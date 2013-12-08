@@ -11,7 +11,7 @@ Building
 --------
 Pre-requisite: Maven should be installed.
 
-AIDR-Collector is a maven based project. Project POM file specifies all the dependencies that are required for the building process. To build, go to the root directory of the project where POM.xml is located and run "mvn install" command. This process initiates downloading process of required packages/libraries from the maven central repository. This process may take a few minutes. A successful build will create a target folder on the project root directory and a couple of other files too.  You must find a file "aidr-collector-1.0.war" if the building process successfully completed.
+AIDR-Collector is a maven based project. Project POM file specifies all the dependencies that are required for the building process. To build, go to the root directory of the project where POM.xml is located and run "mvn install" command. This process initiates downloading process of required packages/libraries from the maven central repository, and may take a few minutes. A successful build will create a target folder on the project root directory and a couple of other files too.  You must find a file "aidr-collector-1.0.war" if the building process successfully completed.
 
 Deployment
 ----------
