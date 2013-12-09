@@ -5,10 +5,10 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>AIDR Fetcher</title>
+        <title>AIDR Collector</title>
     </head>
     <body>
-        <h1>The AIDR Fetcher application is deployed to this location.</h1>
+        <h1>The AIDR Collector application is deployed to this location.</h1>
         <p>To check the status you can use: <a href="webresources/fetcher/twitter/status/all">webresources/fetcher/twitter/status/all</a>.</p>
         <p>Refer to the documentation for information on the API of this application.</p>
     </body>
