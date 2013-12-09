@@ -3,9 +3,9 @@ AIDR Collector Installation Instructions
 
 Required technologies
 ---------------------
-1- Apache Maven (Get the latest version from http://maven.apache.org/)
-2- Apache Tomcat (Get the latest version from http://tomcat.apache.org/) OR GlassFish ( Get the latest version from https://glassfish.java.net/)
-3- Redis (Get the latest version from http://redis.io/)
+* Apache Maven (Get the latest version from http://maven.apache.org/)
+* Apache Tomcat (Get the latest version from http://tomcat.apache.org/) OR GlassFish (Get the latest version from https://glassfish.java.net/)
+* Redis (Get the latest version from http://redis.io/)
 
 Building 
 --------
