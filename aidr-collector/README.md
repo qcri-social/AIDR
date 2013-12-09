@@ -1,6 +1,3 @@
-AIDR - Collector
-====================================================
-
 AIDR Collector Installation Instructions
 ----------------------------------------
 
