@@ -24,7 +24,7 @@ public class Config {
         // Default persister related parameters
         public static final boolean DEFAULT_PERSISTER_ENABLED = true;
         public static final String DEFAULT_PERSISTER_FILE_LOCATION = "/var/www/aidr/data/persister/";
-        public static final String PERSISTER_REST_URI="http://localhost:8084/AIDRPersister/webresources/persister";
+        public static final String PERSISTER_REST_URI="http://localhost:8084/AIDRPersister/webresources/";
     
         // Redis paramters
 	public static final int INPUT_PORT = 4320;
