@@ -1,0 +1,221 @@
+package qa.qcri.aidr.trainer.pybossa.service.impl;
+
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import qa.qcri.aidr.trainer.pybossa.entity.*;
+import qa.qcri.aidr.trainer.pybossa.impl.CVSRemoteFileFormatter;
+import qa.qcri.aidr.trainer.pybossa.impl.MicroMapperPybossaFormatter;
+import qa.qcri.aidr.trainer.pybossa.impl.MicromapperInput;
+import qa.qcri.aidr.trainer.pybossa.service.*;
+import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
+import qa.qcri.aidr.trainer.pybossa.store.URLPrefixCode;
+import qa.qcri.aidr.trainer.pybossa.store.UserAccount;
+
+import java.util.Iterator;
+import java.util.List;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: jlucas
+ * Date: 10/18/13
+ * Time: 1:19 AM
+ * To change this template use File | Settings | File Templates.
+ */
+@Service("pybossaMicroMapperWorker")
+@Transactional(readOnly = false)
+public class PybossaMicroMapperWorker implements MicroMapperWorker {
+
+    protected static Logger logger = Logger.getLogger("service");
+
+    private Client client;
+    private CVSRemoteFileFormatter cvsRemoteFileFormatter = new CVSRemoteFileFormatter();
+    private int MAX_PENDING_QUEUE_SIZE = 50;
+    private int MAX_IMPORT_PROCESS_QUEUE_SIZE = 100;
+    private String PYBOSSA_API_TASK_PUBLSIH_URL;
+
+    private String PYBOSSA_API_TASK_RUN_BASE_URL;
+    private String PYBOSSA_API_TASK_BASE_URL;
+
+    private PybossaCommunicator pybossaCommunicator = new PybossaCommunicator();
+    private JSONParser parser = new JSONParser();
+    private MicroMapperPybossaFormatter pybossaFormatter = new MicroMapperPybossaFormatter();
+
+    @Autowired
+    private ClientService clientService;
+
+    @Autowired
+    private ClientAppService clientAppService;
+
+    @Autowired
+    private TaskQueueService taskQueueService;
+
+    @Autowired
+    private TaskLogService taskLogService;
+
+    @Autowired
+    private ClientAppSourceService clientAppSourceService;
+
+    @Autowired
+    private ClientAppResponseService clientAppResponseService;
+
+    @Autowired
+    private ReportTemplateService reportTemplateService;
+
+
+    public void setClassVariable() throws Exception{
+        client = clientService.findClientByCriteria("name", UserAccount.MIROMAPPER_USER_NAME);
+        PYBOSSA_API_TASK_PUBLSIH_URL = client.getHostURL() + URLPrefixCode.TASK_PUBLISH + client.getHostAPIKey();
+        PYBOSSA_API_TASK_BASE_URL  = client.getHostURL() + URLPrefixCode.TASK_INFO;
+        PYBOSSA_API_TASK_RUN_BASE_URL =  client.getHostURL() + URLPrefixCode.TASKRUN_INFO;
+        MAX_PENDING_QUEUE_SIZE = client.getQueueSize();
+    }
+
+    @Override
+    public void processTaskPublish() throws Exception{
+        setClassVariable();
+        List<ClientApp> appList = clientAppService.getAllClientAppByClientID(client.getClientID() );
+
+        if(appList.size() > 0){
+            for(int i=0; i < appList.size(); i++){
+                ClientApp currentClientApp =  appList.get(i);
+                List<ClientAppSource> datasources = clientAppSourceService.getClientAppSourceByStatus(currentClientApp.getClientAppID(),StatusCodeType.EXTERNAL_DATA_SOURCE_ACTIVE);
+                for(int j=0; j < datasources.size(); j++){
+                    String url = datasources.get(j).getSourceURL();
+                    List<MicromapperInput> micromapperInputList = cvsRemoteFileFormatter.getClickerInputData(url);
+                    if(micromapperInputList.size() > 0){
+                        ClientAppSource source = datasources.get(j);
+                        publishToPybossa(currentClientApp, micromapperInputList , source.getClientAppSourceID());
+                        clientAppSourceService.updateClientAppSourceStatus(source.getClientAppSourceID(), StatusCodeType.EXTERNAL_DATA_SOURCE_USED);
+                    }
+                }
+
+            }
+        }
+
+    }
+
+    private void publishToPybossa(ClientApp currentClientApp, List<MicromapperInput> micromapperInputList, Long clientAppSourceID){
+        try {
+            List<String> aidr_data = pybossaFormatter.assemblePybossaTaskPublishForm(micromapperInputList, currentClientApp);
+
+            for (String temp : aidr_data) {
+
+                String response = pybossaCommunicator.sendPostGet(temp, PYBOSSA_API_TASK_PUBLSIH_URL) ;
+
+                if(!response.startsWith("Exception")){
+                    addToTaskQueue(response, currentClientApp.getClientAppID(), StatusCodeType.TASK_PUBLISHED, clientAppSourceID) ;
+                }
+                else{
+                    addToTaskQueue(temp, currentClientApp.getClientAppID(), StatusCodeType.Task_NOT_PUBLISHED, clientAppSourceID) ;
+                }
+            }
+            // data is consumed. need to mark as completed not to process anymore.
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    private void addToTaskQueue(String inputData, Long clientAppID, Integer status, Long clientAppSourceID){
+
+        System.out.println("addToTaskQueue is called");
+
+        try {
+            Object obj = parser.parse(inputData);
+            JSONObject jsonObject = (JSONObject) obj;
+
+            Long taskID  = (Long)jsonObject.get("id");
+            JSONObject info = (JSONObject)jsonObject.get("info");
+            Long documentID = (Long)info.get("documentID");
+
+            TaskQueue taskQueue = new TaskQueue(taskID, clientAppID, documentID, status);
+            // mostly micromapper will have outside source. AIDR will have docID
+            taskQueue.setClientAppSourceID(clientAppSourceID);
+
+            taskQueueService.createTaskQueue(taskQueue);
+            TaskLog taskLog = new TaskLog(taskQueue.getTaskQueueID(), taskQueue.getStatus());
+            taskLogService.createTaskLog(taskLog);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void processTaskImport() throws Exception{
+        setClassVariable();
+        List<ClientApp> appList = clientAppService.getAllClientAppByClientID(client.getClientID() );
+
+        Iterator itr= appList.iterator();
+        while(itr.hasNext()){
+            ClientApp clientApp = (ClientApp)itr.next();
+            if(clientApp.getStatus().equals(StatusCodeType.MICROMAPPER_ONLY)){
+                List<TaskQueue> taskQueues =  taskQueueService.getTaskQueueByClientAppStatus(clientApp.getClientAppID(),StatusCodeType.TASK_PUBLISHED);
+                if(taskQueues != null ){
+                    int queueSize = MAX_IMPORT_PROCESS_QUEUE_SIZE;
+
+                    if(taskQueues.size() < MAX_IMPORT_PROCESS_QUEUE_SIZE)
+                    {
+                        queueSize =  taskQueues.size();
+                    }
+
+                    for(int i=0; i < queueSize; i++){
+                        TaskQueue taskQueue = taskQueues.get(i);
+                        Long taskID =  taskQueue.getTaskID();
+                        String taskQueryURL = PYBOSSA_API_TASK_BASE_URL + clientApp.getPlatformAppID() + "&id=" + taskID;
+                        String inputData = pybossaCommunicator.sendGet(taskQueryURL);
+                        try {
+                            System.out.println("inputData: " + inputData);
+                            boolean isFound = pybossaFormatter.isTaskStatusCompleted(inputData);
+                            if(isFound){
+                                processTaskQueueImport(clientApp,taskQueue,taskID) ;
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    private void processTaskQueueImport(ClientApp clientApp,TaskQueue taskQueue, Long taskID) throws Exception {
+        String PYBOSSA_API_TASK_RUN = PYBOSSA_API_TASK_RUN_BASE_URL + clientApp.getPlatformAppID() + "&task_id=" + taskID;
+        String importResult = pybossaCommunicator.sendGet(PYBOSSA_API_TASK_RUN) ;
+
+        if(!importResult.isEmpty() && importResult.length() > StatusCodeType.RESPONSE_MIN_LENGTH  ){
+            ClientAppAnswer clientAppAnswer = clientAppResponseService.getClientAppAnswer(clientApp.getClientAppID());
+            TaskQueueResponse taskQueueResponse = pybossaFormatter.getAnswerResponse(importResult, parser, taskQueue.getTaskQueueID(), clientAppAnswer,reportTemplateService);
+            clientAppResponseService.processTaskQueueResponse(taskQueueResponse);
+            taskQueue.setStatus(StatusCodeType.TASK_LIFECYCLE_COMPLETED);
+            updateTaskQueue(taskQueue);
+        }
+    }
+
+    private void updateTaskQueue(TaskQueue taskQueue){
+        taskQueueService.updateTaskQueue(taskQueue);
+        TaskLog taskLog = new TaskLog(taskQueue.getTaskQueueID(), taskQueue.getStatus());
+        taskLogService.createTaskLog(taskLog);
+    }
+
+
+    private TaskQueue getTaskQueue(Long clientAppID, Long documentID){
+        TaskQueue taskQueue = null;
+
+        List<TaskQueue> queSet = taskQueueService.getTaskQueueByDocument(clientAppID, documentID);
+        if(queSet!=null){
+            if(queSet.size() > 0){
+                taskQueue =  queSet.get(0);
+            }
+        }
+
+        return taskQueue;
+    }
+
+}

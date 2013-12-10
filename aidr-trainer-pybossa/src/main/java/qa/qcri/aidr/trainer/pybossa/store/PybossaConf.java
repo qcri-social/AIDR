@@ -1,0 +1,16 @@
+package qa.qcri.aidr.trainer.pybossa.store;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: jlucas
+ * Date: 11/21/13
+ * Time: 11:01 AM
+ * To change this template use File | Settings | File Templates.
+ */
+public class PybossaConf {
+    public static int DEFAULT_N_ANSWERS = 3;
+    public static int DEFAULT_MAP_RAIDUS_CUT_OFF = 1;
+
+    public static String TWEET_CLICKER;
+    public static String IMAGE_CLICKER;
+}
