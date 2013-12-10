@@ -84,8 +84,7 @@ public class TwitterCollectorAPI extends Loggable {
             return Response.ok(response).build();
         }
 
-        String cacheKey = collectionTask.getCollectionCode();
-        log(LOG_LEVEL.INFO, "Generated Cache Key : " + cacheKey);
+        String collectionCode = collectionTask.getCollectionCode();
 
         //building filter for filtering twitter stream
         TwitterStreamQueryBuilder queryBuilder = null;
@@ -107,8 +106,10 @@ public class TwitterCollectorAPI extends Loggable {
             Logger.getLogger(TwitterCollectorAPI.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        if (Config.DEFAULT_PERSISTER_ENABLED)
-        startPersister(cacheKey);
+        if (Config.DEFAULT_PERSISTER_ENABLED){
+            startCollectorPersister(collectionCode);
+            startTaggerPersister(collectionCode);
+        }
 
         //preparing callback response
         String msg = "Initializing Twitter stream tracking. It Will be tracking: " + collectionTask.getToTrack()
@@ -135,8 +136,10 @@ public class TwitterCollectorAPI extends Loggable {
             GenericCache.getInstance().delLastDownloadedDoc(collectionCode);
             GenericCache.getInstance().delTwitterTracker(collectionCode);
             
-            if (Config.DEFAULT_PERSISTER_ENABLED)
-            stopPersister(collectionCode);
+            if (Config.DEFAULT_PERSISTER_ENABLED){
+                stopCollectorPersister(collectionCode);
+                stopTaggerPersister(collectionCode);
+            }
             
             responseMsg = "Collector has been successfully stopped.";
             System.out.println(collectionCode + ": " + responseMsg);
@@ -201,29 +204,57 @@ public class TwitterCollectorAPI extends Loggable {
         return Response.ok(allTasks).build();
     }
     
-    public void startPersister(String collectionCode){
+    public void startCollectorPersister(String collectionCode){
         
         try{
-        WebResource webResource = client.resource(Config.PERSISTER_REST_URI + "/start?file=" 
+        WebResource webResource = client.resource(Config.PERSISTER_REST_URI + "persister/start?file=" 
                 + URLEncoder.encode(Config.DEFAULT_PERSISTER_FILE_LOCATION) 
                 + "&collectionCode=" + URLEncoder.encode(collectionCode));
             ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             String jsonResponse = clientResponse.getEntity(String.class);
-            System.out.println("Persister Response: " + jsonResponse );
+            System.out.println("Collector persister response: " + jsonResponse );
         }catch(RuntimeException e){
             
             System.out.println("Could not start persister. Is persister running?");
         }
     }
     
-    public void stopPersister(String collectionCode){
+    public void stopCollectorPersister(String collectionCode){
         try{
-        WebResource webResource = client.resource(Config.PERSISTER_REST_URI + "/stop?collectionCode=" + URLEncoder.encode(collectionCode));
+        WebResource webResource = client.resource(Config.PERSISTER_REST_URI + "persister/stop?collectionCode=" + URLEncoder.encode(collectionCode));
             ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
             String jsonResponse = clientResponse.getEntity(String.class);
-            System.out.println("Persister Response: " + jsonResponse );
+            System.out.println("Collector persister response: " + jsonResponse );
+        }catch(RuntimeException e){
+         System.out.println("Could not stop persister. Is persister running?");   
+        }
+    }
+    
+     public void startTaggerPersister(String collectionCode){
+        
+        try{
+        WebResource webResource = client.resource(Config.PERSISTER_REST_URI + "taggerPersister/start?file=" 
+                + URLEncoder.encode(Config.DEFAULT_PERSISTER_FILE_LOCATION) 
+                + "&collectionCode=" + URLEncoder.encode(collectionCode));
+            ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            String jsonResponse = clientResponse.getEntity(String.class);
+            System.out.println("Tagger persister response: " + jsonResponse );
+        }catch(RuntimeException e){
+            
+            System.out.println("Could not start persister. Is persister running?");
+        }
+    }
+     
+     public void stopTaggerPersister(String collectionCode){
+        try{
+        WebResource webResource = client.resource(Config.PERSISTER_REST_URI + "taggerPersister/stop?collectionCode=" + URLEncoder.encode(collectionCode));
+            ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+            String jsonResponse = clientResponse.getEntity(String.class);
+            System.out.println("Tagger persister response: " + jsonResponse );
         }catch(RuntimeException e){
          System.out.println("Could not stop persister. Is persister running?");   
         }
