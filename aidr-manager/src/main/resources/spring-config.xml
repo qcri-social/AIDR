@@ -15,7 +15,7 @@
 
     
 	<context:property-placeholder location="classpath:system.properties" />
-    <context:component-scan base-package="com.aidr.app"/>
+    <context:component-scan base-package="qa.qcri.aidr.manager"/>
     <context:component-scan base-package="org.socialsignin.springsocial.security" />
     
     

@@ -19,7 +19,7 @@
         </layout>
     </appender>
     
-    <logger name="com.aidr.app">
+    <logger name="qa.qcri.aidr.manager">
         <!-- level info logs -->
         <level value="info"/>
         <appender-ref ref="fileAppender"/>

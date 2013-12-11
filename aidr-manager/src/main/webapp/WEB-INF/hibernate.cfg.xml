@@ -4,12 +4,12 @@
 
 <hibernate-configuration>
     <session-factory>
-        <mapping class="com.aidr.app.hibernateEntities.AidrCollectionLog"/>
-        <mapping class="com.aidr.app.hibernateEntities.AidrMaster"/>
-        <mapping class="com.aidr.app.hibernateEntities.UserEntity"/>
-        <mapping class="com.aidr.app.hibernateEntities.AidrCollection"/>
-        <mapping class="com.aidr.app.hibernateEntities.AidrTask"/>
-        <mapping class="com.aidr.app.hibernateEntities.UserConnection"/>
-        <mapping class="com.aidr.app.hibernateEntities.Role"/>
+        <mapping class="qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog"/>
+        <mapping class="qa.qcri.aidr.manager.hibernateEntities.AidrMaster"/>
+        <mapping class="qa.qcri.aidr.manager.hibernateEntities.UserEntity"/>
+        <mapping class="qa.qcri.aidr.manager.hibernateEntities.AidrCollection"/>
+        <mapping class="qa.qcri.aidr.manager.hibernateEntities.AidrTask"/>
+        <mapping class="qa.qcri.aidr.manager.hibernateEntities.UserConnection"/>
+        <mapping class="qa.qcri.aidr.manager.hibernateEntities.Role"/>
     </session-factory>
 </hibernate-configuration>
