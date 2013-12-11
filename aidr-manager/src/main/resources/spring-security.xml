@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+	  <global-method-security secured-annotations="enabled" proxy-target-class="false" />
+	  <http pattern="/resources/**" security="none"/>
+      <http pattern="/index.jsp" security="none"/>
+      <http pattern="/signin" security="none"/>
+
+      <http entry-point-ref="springSocialSecurityEntryPoint" use-expressions="true" auto-config="false" >
+        <intercept-url pattern="/protected/twitter" access="hasRole('ROLE_USER_TWITTER')" />
+        <intercept-url pattern="/protected/**" access="hasRole('ROLE_USER')" />
+        <access-denied-handler ref="springSocialSecurityAccessDeniedHandler"/>
+        <logout logout-url="/logout" />
+	    <anonymous />
+	    <custom-filter position="FORM_LOGIN_FILTER" ref="springSocialAuthenticationFilter" />
+	  </http>
+
+	  <authentication-manager alias="authenticationManager"/>
+     
+    <beans:bean id="springSocialSecurityEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+ 		<beans:property name="loginFormUrl" value="/index.jsp"/>
+	</beans:bean>
+	  
+</beans:beans>

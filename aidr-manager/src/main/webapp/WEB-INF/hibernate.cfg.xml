@@ -1,0 +1,15 @@
+<!DOCTYPE hibernate-configuration PUBLIC
+ "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+ "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+        <mapping class="com.aidr.app.hibernateEntities.AidrCollectionLog"/>
+        <mapping class="com.aidr.app.hibernateEntities.AidrMaster"/>
+        <mapping class="com.aidr.app.hibernateEntities.UserEntity"/>
+        <mapping class="com.aidr.app.hibernateEntities.AidrCollection"/>
+        <mapping class="com.aidr.app.hibernateEntities.AidrTask"/>
+        <mapping class="com.aidr.app.hibernateEntities.UserConnection"/>
+        <mapping class="com.aidr.app.hibernateEntities.Role"/>
+    </session-factory>
+</hibernate-configuration>
