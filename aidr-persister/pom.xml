@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.qcri.aidr.persister</groupId>
-    <artifactId>AIDRPersister</artifactId>
+    <artifactId>aidr-persister</artifactId>
     <packaging>war</packaging>
     <version>1.0</version>
 
-    <name>AIDRPersister</name>
+    <name>aidr-persister</name>
     <url>http://maven.apache.org</url>
 
     <dependencies>
