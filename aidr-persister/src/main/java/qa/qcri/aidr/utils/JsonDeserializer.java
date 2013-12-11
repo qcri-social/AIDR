@@ -222,10 +222,10 @@ public class JsonDeserializer {
 
         try {
 
-            String folderLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode;
+            String folderLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output";
             String fileNameforCSVGen = "Classified_" + collectionCode + "_last_100k_tweets";
             fileName = fileNameforCSVGen + ".csv";
-            FileSystemOperations.deleteFile(Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/" + fileNameforCSVGen + ".csv");
+            FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforCSVGen + ".csv");
 
             File folder = new File(folderLocation);
             File[] listOfFiles = folder.listFiles();

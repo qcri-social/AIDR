@@ -124,7 +124,7 @@ public class ReadWriteCSV {
         try {
             String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
             fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
-            String fileToWrite = persisterDIR + collectionDIR + "/" + fileName + ".csv";
+            String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName + ".csv";
             System.out.println("Writing CSV file : " + fileToWrite);
             beanWriter = new CsvBeanWriter(new FileWriter(fileToWrite, true),
                     CsvPreference.EXCEL_PREFERENCE);
@@ -196,7 +196,7 @@ public class ReadWriteCSV {
             if(beanWriter== null){
                 String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
                 fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
-                String fileToWrite = persisterDIR + collectionDIR + "/" + fileName + ".csv";
+                String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName + ".csv";
                 System.out.println("Writing CSV file : " + fileToWrite);
                 beanWriter = new CsvBeanWriter(new FileWriter(fileToWrite, true),
                         CsvPreference.EXCEL_PREFERENCE);

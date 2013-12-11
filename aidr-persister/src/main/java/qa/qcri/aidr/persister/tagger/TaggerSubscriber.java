@@ -40,7 +40,7 @@ public class TaggerSubscriber extends JedisPubSub {
 
     public TaggerSubscriber(String fileLoc, String collectionCode) {
         //remove leading and trailing double quotes from collectionCode
-        fileVolumnNumber = FileSystemOperations.getLatestFileVolumeNumber(collectionCode);
+        fileVolumnNumber = FileSystemOperations.getLatestFileVolumeNumber4Tagger(collectionCode);
         this.collectionCode = collectionCode.replaceAll("^\"|\"$", ""); // removing spaces
         this.persisterDir = fileLoc.replaceAll("^\"|\"$", "");
         collectionDir = createNewDirectory();
@@ -88,18 +88,18 @@ public class TaggerSubscriber extends JedisPubSub {
     }
 
     private String createNewDirectory() {
-        File theDir = new File(persisterDir + collectionCode);
+        File theDir = new File(persisterDir + collectionCode + "/output");
         if (!theDir.exists()) {
-            System.out.println("creating directory: " + persisterDir + collectionCode);
+            System.out.println("creating directory: " + persisterDir + collectionCode + "/output");
             boolean result = theDir.mkdir();
             
             if (result) {
                 System.out.println("DIR created");
-                return persisterDir + collectionCode + "/";
+                return persisterDir + collectionCode + "/output/";
             } 
             
         }
-        return persisterDir + collectionCode + "/";
+        return persisterDir + collectionCode + "/output/";
     }
 
     private void createBufferWriter() {
