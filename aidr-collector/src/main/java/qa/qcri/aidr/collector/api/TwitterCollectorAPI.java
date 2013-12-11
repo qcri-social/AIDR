@@ -187,6 +187,17 @@ public class TwitterCollectorAPI extends Loggable {
         return Response.ok(response).build();
 
     }
+    
+    //TODO: PENDING SERVICE
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/restart")
+    public Response restartCollection(@QueryParam("code") String collectionCode) throws InterruptedException {
+        stopTask(collectionCode);
+        Thread.sleep(2000);
+        //startTask(collectionCode);
+        return null;
+    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
