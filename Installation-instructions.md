@@ -20,7 +20,7 @@ If the maven process creates a .war file, that file must be deployed to Glassfis
 # 2. Collector (aidr-collector)
 
 * Build using maven following the instructions above; this should generate a file `aidr-collector-X.war`
-* Deploy `aidr-collector-1.0.war` to Glassfish following the instructions above.
+* Deploy `aidr-collector-X.war` to Glassfish following the instructions above.
 
 ## Running
 
