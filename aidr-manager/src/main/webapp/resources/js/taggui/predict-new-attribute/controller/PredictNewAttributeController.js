@@ -78,7 +78,7 @@ Ext.define('TAGGUI.predict-new-attribute.controller.PredictNewAttributeControlle
         });
     },
 
-    addAttributeToCrises: function(id, name) {
+    addAttributeToCrises: function(id, name, type) {
         var me = this;
 
         Ext.Ajax.request({
@@ -95,8 +95,12 @@ Ext.define('TAGGUI.predict-new-attribute.controller.PredictNewAttributeControlle
             success: function (response) {
                 var resp = Ext.decode(response.responseText);
                 if (resp.success && resp.data) {
-                    me.getAttributesForCrises();
-                    AIDRFMFunctions.setAlert("Ok", '"' + name + '" has been added.');
+                    if (type === 'standard') {
+                        document.location.href = BASE_URL + '/protected/' + CRISIS_CODE +'/tagger-collection-details';
+                    } else {
+                        me.getAttributesForCrises();
+                        AIDRFMFunctions.setAlert("Ok", '"' + name + '" has been added.');
+                    }
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
