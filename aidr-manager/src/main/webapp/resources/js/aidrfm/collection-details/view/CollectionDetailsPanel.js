@@ -1,26 +1,15 @@
 Ext.require([
-    'AIDRFM.common.AIDRFMFunctions'
+    'AIDRFM.common.AIDRFMFunctions',
+    'AIDRFM.common.StandardLayout'
 ]);
 
 Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
-    extend: 'Ext.panel.Panel',
+    extend: 'AIDRFM.common.StandardLayout',
     alias: 'widget.collection-details-view',
-    border: false,
-    bodyPadding: 40,
-    margin: '25 0',
-    width: 1040,
-    layout: {
-        type: 'vbox',
-        align: 'left'
-    },
 
     fieldDefaults: {
         labelAlign: 'left',
         msgTarget: 'side'
-    },
-
-    defaults: {
-        width: '100%'
     },
 
     initComponent: function () {

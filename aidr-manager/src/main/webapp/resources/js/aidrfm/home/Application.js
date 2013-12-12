@@ -37,11 +37,10 @@ Ext.application({
                         },
                         {
                             xtype: 'panel',
-                            width: 1040,
+                            width: 0,
                             border: false,
                             flex: 1,
-                            margin: '0 0 25 0',
-                            id: 'push'
+                            margin: '0 0 25 0'
                         },
                         {
                             xtype: 'container',

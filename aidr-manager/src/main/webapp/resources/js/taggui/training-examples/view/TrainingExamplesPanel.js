@@ -1,23 +1,12 @@
 Ext.require([
     'AIDRFM.common.AIDRFMFunctions',
+    'AIDRFM.common.StandardLayout',
     'TAGGUI.training-examples.view.LabelPanel'
 ]);
 
 Ext.define('TAGGUI.training-examples.view.TrainingExamplesPanel', {
-    extend: 'Ext.panel.Panel',
+    extend: 'AIDRFM.common.StandardLayout',
     alias: 'widget.training-examples-view',
-    border: false,
-    bodyPadding: 40,
-    margin: '25 0',
-    width: 1040,
-    layout: {
-        type: 'vbox',
-        align: 'left'
-    },
-
-    defaults: {
-        width: '100%'
-    },
 
     initComponent: function () {
         var me = this;

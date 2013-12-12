@@ -1,22 +1,11 @@
 Ext.require([
-    'AIDRFM.common.AIDRFMFunctions'
+    'AIDRFM.common.AIDRFMFunctions',
+    'AIDRFM.common.StandardLayout'
 ]);
 
 Ext.define('TAGGUI.home.view.TaggerHomePanel', {
-    extend: 'Ext.panel.Panel',
+    extend: 'AIDRFM.common.StandardLayout',
     alias: 'widget.tagger-home-view',
-    border: false,
-    bodyPadding: 40,
-    margin: '25 0 0 0',
-    width: 1040,
-    layout: {
-        type: 'vbox',
-        align: 'left'
-    },
-
-    defaults: {
-        width: '100%'
-    },
 
     initComponent: function () {
         var me = this;

@@ -1,23 +1,12 @@
 Ext.require([
     'AIDRFM.common.AIDRFMFunctions',
-    'TAGGUI.attribute-details.view.AttributeValuePanel'
+    'TAGGUI.attribute-details.view.AttributeValuePanel',
+    'AIDRFM.common.StandardLayout'
 ]);
 
 Ext.define('TAGGUI.attribute-details.view.AttributeDetailsPanel', {
-    extend: 'Ext.panel.Panel',
+    extend: 'AIDRFM.common.StandardLayout',
     alias: 'widget.attribute-details-view',
-    border: false,
-    bodyPadding: 40,
-    margin: '25 0',
-    width: 1040,
-    layout: {
-        type: 'vbox',
-        align: 'left'
-    },
-
-    defaults: {
-        width: '100%'
-    },
 
     attributeName: '',
 
