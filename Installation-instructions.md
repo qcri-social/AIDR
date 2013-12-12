@@ -19,13 +19,8 @@ If the maven process creates a .war file, that file must be deployed to Glassfis
 
 # 2. Collector (aidr-collector)
 
-## Building
-
-Build using maven following the instructions above; this should generate a file `aidr-collector-X.war`
-
-## Deploying
-
-Deploy `aidr-collector-1.0.war` to Glassfish following the instructions above.
+* Build using maven following the instructions above; this should generate a file `aidr-collector-X.war`
+* Deploy `aidr-collector-1.0.war` to Glassfish following the instructions above.
 
 ## Running
 
@@ -33,12 +28,7 @@ The AIDR Collector has a RESTFul API, that means all the operations have their c
 
 # 3. Persister (aidr-persister)
 
-## Building
-
-Build using maven following the instructions above; this should generate a file `aidr-persister-X.war`
-
-## Deploying
-
-Deploy `aidr-persister-X.war` to Glassfish using the instructions above.
+* Build using maven following the instructions above; this should generate a file `aidr-persister-X.war`
+* Deploy `aidr-persister-X.war` to Glassfish using the instructions above.
 
 
