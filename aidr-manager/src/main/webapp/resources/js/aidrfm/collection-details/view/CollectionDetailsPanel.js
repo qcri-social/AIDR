@@ -149,7 +149,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.geoDescription = Ext.create('Ext.form.Label', {
             flex: 1,
-            html: '<span class="redInfo">*</span> <a href="http://boundingbox.klokantech.com/">boundingbox.klokantech.com</a> ("Copy/paste CSV format of a boundingbox")',
+            html: '<span class="redInfo">*</span> <a href="http://boundingbox.klokantech.com/" target="_blank">boundingbox.klokantech.com</a> ("Copy/paste CSV format of a boundingbox")',
             padding: '2 0 2 135'
         });
 

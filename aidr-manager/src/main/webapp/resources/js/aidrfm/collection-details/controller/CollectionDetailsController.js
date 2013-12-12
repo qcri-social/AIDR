@@ -59,7 +59,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
                         trackMouse: true,
-                        html: 'This field represents a comma-separated pairs of longitude and latitude. A valid geo location represents a bounding box with southwest corner of the box coming first. Visit <a href="http://boundingbox.klokantech.com/">http://boundingbox.klokantech.com</a> to get a valid bounding box.',
+                        html: 'This field represents a comma-separated pairs of longitude and latitude. A valid geo location represents a bounding box with southwest corner of the box coming first. Visit <a href="http://boundingbox.klokantech.com/" target="_blank">http://boundingbox.klokantech.com</a> to get a valid bounding box.',
                         target: infoPanel.el,
                         dismissDelay: 0
                     });
