@@ -1,16 +1,16 @@
-# Requirements
+# 0. Requirements
 
 * Apache Maven -- http://maven.apache.org/
 * Glassfish -- https://glassfish.java.net/
 * Redis -- http://redis.io/
 
-# Building (general)
+# 1. Building (general)
 
 AIDR is a set of maven-based projects. Inside each project, a POM file specifies all the dependencies that are required for the building process. To build, go to the root directory of the project where pom.xml is located and run `mvn install`
 
 This process initiates downloading process of required packages/libraries from the maven central repository, and may take a few minutes. A successful build will create a target folder on the project root directory and a couple of other files too.
 
-# Collector
+# 2. Collector
 
 ## Building
 
