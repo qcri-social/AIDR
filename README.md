@@ -1,4 +1,4 @@
-AIDR - Artificial Intelligence for Disaster Response
-====================================================
+Artificial Intelligence for Disaster Response
+=============================================
 
-This is a preliminary release of the source code for http://aidr.qcri.org/. We will reorganize and cleanup this repository in the coming weeks.
+For installation instructions and other documentation, please see https://github.com/qcri-social/AIDR/wiki
