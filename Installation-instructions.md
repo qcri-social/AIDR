@@ -2,10 +2,12 @@
 
 Before installing AIDR, you must have the following:
 
-* Apache Maven installed -- get the latest version from http://maven.apache.org/
-* Redis server running -- get the latest version from http://redis.io/
-* Glassfish server running -- get the latest version from https://glassfish.java.net/ (tested on v3.2)
-* MySQL server running -- get the latest version from https://dev.mysql.com/downloads/mysql/ (tested on v14.14)
+* Apache Maven installed -- http://maven.apache.org/
+* Redis server running -- http://redis.io/
+* Glassfish server running -- https://glassfish.java.net/
+* MySQL server running -- https://dev.mysql.com/downloads/mysql/
+
+We have tested AIDR on Ubuntu 12, using Glassfish v3.2 and MySQL v14.14.
 
 # 1. Building and deploying (general)
 
