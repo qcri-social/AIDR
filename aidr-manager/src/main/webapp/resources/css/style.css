@@ -2968,7 +2968,8 @@ footer p a:hover{
     border-bottom: 1px #e3e1e1 solid;
 }
 
-.c-list .crisis-item {
+.c-list .crisis-item,
+.c-models-list .crisis-item {
     overflow: hidden;
     padding-bottom: 10px;
     padding-top: 10px;
@@ -2976,7 +2977,8 @@ footer p a:hover{
 
 .collections-list .collection-item .img,
 .attribute-list .attribute-item .img,
-.c-list .crisis-item .img {
+.c-list .crisis-item .img,
+.c-models-list .crisis-item .img {
     float: left;
     padding: 3px;
     margin: 0 8px 0 0;
@@ -2987,6 +2989,12 @@ footer p a:hover{
     position: relative;
     float: right;
     top: 35px;
+}
+
+.c-models-list .crisis-item .btn {
+    position: relative;
+    float: right;
+    top: 52px;
 }
 
 .attribute-list .attribute-item .btn{
@@ -3116,6 +3124,10 @@ footer p a:hover{
 
 .btn span{
     font-family: "Lucida Sans Unicode", "Lucida Grande", "Arial";
+}
+
+.btn-disabled span{
+    color: #333!important;
 }
 
 .collection-item button:hover,
@@ -3259,11 +3271,13 @@ End of the tab panel styles
 
 .collections-list .content .rightColumn,
 .attribute-list .content .rightColumn,
-.c-list .content .rightColumn {
+.c-list .content .rightColumn,
+.c-models-list .content .rightColumn {
     line-height: 1.5;
     float:left;
     width:160px;
 }
+
 .collections-list .content .leftColumn,
 .attribute-list .content .leftColumn,
 .c-list .content .leftColumn {
@@ -3272,23 +3286,32 @@ End of the tab panel styles
     width:710px;
 }
 
+.c-models-list .content .leftColumn {
+    line-height: 1.5;
+    float:left;
+    width:620px;
+}
+
 .collections-list .content .img,
 .attribute-list .content .img,
-.c-list .content .img {
+.c-list .content .img,
+.c-models-list .content .img {
     float:left;
     width:75px;
 }
 
 .collections-list .content .info,
 .attribute-list .content .info,
-.c-list .content .info {
+.c-list .content .info,
+.c-models-list .content .info {
     float:left;
     width:800px;
 }
 
 .collections-list .content .info .field-labels,
 .attribute-list .content .info .field-labels,
-.c-list .content .info .field-labels {
+.c-list .content .info .field-labels,
+.c-models-list .content .info .field-labels {
     width:200px;
 }
 

@@ -132,7 +132,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         });
 
         this.crisisModelsTpl = new Ext.XTemplate(
-            '<div class="c-list">',
+            '<div class="c-models-list">',
             '<tpl for=".">',
 
             '<div class="crisis-item">',
@@ -140,6 +140,10 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             '<div class="img">',
             '<img alt="Collection History image" src="/AIDRFetchManager/resources/img/AIDR/AIDR_EMBLEM_CMYK_COLOUR_HR.jpg" width="70">',
             '</div>',
+
+            '<button id="buttonRemoveModel_{modelFamilyID}" class="btn btn-blue" onclick="taggerCollectionDetailsController.removeAttributeFromCrisesHandler({modelFamilyID}, \'{attribute}\')">',
+            '<span>Remove</span>',
+            '</button>',
 
             '<div class="content">',
 

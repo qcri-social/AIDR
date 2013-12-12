@@ -232,6 +232,23 @@ public class TaggerController extends BaseController {
         }
     }
 
+    @RequestMapping(value = "/removeAttributeFromCrises.action", method = {RequestMethod.GET})
+    @ResponseBody
+    public Map<String, Object> removeAttributeFromCrises(@RequestParam Integer id) {
+        logger.info("Remove classifier from crises by modelFamilyID");
+        try {
+            boolean success = taggerService.removeAttributeFromCrises(id);
+            if (success){
+                return getUIWrapper(true, "Classifier was successful removed from crisis");
+            } else {
+                return getUIWrapper(false, "Error while remove classifier from crises in Tagger");
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return getUIWrapper(false, e.getMessage());
+        }
+    }
+
     @RequestMapping(value = "/updateAttribute.action", method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> updateAttribute(@RequestParam Integer attributeID, @RequestParam String attributeName) throws Exception {

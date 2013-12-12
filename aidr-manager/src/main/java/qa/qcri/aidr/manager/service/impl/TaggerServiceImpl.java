@@ -417,6 +417,35 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    public boolean removeAttributeFromCrises(Integer modelFamilyID) throws AidrException {
+        try {
+            /**
+             * Rest call to Tagger
+             */
+            WebResource webResource = client.resource(taggerMainUrl + "/modelfamily/" + modelFamilyID);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
+
+            ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .delete(ClientResponse.class);
+            String jsonResponse = clientResponse.getEntity(String.class);
+
+            TaggerStatusResponse response = objectMapper.readValue(jsonResponse, TaggerStatusResponse.class);
+            if (response != null && response.getStatusCode() != null) {
+                if ("SUCCESS".equals(response.getStatusCode())) {
+                    logger.info("Classifier was remove from crises by modelFamilyID: " + modelFamilyID);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            throw new AidrException("Error while removing classifier from crisis in Tagger", e);
+        }
+    }
+
     public TaggerAttribute updateAttribute(TaggerAttribute attribute) throws AidrException{
         try {
             /**

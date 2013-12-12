@@ -225,6 +225,56 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 btn.setDisabled(false);
             }
         });
+    },
+
+    removeAttributeFromCrisesHandler: function(modelFamilyID, name){
+//        If for this model user already called remove action, and this operation was not finished.
+        if (this.modelToRemove === modelFamilyID) {
+            return false;
+        }
+
+        Ext.MessageBox.confirm('Confirm Classifier Remove', 'Do you want to remove <b>"' + name + '"</b> from crisis?',
+            function (buttonId) {
+                if (buttonId === 'yes') {
+                    taggerCollectionDetailsController.removeAttributeFromCrises(modelFamilyID);
+                }
+            }
+        );
+    },
+
+    removeAttributeFromCrises: function (modelFamilyID) {
+        var me = this;
+        me.modelToRemove = modelFamilyID;
+
+        var button = document.getElementById("buttonRemoveModel_" + modelFamilyID);
+        button.classList.toggle("btn-disabled");
+
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/tagger/removeAttributeFromCrises.action',
+            method: 'GET',
+            params: {
+                id: modelFamilyID
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                me.modelToRemove = 0;
+                var resp = Ext.decode(response.responseText);
+                if (resp.success) {
+                    me.mainComponent.crisisModelsStore.load();
+                    AIDRFMFunctions.setAlert("Ok", "Classifier was removed successfully.");
+                } else {
+                    AIDRFMFunctions.setAlert("Error", resp.message);
+                    button.classList.toggle("btn-disabled");
+                }
+            },
+            failure: function () {
+                me.modelToRemove = 0;
+                button.classList.toggle("btn-disabled");
+                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
+            }
+        });
     }
 
 });

@@ -63,7 +63,7 @@ Ext.define('TAGGUI.attribute-details.controller.AttributeDetailsController', {
         AIDRFMFunctions.initMessageContainer();
 
         this.mainComponent = component;
-        taggerCollectionDetailsController = this;
+        attributeDetailsController = this;
         var me = this;
 
         this.getAttributeInfo();
@@ -135,7 +135,7 @@ Ext.define('TAGGUI.attribute-details.controller.AttributeDetailsController', {
         Ext.MessageBox.confirm('Confirm Attribute Delete', 'Do you want to delete <b>"' + me.mainComponent.attributeName + '"</b>?',
             function (buttonId) {
                 if (buttonId === 'yes') {
-                    taggerCollectionDetailsController.attributeDelete();
+                    attributeDetailsController.attributeDelete();
                 }
             }
         );

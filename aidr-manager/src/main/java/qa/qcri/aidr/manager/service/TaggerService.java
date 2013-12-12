@@ -52,6 +52,8 @@ public interface TaggerService {
 
     public boolean deleteAttribute(Integer id) throws AidrException;
 
+    public boolean removeAttributeFromCrises(Integer modelFamilyID) throws AidrException;
+
     public TaggerAttribute updateAttribute(TaggerAttribute attribute) throws AidrException;
 
     public TaggerLabel updateLabel(TaggerLabelRequest label) throws AidrException;
