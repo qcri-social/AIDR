@@ -128,7 +128,7 @@ Ext.define('TAGGUI.predict-new-attribute.view.PredictNewAttributePanel', {
         );
 
         this.customAttributesTpl = new Ext.XTemplate(
-            '<div class="collections-list">',
+            '<div class="attribute-list">',
 
             '<tpl for=".">',
 
@@ -136,7 +136,7 @@ Ext.define('TAGGUI.predict-new-attribute.view.PredictNewAttributePanel', {
             '<div class="attributes-title"><div class="inner"><h2>Custom classifiers</h2></div></div>' +
             '</tpl>' +
 
-            '<div class="collection-item">',
+            '<div class="attribute-item">',
 
             '<button class="btn btn-blue" onclick="predictNewAttributeController.addAttributeToCrises({nominalAttributeID}, \'{name}\', \'custom\')">',
             '<span>Add</span>',

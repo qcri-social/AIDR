@@ -123,6 +123,10 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                                     'Please try again later or contact Support']
                                 );
                             }
+                        },
+                        failure: function () {
+                            AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
+                            mask.hide();
                         }
                     });
 
@@ -222,6 +226,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     me.DetailsComponent.gotoTaggerButton.hide();
                     me.DetailsComponent.enableTaggerButton.hide();
                 }
+            },
+            failure: function () {
+                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
             }
         });
 
@@ -286,6 +293,10 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 me.updateDetailsPanel(jsonData);
                 me.updateDownloadPanel(jsonData.code);
                 me.updateEditPanel();
+                mask.hide();
+            },
+            failure: function () {
+                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
                 mask.hide();
             }
         });
@@ -427,7 +438,12 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
-            }});
+            },
+            failure: function () {
+                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
+                mask.hide();
+            }
+        });
     },
 
     stopCollection: function () {
@@ -457,6 +473,10 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
+            },
+            failure: function () {
+                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
+                mask.hide();
             }
         });
     },
@@ -505,6 +525,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                         interval: 5000
                     });
                 }
+            },
+            failure: function () {
+                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
             }
         });
     },
@@ -544,6 +567,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
+            },
+            failure: function () {
+                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
             }
         });
     },
@@ -607,6 +633,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
+            },
+            failure: function () {
+                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
             }
         });
     },

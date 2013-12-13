@@ -278,8 +278,11 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     }
                 },
                 load: function (s) {
-                    var count = s.getCount();
-                    if (count > 0) {
+                    var activeTab = me.tabPanel.getActiveTab(),
+                        isFirstTab = me.tabPanel.items.findIndex('id', activeTab.id) === 0,
+                        count = s.getCount();
+
+                    if (count > 0 && isFirstTab) {
                         me.collectionHistoryTitle.show();
                         me.collectionLogView.show();
                         me.collectionLogPaging.show();
