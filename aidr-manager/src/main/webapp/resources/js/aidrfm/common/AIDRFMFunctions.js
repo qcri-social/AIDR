@@ -80,6 +80,25 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
             AIDRFMFunctions.setAlert('Error', 'One of Keywords, Geo or Follow field is mandatory');
             isValid = false;
         }
+        if (form.findField('track').getValue()) {
+            var value = form.findField('track').getValue(),
+                keywords = value.split(","),
+                errors = [],
+                isKeywordValid = true;
+            Ext.Array.each(keywords, function(v) {
+                if (v.length > 60) {
+                    if (isKeywordValid){
+                        errors.push('Each keywords should not exceed 60 chars.');
+                    }
+                    errors.push('<b>' + v + '</b> has more than 60 chars');
+                    isKeywordValid = false;
+                }
+            });
+            if (!isKeywordValid) {
+                isValid = isKeywordValid;
+                AIDRFMFunctions.setAlert('Error', errors);
+            }
+        }
         return isValid;
     },
 

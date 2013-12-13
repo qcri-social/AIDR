@@ -132,7 +132,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             fieldLabel: 'Keywords',
             name: 'track',
             allowBlank: false,
-            maxLength: 400,
+            maxLength: 24000,
             maxLengthText: 'The maximum length for this field is 400',
             flex: 1,
             rows: 4,

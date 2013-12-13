@@ -30,7 +30,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             flex: 1,
             text: 'Create New Collection',
             padding: '0 0 0 0',
-            cls: 'header-h1'
+            cls: 'header-h1 bold-text'
         });
 
         this.codeE = Ext.create('Ext.form.field.Text', {
@@ -57,7 +57,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             fieldLabel: 'Keywords',
             name: 'track',
             allowBlank: false,
-            maxLength: 400,
+            maxLength: 24000,
             maxLengthText: 'The maximum length for this field is 400',
             flex: 1,
             rows: 4,
@@ -272,7 +272,8 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             this.breadcrumbs,
             {
                 xtype: 'container',
-                margin: '5 0 5 0'
+                margin: '5 0 0 0',
+                html: '<div class="horisontalLine"></div>'
             },
             this.descriptionL,
             {
@@ -286,4 +287,4 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         this.callParent(arguments);
     }
 
-})
+});
