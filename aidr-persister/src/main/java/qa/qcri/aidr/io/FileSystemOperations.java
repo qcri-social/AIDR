@@ -96,7 +96,7 @@ public class FileSystemOperations {
     
     public static int getLatestFileVolumeNumber4Tagger(String collectionCode) {
 
-        String filesPath = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/";
+        String filesPath = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/";
         File folder = new File(filesPath);
         File[] listOfFiles = folder.listFiles();
         Integer volNum = 1;
