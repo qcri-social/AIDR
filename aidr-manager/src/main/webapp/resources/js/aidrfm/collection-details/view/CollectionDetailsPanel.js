@@ -131,7 +131,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         this.keywordsE = Ext.create('Ext.form.field.TextArea', {
             fieldLabel: 'Keywords',
             name: 'track',
-            allowBlank: false,
+            allowBlank: true,
             maxLength: 24000,
             maxLengthText: 'The maximum length for this field is 400',
             flex: 1,
