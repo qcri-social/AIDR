@@ -90,3 +90,26 @@ INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `
 INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
  VALUES (500, "900_other", "None of the above", "Does not contain any of the above");
 
+INSERT INTO `nominal_attribute` (`nominalAttributeID`, `code`, `name`, `description`)
+ VALUES (600, "needs_v1", "Individual needs v1.0", "Messages of type needs like water, food, blood");
+
+INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
+ VALUES (600, "null", "N/A: does not apply, or cannot judge", "If these categories do not apply to this message, or you cannot be sure about which is the correct category");
+INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
+ VALUES (600, "010_food", "Food", "If the message talks about food requests");
+INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
+    VALUES (600,`020_water`,`Water`,`If the message contains water request`);
+INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
+    VALUES (600,`030_clothes_shoes`,`Clothes or shoes`,`If the message contains clothes or shoes request`);
+INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
+    VALUES (600,`040_volunteer_work`,`Colunterr work`,`If the message contains any type of voluteers requests`);
+INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
+    VALUES (600,`050_medical`,`Medical supplies`,`If the message contains request for medical supplies`);
+INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
+    VALUES (600,`060_blood`,`Blood`,`If blood request is reported in the message`);
+INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
+    VALUES (600,`070_equipment`,`Equipment or machinery`,`If any kind of equipment or machinery is requested`);
+INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
+    VALUES (600,`080_transport`,`Means of transport`,`If any means of transport are requested`);
+INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
+    VALUES (600,`090_money`,`Other need`,`Any other kind of need/request`);
