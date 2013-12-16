@@ -105,6 +105,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             displayField: 'name',
             valueField: 'code',
             multiSelect: true,
+            editable: false,
             fieldLabel: 'Language(s)',
             labelWidth: 100,
             name: 'langFilters',
