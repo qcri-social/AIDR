@@ -161,7 +161,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             '<div>{[this.getNumber(values.trainingExamples)]} &mdash; <a href="' + BASE_URL +  '/protected/'
                 + CRISIS_CODE + '/{modelID}/{modelFamilyID}/training-data">Manage training examples &raquo;</a></div>',
             '<div>{[this.getNumber(values.classifiedDocuments)]}<br><br><br></div>',
-            '<div>{[this.getAucNumber(values.auc)]}</div>',
+            '<div>{[AIDRFMFunctions.getAucNumberWithColors(values.auc)]}</div>',
 
             '</div>',
 
@@ -177,17 +177,6 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             {
                 getNumber: function (r) {
                     return r ? r.format() : 0;
-                },
-                getAucNumber: function (r) {
-                    if (r){
-                        if (r < 0.6){
-                            return '<span class="redInfo">' + r.toFixed(2) + '</span>';
-                        } else if (r <= 0.8){
-                            return '<span class="warningFont">' + r.toFixed(2) + '</span>';
-                        }
-                        return '<span class="greenInfo">' + r.toFixed(2) + '</span>';
-                    }
-                    return '<span class="redInfo">0.0</span>';
                 },
                 getModelName: function (modelId, modelName) {
                     if (modelId && modelId != 0) {
