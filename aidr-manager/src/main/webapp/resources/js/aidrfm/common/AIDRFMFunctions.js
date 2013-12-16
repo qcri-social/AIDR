@@ -127,6 +127,23 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
             statusText = "<b class='warningFont'>" + raw + " </b>";
         }
         return statusText;
+    },
+
+    getAucNumberWithColors: function(r) {
+        var style;
+        if (r){
+            if (r < 0.6){
+                style = 'redInfo';
+            } else if (r <= 0.8){
+                style = 'warningFont';
+            } else {
+                style = 'greenInfo';
+            }
+        } else {
+            r = 0;
+            style = 'redInfo';
+        }
+        return '<span class="' + style + '">' + r.toFixed(2) + '</span>';
     }
 
 });

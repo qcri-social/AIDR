@@ -36,13 +36,17 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
 //            TODO check if this is correct place we need to go to
             html: '<div class="bread-crumbs"><a href="' + BASE_URL + '/protected/' + MODEL_ID + '/attribute-details">Edit classifier "' + MODEL_NAME + '" &raquo;</a></div>',
             margin: 0,
-            padding: '30 0 0 0',
             flex:1
         });
 
         this.horisontalLine = Ext.create('Ext.container.Container', {
             width: '100%',
             html: '<div class="horisontalLine"></div>'
+        });
+
+        this.aucHint = Ext.create('Ext.container.Container', {
+            html: '<span class="redInfo">*</span>If AUC is lower than 0.8-0.9, or AUC is 1.0, you urgently need more training examples.',
+            margin: 0
         });
 
         this.modelLabelsStore = Ext.create('Ext.data.JsonStore', {
@@ -89,7 +93,12 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             '<div>Classified messages:</div>',
             '<div>Precision:</div>',
             '<div>Recall:</div>',
-            '<div>AUC:</div>',
+            '<tpl if="xindex != xcount">' +
+                '<div>AUC:</div>',
+            '</tpl>',
+            '<tpl if="xindex == xcount">' +
+                '<div>Quality (AUC)<span class="redInfo">*</span>:</div>',
+            '</tpl>',
             '</div>',
 
             '<div class="leftColumn">',
@@ -155,7 +164,15 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
                 html: '<div class="horisontalLine"></div>'
             },
             this.modelLabelsView,
-            this.linkToAttribute
+            {
+                xtype: 'container',
+                layout: 'hbox',
+                padding: '30 0 0 0',
+                items: [
+                    this.linkToAttribute,
+                    this.aucHint
+                ]
+            }
         ];
 
         this.callParent(arguments);

@@ -121,6 +121,7 @@ public class ScreenController extends BaseController{
         Integer modelFamilyId = 0;
         String crisisName = "";
         String modelName = "";
+        double modelAuc = 0;
         if (crisis != null && crisis.getCrisisID() != null && crisis.getName() != null){
             crisisId = crisis.getCrisisID();
             crisisName = crisis.getName();
@@ -133,6 +134,7 @@ public class ScreenController extends BaseController{
                 if (model.getModelFamilyID() != null) {
                     modelFamilyId = model.getModelFamilyID();
                 }
+                modelAuc = model.getAuc();
             }
         }
 
@@ -141,6 +143,7 @@ public class ScreenController extends BaseController{
         model.addObject("crisisName", crisisName);
         model.addObject("modelName", modelName);
         model.addObject("modelId", modelId);
+        model.addObject("modelAuc", modelAuc);
         model.addObject("modelFamilyId", modelFamilyId);
         model.addObject("code", code);
         return model;

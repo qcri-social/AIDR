@@ -10,6 +10,7 @@
       MODEL_FAMILY_ID = ${modelFamilyId};
       CRISIS_CODE = "${code}";
       MODEL_NAME = "${modelName}";
+      MODEL_AUC = ${modelAuc};
       CRISIS_NAME = "${crisisName}";
   </script>
 
