@@ -6,6 +6,8 @@ package qa.qcri.aidr.predictui.facade;
 
 import java.util.List;
 import javax.ejb.Local;
+
+import qa.qcri.aidr.predictui.dto.ModelHistoryWrapper;
 import qa.qcri.aidr.predictui.entities.Model;
 import qa.qcri.aidr.predictui.dto.ModelWrapper;
 
@@ -15,10 +17,15 @@ import qa.qcri.aidr.predictui.dto.ModelWrapper;
  */
 @Local
 public interface ModelFacade {
-    
+
     public List<Model> getAllModels();
+
     public Model getModelByID(int id);
-    public List<Model> getModelByModelFamilyID(int modelFamilyID);
+
+    public Integer getModelCountByModelFamilyID(int modelFamilyID);
+
+    public List<ModelHistoryWrapper> getModelByModelFamilyID(int modelFamilyID, Integer start, Integer limit);
+
     public List<ModelWrapper> getModelByCrisisID(int crisisID);
-    
+
 }
