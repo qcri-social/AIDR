@@ -1,26 +1,6 @@
 package qa.qcri.aidr.manager.service.impl;
 
-import qa.qcri.aidr.manager.dto.TrainingDataDTO;
-import qa.qcri.aidr.manager.dto.TrainingDataRequest;
-import qa.qcri.aidr.manager.dto.TaggerUser;
-import qa.qcri.aidr.manager.dto.TaggerModelFamily;
-import qa.qcri.aidr.manager.dto.TaggerCrisisRequest;
-import qa.qcri.aidr.manager.dto.TaskAnswer;
-import qa.qcri.aidr.manager.dto.TaggerModel;
-import qa.qcri.aidr.manager.dto.TaggerLabel;
-import qa.qcri.aidr.manager.dto.TaggerAllCrisesTypesResponse;
-import qa.qcri.aidr.manager.dto.TaggerStatusResponse;
-import qa.qcri.aidr.manager.dto.TaggerModelNominalLabel;
-import qa.qcri.aidr.manager.dto.TaggerCrisesAttribute;
-import qa.qcri.aidr.manager.dto.TaggerAllCrisesResponse;
-import qa.qcri.aidr.manager.dto.TaggerModelLabelsResponse;
-import qa.qcri.aidr.manager.dto.TaggerCrisisType;
-import qa.qcri.aidr.manager.dto.TaggerCrisisModelsResponse;
-import qa.qcri.aidr.manager.dto.TaggerCrisis;
-import qa.qcri.aidr.manager.dto.TaggerCrisisExist;
-import qa.qcri.aidr.manager.dto.TaggerLabelRequest;
-import qa.qcri.aidr.manager.dto.TaggerCrisisAttributesResponse;
-import qa.qcri.aidr.manager.dto.TaggerAttribute;
+import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.service.TaggerService;
 import com.sun.jersey.api.client.Client;
@@ -642,8 +622,6 @@ public class TaggerServiceImpl implements TaggerService {
                     .accept(MediaType.APPLICATION_JSON)
                     .post(ClientResponse.class, objectMapper.writeValueAsString(taskAnswer));
 
-//            String resp = clientResponse.getEntity(String.class);
-//            logger.info("saveTaskAnswer - clientResponse : " + resp);
             logger.info("saveTaskAnswer - response status : " + clientResponse.getStatus());
 
             return clientResponse.getStatus() == 204;
@@ -683,6 +661,25 @@ public class TaggerServiceImpl implements TaggerService {
             }
         } catch (Exception e) {
             throw new AidrException("Error while generating Tweet Ids link in taggerPersister", e);
+        }
+    }
+
+    @Override
+    public ModelHistoryWrapper getModelHistoryByModelFamilyID(Integer start, Integer limit, Integer id) throws AidrException {
+        try {
+            WebResource webResource = client.resource(taggerMainUrl + "/model/modelFamily/" + id
+                    + "?start=" + start
+                    + "&limit=" + limit);
+            ObjectMapper objectMapper = new ObjectMapper();
+            ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .get(ClientResponse.class);
+            String jsonResponse = clientResponse.getEntity(String.class);
+
+            ModelHistoryWrapper modelHistoryWrapper = objectMapper.readValue(jsonResponse, ModelHistoryWrapper.class);
+            return modelHistoryWrapper;
+        } catch (Exception e) {
+            throw new AidrException("Error while Getting history records for Model.", e);
         }
     }
 

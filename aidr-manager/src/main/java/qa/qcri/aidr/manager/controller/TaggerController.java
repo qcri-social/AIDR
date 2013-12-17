@@ -1,22 +1,6 @@
 package qa.qcri.aidr.manager.controller;
 
-import qa.qcri.aidr.manager.dto.TrainingDataDTO;
-import qa.qcri.aidr.manager.dto.TaggerUser;
-import qa.qcri.aidr.manager.dto.TaskInfo;
-import qa.qcri.aidr.manager.dto.TaggerModelFamily;
-import qa.qcri.aidr.manager.dto.TaggerCrisisRequest;
-import qa.qcri.aidr.manager.dto.TaskAnswerRequest;
-import qa.qcri.aidr.manager.dto.TaskAnswer;
-import qa.qcri.aidr.manager.dto.CrisisRequest;
-import qa.qcri.aidr.manager.dto.TaggerLabel;
-import qa.qcri.aidr.manager.dto.UpdateCrisisDTO;
-import qa.qcri.aidr.manager.dto.TaggerUserRequest;
-import qa.qcri.aidr.manager.dto.DateHistory;
-import qa.qcri.aidr.manager.dto.TaggerCrisisType;
-import qa.qcri.aidr.manager.dto.TaggerCrisis;
-import qa.qcri.aidr.manager.dto.TaggerCrisisExist;
-import qa.qcri.aidr.manager.dto.TaggerLabelRequest;
-import qa.qcri.aidr.manager.dto.TaggerAttribute;
+import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.service.TaggerService;
 import org.apache.log4j.Logger;
@@ -27,10 +11,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("protected/tagger")
@@ -466,6 +447,31 @@ public class TaggerController extends BaseController {
             return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
         }
         return getUIWrapper(result,true);
+    }
+
+    @RequestMapping(value = "/modelHistory.action", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, Object> getModelHistoryByModelFamilyID(@RequestParam Integer start, @RequestParam Integer limit, @RequestParam Integer id) throws Exception {
+        if (id == null) {
+            logger.error("Error while Getting history records for Model by ModelFamilyId. ModelFamilyId is empty");
+            return getUIWrapper(false);
+        }
+
+        start = (start != null) ? start : 0;
+        limit = (limit != null) ? limit : 50;
+
+        try {
+            ModelHistoryWrapper result = taggerService.getModelHistoryByModelFamilyID(start, limit, id);
+            if (result != null) {
+                logger.info("Tagger returned " + result.getTotal() + " history records for model with modelFamilyID: " + id);
+                return getUIWrapper(result.getModelHistoryWrapper(), result.getTotal());
+            } else {
+                return getUIWrapper(Collections.emptyList(), 0L);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+        }
     }
 
     private TaggerCrisisRequest transformCrisesRequestToTaggerCrises (CrisisRequest request, Integer taggerUserId) throws Exception{

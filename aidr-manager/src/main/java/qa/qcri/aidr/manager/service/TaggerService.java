@@ -1,18 +1,6 @@
 package qa.qcri.aidr.manager.service;
 
-import qa.qcri.aidr.manager.dto.TrainingDataDTO;
-import qa.qcri.aidr.manager.dto.TaggerUser;
-import qa.qcri.aidr.manager.dto.TaggerModelFamily;
-import qa.qcri.aidr.manager.dto.TaggerCrisisRequest;
-import qa.qcri.aidr.manager.dto.TaskAnswer;
-import qa.qcri.aidr.manager.dto.TaggerModel;
-import qa.qcri.aidr.manager.dto.TaggerLabel;
-import qa.qcri.aidr.manager.dto.TaggerModelNominalLabel;
-import qa.qcri.aidr.manager.dto.TaggerCrisisType;
-import qa.qcri.aidr.manager.dto.TaggerCrisis;
-import qa.qcri.aidr.manager.dto.TaggerCrisisExist;
-import qa.qcri.aidr.manager.dto.TaggerLabelRequest;
-import qa.qcri.aidr.manager.dto.TaggerAttribute;
+import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
 
 import java.util.Collection;
@@ -80,4 +68,6 @@ public interface TaggerService {
     public String generateCSVLink(String code) throws Exception;
 
     public String generateTweetIdsLink(String code) throws Exception;
+
+    public ModelHistoryWrapper getModelHistoryByModelFamilyID(Integer start, Integer limit, Integer id) throws Exception;
 }
