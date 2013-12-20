@@ -1,6 +1,7 @@
 Ext.require([
     'AIDRFM.common.AIDRFMFunctions',
-    'AIDRFM.common.StandardLayout'
+    'AIDRFM.common.StandardLayout',
+    'AIDRFM.common.Footer'
 ]);
 
 Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
@@ -140,6 +141,112 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             loadMask: false
         });
 
+        this.modelHistoryTitle = Ext.create('Ext.form.Label', {
+            hidden: true,
+            padding: '10 0 0 0',
+            cls: 'header-h1',
+            text: 'Model History'
+        });
+
+        this.modelHistoryStore = Ext.create('Ext.data.Store', {
+            pageSize: 10,
+            storeId: 'modelHistoryStore',
+            fields: ['modelID', 'avgPrecision', 'avgRecall', 'avgAuc', 'trainingCount', 'trainingTime'],
+            proxy: {
+                type: 'ajax',
+                url: BASE_URL + '/protected/tagger/modelHistory.action',
+                reader: {
+                    root: 'data',
+                    totalProperty: 'total'
+                }
+            },
+            autoLoad: true,
+            listeners: {
+                beforeload: function (s) {
+                    s.getProxy().extraParams = {
+                        id: MODEL_FAMILY_ID
+                    }
+                },
+                load: function (s) {
+                    var count = s.getCount();
+
+                    if (count > 0 ) {
+                        me.modelHistoryTitle.show();
+                        me.modelHistoryView.show();
+                        me.modelHistoryPaging.show();
+                    } else {
+                        me.modelHistoryTitle.hide();
+                        me.modelHistoryView.hide();
+                        me.modelHistoryPaging.hide();
+                    }
+                }
+            }
+        });
+
+        this.modelHistoryTpl = new Ext.XTemplate(
+            '<div class="collections-list">',
+            '<tpl for=".">',
+
+            '<div class="collection-item">',
+
+            '<div class="img">',
+            '<img alt="Collection History image" src="/AIDRFetchManager/resources/img/AIDR/tag.png" width="70">',
+            '</div>',
+
+            '<div class="content">',
+
+            '<div class="rightColumn">',
+            '<div>Precision:</div>',
+            '<div>Recall:</div>',
+            '<div>AUC:</div>',
+            '<div>Training Count:</div>',
+            '<div>Training Time:</div>',
+            '</div>',
+
+            '<div class="leftColumn">',
+            '<div>{[this.getDocNumber(values.avgPrecision)]}</div>',
+            '<div>{[this.getDocNumber(values.avgRecall)]}</div>',
+            '<div>{[this.getDocNumber(values.avgAuc)]}</div>',
+            '<div>{[this.getTotal(values.trainingCount)]}</div>',
+            '<div>{[this.getDateField(values.trainingTime)]}</div>',
+            '</div>',
+
+            '</div>',
+            '</div>',
+
+            '</tpl>',
+            '</div>',
+            {
+                getDateField: function (r) {
+                    return r ? Ext.Date.format(new Date(r), "Y-m-d H:i:s") : "<span class='na-text'>Not specified</span>";
+                },
+                getTotal: function (r) {
+                    return r ? r.format() : 0;
+                },
+                getDocNumber: function (r) {
+                    return r ? r.toFixed(2) : 0.00;
+                }
+            }
+        );
+
+        this.modelHistoryView = Ext.create('Ext.view.View', {
+            hidden: true,
+            store: this.modelHistoryStore,
+            tpl: this.modelHistoryTpl,
+            itemSelector: 'div.active',
+            loadMask: false
+        });
+
+        this.modelHistoryPaging = Ext.create('Ext.toolbar.Paging', {
+            cls: 'aidr-paging',
+            margin: '12 2 0 2',
+            store:'modelHistoryStore',
+            displayInfo:true,
+            hidden: true,
+            displayMsg:'Model history records {0} - {1} of {2}',
+            emptyMsg:'No model history records to display'
+        });
+
         this.items = [
             this.breadcrumbs,
             {
@@ -172,10 +279,19 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
                     this.linkToAttribute,
                     this.aucHint
                 ]
-            }
+            },
+            {
+                xtype: 'container',
+                width: '100%',
+                margin: '30 0 0 0',
+                html: '<div class="horisontalLine"></div>'
+            },
+            this.modelHistoryTitle,
+            this.modelHistoryView,
+            this.modelHistoryPaging
         ];
 
         this.callParent(arguments);
     }
 
-})
+});

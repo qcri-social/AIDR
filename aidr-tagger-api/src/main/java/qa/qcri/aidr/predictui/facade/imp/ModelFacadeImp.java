@@ -4,9 +4,10 @@
  */
 package qa.qcri.aidr.predictui.facade.imp;
 
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import qa.qcri.aidr.predictui.dto.ModelHistoryWrapper;
 import qa.qcri.aidr.predictui.facade.*;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -52,13 +53,43 @@ public class ModelFacadeImp implements ModelFacade {
         return model;
     }
 
-    public List<Model> getModelByModelFamilyID(int modelFamilyID) {
+    public Integer getModelCountByModelFamilyID(int modelFamilyID) {
+        String sqlCount = " SELECT count(*) "
+                + " FROM model m "
+                + " WHERE m.modelFamilyID = :modelFamilyID ";
+
+        Query queryCount = em.createNativeQuery(sqlCount);
+        queryCount.setParameter("modelFamilyID", modelFamilyID);
+        Object res = queryCount.getSingleResult();
+
+        return Integer.parseInt(res.toString());
+    }
+
+    public List<ModelHistoryWrapper> getModelByModelFamilyID(int modelFamilyID, Integer start, Integer limit) {
         ModelFamily modelFamily = em.find(ModelFamily.class, modelFamilyID);
         Query query = em.createNamedQuery("Model.findByModelFamilyID", Model.class);
         query.setParameter("modelFamily", modelFamily);
-        List<Model> modelLlist = query.getResultList();
+        query.setFirstResult(start);
+        query.setMaxResults(limit);
+        List<Model> modelList = query.getResultList();
 
-        return modelLlist;
+        List<ModelHistoryWrapper> modelWrapperList = new ArrayList<ModelHistoryWrapper>();
+        if (modelList.size() > 0){
+            for (Model model : modelList) {
+                ModelHistoryWrapper wrapper = new ModelHistoryWrapper();
+
+                wrapper.setModelID(model.getModelID());
+                wrapper.setAvgPrecision(model.getAvgPrecision());
+                wrapper.setAvgRecall(model.getAvgRecall());
+                wrapper.setAvgAuc(model.getAvgAuc());
+                wrapper.setTrainingCount(model.getTrainingCount());
+                wrapper.setTrainingTime(model.getTrainingTime());
+
+                modelWrapperList.add(wrapper);
+            }
+        }
+
+        return modelWrapperList;
     }
 
     public List<ModelWrapper> getModelByCrisisID(int crisisID) {

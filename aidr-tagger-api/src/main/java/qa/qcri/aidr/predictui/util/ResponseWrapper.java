@@ -4,7 +4,8 @@
  */
 package qa.qcri.aidr.predictui.util;
 
-import qa.qcri.aidr.predictui.dto.ModelWrapper;
+import qa.qcri.aidr.predictui.dto.*;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +15,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
-import qa.qcri.aidr.predictui.dto.CrisisAttributesDTO;
-import qa.qcri.aidr.predictui.dto.CrisisTypeDTO;
-import qa.qcri.aidr.predictui.dto.ModelNominalLabelDTO;
-import qa.qcri.aidr.predictui.dto.TrainingDataDTO;
 import qa.qcri.aidr.predictui.entities.AidrCollection;
 import qa.qcri.aidr.predictui.entities.Crisis;
 import qa.qcri.aidr.predictui.entities.CrisisType;
@@ -48,8 +45,10 @@ import qa.qcri.aidr.predictui.entities.NominalLabel;
     "modelNominalLabelsDTO",
     "collections",
     "modelWrapper",
+    "modelHistoryWrapper",
     "crisisAttributes",
-    "trainingData"
+    "trainingData",
+    "total"
 })
 @XmlRootElement(name = "responseWrapper")
 @JsonSerialize(include = Inclusion.NON_DEFAULT)
@@ -69,8 +68,10 @@ public class ResponseWrapper implements Serializable {
     private List<ModelNominalLabelDTO> modelNominalLabelsDTO;
     private List<AidrCollection> collections;
     private List<ModelWrapper> modelWrapper;
+    private List<ModelHistoryWrapper> modelHistoryWrapper;
     private List<CrisisAttributesDTO> crisisAttributes;
     private List<TrainingDataDTO> trainingData;
+    private Integer total;
 
     public ResponseWrapper(String statusCode, String message) {
         this.statusCode = statusCode;
@@ -88,7 +89,8 @@ public class ResponseWrapper implements Serializable {
     }
 
     public ResponseWrapper() {
-        crisisTypes = new ArrayList<CrisisTypeDTO>();
+//        why do we need initialize it in default constructor?
+//        crisisTypes = new ArrayList<CrisisTypeDTO>();
     }
 
     public String getStatusCode() {
@@ -265,6 +267,20 @@ public class ResponseWrapper implements Serializable {
     }
 
     /**
+     * @return the modelHistoryWrapper
+     */
+    public List<ModelHistoryWrapper> getModelHistoryWrapper() {
+        return modelHistoryWrapper;
+    }
+
+    /**
+     * @param modelHistoryWrapper the modelHistoryWrapper to set
+     */
+    public void setModelHistoryWrapper(List<ModelHistoryWrapper> modelHistoryWrapper) {
+        this.modelHistoryWrapper = modelHistoryWrapper;
+    }
+
+    /**
      * @return the crisisAttributes
      */
     public List<CrisisAttributesDTO> getCrisisAttributes() {
@@ -306,5 +322,17 @@ public class ResponseWrapper implements Serializable {
         this.modelNominalLabelsDTO = modelNominalLabelsDTO;
     }
 
-    
+    /**
+     * @return the total
+     */
+    public Integer getTotal() {
+        return total;
+    }
+
+    /**
+     * @param total the total to set
+     */
+    public void setTotal(Integer total) {
+        this.total = total;
+    }
 }

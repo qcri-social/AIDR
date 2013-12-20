@@ -42,7 +42,14 @@
 
 <div class="site-footer" style="position:absolute;bottom: 0;">
     <div class="footer">
-        <a style="text-decoration: none;color: #ffffff" href="http://www.qcri.qa/">A project by <img align="middle" id="footerqcrilogo" src="${pageContext.request.contextPath}/resources/img/qcri-gray-horiz.png"></a>
+        <div style="float: right;">
+            <a style="text-decoration: none; color: #ffffff; font-size: 13px;" href="http://www.qcri.qa/">A project by
+                <img align="middle" id="footerqcrilogo" src="${pageContext.request.contextPath}/resources/img/qcri-gray-horiz.png"/></a>
+        </div>
+        <div style="float: left; padding-top: 16px;">
+            <a style="text-decoration: underline; color: #ffffff; font-size: 13px;" href="http://aidr.qcri.org/tos/">Terms
+                of Service</a>
+        </div>
     </div>
 </div>
 
