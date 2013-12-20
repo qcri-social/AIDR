@@ -2,6 +2,7 @@ Ext.require([
     'AIDRFM.common.AIDRFMFunctions',
     'TAGGUI.attribute-details.view.AttributeValuePanel',
     'AIDRFM.common.StandardLayout',
+    'AIDRFM.common.Header',
     'AIDRFM.common.Footer'
 ]);
 

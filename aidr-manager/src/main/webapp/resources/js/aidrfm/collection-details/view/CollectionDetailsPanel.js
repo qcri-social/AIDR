@@ -1,6 +1,7 @@
 Ext.require([
     'AIDRFM.common.AIDRFMFunctions',
     'AIDRFM.common.StandardLayout',
+    'AIDRFM.common.Header',
     'AIDRFM.common.Footer'
 ]);
 
