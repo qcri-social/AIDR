@@ -132,48 +132,51 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         });
 
         this.crisisModelsTpl = new Ext.XTemplate(
-            '<div class="c-models-list">',
+            '<table width="100%">',
             '<tpl for=".">',
 
-            '<div class="crisis-item">',
+            '<tr class="crisis-item">',
 
-            '<div class="img">',
+            '<td class="img">',
             '<img alt="Collection History image" src="/AIDRFetchManager/resources/img/AIDR/AIDR_EMBLEM_CMYK_COLOUR_HR.jpg" width="70">',
-            '</div>',
+            '</td>',
 
-            '<button id="buttonRemoveModel_{modelFamilyID}" class="btn btn-blue" onclick="taggerCollectionDetailsController.removeAttributeFromCrisesHandler({modelFamilyID}, \'{attribute}\')">',
+            '<td class="content"><table><tr>',
+
+
+            '<td class="styled-text-17">Name:</td>',
+            '<td class="styled-text-17">{[this.getModelName(values.modelID, values.attribute)]}</td></tr>',
+
+
+            '<tr><td>Status:</td>',
+            '<td>{[this.getStatus(values.modelID)]}</td></tr>',
+
+            '<tr><td>Training examples:</td>',
+            '<td>{[this.getNumber(values.trainingExamples)]} &mdash; <a href="' + BASE_URL +  '/protected/'
+                + CRISIS_CODE + '/{modelID}/{modelFamilyID}/training-data">Manage training examples &raquo;</a></td></tr>',
+
+
+            '<tr><td>Classified elements (since last change of the classifier):</td>',
+            '<td>{[this.getNumber(values.classifiedDocuments)]}</td></tr>',
+
+            '<tr><td>Quality (AUC)<span class="redInfo">*</span>:</td>',
+            '<td>{[AIDRFMFunctions.getAucNumberWithColors(values.auc)]}</td>',
+
+            '</td></tr></table></td>',
+
+            '<td><button id="buttonRemoveModel_{modelFamilyID}" class="btn btn-blue" onclick="taggerCollectionDetailsController.removeAttributeFromCrisesHandler({modelFamilyID}, \'{attribute}\')">',
             '<span>Remove</span>',
-            '</button>',
+            '</button></td>',
 
-            '<div class="content">',
+            '</tr>',
 
-            '<div class="rightColumn">',
-            '<div class="styled-text-17">Name:</div>',
-            '<div>Status:</div>',
-            '<div>Training examples:</div>',
-            '<div>Classified elements (since last change of the classifier):</div>',
-            '<div>Quality (AUC)<span class="redInfo">*</span>:</div>',
-            '</div>',
 
-            '<div class="leftColumn">',
-            '<div class="styled-text-17">{[this.getModelName(values.modelID, values.attribute)]}</div>',
-            '<div>{[this.getStatus(values.modelID)]}</div>',
-            '<div>{[this.getNumber(values.trainingExamples)]} &mdash; <a href="' + BASE_URL +  '/protected/'
-                + CRISIS_CODE + '/{modelID}/{modelFamilyID}/training-data">Manage training examples &raquo;</a></div>',
-            '<div>{[this.getNumber(values.classifiedDocuments)]}<br><br><br></div>',
-            '<div>{[AIDRFMFunctions.getAucNumberWithColors(values.auc)]}</div>',
-
-            '</div>',
-
-            '</div>',
-            '</div>',
-
-            '<tpl if="xindex != xcount">',
+            '<tr><td colspan="3">',
             '<div class="horisontalLine"></div>',
-            '</tpl>',
+            '</td></tr>',
 
             '</tpl>',
-            '</div>',
+            '</table>',
             {
                 getNumber: function (r) {
                     return r ? r.format() : 0;
