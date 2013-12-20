@@ -1,7 +1,8 @@
 Ext.require([
     'AIDRFM.common.AIDRFMFunctions',
     'AIDRFM.common.StandardLayout',
-    'TAGGUI.training-examples.view.LabelPanel'
+    'TAGGUI.training-examples.view.LabelPanel',
+    'AIDRFM.common.Footer'
 ]);
 
 Ext.define('TAGGUI.training-examples.view.TrainingExamplesPanel', {
