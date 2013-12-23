@@ -53,10 +53,17 @@ To start the automatic tagger, you need to add a classifier to it. Click on the 
 
 Click on the "Add" button next to a classifier to add it. We recommend you to add only one classifier at the beginning -- it will be easier to handle for you.
 
-# 3.2. Collecting training labels
+# 3.2. Collecting training examples
 
-Automatic taggers require training labels, which are items that have been classified manually by humans. Depending on the specific classifier, in particular on the number of different labels or categories contained on it, the number of training labels will vary. Typically, at least a few hundred training labels are needed before the classifier starts to work accurately.
+Automatic taggers require training examples, which are items that have been classified manually by humans. Depending on the specific classifier, in particular on the number of different labels or categories contained on it, the number of training examples will vary. Typically, at least a few hundred training examples are needed before the classifier starts to work accurately.
 
+To collect training examples, copy-paste the "Public link for volunteers" and share it with your digital volunteers. They will be able to provide training labels for all the classifiers of your tagger from that page.
 
+If you do not have volunteers to tag data, you can enter examples yourself. For this, click on "Manage Training Examples" and then on "Add Training Examples". 
 
+# 3.3. Monitoring the automatic tagger
+
+The automatic tagger will not run until a minimum number of training examples (50) is provided. At that point, it will evaluate its own performance and report a number, the **AUC**, which is a standard measure of how well it is performance.
+
+The more examples you provide, the better the classification accuracy will be. An AUC of 0.5 or lower indicates a very bad classifier that is not doing anything better than random guessing -- this is expected when you have few training examples, but may also signal errors or inconsistencies in your examples. An AUC of 0.8 or higher indicates reasonable classification accuracy and 0.9 is sometimes attainable with a few thousands examples.
 
