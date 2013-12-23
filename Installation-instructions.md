@@ -33,31 +33,30 @@ The AIDR Collector has a RESTFul API, that means all the operations have their c
 
 # 4. Manager (aidr-manager)
 
-Prior to start the project building process make sure you have completed the following steps:
+Prior to start the project building process make sure you have completed the following steps (a-d):
 
-1. Install the MySql database server on your machine and create a database schema, name it for example "aidr_fetch_manager". The schema name can also be changed that requires to change application configurations which specify schema details as described in the next 2 steps.
+(a) Install the MySql database server on your machine and create a database schema, name it for example "aidr_fetch_manager". The schema name can also be changed that requires to change application configurations which specify schema details as described in the next 2 steps.
 
-2. In case of first time deployment, make sure you add the following line in the `spring-servlet.xml` file located under `<project-root>/src/main/webapp/WEB-INF/`:
+(b) In case of first time deployment, make sure you add the following line in the `spring-servlet.xml` file located under `<project-root>/src/main/webapp/WEB-INF/`:
 
 `<prop key="hibernate.hbm2ddl.auto">create</prop>`
 
 NOTE:- If the application has previously been deployed and you have MySql schema with tables in place then just remove the above line.
 
-3. In the same file `spring-servlet.xml` the database credentials can be specified/changed according to your installation.
+(c) In the same file `spring-servlet.xml` the database credentials can be specified/changed according to your installation.
 
-4. Apply the following changes to "system.properties" file located under `<app-root>/src/main/resources/`
+(d) Apply the following changes to "system.properties" file located under `<app-root>/src/main/resources/`
+
 * twitter.consumerKey=<put here your Twitter's application consumer key>
 * twitter.consumerSecret=<put here your Twitter's application consumer key secret>
 * twitter.callBackURL=<here goes the URL where the application is accessible>. e.g., http://localhost:8080/AIDRFetchManager   
 * application.secureUrl=<here goes the URL where the application is accessible>. e.g., http://localhost:8080/AIDRFetchManager
 * fetchMainUrl=<here specify the URL of the Collector/Fetcher application>. e.g., http://localhost:8080/AIDRFetcher/webresources/fetcher
 
-After the above steps have been executed:
+After the above steps have been executed, you can build the project:
 
 * Build using maven following the instructions above; this should generate a file `aidr-manager-X.war`
 * Deploy `aidr-manager-X.war` to Glassfish using the instructions above.
-
-
 
 (More instructions: TBA)
 
