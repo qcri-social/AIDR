@@ -12,18 +12,12 @@ After entering AIDR, you will be in a page listing your collections. Click on "C
 
 The "Create New Collection" form appears. The following fields are mandatory:
 
-* Name: a name for your collection, typically the name of a crisis/disaster, e.g. "Typhoon Haiyan"
-* Code: a machine-readable code for your collection, which allows AIDR to uniquely identify your collection. This field can not be edited later. Conventionally we use `Year-Month-Name` for this code.
+* **Name**: a name for your collection, typically the name of a crisis/disaster, e.g. "Typhoon Haiyan"
+* **Code**: a machine-readable code for your collection, which allows AIDR to uniquely identify your collection. This field can not be edited later. Conventionally we use `Year-Month-Name` for this code.
 
-The following fields are optional:
+Next, you have to specify keywords, a geographical boundary, or both* If you specify both, any tweet that either contains the keywords or are inside the geographical boundary will be selected.
 
-* Follow specific users: a list of numeric user-IDs of users in Twitter to follow.
-
-Next, you have to specify either keywords or a geographical region.
-
-## 2.1. Specifying keywords
-
-You can specify up to 400 comma-separated keywords in this field.
+For **keywords**, you can specify up to 400 comma-separated keywords in this field.
 
 General rules:
 * Not case-sensitive ("bridge" matches "Bridge").
@@ -37,9 +31,7 @@ Queries with or without hashtags:
 * If you don't include '#', you also match hashtags ("bridge" matches "#bridge")
 * If you do include '#', you only match hashtags ("#bridge" does not match "bridge")
 
-## 2.2. Specifying a geographical region
-
-One or several geographical regions can be specified. Each one should be indicated by a rectangle in coordinate space. The following website can help you determine these coordinates: http://boundingbox.klokantech.com/ -- chose the option "Copy/paste CSV format of a boundingbox".
+For the **geographical boundary**, one or several regions can be specified. Each one should be indicated by a rectangle in coordinate space. The following website can help you determine these coordinates: http://boundingbox.klokantech.com/ -- chose the option "Copy/paste CSV format of a boundingbox".
 
 
 
