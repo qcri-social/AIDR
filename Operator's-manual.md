@@ -1,12 +1,12 @@
 This document covers the actions of an operator of AIDR, i.e. the person in charge of maintaining data collections and automatic taggers. It assumes you are familiar with is AIDR and what it does.
 
-# Logging in
+# 1. Logging in
 
 To enter AIDR, go to http://aidr.qcri.org/ -- you will be asked to log-in using your Twitter credentials.
 
 You need a Twitter account to be able to use AIDR.
 
-# Creating a collection
+# 2. Creating a collection
 
 After entering AIDR, you will be in a page listing your collections. Click on "Create a New Collection".
 
@@ -21,7 +21,9 @@ The following fields are optional:
 
 Next, you have to specify either keywords or a geographical region.
 
-## Specifying keywords
+## 2.1. Specifying keywords
+
+You can specify up to 400 comma-separated keywords in this field.
 
 General rules:
 * Not case-sensitive ("bridge" matches "Bridge").
@@ -34,6 +36,12 @@ Multi-word queries
 Queries with or without hashtags:
 * If you don't include '#', you also match hashtags ("bridge" matches "#bridge")
 * If you do include '#', you only match hashtags ("#bridge" does not match "bridge")
+
+## 2.2. Specifying a geographical region
+
+One or several geographical regions can be specified. Each one should be indicated by a rectangle in coordinate space. The following website can help you determine these coordinates: http://boundingbox.klokantech.com/ -- chose the option "Copy/paste CSV format of a boundingbox".
+
+
 
 # Creating an automatic tagger
 
