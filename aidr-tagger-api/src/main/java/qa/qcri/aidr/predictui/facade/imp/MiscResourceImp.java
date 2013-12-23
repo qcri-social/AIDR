@@ -54,7 +54,7 @@ public class MiscResourceImp implements MiscResourceFacade {
             orderSQLPart += " ORDER BY " + sortColumn + " " + sortDirection + " ";
         }
 
-        String sql = " SELECT lbl.nominalLabelID, lbl.name labelName, d.data tweetJSON, u.userID, u.name labelerName, dnl.timestamp "
+        String sql = " SELECT lbl.nominalLabelID, lbl.name labelName, d.data tweetJSON, u.userID, u.name labelerName, dnl.timestamp, d.documentID "
                 + " FROM document_nominal_label dnl "
                 + " JOIN nominal_label lbl on lbl.nominalLabelID=dnl.nominalLabelID "
                 + " JOIN model_family mf on mf.nominalAttributeID=lbl.nominalAttributeID "
@@ -94,12 +94,14 @@ public class MiscResourceImp implements MiscResourceFacade {
                 TrainingDataDTO trainingDataRow;
                 for (Object[] row : rows) {
                     trainingDataRow = new TrainingDataDTO();
-                    trainingDataRow.setLabelID(((Integer) row[0]).intValue());
+//                    Removed .intValue() as we already cast to Integer
+                    trainingDataRow.setLabelID((Integer) row[0]);
                     trainingDataRow.setLabelName((String) row[1]);
                     trainingDataRow.setTweetJSON((String) row[2]);
-                    trainingDataRow.setLabelerID(((Integer) row[3]).intValue());
+                    trainingDataRow.setLabelerID((Integer) row[3]);
                     trainingDataRow.setLabelerName((String) row[4]);
                     trainingDataRow.setLabeledTime(((Date) row[5]));
+                    trainingDataRow.setDocumentID(((BigInteger) row[6]).longValue());
                     trainingDataRow.setTotalRows(totalRows);
                     trainingDataList.add(trainingDataRow);
                 }

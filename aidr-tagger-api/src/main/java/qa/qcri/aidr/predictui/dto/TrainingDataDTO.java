@@ -20,7 +20,8 @@ public class TrainingDataDTO {
     private String labelerName;
     private Date labeledTime;
     private Integer totalRows;
-    
+
+    private Long documentID;
 
     /**
      * @return the labelID
@@ -119,7 +120,12 @@ public class TrainingDataDTO {
     public void setTotalRows(Integer totalRows) {
         this.totalRows = totalRows;
     }
-    
 
-    
+    public Long getDocumentID() {
+        return documentID;
+    }
+
+    public void setDocumentID(Long documentID) {
+        this.documentID = documentID;
+    }
 }
