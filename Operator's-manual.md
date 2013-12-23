@@ -45,6 +45,18 @@ Note that currently only one collection per user is allowed. If you start a new 
 
 # 3. Automatically tagging data
 
-# 3.1. Enabling the automatic tagger
+# 3.1. Starting the automatic tagger
 
-From the collection details page, click on "Enable tagger"
+From the collection details page, click on "Enable Tagger" or "Go To Tagger" button if the tagger is already enabled. A tagger is a set of classifiers. Each classifier corresponds to one way of sorting out tweets into categories.
+
+To start the automatic tagger, you need to add a classifier to it. Click on the "Add a new classifier" button and you will see a list of standard classifiers that are useful in disaster scenarios. You can also create your own one, by specifying the different labels in that classifier.
+
+Click on the "Add" button next to a classifier to add it. We recommend you to add only one classifier at the beginning -- it will be easier to handle for you.
+
+# 3.2. Collecting training labels
+
+Automatic taggers require training labels, which are items that have been classified manually by humans. Depending on the specific classifier, in particular on the number of different labels or categories contained on it, the number of training labels will vary. Typically, at least a few hundred training labels are needed before the classifier starts to work accurately.
+
+
+
+
