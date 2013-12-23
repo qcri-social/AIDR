@@ -6,7 +6,7 @@ To enter AIDR, go to http://aidr.qcri.org/ -- you will be asked to log-in using 
 
 You need a Twitter account to be able to use AIDR.
 
-# 2. Creating a collection
+# 2. Collecting data 
 
 After entering AIDR, you will be in a page listing your collections. Click on "Create a New Collection".
 
@@ -32,6 +32,7 @@ Queries with or without hashtags:
 * If you do include '#', you only match hashtags ("#bridge" does not match "bridge")
 
 For the **geographical boundary**, one or several regions can be specified. Each one should be indicated by a rectangle in coordinate space. The following website can help you determine these coordinates: http://boundingbox.klokantech.com/ -- chose the option "Copy/paste CSV format of a boundingbox".
+
 
 
 
