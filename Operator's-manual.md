@@ -10,6 +10,8 @@ You need a Twitter account to be able to use AIDR.
 
 After entering AIDR, you will be in a page listing your collections. Click on "Create a New Collection".
 
+# 2.1. Creating a collection
+
 The "Create New Collection" form appears. The following fields are mandatory:
 
 * **Name**: a name for your collection, typically the name of a crisis/disaster, e.g. "Typhoon Haiyan"
@@ -33,9 +35,16 @@ Queries with or without hashtags:
 
 For the **geographical boundary**, one or several regions can be specified. Each one should be indicated by a rectangle in coordinate space. The following website can help you determine these coordinates: http://boundingbox.klokantech.com/ -- chose the option "Copy/paste CSV format of a boundingbox".
 
+# 2.2. Starting and stopping a collection
 
+Once you create a collection, you need to start it. Do this by click on the "Start" button next to the collection. You can monitor the progress of a collection by clicking on its name on the "My Collections" page and looking at the number of downloaded items and the latest downloaded item. You can click on the "Refresh" button on the upper-right corner of that page to view up-to-date information.
 
+To stop a collection, click on the "Stop" button next to it.
 
-# Creating an automatic tagger
+Note that currently only one collection per user is allowed. If you start a new collection, you need to stop the currently-running ones.
 
-(TBA)
+# 3. Automatically tagging data
+
+# 3.1. Enabling the automatic tagger
+
+From the collection details page, click on "Enable tagger"
