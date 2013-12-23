@@ -18,6 +18,8 @@ public class TaggerModelNominalLabel {
 
     private String modelStatus;
 
+    private Integer nominalAttributeId;
+
     public Double getLabelPrecision() {
         return labelPrecision;
     }
@@ -80,5 +82,13 @@ public class TaggerModelNominalLabel {
 
     public void setModelStatus(String modelStatus) {
         this.modelStatus = modelStatus;
+    }
+
+    public Integer getNominalAttributeId() {
+        return nominalAttributeId;
+    }
+
+    public void setNominalAttributeId(Integer nominalAttributeId) {
+        this.nominalAttributeId = nominalAttributeId;
     }
 }

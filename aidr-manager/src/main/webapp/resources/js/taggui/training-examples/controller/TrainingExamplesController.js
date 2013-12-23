@@ -89,9 +89,12 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                             }
                             if (r.attributeInfo){
                                 Ext.each(r.attributeInfo, function (attr) {
-                                    var labelPanel = Ext.create('TAGGUI.training-examples.view.LabelPanel', {});
-                                    labelPanel.showData(attr);
-                                    me.mainComponent.optionPanel.add(labelPanel);
+//                                    Show labels from only one Category (the one user clicks on previous screen).
+                                    if (attr.nominalAttributeID == NOMINAL_ATTRIBUTE_ID) {
+                                        var labelPanel = Ext.create('TAGGUI.training-examples.view.LabelPanel', {});
+                                        labelPanel.showData(attr);
+                                        me.mainComponent.optionPanel.add(labelPanel);
+                                    }
                                 });
                             }
                         }
