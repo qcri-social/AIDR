@@ -47,6 +47,7 @@ public class ModelNominalLabelImp implements ModelNominalLabelFacade {
                 return null;
             }
             Boolean modelStatus = model.getModelFamily().getIsActive();
+            Integer nominalAttributeId = model.getModelFamily().getNominalAttribute().getNominalAttributeID();
             for (ModelNominalLabel labelEntity : modelNominalLabelList) {
 
                 //Getting training examples for each label
@@ -69,6 +70,7 @@ public class ModelNominalLabelImp implements ModelNominalLabelFacade {
                 mnlDTO.setNominalLabel(labelEntity.getNominalLabel());
                 mnlDTO.setTrainingDocuments(trainingSet);
                 mnlDTO.setModelStatus(modelStatus==true ? "RUNNING" : "NOT RUNNING");
+                mnlDTO.setNominalAttributeId(nominalAttributeId);
                 
                 modelNominalLabelDTOList.add(mnlDTO);
             }

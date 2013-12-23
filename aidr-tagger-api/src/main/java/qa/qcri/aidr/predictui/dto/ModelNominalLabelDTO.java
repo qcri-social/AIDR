@@ -25,6 +25,7 @@ public class ModelNominalLabelDTO implements Serializable {
     private NominalLabel nominalLabel;
     private int trainingDocuments;
     private String modelStatus;
+    private Integer nominalAttributeId;
 
     public ModelNominalLabelDTO() {
     }
@@ -92,6 +93,14 @@ public class ModelNominalLabelDTO implements Serializable {
 
     public void setNominalLabel(NominalLabel nominalLabel) {
         this.nominalLabel = nominalLabel;
+    }
+
+    public Integer getNominalAttributeId() {
+        return nominalAttributeId;
+    }
+
+    public void setNominalAttributeId(Integer nominalAttributeId) {
+        this.nominalAttributeId = nominalAttributeId;
     }
 
     @Override
