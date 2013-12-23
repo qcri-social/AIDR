@@ -31,4 +31,5 @@ The AIDR Collector has a RESTFul API, that means all the operations have their c
 * Build using maven following the instructions above; this should generate a file `aidr-persister-X.war`
 * Deploy `aidr-persister-X.war` to Glassfish using the instructions above.
 
+(More instructions: TBA)
 
