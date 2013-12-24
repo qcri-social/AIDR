@@ -474,6 +474,23 @@ public class TaggerController extends BaseController {
         }
     }
 
+    @RequestMapping(value = "/deleteTrainingExample.action", method = {RequestMethod.GET})
+    @ResponseBody
+    public Map<String, Object> deleteTrainingExample(@RequestParam Integer id) {
+        logger.info("Delete Training Example by Id");
+        try {
+            boolean success = taggerService.deleteTrainingExample(id);
+            if (success){
+                return getUIWrapper(true, "Training Example was successful deleted");
+            } else {
+                return getUIWrapper(false, "Error while deleting Training Example in Tagger");
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return getUIWrapper(false, e.getMessage());
+        }
+    }
+
     private TaggerCrisisRequest transformCrisesRequestToTaggerCrises (CrisisRequest request, Integer taggerUserId) throws Exception{
         TaggerCrisisType crisisType = new TaggerCrisisType(request.getCrisisTypeID());
         TaggerUserRequest taggerUser = new TaggerUserRequest(taggerUserId);

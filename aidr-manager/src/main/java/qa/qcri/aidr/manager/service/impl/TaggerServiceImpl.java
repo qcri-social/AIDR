@@ -36,6 +36,7 @@ public class TaggerServiceImpl implements TaggerService {
     @Value("${taggerPersisterMainUrl}")
     private String taggerPersisterMainUrl;
 
+    @Override
     public List<TaggerCrisisType> getAllCrisisTypes() throws AidrException{
         try {
             /**
@@ -59,6 +60,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public List<TaggerCrisis> getCrisesByUserId(Integer userId) throws AidrException{
         try {
             /**
@@ -82,7 +84,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
-
+    @Override
     public String createNewCrises(TaggerCrisisRequest crisis) throws AidrException {
         try {
             /**
@@ -101,6 +103,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public Collection<TaggerAttribute> getAttributesForCrises(Integer crisisID, Integer userId) throws AidrException{
         try {
             /**
@@ -126,6 +129,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public TaggerCrisisExist isCrisesExist(String code) throws AidrException{
         try {
             WebResource webResource = client.resource(taggerMainUrl + "/crisis/code/" + code);
@@ -147,7 +151,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
-
+    @Override
     public Integer isUserExistsByUsername(String userName) throws AidrException {
         try {
             /**
@@ -173,6 +177,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public Integer addNewUser(TaggerUser taggerUser) throws AidrException {
         try {
             /**
@@ -199,6 +204,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public Integer addAttributeToCrisis(TaggerModelFamily modelFamily) throws AidrException {
         try {
             /**
@@ -225,6 +231,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public TaggerCrisis getCrisesByCode(String code) throws AidrException{
         try {
             /**
@@ -248,6 +255,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public TaggerCrisis updateCode(TaggerCrisis crisis) throws AidrException{
         try {
             /**
@@ -271,6 +279,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public List<TaggerModel> getModelsForCrisis(Integer crisisID) throws AidrException{
         try {
             /**
@@ -294,6 +303,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public TaggerAttribute createNewAttribute(TaggerAttribute attribute) throws AidrException {
         try {
             /**
@@ -320,6 +330,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public TaggerAttribute getAttributeInfo(Integer id) throws AidrException {
         try {
             /**
@@ -344,6 +355,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public TaggerLabel getLabelInfo(Integer id) throws AidrException {
         try {
             /**
@@ -368,6 +380,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public boolean deleteAttribute(Integer id) throws AidrException {
         try {
             /**
@@ -397,6 +410,37 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
+    public boolean deleteTrainingExample(Integer id) throws AidrException {
+        try {
+            /**
+             * Rest call to Tagger
+             */
+            WebResource webResource = client.resource(taggerMainUrl + "/document/" + id);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
+
+            ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .delete(ClientResponse.class);
+            String jsonResponse = clientResponse.getEntity(String.class);
+
+            TaggerStatusResponse response = objectMapper.readValue(jsonResponse, TaggerStatusResponse.class);
+            if (response != null && response.getStatusCode() != null) {
+                if ("SUCCESS".equals(response.getStatusCode())) {
+                    logger.info("Document with ID " + id + " was deleted in Tagger");
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            throw new AidrException("Error while deleting document in Tagger", e);
+        }
+    }
+
+    @Override
     public boolean removeAttributeFromCrises(Integer modelFamilyID) throws AidrException {
         try {
             /**
@@ -426,6 +470,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public TaggerAttribute updateAttribute(TaggerAttribute attribute) throws AidrException{
         try {
             /**
@@ -453,6 +498,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public TaggerLabel updateLabel(TaggerLabelRequest label) throws AidrException{
         try {
             /**
@@ -480,6 +526,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public TaggerLabel createNewLabel(TaggerLabelRequest label) throws AidrException {
         try {
             /**
@@ -506,6 +553,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public TaggerAttribute attributeExists(String code) throws AidrException{
         try {
             WebResource webResource = client.resource(taggerMainUrl + "/attribute/code/" + code);
@@ -527,6 +575,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public List<TrainingDataDTO> getTrainingDataByModelIdAndCrisisId(Integer modelFamilyId,
                                                                      Integer crisisId,
                                                                      Integer start,
@@ -612,6 +661,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public boolean saveTaskAnswer(List<TaskAnswer> taskAnswer) throws AidrException {
         try {
             WebResource webResource = client.resource(crowdsourcingAPIMainUrl + "/taskanswer/save");
@@ -630,6 +680,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public String generateCSVLink(String code) throws AidrException {
         try {
             WebResource webResource = client.resource(taggerPersisterMainUrl + "/genCSV?collectionCode=" + code + "&exportLimit=100000");
@@ -647,6 +698,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public String generateTweetIdsLink(String code) throws AidrException {
         try {
             WebResource webResource = client.resource(taggerPersisterMainUrl + "/genTweetIds?collectionCode=" + code);
@@ -683,6 +735,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
     public List<TaggerModelNominalLabel> getAllLabelsForModel(Integer modelID) throws AidrException{
         try {
             /**
