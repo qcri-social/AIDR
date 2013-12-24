@@ -1,14 +1,14 @@
 See also [Installation Instructions](https://github.com/qcri-social/AIDR/wiki/Installation-instructions)
 
-# Starting AIDR
+# 1. Starting AIDR
 
 (TBA)
 
-# Stopping AIDR
+# 2. Stopping AIDR
 
 (TBA)
 
-# Re-starting AIDR
+# 3. Re-starting AIDR
 
 For `aidr-collector`, `aidr-manager`, `aidr-persister`, `aidr-tagger-api`, `aidr-trainer-api`, and `aidr-trainer-pybossa`, do:
 
