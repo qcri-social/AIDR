@@ -3438,7 +3438,7 @@ End of the tab panel styles
 }
 
 .aidr-grid .x-box-inner {
-    height: 25px!important;
+    height: 27px!important;
 }
 
 .aidr-grid .x-column-header-inner span {
@@ -3447,10 +3447,13 @@ End of the tab panel styles
 }
 
 .aidr-grid .x-grid-cell-inner {
-    padding-top: 4px;
-    height: 24px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    height: 27px;
     font-size: 12px;
     font-family: "Lucida Sans Unicode", "Lucida Grande", "Arial";
+    display: table-cell;
+    vertical-align: middle;
 }
 
 .aidr-grid .x-column-header-last {

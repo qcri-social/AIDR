@@ -12,10 +12,14 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
             'training-data-view': {
                 beforerender: this.beforeRenderView
             },
+
             "#addNewTrainingData": {
                 click: function (btn, e, eOpts) {
                     this.addNewTrainingData();
                 }
+            },
+            'button[action=deleteTrainingExample]': {
+                click: this.deleteTrainingExample
             }
 
         });
@@ -99,6 +103,37 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                 '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + CRISIS_NAME + '</a><span>&nbsp;>&nbsp;' +
                 MODEL_NAME + '&nbsp;>&nbsp;Training data</span></div>', false);
         }
+    },
+
+    deleteTrainingExample: function(button){
+        if (!button.exampleId){
+            AIDRFMFunctions.setAlert("Error", "Error while delete training example. Document Id not available.");
+        }
+
+        var me = this;
+
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/tagger/deleteTrainingExample.action',
+            method: 'GET',
+            params: {
+                id: button.exampleId
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                var resp = Ext.decode(response.responseText);
+                if (resp.success) {
+                    AIDRFMFunctions.setAlert("Ok", "Training Example was deleted successfully.");
+                    me.mainComponent.trainingDataStore.load();
+                } else {
+                    AIDRFMFunctions.setAlert("Error", resp.message);
+                }
+            },
+            failure: function () {
+                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
+            }
+        });
     }
 
 });

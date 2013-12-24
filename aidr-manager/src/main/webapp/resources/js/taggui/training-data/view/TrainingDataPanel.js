@@ -56,10 +56,10 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
             html: '<div class="horisontalLine"></div>'
         });
 
-        this.trainingDataStore = Ext.create('Ext.data.JsonStore', {
+        this.trainingDataStore = Ext.create('Ext.data.Store', {
             pageSize: 20,
             storeId: 'trainingDataStore',
-            fields: ['labelID', 'labelName', 'labeledTime', 'labelerID', 'labelerName', 'tweetJSON'],
+            fields: ['documentID', 'labelID', 'labelName', 'labeledTime', 'labelerID', 'labelerName', 'tweetJSON'],
             remoteSort: true,
             proxy: {
                 type: 'ajax',
@@ -104,6 +104,26 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
                     xtype: 'gridcolumn', dataIndex: 'labelerName', text: 'Labeler', width: 150,
                     renderer: function (value, meta, record) {
                         return me.getField(value);
+                    }
+                },
+                {
+                    xtype: 'gridcolumn', dataIndex: 'documentID', text: 'Action', width: 95, sortable: false,
+                    renderer: function (recordValue, metaData, record, rowIdx, colIdx, store) {
+
+                        var id = Ext.id();
+
+                        Ext.defer(function () {
+                            Ext.widget('button', {
+                                exampleId: recordValue,
+                                renderTo: id,
+                                cls: 'btn btn-red',
+                                text: 'Delete',
+                                width: 70,
+                                action: 'deleteTrainingExample'
+                            });
+                        }, 50);
+
+                        return Ext.String.format('<div style="margin-left:5px" id="{0}"></div>', id);
                     }
                 }
             ]
