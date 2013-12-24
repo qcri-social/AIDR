@@ -1,3 +1,5 @@
+To start/stop/re-start AIDR and other system administration tasks, see [System administrator manual](https://github.com/qcri-social/AIDR/wiki/System-administrator-manual)
+
 # 0. Requirements
 
 Before installing AIDR, you must have the following:
