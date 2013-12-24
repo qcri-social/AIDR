@@ -1,19 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package qa.qcri.aidr.predictui.api;
 
 import java.util.List;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.Path;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import qa.qcri.aidr.predictui.entities.Document;
@@ -65,5 +58,19 @@ public class DocumentResource {
        response.setDocuments(documentList);
        return Response.ok(response).build();
    }
+
+    @DELETE
+    @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteAttribute(@PathParam("id") Long id) {
+        try {
+            documentLocalEJB.deleteDocument(id);
+        } catch (RuntimeException e) {
+            return Response.ok(
+                    new ResponseWrapper(Config.STATUS_CODE_FAILED,
+                            "Error while deleting Document.")).build();
+        }
+        return Response.ok(new ResponseWrapper(Config.STATUS_CODE_SUCCESS)).build();
+    }
     
 }

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package qa.qcri.aidr.predictui.facade.imp;
 
 import qa.qcri.aidr.predictui.facade.*;
@@ -45,7 +41,13 @@ public class DocumentFacadeImp implements DocumentFacade{
         
         return documentList;
     }
-    
-    
+
+    @Override
+    public void deleteDocument(Long documentID) {
+        Document document = em.find(Document.class, documentID);
+        if (document != null) {
+            em.remove(document);
+        }
+    }
     
 }
