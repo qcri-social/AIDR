@@ -44,7 +44,8 @@ Following are the details of parameters used in the above API call.
 The response of this service will be in JSON format. The details of attributes and their datatypes are as follows:
 
 `statusCode` represents one of the statutes mentioned and described above.
-`message`: this shows textual description of a given `statusCode`. This is useful especially in case of an error. 
+
+`message`: this shows textual description of a given statusCode. 
 
 Example:
 `{
@@ -54,7 +55,9 @@ Example:
 
 ## 2. Stop a collection
 GET: `/stop?id=xxx`
+
 id: represents the collectionCode.
+
 Example call: `.../fetcher/twitter/stop?id=4534`
 
 ## Get status of a running collection by collection code 
@@ -77,12 +80,15 @@ Response:
 			
 ## 3. Get the status of all running tasks 
 GET: `/status/all`
+
 Example call: `.../fetcher/twitter/status/all`
 
 ## 4. Persist all running collections to disk 
 GET: `/manage/persist`
-This service intended to use before deploying new versions of the system, so that a persisted copy of all running collections can be maintained for further run. This service creates a json file on the default application server location.
 
-## 5. Run persisted collections after restart of app/machine
+This service intended to be used before deploying new versions of the application. The service persist all running collections in a JSON file on server's default configuration location. After the deployment, you can use the following service to run collections that were persisted.
+
+## 5. Run persisted collections
 GET: `/manage/runPersisted`
-This service intended to be used after deploying a new version of the system so to run the persisted collection those were backed up before system shutdown. This service reads the persisted file from the disk and load collections.
+
+This service intended to be used after deploying a new version of the system so to run the persisted collection those were backed up. This service reads the persisted file from the disk, loads, and starts collections.
