@@ -91,4 +91,4 @@ This service intended to be used before deploying new versions of the applicatio
 ## 5. Run persisted collections
 GET: `/manage/runPersisted`
 
-This service intended to be used after deploying a new version of the system so to run the persisted collection those were backed up. This service reads the persisted file from the disk, loads, and starts collections.
+This service intended to be used after deploying a new version of the system so to run the persisted collection those were backed up. This service reads the persisted file from the disk, and starts collections.
