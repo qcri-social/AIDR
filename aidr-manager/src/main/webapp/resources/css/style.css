@@ -191,7 +191,8 @@ table{
 	border-collapse: collapse;
 }
 
-td, th {
+.crisis-table td,
+.crisis-table th {
     display: table-cell;
     vertical-align: inherit;
     padding: 3px;

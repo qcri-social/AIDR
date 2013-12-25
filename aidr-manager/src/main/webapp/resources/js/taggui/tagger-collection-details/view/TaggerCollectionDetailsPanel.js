@@ -134,7 +134,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         });
 
         this.crisisModelsTpl = new Ext.XTemplate(
-            '<table width="100%">',
+            '<table width="100%" class="crisis-table">',
             '<tpl for=".">',
 
             '<tr class="crisis-item">',
