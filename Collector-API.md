@@ -68,10 +68,9 @@ Response:
   "collectionName": "Syria Collection",
   "toTrack": "syria, damascus, hama, #syrie",
   "tweetsCount": 60,
-  “lastDocument”:”here twitter message will appear”,
+  "lastDocument":"here twitter message will appear",
   "statusCode": "RUNNING",
-  "statusMessage": “”,
-
+  "statusMessage": "",
 }`
 			
 ## Get status of all running task 
