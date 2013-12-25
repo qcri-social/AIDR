@@ -49,7 +49,7 @@ The response of this service will be in JSON format. The details of attributes a
 Example:
 `{
   "statusCode": "RUNNING",
-  "statusMessage": “”,
+  "statusMessage": "",
 }`
 
 ## Stop a collection
@@ -59,11 +59,13 @@ Example call: `.../fetcher/twitter/stop?id=4534`
 
 ## Get status of a running collection by collection code 
 GET: `/status?id=xxx`
+
 id: represents the `collectionCode`.
+
 Example call: `.../fetcher/twitter/status?id=324`
 
 Response:
-`{
+```{
   "collectionCode": "syria-civil-war",
   "collectionName": "Syria Collection",
   "toTrack": "syria, damascus, hama, #syrie",
@@ -71,7 +73,7 @@ Response:
   "lastDocument":"here twitter message will appear",
   "statusCode": "RUNNING",
   "statusMessage": "",
-}`
+}```
 			
 ## Get status of all running task 
 GET: `/status/all`
@@ -83,4 +85,4 @@ This service intended to use before deploying new versions of the system, so tha
 
 ## Run persisted collections after restart of app/machine
 GET: `/manage/runPersisted`
-This service intended to be used after deploying a new version of the system so to run the persisted collection those were backedup before system shutdown. This service reads the persisted file from the disk and load collections.
+This service intended to be used after deploying a new version of the system so to run the persisted collection those were backed up before system shutdown. This service reads the persisted file from the disk and load collections.
