@@ -11,7 +11,7 @@ The collector project uses different status-codes to represents its different st
 
 ## API
 
-### Start a collection
+### 1. Start a collection
 POST Method: `/start`
 	Request Headers: `Content-Type: application/json`
 	Accept:  `application/json` 
@@ -40,7 +40,7 @@ Following are the details of parameters used in the above API call.
 
 * `languageFilter` represents a comma-separated list of language values to filter tweet stream. The values must be a valid BCP 47 language identifier. 
 
-### Response
+**Response**
 The response of this service will be in JSON format. The details of attributes and their datatypes are as follows:
 
 `statusCode` represents one of the statutes mentioned and described above.
@@ -52,7 +52,7 @@ Example:
   "statusMessage": "",
 }`
 
-## Stop a collection
+## 2. Stop a collection
 GET: `/stop?id=xxx`
 id: represents the collectionCode.
 Example call: `.../fetcher/twitter/stop?id=4534`
@@ -75,14 +75,14 @@ Response:
   "statusMessage": "",
 }```
 			
-## Get status of all running task 
+## 3. Get the status of all running tasks 
 GET: `/status/all`
 Example call: `.../fetcher/twitter/status/all`
 
-## Persist all running collections to disk 
+## 4. Persist all running collections to disk 
 GET: `/manage/persist`
 This service intended to use before deploying new versions of the system, so that a persisted copy of all running collections can be maintained for further run. This service creates a json file on the default application server location.
 
-## Run persisted collections after restart of app/machine
+## 5. Run persisted collections after restart of app/machine
 GET: `/manage/runPersisted`
 This service intended to be used after deploying a new version of the system so to run the persisted collection those were backed up before system shutdown. This service reads the persisted file from the disk and load collections.
