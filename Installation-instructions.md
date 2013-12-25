@@ -96,7 +96,10 @@ After the above steps have been executed, you can build the project:
    b) The main method in the jar is in qa.qcri.aidr.predict.Controller
       You will see some incomprehensible debug output. If the numbers are not 0, input data is being processed.
       
+# 6. Tagger-API (aidr-tagger-api)
 
+* Build using maven following the instructions above; this should generate a file `aidr-tagger-api-X.war`
+* Deploy `aidr-tagger-api-X.war` to Glassfish using the instructions above.
 
 (More instructions: TBA)
 
