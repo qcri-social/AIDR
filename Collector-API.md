@@ -9,8 +9,6 @@ The collector project uses different status-codes to represents its different st
 * STOPPED: shows that request to stop a collection is fulfilled and collection has been stopped.
 * NOT-FOUND: represents a given collection reference is not found in the Fetcher module.
 
-## API
-
 ### 1. Start a collection
 POST Method: `/start`
 	Request Headers: `Content-Type: application/json`
