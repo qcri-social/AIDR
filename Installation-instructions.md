@@ -62,9 +62,6 @@ After the above steps have been executed, you can build the project:
 
 # 5. Tagger (aidr-tagger)
 
-Database configuration
--------------------------
-
 1) Create a database. This assumes database=aidr_predict, username=aidr_user, password=pass123 :
 
    `% mysql -u root -p`
