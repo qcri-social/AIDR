@@ -77,7 +77,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
                 '<img alt="Collection History image" src="/AIDRFetchManager/resources/img/AIDR/tag.png" width="70">',
             '</tpl>',
             '<tpl if="xindex == xcount">' +
-                '<div style="width: 70px;"></div>',
+                '<div class="no-image"></div>',
             '</tpl>',
             '</div>',
 

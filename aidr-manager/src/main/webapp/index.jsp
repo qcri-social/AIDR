@@ -15,23 +15,22 @@
 <script type="text/javascript">
     setTimeout("submitform()",3000);
     function submitform(){
-        //alert('test');
         document.forms["login"].submit();
     }
 </script>
-<body class="mainbody">
+<body class="mainbody index">
 
 <div class="headerWrapper">
-    <div class="header"><img class="headeraidrlogo" src="${pageContext.request.contextPath}/resources/img/AIDR/aidr_logo_240x90.png"></div>
+    <div class="header"><img src="${pageContext.request.contextPath}/resources/img/AIDR/aidr_logo_240x90.png"></div>
 </div>
 
 <div class="mainWraper">
     <div class="main">
-        <div style="text-align: center;">
+        <div>
             <p align="center">Welcome! We are redirecting you to Twitter to sign-in.</p>
             <div>
                 <form action="signin/twitter" method="POST" id="login">
-                    <input type="image" src="${pageContext.request.contextPath}/resources/img/tweeterSignin.png" style="border: 0;">
+                    <input type="image" src="${pageContext.request.contextPath}/resources/img/tweeterSignin.png">
                 </form>
 
             </div>
@@ -40,15 +39,14 @@
     </div>
 </div>
 
-<div class="site-footer" style="position:absolute;bottom: 0;">
+<div class="site-footer">
     <div class="footer">
-        <div style="float: right;">
-            <a style="text-decoration: none; color: #ffffff; font-size: 13px;" href="http://www.qcri.qa/">A project by
-                <img align="middle" id="footerqcrilogo" src="${pageContext.request.contextPath}/resources/img/qcri-gray-horiz.png"/></a>
+        <div class="right">
+            <a href="http://www.qcri.qa/">A project by
+                <img align="middle" src="${pageContext.request.contextPath}/resources/img/qcri-gray-horiz.png"/></a>
         </div>
-        <div style="float: left; padding-top: 16px;">
-            <a style="text-decoration: underline; color: #ffffff; font-size: 13px;" href="http://aidr.qcri.org/tos/">Terms
-                of Service</a>
+        <div class="left">
+            <a href="http://aidr.qcri.org/tos/">Terms of Service</a>
         </div>
     </div>
 </div>

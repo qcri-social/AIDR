@@ -123,7 +123,7 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
                             });
                         }, 50);
 
-                        return Ext.String.format('<div style="margin-left:5px" id="{0}"></div>', id);
+                        return Ext.String.format('<div class="margin-left" id="{0}"></div>', id);
                     }
                 }
             ]

@@ -4,6 +4,6 @@ Ext.define('AIDRFM.common.Header', {
 
     width: '100%',
     html: '<div class="headerWrapper">' +
-        '<div id="header" class="header"><img class="headeraidrlogo" src="' + BASE_URL + '/resources/img/AIDR/aidr_logo_240x90.png"></div>' +
+        '<div class="header"><img src="' + BASE_URL + '/resources/img/AIDR/aidr_logo_240x90.png"></div>' +
         '</div>'
 });
