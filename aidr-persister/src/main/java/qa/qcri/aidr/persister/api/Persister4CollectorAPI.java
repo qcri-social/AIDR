@@ -107,4 +107,11 @@ public class Persister4CollectorAPI {
         return Response.ok(fileName).build();
     }
     
+    @GET
+    @Produces("application/json")
+    @Path("/ping")
+    public Response ping() throws UnknownHostException {
+        String response = "{\"application\":\"aidr-persister\", \"status\":\"RUNNING\"}";
+        return Response.ok(response).build();
+    }
 }
