@@ -1,8 +1,8 @@
 # Collector API (aidr-collector)
 
-Base URI: `http://host:port/aidr-collector/webresources/fetcher/`
+Base URI: `http://host:port/AIDRCollector/webresources`
 
-The collector project uses different status-codes to represents its different states as follws:
+The collector project uses different status-codes to represents its different states as follows:
 
 * INITIALIZING: represents that a collection request is starting-up. 
 * RUNNING: represents collection task is running fine.
