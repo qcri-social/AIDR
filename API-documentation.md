@@ -2,15 +2,6 @@
 
 Base URI: `http://host:port/AIDRCollector/webresources`
 
-The collector project uses different status-codes to represents its different states as follows:
-
-* INITIALIZING: represents that a collection request is starting-up. 
-* RUNNING: represents collection task is running fine.
-* ERROR: represents a fatal error. Collection request must be submitted again.
-* RUNNING-WARNING: represents that collection task is running but with some warning (e.g., twitter track limit warning, stall warning etc.)
-* STOPPED: shows that request to stop a collection is fulfilled and collection has been stopped.
-* NOT-FOUND: represents a given collection reference is not found in the Fetcher module.
-
 ### 1. Start a collection
 POST Method: `/start`
 	Request Headers: `Content-Type: application/json`
@@ -44,10 +35,6 @@ Following are the details of parameters used in the above API call.
 **Response**
 The response of this service will be in JSON format. The details of attributes and their datatypes are as follows:
 
-`statusCode` represents one of the statutes mentioned and described above.
-
-`message`: this shows textual description of a given statusCode. 
-
 Example:
 
     {
@@ -55,42 +42,55 @@ Example:
     "statusMessage": "",
     }
 
+`statusCode` represents one of the statutes mentioned and described below.
+
+* INITIALIZING: represents that a collection request is starting-up. 
+* RUNNING: represents collection task is running fine.
+* ERROR: represents a fatal error. Collection request must be submitted again.
+* RUNNING-WARNING: represents that collection task is running but with some warning (e.g., twitter track limit warning, stall warning etc.)
+* STOPPED: shows that request to stop a collection is fulfilled and collection has been stopped.
+* NOT-FOUND: represents a given collection reference is not found in the Fetcher module.
+
+`message`: this shows textual description of a given statusCode. 
+
+
 ## 2. Stop a collection
 GET: `/stop?id=xxx`
 
 id: represents the collectionCode.
 
-Example call: `.../fetcher/twitter/stop?id=4534`
+Example call: `.../twitter/stop?id=4534`
 
-## Get status of a running collection by collection code 
+## 3. Get status of a running collection by collection code 
 GET: `/status?id=xxx`
 
 id: represents the `collectionCode`.
 
-Example call: `.../fetcher/twitter/status?id=324`
+Example call: `.../twitter/status?id=324`
 
 Response:
-   {
-   "collectionCode": "syria-civil-war",
-   "collectionName": "Syria Collection",
-   "toTrack": "syria, damascus, hama, #syrie",
-   "tweetsCount": 60,
-   "lastDocument":"here twitter message will appear",
-   "statusCode": "RUNNING",
-   "statusMessage": "",
-    }
+    
+    {
+    "collectionCode": "syria-civil-war",
+    "collectionName": "Syria Collection",
+    "toTrack": "syria, damascus, hama, #syrie",
+    "tweetsCount": 60,
+    "lastDocument":"here twitter message will appear",
+    "statusCode": "RUNNING",
+    "statusMessage": "",
+     }
 			
-## 3. Get the status of all running tasks 
+## 4. Get the status of all running tasks 
 GET: `/status/all`
 
-Example call: `.../fetcher/twitter/status/all`
+Example call: `.../twitter/status/all`
 
-## 4. Persist all running collections to disk 
+## 5. Persist all running collections to disk 
 GET: `/manage/persist`
 
-This service intended to be used before deploying new versions of the application. The service persist all running collections in a JSON file on server's default configuration location. After the deployment, you can use the following service to run collections that were persisted.
+This service intended to be used before deploying new versions of the application. The service persists all running collections in a JSON file on server's default configuration location. After the deployment, you can use the following service to run collections that were persisted.
 
-## 5. Run persisted collections
+## 6. Run persisted collections
 GET: `/manage/runPersisted`
 
-This service intended to be used after deploying a new version of the system so to run the persisted collection those were backed up. This service reads the persisted file from the disk, and starts collections.
+This service intended to be used after deploying a new version of the application so to re-start the persisted collections. This service reads the persisted file from the disk, and starts collections.
