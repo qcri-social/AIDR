@@ -12,6 +12,7 @@ public class ModelWrapper {
     
     private Integer modelID;
     private Integer modelFamilyID;
+    private Integer attributeID;
     private String attribute;
     private String status;
     private long trainingExamples;
@@ -115,8 +116,12 @@ public class ModelWrapper {
     public void setModelFamilyID(Integer modelFamilyID) {
         this.modelFamilyID = modelFamilyID;
     }
-    
-    
-            
-    
+
+    public Integer getAttributeID() {
+        return attributeID;
+    }
+
+    public void setAttributeID(Integer attributeID) {
+        this.attributeID = attributeID;
+    }
 }

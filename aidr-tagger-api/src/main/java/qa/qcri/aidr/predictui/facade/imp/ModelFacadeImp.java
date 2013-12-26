@@ -144,6 +144,7 @@ public class ModelFacadeImp implements ModelFacade {
 
             modelWrapper.setTrainingExamples(trainingExamples);
             modelWrapper.setAttribute(modelFamily.getNominalAttribute().getName());
+            modelWrapper.setAttributeID(modelFamily.getNominalAttribute().getNominalAttributeID());
             modelWrapper.setAuc(auc);
             modelWrapper.setClassifiedDocuments(classigiedElements);
             String status = "";
