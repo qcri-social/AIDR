@@ -15,9 +15,10 @@ The collector project uses different status-codes to represents its different st
 POST Method: `/start`
 	Request Headers: `Content-Type: application/json`
 	Accept:  `application/json` 
-	Request Body Example: 
+	
+Request Body Example: 
 
-`{
+```{
   "collectionCode": "JapanEQ2013",
   "collectionName": "Japan Earthquake",
   "toTrack": "#earthquake, #japan",
@@ -28,7 +29,7 @@ POST Method: `/start`
   "consumerSecret": "zdRugnKMqBmiIRVLbasdfasdfuQS3w5YpR0naYyHSYCY",
   "accessToken": "57342232-T7YwJSZ34XesdfsdfDBboduYzOFikHDJ9zXVXR0g",
   "accessTokenSecret": "VZr1beowvLksdfsdfszkEXx1z68oks4hm8JCUGeRDw"
-}`
+}```
 
 Following are the details of parameters used in the above API call.
 
