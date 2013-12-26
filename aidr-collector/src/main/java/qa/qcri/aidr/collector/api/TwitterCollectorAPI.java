@@ -193,10 +193,18 @@ public class TwitterCollectorAPI extends Loggable {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/restart")
     public Response restartCollection(@QueryParam("code") String collectionCode) throws InterruptedException {
+        List<CollectionTask> collections = GenericCache.getInstance().getAllRunningCollectionTasks();
+        CollectionTask collectionToRestart = null;
+        for(CollectionTask collection : collections){
+            if (collection.getCollectionCode().equalsIgnoreCase(collectionCode)){
+                collectionToRestart = collection;
+                break;
+            }
+        }
         stopTask(collectionCode);
-        Thread.sleep(2000);
-        //startTask(collectionCode);
-        return null;
+        Thread.sleep(3000);
+        Response response =  startTask(collectionToRestart);
+        return response;
     }
 
     @GET

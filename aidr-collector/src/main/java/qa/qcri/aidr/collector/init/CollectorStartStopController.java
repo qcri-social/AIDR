@@ -14,6 +14,8 @@ import javax.annotation.PreDestroy;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.servlet.http.HttpServlet;
+import qa.qcri.aidr.collector.api.TwitterCollectorAPI;
+import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.CollectorStatus;
 
 import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
@@ -43,13 +45,15 @@ public class CollectorStartStopController extends HttpServlet {
     }
 
     @PreDestroy
-    private void shutdown() { 
+    private void shutdown() throws InterruptedException { 
         //Shutdown tasks go here
         System.out.println("AIDR-Collector: Shutting Down...");
-         List<TwitterStreamTracker> trackersList = GenericCache.getInstance().getAllTwitterTrackers();
-        for (TwitterStreamTracker tracker : trackersList) {
-            System.out.println("Stopping collection: " + tracker.getCollectionCode());
-            tracker.abortCollection();
+        List<CollectionTask> collections = GenericCache.getInstance().getAllRunningCollectionTasks();
+        TwitterCollectorAPI twitterCollector = new TwitterCollectorAPI();
+        for (CollectionTask collection: collections){
+            System.out.println("Stopping " + collection.getCollectionCode());
+            twitterCollector.stopTask(collection.getCollectionCode());
+            Thread.sleep(1000);
         }
         System.out.println("AIDR-Collector: Shutdown procedure completed.");
     
