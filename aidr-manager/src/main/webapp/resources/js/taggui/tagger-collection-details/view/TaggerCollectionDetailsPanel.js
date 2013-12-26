@@ -158,8 +158,8 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                 + CRISIS_CODE + '/{modelID}/{modelFamilyID}/training-data">Manage training examples &raquo;</a></td></tr>',
 
 
-            '<tr><td>Classified elements (since last change of the classifier):</td>',
-            '<td>{[this.getNumber(values.classifiedDocuments)]}</td></tr>',
+            '<tr><td>Classified elements:</td>',
+            '<td>{[this.getNumber(values.classifiedDocuments)]} (since last change of the classifier)</td></tr>',
 
             '<tr><td>Quality (AUC)<span class="redInfo">*</span>:</td>',
             '<td>{[AIDRFMFunctions.getAucNumberWithColors(values.auc)]}</td>',
