@@ -4,6 +4,7 @@
  */
 package qa.qcri.aidr.predictui.api;
 
+import java.net.UnknownHostException;
 import qa.qcri.aidr.predictui.dto.ItemToLabelDTO;
 import qa.qcri.aidr.predictui.dto.TrainingDataDTO;
 import qa.qcri.aidr.predictui.facade.MiscResourceFacade;
@@ -68,6 +69,14 @@ public class MiscResource {
             System.out.println("Exception : " +  e);
         }
        return Response.ok(item).build();
+    }
+    
+     @GET
+    @Produces("application/json")
+    @Path("/ping")
+    public Response ping() {
+        String response = "{\"application\":\"aidr-tagger-api\", \"status\":\"RUNNING\"}";
+        return Response.ok(response).build();
     }
 
 }
