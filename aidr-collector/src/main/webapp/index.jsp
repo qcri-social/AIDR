@@ -9,7 +9,7 @@
     </head>
     <body>
         <h1>The AIDR Collector application is deployed to this location.</h1>
-        <p>To check the status you can use: <a href="webresources/fetcher/twitter/status/all">webresources/fetcher/twitter/status/all</a>.</p>
+        <p>To check the status you can <a href="webresources/fetcher/manage/ping">PING IT</a>.</p>
         <p>Refer to the documentation for information on the API of this application.</p>
     </body>
 </html>

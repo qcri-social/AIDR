@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import qa.qcri.aidr.collector.beans.CollectionTask;
+import qa.qcri.aidr.collector.beans.CollectorStatus;
 import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
 
 /**
@@ -23,6 +24,7 @@ public class GenericCache {
     private Map<String, CollectionTask> twtConfigMap = null; // keeps twitter configuartions tokens and keys of a particular collections
     private Map<String, String> lastDownloadedDocumentMap = null; // stores last downloaded document
     private Map<String, CollectionTask> failedCollections = null; // keeps failed collections
+    private CollectorStatus collectorStatus; // keeps collector status inforamtion
 
     private GenericCache() {
         twitterTrackerMap = new HashMap<String, TwitterStreamTracker>();
@@ -30,9 +32,7 @@ public class GenericCache {
         twtConfigMap = new HashMap<String, CollectionTask>();
         lastDownloadedDocumentMap = new HashMap<String, String>();
         failedCollections = new HashMap<String, CollectionTask>();
-
-
-
+        collectorStatus = new CollectorStatus();
     }
 
     public static GenericCache getInstance() {
@@ -56,6 +56,14 @@ public class GenericCache {
     private static class GenericSingletonHolder {
 
         private static final GenericCache INSTANCE = new GenericCache();
+    }
+    
+    public void setCollectorStatus(CollectorStatus cStatus){
+        this.collectorStatus=cStatus;
+    }
+    
+    public CollectorStatus getCollectorStatus(){
+        return this.collectorStatus;
     }
 
     public void setTwitterTracker(String key, TwitterStreamTracker tracker) {

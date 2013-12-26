@@ -19,7 +19,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import qa.qcri.aidr.collector.beans.CollectionTask;
+import qa.qcri.aidr.collector.beans.CollectorStatus;
 import qa.qcri.aidr.collector.utils.Config;
 import qa.qcri.aidr.collector.utils.GenericCache;
 
@@ -28,8 +30,8 @@ import qa.qcri.aidr.collector.utils.GenericCache;
  *
  * @author Imran
  */
-@Path("fetcher/manage")
-public class FetcherManageResource {
+@Path("manage/")
+public class CollectorManageResource {
 
     @Context
     private UriInfo context;
@@ -38,7 +40,7 @@ public class FetcherManageResource {
     /**
      * Creates a new instance of FetcherManageResource
      */
-    public FetcherManageResource() {
+    public CollectorManageResource() {
     }
 
     @GET
@@ -75,7 +77,7 @@ public class FetcherManageResource {
     @GET
     @Path("/runPersisted")
     @Produces(MediaType.TEXT_PLAIN)
-    public String runPersistedCollections() {
+    public String runPersistedCollections() throws InterruptedException {
 
         String response = "";
         BufferedReader br = null;
@@ -88,6 +90,7 @@ public class FetcherManageResource {
                 CollectionTask collection = gson.fromJson(sCurrentLine, CollectionTask.class);
                 System.out.println("Retrieved from disk :" + gson.toJson(collection));
                 runCollection(collection);
+                Thread.sleep(2000); // starting up collections in a polite way to avoid blocking problem from Twitter
 
             }
             System.out.println("Done reading.");
@@ -125,4 +128,19 @@ public class FetcherManageResource {
             return "Could not start collection";
         }
     }
+    
+    @GET
+    @Path("/ping")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response ping() throws InterruptedException {
+        
+        int runningCollectionsCount=0;
+         List<CollectionTask> collections = GenericCache.getInstance().getAllRunningCollectionTasks();
+        if (!(collections == null || collections.isEmpty())) {
+            runningCollectionsCount = collections.size();
+        }
+        String startDate = GenericCache.getInstance().getCollectorStatus().getStartDate();
+        return Response.ok(new CollectorStatus(startDate, "RUNNING", runningCollectionsCount)).build();
+    }
+    
 }

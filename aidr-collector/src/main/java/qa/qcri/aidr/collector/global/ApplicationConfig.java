@@ -33,7 +33,7 @@ public class ApplicationConfig extends Application {
      * Do not modify addRestResourceClasses() method.
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
-        resources.add(qa.qcri.aidr.collector.api.FetcherManageResource.class);
+        resources.add(qa.qcri.aidr.collector.api.CollectorManageResource.class);
         resources.add(qa.qcri.aidr.collector.api.TwitterCollectorAPI.class);
     }
     

@@ -37,7 +37,7 @@ import twitter4j.conf.ConfigurationBuilder;
  *
  * @author Imran
  */
-@Path("fetcher/twitter/")
+@Path("twitter/")
 public class TwitterCollectorAPI extends Loggable {
 
     @Context
