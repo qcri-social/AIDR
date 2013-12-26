@@ -1,4 +1,4 @@
-# Collector API (aidr-collector)
+# COLLECTOR API (aidr-collector)
 
 Base URI: `http://host:port/AIDRCollector/webresources`
 
@@ -94,3 +94,12 @@ This service intended to be used before deploying new versions of the applicatio
 GET: `/manage/runPersisted`
 
 This service intended to be used after deploying a new version of the application so to re-start the persisted collections. This service reads the persisted file from the disk, and starts collections.
+
+
+# TAGGER API (aidr-tagger)
+
+(TBA)
+
+# PERSISTER API (aidr-persister)
+
+(TBA)
