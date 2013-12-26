@@ -16,6 +16,8 @@ public class TaggerModel {
     
     private Integer modelFamilyID;
 
+    private Integer attributeID;
+
     public Integer getModelID() {
         return modelID;
     }
@@ -76,5 +78,13 @@ public class TaggerModel {
      */
     public void setModelFamilyID(Integer modelFamilyID) {
         this.modelFamilyID = modelFamilyID;
+    }
+
+    public Integer getAttributeID() {
+        return attributeID;
+    }
+
+    public void setAttributeID(Integer attributeID) {
+        this.attributeID = attributeID;
     }
 }

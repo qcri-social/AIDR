@@ -119,6 +119,7 @@ public class ScreenController extends BaseController{
 
         Integer crisisId = 0;
         Integer modelFamilyId = 0;
+        Integer attributeId = 0;
         String crisisName = "";
         String modelName = "";
         double modelAuc = 0;
@@ -135,7 +136,17 @@ public class ScreenController extends BaseController{
                     modelFamilyId = model.getModelFamilyID();
                 }
                 modelAuc = model.getAuc();
+                attributeId = model.getAttributeID();
             }
+        }
+
+        Integer taggerUserId = 0;
+        try {
+            String userName = getAuthenticatedUserName();
+            taggerUserId = taggerService.isUserExistsByUsername(userName);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         ModelAndView model = new ModelAndView("tagger/model-details");
@@ -146,6 +157,8 @@ public class ScreenController extends BaseController{
         model.addObject("modelAuc", modelAuc);
         model.addObject("modelFamilyId", modelFamilyId);
         model.addObject("code", code);
+        model.addObject("userId", taggerUserId);
+        model.addObject("attributeId", attributeId);
         return model;
     }
 
