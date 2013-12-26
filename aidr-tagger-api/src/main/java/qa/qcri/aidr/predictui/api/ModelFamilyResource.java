@@ -99,9 +99,9 @@ public class ModelFamilyResource {
     @DELETE
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteAttribute(@PathParam("id") int id) {
+    public Response deleteAttribute(@PathParam("id") int modelFamilyID) {
         try {
-            modelFamilyLocalEJB.deleteModelFamily(id);
+            modelFamilyLocalEJB.deleteModelFamily(modelFamilyID);
         } catch (RuntimeException e) {
             return Response.ok(
                     new ResponseWrapper(Config.STATUS_CODE_FAILED,
