@@ -18,7 +18,7 @@ POST Method: `/start`
 	
 Request Body Example: 
 
-```{
+    ```{
   "collectionCode": "JapanEQ2013",
   "collectionName": "Japan Earthquake",
   "toTrack": "#earthquake, #japan",
@@ -29,7 +29,7 @@ Request Body Example:
   "consumerSecret": "zdRugnKMqBmiIRVLbasdfasdfuQS3w5YpR0naYyHSYCY",
   "accessToken": "57342232-T7YwJSZ34XesdfsdfDBboduYzOFikHDJ9zXVXR0g",
   "accessTokenSecret": "VZr1beowvLksdfsdfszkEXx1z68oks4hm8JCUGeRDw"
-}```
+    }```
 
 Following are the details of parameters used in the above API call.
 
