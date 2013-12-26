@@ -18,18 +18,18 @@ POST Method: `/start`
 	
 Request Body Example: 
 
-    ```{
-  "collectionCode": "JapanEQ2013",
-  "collectionName": "Japan Earthquake",
-  "toTrack": "#earthquake, #japan",
-  "toFollow": "2342355, 9837498, 3489098",
-  “geoLocation”: ”-74,40,-73,41”,
-  “languageFilter”: ”en, ar, ja”,
-  "consumerKey": "cd2CbYFSSkRi20hsfsdfaaQ",
-  "consumerSecret": "zdRugnKMqBmiIRVLbasdfasdfuQS3w5YpR0naYyHSYCY",
-  "accessToken": "57342232-T7YwJSZ34XesdfsdfDBboduYzOFikHDJ9zXVXR0g",
-  "accessTokenSecret": "VZr1beowvLksdfsdfszkEXx1z68oks4hm8JCUGeRDw"
-    }```
+    {
+    "collectionCode": "JapanEQ2013",
+    "collectionName": "Japan Earthquake",
+    "toTrack": "#earthquake, #japan",
+    "toFollow": "2342355, 9837498, 3489098",
+    "geoLocation": "-74,40,-73,41",
+    "languageFilter": "en, ar, ja",
+    "consumerKey": "cd2CbYFSSkRi20hsfsdfaaQ",
+    "consumerSecret": "zdRugnKMqBmiIRVLbasdfasdfuQS3w5YpR0naYyHSYCY",
+    "accessToken": "57342232-T7YwJSZ34XesdfsdfDBboduYzOFikHDJ9zXVXR0g",
+    "accessTokenSecret": "VZr1beowvLksdfsdfszkEXx1z68oks4hm8JCUGeRDw"
+    }
 
 Following are the details of parameters used in the above API call.
 
@@ -49,10 +49,11 @@ The response of this service will be in JSON format. The details of attributes a
 `message`: this shows textual description of a given statusCode. 
 
 Example:
-`{
-  "statusCode": "RUNNING",
-  "statusMessage": "",
-}`
+
+    {
+    "statusCode": "RUNNING",
+    "statusMessage": "",
+    }
 
 ## 2. Stop a collection
 GET: `/stop?id=xxx`
@@ -69,15 +70,15 @@ id: represents the `collectionCode`.
 Example call: `.../fetcher/twitter/status?id=324`
 
 Response:
-```{
-  "collectionCode": "syria-civil-war",
-  "collectionName": "Syria Collection",
-  "toTrack": "syria, damascus, hama, #syrie",
-  "tweetsCount": 60,
-  "lastDocument":"here twitter message will appear",
-  "statusCode": "RUNNING",
-  "statusMessage": "",
-}```
+   {
+   "collectionCode": "syria-civil-war",
+   "collectionName": "Syria Collection",
+   "toTrack": "syria, damascus, hama, #syrie",
+   "tweetsCount": 60,
+   "lastDocument":"here twitter message will appear",
+   "statusCode": "RUNNING",
+   "statusMessage": "",
+    }
 			
 ## 3. Get the status of all running tasks 
 GET: `/status/all`
