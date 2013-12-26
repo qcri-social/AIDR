@@ -34,21 +34,13 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             flex: 1
         });
 
-        this.linkToAttribute = Ext.create('Ext.container.Container', {
-//            TODO check if this is correct place we need to go to
-            html: '<div class="bread-crumbs"><a href="' + BASE_URL + '/protected/' + MODEL_ID + '/attribute-details">Edit classifier "' + MODEL_NAME + '" &raquo;</a></div>',
-            margin: 0,
-            flex:1
-        });
-
         this.horisontalLine = Ext.create('Ext.container.Container', {
             width: '100%',
             html: '<div class="horisontalLine"></div>'
         });
 
         this.aucHint = Ext.create('Ext.container.Container', {
-            html: '<span class="redInfo">*</span>If AUC is lower than 0.8-0.9, or AUC is 1.0, you urgently need more training examples.',
-            margin: 0
+            html: '<span class="redInfo">*</span>If AUC is lower than 0.8-0.9, or AUC is 1.0, you urgently need more training examples.'
         });
 
         this.modelLabelsStore = Ext.create('Ext.data.JsonStore', {
@@ -144,7 +136,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
 
         this.modelHistoryTitle = Ext.create('Ext.form.Label', {
             hidden: true,
-            padding: '10 0 0 0',
+            margin: '5 0',
             cls: 'header-h1',
             text: 'Model History'
         });
@@ -248,6 +240,68 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             emptyMsg:'No model history records to display'
         });
 
+        this.tabPanel = Ext.create('Ext.tab.Panel', {
+            cls: 'tabPanel',
+            width: '100%',
+            minHeight: 400,
+            activeTab: 0,
+            items: [
+                {
+                    title: 'Details',
+                    items: [
+                        {
+                            xtype: 'container',
+                            layout: {
+                                type: 'vbox',
+                                align: 'stretch'
+                            },
+                            margin: '15 0 0 0',
+                            items: [
+                                this.modelDetails
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            width: '100%',
+                            html: '<div class="horisontalLine"></div>'
+                        },
+                        this.modelLabelsView,
+                        {
+                            xtype: 'container',
+                            layout:  'hbox',
+                            margin: '25 0 0 0',
+                            items: [
+                                {
+                                    xtype: 'container',
+                                    flex: 1
+                                },
+                                this.aucHint
+                            ]
+                        }
+                    ]
+                },
+                {
+                    title: 'History',
+                    padding: '10 0 0 0',
+                    defaults: {
+                        anchor: '100%'
+                    },
+                    items: [
+                        this.modelHistoryTitle,
+                        this.modelHistoryView,
+                        this.modelHistoryPaging
+                    ]
+                },
+                {
+                    title: 'Edit/Remove',
+                    padding: '10 0 0 0',
+                    items: [
+//                        this.
+                    ]
+                }
+            ]
+        });
+
         this.items = [
             this.breadcrumbs,
             {
@@ -262,34 +316,10 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
                     align: 'stretch'
                 },
                 items: [
-                    this.taggerTitle,
-                    this.modelDetails
+                    this.taggerTitle
                 ]
             },
-            {
-                xtype: 'container',
-                width: '100%',
-                html: '<div class="horisontalLine"></div>'
-            },
-            this.modelLabelsView,
-            {
-                xtype: 'container',
-                layout: 'hbox',
-                padding: '30 0 0 0',
-                items: [
-                    this.linkToAttribute,
-                    this.aucHint
-                ]
-            },
-            {
-                xtype: 'container',
-                width: '100%',
-                margin: '30 0 0 0',
-                html: '<div class="horisontalLine"></div>'
-            },
-            this.modelHistoryTitle,
-            this.modelHistoryView,
-            this.modelHistoryPaging
+            this.tabPanel
         ];
 
         this.callParent(arguments);

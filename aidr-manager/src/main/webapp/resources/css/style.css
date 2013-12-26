@@ -583,6 +583,7 @@ End of the tab panel styles
 .aidr-paging {
     background-color: white !important;
     background-image: none;
+    border-width: 0px;
 }
 
 .aidr-paging .x-toolbar-text{
