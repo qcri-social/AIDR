@@ -166,14 +166,10 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
             '</td></tr></table></td>',
 
-            '<td><button id="buttonRemoveModel_{modelFamilyID}" class="btn btn-blue" onclick="taggerCollectionDetailsController.removeAttributeFromCrisesHandler({modelFamilyID}, \'{attribute}\')">',
-            '<span>Remove</span>',
-            '</button></td>',
-
             '</tr>',
 
 
-            '<tr><td colspan="3">',
+            '<tr><td colspan="2">',
             '<div class="horisontalLine"></div>',
             '</td></tr>',
 
@@ -540,4 +536,4 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         this.callParent(arguments);
     }
 
-})
+});

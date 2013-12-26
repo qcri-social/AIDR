@@ -17,15 +17,14 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
 
     },
 
-    beforeRenderView: function (component, eOpts) {
+    beforeRenderView: function (component) {
         AIDRFMFunctions.initMessageContainer();
 
         this.mainComponent = component;
         modelDetailsController = this;
 
-        var me = this;
-
         this.getAllLabelsForModel();
+        this.getAttributeInfo();
     },
 
     getAllLabelsForModel: function() {
@@ -89,12 +88,12 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
                             }
                             var classifiedMessages = '0 (0%)';
                             if (r.classifiedDocumentCount){
-                                var classifiedMessagesPercentage = ((r.classifiedDocumentCount * 100) / totalMessages).toFixed(2)
+                                var classifiedMessagesPercentage = ((r.classifiedDocumentCount * 100) / totalMessages).toFixed(2);
                                 classifiedMessages = r.classifiedDocumentCount.format() + ' (' + classifiedMessagesPercentage + '%)';
                             }
                             var trainingDocuments = '0 (0%)';
                             if (r.trainingDocuments){
-                                var trainingDocumentsPercentage = ((r.trainingDocuments * 100) / totalExamples).toFixed(2)
+                                var trainingDocumentsPercentage = ((r.trainingDocuments * 100) / totalExamples).toFixed(2);
                                 trainingDocuments = r.trainingDocuments.format() + ' (' + trainingDocumentsPercentage + '%)';
                             }
                             model.classifiedDocumentCount = classifiedMessages;
@@ -124,6 +123,34 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
                             '<a href="' + BASE_URL +  '/protected/' + CRISIS_CODE + '/' + MODEL_ID + '/' + MODEL_FAMILY_ID
                             + '/training-data">Manage training examples &raquo;</a>', false);
                         me.mainComponent.modelLabelsStore.loadData(models);
+                    }
+                } else {
+                    AIDRFMFunctions.setAlert("Error", resp.message);
+                }
+            },
+            failure: function () {
+                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
+            }
+        });
+    },
+
+    getAttributeInfo: function () {
+        var me = this;
+
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/tagger/getAttributeInfo.action',
+            method: 'GET',
+            params: {
+                id: ATTRIBUTE_ID
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                var resp = Ext.decode(response.responseText);
+                if (resp.success) {
+                    if (resp.data) {
+                        me.mainComponent.attributeDetails.loadData(resp.data);
                     }
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);

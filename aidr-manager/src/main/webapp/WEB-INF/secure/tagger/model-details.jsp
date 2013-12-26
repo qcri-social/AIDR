@@ -12,6 +12,8 @@
       MODEL_NAME = "${modelName}";
       MODEL_AUC = ${modelAuc};
       CRISIS_NAME = "${crisisName}";
+      USER_ID = ${userId};
+      ATTRIBUTE_ID = ${attributeId};
   </script>
 
 </body>

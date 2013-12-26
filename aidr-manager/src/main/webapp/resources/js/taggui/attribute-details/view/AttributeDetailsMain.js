@@ -15,6 +15,9 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
         width: '100%'
     },
 
+    showDeleteButton: true,
+    showRemoveClassifierButton: true,
+
     initComponent: function () {
         var me = this;
 
@@ -121,9 +124,22 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
             text: 'Delete',
             cls:'btn btn-red',
             margin: '0 0 0 7',
+            hidden: !me.showDeleteButton,
             listeners: {
                 click: function(btn){
                     me.attributeDeleteHandler(btn, me);
+                }
+            }
+        });
+
+        this.removeClassifierButton = Ext.create('Ext.Button', {
+            text: 'Remove Classifier',
+            cls:'btn btn-red',
+            margin: '0 0 0 7',
+            hidden: !me.showRemoveClassifierButton,
+            listeners: {
+                click: function(btn){
+                    me.removeClassifierHandler(btn, me);
                 }
             }
         });
@@ -145,7 +161,8 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
                         this.cancelButton
                     ]
                 },
-                this.deleteButton
+                this.deleteButton,
+                this.removeClassifierButton
             ]
         });
 
@@ -331,6 +348,45 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
         });
     },
 
+    removeClassifierHandler: function (btn, me) {
+        Ext.MessageBox.confirm('Confirm Remove Classifier', 'Do you want to remove Classifier <b>"' + me.attributeName + '"</b>?',
+            function (buttonId) {
+                if (buttonId === 'yes') {
+                    me.removeClassifier(me);
+                }
+            }
+        );
+    },
+
+    removeClassifier: function (me) {
+        me.removeClassifierButton.disable();
+
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/tagger/removeAttributeFromCrises.action',
+            method: 'GET',
+            params: {
+                id: MODEL_FAMILY_ID
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                var resp = Ext.decode(response.responseText);
+                if (resp.success) {
+                    AIDRFMFunctions.setAlert("Ok", "Classifier was removed successfully.");
+                    document.location.href = BASE_URL + '/protected/' + CRISIS_CODE +'/tagger-collection-details';
+                } else {
+                    AIDRFMFunctions.setAlert("Error", resp.message);
+                    me.removeClassifierButton.enable();
+                }
+            },
+            failure: function () {
+                me.removeClassifierButton.enable();
+                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
+            }
+        });
+    },
+
     attributeEdit: function (btn, me) {
         me.nameValue.hide();
         me.editButton.hide();
@@ -354,6 +410,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
     attributeSave: function (btn, me) {
         me.cancelButton.disable();
         me.deleteButton.disable();
+        me.removeClassifierButton.disable();
 
         var attributeName = me.nameTextBox.getValue();
 
@@ -382,12 +439,14 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
                 }
                 me.cancelButton.enable();
                 me.deleteButton.enable();
+                me.removeClassifierButton.enable();
             },
             failure: function () {
                 AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
                 me.attributeCancel(null, me);
                 me.cancelButton.enable();
                 me.deleteButton.enable();
+                me.removeClassifierButton.enable();
             }
         });
     },

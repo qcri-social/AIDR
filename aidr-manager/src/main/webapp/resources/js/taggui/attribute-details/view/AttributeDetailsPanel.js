@@ -26,7 +26,9 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsPanel', {
             flex: 1
         });
 
-        this.main = Ext.create('TAGGUI.attribute-details.view.AttributeDetailsMain');
+        this.main = Ext.create('TAGGUI.attribute-details.view.AttributeDetailsMain', {
+            showRemoveClassifierButton: false
+        });
 
         this.items = [
             this.breadcrumbs,

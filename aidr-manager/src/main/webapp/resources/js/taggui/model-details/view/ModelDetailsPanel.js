@@ -2,7 +2,8 @@ Ext.require([
     'AIDRFM.common.AIDRFMFunctions',
     'AIDRFM.common.StandardLayout',
     'AIDRFM.common.Header',
-    'AIDRFM.common.Footer'
+    'AIDRFM.common.Footer',
+    'TAGGUI.attribute-details.view.AttributeDetailsMain'
 ]);
 
 Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
@@ -240,6 +241,10 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             emptyMsg:'No model history records to display'
         });
 
+        this.attributeDetails = Ext.create('TAGGUI.attribute-details.view.AttributeDetailsMain',{
+            showDeleteButton: false
+        });
+
         this.tabPanel = Ext.create('Ext.tab.Panel', {
             cls: 'tabPanel',
             width: '100%',
@@ -296,7 +301,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
                     title: 'Edit/Remove',
                     padding: '10 0 0 0',
                     items: [
-//                        this.
+                        this.attributeDetails
                     ]
                 }
             ]
