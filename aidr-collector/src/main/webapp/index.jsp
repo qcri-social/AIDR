@@ -9,7 +9,7 @@
     </head>
     <body>
         <h1>The AIDR Collector application is deployed to this location.</h1>
-        <p>To check the status you can <a href="webresources/fetcher/manage/ping">PING IT</a>.</p>
+        <p>To check the status you can <a href="webresources/manage/ping">ping the collector</a>.</p>
         <p>Refer to the documentation for information on the API of this application.</p>
     </body>
 </html>
