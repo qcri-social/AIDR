@@ -22,34 +22,33 @@ Request Body Example:
     "accessTokenSecret": "VZr1beowvLksdfsdfszkEXx1z68oks4hm8JCUGeRDw"
     }
 
-Following are the details of parameters used in the above API call.
+Parameters details:
 
 * `collectionCode` represents user provided unique collection Code
 * `collectionName` represents user provided name to a collection 
 * `toTrack` represents a comma-separated list of keywords that will be used for tracking purposes.
-* `toFollow` represents a comma-separated list twitter users’ IDs which will be followed. A follower ID must be in numeric format.
-* `geoLocation` this field represents a comma-separated pairs of longitude and latitude. A valid geo location represents a bounding box with southwest corner of the box coming first. More about this field can be found on this link.
-
-* `languageFilter` represents a comma-separated list of language values to filter tweet stream. The values must be a valid BCP 47 language identifier. 
+* `toFollow` represents a comma-separated list of twitter users’ IDs to be followed. A follower ID must be in numeric format.
+* `geoLocation` represents a comma-separated pairs of longitude and latitude. A valid geo location represents a bounding box with the southwest corner of the box coming first. 
+* `languageFilter` represents a comma-separated list of languages to filter tweets stream. The values must be a valid BCP 47 language identifier. 
 
 **Response**
-The response of this service will be in JSON format. The details of attributes and their datatypes are as follows:
+Response of this service will be in JSON format. Details of attributes and their datatypes are following:
 
-Example:
+Response example:
 
     {
     "statusCode": "RUNNING",
     "statusMessage": "",
     }
 
-`statusCode` represents one of the statutes mentioned and described below.
+`statusCode` represents one of the statutes mentioned below.
 
-* INITIALIZING: represents that a collection request is starting-up. 
-* RUNNING: represents collection task is running fine.
+* INITIALIZING: represents that a collection request is valid and the collection is in initializing state. 
+* RUNNING: represents collection task is running.
 * ERROR: represents a fatal error. Collection request must be submitted again.
 * RUNNING-WARNING: represents that collection task is running but with some warning (e.g., twitter track limit warning, stall warning etc.)
 * STOPPED: shows that request to stop a collection is fulfilled and collection has been stopped.
-* NOT-FOUND: represents a given collection reference is not found in the Fetcher module.
+* NOT-FOUND: represents that there is no collection running with the provided collection reference.
 
 `message`: this shows textual description of a given statusCode. 
 
