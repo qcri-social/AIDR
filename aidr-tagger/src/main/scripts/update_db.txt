@@ -1,0 +1,14 @@
+
+30 December 2013: Added new relation "nominal_attribute_dependent_label"
+==========================================================================
+CREATE TABLE `nominal_attribute_dependent_label` (
+  `nominalAttributeID` int(10) unsigned NOT NULL,
+  `nominalLabelID` int(10) unsigned NOT NULL,
+  `threshold` float DEFAULT NULL,
+  PRIMARY KEY (`nominalAttributeID`,`nominalLabelID`),
+  KEY `nomiLabel_depLabel` (`nominalLabelID`),
+  CONSTRAINT `nomiLabel_depLabel` FOREIGN KEY (`nominalLabelID`) REFERENCES `nominal_label` (`nominalLabelID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `nomiAtt_depAtt` FOREIGN KEY (`nominalAttributeID`) REFERENCES `nominal_attribute` (`nominalAttributeID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
