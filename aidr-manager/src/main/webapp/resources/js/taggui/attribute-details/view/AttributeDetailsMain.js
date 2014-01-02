@@ -178,7 +178,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
 
         this.valuesLable = Ext.create('Ext.container.Container', {
             width: '100%',
-            html: '<div class="attributes-title"><div class="inner"><h2>Values</h2></div></div>',
+            html: '<div class="attributes-title"><div class="inner"><h2>Categories</h2></div></div>',
             hidden: true
         });
 
