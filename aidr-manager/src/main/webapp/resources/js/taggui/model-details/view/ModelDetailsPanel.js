@@ -23,7 +23,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
 
         this.taggerTitle = Ext.create('Ext.form.Label', {
             cls: 'header-h1 bold-text',
-            text: 'Classifier "' + MODEL_NAME,
+            text: 'Classifier "' + MODEL_NAME + '"',
             flex: 1
         });
 
@@ -139,7 +139,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             hidden: true,
             margin: '5 0',
             cls: 'header-h1',
-            text: 'Model History'
+            text: 'Classifier History'
         });
 
         this.modelHistoryStore = Ext.create('Ext.data.Store', {
