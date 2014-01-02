@@ -9,4 +9,4 @@ AIDR is being developed at the [Social Computing](http://www.qcri.qa/our-researc
 
 # Former team members
 
-* [Jakob Rogstadius](http://hci.uma.pt/%7Ejakob/)
+* [Jakob Rogstadius](http://hci.uma.pt/%7Ejakob/) - Researcher and Developer.
