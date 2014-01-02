@@ -93,7 +93,7 @@ Ext.define('TAGGUI.training-examples.view.TrainingExamplesPanel', {
                     align: 'stretch'
                 },
                 items: [
-                    this.taggerTitle,
+                    //this.taggerTitle,
                     {
                         xtype: 'container',
                         layout:  'hbox',
