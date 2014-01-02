@@ -188,7 +188,6 @@ public class TwitterCollectorAPI extends Loggable {
 
     }
     
-    //TODO: PENDING SERVICE
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/restart")
