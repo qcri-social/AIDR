@@ -237,8 +237,8 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             store:'modelHistoryStore',
             displayInfo:true,
             hidden: true,
-            displayMsg:'Model history records {0} - {1} of {2}',
-            emptyMsg:'No model history records to display'
+            displayMsg:'Classifier history records {0} - {1} of {2}',
+            emptyMsg:'No classifier history records to display'
         });
 
         this.attributeDetails = Ext.create('TAGGUI.attribute-details.view.AttributeDetailsMain',{
