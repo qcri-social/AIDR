@@ -416,7 +416,7 @@ public class TaggerServiceImpl implements TaggerService {
             /**
              * Rest call to Tagger
              */
-            WebResource webResource = client.resource(taggerMainUrl + "/document/" + id);
+            WebResource webResource = client.resource(taggerMainUrl + "/document/removeTrainingExample/" + id);
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 

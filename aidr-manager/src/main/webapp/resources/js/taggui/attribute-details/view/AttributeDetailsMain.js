@@ -135,7 +135,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
         this.removeClassifierButton = Ext.create('Ext.Button', {
             text: 'Remove Classifier',
             cls:'btn btn-red',
-            margin: '0 0 0 7',
+            margin: '5 0',
             hidden: !me.showRemoveClassifierButton,
             listeners: {
                 click: function(btn){
@@ -146,8 +146,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
 
         this.buttonsBlock = Ext.create('Ext.container.Container', {
             layout: 'hbox',
-            margin: '5 0',
-            padding: '0 10',
+            margin: '5 10',
             hidden: true,
             items: [
                 {
@@ -161,14 +160,25 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
                         this.cancelButton
                     ]
                 },
-                this.deleteButton,
-                this.removeClassifierButton
+                this.deleteButton
+            ]
+        });
+
+        this.noButtonsBlock = Ext.create('Ext.container.Container', {
+            layout: 'hbox',
+            margin: '5 10',
+            hidden: true,
+            width: 250,
+            items: [
+                {
+                    xtype: 'container'
+                }
             ]
         });
 
         this.valuesLable = Ext.create('Ext.container.Container', {
             width: '100%',
-            html: '<div class="attributes-title"><div class="inner"><h2>Values</h2></div></div>',
+            html: '<div class="attributes-title"><div class="inner"><h2>Categories</h2></div></div>',
             hidden: true
         });
 
@@ -243,7 +253,15 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
                     this.codeBlock,
                     this.nameBlock,
                     this.typeBlock,
-                    this.buttonsBlock
+                    {
+                        xtype: 'container',
+                        layout:  'hbox',
+                        items: [
+                            this.buttonsBlock,
+                            this.noButtonsBlock,
+                            this.removeClassifierButton
+                        ]
+                    }
                 ]
             },
             {
@@ -277,6 +295,8 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
             if (r.users.userID == USER_ID) {
                 me.buttonsBlock.show();
                 me.valuesEditButton.show();
+            } else {
+                me.noButtonsBlock.show();
             }
         }
         me.typeValue.setText(type, false);

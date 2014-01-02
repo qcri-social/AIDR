@@ -45,7 +45,7 @@ Ext.define('TAGGUI.training-examples.view.LabelPanel', {
 
             Ext.each(attr.nominalLabelJsonModelSet, function (lbl) {
                 me.optionRG.add({
-                    boxLabel: '<span class="styled-text">' + lbl.name + '</span>&nbsp;<span class="small-gray-text">' +lbl.description + '</span>',
+                    boxLabel: '<span class="styled-text"><b>' + lbl.name + '</b></span>&nbsp;<span class="small-gray-text">' +lbl.description + '</span>',
                     name: attr.nominalAttributeID,
                     code: lbl.norminalLabelCode
                 });

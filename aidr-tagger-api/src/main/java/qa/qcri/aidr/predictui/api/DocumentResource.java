@@ -62,13 +62,27 @@ public class DocumentResource {
     @DELETE
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteAttribute(@PathParam("id") Long id) {
+    public Response deleteDocument(@PathParam("id") Long id) {
         try {
             documentLocalEJB.deleteDocument(id);
         } catch (RuntimeException e) {
             return Response.ok(
                     new ResponseWrapper(Config.STATUS_CODE_FAILED,
                             "Error while deleting Document.")).build();
+        }
+        return Response.ok(new ResponseWrapper(Config.STATUS_CODE_SUCCESS)).build();
+    }
+
+    @DELETE
+    @Path("/removeTrainingExample/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response removeTrainingExample(@PathParam("id") Long id) {
+        try {
+            documentLocalEJB.removeTrainingExample(id);
+        } catch (RuntimeException e) {
+            return Response.ok(
+                    new ResponseWrapper(Config.STATUS_CODE_FAILED,
+                            "Error while removing Training Example.")).build();
         }
         return Response.ok(new ResponseWrapper(Config.STATUS_CODE_SUCCESS)).build();
     }

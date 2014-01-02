@@ -255,15 +255,16 @@ public class TaggerController extends BaseController {
     @ResponseBody
     public Map<String,Object> updateLabel(@RequestParam Integer labelID,
                                           @RequestParam String labelName,
+                                          @RequestParam String labelDescription,
                                           @RequestParam Integer attributeID) throws Exception {
         logger.info("Updating Label in Tagger having id " + labelID);
         try{
             TaggerLabel response = taggerService.getLabelInfo(labelID);
             TaggerLabel updatedLabel;
-            if (response != null && labelName != null){
+            if (response != null && (labelName != null || labelDescription != null)){
                 TaggerLabelRequest dto = new TaggerLabelRequest();
                 dto.setName(labelName);
-                dto.setDescription(response.getDescription());
+                dto.setDescription(labelDescription);
                 dto.setNominalAttributeID(attributeID);
                 dto.setNominalLabelCode(response.getNominalLabelCode());
                 dto.setNominalLabelID(response.getNominalLabelID());

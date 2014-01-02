@@ -26,11 +26,24 @@ Ext.define('TAGGUI.attribute-details.view.AttributeValuePanel', {
             flex: 1,
             allowBlank: false,
             hidden: true,
-            value: this.name
-            ,
+            value: this.name,
             listeners: {
                 change: function(combo, newValue) {
-                    if (newValue != '' && newValue != me.attributeName) {
+                    if (newValue != '' && newValue != me.name) {
+                        me.enableParentSaveButton();
+                    }
+                }
+            }
+        });
+
+        this.descriptionTextBox = Ext.create('Ext.form.field.Text', {
+            flex: 1,
+            allowBlank: false,
+            hidden: true,
+            value: this.description,
+            listeners: {
+                change: function(combo, newValue) {
+                    if (newValue != '' && newValue != me.description) {
                         me.enableParentSaveButton();
                     }
                 }
@@ -101,7 +114,8 @@ Ext.define('TAGGUI.attribute-details.view.AttributeValuePanel', {
                                 html: 'Description:',
                                 cls: 'styled-text-14'
                             },
-                            this.descriptionValue
+                            this.descriptionValue,
+                            this.descriptionTextBox
                         ]
                     }
                 ]
@@ -114,20 +128,28 @@ Ext.define('TAGGUI.attribute-details.view.AttributeValuePanel', {
     edit: function(){
         this.nameValue.hide();
         this.nameTextBox.show();
+
+        this.descriptionValue.hide();
+        this.descriptionTextBox.show();
     },
 
     cancel: function(){
         this.nameValue.show();
         this.nameTextBox.hide();
-
         this.nameTextBox.setValue(this.name);
+
+        this.descriptionValue.show();
+        this.descriptionTextBox.hide();
+        this.descriptionTextBox.setValue(this.name);
     },
 
     save: function(){
         var me = this;
 
         var newName = this.nameTextBox.getValue();
-        if (this.name != newName && newName != '') {
+        var newDescription = this.descriptionTextBox.getValue();
+        if ((this.name != newName && newName != '') ||
+            (this.description != newDescription && newDescription != '')) {
 
             Ext.Ajax.request({
                 url: BASE_URL + '/protected/tagger/updateLabel.action',
@@ -135,6 +157,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeValuePanel', {
                 params: {
                     labelID: me.labelId,
                     labelName: Ext.String.trim( newName ),
+                    labelDescription: Ext.String.trim( newDescription ),
                     attributeID: ATTRIBUTE_ID
                 },
                 headers: {
@@ -153,6 +176,9 @@ Ext.define('TAGGUI.attribute-details.view.AttributeValuePanel', {
 
             this.nameValue.setText(newName);
             this.name = newName;
+
+            this.descriptionValue.setText(newDescription);
+            this.description = newDescription;
         }
         this.cancel();
     },
