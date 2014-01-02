@@ -1,54 +1,46 @@
-/*
+/**
  * This code creates a long pooling connection to stream JSONP data 
  * from a REDIS DB to a client using a servlet. The connection is
  * kept alive until one of the conditions occur:
- * 		1. The streaming connection time-out occurs (THREAD_TIMEOUT constant)
- * 		2. The REDIS DB connection times out	(REDIS_CALLBACK_TIMEOUT constant)
- * 		3. Client closes the connection
+ * 		1. The streaming connection duration expires (subscription_duration parameter value)
+ * 		2. The REDIS DB connection times out (REDIS_CALLBACK_TIMEOUT constant)
+ * 		3. Connection loss, e.g., client closes the connection 
  * 
  * 
  * @author Koushik Sinha
- * Last modified: 24/12/2013
+ * Last modified: 02/01/2014
  *
- * Dependencies:  jedis-2.1.0, gson-2.2.4, commons-pool-1.6, slf4j-1.7.5
+ * Dependencies:  servlets 3+, jedis-2.2.1, gson-2.2.4, commons-pool-1.6, slf4j-1.7.5
  * 	
- * Instructions for running the code:
- * 		To test in a browser, use one of the first two strings mentioned below. For testing with the
- * 		the aidr_predict.clex_20131201 channel on the REDIS DB on scd1 server, the servlet should be 
- * 		configured to tunnel using the ssh tunneling command mentioned below. You can increase the
- * 		test duration by adjusting the THREAD_TIMEOUT. Sometimes, the REDIS_CALLBACK_TIMEOUT may
- * 		also need adjustment, in case the rate of publication is very slow. 
+ * Hints for testing:
+ * 		1. You can increase the test duration by adjusting the SUBSCRIPTION_MAX_DURATION. 
+ *  	2. Adjust REDIS_CALLBACK_TIMEOUT, in case the rate of publication is very slow. 
  * 		 
  *
- * Environment setup: 
- * 		1. Deploy as WAR file in glassfish 3.1.2
- * 		2. Setup ssh tunneling using the command: ssh tunneling:: ssh -f -L 1978:localhost:6379 scd1.qcri.org -N
+ * Deployment steps: 
+ * 		1. [Required] Set redisHost and redisPort in code, as per your REDIS setup/location
+ * 		2. [Optional] Tune time-out and other parameters, if necessary
+ * 		3. [Required]Compile and package as WAR file
+ * 		4. [Required] Deploy as WAR file in glassfish 3.1.2
+ * 		5. [Optional] Setup ssh tunneling (e.g. command: ssh tunneling:: ssh -f -L 1978:localhost:6379 scd1.qcri.org -N)
+ * 		6. Issue fetch or stream request from client
  *
  *
  * REST invocations: 
- * 	1. http://localhost:8080/AsyncRedisServlet/getAll?crisisCode=aidr_predict.clex_20131201&callback=print
- *  2. http://localhost:8080/AsyncRedisServlet/getAll?crisisCode=aidr_predict.clex_20131201
- *  3. http://localhost:8080/AsyncRedisServlet/getAll?crisisCode=test_kou_channel&callback=print
- *  4. http://localhost:8080/AsyncRedisServlet/getAll?crisisCode=test_kou_channel
- *  5. http://localhost:8080/AsyncRedisServlet/getAll?crisisCode=aidr_predict.clex_20131201&callback=print&rate=3
- *  6. http://localhost:8080/AsyncRedisServlet/getAll?stopSubscription=true (deprecated - now using THREAD_TIMEOUT) 
+ * 	1. http://localhost:8080/aidr-output/stream?crisisCode=aidr_predict.clex_20131201&subscription_duration=1h 
+ *  2. http://localhost:8080/aidr-output/stream?crisisCode=aidr_predict.clex_20131201&subscription_duration=1h&callback=print
+ *  3. http://localhost:8080/aidr-output/stream?crisisCode=aidr_predict.clex_20131201&subscription_duration=1h&rate=15
+ *  4. http://localhost:8080/aidr-output/stream?crisisCode=aidr_predict.clex_20131201&subscription_duration=1h&callback=print&rate=10
+ * 
  *  
  *  Parameter explanations:
- *  	1. crisisCode: the REDIS channel to which to subscribe
- *  	2. callback: name of the callback function for JSONP data
- *  	3. rate: an upper bound on the rate at which to send messages to client, expressed as messages/min (floating point number)
- */
-
-/*
- * TODO: 
- * 		1. Remove debugging messages once testing is completed satisfactorily.
- * 		2. Figure out why using Jedis pool is creating dangling subscription 
- * 		   in REDIS that can only be stopped by rebooting the server.
- * 		3. Use annotations more extensively to improve coding style/readability.
- * 
- * 	Possible Problem areas:
- * 		1. Memory leak in long running or high rate streaming
- * 		2. Not graceful connection release (read item 2 in TODO above)
+ *  	1. crisisCode [mandatory]: the REDIS channel to which to subscribe
+ *  	2. subscription_duration [mandatory]: time for which to subscribe (connection automatically closed after that). 
+ *		   	The allowed suffixes are: s (for seconds), m (for minutes), h (for hours) and d (for days). The max subscription 
+ *		   	duration is specified by the hard coded SUBSCRIPTION_MAX_DURATION value. 
+ *  	3. callback [optional]: name of the callback function for JSONP data
+ *  	4. rate [optional]: an upper bound on the rate at which to send messages to client, expressed as messages/min 
+ *  	   	(a floating point number).
  */
 
 package qa.qcri.aidr.output.stream;
@@ -74,7 +66,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.BasicConfigurator;
+//import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,26 +85,23 @@ public class RedisHTTPStreaming extends HttpServlet {
 
 	// Time-out constants
 	private static final int REDIS_CALLBACK_TIMEOUT = 2 * 60 * 1000;		// in ms
-	private static final int THREAD_TIMEOUT = 6 * 60 * 60 * 1000;			// in ms
+	private static final int SUBSCRIPTION_MAX_DURATION = 6 * 60 * 60 * 1000;			// in ms
 
 	// Pertaining to JEDIS - establishing connection with a REDIS DB
 	// Currently using ssh tunneling:: ssh -f -L 1978:localhost:6379 scd1.qcri.org -N
-	// 2 channels being used for testing:
+	// Channel(s) being used for testing:
 	// 		a) aidr_predict.clex_20131201
-	//		b) test_kou_channel
+	//		
 	private static String redisChannel = "aidr_predict.clex_20131201";		// channel to subscribe to		
 	private static String redisHost = "localhost";					// Current assumption: REDIS running on same m/c
-	private static int redisPort = 6379;					
-	public JedisPoolConfig poolConfig;
-	public JedisPool pool;
+	private static int redisPort = 1978;					
+	public JedisPoolConfig poolConfig = null;
+	public JedisPool pool = null;
 	public Jedis subscriberJedis = null;
 	public RedisSubscriber aidrSubscriber = null;
-	public static int subscriberCount = 0;
-
+	
 	// Related to Async Thread management
 	public ExecutorService executorServicePool;
-	private static long lastAccessedTime = 0;
-	private static long currentAccessTime = 0;
 
 	// Debugging
 	private static Logger logger = LoggerFactory.getLogger(RedisHTTPStreaming.class);
@@ -121,35 +110,21 @@ public class RedisHTTPStreaming extends HttpServlet {
 
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-		
+
 		// For now: set up a simple configuration that logs on the console
 		//PropertyConfigurator.configure("log4j.properties");		// where to place the properties file?
-		BasicConfigurator.configure();
+		//BasicConfigurator.configure();
 		logger.info("[init] In servlet init...");
-		
-		executorServicePool = Executors.newFixedThreadPool(100);		// max 100 threads
-		lastAccessedTime = new Date().getTime();		// servlet initialization time
 
-		// Attempt setup of ssh tunneling, just to be sure
-		// Turn on only on unix systems, if required
-		/*
-		try {
-			Process p = Runtime.getRuntime().exec("ssh -f -L 1978:localhost:6379 scd1.qcri.org -N");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.info("[init] Unable to execute linux ssh tunneling command!");
-			e.printStackTrace();
-		}
-		*/
+		executorServicePool = Executors.newFixedThreadPool(100);		// max 100 threads
 	}
 
+	// Initialize JEDIS parameters
 	private void initRedisSubscription(String host, int port) {
 		redisHost = host;
 		redisPort = port;
 
-		// These are blind settings from the web samples
-		// No idea in the absence of Jedis documentation
-
+		// Warning: these are settings from samples, may need tweaking!
 		poolConfig = new JedisPoolConfig();
 		poolConfig.setMaxActive(50);
 		poolConfig.setMaxIdle(10);
@@ -163,34 +138,21 @@ public class RedisHTTPStreaming extends HttpServlet {
 		poolConfig.whenExhaustedAction = org.apache.commons.pool.impl.GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW;
 		pool = new JedisPool(poolConfig, redisHost, redisPort, 10);
 		subscriberJedis = pool.getResource();
-
-		++RedisHTTPStreaming.subscriberCount;			// increment the number of opened subscription channels
+		
 		logger.info("[initRedisSubscription] Initialized empty subscriber, with subscriberJedis = " + subscriberJedis);
 		logger.info("[initRedisSubscription] pool = " + pool);
 		logger.info("[initRedisSubscription] poolConfig = " + poolConfig);
 	}
 
-	// Currently unused - for future, if required
-	private void unSubscribeChannel(final RedisSubscriber sub) {
-		System.out.println(sub + "@[unSubscribeChannel] subscriberCount = " + subscriberCount + ", Subscription count = " + sub.getSubscribedChannels());
-		System.out.println("[unSubscribeChannel] aidrSubscriber = " + sub);
-		if (sub != null && sub.getSubscribedChannels() > 0) 
-		{
-			sub.unsubscribe();				// aidrSubscriber.unsubscribe(redisChannel);
-			--RedisHTTPStreaming.subscriberCount;
-			System.out.println(sub + "@[unSubscribeChannel] unsubscribed, Subscription count = " + sub.getSubscribedChannels());
-		}
-	}
-
+	// Stop subscription of this subscribed thread and return resources to the JEDIS thread pool
 	private void stopSubscription(final RedisSubscriber sub, final Jedis jedis) {
-		System.out.println(sub + "@[stopSubscription] subscriberCount = " + subscriberCount + ", Subscription count = " + sub.getSubscribedChannels());
 		System.out.println("[stopSubscription] aidrSubscriber = " + sub + ", jedis = " + jedis);
+		System.out.println(sub + "@[stopSubscription] Subscription count = " + sub.getSubscribedChannels());
 		if (sub != null && sub.getSubscribedChannels() > 0) {
 			sub.unsubscribe();				// aidrSubscriber.unsubscribe(redisChannel);
-			--RedisHTTPStreaming.subscriberCount;
 			System.out.println("[stopSubscription] unsubscribed " + sub + ", Subscription count = " + sub.getSubscribedChannels());
 		}
-		
+
 		try {
 			pool.returnResource(jedis);
 			System.out.println(sub + "@[stopSubscription] Pool resource returned");
@@ -202,22 +164,19 @@ public class RedisHTTPStreaming extends HttpServlet {
 	}
 
 
-
+	// Create a subscription to specified REDIS channel: spawn a new thread
 	private void subscribeToChannel(final RedisSubscriber sub, final Jedis jedis, String channel) throws Exception {
 		redisChannel = channel;
 		System.out.println("[subscribeToChannel] aidrSubscriber = " + sub + ", jedis = " + jedis);
 
-		//new Thread(new Runnable() { 
 		executorServicePool.submit(new Runnable() {
 			public void run() {
 				try {
 					logger.info(sub + "@[subscribeToChannel] Attempting subscription for " + redisHost + ":" + redisPort + "/" + redisChannel);
-					//subscriberJedis.subscribe(sub, redisChannel);
 					jedis.subscribe(sub, redisChannel);
 					logger.info(sub + "@[subscribeToChannel] Out of subscription for Channel = " + redisChannel);
 				} catch (Exception e) {
 					logger.info(sub + "@[subscribeToChannel] AIDR Predict Channel Subscribing failed");
-					--RedisHTTPStreaming.subscriberCount;
 					stopSubscription(sub, jedis);
 				} finally {
 					try {
@@ -231,25 +190,7 @@ public class RedisHTTPStreaming extends HttpServlet {
 					}
 				}
 			}
-		}); //.start();
-	}
-
-	private boolean isSameSession(HttpServletRequest request) {
-
-		HttpSession session = request.getSession(true);
-		if (session.isNew()) {
-			return false;
-		}
-		currentAccessTime = new Date().getTime();		// time in msecs 
-		long elapsed = (currentAccessTime - lastAccessedTime) * 1000;		// time in secs		
-		logger.info("Current time = " + currentAccessTime + ", session last access time = " + lastAccessedTime + ", elapsed = " + elapsed);
-
-		if ((elapsed) <= session.getMaxInactiveInterval()) {
-			lastAccessedTime = currentAccessTime;
-			return true;
-		}
-		return false;
-
+		}); 
 	}
 
 	@Override
@@ -262,18 +203,11 @@ public class RedisHTTPStreaming extends HttpServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 
-		// Parse the HTTP GET request and generating results for output
-		// Set the response MIME type of the response message
-		// response.setContentType("text/html");
-		// response.setContentType("text/javascript");
-		// response.setIntHeader("Refresh", 1);		// auto refresh web-page every 1 sec
-
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
-
+		
 		if (request.getParameter("crisisCode") != null) {
-			// TODO: Handle client refresh of webpage in same session
-			//if (this.aidrSubscriber == null) {}				
+			// TODO: Handle client refresh of webpage in same session				
 			initRedisSubscription(redisHost, redisPort);
 
 			// Get callback function name, if any
@@ -294,54 +228,39 @@ public class RedisHTTPStreaming extends HttpServlet {
 				e.printStackTrace();
 				System.exit(1);
 			}
-			asyncContext.setTimeout(THREAD_TIMEOUT);		// negative --> no timeout
 			executorServicePool.execute(aidrSubscriber);	// alternatively, use: asyncContext.start(aidrSubscriber);
 		} 
 		else {
 			// No crisisCode provided...
-			if (request.getParameter("stopSubscription") == null) {
-				logger.info("[doGet] In parameter: crisisCode = null, stopSubscription=false");
-				PrintWriter out = response.getWriter();
-				try {
-					response.setCharacterEncoding("UTF-8");
-					response.setContentType("text/html");
+			logger.info("[doGet] In parameter: crisisCode = null, stopSubscription=false");
+			PrintWriter out = response.getWriter();
+			try {
+				response.setCharacterEncoding("UTF-8");
+				response.setContentType("text/html");
 
-					// Allocate a output writer to write the response message into the network socket
-					out.println("<!DOCTYPE html>");
-					out.println("<html>");
-					out.println("<head><title>Redis HTTP Streaming App</title></head>");
-					out.println("<body>");
-					out.println("<h1>No CrisisCode Provided! </h1>");
-					out.println("<h>Can not initiate REDIS channel subscription!</h>");
-					out.println("</body></html>");
-				} finally {
-					out.flush();
-					out.close();  // Always close the output writer
-				}
-			}
-			// Instead request to stop subscription - Not sure how to handle now with async threaded execution!
-			if ((request.getParameter("stopSubscription") != null) && (request.getParameter("stopSubscription").equals("true"))) {
-				try {
-					logger.info("[doGet] In parameter: stopSubscription=true");
-					//stopSubscription(aidrSubscriber);
-					shutdownAndAwaitTermination(executorServicePool);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					System.out.println("[doGet] Exception occurred attempting stopSubscription in parameter=stopSubscription: " + e.toString());
-					e.printStackTrace();
-					System.exit(1);
-				}
+				// Allocate a output writer to write the response message into the network socket
+				out.println("<!DOCTYPE html>");
+				out.println("<html>");
+				out.println("<head><title>Redis HTTP Streaming App</title></head>");
+				out.println("<body>");
+				out.println("<h1>No CrisisCode Provided! </h1>");
+				out.println("<h>Can not initiate REDIS channel subscription!</h>");
+				out.println("</body></html>");
+			} finally {
+				out.flush();
+				out.close();  // Always close the output writer
 			}
 		}
 		logger.info("[doGet] Reached end-of-function...");
 	}
 
+	// cleanup all threads 
 	void shutdownAndAwaitTermination(ExecutorService threadPool) {
 		threadPool.shutdown(); // Disable new tasks from being submitted
 		try {
 			// Wait a while for existing tasks to terminate
 			if (!threadPool.awaitTermination(1, TimeUnit.SECONDS)) {
-				threadPool.shutdownNow(); // Cancel currently executing tasks
+				threadPool.shutdownNow(); 			// Cancel currently executing tasks
 				// Wait a while for tasks to respond to being cancelled
 				if (!threadPool.awaitTermination(1, TimeUnit.SECONDS))
 					System.err.println("[shutdownAndAwaitTermination] Pool did not terminate");
@@ -385,6 +304,7 @@ public class RedisHTTPStreaming extends HttpServlet {
 		private boolean runFlag = true;
 		private boolean error = false;
 		private boolean timeout = false;
+		private int subscriptionDuration = SUBSCRIPTION_MAX_DURATION;
 
 		// rate control related 
 		private static final int DEFAULT_SLEEP_TIME = 0;		// in msec
@@ -392,7 +312,6 @@ public class RedisHTTPStreaming extends HttpServlet {
 		private int sleepTime = DEFAULT_SLEEP_TIME;
 
 		// Share data structure between Jedis and Async threads
-		// TODO: later versions for more functionality
 		private List<String> messageList = Collections.synchronizedList(new ArrayList<String>());
 
 
@@ -403,12 +322,15 @@ public class RedisHTTPStreaming extends HttpServlet {
 			this.jedis = jedis;
 			this.setRunFlag(true);		
 
-			logger.info(this +"@[RedisSubscriber] Step 1: add asyc listener.");
-			// Listen for errors and timeouts
-			asyncContext.addListener(this);
+			HttpServletRequest request = (HttpServletRequest) asyncContext.getRequest();
+
+			logger.info(this + "@[RedisSubscriber] Step 1: get subscription duration");
+			if (request.getParameter("subscription_duration") != null) {
+				subscriptionDuration = parseTime(request.getParameter("subscription_duration"));
+			}
 
 			logger.info(this + "@[RedisSubscriber] Step 2: get output rate, if any");
-			HttpServletRequest request = (HttpServletRequest) asyncContext.getRequest();
+
 			if (request.getParameter("rate") != null) {
 				messageRate = Float.parseFloat(request.getParameter("rate"));	// specified as messages/min (NOTE: upper-bound)
 				if (messageRate > 0) {		// otherwise, use default rate
@@ -416,9 +338,42 @@ public class RedisHTTPStreaming extends HttpServlet {
 				}
 			}
 			logger.info(this + "@[RedisSubscriber] Parameters received: crisisCode:" + this.channel
+					+ ", subscription_duration = " + subscriptionDuration 
 					+ ", callback = " + this.callbackName 
-					+ ", count = " + this.messageRate);
-			
+					+ ", rate = " + this.messageRate);
+
+			// Set timeout period for async thread
+			asyncContext.setTimeout(subscriptionDuration);		// negative --> no timeout
+
+			logger.info(this +"@[RedisSubscriber] Step 3: add asyc listener and set timeout period.");
+
+			// Listen for errors and timeouts			
+			asyncContext.addListener(this);
+		}
+
+		private int parseTime(String timeString) {
+			int duration = 0;
+			logger.info("[parseTime] string length = " + timeString.length());
+			float value = Float.parseFloat(timeString.substring(0, timeString.length()-1));
+			if (value > 0) {
+				String suffix = timeString.substring(timeString.length() - 1, timeString.length());
+				logger.info("[parseTime] val = " + timeString.substring(0, timeString.length()-1) + ", suffix = " + suffix);
+				switch(suffix) {
+				case "s":
+					duration = Math.min(SUBSCRIPTION_MAX_DURATION, Math.round(value * 1000));
+					break;
+				case "m":
+					duration = Math.min(SUBSCRIPTION_MAX_DURATION, Math.round(value * 1000 * 60));
+					break;
+				case "h":
+					duration = Math.min(SUBSCRIPTION_MAX_DURATION, Math.round(value * 1000 * 60 * 60));
+					break;
+				case "d":
+					duration = Math.min(SUBSCRIPTION_MAX_DURATION, Math.round(value * 1000 * 60 * 60 * 24));
+					break;
+				}
+			}
+			return duration;
 		}
 
 		@Override
@@ -453,15 +408,15 @@ public class RedisHTTPStreaming extends HttpServlet {
 
 		@Override
 		public void onUnsubscribe(String channel, int subscribedChannels) {
-			logger.info(this + "@[onUnsubscribe] We are in an interesting place...");
+			logger.info(this + "@[onUnsubscribe] Unusbscribed from channel " + channel);
 		}
 
 		///////////////////////////////////
 		// Now to implement Async methods
 		///////////////////////////////////
 		public boolean isThreadTimeout(long startTime) {
-			if ((new Date().getTime() - startTime) > THREAD_TIMEOUT) {
-				System.out.println(this + "@[isThreadTimeout] Exceeded Thread timeout = " + THREAD_TIMEOUT + "msec");
+			if ((new Date().getTime() - startTime) > subscriptionDuration) {
+				System.out.println(this + "@[isThreadTimeout] Exceeded Thread timeout = " + subscriptionDuration + "msec");
 				return true;
 			}
 			return false;
@@ -478,8 +433,6 @@ public class RedisHTTPStreaming extends HttpServlet {
 
 			HttpServletResponse response = (HttpServletResponse) asyncContext.getResponse();
 			response.setContentType("application/json");
-			//response.setHeader("Connection", "keep-alive");
-			//response.setContentLength(messageObjectResponse == null ? 1024 : messageObjectResponse.length());		// dummy setting - required?
 			PrintWriter responseWriter = null;
 			try {
 				responseWriter = response.getWriter();
@@ -489,21 +442,9 @@ public class RedisHTTPStreaming extends HttpServlet {
 				e.printStackTrace();
 				setRunFlag(false);
 			}
-			/*
-			ServletOutputStream responseStream = null;
-			try {
-				responseStream = response.getOutputStream();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				logger.info(this + "@[run] Error initializing output stream for sending data...");
-				e1.printStackTrace();
-				setRunFlag(false);		
-			} 
-			 */
+
 			while (getRunFlag() && !isThreadTimeout(startTime)) {
 				// Here we poll a non blocking resource for updates
-				//System.out.println("[run] messageObjectResponse = " + messageObjectResponse);
-				//if (messageObjectResponse != null) {
 				if (!messageList.isEmpty()) {
 					// There are updates, send these to the waiting client
 					logger.info(this + "@[run] Received message from REDIS");
@@ -511,26 +452,23 @@ public class RedisHTTPStreaming extends HttpServlet {
 					if (!error && !timeout) {
 						// Send updates response as JSON
 						synchronized (messageList) {
-							//final String jsonData = new Gson().toJson(messageObjectResponse != null ? messageObjectResponse : new String("{}"));
 							Gson jsonObject = new GsonBuilder().serializeNulls()		//.disableHtmlEscaping()
 									.serializeSpecialFloatingPointValues().setPrettyPrinting()
 									.create();
 							final String jsonData = jsonObject.toJson(messageList.get(messageList.size()-1) != null 
-															? messageList.get(messageList.size()-1) : new String("{}"));
-							//final String jsonData = new Gson().toJson(messageList.get(messageList.size()-1) != null 
-							//						? messageList.get(messageList.size()-1) : new String("{}"));
-							
+									? messageList.get(messageList.size()-1) : new String("{}"));
+
 							logger.info(this + "@[run] Sending JSON data: " + jsonData);
-							response.setContentLength(jsonData.length());
+							//response.setContentLength(jsonData.length());		// this is probably redundant
 							responseWriter.println(jsonData);
 							responseWriter.flush();
-							
+
 							jsonObject = null;
 							messageObjectResponse = null;
 							messageList.remove(messageList.size()-1);	// remove the sent message from list	 
-						}
+						}	// end synchronized block
 						lastAccessedTime = new Date().getTime();		// time when message last received from REDIS
-						
+
 						// Now sleep for a short time before going for next message - easy to read on screen
 						try {
 							Thread.sleep(sleepTime);
@@ -545,7 +483,7 @@ public class RedisHTTPStreaming extends HttpServlet {
 					}
 				}
 				else {
-					// messageObjectResponse = null --> no message received 
+					// messageList is empty --> no message received 
 					// from REDIS. Wait for some more time before giving up.
 					currentTime = new Date().getTime();
 					long elapsed = currentTime - lastAccessedTime;
@@ -590,15 +528,6 @@ public class RedisHTTPStreaming extends HttpServlet {
 					asyncContext.complete();
 				}
 			}
-		}
-
-		// Currently unused - for future, if required
-		public boolean isClientConnected(PrintWriter out) {
-			// TODO: better way to detect client disconnects?
-			if (out.checkError()) {
-				return false;
-			}
-			return true;
 		}
 
 		public void setRunFlag(final boolean val) {
