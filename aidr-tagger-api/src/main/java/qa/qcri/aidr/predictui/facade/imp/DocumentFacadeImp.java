@@ -49,5 +49,15 @@ public class DocumentFacadeImp implements DocumentFacade{
             em.remove(document);
         }
     }
+
+    @Override
+    public void removeTrainingExample(Long documentID) {
+        Document document = em.find(Document.class, documentID);
+        if (document != null) {
+            document = em.merge(document);
+            document.setHasHumanLabels(false);
+            document.setNominalLabelCollection(null);
+        }
+    }
     
 }
