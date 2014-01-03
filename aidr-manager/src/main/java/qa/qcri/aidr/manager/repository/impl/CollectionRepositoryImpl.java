@@ -62,6 +62,14 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 		return (AidrCollection) criteria.uniqueResult();
 	}
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<AidrCollection> getRunningCollections() {
+        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+        criteria.add(Restrictions.eq("status", CollectionStatus.RUNNING));
+        return (List<AidrCollection>) criteria.list();
+    }
+
 	@Override
 	public AidrCollection getInitializingCollectionStatusByUser(Integer userId) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);

@@ -109,7 +109,7 @@ public class CollectionServiceImpl implements CollectionService {
         } else {
             logger.info("User with ID: '" + userId + "' don't has running collections. Nothing to update." );
 //            If there is no running collection there is still can be collection with status 'Initializing'.
-//            This happens because wa update collection information from fetcher before collection was started.
+//            This happens because we update collection information from fetcher before collection was started.
 //            So we need to update from Fetcher this kind of collections as well.
             collection = collectionRepository.getInitializingCollectionStatusByUser(userId);
             if (collection != null) {
@@ -222,6 +222,7 @@ public class CollectionServiceImpl implements CollectionService {
     }
 
     @SuppressWarnings("deprecation")
+    @Override
     public AidrCollection statusByCollection(AidrCollection collection) throws Exception {
         try {
             /**
@@ -249,14 +250,20 @@ public class CollectionServiceImpl implements CollectionService {
                 if ((response.getTweetsCount() != null && !response.getTweetsCount().equals(collection.getCount())) || response.getLastDocument() != null) {
                     collection.setCount(response.getTweetsCount());
                     collection.setLastDocument(response.getLastDocument());
-                    this.update(collection);
+                    collectionRepository.update(collection);
                 }
             }
             return collection;
         } catch (Exception e) {
-            String msg = "Error while stopping Remote FetchMain Collection";
+            String msg = "Error while getting status for collection from Remote FetchMain Collection";
             logger.error(msg, e);
             throw new Exception(msg);
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AidrCollection> getRunningCollections() throws Exception {
+        return collectionRepository.getRunningCollections();
     }
 }

@@ -12,6 +12,7 @@ public interface CollectionRepository extends GenericRepository<AidrCollection, 
 	public CollectionDataResponse getPaginatedData(Integer start ,Integer limit,Integer userId);
 	public Boolean exist(String code);
 	public AidrCollection getRunningCollectionStatusByUser(Integer userId);
+	public List<AidrCollection> getRunningCollections();
 	public AidrCollection getInitializingCollectionStatusByUser(Integer userId);
 	public AidrCollection start(Integer collectionId);
 	public AidrCollection stop(Integer collectionId);
