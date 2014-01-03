@@ -2,37 +2,30 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
   <display-name>AIDROutput</display-name>
   <welcome-file-list>
-  <welcome-file>index.html</welcome-file>
-  <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
     <welcome-file>index.jsp</welcome-file>
     <welcome-file>default.html</welcome-file>
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
-  
   <servlet>
-      <servlet-name>AIDROutputStream</servlet-name>
-      <servlet-class>qa.qcri.aidr.output.stream.RedisHTTPStreaming</servlet-class>
-   </servlet>
-   <servlet>
-         <servlet-name>AIDROutputFetch</servlet-name>
-         <servlet-class>qa.qcri.aidr.output.fetch.RedisHTTPGetData</servlet-class>
-   </servlet>
-   
-    <servlet-mapping>
-           <servlet-name>AIDROutputStream</servlet-name>
-           <url-pattern>/stream</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-            <servlet-name>AIDROutputFetch</servlet-name>
-            <url-pattern>/fetch</url-pattern>
-    </servlet-mapping>
-   <session-config>
-           <session-timeout>
-               360
-           </session-timeout>
-    </session-config>
-   <!-- Note: All <servlet> elements MUST be grouped together and
-         placed IN FRONT of the <servlet-mapping> elements -->
- 
+    <servlet-name>AIDROutputStream</servlet-name>
+    <servlet-class>qa.qcri.aidr.output.stream.RedisHTTPStreaming</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>AIDROutputFetch</servlet-name>
+    <servlet-class>qa.qcri.aidr.output.fetch.RedisHTTPGetData</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AIDROutputStream</servlet-name>
+    <url-pattern>/stream</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AIDROutputFetch</servlet-name>
+    <url-pattern>/fetch</url-pattern>
+  </servlet-mapping>
+  <session-config>
+    <session-timeout>360</session-timeout>
+  </session-config>
 </web-app>
