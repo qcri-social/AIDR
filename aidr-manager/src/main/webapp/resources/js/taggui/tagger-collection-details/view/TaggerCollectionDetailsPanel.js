@@ -49,7 +49,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         });
 
         this.publicLink = Ext.create('Ext.container.Container', {
-            html: 'Public link for volunteers:',
+            html: 'Public link for volunteers (in MicroMappers):',
             margin: '6 15 0 0'
         });
 
