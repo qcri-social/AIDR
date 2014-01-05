@@ -15,5 +15,6 @@ public interface DocumentFacade {
     public Document getDocumentByID(long id);
     public List<Document> getAllLabeledDocumentbyCrisisID(long crisisID, long attributeID);
     public void deleteDocument(Long documentID);
+    public void removeTrainingExample(Long documentID);
 
 }

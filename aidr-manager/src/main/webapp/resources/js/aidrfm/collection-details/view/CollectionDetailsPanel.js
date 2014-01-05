@@ -47,7 +47,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
 
         this.collectionHistoryTitle = Ext.create('Ext.form.Label', {
-            hidden: true,
             padding: '10 0 0 0',
             cls: 'header-h1',
             text: 'Collection History'
@@ -280,11 +279,9 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     }
                 },
                 load: function (s) {
-                    var activeTab = me.tabPanel.getActiveTab(),
-                        isFirstTab = me.tabPanel.items.findIndex('id', activeTab.id) === 0,
-                        count = s.getCount();
+                    var count = s.getCount();
 
-                    if (count > 0 && isFirstTab) {
+                    if (count > 0) {
                         me.collectionHistoryTitle.show();
                         me.collectionLogView.show();
                         me.collectionLogPaging.show();
@@ -394,7 +391,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         );
 
         this.collectionLogView = Ext.create('Ext.view.View', {
-            hidden: true,
             store: this.collectionLogStore,
             tpl: this.collectionLogTpl,
             itemSelector: 'div.active',
@@ -406,7 +402,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             margin: '12 2 0 2',
             store:'collectionLogStore',
             displayInfo:true,
-            hidden: true,
             displayMsg:'Collection history records {0} - {1} of {2}',
             emptyMsg:'No collection history records to display'
         });
@@ -464,8 +459,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             layout: 'hbox',
                             margin: '5 0 0 0',
                             padding: '0 0 8 0',
-                            //cls: 'bordered-bottom',
-                            items: [ 
+                            items: [
                                 this.keywordsE,
                                 {
                                     border: false,
@@ -713,7 +707,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         {
                             xtype: 'container',
                             defaultType: 'label',
-                            cls: 'bordered-bottom',
                             layout: 'hbox',
                             items: [
                                 {
@@ -772,6 +765,23 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     ]
                 },
                 {
+                    title: 'History',
+                    items: [
+                        {
+                            xtype: 'container',
+                            layout: {
+                                type: 'vbox',
+                                align: 'stretch'
+                            },
+                            items: [
+                                this.collectionHistoryTitle,
+                                this.collectionLogView,
+                                this.collectionLogPaging
+                            ]
+                        }
+                    ]
+                },
+                {
                     title: 'Edit',
                     padding: '10 0 0 0',
                     defaults: {
@@ -813,24 +823,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         }
                     ]
                 }
-            ],
-            listeners: {
-                'tabchange': function (tabPanel, tab) {
-                    var tabIndex = tabPanel.items.findIndex('id', tab.id);
-                    if (tabIndex == 0){
-                        var collectionHistoryCount = me.collectionLogStore.count();
-                        if (collectionHistoryCount > 0) {
-                            me.collectionHistoryTitle.show();
-                            me.collectionLogView.show();
-                            me.collectionLogPaging.show();
-                        }
-                    } else {
-                        me.collectionHistoryTitle.hide();
-                        me.collectionLogView.hide();
-                        me.collectionLogPaging.hide();
-                    }
-                }
-            }
+            ]
         });
 
         this.items = [
@@ -845,10 +838,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     this.refreshButton
                 ]
             },
-            this.tabPanel,
-            this.collectionHistoryTitle,
-            this.collectionLogView,
-            this.collectionLogPaging
+            this.tabPanel
         ];
 
         this.callParent(arguments);

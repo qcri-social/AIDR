@@ -24,4 +24,6 @@ public interface CollectionService {
 	public AidrCollection stopAidrFetcher(AidrCollection collection) throws Exception;
     public AidrCollection startFetcher(FetcherRequestDTO fetcherRequest, AidrCollection aidrCollection) throws Exception;
     public FetcherRequestDTO prepareFetcherRequest(AidrCollection dbCollection);
+    public AidrCollection statusByCollection(AidrCollection collection) throws Exception;
+    public List<AidrCollection> getRunningCollections() throws Exception;
 }

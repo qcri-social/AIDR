@@ -5,42 +5,36 @@
  * closes the connection.
  * 
  * @author Koushik Sinha
- * Last modified: 24/12/2013
+ * Last modified: 02/01/2014
  *
- * Dependencies:  jedis-2.1.0, gson-2.2.4, commons-pool-1.6, slf4j-1.7.5
+ * Dependencies:  servlets 3+, jedis-2.2.1, gson-2.2.4, commons-pool-1.6, slf4j-1.7.5
  * 	
- * Instructions for running the code:
- * 		To test in a browser, use one of the first two strings mentioned below. For testing with the
- * 		the aidr_predict.clex_20131201 channel on the REDIS DB on scd1 server, the servlet should be 
- * 		configured to tunnel using the ssh tunneling command mentioned below. You may need to increase 
- * 		the THREAD_TIMEOUT duration for large values of 'count' parameter. 
- * 		Sometimes, the REDIS_CALLBACK_TIMEOUT may also need adjustment, in case the rate of publication 
- * 		from the REDIS DB is very slow. 
+ * Hints for testing:
+ * 		1. You can increase the test duration by adjusting the SUBSCRIPTION_MAX_DURATION. 
+ *  	2. Adjust REDIS_CALLBACK_TIMEOUT, in case the rate of publication is very slow. 
+ * 		 
  *
- * Environment setup: 
- * 		1. Deploy as WAR file in glassfish 3.1.2
- * 		2. Setup ssh tunneling using the command: ssh tunneling:: ssh -f -L 1978:localhost:6379 scd1.qcri.org -N
+ * Deployment steps: 
+ * 		1. [Required] Set redisHost and redisPort in code, as per your REDIS setup/location
+ * 		2. [Optional] Tune time-out and other parameters, if necessary
+ * 		3. [Required]Compile and package as WAR file
+ * 		4. [Required] Deploy as WAR file in glassfish 3.1.2
+ * 		5. [Optional] Setup ssh tunneling (e.g. command: ssh tunneling:: ssh -f -L 1978:localhost:6379 scd1.qcri.org -N)
+ * 		6. Issue fetch or stream request from client
  *
  *
  * REST invocations: 
- * 	1. http://localhost:8080/AsyncRedisGetData/getData?crisisCode=aidr_predict.clex_20131201&callback=print&count=50
- *  2. http://localhost:8080/AsyncRedisGetData/getData?crisisCode=aidr_predict.clex_20131201&count=xxx
- *  3. http://localhost:8080/AsyncRedisGetData/getData?crisisCode=test_kou_channel&callback=print&count=20
- *  4. http://localhost:8080/AsyncRedisGetData/getData?crisisCode=test_kou_channel&count=xxx
+ * 	1. http://localhost:8080/aidr-output/fetch?crisisCode=aidr_predict.clex_20131201&count=50
+ *  2. http://localhost:8080/aidr-output/fetch?crisisCode=aidr_predict.clex_20131201&callback=func
+ *  3. http://localhost:8080/aidr-output/fetch?crisisCode=aidr_predict.clex_20131201&callback=func&count=50
+ * 
  *  
  *  Parameter explanations:
- *  	1. crisisCode: the REDIS channel to which to subscribe
- *  	2. callback: name of the callback function for JSONP data
- *  	3. count: number of messages to send back to client (integer value)
+ *  	1. crisisCode [mandatory]: the REDIS channel to which to subscribe
+ *  	2. callback [optional]: name of the callback function for JSONP data
+ *  	3. count [optional]: the specified number of messages that have been buffered by the service. 
  */
 
-/*
- * TODO: 
- * 		1. Remove debugging messages once testing is completed satisfactorily.
- * 		2. Figure out why using Jedis pool is creating dangling subscription 
- * 		   in REDIS that can only be stopped by rebooting the server.
- * 		3. Use annotations more extensively to improve coding style/readability.
- */
 package qa.qcri.aidr.output.fetch;
 
 import java.io.IOException;
@@ -65,7 +59,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.BasicConfigurator;
+
+//import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,11 +71,14 @@ import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 @SuppressWarnings("serial")
 @WebServlet(value = "/fetch", asyncSupported = true)
 public class RedisHTTPGetData extends HttpServlet {
 
+	// Message count constants
+	private static final int MAX_MESSAGES_COUNT = 1000;
 	// Time-out constants
 	private static final int REDIS_CALLBACK_TIMEOUT = 2 * 60 * 1000;		// in ms
 	private static final int THREAD_TIMEOUT = 6 * 60 * 60 * 1000;			// in ms
@@ -89,10 +87,10 @@ public class RedisHTTPGetData extends HttpServlet {
 	// Currently using ssh tunneling:: ssh -f -L 1978:localhost:6379 scd1.qcri.org -N
 	// 2 channels being used for testing:
 	// 		a) aidr_predict.clex_20131201
-	//		b) test_kou_channel
+	
 	private String redisChannel = "aidr_predict.clex_20131201";		// channel to subscribe to		
 	private static String redisHost = "localhost";					// Current assumption: REDIS running on same m/c
-	private static int redisPort = 6379;					
+	private static int redisPort = 1978;					
 	public JedisPoolConfig poolConfig;
 	public JedisPool pool;
 	public Jedis subscriberJedis = null;
@@ -111,10 +109,10 @@ public class RedisHTTPGetData extends HttpServlet {
 
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-		
+
 		// For now: set up a simple configuration that logs on the console
 		//PropertyConfigurator.configure("log4j.properties");		// where to place the properties file?
-		BasicConfigurator.configure();
+		//BasicConfigurator.configure();
 		logger.info("[init] In servlet init...");
 
 		executorServicePool = Executors.newFixedThreadPool(100);		// max 100 threads
@@ -160,7 +158,7 @@ public class RedisHTTPGetData extends HttpServlet {
 		logger.info("[initRedisSubscription] poolConfig = " + poolConfig);
 	}
 
-	// Not used currently, fur future, if required
+	// Not used currently, for future, if required
 	private void unSubscribeChannel(final RedisSubscriber sub) {
 		System.out.println(sub + "@[unSubscribeChannel] subscriberCount = " + subscriberCount + ", Subscription count = " + sub.getSubscribedChannels());
 		System.out.println("[unSubscribeChannel] aidrSubscriber = " + sub);
@@ -173,8 +171,9 @@ public class RedisHTTPGetData extends HttpServlet {
 	}
 
 	private void stopSubscription(final RedisSubscriber sub, final Jedis jedis) {
-		System.out.println(sub + "@[stopSubscription] subscriberCount = " + subscriberCount + ", Subscription count = " + sub.getSubscribedChannels());
 		System.out.println("[stopSubscription] aidrSubscriber = " + sub + ", jedis = " + jedis);
+		System.out.println(sub + "@[stopSubscription] subscriberCount = " + subscriberCount + ", Subscription count = " + sub.getSubscribedChannels());
+
 		if (sub != null && sub.getSubscribedChannels() > 0) {
 			sub.unsubscribe();				// aidrSubscriber.unsubscribe(redisChannel);
 			--RedisHTTPGetData.subscriberCount;
@@ -261,7 +260,9 @@ public class RedisHTTPGetData extends HttpServlet {
 
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
-
+		if (request.getParameter("port") != null) {
+			redisPort = Integer.parseInt(request.getParameter("port"));
+		}
 
 		if (request.getParameter("crisisCode") != null) {
 			// TODO: Handle client refresh of webpage in same session
@@ -385,11 +386,14 @@ public class RedisHTTPGetData extends HttpServlet {
 			logger.info("[RedisSubscriber] Step 2: determine message count to be delivered");
 			HttpServletRequest request = (HttpServletRequest) asyncContext.getRequest();
 			if (request.getParameter("count") != null) {
-				messageCount = Integer.parseInt(request.getParameter("count"));
+				int msgCount = Integer.parseInt(request.getParameter("count"));
+				if (msgCount > 0) {
+					messageCount = Math.min(msgCount, MAX_MESSAGES_COUNT);
+				}
 			}
 			logger.info(this + "@[RedisSubscriber] Parameters received: crisisCode:" + this.channel
-								+ ", callback = " + this.callbackName 
-								+ ", count = " + this.messageCount);
+					+ ", callback = " + this.callbackName 
+					+ ", count = " + this.messageCount);
 		}
 
 		@Override
@@ -397,7 +401,6 @@ public class RedisHTTPGetData extends HttpServlet {
 			// onMessage() asynchronously receives messages from the JedisPubSub channel 
 			// Note: no explicit synchronization required for immutable objects
 			// reset for every triggered event of receiving a new message
-			// messageObjectResponse = null;
 			// Assign the messageObject response
 			if (callbackName != null) {
 				messageObjectResponse = callbackName + "(" + message + ")"; // with specified callback - JSONP
@@ -416,7 +419,9 @@ public class RedisHTTPGetData extends HttpServlet {
 		}
 
 		@Override
-		public void onPMessage(String pattern, String channel, String message) {}
+		public void onPMessage(String pattern, String channel, String message) {
+
+		}
 
 		@Override
 		public void onPSubscribe(String pattern, int subscribedChannels) {}
@@ -449,8 +454,7 @@ public class RedisHTTPGetData extends HttpServlet {
 			// Time-out related local variables
 			long startTime = new Date().getTime();			// start time of the thread execution
 			long currentTime = new Date().getTime(); 
-			int count = 0;									// number of messages sent so far
-			
+
 			HttpServletResponse response = (HttpServletResponse) asyncContext.getResponse();
 			response.setContentType("application/json");
 			PrintWriter responseWriter = null;
@@ -462,26 +466,33 @@ public class RedisHTTPGetData extends HttpServlet {
 				e.printStackTrace();
 				setRunFlag(false);
 			}
-			
+
 			logger.info("[run] Started async thread...");
 			while (getRunFlag() && !isThreadTimeout(startTime)) {
 				// Here we poll a non blocking resource for updates
 				//logger.info("[run] messageList.isEmpty = " + messageList.isEmpty());
-				if (!messageList.isEmpty()) { 
+				if (!messageList.isEmpty() && messageList.size() >= messageCount) { 
 					// Messages received, send these to the waiting client
 					logger.info(this + "@[run] Received message list from REDIS, count = " + messageList.size());
 					if (!error && !timeout) {
 						// Iterate over messageList and send each message individually
 						// Send updates response as JSON
+						int count = 0;									// number of messages sent so far
 						synchronized(messageList) {
 							Iterator<String> i = messageList.iterator(); // Must be in synchronized block
 							while (i.hasNext() && count < messageCount) {
 								String msg = i.next();
-								final String jsonData = new Gson().toJson(msg != null ? msg : new String("{}"));
+								Gson jsonObject = new GsonBuilder().serializeNulls()		//.disableHtmlEscaping()
+										.serializeSpecialFloatingPointValues().setPrettyPrinting()
+										.create();
+								final String jsonData = jsonObject.toJson(msg != null ? msg : new String("{}"));
 								logger.info("Sending JSON data: " + jsonData);
 								response.setContentLength(jsonData.length());
+
 								responseWriter.println(jsonData);
 								responseWriter.flush();
+
+								jsonObject = null;
 								msg = null;
 								++count;
 							}							
@@ -489,6 +500,7 @@ public class RedisHTTPGetData extends HttpServlet {
 							messageList.clear();
 						}	// end synchronized
 						if (count == messageCount) {
+							logger.info("run] Received all messages, exiting...magic number reached!!!");
 							responseWriter.close();
 							setRunFlag(false);								// done - exit async thread
 						}
@@ -577,5 +589,3 @@ public class RedisHTTPGetData extends HttpServlet {
 		public void onComplete(AsyncEvent event) throws IOException {}
 	}
 }
-
-
