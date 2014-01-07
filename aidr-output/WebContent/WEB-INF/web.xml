@@ -18,6 +18,11 @@
          <servlet-name>AIDROutputFetch</servlet-name>
          <servlet-class>qa.qcri.aidr.output.fetch.RedisHTTPGetData</servlet-class>
    </servlet>
+   <servlet>
+    <servlet-name>AIDROutputGetLast</servlet-name>
+    <servlet-class>qa.qcri.aidr.output.getdata.GetBufferedAIDRData</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
    
    <servlet-mapping>
            <servlet-name>AIDROutputStream</servlet-name>
@@ -27,11 +32,11 @@
             <servlet-name>AIDROutputFetch</servlet-name>
             <url-pattern>/fetch</url-pattern>
     </servlet-mapping>
-   <session-config>
-           <session-timeout>
-               30
-           </session-timeout>
-    </session-config>
+   <servlet-mapping>
+    <servlet-name>AIDROutputGetLast</servlet-name>
+    <url-pattern>/getLast</url-pattern>
+  </servlet-mapping>
+  
    <!-- Note: All <servlet> elements MUST be grouped together and
          placed IN FRONT of the <servlet-mapping> elements -->
  
