@@ -20,6 +20,7 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 
 
 
+
 //import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +62,8 @@ public class ChannelBufferManager {
 	// Constructor
 	public ChannelBufferManager(final String channelRegEx) {
 		//BasicConfigurator.configure();			// setup logging
+		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
+		
 		logger.info("[ChannelBufferManager] Initializing channel buffer manager.");
 		bufferSize = -1;
 		executorServicePool = Executors.newFixedThreadPool(200);		// max number of threads

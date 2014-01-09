@@ -23,6 +23,8 @@ public class ChannelBuffer {
 	
 	public ChannelBuffer(final String name) {
 		//BasicConfigurator.configure();			// setup log4j logging
+		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
+				
 		this.channelName = name;
 	}
 	
