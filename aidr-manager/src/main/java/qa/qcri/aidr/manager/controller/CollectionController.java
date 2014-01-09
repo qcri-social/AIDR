@@ -86,12 +86,12 @@ public class CollectionController extends BaseController{
             if (CollectionStatus.RUNNING_WARNING.equals(status) || CollectionStatus.RUNNING.equals(status)) {
                 AidrCollection dbCollection = collectionService.findById(collectionId);
 //              stop collection
-                collectionService.stopAidrFetcher(dbCollection);
+                AidrCollection collectionAfterStop = collectionService.stopAidrFetcher(dbCollection);
 
 //              save current state of the collection to collectionLog
                 AidrCollectionLog collectionLog = new AidrCollectionLog();
                 collectionLog.setCount(dbCollection.getCount());
-                collectionLog.setEndDate(dbCollection.getEndDate());
+                collectionLog.setEndDate(collectionAfterStop.getEndDate());
                 collectionLog.setFollow(dbCollection.getFollow());
                 collectionLog.setGeo(dbCollection.getGeo());
                 collectionLog.setLangFilters(dbCollection.getLangFilters());
@@ -102,7 +102,7 @@ public class CollectionController extends BaseController{
 
 //              set some fields from old collection and update collection
                 collection.setStartDate(dbCollection.getStartDate());
-                collection.setEndDate(dbCollection.getEndDate());
+                collection.setEndDate(collectionAfterStop.getEndDate());
                 collection.setUser(dbCollection.getUser());
                 collection.setCreatedDate(dbCollection.getCreatedDate());
                 collectionService.update(collection);
