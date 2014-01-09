@@ -52,8 +52,11 @@ package qa.qcri.aidr.output.getdata;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -62,12 +65,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 //import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -96,8 +96,9 @@ public class GetBufferedAIDRData extends HttpServlet {
 		// For now: set up a simple configuration that logs on the console
 		//PropertyConfigurator.configure("log4j.properties");		// where to place the properties file?
 		//BasicConfigurator.configure();
+		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
 		logger.info("[init] In servlet init...");
-		
+
 		// Most important action - setup channel buffering thread
 		this.cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
 		logger.info("[init] Created cbManager: " + cbManager);
@@ -120,30 +121,13 @@ public class GetBufferedAIDRData extends HttpServlet {
 			error = true;
 		}
 		String channelCode = request.getParameter("crisisCode");
-		if (channelCode.indexOf("*") > 0) {
+		if (channelCode.contains("*") || channelCode.contains("?")) {
 			error = true;			// Error - regular expression based retrieval not supported
 		}
 		if (error)
 		{
-			// No crisisCode provided...
-			PrintWriter out = response.getWriter();
-			try {
-				response.setCharacterEncoding("UTF-8");
-				response.setContentType("text/html");
-
-				// Allocate a output writer to write the response message into the network socket
-				out.println("<!DOCTYPE html>");
-				out.println("<html>");
-				out.println("<head><title>Redis HTTP Get Data App</title></head>");
-				out.println("<body>");
-				out.println("<h1>Invalid/No CrisisCode Provided! </h1>");
-				out.println("<h>Can not initiate REDIS channel subscription!</h>");
-				out.println("</body></html>");
-			} finally {
-				out.flush();
-				out.close();  // Always close the output writer
-			}
-		} 
+			showErrorMessage(response);
+		}
 		else {
 			// Form fully qualified channelName and get other parameter values, if any
 			String channelName = null;
@@ -151,7 +135,7 @@ public class GetBufferedAIDRData extends HttpServlet {
 				channelName = channelCode;		// fully qualified channel name provided
 			}
 			else {
-				channelName = CHANNEL_PREFIX_STRING.concat(channelCode);
+				channelName = CHANNEL_PREFIX_STRING.concat(channelCode);	// fully qualified channel name - same as REDIS channel
 			}
 			String callbackName = request.getParameter("callback");
 			if (request.getParameter("count") != null) {
@@ -160,41 +144,80 @@ public class GetBufferedAIDRData extends HttpServlet {
 					messageCount = Math.min(msgCount, MAX_MESSAGES_COUNT);
 				}
 			}
-			// Finally, get the last messageCount messages for channel=channelCode
-			logger.info("[doGet] cbManager: " + this.cbManager + "::" + cbManager);
+			// Get the last messageCount messages for channel=channelCode
 			List<String> bufferedMessages = new ArrayList<String>();
 			bufferedMessages.addAll(this.cbManager.getLastMessages(channelName, messageCount) != null 
-									? this.cbManager.getLastMessages(channelName, messageCount) : new ArrayList<String>());
+					? this.cbManager.getLastMessages(channelName, messageCount) : new ArrayList<String>());
 
-			// Now send the retrieved list to client and close connection
+			// Now, build the jsonp object to be sent - data in reverse chronological order.
+			// Update from previous version: the entire collection of json objects are wrapped 
+			// with a single callback function.
 			int count = 0;
-			List<String>jsonDataList = new ArrayList<String>();
+			StringBuilder jsonDataList = new StringBuilder();		
+			if (callbackName != null) {
+				jsonDataList.append(callbackName).append("([");
+			}
+			else {
+				jsonDataList.append("[");
+			}
+				
 			ListIterator<String> itr = bufferedMessages.listIterator(bufferedMessages.size());  // Must be in synchronized block
 			while (itr.hasPrevious() && count < messageCount) {
 				String msg = itr.previous();
-				StringBuilder jsonpMsg = null;
-				if (callbackName != null) { 
-					jsonpMsg = new StringBuilder(callbackName);
-					jsonpMsg.append("(").append(msg).append(")");
-				} 
-				else {
-					jsonpMsg = new StringBuilder(msg);
-				}
-				Gson jsonObject = new GsonBuilder().serializeNulls()		//.disableHtmlEscaping()
-						.serializeSpecialFloatingPointValues().setPrettyPrinting()
-						.create();
-				final String jsonData = jsonObject.toJson(msg != null ? jsonpMsg.toString() : new String("{}"));
-				jsonDataList.add(jsonData);
-				logger.info("[doGet] Will send JSON data: " + jsonData);
-				jsonObject = null;
+				JsonOutputBuilder jsonOutput = new JsonOutputBuilder();
+				String jsonData = (msg != null) ? new String(jsonOutput.buildJsonString(msg)) : new String("{}");
+				jsonDataList.append(jsonData).append(",");
+				
+				logger.debug("[doGet] Will send JSON data: " + jsonData);
+				jsonOutput = null;
+				jsonData = null;
 				msg = null;
 				++count;
 			}
-			if (count == 0 || jsonDataList.isEmpty()) {
-				// both conditions should be satisfied ONLY simultaneously
-				jsonDataList.add(callbackName != null ? callbackName.concat(new String("({})")) : new String("{}"));
+			jsonDataList.deleteCharAt(jsonDataList.lastIndexOf(","));		// delete the extra "," at the end of the json string
+			if (callbackName != null) { 
+				jsonDataList.append("])");
+			} else {
+				jsonDataList.append("]");
 			}
-			logger.info("[doGet] Sending actual message count = " + count);
+			if (count == 0 || jsonDataList.length() == 0) {
+				// both conditions should be satisfied ONLY simultaneously: send empty jsonp object
+				jsonDataList.append(callbackName != null ? callbackName.concat(new String("({})")) : new String("{}"));
+			}
+			
+			/*
+			 * // The following commented code wraps each json object with callback function
+			 * int count = 0;
+			 * List<String>jsonDataList = new ArrayList<String>();
+			 * ListIterator<String> itr = bufferedMessages.listIterator(bufferedMessages.size());  // Must be in synchronized block
+			 *  while (itr.hasPrevious() && count < messageCount) {
+			 *  	String msg = itr.previous();
+			 *  	StringBuilder jsonpMsg = null;
+			 *  	if (callbackName != null) { 
+			 *  		jsonpMsg = new StringBuilder(callbackName);
+			 *  		jsonpMsg.append("(").append(msg).append(")");
+			 *  	} 
+			 *  	else {
+			 *  		jsonpMsg = new StringBuilder(msg);
+			 *  	}
+			 *  	Gson jsonObject = new GsonBuilder().serializeNulls()		//.disableHtmlEscaping()
+			 *  			.serializeSpecialFloatingPointValues().setPrettyPrinting()
+			 *  			.create();
+			 *  	final String jsonData = jsonObject.toJson(msg != null ? jsonpMsg.toString() : new String("{}"));
+			 *  	jsonDataList.add(jsonData);
+			 *  	logger.debug("[doGet] Will send JSON data: " + jsonData);
+			 *  	jsonObject = null;
+			 *  	msg = null;
+			 *  	++count;
+			 *  }
+			 *  if (count == 0 || jsonDataList.isEmpty()) {
+			 *  	// both conditions should be satisfied ONLY simultaneously
+			 * 	 	jsonDataList.add(callbackName != null ? callbackName.concat(new String("({})")) : new String("{}"));
+			 *	}
+			 */
+			
+			// Now send the retrieved list to client and close connection
+			logger.debug("[doGet] Sending actual message count = " + count);
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
 			PrintWriter responseWriter = null;
@@ -206,21 +229,56 @@ public class GetBufferedAIDRData extends HttpServlet {
 				e.printStackTrace();
 			}
 
-			responseWriter.println(jsonDataList);
+			responseWriter.println(jsonDataList.toString());
 			responseWriter.flush();
 			logger.info("[doGet] Sent jsonP data set");
 			// check if the write succeeded
 			if (responseWriter.checkError()) {
-				logger.info("[doGet] Client side error - possible client disconnect...");
+				logger.error("[doGet] Client side error - possible client disconnect...");
 			}							
 			// Now reset the messageList buffer and close connection
 			bufferedMessages.clear();
-			jsonDataList.clear();
+			//jsonDataList.clear;			// uncomment if using wrapping per json object
+			
+			bufferedMessages = null;
 			jsonDataList = null;
 			responseWriter.close();
 		} 
 		logger.info("[doGet] Reached end-of-function...");
 	}
+
+	public void showErrorMessage(HttpServletResponse response) throws IOException {
+		// No crisisCode provided...
+		PrintWriter out = response.getWriter();
+		try {
+			response.setCharacterEncoding("UTF-8");
+			response.setContentType("text/html");
+
+			// Allocate a output writer to write the response message into the network socket
+			out.println("<!DOCTYPE html>");
+			out.println("<html>");
+			out.println("<head><title>REDIS PUBSUB Channel Data Output Service</title></head>");
+			out.println("<body>");
+			out.println("<h1>Invalid/No CrisisCode Provided! </h1>");
+			out.println("<h2>Can not initiate REDIS channel subscription!</h2>");
+			out.println("<p><big>Available active channels: </big></p>");
+			out.println("<ul>");
+			Set<String> channelList = this.cbManager.getActiveChannelsList(); 
+			if (channelList != null) {
+				Iterator<String> itr = channelList.iterator();
+				while (itr.hasNext()) {
+					out.println("<li>" + itr.next().substring(CHANNEL_PREFIX_STRING.length()) + "</li>");
+				}
+			}
+			out.println("</body></html>");
+			if (channelList != null) channelList.clear();
+			channelList = null;
+		} finally {
+			out.flush();
+			out.close();  // Always close the output writer
+		}
+	} 
+
 
 	// cleanup when servlet is destroyed (e.g., server shutdown)
 	public void destroy() {

@@ -42,14 +42,14 @@ public class ChannelBuffer {
 	public void addMessage(String msg) {
 		this.messageBuffer.add(msg);
 		this.lastAddTime = new Date().getTime();
-		logger.info("[addMessage] Added message to messageBuffer, buffer size = " + this.messageBuffer.size());
+		logger.debug("[addMessage] Added message to messageBuffer, buffer size = " + this.messageBuffer.size());
 	}
 
 	@SuppressWarnings("unchecked")
 	public void addAllMessages(ArrayList<String> msgList) {
 		this.messageBuffer.addAll(msgList);
 		this.lastAddTime = new Date().getTime();
-		logger.info("[addAllMessages] Added message to messageBuffer, buffer size = " + this.messageBuffer.size());
+		logger.debug("[addAllMessages] Added message to messageBuffer, buffer size = " + this.messageBuffer.size());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -62,7 +62,7 @@ public class ChannelBuffer {
 				msgList.add(itr.next());
 				++count;
 			}
-			logger.info("[getMessages] Returned messages count = " + count);
+			logger.debug("[getMessages] Returned messages count = " + count);
 		}
 		return msgList;
 	}

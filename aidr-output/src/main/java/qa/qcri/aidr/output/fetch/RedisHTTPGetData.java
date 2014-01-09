@@ -111,7 +111,7 @@ public class RedisHTTPGetData extends HttpServlet {
 
 	private String redisChannel = "aidr_predict.clex_20131201";		// channel to subscribe to		
 	private static String redisHost = "localhost";					// Current assumption: REDIS running on same m/c
-	private static int redisPort = 1978;					
+	private static int redisPort = 6379;					
 	public static JedisPoolConfig poolConfig;
 	public static JedisPool pool;
 	public Jedis subscriberJedis = null;
@@ -131,6 +131,7 @@ public class RedisHTTPGetData extends HttpServlet {
 		// For now: set up a simple configuration that logs on the console
 		//PropertyConfigurator.configure("log4j.properties");		// where to place the properties file?
 		//BasicConfigurator.configure();							// initialize log4j logging
+		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");		// set logging level for slf4j
 		logger.info("[init] In servlet init...");
 		initJedisPool();
 		executorServicePool = Executors.newFixedThreadPool(200);		// max number of threads
@@ -150,15 +151,15 @@ public class RedisHTTPGetData extends HttpServlet {
 			poolConfig.timeBetweenEvictionRunsMillis = 60000;
 			poolConfig.maxWait = 3000;
 			poolConfig.whenExhaustedAction = org.apache.commons.pool.impl.GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW;
-			logger.info("[connectToRedis] New Jedis poolConfig: " + poolConfig);
+			logger.debug("[connectToRedis] New Jedis poolConfig: " + poolConfig);
 		} else {
-			logger.info("[connectToRedis] Reusing existing Jedis poolConfig: " + poolConfig);
+			logger.debug("[connectToRedis] Reusing existing Jedis poolConfig: " + poolConfig);
 		}
 		if (null == pool) {
 			pool = new JedisPool(poolConfig, redisHost, redisPort, 10000);
-			logger.info("[connectToRedis] New Jedis pool: " + pool);
+			logger.debug("[connectToRedis] New Jedis pool: " + pool);
 		} else {
-			logger.info("[connectToRedis] Reusing existing Jedis pool: " + pool);
+			logger.debug("[connectToRedis] Reusing existing Jedis pool: " + pool);
 		}
 	}
 
@@ -171,8 +172,8 @@ public class RedisHTTPGetData extends HttpServlet {
 	}
 
 	private void stopSubscription(final RedisSubscriber sub, final Jedis jedis) {
-		System.out.println("[stopSubscription] aidrSubscriber = " + sub + ", jedis = " + jedis + "patternFlag = " + this.patternSubscriptionFlag);
-		System.out.println(sub + "@[stopSubscription] Subscription count = " + sub.getSubscribedChannels());
+		logger.debug("[stopSubscription] aidrSubscriber = " + sub + ", jedis = " + jedis + "patternFlag = " + this.patternSubscriptionFlag);
+		logger.debug(sub + "@[stopSubscription] Subscription count = " + sub.getSubscribedChannels());
 
 		if (sub != null && sub.getSubscribedChannels() > 0) {
 			if (!this.patternSubscriptionFlag) { 
@@ -181,7 +182,7 @@ public class RedisHTTPGetData extends HttpServlet {
 			else {
 				sub.punsubscribe();
 			}
-			System.out.println("[stopSubscription] unsubscribed " + sub + ", Subscription count = " + sub.getSubscribedChannels());
+			logger.info("[stopSubscription] unsubscribed " + sub + ", Subscription count = " + sub.getSubscribedChannels());
 		}
 
 		try {
@@ -194,48 +195,43 @@ public class RedisHTTPGetData extends HttpServlet {
 		logger.info(sub + "@[stopSubscription] Subscription ended for Channel=" + redisChannel);
 	}
 
-	private boolean isChannelPattern(String channelName) {
-		if (channelName.indexOf("*") > 0) {
-			this.patternSubscriptionFlag = true;
+	private boolean isPattern(String channelName) {
+		// We consider only the wildcards * and ?
+		if (channelName.contains("*") || channelName.contains("?")) {
+			patternSubscriptionFlag = true;
+			return true;
 		}
 		else {
-			this.patternSubscriptionFlag = false;
+			patternSubscriptionFlag = false;
+			return false;
 		}
-		return this.patternSubscriptionFlag;
 	}
-
+	
 	private void subscribeToChannel(final RedisSubscriber sub, final Jedis jedis, String channel) throws Exception {
-		if (isChannelPattern(channel)) {
-			this.patternSubscriptionFlag = true;
-		}
-		else {
-			this.patternSubscriptionFlag = false;
-		}
 		redisChannel = channel;
-		System.out.println("[subscribeToChannel] aidrSubscriber = " + sub + ", jedis = " + jedis + "patternFlag = " + this.patternSubscriptionFlag);
 		executorServicePool.submit(new Runnable() {
 			public void run() {
 				try {
 					if (!patternSubscriptionFlag) { 
-						logger.info(sub + "@[subscribeToChannel] Attempting subscription for " + redisHost + ":" + redisPort + "/" + redisChannel);
+						logger.debug(sub + "@[subscribeToChannel] Attempting subscription for " + redisHost + ":" + redisPort + "/" + redisChannel);
 						jedis.subscribe(sub, redisChannel);
 						logger.info(sub + "@[subscribeToChannel] Out of subscription for Channel = " + redisChannel);
 					} 
 					else {
-						logger.info(sub + "@[subscribeToChannel] Attempting pSubscription for " + redisHost + ":" + redisPort + "/" + redisChannel);
+						logger.debug(sub + "@[subscribeToChannel] Attempting pSubscription for " + redisHost + ":" + redisPort + "/" + redisChannel);
 						jedis.psubscribe(sub, redisChannel);
 						logger.info(sub + "@[subscribeToChannel] Out of pSubscription for Channel = " + redisChannel);
 					}
 				} catch (Exception e) {
-					logger.info(sub + "@[subscribeToChannel] AIDR Predict Channel Subscribing failed");
+					logger.error(sub + "@[subscribeToChannel] AIDR Predict Channel Subscribing failed");
 					stopSubscription(sub, jedis);
 				} finally {
 					try {
-						logger.info(sub + "@[subscribeToChannel::finally] Attempting stopSubscription...");
+						logger.debug(sub + "@[subscribeToChannel::finally] Attempting stopSubscription...");
 						stopSubscription(sub, jedis);
 						logger.info(sub + "@[subscribeToChannel::finally] stopSubscription success!");
 					} catch (Exception e) {
-						System.out.println(sub + "@[subscribeToChannel::finally] Exception occurred attempting stopSubscription: " + e.toString());
+						logger.error(sub + "@[subscribeToChannel::finally] Exception occurred attempting stopSubscription: " + e.toString());
 						e.printStackTrace();
 						System.exit(1);
 					}
@@ -245,10 +241,13 @@ public class RedisHTTPGetData extends HttpServlet {
 	}
 
 	public String setFullyQualifiedChannelName(final String channelPrefixCode, final String channelCode) {
-		if (channelCode.startsWith(channelPrefixCode)) {
+		if (isPattern(channelCode)) {
+			patternSubscriptionFlag = true;
 			return channelCode;			// already fully qualified name
 		}
-		String channelName = channelPrefixCode + channelCode;
+		//Otherwise concatenate to form the fully qualified channel name
+		String channelName = channelPrefixCode.concat(channelCode);
+		patternSubscriptionFlag = false;
 		return channelName;
 	}
 
@@ -284,12 +283,11 @@ public class RedisHTTPGetData extends HttpServlet {
 				// if (!isSameSession(request)) {}
 				final AsyncContext asyncContext = request.startAsync(request, response);
 				aidrSubscriber = new RedisSubscriber(asyncContext, subscriberJedis, channel, callbackName);
-				System.out.println("[doGet] aidrSubscriber = " + aidrSubscriber);
 				try {
 					subscribeToChannel(aidrSubscriber, subscriberJedis, channel);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					System.out.println("[doGet] Fatal exception occurred attempting subscription: " + e.toString());
+					logger.error("[doGet] Fatal exception occurred attempting subscription: " + e.toString());
 					e.printStackTrace();
 					System.exit(1);
 				}
@@ -329,6 +327,7 @@ public class RedisHTTPGetData extends HttpServlet {
 				pool.shutdownNow(); // Cancel currently executing tasks
 				// Wait a while for tasks to respond to being cancelled
 				if (!pool.awaitTermination(1, TimeUnit.SECONDS))
+					logger.error("[shutdownAndAwaitTermination] Pool did not terminate");
 					System.err.println("[shutdownAndAwaitTermination] Pool did not terminate");
 			}
 		} catch (InterruptedException ie) {
@@ -342,13 +341,13 @@ public class RedisHTTPGetData extends HttpServlet {
 	// cleanup when servlet is destroyed (e.g., server shutdown)
 	public void destroy() {
 		try {
-			logger.info("[destroy] Attempting stopSubscription...");
+			logger.debug("[destroy] Attempting stopSubscription...");
 			stopSubscription(this.aidrSubscriber, this.subscriberJedis);
 			pool.destroy();
 			logger.info("[destroy] stopSubscription success!");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			System.out.println("[destroy] Exception occurred attempting stopSubscription: " + e.toString());
+			logger.error("[destroy] Exception occurred attempting stopSubscription: " + e.toString());
 			e.printStackTrace();
 		}
 		shutdownAndAwaitTermination(executorServicePool);
@@ -417,12 +416,12 @@ public class RedisHTTPGetData extends HttpServlet {
 			}
 			if (messageList.size() < messageCount) {
 				messageList.add(messageObjectResponse);
-				logger.info("[onMessage] Added new message to messageList, new count = " + messageList.size());
+				logger.debug("[onMessage] Added new message to messageList, new count = " + messageList.size());
 			}
 			lastAccessedTime = new Date().getTime();		// time when message last received from REDIS
 
 			// Also log message for debugging purpose
-			logger.info("[onMessage] Received Redis message: " + messageObjectResponse);
+			logger.debug("[onMessage] Received Redis message: " + messageObjectResponse);
 			channel = null;
 			message = null;
 			messageObjectResponse = null;
@@ -439,12 +438,12 @@ public class RedisHTTPGetData extends HttpServlet {
 			}
 			if (messageList.size() < messageCount) {
 				messageList.add(messageObjectResponse);
-				logger.info("[onPMessage] Added new message to messageList, new count = " + messageList.size());
+				logger.debug("[onPMessage] Added new message to messageList, new count = " + messageList.size());
 			}
 			lastAccessedTime = new Date().getTime();		// time when message last received from REDIS
 
 			// Also log message for debugging purpose
-			logger.info("[onPMessage] For pattern: " + pattern + "##channel = " + channel + ", Received Redis message: " + messageObjectResponse);
+			logger.debug("[onPMessage] For pattern: " + pattern + "##channel = " + channel + ", Received Redis message: " + messageObjectResponse);
 
 			// Clean-up memory - required?
 			pattern = null;
@@ -480,7 +479,7 @@ public class RedisHTTPGetData extends HttpServlet {
 		///////////////////////////////////
 		public boolean isThreadTimeout(long startTime) {
 			if ((THREAD_TIMEOUT > 0) && (new Date().getTime() - startTime) > THREAD_TIMEOUT) {
-				System.out.println("Exceeded Thread timeout = " + THREAD_TIMEOUT + "msec");
+				logger.warn("Exceeded Thread timeout = " + THREAD_TIMEOUT + "msec");
 				return true;
 			}
 			return false;
@@ -504,13 +503,12 @@ public class RedisHTTPGetData extends HttpServlet {
 				setRunFlag(false);
 			}
 
-			logger.info("[run] Started async thread...");
+			logger.debug("[run] Started async thread...");
 			while (getRunFlag() && !isThreadTimeout(startTime)) {
 				// Here we poll a non blocking resource for updates
 				//logger.info("[run] messageList.isEmpty = " + messageList.isEmpty());
 				if (!messageList.isEmpty() && messageList.size() >= messageCount) { 
 					// Messages received, send these to the waiting client
-					logger.info(this + "@[run] Received message list from REDIS, count = " + messageList.size());
 					if (!error && !timeout) {
 						// Iterate over messageList and send each message individually
 						// Send updates response as JSON
@@ -523,7 +521,7 @@ public class RedisHTTPGetData extends HttpServlet {
 										.serializeSpecialFloatingPointValues().setPrettyPrinting()
 										.create();
 								String jsonData = jsonObject.toJson(msg != null ? msg : new String("{}"));
-								logger.info("[run] Sending JSON data: " + jsonData);
+								logger.debug("[run] Sending JSON data: " + jsonData);
 
 								responseWriter.println(jsonData);
 								responseWriter.flush();
@@ -537,13 +535,13 @@ public class RedisHTTPGetData extends HttpServlet {
 							messageList.clear();
 						}	// end synchronized
 						if (count == messageCount) {
-							logger.info("run] Received all messages, exiting...magic number reached!!!");
+							logger.debug("run] Received all messages, exiting...magic number reached!!!");
 							responseWriter.close();
 							setRunFlag(false);								// done - exit async thread
 						}
 					}
 					else {
-						logger.info("Not sending response because task timed-out or error'ed. error={}, timeout={}, run={}", new Object[] { error, timeout, getRunFlag() });
+						logger.error("Not sending response because task timed-out or error'ed. error={}, timeout={}, run={}", new Object[] { error, timeout, getRunFlag() });
 						setRunFlag(false);
 					}
 				}
@@ -554,7 +552,7 @@ public class RedisHTTPGetData extends HttpServlet {
 					currentTime = new Date().getTime();
 					long elapsed = currentTime - lastAccessedTime;
 					if (elapsed > REDIS_CALLBACK_TIMEOUT) {
-						System.out.println("[run::Timeout] Elapsed time = " + elapsed + ", exceeded REDIS timeout = " + REDIS_CALLBACK_TIMEOUT + "sec");
+						logger.error("[run::Timeout] Elapsed time = " + elapsed + ", exceeded REDIS timeout = " + REDIS_CALLBACK_TIMEOUT + "sec");
 						setRunFlag(false);
 					}	
 					else {
@@ -568,7 +566,7 @@ public class RedisHTTPGetData extends HttpServlet {
 				}
 				// check if the client is up - indirectly through whether the write succeeded or failed
 				if (responseWriter.checkError()) {
-					logger.info(this + "@[run] Client side error - possible client disconnect..." + new Date());
+					logger.error(this + "@[run] Client side error - possible client disconnect..." + new Date());
 					setRunFlag(false);
 				}
 			}	// end-while
@@ -580,15 +578,15 @@ public class RedisHTTPGetData extends HttpServlet {
 					responseWriter.close();
 				}
 				try {
-					logger.info(this + "@[run] All done. Attempting stopSubscription... time = " + new Date());
+					logger.debug(this + "@[run] All done. Attempting stopSubscription... time = " + new Date());
 					stopSubscription(this, this.jedis);
 					logger.info(this + "@[run] All done. unSubscription success! ");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					System.out.println(this + "@[run] Attempting clean-up. Exception occurred attempting stopSubscription: " + e.toString());
+					logger.error(this + "@[run] Attempting clean-up. Exception occurred attempting stopSubscription: " + e.toString());
 					e.printStackTrace();
 				}
-				logger.info(this + "@[run] Attempting async complete...");
+				logger.debug(this + "@[run] Attempting async complete...");
 				// Double check just to ensure graceful exit - Not sure if required!
 				if (!error && !timeout) {
 					logger.info(this + "@[run] Async complete...");
