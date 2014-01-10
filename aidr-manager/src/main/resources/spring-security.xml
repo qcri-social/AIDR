@@ -17,12 +17,17 @@
         <logout logout-url="/logout" />
 	    <anonymous />
 	    <custom-filter position="FORM_LOGIN_FILTER" ref="springSocialAuthenticationFilter" />
+        <custom-filter ref="ajaxTimeoutRedirectFilter" after="EXCEPTION_TRANSLATION_FILTER"/>
 	  </http>
 
 	  <authentication-manager alias="authenticationManager"/>
-     
+
+    <beans:bean id="ajaxTimeoutRedirectFilter" class="qa.qcri.aidr.manager.security.authentication.AjaxTimeoutRedirectFilter">
+        <beans:property name="customSessionExpiredErrorCode" value="901"/>
+    </beans:bean>
+
     <beans:bean id="springSocialSecurityEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
  		<beans:property name="loginFormUrl" value="/index.jsp"/>
 	</beans:bean>
-	  
+
 </beans:beans>
