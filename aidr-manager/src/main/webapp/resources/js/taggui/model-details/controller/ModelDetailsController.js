@@ -127,9 +127,6 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
-            },
-            failure: function () {
-                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
             }
         });
     },
@@ -155,9 +152,6 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
-            },
-            failure: function () {
-                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
             }
         });
     }

@@ -168,9 +168,6 @@ Ext.define('TAGGUI.attribute-details.view.AttributeValuePanel', {
                     if (!response.success) {
                         AIDRFMFunctions.setAlert("Error", 'Error while updating label in Tagger.');
                     }
-                },
-                failure: function () {
-                    AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
                 }
             });
 

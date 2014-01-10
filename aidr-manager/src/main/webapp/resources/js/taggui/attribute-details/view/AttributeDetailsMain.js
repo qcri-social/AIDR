@@ -362,7 +362,6 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
                 }
             },
             failure: function () {
-                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
                 me.saveButton.enable();
             }
         });
@@ -402,7 +401,6 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
             },
             failure: function () {
                 me.removeClassifierButton.enable();
-                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
             }
         });
     },
@@ -462,7 +460,6 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
                 me.removeClassifierButton.enable();
             },
             failure: function () {
-                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
                 me.attributeCancel(null, me);
                 me.cancelButton.enable();
                 me.deleteButton.enable();

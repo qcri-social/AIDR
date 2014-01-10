@@ -106,7 +106,6 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
             },
             failure: function () {
                 mask.hide();
-                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
             }
         });
     },
@@ -201,7 +200,6 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
             },
             failure: function () {
                 mask.hide();
-                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
             }
         });
     }

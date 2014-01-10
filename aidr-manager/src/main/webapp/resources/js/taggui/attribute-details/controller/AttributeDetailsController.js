@@ -48,9 +48,6 @@
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
-            },
-            failure: function () {
-                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
             }
         });
     }

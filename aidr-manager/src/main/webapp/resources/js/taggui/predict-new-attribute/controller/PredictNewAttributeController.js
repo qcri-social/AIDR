@@ -71,9 +71,6 @@ Ext.define('TAGGUI.predict-new-attribute.controller.PredictNewAttributeControlle
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
-            },
-            failure: function () {
-                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
             }
         });
     },
@@ -104,9 +101,6 @@ Ext.define('TAGGUI.predict-new-attribute.controller.PredictNewAttributeControlle
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
-            },
-            failure: function () {
-                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
             }
         });
 
