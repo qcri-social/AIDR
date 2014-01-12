@@ -10,13 +10,14 @@
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/extjs/resources/css/ext-all.css"/>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/style.css"/>
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/extjs/ext-all.js"></script>
-    <script>
+    <script type="text/javascript">
         Ext.Loader.setConfig({
                 enabled: true,
                 disableCaching: false,
                 paths : {
                     AIDRFM: '${pageContext.request.contextPath}/resources/js/aidrfm',
-                    TAGGUI: '${pageContext.request.contextPath}/resources/js/taggui'
+                    TAGGUI: '${pageContext.request.contextPath}/resources/js/taggui',
+                    ADMIN: '${pageContext.request.contextPath}/resources/js/administration'
                 }
             }
         );
