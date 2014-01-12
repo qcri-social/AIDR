@@ -81,11 +81,6 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             margin: '5 0 5 0'
         });
 
-        this.horisontalLine = Ext.create('Ext.container.Container', {
-            width: '100%',
-            html: '<div class="horisontalLine"></div>'
-        });
-
         this.aucHint = Ext.create('Ext.container.Container', {
             html: '<span class="redInfo">*</span>If AUC is lower than 0.8-0.9, or AUC is 1.0, you urgently need more training examples.',
             margin: 0
@@ -170,7 +165,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
 
             '<tr><td colspan="2">',
-            '<div class="horisontalLine"></div>',
+            '<div class="horizontalLine"></div>',
             '</td></tr>',
 
             '</tpl>',
@@ -308,7 +303,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                 {
                     xtype: 'container',
                     width: '100%',
-                    html: '<div class="horisontalLine"></div>'
+                    html: '<div class="horizontalLine"></div>'
                 }
             ]
         });
@@ -467,7 +462,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                         {
                             xtype: 'container',
                             margin: '15 0 0 0',
-                            html: '<div class="horisontalLine"></div>'
+                            html: '<div class="horizontalLine"></div>'
                         },
                         {
                             xtype: 'container',
@@ -518,7 +513,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             {
                 xtype: 'container',
                 margin: '5 0 5 0',
-                html: '<div class="horisontalLine"></div>'
+                html: '<div class="horizontalLine"></div>'
             },
             {
                 xtype: 'container',

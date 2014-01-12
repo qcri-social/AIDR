@@ -38,11 +38,6 @@ Ext.define('TAGGUI.home.view.TaggerHomePanel', {
             flex: 1
         });
 
-        this.horisontalLine = Ext.create('Ext.container.Container', {
-            width: '100%',
-            html: '<div class="horisontalLine"></div>'
-        });
-
         this.crisesStore = Ext.create('Ext.data.JsonStore', {
             pageSize: 10,
             storeId: 'crisesStore',
@@ -129,7 +124,7 @@ Ext.define('TAGGUI.home.view.TaggerHomePanel', {
             {
                 xtype: 'container',
                 margin: '5 0 0 0',
-                html: '<div class="horisontalLine"></div>'
+                html: '<div class="horizontalLine"></div>'
             },
             {
                 xtype: 'container',
@@ -153,7 +148,7 @@ Ext.define('TAGGUI.home.view.TaggerHomePanel', {
             {
                 xtype: 'container',
                 width: '100%',
-                html: '<div class="horisontalLine"></div>'
+                html: '<div class="horizontalLine"></div>'
             },
             this.crisesView
         ];

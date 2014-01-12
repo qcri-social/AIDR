@@ -45,11 +45,6 @@ Ext.define('TAGGUI.predict-new-attribute.view.PredictNewAttributePanel', {
             flex: 1
         });
 
-        this.horisontalLine = Ext.create('Ext.container.Container', {
-            width: '100%',
-            html: '<div class="horisontalLine"></div>'
-        });
-
         this.standardAttributesStore = Ext.create('Ext.data.JsonStore', {
             pageSize: 100,
             storeId: 'standardAttributesStore',
@@ -197,7 +192,7 @@ Ext.define('TAGGUI.predict-new-attribute.view.PredictNewAttributePanel', {
             {
                 xtype: 'container',
                 margin: '5 0 0 0',
-                html: '<div class="horisontalLine"></div>'
+                html: '<div class="horizontalLine"></div>'
             },
             {
                 xtype: 'container',
@@ -213,7 +208,7 @@ Ext.define('TAGGUI.predict-new-attribute.view.PredictNewAttributePanel', {
             {
                 xtype: 'container',
                 width: '100%',
-                html: '<div class="horisontalLine"></div>'
+                html: '<div class="horizontalLine"></div>'
             },
             this.standardAttributesView,
             this.emptySpace,

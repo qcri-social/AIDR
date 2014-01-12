@@ -25,11 +25,6 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
             flex: 1
         });
 
-        this.horisontalLine = Ext.create('Ext.container.Container', {
-            width: '100%',
-            html: '<div class="horisontalLine"></div>'
-        });
-
         this.codeE = Ext.create('Ext.form.field.Text', {
             fieldLabel: 'Code',
             name: 'code',
@@ -272,7 +267,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
             {
                 xtype: 'container',
                 margin: '5 0 0 0',
-                html: '<div class="horisontalLine"></div>'
+                html: '<div class="horizontalLine"></div>'
             },
             {
                 xtype: 'container',

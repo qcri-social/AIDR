@@ -267,7 +267,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
             {
                 xtype: 'container',
                 width: '100%',
-                html: '<div class="horisontalLine"></div>'
+                html: '<div class="horizontalLine"></div>'
             },
             this.valuesLable,
             this.labelsBlock,

@@ -37,7 +37,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
             {
                 xtype: 'container',
                 margin: '5 0 5 0',
-                html: '<div class="horisontalLine"></div>'
+                html: '<div class="horizontalLine"></div>'
             },
             {
                 xtype: 'container',

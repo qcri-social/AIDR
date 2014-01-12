@@ -25,11 +25,6 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
             flex: 1
         });
 
-        this.horisontalLine = Ext.create('Ext.container.Container', {
-            width: '100%',
-            html: '<div class="horisontalLine"></div>'
-        });
-
         this.newCollectionButton = Ext.create('Ext.Button', {
             text: 'Create New Collection',
             margin: '27 0 0 15',
@@ -179,7 +174,11 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                     }
                 ]
             },
-            this.horisontalLine,
+            {
+                xtype: 'container',
+                width: '100%',
+                html: '<div class="horizontalLine"></div>'
+            },
             this.collectionView
         ];
 

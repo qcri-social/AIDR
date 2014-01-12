@@ -32,7 +32,7 @@ Ext.define('ADMIN.health.view.AdminHealthPanel', {
             {
                 xtype: 'container',
                 margin: '5 0 5 0',
-                html: '<div class="horisontalLine"></div>'
+                html: '<div class="horizontalLine"></div>'
             },
             this.pageTitle
         ];

@@ -35,7 +35,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsPanel', {
             {
                 xtype: 'container',
                 margin: '5 0 0 0',
-                html: '<div class="horisontalLine"></div>'
+                html: '<div class="horizontalLine"></div>'
             },
             {
                 xtype: 'container',
@@ -50,7 +50,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsPanel', {
             {
                 xtype: 'container',
                 width: '100%',
-                html: '<div class="horisontalLine"></div>'
+                html: '<div class="horizontalLine"></div>'
             },
             this.main
         ];
