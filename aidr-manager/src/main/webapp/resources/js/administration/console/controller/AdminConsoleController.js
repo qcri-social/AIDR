@@ -11,6 +11,12 @@ Ext.define('ADMIN.console.controller.AdminConsoleController', {
 
             'admin-console-view': {
                 beforerender: this.beforeRenderView
+            },
+
+            "#toSystemHealthButton": {
+                click: function (btn, e, eOpts) {
+                    this.toSystemHealth();
+                }
             }
 
         });
@@ -21,6 +27,10 @@ Ext.define('ADMIN.console.controller.AdminConsoleController', {
         AIDRFMFunctions.initMessageContainer();
 
         this.mainComponent = component;
+    },
+
+    toSystemHealth: function() {
+        document.location.href = BASE_URL + '/protected/administration/admin-health';
     }
 
 });

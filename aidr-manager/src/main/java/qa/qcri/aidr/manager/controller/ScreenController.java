@@ -249,9 +249,14 @@ public class ScreenController extends BaseController{
         return model;
     }
 
-    @RequestMapping("protected/admin-console")
+    @RequestMapping("protected/administration/admin-console")
     public String adminConsole(Map<String, String> model) throws Exception {
         return "administration/admin-console";
+    }
+
+    @RequestMapping("protected/administration/admin-health")
+    public String adminHealth(Map<String, String> model) throws Exception {
+        return "administration/health";
     }
 
 }
