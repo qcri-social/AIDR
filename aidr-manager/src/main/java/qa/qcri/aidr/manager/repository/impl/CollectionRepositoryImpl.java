@@ -78,6 +78,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 
         criteria.add(Restrictions.eq("status", CollectionStatus.RUNNING));
         addCollectionSearchCriteria(terms, criteria);
+        searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
 
         return (List<AidrCollection>) criteria.list();
     }
@@ -103,6 +104,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 
         criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING));
         addCollectionSearchCriteria(terms, criteria);
+        searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
 
         return (List<AidrCollection>) criteria.list();
     }
@@ -126,6 +128,22 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
             String wildcard ='%'+ URLDecoder.decode(terms.trim())+'%';
             criteria.add(Restrictions.ilike("name", wildcard));
             criteria.add(Restrictions.ilike("code", wildcard));
+        }
+    }
+
+    private void searchCollectionsAddOrder(String sortColumn, String sortDirection, Criteria criteria) {
+        if (StringUtils.hasText(sortColumn)) {
+            if ("user".equals(sortColumn)){
+                sortColumn = "user.userName";
+                criteria.createAlias("user", "user");
+            }
+            Order order;
+            if ("ASC".equals(sortDirection)){
+                order = Order.asc(sortColumn);
+            } else {
+                order = Order.desc(sortColumn);
+            }
+            criteria.addOrder(order);
         }
     }
 
