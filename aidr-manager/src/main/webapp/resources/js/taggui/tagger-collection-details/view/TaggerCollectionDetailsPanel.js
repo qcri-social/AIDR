@@ -365,78 +365,78 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             ]
         });
 
-        this.feedsBlock = Ext.create('Ext.container.Container', {
-            flex: 1,
-            layout: 'vbox',
-            items: [
-                {
-                    xtype: 'container',
-                    defaultType: 'label',
-                    padding: '0 10',
-                    flex: 1,
-                    layout: 'vbox',
-                    defaults: {
-                        margin: '5 0'
-                    },
-                    height: 100,
-                    items: [
-                        {
-                            xtype: 'container',
-                            defaultType: 'label',
-                            layout: 'hbox',
-                            items: [
-                                {
-                                    width: 75,
-                                    html: '<b>Data feed</b>'
-                                },
-                                {
-                                    html: '<b>URL</b>'
-                                }
-                            ]
-                        },{
-                            xtype: 'container',
-                            defaultType: 'label',
-                            layout: 'hbox',
-                            items: [
-                                {
-                                    width: 75,
-                                    text: 'Tweet-ids:'
-                                },
-                                {
-                                    html: '<a href="http://aidr.qcri.org/predict/public/"' + CRISIS_CODE + '>http://aidr.qcri.org/predict/public/' + CRISIS_CODE + '</a>'
-                                }
-                            ]
-                        },{
-                            xtype: 'container',
-                            defaultType: 'label',
-                            layout: 'hbox',
-                            items: [
-                                {
-                                    width: 75,
-                                    text: 'Full:'
-                                },
-                                {
-                                    html: '<a href="http://aidr.qcri.org/predict/protected/"' + CRISIS_CODE + '>http://aidr.qcri.org/predict/protected/' + CRISIS_CODE + '</a><br>'
-                                }
-                            ]
-                        },{
-                            xtype: 'container',
-                            defaultType: 'label',
-                            layout: 'hbox',
-                            items: [
-                                {
-                                    width: 75,
-                                    text: ''
-                                },
-                                {
-                                    html: 'User: <span class="na-text">N/A</span> Pass: <span class="na-text">N/A</span>'
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        });
+//        this.feedsBlock = Ext.create('Ext.container.Container', {
+//            flex: 1,
+//            layout: 'vbox',
+//            items: [
+//                {
+//                    xtype: 'container',
+//                    defaultType: 'label',
+//                    padding: '0 10',
+//                    flex: 1,
+//                    layout: 'vbox',
+//                    defaults: {
+//                        margin: '5 0'
+//                    },
+//                    height: 100,
+//                    items: [
+//                        {
+//                            xtype: 'container',
+//                            defaultType: 'label',
+//                            layout: 'hbox',
+//                            items: [
+//                                {
+//                                    width: 75,
+//                                    html: '<b>Data feed</b>'
+//                                },
+//                                {
+//                                    html: '<b>URL</b>'
+//                                }
+//                            ]
+//                        },{
+//                            xtype: 'container',
+//                            defaultType: 'label',
+//                            layout: 'hbox',
+//                            items: [
+//                                {
+//                                    width: 75,
+//                                    text: 'Tweet-ids:'
+//                                },
+//                                {
+//                                    html: '<a href="http://aidr.qcri.org/predict/public/"' + CRISIS_CODE + '>http://aidr.qcri.org/predict/public/' + CRISIS_CODE + '</a>'
+//                                }
+//                            ]
+//                        },{
+//                            xtype: 'container',
+//                            defaultType: 'label',
+//                            layout: 'hbox',
+//                            items: [
+//                                {
+//                                    width: 75,
+//                                    text: 'Full:'
+//                                },
+//                                {
+//                                    html: '<a href="http://aidr.qcri.org/predict/protected/"' + CRISIS_CODE + '>http://aidr.qcri.org/predict/protected/' + CRISIS_CODE + '</a><br>'
+//                                }
+//                            ]
+//                        },{
+//                            xtype: 'container',
+//                            defaultType: 'label',
+//                            layout: 'hbox',
+//                            items: [
+//                                {
+//                                    width: 75,
+//                                    text: ''
+//                                },
+//                                {
+//                                    html: 'User: <span class="na-text">N/A</span> Pass: <span class="na-text">N/A</span>'
+//                                }
+//                            ]
+//                        }
+//                    ]
+//                }
+//            ]
+//        });
 
         this.tabPanel = Ext.create('Ext.tab.Panel', {
             cls: 'tabPanel',
