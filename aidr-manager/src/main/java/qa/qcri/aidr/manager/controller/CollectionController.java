@@ -1,11 +1,7 @@
 package qa.qcri.aidr.manager.controller;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import qa.qcri.aidr.manager.dto.AidrCollectionTotalDTO;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
@@ -292,6 +288,52 @@ public class CollectionController extends BaseController{
             return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
         }
         return getUIWrapper(result,true);
+    }
+
+    @RequestMapping(value = "/getAllRunning.action", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object>  getAllRunning(@RequestParam Integer start,
+                                             @RequestParam Integer limit,
+                                             @RequestParam (value = "terms", required = false, defaultValue = "") String terms,
+                                             @RequestParam (value = "sortColumn", required = false, defaultValue = "") String sortColumn,
+                                             @RequestParam (value = "sortDirection", required = false, defaultValue = "") String sortDirection) throws Exception {
+        start = (start != null) ? start : 0;
+        limit = (limit != null) ? limit :50;
+
+        UserEntity userEntity = getAuthenticatedUser();
+        if(userEntity != null){
+            Long total = collectionService.getRunningCollectionsCount(terms);
+
+            List<AidrCollection> collections = Collections.emptyList();
+            if (total > 0) {
+                collections = collectionService.getRunningCollections(start, limit, terms, sortColumn, sortDirection);
+            }
+            return getUIWrapper(collections, total);
+        }
+        return getUIWrapper(false);
+    }
+
+    @RequestMapping(value = "/getAllStopped.action", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object>  getAllStopped(@RequestParam Integer start,
+                                             @RequestParam Integer limit,
+                                             @RequestParam (value = "terms", required = false, defaultValue = "") String terms,
+                                             @RequestParam (value = "sortColumn", required = false, defaultValue = "") String sortColumn,
+                                             @RequestParam (value = "sortDirection", required = false, defaultValue = "") String sortDirection) throws Exception {
+        start = (start != null) ? start : 0;
+        limit = (limit != null) ? limit :50;
+
+        UserEntity userEntity = getAuthenticatedUser();
+        if(userEntity != null){
+            Long total = collectionService.getStoppedCollectionsCount(terms);
+
+            List<AidrCollection> collections = Collections.emptyList();
+            if (total > 0) {
+                collections = collectionService.getStoppedCollections(start, limit, terms, sortColumn, sortDirection);
+            }
+            return getUIWrapper(collections, total);
+        }
+        return getUIWrapper(false);
     }
 
     private AidrCollectionTotalDTO convertAidrCollectionToDTO(AidrCollection collection){

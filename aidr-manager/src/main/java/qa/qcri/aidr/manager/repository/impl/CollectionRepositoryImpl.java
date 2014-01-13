@@ -1,16 +1,19 @@
 package qa.qcri.aidr.manager.repository.impl;
 
 import java.io.Serializable;
+import java.net.URLDecoder;
 import java.util.Calendar;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
+import org.springframework.util.StringUtils;
 import qa.qcri.aidr.manager.dto.CollectionDataResponse;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
@@ -65,9 +68,65 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
     @SuppressWarnings("unchecked")
     @Override
     public List<AidrCollection> getRunningCollections() {
+        return getRunningCollections(null, null, null, null, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<AidrCollection> getRunningCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) {
         Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+
         criteria.add(Restrictions.eq("status", CollectionStatus.RUNNING));
+        addCollectionSearchCriteria(terms, criteria);
+
         return (List<AidrCollection>) criteria.list();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Long getRunningCollectionsCount(String terms) {
+        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
+        criteria.add(Restrictions.eq("status", CollectionStatus.RUNNING));
+        addCollectionSearchCriteria(terms, criteria);
+
+        ScrollableResults scroll = criteria.scroll();
+        int i = scroll.last() ? scroll.getRowNumber() + 1 : 0;
+        return Long.valueOf(i);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<AidrCollection> getStoppedCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) {
+        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+
+        criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING));
+        addCollectionSearchCriteria(terms, criteria);
+
+        return (List<AidrCollection>) criteria.list();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Long getStoppedCollectionsCount(String terms) {
+        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
+        criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING));
+        addCollectionSearchCriteria(terms, criteria);
+
+        ScrollableResults scroll = criteria.scroll();
+        int i = scroll.last() ? scroll.getRowNumber() + 1 : 0;
+        return Long.valueOf(i);
+    }
+
+    private void addCollectionSearchCriteria(String terms, Criteria criteria) {
+        if (StringUtils.hasText(terms)){
+            String wildcard ='%'+ URLDecoder.decode(terms.trim())+'%';
+            criteria.add(Restrictions.ilike("name", wildcard));
+            criteria.add(Restrictions.ilike("code", wildcard));
+        }
     }
 
 	@Override
