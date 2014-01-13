@@ -134,7 +134,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
             '<div class="content">',
 
             '<div class="img">',
-            '<img alt="Attribute image" src="/AIDRFetchManager/resources/img/AIDR/AIDR_EMBLEM_CMYK_COLOUR_HR.jpg" width="70">',
+            '<img alt="Attribute image" src="/AIDRFetchManager/resources/img/AIDR/AIDR_EMBLEM_CMYK_COLOUR_HR.jpg" width="70" height="70">',
             '</div>',
 
             '<div class="info">',
