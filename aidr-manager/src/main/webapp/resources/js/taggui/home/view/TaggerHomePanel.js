@@ -156,4 +156,4 @@ Ext.define('TAGGUI.home.view.TaggerHomePanel', {
         this.callParent(arguments);
     }
 
-})
+});

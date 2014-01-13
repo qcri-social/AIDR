@@ -198,6 +198,8 @@ body{
 .c-list .crisis-item .img,
 .c-models-list .crisis-item .img {
     float: left;
+    height: 76px;
+    width: 84px;
     padding: 3px;
     margin: 0 8px 0 0;
 }
