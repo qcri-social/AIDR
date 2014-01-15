@@ -82,6 +82,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import qa.qcri.aidr.output.getdata.JsonDataFormatter;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -98,7 +99,7 @@ public class RedisHTTPGetData extends HttpServlet {
 	// Message count constants
 	private static final int MAX_MESSAGES_COUNT = 100;
 	// Time-out constants
-	private static final int REDIS_CALLBACK_TIMEOUT = 2 * 60 * 1000;		// in ms
+	private static final int REDIS_CALLBACK_TIMEOUT = 5 * 60 * 1000;		// in ms
 	private static final int THREAD_TIMEOUT = 1 * 60 * 60 * 1000;			// in ms
 
 	// Pertaining to JEDIS - establishing connection with a REDIS DB
@@ -405,51 +406,24 @@ public class RedisHTTPGetData extends HttpServlet {
 		public void onMessage(String channel, String message) {
 			// onMessage() asynchronously receives messages from the JedisPubSub channel 
 			// Note: no explicit synchronization required for immutable objects
-			// reset for every triggered event of receiving a new message
-			// Assign the messageObject response
-			//String messageObjectResponse = null;
-			if (callbackName != null) {
-				messageObjectResponse = callbackName + "(" + message + ")"; // with specified callback - JSONP
-			}
-			else {
-				messageObjectResponse = message; 			// without callback - pure JSON
-			}
 			if (messageList.size() < messageCount) {
-				messageList.add(messageObjectResponse);
+				messageList.add(message);
 				logger.debug("[onMessage] Added new message to messageList, new count = " + messageList.size());
 			}
 			lastAccessedTime = new Date().getTime();		// time when message last received from REDIS
-
-			// Also log message for debugging purpose
-			logger.debug("[onMessage] Received Redis message: " + messageObjectResponse);
-			channel = null;
-			message = null;
-			messageObjectResponse = null;
 		}
 
 		@Override
 		public void onPMessage(String pattern, String channel, String message) {
-			//String messageObjectResponse = null;
-			if (callbackName != null) {
-				messageObjectResponse = callbackName + "(" + message + ")"; // with specified callback - JSONP
-			}
-			else {
-				messageObjectResponse = message; 			// without callback - pure JSON
-			}
+			
 			if (messageList.size() < messageCount) {
-				messageList.add(messageObjectResponse);
+				messageList.add(message);
 				logger.debug("[onPMessage] Added new message to messageList, new count = " + messageList.size());
 			}
 			lastAccessedTime = new Date().getTime();		// time when message last received from REDIS
-
+			
 			// Also log message for debugging purpose
 			logger.debug("[onPMessage] For pattern: " + pattern + "##channel = " + channel + ", Received Redis message: " + messageObjectResponse);
-
-			// Clean-up memory - required?
-			pattern = null;
-			channel = null;
-			message = null;
-			messageObjectResponse = null;
 		}
 
 
@@ -512,33 +486,24 @@ public class RedisHTTPGetData extends HttpServlet {
 					if (!error && !timeout) {
 						// Iterate over messageList and send each message individually
 						// Send updates response as JSON
-						int count = 0;									// number of messages sent so far
 						synchronized(messageList) {
-							Iterator<String> i = messageList.iterator(); // Must be in synchronized block
-							while (i.hasNext() && count < messageCount) {
-								String msg = i.next();
-								Gson jsonObject = new GsonBuilder().serializeNulls()		//.disableHtmlEscaping()
-										.serializeSpecialFloatingPointValues().setPrettyPrinting()
-										.create();
-								String jsonData = jsonObject.toJson(msg != null ? msg : new String("{}"));
-								logger.debug("[run] Sending JSON data: " + jsonData);
-
-								responseWriter.println(jsonData);
+							JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
+							StringBuilder jsonDataList = taggerOutput.createList(messageList, messageList.size());
+							int count = taggerOutput.getMessageCount();
+							
+							// Send the retrieved list to client
+							if (jsonDataList.length() > 0) { 
+								responseWriter.println(jsonDataList);		// change made at home
 								responseWriter.flush();
-
-								jsonObject = null;
-								jsonData = null;
-								msg = null;
-								++count;
-							}							
-							// Now reset the messageList buffer
+							}
+							logger.info("[writeJsonData] Sent jsonP data set, length = " + count);
+											
+							// Reset the messageList buffer and cleanup
 							messageList.clear();
+							jsonDataList = null;
 						}	// end synchronized
-						if (count == messageCount) {
-							logger.debug("run] Received all messages, exiting...magic number reached!!!");
-							responseWriter.close();
-							setRunFlag(false);								// done - exit async thread
-						}
+						responseWriter.close();
+						setRunFlag(false);								// done - exit async thread
 					}
 					else {
 						logger.error("Not sending response because task timed-out or error'ed. error={}, timeout={}, run={}", new Object[] { error, timeout, getRunFlag() });

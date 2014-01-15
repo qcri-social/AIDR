@@ -1,3 +1,13 @@
+/** 
+ * @author Koushik Sinha
+ * Last modified: 06/01/2014
+ * 
+ * The ChannelBuffer class implements the creation,
+ * and deletion of channels as well as retrieval of
+ * messages from a specific channel.
+ * 
+ */
+
 package qa.qcri.aidr.output.getdata;
 
 import java.util.ArrayList;
@@ -14,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ChannelBuffer {
-	private static int MAX_BUFFER_SIZE = 100;		// number of elements the buffer will hold at any time
+	private static int MAX_BUFFER_SIZE = 2000;		// number of elements the buffer will hold at any time
 	private String channelName;
 	private long lastAddTime;
 	private Buffer messageBuffer;

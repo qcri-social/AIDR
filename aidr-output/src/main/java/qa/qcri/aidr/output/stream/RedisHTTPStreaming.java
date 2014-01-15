@@ -5,7 +5,7 @@
  * 		1. The streaming connection duration expires (subscription_duration parameter value)
  * 		2. The REDIS DB connection times out (REDIS_CALLBACK_TIMEOUT constant)
  * 		3. Connection loss, e.g., client closes the connection 
- 
+
  * The code accepts i) channel name, ii) fully qualified channel name and, iii) wildcard '*' for
  * pattern based subscription.
  * 
@@ -65,6 +65,8 @@
 package qa.qcri.aidr.output.stream;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -96,12 +98,15 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import qa.qcri.aidr.output.getdata.JsonDataFormatter;
+import qa.qcri.aidr.output.getdata.WriteResponse;
+
 @SuppressWarnings("serial")
 @WebServlet(value = "/stream", asyncSupported = true)
 public class RedisHTTPStreaming extends HttpServlet {
 
 	// Time-out constants
-	private static final int REDIS_CALLBACK_TIMEOUT = 2 * 60 * 1000;		// in ms
+	private static final int REDIS_CALLBACK_TIMEOUT = 5 * 60 * 1000;		// in ms
 	private static final int SUBSCRIPTION_MAX_DURATION = 6 * 60 * 60 * 1000;			// in ms
 
 	// Pertaining to JEDIS - establishing connection with a REDIS DB
@@ -266,10 +271,6 @@ public class RedisHTTPStreaming extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
-
-		response.setContentType("application/json");
-		response.setCharacterEncoding("UTF-8");
-
 		if (request.getParameter("crisisCode") != null) {
 			// TODO: Handle client refresh of webpage in same session				
 			if (initRedisConnection()) {
@@ -327,7 +328,7 @@ public class RedisHTTPStreaming extends HttpServlet {
 				// Wait a while for tasks to respond to being cancelled
 				if (!threadPool.awaitTermination(1, TimeUnit.SECONDS))
 					logger.error("[shutdownAndAwaitTermination] Pool did not terminate");
-					System.err.println("[shutdownAndAwaitTermination] Pool did not terminate");
+				System.err.println("[shutdownAndAwaitTermination] Pool did not terminate");
 			}
 		} catch (InterruptedException ie) {
 			// (Re-)Cancel if current thread also interrupted
@@ -367,7 +368,7 @@ public class RedisHTTPStreaming extends HttpServlet {
 		private boolean runFlag = true;
 		private boolean error = false;
 		private boolean timeout = false;
-		private int subscriptionDuration = SUBSCRIPTION_MAX_DURATION;
+		private long subscriptionDuration = SUBSCRIPTION_MAX_DURATION;
 
 		// rate control related 
 		private static final int DEFAULT_SLEEP_TIME = 0;		// in msec
@@ -414,8 +415,8 @@ public class RedisHTTPStreaming extends HttpServlet {
 			asyncContext.addListener(this);
 		}
 
-		private int parseTime(String timeString) {
-			int duration = 0;
+		private long parseTime(String timeString) {
+			long duration = 0;
 			float value = Float.parseFloat(timeString.substring(0, timeString.length()-1));
 			if (value > 0) {
 				String suffix = timeString.substring(timeString.length() - 1, timeString.length());
@@ -439,43 +440,21 @@ public class RedisHTTPStreaming extends HttpServlet {
 
 		@Override
 		public void onMessage(String channel, String message) {
-			// onMessage() asynchronously receives messages from the JedisPubSub channel 
-			// Note: no explicit synchronization required for immutable objects
-			// reset for every triggered event of receiving a new message.
-			StringBuilder messageObjectResponse = null;
-			if (callbackName != null) {
-				// with specified callback - JSONP
-				messageObjectResponse = new StringBuilder("callbackname").append("(").append(message).append(")");  
+			final int DEFAULT_COUNT = 1;
+			synchronized (messageList) {
+				if (messageList.size() < DEFAULT_COUNT) messageList.add(message);
 			}
-			else {
-				messageObjectResponse = new StringBuilder(message); 	// without callback - pure JSON
-			}
-			messageList.add(messageObjectResponse.toString());		
-
 			// Also log message for debugging purpose
-			logger.debug(this + "@[onMessage] Received Redis message to be sent to client: ");
-
-			// Clean-up memory
-			messageObjectResponse = null;
+			logger.debug("[onMessage] Received Redis message to be sent to client");
 		}
 
 		@Override
 		public void onPMessage(String pattern, String channel, String message) {
-			StringBuilder messageObjectResponse = null;
-			if (callbackName != null) {
-				// with specified callback - JSONP
-				messageObjectResponse = new StringBuilder("callbackname").append("(").append(message).append(")");  
+			synchronized (messageList) {
+				if (messageList.size() <  1) messageList.add(message);
 			}
-			else {
-				messageObjectResponse = new StringBuilder(message); 	// without callback - pure JSON
-			}
-			messageList.add(messageObjectResponse.toString());		
-
 			// Also log message for debugging purpose
 			logger.debug("[onPMessage] For pattern: " + pattern + "##channel = " + channel + ", Received Redis message: ");
-
-			// Clean-up memory
-			messageObjectResponse = null;
 		}
 
 		@Override
@@ -519,10 +498,14 @@ public class RedisHTTPStreaming extends HttpServlet {
 			long lastAccessedTime = currentTime; 
 
 			HttpServletResponse response = (HttpServletResponse) asyncContext.getResponse();
+			response.setBufferSize(700);
 			response.setContentType("application/json");
-			PrintWriter responseWriter = null;
+			response.setCharacterEncoding("UTF-8");
+			//PrintWriter responseWriter = null;
+			PrintStream responseWriter = null;
 			try {
-				responseWriter = response.getWriter();
+				//responseWriter = response.getWriter();
+				responseWriter = new PrintStream(response.getOutputStream(), true, "UTF-8");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				logger.error(this + "@[run] Error initializing PrintWriter", e);
@@ -530,28 +513,41 @@ public class RedisHTTPStreaming extends HttpServlet {
 				setRunFlag(false);
 			}
 
+			//WriteResponse writer = new WriteResponse(response,true);
+			//writer.initWriter("application/json");
 			while (getRunFlag() && !isThreadTimeout(startTime)) {
 				// Here we poll a non blocking resource for updates
-				if (!messageList.isEmpty()) {
+				if (messageList != null && !messageList.isEmpty()) {
 					// There are updates, send these to the waiting client
 					if (!error && !timeout) {
 						// Send updates response as JSON
+						// Get the last messageCount messages for channel=channelCode
+						//logger.info("[run] Preparing new JSONP message to send : " + messageList.get(messageList.size()-1));
+						List<String> latestMsg = null; 
 						synchronized (messageList) {
-							Gson jsonObject = new GsonBuilder().serializeNulls()		//.disableHtmlEscaping()
-									.serializeSpecialFloatingPointValues().setPrettyPrinting()
-									.create();
-							String jsonData = jsonObject.toJson(messageList.get(messageList.size()-1) != null 
-									? messageList.get(messageList.size()-1) : new String("{}"));
+							latestMsg = new ArrayList<String>();
+							latestMsg.addAll(messageList);
+						}
+						JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
+						StringBuilder jsonDataList = taggerOutput.createList(latestMsg, latestMsg.size());
+						int count = taggerOutput.getMessageCount();
 
-							logger.info(this + "@[run] Sending JSON data: " + jsonData);
-							responseWriter.println(jsonData);
+						// Send the retrieved list to client
+						if (jsonDataList.length() > 0) { 
+							responseWriter.println(jsonDataList.toString());		// change made at home
+							responseWriter.println();								// newline for readability
 							responseWriter.flush();
+						}
+						logger.info("[run] Sent jsonP data set, length = " + count);
 
-							jsonObject = null;
-							jsonData = null;
-							messageList.remove(messageList.size()-1);	// remove the sent message from list
-							//messageObjectResponse = null;
-						}	// end synchronized block
+						//writer.writeJsonData(jsonDataList, count);
+						synchronized (messageList) {
+							// Reset the messageList buffer and cleanup
+							messageList.clear();	// remove the sent message from list
+							latestMsg.clear();
+							latestMsg = null;
+							jsonDataList = null;
+						}
 						lastAccessedTime = new Date().getTime();		// time when message last received from REDIS
 
 						// Now sleep for a short time before going for next message - easy to read on screen
@@ -594,8 +590,10 @@ public class RedisHTTPStreaming extends HttpServlet {
 
 			// clean-up and exit thread
 			if (!error && !timeout) {
-				messageList.clear();
-				messageList = null;
+				if (messageList != null) {
+					messageList.clear();
+					messageList = null;
+				}
 				if (!responseWriter.checkError()) {
 					responseWriter.close();
 				}

@@ -52,6 +52,7 @@ package qa.qcri.aidr.output.getdata;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -64,6 +65,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 
 //import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
@@ -82,7 +84,7 @@ public class GetBufferedAIDRData extends HttpServlet {
 	// Related to channel buffer management
 	private static final String CHANNEL_REG_EX = "aidr_predict.*";
 	private static final String CHANNEL_PREFIX_STRING = "aidr_predict.";
-	private static final int MAX_MESSAGES_COUNT = 100;
+	private static final int MAX_MESSAGES_COUNT = 1000;
 	private static final int DEFAULT_COUNT = 50;		// default number of messages to fetch
 	private int messageCount = DEFAULT_COUNT;			// number of messages to fetch
 	private ChannelBufferManager cbManager; 			// managing buffers for each publishing channel
@@ -121,7 +123,7 @@ public class GetBufferedAIDRData extends HttpServlet {
 			error = true;
 		}
 		String channelCode = request.getParameter("crisisCode");
-		if (channelCode.contains("*") || channelCode.contains("?")) {
+		if (channelCode.contains("*") || channelCode.contains("?")) {	// || !cbManager.getActiveChannelCodes().contains(channelCode)) {
 			error = true;			// Error - regular expression based retrieval not supported
 		}
 		if (error)
@@ -137,6 +139,7 @@ public class GetBufferedAIDRData extends HttpServlet {
 			else {
 				channelName = CHANNEL_PREFIX_STRING.concat(channelCode);	// fully qualified channel name - same as REDIS channel
 			}
+			
 			String callbackName = request.getParameter("callback");
 			if (request.getParameter("count") != null) {
 				int msgCount = Integer.parseInt(request.getParameter("count"));
@@ -148,105 +151,48 @@ public class GetBufferedAIDRData extends HttpServlet {
 			List<String> bufferedMessages = new ArrayList<String>();
 			bufferedMessages.addAll(this.cbManager.getLastMessages(channelName, messageCount) != null 
 					? this.cbManager.getLastMessages(channelName, messageCount) : new ArrayList<String>());
-
-			// Now, build the jsonp object to be sent - data in reverse chronological order.
-			// Update from previous version: the entire collection of json objects are wrapped 
-			// with a single callback function.
-			int count = 0;
-			StringBuilder jsonDataList = new StringBuilder();		
-			if (callbackName != null) {
-				jsonDataList.append(callbackName).append("([");
-			}
-			else {
-				jsonDataList.append("[");
-			}
-				
-			ListIterator<String> itr = bufferedMessages.listIterator(bufferedMessages.size());  // Must be in synchronized block
-			while (itr.hasPrevious() && count < messageCount) {
-				String msg = itr.previous();
-				JsonOutputBuilder jsonOutput = new JsonOutputBuilder();
-				String jsonData = (msg != null) ? new String(jsonOutput.buildJsonString(msg)) : new String("{}");
-				jsonDataList.append(jsonData).append(",");
-				
-				logger.debug("[doGet] Will send JSON data: " + jsonData);
-				jsonOutput = null;
-				jsonData = null;
-				msg = null;
-				++count;
-			}
-			jsonDataList.deleteCharAt(jsonDataList.lastIndexOf(","));		// delete the extra "," at the end of the json string
-			if (callbackName != null) { 
-				jsonDataList.append("])");
-			} else {
-				jsonDataList.append("]");
-			}
-			if (count == 0 || jsonDataList.length() == 0) {
-				// both conditions should be satisfied ONLY simultaneously: send empty jsonp object
-				jsonDataList.append(callbackName != null ? callbackName.concat(new String("({})")) : new String("{}"));
-			}
 			
-			/*
-			 * // The following commented code wraps each json object with callback function
-			 * int count = 0;
-			 * List<String>jsonDataList = new ArrayList<String>();
-			 * ListIterator<String> itr = bufferedMessages.listIterator(bufferedMessages.size());  // Must be in synchronized block
-			 *  while (itr.hasPrevious() && count < messageCount) {
-			 *  	String msg = itr.previous();
-			 *  	StringBuilder jsonpMsg = null;
-			 *  	if (callbackName != null) { 
-			 *  		jsonpMsg = new StringBuilder(callbackName);
-			 *  		jsonpMsg.append("(").append(msg).append(")");
-			 *  	} 
-			 *  	else {
-			 *  		jsonpMsg = new StringBuilder(msg);
-			 *  	}
-			 *  	Gson jsonObject = new GsonBuilder().serializeNulls()		//.disableHtmlEscaping()
-			 *  			.serializeSpecialFloatingPointValues().setPrettyPrinting()
-			 *  			.create();
-			 *  	final String jsonData = jsonObject.toJson(msg != null ? jsonpMsg.toString() : new String("{}"));
-			 *  	jsonDataList.add(jsonData);
-			 *  	logger.debug("[doGet] Will send JSON data: " + jsonData);
-			 *  	jsonObject = null;
-			 *  	msg = null;
-			 *  	++count;
-			 *  }
-			 *  if (count == 0 || jsonDataList.isEmpty()) {
-			 *  	// both conditions should be satisfied ONLY simultaneously
-			 * 	 	jsonDataList.add(callbackName != null ? callbackName.concat(new String("({})")) : new String("{}"));
-			 *	}
-			 */
+			JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
+			StringBuilder jsonDataList = taggerOutput.createList(bufferedMessages, messageCount);
+			int count = taggerOutput.getMessageCount();
 			
 			// Now send the retrieved list to client and close connection
-			logger.debug("[doGet] Sending actual message count = " + count);
-			response.setContentType("application/json");
-			response.setCharacterEncoding("UTF-8");
-			PrintWriter responseWriter = null;
-			try {
-				responseWriter = response.getWriter();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				logger.error("[doGet] Error initializing PrintWriter", e);
-				e.printStackTrace();
-			}
-
-			responseWriter.println(jsonDataList.toString());
-			responseWriter.flush();
-			logger.info("[doGet] Sent jsonP data set");
-			// check if the write succeeded
-			if (responseWriter.checkError()) {
-				logger.error("[doGet] Client side error - possible client disconnect...");
-			}							
+			writeJsonData(response, jsonDataList, count);
+		
 			// Now reset the messageList buffer and close connection
 			bufferedMessages.clear();
-			//jsonDataList.clear;			// uncomment if using wrapping per json object
-			
 			bufferedMessages = null;
+			
+			//jsonDataList.clear;			// uncomment if using wrapping per json object
 			jsonDataList = null;
-			responseWriter.close();
+			response.getWriter().close();
 		} 
 		logger.info("[doGet] Reached end-of-function...");
 	}
 
+	public void writeJsonData(HttpServletResponse response, StringBuilder jsonDataList, int count) {
+		logger.info("[writeJsonData] Sending actual message count = " + count);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		PrintWriter responseWriter = null;
+		try {
+			responseWriter = response.getWriter();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.error("[writeJsonData] Error initializing PrintWriter", e);
+			e.printStackTrace();
+		}
+		if (jsonDataList.length() > 0) { 
+			responseWriter.println(jsonDataList);		// change made at home
+			responseWriter.flush();
+		}
+		logger.info("[writeJsonData] Sent jsonP data set");
+		// check if the write succeeded
+		if (responseWriter.checkError()) {
+			logger.error("[writeJsonData] Client side error - possible client disconnect...");
+		}							
+	}
+	
 	public void showErrorMessage(HttpServletResponse response) throws IOException {
 		// No crisisCode provided...
 		PrintWriter out = response.getWriter();

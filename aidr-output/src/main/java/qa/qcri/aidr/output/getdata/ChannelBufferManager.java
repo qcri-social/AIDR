@@ -1,3 +1,17 @@
+/** 
+ * @author Koushik Sinha
+ * Last modified: 06/01/2014
+ * 
+ * The ChannelBufferManager class implements the following channel buffer management functionalities 
+ * for the /getLast REST API: 
+ * 		a) Subscribe to all CHANNEL_PREFIX_STRING channels in REDIS using pattern-based subscription.
+ * 		b) Monitor the REDIS pubsub system for new or removed channels.
+ * 		c) If new channel found, then create a new ChannelBuffer for it.
+ * 		d) If no messages received on an existing channel for a certain duration then delete the channel.
+ * 		e) Return an ArrayList<String> of messages for a specific channel and messageCount value. 
+ *
+ */
+
 package qa.qcri.aidr.output.getdata;
 
 import java.util.ArrayList;
@@ -15,11 +29,6 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
-
-
-
-
-
 
 //import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
@@ -163,11 +172,12 @@ public class ChannelBufferManager {
 
 	// Returns true if channelName present in list of channels
 	// TODO: define the appropriate collections data structure - HashMap, HashSet, ArrayList? 
-	private boolean isChannelPresent(String channelName) {
+	public boolean isChannelPresent(String channelName) {
 		return this.subscribedChannels.containsKey(channelName);
 	}
 
-	private void createChannelBuffer(final String channelName) {
+	// channelName = fully qualified channel name as present in REDIS pubsub system
+	public void createChannelBuffer(final String channelName) {
 		if (!isChannelPresent(channelName)) {
 		ChannelBuffer cb = new ChannelBuffer(channelName);
 		if (bufferSize <= 0)
@@ -182,7 +192,7 @@ public class ChannelBufferManager {
 		}
 	}
 
-	private void deleteChannelBuffer(final String channelName) {
+	public void deleteChannelBuffer(final String channelName) {
 		if (isChannelPresent(channelName)) {
 			ChannelBuffer cb = this.subscribedChannels.get(channelName);
 			cb.deleteBuffer();
@@ -191,14 +201,32 @@ public class ChannelBufferManager {
 		}
 	}
 
-	private void deleteAllChannelBuffers() {
+	public void deleteAllChannelBuffers() {
 		this.subscribedChannels.clear();
 	}
 	
+	/** 
+	 * @return A set of fully qualified channel names
+	 */
 	public Set<String> getActiveChannelsList() {
 		return this.subscribedChannels.keySet().isEmpty() ? null : this.subscribedChannels.keySet();
 	}
-
+	
+	/** 
+	 * @return A set of only the channel codes - stripped of CHANNEL_PREFIX_STRING
+	 */
+	public Set<String> getActiveChannelCodes() {
+		Set<String> channelCodeSet = new HashSet<String>();
+		Set<String> tempSet = getActiveChannelsList();
+		for (String s:tempSet) {
+			channelCodeSet.add(s.substring(CHANNEL_PREFIX_STRING.length()));
+		}
+		tempSet.clear();
+		tempSet = null;
+		return channelCodeSet.isEmpty() ? null : channelCodeSet;
+	}
+	
+	
 	// Initialize JEDIS parameters and get connection resource from JEDIS pool
 	private boolean connectToRedis() {
 		if (null == poolConfig) {
