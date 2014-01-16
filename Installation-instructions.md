@@ -101,5 +101,10 @@ After the above steps have been executed, you can build the project:
 * Build using maven following the instructions above; this should generate a file `aidr-tagger-api-X.war`
 * Deploy `aidr-tagger-api-X.war` to Glassfish using the instructions above.
 
+# 7. Output (aidr-output)
+
+* Build using maven following the instructions above; this should generate a file `aidr-output-X.war`
+* Deploy `aidr-output-X.war` to Glassfish using the instructions above.
+
 (More instructions: TBA)
 
