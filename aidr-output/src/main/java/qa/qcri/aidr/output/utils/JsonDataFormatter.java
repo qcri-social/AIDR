@@ -1,4 +1,4 @@
-package qa.qcri.aidr.output.getdata;
+package qa.qcri.aidr.output.utils;
 
 import java.util.List;
 import java.util.ListIterator;
@@ -24,7 +24,7 @@ public class JsonDataFormatter {
 		return count;
 	}
 	
-	public StringBuilder createList(List<String> bufferedMessages, int messageCount) {
+	public StringBuilder createList(List<String> bufferedMessages, int messageCount, boolean rejectNullFlag) {
 		// Now, build the jsonp object to be sent - data in reverse chronological order.
 		// Update from previous version: the entire collection of json objects are wrapped 
 		// with a single callback function.
@@ -40,7 +40,7 @@ public class JsonDataFormatter {
 			while (itr.hasPrevious() && count < messageCount) {
 				String msg = itr.previous();
 				TaggerJsonOutputAdapter jsonOutput = new TaggerJsonOutputAdapter();
-				String jsonData = (msg != null) ? jsonOutput.buildJsonString(msg) : null;
+				String jsonData = (msg != null) ? jsonOutput.buildJsonString(msg, rejectNullFlag) : null;
 				if (jsonData != null) {
 					jsonDataList.append(jsonData).append(",");
 					++count;
@@ -53,7 +53,7 @@ public class JsonDataFormatter {
 			}
 			if (count == 0) {
 				// send empty jsonp object
-				jsonDataList.append(callbackName != null ? new String("{}])") : new String("{}"));
+				jsonDataList.append(callbackName != null ? new String("{}])") : new String("{}]"));
 			} 
 			else {
 				// there are json objects to send

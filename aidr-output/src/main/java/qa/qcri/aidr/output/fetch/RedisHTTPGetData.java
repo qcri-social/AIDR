@@ -34,19 +34,19 @@
  * Invocations: 
  * ============
  * Channel name based examples:
- * 	1. http://localhost:8080/aidr-output/fetch?crisisCode=clex_20131201&count=50
- *  2. http://localhost:8080/aidr-output/fetch?crisisCode=clex_20131201&callback=func
- *  3. http://localhost:8080/aidr-output/fetch?crisisCode=clex_20131201&callback=func&count=50
+ * 	1. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=clex_20131201&count=50
+ *  2. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=clex_20131201&callback=func
+ *  3. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=clex_20131201&callback=func&count=50
  * 
  * Wildcard based examples: 
- *  1. http://localhost:8080/aidr-output/fetch?crisisCode=*&count=50
- *  2. http://localhost:8080/aidr-output/fetch?crisisCode=*&callback=func
- *  3. http://localhost:8080/aidr-output/fetch?crisisCode=*&callback=func&count=50
+ *  1. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=*&count=50
+ *  2. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=*&callback=func
+ *  3. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=*&callback=func&count=50
  *  
  * Fully qualified channel name based examples:
- *  1. http://localhost:8080/aidr-output/fetch?crisisCode=aidr_predict.clex_20131201&count=50
- *  2. http://localhost:8080/aidr-output/fetch?crisisCode=aidr_predict.clex_20131201&callback=func
- *  3. http://localhost:8080/aidr-output/fetch?crisisCode=aidr_predict.clex_20131201&callback=func&count=50
+ *  1. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=aidr_predict.clex_20131201&count=50
+ *  2. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=aidr_predict.clex_20131201&callback=func
+ *  3. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=aidr_predict.clex_20131201&callback=func&count=50
  *  
  *  
  *  Parameter explanations:
@@ -82,7 +82,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import qa.qcri.aidr.output.getdata.JsonDataFormatter;
+import qa.qcri.aidr.output.utils.JsonDataFormatter;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -93,14 +93,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 @SuppressWarnings("serial")
-@WebServlet(value = "/fetch", asyncSupported = true)
+@WebServlet(value = "/channel", asyncSupported = true)
 public class RedisHTTPGetData extends HttpServlet {
 
 	// Message count constants
 	private static final int MAX_MESSAGES_COUNT = 100;
 	// Time-out constants
 	private static final int REDIS_CALLBACK_TIMEOUT = 5 * 60 * 1000;		// in ms
-	private static final int THREAD_TIMEOUT = 1 * 60 * 60 * 1000;			// in ms
+	private static final int THREAD_TIMEOUT = 15 * 60 * 1000;				// in ms
 
 	// Pertaining to JEDIS - establishing connection with a REDIS DB
 	// Currently using ssh tunneling:: ssh -f -L 1978:localhost:6379 scd1.qcri.org -N
@@ -109,7 +109,8 @@ public class RedisHTTPGetData extends HttpServlet {
 
 	private static final String CHANNEL_PREFIX_CODE = "aidr_predict.";
 	private boolean patternSubscriptionFlag;
-
+	private final boolean rejectNullFlag = true;
+	
 	private String redisChannel = "aidr_predict.clex_20131201";		// channel to subscribe to		
 	private static String redisHost = "localhost";					// Current assumption: REDIS running on same m/c
 	private static int redisPort = 6379;					
@@ -174,8 +175,6 @@ public class RedisHTTPGetData extends HttpServlet {
 
 	private void stopSubscription(final RedisSubscriber sub, final Jedis jedis) {
 		logger.debug("[stopSubscription] aidrSubscriber = " + sub + ", jedis = " + jedis + "patternFlag = " + this.patternSubscriptionFlag);
-		logger.debug(sub + "@[stopSubscription] Subscription count = " + sub.getSubscribedChannels());
-
 		if (sub != null && sub.getSubscribedChannels() > 0) {
 			if (!this.patternSubscriptionFlag) { 
 				sub.unsubscribe();				
@@ -488,7 +487,7 @@ public class RedisHTTPGetData extends HttpServlet {
 						// Send updates response as JSON
 						synchronized(messageList) {
 							JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
-							StringBuilder jsonDataList = taggerOutput.createList(messageList, messageList.size());
+							StringBuilder jsonDataList = taggerOutput.createList(messageList, messageList.size(), rejectNullFlag);
 							int count = taggerOutput.getMessageCount();
 							
 							// Send the retrieved list to client

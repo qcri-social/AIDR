@@ -8,7 +8,7 @@
  *  
  */
 
-package qa.qcri.aidr.output.getdata;
+package qa.qcri.aidr.output.utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ public class TaggerJsonOutputAdapter {
 		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
 	}
 	
-	public String buildJsonString(String rawJsonString) {
+	public String buildJsonString(String rawJsonString, boolean rejectNullFlag) {
 		Gson jsonObject = new GsonBuilder().serializeNulls()			//.disableHtmlEscaping()
 				.serializeSpecialFloatingPointValues().setPrettyPrinting()
 				.create();
@@ -59,18 +59,15 @@ public class TaggerJsonOutputAdapter {
 		jsonObj.crisis_name.append(crisisName);
 		
 		for (int itr = 0;itr < nominalLabels.size();itr++) {
-			//logger.debug("[buildJsonString] Label " + itr + ": " + nominalLabels.get(itr));
 			jsonObj.nominal_labels.add(nominalLabels.get(itr));
 		}
+		if (!isemptyNominalLabels(nominalLabels)) 
+				return jsonObject.toJson(jsonObj);
 		
-		//logger.debug("[JsonOutputBuilder] text : " + jsonObj.text);
-		//logger.debug("[JsonOutputBuilder] crisis code: " + jsonObj.crisis_code);
-		//logger.debug("[JsonOutputBuilder] crisis name: " + jsonObj.crisis_name);
-		//logger.debug("[JsonOutputBuilder] nominal labels: " + jsonObj.nominal_labels);
-		
-		if (!isemptyNominalLabels(nominalLabels))
+		if (rejectNullFlag) 
+			return null;			// returning "null" to meet Tagger's specific front-end requirements
+		else
 			return jsonObject.toJson(jsonObj);
-		return null;			// returning "null" to meet Tagger's specific front-end requirements
 	}
 	
 	private boolean isemptyNominalLabels(JsonArray nominalLabels) {

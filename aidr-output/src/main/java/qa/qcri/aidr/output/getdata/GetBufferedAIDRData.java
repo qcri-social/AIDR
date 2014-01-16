@@ -1,17 +1,17 @@
 /**
  * This code makes a HTTP request to get the last 'n' JSONP data 
  * from a REDIS DB to a client using a servlet. After sending the data, it 
- * closes the connection. The data from the REDIS channels is buffered in 
- * the background by a continuous running buffering system - started at servlet startup
+ * closes the connection. The data from the REDIS channels are buffered in 
+ * the background by a long running buffering system - started at servlet startup
  * The jsonp messages are returned in an ArrayList data structure, in reverse chronological order.
  * 
  * The code accepts i) channel name or, ii) fully qualified channel name. However, wildcard '*' for
  * pattern based subscription are NOT allowed.
  * 
  * @author Koushik Sinha
- * Last modified: 06/01/2014
+ * Last modified: 14/01/2014
  *
- * Dependencies:  servlets 3+, jedis-2.2.1, gson-2.2.4, commons-pool-1.6, slf4j-1.7.5
+ * Dependencies:  servlets 3+, jedis-2.2.1, gson-2.2.4, commons-pool-1.6, slf4j-1.7.5, JAX-RS 1.x, Jersey 1.8+
  * 	
  * Hints for testing:
  * 		1. Tune the socket timeout parameter in JedisPool(...) call if connecting over a slow network
@@ -30,15 +30,18 @@
  * Invocations: 
  * ============	
  * Channel name based examples: 
- *  1. http://localhost:8080/aidr-output/getLast?crisisCode=clex_20131201&count=50
- *  2. http://localhost:8080/aidr-output/getLast?crisisCode=clex_20131201&callback=func
- *  3. http://localhost:8080/aidr-output/getLast?crisisCode=clex_20131201&callback=func&count=50
+ *  1. http://localhost:8080/aidr-output/crisis/fetch/channel/clex_20131201&count=50
+ *  2. http://localhost:8080/aidr-output/crisis/fetch/channel/clex_20131201&callback=JSONP
+ *  3. http://localhost:8080/aidr-output/crisis/fetch/channel/clex_20131201&callback=JSONP&count=50
  *  
  * Fully qualified channel name based examples: 
- *  1. http://localhost:8080/aidr-output/getLast?crisisCode=aidr_predict.clex_20131201&count=50
- *  2. http://localhost:8080/aidr-output/getLast?crisisCode=aidr_predict.clex_20131201&callback=func
- *  3. http://localhost:8080/aidr-output/getLast?crisisCode=aidr_predict.clex_20131201&callback=func&count=50
+ *  1. http://localhost:8080/aidr-output/crisis/fetch/channel/aidr_predict.clex_20131201&count=50
+ *  2. http://localhost:8080/aidr-output/crisis/fetch/channel/aidr_predict.clex_20131201&callback=func
+ *  3. http://localhost:8080/aidr-output/crisis/fetch/channel/aidr_predict.clex_20131201&callback=func&count=50
  * 
+ * Apart from the above valid paths one can use:
+ * 	1. http://localhost:8080/aidr-output/crisis/fetch/channels/list     => returns list of active channels
+ * 	2. http://localhost:8080/aidr-output/crisis/fetch/channels/latest	=> returns the latest tweet data from  across all channels
  *  
  *  Parameter explanations:
  *  	1. crisisCode [mandatory]: the REDIS channel to which to subscribe
@@ -49,34 +52,34 @@
 
 package qa.qcri.aidr.output.getdata;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
+
+import com.sun.jersey.spi.resource.Singleton;
 
 
 //import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import qa.qcri.aidr.output.utils.JsonDataFormatter;
 
-@SuppressWarnings("serial")
-@WebServlet(value = "/getLast", asyncSupported = true)
-public class GetBufferedAIDRData extends HttpServlet {
+@Path("/")
+@Singleton
+public class GetBufferedAIDRData implements ServletContextListener {
 
 	// Debugging
 	private static Logger logger = LoggerFactory.getLogger(GetBufferedAIDRData.class);
@@ -86,49 +89,136 @@ public class GetBufferedAIDRData extends HttpServlet {
 	private static final String CHANNEL_PREFIX_STRING = "aidr_predict.";
 	private static final int MAX_MESSAGES_COUNT = 1000;
 	private static final int DEFAULT_COUNT = 50;		// default number of messages to fetch
+	private static final String DEFAULT_COUNT_STR = "50";
 	private int messageCount = DEFAULT_COUNT;			// number of messages to fetch
-	private ChannelBufferManager cbManager; 			// managing buffers for each publishing channel
 
+	private static ChannelBufferManager cbManager; 			// managing buffers for each publishing channel
 	boolean error = false;
+	private final boolean rejectNullFlag = true;
 	/////////////////////////////////////////////////////////////////////////////
-
-	public void init(ServletConfig config) throws ServletException {
-		super.init(config);
-
-		// For now: set up a simple configuration that logs on the console
-		//PropertyConfigurator.configure("log4j.properties");		// where to place the properties file?
-		//BasicConfigurator.configure();
-		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
-		logger.info("[init] In servlet init...");
-
-		// Most important action - setup channel buffering thread
-		this.cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
-		logger.info("[init] Created cbManager: " + cbManager);
+	@POST
+	@Path("/{crisisCode}")
+	@Produces({"application/json", "text/html"})
+	public Response handlePost(@PathParam("crisisCode") String channelCode,
+			@QueryParam("callbackName") String callbackName,
+			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
+		return Response.ok(getBufferedAIDRData(channelCode, callbackName, count)).build();
 	}
 
-	@Override
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		doGet(request, response);
+	/**
+	 * 
+	 * @return Returns list of active channels
+	 */
+	@GET
+	@Path("/channels/list")
+	@Produces("text/html")
+	public Response getActiveChannelsList() {
+
+		Set<String> channelList = cbManager.getActiveChannelsList();
+		StringBuilder htmlMessageString = new StringBuilder();
+
+		// Build HTML doc to return
+		htmlMessageString.append("<!DOCTYPE html>");
+		htmlMessageString.append("<html>");
+		htmlMessageString.append("<head><title>REDIS PUBSUB Channel Data Output Service</title></head>");
+		htmlMessageString.append("<body>");
+		htmlMessageString.append("<p><big>Available active channels: </big></p>");
+		htmlMessageString.append("<ul>"); 
+		if (channelList != null) {
+			Iterator<String> itr = channelList.iterator();
+			while (itr.hasNext()) {
+				htmlMessageString.append("<li>" + itr.next().substring(CHANNEL_PREFIX_STRING.length()) + "</li>");
+			}
+		}
+		htmlMessageString.append("</body></html>");
+		if (channelList != null) channelList.clear();
+		channelList = null;
+
+		return Response.ok(htmlMessageString.toString()).build();
 	}
 
-	@Override
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws IOException, ServletException {
+	/**
+	 * 
+	 * @param callbackName  JSONP callback name
+	 * @param count number of messages to fetch
+	 * @return the latest tweet data as a jsonp object from across all active channels
+	 */
+	@GET
+	@Path("/channels/latest")
+	@Produces("application/json")
+	public Response getLatestBufferedAIDRData(@QueryParam("callback") String callbackName,
+			@DefaultValue("1") @QueryParam("count") String count) {
+
+		// Get the last count number of messages for channel=channelCode
+		List<String> bufferedMessages = new ArrayList<String>();
+		messageCount = Integer.parseInt(count);		// number of latest messages across all channels to return
+		for (int i = 0;i < messageCount;i++) {
+			List<String> temp = cbManager.getLatestFromAllChannels();
+			bufferedMessages.addAll(temp != null ? temp : new ArrayList<String>());
+			temp.clear();
+			temp = null;
+		}
+		JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
+		StringBuilder jsonDataList = taggerOutput.createList(bufferedMessages.subList(0, messageCount), messageCount, rejectNullFlag);
+		int sendCount = taggerOutput.getMessageCount();
+
+		// Reset the messageList buffer and return
+		bufferedMessages.clear();
+		bufferedMessages = null;
+
+		// Finally, send the retrieved list to client and close connection
+		logger.info("[doGet] Going to send json data, count = " + sendCount);
+		return Response.ok(jsonDataList.toString()).build();
+	}
+
+	/**
+	 * 
+	 * @param callbackName  JSONP callback name
+	 * @param count  number of buffered messages to fetch
+	 * @return returns the 'count' number of buffered messages from requested channel as jsonp data 
+	 */
+	@GET
+	@Path("/channel/{crisisCode}")
+	@Produces({"application/json"})
+	public Response getBufferedAIDRData(@PathParam("crisisCode") String channelCode,
+			@QueryParam("callback") String callbackName,
+			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
+
 		error = false;
-		logger.info("[doGet] Received a request");
+
 		// Parse the HTTP GET request and generating results for output
 		// Set the response MIME type of the response message
-		if (request.getParameter("crisisCode") == null) {
+		if (channelCode == null) {
 			error = true;
 		}
-		String channelCode = request.getParameter("crisisCode");
 		if (channelCode.contains("*") || channelCode.contains("?")) {	// || !cbManager.getActiveChannelCodes().contains(channelCode)) {
 			error = true;			// Error - regular expression based retrieval not supported
 		}
 		if (error)
-		{
-			showErrorMessage(response);
+		{	
+			Set<String> channelList = cbManager.getActiveChannelsList();
+			StringBuilder htmlMessageString = new StringBuilder();
+
+			// Build HTML doc to return
+			htmlMessageString.append("<!DOCTYPE html>");
+			htmlMessageString.append("<html>");
+			htmlMessageString.append("<head><title>REDIS PUBSUB Channel Data Output Service</title></head>");
+			htmlMessageString.append("<body>");
+			htmlMessageString.append("<h1>Invalid/No CrisisCode Provided! </h1>");
+			htmlMessageString.append("<h2>Can not initiate REDIS channel subscription!</h2>");
+			htmlMessageString.append("<p><big>Available active channels: </big></p>");
+			htmlMessageString.append("<ul>"); 
+			if (channelList != null) {
+				Iterator<String> itr = channelList.iterator();
+				while (itr.hasNext()) {
+					htmlMessageString.append("<li>" + itr.next().substring(CHANNEL_PREFIX_STRING.length()) + "</li>");
+				}
+			}
+			htmlMessageString.append("</body></html>");
+			if (channelList != null) channelList.clear();
+			channelList = null;
+
+			return Response.ok(htmlMessageString.toString()).build();
 		}
 		else {
 			// Form fully qualified channelName and get other parameter values, if any
@@ -139,96 +229,101 @@ public class GetBufferedAIDRData extends HttpServlet {
 			else {
 				channelName = CHANNEL_PREFIX_STRING.concat(channelCode);	// fully qualified channel name - same as REDIS channel
 			}
-			
-			String callbackName = request.getParameter("callback");
-			if (request.getParameter("count") != null) {
-				int msgCount = Integer.parseInt(request.getParameter("count"));
+			if (isChannelPresent(channelName)) {
+				int msgCount = Integer.parseInt(count);
 				if (msgCount > 0) {
 					messageCount = Math.min(msgCount, MAX_MESSAGES_COUNT);
 				}
-			}
-			// Get the last messageCount messages for channel=channelCode
-			List<String> bufferedMessages = new ArrayList<String>();
-			bufferedMessages.addAll(this.cbManager.getLastMessages(channelName, messageCount) != null 
-					? this.cbManager.getLastMessages(channelName, messageCount) : new ArrayList<String>());
-			
-			JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
-			StringBuilder jsonDataList = taggerOutput.createList(bufferedMessages, messageCount);
-			int count = taggerOutput.getMessageCount();
-			
-			// Now send the retrieved list to client and close connection
-			writeJsonData(response, jsonDataList, count);
-		
-			// Now reset the messageList buffer and close connection
-			bufferedMessages.clear();
-			bufferedMessages = null;
-			
-			//jsonDataList.clear;			// uncomment if using wrapping per json object
-			jsonDataList = null;
-			response.getWriter().close();
-		} 
-		logger.info("[doGet] Reached end-of-function...");
-	}
+				// Get the last messageCount messages for channel=channelCode
+				List<String> bufferedMessages = new ArrayList<String>();
+				List<String> temp = cbManager.getLastMessages(channelName, messageCount);
+				bufferedMessages.addAll(temp != null ? temp : new ArrayList<String>());
 
-	public void writeJsonData(HttpServletResponse response, StringBuilder jsonDataList, int count) {
-		logger.info("[writeJsonData] Sending actual message count = " + count);
-		response.setContentType("application/json");
-		response.setCharacterEncoding("UTF-8");
-		PrintWriter responseWriter = null;
-		try {
-			responseWriter = response.getWriter();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.error("[writeJsonData] Error initializing PrintWriter", e);
-			e.printStackTrace();
-		}
-		if (jsonDataList.length() > 0) { 
-			responseWriter.println(jsonDataList);		// change made at home
-			responseWriter.flush();
-		}
-		logger.info("[writeJsonData] Sent jsonP data set");
-		// check if the write succeeded
-		if (responseWriter.checkError()) {
-			logger.error("[writeJsonData] Client side error - possible client disconnect...");
-		}							
-	}
-	
-	public void showErrorMessage(HttpServletResponse response) throws IOException {
-		// No crisisCode provided...
-		PrintWriter out = response.getWriter();
-		try {
-			response.setCharacterEncoding("UTF-8");
-			response.setContentType("text/html");
+				JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
+				StringBuilder jsonDataList = taggerOutput.createList(bufferedMessages, messageCount, rejectNullFlag);
+				int sendCount = taggerOutput.getMessageCount();
 
-			// Allocate a output writer to write the response message into the network socket
-			out.println("<!DOCTYPE html>");
-			out.println("<html>");
-			out.println("<head><title>REDIS PUBSUB Channel Data Output Service</title></head>");
-			out.println("<body>");
-			out.println("<h1>Invalid/No CrisisCode Provided! </h1>");
-			out.println("<h2>Can not initiate REDIS channel subscription!</h2>");
-			out.println("<p><big>Available active channels: </big></p>");
-			out.println("<ul>");
-			Set<String> channelList = this.cbManager.getActiveChannelsList(); 
-			if (channelList != null) {
-				Iterator<String> itr = channelList.iterator();
-				while (itr.hasNext()) {
-					out.println("<li>" + itr.next().substring(CHANNEL_PREFIX_STRING.length()) + "</li>");
+				// Cleanup, send the retrieved list to client and close connection
+				if (null != temp) { 
+					temp.clear();
+					temp = null;
 				}
+				bufferedMessages.clear();
+				bufferedMessages = null;
+				
+				logger.info("[doGet] Sending jsonp data, count = " + sendCount);
+				return Response.ok(jsonDataList.toString()).build();
 			}
-			out.println("</body></html>");
-			if (channelList != null) channelList.clear();
-			channelList = null;
-		} finally {
-			out.flush();
-			out.close();  // Always close the output writer
+			else {
+				return Response.ok(new String("{}")).build();
+			}
 		}
-	} 
+	}
+
+	/**
+	 * 
+	 * @param channel fully qualified channel name
+	 * @return true if present, false if not
+	 */
+	public boolean isChannelPresent(String channel) {
+		Set<String> channelList = cbManager.getActiveChannelsList();
+		if (channelList != null) {
+			return channelList.contains(channel);
+		}
+		return false;
+	}
+
+	@GET
+	@Path("/channel/error/{crisisCode}")
+	@Produces({"text/html"})
+	public Response onErrorResponse() {
+		Set<String> channelList = cbManager.getActiveChannelsList();
+		StringBuilder htmlMessageString = new StringBuilder();
+
+		// Build HTML doc to return
+		htmlMessageString.append("<!DOCTYPE html>");
+		htmlMessageString.append("<html>");
+		htmlMessageString.append("<head><title>REDIS PUBSUB Channel Data Output Service</title></head>");
+		htmlMessageString.append("<body>");
+		htmlMessageString.append("<h1>Invalid/No CrisisCode Provided! </h1>");
+		htmlMessageString.append("<h2>Can not initiate REDIS channel subscription!</h2>");
+		htmlMessageString.append("<p><big>Available active channels: </big></p>");
+		htmlMessageString.append("<ul>"); 
+		if (channelList != null) {
+			Iterator<String> itr = channelList.iterator();
+			while (itr.hasNext()) {
+				htmlMessageString.append("<li>" + itr.next().substring(CHANNEL_PREFIX_STRING.length()) + "</li>");
+			}
+		}
+		htmlMessageString.append("</body></html>");
+		if (channelList != null) channelList.clear();
+		channelList = null;
+		
+		return Response.ok(htmlMessageString.toString()).build();
+	}
 
 
 	// cleanup when servlet is destroyed (e.g., server shutdown)
-	public void destroy() {
+	public void finalize() throws Throwable {
+		//cbManager.finalize();
+		super.finalize();
+	}
+
+	@Override
+	public void contextDestroyed(ServletContextEvent sce) {
 		cbManager.finalize();
-		super.destroy();
+		logger.info("Context destroyed");
+	}
+
+	@Override
+	public void contextInitialized(ServletContextEvent sce) {
+		// For now: set up a simple configuration that logs on the console
+		//PropertyConfigurator.configure("log4j.properties");		// where to place the properties file?
+		//BasicConfigurator.configure();							// basic configuration for log4j logging
+		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
+
+		// Most important action - setup channel buffering thread
+		cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
+		logger.info("Context Initialized");
 	}
 }
