@@ -28,7 +28,7 @@
  * 		6. Issue stream request from client
  *
  *
- * Invocations: 
+ * Invocation: host:port/context-path/channel?crisisCode={crisisCode}&callback={callback}&rate={rate}&duration={duration}  
  * ============
  * Channel Name based examples:
  *  1. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=clex_20131201&callback=print&rate=10  

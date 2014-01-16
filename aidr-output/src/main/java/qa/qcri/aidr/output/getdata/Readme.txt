@@ -9,7 +9,7 @@
  pattern based subscription are NOT allowed.
  
  @author Koushik Sinha
- Last modified: 06/01/2014
+ Last modified: 14/01/2014
  
  Dependencies:  servlets 3+, jedis-2.2.1, gson-2.2.4, commons-pool-1.6, slf4j-1.7.5
  	
@@ -27,17 +27,21 @@
  	6. Issue getLast request from client
  
  
- Invocations: 
+ Invocation:	host:port/context-path/channel/{crisisCode}?callback={callback}&count={count} 
  ============	
- Channel name based examples: 
-  	1. http://localhost:8080/aidr-output/getLast?crisisCode=clex_20131201&count=50
-  	2. http://localhost:8080/aidr-output/getLast?crisisCode=clex_20131201&callback=func
-  	3. http://localhost:8080/aidr-output/getLast?crisisCode=clex_20131201&callback=func&count=50
-  
- Fully qualified channel name based examples: 
-  	1. http://localhost:8080/aidr-output/getLast?crisisCode=aidr_predict.clex_20131201&count=50
-  	2. http://localhost:8080/aidr-output/getLast?crisisCode=aidr_predict.clex_20131201&callback=func
-  	3. http://localhost:8080/aidr-output/getLast?crisisCode=aidr_predict.clex_20131201&callback=func&count=50
+  Channel name based examples: 
+    1. http://localhost:8080/aidr-output/crisis/fetch/channel/clex_20131201?count=50
+    2. http://localhost:8080/aidr-output/crisis/fetch/channel/clex_20131201?callback=JSONP
+    3. http://localhost:8080/aidr-output/crisis/fetch/channel/clex_20131201?callback=JSONP&count=50
+    
+  Fully qualified channel name based examples: 
+    1. http://localhost:8080/aidr-output/crisis/fetch/channel/aidr_predict.clex_20131201?count=50
+    2. http://localhost:8080/aidr-output/crisis/fetch/channel/aidr_predict.clex_20131201?callback=func
+    3. http://localhost:8080/aidr-output/crisis/fetch/channel/aidr_predict.clex_20131201?callback=func&count=50
+   
+  Apart from the above valid paths one can use:
+   	1. http://localhost:8080/aidr-output/crisis/fetch/channels/list     => returns list of active channels
+   	2. http://localhost:8080/aidr-output/crisis/fetch/channels/latest	=> returns the latest tweet data from  across all channels
  
   
   Parameter explanations:

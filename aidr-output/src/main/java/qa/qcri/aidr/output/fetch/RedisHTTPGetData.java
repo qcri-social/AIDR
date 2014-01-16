@@ -31,7 +31,7 @@
  * 		6. Issue fetch request from client
  *
  *
- * Invocations: 
+ * Invocation: host:port/context-path/channel?crisisCode={crisisCode}&callback={callback}&count={count}
  * ============
  * Channel name based examples:
  * 	1. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=clex_20131201&count=50
