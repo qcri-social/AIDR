@@ -39,7 +39,7 @@ public class JsonDataFormatter {
 			ListIterator<String> itr = bufferedMessages.listIterator(bufferedMessages.size());  // Must be in synchronized block
 			while (itr.hasPrevious() && count < messageCount) {
 				String msg = itr.previous();
-				TaggerJsonOutputAdapter jsonOutput = new TaggerJsonOutputAdapter();
+				NewTaggerJsonOutputAdapter jsonOutput = new NewTaggerJsonOutputAdapter();
 				String jsonData = (msg != null) ? jsonOutput.buildJsonString(msg, rejectNullFlag) : null;
 				if (jsonData != null) {
 					jsonDataList.append(jsonData).append(",");

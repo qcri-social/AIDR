@@ -131,7 +131,7 @@ public class ChannelBufferManager {
 			//First create a new circular buffer and then add to that buffer
 			createChannelQueue(channelName);
 			addMessageToChannelBuffer(channelName, receivedMessage);
-			logger.debug("[manageChannelBuffers] Created new channel");
+			logger.info("[manageChannelBuffers] Created new channel: " + channelName);
 		}
 		// Periodically check if any channel is down - if so, delete
 		long currentTime = new Date().getTime();

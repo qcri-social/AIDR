@@ -223,7 +223,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		else {
 			// Form fully qualified channelName and get other parameter values, if any
 			String channelName = null;
-			if (channelCode.startsWith(CHANNEL_PREFIX_STRING)) {
+			if (channelCode.startsWith(CHANNEL_PREFIX_STRING) || channelCode.contains(".")) {
 				channelName = channelCode;		// fully qualified channel name provided
 			}
 			else {
@@ -255,7 +255,12 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				return Response.ok(jsonDataList.toString()).build();
 			}
 			else {
-				return Response.ok(new String("{}")).build();
+				if (callbackName != null) {
+					StringBuilder respStr = new StringBuilder();
+					respStr.append(callbackName).append("([{}])");
+					return Response.ok(respStr.toString()).build();
+				} else
+					return Response.ok(new String("[{}]")).build();
 			}
 		}
 	}
