@@ -5,7 +5,7 @@
  * 		1. The streaming connection duration expires (subscription_duration parameter value)
  * 		2. The REDIS DB connection times out (REDIS_CALLBACK_TIMEOUT constant)
  * 		3. Connection loss, e.g., client closes the connection 
- 
+
  * The code accepts i) channel name, ii) fully qualified channel name and, iii) wildcard '*' for
  * pattern based subscription.
  * 
@@ -28,28 +28,28 @@
  * 		6. Issue stream request from client
  *
  *
- * Invocations: 
+ * Invocation: host:port/context-path/channel?crisisCode={crisisCode}&callback={callback}&rate={rate}&duration={duration}  
  * ============
  * Channel Name based examples:
- *  1. http://localhost:8080/aidr-output/stream?crisisCode=clex_20131201&callback=print&rate=10  
- *  2. http://localhost:8080/aidr-output/stream?crisisCode=clex_20131201&duration=1h 
- *  3. http://localhost:8080/aidr-output/stream?crisisCode=clex_20131201&duration=1h&callback=print
- *  4. http://localhost:8080/aidr-output/stream?crisisCode=clex_20131201&duration=1h&rate=15
- *  5. http://localhost:8080/aidr-output/stream?crisisCode=clex_20131201&duration=1h&callback=print&rate=10
+ *  1. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=clex_20131201&callback=print&rate=10  
+ *  2. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=clex_20131201&duration=1h 
+ *  3. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=clex_20131201&duration=1h&callback=print
+ *  4. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=clex_20131201&duration=1h&rate=15
+ *  5. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=clex_20131201&duration=1h&callback=print&rate=10
  *  
  * Wildcard based examples:
- *  1. http://localhost:8080/aidr-output/stream?crisisCode=*&callback=print&rate=10 
- *  2. http://localhost:8080/aidr-output/stream?crisisCode=*&duration=1h 
- *  3. http://localhost:8080/aidr-output/stream?crisisCode=*&duration=1h&callback=print
- *  4. http://localhost:8080/aidr-output/stream?crisisCode=*&duration=1h&rate=15
- *  5. http://localhost:8080/aidr-output/stream?crisisCode=*&duration=1h&callback=print&rate=10
+ *  1. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=*&callback=print&rate=10 
+ *  2. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=*&duration=1h 
+ *  3. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=*&duration=1h&callback=print
+ *  4. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=*&duration=1h&rate=15
+ *  5. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=*&duration=1h&callback=print&rate=10
  *  
  * Fully qualified channel name examples:
- *  1. http://localhost:8080/aidr-output/stream?crisisCode=aidr_predict.clex_20131201&callback=print&rate=10 
- *  2. http://localhost:8080/aidr-output/stream?crisisCode=aidr_predict.clex_20131201&duration=1h 
- *  3. http://localhost:8080/aidr-output/stream?crisisCode=aidr_predict.clex_20131201&duration=1h&callback=print
- *  4. http://localhost:8080/aidr-output/stream?crisisCode=aidr_predict.clex_20131201&duration=1h&rate=15
- *  5. http://localhost:8080/aidr-output/stream?crisisCode=aidr_predict.clex_20131201&duration=1h&callback=print&rate=10
+ *  1. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&callback=print&rate=10 
+ *  2. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&duration=1h 
+ *  3. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&duration=1h&callback=print
+ *  4. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&duration=1h&rate=15
+ *  5. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&duration=1h&callback=print&rate=10
  * 
  *  
  *  Parameter explanations:
@@ -65,7 +65,6 @@
 package qa.qcri.aidr.output.stream;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -88,21 +87,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import qa.qcri.aidr.output.utils.JedisConnectionObject;
+import qa.qcri.aidr.output.utils.JsonDataFormatter;
+import qa.qcri.aidr.output.utils.WriteResponse;
 
 @SuppressWarnings("serial")
-@WebServlet(value = "/stream", asyncSupported = true)
+@WebServlet(value = "/channel", asyncSupported = true)
 public class RedisHTTPStreaming extends HttpServlet {
 
 	// Time-out constants
-	private static final int REDIS_CALLBACK_TIMEOUT = 2 * 60 * 1000;		// in ms
-	private static final int SUBSCRIPTION_MAX_DURATION = 6 * 60 * 60 * 1000;			// in ms
+	private static final int REDIS_CALLBACK_TIMEOUT = 5 * 60 * 1000;		// in ms
+	private static final int SUBSCRIPTION_MAX_DURATION = -1;			//default = no expiry
 
 	// Pertaining to JEDIS - establishing connection with a REDIS DB
 	// Currently using ssh tunneling:: ssh -f -L 1978:localhost:6379 scd1.qcri.org -N
@@ -111,14 +109,20 @@ public class RedisHTTPStreaming extends HttpServlet {
 	//		
 	private static final String CHANNEL_PREFIX_CODE = "aidr_predict.";
 	private boolean patternSubscriptionFlag;
-
+	private final boolean rejectNullFlag = true;
+	
 	private String redisChannel = "aidr_predict.clex_20131201";		// channel to subscribe to		
 	private static final String redisHost = "localhost";					// Current assumption: REDIS running on same m/c
 	private static final int redisPort = 6379;					
-	public static JedisPoolConfig poolConfig = null;
-	public static JedisPool pool = null;
+	
+	
+	public static JedisConnectionObject jedisConn;
 	public Jedis subscriberJedis = null;
 	public RedisSubscriber aidrSubscriber = null;
+
+	// Runtime related
+	private boolean isConnected = false;
+	private boolean isSubscribed =false;
 
 	// Related to Async Thread management
 	public ExecutorService executorServicePool;
@@ -135,40 +139,20 @@ public class RedisHTTPStreaming extends HttpServlet {
 		//PropertyConfigurator.configure("log4j.properties");		// where to place the properties file?
 		//BasicConfigurator.configure();							// initialize log4j logging
 		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
-		logger.info("[init] In servlet init...");
-		initJedisPool();
+		jedisConn = new JedisConnectionObject(redisHost, redisPort);
 		executorServicePool = Executors.newFixedThreadPool(200);		// max number of threads
 	}
 
-	// Initialize JEDIS parameters and thread pool
-	public void initJedisPool() {
-		if (null == poolConfig) {
-			poolConfig = new JedisPoolConfig();
-			poolConfig.setMaxActive(100);
-			poolConfig.setMaxIdle(50);
-			poolConfig.setMinIdle(5);
-			poolConfig.setTestWhileIdle(true);
-			poolConfig.setTestOnBorrow(true);
-			poolConfig.setTestOnReturn(true);
-			poolConfig.numTestsPerEvictionRun = 10;
-			poolConfig.timeBetweenEvictionRunsMillis = 60000;
-			poolConfig.maxWait = 3000;
-			poolConfig.whenExhaustedAction = org.apache.commons.pool.impl.GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW;
-			logger.debug("[connectToRedis] New Jedis poolConfig: " + poolConfig);
-		} else {
-			logger.debug("[connectToRedis] Reusing existing Jedis poolConfig: " + poolConfig);
-		}
-		if (null == pool) {
-			pool = new JedisPool(poolConfig, redisHost, redisPort, 10000);
-			logger.debug("[connectToRedis] New Jedis pool: " + pool);
-		} else {
-			logger.debug("[connectToRedis] Reusing existing Jedis pool: " + pool);
-		}
-	}
-
 	public boolean initRedisConnection() { 
-		this.subscriberJedis = pool.getResource();
-		if (this.subscriberJedis != null) {
+		try {
+			isConnected = jedisConn.connectToRedis();
+			subscriberJedis = jedisConn.getJedis();
+		} catch (JedisConnectionException e) {
+			logger.error("Fatal error! Couldn't establish connection to REDIS!");
+			e.printStackTrace();
+			System.exit(1);
+		}
+		if (subscriberJedis != null) {
 			return true;
 		}
 		return false;
@@ -176,7 +160,6 @@ public class RedisHTTPStreaming extends HttpServlet {
 
 	// Stop subscription of this subscribed thread and return resources to the JEDIS thread pool
 	private void stopSubscription(final RedisSubscriber sub, final Jedis jedis) {
-		logger.debug(sub + "@[stopSubscription] Subscription count = " + sub.getSubscribedChannels());
 		if (sub != null && sub.getSubscribedChannels() > 0) {
 			if (!patternSubscriptionFlag) { 
 				sub.unsubscribe();				
@@ -184,17 +167,9 @@ public class RedisHTTPStreaming extends HttpServlet {
 			else {
 				sub.punsubscribe();
 			}
-			logger.info("[stopSubscription] unsubscribed " + sub + ", Subscription count = " + sub.getSubscribedChannels());
 		}
-
-		try {
-			pool.returnResource(jedis);
-			logger.info(sub + "@[stopSubscription] Pool resource returned");
-		} catch (JedisConnectionException e) {
-			logger.error(sub + "@[stopsubscription] JedisConnectionException occurred...");
-			pool.returnBrokenResource(jedis);
-		}
-		logger.info(sub + "@[stopSubscription] Subscription ended for Channel=" + redisChannel);
+		jedisConn.returnJedis();
+		logger.info("[stopSubscription] Subscription ended for Channel=" + redisChannel);
 	}
 
 
@@ -206,25 +181,21 @@ public class RedisHTTPStreaming extends HttpServlet {
 				try {
 					logger.debug("[subscribeToChannel] patternSubscriptionFlag = " + patternSubscriptionFlag);
 					if (!patternSubscriptionFlag) { 
-						logger.debug(sub + "@[subscribeToChannel] Attempting subscription for " + redisHost + ":" + redisPort + "/" + redisChannel);
+						logger.info("[subscribeToChannel] Attempting subscription for " + redisHost + ":" + redisPort + "/" + redisChannel);
 						jedis.subscribe(sub, redisChannel);
-						logger.info(sub + "@[subscribeToChannel] Out of subscription for Channel = " + redisChannel);
 					} 
 					else {
-						logger.debug(sub + "@[subscribeToChannel] Attempting pSubscription for " + redisHost + ":" + redisPort + "/" + redisChannel);
+						logger.info("[subscribeToChannel] Attempting pSubscription for " + redisHost + ":" + redisPort + "/" + redisChannel);
 						jedis.psubscribe(sub, redisChannel);
-						logger.info(sub + "@[subscribeToChannel] Out of pSubscription for Channel = " + redisChannel);
 					}
 				} catch (Exception e) {
-					logger.debug(sub + "@[subscribeToChannel] AIDR Predict Channel Subscribing failed");
+					logger.error("[subscribeToChannel] AIDR Predict Channel Subscribing failed");
 					stopSubscription(sub, jedis);
 				} finally {
 					try {
-						logger.debug(sub + "@[subscribeToChannel::finally] Attempting stopSubscription...");
 						stopSubscription(sub, jedis);
-						logger.info(sub + "@[subscribeToChannel::finally] stopSubscription success!");
 					} catch (Exception e) {
-						logger.error(sub + "@[subscribeToChannel::finally] Exception occurred attempting stopSubscription: " + e.toString());
+						logger.error("[subscribeToChannel] Exception occurred attempting stopSubscription: " + e.toString());
 						e.printStackTrace();
 						System.exit(1);
 					}
@@ -266,20 +237,14 @@ public class RedisHTTPStreaming extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
-
-		response.setContentType("application/json");
-		response.setCharacterEncoding("UTF-8");
-
 		if (request.getParameter("crisisCode") != null) {
-			// TODO: Handle client refresh of webpage in same session				
+			// TODO: Handle client refresh of web-page in same session				
 			if (initRedisConnection()) {
 				// Get callback function name, if any
 				String channel = setFullyQualifiedChannelName(CHANNEL_PREFIX_CODE, request.getParameter("crisisCode"));
 				String callbackName = request.getParameter("callback");
 
-				// Now spawn asynchronous response.getWriter() - if coming from a different session
-				//TODO: handling same sessions gracefully 
-				// if (!isSameSession(request)) {}
+				// Now spawn asynchronous response thread to handle streaming
 				final AsyncContext asyncContext = request.startAsync(request, response);
 				aidrSubscriber = new RedisSubscriber(asyncContext, subscriberJedis, channel, callbackName);
 				try {
@@ -295,26 +260,20 @@ public class RedisHTTPStreaming extends HttpServlet {
 		} 
 		else {
 			// No crisisCode provided...
-			logger.info("[doGet] In parameter: crisisCode = null, stopSubscription=false");
-			PrintWriter out = response.getWriter();
-			try {
-				response.setCharacterEncoding("UTF-8");
-				response.setContentType("text/html");
+			WriteResponse responseWriter = new WriteResponse(response,false);
+			responseWriter.initWriter("text/html");
+			StringBuilder htmlMessageString = new StringBuilder();
 
-				// Allocate a output writer to write the response message into the network socket
-				out.println("<!DOCTYPE html>");
-				out.println("<html>");
-				out.println("<head><title>Redis HTTP Streaming App</title></head>");
-				out.println("<body>");
-				out.println("<h1>No CrisisCode Provided! </h1>");
-				out.println("<h>Can not initiate REDIS channel subscription!</h>");
-				out.println("</body></html>");
-			} finally {
-				out.flush();
-				out.close();  // Always close the output writer
-			}
+			// Build HTML doc to return
+			htmlMessageString.append("<!DOCTYPE html>");
+			htmlMessageString.append("<html>");
+			htmlMessageString.append("<head><title>REDIS PUBSUB Channel Data Output Service</title></head>");
+			htmlMessageString.append("<body>");
+			htmlMessageString.append("<h1>Invalid/No CrisisCode Provided! </h1>");
+			htmlMessageString.append("<h2>Can not initiate REDIS channel subscription!</h2>");
+			htmlMessageString.append("</body></html>");
+			responseWriter.writeHtmlData(htmlMessageString, 0);
 		}
-		logger.info("[doGet] Reached end-of-function...");
 	}
 
 	// cleanup all threads 
@@ -327,7 +286,6 @@ public class RedisHTTPStreaming extends HttpServlet {
 				// Wait a while for tasks to respond to being cancelled
 				if (!threadPool.awaitTermination(1, TimeUnit.SECONDS))
 					logger.error("[shutdownAndAwaitTermination] Pool did not terminate");
-					System.err.println("[shutdownAndAwaitTermination] Pool did not terminate");
 			}
 		} catch (InterruptedException ie) {
 			// (Re-)Cancel if current thread also interrupted
@@ -340,9 +298,9 @@ public class RedisHTTPStreaming extends HttpServlet {
 	// cleanup when servlet is destroyed (e.g., server shutdown)
 	public void destroy() {
 		try {
-			logger.debug("[destroy] Attempting stopSubscription...");
 			stopSubscription(this.aidrSubscriber, this.subscriberJedis);
-			pool.destroy();
+			jedisConn.finalize();
+			jedisConn = null;
 			logger.info("[destroy] stopSubscription success!");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -367,7 +325,7 @@ public class RedisHTTPStreaming extends HttpServlet {
 		private boolean runFlag = true;
 		private boolean error = false;
 		private boolean timeout = false;
-		private int subscriptionDuration = SUBSCRIPTION_MAX_DURATION;
+		private long subscriptionDuration = SUBSCRIPTION_MAX_DURATION;
 
 		// rate control related 
 		private static final int DEFAULT_SLEEP_TIME = 0;		// in msec
@@ -386,39 +344,30 @@ public class RedisHTTPStreaming extends HttpServlet {
 			this.setRunFlag(true);		
 
 			HttpServletRequest request = (HttpServletRequest) asyncContext.getRequest();
-
-			logger.info(this + "@[RedisSubscriber] Step 1: get subscription duration");
 			if (request.getParameter("duration") != null) {
 				subscriptionDuration = parseTime(request.getParameter("duration"));
 			}
-
-			logger.info(this + "@[RedisSubscriber] Step 2: get output rate, if any");
-
+			logger.info("Client subscribed for duration = " + subscriptionDuration);
 			if (request.getParameter("rate") != null) {
 				messageRate = Float.parseFloat(request.getParameter("rate"));	// specified as messages/min (NOTE: upper-bound)
 				if (messageRate > 0) {		// otherwise, use default rate
 					sleepTime = Math.max(0, Math.round(60 * 1000 / messageRate));		// time to sleep between sends (in msecs)
 				}
 			}
-			logger.info(this + "@[RedisSubscriber] Parameters received: crisisCode:" + this.channel
-					+ ", subscription_duration = " + subscriptionDuration 
-					+ ", callback = " + this.callbackName 
-					+ ", rate = " + this.messageRate);
-
 			// Set timeout period for async thread
 			asyncContext.setTimeout(subscriptionDuration);		// negative --> no timeout
-
-			logger.info(this +"@[RedisSubscriber] Step 3: add asyc listener and set timeout period.");
-
 			// Listen for errors and timeouts			
 			asyncContext.addListener(this);
 		}
 
-		private int parseTime(String timeString) {
-			int duration = 0;
+		private long parseTime(String timeString) {
+			long duration = 0;
+			final int maxDuration = SUBSCRIPTION_MAX_DURATION > 0 ? SUBSCRIPTION_MAX_DURATION : Integer.MAX_VALUE;
 			float value = Float.parseFloat(timeString.substring(0, timeString.length()-1));
 			if (value > 0) {
 				String suffix = timeString.substring(timeString.length() - 1, timeString.length());
+				// The following switch-case works only with JEE 7+
+				/*
 				switch(suffix) {
 				case "s":
 					duration = Math.min(SUBSCRIPTION_MAX_DURATION, Math.round(value * 1000));
@@ -433,69 +382,57 @@ public class RedisHTTPStreaming extends HttpServlet {
 					duration = Math.min(SUBSCRIPTION_MAX_DURATION, Math.round(value * 1000 * 60 * 60 * 24));
 					break;
 				}
+				*/
+				// Alternative to the above switch-case - works on any version
+				if (suffix.equalsIgnoreCase("s"))
+					duration = Math.min(maxDuration, Math.round(value * 1000));
+				if (suffix.equalsIgnoreCase("m"))
+					duration = Math.min(maxDuration, Math.round(value * 1000 * 60));
+				if (suffix.equalsIgnoreCase("h"))
+					duration = Math.min(maxDuration, Math.round(value * 1000 * 60 * 60));
+				if (suffix.equalsIgnoreCase("d"))
+					duration = Math.min(maxDuration, Math.round(value * 1000 * 60 * 60 * 24));
 			}
 			return duration;
 		}
 
 		@Override
 		public void onMessage(String channel, String message) {
-			// onMessage() asynchronously receives messages from the JedisPubSub channel 
-			// Note: no explicit synchronization required for immutable objects
-			// reset for every triggered event of receiving a new message.
-			StringBuilder messageObjectResponse = null;
-			if (callbackName != null) {
-				// with specified callback - JSONP
-				messageObjectResponse = new StringBuilder("callbackname").append("(").append(message).append(")");  
+			final int DEFAULT_COUNT = 1;
+			synchronized (messageList) {
+				if (messageList.size() < DEFAULT_COUNT) messageList.add(message);
 			}
-			else {
-				messageObjectResponse = new StringBuilder(message); 	// without callback - pure JSON
-			}
-			messageList.add(messageObjectResponse.toString());		
-
-			// Also log message for debugging purpose
-			logger.debug(this + "@[onMessage] Received Redis message to be sent to client: ");
-
-			// Clean-up memory
-			messageObjectResponse = null;
 		}
 
 		@Override
 		public void onPMessage(String pattern, String channel, String message) {
-			StringBuilder messageObjectResponse = null;
-			if (callbackName != null) {
-				// with specified callback - JSONP
-				messageObjectResponse = new StringBuilder("callbackname").append("(").append(message).append(")");  
+			synchronized (messageList) {
+				if (messageList.size() <  1) messageList.add(message);
 			}
-			else {
-				messageObjectResponse = new StringBuilder(message); 	// without callback - pure JSON
-			}
-			messageList.add(messageObjectResponse.toString());		
-
-			// Also log message for debugging purpose
-			logger.debug("[onPMessage] For pattern: " + pattern + "##channel = " + channel + ", Received Redis message: ");
-
-			// Clean-up memory
-			messageObjectResponse = null;
 		}
 
 		@Override
 		public void onPSubscribe(String pattern, int subscribedChannels) {
+			isSubscribed = true;
 			logger.info("[onPSubscribe] Started pattern subscription...");
 		}
 
 		@Override
 		public void onPUnsubscribe(String pattern, int subscribedChannels) {
+			isSubscribed = false;
 			logger.info("[onPUnsubscribe] Unsubscribed from pattern subscription...");
 		}
 
 		@Override
 		public void onSubscribe(String channel, int subscribedChannels) {
+			isSubscribed = true;
 			logger.info("[onSubscribe] Started channel subscription...");
 		}
 
 		@Override
 		public void onUnsubscribe(String channel, int subscribedChannels) {
-			logger.info(this + "@[onUnsubscribe] Unusbscribed from channel " + channel);
+			isSubscribed = false;
+			logger.info("[onUnsubscribe] Unusbscribed from channel " + channel);
 		}
 
 		///////////////////////////////////
@@ -503,7 +440,7 @@ public class RedisHTTPStreaming extends HttpServlet {
 		///////////////////////////////////
 		public boolean isThreadTimeout(long startTime) {
 			if ((subscriptionDuration > 0) && (new Date().getTime() - startTime) > subscriptionDuration) {
-				logger.warn(this + "@[isThreadTimeout] Exceeded Thread timeout = " + subscriptionDuration + "msec");
+				logger.info("[isThreadTimeout] Exceeded Thread timeout = " + subscriptionDuration + "msec");
 				return true;
 			}
 			return false;
@@ -512,68 +449,61 @@ public class RedisHTTPStreaming extends HttpServlet {
 
 		@Override
 		public void run() {
-			logger.info(this + "@[run] started async thread execution..., time = " + new Date());
 			// Time-out related local variables
 			long startTime = new Date().getTime();			// start time of the thread execution
-			long currentTime = new Date().getTime(); 
-			long lastAccessedTime = currentTime; 
-
+			long lastAccessedTime = startTime; 
+			
 			HttpServletResponse response = (HttpServletResponse) asyncContext.getResponse();
-			response.setContentType("application/json");
-			PrintWriter responseWriter = null;
-			try {
-				responseWriter = response.getWriter();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				logger.error(this + "@[run] Error initializing PrintWriter", e);
-				e.printStackTrace();
-				setRunFlag(false);
-			}
-
+			response.setBufferSize(700);
+			WriteResponse responseWriter = new WriteResponse(response,true);
+			boolean isWriter = responseWriter.initWriter("application/json");
+			setRunFlag(isWriter);
 			while (getRunFlag() && !isThreadTimeout(startTime)) {
 				// Here we poll a non blocking resource for updates
-				if (!messageList.isEmpty()) {
+				if (messageList != null && !messageList.isEmpty()) {
 					// There are updates, send these to the waiting client
 					if (!error && !timeout) {
 						// Send updates response as JSON
+						List<String> latestMsg = null; 
 						synchronized (messageList) {
-							Gson jsonObject = new GsonBuilder().serializeNulls()		//.disableHtmlEscaping()
-									.serializeSpecialFloatingPointValues().setPrettyPrinting()
-									.create();
-							String jsonData = jsonObject.toJson(messageList.get(messageList.size()-1) != null 
-									? messageList.get(messageList.size()-1) : new String("{}"));
+							latestMsg = new ArrayList<String>();
+							latestMsg.addAll(messageList);
+						}
+						JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
+						StringBuilder jsonDataList = taggerOutput.createList(latestMsg, latestMsg.size(), rejectNullFlag);
+						int count = taggerOutput.getMessageCount();
+						responseWriter.writeJsonData(jsonDataList, count);
+						responseWriter.writerHandle.println();
+						responseWriter.writerHandle.flush();
+						synchronized (messageList) {
+							if (messageList.get(messageList.size()-1) != "{}")		// we did not just send an empty JSONP message
+								lastAccessedTime = new Date().getTime();			// approx. time when message last received from REDIS
 
-							logger.info(this + "@[run] Sending JSON data: " + jsonData);
-							responseWriter.println(jsonData);
-							responseWriter.flush();
-
-							jsonObject = null;
-							jsonData = null;
-							messageList.remove(messageList.size()-1);	// remove the sent message from list
-							//messageObjectResponse = null;
-						}	// end synchronized block
-						lastAccessedTime = new Date().getTime();		// time when message last received from REDIS
-
+							// Reset the messageList buffer and cleanup
+							messageList.clear();	// remove the sent message from list
+							latestMsg.clear();
+							latestMsg = null;
+							jsonDataList = null;
+						}
 						// Now sleep for a short time before going for next message - easy to read on screen
 						try {
 							Thread.sleep(sleepTime);
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
-							e.printStackTrace();
+							//e.printStackTrace();
 						}
 					}
 					else {
-						logger.error(this + "@[run] Not sending response because task timed-out or error'ed. error={}, timeout={}, run={}", new Object[] { error, timeout, getRunFlag() });
 						setRunFlag(false);
 					}
 				}
 				else {
 					// messageList is empty --> no message received 
 					// from REDIS. Wait for some more time before giving up.
-					currentTime = new Date().getTime();
+					long currentTime = new Date().getTime();
 					long elapsed = currentTime - lastAccessedTime;
 					if (elapsed > REDIS_CALLBACK_TIMEOUT) {
-						logger.error(this + "@[run::Timeout] Elapsed time = " + elapsed + ", exceeded REDIS timeout = " + REDIS_CALLBACK_TIMEOUT + "sec");
+						logger.error("[run] exceeded REDIS timeout = " + REDIS_CALLBACK_TIMEOUT + "msec");
 						setRunFlag(false);
 					}	
 					else {
@@ -587,31 +517,29 @@ public class RedisHTTPStreaming extends HttpServlet {
 				}
 				// check if the client is up - indirectly through whether the write succeeded or failed
 				if (responseWriter.checkError()) {
-					logger.info(this + "@[run] Client side error - possible client disconnect..." + new Date());
+					logger.info("[run] Client side error - possible client disconnect..." + new Date());
 					setRunFlag(false);
 				}
 			}	// end-while
 
 			// clean-up and exit thread
 			if (!error && !timeout) {
-				messageList.clear();
-				messageList = null;
+				if (messageList != null) {
+					messageList.clear();
+					messageList = null;
+				}
 				if (!responseWriter.checkError()) {
 					responseWriter.close();
 				}
 				try {
-					logger.debug(this + "@[run] All done. Attempting stopSubscription... time = " + new Date());
 					stopSubscription(this, this.jedis);
-					logger.debug(this + "@[run] All done. unSubscription success! ");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					logger.error(this + "@[run] Attempting clean-up. Exception occurred attempting stopSubscription: " + e.toString());
+					logger.error("[run] Attempting clean-up. Exception occurred attempting stopSubscription: " + e.toString());
 					e.printStackTrace();
 				}
-				logger.debug(this + "@[run] Attempting async complete...");
 				// Double check just to ensure graceful exit - Not sure if required!
 				if (!error && !timeout) {
-					logger.debug(this + "@[run] Async complete...");
 					asyncContext.complete();
 				}
 			}
@@ -619,7 +547,6 @@ public class RedisHTTPStreaming extends HttpServlet {
 
 		public void setRunFlag(final boolean val) {
 			runFlag = val;
-			logger.info(this + "@[setRunFlag] flag = " + runFlag);
 		}
 
 		public boolean getRunFlag() {
@@ -630,20 +557,22 @@ public class RedisHTTPStreaming extends HttpServlet {
 		public void onError(AsyncEvent event) throws IOException {
 			setRunFlag(false);
 			error = true;
-			logger.error(this + "@[onError] An error occured while executing task for client ");
+			logger.error("[onError] An error occured while executing task for client ");
 		}
 
 		@Override
 		public void onTimeout(AsyncEvent event) throws IOException {
 			setRunFlag(false);
 			timeout = true;
-			logger.warn(this + "@[onTimeout] Timed out while executing task for client");
+			logger.warn("[onTimeout] Timed out while executing task for client");
 		}
 
 		@Override
 		public void onStartAsync(AsyncEvent event) throws IOException {}
 
 		@Override
-		public void onComplete(AsyncEvent event) throws IOException {}
+		public void onComplete(AsyncEvent event) throws IOException {
+			logger.debug("[run] Async thread complete...");
+		}
 	}
 }

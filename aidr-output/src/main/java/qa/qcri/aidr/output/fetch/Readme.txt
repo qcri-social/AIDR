@@ -1,4 +1,3 @@
-
  This code creates a long pooling connection to get 'n' JSONP data  
  from a REDIS DB to a client using a servlet. After sending the data, it 
  closes the connection. The difference between /getAll and /fetch is that
@@ -16,36 +15,36 @@
  Dependencies:  servlets 3+, jedis-2.2.1, gson-2.2.4, commons-pool-1.6, slf4j-1.7.5
  	
  Hints for testing:
- 	1. Tune the socket timeout parameter in JedisPool(...) call if connecting over a slow network
+ 		1. Tune the socket timeout parameter in JedisPool(...) call if connecting over a slow network
   	2. Tune REDIS_CALLBACK_TIMEOUT, in case the rate of publication is very slow
   	3. Tune the number of threads in ExecutorService 
  		 
  
  Deployment steps: 
- 	1. [Required] Set redisHost and redisPort in code, as per your REDIS setup/location
- 	2. [Optional] Tune time-out and other parameters, if necessary
- 	3. [Required]Compile and package as WAR file
- 	4. [Required] Deploy as WAR file in glassfish 3.1.2
- 	5. [Optional] Setup ssh tunneling (e.g. command: ssh tunneling:: ssh -f -L 1978:localhost:6379 scd1.qcri.org -N)
- 	6. Issue fetch request from client
-
+ 		1. [Required] Set redisHost and redisPort in code, as per your REDIS setup/location
+ 		2. [Optional] Tune time-out and other parameters, if necessary
+ 		3. [Required]Compile and package as WAR file
+ 		4. [Required] Deploy as WAR file in glassfish 3.1.2
+ 		5. [Optional] Setup ssh tunneling (e.g. command: ssh tunneling:: ssh -f -L 1978:localhost:6379 scd1.qcri.org -N)
+ 		6. Issue fetch request from client
  
- Invocations: 
+ 
+ Invocation: host:port/context-path/channel?crisisCode={crisisCode}&callback={callback}&count={count}
  ============
  Channel name based examples:
-  	1. http://localhost:8080/aidr-output/fetch?crisisCode=clex_20131201&count=50
-  	2. http://localhost:8080/aidr-output/fetch?crisisCode=clex_20131201&callback=func
-  	3. http://localhost:8080/aidr-output/fetch?crisisCode=clex_20131201&callback=func&count=50
+ 	1. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=clex_20131201&count=50
+  2. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=clex_20131201&callback=func
+  3. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=clex_20131201&callback=func&count=50
  
  Wildcard based examples: 
-  	1. http://localhost:8080/aidr-output/fetch?crisisCode=*&count=50
-  	2. http://localhost:8080/aidr-output/fetch?crisisCode=*&callback=func
-  	3. http://localhost:8080/aidr-output/fetch?crisisCode=*&callback=func&count=50
+  1. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=*&count=50
+  2. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=*&callback=func
+  3. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=*&callback=func&count=50
   
  Fully qualified channel name based examples:
-  	1. http://localhost:8080/aidr-output/fetch?crisisCode=aidr_predict.clex_20131201&count=50
-  	2. http://localhost:8080/aidr-output/fetch?crisisCode=aidr_predict.clex_20131201&callback=func
-  	3. http://localhost:8080/aidr-output/fetch?crisisCode=aidr_predict.clex_20131201&callback=func&count=50
+  1. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=aidr_predict.clex_20131201&count=50
+  2. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=aidr_predict.clex_20131201&callback=func
+  3. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=aidr_predict.clex_20131201&callback=func&count=50
   
   
   Parameter explanations:
