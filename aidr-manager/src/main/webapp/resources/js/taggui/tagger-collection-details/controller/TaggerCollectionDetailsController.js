@@ -37,6 +37,18 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 }
             },
 
+            "#goFetchLink": {
+                click: function (btn, e, eOpts) {
+                    this.goToFetchLink();
+                }
+            },
+
+            "#goRealtimeLink": {
+                click: function (btn, e, eOpts) {
+                    this.goToRealtTimeLink();
+                }
+            },
+
             "#generateCSVLink": {
                 click: function (btn, e, eOpts) {
                     this.generateCSVLink(btn);
@@ -100,6 +112,14 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 }
             }
         });
+    },
+
+    goToFetchLink: function() {
+        document.location.href ='http://aidr-dev.qcri.org/AIDROutput/aidrTaggerLatest.html?crisisCode=' + CRISIS_CODE ;
+    },
+
+    goToRealtTimeLink: function() {
+        document.location.href ='http://aidr-dev.qcri.org/AIDROutput/aidrTaggerStream.html?crisisCode=' + CRISIS_CODE ;
     },
 
     goToCollector: function() {
