@@ -7,10 +7,7 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.ScrollableResults;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 import org.springframework.stereotype.Repository;
 
 import org.springframework.util.StringUtils;
@@ -76,7 +73,11 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
     public List<AidrCollection> getRunningCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) {
         Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
 
-        criteria.add(Restrictions.eq("status", CollectionStatus.RUNNING));
+        LogicalExpression or = Restrictions.or(
+                Restrictions.eq("status", CollectionStatus.RUNNING),
+                Restrictions.eq("status", CollectionStatus.RUNNING_WARNING)
+        );
+        criteria.add(or);
         addCollectionSearchCriteria(terms, criteria);
         searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
 
@@ -89,7 +90,11 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
         Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
-        criteria.add(Restrictions.eq("status", CollectionStatus.RUNNING));
+        LogicalExpression or = Restrictions.or(
+                Restrictions.eq("status", CollectionStatus.RUNNING),
+                Restrictions.eq("status", CollectionStatus.RUNNING_WARNING)
+        );
+        criteria.add(or);
         addCollectionSearchCriteria(terms, criteria);
 
         ScrollableResults scroll = criteria.scroll();
@@ -103,6 +108,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
         Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
 
         criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING));
+        criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING_WARNING));
         addCollectionSearchCriteria(terms, criteria);
         searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
 
@@ -116,6 +122,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
         criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING));
+        criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING_WARNING));
         addCollectionSearchCriteria(terms, criteria);
 
         ScrollableResults scroll = criteria.scroll();
@@ -126,8 +133,18 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
     private void addCollectionSearchCriteria(String terms, Criteria criteria) {
         if (StringUtils.hasText(terms)){
             String wildcard ='%'+ URLDecoder.decode(terms.trim())+'%';
-            criteria.add(Restrictions.ilike("name", wildcard));
-            criteria.add(Restrictions.ilike("code", wildcard));
+
+            LogicalExpression orNameCode = Restrictions.or(
+                    Restrictions.ilike("name", wildcard),
+                    Restrictions.ilike("code", wildcard)
+            );
+
+            LogicalExpression orAll = Restrictions.or(
+                    orNameCode,
+                    Restrictions.ilike("track", wildcard)
+            );
+
+            criteria.add(orAll);
         }
     }
 

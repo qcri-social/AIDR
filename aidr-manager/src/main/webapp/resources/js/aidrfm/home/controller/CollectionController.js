@@ -29,6 +29,12 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
                 click: function (btn, e, eOpts) {
                     document.location.href = BASE_URL + '/protected/tagger-home';
                 }
+            },
+
+            "#goToAdminSection": {
+                click: function (btn, e, eOpts) {
+                    document.location.href = BASE_URL + '/protected/administration/admin-console';
+                }
             }
 
         });
@@ -40,6 +46,8 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
 
         this.mainComponent = component;
         collectionController = this;
+
+        this.applyUserPermissions();
 
         var me = this;
 
@@ -205,6 +213,33 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
 
     refreshButtonAction: function() {
         this.mainComponent.collectionStore.load();
+    },
+
+    applyUserPermissions: function () {
+        var me = this;
+
+        Ext.Ajax.request({
+            url:  BASE_URL + '/protected/user/getCurrentUserRoles.action',
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                var response = Ext.decode(response.responseText);
+                if (response.data && response.data.roles) {
+                    var roles = response.data.roles;
+                    if (Ext.isArray(roles)) {
+                        Ext.each(roles, function (role) {
+                            if (role.name && role.name == 'ADMIN'){
+                                me.mainComponent.goToAdminSection.show();
+                            }
+                        })
+                    }
+                } else {
+                    AIDRFMFunctions.setAlert('Error', 'Collection Code already exist. Please select another code');
+                }
+            }
+        });
     }
 
 });

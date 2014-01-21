@@ -14,7 +14,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
 
         this.breadcrumbs = Ext.create('Ext.container.Container', {
             html: '<div class="bread-crumbs">' +
-                '<a href="' + BASE_URL + '/protected/home">AIDR</a><span>&nbsp;&gt;&nbsp;Administrator console</span></div>',
+                '<a href="http://aidr.qcri.org/">AIDR</a><span>&nbsp;&gt;&nbsp;Administrator console</span></div>',
             margin: 0,
             padding: 0
         });
@@ -33,9 +33,9 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
         });
 
         this.runningCollectionsStore = Ext.create('Ext.data.Store', {
-            pageSize: 20,
+            pageSize: 10,
             storeId: 'runningCollectionsStore',
-            fields: ['id', 'name', 'code', 'count', 'startDate', 'user'],
+            fields: ['id', 'name', 'code', 'count', 'startDate', 'user', 'totalCount'],
             remoteSort: true,
             proxy: {
                 type: 'ajax',
@@ -61,7 +61,13 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                         terms: terms
                     };
                 }
-            }
+            },
+            sorters: [
+                {
+                    property: 'startDate',
+                    direction: 'DESC'
+                }
+            ]
         });
 
         this.runningCollectionsGrid = Ext.create('Ext.grid.Panel', {
@@ -91,13 +97,13 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'name', text: 'Collected tweets', width: 150,
+                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 150, sortable: false,
                     renderer: function (value, meta, record) {
-                        return '';
+                        return value ? Ext.util.Format.number(value, '0,000') : 0;
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'name', text: 'Taggers', width: 100,
+                    xtype: 'gridcolumn', dataIndex: 'name', text: 'Taggers', width: 100, sortable: false,
                     renderer: function (value, meta, record) {
                         return '';
                     }
@@ -143,9 +149,9 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
         });
 
         this.stoppedCollectionsStore = Ext.create('Ext.data.Store', {
-            pageSize: 20,
+            pageSize: 10,
             storeId: 'stoppedCollectionsStore',
-            fields: ['id', 'name', 'code', 'count', 'startDate', 'user'],
+            fields: ['id', 'name', 'code', 'count', 'startDate', 'user', 'totalCount'],
             remoteSort: true,
             proxy: {
                 type: 'ajax',
@@ -171,7 +177,13 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                         terms: terms
                     };
                 }
-            }
+            },
+            sorters: [
+                {
+                    property: 'startDate',
+                    direction: 'DESC'
+                }
+            ]
         });
 
         this.stoppedCollectionsGrid = Ext.create('Ext.grid.Panel', {
@@ -201,13 +213,13 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'name', text: 'Collected tweets', width: 150,
+                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 150, sortable: false,
                     renderer: function (value, meta, record) {
-                        return '';
+                        return value ? Ext.util.Format.number(value, '0,000') : 0;
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'name', text: 'Taggers', width: 100,
+                    xtype: 'gridcolumn', dataIndex: 'name', text: 'Taggers', width: 100, sortable: false,
                     renderer: function (value, meta, record) {
                         return '';
                     }
