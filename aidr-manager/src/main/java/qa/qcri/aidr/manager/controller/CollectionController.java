@@ -1,31 +1,22 @@
 package qa.qcri.aidr.manager.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import qa.qcri.aidr.manager.dto.AidrCollectionTotalDTO;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
-import qa.qcri.aidr.manager.service.CollectionLogService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
+import org.springframework.web.bind.annotation.*;
+import qa.qcri.aidr.manager.dto.AidrCollectionTotalDTO;
 import qa.qcri.aidr.manager.dto.CollectionDataResponse;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
+import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Controller
 @RequestMapping("protected/collection")
@@ -86,12 +77,12 @@ public class CollectionController extends BaseController{
             if (CollectionStatus.RUNNING_WARNING.equals(status) || CollectionStatus.RUNNING.equals(status)) {
                 AidrCollection dbCollection = collectionService.findById(collectionId);
 //              stop collection
-                collectionService.stopAidrFetcher(dbCollection);
+                AidrCollection collectionAfterStop = collectionService.stopAidrFetcher(dbCollection);
 
 //              save current state of the collection to collectionLog
                 AidrCollectionLog collectionLog = new AidrCollectionLog();
                 collectionLog.setCount(dbCollection.getCount());
-                collectionLog.setEndDate(dbCollection.getEndDate());
+                collectionLog.setEndDate(collectionAfterStop.getEndDate());
                 collectionLog.setFollow(dbCollection.getFollow());
                 collectionLog.setGeo(dbCollection.getGeo());
                 collectionLog.setLangFilters(dbCollection.getLangFilters());
@@ -102,7 +93,7 @@ public class CollectionController extends BaseController{
 
 //              set some fields from old collection and update collection
                 collection.setStartDate(dbCollection.getStartDate());
-                collection.setEndDate(dbCollection.getEndDate());
+                collection.setEndDate(collectionAfterStop.getEndDate());
                 collection.setUser(dbCollection.getUser());
                 collection.setCreatedDate(dbCollection.getCreatedDate());
                 collectionService.update(collection);
@@ -292,6 +283,74 @@ public class CollectionController extends BaseController{
             return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
         }
         return getUIWrapper(result,true);
+    }
+
+    @RequestMapping(value = "/getAllRunning.action", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object>  getAllRunning(@RequestParam Integer start,
+                                             @RequestParam Integer limit,
+                                             @RequestParam (value = "terms", required = false, defaultValue = "") String terms,
+                                             @RequestParam (value = "sortColumn", required = false, defaultValue = "") String sortColumn,
+                                             @RequestParam (value = "sortDirection", required = false, defaultValue = "") String sortDirection) throws Exception {
+        start = (start != null) ? start : 0;
+        limit = (limit != null) ? limit :20;
+
+        UserEntity userEntity = getAuthenticatedUser();
+        if(userEntity != null){
+            Long total = collectionService.getRunningCollectionsCount(terms);
+
+            List<AidrCollectionTotalDTO> dtoList = new ArrayList<AidrCollectionTotalDTO>();
+            if (total > 0) {
+                List<AidrCollection> collections = collectionService.getRunningCollections(start, limit, terms, sortColumn, sortDirection);
+                for (AidrCollection collection : collections) {
+                    AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
+                    if (dto != null) {
+                        Integer totalCount = collectionLogService.countTotalDownloadedItemsForCollection(collection.getId());
+                        if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())) {
+                            totalCount += dto.getCount();
+                        }
+                        dto.setTotalCount(totalCount);
+                        dtoList.add(dto);
+                    }
+                }
+            }
+            return getUIWrapper(dtoList, total);
+        }
+        return getUIWrapper(false);
+    }
+
+    @RequestMapping(value = "/getAllStopped.action", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object>  getAllStopped(@RequestParam Integer start,
+                                             @RequestParam Integer limit,
+                                             @RequestParam (value = "terms", required = false, defaultValue = "") String terms,
+                                             @RequestParam (value = "sortColumn", required = false, defaultValue = "") String sortColumn,
+                                             @RequestParam (value = "sortDirection", required = false, defaultValue = "") String sortDirection) throws Exception {
+        start = (start != null) ? start : 0;
+        limit = (limit != null) ? limit :20;
+
+        UserEntity userEntity = getAuthenticatedUser();
+        if(userEntity != null){
+            Long total = collectionService.getStoppedCollectionsCount(terms);
+
+            List<AidrCollectionTotalDTO> dtoList = new ArrayList<AidrCollectionTotalDTO>();
+            if (total > 0) {
+                List<AidrCollection> collections = collectionService.getStoppedCollections(start, limit, terms, sortColumn, sortDirection);
+                for (AidrCollection collection : collections) {
+                    AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
+                    if (dto != null) {
+                        Integer totalCount = collectionLogService.countTotalDownloadedItemsForCollection(collection.getId());
+                        if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())) {
+                            totalCount += dto.getCount();
+                        }
+                        dto.setTotalCount(totalCount);
+                        dtoList.add(dto);
+                    }
+                }
+            }
+            return getUIWrapper(dtoList, total);
+        }
+        return getUIWrapper(false);
     }
 
     private AidrCollectionTotalDTO convertAidrCollectionToDTO(AidrCollection collection){

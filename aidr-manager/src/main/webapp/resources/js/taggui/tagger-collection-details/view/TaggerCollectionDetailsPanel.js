@@ -81,11 +81,6 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             margin: '5 0 5 0'
         });
 
-        this.horisontalLine = Ext.create('Ext.container.Container', {
-            width: '100%',
-            html: '<div class="horisontalLine"></div>'
-        });
-
         this.aucHint = Ext.create('Ext.container.Container', {
             html: '<span class="redInfo">*</span>If AUC is lower than 0.8-0.9, or AUC is 1.0, you urgently need more training examples.',
             margin: 0
@@ -140,7 +135,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             '<tr class="crisis-item">',
 
             '<td class="img">',
-            '<img alt="Collection History image" src="/AIDRFetchManager/resources/img/AIDR/AIDR_EMBLEM_CMYK_COLOUR_HR.jpg" width="70">',
+            '<img alt="Collection History image" src="/AIDRFetchManager/resources/img/AIDR/AIDR_EMBLEM_CMYK_COLOUR_HR.jpg" width="70" height="70">',
             '</td>',
 
             '<td class="content"><table><tr>',
@@ -170,7 +165,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
 
             '<tr><td colspan="2">',
-            '<div class="horisontalLine"></div>',
+            '<div class="horizontalLine"></div>',
             '</td></tr>',
 
             '</tpl>',
@@ -308,7 +303,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                 {
                     xtype: 'container',
                     width: '100%',
-                    html: '<div class="horisontalLine"></div>'
+                    html: '<div class="horizontalLine"></div>'
                 }
             ]
         });
@@ -392,78 +387,78 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             ]
         });
 
-        this.feedsBlock = Ext.create('Ext.container.Container', {
-            flex: 1,
-            layout: 'vbox',
-            items: [
-                {
-                    xtype: 'container',
-                    defaultType: 'label',
-                    padding: '0 10',
-                    flex: 1,
-                    layout: 'vbox',
-                    defaults: {
-                        margin: '5 0'
-                    },
-                    height: 100,
-                    items: [
-                        {
-                            xtype: 'container',
-                            defaultType: 'label',
-                            layout: 'hbox',
-                            items: [
-                                {
-                                    width: 75,
-                                    html: '<b>Data feed</b>'
-                                },
-                                {
-                                    html: '<b>URL</b>'
-                                }
-                            ]
-                        },{
-                            xtype: 'container',
-                            defaultType: 'label',
-                            layout: 'hbox',
-                            items: [
-                                {
-                                    width: 75,
-                                    text: 'Tweet-ids:'
-                                },
-                                {
-                                    html: '<a href="http://aidr.qcri.org/predict/public/"' + CRISIS_CODE + '>http://aidr.qcri.org/predict/public/' + CRISIS_CODE + '</a>'
-                                }
-                            ]
-                        },{
-                            xtype: 'container',
-                            defaultType: 'label',
-                            layout: 'hbox',
-                            items: [
-                                {
-                                    width: 75,
-                                    text: 'Full:'
-                                },
-                                {
-                                    html: '<a href="http://aidr.qcri.org/predict/protected/"' + CRISIS_CODE + '>http://aidr.qcri.org/predict/protected/' + CRISIS_CODE + '</a><br>'
-                                }
-                            ]
-                        },{
-                            xtype: 'container',
-                            defaultType: 'label',
-                            layout: 'hbox',
-                            items: [
-                                {
-                                    width: 75,
-                                    text: ''
-                                },
-                                {
-                                    html: 'User: <span class="na-text">N/A</span> Pass: <span class="na-text">N/A</span>'
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        });
+//        this.feedsBlock = Ext.create('Ext.container.Container', {
+//            flex: 1,
+//            layout: 'vbox',
+//            items: [
+//                {
+//                    xtype: 'container',
+//                    defaultType: 'label',
+//                    padding: '0 10',
+//                    flex: 1,
+//                    layout: 'vbox',
+//                    defaults: {
+//                        margin: '5 0'
+//                    },
+//                    height: 100,
+//                    items: [
+//                        {
+//                            xtype: 'container',
+//                            defaultType: 'label',
+//                            layout: 'hbox',
+//                            items: [
+//                                {
+//                                    width: 75,
+//                                    html: '<b>Data feed</b>'
+//                                },
+//                                {
+//                                    html: '<b>URL</b>'
+//                                }
+//                            ]
+//                        },{
+//                            xtype: 'container',
+//                            defaultType: 'label',
+//                            layout: 'hbox',
+//                            items: [
+//                                {
+//                                    width: 75,
+//                                    text: 'Tweet-ids:'
+//                                },
+//                                {
+//                                    html: '<a href="http://aidr.qcri.org/predict/public/"' + CRISIS_CODE + '>http://aidr.qcri.org/predict/public/' + CRISIS_CODE + '</a>'
+//                                }
+//                            ]
+//                        },{
+//                            xtype: 'container',
+//                            defaultType: 'label',
+//                            layout: 'hbox',
+//                            items: [
+//                                {
+//                                    width: 75,
+//                                    text: 'Full:'
+//                                },
+//                                {
+//                                    html: '<a href="http://aidr.qcri.org/predict/protected/"' + CRISIS_CODE + '>http://aidr.qcri.org/predict/protected/' + CRISIS_CODE + '</a><br>'
+//                                }
+//                            ]
+//                        },{
+//                            xtype: 'container',
+//                            defaultType: 'label',
+//                            layout: 'hbox',
+//                            items: [
+//                                {
+//                                    width: 75,
+//                                    text: ''
+//                                },
+//                                {
+//                                    html: 'User: <span class="na-text">N/A</span> Pass: <span class="na-text">N/A</span>'
+//                                }
+//                            ]
+//                        }
+//                    ]
+//                }
+//            ]
+//        });
 
         this.tabPanel = Ext.create('Ext.tab.Panel', {
             cls: 'tabPanel',
@@ -489,7 +484,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                         {
                             xtype: 'container',
                             margin: '15 0 0 0',
-                            html: '<div class="horisontalLine"></div>'
+                            html: '<div class="horizontalLine"></div>'
                         },
                         {
                             xtype: 'container',
@@ -540,7 +535,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             {
                 xtype: 'container',
                 margin: '5 0 5 0',
-                html: '<div class="horisontalLine"></div>'
+                html: '<div class="horizontalLine"></div>'
             },
             {
                 xtype: 'container',

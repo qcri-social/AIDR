@@ -84,7 +84,7 @@ Ext.define('TAGGUI.training-examples.view.TrainingExamplesPanel', {
             {
                 xtype: 'container',
                 margin: '5 0 0 0',
-                html: '<div class="horisontalLine"></div>'
+                html: '<div class="horizontalLine"></div>'
             },
             {
                 xtype: 'container',

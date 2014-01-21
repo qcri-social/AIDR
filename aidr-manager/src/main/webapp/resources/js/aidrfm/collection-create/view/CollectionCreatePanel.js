@@ -276,13 +276,13 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             {
                 xtype: 'container',
                 margin: '5 0 0 0',
-                html: '<div class="horisontalLine"></div>'
+                html: '<div class="horizontalLine"></div>'
             },
             this.descriptionL,
             {
                 xtype: 'container',
                 margin: '5 0 15 0',
-                html: '<div class="horisontalLine"></div>'
+                html: '<div class="horizontalLine"></div>'
             },
             this.editForm
         ];

@@ -266,4 +266,29 @@ public class CollectionServiceImpl implements CollectionService {
     public List<AidrCollection> getRunningCollections() throws Exception {
         return collectionRepository.getRunningCollections();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AidrCollection> getRunningCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) throws Exception {
+        return collectionRepository.getRunningCollections(start, limit, terms, sortColumn, sortDirection);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Long getRunningCollectionsCount(String terms) throws Exception {
+        return collectionRepository.getRunningCollectionsCount(terms);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AidrCollection> getStoppedCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) throws Exception {
+        return collectionRepository.getStoppedCollections(start, limit, terms, sortColumn, sortDirection);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Long getStoppedCollectionsCount(String terms) throws Exception {
+        return collectionRepository.getStoppedCollectionsCount(terms);
+    }
+
 }

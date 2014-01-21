@@ -5,7 +5,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>AIDR Collector</title>
+        <title>AIDR Output</title>
     </head>
     <body>
         <h1>The AIDR Output application is deployed to this location.</h1>

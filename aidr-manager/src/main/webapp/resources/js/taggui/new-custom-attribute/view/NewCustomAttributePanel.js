@@ -25,11 +25,6 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
             flex: 1
         });
 
-        this.horisontalLine = Ext.create('Ext.container.Container', {
-            width: '100%',
-            html: '<div class="horisontalLine"></div>'
-        });
-
         this.codeE = Ext.create('Ext.form.field.Text', {
             fieldLabel: 'Code',
             name: 'code',
@@ -139,7 +134,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
             '<div class="content">',
 
             '<div class="img">',
-            '<img alt="Attribute image" src="/AIDRFetchManager/resources/img/AIDR/AIDR_EMBLEM_CMYK_COLOUR_HR.jpg" width="70">',
+            '<img alt="Attribute image" src="/AIDRFetchManager/resources/img/AIDR/AIDR_EMBLEM_CMYK_COLOUR_HR.jpg" width="70" height="70">',
             '</div>',
 
             '<div class="info">',
@@ -272,7 +267,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
             {
                 xtype: 'container',
                 margin: '5 0 0 0',
-                html: '<div class="horisontalLine"></div>'
+                html: '<div class="horizontalLine"></div>'
             },
             {
                 xtype: 'container',

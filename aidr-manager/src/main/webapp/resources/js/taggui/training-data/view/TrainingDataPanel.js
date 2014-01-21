@@ -51,11 +51,6 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
             margin: '0 0 0 0'
         });
 
-        this.horisontalLine = Ext.create('Ext.container.Container', {
-            width: '100%',
-            html: '<div class="horisontalLine"></div>'
-        });
-
         this.trainingDataStore = Ext.create('Ext.data.Store', {
             pageSize: 20,
             storeId: 'trainingDataStore',
@@ -143,7 +138,7 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
             {
                 xtype: 'container',
                 margin: '5 0 0 0',
-                html: '<div class="horisontalLine"></div>'
+                html: '<div class="horizontalLine"></div>'
             },
             {
                 xtype: 'container',

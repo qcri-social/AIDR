@@ -21,7 +21,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
 
             "#skipTask": {
                 click: function (btn, e, eOpts) {
-                    this.skipTask();
+                    this.skipTaskHandler();
                 }
             },
 
@@ -52,7 +52,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
         }
     },
 
-    loadData: function() {
+    loadData: function(fromSkipAction) {
         var me = this;
 
         var mask = AIDRFMFunctions.getMask(true);
@@ -97,6 +97,9 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                                     }
                                 });
                             }
+                            if (fromSkipAction){
+                                me.skipTask();
+                            }
                         }
                     }
                 } else {
@@ -106,7 +109,6 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
             },
             failure: function () {
                 mask.hide();
-                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
             }
         });
     },
@@ -164,11 +166,17 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
         });
     },
 
+    skipTaskHandler: function(){
+        var me = this;
+        me.mainComponent.previousDocumentID = me.mainComponent.documentID;
+        me.loadData(true);
+    },
+
     skipTask: function() {
         var me = this;
 
-        if (!me.mainComponent.documentID) {
-            AIDRFMFunctions.setAlert("Error", "Can not find Document Id");
+        if (!me.mainComponent.previousDocumentID) {
+            AIDRFMFunctions.setAlert("Error", "Can not find Document Id to skip it");
             return false;
         }
 
@@ -179,7 +187,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
             url: BASE_URL + '/protected/tagger/skipTask.action',
             method: 'GET',
             params: {
-                id: me.mainComponent.documentID
+                id: me.mainComponent.previousDocumentID
             },
             headers: {
                 'Accept': 'application/json'
@@ -189,7 +197,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                 if (resp.success) {
                     if (resp.data) {
                         if (resp.data == 'success') {
-                            me.loadData();
+//                            me.loadData();
                         } else {
                             AIDRFMFunctions.setAlert("Error", "Error while skipping task.");
                         }
@@ -201,7 +209,6 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
             },
             failure: function () {
                 mask.hide();
-                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
             }
         });
     }

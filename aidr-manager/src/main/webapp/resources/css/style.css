@@ -169,7 +169,7 @@ body{
 	overflow-x: hidden;
 }
 
-.horisontalLine {
+.horizontalLine {
     border-bottom: 1px #e3e1e1 solid;
     margin-bottom : 5px;
 }
@@ -652,12 +652,12 @@ End of the tab panel styles
     border-bottom-width: 0!important;
     border-left-width: 0!important;
     border-right-width: 0!important;
-    /*top: 27px!important;*/
+    top: 27px!important;
 }
 
-/*.aidr-grid .x-box-inner {*/
-    /*height: 27px!important;*/
-/*}*/
+.aidr-grid .x-box-inner {
+    height: 27px!important;
+}
 
 .aidr-grid .x-column-header-inner span {
     font-size: 12px;
@@ -667,7 +667,7 @@ End of the tab panel styles
 .aidr-grid .x-grid-cell-inner {
     padding-top: 3px;
     padding-bottom: 3px;
-    height: 27px;
+    height: 31px;
     font-size: 12px;
     font-family: "Lucida Sans Unicode", "Lucida Grande", "Arial";
     display: table-cell;

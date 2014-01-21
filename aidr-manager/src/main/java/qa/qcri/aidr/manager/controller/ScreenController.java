@@ -1,19 +1,18 @@
 package qa.qcri.aidr.manager.controller;
 
-import java.util.List;
-import java.util.Map;
-
-import qa.qcri.aidr.manager.dto.TaggerCrisis;
-import qa.qcri.aidr.manager.dto.TaggerCrisisExist;
-import qa.qcri.aidr.manager.dto.TaggerModel;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.service.CollectionService;
-import qa.qcri.aidr.manager.service.TaggerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+import qa.qcri.aidr.manager.dto.TaggerCrisis;
+import qa.qcri.aidr.manager.dto.TaggerModel;
+import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
+import qa.qcri.aidr.manager.service.CollectionService;
+import qa.qcri.aidr.manager.service.TaggerService;
+
+import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -248,6 +247,16 @@ public class ScreenController extends BaseController{
         model.addObject("nominalAttributeId", nominalAttributeId);
 
         return model;
+    }
+
+    @RequestMapping("protected/administration/admin-console")
+    public String adminConsole(Map<String, String> model) throws Exception {
+        return "administration/admin-console";
+    }
+
+    @RequestMapping("protected/administration/admin-health")
+    public String adminHealth(Map<String, String> model) throws Exception {
+        return "administration/health";
     }
 
 }

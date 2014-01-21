@@ -35,11 +35,6 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             flex: 1
         });
 
-        this.horisontalLine = Ext.create('Ext.container.Container', {
-            width: '100%',
-            html: '<div class="horisontalLine"></div>'
-        });
-
         this.aucHint = Ext.create('Ext.container.Container', {
             html: '<span class="redInfo">*</span>If AUC is lower than 0.8-0.9, or AUC is 1.0, you urgently need more training examples.'
         });
@@ -67,7 +62,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
 
             '<div class="img">',
             '<tpl if="xindex != xcount">' +
-                '<img alt="Collection History image" src="/AIDRFetchManager/resources/img/AIDR/tag.png" width="70">',
+                '<img alt="Collection History image" src="/AIDRFetchManager/resources/img/AIDR/tag.png" width="70" height="79">',
             '</tpl>',
             '<tpl if="xindex == xcount">' +
                 '<div class="no-image"></div>',
@@ -184,7 +179,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             '<div class="collection-item">',
 
             '<div class="img">',
-            '<img alt="Collection History image" src="/AIDRFetchManager/resources/img/AIDR/tag.png" width="70">',
+            '<img alt="Collection History image" src="/AIDRFetchManager/resources/img/AIDR/tag.png" width="70" height="79">',
             '</div>',
 
             '<div class="content">',
@@ -268,7 +263,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
                         {
                             xtype: 'container',
                             width: '100%',
-                            html: '<div class="horisontalLine"></div>'
+                            html: '<div class="horizontalLine"></div>'
                         },
                         this.modelLabelsView,
                         {
@@ -312,7 +307,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             {
                 xtype: 'container',
                 margin: '5 0 0 0',
-                html: '<div class="horisontalLine"></div>'
+                html: '<div class="horizontalLine"></div>'
             },
             {
                 xtype: 'container',

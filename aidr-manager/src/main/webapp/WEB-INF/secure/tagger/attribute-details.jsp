@@ -1,4 +1,4 @@
-<jsp:include page="header.jsp"/>
+<jsp:include page="../header.jsp"/>
 <title>AIDR - Classifiers details</title>
 </head>
 <body class="mainbody">

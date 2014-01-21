@@ -205,7 +205,6 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 }
             },
             failure: function () {
-                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
                 btn.setDisabled(false);
             }
         });
@@ -241,7 +240,6 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 }
             },
             failure: function () {
-                AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
                 btn.setDisabled(false);
             }
         });

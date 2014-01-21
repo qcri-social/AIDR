@@ -109,7 +109,7 @@ public class CollectorManageResource {
 
         response = "Running persisted collections completed.";
         return response;
-
+ 
     }
 
     private String runCollection(CollectionTask collection) {
