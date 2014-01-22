@@ -1,6 +1,6 @@
 package qa.qcri.aidr.output.getdata;
 
-import qa.qcri.aidr.output.getdata.TaggerJsonOutputAdapter;
+import qa.qcri.aidr.output.utils.TaggerJsonOutputAdapter;
 
 public class TestTaggerJsonOutputAdapter {
 	public static void main(String args[]) {
@@ -10,13 +10,13 @@ public class TestTaggerJsonOutputAdapter {
 		
 		System.out.println("TaggerJsonOutputAdapter:");
 		TaggerJsonOutputAdapter obj = new TaggerJsonOutputAdapter();
-		String testout1 = obj.buildJsonString(testString1);
+		String testout1 = obj.buildJsonString(testString1, false);
 		System.out.println("testString 1: " + testout1);
 		
-		String testout2 = obj.buildJsonString(testString2);
+		String testout2 = obj.buildJsonString(testString2, false);
 		System.out.println("testString 2: " + testout2);
 		
-		String testout3 = obj.buildJsonString(testString3);
+		String testout3 = obj.buildJsonString(testString3, false);
 		System.out.println("testString 3: " + testout3);
 	}
 }

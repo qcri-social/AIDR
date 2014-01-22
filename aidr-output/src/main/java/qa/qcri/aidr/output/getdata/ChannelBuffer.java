@@ -26,24 +26,26 @@ import org.slf4j.LoggerFactory;
 
 public class ChannelBuffer {
 	private static int MAX_BUFFER_SIZE = 2000;		// number of elements the buffer will hold at any time
-	private String channelName;
+	private String channelName = null;
 	private long lastAddTime;
-	private Buffer messageBuffer;
-	
+	private Buffer messageBuffer = null;
+	int size = 0;
 	private static Logger logger = LoggerFactory.getLogger(ChannelBuffer.class);
-	
+
 	public ChannelBuffer(final String name) {
 		//BasicConfigurator.configure();			// setup log4j logging
 		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
 		channelName = name;
 	}
-	
+
 	public void createChannelBuffer() {
 		messageBuffer = BufferUtils.synchronizedBuffer(new CircularFifoBuffer(MAX_BUFFER_SIZE));
+		size = MAX_BUFFER_SIZE;
 	}
 
 	public void createChannelBuffer(final int bufferSize) {
 		messageBuffer = BufferUtils.synchronizedBuffer(new CircularFifoBuffer(bufferSize));
+		size = bufferSize;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -68,7 +70,7 @@ public class ChannelBuffer {
 		synchronized(messageBuffer) {
 			Iterator<String>itr = messageBuffer.iterator();
 			int count = 0;
-			while (itr.hasNext()) {
+			while (itr.hasNext() && count < msgCount) {
 				msgList.add(itr.next());
 				++count;
 			}
@@ -83,24 +85,29 @@ public class ChannelBuffer {
 	 */
 	public List<String> getLIFOMessages(int msgCount) {
 		List<String> msgList = new ArrayList<String>();
-		
 		List<String> tempList = new ArrayList<String>();
 		tempList.addAll(getMessages(MAX_BUFFER_SIZE));
 		int count = 0;
-		ListIterator<String>itr = tempList.listIterator(tempList.size()-1);
-		while (itr.hasPrevious() && count < msgCount) {
-			msgList.add(itr.next());
-			++count;
+		synchronized (tempList) {
+			ListIterator<String>itr = tempList.listIterator(tempList.size()-1);
+			while (itr.hasPrevious() && count < msgCount) {
+				msgList.add(itr.previous());
+				++count;
+			}
 		}
+		tempList.clear();
+		tempList = null;
 		return msgList;
 	}
-	
+
 	public void deleteBuffer() {
 		channelName = null;
-		messageBuffer.clear();
-		messageBuffer = null;
+		if (messageBuffer != null) {
+			messageBuffer.clear();
+			messageBuffer = null;
+		}
 	}
-	
+
 	public void setChannelName(String name) {
 		channelName = name;
 	}
@@ -108,8 +115,16 @@ public class ChannelBuffer {
 	public String getChannelName() {
 		return channelName;
 	}
-	
+
 	public long getLastAddTime() {
 		return lastAddTime;
+	}
+	
+	public int getMaxBufferSize() {
+		return MAX_BUFFER_SIZE;
+	}
+	
+	public int getBufferSize() {
+		return size;
 	}
 }

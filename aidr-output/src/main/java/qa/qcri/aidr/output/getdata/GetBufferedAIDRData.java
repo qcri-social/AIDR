@@ -93,7 +93,6 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	private int messageCount = DEFAULT_COUNT;			// number of messages to fetch
 
 	private static ChannelBufferManager cbManager; 			// managing buffers for each publishing channel
-	boolean error = false;
 	private final boolean rejectNullFlag = true;
 	/////////////////////////////////////////////////////////////////////////////
 	@POST
@@ -113,7 +112,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	@Path("/channels/list")
 	@Produces("text/html")
 	public Response getActiveChannelsList() {
-
+		
 		Set<String> channelList = cbManager.getActiveChannelsList();
 		StringBuilder htmlMessageString = new StringBuilder();
 
@@ -149,26 +148,28 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	public Response getLatestBufferedAIDRData(@QueryParam("callback") String callbackName,
 			@DefaultValue("1") @QueryParam("count") String count) {
 
-		// Get the last count number of messages for channel=channelCode
-		List<String> bufferedMessages = new ArrayList<String>();
-		messageCount = Integer.parseInt(count);		// number of latest messages across all channels to return
-		for (int i = 0;i < messageCount;i++) {
-			List<String> temp = cbManager.getLatestFromAllChannels();
+		if (cbManager.jedisConn.getPoolSetup()) {		// Jedis pool is ready
+			// Get the last count number of messages for channel=channelCode
+			List<String> bufferedMessages = new ArrayList<String>();
+			messageCount = Integer.parseInt(count);		// number of latest messages across all channels to return
+			List<String> temp = cbManager.getLatestFromAllChannels(messageCount);
 			bufferedMessages.addAll(temp != null ? temp : new ArrayList<String>());
-			temp.clear();
-			temp = null;
+			if (temp != null) {
+				temp.clear();
+				temp = null;
+			}
+			final JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
+			final StringBuilder jsonDataList = taggerOutput.createList(bufferedMessages, messageCount, rejectNullFlag);
+			final int sendCount = taggerOutput.getMessageCount();
+
+			// Reset the messageList buffer and return
+			bufferedMessages.clear();
+			bufferedMessages = null;
+
+			// Finally, send the retrieved list to client and close connection
+			return Response.ok(jsonDataList.toString()).build();
 		}
-		JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
-		StringBuilder jsonDataList = taggerOutput.createList(bufferedMessages.subList(0, messageCount), messageCount, rejectNullFlag);
-		int sendCount = taggerOutput.getMessageCount();
-
-		// Reset the messageList buffer and return
-		bufferedMessages.clear();
-		bufferedMessages = null;
-
-		// Finally, send the retrieved list to client and close connection
-		logger.info("[doGet] Going to send json data, count = " + sendCount);
-		return Response.ok(jsonDataList.toString()).build();
+		return Response.ok(new String("[{}]")).build();
 	}
 
 	/**
@@ -184,85 +185,91 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			@QueryParam("callback") String callbackName,
 			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
 
-		error = false;
-
-		// Parse the HTTP GET request and generating results for output
-		// Set the response MIME type of the response message
-		if (channelCode == null) {
-			error = true;
-		}
-		if (channelCode.contains("*") || channelCode.contains("?")) {	// || !cbManager.getActiveChannelCodes().contains(channelCode)) {
-			error = true;			// Error - regular expression based retrieval not supported
-		}
-		if (error)
-		{	
-			Set<String> channelList = cbManager.getActiveChannelsList();
-			StringBuilder htmlMessageString = new StringBuilder();
-
-			// Build HTML doc to return
-			htmlMessageString.append("<!DOCTYPE html>");
-			htmlMessageString.append("<html>");
-			htmlMessageString.append("<head><title>REDIS PUBSUB Channel Data Output Service</title></head>");
-			htmlMessageString.append("<body>");
-			htmlMessageString.append("<h1>Invalid/No CrisisCode Provided! </h1>");
-			htmlMessageString.append("<h2>Can not initiate REDIS channel subscription!</h2>");
-			htmlMessageString.append("<p><big>Available active channels: </big></p>");
-			htmlMessageString.append("<ul>"); 
-			if (channelList != null) {
-				Iterator<String> itr = channelList.iterator();
-				while (itr.hasNext()) {
-					htmlMessageString.append("<li>" + itr.next().substring(CHANNEL_PREFIX_STRING.length()) + "</li>");
-				}
+		if (cbManager.jedisConn.getPoolSetup()) {
+			boolean error = false;
+			// Parse the HTTP GET request and generating results for output
+			// Set the response MIME type of the response message
+			if (null == channelCode) {
+				error = true;
 			}
-			htmlMessageString.append("</body></html>");
-			if (channelList != null) channelList.clear();
-			channelList = null;
+			if (!error && channelCode.contains("*")) {
+				// Got a wildcard fetch request - fetch from all channels
+				return getLatestBufferedAIDRData(callbackName, count);
+			}
+			if (channelCode != null && channelCode.contains("?")) { 
+				error = true;
+			}
+			if (error)
+			{	
+				Set<String> channelList = cbManager.getActiveChannelsList();
+				StringBuilder htmlMessageString = new StringBuilder();
 
-			return Response.ok(htmlMessageString.toString()).build();
-		}
-		else {
-			// Form fully qualified channelName and get other parameter values, if any
-			String channelName = null;
-			if (channelCode.startsWith(CHANNEL_PREFIX_STRING) || channelCode.contains(".")) {
-				channelName = channelCode;		// fully qualified channel name provided
+				// Build HTML doc to return
+				htmlMessageString.append("<!DOCTYPE html>");
+				htmlMessageString.append("<html>");
+				htmlMessageString.append("<head><title>REDIS PUBSUB Channel Data Output Service</title></head>");
+				htmlMessageString.append("<body>");
+				htmlMessageString.append("<h1>Invalid/No CrisisCode Provided! </h1>");
+				htmlMessageString.append("<h2>Can not initiate REDIS channel subscription!</h2>");
+				htmlMessageString.append("<p><big>Available active channels: </big></p>");
+				htmlMessageString.append("<ul>"); 
+				if (channelList != null) {
+					Iterator<String> itr = channelList.iterator();
+					while (itr.hasNext()) {
+						htmlMessageString.append("<li>" + itr.next().substring(CHANNEL_PREFIX_STRING.length()) + "</li>");
+					}
+				}
+				htmlMessageString.append("</body></html>");
+				if (channelList != null) channelList.clear();
+				channelList = null;
+
+				return Response.ok(htmlMessageString.toString()).build();
 			}
 			else {
-				channelName = CHANNEL_PREFIX_STRING.concat(channelCode);	// fully qualified channel name - same as REDIS channel
-			}
-			if (isChannelPresent(channelName)) {
-				int msgCount = Integer.parseInt(count);
-				if (msgCount > 0) {
-					messageCount = Math.min(msgCount, MAX_MESSAGES_COUNT);
+				// Form fully qualified channelName and get other parameter values, if any
+				String channelName = null;
+				if (channelCode.startsWith(CHANNEL_PREFIX_STRING) || channelCode.contains(".")) {
+					channelName = channelCode;		// fully qualified channel name provided
 				}
-				// Get the last messageCount messages for channel=channelCode
-				List<String> bufferedMessages = new ArrayList<String>();
-				List<String> temp = cbManager.getLastMessages(channelName, messageCount);
-				bufferedMessages.addAll(temp != null ? temp : new ArrayList<String>());
-
-				JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
-				StringBuilder jsonDataList = taggerOutput.createList(bufferedMessages, messageCount, rejectNullFlag);
-				int sendCount = taggerOutput.getMessageCount();
-
-				// Cleanup, send the retrieved list to client and close connection
-				if (null != temp) { 
-					temp.clear();
-					temp = null;
+				else {
+					channelName = CHANNEL_PREFIX_STRING.concat(channelCode);	// fully qualified channel name - same as REDIS channel
 				}
-				bufferedMessages.clear();
-				bufferedMessages = null;
-				
-				logger.info("[doGet] Sending jsonp data, count = " + sendCount);
-				return Response.ok(jsonDataList.toString()).build();
-			}
-			else {
-				if (callbackName != null) {
-					StringBuilder respStr = new StringBuilder();
-					respStr.append(callbackName).append("([{}])");
-					return Response.ok(respStr.toString()).build();
-				} else
-					return Response.ok(new String("[{}]")).build();
+				if (isChannelPresent(channelName)) {
+					int msgCount = Integer.parseInt(count);
+					if (msgCount > 0) {
+						messageCount = Math.min(msgCount, MAX_MESSAGES_COUNT);
+					}
+					// Get the last messageCount messages for channel=channelCode
+					List<String> bufferedMessages = new ArrayList<String>();
+					List<String> temp = cbManager.getLastMessages(channelName, messageCount);
+					bufferedMessages.addAll(temp != null ? temp : new ArrayList<String>());
+
+					final JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
+					final StringBuilder jsonDataList = taggerOutput.createList(bufferedMessages, messageCount, rejectNullFlag);
+					final int sendCount = taggerOutput.getMessageCount();
+
+					// Cleanup, send the retrieved list to client and close connection
+					if (temp != null) { 
+						temp.clear();
+						temp = null;
+					}
+					bufferedMessages.clear();
+					bufferedMessages = null;
+
+					logger.info("[doGet] Sending jsonp data, count = " + sendCount);
+					return Response.ok(jsonDataList.toString()).build();
+				}
+				else {
+					if (callbackName != null) {
+						StringBuilder respStr = new StringBuilder();
+						respStr.append(callbackName).append("([{}])");
+						return Response.ok(respStr.toString()).build();
+					} else
+						return Response.ok(new String("[{}]")).build();
+				}
 			}
 		}
+		return Response.ok(new String("[{}]")).build();
 	}
 
 	/**
@@ -290,8 +297,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		htmlMessageString.append("<html>");
 		htmlMessageString.append("<head><title>REDIS PUBSUB Channel Data Output Service</title></head>");
 		htmlMessageString.append("<body>");
-		htmlMessageString.append("<h1>Invalid/No CrisisCode Provided! </h1>");
-		htmlMessageString.append("<h2>Can not initiate REDIS channel subscription!</h2>");
+		htmlMessageString.append("<h1>Can not initiate REDIS channel subscription!</h1>");
 		htmlMessageString.append("<p><big>Available active channels: </big></p>");
 		htmlMessageString.append("<ul>"); 
 		if (channelList != null) {
@@ -303,20 +309,13 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		htmlMessageString.append("</body></html>");
 		if (channelList != null) channelList.clear();
 		channelList = null;
-		
+
 		return Response.ok(htmlMessageString.toString()).build();
-	}
-
-
-	// cleanup when servlet is destroyed (e.g., server shutdown)
-	public void finalize() throws Throwable {
-		//cbManager.finalize();
-		super.finalize();
 	}
 
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
-		cbManager.finalize();
+		cbManager.close();
 		logger.info("Context destroyed");
 	}
 

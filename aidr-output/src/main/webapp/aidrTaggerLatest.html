@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<link rel="shortcut icon" type="image/ico" href="media/images/aidrIco.ico" />
+		
+		<title>AIDR: Artificial Intelligence for Disaster Response</title>
+
+		<style type="text/css">
+            @import "media/css/main.css";
+			@import "media/css/site_jui.css";
+			@import "media/css/demo_table_jui.css";
+			@import "media/css/jquery-ui-1.7.2.custom.css";
+
+            .dataTables_filter input { width: 300px; height: 20px; margin:3px; }
+			.dataTables_info { padding-top: 0; }
+			.dataTables_paginate { padding-top: 0; }
+			.css_right { float: right; }
+			#example_wrapper .fg-toolbar { font-size: 0.8em }
+			#theme_links span { float: left; padding: 2px 10px; }
+
+		</style>
+		<script type="text/javascript" language="javascript" src="media/js/jquery.js"></script>
+		<script type="text/javascript" language="javascript" src="media/js/jquery.dataTables.js"></script>
+        <script src="media/js/purl.js"></script>
+		<script type="text/javascript" charset="utf-8">
+			$(document).ready(function() {
+                var searchKey = $.url().param('crisisCode');
+                //searchKey = 'dolphins_slaughter' ;
+                if(searchKey !="" && typeof searchKey != 'undefined'){
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://aidr-dev.qcri.org:8084/AIDROutput/crisis/fetch/channel/'+searchKey+'?callback=jsonp&count=1000',
+                        dataType: 'jsonp',
+                        success: renderList,
+                        error: FailedRenderList,
+                        jsonp: false,
+                        jsonpCallback: "jsonp"
+                    });
+
+                }
+                else{
+                    var e = document.getElementById("dynamic");
+                    e.style.display = 'none';
+                    var loadingText = document.getElementById("title");
+                    loadingText.innerHTML = '<b>Crisis Information is not provided. Try it later please.</b>'
+                }
+
+                function FailedRenderList() {console.log("failed");}
+
+                function renderList(data) {
+                    console.log(data);
+                    var appList = new Array();
+                    var crisisName ;
+                    var index = 0;
+                    $.each(data, function (i,v)
+                    {
+                        crisisName = v.crisis_name;
+                        if(typeof crisisName == 'undefined') {
+                            appList = null;
+                        }
+                        else{
+                            $.each(v.nominal_labels, function (j,x)
+                            {
+                                rowInput = new Object();
+                                rowInput.label_name = x.label_name;
+                                rowInput.label_code = x.label_code;
+                                rowInput.confidence = x.confidence;
+                                rowInput.label_description = x.label_description;
+                                rowInput.attribute_code = x.attribute_code;
+                                rowInput.attribute_name  = x.attribute_name;
+                                rowInput.text = v.text;
+
+                                appList[index] = rowInput;
+                                index = index + 1;
+                            } );
+                            //appList[i] = v.nominal_labels[0];
+                        }
+
+                    });
+
+                    var list = data == null ? [] : (data instanceof Array ? data : [data]);
+
+                     if(typeof list !='undefined' && list!= null && appList != null){
+                         var titleText = document.getElementById("title");
+                         titleText.innerHTML = '<h2>'+crisisName+'</h2>';
+                            //<h2>Japan chemial</h2>
+                            var oTable = $('#example').dataTable( {
+                                    "bProcessing": true,
+                                    "bJQueryUI": true,
+                                    "aaData": appList,
+					                "sPaginationType": "full_numbers",
+                                    "aoColumns": [
+                                        { "mData": "text" },
+                                        { "mData": "attribute_name" },
+                                        { "mData": "label_name" },
+                                        { "mData": "confidence" }
+
+                                    ]
+                                } );
+                     }
+                     else{
+                         var e = document.getElementById("dynamic");
+                         e.style.display = 'none';
+
+                         var loadingText = document.getElementById("title");
+                         loadingText.innerHTML = '<b>No data has been tagged yet. Try it later please.</b>'
+                     }
+                }
+
+            });
+</script>
+	</head>
+	<body id="mainBody">
+        <div id="headerwrapper">
+            <div id="header">
+                <img id="headeraidrlogo" src="media/images/aidr_logo_240x90.png">&nbsp;
+            </div>
+        </div>
+
+        <div id="mainwrapper">
+            <div id="main">
+                    <div id="title" style="margin: 15px;"></div>
+                    <div id="dynamic" style="margin: 15px;">
+                        <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
+                            <thead>
+                                <tr>
+                                    <th width="50%">Tweet</th>
+                                    <th width="20%">Attribute</th>
+                                    <th width="20%">Label</th>
+                                    <th width="10%">Confidence</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="4" class="dataTables_empty"><p id="loadingInfo">Loading data.........</p></td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <div class="spacer"></div>
+            </div>
+        </div>
+
+
+        <div id="footerwrapper"><div id="footer">
+            <div style="float: right;">
+                <a style="text-decoration: none;" href="http://www.qcri.qa/">A project by <img align="middle" id="footerqcrilogo" src="media/images/qcri-gray-horiz.png"/></a>
+            </div>
+            <div style="float: left; padding-top: 16px;">
+                <a style="text-decoration: underline;" href="tos/">Terms of Service</a>
+            </div>
+        </div></div>
+
+
+	</body>
+</html>

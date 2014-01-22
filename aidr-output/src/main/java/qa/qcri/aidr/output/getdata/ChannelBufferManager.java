@@ -47,10 +47,10 @@ public class ChannelBufferManager {
 
 	// Redis connection related
 	public static final String redisHost = "localhost";	// Current assumption: REDIS running on same m/c
-	public static final int redisPort = 6379;	
+	public static final int redisPort = 1978;	
 
 	// Jedis related
-	public static JedisConnectionObject jedisConn;
+	public static JedisConnectionObject jedisConn;		// we need only a single instance of JedisConnectionObject running in background
 	public Jedis subscriberJedis = null;
 	public RedisSubscriber aidrSubscriber = null;
 
@@ -77,15 +77,16 @@ public class ChannelBufferManager {
 		executorServicePool = Executors.newFixedThreadPool(200);		// max number of threads
 		jedisConn = new JedisConnectionObject(redisHost, redisPort);
 		try {
-			isConnected = jedisConn.connectToRedis();
-			subscriberJedis = jedisConn.getJedis();
+			subscriberJedis = jedisConn.getJedisResource();
+			if (subscriberJedis != null) isConnected = true;
 		} catch (JedisConnectionException e) {
 			logger.error("Fatal error! Couldn't establish connection to REDIS!");
 			e.printStackTrace();
-			System.exit(1);
+			//System.exit(1);
 		}
 		if (isConnected) {
 			aidrSubscriber = new RedisSubscriber();
+			jedisConn.setJedisSubscription(subscriberJedis, true);		// we will be using pattern-based subscription
 			logger.info("[ChannelBufferManager] Created new Jedis connection: " + aidrSubscriber);
 			try {
 				subscribeToChannel(channelRegEx);
@@ -96,7 +97,7 @@ public class ChannelBufferManager {
 				// TODO Auto-generated catch block
 				logger.error("[ChannelBufferManager] Fatal exception occurred attempting subscription: " + e.toString());
 				e.printStackTrace();
-				System.exit(1);
+				//System.exit(1);
 			}
 			if (isSubscribed) {
 				ChannelBufferManager.subscribedChannels = new ConcurrentHashMap<String,ChannelBuffer>();
@@ -121,7 +122,7 @@ public class ChannelBufferManager {
 			final String receivedMessage) {
 		if (null == channelName) {
 			logger.error("[manageChannelBuffers] Something terribly wrong! Fatal error in: " + channelName);
-			System.exit(1);
+			//System.exit(1);
 		}
 		if (isChannelPresent(channelName)) {
 			// Add to appropriate circular buffer
@@ -160,10 +161,13 @@ public class ChannelBufferManager {
 	}
 
 	public List<String> getLastMessages(String channelName, int msgCount) {
-		//logger.info("[getLastMessages] fetching count = " + msgCount);
 		if (isChannelPresent(channelName)) {
 			ChannelBuffer cb = ChannelBufferManager.subscribedChannels.get(channelName);
-			return cb != null ? cb.getMessages(msgCount) : null;
+			// Note: Ideally, we should have used the method call cb.getMessages(msgCount)
+			// However, we get all messages in buffer since we do not know how many will 
+			// eventually be valid, due to rejectNullFlag setting in caller. The filtering
+			// to send msgCount number of messages will happen in the caller. 
+			return cb != null ? cb.getMessages(cb.getBufferSize()) : null;		
 		}
 		return null;
 	}
@@ -210,7 +214,7 @@ public class ChannelBufferManager {
 	 * @return A set of fully qualified channel names, null if none found
 	 */
 	public Set<String> getActiveChannelsList() {
-		Set<String> channelSet = new HashSet<String>();
+		final Set<String> channelSet = new HashSet<String>();
 		channelSet.addAll(ChannelBufferManager.subscribedChannels.keySet().isEmpty() 
 				? new HashSet<String>() : ChannelBufferManager.subscribedChannels.keySet());
 		return channelSet.isEmpty() ? null : channelSet;
@@ -220,34 +224,37 @@ public class ChannelBufferManager {
 	 * @return A set of only the channel codes - stripped of CHANNEL_PREFIX_STRING, null if none found
 	 */
 	public Set<String> getActiveChannelCodes() {
-		Set<String> channelCodeSet = new HashSet<String>();
-		final Set<String> tempSet = getActiveChannelsList();
+		final Set<String> channelCodeSet = new HashSet<String>();
+		Set<String> tempSet = getActiveChannelsList();
 		for (String s:tempSet) {
 			channelCodeSet.add(s.substring(CHANNEL_PREFIX_STRING.length()));
 		}
 		tempSet.clear();
+		tempSet = null;
 		return channelCodeSet.isEmpty() ? null : channelCodeSet;
 	}
 
 	/**
 	 * @return List of latest tweets seen on all active channels, one tweet/channel, null if none found
 	 */
-	public List<String> getLatestFromAllChannels() {
+	public List<String> getLatestFromAllChannels(final int msgCount) {
 		TreeMap<Long, String>dataSet = new TreeMap<Long, String>();
-
-		List<ChannelBuffer>cbList = new ArrayList<ChannelBuffer>();
+		final List<ChannelBuffer>cbList = new ArrayList<ChannelBuffer>();
+		
 		cbList.addAll(ChannelBufferManager.subscribedChannels.values());
-		Iterator<ChannelBuffer>it = cbList.iterator();
-		while (it.hasNext()) {
-			final ChannelBuffer temp = it.next();
-			final List<String> tempList = temp.getLIFOMessages(1);
-			if (!tempList.isEmpty())
-				dataSet.put(temp.getLastAddTime(), tempList.get(0));
-			tempList.clear();
+		for (ChannelBuffer temp: cbList) {
+			final List<String> tempList = temp.getLIFOMessages(msgCount);		// reverse-chronologically ordered list
+			if (!tempList.isEmpty()) {
+				for (int i = 0;i < Math.min(msgCount,tempList.size());i++) {
+					// By virtue of FIFO and serial buffering of messages, messages from same channel as
+					// well as different channels are guaranteed to have different time-stamps. 
+					dataSet.put(temp.getLastAddTime()+i, tempList.get(i));		// older messages with higher timestamp/key-value
+				}
+				tempList.clear();
+			}
 		}
-		List<String> msgList = null; 
+		final List<String> msgList = new ArrayList<String>();; 
 		if (!dataSet.isEmpty()) {
-			msgList = new ArrayList<String>();
 			msgList.addAll(dataSet.descendingMap().values());
 			dataSet.clear();
 			dataSet = null;
@@ -263,41 +270,33 @@ public class ChannelBufferManager {
 					// Execute the blocking REDIS subscription call
 					subscriberJedis.psubscribe(aidrSubscriber, channelRegEx);
 				} catch (Exception e) {
-					logger.error("[subscribeToChannel] AIDR Predict Channel Subscribing failed");
+					logger.error("[subscribeToChannel] AIDR Predict Channel pSubscribing failed for channel = " + channelRegEx);
 					stopSubscription();
 				} finally {
 					try {
 						stopSubscription();
 					} catch (Exception e) {
-						logger.error("[subscribeToChannel::finally] Exception occurred attempting stopSubscription: " + e.toString());
+						logger.error("[subscribeToChannel] " + channelRegEx  + ": Exception occurred attempting stopSubscription: " + e.toString());
 						e.printStackTrace();
-						System.exit(1);
 					}
 				}
 			}
 		}); 
 	}
 
-	private void stopSubscription() {
-		if (aidrSubscriber.getSubscribedChannels() > 0) {
+	private synchronized void stopSubscription() {
+		if (aidrSubscriber != null && aidrSubscriber.getSubscribedChannels() > 0) {
 			aidrSubscriber.punsubscribe();				
 		}
-		jedisConn.returnJedis();
+		if (jedisConn != null && aidrSubscriber.getSubscribedChannels() == 0) jedisConn.returnJedis(subscriberJedis);
 	}
 
-	public void finalize() {
-		logger.info("[finalize] Taking down all channel buffers and threads");
+	public void close() {
 		stopSubscription();
-		jedisConn.finalize();
-		jedisConn = null;
+		//jedisConn.closeAll();
 		deleteAllChannelBuffers();
 		executorServicePool.shutdown(); // Disable new tasks from being submitted
-		try {
-			super.finalize();
-		} catch (Throwable e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		logger.info("[close] All done, shutdown fetch service...");
 	}
 
 	////////////////////////////////////////////////////
@@ -313,25 +312,21 @@ public class ChannelBufferManager {
 
 		@Override
 		public void onSubscribe(String channel, int subscribedChannels) {
-			// TODO Auto-generated method stub
 			logger.info("[onSubscribe] Subscribed to channel:" + channel);
 		}
 
 		@Override
 		public void onUnsubscribe(String channel, int subscribedChannels) {
-			// TODO Auto-generated method stub
 			logger.info("[onUnsubscribe] Unsubscribed from channel:" + channel);
 		}
 
 		@Override
 		public void onPUnsubscribe(String pattern, int subscribedChannels) {
-			// TODO Auto-generated method stub
 			logger.info("[onPSubscribe] Unsubscribed from channel pattern:" + pattern);
 		}
 
 		@Override
 		public void onPSubscribe(String pattern, int subscribedChannels) {
-			// TODO Auto-generated method stub
 			logger.info("[onPSubscribe] Subscribed to channel pattern:" + pattern);
 		}
 	}
