@@ -135,7 +135,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             '<tr class="crisis-item">',
 
             '<td class="img">',
-            '<img alt="Collection History image" src="/AIDRFetchManager/resources/img/AIDR/AIDR_EMBLEM_CMYK_COLOUR_HR.jpg" width="70">',
+            '<img alt="Collection History image" src="/AIDRFetchManager/resources/img/AIDR/AIDR_EMBLEM_CMYK_COLOUR_HR.jpg" width="70" height="70">',
             '</td>',
 
             '<td class="content"><table><tr>',
@@ -323,6 +323,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         this.generateCSVButton = Ext.create('Ext.Button', {
             text: 'Export tweets (.csv) (Last 100k tweets)',
             margin: 5,
+            width:290,
             cls:'btn btn-blue download-button',
             id: 'generateCSVLink'
         });
@@ -330,14 +331,32 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         this.generateTweetIdsButton = Ext.create('Ext.Button', {
             text: 'Export tweet-ids only (.csv) (All tweets)',
             margin: 5,
+            width:290,
             cls:'btn btn-blue download-button',
             id: 'generateTweetIdsLink'
+        });
+
+        this.taggerFetchButton = Ext.create('Ext.Button', {
+            text: 'View latest tagger collection details',
+            margin: 5,
+            width:290,
+            cls:'btn btn-blue download-button',
+            id: 'goFetchLink'
+        });
+
+        this.taggerRealtimeButton = Ext.create('Ext.Button', {
+            text: 'View realtime tagger collection details',
+            margin: 5,
+            width:290,
+            cls:'btn btn-blue download-button',
+            id: 'goRealtimeLink'
         });
 
         this.downloadText = Ext.create('Ext.form.Label', {
             flex: 1,
             html: ''
         });
+
 
         this.downloadsBlock = Ext.create('Ext.container.Container', {
             layout: 'vbox',
@@ -361,6 +380,9 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                         this.tweetsIdsLink
                     ]
                 },
+                ,
+                this.taggerFetchButton,
+                this.taggerRealtimeButton,
                 this.downloadText
             ]
         });

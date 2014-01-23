@@ -25,6 +25,14 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
             flex: 1
         });
 
+        this.goToAdminSection = Ext.create('Ext.Button', {
+            text: 'Administrator console',
+            margin: '27 0 0 15',
+            cls:'btn btn-blue',
+            id: 'goToAdminSection',
+            hidden: true
+        });
+
         this.newCollectionButton = Ext.create('Ext.Button', {
             text: 'Create New Collection',
             margin: '27 0 0 15',
@@ -159,6 +167,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                         margin: '5 0',
                         items: [
                             this.collectionTitle,
+                            this.goToAdminSection,
                             this.newCollectionButton,
                             this.manageCrisisButton
                         ]
