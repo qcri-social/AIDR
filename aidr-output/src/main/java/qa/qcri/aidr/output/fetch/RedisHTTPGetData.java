@@ -112,7 +112,7 @@ public class RedisHTTPGetData extends HttpServlet {
 
 	private String redisChannel = "*";					// channel to subscribe to		
 	private static String redisHost = "localhost";		// Current assumption: REDIS running on same m/c
-	private static int redisPort = 1978;					
+	private static int redisPort = 6379;					
 
 	public static JedisConnectionObject jedisConn;				// one JedisConnectionObject per connection
 	public Jedis subscriberJedis = null;
@@ -159,6 +159,7 @@ public class RedisHTTPGetData extends HttpServlet {
 	// Stop subscription of this subscribed thread and return resources to the JEDIS thread pool
 	private synchronized void stopSubscription(final RedisSubscriber sub, final Jedis jedis) {
 		if (sub != null && sub.getSubscribedChannels() > 0) {
+			logger.info("[stopSubscription] sub = " + sub + ", jedis = " + jedis + ", flag = " + sub.patternFlag);
 			if (!sub.patternFlag) { 
 				sub.unsubscribe();                                
 			}
@@ -179,15 +180,17 @@ public class RedisHTTPGetData extends HttpServlet {
 				try {
 					if (!patternSubscriptionFlag) { 
 						logger.info("[subscribeToChannel] Attempting subscription for " + redisHost + ":" + redisPort + "/" + redisChannel);
+						sub.patternFlag = false;
 						jedis.subscribe(sub, redisChannel);
 					} 
 					else {
 						logger.info("[subscribeToChannel] Attempting pSubscription for " + redisHost + ":" + redisPort + "/" + redisChannel);
+						sub.patternFlag = true;
 						jedis.psubscribe(sub, redisChannel);
 					}
 				} catch (Exception e) {
-					logger.error("[subscribeToChannel] AIDR Predict Channel Subscribing failed");
-					stopSubscription(sub, jedis);
+					logger.error("[subscribeToChannel] AIDR Predict Channel Subscribing failed, attempting stopSubscription...");
+					logger.error("sub = " + sub + ", jedis = " + jedis + ", flag = " + sub.patternFlag);
 				} finally {
 					try {
 						stopSubscription(sub, jedis);
