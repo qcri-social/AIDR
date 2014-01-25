@@ -4,6 +4,7 @@ import java.util.List;
 
 import qa.qcri.aidr.manager.dto.CollectionDataResponse;
 import qa.qcri.aidr.manager.dto.FetcherRequestDTO;
+import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 
 public interface CollectionService {
@@ -37,6 +38,8 @@ public interface CollectionService {
     public AidrCollection stopAidrFetcher(AidrCollection collection) throws Exception;
 
     public AidrCollection startFetcher(FetcherRequestDTO fetcherRequest, AidrCollection aidrCollection) throws Exception;
+
+    public boolean pingCollector() throws AidrException;
 
     public FetcherRequestDTO prepareFetcherRequest(AidrCollection dbCollection);
 

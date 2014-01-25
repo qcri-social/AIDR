@@ -787,6 +787,27 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    @Override
+    public boolean pingTagger() throws AidrException{
+        try {
+            WebResource webResource = client.resource(taggerMainUrl + "/misc/ping");
+            ObjectMapper objectMapper = new ObjectMapper();
+            ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .get(ClientResponse.class);
+            String jsonResponse = clientResponse.getEntity(String.class);
+
+            PingResponse pingResponse = objectMapper.readValue(jsonResponse, PingResponse.class);
+            if (pingResponse != null && "RUNNING".equals(pingResponse.getStatus())) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            throw new AidrException("Error while Getting training data for Crisis and Model.", e);
+        }
+    }
+
     private Collection<TaggerAttribute> convertTaggerCrisesAttributeToDTO (List<TaggerCrisesAttribute> attributes, Integer userId) {
         Map<Integer, TaggerAttribute> result = new HashMap<Integer, TaggerAttribute>();
         for (TaggerCrisesAttribute a : attributes) {

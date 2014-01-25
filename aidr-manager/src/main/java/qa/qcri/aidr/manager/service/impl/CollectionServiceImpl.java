@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.manager.dto.CollectionDataResponse;
 import qa.qcri.aidr.manager.dto.FetcherRequestDTO;
 import qa.qcri.aidr.manager.dto.FetcheResponseDTO;
+import qa.qcri.aidr.manager.dto.PingResponse;
+import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
 import qa.qcri.aidr.manager.hibernateEntities.UserConnection;
@@ -191,6 +193,27 @@ public class CollectionServiceImpl implements CollectionService {
             logger.error("Error while starting Remote FetchMain Collection", e);
         }
         return null;
+    }
+
+    @Override
+    public boolean pingCollector() throws AidrException {
+        try {
+            WebResource webResource = client.resource(fetchMainUrl + "/manage/ping");
+            ObjectMapper objectMapper = new ObjectMapper();
+            ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .get(ClientResponse.class);
+            String jsonResponse = clientResponse.getEntity(String.class);
+
+            PingResponse pingResponse = objectMapper.readValue(jsonResponse, PingResponse.class);
+            if (pingResponse != null && "RUNNING".equals(pingResponse.getStatus())) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            throw new AidrException("Error while Getting training data for Crisis and Model.", e);
+        }
     }
 
     @SuppressWarnings("deprecation")

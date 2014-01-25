@@ -75,4 +75,6 @@ public interface TaggerService {
     public ModelHistoryWrapper getModelHistoryByModelFamilyID(Integer start, Integer limit, Integer id) throws Exception;
 
     public Map<String, Integer> getTaggersForCollections(List<String> collectionCodes) throws Exception;
+
+    public boolean pingTagger() throws AidrException;
 }
