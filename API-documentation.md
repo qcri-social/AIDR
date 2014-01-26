@@ -347,6 +347,7 @@ Base URI: `http://localhost:port/aidr-persister/webresources`
 GET `.../persister/start?file="file_location"&collectionCode=XXX`
 
 `file` parameter represents the location where persister should persist the content of collection.
+
 `collectionCode` represents the collectionCode for which the persister should start persistance.
 
 ## Stop persister for aidr-collector
@@ -360,5 +361,14 @@ GET `.../persister/stop?collectionCode`
 GET `.../persister/genCSV?collectionCode=XXX&exportLimit=34234`
 
 `collectionCode` represents the code of collection for which a CSV file should be generated.
+
 `exportLimit` represents limit of tweets to be exported. Datatype of this parameter is number.
+
+Note: this export service uses full tweet content. Use the next service if only tweet-ids needed to be exported.
+
+## Generate CSV of all tweets (only tweet-ids)
+
+GET `.../persister/genTweetIds?collectionCode=XXX`
+
+`collectionCode` represents the code of collection for which a CSV file should be generated.
 
