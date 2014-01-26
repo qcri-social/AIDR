@@ -148,180 +148,180 @@ Example:
 
 ## Get Crises with its attributes and labels by UserID 
 
-GET crisis?userID={id}
+GET `crisis?userID={id}`
 
-Example: crisis?userID=1
+Example: `crisis?userID=1`
 	
 ## Get all the models for a given crisisID
 
 GET `model/crisis/{crisisID}`
 
 ## Get all attributes
+
 GET `attribute/all`
 
 Note: 
 Standard attributes always come under SYSTEM user. So in the resultset look for userID=1 for standard
 attributes. Custom attributes are user-defined attribute so they appear with the userID other than 1.
 
-Get attributes and its labels by attributeID
-	GET
-	URI: attribute/{attributeID}
-Get all attributes except the given Crisis
-	GET
-	URI: attribute/crisis/all?exceptCrisis={crisisID}
-	Example:
-		attribute/crisis/all?exceptCrisis=23
-Add an attribute to a crisis
-	POST
-	URL: /modelfamily
-	Body:
-{
-"crisis":{
-"crisisID": "1"
-},
-"nominalAttribute":{
-"nominalAttributeID":"23"
-},
-"isActive":"false"
-}
+##Get attributes and its labels by attributeID
+GET `attribute/{attributeID}`
 
-Delete an attribute/classifier from a crisis
-	DELETE
-	URL: /modelfamily/{id}
-	
-	id: represents the id of an attribute/classifier
-Get all labels given a modelID
-	GET
-	URL: modelNominalLabel/{modelID}
+## Get all attributes except the given Crisis
+GET `attribute/crisis/all?exceptCrisis={crisisID}`
 
-Get Training data by Crisis and Attribute ID
-	GET
-	URL: base_uri/misc/getTrainingData?crisisID=14&attributeID=15&fromRecord=0&limit=50
-	
-IsAttributeExist
-	GET
-	URI: base_uri/attribute/code/{code}
-	Return attributeID > 0 if attribute exists, otherwise attributeID = 0
-	
+Example: `attribute/crisis/all?exceptCrisis=23`
 
+## Add an attribute to a crisis
 
+POST `/modelfamily`
 
-Manage Crisis Types (resource path: /crisisType)
-Add Crisis Type
-POST: /
-	Request Headers: 
-Content-Type: application/json
-	Accept:  application/json
-	Request Body Example: 
-
-{
-  "name": "Earthquake"
-}
-
-Response
-			Example:
-{
-  “crisisTypeID”:”293”,
-  “name”:”Earthquake”	
-}
-
-Retrieve Crisis Type
-GET: /{id}
-
-	id: represents the crisisID.
-	Example call: .../crisisType/2
-
-Update Crisis Type
-PUT: /
-	Request Headers: Content-Type: application/json
-	Example body:
-{
-  "crisisTypeID": "213",
-  "name": “Earthquake Crisis”,
-}
-Delete Crisis Type
-DELETE: /{id}
-	
-	id: represents the crisisId.
-	Example call: .../crisisType/5
-
-Manage Attributes (resource path: /attribute)
-	Add Attribute(s)
-POST 
-	Request Headers: 
-Content-Type: application/json
-	Accept:  application/json
-	Request Body Example: 
-
-{
- "code": "Casualties",
- "name": "People Killed",
- "description" :"Represents people killed",
-"users":
-           {
-               "userID": "1"
-           }
-}
-Retrieve an attribute
-GET: /{id}
-ID represents attributeID.
-
-Update an attribute
-PUT
-Request Body Example: 
-
-{
-“nominalAttributeID” : “1”,
- "code": "Casualties",
- "name": "People Killed",
- "description" :"Represents people killed",
-"users":
-           {
-               "userID": "1"
-           }
-}
-Delete an attribute
-DELETE: /{id}
-ID represents attributeID.
-Example call:
-.../attribute/5 
-
-Manage Labels (resource path: /label)
-	Add label(s)
-POST Method: 
-	Request Headers: 
-Content-Type: application/json
-	Accept:  application/json
-	Request Body Example: 
-
-{"nominalLabelCode": "test123", 
-"description": "testsd", 
-"name": "test", 
-"nominalAttributeID":"1"
-}
-
-Retrieve a label
-GET: /{id}
-ID represents labelID.
-
-Update a label
-PUT
-Request Body Example: 
+Body:
     {
-       "description": "This is description",
-       "name": "test",
-       "nominalLabelCode": "test123",
-       "nominalLabelID": "93",
-"nominalAttributeID": "1"
+    "crisis":{
+    "crisisID": "1"
+    },
+    "nominalAttribute":{
+    "nominalAttributeID":"23"
+    },
+    "isActive":"false"
     }
 
+## Delete an attribute/classifier from a crisis
 
+DELETE `/modelfamily/{id}`
 
-Delete a Label
-DELETE: /{id}
+id: represents the id of an attribute/classifier
+
+## Get all labels given a modelID
+GET `modelNominalLabel/{modelID}`
+
+## Get Training data by Crisis and Attribute ID
+
+GET `base_uri/misc/getTrainingData?crisisID=14&attributeID=15&fromRecord=0&limit=50`
+	
+## IsAttributeExist
+
+GET `base_uri/attribute/code/{code}`
+
+Return attributeID > 0 if attribute exists, otherwise attributeID = 0
+	
+# Manage Crisis Types (resource path: /crisisType)
+
+## Add Crisis Type
+POST: /
+Example: 
+
+    {
+      "name": "Earthquake"
+    }
+
+Response example:
+    {
+    "crisisTypeID":"293",
+    "name":"Earthquake"	
+    }
+
+## Retrieve Crisis Type
+GET: `/{id}`
+id: represents the crisisID.
+	
+Example call: `.../crisisType/2`
+
+## Update Crisis Type
+
+PUT: /
+
+Example body:
+   {
+    "crisisTypeID": "213",
+    "name": "Earthquake Crisis",
+   }
+
+## Delete Crisis Type
+
+DELETE: `/{id}`
+
+id: represents the crisisId.
+Example call: `.../crisisType/5`
+
+# Manage Attributes (resource path: /attribute)
+
+## Add Attribute(s)
+POST `/`
+Example: 
+
+   {
+   "code": "Casualties",
+   "name": "People Killed",
+   "description" :"Represents people killed",
+   "users":
+           {
+               "userID": "1"
+           }
+   }
+
+## Retrieve an attribute
+GET: `/{id}`
+
+ID represents attributeID.
+
+## Update an attribute
+PUT
+
+Example: 
+   {
+   "nominalAttributeID" : "1",
+   "code": "Casualties",
+   "name": "People Killed",
+   "description" :"Represents people killed",
+   "users":
+           {
+               "userID": "1"
+           }
+   }
+
+## Delete an attribute
+DELETE: `/{id}`
+ID represents attributeID.
+
+Example call: `.../attribute/5`
+
+# Manage Labels (resource path: /label)
+
+## Add label(s)
+POST `/`
+
+Example: 
+
+   {
+   "nominalLabelCode": "test123", 
+   "description": "testsd", 
+   "name": "test", 
+   "nominalAttributeID":"1"
+   }
+
+## Retrieve a label
+GET: `/{id}`
 ID represents labelID.
-Example call:
-.../label/5 
+
+## Update a label
+PUT
+
+Example: 
+    {
+     "description": "This is description",
+     "name": "test",
+     "nominalLabelCode": "test123",
+     "nominalLabelID": "93",
+     "nominalAttributeID": "1"
+    }
+
+## Delete a Label
+DELETE: `/{id}`
+ID represents labelID.
+
+Example call: `.../label/5`
 
 # PERSISTER API (aidr-persister)
 
