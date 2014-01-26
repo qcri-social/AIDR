@@ -96,6 +96,7 @@ This service intended to be used after deploying a new version of the applicatio
 
 
 # TAGGER API (aidr-tagger)
+Base URI: `http://localhost:port/aidr-tagger-api/rest/`
 
 ## Check crisis exists or not by CrisisCode
 GET `/crisis/code/{code}`
