@@ -97,16 +97,19 @@ This service intended to be used after deploying a new version of the applicatio
 
 # TAGGER API (aidr-tagger)
 
-## Check Crisis Exists or not by CrisisCode
+## Check crisis exists or not by CrisisCode
 GET `/crisis/code/{code}`
 
 Example: /crisis/code/sandy2012
 
 Response:
 
-    {"crisisCode":"sand2012", "exists":"false"}
+    {
+    "crisisCode":"sand2012", 
+    "exists":"false"
+    }
 
-## Get All collections running in the collector by UserID
+## Get all running collections by UserID (from aidr-collector)
 
 GET `/collection/{userID}`
 
@@ -114,11 +117,11 @@ GET `/collection/{userID}`
 
 GET `/crisisType/all`
 
-## Check if User exists by username
+## Check if user exists by username
 
 GET `/user/{userName}`
 	
-## Add new User
+## Add a new user
 
 POST `/user`
 	
@@ -146,7 +149,7 @@ Example:
        }
    }
 
-## Get Crises with its attributes and labels by UserID 
+## Get crises, attributes, and labels by UserID 
 
 GET `crisis?userID={id}`
 
@@ -162,12 +165,13 @@ GET `attribute/all`
 
 Note: 
 Standard attributes always come under SYSTEM user. So in the resultset look for userID=1 for standard
-attributes. Custom attributes are user-defined attribute so they appear with the userID other than 1.
+attributes. Custom attributes are user-defined attribute so they appear with userID other than 1.
 
-##Get attributes and its labels by attributeID
+## Get attributes and labels by attributeID
+
 GET `attribute/{attributeID}`
 
-## Get all attributes except the given Crisis
+## Get all attributes except the attributes of the given Crisis
 GET `attribute/crisis/all?exceptCrisis={crisisID}`
 
 Example: `attribute/crisis/all?exceptCrisis=23`
@@ -196,19 +200,19 @@ id: represents the id of an attribute/classifier
 ## Get all labels given a modelID
 GET `modelNominalLabel/{modelID}`
 
-## Get Training data by Crisis and Attribute ID
+## Get training data by crisis and attributeID
 
 GET `base_uri/misc/getTrainingData?crisisID=14&attributeID=15&fromRecord=0&limit=50`
 	
-## IsAttributeExist
+## Is attribute exists
 
 GET `base_uri/attribute/code/{code}`
 
-Return attributeID > 0 if attribute exists, otherwise attributeID = 0
+Returns attributeID > 0 if attribute exists, otherwise attributeID = 0
 	
-# Manage Crisis Types (resource path: /crisisType)
+# Manage crisis types (resource path: /crisisType)
 
-## Add Crisis Type
+## Add a new crisis type
 POST: `/`
 Example: 
 
@@ -223,14 +227,14 @@ Response example:
     "name":"Earthquake"	
     }
 
-## Retrieve Crisis Type
+## Retrieve crisis type by crisisID
 GET: `/{id}`
 
 id: represents the crisisID.
 	
 Example call: `.../crisisType/2`
 
-## Update Crisis Type
+## Update crisis type
 
 PUT: `/`
 
@@ -241,7 +245,7 @@ Example body:
      "name": "Earthquake Crisis",
     }
 
-## Delete Crisis Type
+## Delete crisis type
 
 DELETE: `/{id}`
 
