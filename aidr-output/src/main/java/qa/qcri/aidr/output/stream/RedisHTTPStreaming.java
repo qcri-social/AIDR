@@ -31,25 +31,25 @@
  * Invocation: host:port/context-path/channel?crisisCode={crisisCode}&callback={callback}&rate={rate}&duration={duration}  
  * ============
  * Channel Name based examples:
- *  1. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=clex_20131201&callback=print&rate=10  
- *  2. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=clex_20131201&duration=1h 
- *  3. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=clex_20131201&duration=1h&callback=print
- *  4. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=clex_20131201&duration=1h&rate=15
- *  5. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=clex_20131201&duration=1h&callback=print&rate=10
+ *  1. http://localhost:8080/AIDROutput/crisis/stream/channel?crisisCode=clex_20131201&callback=print&rate=10  
+ *  2. http://localhost:8080/AIDROutput/crisis/stream/channel?crisisCode=clex_20131201&duration=1h 
+ *  3. http://localhost:8080/AIDROutput/crisis/stream/channel?crisisCode=clex_20131201&duration=1h&callback=print
+ *  4. http://localhost:8080/AIDROutput/crisis/stream/channel?crisisCode=clex_20131201&duration=1h&rate=15
+ *  5. http://localhost:8080/AIDROutput/crisis/stream/channel?crisisCode=clex_20131201&duration=1h&callback=print&rate=10
  *  
  * Wildcard based examples:
- *  1. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=*&callback=print&rate=10 
- *  2. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=*&duration=1h 
- *  3. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=*&duration=1h&callback=print
- *  4. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=*&duration=1h&rate=15
- *  5. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=*&duration=1h&callback=print&rate=10
+ *  1. http://localhost:8080/AIDROutput/crisis/stream/channel?crisisCode=*&callback=print&rate=10 
+ *  2. http://localhost:8080/AIDROutput/crisis/stream/channel?crisisCode=*&duration=1h 
+ *  3. http://localhost:8080/AIDROutput/crisis/stream/channel?crisisCode=*&duration=1h&callback=print
+ *  4. http://localhost:8080/AIDROutput/crisis/stream/channel?crisisCode=*&duration=1h&rate=15
+ *  5. http://localhost:8080/AIDROutput/crisis/stream/channel?crisisCode=*&duration=1h&callback=print&rate=10
  *  
  * Fully qualified channel name examples:
- *  1. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&callback=print&rate=10 
- *  2. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&duration=1h 
- *  3. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&duration=1h&callback=print
- *  4. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&duration=1h&rate=15
- *  5. http://localhost:8080/aidr-output/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&duration=1h&callback=print&rate=10
+ *  1. http://localhost:8080/AIDROutput/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&callback=print&rate=10 
+ *  2. http://localhost:8080/AIDROutput/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&duration=1h 
+ *  3. http://localhost:8080/AIDROutput/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&duration=1h&callback=print
+ *  4. http://localhost:8080/AIDROutput/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&duration=1h&rate=15
+ *  5. http://localhost:8080/AIDROutput/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&duration=1h&callback=print&rate=10
  * 
  *  
  *  Parameter explanations:
@@ -247,7 +247,7 @@ public class RedisHTTPStreaming extends HttpServlet {
 			throws ServletException, IOException {
 		doGet(request, response);
 	}
-
+	
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {

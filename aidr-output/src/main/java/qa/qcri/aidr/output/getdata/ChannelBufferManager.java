@@ -80,6 +80,7 @@ public class ChannelBufferManager {
 			subscriberJedis = jedisConn.getJedisResource();
 			if (subscriberJedis != null) isConnected = true;
 		} catch (JedisConnectionException e) {
+			isConnected = false;
 			logger.error("Fatal error! Couldn't establish connection to REDIS!");
 			e.printStackTrace();
 			//System.exit(1);
@@ -95,6 +96,7 @@ public class ChannelBufferManager {
 				logger.info("[ChannelBufferManager] Created pattern subscription");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				isSubscribed = false;
 				logger.error("[ChannelBufferManager] Fatal exception occurred attempting subscription: " + e.toString());
 				e.printStackTrace();
 				//System.exit(1);

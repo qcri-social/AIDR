@@ -34,19 +34,19 @@
  * Invocation: host:port/context-path/channel?crisisCode={crisisCode}&callback={callback}&count={count}
  * ============
  * Channel name based examples:
- * 	1. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=clex_20131201&count=50
- *  2. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=clex_20131201&callback=func
- *  3. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=clex_20131201&callback=func&count=50
+ * 	1. http://localhost:8080/AIDROutput/crisis/getlist/channel?crisisCode=clex_20131201&count=50
+ *  2. http://localhost:8080/AIDROutput/crisis/getlist/channel?crisisCode=clex_20131201&callback=func
+ *  3. http://localhost:8080/AIDROutput/crisis/getlist/channel?crisisCode=clex_20131201&callback=func&count=50
  * 
  * Wildcard based examples: 
- *  1. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=*&count=50
- *  2. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=*&callback=func
- *  3. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=*&callback=func&count=50
+ *  1. http://localhost:8080/AIDROutput/crisis/getlist/channel?crisisCode=*&count=50
+ *  2. http://localhost:8080/AIDROutput/crisis/getlist/channel?crisisCode=*&callback=func
+ *  3. http://localhost:8080/AIDROutput/crisis/getlist/channel?crisisCode=*&callback=func&count=50
  *  
  * Fully qualified channel name based examples:
- *  1. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=aidr_predict.clex_20131201&count=50
- *  2. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=aidr_predict.clex_20131201&callback=func
- *  3. http://localhost:8080/aidr-output/crisis/getlist/channel?crisisCode=aidr_predict.clex_20131201&callback=func&count=50
+ *  1. http://localhost:8080/AIDROutput/crisis/getlist/channel?crisisCode=aidr_predict.clex_20131201&count=50
+ *  2. http://localhost:8080/AIDROutput/crisis/getlist/channel?crisisCode=aidr_predict.clex_20131201&callback=func
+ *  3. http://localhost:8080/AIDROutput/crisis/getlist/channel?crisisCode=aidr_predict.clex_20131201&callback=func&count=50
  *  
  *  
  *  Parameter explanations:
