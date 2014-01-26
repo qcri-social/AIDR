@@ -4,8 +4,11 @@
  */
 package qa.qcri.aidr.predictui.facade.imp;
 
+import qa.qcri.aidr.predictui.dto.TaggersForCodes;
 import qa.qcri.aidr.predictui.facade.*;
-import java.util.List;
+
+import java.math.BigInteger;
+import java.util.*;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -60,6 +63,30 @@ public class ModelFamilyFacadeImp implements ModelFamilyFacade{
         if (mf != null){
             em.remove(mf);
         }
+    }
+
+    public List<TaggersForCodes> getTaggersByCodes(final List<String> codes) {
+        List<TaggersForCodes> result = new ArrayList<TaggersForCodes>();
+
+        String sql = "select c.code as code, " +
+                " count(mf.modelFamilyID) as modelsCount " +
+                " from model_family mf " +
+                " right outer join crisis c on c.crisisID = mf.crisisID " +
+                " where c.code in :codes " +
+                " group by mf.crisisID ";
+
+        Query query = em.createNativeQuery(sql);
+        query.setParameter("codes", codes);
+
+        List<Object[]> rows = query.getResultList();
+        for (Object[] row : rows) {
+            TaggersForCodes taggersForCodes = new TaggersForCodes();
+            taggersForCodes.setCode((String) row[0]);
+            taggersForCodes.setCount((BigInteger) row[1]);
+            result.add(taggersForCodes);
+        }
+
+        return result;
     }
     
 }

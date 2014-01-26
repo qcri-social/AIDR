@@ -41,6 +41,8 @@ public class AidrCollectionTotalDTO {
 
     private Integer totalCount;
 
+    private Integer taggersCount;
+
     public Integer getId() {
         return id;
     }
@@ -170,5 +172,13 @@ public class AidrCollectionTotalDTO {
 
     public void setTotalCount(Integer totalCount) {
         this.totalCount = totalCount;
+    }
+
+    public Integer getTaggersCount() {
+        return taggersCount;
+    }
+
+    public void setTaggersCount(Integer taggersCount) {
+        this.taggersCount = taggersCount;
     }
 }

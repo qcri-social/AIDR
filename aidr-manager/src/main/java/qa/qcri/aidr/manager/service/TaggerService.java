@@ -5,6 +5,7 @@ import qa.qcri.aidr.manager.exception.AidrException;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public interface TaggerService {
 
@@ -72,4 +73,8 @@ public interface TaggerService {
     public String generateTweetIdsLink(String code) throws Exception;
 
     public ModelHistoryWrapper getModelHistoryByModelFamilyID(Integer start, Integer limit, Integer id) throws Exception;
+
+    public Map<String, Integer> getTaggersForCollections(List<String> collectionCodes) throws Exception;
+
+    public boolean pingTagger() throws AidrException;
 }

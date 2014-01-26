@@ -13,6 +13,7 @@ import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
+import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 
 import java.text.SimpleDateFormat;
@@ -29,6 +30,9 @@ public class CollectionController extends BaseController{
 
     @Autowired
     private CollectionLogService collectionLogService;
+
+    @Autowired
+    private TaggerService taggerService;
 
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
@@ -287,30 +291,62 @@ public class CollectionController extends BaseController{
 
     @RequestMapping(value = "/getAllRunning.action", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String,Object>  getAllRunning(@RequestParam Integer start,
+    public Map<String, Object> getAllRunning(@RequestParam Integer start,
                                              @RequestParam Integer limit,
-                                             @RequestParam (value = "terms", required = false, defaultValue = "") String terms,
-                                             @RequestParam (value = "sortColumn", required = false, defaultValue = "") String sortColumn,
-                                             @RequestParam (value = "sortDirection", required = false, defaultValue = "") String sortDirection) throws Exception {
+                                             @RequestParam(value = "terms", required = false, defaultValue = "") String terms,
+                                             @RequestParam(value = "sortColumn", required = false, defaultValue = "") String sortColumn,
+                                             @RequestParam(value = "sortDirection", required = false, defaultValue = "") String sortDirection) throws Exception {
         start = (start != null) ? start : 0;
-        limit = (limit != null) ? limit :20;
+        limit = (limit != null) ? limit : 20;
 
         UserEntity userEntity = getAuthenticatedUser();
-        if(userEntity != null){
+        if (userEntity != null) {
             Long total = collectionService.getRunningCollectionsCount(terms);
 
             List<AidrCollectionTotalDTO> dtoList = new ArrayList<AidrCollectionTotalDTO>();
             if (total > 0) {
                 List<AidrCollection> collections = collectionService.getRunningCollections(start, limit, terms, sortColumn, sortDirection);
+
+                List<String> collectionCodes = new ArrayList<String>();
+                List<Integer> collectionIds = new ArrayList<Integer>();
+                for (AidrCollection collection : collections) {
+                    collectionCodes.add(collection.getCode());
+                    collectionIds.add(collection.getId());
+                }
+
+                Map<String, Integer> taggersForCollections = Collections.emptyMap();
+                try {
+                    taggersForCollections = taggerService.getTaggersForCollections(collectionCodes);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                Map<Integer, Integer> totalCountsFromLogForCollections = Collections.emptyMap();
+                try {
+                    totalCountsFromLogForCollections = collectionLogService.countTotalDownloadedItemsForCollectionIds(collectionIds);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 for (AidrCollection collection : collections) {
                     AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
                     if (dto != null) {
-                        Integer totalCount = collectionLogService.countTotalDownloadedItemsForCollection(collection.getId());
+                        Integer totalCount;
+                        if (totalCountsFromLogForCollections.containsKey(collection.getId())) {
+                            totalCount = totalCountsFromLogForCollections.get(collection.getId());
+                        } else {
+                            totalCount = 0;
+                        }
+
                         if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())) {
                             totalCount += dto.getCount();
                         }
                         dto.setTotalCount(totalCount);
                         dtoList.add(dto);
+
+                        if (taggersForCollections.containsKey(collection.getCode())) {
+                            dto.setTaggersCount(taggersForCollections.get(collection.getCode()));
+                        }
                     }
                 }
             }
@@ -336,15 +372,47 @@ public class CollectionController extends BaseController{
             List<AidrCollectionTotalDTO> dtoList = new ArrayList<AidrCollectionTotalDTO>();
             if (total > 0) {
                 List<AidrCollection> collections = collectionService.getStoppedCollections(start, limit, terms, sortColumn, sortDirection);
+
+                List<String> collectionCodes = new ArrayList<String>();
+                List<Integer> collectionIds = new ArrayList<Integer>();
+                for (AidrCollection collection : collections) {
+                    collectionCodes.add(collection.getCode());
+                    collectionIds.add(collection.getId());
+                }
+
+                Map<String, Integer> taggersForCollections = Collections.emptyMap();
+                try {
+                    taggersForCollections = taggerService.getTaggersForCollections(collectionCodes);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                Map<Integer, Integer> totalCountsFromLogForCollections = Collections.emptyMap();
+                try {
+                    totalCountsFromLogForCollections = collectionLogService.countTotalDownloadedItemsForCollectionIds(collectionIds);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 for (AidrCollection collection : collections) {
                     AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
                     if (dto != null) {
-                        Integer totalCount = collectionLogService.countTotalDownloadedItemsForCollection(collection.getId());
+                        Integer totalCount;
+                        if (totalCountsFromLogForCollections.containsKey(collection.getId())) {
+                            totalCount = totalCountsFromLogForCollections.get(collection.getId());
+                        } else {
+                            totalCount = 0;
+                        }
+
                         if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())) {
                             totalCount += dto.getCount();
                         }
                         dto.setTotalCount(totalCount);
                         dtoList.add(dto);
+
+                        if (taggersForCollections.containsKey(collection.getCode())) {
+                            dto.setTaggersCount(taggersForCollections.get(collection.getCode()));
+                        }
                     }
                 }
             }

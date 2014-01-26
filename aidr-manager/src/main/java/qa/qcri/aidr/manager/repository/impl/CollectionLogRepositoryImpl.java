@@ -1,5 +1,6 @@
 package qa.qcri.aidr.manager.repository.impl;
 
+import org.hibernate.type.IntegerType;
 import qa.qcri.aidr.manager.dto.CollectionLogDataResponse;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
 import qa.qcri.aidr.manager.repository.CollectionLogRepository;
@@ -17,7 +18,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository("collectionLogRepository")
 public class CollectionLogRepositoryImpl extends GenericRepositoryImpl<AidrCollectionLog, Serializable> implements CollectionLogRepository {
@@ -73,7 +76,33 @@ public class CollectionLogRepositoryImpl extends GenericRepositoryImpl<AidrColle
                 return total != null ? total.intValue() : 0;
             }
         });
+    }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public Map<Integer, Integer> countTotalDownloadedItemsForCollectionIds(final List<Integer> ids) {
+        return (Map<Integer, Integer>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
+            @Override
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                String sql = " select c.collectionID as id, " +
+                        " sum(c.count) as count " +
+                        " from AIDR_COLLECTION_LOG c " +
+                        " where c.collectionID in :ids " +
+                        " group by c.collectionID ";
+                SQLQuery sqlQuery = session.createSQLQuery(sql);
+                sqlQuery.addScalar("id", new IntegerType());
+                sqlQuery.addScalar("count", new IntegerType());
+                sqlQuery.setParameterList("ids", ids);
+
+                List<Object[]> list = sqlQuery.list();
+                Map<Integer, Integer> result = new HashMap<Integer, Integer>();
+                for (Object[] row : list) {
+                    result.put((Integer) row[0], (Integer) row[1]);
+                }
+
+                return result;
+            }
+        });
     }
 
 }

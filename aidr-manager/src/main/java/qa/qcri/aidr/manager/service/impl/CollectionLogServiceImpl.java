@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.core.MediaType;
+import java.util.List;
+import java.util.Map;
 
 @Service("collectionLogService")
 public class CollectionLogServiceImpl implements CollectionLogService {
@@ -70,6 +72,12 @@ public class CollectionLogServiceImpl implements CollectionLogService {
     @Transactional(readOnly = true)
     public Integer countTotalDownloadedItemsForCollection(Integer collectionId) throws Exception {
         return collectionLogRepository.countTotalDownloadedItemsForCollection(collectionId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<Integer, Integer> countTotalDownloadedItemsForCollectionIds(List<Integer> ids) throws Exception {
+        return collectionLogRepository.countTotalDownloadedItemsForCollectionIds(ids);
     }
 
     public String generateCSVLink(String code) throws AidrException {

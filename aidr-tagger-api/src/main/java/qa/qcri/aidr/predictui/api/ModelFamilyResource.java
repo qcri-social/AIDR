@@ -4,9 +4,12 @@
  */
 package qa.qcri.aidr.predictui.api;
 
+import java.util.Collections;
 import java.util.List;
 
 import qa.qcri.aidr.predictui.dto.ModelFamilyDTO;
+import qa.qcri.aidr.predictui.dto.TaggersForCodes;
+import qa.qcri.aidr.predictui.dto.TaggersForCodesRequest;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -86,6 +89,20 @@ public class ModelFamilyResource {
 
         return Response.ok(modelFamily).build();
 
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/taggers-by-codes")
+    public Response getTaggersByCodes(TaggersForCodesRequest codesRequest) {
+        List<TaggersForCodes> taggersByCodes = modelFamilyLocalEJB.getTaggersByCodes(codesRequest.getCodes());
+        if (taggersByCodes.isEmpty() || taggersByCodes == null){
+            taggersByCodes = Collections.emptyList();
+        }
+        ResponseWrapper response = new ResponseWrapper();
+        response.setTaggersForCodes(taggersByCodes);
+        return Response.ok(response).build();
     }
 
     private ModelFamily transformModelFamilyDTO(ModelFamilyDTO modelFamilyDTO){

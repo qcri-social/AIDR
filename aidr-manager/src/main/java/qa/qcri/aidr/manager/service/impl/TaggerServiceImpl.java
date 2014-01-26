@@ -759,6 +759,55 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+    public Map<String, Integer> getTaggersForCollections(List<String> collectionCodes) throws AidrException {
+        try {
+            /**
+             * Rest call to Tagger
+             */
+            WebResource webResource = client.resource(taggerMainUrl + "/modelfamily/taggers-by-codes");
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .post(ClientResponse.class, objectMapper.writeValueAsString(new TaggersForCollectionsRequest(collectionCodes)));
+
+            String jsonResponse = clientResponse.getEntity(String.class);
+            TaggersForCollectionsResponse taggersResponse = objectMapper.readValue(jsonResponse, TaggersForCollectionsResponse.class);
+            if (taggersResponse != null && !taggersResponse.getTaggersForCodes().isEmpty()) {
+                Map<String, Integer> result = new HashMap<String, Integer>();
+                for (TaggersForCodes taggerForCode : taggersResponse.getTaggersForCodes()){
+                    result.put(taggerForCode.getCode(), taggerForCode.getCount());
+                }
+                return result;
+            } else {
+                return Collections.emptyMap();
+            }
+        } catch (Exception e) {
+            throw new AidrException("Error while adding new user to Tagger", e);
+        }
+    }
+
+    @Override
+    public boolean pingTagger() throws AidrException{
+        try {
+            WebResource webResource = client.resource(taggerMainUrl + "/misc/ping");
+            ObjectMapper objectMapper = new ObjectMapper();
+            ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .get(ClientResponse.class);
+            String jsonResponse = clientResponse.getEntity(String.class);
+
+            PingResponse pingResponse = objectMapper.readValue(jsonResponse, PingResponse.class);
+            if (pingResponse != null && "RUNNING".equals(pingResponse.getStatus())) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            throw new AidrException("Error while Getting training data for Crisis and Model.", e);
+        }
+    }
+
     private Collection<TaggerAttribute> convertTaggerCrisesAttributeToDTO (List<TaggerCrisesAttribute> attributes, Integer userId) {
         Map<Integer, TaggerAttribute> result = new HashMap<Integer, TaggerAttribute>();
         for (TaggerCrisesAttribute a : attributes) {
