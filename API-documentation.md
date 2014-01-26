@@ -209,7 +209,7 @@ Return attributeID > 0 if attribute exists, otherwise attributeID = 0
 # Manage Crisis Types (resource path: /crisisType)
 
 ## Add Crisis Type
-POST: /
+POST: `/`
 Example: 
 
     {
@@ -217,6 +217,7 @@ Example:
     }
 
 Response example:
+    
     {
     "crisisTypeID":"293",
     "name":"Earthquake"	
@@ -224,19 +225,21 @@ Response example:
 
 ## Retrieve Crisis Type
 GET: `/{id}`
+
 id: represents the crisisID.
 	
 Example call: `.../crisisType/2`
 
 ## Update Crisis Type
 
-PUT: /
+PUT: `/`
 
 Example body:
-   {
-    "crisisTypeID": "213",
-    "name": "Earthquake Crisis",
-   }
+   
+    {
+     "crisisTypeID": "213",
+     "name": "Earthquake Crisis",
+    }
 
 ## Delete Crisis Type
 
@@ -249,17 +252,18 @@ Example call: `.../crisisType/5`
 
 ## Add Attribute(s)
 POST `/`
+
 Example: 
 
-   {
-   "code": "Casualties",
-   "name": "People Killed",
-   "description" :"Represents people killed",
-   "users":
+    {
+    "code": "Casualties",
+    "name": "People Killed",
+    "description" :"Represents people killed",
+    "users":
            {
                "userID": "1"
            }
-   }
+    }
 
 ## Retrieve an attribute
 GET: `/{id}`
@@ -267,22 +271,25 @@ GET: `/{id}`
 ID represents attributeID.
 
 ## Update an attribute
-PUT
+PUT `/`
 
 Example: 
-   {
-   "nominalAttributeID" : "1",
-   "code": "Casualties",
-   "name": "People Killed",
-   "description" :"Represents people killed",
-   "users":
+
+    {
+    "nominalAttributeID" : "1",
+    "code": "Casualties",
+    "name": "People Killed",
+    "description" :"Represents people killed",
+    "users":
            {
                "userID": "1"
            }
-   }
+    }
 
 ## Delete an attribute
+
 DELETE: `/{id}`
+
 ID represents attributeID.
 
 Example call: `.../attribute/5`
@@ -294,21 +301,23 @@ POST `/`
 
 Example: 
 
-   {
-   "nominalLabelCode": "test123", 
-   "description": "testsd", 
-   "name": "test", 
-   "nominalAttributeID":"1"
-   }
+    {
+    "nominalLabelCode": "test123", 
+    "description": "testsd", 
+    "name": "test", 
+    "nominalAttributeID":"1"
+    }
 
 ## Retrieve a label
 GET: `/{id}`
+
 ID represents labelID.
 
 ## Update a label
-PUT
+PUT `/`
 
 Example: 
+    
     {
      "description": "This is description",
      "name": "test",
@@ -319,6 +328,7 @@ Example:
 
 ## Delete a Label
 DELETE: `/{id}`
+
 ID represents labelID.
 
 Example call: `.../label/5`
