@@ -10,7 +10,7 @@ One can simply un-deploy one of the AIDR applications from application server us
 
 # 3. Re-starting AIDR
 
-To re-starting an application perform the above two steps by stopping the application and starting it again.
+To re-starting an application perform the above two steps by stopping the application first and then starting it again.
 
 One can re-start the application server to re-start all applications by using re-start command of application server. For example, in case of GlassFish server do:
 
