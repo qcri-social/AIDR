@@ -95,7 +95,7 @@ GET: `/manage/runPersisted`
 This service intended to be used after deploying a new version of the application so to re-start the persisted collections. This service reads the persisted file from the disk, and starts collections.
 
 
-# TAGGER API (aidr-tagger)
+# TAGGER API (aidr-tagger-api)
 Base URI: `http://localhost:port/aidr-tagger-api/rest/`
 
 ## Check crisis exists or not by CrisisCode
