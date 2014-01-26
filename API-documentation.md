@@ -340,4 +340,25 @@ Example call: `.../label/5`
 
 # PERSISTER API (aidr-persister)
 
-(TBA)
+Base URI: `http://localhost:port/aidr-persister/webresources`
+
+## Start persister for aidr-collector
+
+GET `.../persister/start?file="file_location"&collectionCode=XXX`
+
+`file` parameter represents the location where persister should persist the content of collection.
+`collectionCode` represents the collectionCode for which the persister should start persistance.
+
+## Stop persister for aidr-collector
+
+GET `.../persister/stop?collectionCode`
+
+`collectionCode` represents the code of collection for which the persistance should be stopped.
+
+## Generate CSV out of last X collected tweets
+
+GET `.../persister/genCSV?collectionCode=XXX&exportLimit=34234`
+
+`collectionCode` represents the code of collection for which a CSV file should be generated.
+`exportLimit` represents limit of tweets to be exported. Datatype of this parameter is number.
+
