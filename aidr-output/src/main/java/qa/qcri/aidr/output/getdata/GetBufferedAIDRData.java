@@ -53,6 +53,7 @@
 package qa.qcri.aidr.output.getdata;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -71,10 +72,13 @@ import javax.ws.rs.core.Response;
 import com.sun.jersey.spi.resource.Singleton;
 
 
+
+
 //import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
 
 @Path("/")
@@ -321,11 +325,18 @@ public class GetBufferedAIDRData implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		// For now: set up a simple configuration that logs on the console
-		//PropertyConfigurator.configure("log4j.properties");		// where to place the properties file?
-		//BasicConfigurator.configure();							// basic configuration for log4j logging
-		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
-
+		AIDROutputConfig configuration = new AIDROutputConfig();
+		HashMap<String, String> configParams = configuration.getConfigProperties();
+		System.out.println("logger = " + configParams.get("logger"));
+		if (configParams.get("logger").equalsIgnoreCase("log4j")) {
+			// For now: set up a simple configuration that logs on the console
+			// PropertyConfigurator.configure("log4j.properties");      
+			//BasicConfigurator.configure();    // initialize log4j logging
+		}
+		if (configParams.get("logger").equalsIgnoreCase("slf4j")) {
+			System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");	// set logging level for slf4j
+		}
+		
 		// Most important action - setup channel buffering thread
 		cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
 		logger.info("Context Initialized");

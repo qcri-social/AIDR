@@ -63,6 +63,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -79,9 +80,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+//import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
 import qa.qcri.aidr.output.utils.WriteResponse;
@@ -106,7 +109,7 @@ public class RedisHTTPGetData extends HttpServlet {
 	// 2 channels being used for testing:
 	// 		a) aidr_predict.clex_20131201
 
-	private static final String CHANNEL_PREFIX_CODE = "aidr_predict.";
+	private static final String CHANNEL_PREFIX_STRING = "aidr_predict.";
 	private boolean patternSubscriptionFlag;
 	private final boolean rejectNullFlag = false;
 
@@ -132,11 +135,20 @@ public class RedisHTTPGetData extends HttpServlet {
 
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-
-		// For now: set up a simple configuration that logs on the console
-		//PropertyConfigurator.configure("log4j.properties");                // where to place the properties file?
-		//BasicConfigurator.configure();                                                        // initialize log4j logging
-		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");                // set logging level for slf4j
+		
+		AIDROutputConfig configuration = new AIDROutputConfig();
+		HashMap<String, String> configParams = configuration.getConfigProperties();
+		
+		redisHost = configParams.get("host");
+		redisPort = Integer.parseInt(configParams.get("port"));
+		if (configParams.get("logger").equalsIgnoreCase("log4j")) {
+			// For now: set up a simple configuration that logs on the console
+			// PropertyConfigurator.configure("log4j.properties");      
+			//BasicConfigurator.configure();    // initialize log4j logging
+		}
+		if (configParams.get("logger").equalsIgnoreCase("slf4j")) {
+			System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");	// set logging level for slf4j
+		}
 		jedisConn = new JedisConnectionObject(redisHost, redisPort);
 		executorServicePool = Executors.newFixedThreadPool(200);                // max number of threads
 	}
@@ -147,8 +159,9 @@ public class RedisHTTPGetData extends HttpServlet {
 			subscriberJedis = jedisConn.getJedisResource();
 		} catch (JedisConnectionException e) {
 			logger.error("Fatal error! Couldn't establish connection to REDIS!");
+			subscriberJedis = null;
 			e.printStackTrace();
-			System.exit(1);
+			//System.exit(1);
 		}
 		if (subscriberJedis != null) {
 			return true;
@@ -254,7 +267,7 @@ public class RedisHTTPGetData extends HttpServlet {
 			//if (this.aidrSubscriber == null) {}				
 			if (initRedisConnection()) {
 				// Get callback function name, if any
-				String channel = setFullyQualifiedChannelName(CHANNEL_PREFIX_CODE, request.getParameter("crisisCode"));
+				String channel = setFullyQualifiedChannelName(CHANNEL_PREFIX_STRING, request.getParameter("crisisCode"));
 				String callbackName = request.getParameter("callback");
 				redisChannel = channel;
 

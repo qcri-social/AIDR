@@ -16,6 +16,7 @@ package qa.qcri.aidr.output.getdata;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -25,11 +26,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
-
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
+
 
 //import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
@@ -46,8 +48,8 @@ public class ChannelBufferManager {
 	private static ExecutorService executorServicePool;
 
 	// Redis connection related
-	public static final String redisHost = "localhost";	// Current assumption: REDIS running on same m/c
-	public static final int redisPort = 6379;	
+	public static String redisHost = "localhost";	// Current assumption: REDIS running on same m/c
+	public static int redisPort = 6379;	
 
 	// Jedis related
 	public static JedisConnectionObject jedisConn;		// we need only a single instance of JedisConnectionObject running in background
@@ -69,10 +71,21 @@ public class ChannelBufferManager {
 
 	// Constructor
 	public ChannelBufferManager(final String channelRegEx) {
-		//BasicConfigurator.configure();			// setup logging
-		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
+		AIDROutputConfig configuration = new AIDROutputConfig();
+		HashMap<String, String> configParams = configuration.getConfigProperties();
 
+		redisHost = configParams.get("host");
+		redisPort = Integer.parseInt(configParams.get("port"));
+		if (configParams.get("logger").equalsIgnoreCase("log4j")) {
+			// For now: set up a simple configuration that logs on the console
+			// PropertyConfigurator.configure("log4j.properties");      
+			//BasicConfigurator.configure();    // initialize log4j logging
+		}
+		if (configParams.get("logger").equalsIgnoreCase("slf4j")) {
+			System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");	// set logging level for slf4j
+		}
 		logger.info("[ChannelBufferManager] Initializing channel buffer manager.");
+
 		bufferSize = -1;
 		executorServicePool = Executors.newFixedThreadPool(200);		// max number of threads
 		jedisConn = new JedisConnectionObject(redisHost, redisPort);
@@ -80,6 +93,7 @@ public class ChannelBufferManager {
 			subscriberJedis = jedisConn.getJedisResource();
 			if (subscriberJedis != null) isConnected = true;
 		} catch (JedisConnectionException e) {
+			subscriberJedis = null;
 			isConnected = false;
 			logger.error("Fatal error! Couldn't establish connection to REDIS!");
 			e.printStackTrace();
@@ -242,7 +256,7 @@ public class ChannelBufferManager {
 	public List<String> getLatestFromAllChannels(final int msgCount) {
 		TreeMap<Long, String>dataSet = new TreeMap<Long, String>();
 		final List<ChannelBuffer>cbList = new ArrayList<ChannelBuffer>();
-		
+
 		cbList.addAll(ChannelBufferManager.subscribedChannels.values());
 		for (ChannelBuffer temp: cbList) {
 			final List<String> tempList = temp.getLIFOMessages(msgCount);		// reverse-chronologically ordered list
@@ -287,8 +301,12 @@ public class ChannelBufferManager {
 	}
 
 	private synchronized void stopSubscription() {
-		if (aidrSubscriber != null && aidrSubscriber.getSubscribedChannels() > 0) {
-			aidrSubscriber.punsubscribe();				
+		try {
+			if (aidrSubscriber != null && aidrSubscriber.getSubscribedChannels() > 0) {
+				aidrSubscriber.punsubscribe();				
+			}
+		} catch (JedisConnectionException e) {
+			logger.info("[stopSubscription] Connection to REDIS seems to be lost!");
 		}
 		if (jedisConn != null && aidrSubscriber.getSubscribedChannels() == 0) jedisConn.returnJedis(subscriberJedis);
 	}

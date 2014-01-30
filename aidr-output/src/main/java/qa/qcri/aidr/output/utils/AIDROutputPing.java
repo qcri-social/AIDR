@@ -25,6 +25,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+//import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +41,7 @@ public class AIDROutputPing {
 	private Jedis jedis;
 
 	private static String host = "localhost";
-	private static int port = 6379; 
+	private static int port = 1978; 
 
 	private static HashMap<String, Method>APIHashMap = null;
 
@@ -52,13 +53,20 @@ public class AIDROutputPing {
 	}
 
 	public AIDROutputPing(final String host, final int port) {
-		// For now: set up a simple configuration that logs on the console
-		//PropertyConfigurator.configure("log4j.properties");                // where to place the properties file?
-		//BasicConfigurator.configure();                                     // initialize log4j logging
-		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");      // set logging level for slf4j
-
-		AIDROutputPing.host = host;
-		AIDROutputPing.port = port;
+		
+		AIDROutputConfig configuration = new AIDROutputConfig();
+		HashMap<String, String> configParams = configuration.getConfigProperties();
+		AIDROutputPing.host = configParams.get("host");
+		AIDROutputPing.port = Integer.parseInt(configParams.get("port"));
+		if (configParams.get("logger").equalsIgnoreCase("log4j")) {
+			// For now: set up a simple configuration that logs on the console
+			// PropertyConfigurator.configure("log4j.properties");      
+			// BasicConfigurator.configure();    // initialize log4j logging
+		}
+		if (configParams.get("logger").equalsIgnoreCase("slf4j")) {
+			System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");	// set logging level for slf4j
+		}
+		
 		APIHashMap = new HashMap<String, Method>();
 
 		// Register available REST APIs
@@ -97,7 +105,7 @@ public class AIDROutputPing {
 						// TODO - implement code here
 					}
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException 
-						| InstantiationException | ClassNotFoundException e) {
+						| InstantiationException | ClassNotFoundException | JedisConnectionException e) {
 					apiResult = null;
 					logger.error("Error! API not working");
 				}
@@ -119,6 +127,7 @@ public class AIDROutputPing {
 	@Path("/ping")
 	@Produces("application/json")
 	public Response pingAIDROutput(@QueryParam("callback") String callbackName) {
+		logger.info("[pingAIDROutput] Ping request received...");
 		// First ensure that AIDROutput is up and running
 		String result = null;
 		try {
@@ -138,7 +147,6 @@ public class AIDROutputPing {
 			// REDIS connection is working - now to test if APIs are workings
 			boolean isAPIRunning = testAIDROutputAPI("fetch");
 			if (isAPIRunning) { 
-				//logger.info("REDIS accessible - all services available...");
 				String responseStr = "{\"application\":\"AIDROutput\", \"status\":\"RUNNING\"}";
 				if (callbackName != null) {
 					jsonpRes.append(responseStr).append(")");
