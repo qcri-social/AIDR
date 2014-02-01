@@ -81,8 +81,12 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
         addCollectionSearchCriteria(terms, criteria);
         searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
 
-        criteria.setFirstResult(start);
-        criteria.setMaxResults(limit);
+        if (start != null) {
+            criteria.setFirstResult(start);
+        }
+        if (limit != null) {
+            criteria.setMaxResults(limit);
+        }
 
         return (List<AidrCollection>) criteria.list();
     }
@@ -115,8 +119,12 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
         addCollectionSearchCriteria(terms, criteria);
         searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
 
-        criteria.setFirstResult(start);
-        criteria.setMaxResults(limit);
+        if (start != null) {
+            criteria.setFirstResult(start);
+        }
+        if (limit != null) {
+            criteria.setMaxResults(limit);
+        }
 
         return (List<AidrCollection>) criteria.list();
     }
