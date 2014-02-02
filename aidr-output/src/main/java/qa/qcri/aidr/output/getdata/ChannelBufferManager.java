@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 public class ChannelBufferManager {
 
-	private static final int NO_DATA_TIMEOUT = 5 * 60 * 1000;		// when to delete a channel buffer
+	private static final int NO_DATA_TIMEOUT = 48 * 60 * 60 * 1000;		// when to delete a channel buffer
 	private static final int CHECK_INTERVAL = NO_DATA_TIMEOUT;
 
 	private static Logger logger = LoggerFactory.getLogger(ChannelBufferManager.class);
@@ -214,7 +214,7 @@ public class ChannelBufferManager {
 			ChannelBuffer cb = ChannelBufferManager.subscribedChannels.get(channelName);
 			cb.deleteBuffer();
 			ChannelBufferManager.subscribedChannels.remove(channelName);
-			logger.debug("[deleteChannelBuffer] Deleted channel buffer: " + channelName);
+			logger.info("[deleteChannelBuffer] Deleted channel buffer: " + channelName);
 		}
 	}
 

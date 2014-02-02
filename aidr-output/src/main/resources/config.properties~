@@ -1,5 +1,0 @@
-#Thu Jan 30 15:50:50 AST 2014
-host=localhost
-port=1978
-logger=slf4j
-

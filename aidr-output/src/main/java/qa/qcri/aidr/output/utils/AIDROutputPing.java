@@ -6,11 +6,11 @@
  * 		i) Connection to REDIS is available
  * 		ii) Services are returning non-null results
  * 
- *  Invocation:	host:port/context-path/test/ping?callback={callback}
+ *  Invocation:	host:port/context-root/rest/manage/ping?callback={callback}
  *  
  *  Example: 
- *  	1. localhost:8080/AIDROutput/crisis/test/ping
- *  	2. localhost:8080/AIDROutput/crisis/test/ping?callback=JSONP
+ *  	1. localhost:8080/AIDROutput/rest/manage/ping
+ *  	2. localhost:8080/AIDROutput/rest/manage/ping?callback=JSONP
  *  
  */
 package qa.qcri.aidr.output.utils;
