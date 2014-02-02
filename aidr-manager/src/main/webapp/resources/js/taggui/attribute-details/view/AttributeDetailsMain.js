@@ -406,15 +406,22 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
     },
 
     attributeEdit: function (btn, me) {
+        me.suspendLayout = true;
+
         me.nameValue.hide();
         me.editButton.hide();
 
         me.nameTextBox.show();
         me.saveButton.show();
         me.cancelButton.show();
+
+        me.suspendLayout = false;
+        me.forceComponentLayout();
     },
 
     attributeCancel: function (btn, me) {
+        me.suspendLayout = true;
+
         me.nameValue.show();
         me.editButton.show();
 
@@ -423,28 +430,38 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
         me.cancelButton.hide();
 
         me.nameTextBox.setValue(me.attributeName);
+
+        me.suspendLayout = false;
+        me.forceComponentLayout();
     },
 
     attributeSave: function (btn, me) {
+        me.suspendLayout = true;
+
         me.cancelButton.disable();
         me.deleteButton.disable();
         me.removeClassifierButton.disable();
+        me.saveButton.disable();
 
-        var attributeName = me.nameTextBox.getValue();
+        var attributeName = Ext.String.trim( me.nameTextBox.getValue() );
 
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/updateAttribute.action',
             method: 'POST',
             params: {
                 attributeID: ATTRIBUTE_ID,
-                attributeName: Ext.String.trim( attributeName )
+                attributeName: attributeName
             },
             headers: {
                 'Accept': 'application/json'
             },
             success: function (resp) {
+                me.suspendLayout = true;
+
                 var response = Ext.decode(resp.responseText);
                 if (response.success) {
+                    me.attributeName = attributeName;
+
                     me.nameTextBox.hide();
                     me.saveButton.hide();
                     me.cancelButton.hide();
@@ -458,6 +475,9 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
                 me.cancelButton.enable();
                 me.deleteButton.enable();
                 me.removeClassifierButton.enable();
+
+                me.suspendLayout = false;
+                me.forceComponentLayout();
             },
             failure: function () {
                 me.attributeCancel(null, me);
@@ -466,9 +486,14 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
                 me.removeClassifierButton.enable();
             }
         });
+
+        me.suspendLayout = false;
+        me.forceComponentLayout();
     },
 
     valuesEdit: function (btn, me) {
+        me.suspendLayout = true;
+
         var children = me.labelsBlock.items ? me.labelsBlock.items.items : [];
         Ext.each(children, function (child) {
             if (child.name != NA_CATEGORY_NAME) {
@@ -479,9 +504,14 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
         me.valuesEditButton.hide();
         me.valuesSaveButton.show();
         me.valuesCancelButton.show();
+
+        me.suspendLayout = false;
+        me.forceComponentLayout();
     },
 
     valuesSave: function (btn, me) {
+        me.suspendLayout = true;
+
         var children = me.labelsBlock.items ? me.labelsBlock.items.items : [];
         Ext.each(children, function (child) {
             if (child.name != NA_CATEGORY_NAME) {
@@ -493,9 +523,15 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
         me.valuesSaveButton.hide();
         me.valuesSaveButton.disable();
         me.valuesCancelButton.hide();
+
+        me.suspendLayout = false;
+        me.forceComponentLayout();
+
     },
 
     valuesCancel: function (btn, me) {
+        me.suspendLayout = true;
+
         var children = me.labelsBlock.items ? me.labelsBlock.items.items : [];
         Ext.each(children, function (child) {
             if (child.name != NA_CATEGORY_NAME) {
@@ -507,6 +543,9 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
         me.valuesSaveButton.hide();
         me.valuesSaveButton.disable();
         me.valuesCancelButton.hide();
+
+        me.suspendLayout = false;
+        me.forceComponentLayout();
     }
 
 });
