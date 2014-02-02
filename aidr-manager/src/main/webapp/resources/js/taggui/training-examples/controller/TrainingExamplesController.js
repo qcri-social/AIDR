@@ -78,7 +78,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                             me.mainComponent.saveLabelsButton.disable();
                             me.mainComponent.skipTaskButton.disable();
                         }
-                        if (obj) {
+                        if (obj && obj[0]) {
                             me.mainComponent.optionPanel.removeAll();
                             var r = obj[0];
                             me.mainComponent.documentID = r.documentID;
@@ -90,7 +90,8 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                             if (r.attributeInfo){
                                 Ext.each(r.attributeInfo, function (attr) {
 //                                    Show labels from only one Category (the one user clicks on previous screen).
-                                    if (attr.nominalAttributeID == NOMINAL_ATTRIBUTE_ID) {
+                                    if (NOMINAL_ATTRIBUTE_ID == 0 ||
+                                        attr.nominalAttributeID == NOMINAL_ATTRIBUTE_ID) {
                                         var labelPanel = Ext.create('TAGGUI.training-examples.view.LabelPanel', {});
                                         labelPanel.showData(attr);
                                         me.mainComponent.optionPanel.add(labelPanel);
@@ -100,6 +101,8 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                             if (fromSkipAction){
                                 me.skipTask();
                             }
+                        } else{
+                            AIDRFMFunctions.setAlert("Error", "Examples not available for this crisis.");
                         }
                     }
                 } else {

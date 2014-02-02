@@ -148,17 +148,17 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
                 },
                 items: [
                     this.taggerTitle,
-                    this.taggerDescription
+                    {
+                        xtype: 'container',
+                        layout: 'hbox',
+                        items: [
+                            this.taggerDescription,
+                            this.addTrainingData
+                        ]
+                    }
                 ]
             },
-            {
-                xtype: 'container',
-                layout: 'hbox',
-                items: [
-                    this.taggerDescription2line,
-                    this.addTrainingData
-                ]
-            },
+            this.taggerDescription2line,
             this.trainingDataGrid,
             this.trainingDataPaging
         ];
