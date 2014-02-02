@@ -14,7 +14,7 @@ Ext.define('ADMIN.health.view.AdminHealthPanel', {
 
         this.breadcrumbs = Ext.create('Ext.container.Container', {
             html: '<div class="bread-crumbs">' +
-                '<a href="http://aidr.qcri.org/">AIDR</a><span>&nbsp;&gt;&nbsp;' +
+                '<a href="' + BASE_URL + '/protected/home">AIDR</a><span>&nbsp;&gt;&nbsp;' +
                 '<a href="' + BASE_URL + '/protected/administration/admin-console">Administrator console</a><span>&nbsp;&gt;&nbsp;' +
                 'System health</span></div>',
             margin: 0,

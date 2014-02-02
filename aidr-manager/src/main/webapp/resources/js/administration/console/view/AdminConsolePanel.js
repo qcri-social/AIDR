@@ -14,7 +14,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
 
         this.breadcrumbs = Ext.create('Ext.container.Container', {
             html: '<div class="bread-crumbs">' +
-                '<a href="http://aidr.qcri.org/">AIDR</a><span>&nbsp;&gt;&nbsp;Administrator console</span></div>',
+                '<a href="' + BASE_URL + '/protected/home">AIDR</a><span>&nbsp;&gt;&nbsp;Administrator console</span></div>',
             margin: 0,
             padding: 0
         });
