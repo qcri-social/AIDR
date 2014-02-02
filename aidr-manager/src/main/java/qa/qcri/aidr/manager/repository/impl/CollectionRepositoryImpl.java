@@ -77,7 +77,13 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
                 Restrictions.eq("status", CollectionStatus.RUNNING),
                 Restrictions.eq("status", CollectionStatus.RUNNING_WARNING)
         );
-        criteria.add(or);
+
+        LogicalExpression orAll = Restrictions.or(
+                or,
+                Restrictions.eq("status", CollectionStatus.INITIALIZING)
+        );
+
+        criteria.add(orAll);
         addCollectionSearchCriteria(terms, criteria);
         searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
 
@@ -101,7 +107,13 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
                 Restrictions.eq("status", CollectionStatus.RUNNING),
                 Restrictions.eq("status", CollectionStatus.RUNNING_WARNING)
         );
-        criteria.add(or);
+
+        LogicalExpression orAll = Restrictions.or(
+                or,
+                Restrictions.eq("status", CollectionStatus.INITIALIZING)
+        );
+
+        criteria.add(orAll);
         addCollectionSearchCriteria(terms, criteria);
 
         ScrollableResults scroll = criteria.scroll();
@@ -116,6 +128,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 
         criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING));
         criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING_WARNING));
+        criteria.add(Restrictions.ne("status", CollectionStatus.INITIALIZING));
         addCollectionSearchCriteria(terms, criteria);
         searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
 
@@ -137,6 +150,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 
         criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING));
         criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING_WARNING));
+        criteria.add(Restrictions.ne("status", CollectionStatus.INITIALIZING));
         addCollectionSearchCriteria(terms, criteria);
 
         ScrollableResults scroll = criteria.scroll();
