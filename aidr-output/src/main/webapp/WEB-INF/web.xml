@@ -40,12 +40,12 @@
   
   <servlet-mapping>
   	<servlet-name>AIDROutputPing</servlet-name>
-  	<url-pattern>/crisis/test/*</url-pattern>
+  	<url-pattern>/rest/manage/*</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
     <servlet-name>AIDROutput JAX-RS Servlet</servlet-name>
-    <url-pattern>/crisis/fetch/*</url-pattern>
+    <url-pattern>/rest/crisis/fetch/*</url-pattern>
   </servlet-mapping>
   
   <listener>

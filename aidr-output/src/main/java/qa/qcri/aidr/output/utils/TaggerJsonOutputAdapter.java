@@ -60,7 +60,7 @@ public class TaggerJsonOutputAdapter {
 				jsonObj.crisis_code = crisisCode;
 				jsonObj.crisis_name = crisisName;
 				jsonObj.nominal_labels.addAll(nominalLabels);
-
+				
 				if (!isemptyNominalLabels(nominalLabels)) 
 					return jsonObject.toJson(jsonObj);
 
