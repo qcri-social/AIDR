@@ -48,4 +48,9 @@ public class ClientAppServiceImpl implements ClientAppService {
     public List<ClientApp> getAllClientAppByCrisisID(Long crisisID) {
         return clientAppDao.findAllClientAppByCrisisID(crisisID);  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    @Override
+    public List<ClientApp> findClientAppByAppType(String columnName, Integer typeID) {
+        return clientAppDao.findClientAppByAppType(columnName, typeID);  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

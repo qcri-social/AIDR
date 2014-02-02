@@ -51,5 +51,15 @@ public class ClientAppDaoImpl extends AbstractDaoImpl<ClientApp, String> impleme
         return findByCriteria(Restrictions.eq("status", status));  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    public List<ClientApp> findClientAppByAppType(String columnName, Integer typeID) {
+
+        return findByCriteria(Restrictions.conjunction()
+                .add(Restrictions.eq("appType",typeID))
+                .add(Restrictions.not(Restrictions.eq("status",0))));
+    }
+
+
+
 
 }

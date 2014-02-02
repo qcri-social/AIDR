@@ -20,5 +20,6 @@ public interface ClientAppService {
     List<ClientApp> getAllClientAppByClientID(Long clientID);
     List<ClientApp> findClientAppByStatus(Integer status);
     List<ClientApp> getAllClientAppByCrisisID(Long crisisID);
+    List<ClientApp> findClientAppByAppType(String columnName, Integer typeID);
 
 }

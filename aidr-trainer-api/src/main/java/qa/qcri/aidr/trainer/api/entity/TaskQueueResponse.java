@@ -26,14 +26,18 @@ public class TaskQueueResponse implements Serializable {
     @Column (name = "response", nullable = false)
     private String response;
 
+    @Column (name = "taskInfo", nullable = true)
+    private String taskInfo;
+
     @Column (name = "created", nullable = false)
     private Date created;
 
     public TaskQueueResponse(){}
 
-    public TaskQueueResponse(Long taskQueueID, String response){
+    public TaskQueueResponse(Long taskQueueID, String response, String taskInfo){
         this.taskQueueID = taskQueueID;
         this.response = response;
+        this.taskInfo = taskInfo;
     }
 
     public Date getCreated() {
@@ -60,5 +64,11 @@ public class TaskQueueResponse implements Serializable {
         this.response = response;
     }
 
+    public String getTaskInfo() {
+        return taskInfo;
+    }
 
+    public void setTaskInfo(String taskInfo) {
+        this.taskInfo = taskInfo;
+    }
 }

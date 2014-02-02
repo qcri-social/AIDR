@@ -83,5 +83,4 @@ public class TemplateController {
 
         return templateService.getCrisisLandingJSONPByCrisisCode(crisisCode);
     }
-
 }

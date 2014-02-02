@@ -27,15 +27,15 @@ public class CrisisServiceTest {
 
     @Test
     public void testFindByCrisisID() throws Exception {
-       Long id = new Long("14");
+      // Long id = new Long("14");
 
-       Crisis crisis = crisisService.findByCrisisID(id) ;
+      // Crisis crisis = crisisService.findByCrisisID(id) ;
        //CrisisJsonModel findByOptimizedCrisisID(Long id)
-       System.out.println(crisis + "\n");
+      // System.out.println(crisis + "\n");
 
-       CrisisJsonModel crisisJsonModel = crisisService.findByOptimizedCrisisID(id);
+      // CrisisJsonModel crisisJsonModel = crisisService.findByOptimizedCrisisID(id);
 
-       System.out.println(crisisJsonModel + "\n");
+       //System.out.println(crisisJsonModel + "\n");
     }
 
 

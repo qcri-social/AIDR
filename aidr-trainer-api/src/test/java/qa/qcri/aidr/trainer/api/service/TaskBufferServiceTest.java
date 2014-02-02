@@ -26,14 +26,14 @@ public class TaskBufferServiceTest {
 
     @Test
     public void testFindAllTaskBuffer() throws Exception {
-        List<TaskBufferJsonModel> taskBuffers = taskBufferService.findOneTaskBufferByCririsID(new Long(14),"Pybossa", 0, 1) ;
-        System.out.println("taskBuffers : " + taskBuffers.size());
-        taskAssignmentService.revertTaskAssignment(new Long(367577), "pybossa");
+       // List<TaskBufferJsonModel> taskBuffers = taskBufferService.findOneTaskBufferByCririsID(new Long(14),"Pybossa", 0, 1) ;
+       // System.out.println("taskBuffers : " + taskBuffers.size());
+      //  taskAssignmentService.revertTaskAssignment(new Long(367577), "pybossa");
 
-        for(int i = 0; i < taskBuffers.size(); i++){
-            taskAssignmentService.revertTaskAssignment(taskBuffers.get(i).getDocumentID(), "Pybossa");
-        }
-        int originalReqCount = taskBuffers.size();
+      //  for(int i = 0; i < taskBuffers.size(); i++){
+      //      taskAssignmentService.revertTaskAssignment(taskBuffers.get(i).getDocumentID(), "Pybossa");
+      //  }
+      //  int originalReqCount = taskBuffers.size();
 
     }
 }

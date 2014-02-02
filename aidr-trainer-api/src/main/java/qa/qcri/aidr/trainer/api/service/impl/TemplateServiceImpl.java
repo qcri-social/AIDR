@@ -53,7 +53,6 @@ public class TemplateServiceImpl implements TemplateService {
         if(clientAppList != null){
             if(clientAppList.size() > 0){
                 client = clientService.findClientbyID("clientID", clientAppList.get(0).getClientID());
-
                 for(int i=0; i < clientAppList.size(); i++){
                     ClientApp clientApp = clientAppList.get(i);
                     CrisisApplicationListFormatter formatter = new CrisisApplicationListFormatter(clientApp,client,taskQueueService) ;

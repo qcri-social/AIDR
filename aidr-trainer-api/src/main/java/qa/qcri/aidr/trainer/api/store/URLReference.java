@@ -9,5 +9,5 @@ package qa.qcri.aidr.trainer.api.store;
  */
 public class URLReference {
     public static String PUBLIC_LINK = "http://pybossa-dev.qcri.org/AIDRCrowdsourcingAPI/crisisContent.html";
-    public static String PUBLIC_PYBOSSA_URL = "http://pybossa-dev.qcri.org";
+    public static String PUBLIC_PYBOSSA_URL = "http://pybossa.qcri.org";
 }

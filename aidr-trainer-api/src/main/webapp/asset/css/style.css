@@ -1,10 +1,9 @@
 body {
     font-family: "Ubuntu", "Lucida Sans Unicode", "Lucida Grande", "Arial";
-    background: transparent url("../../image/qcri-bg-clouds.jpg") no-repeat center center;
 }
 
 .headeraidrlogo {
-    margin-top: 10px;
+    margin-top: 20px;
     border-radius: 0px;
     padding: 8px;
     background: none;

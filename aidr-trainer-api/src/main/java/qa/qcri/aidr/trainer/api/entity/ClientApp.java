@@ -1,5 +1,8 @@
 package qa.qcri.aidr.trainer.api.entity;
 
+import qa.qcri.aidr.trainer.api.store.CodeLookUp;
+import qa.qcri.aidr.trainer.api.store.StatusCodeType;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -57,6 +60,9 @@ public class ClientApp implements Serializable {
     @Column (name = "created", nullable = false)
     private Date created;
 
+    @Column (name = "appType", nullable = false)
+    private Integer appType;
+
     @ManyToOne
     @JoinColumn(name="clientID" ,nullable = false, insertable = false, updatable = false)
     private Client client;
@@ -77,6 +83,7 @@ public class ClientApp implements Serializable {
         this.quorum = 1;
         this.status = 1;
         this.taskRunsPerTask = 3;
+        this.appType = CodeLookUp.APP_MULTIPLE_CHOICE;
     }
 
 
@@ -193,4 +200,11 @@ public class ClientApp implements Serializable {
         this.nominalAttributeID = nominalAttributeID;
     }
 
+    public Integer getAppType() {
+        return appType;
+    }
+
+    public void setAppType(Integer appType) {
+        this.appType = appType;
+    }
 }

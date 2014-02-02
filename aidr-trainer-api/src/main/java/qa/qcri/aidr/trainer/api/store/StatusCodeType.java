@@ -16,4 +16,12 @@ public class StatusCodeType {
 
     public static String CRISIS_PYBOSSA_SERVICE_READY =  "ready";
     public static String CRISIS_PYBOSSA_SERVICE_NOT_READY =  "not_ready";
+
+    public static Integer Task_NOT_PUBLISHED = 0;
+    public static Integer TASK_PUBLISHED = 1;
+    public static Integer TASK_LIFECYCLE_COMPLETED = 2;
+    public static Integer TASK_EXPORTED = 3;
+
+
+
 }

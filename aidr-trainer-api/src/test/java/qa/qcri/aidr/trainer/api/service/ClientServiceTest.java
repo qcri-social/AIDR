@@ -23,7 +23,7 @@ public class ClientServiceTest {
 
     @Test
     public void testFindClientbyID() throws Exception {
-           Client client = clientService.findClientbyID("clientID", new Long(1));
-           System.out.print("client : " + client);
+          // Client client = clientService.findClientbyID("clientID", new Long(1));
+          // System.out.print("client : " + client);
     }
 }

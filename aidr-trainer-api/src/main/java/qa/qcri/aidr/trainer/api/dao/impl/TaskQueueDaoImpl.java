@@ -56,4 +56,5 @@ public class TaskQueueDaoImpl extends AbstractDaoImpl<TaskQueue, String> impleme
     public List<TaskQueue> findTaskQueueSetByclientApp(Long clientAppID) {
         return findByCriteria(Restrictions.eq("clientAppID", clientAppID));
     }
+
 }
