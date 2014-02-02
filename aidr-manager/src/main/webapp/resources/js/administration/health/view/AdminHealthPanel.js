@@ -54,6 +54,17 @@ Ext.define('ADMIN.health.view.AdminHealthPanel', {
             flex: 1
         });
 
+        this.AIDROutputLabel = Ext.create('Ext.form.Label', {
+            cls: 'styled-text',
+            text: 'AIDROutput',
+            width: 120
+        });
+
+        this.AIDROutputStatus = Ext.create('Ext.form.Label', {
+            cls: 'styled-text',
+            flex: 1
+        });
+
         this.pageTitle = Ext.create('Ext.form.Label', {
             cls: 'header-h1 bold-text',
             text: 'System health',
@@ -91,6 +102,14 @@ Ext.define('ADMIN.health.view.AdminHealthPanel', {
                 items: [
                     this.trainerLabel,
                     this.trainerStatus
+                ]
+            },{
+                xtype: 'container',
+                margin: '15 0 0 0',
+                layout: 'hbox',
+                items: [
+                    this.AIDROutputLabel,
+                    this.AIDROutputStatus
                 ]
             }
         ];

@@ -33,6 +33,9 @@ public class TaggerServiceImpl implements TaggerService {
     @Value("${persisterMainUrl}")
     private String persisterMainUrl;
 
+    @Value("${outputAPIMainUrl}")
+    private String outputAPIMainUrl;
+
     @Override
     public List<TaggerCrisisType> getAllCrisisTypes() throws AidrException{
         try {
@@ -788,6 +791,27 @@ public class TaggerServiceImpl implements TaggerService {
     public boolean pingTagger() throws AidrException{
         try {
             WebResource webResource = client.resource(taggerMainUrl + "/misc/ping");
+            ObjectMapper objectMapper = new ObjectMapper();
+            ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .get(ClientResponse.class);
+            String jsonResponse = clientResponse.getEntity(String.class);
+
+            PingResponse pingResponse = objectMapper.readValue(jsonResponse, PingResponse.class);
+            if (pingResponse != null && "RUNNING".equals(pingResponse.getStatus())) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            throw new AidrException("Error while Getting training data for Crisis and Model.", e);
+        }
+    }
+
+    @Override
+    public boolean pingAIDROutput() throws AidrException{
+        try {
+            WebResource webResource = client.resource(outputAPIMainUrl + "/manage/ping");
             ObjectMapper objectMapper = new ObjectMapper();
             ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)

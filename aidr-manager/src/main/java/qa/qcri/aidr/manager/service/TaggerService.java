@@ -77,4 +77,6 @@ public interface TaggerService {
     public Map<String, Integer> getTaggersForCollections(List<String> collectionCodes) throws Exception;
 
     public boolean pingTagger() throws AidrException;
+
+    public boolean pingAIDROutput() throws AidrException;
 }

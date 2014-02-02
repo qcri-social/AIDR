@@ -206,7 +206,7 @@ public class CollectionServiceImpl implements CollectionService {
             String jsonResponse = clientResponse.getEntity(String.class);
 
             PingResponse pingResponse = objectMapper.readValue(jsonResponse, PingResponse.class);
-            if (pingResponse != null && "RUNNING".equals(pingResponse.getStatus())) {
+            if (pingResponse != null && "RUNNING".equals(pingResponse.getCurrentStatus())) {
                 return true;
             } else {
                 return false;
