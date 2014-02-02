@@ -33,9 +33,6 @@ public class TaggerServiceImpl implements TaggerService {
     @Value("${persisterMainUrl}")
     private String persisterMainUrl;
 
-    @Value("${taggerPersisterMainUrl}")
-    private String taggerPersisterMainUrl;
-
     @Override
     public List<TaggerCrisisType> getAllCrisisTypes() throws AidrException{
         try {
@@ -683,7 +680,7 @@ public class TaggerServiceImpl implements TaggerService {
     @Override
     public String generateCSVLink(String code) throws AidrException {
         try {
-            WebResource webResource = client.resource(taggerPersisterMainUrl + "/genCSV?collectionCode=" + code + "&exportLimit=100000");
+            WebResource webResource = client.resource(persisterMainUrl + "/taggerPersister/genCSV?collectionCode=" + code + "&exportLimit=100000");
             ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
                     .get(ClientResponse.class);
             String jsonResponse = clientResponse.getEntity(String.class);
@@ -701,7 +698,7 @@ public class TaggerServiceImpl implements TaggerService {
     @Override
     public String generateTweetIdsLink(String code) throws AidrException {
         try {
-            WebResource webResource = client.resource(taggerPersisterMainUrl + "/genTweetIds?collectionCode=" + code);
+            WebResource webResource = client.resource(persisterMainUrl + "/taggerPersister/genTweetIds?collectionCode=" + code);
             ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
                     .get(ClientResponse.class);
             String jsonResponse = clientResponse.getEntity(String.class);
