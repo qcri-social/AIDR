@@ -1,0 +1,75 @@
+
+
+/* Main page */
+
+#mainBody {
+	padding: 0;
+	margin: 0;
+}
+
+
+#headeraidrlogo {
+	margin-top: 10px;
+	border-radius: 0px;
+	padding: 8px 8px 8px 190px;
+	background: none;
+}
+
+#headerwrapper {
+	background-color: #00a79d;
+	opacity: 0.9;
+	height: 120px;
+	width: auto;
+	margin: 0;
+	padding: 0;
+}
+
+#header {
+	margin: 0 auto;
+	padding: 0;
+	width: 1020;
+}
+
+#mainBody {
+	background: url(../../media/images/aidr-bg-clouds.jpg) repeat-x ;
+}
+
+#mainwrapper {
+	margin: 0 auto;
+	padding: 1em;
+}
+
+#main {
+	padding: 1em;
+	border-radius: 12px;
+	margin: 0 auto;
+	width: 1020px;
+	background: white;
+    min-height: 420px;
+}
+
+#footerwrapper {
+	background-color: #464646;
+	height: 120px;
+	width: auto;
+	margin: 0;
+	padding: 0;
+}
+
+#footerwrapper #footer {
+	width: 960px;
+	padding: 1em;
+	margin: 0 auto;
+	font-size: 0.8em;
+	color: white;
+	text-align: right;
+}
+
+a:link {text-decoration: none; color: #ffffff;}
+a:visited {text-decoration: none; color: #ffffff;}
+a:active {text-decoration: none; color: #ffffff;}
+a:hover {text-decoration: none; color: #ffffff;}
+
+#footerqcrilogo {
+	padding-left: 0.4em;
+}

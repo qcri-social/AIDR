@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link rel="shortcut icon" type="image/ico" href="media/images/aidrIco.ico" />
+
+    <title>AIDR: Artificial Intelligence for Disaster Response</title>
+
+    <style type="text/css">
+        @import "media/css/main.css";
+    </style>
+    <script type="text/javascript" language="javascript" src="media/js/jquery.js"></script>
+    <script src="media/js/purl.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            var searchKey = $.url().param('crisisCode');
+            // sse.php sends messages with text/event-stream mimetype.
+            if(searchKey !="" && typeof searchKey != 'undefined'){
+                //dolphins_slaughter
+                var url = 'http://aidr-dev.qcri.org:8084/AIDROutput/crisis/stream/channel?crisisCode='+ searchKey+'&rate=60';
+                //var url='http://localhost:8888/predict-ui/predictOutput/httpOutputAction.php';
+
+                var template = '<iframe id="realtimeFeeder" width="100%" height="500" scrolling="auto" frameborder="0" src=\"';
+                template = template +   url + '\"></iframe>';
+
+                $( ".border" ).append( template);
+
+                var autoRefresh = setInterval(
+                        function ()  // Call out to get the time
+                        {
+                            var $contents = $('#realtimeFeeder').contents();
+                            $contents.scrollTop($contents.height());
+                        }, 1000);// end check
+            }
+        });
+    </script>
+</head>
+<body id="mainBody">
+<div id="headerwrapper">
+    <div id="header">
+        <img id="headeraidrlogo" src="media/images/aidr_logo_240x90.png">&nbsp;
+    </div>
+</div>
+
+<div id="mainwrapper">
+    <div id="main">
+        <div class="border" id="log"></div>
+        <div class="spacer"></div>
+    </div>
+</div>
+
+
+<div id="footerwrapper"><div id="footer">
+    <div style="float: right;">
+        <a style="text-decoration: none;" href="http://www.qcri.qa/">A project by <img align="middle" id="footerqcrilogo" src="media/images/qcri-gray-horiz.png"/></a>
+    </div>
+    <div style="float: left; padding-top: 16px;">
+        <a style="text-decoration: underline;" href="tos/">Terms of Service</a>
+    </div>
+</div></div>
+
+
+</body>
+</html>

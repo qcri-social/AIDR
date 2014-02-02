@@ -21,6 +21,50 @@ Ext.define('ADMIN.health.view.AdminHealthPanel', {
             padding: 0
         });
 
+        this.collectorLabel = Ext.create('Ext.form.Label', {
+            cls: 'styled-text',
+            text: 'Collector',
+            width: 120
+        });
+
+        this.collectorStatus = Ext.create('Ext.form.Label', {
+            cls: 'styled-text',
+            flex: 1
+        });
+
+        this.taggerLabel = Ext.create('Ext.form.Label', {
+            cls: 'styled-text',
+            text: 'Tagger',
+            width: 120
+        });
+
+        this.taggerStatus = Ext.create('Ext.form.Label', {
+            cls: 'styled-text',
+            flex: 1
+        });
+
+        this.trainerLabel = Ext.create('Ext.form.Label', {
+            cls: 'styled-text',
+            text: 'Trainer',
+            width: 120
+        });
+
+        this.trainerStatus = Ext.create('Ext.form.Label', {
+            cls: 'styled-text',
+            flex: 1
+        });
+
+        this.AIDROutputLabel = Ext.create('Ext.form.Label', {
+            cls: 'styled-text',
+            text: 'AIDROutput',
+            width: 120
+        });
+
+        this.AIDROutputStatus = Ext.create('Ext.form.Label', {
+            cls: 'styled-text',
+            flex: 1
+        });
+
         this.pageTitle = Ext.create('Ext.form.Label', {
             cls: 'header-h1 bold-text',
             text: 'System health',
@@ -34,7 +78,40 @@ Ext.define('ADMIN.health.view.AdminHealthPanel', {
                 margin: '5 0 5 0',
                 html: '<div class="horizontalLine"></div>'
             },
-            this.pageTitle
+            this.pageTitle,
+            {
+                xtype: 'container',
+                margin: '5 0 0 0',
+                layout: 'hbox',
+                items: [
+                    this.collectorLabel,
+                    this.collectorStatus
+                ]
+            },{
+                xtype: 'container',
+                margin: '15 0 0 0',
+                layout: 'hbox',
+                items: [
+                    this.taggerLabel,
+                    this.taggerStatus
+                ]
+            },{
+                xtype: 'container',
+                margin: '15 0 0 0',
+                layout: 'hbox',
+                items: [
+                    this.trainerLabel,
+                    this.trainerStatus
+                ]
+            },{
+                xtype: 'container',
+                margin: '15 0 0 0',
+                layout: 'hbox',
+                items: [
+                    this.AIDROutputLabel,
+                    this.AIDROutputStatus
+                ]
+            }
         ];
 
         this.callParent(arguments);

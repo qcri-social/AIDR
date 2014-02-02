@@ -27,21 +27,21 @@
  	6. Issue getLast request from client
  
  
- Invocation:	host:port/context-path/channel/{crisisCode}?callback={callback}&count={count} 
+ Invocation:	host:port/context-root/rest/crisis/fetch/channel/{crisisCode}?callback={callback}&count={count} 
  ============	
   Channel name based examples: 
-    1. http://localhost:8080/aidr-output/crisis/fetch/channel/clex_20131201?count=50
-    2. http://localhost:8080/aidr-output/crisis/fetch/channel/clex_20131201?callback=JSONP
-    3. http://localhost:8080/aidr-output/crisis/fetch/channel/clex_20131201?callback=JSONP&count=50
+    1. http://localhost:8080/aidr-output/rest/crisis/fetch/channel/clex_20131201?count=50
+    2. http://localhost:8080/aidr-output/rest/crisis/fetch/channel/clex_20131201?callback=JSONP
+    3. http://localhost:8080/aidr-output/rest/crisis/fetch/channel/clex_20131201?callback=JSONP&count=50
     
   Fully qualified channel name based examples: 
-    1. http://localhost:8080/aidr-output/crisis/fetch/channel/aidr_predict.clex_20131201?count=50
-    2. http://localhost:8080/aidr-output/crisis/fetch/channel/aidr_predict.clex_20131201?callback=func
-    3. http://localhost:8080/aidr-output/crisis/fetch/channel/aidr_predict.clex_20131201?callback=func&count=50
+    1. http://localhost:8080/aidr-output/rest/crisis/fetch/channel/aidr_predict.clex_20131201?count=50
+    2. http://localhost:8080/aidr-output/rest/crisis/fetch/channel/aidr_predict.clex_20131201?callback=func
+    3. http://localhost:8080/aidr-output/rest/crisis/fetch/channel/aidr_predict.clex_20131201?callback=func&count=50
    
   Apart from the above valid paths one can use:
-   	1. http://localhost:8080/aidr-output/crisis/fetch/channels/list     => returns list of active channels
-   	2. http://localhost:8080/aidr-output/crisis/fetch/channels/latest	=> returns the latest tweet data from  across all channels
+   	1. http://localhost:8080/aidr-output/rest/crisis/fetch/channels/list     => returns list of active channels
+   	2. http://localhost:8080/aidr-output/rest/crisis/fetch/channels/latest	=> returns the latest tweet data from  across all channels
  
   
   Parameter explanations:

@@ -14,7 +14,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
 
         this.breadcrumbs = Ext.create('Ext.container.Container', {
             html: '<div class="bread-crumbs">' +
-                '<a href="http://aidr.qcri.org/">AIDR</a><span>&nbsp;&gt;&nbsp;Administrator console</span></div>',
+                '<a href="' + BASE_URL + '/protected/home">AIDR</a><span>&nbsp;&gt;&nbsp;Administrator console</span></div>',
             margin: 0,
             padding: 0
         });
@@ -35,7 +35,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
         this.runningCollectionsStore = Ext.create('Ext.data.Store', {
             pageSize: 10,
             storeId: 'runningCollectionsStore',
-            fields: ['id', 'name', 'code', 'count', 'startDate', 'user', 'totalCount'],
+            fields: ['id', 'name', 'code', 'count', 'startDate', 'user', 'totalCount', 'taggersCount'],
             remoteSort: true,
             proxy: {
                 type: 'ajax',
@@ -103,9 +103,14 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'name', text: 'Taggers', width: 100, sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'taggersCount', text: 'Taggers', width: 100, sortable: false,
                     renderer: function (value, meta, record) {
-                        return '';
+                        if (value){
+                            var result = Ext.util.Format.number(value, '0,000');
+                            return me.getTaggerLink(value, record.data.code);
+                        } else {
+                            return 0;
+                        }
                     }
                 }
             ]
@@ -151,7 +156,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
         this.stoppedCollectionsStore = Ext.create('Ext.data.Store', {
             pageSize: 10,
             storeId: 'stoppedCollectionsStore',
-            fields: ['id', 'name', 'code', 'count', 'startDate', 'user', 'totalCount'],
+            fields: ['id', 'name', 'code', 'count', 'startDate', 'user', 'totalCount', 'taggersCount'],
             remoteSort: true,
             proxy: {
                 type: 'ajax',
@@ -219,9 +224,14 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'name', text: 'Taggers', width: 100, sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'taggersCount', text: 'Taggers', width: 100, sortable: false,
                     renderer: function (value, meta, record) {
-                        return '';
+                        if (value){
+                            var result = Ext.util.Format.number(value, '0,000');
+                            return me.getTaggerLink(value, record.data.code);
+                        } else {
+                            return 0;
+                        }
                     }
                 }
             ]
@@ -299,9 +309,17 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
         this.callParent(arguments);
     },
 
-    getCollectionNameAsLink: function (name, code) {
-        if (name && code) {
-            return '<a href="' + BASE_URL + '/protected/' + code + '/collection-details">' + name + '</a>';
+    getCollectionNameAsLink: function (value, code) {
+        if (value && code) {
+            return '<a href="' + BASE_URL + '/protected/' + code + '/collection-details">' + value + '</a>';
+        } else {
+            return '<span class="na-text">Not specified</span>';
+        }
+    },
+
+    getTaggerLink: function (value, code) {
+        if (value && code) {
+            return '<a href="' + BASE_URL + '/protected/' + code + '/tagger-collection-details">' + value + '</a>';
         } else {
             return '<span class="na-text">Not specified</span>';
         }

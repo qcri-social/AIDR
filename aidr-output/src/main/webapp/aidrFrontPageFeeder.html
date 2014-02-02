@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <title>HTML5 Server-Sent Test</title>
+    <link href="media/css/animate.css" rel="stylesheet">
+    <script type="text/javascript" language="javascript" src="media/js/jquery.js"></script>
+    <style>
+        #connection {
+            font: 14px Arial, sans-serif;
+            font-weight: bold;
+            vertical-align: middle;
+            color: black;
+        }
+        #connection div {
+            background-color: orange;
+            width: 10px;
+            height: 10px;
+            display: inline-block;
+            border-radius: 10px;
+            margin-left: 5px;
+            -webkit-animation-duration: 2s;
+            -webkit-animation-iteration-count: infinite;
+            -webkit-animation-timing-function: linear;
+        }
+        #log {
+            overflow: auto;
+            width: 400px;
+            height: 150px;
+            margin-right: 20px;
+            float: left;
+        }
+        #log p {
+            margin: 0;
+            padding: 0;
+        }
+        #log .info {
+            color: #4d4d4d;
+            font-weight: bold;
+        }
+        #log .header{
+            color: #00a79d;
+        }
+        #log .msg {
+            margin-left: 11px;
+            color: #6e6e6e;
+            font-weight: normal;
+            font-size:0.85em;
+        }
+        .border {
+            border: 2px solid black;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: white;
+        }
+        #right-panel div {
+            text-align: left;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="border" id="log"></div>
+
+<script>
+
+    Logger.prototype.clear = function() {
+        this.el.textContent = '';
+    };
+
+    function Logger(id) {
+        this.el = document.getElementById(id);
+    }
+
+    Logger.prototype.log = function(msg, opt_class) {
+        logger.clear();
+        var fragment = document.createDocumentFragment();
+        var p = document.createElement('div');
+        p.className = opt_class || 'info';
+        p.innerHTML = msg;
+        fragment.appendChild(p);
+        $("table").fadeIn("slow");
+        this.el.appendChild(fragment);
+    };
+
+    Logger.prototype.clear = function() {
+        $("table").slideDown();
+        this.el.textContent = '';
+    };
+
+    var logger = new Logger('log');
+
+    $(document).ready(function() {
+        var refreshRate = 5000;
+        var blink = -1;
+        //http://aidr-dev.qcri.org:8084/aidr-output/crisis/fetch/channels/latest?callback=jsonp
+        var autoRefresh = setInterval(
+                function ()  // Call out to get the time
+                {
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://aidr-dev.qcri.org:8084/AIDROutput/rest/crisis/fetch/channels/latest?callback=jsonp',
+                        dataType: 'jsonp',
+                        success: renderList,
+                        error: FailedRenderList,
+                        jsonp: false,
+                        jsonpCallback: "jsonp" // end success
+                    });  // end ajax call
+                }, refreshRate);// end check
+    });
+
+
+    function FailedRenderList() {
+        var defaultTextHtml =  "<h2><b>Initializing tagger feed. Please come back in a few minutes.</b></h2>";
+        document.getElementById('log').innerHTML=defaultTextHtml;
+    }
+
+    function renderList(data) {
+        console.log(data);
+
+        var list = data == null ? [] : (data instanceof Array ? data : [data]);
+
+
+        if(typeof list !='undefined' || list!= null ){
+            if(list[0].nominal_labels != null || typeof list[0].nominal_labels != 'undefined'){
+                var template = '';
+                template = template +  '<table>';
+                template = template +  '<tr><td colspan="2" class="header">' + list[0].crisis_name + '</td></tr>';
+                template = template +  '<tr><td colspan="2">' + list[0].text + '</td></tr>';
+
+                var appList =  list[0].nominal_labels== null ? [] : (list[0].nominal_labels instanceof Array ? list[0].nominal_labels : [list[0]].nominal_labels);
+
+                $.each(appList, function(index, item) {
+
+                    template = template +  '<tr><td class="msg" width="100px">Label/Confidence </td><td class="msg">' + item.label_name + '  ( Confidence : ' +  item.confidence  + ' )</td></tr>';
+                });
+                template =  template + '</table>';
+                logger.log(template);
+            }
+            else{
+                FailedRenderList();
+            }
+        }
+        else{
+            FailedRenderList();
+        }
+    }
+</script>
+</body>
+</html>

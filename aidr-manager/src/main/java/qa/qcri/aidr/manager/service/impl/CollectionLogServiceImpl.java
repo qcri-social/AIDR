@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.core.MediaType;
+import java.util.List;
+import java.util.Map;
 
 @Service("collectionLogService")
 public class CollectionLogServiceImpl implements CollectionLogService {
@@ -72,9 +74,15 @@ public class CollectionLogServiceImpl implements CollectionLogService {
         return collectionLogRepository.countTotalDownloadedItemsForCollection(collectionId);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Map<Integer, Integer> countTotalDownloadedItemsForCollectionIds(List<Integer> ids) throws Exception {
+        return collectionLogRepository.countTotalDownloadedItemsForCollectionIds(ids);
+    }
+
     public String generateCSVLink(String code) throws AidrException {
         try {
-            WebResource webResource = client.resource(persisterMainUrl + "/genCSV?collectionCode=" + code);
+            WebResource webResource = client.resource(persisterMainUrl + "/persister/genCSV?collectionCode=" + code);
             ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
                     .get(ClientResponse.class);
             String jsonResponse = clientResponse.getEntity(String.class);
@@ -91,7 +99,7 @@ public class CollectionLogServiceImpl implements CollectionLogService {
 
     public String generateTweetIdsLink(String code) throws AidrException {
         try {
-            WebResource webResource = client.resource(persisterMainUrl + "/genTweetIds?collectionCode=" + code);
+            WebResource webResource = client.resource(persisterMainUrl + "/persister/genTweetIds?collectionCode=" + code);
             ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
                     .get(ClientResponse.class);
             String jsonResponse = clientResponse.getEntity(String.class);

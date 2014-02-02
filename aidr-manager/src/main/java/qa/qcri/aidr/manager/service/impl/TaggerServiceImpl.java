@@ -33,8 +33,8 @@ public class TaggerServiceImpl implements TaggerService {
     @Value("${persisterMainUrl}")
     private String persisterMainUrl;
 
-    @Value("${taggerPersisterMainUrl}")
-    private String taggerPersisterMainUrl;
+    @Value("${outputAPIMainUrl}")
+    private String outputAPIMainUrl;
 
     @Override
     public List<TaggerCrisisType> getAllCrisisTypes() throws AidrException{
@@ -683,7 +683,7 @@ public class TaggerServiceImpl implements TaggerService {
     @Override
     public String generateCSVLink(String code) throws AidrException {
         try {
-            WebResource webResource = client.resource(taggerPersisterMainUrl + "/genCSV?collectionCode=" + code + "&exportLimit=100000");
+            WebResource webResource = client.resource(persisterMainUrl + "/taggerPersister/genCSV?collectionCode=" + code + "&exportLimit=100000");
             ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
                     .get(ClientResponse.class);
             String jsonResponse = clientResponse.getEntity(String.class);
@@ -701,7 +701,7 @@ public class TaggerServiceImpl implements TaggerService {
     @Override
     public String generateTweetIdsLink(String code) throws AidrException {
         try {
-            WebResource webResource = client.resource(taggerPersisterMainUrl + "/genTweetIds?collectionCode=" + code);
+            WebResource webResource = client.resource(persisterMainUrl + "/taggerPersister/genTweetIds?collectionCode=" + code);
             ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
                     .get(ClientResponse.class);
             String jsonResponse = clientResponse.getEntity(String.class);
@@ -756,6 +756,76 @@ public class TaggerServiceImpl implements TaggerService {
             return modelLabelsResponse.getModelNominalLabelsDTO();
         } catch (Exception e) {
             throw new AidrException("Error while getting all labels for model from Tagger", e);
+        }
+    }
+
+    public Map<String, Integer> getTaggersForCollections(List<String> collectionCodes) throws AidrException {
+        try {
+            /**
+             * Rest call to Tagger
+             */
+            WebResource webResource = client.resource(taggerMainUrl + "/modelfamily/taggers-by-codes");
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .post(ClientResponse.class, objectMapper.writeValueAsString(new TaggersForCollectionsRequest(collectionCodes)));
+
+            String jsonResponse = clientResponse.getEntity(String.class);
+            TaggersForCollectionsResponse taggersResponse = objectMapper.readValue(jsonResponse, TaggersForCollectionsResponse.class);
+            if (taggersResponse != null && !taggersResponse.getTaggersForCodes().isEmpty()) {
+                Map<String, Integer> result = new HashMap<String, Integer>();
+                for (TaggersForCodes taggerForCode : taggersResponse.getTaggersForCodes()){
+                    result.put(taggerForCode.getCode(), taggerForCode.getCount());
+                }
+                return result;
+            } else {
+                return Collections.emptyMap();
+            }
+        } catch (Exception e) {
+            throw new AidrException("Error while adding new user to Tagger", e);
+        }
+    }
+
+    @Override
+    public boolean pingTagger() throws AidrException{
+        try {
+            WebResource webResource = client.resource(taggerMainUrl + "/misc/ping");
+            ObjectMapper objectMapper = new ObjectMapper();
+            ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .get(ClientResponse.class);
+            String jsonResponse = clientResponse.getEntity(String.class);
+
+            PingResponse pingResponse = objectMapper.readValue(jsonResponse, PingResponse.class);
+            if (pingResponse != null && "RUNNING".equals(pingResponse.getStatus())) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            throw new AidrException("Error while Getting training data for Crisis and Model.", e);
+        }
+    }
+
+    @Override
+    public boolean pingAIDROutput() throws AidrException{
+        try {
+            WebResource webResource = client.resource(outputAPIMainUrl + "/manage/ping");
+            ObjectMapper objectMapper = new ObjectMapper();
+            ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .get(ClientResponse.class);
+            String jsonResponse = clientResponse.getEntity(String.class);
+
+            PingResponse pingResponse = objectMapper.readValue(jsonResponse, PingResponse.class);
+            if (pingResponse != null && "RUNNING".equals(pingResponse.getStatus())) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            throw new AidrException("Error while Getting training data for Crisis and Model.", e);
         }
     }
 

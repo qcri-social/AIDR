@@ -10,36 +10,42 @@
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
   <servlet>
-   <servlet-name>aidr-output JAX-RS Servlet</servlet-name>
+   <servlet-name>AIDROutput JAX-RS Servlet</servlet-name>
     <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
     <init-param>
     	<param-name>com.sun.jersey.config.property.packages</param-name>
       	<param-value>qa.qcri.aidr.output.getdata</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
-    <async-supported>true</async-supported>
  </servlet>
+ <servlet>
+   <servlet-name>AIDROutputPing</servlet-name>
+    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+    <init-param>
+    	<param-name>com.sun.jersey.config.property.packages</param-name>
+      	<param-value>qa.qcri.aidr.output.utils</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+ </servlet>
+ 
   <servlet>
     <servlet-name>AIDROutputStream</servlet-name>
     <servlet-class>qa.qcri.aidr.output.stream.RedisHTTPStreaming</servlet-class>
   </servlet>
   
-  <servlet>
-    <servlet-name>AIDROutputFetch</servlet-name>
-    <servlet-class>qa.qcri.aidr.output.fetch.RedisHTTPGetData</servlet-class>
-  </servlet>
- 
   <servlet-mapping>
   	<servlet-name>AIDROutputStream</servlet-name>
   	<url-pattern>/crisis/stream/*</url-pattern>
   </servlet-mapping>
+  
   <servlet-mapping>
-    <servlet-name>AIDROutputFetch</servlet-name>
-    <url-pattern>/crisis/getlist/*</url-pattern>
+  	<servlet-name>AIDROutputPing</servlet-name>
+  	<url-pattern>/rest/manage/*</url-pattern>
   </servlet-mapping>
+  
   <servlet-mapping>
-    <servlet-name>aidr-output JAX-RS Servlet</servlet-name>
-    <url-pattern>/crisis/fetch/*</url-pattern>
+    <servlet-name>AIDROutput JAX-RS Servlet</servlet-name>
+    <url-pattern>/rest/crisis/fetch/*</url-pattern>
   </servlet-mapping>
   
   <listener>

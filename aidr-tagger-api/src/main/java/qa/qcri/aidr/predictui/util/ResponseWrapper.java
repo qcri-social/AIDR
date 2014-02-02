@@ -7,7 +7,6 @@ package qa.qcri.aidr.predictui.util;
 import qa.qcri.aidr.predictui.dto.*;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -17,7 +16,6 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import qa.qcri.aidr.predictui.entities.AidrCollection;
 import qa.qcri.aidr.predictui.entities.Crisis;
-import qa.qcri.aidr.predictui.entities.CrisisType;
 import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.entities.Model;
 import qa.qcri.aidr.predictui.entities.ModelFamily;
@@ -46,6 +44,7 @@ import qa.qcri.aidr.predictui.entities.NominalLabel;
     "collections",
     "modelWrapper",
     "modelHistoryWrapper",
+    "taggersForCodes",
     "crisisAttributes",
     "trainingData",
     "total"
@@ -69,6 +68,7 @@ public class ResponseWrapper implements Serializable {
     private List<AidrCollection> collections;
     private List<ModelWrapper> modelWrapper;
     private List<ModelHistoryWrapper> modelHistoryWrapper;
+    private List<TaggersForCodes> taggersForCodes;
     private List<CrisisAttributesDTO> crisisAttributes;
     private List<TrainingDataDTO> trainingData;
     private Integer total;
@@ -278,6 +278,20 @@ public class ResponseWrapper implements Serializable {
      */
     public void setModelHistoryWrapper(List<ModelHistoryWrapper> modelHistoryWrapper) {
         this.modelHistoryWrapper = modelHistoryWrapper;
+    }
+
+    /**
+     * @return the taggersForCodes
+     */
+    public List<TaggersForCodes> getTaggersForCodes() {
+        return taggersForCodes;
+    }
+
+    /**
+     * @param taggersForCodes the taggersForCodes to set
+     */
+    public void setTaggersForCodes(List<TaggersForCodes> taggersForCodes) {
+        this.taggersForCodes = taggersForCodes;
     }
 
     /**

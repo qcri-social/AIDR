@@ -26,30 +26,26 @@ public class JsonDataFormatter {
 	
 	public StringBuilder createList(List<String> bufferedMessages, int messageCount, boolean rejectNullFlag) {
 		// Now, build the jsonp object to be sent - data in reverse chronological order.
-		// Update from previous version: the entire collection of json objects are wrapped 
-		// with a single callback function.
+		// The entire collection of json objects are wrapped with a single callback function.
+		StringBuilder jsonDataList = new StringBuilder();
 		synchronized (bufferedMessages) {
-			count = 0;
-			StringBuilder jsonDataList = new StringBuilder();		
+			count = 0;		
 			if (callbackName != null) 
 				jsonDataList.append(callbackName).append("([");
 			else 
 				jsonDataList.append("[");
-
+			
 			ListIterator<String> itr = bufferedMessages.listIterator(bufferedMessages.size());  // Must be in synchronized block
 			while (itr.hasPrevious() && count < messageCount) {
-				String msg = itr.previous();
-				NewTaggerJsonOutputAdapter jsonOutput = new NewTaggerJsonOutputAdapter();
-				String jsonData = (msg != null) ? jsonOutput.buildJsonString(msg, rejectNullFlag) : null;
+				final String msg = itr.previous();
+				final TaggerJsonOutputAdapter jsonOutput = new TaggerJsonOutputAdapter();
+				final String jsonData = (msg != null) ? jsonOutput.buildJsonString(msg, rejectNullFlag) : null;
+				//logger.info("[createList] json string: " + jsonData);
 				if (jsonData != null) {
-					jsonDataList.append(jsonData).append(",");
+					jsonDataList.append(jsonData);
 					++count;
-					//logger.debug("[createList] Will send JSON data: " + jsonData);
+					if (count < messageCount) jsonDataList.append(",");		// otherwise, this was the last message to append
 				}
-				jsonOutput = null;
-				jsonData = null;
-				msg = null;
-
 			}
 			if (count == 0) {
 				// send empty jsonp object
@@ -57,13 +53,13 @@ public class JsonDataFormatter {
 			} 
 			else {
 				// there are json objects to send
-				jsonDataList.deleteCharAt(jsonDataList.lastIndexOf(","));		// delete the extra "," at the end of the json string
+				//jsonDataList.deleteCharAt(jsonDataList.lastIndexOf(","));		// delete the extra "," at the end of the json string
 				if (callbackName != null) 
 					jsonDataList.append("])");
 				else 
 					jsonDataList.append("]");
 			}
-			return jsonDataList;
 		}
+		return jsonDataList;
 	}
 }

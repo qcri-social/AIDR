@@ -6,7 +6,7 @@ INSERT INTO `nominal_attribute` (`nominalAttributeID`, `code`, `name`, `descript
  VALUES (100, "unclusters_v1", "Clusters v1.0", "Humanitarian Clusters, v1.0");
 
 INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (100, "null", "Does not apply", "The label does not apply");
+ VALUES (100, "null", "Does not apply", "The label does not apply, or I am not sure about the label for this message");
 INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
  VALUES (100, "010_camps", "Camp management", "Camp coordination and camp management (IOM, UNHCR, ...)");
 INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
@@ -35,7 +35,7 @@ INSERT INTO `nominal_attribute` (`nominalAttributeID`, `code`, `name`, `descript
  VALUES (200, "eyewitness_v1", "Eye witness v1.0", "Eye witness accounts, v1.0");
 
 INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (200, "null", "Does not apply", "The label does not apply");
+ VALUES (200, "null", "Does not apply", "The label does not apply, or I am not sure about the label for this message");
 INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
  VALUES (200, "010_true", "Yes", "Describes an eyewitness account");
 INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
@@ -46,7 +46,7 @@ INSERT INTO `nominal_attribute` (`nominalAttributeID`, `code`, `name`, `descript
  VALUES (300, "informative_v1", "Informative v1.0", "Informative messages enhancing situational awareness, v1.0");
 
 INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (300, "null", "Does not apply", "The label does not apply");
+ VALUES (300, "null", "Does not apply", "The label does not apply, or I am not sure about the label for this message");
 INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
  VALUES (300, "010_informative", "Informative", "Contributes useful information enhancing situational awareness");
 INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)

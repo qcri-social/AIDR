@@ -76,7 +76,7 @@ public class WriteResponse {
 	public void writeHtmlData(StringBuilder htmlDataList, int count) {
 		// Allocate a output writer to write the response message into the network socket
 		if (htmlDataList.length() > 0) { 
-			writerHandle.println(htmlDataList);		// change made at home
+			writerHandle.println(htmlDataList);		
 			writerHandle.flush();
 		}
 		if (!keepAlive)

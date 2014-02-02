@@ -2,6 +2,7 @@ package qa.qcri.aidr.manager.controller;
 
 import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
+import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class TaggerController extends BaseController {
 
     @Autowired
     private TaggerService taggerService;
+
+    @Autowired
+    private CollectionService collectionService;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -490,6 +494,27 @@ public class TaggerController extends BaseController {
             logger.error(e.getMessage(), e);
             return getUIWrapper(false, e.getMessage());
         }
+    }
+
+    @RequestMapping(value = "/pingService.action", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> pingService(@RequestParam String service) throws Exception {
+        boolean result = false;
+        try {
+            if ("tagger".equals(service)) {
+                result = taggerService.pingTagger();
+            } else if ("collector".equals(service)) {
+                result = collectionService.pingCollector();
+            } else if ("trainer".equals(service)) {
+//                result = taggerService.pingTagger();
+            } else if ("AIDROutput".equals(service)) {
+                result = taggerService.pingAIDROutput();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+        }
+        return getUIWrapper(result, true);
     }
 
     private TaggerCrisisRequest transformCrisesRequestToTaggerCrises (CrisisRequest request, Integer taggerUserId) throws Exception{
