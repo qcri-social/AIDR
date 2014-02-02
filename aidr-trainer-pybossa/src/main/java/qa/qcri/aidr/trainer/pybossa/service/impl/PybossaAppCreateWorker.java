@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.trainer.pybossa.entity.Client;
 import qa.qcri.aidr.trainer.pybossa.entity.ClientApp;
-import qa.qcri.aidr.trainer.pybossa.impl.PybossaFormatter;
+import qa.qcri.aidr.trainer.pybossa.format.impl.PybossaFormatter;
 import qa.qcri.aidr.trainer.pybossa.service.ClientAppCreateWorker;
 import qa.qcri.aidr.trainer.pybossa.service.ClientAppService;
 import qa.qcri.aidr.trainer.pybossa.service.ClientService;
@@ -135,8 +135,10 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
                 JSONArray labelModel = (JSONArray) featureJsonObj.get("nominalLabelJsonModelSet");
                 String appInfo = pybossaCommunicator.sendGet(PYBOSSA_APP_INFO_URL + appcode);
                 Long appID = pybossaFormatter.getAppID(appInfo, parser);
-                ClientApp clApp = createClientAppInstance(crisisID, appname,description,appID,appcode,nominalAttributeID);
-                doAppUpdate(clApp, appInfo, featureJsonObj, labelModel, code, name);
+                if(localClientApp == null){
+                    localClientApp = createClientAppInstance(crisisID, appname,description,appID,appcode,nominalAttributeID);
+                }
+                doAppUpdate(localClientApp, appInfo, featureJsonObj, labelModel, code, name);
             }
         }
     }
@@ -157,6 +159,9 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
     @Override
     public void doAppTemplateUpdate(ClientApp clientApp, Long nominalAttributeID) throws Exception {
         Long crisisID = clientApp.getCrisisID();
+        if(client == null){
+            setClassVariable();
+        }
         String crisisInfo = pybossaCommunicator.sendGet(AIDR_GET_CRISIS_URL + crisisID);
         if(!crisisInfo.isEmpty()){
             JSONObject crisisJson = (JSONObject) parser.parse(crisisInfo);
@@ -186,7 +191,7 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
 
 
     private ClientApp createClientAppInstance(Long crisisID, String appname, String description, Long appID, String appcode, Long nominalAttributeID){
-        ClientApp clApp = new ClientApp(client.getClientID(),crisisID, appname,description,appID,appcode,nominalAttributeID, client.getDefaultTaskRunsPerTask());
+        ClientApp clApp = new ClientApp(client.getClientID(),crisisID, appname,description,appID,appcode,nominalAttributeID, client.getDefaultTaskRunsPerTask(), StatusCodeType.APP_MULTIPLE_CHOICE);
         clientAppService.createClientApp(clApp);
         return clApp;
 

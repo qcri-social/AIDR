@@ -24,8 +24,8 @@ public class ClientAppEvent implements Serializable {
     @Column (name = "name", nullable = false)
     private String name;
 
-    @Column (name = "clinetAppID", nullable = false)
-    private Long clinetAppID;
+    @Column (name = "clientAppID", nullable = false)
+    private Long clientAppID;
 
     @Column (name = "sequence", nullable = false)
     private Integer sequence;
@@ -36,6 +36,13 @@ public class ClientAppEvent implements Serializable {
     @Column (name = "created", nullable = true)
     private Date created;
 
+    public Long getClientAppID() {
+        return clientAppID;
+    }
+
+    public void setClientAppID(Long clientAppID) {
+        this.clientAppID = clientAppID;
+    }
 
     public Long getClientAppEventID() {
         return clientAppEventID;
@@ -51,14 +58,6 @@ public class ClientAppEvent implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Long getClinetAppID() {
-        return clinetAppID;
-    }
-
-    public void setClinetAppID(Long clinetAppID) {
-        this.clinetAppID = clinetAppID;
     }
 
     public Integer getSequence() {

@@ -26,13 +26,25 @@ public class TaskLogServiceImpl implements TaskLogService {
     @Override
     @Transactional(readOnly = false)
     public void createTaskLog(TaskLog taskLog) {
-        taskLogDao.saveOrUpdate(taskLog);
+        try{
+            taskLogDao.saveOrUpdate(taskLog);
+        }
+        catch(Exception ex){
+            System.out.println("createTaskLog exception : " + ex.getMessage());
+            throw new RuntimeException(ex.getMessage());
+        }
     }
 
     @Override
     @Transactional(readOnly = false)
     public void updateTaskLog(TaskLog taskLog) {
-        taskLogDao.saveOrUpdate(taskLog);
+        try{
+            taskLogDao.saveOrUpdate(taskLog);
+        }
+        catch(Exception ex){
+            System.out.println("updateTaskLog Exception: " + ex.getMessage());
+            throw new RuntimeException(ex.getMessage());
+        }
     }
 
     @Override

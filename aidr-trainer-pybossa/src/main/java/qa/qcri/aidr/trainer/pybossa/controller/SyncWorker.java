@@ -31,9 +31,14 @@ public class SyncWorker implements Worker {
 		//logger.debug("   " + threadName + " has began working.(SyncWorker - run ClientApps)");
         logger.info("Scheduler is starting");
         try {
+
             pybossaWorker.doCreateApp();
             clientAppRunWorker.processTaskPublish();
             clientAppRunWorker.processTaskRunImport();
+
+            microMapperWorker.processTaskPublish();
+            microMapperWorker.processTaskImport();
+            microMapperWorker.processTaskExport();
 
             Thread.sleep(180000); // simulates work
 

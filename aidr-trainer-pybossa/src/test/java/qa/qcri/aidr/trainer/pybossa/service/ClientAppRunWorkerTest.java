@@ -23,6 +23,6 @@ public class ClientAppRunWorkerTest {
     @Test
     public void testProcessTaskPublish() throws Exception {
         //clientAppRunWorker.processTaskPublish();
-       // clientAppRunWorker.processTaskRunImport();
+        //clientAppRunWorker.processTaskRunImport();
     }
 }

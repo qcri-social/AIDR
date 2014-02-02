@@ -13,4 +13,10 @@ public class PybossaConf {
 
     public static String TWEET_CLICKER;
     public static String IMAGE_CLICKER;
+
+    public static String VIDEO_CLICKER_RESPONSE_SEVERE = "severe";
+    public static String VIDEO_CLICKER_RESPONSE_MILD = "mild";
+
+    public static String GEOJSON_TYPE_POINT="point";
+    public static String GEOJSON_TYPE_FEATURE_COLLECTION="FeatureCollection";
 }

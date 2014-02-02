@@ -27,10 +27,8 @@ public class ReportTemplateDaoImpl extends AbstractDaoImpl<ReportTemplate, Strin
                 .add(Restrictions.eq("taskQueueID",reportTemplate.getTaskQueueID()))
                 .add(Restrictions.eq("answer", reportTemplate.getAnswer())));
 
-        System.out.print(templateList);
-        System.out.println(templateList.size());
         if(templateList.size() == 0) {
-            saveOrUpdate(reportTemplate);
+            save(reportTemplate);
         }
     }
 

@@ -1,4 +1,4 @@
-package qa.qcri.aidr.trainer.pybossa.impl;
+package qa.qcri.aidr.trainer.pybossa.format.impl;
 
 /**
  * Created with IntelliJ IDEA.
@@ -7,7 +7,7 @@ package qa.qcri.aidr.trainer.pybossa.impl;
  * Time: 2:42 AM
  * To change this template use File | Settings | File Templates.
  */
-public class MicromapperOuput {
+public class MicromapperInput {
 
     private String tweetID;
     private String tweet;
@@ -18,11 +18,11 @@ public class MicromapperOuput {
     private String created;
     private String answer;
 
-    public MicromapperOuput(){
+    public MicromapperInput(){
 
     }
 
-    public MicromapperOuput(String tweetID, String tweet, String author, String lat, String lng, String url, String created, String answer){
+    public MicromapperInput(String tweetID, String tweet, String author, String lat, String lng , String url, String created){
         this.tweetID = tweetID;
         this.tweet = tweet;
         this.author = author;
@@ -30,15 +30,16 @@ public class MicromapperOuput {
         this.lng = lng;
         this.url = url;
         this.created = created;
-        this.answer = answer;
-
     }
 
-    public String getAnswer() {
-        return answer;
-    }
-
-    public void setAnswer(String answer) {
+    public MicromapperInput(String tweetID, String tweet, String author, String lat, String lng , String url, String created, String answer){
+        this.tweetID = tweetID;
+        this.tweet = tweet;
+        this.author = author;
+        this.lat = lat;
+        this.lng = lng;
+        this.url = url;
+        this.created = created;
         this.answer = answer;
     }
 
@@ -98,7 +99,11 @@ public class MicromapperOuput {
         this.created = created;
     }
 
-    public String toString(){
-        return tweetID+","+tweet+","+author+","+lat+","+lng+","+url+","+created+","+answer;
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 }

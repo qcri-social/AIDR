@@ -1,4 +1,4 @@
-package qa.qcri.aidr.trainer.pybossa.impl;
+package qa.qcri.aidr.trainer.pybossa.format.impl;
 
 /**
  * Created with IntelliJ IDEA.
@@ -7,7 +7,7 @@ package qa.qcri.aidr.trainer.pybossa.impl;
  * Time: 2:42 AM
  * To change this template use File | Settings | File Templates.
  */
-public class MicromapperInput {
+public class MicromapperOuput {
 
     private String tweetID;
     private String tweet;
@@ -16,12 +16,13 @@ public class MicromapperInput {
     private String lng;
     private String url;
     private String created;
+    private String answer;
 
-    public MicromapperInput(){
+    public MicromapperOuput(){
 
     }
 
-    public MicromapperInput(String tweetID, String tweet, String author, String lat, String lng , String url, String created){
+    public MicromapperOuput(String tweetID, String tweet, String author, String lat, String lng, String url, String created, String answer){
         this.tweetID = tweetID;
         this.tweet = tweet;
         this.author = author;
@@ -29,6 +30,16 @@ public class MicromapperInput {
         this.lng = lng;
         this.url = url;
         this.created = created;
+        this.answer = answer;
+
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 
     public String getTweetID() {
@@ -87,5 +98,7 @@ public class MicromapperInput {
         this.created = created;
     }
 
-
+    public String toString(){
+        return tweetID+","+tweet+","+author+","+lat+","+lng+","+url+","+created+","+answer;
+    }
 }

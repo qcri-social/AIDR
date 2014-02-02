@@ -29,8 +29,9 @@ public class MicroMapperWorkerTest {
 
       //  List<TaskQueueResponse> responseList =  clientAppResponseService.getTaskQueueResponseByContent();
      //
-     // microMapperWorker.processTaskPublish();
+     //   microMapperWorker.processTaskPublish();
       //microMapperWorker.processTaskImport();
+      //  microMapperWorker.processTaskExport();
     }
 
 }

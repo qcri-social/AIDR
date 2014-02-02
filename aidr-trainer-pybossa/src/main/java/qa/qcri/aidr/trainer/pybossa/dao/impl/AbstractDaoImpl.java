@@ -39,15 +39,11 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
     @Override
     public void saveOrUpdate(E e) {
         getCurrentSession().saveOrUpdate(e);
-        getCurrentSession().flush();
-        getCurrentSession().clear();
     }
 
     @Override
     public void save(E e) {
         getCurrentSession().save(e);
-        getCurrentSession().flush();
-        getCurrentSession().clear();
     }
 
 

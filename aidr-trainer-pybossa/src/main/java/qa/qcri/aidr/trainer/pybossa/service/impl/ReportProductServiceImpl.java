@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.trainer.pybossa.entity.*;
-import qa.qcri.aidr.trainer.pybossa.impl.CVSRemoteFileFormatter;
+import qa.qcri.aidr.trainer.pybossa.format.impl.CVSRemoteFileFormatter;
 import qa.qcri.aidr.trainer.pybossa.service.*;
 import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
 import qa.qcri.aidr.trainer.pybossa.store.UserAccount;
@@ -52,8 +52,10 @@ public class ReportProductServiceImpl implements ReportProductService {
 
     @Override
     public void generateCVSReportForGeoClicker() throws Exception{
+        System.out.println("generateCVSReportForGeoClicker started");
         setClassVariable();
         List<ClientApp> appList = clientAppService.getAllClientAppByClientID(client.getClientID() );
+        System.out.println("appList size: " + appList.size() + " - " + client.getClientID());
         Iterator itr= appList.iterator();
         while(itr.hasNext()){
             ClientApp clientApp = (ClientApp)itr.next();
@@ -73,7 +75,7 @@ public class ReportProductServiceImpl implements ReportProductService {
                 }
                 formatter.finalizeCVSOutputFile(writer);
                 ClientAppEvent targetClinetApp = clientAppEventService.getNextSequenceClientAppEvent(clientApp.getClientAppID());
-                ClientAppSource appSource = new ClientAppSource(targetClinetApp.getClinetAppID(), StatusCodeType.EXTERNAL_DATA_SOURCE_ACTIVE, fileName);
+                ClientAppSource appSource = new ClientAppSource(targetClinetApp.getClientAppID(), StatusCodeType.EXTERNAL_DATA_SOURCE_ACTIVE, fileName);
                 clientAppSourceService.insertNewClientAppSource(appSource);
             }
             // insert into source for file
@@ -82,6 +84,7 @@ public class ReportProductServiceImpl implements ReportProductService {
     }
 
     private String[] generateOutputData(ReportTemplate rpt){
+
         String[] data = new String[8];
         data[0] =   rpt.getTweetID().toString();
         data[1] =  rpt.getTweet();

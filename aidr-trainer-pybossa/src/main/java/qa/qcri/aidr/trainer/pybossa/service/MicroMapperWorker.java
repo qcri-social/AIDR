@@ -11,4 +11,5 @@ public interface MicroMapperWorker {
 
     void processTaskPublish() throws Exception;
     void processTaskImport() throws Exception;
+    void processTaskExport() throws Exception;
 }

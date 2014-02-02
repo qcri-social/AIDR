@@ -1,4 +1,4 @@
-package qa.qcri.aidr.trainer.pybossa.impl;
+package qa.qcri.aidr.trainer.pybossa.format.impl;
 
 /**
  * Created with IntelliJ IDEA.

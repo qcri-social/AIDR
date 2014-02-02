@@ -1,4 +1,4 @@
-package qa.qcri.aidr.trainer.pybossa.impl;
+package qa.qcri.aidr.trainer.pybossa.format.impl;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
@@ -102,6 +102,43 @@ public class CVSRemoteFileFormatter {
 
         return sourceSet;
     }
+
+
+    public List<MicromapperInput> getGeoClickerInputData(String url) throws Exception{
+        //"tweetID","tweet","author","lat","lng","url","created","answer"
+        String[] row = null;
+        List<MicromapperInput> sourceSet = new ArrayList<MicromapperInput>();
+
+        CSVReader csvReader = getCVSContentReader(url) ;
+        List content = csvReader.readAll();
+
+        for (Object object : content) {
+            row = (String[]) object;
+            if(row!=null){
+                if(row.length > 7){
+                    String tweetID = row[0];
+                    String tweet=row[1];
+                    String author=row[2];
+                    String lat=row[3];
+                    String lng=row[4];
+                    String imgURL = row[5];
+                    String created = row[6];
+                    String answer = row[7];
+
+                    MicromapperInput source = new MicromapperInput(tweetID, tweet, author, lat, lng, imgURL, created, answer);
+                    sourceSet.add(source);
+                }
+            }
+        }
+        csvReader.close();
+
+        if(sourceSet.size() > 1){
+            sourceSet.remove(0);
+        }
+
+        return sourceSet;
+    }
+
 
     public List<MicromapperInput> getClickerLocalFileInputData(String csvFilename) throws Exception{
         //[Twitter username] // [Tweet message] // [optional: time-stamp] // [optional: location] // [optional: latitude] // [optional: longitude] // [image link]

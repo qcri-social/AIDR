@@ -11,7 +11,7 @@ import qa.qcri.aidr.trainer.pybossa.entity.Client;
 import qa.qcri.aidr.trainer.pybossa.entity.ClientApp;
 import qa.qcri.aidr.trainer.pybossa.entity.TaskLog;
 import qa.qcri.aidr.trainer.pybossa.entity.TaskQueue;
-import qa.qcri.aidr.trainer.pybossa.impl.PybossaFormatter;
+import qa.qcri.aidr.trainer.pybossa.format.impl.PybossaFormatter;
 import qa.qcri.aidr.trainer.pybossa.service.*;
 import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
 import qa.qcri.aidr.trainer.pybossa.store.URLPrefixCode;

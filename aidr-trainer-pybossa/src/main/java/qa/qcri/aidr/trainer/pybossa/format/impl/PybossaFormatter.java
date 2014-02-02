@@ -1,16 +1,15 @@
-package qa.qcri.aidr.trainer.pybossa.impl;
+package qa.qcri.aidr.trainer.pybossa.format.impl;
 
-import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import qa.qcri.aidr.trainer.pybossa.entity.*;
-import qa.qcri.aidr.trainer.pybossa.service.ReportTemplateService;
-import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
+import qa.qcri.aidr.trainer.pybossa.entity.ClientApp;
+import qa.qcri.aidr.trainer.pybossa.entity.TaskLog;
+import qa.qcri.aidr.trainer.pybossa.util.DateTimeConverter;
 import qa.qcri.aidr.trainer.pybossa.util.JsonSorter;
 import qa.qcri.aidr.trainer.pybossa.util.StreamConverter;
 
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -23,9 +22,9 @@ import java.util.List;
  * Time: 4:29 PM
  * To change this template use File | Settings | File Templates.
  */
-public class MicroMapperPybossaFormatter {
-    protected static Logger logger = Logger.getLogger("service");
-    public MicroMapperPybossaFormatter(){}
+public class PybossaFormatter {
+   // protected static Logger logger = Logger.getLogger("service");
+    public PybossaFormatter(){}
 
     public String assmeblePybossaAppCreationForm(String name, String shortName, String description) throws Exception{
 
@@ -38,6 +37,20 @@ public class MicroMapperPybossaFormatter {
         return app.toJSONString();
     }
 
+    public Long getDocumentID(String jsonApp, JSONParser parser) throws Exception{
+        Long documentID = null;
+        JSONArray array = (JSONArray) parser.parse(jsonApp);
+        Iterator itr= array.iterator();
+
+        while(itr.hasNext()){
+            JSONObject featureJsonObj = (JSONObject)itr.next();
+            JSONObject info = (JSONObject)featureJsonObj.get("info");
+            documentID = (Long)info.get("documentID");
+        }
+
+        return documentID;
+
+    }
 
     public Long getAppID(String jsonApp, JSONParser parser) throws Exception{
         Long appID = null;
@@ -52,15 +65,54 @@ public class MicroMapperPybossaFormatter {
         return appID;
     }
 
-    public List<String> assemblePybossaTaskPublishForm( List<MicromapperInput> inputSources, ClientApp clientApp) throws Exception {
+    public String getTaskLogDateHistory(List<TaskLog> taskLogList, String pybossaResult, JSONParser parser) throws Exception{
+        //JSONObject aModified = new JSONObject();
+        JSONObject dateJSON = new JSONObject();
 
-        List<String> outputFormatData = new ArrayList<String>();
+        for(int i=0; i < taskLogList.size(); i++){
+            TaskLog taskLog = taskLogList.get(i);
+            switch (taskLog.getStatus()) {
+                case 1: dateJSON.put("taskcreated", taskLog.getCreated().toString());
+                        dateJSON.put("taskpulled", taskLog.getCreated().toString());
+                    break;
+            }
+            dateJSON.put("taskpulled", DateTimeConverter.reformattedCurrentDate());
+        }
 
-        Iterator itr= inputSources.iterator();
+        JSONArray array = (JSONArray) parser.parse(pybossaResult) ;
+
+        Iterator itr= array.iterator();
 
         while(itr.hasNext()){
-            MicromapperInput micromapperInput = (MicromapperInput)itr.next();
-            JSONObject info = assemblePybossaInfoFormat(micromapperInput, clientApp) ;
+            JSONObject featureJsonObj = (JSONObject)itr.next();
+
+            String taskPresented = (String)featureJsonObj.get("created");
+          //  taskPresented = DateTimeConverter.utcToDefault(taskPresented);
+
+            String taskCompleted = (String)featureJsonObj.get("finish_time");
+          //  taskCompleted = DateTimeConverter.utcToDefault(taskCompleted);
+
+            dateJSON.put("taskpresented",taskPresented) ;
+            dateJSON.put("taskcompleted",taskCompleted) ;
+
+            featureJsonObj.put("dateHistory",dateJSON) ;
+        }
+
+        return  array.toJSONString();
+    }
+
+    public List<String> assemblePybossaTaskPublishForm(String inputData, ClientApp clientApp) throws Exception {
+
+        List<String> outputFormatData = new ArrayList<String>();
+        JSONParser parser = new JSONParser();
+        Object obj = parser.parse(inputData);
+
+        JSONArray jsonObject = (JSONArray) obj;
+        Iterator itr= jsonObject.iterator();
+
+        while(itr.hasNext()){
+            JSONObject featureJsonObj = (JSONObject)itr.next();
+            JSONObject info = assemblePybossaInfoFormat(featureJsonObj, parser, clientApp) ;
 
             JSONObject tasks = new JSONObject();
 
@@ -79,8 +131,7 @@ public class MicroMapperPybossaFormatter {
         return outputFormatData;
     }
 
-
-    public String updateApp(ClientApp clientApp,JSONObject attribute, JSONArray labelModel) throws Exception {
+    public String updateApp(ClientApp clientApp,JSONObject attribute, JSONArray labelModel, Long categoryID) throws Exception {
         InputStream templateIS = Thread.currentThread().getContextClassLoader().getResourceAsStream("html/template.html");
         String templateString = StreamConverter.convertStreamToString(templateIS) ;
 
@@ -88,6 +139,8 @@ public class MicroMapperPybossaFormatter {
        // templateString = templateString.replace("TEMPLATE:NAME", clientApp.getName());
         //TEMPLATEFORATTRIBUTEAIDR
         String attributeDisplay = (String)attribute.get("name") ;
+       // String attributeCode = (String)attribute.get("code");
+
         attributeDisplay =  attributeDisplay +" " + (String)attribute.get("description") ;
         templateString = templateString.replace("TEMPLATE:FORATTRIBUTEAIDR", attributeDisplay);
 
@@ -95,7 +148,7 @@ public class MicroMapperPybossaFormatter {
         JSONArray sortedLabelModel = JsonSorter.sortJsonByKey(labelModel, "norminalLabelCode");
         StringBuffer displayLabel = new StringBuffer();
         Iterator itr= sortedLabelModel.iterator();
-       // logger.debug("sortedLabelModel : " + sortedLabelModel);
+        //logger.debug("sortedLabelModel : " + sortedLabelModel);
         while(itr.hasNext()){
 
             JSONObject featureJsonObj = (JSONObject)itr.next();
@@ -104,10 +157,10 @@ public class MicroMapperPybossaFormatter {
             String description = (String)featureJsonObj.get("description");
             Long norminalLabelID = (Long) featureJsonObj.get("norminalLabelID");
 
-            displayLabel.append("<label class='checkbox' name='nominalLabel'><strong>")  ;
-            displayLabel.append("<input name='nominalLabel' type='checkbox' value=");
-            displayLabel.append(labelName) ;
-            displayLabel.append(">") ;
+            displayLabel.append("<label class='radio' name='nominalLabel'><strong>")  ;
+            displayLabel.append("<input name='nominalLabel' type='radio' value='");
+            displayLabel.append(lableCode) ;
+            displayLabel.append("'>") ;
             displayLabel.append(labelName) ;
             displayLabel.append("</strong>")  ;
             if(!description.isEmpty()){
@@ -119,7 +172,7 @@ public class MicroMapperPybossaFormatter {
             displayLabel.append("</label>")  ;
         }
 
-       // logger.debug("displayLabel : " + displayLabel.toString());
+        //logger.debug("displayLabel : " + displayLabel.toString());
 
         templateString = templateString.replace("TEMPLATE:FORLABELSFROMAIDR", displayLabel.toString());
 
@@ -156,7 +209,7 @@ public class MicroMapperPybossaFormatter {
         app2.put("allow_anonymous_contributors", true);
         app2.put("time_estimate", 0);
         app2.put("hidden", 0);
-        app2.put("category_id", null);
+        app2.put("category_id", categoryID);
         app2.put("owner_id", 1);
 
         //long_description
@@ -164,64 +217,45 @@ public class MicroMapperPybossaFormatter {
 
     }
 
+    private JSONObject assemblePybossaInfoFormat(JSONObject featureJsonObj, JSONParser parser, ClientApp clientApp) throws Exception{
+        //attributeInfo
+        String attributeInfo = (String)featureJsonObj.get("attributeInfo");
+        // ISSUE ON DATA. NEED TO RE-DO
+        //JSONObject attributeInfo = (JSONObject) parser.parse(att);
+        JSONObject data = (JSONObject) parser.parse((String)featureJsonObj.get("data"));
 
-    private JSONObject assemblePybossaInfoFormat(MicromapperInput micromapperInput, ClientApp clientApp) throws Exception{
+        Long documentID =  (Long)featureJsonObj.get("documentID");
+        Long crisisID =  (Long)featureJsonObj.get("crisisID");
 
-        Integer n_answers = clientApp.getClient().getDefaultTaskRunsPerTask();
+        JSONObject usr =  (JSONObject)data.get("user");
+        String userName = (String)usr.get("name");
+        Long userID = (Long)usr.get("id");
+        String tweetTxt = (String)data.get("text");
+        String createdAt = (String)data.get("created_at");
+        Long tweetID =  (Long)data.get("id");
 
+
+        Integer n_answers = 1;
         if(clientApp != null){
             n_answers = clientApp.getTaskRunsPerTask();
         }
 
+
         JSONObject pybossaData = new JSONObject();
         pybossaData.put("question","please tag it.");
-
-        if(clientApp.getShortName().toLowerCase().contains("geo")){
-            pybossaData = createGeoClickerInfo(pybossaData, micromapperInput);
-        }
-        else{
-            pybossaData = createNonGeoClickerInfo(pybossaData, micromapperInput);
-        }
-
+        pybossaData.put("userName",userName);
+        pybossaData.put("tweetid",tweetID);
+        pybossaData.put("userID",userID.toString());
+        pybossaData.put("text",tweetTxt);
+        pybossaData.put("createdAt",createdAt);
         pybossaData.put("n_answers",n_answers);
+        //pybossaData.put("attributeInfo",attributeInfo);
+        pybossaData.put("documentID",documentID);
+        pybossaData.put("crisisID",crisisID);
+        pybossaData.put("aidrID",clientApp.getClient().getAidrUserID());
 
         return pybossaData;
     }
-
-
-    private JSONObject createNonGeoClickerInfo(JSONObject pybossaData, MicromapperInput micromapperInput ){
-
-        pybossaData.put("author",micromapperInput.getAuthor());
-        pybossaData.put("tweetid",micromapperInput.getTweetID());
-        pybossaData.put("userID",micromapperInput.getAuthor());
-        pybossaData.put("tweet",micromapperInput.getTweet());
-        pybossaData.put("timestamp",micromapperInput.getCreated());
-        pybossaData.put("lat",micromapperInput.getLat());
-        pybossaData.put("lon",micromapperInput.getLng());
-        pybossaData.put("url",micromapperInput.getUrl());
-        pybossaData.put("imgurl",micromapperInput.getUrl());
-
-        return pybossaData;
-
-    }
-
-
-    private JSONObject createGeoClickerInfo(JSONObject pybossaData, MicromapperInput micromapperInput ){
-
-        pybossaData.put("author",micromapperInput.getAuthor());
-        pybossaData.put("tweetid",micromapperInput.getTweetID());
-        pybossaData.put("userID",micromapperInput.getAuthor());
-        pybossaData.put("tweet",micromapperInput.getTweet());
-        pybossaData.put("timestamp",micromapperInput.getCreated());
-        pybossaData.put("lat",micromapperInput.getLat());
-        pybossaData.put("lon",micromapperInput.getLng());
-        pybossaData.put("url",micromapperInput.getUrl());
-        pybossaData.put("imgurl",micromapperInput.getUrl());
-        pybossaData.put("category",micromapperInput.getUrl());
-
-        return pybossaData;
-    }
-
 
     public boolean isTaskStatusCompleted(String data) throws Exception{
         /// will do later for importing process
@@ -235,9 +269,9 @@ public class MicroMapperPybossaFormatter {
 
             while(itr.hasNext()){
                 JSONObject featureJsonObj = (JSONObject)itr.next();
-                logger.debug("featureJsonObj : " +  featureJsonObj);
+                //logger.debug("featureJsonObj : " +  featureJsonObj);
                 String status = (String)featureJsonObj.get("state") ;
-                logger.debug("status : "  + status);
+                //logger.debug("status : "  + status);
                 if(status.equalsIgnoreCase("completed"))
                 {
                     isCompleted = true;
@@ -271,92 +305,60 @@ public class MicroMapperPybossaFormatter {
         return null;
     }
 
-
-    public TaskQueueResponse getAnswerResponse(String pybossaResult, JSONParser parser, Long taskQueueID, ClientAppAnswer clientAppAnswer, ReportTemplateService rtpService) throws Exception{
-        JSONObject responseJSON = new JSONObject();
-
-        JSONArray questionArrary =   (JSONArray) parser.parse(clientAppAnswer.getAnswer()) ;
-        int questionSize =  questionArrary.size();
-        int[] responses = new int[questionSize];
-        String[] questions = new String[questionSize];
-
-        for(int i=0; i< questionSize; i++){
-            JSONObject obj = (JSONObject)questionArrary.get(i);
-            questions[i] =   (String)obj.get("qa");
-        }
-
-        JSONArray array = (JSONArray) parser.parse(pybossaResult) ;
-
-        Iterator itr= array.iterator();
-        String answer = null;
-        boolean isGeoClicker = false;
+    private void assembleToAIDRImportFormat(String data) throws Exception{
+        System.out.println(data);
+        JSONParser parser = new JSONParser();
+        Object obj = parser.parse(data);
+        JSONArray jsonObject = (JSONArray) obj;
+        Iterator itr= jsonObject.iterator();
         while(itr.hasNext()){
             JSONObject featureJsonObj = (JSONObject)itr.next();
 
-            JSONObject info = (JSONObject)featureJsonObj.get("info");
-            Long taskID = (Long) featureJsonObj.get("id");
-             // tweet
-            if(info.get("category")!=null) {
-                answer = (String)info.get("category");
-            }
-            // image
-            if(info.get("damage")!=null) {
-                answer = (String)info.get("damage");
-            }
-            // geo
-            if(info.get("loc")!=null) {
-                answer = (String)info.get("loc");
-                isGeoClicker = true;
-            }
+            JSONObject info = (JSONObject) parser.parse((String)featureJsonObj.get("info"));
 
-            if(answer!=null && !isGeoClicker){
-                for(int i=0; i < questions.length; i++ ){
-                    if(questions[i].trim().equalsIgnoreCase(answer.trim())){
-                        responses[i] = responses[i] + 1;
-                        handleItemAboveCutOff(taskQueueID,responses[i], answer, info, clientAppAnswer, rtpService);
-                    }
+            String userName = (String)featureJsonObj.get("user_id");
+            Long userID = (Long)featureJsonObj.get("user_id");
+            String answer = (String)info.get("category");
 
-                }
-            }
+            Long crisisID = (Long)info.get("crisisID");
+            Long documentID = (Long)info.get("documentID");
+            String attributeInfo =    (String)info.get("attributeInfo");
 
+            //'[{"attributeID":15,"labelID":"56"},
+            //{"attributeID":17,"labelID":"57"},
+            //{"attributeID":18,"labelID":"58"},
+            //{"attributeID":20,"labelID":"12"}
+            //]'
+            //outputFormatData.add(processPybossaOutputFormat(pybossaData));
+
+            System.out.println(featureJsonObj.toString());
         }
+    }
 
-        String taskInfo = "";
-        String responseJsonString = "";
-        if(!isGeoClicker){
-            for(int i=0; i < questions.length; i++ ){
-                responseJSON.put(questions[i], responses[i]);
+    public Long getCategoryID(String data, JSONParser parser, boolean isJsonArray) throws Exception{
+        Long categoryID = null;
+        if(isJsonArray){
+            JSONArray array = (JSONArray) parser.parse(data);
+            Iterator itr= array.iterator();
+
+            while(itr.hasNext()){
+                JSONObject featureJsonObj = (JSONObject)itr.next();
+                categoryID = (Long)featureJsonObj.get("id");
             }
-            responseJsonString = responseJSON.toJSONString();
         }
         else{
-            // geo , well, map needs to handle result based on raidus
-            responseJsonString = "geo";
-            taskInfo = pybossaResult;
+            JSONObject jsonObject = (JSONObject) parser.parse(data);
+            categoryID = (Long)jsonObject.get("id");
         }
-
-        TaskQueueResponse taskQueueResponse = new TaskQueueResponse(taskQueueID, responseJsonString, taskInfo);
-        return  taskQueueResponse;
+        return categoryID;
     }
 
-    private void handleItemAboveCutOff(Long taskQueueID,int responseCount, String answer, JSONObject info, ClientAppAnswer clientAppAnswer, ReportTemplateService reportTemplateService){
-        // MAKE SURE TO MODIFY TEMPLATE HTML  Standize OUTPUT FORMAT
-        if(responseCount >= clientAppAnswer.getVoteCutOff()){
-            String tweetID = (String)info.get("tweetid");
-            String tweet = (String)info.get("tweet");
-            String author= (String)info.get("author");
-            String lat= (String)info.get("lat");
-            String lng= (String)info.get("lon");
-            String url= (String)info.get("url");
-            String created = (String)info.get("timestamp");
-            Long taskID = (Long)info.get("taskID");
+    public String getCatagoryDataSet(String attributeName,  String attributeCode){
+        JSONObject categoryJSON = new JSONObject();
+        categoryJSON.put("name", attributeName) ;
+        categoryJSON.put("short_name", attributeCode) ;
+        categoryJSON.put("description", attributeName);
 
-            //MicromapperOuput output = new MicromapperOuput(tweetID,tweet ,author,lat,lng,url,created, answer);
-            //Long taskQueueID, Long taskID, String tweetID,String tweet,String author,String lat,String lng,String url,String created,String answer
-            ReportTemplate template = new ReportTemplate(taskQueueID,taskID,tweetID,tweet,author,lat,lng,url,created, answer, StatusCodeType.TEMPLATE_IS_READY_FOR_EXPORT, clientAppAnswer.getClientAppID());
-            reportTemplateService.saveReportItem(template);
-            // save to output
-        }
+        return categoryJSON.toJSONString();
     }
-
 }

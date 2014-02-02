@@ -1,5 +1,7 @@
 package qa.qcri.aidr.trainer.pybossa.entity;
 
+import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -57,6 +59,10 @@ public class ClientApp implements Serializable {
     @Column (name = "created", nullable = false)
     private Date created;
 
+    @Column (name = "appType", nullable = false)
+    private Integer appType;
+
+
     @ManyToOne
     @JoinColumn(name="clientID" ,nullable = false, insertable = false, updatable = false)
     private Client client;
@@ -65,7 +71,7 @@ public class ClientApp implements Serializable {
     public ClientApp(){
     }
 
-    public ClientApp(Long clientID, Long crisisID, String name, String description, Long platformAppID, String shortName, Long nominalAttributeID, int taskRunsPerTask){
+    public ClientApp(Long clientID, Long crisisID, String name, String description, Long platformAppID, String shortName, Long nominalAttributeID, int taskRunsPerTask, int appType){
 
         this.clientID = clientID;
         this.crisisID = crisisID;
@@ -74,11 +80,19 @@ public class ClientApp implements Serializable {
         this.platformAppID =  platformAppID;
         this.shortName = shortName;
         this.nominalAttributeID = nominalAttributeID;
-        this.quorum = 1;
-        this.status = 1;
+        this.quorum = StatusCodeType.AIDR_ONLY;
+        this.status = StatusCodeType.AIDR_ONLY;
         this.taskRunsPerTask = taskRunsPerTask;
+        this.appType = appType;
     }
 
+    public Integer getAppType() {
+        return appType;
+    }
+
+    public void setAppType(Integer appType) {
+        this.appType = appType;
+    }
 
     public Client getClient() {
         return client;

@@ -37,4 +37,9 @@ public class StatusCodeType {
     public static Integer TEMPLATE_IS_READY_FOR_EXPORT = 0;
     public static Integer TEMPLATE_EXPORTED = 1;
 
+    public static Integer APP_MULTIPLE_CHOICE = 1;
+    public static Integer APP_IMAGE = 2;
+    public static Integer APP_VIDEO = 3;
+    public static Integer APP_MAP = 4;
+
 }

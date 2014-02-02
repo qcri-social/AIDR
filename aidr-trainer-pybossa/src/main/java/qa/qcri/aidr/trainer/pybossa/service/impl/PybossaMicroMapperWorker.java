@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.trainer.pybossa.entity.*;
-import qa.qcri.aidr.trainer.pybossa.impl.CVSRemoteFileFormatter;
-import qa.qcri.aidr.trainer.pybossa.impl.MicroMapperPybossaFormatter;
-import qa.qcri.aidr.trainer.pybossa.impl.MicromapperInput;
+import qa.qcri.aidr.trainer.pybossa.format.impl.CVSRemoteFileFormatter;
+import qa.qcri.aidr.trainer.pybossa.format.impl.MicroMapperPybossaFormatter;
+import qa.qcri.aidr.trainer.pybossa.format.impl.MicromapperInput;
 import qa.qcri.aidr.trainer.pybossa.service.*;
 import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
 import qa.qcri.aidr.trainer.pybossa.store.URLPrefixCode;
@@ -35,7 +35,7 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
     private Client client;
     private CVSRemoteFileFormatter cvsRemoteFileFormatter = new CVSRemoteFileFormatter();
     private int MAX_PENDING_QUEUE_SIZE = 50;
-    private int MAX_IMPORT_PROCESS_QUEUE_SIZE = 100;
+    private int MAX_IMPORT_PROCESS_QUEUE_SIZE = 10000;
     private String PYBOSSA_API_TASK_PUBLSIH_URL;
 
     private String PYBOSSA_API_TASK_RUN_BASE_URL;
@@ -66,6 +66,8 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
     @Autowired
     private ReportTemplateService reportTemplateService;
 
+    @Autowired
+    private ReportProductService reportProductService;
 
     public void setClassVariable() throws Exception{
         client = clientService.findClientByCriteria("name", UserAccount.MIROMAPPER_USER_NAME);
@@ -85,12 +87,20 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
                 ClientApp currentClientApp =  appList.get(i);
                 List<ClientAppSource> datasources = clientAppSourceService.getClientAppSourceByStatus(currentClientApp.getClientAppID(),StatusCodeType.EXTERNAL_DATA_SOURCE_ACTIVE);
                 for(int j=0; j < datasources.size(); j++){
+                    List<MicromapperInput> micromapperInputList = null;
                     String url = datasources.get(j).getSourceURL();
-                    List<MicromapperInput> micromapperInputList = cvsRemoteFileFormatter.getClickerInputData(url);
-                    if(micromapperInputList.size() > 0){
-                        ClientAppSource source = datasources.get(j);
-                        publishToPybossa(currentClientApp, micromapperInputList , source.getClientAppSourceID());
-                        clientAppSourceService.updateClientAppSourceStatus(source.getClientAppSourceID(), StatusCodeType.EXTERNAL_DATA_SOURCE_USED);
+                    if(currentClientApp.getAppType() == StatusCodeType.APP_MAP){
+                        micromapperInputList = cvsRemoteFileFormatter.getGeoClickerInputData(url);
+                    }
+                    else{
+                        micromapperInputList = cvsRemoteFileFormatter.getClickerInputData(url);
+                    }
+                    if(micromapperInputList != null){
+                        if(micromapperInputList.size() > 0) {
+                            ClientAppSource source = datasources.get(j);
+                            publishToPybossa(currentClientApp, micromapperInputList , source.getClientAppSourceID());
+                            clientAppSourceService.updateClientAppSourceStatus(source.getClientAppSourceID(), StatusCodeType.EXTERNAL_DATA_SOURCE_USED);
+                        }
                     }
                 }
 
@@ -122,7 +132,7 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
 
     private void addToTaskQueue(String inputData, Long clientAppID, Integer status, Long clientAppSourceID){
 
-        System.out.println("addToTaskQueue is called");
+        //System.out.println("addToTaskQueue is called");
 
         try {
             Object obj = parser.parse(inputData);
@@ -169,7 +179,7 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
                         String taskQueryURL = PYBOSSA_API_TASK_BASE_URL + clientApp.getPlatformAppID() + "&id=" + taskID;
                         String inputData = pybossaCommunicator.sendGet(taskQueryURL);
                         try {
-                            System.out.println("inputData: " + inputData);
+
                             boolean isFound = pybossaFormatter.isTaskStatusCompleted(inputData);
                             if(isFound){
                                 processTaskQueueImport(clientApp,taskQueue,taskID) ;
@@ -185,14 +195,32 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
 
     }
 
+    @Override
+    public void processTaskExport() throws Exception {
+        reportProductService.generateCVSReportForGeoClicker();
+    }
+
     private void processTaskQueueImport(ClientApp clientApp,TaskQueue taskQueue, Long taskID) throws Exception {
         String PYBOSSA_API_TASK_RUN = PYBOSSA_API_TASK_RUN_BASE_URL + clientApp.getPlatformAppID() + "&task_id=" + taskID;
         String importResult = pybossaCommunicator.sendGet(PYBOSSA_API_TASK_RUN) ;
 
         if(!importResult.isEmpty() && importResult.length() > StatusCodeType.RESPONSE_MIN_LENGTH  ){
             ClientAppAnswer clientAppAnswer = clientAppResponseService.getClientAppAnswer(clientApp.getClientAppID());
-            TaskQueueResponse taskQueueResponse = pybossaFormatter.getAnswerResponse(importResult, parser, taskQueue.getTaskQueueID(), clientAppAnswer,reportTemplateService);
-            clientAppResponseService.processTaskQueueResponse(taskQueueResponse);
+
+            if(clientApp.getAppType().equals(StatusCodeType.APP_VIDEO)){
+                TaskQueueResponse taskQueueResponse = pybossaFormatter.getAnswerResponseForVideo(clientApp, importResult, parser, taskQueue.getTaskQueueID(), clientAppAnswer,reportTemplateService);
+                clientAppResponseService.processTaskQueueResponse(taskQueueResponse);
+            }
+            else if(clientApp.getAppType().equals(StatusCodeType.APP_MAP))
+            {
+                TaskQueueResponse taskQueueResponse = pybossaFormatter.getAnswerResponseForGeo(importResult, parser, taskQueue.getTaskQueueID());
+                clientAppResponseService.processTaskQueueResponse(taskQueueResponse);
+            }
+            else{
+                TaskQueueResponse taskQueueResponse = pybossaFormatter.getAnswerResponse(clientApp, importResult, parser, taskQueue.getTaskQueueID(), clientAppAnswer,reportTemplateService);
+                clientAppResponseService.processTaskQueueResponse(taskQueueResponse);
+            }
+
             taskQueue.setStatus(StatusCodeType.TASK_LIFECYCLE_COMPLETED);
             updateTaskQueue(taskQueue);
         }

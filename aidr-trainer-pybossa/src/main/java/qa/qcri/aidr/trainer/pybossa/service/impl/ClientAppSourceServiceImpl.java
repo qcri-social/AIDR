@@ -36,7 +36,14 @@ public class ClientAppSourceServiceImpl implements ClientAppSourceService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public void insertNewClientAppSource(ClientAppSource clientAppSource) {
-        clientAppSourceDao.insertClientAppSource(clientAppSource);
+        try{
+            clientAppSourceDao.insertClientAppSource(clientAppSource);
+        }
+        catch(Exception ex){
+            System.out.println("insertNewClientAppSource exception : " + ex.getMessage());
+            throw new RuntimeException(ex.getMessage());
+        }
     }
 }

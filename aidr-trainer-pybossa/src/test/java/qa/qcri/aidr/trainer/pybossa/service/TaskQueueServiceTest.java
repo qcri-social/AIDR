@@ -32,7 +32,7 @@ public class TaskQueueServiceTest {
 
     @Test
     public void testCreateTaskQueue() throws Exception {
-
+        /**
             JSONParser parser = new JSONParser();
             List<Long> arrayList = new ArrayList<Long>();
 
@@ -55,7 +55,7 @@ public class TaskQueueServiceTest {
                 System.out.println("userID;: " + arrayList.size());
             }
 
-
+         **/
 
       //  Long clientAppID = new Long(94);
       //  List<TaskQueue> taskQueues =  taskQueueService.getTaskQueueByClientAppStatus(clientAppID,1);

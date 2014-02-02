@@ -187,8 +187,8 @@ public class PybossaCommunicator extends AbstractCommunicator {
             in.close();
 
         }catch (Exception ex) {
-            System.out.println("ex Code sendGet: " + ex + " : sendGet url = ");
-          //  logger.debug("[errror on sendGet ]" + url);
+            System.out.println("ex Code sendGet: " + ex + " : sendGet url = " + url);
+            logger.debug("[errror on sendGet ]" + url);
         }
 
         return response.toString();
