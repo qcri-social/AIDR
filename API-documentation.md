@@ -379,11 +379,11 @@ Base URI: `http://localhost:port/aidr-output/webresources`
 
 ## Get a jsonp list of labeled tweets from a specific channel
 
-GET `.../rest/crisis/fetch/channel/{crisisCode}&callback={callbackName}&count={val}`
+GET `.../rest/crisis/fetch/channel/{crisisCode}&callback={callbackName}&count={count}`
 
 * `crisisCode` [mandatory]: the REDIS channel to which to subscribe
 * `callback` [optional]: name of the callback function for JSONP data
-* `count' [optional]: the specified number of messages that have been buffered by the service. If unspecified or <= 0 or larger than the MAX_MESSAGES_COUNT field, the default number of messages are returned.
+* `count` [optional]: the specified number of messages that have been buffered by the service. If unspecified or <= 0 or larger than the MAX_MESSAGES_COUNT field, the default number of messages are returned.
 
 ## Return a list of active channels
 
