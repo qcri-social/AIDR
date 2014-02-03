@@ -377,11 +377,11 @@ GET `.../persister/genTweetIds?collectionCode=XXX`
 
 Base URI: `http://localhost:port/aidr-output/webresources`
 
-## Get a jsonp list of labeled tweets from a specific channel
+## Get a JSONP list of labeled tweets from a specific channel
 
 GET `.../rest/crisis/fetch/channel/{crisisCode}&callback={callbackName}&count={count}`
 
-* `crisisCode` [mandatory]: the REDIS channel to which to subscribe
+* `crisisCode` [mandatory]: Redis channel identifier to which to subscribe
 * `callback` [optional]: name of the callback function for JSONP data
 * `count` [optional]: the specified number of messages that have been buffered by the service. If unspecified or <= 0 or larger than the MAX_MESSAGES_COUNT field, the default number of messages are returned.
 
@@ -391,7 +391,7 @@ GET `.../rest/crisis/fetch/channels/list`
 
 Returns an HTML page listing the currently active channels that are being monitored by `aidr-output`
 
-## Get the latest labeled tweet across all channels as a jsonp object
+## Get the latest labeled tweet across all channels as a JSONP object
 
 GET `.../rest/crisis/fetch/channels/latest`
 
@@ -399,7 +399,7 @@ GET `.../rest/crisis/fetch/channels/latest`
 
 GET `.../crisis/stream/channel?crisisCode={crisisCode}&callback={callback}&rate={rate}&duration={duration}`
 
-* `crisisCode` [mandatory]: the Redis channel to which to subscribe
+* `crisisCode` [mandatory]: Redis channel identifier to which to subscribe
 * `callback` [optional]: name of the callback function for JSONP data
 * `rate` [optional]: an upper bound on the rate at which to send messages to client, expressed as messages/min (a floating point number). If <= 0, then default rate is assumed.
 * `duration` [optional]: time for which to subscribe (connection automatically closed after that). The allowed suffixes are: s (for seconds), m (for minutes), h (for hours) and d (for days). If nothing is specified, then by default, duration is disabled. 
@@ -409,5 +409,5 @@ GET `.../crisis/stream/channel?crisisCode={crisisCode}&callback={callback}&rate=
 GET `.../rest/manage/ping`
 
 Provides a method to test whether:
-i) Connection to REDIS is available
+i) Connection to Redis is available
 ii) `aidr-output` services are running as expected
