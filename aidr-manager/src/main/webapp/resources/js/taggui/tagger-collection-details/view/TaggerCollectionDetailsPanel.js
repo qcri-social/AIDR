@@ -53,6 +53,26 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             margin: '6 15 0 0'
         });
 
+        this.twitterLink =  Ext.create('Ext.form.Label', {
+            html: '<image src="/AIDRFetchManager/resources/img/icons/twitter-icon.png" />',
+            padding: '0 5 0 0'
+        });
+
+        this.facebookLink =  Ext.create('Ext.form.Label', {
+            html: '<image src="/AIDRFetchManager/resources/img/icons/facebook-icon.png" />' ,
+            padding: '0 5 0 0'
+        });
+
+        this.googlePlusLink =  Ext.create('Ext.form.Label', {
+            html: '<image src="/AIDRFetchManager/resources/img/icons/google-icon.png" />',
+            padding: '0 5 0 0'
+        });
+
+        this.pinterestLink =  Ext.create('Ext.form.Label', {
+            html: '<image src="/AIDRFetchManager/resources/img/icons/pinterest-icon.png" />',
+            padding: '0 5 0 0'
+        });
+
         this.socialIcons = Ext.create('Ext.container.Container', {
             flex: 1,
             layout: 'hbox',
@@ -60,19 +80,10 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                 margin: '0 5 0 0'
             },
             items: [
-                {
-                    xtype: 'image',
-                    src: '/AIDRFetchManager/resources/img/icons/twitter-icon.png'
-                },{
-                    xtype: 'image',
-                    src: '/AIDRFetchManager/resources/img/icons/facebook-icon.png'
-                },{
-                    xtype: 'image',
-                    src: '/AIDRFetchManager/resources/img/icons/google-icon.png'
-                },{
-                    xtype: 'image',
-                    src: '/AIDRFetchManager/resources/img/icons/pinterest-icon.png'
-                }
+                this.twitterLink,
+                this.facebookLink,
+                this.googlePlusLink,
+                this.pinterestLink
             ]
         });
 

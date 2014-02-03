@@ -149,7 +149,17 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                         var data = Ext.JSON.decode(resp.data);
                         if (data && data.status) {
                             if (data.status == 'ready') {
+                                var title =  "Help us classifying tweets related to " + CRISIS_NAME;
+                                var twitterURL = "https://twitter.com/intent/tweet?text="+title+"&url=" + data.url;
+                                var facebookURL= "https://www.facebook.com/sharer/sharer.php?t="+title+"&u=" + data.url;
+                                var googlePlusURL= "https://plus.google.com/share?url="+data.url;
+                                var pinterestURL= "http://www.pinterest.com/pin/create/button/?media=IMAGEURL&description="+title+"&url=" + data.url;
                                 me.mainComponent.pyBossaLink.setText('<div class="gray-backgrpund"><a href="' + data.url + '"><i>' + data.url + '</i></a></div>', false);
+                                me.mainComponent.twitterLink.setText('<a href="'+ twitterURL +'"><image src="/AIDRFetchManager/resources/img/icons/twitter-icon.png" /></a>', false);
+                                me.mainComponent.facebookLink.setText('<a href="'+ facebookURL +'"><image src="/AIDRFetchManager/resources/img/icons/facebook-icon.png" /></a>', false);
+                                me.mainComponent.googlePlusLink.setText('<a href="'+ googlePlusURL +'"><image src="/AIDRFetchManager/resources/img/icons/google-icon.png" /></a>', false);
+                                me.mainComponent.pinterestLink.setText('<a href="'+ pinterestURL +'"><image src="/AIDRFetchManager/resources/img/icons/pinterest-icon.png" /></a>', false);
+
                             } else if (data.status == 'not_ready') {
                                 me.mainComponent.pyBossaLink.setText('<div class="gray-backgrpund"><i>' + data.message + '</i></div>', false);
                             }
