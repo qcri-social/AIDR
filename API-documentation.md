@@ -409,5 +409,5 @@ GET `.../crisis/stream/channel?crisisCode={crisisCode}&callback={callback}&rate=
 GET `.../rest/manage/ping`
 
 Provides a method to test whether:
-i) Connection to Redis is available
-ii) `aidr-output` services are running as expected
+1. Connection to Redis is available
+2. `aidr-output` services are running as expected
