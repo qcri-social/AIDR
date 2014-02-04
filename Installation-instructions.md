@@ -86,7 +86,9 @@ After the above steps have been executed, you can build the project:
 
 4) Edit `src/main/java/qa/qcri/aidr/predict/common/Config.java` to match the database login info.
 
-5) Compile the application to a jar file.
+5) Modify config/config.txt with appropriate MySQL settings
+
+6) Compile the application to a jar file.
 
  `% mvn install` (or right-click on `pom.xml`, Run as ... Maven build ... 'install')
      
@@ -98,6 +100,7 @@ After the above steps have been executed, you can build the project:
       
 # 6. Tagger-API (aidr-tagger-api)
 
+* Create JDBC resources in server (e.g., Glassfish) to match the JNDI names (JNDI/aidr_predict and JNDI/aidr_fetch_manager) used in src/main/resource/META-INF/persistence.xml. 
 * Build using maven following the instructions above; this should generate a file `aidr-tagger-api-X.war`
 * Deploy `aidr-tagger-api-X.war` to Glassfish using the instructions above.
 
