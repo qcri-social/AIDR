@@ -37,7 +37,11 @@ The AIDR Collector has a RESTFul API, that means all the operations have their c
 
 Prior to start the project building process make sure you have completed the following steps (a-d):
 
-(a) Install the MySql database server on your machine and create a database schema, name it for example "aidr_fetch_manager". The schema name can also be changed that requires to change application configurations which specify schema details as described in the next 2 steps.
+(a) Install the MySql database server on your machine and create a database schema, name it for example "aidr_fetch_manager". 
+
+Useful links for setting up MySql with Glassfish: [Using Connector/J with Glassfish](http://dev.mysql.com/doc/connector-j/en/connector-j-usagenotes-glassfish-config.html) and [How to setup a JDBC connection in Glassfish](http:// computingat40s.wordpress.com/how-to-setup-a-jdbc-connection-in-glassfish) 
+
+The schema name can also be changed that requires to change application configurations which specify schema details as described in the next 2 steps.
 
 (b) In case of first time deployment, make sure you add the following line in the `spring-servlet.xml` file located under `<project-root>/src/main/webapp/WEB-INF/`:
 
@@ -112,12 +116,14 @@ After the above steps have been executed, you can build the project:
 # 8. Trainer API (aidr-trainer-api)
 
 * Pre-requisite: aidr-tagger database and aidr-scheduler database should be created. Aidr-tagger database script is located in aidr-tagger installtion details. Aidr-trainer database script (aidr_scheduler.sql) can be found in the root of the aidr-trainer-api project.
+* Appropriately set the properties in the database.properties and databaseTemp.properties files under src/main/resources.
 * Build using maven following the instructions above; this should generate a file `aidr-trainer-api-X.war`
 * Deploy `aidr-trainer-api-X.war` to Glassfish using the instructions above. 
 
 # 9. Trainer Pybossa (aidr-trainer-pybossa)
 
 * Pre-requisite: aidr-tagger database and aidr-scheduler database should be created. Aidr-tagger database script is located in aidr-tagger installtion details. Aidr-trainer database script (aidr_scheduler.sql) can be found in the root of the aidr-trainer-api project.
+* Appropriately set the properties in the database.properties under src/main/resources
 * Build using maven following the instructions above; this should generate a file `aidr-trainer-pybossa-X.war`
 * Deploy `aidr-trainer-pybossa-X.war` to Glassfish using the instructions above. 
 
