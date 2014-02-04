@@ -6,6 +6,9 @@ import qa.qcri.aidr.trainer.api.dao.TaskAssignmentDao;
 import qa.qcri.aidr.trainer.api.entity.TaskAssignment;
 import qa.qcri.aidr.trainer.api.entity.TaskBuffer;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Repository
@@ -55,6 +58,27 @@ public class TaskAssignmentDaoImpl extends AbstractDaoImpl<TaskAssignment, Strin
         if(taskAssignment!=null){
             delete(taskAssignment);
         }
+    }
+
+    @Override
+    public void undoTaskAssignmentByTimer() {
+        try {
+           // System.out.println("undoTaskAssignmentByTimer is called");
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.HOUR, -12);
+            String calDate = dateFormat.format(cal.getTime());
+            List<TaskAssignment> taskAssignments = findByCriteria(Restrictions.le("assignedAt",dateFormat.parse(calDate)));
+           // System.out.println("undoTaskAssignmentByTimer size : " + taskAssignments);
+            for (Iterator it =taskAssignments.iterator(); it.hasNext();){
+                TaskAssignment taskAssignment = (TaskAssignment) it.next();
+                undoTaskAssignment(taskAssignment.getDocumentID(), taskAssignment.getUserID());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
     }
 
     @Override

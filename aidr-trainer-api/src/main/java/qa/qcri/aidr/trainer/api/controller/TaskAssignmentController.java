@@ -58,5 +58,14 @@ public class TaskAssignmentController {
 
     }
 
+     //processTaskAssignmentCleanUp
 
+    @GET
+    @Produces( MediaType.APPLICATION_JSON )
+    @Path("/revert/timeout")
+    public Response releaseTaskAssignmentBatch(){
+        taskAssignmentService.processTaskAssignmentCleanUp();
+        return Response.status(200).entity(StatusCodeType.TASK_COMMIT_SUCCESS).build();
+
+    }
 }

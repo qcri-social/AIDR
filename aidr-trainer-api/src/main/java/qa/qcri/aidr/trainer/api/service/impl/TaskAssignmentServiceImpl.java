@@ -59,4 +59,10 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
     public Integer getPendingTaskCount(Long userID) {
         return taskAssignmentDao.getPendingTaskCount(userID);
     }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void processTaskAssignmentCleanUp() {
+        taskAssignmentDao.undoTaskAssignmentByTimer();
+    }
 }

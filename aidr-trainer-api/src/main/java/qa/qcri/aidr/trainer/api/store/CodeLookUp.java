@@ -13,4 +13,6 @@ public class CodeLookUp {
     public static Integer APP_IMAGE = 2;
     public static Integer APP_VIDEO = 3;
     public static Integer APP_MAP = 4;
+
+    public static Integer APP_STATUS_ALIVE = 200;
 }

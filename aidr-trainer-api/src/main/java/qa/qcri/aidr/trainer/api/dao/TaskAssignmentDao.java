@@ -13,6 +13,7 @@ public interface TaskAssignmentDao extends AbstractDao<TaskAssignment, String>  
     void undoTaskAssignment(List<TaskBuffer> taskBuffer, Long userID);
     void undoTaskAssignment(Map<Long, Long> taskMap);
     void undoTaskAssignment(Long documentID, Long userID);
+    void undoTaskAssignmentByTimer();
     TaskAssignment findTaskAssignment(Long documentID, Long userID);
     Integer getPendingTaskCount(Long userID);
 }

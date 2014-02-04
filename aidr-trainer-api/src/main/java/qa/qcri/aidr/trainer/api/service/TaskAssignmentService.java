@@ -13,5 +13,6 @@ public interface TaskAssignmentService {
     void revertTaskAssignment(Long documentID, Long userID);
     void revertTaskAssignment(Long documentID, String userName);
     Integer getPendingTaskCount(Long userID);
+    void processTaskAssignmentCleanUp();
 
 }
