@@ -41,7 +41,7 @@ public class JedisConnectionObject {
 		synchronized (allotedJedis) {
 			if (null == poolConfig) {
 				poolConfig = new JedisPoolConfig();
-				poolConfig.setMaxActive(100);
+				poolConfig.setMaxActive(200);
 				poolConfig.setMaxIdle(50);
 				poolConfig.setMinIdle(5);
 				poolConfig.setTestWhileIdle(true);
@@ -49,14 +49,14 @@ public class JedisConnectionObject {
 				poolConfig.setTestOnReturn(true);
 				poolConfig.numTestsPerEvictionRun = 10;
 				poolConfig.timeBetweenEvictionRunsMillis = 60000;
-				poolConfig.maxWait = 3000;
+				poolConfig.maxWait = 60000;
 				poolConfig.whenExhaustedAction = org.apache.commons.pool.impl.GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW;
 				logger.info("[connectToRedis] New Jedis poolConfig: " + poolConfig);
 			} else {
 				logger.info("[connectToRedis] Reusing existing Jedis poolConfig: " + poolConfig);
 			}
 			if (null == pool) {
-				pool = new JedisPool(poolConfig, redisHost, redisPort, 10000);
+				pool = new JedisPool(poolConfig, redisHost, redisPort, 30000);
 				poolSetup = true;
 				logger.info("[connectToRedis] New Jedis pool: " + pool);
 			} else {
