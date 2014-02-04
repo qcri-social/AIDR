@@ -14,11 +14,8 @@
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function() {
             var searchKey = $.url().param('crisisCode');
-            // sse.php sends messages with text/event-stream mimetype.
             if(searchKey !="" && typeof searchKey != 'undefined'){
-                //dolphins_slaughter
-                var url = 'http://aidr-dev.qcri.org:8084/AIDROutput/crisis/stream/channel?crisisCode='+ searchKey+'&rate=60';
-                //var url='http://localhost:8888/predict-ui/predictOutput/httpOutputAction.php';
+                var url = 'http://aidr-dev.qcri.org/AIDROutput/crisis/stream/channel?crisisCode='+ searchKey+'&rate=60';
 
                 var template = '<iframe id="realtimeFeeder" width="100%" height="500" scrolling="auto" frameborder="0" src=\"';
                 template = template +   url + '\"></iframe>';
