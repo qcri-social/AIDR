@@ -123,7 +123,7 @@ After the above steps have been executed, you can build the project:
 
 # 10. Context Root Settings
 
-Sample context roots for deployment:
+Default context roots for deployment:
 
 1. `aidr-collector`: AIDRCollector
 2. `aidr-persister`: AIDRPersister
