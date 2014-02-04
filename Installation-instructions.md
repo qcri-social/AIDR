@@ -39,7 +39,7 @@ Prior to start the project building process make sure you have completed the fol
 
 (a) Install the MySql database server on your machine and create a database schema, name it for example "aidr_fetch_manager". 
 
-Useful links for setting up MySql with Glassfish: [Using Connector/J with Glassfish](http://dev.mysql.com/doc/connector-j/en/connector-j-usagenotes-glassfish-config.html) and [How to setup a JDBC connection in Glassfish](http:// computingat40s.wordpress.com/how-to-setup-a-jdbc-connection-in-glassfish) 
+Useful links for setting up MySql with Glassfish: [Using Connector/J with Glassfish](http://dev.mysql.com/doc/connector-j/en/connector-j-usagenotes-glassfish-config.html) and [How to setup a JDBC connection in Glassfish](http://computingat40s.wordpress.com/how-to-setup-a-jdbc-connection-in-glassfish/) 
 
 The schema name can also be changed that requires to change application configurations which specify schema details as described in the next 2 steps.
 
