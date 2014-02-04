@@ -103,7 +103,7 @@ import qa.qcri.aidr.output.utils.WriteResponse;
 public class RedisHTTPStreaming extends HttpServlet {
 
 	// Time-out constants
-	private static final int REDIS_CALLBACK_TIMEOUT = 5 * 60 * 1000;                // in ms
+	private static final int REDIS_CALLBACK_TIMEOUT = 15 * 60 * 1000;                // in ms
 	private static final int SUBSCRIPTION_MAX_DURATION = -1;                        //default = no expiry
 
 	// Pertaining to JEDIS - establishing connection with a REDIS DB
@@ -460,7 +460,7 @@ public class RedisHTTPStreaming extends HttpServlet {
 		public void onSubscribe(String channel, int subscribedChannels) {
 			isSubscribed = true;
 			patternFlag = false;
-			logger.info("[onSubscribe] Started channel subscription: " + channel);
+			logger.info("[onSubscribe] Started channel subscription: " + channel + " on Redis@" + redisHost + ":" + redisPort);
 		}
 
 		@Override

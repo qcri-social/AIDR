@@ -787,7 +787,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     ]
                 },
                 {
-                    title: 'Download',
+                    title: 'Download/Export',
                     padding: '10 0 0 0',
                     items: [
                         {

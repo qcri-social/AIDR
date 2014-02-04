@@ -316,7 +316,21 @@ public class GetBufferedAIDRData implements ServletContextListener {
 
 		return Response.ok(htmlMessageString.toString()).build();
 	}
-
+	
+	/*@GET
+	@Path("/error/restart/{passcode}")
+	@Produces("application/json")
+	public Response restartFetchService(@PathParam("passcode") String passcode) {
+		if (passcode.equals("sysadmin2013"))
+		if (cbManager != null) {
+			cbManager.close();
+		}
+		cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
+		logger.info("aidr-output fetch service restarted...");
+		final String statusStr = "{\"aidr-output fetch service\":\"RESTARTED\"}";
+		return Response.ok(statusStr).build();
+	}*/
+	
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
 		cbManager.close();

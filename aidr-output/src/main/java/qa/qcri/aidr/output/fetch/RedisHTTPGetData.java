@@ -56,7 +56,7 @@
  *  		or <= 0 or larger than the MAX_MESSAGES_COUNT, the default number of messages are returned 
  */
 
-package qa.qcri.aidr.output.getcurrent;
+package qa.qcri.aidr.output.fetch;
 
 import java.io.IOException;
 import java.io.PrintWriter;

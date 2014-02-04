@@ -80,7 +80,7 @@ public class AIDROutputPing {
 		}
 
 		// Initialize connection to REDIS DB
-		jedisConn = new JedisConnectionObject(host, port);
+		jedisConn = new JedisConnectionObject(AIDROutputPing.host, AIDROutputPing.port);
 	}
 
 	/**
