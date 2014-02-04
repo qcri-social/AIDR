@@ -16,7 +16,10 @@ import qa.qcri.aidr.trainer.pybossa.service.*;
 import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
 import qa.qcri.aidr.trainer.pybossa.store.URLPrefixCode;
 import qa.qcri.aidr.trainer.pybossa.store.UserAccount;
+import qa.qcri.aidr.trainer.pybossa.util.DateTimeConverter;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,6 +49,7 @@ public class PybossaWorker implements ClientAppRunWorker {
     private String AIDR_TASK_ANSWER_URL;
     private String PYBOSSA_API_TASK_RUN_BASE_URL;
     private String PYBOSSA_API_TASK_BASE_URL;
+    private String AIDR_ASSIGNED_TASK_CLEAN_UP;
 
     private PybossaCommunicator pybossaCommunicator = new PybossaCommunicator();
     private JSONParser parser = new JSONParser();
@@ -73,6 +77,7 @@ public class PybossaWorker implements ClientAppRunWorker {
             PYBOSSA_API_TASK_BASE_URL  = client.getHostURL() + URLPrefixCode.TASK_INFO;
             PYBOSSA_API_TASK_RUN_BASE_URL =  client.getHostURL() + URLPrefixCode.TASKRUN_INFO;
             MAX_PENDING_QUEUE_SIZE = client.getQueueSize();
+            AIDR_ASSIGNED_TASK_CLEAN_UP = client.getAidrHostURL() + URLPrefixCode.ASSIGN_TASK_CLEANUP;
         }
 
     }
@@ -88,6 +93,10 @@ public class PybossaWorker implements ClientAppRunWorker {
             setClassVariable(clientApp.getClient());
             processTaskRunPerClientAppImport(clientApp);
         }
+
+        // Do data clean up after import is completed
+       // System.out.print("clean up is called : " + AIDR_ASSIGNED_TASK_CLEAN_UP);
+        pybossaCommunicator.sendGet(AIDR_ASSIGNED_TASK_CLEAN_UP);
     }
 
     @Override
@@ -155,6 +164,13 @@ public class PybossaWorker implements ClientAppRunWorker {
 
                     if(isFound){
                         processTaskQueueImport(clientApp, taskQueue, taskID);
+                    }
+                    else{
+                        long diffHours = DateTimeConverter.getHourDifference(taskQueue.getCreated(), null);
+                        if(diffHours >= StatusCodeType.TASK_CLEANUP_CUT_OFF_HOUR){
+                            taskQueue.setStatus(StatusCodeType.TASK_ABANDONED);
+                            taskQueueService.updateTaskQueue(taskQueue);
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

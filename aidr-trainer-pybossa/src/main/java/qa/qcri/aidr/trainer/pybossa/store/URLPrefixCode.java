@@ -13,6 +13,7 @@ public class URLPrefixCode {
     public static String TASK_ANSWER_SAVE = "/taskanswer/save";
     public static String TASK_INFO = "/task?app_id=";
     public static String TASKRUN_INFO = "/taskrun?app_id=";
+    public static String ASSIGN_TASK_CLEANUP= "/taskassignment/revert/timeout";
 
     public static String AIDR_ACTIVE_NOMINAL_ATTRIBUTE ="/crisis/getnominalAttribute";
     public static String AIDR_CRISIS_INFO="/crisis/id/";

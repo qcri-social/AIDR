@@ -39,6 +39,25 @@ public class DateTimeConverter {
         return date.toString();
     }
 
+    public static long getHourDifference(Date oldDate, Date newDate){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        long diffHours = 0;
+        if(newDate == null){
+            newDate = new Date();
+        }
+
+        try {
+            Date dbDate = sdf.parse(oldDate.toString());
+            Date nowDate = sdf.parse(sdf.format(newDate));
+            long diff = Math.abs(nowDate.getTime() - dbDate.getTime());
+            diffHours = diff / (60 * 60 * 1000);
+
+        } catch (ParseException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        return diffHours;
+    }
 
     public static String reformattedCurrentDate(){
         DateFormat currentFormat =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");

@@ -13,6 +13,8 @@ public class StatusCodeType {
     public static Integer TASK_PUBLISHED = 1;
     public static Integer TASK_LIFECYCLE_COMPLETED = 2;
     public static Integer TASK_EXPORTED = 3;
+    public static Integer TASK_ABANDONED = 4;
+
     public static Integer MAX_PENDING_QUEUE_SIZE = 50;
 
     public static String TASK_COMMIT_SUCCESS = "success";
@@ -41,5 +43,7 @@ public class StatusCodeType {
     public static Integer APP_IMAGE = 2;
     public static Integer APP_VIDEO = 3;
     public static Integer APP_MAP = 4;
+
+    public static long TASK_CLEANUP_CUT_OFF_HOUR = 12;
 
 }
