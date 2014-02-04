@@ -120,3 +120,17 @@ After the above steps have been executed, you can build the project:
 * Pre-requisite: aidr-tagger database and aidr-scheduler database should be created. Aidr-tagger database script is located in aidr-tagger installtion details. Aidr-trainer database script (aidr_scheduler.sql) can be found in the root of the aidr-trainer-api project.
 * Build using maven following the instructions above; this should generate a file `aidr-trainer-pybossa-X.war`
 * Deploy `aidr-trainer-pybossa-X.war` to Glassfish using the instructions above. 
+
+# 10. Context Root Settings
+
+Sample context roots for deployment:
+
+1. `aidr-collector`: AIDRCollector
+2. `aidr-persister`: AIDRPersister
+3. `aidr-manager`: AIDRFetchManager
+4. `aidr-tagger-api`: AIDRPredictUI-API
+6. `aidr-trainer-api`: AIDRTrainerAPI
+7. `aidr-output`: AIDROutput
+7. `aidr-trainer-pybossa`: AIDRCrowdSourcingAPI 
+
+These values need to reflect the setting used in the file: aidr-manager/src/main/resources/system.properties
