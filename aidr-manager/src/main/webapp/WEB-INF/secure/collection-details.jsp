@@ -9,7 +9,8 @@
   <script type="text/javascript">
       COLLECTION_ID = ${id};
       COLLECTION_CODE = "${collectionCode}";
-  </script> 
+      USER_NAME = "${userName}";
+  </script>
 
 </body>
 </html>

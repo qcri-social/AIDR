@@ -1,13 +1,16 @@
 package qa.qcri.aidr.manager.repository.impl;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URLDecoder;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.ScrollableResults;
+import org.hibernate.*;
 import org.hibernate.criterion.*;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.stereotype.Repository;
 
 import org.springframework.util.StringUtils;
@@ -30,21 +33,41 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public CollectionDataResponse getPaginatedData(Integer start, Integer limit,Integer userId) {
+	public List<AidrCollection> getPaginatedData(Integer start, Integer limit, Integer userId) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
-		criteria.add(Restrictions.eq("user.id", userId));
+        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+        criteria.createAlias("managers", "managers");
+        LogicalExpression or = Restrictions.or(
+                Restrictions.eq("user.id", userId),
+                Restrictions.eq("managers.id", userId)
+        );
+        criteria.add(or);
 		criteria.setFirstResult(start);
 		criteria.setMaxResults(limit);
 		criteria.addOrder(Order.desc("startDate"));
 		criteria.addOrder(Order.desc("createdDate"));
-		
-		Criteria countCriteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
-                countCriteria.add(Restrictions.eq("user.id", userId)); // added by Imran to restrict count for the given user
-		countCriteria.setProjection(Projections.rowCount());
-		Long count = (Long) countCriteria.uniqueResult();
-		
-		return new CollectionDataResponse((List<AidrCollection>) criteria.list(),count);
+
+		return (List<AidrCollection>) criteria.list();
 	}
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Integer getCollectionsCount(final Integer userId) {
+        return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
+            @Override
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                String sql = " select count(distinct c.id) " +
+                        " FROM AIDR_COLLECTION c " +
+                        " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
+                        " ON c.id = c_m.id_collection " +
+                        " WHERE c.user_id = :userId or c_m.id_manager = :userId ";
+                SQLQuery sqlQuery = session.createSQLQuery(sql);
+                sqlQuery.setParameter("userId", userId);
+                BigInteger total = (BigInteger) sqlQuery.uniqueResult();
+                return total != null ? total.intValue() : 0;
+            }
+        });
+    }
 
 	@Override
 	public Boolean exist(String code) {
