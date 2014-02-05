@@ -56,7 +56,7 @@ Ext.define('ADMIN.health.view.AdminHealthPanel', {
 
         this.AIDROutputLabel = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
-            text: 'AIDROutput',
+            text: 'Output',
             width: 120
         });
 
