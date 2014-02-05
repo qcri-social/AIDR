@@ -598,7 +598,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 {
                                     xtype: 'container',
                                     defaultType: 'label',
-                                    padding: '22 0 0 0',
+                                    padding: '12 0 0 0',
                                     layout: 'hbox',
                                     items: [
                                         this.startButton,
