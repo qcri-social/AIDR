@@ -3,18 +3,12 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Dec 09, 2013 at 11:35 AM
+-- Generation Time: Feb 04, 2014 at 04:37 PM
 -- Server version: 5.5.29
 -- PHP Version: 5.4.10
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
 
 --
 -- Database: `aidr_scheduler`
@@ -61,9 +55,10 @@ CREATE TABLE `clientApp` (
   `iconURL` varchar(200) DEFAULT 'http://i.imgur.com/lgZAWIc.png',
   `status` int(11) unsigned NOT NULL DEFAULT '1',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `appType` int(11) DEFAULT '1',
   PRIMARY KEY (`clientAppID`),
   UNIQUE KEY `shortName_UNIQUE` (`shortName`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=48 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=61 ;
 
 -- --------------------------------------------------------
 
@@ -88,12 +83,12 @@ CREATE TABLE `clientAppAnswer` (
 CREATE TABLE `clientAppEvent` (
   `clientAppEventID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
-  `clinetAppID` bigint(20) NOT NULL,
+  `clientAppID` bigint(20) NOT NULL,
   `sequence` int(11) NOT NULL,
   `eventID` bigint(20) NOT NULL,
   `created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`clientAppEventID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
 
 -- --------------------------------------------------------
 
@@ -108,7 +103,7 @@ CREATE TABLE `clientAppSource` (
   `status` int(10) unsigned NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`clientAppSourceID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=50 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=70 ;
 
 -- --------------------------------------------------------
 
@@ -148,7 +143,7 @@ CREATE TABLE `reportTemplate` (
   `status` int(11) NOT NULL DEFAULT '0',
   `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`reportTemplateID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2941 ;
 
 -- --------------------------------------------------------
 
@@ -179,7 +174,7 @@ CREATE TABLE `taskQueue` (
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`taskQueueID`,`clientAppID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=43982 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=65016 ;
 
 -- --------------------------------------------------------
 
@@ -195,7 +190,3 @@ CREATE TABLE `taskQueueResponse` (
   PRIMARY KEY (`taskQueueID`),
   UNIQUE KEY `taskQueueID_UNIQUE` (`taskQueueID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
