@@ -317,7 +317,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		return Response.ok(htmlMessageString.toString()).build();
 	}
 	
-	/*@GET
+	@GET
 	@Path("/error/restart/{passcode}")
 	@Produces("application/json")
 	public Response restartFetchService(@PathParam("passcode") String passcode) {
@@ -329,7 +329,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		logger.info("aidr-output fetch service restarted...");
 		final String statusStr = "{\"aidr-output fetch service\":\"RESTARTED\"}";
 		return Response.ok(statusStr).build();
-	}*/
+	}
 	
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {

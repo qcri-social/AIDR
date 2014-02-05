@@ -6,6 +6,7 @@ import qa.qcri.aidr.manager.util.JsonDateSerializer;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import java.util.Date;
+import java.util.List;
 
 public class AidrCollectionTotalDTO {
 
@@ -42,6 +43,8 @@ public class AidrCollectionTotalDTO {
     private Integer totalCount;
 
     private Integer taggersCount;
+
+    private List<UserEntity> managers;
 
     public Integer getId() {
         return id;
@@ -180,5 +183,13 @@ public class AidrCollectionTotalDTO {
 
     public void setTaggersCount(Integer taggersCount) {
         this.taggersCount = taggersCount;
+    }
+
+    public List<UserEntity> getManagers() {
+        return managers;
+    }
+
+    public void setManagers(List<UserEntity> managers) {
+        this.managers = managers;
     }
 }

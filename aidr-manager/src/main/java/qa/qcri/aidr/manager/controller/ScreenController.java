@@ -24,8 +24,12 @@ public class ScreenController extends BaseController{
     private TaggerService taggerService;
 
 	@RequestMapping("protected/home")
-	public String home(Map<String, String> model) throws Exception {
-		return "home";
+	public ModelAndView home() throws Exception {
+        String userName = getAuthenticatedUserName();
+
+        ModelAndView model = new ModelAndView("home");
+        model.addObject("userName", userName);
+        return model;
 	}
 
 	@RequestMapping("signin")
@@ -35,11 +39,13 @@ public class ScreenController extends BaseController{
 
     @RequestMapping("protected/{code}/collection-details")
     public ModelAndView collectionDetails(@PathVariable(value="code") String code) throws Exception {
+        String userName = getAuthenticatedUserName();
         AidrCollection collection = collectionService.findByCode(code);
 
         ModelAndView model = new ModelAndView("collection-details");
         model.addObject("id", collection.getId());
         model.addObject("collectionCode", code);
+        model.addObject("userName", userName);
         return model;
     }
 

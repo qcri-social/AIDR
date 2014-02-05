@@ -19,7 +19,9 @@ public interface CollectionService {
 
     public AidrCollection findByCode(String code) throws Exception;
 
-    public CollectionDataResponse findAll(Integer start, Integer limit, Integer userId) throws Exception;
+    public List<AidrCollection> findAll(Integer start, Integer limit, Integer userId) throws Exception;
+
+    public Integer getCollectionsCount(Integer userId) throws Exception;
 
     public List<AidrCollection> searchByName(String query, Integer userId) throws Exception;
 

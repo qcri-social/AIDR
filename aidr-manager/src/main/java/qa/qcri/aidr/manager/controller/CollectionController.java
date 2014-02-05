@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import qa.qcri.aidr.manager.dto.AidrCollectionTotalDTO;
-import qa.qcri.aidr.manager.dto.CollectionDataResponse;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
@@ -50,6 +49,9 @@ public class CollectionController extends BaseController{
 			collection.setStatus(CollectionStatus.NOT_RUNNING);
 			Calendar now = Calendar.getInstance();
 			collection.setCreatedDate(now.getTime());
+            List<UserEntity> managers = new ArrayList<UserEntity>();
+            managers.add(entity);
+            collection.setManagers(managers);
 			collectionService.create(collection);
 			return getUIWrapper(true);  
 		}catch(Exception e){
@@ -99,6 +101,7 @@ public class CollectionController extends BaseController{
                 collection.setStartDate(dbCollection.getStartDate());
                 collection.setEndDate(collectionAfterStop.getEndDate());
                 collection.setUser(dbCollection.getUser());
+                collection.setManagers(dbCollection.getManagers());
                 collection.setCreatedDate(dbCollection.getCreatedDate());
                 collectionService.update(collection);
 
@@ -108,6 +111,7 @@ public class CollectionController extends BaseController{
                 AidrCollection dbCollection = collectionService.findById(collection.getId());
                 collection.setStartDate(dbCollection.getStartDate());
                 collection.setUser(dbCollection.getUser());
+                collection.setManagers(dbCollection.getManagers());
                 collection.setCreatedDate(dbCollection.getCreatedDate());
                 collectionService.update(collection);
             }
@@ -137,25 +141,34 @@ public class CollectionController extends BaseController{
 	@RequestMapping(value = "/findAll.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object>  findAll(@RequestParam Integer start, @RequestParam Integer limit ) throws Exception {
-		start = (start != null) ? start : 0;
-		limit = (limit != null) ? limit :50;
-		UserEntity userEntity = getAuthenticatedUser();
-		if(userEntity!=null){
-            Integer userId = userEntity.getId();
-//            Call update from Fetcher and then get list with updated items
+        start = (start != null) ? start : 0;
+        limit = (limit != null) ? limit : 50;
+        UserEntity userEntity = getAuthenticatedUser();
+        if (userEntity != null) {
+            List<AidrCollectionTotalDTO> dtoList = new ArrayList<AidrCollectionTotalDTO>();
+            Integer count = 0;
             try {
+                Integer userId = userEntity.getId();
+//                Call update from Fetcher and then get list with updated items
                 collectionService.updateAndGetRunningCollectionStatusByUser(userId);
+
+                count = collectionService.getCollectionsCount(userId);
+                if (count > 0) {
+                    List<AidrCollection> data = collectionService.findAll(start, limit, userId);
+                    for (AidrCollection collection : data) {
+                        AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
+                        dtoList.add(dto);
+                    }
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            CollectionDataResponse dataResponse = collectionService.findAll(start, limit, userId);
-			return getUIWrapper(dataResponse.getData(),dataResponse.getTotal());
-		}
-		return getUIWrapper(false);
+            return getUIWrapper(dtoList, count.longValue());
+        }
+        return getUIWrapper(false);
+    }
 
-	}
-	
-	@RequestMapping(value = "/search.action", method = RequestMethod.GET)
+    @RequestMapping(value = "/search.action", method = RequestMethod.GET)
 	@ResponseBody
 	public List<AidrCollection> search(@RequestParam String query) throws Exception {
 		UserEntity userEntity = getAuthenticatedUser();
@@ -432,7 +445,11 @@ public class CollectionController extends BaseController{
         dto.setCode(collection.getCode());
         dto.setName(collection.getName());
         dto.setTarget(collection.getTarget());
-        dto.setUser(collection.getUser());
+
+        UserEntity user = collection.getUser();
+        user.setRoles(null);
+        dto.setUser(user);
+
         if (collection.getCount() != null) {
             dto.setCount(collection.getCount());
         } else {
@@ -447,6 +464,12 @@ public class CollectionController extends BaseController{
         dto.setEndDate(collection.getEndDate());
         dto.setCreatedDate(collection.getCreatedDate());
         dto.setLastDocument(collection.getLastDocument());
+
+        List<UserEntity> managers = collection.getManagers();
+        for (UserEntity manager : managers) {
+            manager.setRoles(null);
+        }
+        dto.setManagers(managers);
 
         return dto;
     }

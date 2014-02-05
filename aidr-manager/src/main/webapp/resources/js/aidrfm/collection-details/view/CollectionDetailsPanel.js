@@ -104,6 +104,15 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             cls: 'header-h2'
         });
 
+        this.administrationL = Ext.create('Ext.form.Label', {
+            flex: 1,
+            text: 'Administration',
+            padding: '15 0 0 0',
+            cls: 'header-h2'
+        });
+
+        this.managersL = Ext.create('Ext.form.Label', {flex: 1});
+
         this.codeE = Ext.create('Ext.form.field.Text', {
             fieldLabel: 'Code',
             name: 'code',
@@ -703,6 +712,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             xtype: 'container',
                             defaultType: 'label',
                             layout: 'hbox',
+                            cls: 'bordered-bottom',
                             items: [
                                 {
                                     width: 220,
@@ -710,8 +720,9 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 },
                                 this.languageFiltersL
                             ]
-                        }
-
+                        },
+                        this.administrationL,
+                        this.managersL
                     ]
                 }
             ]
@@ -745,6 +756,97 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         this.downloadText = Ext.create('Ext.form.Label', {
             flex: 1,
             html: ''
+        });
+
+        this.messageForNotOwner = Ext.create('Ext.form.Label', {
+            padding: '5 0',
+            hidden:true,
+            html: '<div class="styled-text">Only owner of the collection could add managers.</div>'
+        });
+
+        this.usersCombo = Ext.create('Ext.form.field.ComboBox', {
+            minChars: 0,
+            width: 300,
+            pageSize: true,
+            triggerAction: 'query',
+            margin: '1 0 0 0',
+            displayField: 'userName',
+            valueField: 'id',
+            store: {
+                fields: ['id', 'userName'],
+                pageSize: 10,
+                proxy: {
+                    type: 'ajax',
+                    url: BASE_URL + '/protected/user/getUsers.action',
+                    reader: {
+                        root: 'data',
+                        type: 'json'
+                    }
+                }
+            }
+        });
+
+        this.addManagerButton = Ext.create('Ext.Button', {
+            text: 'Add Manager',
+            margin: '0 0 0 10',
+            cls:'btn btn-blue',
+            id: 'addManager'
+        });
+
+        this.managersStore = Ext.create('Ext.data.Store', {
+            pageSize: 50,
+            storeId: 'managersStore',
+            fields: ['id', 'userName']
+        });
+
+        this.managersGrid = Ext.create('Ext.grid.Panel', {
+            store: this.managersStore,
+            cls: 'aidr-grid',
+            columns: [
+                {
+                    xtype: 'gridcolumn', dataIndex: 'userName', text: 'Value', flex: 1
+                },
+                {
+                    xtype: 'gridcolumn', dataIndex: 'id', text: 'Action', width: 175, sortable: false,
+                    renderer: function (recordValue, metaData, record, rowIdx, colIdx, store) {
+                        var id = Ext.id();
+
+                        Ext.defer(function () {
+                            Ext.widget('button', {
+                                exampleId: recordValue,
+                                renderTo: id,
+                                cls: 'btn btn-red',
+                                text: 'Remove Manager',
+                                width: 150,
+                                action: 'removeManager'
+                            });
+                        }, 50);
+
+                        return Ext.String.format('<div class="margin-left" id="{0}"></div>', id);
+                    }
+                }
+            ]
+        });
+
+        this.addManagersPanel = Ext.create('Ext.container.Container', {
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            hidden:true,
+            items: [
+                {
+                    xtype: 'container',
+                    padding: '10 0 15 0',
+                    defaultType: 'label',
+                    layout: 'hbox',
+                    items: [
+                        this.usersCombo,
+                        this.addManagerButton
+                    ]
+                },
+                this.managersGrid
+            ]
         });
 
         this.tabPanel = Ext.create('Ext.tab.Panel', {
@@ -817,6 +919,23 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             ]
                         }
                     ]
+                },
+                {
+                    title: 'Permission',
+                    padding: '10 0 0 0',
+                    items: [
+                        {
+                            xtype: 'container',
+                            layout: {
+                                type: 'vbox',
+                                align: 'stretch'
+                            },
+                            items: [
+                                this.messageForNotOwner,
+                                this.addManagersPanel
+                            ]
+                        }
+                    ]
                 }
             ]
         });
@@ -844,4 +963,4 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         this.callParent(arguments);
     }
 
-})
+});

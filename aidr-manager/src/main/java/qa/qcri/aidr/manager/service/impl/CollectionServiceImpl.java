@@ -79,8 +79,14 @@ public class CollectionServiceImpl implements CollectionService {
 
     @Override
     @Transactional(readOnly = true)
-    public CollectionDataResponse findAll(Integer start, Integer limit, Integer userId) throws Exception {
+    public List<AidrCollection> findAll(Integer start, Integer limit, Integer userId) throws Exception {
         return collectionRepository.getPaginatedData(start, limit, userId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Integer getCollectionsCount(Integer userId) throws Exception {
+        return collectionRepository.getCollectionsCount(userId);
     }
 
     @Override

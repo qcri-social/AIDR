@@ -113,9 +113,9 @@ public class DataStore extends Loggable {
             DriverManager.registerDriver(driver);
 
             mySqlPool = new ConnectionPool("aidr-backend",
-                    1, // min-pool
-                    5, // max-pool
-                    30, // max-size
+                    10, // min-pool default = 1
+                    20, // max-pool default = 5
+                    35, // max-size default 30
                     180000, // timeout (ms)
                     Config.MYSQL_PATH, Config.MYSQL_USERNAME,
                     Config.MYSQL_PASSWORD);
