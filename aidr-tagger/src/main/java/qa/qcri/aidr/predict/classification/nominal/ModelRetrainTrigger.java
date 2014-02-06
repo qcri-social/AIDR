@@ -21,12 +21,12 @@ import qa.qcri.aidr.predict.dbentities.ModelFamilyEC;
  * queue. When a sufficient number of samples have arrived, it throws an event
  * triggering rebuilding of the relevant model.
  * 
- * @author jrogstadius
+ * @authors jrogstadius & Imran
  */
 class ModelRetrainTrigger extends Loggable implements Runnable {
 
     public Event<CrisisAttributePair> onRetrain = new Event<CrisisAttributePair>();
-    int sampleCountThreshold = 5; // TODO: Model re-training threshold should
+    int sampleCountThreshold = 20; // TODO: Model re-training threshold should
                                    // be dynamic default =20
     int timeThreshold = 60000; // 1000*60*10; //TODO: Model re-training
                                // threshold should be dynamic
