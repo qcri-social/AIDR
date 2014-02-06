@@ -140,13 +140,6 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
         this.modelHistoryStore = Ext.create('Ext.data.Store', {
             pageSize: 10,
             storeId: 'modelHistoryStore',
-            sorters: [{
-                property: 'trainingTime',
-                direction: 'DESC'
-            }],
-            sortRoot: 'trainingTime',
-            sortOnLoad: true,
-            remoteSort: false,
             fields: ['modelID', 'avgPrecision', 'avgRecall', 'avgAuc', 'trainingCount', 'trainingTime'],
             proxy: {
                 type: 'ajax',
