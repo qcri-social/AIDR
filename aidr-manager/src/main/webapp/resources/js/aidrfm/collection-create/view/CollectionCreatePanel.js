@@ -66,7 +66,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             emptyText: 'e.g., #sandy, #newyork,#joplin (max 400)'
         });
 
-        this.geoE = Ext.create('Ext.form.field.Text', {
+        this.geoE = Ext.create( 'Ext.form.field.Text', {
             fieldLabel: 'Geographical regions',
             labelWidth: 130,
             name: 'geo',
@@ -112,8 +112,10 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             labelWidth: 100,
             name: 'langFilters',
             flex: 1,
+            id: 'CollectionLang',
             value: 'en',
             emptyText: 'e.g., en, ar, ja',
+
             tpl: '<tpl for=".">' +
                 '<li role="option" class="x-boundlist-item">{name}</li>' +
                 '<tpl if="xindex == 9"><hr/></tpl>' +
@@ -121,11 +123,17 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                 '</tpl>'
         });
 
+        this.langNote = Ext.create('Ext.form.Label', {
+            flex: 1,
+            html:'<div></div>',
+            padding: '2 0 2 105'
+        });
+
         this.configurationsL = Ext.create('Ext.form.Label', {
             flex: 1,
             text: 'Optional configuration',
             padding: '15 0 0 0',
-            cls: 'header-h2'
+            cls: 'header-h2 bordered-top'
         });
 
         this.saveButton = Ext.create('Ext.Button', {
@@ -207,9 +215,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                         {
                             xtype: 'container',
                             layout: 'hbox',
-                            margin: '5 0 0 0',
-                            padding: '0 0 20 0',
-                            cls: 'bordered-bottom',
+                            margin: '5 0',
                             items: [
                                 this.langCombo,
                                 {
@@ -222,6 +228,8 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                                 }
                             ]
                         },
+                        this.langNote,
+
                         this.configurationsL,
                         {
                             xtype: 'container',
