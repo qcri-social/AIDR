@@ -106,7 +106,6 @@ public class UserController extends BaseController{
             if (code == null || code.trim().length() == 0 || userId == null){
                 return getUIWrapper(false, msg);
             }
-//            UserEntity userEntity = userService.getById(userId);
             AidrCollection collection = collectionService.findByCode(code);
             List<UserEntity> managers = collection.getManagers();
             if (managers == null){

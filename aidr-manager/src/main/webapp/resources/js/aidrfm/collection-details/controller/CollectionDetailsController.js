@@ -305,7 +305,6 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 me.updateDownloadPanel(jsonData.code);
                 me.updateEditPanel();
                 me.setManagers(jsonData.managers);
-                me.applyOwnerPermission(jsonData.user);
 
                 me.DetailsComponent.managersStore.loadData(jsonData.managers);
 
@@ -318,14 +317,6 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 mask.hide();
             }
         });
-    },
-
-    applyOwnerPermission: function(collectionOwner) {
-        if (collectionOwner.userName == USER_NAME){
-            this.DetailsComponent.addManagersPanel.show();
-        } else {
-            this.DetailsComponent.messageForNotOwner.show();
-        }
     },
 
     setManagers: function(managers) {
