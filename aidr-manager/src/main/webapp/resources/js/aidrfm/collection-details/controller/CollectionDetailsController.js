@@ -202,8 +202,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             },
 
             'button[action=removeManager]': {
-                    click: function (btn, e, eOpts) {
-                    alert("Will be implemented soon");
+                click: function (btn, e, eOpts) {
+                    this.removeManager(btn);
                 }
             }
 
@@ -307,8 +307,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 me.setManagers(jsonData.managers);
                 me.applyOwnerPermission(jsonData.user);
 
-                me.DetailsComponent.managersStore.loadData(jsonData.managers
-                );
+                me.DetailsComponent.managersStore.loadData(jsonData.managers);
 
                 me.DetailsComponent.suspendLayout = false;
                 me.DetailsComponent.forceComponentLayout();
@@ -780,6 +779,37 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             AIDRFMFunctions.setAlert("Info", "Please select user from list");
             btn.setDisabled(false);
         }
+    },
+
+    removeManager: function(btn) {
+        var me = this;
+
+        btn.setDisabled(true);
+        var userId = btn.exampleId;
+
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/user/removeManagerFromCollection.action',
+            method: 'GET',
+            params: {
+                code: COLLECTION_CODE,
+                userId: userId
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                btn.setDisabled(false);
+                var resp = Ext.decode(response.responseText);
+                if (resp.success && resp.data) {
+                    me.DetailsComponent.managersStore.loadData(resp.data);
+                } else {
+                    AIDRFMFunctions.setAlert("Error", resp.message);
+                }
+            },
+            failure: function () {
+                btn.setDisabled(false);
+            }
+        });
     }
 
 });

@@ -76,14 +76,15 @@ public class UserController extends BaseController{
             }
             UserEntity userEntity = userService.getById(userId);
             AidrCollection collection = collectionService.findByCode(code);
+
+            if (isUserInCollectionManagersList(userEntity, collection)){
+                msg = "Selected user is already in managers list of this collection.";
+                return getUIWrapper(false, msg);
+            }
+
             List<UserEntity> managers = collection.getManagers();
             if (managers == null){
                 managers = new ArrayList<UserEntity>();
-            }
-
-            if (isUserInCollectionManagerList(userEntity, collection)){
-                msg = "Selected user is already in managers list of this collection.";
-                return getUIWrapper(false, msg);
             }
 
             managers.add(userEntity);
@@ -96,7 +97,39 @@ public class UserController extends BaseController{
         }
     }
 
-    private boolean isUserInCollectionManagerList(UserEntity user, AidrCollection collection) {
+    @RequestMapping(value = "/removeManagerFromCollection.action", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> removeManagerFromCollection(@RequestParam String code, @RequestParam Integer userId) throws Exception {
+        logger.info("Add manager to Collection");
+        String msg = "Error while removing user from collection managers list";
+        try{
+            if (code == null || code.trim().length() == 0 || userId == null){
+                return getUIWrapper(false, msg);
+            }
+//            UserEntity userEntity = userService.getById(userId);
+            AidrCollection collection = collectionService.findByCode(code);
+            List<UserEntity> managers = collection.getManagers();
+            if (managers == null){
+                return getUIWrapper(false, msg);
+            }
+
+            for (UserEntity manager : managers){
+                if (manager.getId().equals(userId)){
+                    managers.remove(manager);
+                    break;
+                }
+            }
+
+            collectionService.update(collection);
+
+            return getUIWrapper(managers, true);
+        }catch(Exception e){
+            logger.error(msg, e);
+            return getUIWrapper(false, msg);
+        }
+    }
+
+    private boolean isUserInCollectionManagersList(UserEntity user, AidrCollection collection) {
         if (collection.getManagers() == null) {
             return false;
         }
