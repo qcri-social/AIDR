@@ -96,6 +96,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     Ext.Ajax.request({
                         url: BASE_URL + '/protected/collection/getRunningCollectionStatusByUser.action',
                         method: 'GET',
+                        params: {
+                            id: OWNER_ID
+                        },
                         headers: {
                             'Accept': 'application/json'
                         },
@@ -107,7 +110,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                                 if (response.data) {
                                     var collectionData = response.data;
                                     var collectionName = collectionData.name;
-                                    Ext.MessageBox.confirm('Confirm', 'The collection <b>' + collectionName + '</b> is already running. ' +
+                                    Ext.MessageBox.confirm('Confirm', 'The collection <b>' + collectionName + '</b> is already running for user <b>' + OWNER_NAME + '</b>. ' +
                                         'Do you want to stop <b>' + collectionName + '</b>  and start <b>' + name + ' </b>?', function (buttonId) {
                                         if (buttonId === 'yes') {
                                             datailsController.startCollection();
@@ -300,6 +303,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 var jsonData = Ext.decode(response.responseText);
 
                 me.DetailsComponent.suspendLayout = true;
+
+                OWNER_ID = jsonData.user.id;
+                OWNER_NAME = jsonData.user.userName;
 
                 me.updateDetailsPanel(jsonData);
                 me.updateDownloadPanel(jsonData.code);
