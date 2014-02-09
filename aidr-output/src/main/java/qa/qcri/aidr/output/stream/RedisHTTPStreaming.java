@@ -269,7 +269,7 @@ public class RedisHTTPStreaming extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
-		if (jedisConn.getPoolSetup()) {			// Jedis pool is ready to use
+		if (jedisConn.isPoolSetup()) {			// Jedis pool is ready to use
 			if (request.getParameter("crisisCode") != null) {
 				// TODO: Handle client refresh of web-page in same session                                
 				if (initRedisConnection()) {
