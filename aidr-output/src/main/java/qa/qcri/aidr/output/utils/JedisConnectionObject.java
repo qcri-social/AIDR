@@ -25,10 +25,16 @@ public class JedisConnectionObject {
 	private static int redisPort = 6379;
 
 	private static boolean poolSetup = false;
-
+	private static boolean connectionSetup = false;
+	
 	// Logger setup
 	private static Logger logger = LoggerFactory.getLogger(JedisConnectionObject.class);
 
+	/**
+	 * 
+	 * @param host hostname on which REDIS resides
+	 * @param port port number to use for establishing connection
+	 */
 	public JedisConnectionObject(final String host, final int port) {
 		// For now: set up a simple configuration that logs on the console
 		//PropertyConfigurator.configure("log4j.properties");		// where to place the properties file?
@@ -56,27 +62,53 @@ public class JedisConnectionObject {
 				logger.info("[connectToRedis] Reusing existing Jedis poolConfig: " + poolConfig);
 			}
 			if (null == pool) {
-				pool = new JedisPool(poolConfig, redisHost, redisPort, 30000);
-				poolSetup = true;
-				logger.info("[connectToRedis] New Jedis pool: " + pool);
+				try {
+					pool = new JedisPool(poolConfig, redisHost, redisPort, 30000);
+					poolSetup = true;
+					logger.info("[connectToRedis] New Jedis pool: " + pool);
+				} catch (Exception e) {
+					logger.error("[connectToRedis] Fatal error! Could not initialize Jedis Pool!");
+					poolConfig = null;
+					pool = null;
+					poolSetup = false;
+				}
 			} else {
+				poolSetup = true;
 				logger.info("[connectToRedis] Reusing existing Jedis pool: " + pool);
 			}
 		}
 	}
 
+	/**
+	 * Connects to a REDIS DB on default port 6379 of localhost
+	 */
 	public JedisConnectionObject() {
 		this("localhost", 6379);
 	}
 
+	/**
+	 * Connects to a REDIS DB on lcoalhost with specified port
+	 * @param port port number to use for connecting to REDIS DB
+	 */
 	public JedisConnectionObject(final int port) {
 		this("localhost", port);
 	}
 
-	// Get connection resource from JEDIS pool
+	/**
+	 *  Get a connection resource from JEDIS pool
+	 * @return
+	 */
 	public synchronized Jedis getJedisResource() {
-		if (pool != null) {
-			Jedis subscriberJedis = pool.getResource();
+		Jedis subscriberJedis = null;
+		if (isPoolSetup()) {
+			try {
+				subscriberJedis = pool.getResource();
+				connectionSetup = true;
+			} catch (Exception e) {
+				subscriberJedis = null;
+				connectionSetup = false;
+				logger.error("[getJedisResource] Fatal error! Could not get a resource from the pool.");
+			}
 			if (subscriberJedis != null) {
 				allotedJedis.put(subscriberJedis, false);		// initially nothing assigned
 				return subscriberJedis;
@@ -109,7 +141,7 @@ public class JedisConnectionObject {
 	}
 
 	/**
-	 * Returns a specific instance of Jedis connection pool
+	 * Returns to the Jedis pool a specific instance of allocated Jedis connection resource
 	 * @param jedisInstance a Jedis instance borrowed from the Jedis Pool
 	 */
 	public synchronized void returnJedis(Jedis jedisInstance) {
@@ -129,26 +161,54 @@ public class JedisConnectionObject {
 		}
 	}
 
+	/**
+	 * 
+	 * @return active Jedis pool object
+	 */
 	public JedisPool getJedisPool() {
 		return pool;
 	}
 
+	/**
+	 * 
+	 * @return active Jedis poolconfig object
+	 */
 	public JedisPoolConfig getJedisPoolConfig() {
 		return poolConfig;
 	}
 
+	/**
+	 * 
+	 * @return Redis hostname being used
+	 */
 	public String getRedisHost() {
 		return redisHost;
 	}
 
+	/**
+	 * 
+	 * @return port number being used to connect to Redis
+	 */
 	public int getRedisPort() {
 		return redisPort;
 	}
 
-	public boolean getPoolSetup() {
+	/**
+	 * Returns the state of Jedis pool for this JedisConnectionObject instance
+	 * @return true is Jedis pool has been established, false otherwise
+	 */
+	public boolean isPoolSetup() {
 		return poolSetup;
 	}
-
+	
+	/**
+	 * Returns the state of Jedis connection for this JedisConnectionObject instance
+	 * @return true is Jedis connection has been established, false otherwise
+	 */
+	public boolean isConnectionSetup() {
+		return connectionSetup;
+	}
+	
 	/**
 	 * Closes all open jedis connections and destroys the Jedis pool. 
 	 * Warning! Not thread safe! Use with care!

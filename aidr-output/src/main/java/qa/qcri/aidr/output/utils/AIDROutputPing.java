@@ -143,7 +143,7 @@ public class AIDROutputPing {
 		StringBuilder jsonpRes = new StringBuilder();
 		if (callbackName != null) jsonpRes.append(callbackName).append("(");
 		
-		if (result.equalsIgnoreCase("pong")) {
+		if (null != result && result.equalsIgnoreCase("pong")) {
 			// REDIS connection is working - now to test if APIs are workings
 			boolean isAPIRunning = testAIDROutputAPI("fetch");
 			if (isAPIRunning) { 

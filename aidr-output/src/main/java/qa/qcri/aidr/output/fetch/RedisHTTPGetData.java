@@ -135,10 +135,10 @@ public class RedisHTTPGetData extends HttpServlet {
 
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-		
+
 		AIDROutputConfig configuration = new AIDROutputConfig();
 		HashMap<String, String> configParams = configuration.getConfigProperties();
-		
+
 		redisHost = configParams.get("host");
 		redisPort = Integer.parseInt(configParams.get("port"));
 		if (configParams.get("logger").equalsIgnoreCase("log4j")) {
@@ -155,16 +155,18 @@ public class RedisHTTPGetData extends HttpServlet {
 
 
 	public synchronized boolean initRedisConnection() { 
-		try {
-			subscriberJedis = jedisConn.getJedisResource();
-		} catch (JedisConnectionException e) {
-			logger.error("Fatal error! Couldn't establish connection to REDIS!");
-			subscriberJedis = null;
-			e.printStackTrace();
-			//System.exit(1);
-		}
-		if (subscriberJedis != null) {
-			return true;
+		if (jedisConn.isPoolSetup()) {
+			try {
+				subscriberJedis = jedisConn.getJedisResource();
+			} catch (JedisConnectionException e) {
+				logger.error("Fatal error! Couldn't establish connection to REDIS!");
+				subscriberJedis = null;
+				e.printStackTrace();
+				//System.exit(1);
+			}
+			if (subscriberJedis != null) {
+				return true;
+			}
 		}
 		return false;
 	}
