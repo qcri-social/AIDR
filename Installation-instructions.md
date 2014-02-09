@@ -8,6 +8,7 @@ Before installing AIDR, you must have the following:
 * Redis server running -- http://redis.io/
 * Glassfish server running -- https://glassfish.java.net/
 * MySQL server running -- https://dev.mysql.com/downloads/mysql/
+* Pybossa server running -- http://docs.pybossa.com/en/latest/index.html
 
 We have tested AIDR on Ubuntu 12, using Glassfish v3.2 and MySQL v14.14.
 
@@ -123,7 +124,9 @@ After the above steps have been executed, you can build the project:
 # 9. Trainer Pybossa (aidr-trainer-pybossa)
 
 * Pre-requisite: aidr-tagger database and aidr-scheduler database should be created. Aidr-tagger database script is located in aidr-tagger installtion details. Aidr-trainer database script (aidr_scheduler.sql) can be found in the root of the aidr-trainer-api project.
+* Pybossa Server or user should have pybossa account(s) with clickers.micromappers.org 
 * Appropriately set the properties in the database.properties under src/main/resources
+* User should configure client table.
 * Build using maven following the instructions above; this should generate a file `aidr-trainer-pybossa-X.war`
 * Deploy `aidr-trainer-pybossa-X.war` to Glassfish using the instructions above. 
 
@@ -137,6 +140,6 @@ Default context roots for deployment:
 4. `aidr-tagger-api`: AIDRPredictUI-API
 6. `aidr-trainer-api`: AIDRTrainerAPI
 7. `aidr-output`: AIDROutput
-7. `aidr-trainer-pybossa`: AIDRCrowdSourcingAPI 
+7. `aidr-trainer-pybossa`: AIDRTrainerPybossa 
 
 These values need to reflect the setting used in the file: aidr-manager/src/main/resources/system.properties
