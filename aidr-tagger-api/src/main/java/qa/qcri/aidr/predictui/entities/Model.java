@@ -42,7 +42,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
     @NamedQuery(name = "Model.findByAvgAuc", query = "SELECT m FROM Model m WHERE m.avgAuc = :avgAuc"),
     @NamedQuery(name = "Model.findByTrainingCount", query = "SELECT m FROM Model m WHERE m.trainingCount = :trainingCount"),
     @NamedQuery(name = "Model.findByTrainingTime", query = "SELECT m FROM Model m WHERE m.trainingTime = :trainingTime"),
-    @NamedQuery(name = "Model.findByModelFamilyID", query = "SELECT m FROM Model m WHERE m.modelFamily = :modelFamily")})
+    @NamedQuery(name = "Model.findByModelFamilyID", query = "SELECT m FROM Model m WHERE m.modelFamily = :modelFamily order by trainingTime desc")})
 public class Model implements Serializable {
     
     private static final long serialVersionUID = 1L;
