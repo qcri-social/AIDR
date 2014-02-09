@@ -15,7 +15,7 @@ import qa.qcri.aidr.manager.service.UserService;
 public class BaseController {
 	
 	@Resource(name="userService")
-	private UserService userService;
+	protected UserService userService;
 
     protected <T> Map<String, Object> getUIWrapper(Boolean success) {
         return getUIWrapper(null, success, null, null);

@@ -4,14 +4,13 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -39,5 +38,28 @@ public class UserController extends BaseController{
 			return getUIWrapper(false, msg);
 		}
 	}
+
+    @RequestMapping(value = "/getUsers.action", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> getUsers(@RequestParam(value = "query", defaultValue = "") String query,
+                                       @RequestParam(value = "start", defaultValue = "0") Integer start,
+                                       @RequestParam(value = "limit", defaultValue = "10") Integer limit) throws Exception {
+        logger.info("Get users list");
+        try{
+            Long total = userService.getUsersCount(query);
+            List<UserEntity> users = Collections.emptyList();
+            if (total > 0) {
+                users = userService.getUsers(query, start, limit);
+                for (UserEntity user : users) {
+                    user.setRoles(null);
+                }
+            }
+            return getUIWrapper(users, total);
+        }catch(Exception e){
+            String msg = "Error while getting users list";
+            logger.error(msg, e);
+            return getUIWrapper(false, msg);
+        }
+    }
 	
 }

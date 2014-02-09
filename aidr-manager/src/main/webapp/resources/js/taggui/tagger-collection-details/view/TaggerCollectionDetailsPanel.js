@@ -20,8 +20,10 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         });
 
         this.taggerTitle = Ext.create('Ext.form.Label', {
-            cls: 'header-h1 bold-text',
+            cls: 'header-h1',
             text: 'Tagger for "' + CRISIS_NAME + '"',
+            margin: '10 0 15 0',
+            padding: 0,
             flex: 1
         });
 
@@ -550,9 +552,11 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             },
             {
                 xtype: 'container',
+
                 layout: {
                     type: 'vbox',
-                    align: 'stretch'
+                    align: 'stretch',
+                    padding: '0 0 10 0'
                 },
                 items: [
                     this.taggerTitle

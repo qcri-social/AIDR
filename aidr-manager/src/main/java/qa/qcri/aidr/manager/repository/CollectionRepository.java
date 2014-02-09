@@ -10,7 +10,9 @@ public interface CollectionRepository extends GenericRepository<AidrCollection, 
 
     public List<AidrCollection> searchByName(String query, Integer userId) throws Exception;
 
-    public CollectionDataResponse getPaginatedData(Integer start, Integer limit, Integer userId);
+    public List<AidrCollection> getPaginatedData(Integer start, Integer limit, Integer userId);
+
+    public Integer getCollectionsCount(Integer userId);
 
     public Boolean exist(String code);
 

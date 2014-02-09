@@ -58,7 +58,7 @@ public class Model extends Loggable {
 
             double precTemp = evaluation.precision(i);
             double recTemp = evaluation.recall(i);
-            double aucTemp = evaluation.areaUnderPRC(i);
+            double aucTemp = evaluation.areaUnderROC(i); //.areaUnderPRC(i);
             if (!(aucTemp >= 0 && aucTemp <= 1)) {
                 log(LogLevel.ERROR, "AUC is not available for the trained model");
                 aucTemp = 0;
@@ -71,13 +71,13 @@ public class Model extends Loggable {
             labelPerformanceList.add(labelPerformance);
 
             //Average classification performance across all non-null labels
-            if (Integer.parseInt(classAttribute.value(i)) != nullLabelID) {
+            //if (Integer.parseInt(classAttribute.value(i)) != nullLabelID) {
                 precSum += precTemp;
                 recSum += recTemp;
                 aucSum += aucTemp;
-            }
+            //}
         }
-        double numValues = classAttribute.numValues() - 1; // ignore "null"
+        double numValues = classAttribute.numValues();// - 1; // ignore "null"
         
         meanPrecision = precSum / numValues;
         meanRecall = recSum / numValues;

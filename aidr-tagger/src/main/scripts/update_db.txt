@@ -12,3 +12,25 @@ CREATE TABLE `nominal_attribute_dependent_label` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+05 Feb 2014: Run the following two scripts to not use default category "Does not apply" code="NULL" as training and test set.
+=============================================================================================================================
+CREATE OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `nominal_label_training_data`
+AS SELECT
+   `d`.`documentID` AS `documentID`,
+   `d`.`crisisID` AS `crisisID`,
+   `dnl`.`nominalLabelID` AS `nominalLabelID`,
+   `nl`.`nominalAttributeID` AS `nominalAttributeID`,
+   `d`.`wordFeatures` AS `wordFeatures`
+FROM ((`document` `d` join `document_nominal_label` `dnl` on((`d`.`documentID` = `dnl`.`documentID`))) join `nominal_label` `nl` on((`nl`.`nominalLabelID` = `dnl`.`nominalLabelID`))) 
+where ((not(`d`.`isEvaluationSet`)) and (`d`.`wordFeatures` is not null) and (not(nl.`nominalLabelCode`='null')));
+
+
+CREATE OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `nominal_label_evaluation_data`
+AS SELECT
+   `d`.`documentID` AS `documentID`,
+   `d`.`crisisID` AS `crisisID`,
+   `dnl`.`nominalLabelID` AS `nominalLabelID`,
+   `nl`.`nominalAttributeID` AS `nominalAttributeID`,
+   `d`.`wordFeatures` AS `wordFeatures`
+FROM ((`document` `d` join `document_nominal_label` `dnl` on((`d`.`documentID` = `dnl`.`documentID`))) join `nominal_label` `nl` on((`nl`.`nominalLabelID` = `dnl`.`nominalLabelID`))) where (`d`.`isEvaluationSet` and (`d`.`wordFeatures` is not null) and (not(nl.`nominalLabelCode`='null')));
+

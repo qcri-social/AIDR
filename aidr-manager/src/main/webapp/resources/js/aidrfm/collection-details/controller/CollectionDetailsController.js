@@ -193,6 +193,18 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 click: function (btn, e, eOpts) {
                     this.generateTweetIdsLink(btn);
                 }
+            },
+
+            "#addManager": {
+                click: function (btn, e, eOpts) {
+                    alert("Will be implemented soon");
+                }
+            },
+
+            'button[action=removeManager]': {
+                    click: function (btn, e, eOpts) {
+                    alert("Will be implemented soon");
+                }
             }
 
         });
@@ -286,15 +298,44 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             },
             success: function (response) {
                 var jsonData = Ext.decode(response.responseText);
+
+                me.DetailsComponent.suspendLayout = true;
+
                 me.updateDetailsPanel(jsonData);
                 me.updateDownloadPanel(jsonData.code);
                 me.updateEditPanel();
+                me.setManagers(jsonData.managers);
+                me.applyOwnerPermission(jsonData.user);
+
+                me.DetailsComponent.managersStore.loadData(jsonData.managers
+                );
+
+                me.DetailsComponent.suspendLayout = false;
+                me.DetailsComponent.forceComponentLayout();
+
                 mask.hide();
             },
             failure: function () {
                 mask.hide();
             }
         });
+    },
+
+    applyOwnerPermission: function(collectionOwner) {
+        if (collectionOwner.userName == USER_NAME){
+            this.DetailsComponent.addManagersPanel.show();
+        } else {
+            this.DetailsComponent.messageForNotOwner.show();
+        }
+    },
+
+    setManagers: function(managers) {
+        var result = '';
+        Ext.Array.each(managers, function(r, index) {
+            result += r.userName + ', '
+        });
+        result = result.substring(0, result.length - 2);
+        this.DetailsComponent.managersL.setText(result);
     },
 
     updateDetailsPanel: function (r) {

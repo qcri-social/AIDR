@@ -59,7 +59,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
         this.collectionStore = Ext.create('Ext.data.JsonStore', {
             pageSize: 10,
             storeId: 'collectionStore',
-            fields: ['id', 'code', 'name', 'target', 'langFilters', 'startDate', 'endDate', 'status', 'count', 'track', 'geo', 'follow', 'lastDocument'],
+            fields: ['id', 'code', 'name', 'target', 'langFilters', 'startDate', 'endDate', 'status', 'count', 'track', 'geo', 'follow', 'lastDocument', 'user'],
             proxy: {
                 type: 'ajax',
                 url: 'collection/findAll.action',
@@ -105,7 +105,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
             '</div>',
 
             '<div class="info">',
-            '<div class="collection-title"><a href="{[this.getEncodedCode(values.code)]}/collection-details">{name}</a></div>',
+            '<div class="collection-title"><a href="{[this.getEncodedCode(values.code)]}/collection-details">{name}</a>{[this.getSharedBy(values.user)]}</div>',
             '<div class="styled-text-14" id="statusField_{id}">{[this.getStatus(values.status)]}</div>',
             '<div class="styled-text-14" id="docCountField_{id}">Downloaded items (since last re-start):&nbsp;&nbsp;&nbsp;{[this.getDocNumber(values.count)]}</div>',
             '<div class="styled-text-14" id="lastDocField_{id}">Last downloaded item:&nbsp;&nbsp;&nbsp;{[this.getLastDoc(values.lastDocument)]}</div>',
@@ -142,6 +142,12 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                 },
                 getEncodedCode: function(code) {
                     return encodeURI(code);
+                },
+                getSharedBy: function(owner) {
+                    if (owner.userName == USER_NAME){
+                        return '';
+                    }
+                    return '<span class="styled-text-14"> (Shared by &#45; ' + owner.userName + ')</span>';
                 }
             }
         );

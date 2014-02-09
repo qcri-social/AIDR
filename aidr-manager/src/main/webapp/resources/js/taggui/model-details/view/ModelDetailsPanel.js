@@ -188,8 +188,8 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             '<div>Precision:</div>',
             '<div>Recall:</div>',
             '<div>AUC:</div>',
-            '<div>Training Count:</div>',
-            '<div>Training Time:</div>',
+            '<div>Training Examples:</div>',
+            '<div>Date/Time:</div>',
             '</div>',
 
             '<div class="leftColumn">',
