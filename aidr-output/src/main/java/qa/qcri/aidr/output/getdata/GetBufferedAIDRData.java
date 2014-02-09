@@ -116,27 +116,33 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	@Path("/channels/list")
 	@Produces("text/html")
 	public Response getActiveChannelsList() {
-		
-		Set<String> channelList = cbManager.getActiveChannelsList();
 		StringBuilder htmlMessageString = new StringBuilder();
-
 		// Build HTML doc to return
 		htmlMessageString.append("<!DOCTYPE html>");
 		htmlMessageString.append("<html>");
 		htmlMessageString.append("<head><title>REDIS PUBSUB Channel Data Output Service</title></head>");
 		htmlMessageString.append("<body>");
-		htmlMessageString.append("<p><big>Available active channels: </big></p>");
-		htmlMessageString.append("<ul>"); 
-		if (channelList != null) {
-			Iterator<String> itr = channelList.iterator();
-			while (itr.hasNext()) {
-				htmlMessageString.append("<li>" + itr.next().substring(CHANNEL_PREFIX_STRING.length()) + "</li>");
+		
+		if (cbManager.jedisConn.isConnectionSetup()) {
+			Set<String> channelList = cbManager.getActiveChannelsList();
+
+			htmlMessageString.append("<p><big>Available active channels: </big></p>");
+			htmlMessageString.append("<ul>"); 
+			if (channelList != null) {
+				Iterator<String> itr = channelList.iterator();
+				while (itr.hasNext()) {
+					htmlMessageString.append("<li>" + itr.next().substring(CHANNEL_PREFIX_STRING.length()) + "</li>");
+				}
 			}
+			
+			if (channelList != null) channelList.clear();
+			channelList = null;
+		}
+		else {
+			htmlMessageString.append("<p><big>Something wrong. Could not establish connection to REDIS!</big></p>");
+			
 		}
 		htmlMessageString.append("</body></html>");
-		if (channelList != null) channelList.clear();
-		channelList = null;
-
 		return Response.ok(htmlMessageString.toString()).build();
 	}
 
@@ -152,7 +158,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	public Response getLatestBufferedAIDRData(@QueryParam("callback") String callbackName,
 			@DefaultValue("1") @QueryParam("count") String count) {
 
-		if (cbManager.jedisConn.getPoolSetup()) {		// Jedis pool is ready
+		if (cbManager.jedisConn.isConnectionSetup()) {		// Jedis pool is ready
 			// Get the last count number of messages for channel=channelCode
 			List<String> bufferedMessages = new ArrayList<String>();
 			messageCount = Integer.parseInt(count);		// number of latest messages across all channels to return
@@ -189,7 +195,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			@QueryParam("callback") String callbackName,
 			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
 
-		if (cbManager.jedisConn.getPoolSetup()) {
+		if (cbManager.jedisConn.isConnectionSetup()) {
 			boolean error = false;
 			// Parse the HTTP GET request and generating results for output
 			// Set the response MIME type of the response message
@@ -316,21 +322,21 @@ public class GetBufferedAIDRData implements ServletContextListener {
 
 		return Response.ok(htmlMessageString.toString()).build();
 	}
-	
+
 	@GET
 	@Path("/error/restart/{passcode}")
 	@Produces("application/json")
 	public Response restartFetchService(@PathParam("passcode") String passcode) {
 		if (passcode.equals("sysadmin2013"))
-		if (cbManager != null) {
-			cbManager.close();
-		}
+			if (cbManager != null) {
+				cbManager.close();
+			}
 		cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
 		logger.info("aidr-output fetch service restarted...");
 		final String statusStr = "{\"aidr-output fetch service\":\"RESTARTED\"}";
 		return Response.ok(statusStr).build();
 	}
-	
+
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
 		cbManager.close();
@@ -350,7 +356,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		if (configParams.get("logger").equalsIgnoreCase("slf4j")) {
 			System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");	// set logging level for slf4j
 		}
-		
+
 		// Most important action - setup channel buffering thread
 		cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
 		logger.info("Context Initialized");
