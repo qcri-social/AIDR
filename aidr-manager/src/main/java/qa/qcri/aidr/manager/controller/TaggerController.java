@@ -506,7 +506,7 @@ public class TaggerController extends BaseController {
             } else if ("collector".equals(service)) {
                 result = collectionService.pingCollector();
             } else if ("trainer".equals(service)) {
-//                result = taggerService.pingTagger();
+                result = taggerService.pingTrainer();
             } else if ("AIDROutput".equals(service)) {
                 result = taggerService.pingAIDROutput();
             }

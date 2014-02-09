@@ -809,6 +809,27 @@ public class TaggerServiceImpl implements TaggerService {
     }
 
     @Override
+    public boolean pingTrainer() throws AidrException{
+        try {
+            WebResource webResource = client.resource(crowdsourcingAPIMainUrl + "/util/ping/heartbeat");
+            ObjectMapper objectMapper = new ObjectMapper();
+            ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .get(ClientResponse.class);
+            String jsonResponse = clientResponse.getEntity(String.class);
+
+            PingResponse pingResponse = objectMapper.readValue(jsonResponse, PingResponse.class);
+            if (pingResponse != null && "200".equals(pingResponse.getStatus())) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            throw new AidrException("Error while Getting training data for Crisis and Model.", e);
+        }
+    }
+
+    @Override
     public boolean pingAIDROutput() throws AidrException{
         try {
             WebResource webResource = client.resource(outputAPIMainUrl + "/manage/ping");
