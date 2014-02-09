@@ -55,16 +55,22 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
 
     public void setClassVariable() throws Exception{
         client = clientService.findClientByCriteria("name", UserAccount.SYSTEM_USER_NAME);
-        AIDR_ALL_ACTIVE_CRISIS_URL = client.getAidrHostURL() + URLPrefixCode.AIDR_ACTIVE_NOMINAL_ATTRIBUTE ;
-        AIDR_GET_CRISIS_URL = client.getAidrHostURL() + URLPrefixCode.AIDR_CRISIS_INFO ;
-        PYBOSSA_API_APP_UPDATE_BASE_URL = client.getHostURL()  + URLPrefixCode.PYBOSAA_APP;
-        PYBOSSA_API_APP_CREATE_URL = client.getHostURL()  + URLPrefixCode.PYBOSSA_APP_KEY + client.getHostAPIKey();
-        PYBOSSA_API_CATEGORY_BASE_URL = client.getHostURL() + URLPrefixCode.PYBOSSA_CATEGORY;
+        if(client != null){
+            AIDR_ALL_ACTIVE_CRISIS_URL = client.getAidrHostURL() + URLPrefixCode.AIDR_ACTIVE_NOMINAL_ATTRIBUTE ;
+            AIDR_GET_CRISIS_URL = client.getAidrHostURL() + URLPrefixCode.AIDR_CRISIS_INFO ;
+            PYBOSSA_API_APP_UPDATE_BASE_URL = client.getHostURL()  + URLPrefixCode.PYBOSAA_APP;
+            PYBOSSA_API_APP_CREATE_URL = client.getHostURL()  + URLPrefixCode.PYBOSSA_APP_KEY + client.getHostAPIKey();
+            PYBOSSA_API_CATEGORY_BASE_URL = client.getHostURL() + URLPrefixCode.PYBOSSA_CATEGORY;
+        }
     }
 
     @Override
     public void doCreateApp() throws Exception{
         setClassVariable();
+        if(client == null){
+            return;
+        }
+
         List<ClientApp> appList = clientAppService.getAllClientAppByClientID(client.getClientID());
         String crisisSet = pybossaCommunicator.sendGet(AIDR_ALL_ACTIVE_CRISIS_URL);
 

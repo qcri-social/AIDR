@@ -71,15 +71,21 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
 
     public void setClassVariable() throws Exception{
         client = clientService.findClientByCriteria("name", UserAccount.MIROMAPPER_USER_NAME);
-        PYBOSSA_API_TASK_PUBLSIH_URL = client.getHostURL() + URLPrefixCode.TASK_PUBLISH + client.getHostAPIKey();
-        PYBOSSA_API_TASK_BASE_URL  = client.getHostURL() + URLPrefixCode.TASK_INFO;
-        PYBOSSA_API_TASK_RUN_BASE_URL =  client.getHostURL() + URLPrefixCode.TASKRUN_INFO;
-        MAX_PENDING_QUEUE_SIZE = client.getQueueSize();
+        if(client != null){
+            PYBOSSA_API_TASK_PUBLSIH_URL = client.getHostURL() + URLPrefixCode.TASK_PUBLISH + client.getHostAPIKey();
+            PYBOSSA_API_TASK_BASE_URL  = client.getHostURL() + URLPrefixCode.TASK_INFO;
+            PYBOSSA_API_TASK_RUN_BASE_URL =  client.getHostURL() + URLPrefixCode.TASKRUN_INFO;
+            MAX_PENDING_QUEUE_SIZE = client.getQueueSize();
+        }
+
     }
 
     @Override
     public void processTaskPublish() throws Exception{
         setClassVariable();
+        if(client == null){
+            return;
+        }
         List<ClientApp> appList = clientAppService.getAllClientAppByClientID(client.getClientID() );
 
         if(appList.size() > 0){
@@ -158,6 +164,9 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
     @Override
     public void processTaskImport() throws Exception{
         setClassVariable();
+        if(client == null){
+            return;
+        }
         List<ClientApp> appList = clientAppService.getAllClientAppByClientID(client.getClientID() );
 
         Iterator itr= appList.iterator();

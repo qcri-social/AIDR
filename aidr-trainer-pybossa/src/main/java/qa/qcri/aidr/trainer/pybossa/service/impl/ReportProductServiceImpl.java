@@ -52,10 +52,12 @@ public class ReportProductServiceImpl implements ReportProductService {
 
     @Override
     public void generateCVSReportForGeoClicker() throws Exception{
-        System.out.println("generateCVSReportForGeoClicker started");
         setClassVariable();
+        if(client == null){
+            return;
+        }
         List<ClientApp> appList = clientAppService.getAllClientAppByClientID(client.getClientID() );
-        System.out.println("appList size: " + appList.size() + " - " + client.getClientID());
+       // System.out.println("appList size: " + appList.size() + " - " + client.getClientID());
         Iterator itr= appList.iterator();
         while(itr.hasNext()){
             ClientApp clientApp = (ClientApp)itr.next();

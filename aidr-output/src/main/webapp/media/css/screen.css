@@ -1,0 +1,21 @@
+#sidebar {
+    overflow: auto;
+    position:relative;
+    width: 100%;
+    height: 420px;
+    z-index: 11;
+    background: rgba(255, 255, 255, 0.20);
+    padding-top: 0px;
+}
+
+#tweetList { list-style-type: none; margin: 0; padding: 0; width: 100%;overflow:auto;height: 420px; }
+#tweetList li { margin: 3px; padding: 0.4em; font-size: 1.4em; background:rgba(45, 139, 124, 0.2); color: #373C34; }
+
+#tweetList li p { font-size: 12px;}
+#tweetList li b {  color: #ffffff;}
+
+
+
+
+
+

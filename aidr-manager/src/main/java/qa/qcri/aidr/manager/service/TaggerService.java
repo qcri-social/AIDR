@@ -78,5 +78,7 @@ public interface TaggerService {
 
     public boolean pingTagger() throws AidrException;
 
+    public boolean pingTrainer() throws AidrException;
+
     public boolean pingAIDROutput() throws AidrException;
 }

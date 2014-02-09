@@ -197,7 +197,7 @@ public class TemplateServiceImpl implements TemplateService {
         }
 
         if(isReadyToShow){
-            String url = URLReference.PUBLIC_LINK + "?code=" + crisisCode;
+            String url = URLReference.PUBLIC_LINK + crisisCode;
             crisisLandingStatusModel = new CrisisLandingStatusModel(url, StatusCodeType.CRISIS_PYBOSSA_SERVICE_READY, "ready" );
         }
         else{
