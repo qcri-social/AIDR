@@ -1,23 +1,26 @@
 package qa.qcri.aidr.manager.controller;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.service.CollectionService;
 
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("protected/user")
 public class UserController extends BaseController{
 
 	private Logger logger = Logger.getLogger(UserController.class);
+
+    @Autowired
+    private CollectionService collectionService;
 
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
@@ -60,6 +63,49 @@ public class UserController extends BaseController{
             logger.error(msg, e);
             return getUIWrapper(false, msg);
         }
+    }
+
+    @RequestMapping(value = "/addManagerToCollection.action", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> addManagerToCollection(@RequestParam String code, @RequestParam Integer userId) throws Exception {
+        logger.info("Add manager to Collection");
+        String msg = "Error while adding manager to collection managers list";
+        try{
+            if (code == null || code.trim().length() == 0 || userId == null){
+                return getUIWrapper(false, msg);
+            }
+            UserEntity userEntity = userService.getById(userId);
+            AidrCollection collection = collectionService.findByCode(code);
+            List<UserEntity> managers = collection.getManagers();
+            if (managers == null){
+                managers = new ArrayList<UserEntity>();
+            }
+
+            if (isUserInCollectionManagerList(userEntity, collection)){
+                msg = "Selected user is already in managers list of this collection.";
+                return getUIWrapper(false, msg);
+            }
+
+            managers.add(userEntity);
+            collectionService.update(collection);
+
+            return getUIWrapper(userEntity, true);
+        }catch(Exception e){
+            logger.error(msg, e);
+            return getUIWrapper(false, msg);
+        }
+    }
+
+    private boolean isUserInCollectionManagerList(UserEntity user, AidrCollection collection) {
+        if (collection.getManagers() == null) {
+            return false;
+        }
+        for (UserEntity manager : collection.getManagers()){
+            if (manager.getId().equals(user.getId())){
+                return true;
+            }
+        }
+        return false;
     }
 	
 }

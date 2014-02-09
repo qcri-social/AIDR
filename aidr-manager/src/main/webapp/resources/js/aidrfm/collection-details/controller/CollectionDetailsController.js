@@ -197,7 +197,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
             "#addManager": {
                 click: function (btn, e, eOpts) {
-                    alert("Will be implemented soon");
+                    this.addManager(btn);
                 }
             },
 
@@ -745,6 +745,41 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 btn.setDisabled(false);
             }
         });
+    },
+
+    addManager: function(btn) {
+        var me = this;
+        btn.setDisabled(true);
+        var userId = me.DetailsComponent.usersCombo.getValue();
+
+        if (typeof userId == 'number') {
+            Ext.Ajax.request({
+                url: BASE_URL + '/protected/user/addManagerToCollection.action',
+                method: 'GET',
+                params: {
+                    code: COLLECTION_CODE,
+                    userId: userId
+                },
+                headers: {
+                    'Accept': 'application/json'
+                },
+                success: function (response) {
+                    btn.setDisabled(false);
+                    var resp = Ext.decode(response.responseText);
+                    if (resp.success && resp.data) {
+                        me.DetailsComponent.managersStore.add(resp.data);
+                    } else {
+                        AIDRFMFunctions.setAlert("Error", resp.message);
+                    }
+                },
+                failure: function () {
+                    btn.setDisabled(false);
+                }
+            });
+        } else {
+            AIDRFMFunctions.setAlert("Info", "Please select user from list");
+            btn.setDisabled(false);
+        }
     }
 
 });

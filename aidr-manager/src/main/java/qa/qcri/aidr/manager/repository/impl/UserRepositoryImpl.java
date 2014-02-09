@@ -27,6 +27,13 @@ public class UserRepositoryImpl extends GenericRepositoryImpl<UserEntity,Seriali
 		return (UserEntity) criteria.uniqueResult();
 	}
 
+    @Override
+	public UserEntity getById(Integer id) {
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(UserEntity.class);
+		criteria.add(Restrictions.eq("id", id));
+		return (UserEntity) criteria.uniqueResult();
+	}
+
 	@Override
     public List<UserEntity> getUsers(String query, Integer start, Integer limit) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(UserEntity.class);

@@ -10,6 +10,8 @@ public interface UserService {
 
     public UserEntity fetchByUserName(String username);
 
+    public UserEntity getById(Integer id);
+
     public List<UserEntity> getUsers(String query, Integer start, Integer limit);
 
     public Long getUsersCount(String query);
