@@ -1,4 +1,6 @@
-
+body {
+    font-family: "Lucida Sans Unicode", "Lucida Grande", "Arial";
+}
 
 /* Main page */
 
@@ -45,7 +47,7 @@
 	margin: 0 auto;
 	width: 1020px;
 	background: white;
-    min-height: 420px;
+    min-height: 480px;
 }
 
 #footerwrapper {

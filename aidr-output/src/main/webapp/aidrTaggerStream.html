@@ -8,26 +8,73 @@
 
     <style type="text/css">
         @import "media/css/main.css";
+        @import "media/css/screen.css";
     </style>
     <script type="text/javascript" language="javascript" src="media/js/jquery.js"></script>
     <script src="media/js/purl.js"></script>
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function() {
             var searchKey = $.url().param('crisisCode');
+           // searchKey = "hello";
+            var crisisName = "";
             if(searchKey !="" && typeof searchKey != 'undefined'){
-                var url = 'http://aidr-dev.qcri.org/AIDROutput/crisis/stream/channel?crisisCode='+ searchKey+'&rate=60';
+                var url = 'http://aidr.qcri.org/AIDROutput/crisis/stream/channel?crisisCode='+ searchKey+'&rate=60';
+                //var url = "http://localhost:8888/predict-ui/tester.php";
 
-                var template = '<iframe id="realtimeFeeder" width="100%" height="500" scrolling="auto" frameborder="0" src=\"';
-                template = template +   url + '\"></iframe>';
+                var xhReq = new XMLHttpRequest();
+                xhReq.open("GET", url, true);
+                xhReq.send(null);
+                var pollTimer = setInterval(pollLatestResponse, 5000);
+                var urlDesc = '<a href="'+url+'">View json feed</a>'
+                $("#dataFeedLink").append(urlDesc);
 
-                $( ".border" ).append( template);
+                function pollLatestResponse() {
+                    var allMessages = xhReq.responseText;
+                    //console.log("allMessages : " + allMessages);
+                    var nextReadPos = 0;
+                    var index = 0;
+                    do {
+                        var unprocessed = allMessages.substring(nextReadPos);
+                        //console.log("unprocessed : " + unprocessed);
+                        var messageXMLEndIndex = unprocessed.indexOf("}]");
+                        if (messageXMLEndIndex!=-1) {
+                            var endOfFirstMessageIndex = messageXMLEndIndex + "}]}]".length;
+                            var anUpdate = unprocessed.substring(0, endOfFirstMessageIndex);
+                           // console.log("anUpdate : " + anUpdate);
 
-                var autoRefresh = setInterval(
-                        function ()  // Call out to get the time
-                        {
-                            var $contents = $('#realtimeFeeder').contents();
-                            $contents.scrollTop($contents.height());
-                        }, 1000);// end check
+                            var obj = jQuery.parseJSON( anUpdate );
+
+
+                            $("#tweetList").append($("<li class='ui-widget-content'></li>").html(formatToDisplay(obj[0])));
+                         //   $("#tweetList").fadeIn( "slow" );
+                            $("#tweetList").animate({ scrollTop: $('#tweetList')[0].scrollHeight}, 1000);
+                            nextReadPos += endOfFirstMessageIndex;
+                            index++;
+
+                        }
+                    } while (messageXMLEndIndex != -1);
+                }
+
+                function formatToDisplay(obj){
+                    if(typeof crisisName == 'undefined' || crisisName ==''){
+                        crisisName =  obj.crisis_name;
+                        $("#dataFeedheader").append("<p></p>").html(obj.crisis_name);
+                    }
+
+
+                    var template = '';
+                    template = template +  '<table>';
+                    template = template +  '<tr><td colspan="2" class="tweet">' + obj.text + '</td></tr>';
+
+                    var appList =  obj.nominal_labels== null ? [] : (obj.nominal_labels instanceof Array ? obj.nominal_labels : [obj].nominal_labels);
+
+                    $.each(appList, function(index, item) {
+                        template = template +  '<tr><td class="msg" width="100px">'+item.attribute_name+' </td><td class="msg">' + item.label_name + '  (Confidence: ' +  item.confidence.toFixed(2)  + ')</td></tr>';
+                    });
+                    template =  template + '</table>';
+
+                    return template;
+                }
             }
         });
     </script>
@@ -41,8 +88,11 @@
 
 <div id="mainwrapper">
     <div id="main">
-        <div class="border" id="log"></div>
-        <div class="spacer"></div>
+        <div id="dataFeedheader"></div>
+        <div id="sidebar">
+            <ol id="tweetList"></ol>
+        </div>
+        <div id="dataFeedLink"></div>
     </div>
 </div>
 
