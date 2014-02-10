@@ -67,47 +67,50 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
     @Override
     public void doCreateApp() throws Exception{
         setClassVariable();
-        if(client == null){
-            return;
-        }
+        if(client != null){
 
-        List<ClientApp> appList = clientAppService.getAllClientAppByClientID(client.getClientID());
-        String crisisSet = pybossaCommunicator.sendGet(AIDR_ALL_ACTIVE_CRISIS_URL);
 
-        if(crisisSet != null ){
+            List<ClientApp> appList = clientAppService.getAllClientAppByClientID(client.getClientID());
+            String crisisSet = pybossaCommunicator.sendGet(AIDR_ALL_ACTIVE_CRISIS_URL);
 
-            JSONArray array = (JSONArray) parser.parse(crisisSet);
+            if(crisisSet != null ){
 
-            for(int i = 0 ; i < array.size(); i++){
-                JSONObject jsonObject = (JSONObject)array.get(i);
+                JSONArray array = (JSONArray) parser.parse(crisisSet);
 
-                Long cririsID = (Long)jsonObject.get("cririsID");
-                Long attID = (Long)jsonObject.get("nominalAttributeID");
+                for(int i = 0 ; i < array.size(); i++){
+                    JSONObject jsonObject = (JSONObject)array.get(i);
 
-                if(!findDuplicate(appList, cririsID, attID)){
-                    // AIDR_GET_CRISIS_URL = AIDR_GET_CRISIS_URL + id;
-                    String cririsInfo = pybossaCommunicator.sendGet(AIDR_GET_CRISIS_URL + cririsID);
-                    if(!cririsInfo.isEmpty()){
-                        JSONObject crisisJson = (JSONObject) parser.parse(cririsInfo);
-                        if(crisisJson.get("nominalAttributeJsonModelSet") != null ){
-                            String nominalModel = crisisJson.get("nominalAttributeJsonModelSet").toString();
-                            if(!nominalModel.isEmpty() && nominalModel.length() > StatusCodeType.RESPONSE_MIN_LENGTH){
-                                String name = (String)crisisJson.get("name");
-                                Long crisisID = (Long)crisisJson.get("crisisID");
-                                String code = (String)crisisJson.get("code");
-                                String description = name + "(" + crisisID + ")";
-                                JSONArray attArray = (JSONArray)crisisJson.get("nominalAttributeJsonModelSet");
-                                Iterator itr= attArray.iterator();
-                                while(itr.hasNext()){
-                                    JSONObject featureJsonObj = (JSONObject)itr.next();
-                                    Long nominalAttributeID = (Long)featureJsonObj.get("nominalAttributeID");
-                                    processAppCreation(featureJsonObj, nominalAttributeID,crisisID,attID,code, name, description);
+                    Long cririsID = (Long)jsonObject.get("cririsID");
+                    Long attID = (Long)jsonObject.get("nominalAttributeID");
+
+                    if(!findDuplicate(appList, cririsID, attID)){
+                        // AIDR_GET_CRISIS_URL = AIDR_GET_CRISIS_URL + id;
+                        String cririsInfo = pybossaCommunicator.sendGet(AIDR_GET_CRISIS_URL + cririsID);
+                        if(!cririsInfo.isEmpty()){
+                            JSONObject crisisJson = (JSONObject) parser.parse(cririsInfo);
+                            if(crisisJson.get("nominalAttributeJsonModelSet") != null ){
+                                String nominalModel = crisisJson.get("nominalAttributeJsonModelSet").toString();
+                                if(!nominalModel.isEmpty() && nominalModel.length() > StatusCodeType.RESPONSE_MIN_LENGTH){
+                                    String name = (String)crisisJson.get("name");
+                                    Long crisisID = (Long)crisisJson.get("crisisID");
+                                    String code = (String)crisisJson.get("code");
+                                    String description = name + "(" + crisisID + ")";
+                                    JSONArray attArray = (JSONArray)crisisJson.get("nominalAttributeJsonModelSet");
+                                    Iterator itr= attArray.iterator();
+                                    while(itr.hasNext()){
+                                        JSONObject featureJsonObj = (JSONObject)itr.next();
+                                        Long nominalAttributeID = (Long)featureJsonObj.get("nominalAttributeID");
+                                        processAppCreation(featureJsonObj, nominalAttributeID,crisisID,attID,code, name, description);
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+
+
+
         }
 
     }
