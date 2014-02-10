@@ -64,7 +64,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
         });
     },
 
-    startCollectionCheck: function(id, name) {
+    startCollectionCheck: function(id, name, ownerName, ownerId) {
         var me = this;
 
         var mask = AIDRFMFunctions.getMask(true, 'Starting collection ...');
@@ -73,6 +73,9 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
         Ext.Ajax.request({
             url: 'collection/getRunningCollectionStatusByUser.action',
             method: 'GET',
+            params: {
+                id: ownerId
+            },
             headers: {
                 'Accept': 'application/json'
             },
@@ -83,7 +86,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
                     if (response.data) {
                         var collectionData = response.data;
                         var collectionName = collectionData.name;
-                        Ext.MessageBox.confirm('Confirm', 'The collection <b>' + collectionName + '</b> is already running. ' +
+                        Ext.MessageBox.confirm('Confirm', 'The collection <b>' + collectionName + '</b> is already running for user <b>' + ownerName + '</b>. ' +
                             'Do you want to stop <b>' + collectionName + '</b>  and start <b>' + name + ' </b>?', function (buttonId) {
                             if (buttonId === 'yes') {
                                 me.refreshButtonAction();

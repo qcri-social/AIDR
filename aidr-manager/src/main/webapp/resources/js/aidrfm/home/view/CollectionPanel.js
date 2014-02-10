@@ -91,7 +91,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
 
             '<div class="collection-item">',
 
-            '<button id="buttonStart_{id}" class="btn btn-green {[this.isButtonStartHidden(values.status)]}" onclick="collectionController.startCollectionCheck({id}, \'{name}\')">',
+            '<button id="buttonStart_{id}" class="btn btn-green {[this.isButtonStartHidden(values.status)]}" onclick="collectionController.startCollectionCheck({id}, \'{name}\', \'{user.userName}\', {user.id})">',
             '<span>Start</span>',
             '</button>',
             '<button id="buttonStop_{id}" class="btn btn-red {[this.isButtonStopHidden(values.status)]}" onclick="collectionController.stopCollection({id})">',

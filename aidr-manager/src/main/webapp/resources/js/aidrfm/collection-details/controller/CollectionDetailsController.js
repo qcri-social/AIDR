@@ -96,6 +96,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     Ext.Ajax.request({
                         url: BASE_URL + '/protected/collection/getRunningCollectionStatusByUser.action',
                         method: 'GET',
+                        params: {
+                            id: OWNER_ID
+                        },
                         headers: {
                             'Accept': 'application/json'
                         },
@@ -107,7 +110,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                                 if (response.data) {
                                     var collectionData = response.data;
                                     var collectionName = collectionData.name;
-                                    Ext.MessageBox.confirm('Confirm', 'The collection <b>' + collectionName + '</b> is already running. ' +
+                                    Ext.MessageBox.confirm('Confirm', 'The collection <b>' + collectionName + '</b> is already running for user <b>' + OWNER_NAME + '</b>. ' +
                                         'Do you want to stop <b>' + collectionName + '</b>  and start <b>' + name + ' </b>?', function (buttonId) {
                                         if (buttonId === 'yes') {
                                             datailsController.startCollection();
@@ -197,13 +200,13 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
             "#addManager": {
                 click: function (btn, e, eOpts) {
-                    alert("Will be implemented soon");
+                    this.addManager(btn);
                 }
             },
 
             'button[action=removeManager]': {
-                    click: function (btn, e, eOpts) {
-                    alert("Will be implemented soon");
+                click: function (btn, e, eOpts) {
+                    this.removeManager(btn);
                 }
             }
 
@@ -301,14 +304,15 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
                 me.DetailsComponent.suspendLayout = true;
 
+                OWNER_ID = jsonData.user.id;
+                OWNER_NAME = jsonData.user.userName;
+
                 me.updateDetailsPanel(jsonData);
                 me.updateDownloadPanel(jsonData.code);
                 me.updateEditPanel();
                 me.setManagers(jsonData.managers);
-                me.applyOwnerPermission(jsonData.user);
 
-                me.DetailsComponent.managersStore.loadData(jsonData.managers
-                );
+                me.DetailsComponent.managersStore.loadData(jsonData.managers);
 
                 me.DetailsComponent.suspendLayout = false;
                 me.DetailsComponent.forceComponentLayout();
@@ -319,14 +323,6 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 mask.hide();
             }
         });
-    },
-
-    applyOwnerPermission: function(collectionOwner) {
-        if (collectionOwner.userName == USER_NAME){
-            this.DetailsComponent.addManagersPanel.show();
-        } else {
-            this.DetailsComponent.messageForNotOwner.show();
-        }
     },
 
     setManagers: function(managers) {
@@ -738,6 +734,72 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     }
                 } else {
                     me.DetailsComponent.tweetsIdsLink.setText('', false);
+                    AIDRFMFunctions.setAlert("Error", resp.message);
+                }
+            },
+            failure: function () {
+                btn.setDisabled(false);
+            }
+        });
+    },
+
+    addManager: function(btn) {
+        var me = this;
+        btn.setDisabled(true);
+        var userId = me.DetailsComponent.usersCombo.getValue();
+
+        if (typeof userId == 'number') {
+            Ext.Ajax.request({
+                url: BASE_URL + '/protected/user/addManagerToCollection.action',
+                method: 'GET',
+                params: {
+                    code: COLLECTION_CODE,
+                    userId: userId
+                },
+                headers: {
+                    'Accept': 'application/json'
+                },
+                success: function (response) {
+                    btn.setDisabled(false);
+                    var resp = Ext.decode(response.responseText);
+                    if (resp.success && resp.data) {
+                        me.DetailsComponent.managersStore.add(resp.data);
+                    } else {
+                        AIDRFMFunctions.setAlert("Error", resp.message);
+                    }
+                },
+                failure: function () {
+                    btn.setDisabled(false);
+                }
+            });
+        } else {
+            AIDRFMFunctions.setAlert("Info", "Please select user from list");
+            btn.setDisabled(false);
+        }
+    },
+
+    removeManager: function(btn) {
+        var me = this;
+
+        btn.setDisabled(true);
+        var userId = btn.exampleId;
+
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/user/removeManagerFromCollection.action',
+            method: 'GET',
+            params: {
+                code: COLLECTION_CODE,
+                userId: userId
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                btn.setDisabled(false);
+                var resp = Ext.decode(response.responseText);
+                if (resp.success && resp.data) {
+                    me.DetailsComponent.managersStore.loadData(resp.data);
+                } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
             },

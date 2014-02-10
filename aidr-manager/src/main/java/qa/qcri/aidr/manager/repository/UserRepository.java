@@ -9,6 +9,8 @@ public interface UserRepository extends GenericRepository<UserEntity, Serializab
 
 	public UserEntity fetchByUsername(String username);
 
+	public UserEntity getById(Integer id);
+
     public List<UserEntity> getUsers(String query, Integer start, Integer limit);
 
     public Long getUsersCount(String query);

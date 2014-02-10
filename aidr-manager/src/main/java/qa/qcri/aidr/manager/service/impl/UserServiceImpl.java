@@ -31,6 +31,12 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	@Transactional(readOnly=true)
+	public UserEntity getById(Integer id) {
+		return userRepository.getById(id);
+	}
+
+	@Override
+	@Transactional(readOnly=true)
     public List<UserEntity> getUsers(String query, Integer start, Integer limit) {
 		return userRepository.getUsers(query, start, limit);
 	}
