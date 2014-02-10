@@ -127,6 +127,14 @@ After the above steps have been executed, you can build the project:
 * Pybossa Server or user should have pybossa account(s) with clickers.micromappers.org 
 * Appropriately set the properties in the database.properties under src/main/resources
 * User should configure client table.
+  aidrUserID: user's aidr ID
+  name: client name
+  hostURL: Pybossa api host url
+  hostAPIKey: Pybossa account api key
+  description: client description
+  queueSize: task pending size
+  aidrHostURL : train API rest service url
+  defaultTaskRunsPerTask : the numbers of user vote for a task 
 * Build using maven following the instructions above; this should generate a file `aidr-trainer-pybossa-X.war`
 * Deploy `aidr-trainer-pybossa-X.war` to Glassfish using the instructions above. 
 
