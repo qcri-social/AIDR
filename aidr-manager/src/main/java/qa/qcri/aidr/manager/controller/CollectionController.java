@@ -186,10 +186,10 @@ public class CollectionController extends BaseController{
 	
 	@RequestMapping(value = "/getRunningCollectionStatusByUser.action", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String,Object> runningCollectionByUser() throws Exception {
-	   UserEntity userEntity = getAuthenticatedUser();
-	   if(userEntity!=null){
-		  return getUIWrapper(collectionService.getRunningCollectionStatusByUser(userEntity.getId()),true);
+	public Map<String,Object> runningCollectionByUser(@RequestParam(value = "id") Integer userId) throws Exception {
+	   if(userId != null){
+           AidrCollection collection = collectionService.getRunningCollectionStatusByUser(userId);
+           return getUIWrapper(collection,true);
 	   }
 	   return getUIWrapper(false);
 	}
@@ -198,21 +198,18 @@ public class CollectionController extends BaseController{
 	@ResponseBody
 	public Map<String,Object> start(@RequestParam Integer id) throws Exception {
         try {
-            UserEntity userEntity = getAuthenticatedUser();
-            if (userEntity != null) {
-                AidrCollection collection = collectionService.start(id, userEntity.getId());
-                AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
-                if (dto != null) {
-                    Integer totalCount = collectionLogService.countTotalDownloadedItemsForCollection(id);
-                    if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())){
-                        totalCount += dto.getCount();
-                    }
-                    dto.setTotalCount(totalCount);
-                } else {
-                    return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+            AidrCollection collection = collectionService.start(id);
+            AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
+            if (dto != null) {
+                Integer totalCount = collectionLogService.countTotalDownloadedItemsForCollection(id);
+                if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())){
+                    totalCount += dto.getCount();
                 }
-                return getUIWrapper(dto, true);
+                dto.setTotalCount(totalCount);
+            } else {
+                return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
             }
+            return getUIWrapper(dto, true);
         } catch (Exception e) {
             e.printStackTrace();
         }

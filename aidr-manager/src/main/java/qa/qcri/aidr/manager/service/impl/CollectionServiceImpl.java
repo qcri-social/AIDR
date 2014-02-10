@@ -129,12 +129,16 @@ public class CollectionServiceImpl implements CollectionService {
 
     @Override
     @Transactional(readOnly = false)
-    public AidrCollection start(Integer collectionId, Integer userId) throws Exception {
+    public AidrCollection start(Integer collectionId) throws Exception {
+
+//        We are going to start new collection. Lets stop collection which is running for owner of the new collection.
+        AidrCollection dbCollection = collectionRepository.findById(collectionId);
+        Integer userId = dbCollection.getUser().getId();
         AidrCollection alreadyRunningCollection = collectionRepository.getRunningCollectionStatusByUser(userId);
         if (alreadyRunningCollection != null) {
             this.stop(alreadyRunningCollection.getId());
         }
-        AidrCollection dbCollection = collectionRepository.findById(collectionId);
+
         return startFetcher(prepareFetcherRequest(dbCollection), dbCollection);
     }
 

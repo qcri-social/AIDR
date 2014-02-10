@@ -758,12 +758,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             html: ''
         });
 
-        this.messageForNotOwner = Ext.create('Ext.form.Label', {
-            padding: '5 0',
-            hidden:true,
-            html: '<div class="styled-text">Only owner of the collection could add managers.</div>'
-        });
-
         this.usersCombo = Ext.create('Ext.form.field.ComboBox', {
             minChars: 0,
             width: 300,
@@ -833,7 +827,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 type: 'vbox',
                 align: 'stretch'
             },
-            hidden:true,
             items: [
                 {
                     xtype: 'container',
@@ -931,7 +924,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 align: 'stretch'
                             },
                             items: [
-                                this.messageForNotOwner,
                                 this.addManagersPanel
                             ]
                         }

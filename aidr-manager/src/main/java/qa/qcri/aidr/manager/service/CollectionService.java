@@ -31,7 +31,7 @@ public interface CollectionService {
 
     public AidrCollection updateAndGetRunningCollectionStatusByUser(Integer userId) throws Exception;
 
-    public AidrCollection start(Integer collectionId, Integer userId) throws Exception;
+    public AidrCollection start(Integer collectionId) throws Exception;
 
     public AidrCollection stop(Integer collectionId) throws Exception;
 
