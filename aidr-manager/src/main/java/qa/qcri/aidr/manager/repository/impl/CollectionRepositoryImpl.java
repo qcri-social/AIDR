@@ -16,6 +16,7 @@ import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 @Repository("collectionRepository")
@@ -32,22 +33,37 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<AidrCollection> getPaginatedData(Integer start, Integer limit, UserEntity user) {
-        Integer userId = user.getId();
-        boolean isAdmin = isUserAdmin(user);
+	public List<AidrCollection> getPaginatedData(final Integer start, final Integer limit, final UserEntity user) {
+        final Integer userId = user.getId();
+        final boolean isAdmin = isUserAdmin(user);
+
+//        Workaround as criteria query gets result for different managers and in the end we get less then limit records.
+        List<Integer> collectionIds = (List<Integer>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
+            @Override
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                String sql = " SELECT DISTINCT c.id FROM AIDR_COLLECTION c ";
+                if (!isAdmin) {
+                    sql += " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
+                            " ON c.id = c_m.id_collection " +
+                            " WHERE c.user_id = 1 OR c_m.id_manager = 1 ";
+                }
+                sql += " order by c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
+
+                SQLQuery sqlQuery = session.createSQLQuery(sql);
+                if (!isAdmin) {
+                    sqlQuery.setParameter("userId", userId);
+                }
+                sqlQuery.setParameter("start", start);
+                sqlQuery.setParameter("limit", limit);
+                List<Integer> ids = (List<Integer>) sqlQuery.list();
+                return ids != null ? ids : Collections.emptyList();
+            }
+        });
 
         Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-        if (!isAdmin) {
-            criteria.createAlias("managers", "managers");
-            LogicalExpression or = Restrictions.or(
-                    Restrictions.eq("user.id", userId),
-                    Restrictions.eq("managers.id", userId)
-            );
-            criteria.add(or);
-        }
-        criteria.setFirstResult(start);
-		criteria.setMaxResults(limit);
+
+        criteria.add(Restrictions.in("id", collectionIds));
 		criteria.addOrder(Order.desc("startDate"));
 		criteria.addOrder(Order.desc("createdDate"));
 
