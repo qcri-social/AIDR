@@ -35,24 +35,19 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 	@Override
 	public List<AidrCollection> getPaginatedData(final Integer start, final Integer limit, final UserEntity user) {
         final Integer userId = user.getId();
-        final boolean isAdmin = isUserAdmin(user);
 
 //        Workaround as criteria query gets result for different managers and in the end we get less then limit records.
         List<Integer> collectionIds = (List<Integer>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
             @Override
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                String sql = " SELECT DISTINCT c.id FROM AIDR_COLLECTION c ";
-                if (!isAdmin) {
-                    sql += " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
-                            " ON c.id = c_m.id_collection " +
-                            " WHERE c.user_id =:userId OR c_m.id_manager = :userId ";
-                }
-                sql += " order by c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
+                String sql = " SELECT DISTINCT c.id FROM AIDR_COLLECTION c " +
+                        " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
+                        " ON c.id = c_m.id_collection " +
+                        " WHERE c.user_id =:userId OR c_m.id_manager = :userId " +
+                        " order by c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
 
                 SQLQuery sqlQuery = session.createSQLQuery(sql);
-                if (!isAdmin) {
-                    sqlQuery.setParameter("userId", userId);
-                }
+                sqlQuery.setParameter("userId", userId);
                 sqlQuery.setParameter("start", start);
                 sqlQuery.setParameter("limit", limit);
                 List<Integer> ids = (List<Integer>) sqlQuery.list();
@@ -77,39 +72,19 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
             @Override
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
                 Integer userId = user.getId();
-                boolean isAdmin = isUserAdmin(user);
 
                 String sql = " select count(distinct c.id) " +
-                        " FROM AIDR_COLLECTION c ";
-
-                if (!isAdmin) {
-                    sql += " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
-                            " ON c.id = c_m.id_collection " +
-                            " WHERE c.user_id = :userId or c_m.id_manager = :userId ";
-                }
+                        " FROM AIDR_COLLECTION c " +
+                        " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
+                        " ON c.id = c_m.id_collection " +
+                        " WHERE c.user_id = :userId or c_m.id_manager = :userId ";
 
                 SQLQuery sqlQuery = session.createSQLQuery(sql);
-                if (!isAdmin) {
-                    sqlQuery.setParameter("userId", userId);
-                }
+                sqlQuery.setParameter("userId", userId);
                 BigInteger total = (BigInteger) sqlQuery.uniqueResult();
                 return total != null ? total.intValue() : 0;
             }
         });
-    }
-
-    private boolean isUserAdmin(UserEntity user) {
-        List<Role> roles = user.getRoles();
-        if(roles == null){
-            return false;
-        }
-        for(Role role : roles) {
-            String roleName = role.getName().toLowerCase();
-            if("admin".equals(roleName)){
-                return true;
-            }
-        }
-        return false;
     }
 
 	@Override
