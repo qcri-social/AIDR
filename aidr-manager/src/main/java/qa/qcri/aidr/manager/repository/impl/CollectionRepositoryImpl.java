@@ -45,7 +45,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
                 if (!isAdmin) {
                     sql += " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
                             " ON c.id = c_m.id_collection " +
-                            " WHERE c.user_id = 1 OR c_m.id_manager = 1 ";
+                            " WHERE c.user_id =:userId OR c_m.id_manager = :userId ";
                 }
                 sql += " order by c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
 
