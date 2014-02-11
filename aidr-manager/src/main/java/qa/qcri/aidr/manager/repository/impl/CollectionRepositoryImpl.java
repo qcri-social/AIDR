@@ -1,23 +1,22 @@
 package qa.qcri.aidr.manager.repository.impl;
 
+import org.hibernate.*;
+import org.hibernate.criterion.*;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
+import qa.qcri.aidr.manager.hibernateEntities.Role;
+import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.repository.CollectionRepository;
+import qa.qcri.aidr.manager.util.CollectionStatus;
+
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.List;
-
-import org.hibernate.*;
-import org.hibernate.criterion.*;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.stereotype.Repository;
-
-import org.springframework.util.StringUtils;
-import qa.qcri.aidr.manager.dto.CollectionDataResponse;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.repository.CollectionRepository;
-import qa.qcri.aidr.manager.util.CollectionStatus;
 
 @Repository("collectionRepository")
 public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollection, Serializable> implements CollectionRepository{
@@ -33,16 +32,21 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<AidrCollection> getPaginatedData(Integer start, Integer limit, Integer userId) {
-		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+	public List<AidrCollection> getPaginatedData(Integer start, Integer limit, UserEntity user) {
+        Integer userId = user.getId();
+        boolean isAdmin = isUserAdmin(user);
+
+        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-        criteria.createAlias("managers", "managers");
-        LogicalExpression or = Restrictions.or(
-                Restrictions.eq("user.id", userId),
-                Restrictions.eq("managers.id", userId)
-        );
-        criteria.add(or);
-		criteria.setFirstResult(start);
+        if (!isAdmin) {
+            criteria.createAlias("managers", "managers");
+            LogicalExpression or = Restrictions.or(
+                    Restrictions.eq("user.id", userId),
+                    Restrictions.eq("managers.id", userId)
+            );
+            criteria.add(or);
+        }
+        criteria.setFirstResult(start);
 		criteria.setMaxResults(limit);
 		criteria.addOrder(Order.desc("startDate"));
 		criteria.addOrder(Order.desc("createdDate"));
@@ -52,21 +56,44 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 
     @SuppressWarnings("unchecked")
     @Override
-    public Integer getCollectionsCount(final Integer userId) {
+    public Integer getCollectionsCount(final UserEntity user) {
         return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
             @Override
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                Integer userId = user.getId();
+                boolean isAdmin = isUserAdmin(user);
+
                 String sql = " select count(distinct c.id) " +
-                        " FROM AIDR_COLLECTION c " +
-                        " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
-                        " ON c.id = c_m.id_collection " +
-                        " WHERE c.user_id = :userId or c_m.id_manager = :userId ";
+                        " FROM AIDR_COLLECTION c ";
+
+                if (!isAdmin) {
+                    sql += " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
+                            " ON c.id = c_m.id_collection " +
+                            " WHERE c.user_id = :userId or c_m.id_manager = :userId ";
+                }
+
                 SQLQuery sqlQuery = session.createSQLQuery(sql);
-                sqlQuery.setParameter("userId", userId);
+                if (!isAdmin) {
+                    sqlQuery.setParameter("userId", userId);
+                }
                 BigInteger total = (BigInteger) sqlQuery.uniqueResult();
                 return total != null ? total.intValue() : 0;
             }
         });
+    }
+
+    private boolean isUserAdmin(UserEntity user) {
+        List<Role> roles = user.getRoles();
+        if(roles == null){
+            return false;
+        }
+        for(Role role : roles) {
+            String roleName = role.getName().toLowerCase();
+            if("admin".equals(roleName)){
+                return true;
+            }
+        }
+        return false;
     }
 
 	@Override

@@ -1,11 +1,11 @@
 package qa.qcri.aidr.manager.service;
 
-import java.util.List;
-
-import qa.qcri.aidr.manager.dto.CollectionDataResponse;
 import qa.qcri.aidr.manager.dto.FetcherRequestDTO;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
+import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+
+import java.util.List;
 
 public interface CollectionService {
 
@@ -19,9 +19,9 @@ public interface CollectionService {
 
     public AidrCollection findByCode(String code) throws Exception;
 
-    public List<AidrCollection> findAll(Integer start, Integer limit, Integer userId) throws Exception;
+    public List<AidrCollection> findAll(Integer start, Integer limit, UserEntity user) throws Exception;
 
-    public Integer getCollectionsCount(Integer userId) throws Exception;
+    public Integer getCollectionsCount(UserEntity user) throws Exception;
 
     public List<AidrCollection> searchByName(String query, Integer userId) throws Exception;
 
