@@ -152,9 +152,9 @@ public class CollectionController extends BaseController{
 //                Call update from Fetcher and then get list with updated items
                 collectionService.updateAndGetRunningCollectionStatusByUser(userId);
 
-                count = collectionService.getCollectionsCount(userId);
+                count = collectionService.getCollectionsCount(userEntity);
                 if (count > 0) {
-                    List<AidrCollection> data = collectionService.findAll(start, limit, userId);
+                    List<AidrCollection> data = collectionService.findAll(start, limit, userEntity);
                     for (AidrCollection collection : data) {
                         AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
                         dtoList.add(dto);

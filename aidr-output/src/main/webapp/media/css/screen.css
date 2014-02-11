@@ -9,10 +9,22 @@
 }
 
 #tweetList { list-style-type: none; margin: 0; padding: 0; width: 100%;overflow:auto;height: 420px; }
-#tweetList li { margin: 3px; padding: 0.4em; font-size: 1.4em; background:rgba(45, 139, 124, 0.2); color: #373C34; }
+#tweetList li { margin: 3px; padding: 0.8em; font-size: 0.71em; background:rgba(45, 139, 124, 0.2); color: #373C34; }
 
 #tweetList li p { font-size: 12px;}
 #tweetList li b {  color: #ffffff;}
+#dataFeedheader{
+    font-size: 1.0em;
+    padding-bottom: 10px;
+    padding-left: 3px;
+}
+#dataFeedLink a{
+    float: right;
+    color: #00a79d;
+    font-size: 1.0em;
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
 
 
 
