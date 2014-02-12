@@ -1,32 +1,31 @@
 package qa.qcri.aidr.manager.service.impl;
 
-import java.net.URLEncoder;
-import java.util.List;
-
-import javax.ws.rs.core.MediaType;
-
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import qa.qcri.aidr.manager.dto.CollectionDataResponse;
-import qa.qcri.aidr.manager.dto.FetcherRequestDTO;
 import qa.qcri.aidr.manager.dto.FetcheResponseDTO;
+import qa.qcri.aidr.manager.dto.FetcherRequestDTO;
 import qa.qcri.aidr.manager.dto.PingResponse;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
 import qa.qcri.aidr.manager.hibernateEntities.UserConnection;
+import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 import qa.qcri.aidr.manager.repository.CollectionLogRepository;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
 import qa.qcri.aidr.manager.repository.UserConnectionRepository;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
+
+import javax.ws.rs.core.MediaType;
+import java.net.URLEncoder;
+import java.util.List;
 
 @Service("collectionService")
 public class CollectionServiceImpl implements CollectionService {
@@ -79,14 +78,14 @@ public class CollectionServiceImpl implements CollectionService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AidrCollection> findAll(Integer start, Integer limit, Integer userId) throws Exception {
-        return collectionRepository.getPaginatedData(start, limit, userId);
+    public List<AidrCollection> findAll(Integer start, Integer limit, UserEntity user) throws Exception {
+        return collectionRepository.getPaginatedData(start, limit, user);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Integer getCollectionsCount(Integer userId) throws Exception {
-        return collectionRepository.getCollectionsCount(userId);
+    public Integer getCollectionsCount(UserEntity user) throws Exception {
+        return collectionRepository.getCollectionsCount(user);
     }
 
     @Override
