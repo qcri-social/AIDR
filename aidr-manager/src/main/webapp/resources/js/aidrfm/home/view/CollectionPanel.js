@@ -81,6 +81,13 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                          */
                         document.location.href = BASE_URL + '/protected/home'
                     }
+                    var count = store.getCount();
+
+                    if (count > 0) {
+                        me.collectionPaging.show();
+                    } else {
+                        me.collectionPaging.hide();
+                    }
                 }
             }
         });
@@ -159,6 +166,15 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
             loadMask: false
         });
 
+        this.collectionPaging = Ext.create('Ext.toolbar.Paging', {
+            cls: 'aidr-paging',
+            margin: '12 2 0 2',
+            store:'collectionStore',
+            displayInfo: true,
+            displayMsg:'Collection records {0} - {1} of {2}',
+            emptyMsg:'No collection records to display'
+        });
+
         this.items = [
             {
                 xtype: 'container',
@@ -194,7 +210,8 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                 width: '100%',
                 html: '<div class="horizontalLine"></div>'
             },
-            this.collectionView
+            this.collectionView,
+            this.collectionPaging
         ];
 
         this.callParent(arguments);

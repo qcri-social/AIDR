@@ -1,18 +1,18 @@
 package qa.qcri.aidr.manager.repository;
 
+import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
+import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+
 import java.io.Serializable;
 import java.util.List;
-
-import qa.qcri.aidr.manager.dto.CollectionDataResponse;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 
 public interface CollectionRepository extends GenericRepository<AidrCollection, Serializable> {
 
     public List<AidrCollection> searchByName(String query, Integer userId) throws Exception;
 
-    public List<AidrCollection> getPaginatedData(Integer start, Integer limit, Integer userId);
+    public List<AidrCollection> getPaginatedData(Integer start, Integer limit, UserEntity user);
 
-    public Integer getCollectionsCount(Integer userId);
+    public Integer getCollectionsCount(UserEntity user);
 
     public Boolean exist(String code);
 
