@@ -28,7 +28,8 @@ public class JsonDataFormatter {
 		// Now, build the jsonp object to be sent - data in reverse chronological order.
 		// The entire collection of json objects are wrapped with a single callback function.
 		StringBuilder jsonDataList = new StringBuilder();
-		synchronized (bufferedMessages) {
+		//synchronized (bufferedMessages) 
+		{
 			count = 0;		
 			if (callbackName != null) 
 				jsonDataList.append(callbackName).append("([");

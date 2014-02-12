@@ -308,7 +308,9 @@ public class ChannelBufferManager {
 		} catch (JedisConnectionException e) {
 			logger.info("[stopSubscription] Connection to REDIS seems to be lost!");
 		}
-		if (jedisConn != null && aidrSubscriber.getSubscribedChannels() == 0) jedisConn.returnJedis(subscriberJedis);
+		if (jedisConn != null)
+			jedisConn.returnJedis(subscriberJedis);
+		this.notifyAll();
 	}
 
 	public void close() {
