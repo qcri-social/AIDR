@@ -123,7 +123,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		htmlMessageString.append("<head><title>REDIS PUBSUB Channel Data Output Service</title></head>");
 		htmlMessageString.append("<body>");
 		
-		if (cbManager.jedisConn.isConnectionSetup()) {
+		if (cbManager.jedisConn != null && cbManager.jedisConn.isConnectionSetup()) {
 			Set<String> channelList = cbManager.getActiveChannelsList();
 
 			htmlMessageString.append("<p><big>Available active channels: </big></p>");
@@ -158,7 +158,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	public Response getLatestBufferedAIDRData(@QueryParam("callback") String callbackName,
 			@DefaultValue("1") @QueryParam("count") String count) {
 
-		if (cbManager.jedisConn.isConnectionSetup()) {		// Jedis pool is ready
+		if (cbManager.jedisConn != null && cbManager.jedisConn.isConnectionSetup()) {		// Jedis pool is ready
 			// Get the last count number of messages for channel=channelCode
 			List<String> bufferedMessages = new ArrayList<String>();
 			messageCount = Integer.parseInt(count);		// number of latest messages across all channels to return
@@ -195,7 +195,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			@QueryParam("callback") String callbackName,
 			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
 
-		if (cbManager.jedisConn.isConnectionSetup()) {
+		if (cbManager.jedisConn != null && cbManager.jedisConn.isConnectionSetup()) {
 			boolean error = false;
 			// Parse the HTTP GET request and generating results for output
 			// Set the response MIME type of the response message

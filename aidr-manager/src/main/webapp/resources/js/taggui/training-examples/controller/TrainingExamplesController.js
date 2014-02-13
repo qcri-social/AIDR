@@ -183,37 +183,35 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
             return false;
         }
 
-        var mask = AIDRFMFunctions.getMask(true);
-        mask.show();
+       // var mask = AIDRFMFunctions.getMask(true);
+       // mask.show();
+        var children = me.mainComponent.optionPanel.items ? me.mainComponent.optionPanel.items.items : [];
 
-        Ext.Ajax.request({
-            url: BASE_URL + '/protected/tagger/skipTask.action',
-            method: 'GET',
-            params: {
-                id: me.mainComponent.previousDocumentID
-            },
-            headers: {
-                'Accept': 'application/json'
-            },
-            success: function (response) {
-                var resp = Ext.decode(response.responseText);
-                if (resp.success) {
-                    if (resp.data) {
-                        if (resp.data == 'success') {
-//                            me.loadData();
-                        } else {
-                            AIDRFMFunctions.setAlert("Error", "Error while skipping task.");
-                        }
+        Ext.each(children, function (child) {
+            Ext.Ajax.request({
+                url: BASE_URL + '/protected/tagger/saveTaskAnswer.action',
+                method: 'POST',
+                params: {
+                    documentID: me.mainComponent.documentID,
+                    crisisID: CRISIS_ID,
+                    category: Ext.String.trim( 'null' ),
+                    taskcreated: me.mainComponent.createDate,
+                    taskcompleted: Ext.Date.format(new Date(), "c")
+                },
+                headers: {
+                    'Accept': 'application/json'
+                },
+                success: function (response) {
+                    var resp = Ext.decode(response.responseText);
+                    if (resp.success) {
+                        me.loadData();
+                    } else {
+                        AIDRFMFunctions.setAlert("Error", "Error while skip task.");
                     }
-                } else {
-                    AIDRFMFunctions.setAlert("Error", resp.message);
                 }
-                mask.hide();
-            },
-            failure: function () {
-                mask.hide();
-            }
+            });
         });
+
     }
 
 });

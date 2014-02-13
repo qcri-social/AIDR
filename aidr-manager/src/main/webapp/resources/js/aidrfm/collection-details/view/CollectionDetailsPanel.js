@@ -780,10 +780,17 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             }
         });
 
+        this.addManagerInfo = Ext.create('Ext.form.Label', {
+            cls: 'styled-text',
+            margin: '7 0 0 0',
+            html: '<p>This page lists the Twitter usernames of people who have access to manage this collection.</p>',
+            flex: 1
+        });
+
         this.addManagerButton = Ext.create('Ext.Button', {
             text: 'Add Manager',
             margin: '0 0 0 10',
-            cls:'btn btn-blue',
+            cls:'btn btn-green',
             id: 'addManager'
         });
 
@@ -828,6 +835,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 align: 'stretch'
             },
             items: [
+                this.addManagerInfo,
                 {
                     xtype: 'container',
                     padding: '10 0 15 0',
@@ -881,6 +889,23 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         this.editForm
                     ]
                 },
+                ,
+                {
+                    title: 'Permissions',
+                    padding: '10 0 0 0',
+                    items: [
+                        {
+                            xtype: 'container',
+                            layout: {
+                                type: 'vbox',
+                                align: 'stretch'
+                            },
+                            items: [
+                                this.addManagersPanel
+                            ]
+                        }
+                    ]
+                },
                 {
                     title: 'Download/Export',
                     padding: '10 0 0 0',
@@ -909,22 +934,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     ]
                                 },
                                 this.downloadText
-                            ]
-                        }
-                    ]
-                },
-                {
-                    title: 'Permission',
-                    padding: '10 0 0 0',
-                    items: [
-                        {
-                            xtype: 'container',
-                            layout: {
-                                type: 'vbox',
-                                align: 'stretch'
-                            },
-                            items: [
-                                this.addManagersPanel
                             ]
                         }
                     ]
