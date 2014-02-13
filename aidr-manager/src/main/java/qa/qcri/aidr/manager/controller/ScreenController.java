@@ -8,6 +8,7 @@ import org.springframework.web.servlet.ModelAndView;
 import qa.qcri.aidr.manager.dto.TaggerCrisis;
 import qa.qcri.aidr.manager.dto.TaggerModel;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
+import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 
@@ -37,8 +38,45 @@ public class ScreenController extends BaseController{
 		return "signin";
 	}
 
+    @RequestMapping("protected/access-error")
+    public ModelAndView accessError() throws Exception {
+        return new ModelAndView("access-error");
+    }
+
+    private boolean isHasPermissionForCollection(String code) throws Exception{
+        UserEntity user = getAuthenticatedUser();
+        if (user == null){
+            return false;
+        }
+
+//        current user is Admin
+        if (userService.isUserAdmin(user)) {
+            return true;
+        }
+
+        AidrCollection collection = collectionService.findByCode(code);
+        if (collection == null){
+            return false;
+        }
+
+//        current user is a owner of the collection
+        if(user.getUserName().equals(collection.getUser().getUserName())){
+            return true;
+        }
+
+//        current user is in managers list of the collection
+        if (userService.isUserInCollectionManagersList(user, collection)){
+            return true;
+        }
+        return false;
+    }
+
     @RequestMapping("protected/{code}/collection-details")
     public ModelAndView collectionDetails(@PathVariable(value="code") String code) throws Exception {
+        if (!isHasPermissionForCollection(code)){
+            return new ModelAndView("redirect:/protected/access-error");
+        }
+
         String userName = getAuthenticatedUserName();
         AidrCollection collection = collectionService.findByCode(code);
 
@@ -61,6 +99,10 @@ public class ScreenController extends BaseController{
 
     @RequestMapping("protected/{code}/tagger-collection-details")
     public ModelAndView taggerCollectionDetails(@PathVariable(value="code") String code) throws Exception {
+        if (!isHasPermissionForCollection(code)){
+            return new ModelAndView("redirect:/protected/access-error");
+        }
+
         TaggerCrisis crisis = taggerService.getCrisesByCode(code);
 
         Integer crisisId = 0;
@@ -84,6 +126,9 @@ public class ScreenController extends BaseController{
 
     @RequestMapping("protected/{code}/predict-new-attribute")
     public ModelAndView predictNewAttribute(@PathVariable(value="code") String code) throws Exception {
+        if (!isHasPermissionForCollection(code)){
+            return new ModelAndView("redirect:/protected/access-error");
+        }
 
         TaggerCrisis crisis = taggerService.getCrisesByCode(code);
 
@@ -119,6 +164,9 @@ public class ScreenController extends BaseController{
 
     @RequestMapping("protected/{code}/{id}/model-details")
     public ModelAndView modelDetails(@PathVariable(value="code") String code, @PathVariable(value="id") Integer modelId) throws Exception {
+        if (!isHasPermissionForCollection(code)){
+            return new ModelAndView("redirect:/protected/access-error");
+        }
 
         TaggerCrisis crisis = taggerService.getCrisesByCode(code);
 
@@ -169,6 +217,10 @@ public class ScreenController extends BaseController{
 
     @RequestMapping("protected/{code}/new-custom-attribute")
     public ModelAndView newCustomAttribute(@PathVariable(value="code") String code) throws Exception {
+        if (!isHasPermissionForCollection(code)){
+            return new ModelAndView("redirect:/protected/access-error");
+        }
+
         TaggerCrisis crisis = taggerService.getCrisesByCode(code);
         Integer crisisId = 0;
         String crisisName = "";
@@ -190,6 +242,10 @@ public class ScreenController extends BaseController{
     public ModelAndView trainingData(@PathVariable(value="code") String code,
                                      @PathVariable(value="modelId") Integer modelId,
                                      @PathVariable(value="modelFamilyId") Integer modelFamilyId) throws Exception {
+        if (!isHasPermissionForCollection(code)){
+            return new ModelAndView("redirect:/protected/access-error");
+        }
+
         TaggerCrisis crisis = taggerService.getCrisesByCode(code);
 
         Integer crisisId = 0;
@@ -223,6 +279,10 @@ public class ScreenController extends BaseController{
                                          @PathVariable(value="modelId") Integer modelId,
                                          @PathVariable(value="modelFamilyId") Integer modelFamilyId,
                                          @PathVariable(value="nominalAttributeId") Integer nominalAttributeId) throws Exception {
+        if (!isHasPermissionForCollection(code)){
+            return new ModelAndView("redirect:/protected/access-error");
+        }
+
         TaggerCrisis crisis = taggerService.getCrisesByCode(code);
 
         Integer crisisId = 0;
@@ -256,13 +316,23 @@ public class ScreenController extends BaseController{
     }
 
     @RequestMapping("protected/administration/admin-console")
-    public String adminConsole(Map<String, String> model) throws Exception {
-        return "administration/admin-console";
+    public ModelAndView adminConsole(Map<String, String> model) throws Exception {
+        UserEntity user = getAuthenticatedUser();
+        if (!userService.isUserAdmin(user)){
+            return new ModelAndView("redirect:/protected/access-error");
+        }
+
+        return new ModelAndView( "administration/admin-console");
     }
 
     @RequestMapping("protected/administration/admin-health")
-    public String adminHealth(Map<String, String> model) throws Exception {
-        return "administration/health";
+    public ModelAndView adminHealth(Map<String, String> model) throws Exception {
+        UserEntity user = getAuthenticatedUser();
+        if (!userService.isUserAdmin(user)){
+            return new ModelAndView("redirect:/protected/access-error");
+        }
+
+        return new ModelAndView("administration/health");
     }
 
 }

@@ -77,7 +77,7 @@ public class UserController extends BaseController{
             UserEntity userEntity = userService.getById(userId);
             AidrCollection collection = collectionService.findByCode(code);
 
-            if (isUserInCollectionManagersList(userEntity, collection)){
+            if (userService.isUserInCollectionManagersList(userEntity, collection)){
                 msg = "Selected user is already in managers list of this collection.";
                 return getUIWrapper(false, msg);
             }
@@ -126,18 +126,6 @@ public class UserController extends BaseController{
             logger.error(msg, e);
             return getUIWrapper(false, msg);
         }
-    }
-
-    private boolean isUserInCollectionManagersList(UserEntity user, AidrCollection collection) {
-        if (collection.getManagers() == null) {
-            return false;
-        }
-        for (UserEntity manager : collection.getManagers()){
-            if (manager.getId().equals(user.getId())){
-                return true;
-            }
-        }
-        return false;
     }
 	
 }
