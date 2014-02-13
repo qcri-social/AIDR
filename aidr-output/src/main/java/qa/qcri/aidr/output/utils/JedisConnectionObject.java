@@ -76,6 +76,7 @@ public class JedisConnectionObject {
 				poolSetup = true;
 				logger.info("[connectToRedis] Reusing existing Jedis pool: " + pool);
 			}
+			allotedJedis.notifyAll();
 		}
 	}
 
@@ -159,6 +160,7 @@ public class JedisConnectionObject {
 					pool.returnResource(jedisInstance);
 			}
 		}
+		this.notifyAll();
 	}
 
 	/**
