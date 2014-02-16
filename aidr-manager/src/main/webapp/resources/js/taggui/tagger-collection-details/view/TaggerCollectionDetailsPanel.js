@@ -122,7 +122,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         this.crisisModelsStore = Ext.create('Ext.data.Store', {
             pageSize: 30,
             storeId: 'crisisModelsStore',
-            fields: ['attribute', 'auc', 'classifiedDocuments', 'modelID', 'status', 'trainingExamples', 'modelFamilyID'],
+            fields: ['attribute', 'attributeID', 'auc', 'classifiedDocuments', 'modelID', 'status', 'trainingExamples', 'modelFamilyID'],
             proxy: {
                 type: 'ajax',
                 url: BASE_URL + '/protected/tagger/getModelsForCrisis.action',
@@ -163,7 +163,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
             '<tr><td>Training examples:</td>',
             '<td>{[this.getNumber(values.trainingExamples)]} &mdash; <a href="' + BASE_URL +  '/protected/'
-                + CRISIS_CODE + '/{modelID}/{modelFamilyID}/training-data">Manage training examples &raquo;</a></td></tr>',
+                + CRISIS_CODE + '/{modelID}/{modelFamilyID}/{attributeID}/training-data">Manage training examples &raquo;</a></td></tr>',
 
 
             '<tr><td>Classified elements:</td>',

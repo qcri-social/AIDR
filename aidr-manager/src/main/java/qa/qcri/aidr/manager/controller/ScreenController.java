@@ -238,10 +238,11 @@ public class ScreenController extends BaseController{
         return model;
     }
 
-    @RequestMapping("protected/{code}/{modelId}/{modelFamilyId}/training-data")
+    @RequestMapping("protected/{code}/{modelId}/{modelFamilyId}/{attributeID}/training-data")
     public ModelAndView trainingData(@PathVariable(value="code") String code,
                                      @PathVariable(value="modelId") Integer modelId,
-                                     @PathVariable(value="modelFamilyId") Integer modelFamilyId) throws Exception {
+                                     @PathVariable(value="modelFamilyId") Integer modelFamilyId,
+                                     @PathVariable(value="attributeID") Integer attributeID) throws Exception {
         if (!isHasPermissionForCollection(code)){
             return new ModelAndView("redirect:/protected/access-error");
         }
@@ -270,6 +271,7 @@ public class ScreenController extends BaseController{
         model.addObject("modelName", modelName);
         model.addObject("modelId", modelId);
         model.addObject("modelFamilyId", modelFamilyId);
+        model.addObject("attributeID", attributeID);
         model.addObject("code", code);
         return model;
     }
