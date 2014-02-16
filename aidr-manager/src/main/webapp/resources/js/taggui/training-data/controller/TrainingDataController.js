@@ -37,7 +37,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 
     addNewTrainingData: function() {
         document.location.href = BASE_URL + "/protected/" + CRISIS_CODE + '/' + MODEL_ID + '/'
-            + MODEL_FAMILY_ID + '/' + this.mainComponent.nominalAttributeId +'/training-examples';
+            + MODEL_FAMILY_ID + '/' + ATTRIBUTE_ID +'/training-examples';
     },
 
     loadModelData: function() {
@@ -64,8 +64,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                         var count = resp.data.length;
                         if (count > 0) {
                             var totalMessages = 0,
-                                totalExamples = 0,
-                                nominalAttributeId = 0;
+                                totalExamples = 0;
 
                             Ext.Array.each(resp.data, function(r, index) {
 //                              do not count any data from labels with code == null
@@ -79,11 +78,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                                 if (r.trainingDocuments && r.trainingDocuments > 0) {
                                     totalExamples += r.trainingDocuments;
                                 }
-
-                                nominalAttributeId = r.nominalAttributeId;
                             });
-
-                            me.mainComponent.nominalAttributeId = nominalAttributeId;
 
                             me.mainComponent.taggerDescription.setText('Status: <b>' + status + '</b>. ' +
                                 'Has classified <b>' + totalMessages + '</b> messages.&nbsp;' + detailsForModel, false);
