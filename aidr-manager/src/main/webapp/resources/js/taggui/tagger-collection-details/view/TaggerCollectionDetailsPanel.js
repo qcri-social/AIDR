@@ -2,7 +2,8 @@ Ext.require([
     'AIDRFM.common.AIDRFMFunctions',
     'AIDRFM.common.StandardLayout',
     'AIDRFM.common.Header',
-    'AIDRFM.common.Footer'
+    'AIDRFM.common.Footer',
+    'Ext.ux.data.PagingMemoryProxy'
 ]);
 
 Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel', {
@@ -122,7 +123,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         this.crisisModelsStore = Ext.create('Ext.data.Store', {
             pageSize: 30,
             storeId: 'crisisModelsStore',
-            fields: ['attribute', 'auc', 'classifiedDocuments', 'modelID', 'status', 'trainingExamples', 'modelFamilyID'],
+            fields: ['attribute', 'attributeID', 'auc', 'classifiedDocuments', 'modelID', 'status', 'trainingExamples', 'modelFamilyID'],
             proxy: {
                 type: 'ajax',
                 url: BASE_URL + '/protected/tagger/getModelsForCrisis.action',
@@ -163,7 +164,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
             '<tr><td>Training examples:</td>',
             '<td>{[this.getNumber(values.trainingExamples)]} &mdash; <a href="' + BASE_URL +  '/protected/'
-                + CRISIS_CODE + '/{modelID}/{modelFamilyID}/training-data">Manage training examples &raquo;</a></td></tr>',
+                + CRISIS_CODE + '/{modelID}/{modelFamilyID}/{attributeID}/training-data">Manage training examples &raquo;</a></td></tr>',
 
 
             '<tr><td>Classified elements:</td>',
@@ -324,154 +325,127 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
         this.CSVLink = Ext.create('Ext.form.Label', {
             flex: 1,
-            padding: '5 5 5 5',
+            padding: '0 0 0 5',
             html: ''
         });
         this.tweetsIdsLink = Ext.create('Ext.form.Label', {
             flex: 1,
-            margin: '5 5 5 5',
+            margin: '0 0 0 5',
             html: ''
         });
 
-        this.generateCSVButton = Ext.create('Ext.Button', {
-            text: 'Export tweets (.csv) (Last 100k tweets)',
-            margin: 5,
-            width:290,
-            cls:'btn btn-blue download-button',
-            id: 'generateCSVLink'
-        });
-
-        this.generateTweetIdsButton = Ext.create('Ext.Button', {
-            text: 'Export tweet-ids only (.csv) (All tweets)',
-            margin: 5,
-            width:290,
-            cls:'btn btn-blue download-button',
-            id: 'generateTweetIdsLink'
-        });
-
-        this.taggerFetchButton = Ext.create('Ext.Button', {
-            text: 'View latest tagger collection details',
-            margin: 5,
-            width:290,
-            cls:'btn btn-blue download-button',
-            id: 'goFetchLink'
-        });
-
-        this.taggerRealtimeButton = Ext.create('Ext.Button', {
-            text: 'View realtime tagger collection details',
-            margin: 5,
-            width:290,
-            cls:'btn btn-blue download-button',
-            id: 'goRealtimeLink'
-        });
-
-        this.downloadText = Ext.create('Ext.form.Label', {
+        this.taggerFetchLink = Ext.create('Ext.form.Label', {
             flex: 1,
-            html: ''
+            padding: '15 0 0 5',
+            html: '<div class="styled-text download-link"><a href="http://aidr-dev.qcri.org/AIDROutput/aidrTaggerLatest.html?crisisCode='
+                + CRISIS_CODE + '">View latest tagger collection details</a></div>'
         });
 
+        this.taggerRealtimeLink = Ext.create('Ext.form.Label', {
+            flex: 1,
+            padding: '15 0 0 5',
+            html: '<div class="styled-text download-link"><a href="http://aidr-dev.qcri.org/AIDROutput/aidrTaggerStream.html?crisisCode='
+                + CRISIS_CODE + '">View realtime tagger collection details</a></div>'
+        });
 
-        this.downloadsBlock = Ext.create('Ext.container.Container', {
-            layout: 'vbox',
-            items: [
+        this.taggerFetchInfo = Ext.create('Ext.form.Label', {
+            cls: 'styled-text',
+            html: '<p>Latest tweets.</p>'
+        });
+
+        this.taggerFetchStore = Ext.create('Ext.data.Store', {
+            pageSize: 10,
+            storeId: 'taggerFetchStore',
+                fields: ['text', 'attribute_name', 'label_name', 'confidence']
+        });
+
+        this.taggerFetchGrid = Ext.create('Ext.grid.Panel', {
+            store: this.taggerFetchStore,
+            padding: '20 0 00 0',
+            itemId: 'taggerFetchGrid',
+            cls: 'aidr-grid',
+            columns: [
                 {
-                    xtype: 'container',
-                    padding: '15 0 0 0',
-                    defaultType: 'label',
-                    layout: 'hbox',
-                    items: [
-                        this.generateCSVButton,
-                        this.CSVLink
-                    ]
+                    xtype: 'gridcolumn', dataIndex: 'text', text: 'Tweet', flex: 1
                 },
                 {
-                    xtype: 'container',
-                    defaultType: 'label',
-                    layout: 'hbox',
-                    items: [
-                        this.generateTweetIdsButton,
-                        this.tweetsIdsLink
-                    ]
+                    xtype: 'gridcolumn', dataIndex: 'attribute_name', text: 'Attribute', width: 150
                 },
-                ,
-                this.taggerFetchButton,
-                this.taggerRealtimeButton,
-                this.downloadText
+                {
+                    xtype: 'gridcolumn', dataIndex: 'label_name', text: 'Label', width: 150
+                },
+                {
+                    xtype: 'gridcolumn', dataIndex: 'confidence', text: 'Confidence', width: 150
+                }
             ]
         });
 
-//        this.feedsBlock = Ext.create('Ext.container.Container', {
-//            flex: 1,
-//            layout: 'vbox',
-//            items: [
-//                {
-//                    xtype: 'container',
-//                    defaultType: 'label',
-//                    padding: '0 10',
-//                    flex: 1,
-//                    layout: 'vbox',
-//                    defaults: {
-//                        margin: '5 0'
-//                    },
-//                    height: 100,
-//                    items: [
-//                        {
-//                            xtype: 'container',
-//                            defaultType: 'label',
-//                            layout: 'hbox',
-//                            items: [
-//                                {
-//                                    width: 75,
-//                                    html: '<b>Data feed</b>'
-//                                },
-//                                {
-//                                    html: '<b>URL</b>'
-//                                }
-//                            ]
-//                        },{
-//                            xtype: 'container',
-//                            defaultType: 'label',
-//                            layout: 'hbox',
-//                            items: [
-//                                {
-//                                    width: 75,
-//                                    text: 'Tweet-ids:'
-//                                },
-//                                {
-//                                    html: '<a href="http://aidr.qcri.org/predict/public/"' + CRISIS_CODE + '>http://aidr.qcri.org/predict/public/' + CRISIS_CODE + '</a>'
-//                                }
-//                            ]
-//                        },{
-//                            xtype: 'container',
-//                            defaultType: 'label',
-//                            layout: 'hbox',
-//                            items: [
-//                                {
-//                                    width: 75,
-//                                    text: 'Full:'
-//                                },
-//                                {
-//                                    html: '<a href="http://aidr.qcri.org/predict/protected/"' + CRISIS_CODE + '>http://aidr.qcri.org/predict/protected/' + CRISIS_CODE + '</a><br>'
-//                                }
-//                            ]
-//                        },{
-//                            xtype: 'container',
-//                            defaultType: 'label',
-//                            layout: 'hbox',
-//                            items: [
-//                                {
-//                                    width: 75,
-//                                    text: ''
-//                                },
-//                                {
-//                                    html: 'User: <span class="na-text">N/A</span> Pass: <span class="na-text">N/A</span>'
-//                                }
-//                            ]
-//                        }
-//                    ]
-//                }
-//            ]
-//        });
+        this.taggerFetchPaging = Ext.create('Ext.toolbar.Paging', {
+            cls: 'aidr-paging',
+            margin: '12 2 0 2',
+            store:'taggerFetchStore',
+            displayInfo:true,
+            displayMsg:'Collection history records {0} - {1} of {2}',
+            emptyMsg:'No collection history records to display',
+            items: [
+                {
+                    xtype: 'tbseparator'
+                },
+                {
+                    xtype : 'trigger',
+                    itemId : 'gridTrigger',
+                    fieldLabel: 'Filter Grid Data',
+                    triggerCls : 'x-form-clear-trigger',
+                    emptyText : 'Start typing to filter data',
+                    size : 30,
+                    minChars : 1,
+                    enableKeyEvents : true,
+                    onTriggerClick : function(){
+                        this.reset();
+                        this.fireEvent('triggerClear');
+                    }
+                }
+            ]
+        });
+
+        this.taggerFetchPanel = Ext.create('Ext.container.Container', {
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            items: [
+                this.taggerFetchInfo,
+                this.taggerFetchGrid,
+                this.taggerFetchPaging
+            ]
+        });
+
+        this.downloadsBlock = Ext.create('Ext.container.Container', {
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            items: [
+                {
+                    xtype: 'label',
+                    flex: 1,
+                    text: 'View',
+                    cls: 'header-h2'
+                },
+                this.taggerFetchPanel,
+                this.taggerFetchLink,
+                this.taggerRealtimeLink,
+                {
+                    xtype: 'label',
+                    flex: 1,
+                    padding: '15 0 0 0',
+                    text: 'Download as CSV files',
+                    cls: 'header-h2'
+                },
+                this.CSVLink,
+                this.tweetsIdsLink
+            ]
+        });
 
         this.tabPanel = Ext.create('Ext.tab.Panel', {
             cls: 'tabPanel',
@@ -533,10 +507,9 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                     ]
                 },
                 {
-                    title: 'Download/Export',
+                    title: 'View/Download',
                     padding: '10 0 0 0',
                     items: [
-//                        this.feedsBlock
                         this.downloadsBlock
                     ]
                 }

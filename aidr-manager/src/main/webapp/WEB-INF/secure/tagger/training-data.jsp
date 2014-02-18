@@ -11,6 +11,7 @@
       MODEL_ID = ${modelId};
       MODEL_FAMILY_ID = ${modelFamilyId};
       MODEL_NAME = "${modelName}";
+      ATTRIBUTE_ID = "${attributeID}";
   </script>
 
 </body>

@@ -26,8 +26,6 @@ import qa.qcri.aidr.predict.dbentities.ModelFamilyEC;
 class ModelRetrainTrigger extends Loggable implements Runnable {
 
     public Event<CrisisAttributePair> onRetrain = new Event<CrisisAttributePair>();
-    int sampleCountThreshold = 5; // TODO: Model re-training threshold should
-                                   // be dynamic default =20
     int timeThreshold = 60000; // 1000*60*10; //TODO: Model re-training
                                // threshold should be dynamic
     HashMap<Integer, HashMap<Integer, Integer>> newSampleCounts = new HashMap<Integer, HashMap<Integer, Integer>>();
@@ -45,7 +43,7 @@ class ModelRetrainTrigger extends Loggable implements Runnable {
     public void initialize(ArrayList<ModelFamilyEC> modelStates) {
         for (ModelFamilyEC m : modelStates) {
             increment(m.getCrisisID(), new int[] { m.getNominalAttribute().getNominalAttributeID()},
-                    m.getTrainingExampleCount() % sampleCountThreshold);
+                    m.getTrainingExampleCount() % Config.SAMPLE_COUNT_THRESHOLD);
         }
     }
 
@@ -124,7 +122,7 @@ class ModelRetrainTrigger extends Loggable implements Runnable {
             HashMap<Integer, Integer> eventMap = newSampleCounts.get(crisisID);
             for (int attributeID : eventMap.keySet()) {
                 long now = new Date().getTime();
-                if (eventMap.get(attributeID) >= sampleCountThreshold
+                if (eventMap.get(attributeID) >= Config.SAMPLE_COUNT_THRESHOLD
                         && (now - rebuildTimestamps.get(crisisID).get(
                                 attributeID)) >= timeThreshold) {
 

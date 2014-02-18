@@ -22,6 +22,7 @@
 		</style>
 		<script type="text/javascript" language="javascript" src="media/js/jquery.js"></script>
 		<script type="text/javascript" language="javascript" src="media/js/jquery.dataTables.js"></script>
+        <script type="text/javascript" language="javascript" src="media/js/dateFormat.js"></script>
         <script src="media/js/purl.js"></script>
 		<script type="text/javascript" charset="utf-8">
 			$(document).ready(function() {
@@ -52,10 +53,14 @@
                     console.log(data);
                     var appList = new Array();
                     var crisisName ;
+                    var createdAt;
                     var index = 0;
+                    $.format = DateFormat.format;
                     $.each(data, function (i,v)
                     {
                         crisisName = v.crisis_name;
+                        createdAt = v.created_at;
+
                         if(typeof crisisName == 'undefined') {
                             appList = null;
                         }
@@ -63,6 +68,7 @@
                             $.each(v.nominal_labels, function (j,x)
                             {
                                 rowInput = new Object();
+                                rowInput.createdAt =  $.format.date(createdAt,"yyyy-MM-dd HH:mm:ss");
                                 rowInput.label_name = x.label_name;
                                 rowInput.label_code = x.label_code;
                                 rowInput.confidence = x.confidence.toFixed(2);
@@ -91,6 +97,7 @@
                                     "aaData": appList,
 					                "sPaginationType": "full_numbers",
                                     "aoColumns": [
+                                        { "mData": "createdAt" },
                                         { "mData": "text" },
                                         { "mData": "attribute_name" },
                                         { "mData": "label_name" },
@@ -125,9 +132,10 @@
                         <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
                             <thead>
                                 <tr>
+                                    <th width="10%">Date/Time</th>
                                     <th width="50%">Tweet</th>
-                                    <th width="20%">Attribute</th>
-                                    <th width="20%">Label</th>
+                                    <th width="15%">Classifier</th>
+                                    <th width="15%">Category</th>
                                     <th width="10%">Confidence</th>
                                 </tr>
                             </thead>

@@ -49,9 +49,12 @@ public class MiscResourceImp implements MiscResourceFacade {
                     sortDirection = "DESC";
                 }
             } else {
-                sortDirection = "ASC";
+                sortDirection = "DESC";
             }
             orderSQLPart += " ORDER BY " + sortColumn + " " + sortDirection + " ";
+        }
+        else{
+            orderSQLPart += " ORDER BY dnl.timestamp DESC";
         }
 
         String sql = " SELECT lbl.nominalLabelID, lbl.name labelName, d.data tweetJSON, u.userID, u.name labelerName, dnl.timestamp, d.documentID "

@@ -4,7 +4,10 @@
  */
 package qa.qcri.aidr.predictui.api;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
@@ -140,5 +143,29 @@ public class TrainingDataResource {
         dto.setCrisisID(c.getCrisisID());
         dto.setCrisisType(typeDTO);
         return dto;
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/samplecountthreshold")
+    public Response getSampleCountThreshold(){
+
+        Properties prop = new Properties();
+        int sampleCountThreshold = 20;
+        try {
+            prop.load(new FileInputStream(Config.AIDR_TAGGER_CONFIG_URL));
+            sampleCountThreshold =   Integer.parseInt(prop
+                    .getProperty("sampleCountThreshold"));
+        } catch (IOException ex) {
+            System.out.println("IOException: " + ex);
+            throw new RuntimeException(ex);
+        }
+        catch(Exception ex2){
+            System.out.println("Exception: " +ex2);
+            throw new RuntimeException(ex2);
+        }
+
+        String response = "{\"sampleCountThreshold\":\"" + sampleCountThreshold + "\"}";
+        return Response.ok(response).build();
     }
 }

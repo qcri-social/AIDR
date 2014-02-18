@@ -1,15 +1,15 @@
 package qa.qcri.aidr.manager.controller;
 
-import qa.qcri.aidr.manager.dto.*;
-import qa.qcri.aidr.manager.exception.AidrException;
-import qa.qcri.aidr.manager.service.CollectionService;
-import qa.qcri.aidr.manager.service.TaggerService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import qa.qcri.aidr.manager.dto.*;
+import qa.qcri.aidr.manager.exception.AidrException;
+import qa.qcri.aidr.manager.service.CollectionService;
+import qa.qcri.aidr.manager.service.TaggerService;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -447,6 +447,19 @@ public class TaggerController extends BaseController {
         String result = "";
         try {
             result = taggerService.generateTweetIdsLink(code);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+        }
+        return getUIWrapper(result,true);
+    }
+
+    @RequestMapping(value = "/loadLatestTweets.action", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> loadLatestTweets(@RequestParam String code) throws Exception {
+        String result = "";
+        try {
+            result = taggerService.loadLatestTweets(code);
         } catch (Exception e) {
             e.printStackTrace();
             return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");

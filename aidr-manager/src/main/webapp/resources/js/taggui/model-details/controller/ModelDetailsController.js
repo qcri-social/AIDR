@@ -120,7 +120,8 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
                         me.mainComponent.modelDetails.setText('Status: <b>' + status + '</b>.&nbsp;' +
                             'Has classified <b>' + totalMessages.format() + '</b> messages.&nbsp;' +
                             'Trained on <b>' + totalExamples.format() + '</b> training examples.&nbsp;' +
-                            '<a href="' + BASE_URL +  '/protected/' + CRISIS_CODE + '/' + MODEL_ID + '/' + MODEL_FAMILY_ID
+                            '<a href="' + BASE_URL +  '/protected/'
+                            + CRISIS_CODE + '/' + MODEL_ID + '/' + MODEL_FAMILY_ID + '/' + ATTRIBUTE_ID
                             + '/training-data">Manage training examples &raquo;</a>', false);
                         me.mainComponent.modelLabelsStore.loadData(models);
                     }

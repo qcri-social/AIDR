@@ -9,8 +9,6 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
     extend: 'AIDRFM.common.StandardLayout',
     alias: 'widget.training-data-view',
 
-    nominalAttributeId: 0,
-
     initComponent: function () {
         var me = this;
 

@@ -30,7 +30,8 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
         this.modelDetails = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '0 0 15 0',
-            html: 'Has classified <b>0</b> messages.&nbsp;<a href="' + BASE_URL +  '/protected/' + CRISIS_CODE + '/' + MODEL_ID + '/' + MODEL_FAMILY_ID
+            html: 'Has classified <b>0</b> messages.&nbsp;<a href="' + BASE_URL +  '/protected/'
+                + CRISIS_CODE + '/' + MODEL_ID + '/' + MODEL_FAMILY_ID + '/' + ATTRIBUTE_ID +
                 + '/training-data">Manage training examples &raquo;</a>',
             flex: 1
         });
