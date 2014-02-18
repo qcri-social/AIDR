@@ -717,6 +717,24 @@ public class TaggerServiceImpl implements TaggerService {
     }
 
     @Override
+    public String loadLatestTweets(String code) throws AidrException {
+        try {
+            WebResource webResource = client.resource(outputAPIMainUrl + "/crisis/fetch/channel/" + code + "?count=1000");
+            ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
+                    .get(ClientResponse.class);
+            String jsonResponse = clientResponse.getEntity(String.class);
+
+                if (jsonResponse != null && jsonResponse.startsWith("[")) {
+                return jsonResponse;
+            } else {
+                return "";
+            }
+        } catch (Exception e) {
+            throw new AidrException("Error while generating Tweet Ids link in taggerPersister", e);
+        }
+    }
+
+    @Override
     public ModelHistoryWrapper getModelHistoryByModelFamilyID(Integer start, Integer limit, Integer id) throws AidrException {
         try {
             WebResource webResource = client.resource(taggerMainUrl + "/model/modelFamily/" + id
