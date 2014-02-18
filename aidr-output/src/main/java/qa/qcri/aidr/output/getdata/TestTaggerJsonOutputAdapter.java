@@ -1,5 +1,10 @@
 package qa.qcri.aidr.output.getdata;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 import qa.qcri.aidr.output.utils.TaggerJsonOutputAdapter;
 
 public class TestTaggerJsonOutputAdapter {
@@ -18,5 +23,30 @@ public class TestTaggerJsonOutputAdapter {
 		
 		String testout3 = obj.buildJsonString(testString3, false);
 		System.out.println("testString 3: " + testout3);
+		
+		System.out.println("Date : " + extractTweetTimestampField(testout3));
+		
 	}
+
+	public static Date extractTweetTimestampField(String tweet) {
+		String offsetString = "\"created_at\":\"";
+		StringBuffer strBuff = new StringBuffer();
+		strBuff.append(tweet.substring(tweet.indexOf(offsetString) + offsetString.length(), tweet.indexOf("\",", tweet.indexOf(offsetString))));
+		
+		System.out.println(strBuff.toString());
+		
+		// Tue Feb 18 08:46:03 +0000 2014
+		SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZ yyyy");
+		formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+		try {
+			return formatter.parse(strBuff.toString());
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 }
+
+

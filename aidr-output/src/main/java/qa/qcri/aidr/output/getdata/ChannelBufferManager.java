@@ -14,6 +14,8 @@
 
 package qa.qcri.aidr.output.getdata;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,6 +23,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -31,6 +34,10 @@ import qa.qcri.aidr.output.utils.JedisConnectionObject;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
+
+
+
+
 
 
 //import org.apache.log4j.BasicConfigurator;
@@ -259,26 +266,52 @@ public class ChannelBufferManager {
 
 		cbList.addAll(ChannelBufferManager.subscribedChannels.values());
 		for (ChannelBuffer temp: cbList) {
-			final List<String> tempList = temp.getLIFOMessages(msgCount);		// reverse-chronologically ordered list
+			final List<String> tempList = temp.getLIFOMessages(msgCount+1);		// reverse-chronologically ordered list
 			if (!tempList.isEmpty()) {
-				for (int i = 0;i < Math.min(msgCount,tempList.size());i++) {
+				for (int i = 0;i < Math.min(msgCount+1,tempList.size());i++) {
 					// By virtue of FIFO and serial buffering of messages, messages from same channel as
-					// well as different channels are guaranteed to have different time-stamps. 
-					dataSet.put(temp.getLastAddTime()+i, tempList.get(i));		// older messages with higher timestamp/key-value
+					// well as different channels are guaranteed to have different getLastAddTime(). 
+					// But, this does not hold if we use actual tweet Time as below.
+					long tweetTime = extractTweetTimestampField(tempList.get(i)).getTime();
+					if (!dataSet.containsKey(tweetTime))		// we keep only the first one we have seen		
+					{
+						dataSet.put(tweetTime, tempList.get(i));		// automatically sorted by tweetTime - TreeMap implementation
+						//logger.info("Timestamp" + tweetTime + ": Added tweet from " + temp.getChannelName() + " : " + tempList.get(i));
+					}
 				}
 				tempList.clear();
 			}
 		}
-		final List<String> msgList = new ArrayList<String>();; 
+		// We need to send msgCount number of message from all active buffers
+		// since we do not know which ones will be rejected, based on the 
+		// rejectNullFlag setting used in the output handler
+		final List<String> msgList = new ArrayList<String>(); 
 		if (!dataSet.isEmpty()) {
-			msgList.addAll(dataSet.descendingMap().values());
+			//msgList.addAll(dataSet.descendingMap().values());
+			msgList.addAll(dataSet.values());		// inversion will happen in client output handler
 			dataSet.clear();
 			dataSet = null;
 		}
 		return msgList;
 	}
 
-
+	public Date extractTweetTimestampField(String tweet) {
+		String offsetString = "\"created_at\":\"";
+		StringBuffer strBuff = new StringBuffer();
+		strBuff.append(tweet.substring(tweet.indexOf(offsetString) + offsetString.length(), tweet.indexOf("\",", tweet.indexOf(offsetString))));
+		
+		// Tweet date format: Tue Feb 18 08:46:03 +0000 2014
+		SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZ yyyy");
+		formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+		try {
+			return formatter.parse(strBuff.toString());
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	private void subscribeToChannel(final String channelRegEx) throws Exception {
 		executorServicePool.submit(new Runnable() {
 			public void run() {
