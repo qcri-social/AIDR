@@ -12,13 +12,18 @@
     <class>qa.qcri.aidr.predictui.entities.ModelNominalLabel</class>
     <class>qa.qcri.aidr.predictui.entities.ModelFamily</class>
     <class>qa.qcri.aidr.predictui.entities.Crisis</class>
-    <properties/>
+    <properties>
+        <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
+    </properties>
+    
+  
   </persistence-unit>
   <persistence-unit name="qa.qcri.aidr.collectorManager-PU" transaction-type="JTA">
     <provider>org.hibernate.ejb.HibernatePersistence</provider>
     <jta-data-source>JNDI/aidr_fetch_manager</jta-data-source>
     <properties>
       <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
     </properties>
   </persistence-unit>
 </persistence>
