@@ -6,6 +6,7 @@ AIDR is being developed at the [Social Computing](http://www.qcri.qa/our-researc
 * [Muhammad Imran](http://mimran.me/) - Researcher and Technical Lead.
 * [Ji Lucas](http://www.linkedin.com/in/jilucas) - Senior Software Engineer.
 * [Koushik Sinha](http://www.linkedin.com/pub/koushik-sinha/6/676/609) - Senior Software Engineer.
+* [Sarah Vieweg](http://sarahvieweg.com/) - Scientist.
 
 # Former team members
 
