@@ -23,7 +23,6 @@ public class CrisisApplicationListModel {
         this.totaltaskNumber = totaltaskNumber;
 
     }
-    public CrisisApplicationListModel() {}		// gf 3 way - attempting fix
 
     public String getUrl() {
         return url;

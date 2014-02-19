@@ -26,8 +26,6 @@ public class TaskBufferJsonModel {
 
     private Integer assignedCount;
 
-    public TaskBufferJsonModel() {}		// gf 3 way - attempting fix
-    
     public TaskBufferJsonModel(Long documentID, Long crisisID,Set<NominalAttributeJsonModel>  attributeInfo, String language,String doctype,String data,Double valueAsTrainingSample,Integer assignedCount){
         this.documentID = documentID;
         this.crisisID = crisisID;

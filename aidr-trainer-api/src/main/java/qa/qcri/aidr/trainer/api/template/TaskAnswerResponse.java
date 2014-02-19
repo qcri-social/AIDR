@@ -22,8 +22,6 @@ public class TaskAnswerResponse {
     private List<DocumentNominalLabel> documentNominalLabelList = new ArrayList<DocumentNominalLabel>();
     private String jedisJson;
 
-    public TaskAnswerResponse() {}		// gf 3 way - attempting fix
-    
     public List<DocumentNominalLabel> getDocumentNominalLabelList() {
         return documentNominalLabelList;
     }

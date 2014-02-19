@@ -38,15 +38,13 @@ public class CrisisServiceTest {
        //System.out.println(crisisJsonModel + "\n");
     }
 
-    /*
-    @Test
+
     public void testFindAllTest() throws Exception{
        List<Crisis> crisisList = crisisService.findAllActiveCrisis();
-       System.out.println(crisisList + " testFindAllTest\n");
+       System.out.println(crisisList + "\n");
        List<CrisisNominalAttributeModel> tm = crisisService.getAllActiveCrisisNominalAttribute();
 
        System.out.println(tm + "\n");
 
     }
-	*/
 }

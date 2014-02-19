@@ -16,7 +16,7 @@ public class CrisisJsonModel {
     private String code;
     private Set<NominalAttributeJsonModel> nominalAttributeJsonModelSet;
 
-    public CrisisJsonModel() {}		// gf 3 way - attempting fix
+
     public Set<NominalAttributeJsonModel> getNominalAttributeJsonModelSet() {
         return nominalAttributeJsonModelSet;
     }

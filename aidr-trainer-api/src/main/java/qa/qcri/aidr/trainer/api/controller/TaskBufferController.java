@@ -23,12 +23,12 @@ public class TaskBufferController {
 
     @GET
     @Produces( MediaType.APPLICATION_JSON )
-    @Path("/getassignabletasks/{userName}/{crisisID}/{maxresult}")
+    @Path("/getbatchtaskbuffer/{userName}/{crisisID}/{maxresult}")
     public List<TaskBuffer> getAllTaskBufferToAssign(
                                                      @PathParam("userName") String userName,
                                                      @PathParam("crisisID") String crisisID,
                                                      @PathParam("maxresult") String maxresult){
-        return taskBufferService.findAllTaskBufferByCririsID(new Long(crisisID),userName, StatusCodeType.TASK_BUFFER_STATUS_AVAILABLE,Integer.valueOf(maxresult));
+        return taskBufferService.findAvailableaskBufferByCririsID(new Long(crisisID),userName, StatusCodeType.TASK_BUFFER_STATUS_AVAILABLE,Integer.valueOf(maxresult));
       //  return  taskBufferService.findAssignableTaskBuffer("assignedCount", 0, Integer.valueOf(maxresult));
 
     }
