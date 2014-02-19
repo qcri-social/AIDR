@@ -40,6 +40,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 
 @Service("collectionService")
 public class CollectionServiceImpl implements CollectionService {
@@ -91,11 +92,18 @@ public class CollectionServiceImpl implements CollectionService {
         return collectionRepository.findByCode(code);
     }
 
-    @Override
+     @Override
     @Transactional(readOnly = true)
-    public CollectionDataResponse findAll(Integer start, Integer limit, Integer userId) throws Exception {
-        return collectionRepository.getPaginatedData(start, limit, userId);
+    public List<AidrCollection> findAll(Integer start, Integer limit, UserEntity user) throws Exception {
+        return collectionRepository.getPaginatedData(start, limit, user);
     }
+
+
+//    @Override
+//    @Transactional(readOnly = true)
+//    public CollectionDataResponse findAll(Integer start, Integer limit, Integer userId) throws Exception {
+//        return collectionRepository.getPaginatedData(start, limit, userId);
+//    }
 
     @Override
     @Transactional(readOnly = true)
@@ -135,16 +143,33 @@ public class CollectionServiceImpl implements CollectionService {
         return null;
     }
 
-    @Override
+     @Override
     @Transactional(readOnly = false)
-    public AidrCollection start(Integer collectionId, Integer userId) throws Exception {
+    public AidrCollection start(Integer collectionId) throws Exception {
+
+// We are going to start new collection. Lets stop collection which is running for owner of the new collection.
+        AidrCollection dbCollection = collectionRepository.findById(collectionId);
+        Integer userId = dbCollection.getUser().getId();
         AidrCollection alreadyRunningCollection = collectionRepository.getRunningCollectionStatusByUser(userId);
         if (alreadyRunningCollection != null) {
             this.stop(alreadyRunningCollection.getId());
         }
-        AidrCollection dbCollection = collectionRepository.findById(collectionId);
+
         return startFetcher(prepareFetcherRequest(dbCollection), dbCollection);
     }
+
+
+    
+//    @Override
+//    @Transactional(readOnly = false)
+//    public AidrCollection start(Integer collectionId, Integer userId) throws Exception {
+//        AidrCollection alreadyRunningCollection = collectionRepository.getRunningCollectionStatusByUser(userId);
+//        if (alreadyRunningCollection != null) {
+//            this.stop(alreadyRunningCollection.getId());
+//        }
+//        AidrCollection dbCollection = collectionRepository.findById(collectionId);
+//        return startFetcher(prepareFetcherRequest(dbCollection), dbCollection);
+//    }
 
     @Transactional(readOnly = true)
     public FetcherRequestDTO prepareFetcherRequest(AidrCollection dbCollection) {
@@ -360,6 +385,12 @@ public class CollectionServiceImpl implements CollectionService {
     @Transactional(readOnly = true)
     public Long getStoppedCollectionsCount(String terms) throws Exception {
         return collectionRepository.getStoppedCollectionsCount(terms);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Integer getCollectionsCount(UserEntity user) throws Exception {
+        return collectionRepository.getCollectionsCount(user);
     }
 
 }

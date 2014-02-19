@@ -4,46 +4,7 @@ import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.service.TaggerService;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//import com.sun.jersey.api.client.Client;		// gf 3 way
+//import com.sun.jersey.api.client.Client;
 //import com.sun.jersey.api.client.ClientResponse;
 //import com.sun.jersey.api.client.WebResource;
 import javax.ws.rs.client.Client;
@@ -56,13 +17,13 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import org.glassfish.jersey.jackson.JacksonFeature;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import java.util.*;
 
 @Service("taggerService")
@@ -70,8 +31,8 @@ public class TaggerServiceImpl implements TaggerService {
 
     private Logger logger = Logger.getLogger(getClass());
 
-    //@Autowired // gf 3 way
-    //private Client client = ClientBuilder.newClient();
+    //@Autowired
+    //private Client client;
 
     @Value("${taggerMainUrl}")
     private String taggerMainUrl;
@@ -92,7 +53,6 @@ public class TaggerServiceImpl implements TaggerService {
             /**
              * Rest call to Tagger
              */
-        	// gf 3 way
             //WebResource webResource = client.resource(taggerMainUrl + "/crisisType/all");
         	WebTarget webResource = client.target(taggerMainUrl + "/crisisType/all");
         	
@@ -104,6 +64,7 @@ public class TaggerServiceImpl implements TaggerService {
         	
         	//String jsonResponse = clientResponse.getEntity(String.class);
         	String jsonResponse = clientResponse.readEntity(String.class); 
+
 
             TaggerAllCrisesTypesResponse crisesTypesResponse = objectMapper.readValue(jsonResponse, TaggerAllCrisesTypesResponse.class);
             if (crisesTypesResponse.getCrisisTypes() != null) {
@@ -209,16 +170,16 @@ public class TaggerServiceImpl implements TaggerService {
     	try {
             //WebResource webResource = client.resource(taggerMainUrl + "/crisis/code/" + code);
         	WebTarget webResource = client.target(taggerMainUrl + "/crisis/code/" + code);
-        	System.out.println("webResource: " + webResource);
+        	
             ObjectMapper objectMapper = new ObjectMapper();
             //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
             //        .accept(MediaType.APPLICATION_JSON)
             //        .get(ClientResponse.class);
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-            System.out.println("clientResponse: " + clientResponse);
+            
             //String jsonResponse = clientResponse.getEntity(String.class);
             String jsonResponse = clientResponse.readEntity(String.class);
-            System.out.println("jsonResponse: " + jsonResponse);
+            
             
             TaggerCrisisExist crisisExist = objectMapper.readValue(jsonResponse, TaggerCrisisExist.class);
             if (crisisExist.getCrisisId() != null) {
@@ -350,7 +311,7 @@ public class TaggerServiceImpl implements TaggerService {
         	
             //String jsonResponse = clientResponse.getEntity(String.class);
         	String jsonResponse = clientResponse.readEntity(String.class);
-        	
+
             TaggerCrisis crisis = objectMapper.readValue(jsonResponse, TaggerCrisis.class);
             if (crisis != null) {
                 logger.info("Tagger returned crisis with code" + crisis.getCode());
@@ -411,7 +372,7 @@ public class TaggerServiceImpl implements TaggerService {
         	
         	//String jsonResponse = clientResponse.getEntity(String.class);
         	String jsonResponse = clientResponse.readEntity(String.class);
-        	
+
             TaggerCrisisModelsResponse crisisModelsResponse = objectMapper.readValue(jsonResponse, TaggerCrisisModelsResponse.class);
             if (crisisModelsResponse.getModelWrapper() != null) {
                 logger.info("Tagger returned " + crisisModelsResponse.getModelWrapper().size() + " models for crises with ID " + crisisID);
@@ -475,7 +436,7 @@ public class TaggerServiceImpl implements TaggerService {
             
             //String jsonResponse = clientResponse.getEntity(String.class);
             String jsonResponse = clientResponse.readEntity(String.class);
-            
+
             TaggerAttribute response = objectMapper.readValue(jsonResponse, TaggerAttribute.class);
             if (response != null) {
                 logger.info("Attribute with ID " + response.getNominalAttributeID() + " was retrieved from Tagger");
@@ -506,7 +467,6 @@ public class TaggerServiceImpl implements TaggerService {
             
             //String jsonResponse = clientResponse.getEntity(String.class);
             String jsonResponse = clientResponse.readEntity(String.class);
-            
             TaggerLabel response = objectMapper.readValue(jsonResponse, TaggerLabel.class);
             if (response != null) {
                 logger.info("Label with ID " + response.getNominalLabelID() + " was retrieved from Tagger");
@@ -538,7 +498,7 @@ public class TaggerServiceImpl implements TaggerService {
             
             //String jsonResponse = clientResponse.getEntity(String.class);
             String jsonResponse = clientResponse.readEntity(String.class);
-            
+
             TaggerStatusResponse response = objectMapper.readValue(jsonResponse, TaggerStatusResponse.class);
             if (response != null && response.getStatusCode() != null) {
                 if ("SUCCESS".equals(response.getStatusCode())) {
@@ -744,7 +704,7 @@ public class TaggerServiceImpl implements TaggerService {
         	
         	//String jsonResponse = clientResponse.getEntity(String.class);
         	String jsonResponse = clientResponse.readEntity(String.class);
-        	
+
             TaggerAttribute attribute = objectMapper.readValue(jsonResponse, TaggerAttribute.class);
             if (attribute != null) {
                 logger.info("Attribute with the code " + code + " already exist in Tagger.");
@@ -820,8 +780,6 @@ public class TaggerServiceImpl implements TaggerService {
             
             //String jsonResponse = clientResponse.getEntity(String.class);
             String jsonResponse = clientResponse.readEntity(String.class);
-            
-            logger.info("getAssignableTask - jsonResponse : " + jsonResponse);
 
             return jsonResponse;
         } catch (Exception e) {
@@ -844,8 +802,6 @@ public class TaggerServiceImpl implements TaggerService {
         	
             //String jsonResponse = clientResponse.getEntity(String.class);
         	String jsonResponse = clientResponse.readEntity(String.class);
-        	
-            logger.info("getTemplateStatus - jsonResponse : " + jsonResponse);
 
             return jsonResponse;
         } catch (Exception e) {
@@ -870,8 +826,6 @@ public class TaggerServiceImpl implements TaggerService {
             
             //String jsonResponse = clientResponse.getEntity(String.class);
             String jsonResponse = clientResponse.readEntity(String.class);
-            
-            logger.info("skipTask - jsonResponse : " + jsonResponse);
 
             return jsonResponse;
         } catch (Exception e) {
@@ -915,7 +869,7 @@ public class TaggerServiceImpl implements TaggerService {
         	
         	//String jsonResponse = clientResponse.getEntity(String.class);
         	String jsonResponse = clientResponse.readEntity(String.class);
-        	
+
             if (jsonResponse != null && "http".equals(jsonResponse.substring(0, 4))) {
                 return jsonResponse;
             } else {
@@ -940,7 +894,32 @@ public class TaggerServiceImpl implements TaggerService {
         	//String jsonResponse = clientResponse.getEntity(String.class);
         	String jsonResponse = clientResponse.readEntity(String.class);
 
+
             if (jsonResponse != null && "http".equals(jsonResponse.substring(0, 4))) {
+                return jsonResponse;
+            } else {
+                return "";
+            }
+        } catch (Exception e) {
+            throw new AidrException("Error while generating Tweet Ids link in taggerPersister", e);
+        }
+    }
+
+    @Override
+    public String loadLatestTweets(String code) throws AidrException {
+    	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+    	try {
+            //WebResource webResource = client.resource(outputAPIMainUrl + "/crisis/fetch/channel/" + code + "?count=1000");
+        	WebTarget webResource = client.target(outputAPIMainUrl + "/crisis/fetch/channel/" + code + "?count=1000");
+            
+            //ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
+            //        .get(ClientResponse.class);
+        	Response clientResponse = webResource.request(MediaType.TEXT_PLAIN).get();
+        	
+            //String jsonResponse = clientResponse.getEntity(String.class);
+        	String jsonResponse = clientResponse.readEntity(String.class);
+
+                if (jsonResponse != null && jsonResponse.startsWith("[")) {
                 return jsonResponse;
             } else {
                 return "";
@@ -969,7 +948,7 @@ public class TaggerServiceImpl implements TaggerService {
             
             //String jsonResponse = clientResponse.getEntity(String.class);
             String jsonResponse = clientResponse.readEntity(String.class);
-            
+
             ModelHistoryWrapper modelHistoryWrapper = objectMapper.readValue(jsonResponse, ModelHistoryWrapper.class);
             return modelHistoryWrapper;
         } catch (Exception e) {
@@ -1060,6 +1039,33 @@ public class TaggerServiceImpl implements TaggerService {
 
             PingResponse pingResponse = objectMapper.readValue(jsonResponse, PingResponse.class);
             if (pingResponse != null && "RUNNING".equals(pingResponse.getStatus())) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            throw new AidrException("Error while Getting training data for Crisis and Model.", e);
+        }
+    }
+
+    @Override
+    public boolean pingTrainer() throws AidrException{
+    	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+    	try {
+            //WebResource webResource = client.resource(crowdsourcingAPIMainUrl + "/util/ping/heartbeat");
+    		WebTarget webResource = client.target(crowdsourcingAPIMainUrl + "/util/ping/heartbeat");
+    		
+            ObjectMapper objectMapper = new ObjectMapper();
+            //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+            //        .accept(MediaType.APPLICATION_JSON)
+            //        .get(ClientResponse.class);
+            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+            
+            //String jsonResponse = clientResponse.getEntity(String.class);
+            String jsonResponse = clientResponse.readEntity(String.class);
+
+            PingResponse pingResponse = objectMapper.readValue(jsonResponse, PingResponse.class);
+            if (pingResponse != null && "200".equals(pingResponse.getStatus())) {
                 return true;
             } else {
                 return false;
