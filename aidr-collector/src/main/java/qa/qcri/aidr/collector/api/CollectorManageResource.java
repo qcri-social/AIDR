@@ -5,14 +5,17 @@
 package qa.qcri.aidr.collector.api;
 
 import com.google.gson.Gson;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Path;
@@ -20,6 +23,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.glassfish.jersey.jackson.JacksonFeature;
+
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.CollectorStatus;
 import qa.qcri.aidr.collector.utils.Config;
@@ -30,13 +36,12 @@ import qa.qcri.aidr.collector.utils.GenericCache;
  *
  * @author Imran
  */
-@Path("manage/")
+@Path("/manage")
 public class CollectorManageResource {
 
     @Context
     private UriInfo context;
-    private Client client = new Client();
-
+    
     /**
      * Creates a new instance of FetcherManageResource
      */
@@ -113,14 +118,20 @@ public class CollectorManageResource {
     }
 
     private String runCollection(CollectionTask collection) {
-
+    	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
-            WebResource webResource = client.resource(Config.FETCHER_REST_URI + "/twitter/start");
+            //WebResource webResource = client.resource(Config.FETCHER_REST_URI + "/twitter/start");
+        	WebTarget webResource = client.target(Config.FETCHER_REST_URI + "/twitter/start");
             Gson gson = new Gson();
-            ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .post(ClientResponse.class, gson.toJson(collection));
-            String jsonResponse = clientResponse.getEntity(String.class);
+            //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+            //		  .accept(MediaType.APPLICATION_JSON)
+            //        .post(ClientResponse.class, gson.toJson(collection));
+            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
+            							.post(Entity.json(gson.toJson(collection)), Response.class);
+            
+            //String jsonResponse = clientResponse.getEntity(String.class);
+            String jsonResponse = clientResponse.readEntity(String.class);
+            
             System.out.println("Fetcher Response: " + jsonResponse);
             return jsonResponse;
         } catch (Exception e) {

@@ -6,25 +6,23 @@ package qa.qcri.aidr.collector.global;
 
 import java.util.Set;
 
+import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
+
+import org.glassfish.jersey.jackson.JacksonFeature;
 
 /**
  *
  * @author Imran
  */
-@javax.ws.rs.ApplicationPath("webresources")
+@ApplicationPath("/webresources")
 public class ApplicationConfig extends Application {
 
     @Override
     public Set<Class<?>> getClasses() {
-        Set<Class<?>> resources = new java.util.HashSet<Class<?>>();
-        // following code can be used to customize Jersey 1.x JSON provider:
-        try {
-            Class jacksonProvider = Class.forName("org.codehaus.jackson.jaxrs.JacksonJsonProvider");
-            resources.add(jacksonProvider);
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(getClass().getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+        System.out.println("In ApplicationConfig: registering REST APIs");
+    	Set<Class<?>> resources = new java.util.HashSet<Class<?>>();
+    	resources.add(JacksonFeature.class);
         addRestResourceClasses(resources);
         return resources;
     }
@@ -33,8 +31,11 @@ public class ApplicationConfig extends Application {
      * Do not modify addRestResourceClasses() method.
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
-        resources.add(qa.qcri.aidr.collector.api.CollectorManageResource.class);
+    	resources.add(qa.qcri.aidr.collector.api.CollectorManageResource.class);
+    	System.out.println("Added resource CollectionManageResource");
         resources.add(qa.qcri.aidr.collector.api.TwitterCollectorAPI.class);
+        System.out.println("Added resource TwitterCollectorAPI");
+        
     }
     
 }

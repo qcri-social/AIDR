@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  *
@@ -51,7 +52,9 @@ public class CollectionTask {
     //@XmlTransient
     protected String accessTokenSecret;
     protected Long tweetsCount;
-
+    
+    public CollectionTask() {}		
+    
     /**
      * @return the toTrack
      */
