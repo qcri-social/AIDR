@@ -9,6 +9,8 @@ package qa.qcri.aidr.trainer.api.template;
  */
 public class NominalLabelJsonModel {
 
+	public NominalLabelJsonModel() {}		// gf 3 way - attempting fix
+	
     public Long getNorminalLabelID() {
         return norminalLabelID;
     }

@@ -8,7 +8,6 @@ findByID();
 function findByID() {
 
     var searchKey = $.url().param('code');
-
     if(typeof searchKey !='undefined' ){
         url = "http://" + window.location.host + rootURL + searchKey;
         $.ajax({
@@ -44,7 +43,6 @@ function renderList(data) {
         var appList =  list[0].app== null ? [] : (list[0].app instanceof Array ? list[0].app : [list[0].app]);
         var template = '';
         var crisisTitle = '<h2>' + list[0].crisisName +'</h2>';
-        document.title = "Help us classifying tweets related to " + list[0].crisisName + " - AIDR/MicroMappers";
         $.each(appList, function(index, item) {
             var respURL = item.url.split("/");
             if(respURL.length > 0){

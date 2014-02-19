@@ -8,7 +8,9 @@ package qa.qcri.aidr.trainer.api.template;
  * To change this template use File | Settings | File Templates.
  */
 public class ModelFamilyJsonModel {
-    public Long getModelFamilyID() {
+    public ModelFamilyJsonModel() {}	// gf 3 way - attempting fix
+	
+	public Long getModelFamilyID() {
         return modelFamilyID;
     }
 

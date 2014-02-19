@@ -10,7 +10,10 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public class NominalAttributeJsonModel {
-    public Long getNominalAttributeID() {
+    
+	public NominalAttributeJsonModel() {}		// gf 3 way - attempting fix
+	
+	public Long getNominalAttributeID() {
         return nominalAttributeID;
     }
 

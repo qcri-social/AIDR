@@ -15,7 +15,9 @@ public class GeoJsonOutputModel {
 
     private String geoJsonInfo;
     private String geoJson;
-
+    
+    public GeoJsonOutputModel() {}		// gf 3 way - attempting fix
+    
     public GeoJsonOutputModel( ReportTemplate reportTemplate, TaskQueueResponse taskQueueResponse){
 
         this.geoJson= taskQueueResponse.getResponse();
