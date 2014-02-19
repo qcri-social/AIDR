@@ -23,6 +23,8 @@ If the maven process creates a .war file, that file must be deployed to Glassfis
 # 2. Collector (aidr-collector)
 
 * Build using maven following the instructions above; this should generate a file `aidr-collector-X.war`
+* In `utils/Config.java`, appropriately set the configuration parameters. Note that the FETCHER_REST_URI and the PERSISTER_REST_URI should match the actual URI's used. 
+* Appropriately set the `fetchMainUrl` in the `system.properties` file under `aidr-manager`. 
 * Deploy `aidr-collector-X.war` to Glassfish following the instructions above.
 
 ## Running
@@ -32,6 +34,8 @@ The AIDR Collector has a RESTFul API, that means all the operations have their c
 # 3. Persister (aidr-persister)
 
 * Build using maven following the instructions above; this should generate a file `aidr-persister-X.war`
+* Modify the `utils/Config.java` file appropriately. Ensure that you have read-write permissions for the DEFAULT_PERSISTER_FILE_PATH and SCD1_URL. 
+* Appropriately set the `persisterMainUrl` in the `system.properties` file under `aidr-manager`.
 * Deploy `aidr-persister-X.war` to Glassfish using the instructions above.
 
 # 4. Manager (aidr-manager)
@@ -105,13 +109,15 @@ After the above steps have been executed, you can build the project:
       
 # 6. Tagger-API (aidr-tagger-api)
 
-* Create JDBC resources in server (e.g., Glassfish) to match the JNDI names (JNDI/aidr_predict and JNDI/aidr_fetch_manager) used in src/main/resource/META-INF/persistence.xml. 
+* Create JDBC resources in server (e.g., Glassfish) to match the JNDI names (JNDI/aidr_predict and JNDI/aidr_fetch_manager) used in src/main/resource/META-INF/persistence.xml.
+* Appropriately set the `taggerMainUrl` in the `system.properties` file under `aidr-manager`. 
 * Build using maven following the instructions above; this should generate a file `aidr-tagger-api-X.war`
 * Deploy `aidr-tagger-api-X.war` to Glassfish using the instructions above.
 
 # 7. Output (aidr-output)
 
 * Build using maven following the instructions above; this should generate a file `aidr-output-X.war`
+* Appropriately set the `outputAPIMainUrl` in the `system.properties` file under `aidr-manager`.
 * Deploy `aidr-output-X.war` to Glassfish using the instructions above.
 
 # 8. Trainer API (aidr-trainer-api)
@@ -133,7 +139,8 @@ After the above steps have been executed, you can build the project:
     * description: client description
     * queueSize: task pending size
     * aidrHostURL : train API rest service url
-    * defaultTaskRunsPerTask : the numbers of user vote for a task     
+    * defaultTaskRunsPerTask : the numbers of user vote for a task
+* Appropriately set the `crowdsourcingAPIMainUrl` in the `system.properties` file under `aidr-manager`.     
 * Build using maven following the instructions above; this should generate a file `aidr-trainer-pybossa-X.war`
 * Deploy `aidr-trainer-pybossa-X.war` to Glassfish using the instructions above. 
 
