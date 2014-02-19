@@ -4,11 +4,14 @@ package qa.qcri.aidr.persister.api;
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-import com.sun.jersey.api.json.JSONWithPadding;
-import java.net.UnknownHostException;
+//import com.sun.jersey.api.json.JSONWithPadding;
+
+
+import java.net.UnknownHostException;   
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
@@ -19,7 +22,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import org.apache.commons.lang.StringUtils;
+//import org.codehaus.jackson.map.annotate.JsonView;
+//import org.glassfish.jersey.server.JSONP;			// gf 3 way modified
+
 import qa.qcri.aidr.persister.collector.RedisCollectorPersister;
 import qa.qcri.aidr.persister.tagger.RedisTaggerPersister;
 import qa.qcri.aidr.utils.ClassifiedTweet;
@@ -46,7 +53,8 @@ public class Persister4TaggerAPI {
     @Consumes("application/json")
     @Path("/start")
     public Response startPersister(@QueryParam("file") String fileLocation, @QueryParam("collectionCode") String collectionCode) {
-        String response = "";
+    	System.out.println("In tagger-persister start");
+    	String response = "";
         try {
             fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH; //OVERRIDING PATH RECEIVED FROM EXTERNAL REQUEST
             if (StringUtils.isNotEmpty(fileLocation) && StringUtils.isNotEmpty(collectionCode)) {
@@ -94,7 +102,8 @@ public class Persister4TaggerAPI {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/genCSV")
     public Response generateCSVFromLastestJSON(@QueryParam("collectionCode") String collectionCode, @QueryParam("exportLimit") int exportLimit) throws UnknownHostException {
-        JsonDeserializer jsonD = new JsonDeserializer();
+    	System.out.println("In tagger-persister genCSV");
+    	JsonDeserializer jsonD = new JsonDeserializer();
         String fileName = jsonD.taggerGenerateJSON2CSV_100K_BasedOnTweetCount(collectionCode, exportLimit);
         fileName = Config.SCD1_URL + collectionCode + "/" + fileName;
         return Response.ok(fileName).build();
@@ -104,21 +113,28 @@ public class Persister4TaggerAPI {
     @Produces("application/json")
     @Path("/genTweetIds")
     public Response generateTweetsIDSCSVFromAllJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
-        JsonDeserializer jsonD = new JsonDeserializer();
+    	System.out.println("In tagger-persister genTweetIds");
+    	JsonDeserializer jsonD = new JsonDeserializer();
         String fileName = jsonD.generateClassifiedJson2TweetIdsCSV(collectionCode);
         fileName = Config.SCD1_URL + collectionCode + "/" + fileName;
         return Response.ok(fileName).build();
     }
 
     @GET
+    //@JSONP		// gf 3 way modified
     @Produces({"application/javascript"})
     @Path("/getClassifiedTweets")
-    public JSONWithPadding get_N_LatestClassifiedTweets(@QueryParam("collectionCode") String collectionCode, @QueryParam("exportLimit") int exportLimit, @QueryParam("callback") String callback) throws UnknownHostException {
-        JsonDeserializer jsonD = new JsonDeserializer();
+    //public JSONWithPadding get_N_LatestClassifiedTweets(@QueryParam("collectionCode") String collectionCode, @QueryParam("exportLimit") int exportLimit, @QueryParam("callback") String callback) throws UnknownHostException {
+    public Response get_N_LatestClassifiedTweets(@QueryParam("collectionCode") String collectionCode, 
+    								@QueryParam("exportLimit") int exportLimit, 
+    								@QueryParam("callback") String callback) 
+    										throws UnknownHostException {
+    	System.out.println("In tagger-persister getClassifiedTweets");
+    	JsonDeserializer jsonD = new JsonDeserializer();
         List<ClassifiedTweet> tweets = jsonD.getNClassifiedTweetsJSON(collectionCode, exportLimit);
         //return Response.ok(tweets).build();
-        return new JSONWithPadding(new GenericEntity<List<ClassifiedTweet>>(tweets) {
-        }, callback);
+        //return new JSONWithPadding(new GenericEntity<List<ClassifiedTweet>>(tweets) {}, callback);
+        return Response.ok(new GenericEntity<List<ClassifiedTweet>>(tweets) {}, callback).build();
     }
 
 }
