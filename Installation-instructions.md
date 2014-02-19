@@ -116,6 +116,7 @@ After the above steps have been executed, you can build the project:
 
 # 7. Output (aidr-output)
 
+* Set the Redis host and port numbers appropriately in the `resources/config.properties` file. 
 * Build using maven following the instructions above; this should generate a file `aidr-output-X.war`
 * Appropriately set the `outputAPIMainUrl` in the `system.properties` file under `aidr-manager`.
 * Deploy `aidr-output-X.war` to Glassfish using the instructions above.
