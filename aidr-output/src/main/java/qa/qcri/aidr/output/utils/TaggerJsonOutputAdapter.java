@@ -35,11 +35,17 @@ public class TaggerJsonOutputAdapter {
 		JsonParser parser = new JsonParser();
 		JsonObject obj = (JsonObject) parser.parse(rawJsonString);
 		JsonElement tweetData = null;
+		JsonElement timestamp = null;
 		JsonObject aidrData = null;
 		JsonArray nominalLabels; 
 
-		if (obj.has("text")) {								// should always be true
-			tweetData = (JsonElement) obj.get("text");		// get the tweet text string
+		if (obj.has("text")) {									// should always be true
+			tweetData = obj.get("text");						// get the tweet text string
+			
+			if (obj.has("created_at")) {
+				timestamp = obj.get("created_at");
+			}
+			
 			if (obj.has("aidr")) {								// should always be true
 				aidrData = (JsonObject) obj.get("aidr");		// get the aidr JSON object
 
@@ -57,6 +63,7 @@ public class TaggerJsonOutputAdapter {
 				}
 				JsonReturnClass jsonObj = new JsonReturnClass();
 				jsonObj.text = tweetData;
+				jsonObj.created_at = timestamp;
 				jsonObj.crisis_code = crisisCode;
 				jsonObj.crisis_name = crisisName;
 				jsonObj.nominal_labels.addAll(nominalLabels);
@@ -86,6 +93,7 @@ public class TaggerJsonOutputAdapter {
 
 	private class JsonReturnClass {
 		private JsonElement text = null;
+		private JsonElement created_at = null;
 		private JsonElement crisis_code = null;
 		private JsonElement crisis_name = null;
 		private JsonArray nominal_labels;
@@ -93,7 +101,11 @@ public class TaggerJsonOutputAdapter {
 		public JsonReturnClass() {
 			nominal_labels = new JsonArray();
 		}
-
+		
+		public JsonElement getDate() {
+			return created_at;
+		}
+		
 		public JsonElement getText() {
 			return text;
 		}

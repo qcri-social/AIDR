@@ -37,28 +37,9 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 }
             },
 
-            "#goFetchLink": {
-                click: function (btn, e, eOpts) {
-                    this.goToFetchLink();
-                }
-            },
-
-            "#goRealtimeLink": {
-                click: function (btn, e, eOpts) {
-                    this.goToRealtTimeLink();
-                }
-            },
-
-            "#generateCSVLink": {
-                click: function (btn, e, eOpts) {
-                    this.generateCSVLink(btn);
-                }
-            },
-
-            "#generateTweetIdsLink": {
-                click: function (btn, e, eOpts) {
-                    this.generateTweetIdsLink(btn);
-                }
+            '#gridTrigger' : {
+                keyup : this.onTriggerKeyUp,
+                triggerClear : this.onTriggerClear
             }
 
         });
@@ -71,7 +52,10 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         this.mainComponent = component;
         taggerCollectionDetailsController = this;
         this.getTemplateStatus();
-        this.updateDownloadPanel();
+
+        this.generateCSVLink();
+        this.generateTweetIdsLink();
+        this.loadLatestTweets();
 
         var me = this;
     },
@@ -112,14 +96,6 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 }
             }
         });
-    },
-
-    goToFetchLink: function() {
-        document.location.href ='http://aidr-dev.qcri.org/AIDROutput/aidrTaggerLatest.html?crisisCode=' + CRISIS_CODE ;
-    },
-
-    goToRealtTimeLink: function() {
-        document.location.href ='http://aidr-dev.qcri.org/AIDROutput/aidrTaggerStream.html?crisisCode=' + CRISIS_CODE ;
     },
 
     goToCollector: function() {
@@ -177,17 +153,8 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         });
     },
 
-    updateDownloadPanel: function () {
-        var downloadTabText = '<div class="styled-text">You can read the collected tweets from:<br><br>' +
-            '<b>1.</b>&nbsp;&nbsp;Tweets in JSON format: <a href="http://scd1.qcri.org/aidr/data/persister/' + CRISIS_CODE + '">http://scd1.qcri.org/aidr/data/persister/' + CRISIS_CODE + '/</a><br>' +
-            '<b>2.</b>&nbsp;&nbsp;Redis queue FetcherChannel.' + CRISIS_CODE + ' on host scd1.qcri.org port 6379<br></div>';
-
-        this.mainComponent.downloadText.setText(downloadTabText, false);
-    },
-
-    generateCSVLink: function(btn) {
+    generateCSVLink: function() {
         var me = this;
-        btn.setDisabled(true);
         me.mainComponent.CSVLink.setText('<div class="loading-block"></div>', false);
 
         Ext.Ajax.request({
@@ -200,29 +167,23 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 'Accept': 'application/json'
             },
             success: function (response) {
-                btn.setDisabled(false);
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
                     if (resp.data && resp.data != '') {
-                        me.mainComponent.CSVLink.setText('<div class="styled-text download-link"><a href="' + resp.data + '">' + resp.data + '</a></div>', false);
+                        me.mainComponent.CSVLink.setText('<div class="styled-text download-link">&#8226;&nbsp;<a href="' + resp.data + '">Download latest 100,000 tweets</a></div>', false);
                     } else {
-                        me.mainComponent.CSVLink.setText('', false);
-                        AIDRFMFunctions.setAlert("Error", "Generate CSV service returned empty url. For further inquiries please contact admin.");
+                        me.mainComponent.CSVLink.setText('<div class="styled-text download-link">&#8226;&nbsp;Download latest 100,000 tweets - Not yet available for this crisis.</div>', false);
                     }
                 } else {
                     me.mainComponent.CSVLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
-            },
-            failure: function () {
-                btn.setDisabled(false);
             }
         });
     },
 
-    generateTweetIdsLink: function(btn) {
+    generateTweetIdsLink: function() {
         var me = this;
-        btn.setDisabled(true);
         me.mainComponent.tweetsIdsLink.setText('<div class="loading-block"></div>', false);
 
         Ext.Ajax.request({
@@ -235,24 +196,99 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 'Accept': 'application/json'
             },
             success: function (response) {
-                btn.setDisabled(false);
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
                     if (resp.data && resp.data != '') {
-                        me.mainComponent.tweetsIdsLink.setText('<div class="styled-text download-link"><a href="' + resp.data + '">' + resp.data + '</a></div>', false);
+                        me.mainComponent.tweetsIdsLink.setText('<div class="styled-text download-link">&#8226;&nbsp;<a href="' + resp.data + '">Download all tweets (tweet-ids only)</a></div>', false);
                     } else {
-                        me.mainComponent.tweetsIdsLink.setText('', false);
-                        AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
+                        me.mainComponent.tweetsIdsLink.setText('<div class="styled-text download-link">&#8226;&nbsp;Download all tweets (tweet-ids only) - Not yet available for this crisis.</div>', false);
                     }
                 } else {
                     me.mainComponent.tweetsIdsLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
-            },
-            failure: function () {
-                btn.setDisabled(false);
             }
         });
+    },
+
+    loadLatestTweets: function () {
+        var me = this;
+
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/tagger/loadLatestTweets.action',
+            method: 'GET',
+            params: {
+                code: CRISIS_CODE
+//                code: "2014-02-uk_floods"
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                var jsonData = Ext.decode(response.responseText);
+                var tweetData = Ext.JSON.decode(jsonData.data);
+
+                var data = me.transformTweetData(tweetData);
+                fetchData = data;
+                fetchTmpData = Ext.clone(data);
+
+                me.mainComponent.taggerFetchStore.setProxy({
+                    type: 'pagingmemory',
+                    data: fetchTmpData,
+                    reader: {
+                        type: 'json',
+                        totalProperty: 'totalCount',
+                        root: 'data',
+                        successProperty: 'success'
+                    }
+                });
+                me.mainComponent.taggerFetchStore.load();
+            }
+        });
+    },
+
+    transformTweetData: function(tweetData) {
+        var result = {};
+        var data = [];
+        Ext.Array.each(tweetData, function(r, index) {
+            var row = {};
+            row.text = r.text ? r.text : '';
+            row.attribute_name = r.nominal_labels[0].attribute_name ? r.nominal_labels[0].attribute_name : '';
+            row.label_name = r.nominal_labels[0].label_name ? r.nominal_labels[0].label_name : '';
+            row.confidence = r.nominal_labels[0].confidence ? r.nominal_labels[0].confidence : '';
+            data.push(row);
+        });
+        result.data = data;
+        result.totalCount = data.length;
+        result.success = true;
+        return result;
+    },
+
+    onTriggerKeyUp : function(t) {
+        var me = this;
+
+        var thisRegEx = new RegExp(t.getValue(), "i");
+        var grid = me.mainComponent.taggerFetchGrid;
+        var records = [];
+        Ext.each(fetchData.data, function (record) {
+            if (thisRegEx.test(record[grid.columns[0].dataIndex])) {
+                if (!grid.filterHidden && grid.columns[0].isHidden()) {
+                } else {
+                    records.push(record);
+                }
+            }
+        });
+        fetchTmpData.data = records;
+        fetchTmpData.totalCount = records.length;
+        me.mainComponent.taggerFetchStore.load();
+    },
+
+    onTriggerClear : function() {
+        var me = this;
+
+        fetchTmpData.data = fetchData.data;
+        fetchTmpData.totalCount = fetchData.totalCount;
+        me.mainComponent.taggerFetchStore.load();
     }
 
 });
