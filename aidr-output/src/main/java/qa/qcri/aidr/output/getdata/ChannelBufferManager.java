@@ -35,11 +35,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
-
-
-
-
-
 //import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,7 +89,9 @@ public class ChannelBufferManager {
 		logger.info("[ChannelBufferManager] Initializing channel buffer manager.");
 
 		bufferSize = -1;
-		executorServicePool = Executors.newFixedThreadPool(200);		// max number of threads
+		executorServicePool = Executors.newCachedThreadPool();	//Executors.newFixedThreadPool(10);		// max number of threads
+		logger.info("Create thread pool: " + executorServicePool);
+
 		jedisConn = new JedisConnectionObject(redisHost, redisPort);
 		try {
 			subscriberJedis = jedisConn.getJedisResource();
@@ -226,11 +223,13 @@ public class ChannelBufferManager {
 	}
 
 	public void deleteAllChannelBuffers() {
-		for (String channelId: ChannelBufferManager.subscribedChannels.keySet()) {
-			ChannelBufferManager.subscribedChannels.get(channelId).deleteBuffer();
-			ChannelBufferManager.subscribedChannels.remove(channelId);
+		if (ChannelBufferManager.subscribedChannels != null) {
+			for (String channelId: ChannelBufferManager.subscribedChannels.keySet()) {
+				ChannelBufferManager.subscribedChannels.get(channelId).deleteBuffer();
+				ChannelBufferManager.subscribedChannels.remove(channelId);
+			}
+			ChannelBufferManager.subscribedChannels.clear();
 		}
-		ChannelBufferManager.subscribedChannels.clear();
 	}
 
 	/** 
@@ -266,9 +265,9 @@ public class ChannelBufferManager {
 
 		cbList.addAll(ChannelBufferManager.subscribedChannels.values());
 		for (ChannelBuffer temp: cbList) {
-			final List<String> tempList = temp.getLIFOMessages(msgCount+1);		// reverse-chronologically ordered list
+			final List<String> tempList = temp.getLIFOMessages(msgCount+4);		// reverse-chronologically ordered list
 			if (!tempList.isEmpty()) {
-				for (int i = 0;i < Math.min(msgCount+1,tempList.size());i++) {
+				for (int i = 0;i < Math.min(msgCount+4,tempList.size());i++) {
 					// By virtue of FIFO and serial buffering of messages, messages from same channel as
 					// well as different channels are guaranteed to have different getLastAddTime(). 
 					// But, this does not hold if we use actual tweet Time as below.
@@ -312,6 +311,7 @@ public class ChannelBufferManager {
 		return null;
 	}
 	
+
 	private void subscribeToChannel(final String channelRegEx) throws Exception {
 		executorServicePool.submit(new Runnable() {
 			public void run() {
@@ -341,7 +341,7 @@ public class ChannelBufferManager {
 		} catch (JedisConnectionException e) {
 			logger.info("[stopSubscription] Connection to REDIS seems to be lost!");
 		}
-		if (jedisConn != null)
+		if (jedisConn != null && aidrSubscriber != null && aidrSubscriber.getSubscribedChannels() == 0) 
 			jedisConn.returnJedis(subscriberJedis);
 		this.notifyAll();
 	}

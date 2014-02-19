@@ -23,7 +23,7 @@ public class TestTaggerJsonOutputAdapter {
 		
 		String testout3 = obj.buildJsonString(testString3, false);
 		System.out.println("testString 3: " + testout3);
-		
+	
 		System.out.println("Date : " + extractTweetTimestampField(testout3));
 		
 	}
@@ -46,7 +46,4 @@ public class TestTaggerJsonOutputAdapter {
 		}
 		return null;
 	}
-
 }
-
-

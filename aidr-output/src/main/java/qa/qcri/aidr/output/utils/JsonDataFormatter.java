@@ -41,8 +41,7 @@ public class JsonDataFormatter {
 				final String msg = itr.previous();
 				final TaggerJsonOutputAdapter jsonOutput = new TaggerJsonOutputAdapter();
 				final String jsonData = (msg != null) ? jsonOutput.buildJsonString(msg, rejectNullFlag) : null;
-				//logger.info("[createList] input tweet: " + msg);
-				//logger.info("returned json string: " + jsonData);
+				//logger.info("[createList] json string: " + jsonData);
 				if (jsonData != null) {
 					jsonDataList.append(jsonData);
 					++count;

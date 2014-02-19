@@ -26,7 +26,7 @@ public class TaggerJsonOutputAdapter {
 	
 	public String buildJsonString(String rawJsonString, boolean rejectNullFlag) {
 		Gson jsonObject = new GsonBuilder().serializeNulls().disableHtmlEscaping()
-				.serializeSpecialFloatingPointValues()					//.setPrettyPrinting()
+				.serializeSpecialFloatingPointValues()	//.setPrettyPrinting()
 				.create();
 		// remove top-level array: we are only dealing with JsonObjects from REDIS in aidr-output
 		if (rawJsonString.startsWith("["))		// should never happen 
@@ -39,8 +39,8 @@ public class TaggerJsonOutputAdapter {
 		JsonObject aidrData = null;
 		JsonArray nominalLabels; 
 
-		if (obj.has("text")) {									// should always be true
-			tweetData = obj.get("text");						// get the tweet text string
+		if (obj.has("text")) {					// should always be true
+			tweetData = obj.get("text");		// get the tweet text string
 			
 			if (obj.has("created_at")) {
 				timestamp = obj.get("created_at");
@@ -92,8 +92,8 @@ public class TaggerJsonOutputAdapter {
 	}
 
 	private class JsonReturnClass {
-		private JsonElement text = null;
 		private JsonElement created_at = null;
+		private JsonElement text = null;
 		private JsonElement crisis_code = null;
 		private JsonElement crisis_name = null;
 		private JsonArray nominal_labels;

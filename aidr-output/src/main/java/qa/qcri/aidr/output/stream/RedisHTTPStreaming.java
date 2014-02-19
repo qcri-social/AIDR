@@ -86,7 +86,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 //import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,10 +138,10 @@ public class RedisHTTPStreaming extends HttpServlet {
 
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-
+		
 		AIDROutputConfig configuration = new AIDROutputConfig();
 		HashMap<String, String> configParams = configuration.getConfigProperties();
-
+		
 		redisHost = configParams.get("host");
 		redisPort = Integer.parseInt(configParams.get("port"));
 		if (configParams.get("logger").equalsIgnoreCase("log4j")) {
@@ -168,10 +167,8 @@ public class RedisHTTPStreaming extends HttpServlet {
 			//System.exit(1);
 		}
 		if (subscriberJedis != null) {
-			this.notifyAll();
 			return true;
 		}
-		this.notifyAll();
 		return false;
 	}
 
@@ -335,14 +332,13 @@ public class RedisHTTPStreaming extends HttpServlet {
 	// cleanup when servlet is destroyed (e.g., server shutdown)
 	public void destroy() {
 		try {
-			int attempts = 0;
 			long startTime = new Date().getTime();
-			while (subscriptions != null && subscriptions.size() > 0 && attempts < 5) {
+			while (subscriptions.size() > 0) {
 				Iterator<Jedis>itr = subscriptions.keySet().iterator();
 				while (itr.hasNext()) {
 					Jedis j = itr.next();
 					if (subscriptions.get(j) != null) subscriptions.get(j).setRunFlag(false);		// signal thread to stop
-					if (new Date().getTime() - startTime > 1000) {	// spin-loop, waiting for subscription threads to unsubscribe
+					if (new Date().getTime() - startTime > 5000) {	// spin-loop, waiting for subscription threads to unsubscribe
 						// forcibly relinquish subscription and Jedis resource
 						if (subscriptions.get(j) != null && subscriptions.get(j).patternFlag) {
 							subscriptions.get(j).punsubscribe();
@@ -353,20 +349,14 @@ public class RedisHTTPStreaming extends HttpServlet {
 						subscriptions.remove(j);
 					}
 				}
-				++attempts;
 			}		
+			//jedisConn.closeAll();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.error("[destroy] Exception occurred attempting stopSubscription: " + e.toString());
 			e.printStackTrace();
 		}
-		try {
-			super.finalize();
-		} catch (Throwable e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if (executorServicePool != null) shutdownAndAwaitTermination(executorServicePool);
+		shutdownAndAwaitTermination(executorServicePool);
 		logger.info("[destroy] All done, shutdown streaming service...");
 	}
 
@@ -443,7 +433,6 @@ public class RedisHTTPStreaming extends HttpServlet {
 			final int DEFAULT_COUNT = 1;
 			synchronized (messageList) {
 				if (messageList.size() < DEFAULT_COUNT) messageList.add(message);
-				//messageList.notifyAll();
 			}
 		}
 
@@ -451,7 +440,6 @@ public class RedisHTTPStreaming extends HttpServlet {
 		public void onPMessage(String pattern, String channel, String message) {
 			synchronized (messageList) {
 				if (messageList.size() <  1) messageList.add(message);
-				//messageList.notifyAll();
 			}
 		}
 
@@ -512,17 +500,21 @@ public class RedisHTTPStreaming extends HttpServlet {
 						// Send updates response as JSON
 						List<String> latestMsg = null; 
 						synchronized (messageList) {
-							JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);        // Tagger specific JSONP output formatter
-							StringBuilder jsonDataList = taggerOutput.createList(messageList, messageList.size(), rejectNullFlag);
-							int count = taggerOutput.getMessageCount();
-							responseWriter.writeJsonData(jsonDataList, count);
-							responseWriter.writerHandle.println();
-							responseWriter.writerHandle.flush();
-
+							latestMsg = new ArrayList<String>();
+							latestMsg.addAll(messageList);
+						}
+						JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);        // Tagger specific JSONP output formatter
+						StringBuilder jsonDataList = taggerOutput.createList(latestMsg, latestMsg.size(), rejectNullFlag);
+						int count = taggerOutput.getMessageCount();
+						responseWriter.writeJsonData(jsonDataList, count);
+						responseWriter.writerHandle.println();
+						responseWriter.writerHandle.flush();
+						synchronized (messageList) {
 							// Reset the messageList buffer and cleanup
 							messageList.clear();        // remove the sent message from list
+							latestMsg.clear();
+							latestMsg = null;
 							jsonDataList = null;
-							//messageList.notifyAll();
 						}
 						lastAccessedTime = new Date().getTime();                        // approx. time when message last received from REDIS
 						// Now sleep for a short time before going for next message - easy to read on screen
