@@ -1,31 +1,45 @@
 package qa.qcri.aidr.manager.service.impl;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
+import java.net.URLEncoder;
+import java.util.List;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import qa.qcri.aidr.manager.dto.FetcheResponseDTO;
+
+import qa.qcri.aidr.manager.dto.CollectionDataResponse;
 import qa.qcri.aidr.manager.dto.FetcherRequestDTO;
+import qa.qcri.aidr.manager.dto.FetcheResponseDTO;
 import qa.qcri.aidr.manager.dto.PingResponse;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
 import qa.qcri.aidr.manager.hibernateEntities.UserConnection;
-import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 import qa.qcri.aidr.manager.repository.CollectionLogRepository;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
 import qa.qcri.aidr.manager.repository.UserConnectionRepository;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 
-import javax.ws.rs.core.MediaType;
-import java.net.URLEncoder;
-import java.util.List;
+
+
+
+
+
+//import com.sun.jersey.api.client.Client;		// gf 3 way
+//import com.sun.jersey.api.client.ClientResponse;
+//import com.sun.jersey.api.client.WebResource;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 
 @Service("collectionService")
 public class CollectionServiceImpl implements CollectionService {
@@ -37,8 +51,9 @@ public class CollectionServiceImpl implements CollectionService {
     private CollectionLogRepository collectionLogRepository;
     @Autowired
     private UserConnectionRepository userConnectionRepository;
-    @Autowired
-    private Client client;
+    //@Autowired	// gf 3 way
+    //private Client client;
+    //private Client client = ClientBuilder.newClient();
     @Value("${fetchMainUrl}")
     private String fetchMainUrl;
     @Value("${twitter.consumerKey}")
@@ -78,14 +93,8 @@ public class CollectionServiceImpl implements CollectionService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AidrCollection> findAll(Integer start, Integer limit, UserEntity user) throws Exception {
-        return collectionRepository.getPaginatedData(start, limit, user);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Integer getCollectionsCount(UserEntity user) throws Exception {
-        return collectionRepository.getCollectionsCount(user);
+    public CollectionDataResponse findAll(Integer start, Integer limit, Integer userId) throws Exception {
+        return collectionRepository.getPaginatedData(start, limit, userId);
     }
 
     @Override
@@ -128,16 +137,12 @@ public class CollectionServiceImpl implements CollectionService {
 
     @Override
     @Transactional(readOnly = false)
-    public AidrCollection start(Integer collectionId) throws Exception {
-
-//        We are going to start new collection. Lets stop collection which is running for owner of the new collection.
-        AidrCollection dbCollection = collectionRepository.findById(collectionId);
-        Integer userId = dbCollection.getUser().getId();
+    public AidrCollection start(Integer collectionId, Integer userId) throws Exception {
         AidrCollection alreadyRunningCollection = collectionRepository.getRunningCollectionStatusByUser(userId);
         if (alreadyRunningCollection != null) {
             this.stop(alreadyRunningCollection.getId());
         }
-
+        AidrCollection dbCollection = collectionRepository.findById(collectionId);
         return startFetcher(prepareFetcherRequest(dbCollection), dbCollection);
     }
 
@@ -184,12 +189,26 @@ public class CollectionServiceImpl implements CollectionService {
             /**
              * Rest call to Fetcher
              */
-            WebResource webResource = client.resource(fetchMainUrl + "/twitter/start");
+        	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+        	// gf 3 way
+            //WebResource webResource = client.resource(fetchMainUrl + "/twitter/start");
+        	WebTarget webResource = client.target(fetchMainUrl + "/twitter/start");
+            
+        	System.out.println("In startFetcher...");
             ObjectMapper objectMapper = new ObjectMapper();
-            ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .post(ClientResponse.class, objectMapper.writeValueAsString(fetcherRequest));
-            String jsonResponse = clientResponse.getEntity(String.class);
+            //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+            //        .accept(MediaType.APPLICATION_JSON)
+            //        .post(ClientResponse.class, objectMapper.writeValueAsString(fetcherRequest));
+            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
+            		.post(Entity.json(objectMapper.writeValueAsString(fetcherRequest)), Response.class);
+            //.post(Entity.entity(objectMapper.writeValueAsString(fetcherRequest), MediaType.APPLICATION_JSON));
+					
+            System.out.println("ObjectMapper: " + objectMapper.writeValueAsString(fetcherRequest));
+            System.out.println("Response = " + clientResponse);
+            //String jsonResponse = clientResponse.getEntity(String.class);
+            String jsonResponse = clientResponse.readEntity(String.class);
+            
+            logger.info("NEW STRING: " + jsonResponse);
             FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);
             logger.info("start Response from fetchMain " + objectMapper.writeValueAsString(response));
             aidrCollection.setStatus(CollectionStatus.getByStatus(response.getStatusCode()));
@@ -207,13 +226,19 @@ public class CollectionServiceImpl implements CollectionService {
     @Override
     public boolean pingCollector() throws AidrException {
         try {
-            WebResource webResource = client.resource(fetchMainUrl + "/manage/ping");
-            ObjectMapper objectMapper = new ObjectMapper();
-            ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .get(ClientResponse.class);
-            String jsonResponse = clientResponse.getEntity(String.class);
-
+        	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+        	//WebResource webResource = client.resource(fetchMainUrl + "/manage/ping");
+        	WebTarget webResource = client.target(fetchMainUrl + "/manage/ping");
+        	
+        	ObjectMapper objectMapper = new ObjectMapper();
+            //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+            //        .accept(MediaType.APPLICATION_JSON)
+            //        .get(ClientResponse.class);
+        	Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+        	
+        	//String jsonResponse = clientResponse.getEntity(String.class);
+        	String jsonResponse = clientResponse.readEntity(String.class);
+        	
             PingResponse pingResponse = objectMapper.readValue(jsonResponse, PingResponse.class);
             if (pingResponse != null && "RUNNING".equals(pingResponse.getCurrentStatus())) {
                 return true;
@@ -231,11 +256,18 @@ public class CollectionServiceImpl implements CollectionService {
             /**
              * Rest call to Fetcher
              */
-            WebResource webResource = client.resource(fetchMainUrl + "/twitter/stop?id=" + URLEncoder.encode(collection.getCode()));
-            ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-            String response = clientResponse.getEntity(String.class);
-            logger.info(response);
+        	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+            //WebResource webResource = client.resource(fetchMainUrl + "/twitter/stop?id=" + URLEncoder.encode(collection.getCode()));
+        	WebTarget webResource = client.target(fetchMainUrl + "/twitter/stop?id=" + URLEncoder.encode(collection.getCode(), "UTF-8"));
+            
+            //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+            //        .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        	Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+        	
+        	//String response = clientResponse.getEntity(String.class);
+        	String jsonResponse = clientResponse.readEntity(String.class);
+        	
+            logger.info(jsonResponse);
             /**
              * Change Database Status
              */
@@ -260,10 +292,17 @@ public class CollectionServiceImpl implements CollectionService {
             /**
              * Make a call to fetcher Status Rest API
              */
-            WebResource webResource = client.resource(fetchMainUrl + "/twitter/status?id=" + URLEncoder.encode(collection.getCode()));
-            ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
-            String jsonResponse = clientResponse.getEntity(String.class);
+        	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+            //WebResource webResource = client.resource(fetchMainUrl + "/twitter/status?id=" + URLEncoder.encode(collection.getCode()));
+        	WebTarget webResource = client.target(fetchMainUrl + "/twitter/status?id=" + URLEncoder.encode(collection.getCode(), "UTF-8"));
+            
+            //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+            //        .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        	Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+        	
+            //String jsonResponse = clientResponse.getEntity(String.class);
+        	String jsonResponse = clientResponse.readEntity(String.class);
+        	
             logger.info("jsonResponse" + jsonResponse);
             ObjectMapper objectMapper = new ObjectMapper();
             FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);

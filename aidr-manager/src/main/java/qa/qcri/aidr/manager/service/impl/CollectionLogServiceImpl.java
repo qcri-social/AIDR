@@ -5,9 +5,19 @@ import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
 import qa.qcri.aidr.manager.repository.CollectionLogRepository;
 import qa.qcri.aidr.manager.service.CollectionLogService;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
+
+
+
+
+
+//import com.sun.jersey.api.client.Client;		// gf 3 way
+//import com.sun.jersey.api.client.ClientResponse;
+//import com.sun.jersey.api.client.WebResource;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.core.MediaType;
+
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +34,9 @@ public class CollectionLogServiceImpl implements CollectionLogService {
 
     private Logger logger = Logger.getLogger(getClass());
 
-    @Autowired
-    private Client client;
+    // gf 3 way - disable @AutoWired since Client API has changed
+    //@Autowired
+    private Client client = ClientBuilder.newClient();;
 
     @Autowired
     private CollectionLogRepository collectionLogRepository;
@@ -82,11 +94,15 @@ public class CollectionLogServiceImpl implements CollectionLogService {
 
     public String generateCSVLink(String code) throws AidrException {
         try {
-            WebResource webResource = client.resource(persisterMainUrl + "/persister/genCSV?collectionCode=" + code);
-            ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
-                    .get(ClientResponse.class);
-            String jsonResponse = clientResponse.getEntity(String.class);
-
+            //WebResource webResource = client.resource(persisterMainUrl + "/persister/genCSV?collectionCode=" + code);
+            WebTarget webResource = client.target(persisterMainUrl + "/persister/genCSV?collectionCode=" + code);
+            //ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
+            //        .get(ClientResponse.class);
+            Response clientResponse = webResource.request(MediaType.TEXT_PLAIN).get();
+            
+            //String jsonResponse = clientResponse.getEntity(String.class);
+            String jsonResponse = clientResponse.readEntity(String.class);
+            
             if (jsonResponse != null && "http".equals(jsonResponse.substring(0, 4))) {
                 return jsonResponse;
             } else {
@@ -99,11 +115,16 @@ public class CollectionLogServiceImpl implements CollectionLogService {
 
     public String generateTweetIdsLink(String code) throws AidrException {
         try {
-            WebResource webResource = client.resource(persisterMainUrl + "/persister/genTweetIds?collectionCode=" + code);
-            ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
-                    .get(ClientResponse.class);
-            String jsonResponse = clientResponse.getEntity(String.class);
-
+            //WebResource webResource = client.resource(persisterMainUrl + "/persister/genTweetIds?collectionCode=" + code);
+        	WebTarget webResource = client.target(persisterMainUrl + "/persister/genTweetIds?collectionCode=" + code);
+        	
+        	//ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
+            //        .get(ClientResponse.class);
+        	Response clientResponse = webResource.request(MediaType.TEXT_PLAIN).get();
+        	
+        	//String jsonResponse = clientResponse.getEntity(String.class);
+        	String jsonResponse = clientResponse.readEntity(String.class);
+        	
             if (jsonResponse != null && "http".equals(jsonResponse.substring(0, 4))) {
                 return jsonResponse;
             } else {

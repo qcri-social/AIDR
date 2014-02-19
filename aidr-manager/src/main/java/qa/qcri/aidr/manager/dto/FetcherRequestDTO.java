@@ -18,7 +18,9 @@ public class FetcherRequestDTO implements Serializable {
     private String accessTokenSecret;
     private String geoLocation;
     private String languageFilter;
-
+    
+    public FetcherRequestDTO() {}		// gf 3 - modified attempt
+    
     public String getGeoLocation() {
         return geoLocation;
     }
