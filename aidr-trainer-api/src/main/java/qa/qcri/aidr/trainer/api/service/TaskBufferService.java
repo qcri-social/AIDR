@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface TaskBufferService {
     List<TaskBuffer> findAssignableTaskBuffer(String columnName, Integer value,String userName ,Integer maxresult);
-    List<TaskBuffer> findAllTaskBufferByCririsID(Long cririsID, String userName ,Integer assignedCount, Integer maxresult);
+    List<TaskBuffer> findAvailableaskBufferByCririsID(Long cririsID, String userName ,Integer assignedCount, Integer maxresult);
     List<TaskBufferJsonModel> findOneTaskBufferByCririsID(Long cririsID,String userName ,Integer assignedCount, Integer maxresult);
 
 }

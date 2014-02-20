@@ -9,6 +9,7 @@ import qa.qcri.aidr.trainer.api.service.TaskBufferService;
 import qa.qcri.aidr.trainer.api.template.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -46,14 +47,30 @@ public class TaskBufferServiceImpl implements TaskBufferService {
 
     @Override
     @Transactional(readOnly = false)
-    public List<TaskBuffer> findAllTaskBufferByCririsID(Long cririsID,String userName , Integer assignedCount, Integer maxresult) {
+    public List<TaskBuffer> findAvailableaskBufferByCririsID(Long cririsID,String userName , Integer assignedCount, Integer maxresult) {
         // tractional process for get & insert
         List<TaskBuffer> taskBufferList = null;
+        ArrayList<Long> docID = new ArrayList<Long>();
+        boolean douplicateFound = false;
         Users users = usersDao.findUserByName(userName);
         if(users != null){
             taskBufferList =  taskBufferDao.findAllTaskBufferByCririsID(cririsID, assignedCount, maxresult);
+            for (Iterator it =taskBufferList.iterator(); it.hasNext();){
+                TaskBuffer tb = (TaskBuffer) it.next();
+                if(!docID.contains(tb.getDocumentID())){
+                    docID.add(tb.getDocumentID());
+                    // System.out.println("findAllTaskBufferByCririsID : " + tb.getDocumentID());
+                }
+                else{
+                    douplicateFound = true;
+                }
 
-            taskAssignmentDao.insertTaskAssignment(taskBufferList, users.getUserID());
+            }
+
+            if(!douplicateFound){
+                taskAssignmentDao.insertTaskAssignment(taskBufferList, users.getUserID());
+            }
+
         }
 
         return  taskBufferList;
