@@ -28,6 +28,7 @@ import javax.ws.rs.core.MediaType;
 
 import java.util.List;
 import java.util.Map;
+import org.glassfish.jersey.jackson.JacksonFeature;
 
 @Service("collectionLogService")
 public class CollectionLogServiceImpl implements CollectionLogService {
@@ -36,7 +37,7 @@ public class CollectionLogServiceImpl implements CollectionLogService {
 
     // gf 3 way - disable @AutoWired since Client API has changed
     //@Autowired
-    private Client client = ClientBuilder.newClient();;
+    
 
     @Autowired
     private CollectionLogRepository collectionLogRepository;
@@ -94,6 +95,7 @@ public class CollectionLogServiceImpl implements CollectionLogService {
 
     public String generateCSVLink(String code) throws AidrException {
         try {
+            Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
             //WebResource webResource = client.resource(persisterMainUrl + "/persister/genCSV?collectionCode=" + code);
             WebTarget webResource = client.target(persisterMainUrl + "/persister/genCSV?collectionCode=" + code);
             //ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
@@ -114,7 +116,9 @@ public class CollectionLogServiceImpl implements CollectionLogService {
     }
 
     public String generateTweetIdsLink(String code) throws AidrException {
+        Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
+            //Client client = ClientBuilder.newClient();
             //WebResource webResource = client.resource(persisterMainUrl + "/persister/genTweetIds?collectionCode=" + code);
         	WebTarget webResource = client.target(persisterMainUrl + "/persister/genTweetIds?collectionCode=" + code);
         	
