@@ -10,7 +10,7 @@ Before installing AIDR, you must have the following:
 * MySQL server running -- https://dev.mysql.com/downloads/mysql/
 * Pybossa server running -- http://docs.pybossa.com/en/latest/index.html
 
-We have tested AIDR on Ubuntu 12, using Glassfish v3.2 and MySQL v14.14.
+We have tested AIDR on Ubuntu 12, using Glassfish v4.0 and MySQL v14.14.
 
 # 1. Building and deploying (general)
 
