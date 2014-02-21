@@ -914,12 +914,12 @@ public class TaggerServiceImpl implements TaggerService {
             
             //ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
             //        .get(ClientResponse.class);
-        	Response clientResponse = webResource.request(MediaType.TEXT_PLAIN).get();
+        	Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
         	
             //String jsonResponse = clientResponse.getEntity(String.class);
         	String jsonResponse = clientResponse.readEntity(String.class);
 
-                if (jsonResponse != null && jsonResponse.startsWith("[")) {
+            if (jsonResponse != null && jsonResponse.startsWith("[")) {
                 return jsonResponse;
             } else {
                 return "";
