@@ -62,7 +62,11 @@ NOTE:- If the application has previously been deployed and you have MySql schema
 * twitter.consumerSecret=<put here your Twitter's application consumer key secret>
 * twitter.callBackURL=<here goes the URL where the application is accessible>. e.g., http://localhost:8080/AIDRFetchManager   
 * application.secureUrl=<here goes the URL where the application is accessible>. e.g., http://localhost:8080/AIDRFetchManager
-* fetchMainUrl=<here specify the URL of the Collector/Fetcher application>. e.g., http://localhost:8080/AIDRFetcher/webresources/fetcher
+*fetchMainUrl=Put here aidr-collector webresources path (e.g., http://localhost:8084/aidr-collector/webresources)
+*taggerMainUrl=Put here aidr-tagger-api webresources path (e.g., http://localhost:8084/aidr-tagger-api/rest
+*persisterMainUrl=Put here aidr-persister webresources path (e.g., http://localhost:8084/aidr-persister/webresources)
+*crowdsourcingAPIMainUrl=Put here aidr-trainer-api webresources path (e.g., http://localhost:8084/aidr-trainer-api/rest)
+*outputAPIMainUrl=Put here aidr-output webresources path (e.g., http://localhost:8084/aidr-output/rest)
 
 After the above steps have been executed, you can build the project:
 
@@ -146,15 +150,3 @@ After the above steps have been executed, you can build the project:
 * Deploy `aidr-trainer-pybossa-X.war` to Glassfish using the instructions above. 
 
 # 10. Context Root Settings
-
-Default context roots for deployment:
-
-1. `aidr-collector`: AIDRCollector
-2. `aidr-persister`: AIDRPersister
-3. `aidr-manager`: AIDRFetchManager
-4. `aidr-tagger-api`: AIDRPredictUI-API
-6. `aidr-trainer-api`: AIDRTrainerAPI
-7. `aidr-output`: AIDROutput
-7. `aidr-trainer-pybossa`: AIDRTrainerPybossa 
-
-These values need to reflect the setting used in the file: aidr-manager/src/main/resources/system.properties
