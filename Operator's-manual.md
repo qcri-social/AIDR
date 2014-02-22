@@ -91,6 +91,7 @@ You can click on the "Refresh" button on the upper-right corner of that page to 
 
 To stop a collection, click on the "Stop" button next to it. Note that currently only one collection per user is allowed. If you start a new collection, you need to stop the currently-running ones.
 
+Note that Twitter’s Terms of Service allow you to download up to 100,000 tweets per day. But you can download as many tweet IDs as you’d like. Tweet IDs are simply unique identifiers for every posted tweet. You can then convert  tweet IDs back into their original tweets. This is permissible according to Twitter’s Terms of Service.
 
 # 3. Automatically tagging data
 
