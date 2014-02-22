@@ -77,6 +77,8 @@ public class MiscResourceImp implements MiscResourceFacade {
                 + " JOIN task_answer ta on ta.documentID = d.documentID "
                 + " JOIN users u on u.userID = ta.userID "
                 + " WHERE mf.modelFamilyID = :modelFamilyID AND d.crisisID = :crisisID ";
+
+        System.out.println("getTraningDataByCrisisAndAttribute : " + sql);
         try {
             Integer totalRows;
 
