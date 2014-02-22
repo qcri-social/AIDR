@@ -94,24 +94,25 @@ To stop a collection, click on the "Stop" button next to it. Note that currently
 
 # 3. Automatically tagging data
 
+Automatic taggers require training examples, which are items that have been classified manually by humans. Depending on the specific classifier, in particular on the number of different labels or categories contained on it, the number of training examples will vary. Typically, at least a few hundred training examples are needed before the classifier starts to work accurately.
+
 # 3.1. Starting the automatic tagger
 
-From the collection details page, click on "Enable Tagger" or "Go To Tagger" button if the tagger is already enabled. A tagger is a set of classifiers. Each classifier corresponds to one way of sorting out tweets into categories.
+From the collection details page, click on "Enable Tagger" or "Go To Tagger" button if the tagger is already enabled [Figure 7] . A tagger is a set of classifiers. Each classifier corresponds to one way of sorting out tweets into user-defined categories. Before enabling automatic tagging, you must chose a crisis type to define your collection [Figure 8]. 
 
-To start the automatic tagger, you need to add a classifier to it. Click on the "Add a new classifier" button and you will see a list of standard classifiers that are useful in disaster scenarios. You can also create your own one, by specifying the different labels in that classifier.
-
-Click on the "Add" button next to a classifier to add it. We recommend you to add only one classifier at the beginning -- it will be easier to handle for you.
+To start the tagger, you must then add a classifier to it. Click on the "Add a new classifier" button under the collection you wish to start. A list of standard classifiers that are useful in disaster scenarios will appear [Figure 9]. You can also create your own one, by specifying the different labels in that classifier [Figure 10]. You will chose the classier based on what types of tweets you are interested in. Click on the "Add" button next to a classifier to add it. We recommend you to add only one classifier at the beginning -- it will be easier to handle for you.
 
 # 3.2. Collecting training examples
 
-Automatic taggers require training examples, which are items that have been classified manually by humans. Depending on the specific classifier, in particular on the number of different labels or categories contained on it, the number of training examples will vary. Typically, at least a few hundred training examples are needed before the classifier starts to work accurately.
+At this stage, you can copy-paste the "Public link for volunteers" and share it with your organization or volunteers. All users with the link will then be able to apply training labels for your tagger. If you do not have others to tag the tweets, then proceed with the training examples yourself.
 
-To collect training examples, copy-paste the "Public link for volunteers" and share it with your digital volunteers. They will be able to provide training labels for all the classifiers of your tagger from that page.
+ To do this, click on "Manage Training Examples" [Figure 11]. On the next screen, click "Add training data." If your collection has not acquired enough tweets for the training, this screen below will show. After a few minutes, try again. 
 
-If you do not have volunteers to tag data, you can enter examples yourself. For this, click on "Manage Training Examples" and then on "Add Training Examples". 
+Once you click to add training data, you will begin to label training examples. To complete the training data, you will be asked to indicate the proper label for tweets gathered as part of your collection. The labels are determined by the classifier you chose for your collection based on what type of information you are looking to collect from the tweets [Figure 12]. Again, these training examples provide the basis for your automatic tagger.
+
 
 # 3.3. Monitoring the automatic tagger
 
-The automatic tagger will not run until a minimum number of training examples (50) is provided. At that point, it will evaluate its own performance and report a number, the **AUC** (Area under curve), which is a standard measure of how well it is performance.
+The automatic tagger will not run until a minimum number of training examples (20) is provided. At that point, it will evaluate its own performance and report a number, the **AUC** (Area under curve), which is a standard measure of how well it is performance.
 
 The more examples you provide, the better the classification accuracy will be. An AUC of 0.5 or lower indicates a very bad classifier that is not doing anything better than random guessing -- this is expected when you have few training examples, but may also signal errors or inconsistencies in your examples. An AUC of 0.8 or higher indicates reasonable classification accuracy and 0.9 is sometimes attainable with a few thousands examples.
