@@ -1,4 +1,4 @@
-This document covers the actions of an operator of AIDR, i.e. the person in charge of maintaining data collections and automatic taggers. It assumes you are familiar with is AIDR and what it does.
+
 
 # Introduction
 
