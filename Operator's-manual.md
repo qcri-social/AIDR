@@ -117,3 +117,10 @@ Once you click to add training data, you will begin to label training examples. 
 The automatic tagger will not run until a minimum number of training examples (20) is provided. At that point, it will evaluate its own performance and report a number, the **AUC** (Area under curve), which is a standard measure of how well it is performance.
 
 The more examples you provide, the better the classification accuracy will be. An AUC of 0.5 or lower indicates a very bad classifier that is not doing anything better than random guessing -- this is expected when you have few training examples, but may also signal errors or inconsistencies in your examples. An AUC of 0.8 or higher indicates reasonable classification accuracy and 0.9 is sometimes attainable with a few thousands examples.
+
+# 3.4. Downloading collected data
+
+To download/export the data gathered click the Download/Export button
+
+Choose which format to download/export. Click relevant button
+
