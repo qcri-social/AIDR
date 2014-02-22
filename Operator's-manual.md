@@ -1,5 +1,4 @@
 
-
 # Introduction
 
 Social media platforms are increasingly used to communicate crisis information when major disasters strike. Hence, the rise of Big (Crisis) Data. Humanitarian organizations, digital humanitarians and disaster-affected communities know that some of this user-generated content can increase situational awareness. To do this, relevant and actionable content must be identified in near real-time so that can be triangulated with other sources. By doing this, informed decisions can be made more quickly. However, finding potentially life-saving information in this growing stack of Big Crisis Data is like looking for the proverbial needle in a giant haystack. This is why Patrick Meier and his team at QCRI developed AIDR.
@@ -23,9 +22,8 @@ The Tagger displays a list of automatically tagged tweets updated in real-time. 
 
 # 1. Logging in
 
-To enter AIDR, go to http://aidr.qcri.org/ -- you will be asked to log-in using your Twitter credentials.
+To enter AIDR, go to http://aidr.qcri.org/ -- you will be asked to log-in using your Twitter credentials [Figure 1]. You need a Twitter account to be able to use AIDR. If you do not have a Twitter account please sign up here. Once you have signed in, you will receive a prompt asking you to authorize AIDR to use your Twitter account [Figure 2]. Click “Authorize app” to proceed. Every time you log into AIDR you will have to authorize the platform to use your account. 
 
-You need a Twitter account to be able to use AIDR.
 
 # 2. Collecting data 
 
