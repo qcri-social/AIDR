@@ -48,6 +48,14 @@ If you don't include “#”, you also match hashtags ("bridge" matches "#bridge
 If you do include “#”, you only match hashtags ("#bridge" does not match "bridge")
 
 
+There are also some optional fields. They are:
+Language: filters results only by the specified languages. You can chose more than one language. Although not mandatory, specifying a language or languages is recommended if you intend to use the automatic tagger.
+Geographical regions: comma-separated pairs of latitude or longitude. If you specify a geographical region, all messages from within the region will be collected. This is independent of whether or not they contain the keywords.
+Follow specific users: comma-separated list of twitter user IDs to be followed.
+A geographical boundary, or both A filter based on keywords and geographical coordinates includes tweets that either match the keywords or fall within the geographical bounding box.
+For the geographical boundary, one or several regions can be specified. Each one should be indicated by a rectangle in coordinate space. The following website can help you determine these coordinates: http://boundingbox.klokantech.com/
+
+
 # 2.2. Starting and stopping a collection
 
 Once you create a collection, you need to start it. Do this by click on the "Start" button next to the collection. You can monitor the progress of a collection by clicking on its name on the "My Collections" page and looking at the number of downloaded items and the latest downloaded item. You can click on the "Refresh" button on the upper-right corner of that page to view up-to-date information.
