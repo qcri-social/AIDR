@@ -17,7 +17,9 @@ Tagger
 The Tagger component of AIDR automatically applies the topics of interest to tweets collected in real-time using the Collector. This is where the machine learning kicks in. The Tagger uses the human-classified tweets to learn what kinds of tweets the user is interested in. When enough tweets have been classified (20 minimum), the Tagger automatically begins to tag new tweets by topic of interest. The more tweets a user classifies, the more accurate the Tagger will be. Note that each automatically tagged tweet includes an accuracy score—i.e., the probability that the tweet was correctly tagged by the automatic Tagger.
 The Tagger displays a list of automatically tagged tweets updated in real-time. The user can filter this list by topic and/or accuracy score—display all tweets tagged as “Needs” with an accuracy of 90% or more, for example. She can also download the tagged tweets for further analysis. In addition, she can share the data link of her Tagger with developers so they can import the tagged tweets directly into to their own platforms, e.g., MicroMappers, Ushahidi, CrisisTracker, etc. (Note that AIDR already powers CrisisTracker by automating the classification of tweets). In addition, the user can share a display link with individuals who wish to embed the live feed into their websites, blogs, etc.
 
+### Instructions
 
+This manual covers the working procedures for an operator of AIDR using Twitter for collection. The following section contains step-by-step instructions for using the platform.
 
 # 1. Logging in
 
@@ -26,32 +28,25 @@ To enter AIDR, go to http://aidr.qcri.org/ -- you will be asked to log-in using 
 
 # 2. Collecting data 
 
-After entering AIDR, you will be in a page listing your collections. Click on "Create a New Collection".
+After authorizing AIDR to access you account, you will be redirected back to the application. This will bring you to your “My Collections” page. To start, click on "Create a New Collection" [Figure 3].
+
 
 # 2.1. Creating a collection
 
-The "Create New Collection" form appears. The following fields are mandatory:
-
-* **Name**: a name for your collection, typically the name of a crisis/disaster, e.g. "Typhoon Haiyan"
-* **Code**: a machine-readable code for your collection, which allows AIDR to uniquely identify your collection. This field can not be edited later. Conventionally we use `Year-Month-Name` for this code.
-
-Next, you have to specify keywords, a geographical boundary, or both* If you specify both, any tweet that either contains the keywords or are inside the geographical boundary will be selected.
-
-For **keywords**, you can specify up to 400 comma-separated keywords in this field.
-
+The "Create New Collection" form appears [Figure 4]. The following fields are mandatory:
+Name: a name for your collection, typically the name of a crisis/disaster, e.g. "Typhoon Haiyan"
+Code: a machine-readable code for your collection, which allows AIDR to uniquely identify your collection. A suggested code will appear in the field which you can use or change to suit your requirements. Conventionally a code in the format Year-Month-Name is used for this code. It is important to remember that this field can not be edited later.
+Keywords: comma-separated keywords to filter the Twitter stream. You can specify up to 400 keywords in this field.
 General rules:
-* Not case-sensitive ("bridge" matches "Bridge").
-* Whole words match ("bridge" does not match "damagedbridge").
-
-Multi-word queries
-* If you include two or more words on a query, all of them must be present in the tweet ("Brooklin bridge" does not match a tweet that does not contain "Brooklin" or does not contain "bridge")
-* The words does not need to be consecutive or in that order ("Brooklin bridge" will match "the bridge to Brooklin")
-
+Not case-sensitive ("bridge" matches "Bridge")
+Whole words match ("bridge" does not match "damagedbridge")
+Multi-word queries:
+If you include two or more words in a query, all of them must be present in the tweet ("Brooklyn bridge" does not match a tweet that does not contain "Brooklyn" or does not contain "bridge")
+The words does not need to be consecutive or in that order ("Brooklyn bridge" will match "the bridge to Brooklyn")
 Queries with or without hashtags:
-* If you don't include '#', you also match hashtags ("bridge" matches "#bridge")
-* If you do include '#', you only match hashtags ("#bridge" does not match "bridge")
+If you don't include “#”, you also match hashtags ("bridge" matches "#bridge")
+If you do include “#”, you only match hashtags ("#bridge" does not match "bridge")
 
-For the **geographical boundary**, one or several regions can be specified. Each one should be indicated by a rectangle in coordinate space. The following website can help you determine these coordinates: http://boundingbox.klokantech.com/ -- chose the option "Copy/paste CSV format of a boundingbox".
 
 # 2.2. Starting and stopping a collection
 
