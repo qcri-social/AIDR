@@ -154,8 +154,13 @@ public class TrainingDataResource {
         int sampleCountThreshold = 20;
         try {
             prop.load(new FileInputStream(Config.AIDR_TAGGER_CONFIG_URL));
-            sampleCountThreshold =   Integer.parseInt(prop
-                    .getProperty("sampleCountThreshold"));
+            String value = prop.getProperty("sampleCountThreshold") ;
+
+            if(value != null){
+                sampleCountThreshold =   Integer.parseInt(prop
+                        .getProperty("sampleCountThreshold"));
+            }
+
         } catch (IOException ex) {
             System.out.println("IOException: " + ex);
             throw new RuntimeException(ex);
