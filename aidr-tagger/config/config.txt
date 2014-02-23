@@ -3,9 +3,9 @@
 # ################################ #
 
 # MySQL connection details
-mysql_path=jdbc:mysql://localhost/aidr_predict?useUnicode=true&characterEncoding=UTF-8
-mysql_username=aidr_admin
-mysql_password=aidr_admin
+mysql_path=jdbc:mysql://localhost:8889/aidr_predict
+mysql_username=root
+mysql_password=root
 
 # Replace console with a filename to log to file
 log_file_name=console
