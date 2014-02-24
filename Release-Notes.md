@@ -1,7 +1,9 @@
 ## Release v1.0.0
 
 This version of the AIDR system has been tested with GlassFish Open Source Edition 4.0 on the following operating systems:
+
 1. OS X 10.9.1
+
 2. Ubuntu 13.10
 
 Known issues: 
