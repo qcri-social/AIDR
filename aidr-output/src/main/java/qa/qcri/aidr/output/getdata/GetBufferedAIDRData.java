@@ -11,7 +11,7 @@
  * @author Koushik Sinha
  * Last modified: 14/01/2014
  *
- * Dependencies:  servlets 3+, jedis-2.2.1, gson-2.2.4, commons-pool-1.6, slf4j-1.7.5, JAX-RS 1.x, Jersey 1.8+
+ * Dependencies:  servlets 3+, jedis-2.2.1, gson-2.2.4, commons-pool-1.6, slf4j-1.7.5, JAX-RS 2.0, jersey 2.0+
  * 	
  * Hints for testing:
  * 		1. Tune the socket timeout parameter in JedisPool(...) call if connecting over a slow network

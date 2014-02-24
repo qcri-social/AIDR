@@ -11,7 +11,7 @@
  @author Koushik Sinha
  Last modified: 14/01/2014
  
- Dependencies:  servlets 3+, jedis-2.2.1, gson-2.2.4, commons-pool-1.6, slf4j-1.7.5
+ Dependencies:  servlets 3+, jedis-2.2.1, gson-2.2.4, commons-pool-1.6, slf4j-1.7.5, jax-rs 2.0
  	
  Hints for testing:
  	1. Tune the socket timeout parameter in JedisPool(...) call if connecting over a slow network
@@ -40,8 +40,8 @@
     3. http://localhost:8080/aidr-output/rest/crisis/fetch/channel/aidr_predict.clex_20131201?callback=func&count=50
    
   Apart from the above valid paths one can use:
-   	1. http://localhost:8080/aidr-output/rest/crisis/fetch/channels/list     => returns list of active channels
-   	2. http://localhost:8080/aidr-output/rest/crisis/fetch/channels/latest	=> returns the latest tweet data from  across all channels
+    1. http://localhost:8080/aidr-output/rest/crisis/fetch/channels/list     => returns list of active channels
+    2. http://localhost:8080/aidr-output/rest/crisis/fetch/channels/latest	=> returns the latest tweet data from  across all channels
  
   
   Parameter explanations:
