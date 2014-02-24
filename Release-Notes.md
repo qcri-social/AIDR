@@ -1,4 +1,4 @@
-## Release v1.0.0
+## AIDR v1.0.0
 
 **Release date**: February 24, 2014
 
