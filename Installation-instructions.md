@@ -148,3 +148,7 @@ After the above steps have been executed, you can build the project:
 * Appropriately set the `crowdsourcingAPIMainUrl` in the `system.properties` file under `aidr-manager`.     
 * Build using maven following the instructions above; this should generate a file `aidr-trainer-pybossa-X.war`
 * Deploy `aidr-trainer-pybossa-X.war` to Glassfish using the instructions above. 
+
+# 9. Known Issues
+
+* aidr-manager application, when deployed on Glassfish 4 application server, does not load its default homepage (index.jsp page) on startup. In this case, complete path (e.g., http://abc.org/aidr/index.jsp) must be provided to launch the default homepage.
