@@ -189,7 +189,6 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
 
                         if(nominalAttributeID.equals(nominalAttID)){
                             processAppCreation(featureJsonObj, nominalAttributeID,crisisID,nominalAttID,code, name, description);
-                           // doAppUpdate(clientApp, )
                             break;
                         }
                     }

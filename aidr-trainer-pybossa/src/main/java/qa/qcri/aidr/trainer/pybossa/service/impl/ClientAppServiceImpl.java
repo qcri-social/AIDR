@@ -66,4 +66,20 @@ public class ClientAppServiceImpl implements ClientAppService {
         return clientAppDao.getAllClientAppByClientIDAndStatus(clientID, status);
         //return clientAppDao.findAllClientAppByCrisisID(crisisID);  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    @Override
+    public List<ClientApp> getAllClientAppByCrisisIDAndStatus(Long crisisID, Integer status) {
+        return clientAppDao.getAllClientAppByCrisisIDAndStatus(crisisID, status);
+        //return clientAppDao.findAllClientAppByCrisisID(crisisID);  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void updateClientAppStatus(ClientApp clientApp, Integer status) {
+        ClientApp app = findClientAppByID("clientAppID", clientApp.getClientAppID());
+        if(app != null){
+            app.setStatus(status);
+            clientAppDao.updateClientApp(app);
+        }
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

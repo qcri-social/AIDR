@@ -8,7 +8,7 @@ package qa.qcri.aidr.trainer.pybossa.store;
  * To change this template use File | Settings | File Templates.
  */
 public class URLPrefixCode {
-    public static String ASSINGN_TASK = "/taskbuffer/getassignabletasks/";
+    public static String ASSINGN_TASK = "/taskbuffer/getbatchtaskbuffer/";
     public static String TASK_PUBLISH = "/task?api_key=";
     public static String TASK_ANSWER_SAVE = "/taskanswer/save";
     public static String TASK_INFO = "/task?app_id=";

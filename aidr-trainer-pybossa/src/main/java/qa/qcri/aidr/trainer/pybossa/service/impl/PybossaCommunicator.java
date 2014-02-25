@@ -2,6 +2,7 @@ package qa.qcri.aidr.trainer.pybossa.service.impl;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
@@ -74,6 +75,46 @@ public class PybossaCommunicator extends AbstractCommunicator {
     }
 
     @Override
+    public String deleteGet(String url){
+        int responseCode = -1;
+        HttpClient httpClient = new DefaultHttpClient();
+        StringBuffer responseOutput = new StringBuffer();
+        try {
+            HttpDelete request = new HttpDelete(url);
+            request.addHeader("content-type", "application/json");
+            HttpResponse response = httpClient.execute(request);
+            responseCode = response.getStatusLine().getStatusCode();
+
+            if ( responseCode == 200 || responseCode == 204) {
+                if(response.getEntity()!=null){
+                    BufferedReader br = new BufferedReader(
+                            new InputStreamReader((response.getEntity().getContent())));
+
+                    String output;
+                    while ((output = br.readLine()) != null) {
+                        System.out.println(output);
+                        responseOutput.append(output);
+                    }
+                }
+            }
+            else{
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + response.getStatusLine().getStatusCode());
+            }
+
+
+        }catch (Exception ex) {
+            System.out.println("ex Code deleteGet1: " + ex);
+            System.out.println("ex Code deleteGet2: " + url);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+
+        return responseOutput.toString();
+
+    }
+
+    @Override
     public int sendPost(String data, String url) {
         // dataoutput="{\"info\": {\"username\": \" drippingmind\", \"userid\": \"449077875\", \"n_answers\": 2, \"date\": \" Wed Dec 05 11:13:18 CET 2012\", \"text\": \" Google provides support in the #Philippines w/ crisis response map 4 typhoon #Pablo #Bopha http://t.co/mJCNBHAJ #DRM #ICT #EmergencyResponse\", \"question\": \"Please tag the following tweet or SMS based on the category or categories that best describes the link(s) included in the tweet/Sms\", \"tweetid\": \"2.76E17\"}, \"state\": 0, \"n_answers\": 30, \"quorum\": 0, \"calibration\": 0, \"app_id\": 4, \"priority_0\": 0}";
         int responseCode = -1;
@@ -94,9 +135,9 @@ public class PybossaCommunicator extends AbstractCommunicator {
                             new InputStreamReader((response.getEntity().getContent())));
 
                     String output;
-                   // System.out.println("Output from Server ...." + response.getStatusLine().getStatusCode() + "\n");
+                    System.out.println("Output from Server ...." + response.getStatusLine().getStatusCode() + "\n");
                     while ((output = br.readLine()) != null) {
-                     //   System.out.println(output);
+                        System.out.println(output);
                     }
                 }
             }
@@ -107,7 +148,9 @@ public class PybossaCommunicator extends AbstractCommunicator {
 
 
         }catch (Exception ex) {
-            System.out.println("ex Code sendPost: " + ex);
+            System.out.println("ex Code sendPost1: " + ex);
+            System.out.println("ex Code sendPost2: " + data);
+            System.out.println("ex Code sendPost3: " + url);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }

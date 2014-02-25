@@ -27,6 +27,11 @@ public class ClientAppDaoImpl extends AbstractDaoImpl<ClientApp, String> impleme
     }
 
     @Override
+    public void updateClientApp(ClientApp clientApp) {
+        saveOrUpdate(clientApp);
+    }
+
+    @Override
     public ClientApp findClientAppByID(String columnName, Long id) {
         ClientApp appCfg = findByCriterionID(Restrictions.eq(columnName, id));
         return appCfg;  //To change body of implemented methods use File | Settings | File Templates.
@@ -66,5 +71,13 @@ public class ClientAppDaoImpl extends AbstractDaoImpl<ClientApp, String> impleme
                 .add(Restrictions.eq("clientID",clientID))
                 .add(Restrictions.eq("status", status)));
                  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public List<ClientApp> getAllClientAppByCrisisIDAndStatus(Long clientID, Integer status) {
+        return findByCriteria(Restrictions.conjunction()
+                .add(Restrictions.eq("crisisID",clientID))
+                .add(Restrictions.eq("status", status)));
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

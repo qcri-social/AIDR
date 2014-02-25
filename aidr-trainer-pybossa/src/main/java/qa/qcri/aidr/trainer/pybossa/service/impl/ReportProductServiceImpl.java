@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.trainer.pybossa.entity.*;
 import qa.qcri.aidr.trainer.pybossa.format.impl.CVSRemoteFileFormatter;
 import qa.qcri.aidr.trainer.pybossa.service.*;
+import qa.qcri.aidr.trainer.pybossa.store.PybossaConf;
 import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
 import qa.qcri.aidr.trainer.pybossa.store.UserAccount;
 import qa.qcri.aidr.trainer.pybossa.util.DateTimeConverter;
@@ -66,7 +67,7 @@ public class ReportProductServiceImpl implements ReportProductService {
             if(templateList.size() > 0){
                 CVSRemoteFileFormatter formatter = new CVSRemoteFileFormatter();
 
-                String fileName = DateTimeConverter.reformattedCurrentDateForFileName() + clientApp.getShortName() + "export.csv";
+                String fileName = PybossaConf.DEFAULT_TRAINER_FILE_PATH + DateTimeConverter.reformattedCurrentDateForFileName() + clientApp.getShortName() + "export.csv";
                 CSVWriter writer = formatter.instanceToOutput(fileName);
 
                 for(int i=0; i < templateList.size(); i++){
