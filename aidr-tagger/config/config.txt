@@ -53,4 +53,4 @@ max_new_tasks_per_minute=50
 nominal_attribute_null_value=null
 
 # Model re-training threshold
-sampleCountThreshold=20
+sampleCountThreshold=50
