@@ -50,27 +50,10 @@ public class TaskBufferServiceImpl implements TaskBufferService {
     public List<TaskBuffer> findAvailableaskBufferByCririsID(Long cririsID,String userName , Integer assignedCount, Integer maxresult) {
         // tractional process for get & insert
         List<TaskBuffer> taskBufferList = null;
-        ArrayList<Long> docID = new ArrayList<Long>();
-        boolean douplicateFound = false;
         Users users = usersDao.findUserByName(userName);
         if(users != null){
             taskBufferList =  taskBufferDao.findAllTaskBufferByCririsID(cririsID, assignedCount, maxresult);
-            for (Iterator it =taskBufferList.iterator(); it.hasNext();){
-                TaskBuffer tb = (TaskBuffer) it.next();
-                if(!docID.contains(tb.getDocumentID())){
-                    docID.add(tb.getDocumentID());
-                    // System.out.println("findAllTaskBufferByCririsID : " + tb.getDocumentID());
-                }
-                else{
-                    douplicateFound = true;
-                }
-
-            }
-
-            if(!douplicateFound){
-                taskAssignmentDao.insertTaskAssignment(taskBufferList, users.getUserID());
-            }
-
+            taskAssignmentDao.insertTaskAssignment(taskBufferList, users.getUserID());
         }
 
         return  taskBufferList;

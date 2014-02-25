@@ -7,6 +7,7 @@ import qa.qcri.aidr.trainer.api.service.TaskAnswerService;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -28,6 +29,7 @@ public class TaskAnswerController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/save")
     public void saveTaskAnswer(String data){
+        logger.debug("saveTaskAnswer start: " + new Date());
         logger.debug("saveTaskAnswer..: " + data);
         taskAnswerService.insertTaskAnswer(data);
 

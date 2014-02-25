@@ -53,4 +53,13 @@ public class ClientAppServiceImpl implements ClientAppService {
     public List<ClientApp> findClientAppByAppType(String columnName, Integer typeID) {
         return clientAppDao.findClientAppByAppType(columnName, typeID);  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    @Override
+    public void updateClientAppByShortName(String shortName, Integer status) {
+       ClientApp clientApp = findClientAppByCriteria("shortName",shortName);
+       if(clientApp != null){
+           clientApp.setStatus(status);
+           clientAppDao.saveOrUpdate(clientApp);
+       }
+    }
 }

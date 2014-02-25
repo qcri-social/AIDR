@@ -1,8 +1,6 @@
 package qa.qcri.aidr.trainer.api.dao.impl;
 
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.hibernate.*;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -24,7 +22,6 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
     private SessionFactory sessionFactory;
 
     public Session getCurrentSession() {
-
         return sessionFactory.getCurrentSession();
     }
 
@@ -35,11 +32,15 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 
     @Override
     public void saveOrUpdate(E e) {
-        getCurrentSession().saveOrUpdate(e);
+        Session session = getCurrentSession();
+        session.buildLockRequest(LockOptions.UPGRADE);
+        session.saveOrUpdate(e);
     }
 
     @Override
     public void save(E e) {
+        Session session = getCurrentSession();
+        session.buildLockRequest(LockOptions.UPGRADE);
         getCurrentSession().save(e);
     }
 
