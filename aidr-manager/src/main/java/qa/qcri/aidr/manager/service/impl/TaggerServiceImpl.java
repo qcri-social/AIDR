@@ -582,6 +582,7 @@ public class TaggerServiceImpl implements TaggerService {
             /**
              * Rest call to Tagger
              */
+            deletePybossaApp(modelFamilyID);
             //WebResource webResource = client.resource(taggerMainUrl + "/modelfamily/" + modelFamilyID);
         	WebTarget webResource = client.target(taggerMainUrl + "/modelfamily/" + modelFamilyID);
         	
@@ -591,6 +592,10 @@ public class TaggerServiceImpl implements TaggerService {
             //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
             //        .accept(MediaType.APPLICATION_JSON)
             //        .delete(ClientResponse.class);
+
+            //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+            //        .accept(MediaType.APPLICATION_JSON)
+            //        .get(ClientResponse.class);
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).delete();
             
             //String jsonResponse = clientResponse.getEntity(String.class);
@@ -1193,6 +1198,43 @@ public class TaggerServiceImpl implements TaggerService {
             return 50;
 
         }
+    }
+
+    private void deletePybossaApp(Integer modelFamilyID){
+        Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+        try{
+
+            System.out.print("removeAttributeFromCrises: starting ......................................");
+            //WebResource webResource = client.resource(taggerMainUrl + "/modelfamily/" + modelFamilyID);
+            WebTarget webResource = client.target(taggerMainUrl + "/modelfamily/" + modelFamilyID);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
+
+            //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+            //        .accept(MediaType.APPLICATION_JSON)
+            //        .delete(ClientResponse.class);
+            Response resp = webResource.request(MediaType.APPLICATION_JSON).get();
+            String jsonResp = resp.readEntity(String.class);
+            TaggerModelFamily tm = objectMapper.readValue(jsonResp, TaggerModelFamily.class);
+            String crisisCode = tm.getCrisis().getCode();
+            String attributeCode = tm.getNominalAttribute().getCode();
+
+            System.out.print("crisisCode: " + crisisCode);
+            System.out.print("attributeCode: " + attributeCode);
+
+            WebTarget webResp = client.target(crowdsourcingAPIMainUrl+ "/clientapp/delete/" + crisisCode + "/" + attributeCode );
+
+            //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+            //        .accept(MediaType.APPLICATION_JSON)
+            //        .get(ClientResponse.class);
+            Response clientResp = webResource.request(MediaType.APPLICATION_JSON).get();
+            logger.info("deactivated - clientResponse : " + clientResp);
+        }
+        catch(Exception e){
+            logger.error("deactivated - deletePybossaApp : " + e);
+        }
+
     }
 
 }
