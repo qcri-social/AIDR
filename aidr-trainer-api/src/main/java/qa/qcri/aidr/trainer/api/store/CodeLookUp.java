@@ -15,4 +15,5 @@ public class CodeLookUp {
     public static Integer APP_MAP = 4;
 
     public static Integer APP_STATUS_ALIVE = 200;
+    public static Integer APP_SERVICE_COMPLETED = 200;
 }
