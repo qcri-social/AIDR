@@ -30,7 +30,7 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
         this.taggerDescription = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '0 0 15 0',
-            html: 'Status: <b>Waiting.</b>(50 training examples are needed) <b>0</b> messages are classified.&nbsp;',
+            html: 'Status: <b>Waiting training examples</b>. Has classified <b>0</b> messages.&nbsp;',
             flex: 1
         });
 
