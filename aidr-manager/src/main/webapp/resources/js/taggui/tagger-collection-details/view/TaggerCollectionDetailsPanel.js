@@ -123,7 +123,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         this.crisisModelsStore = Ext.create('Ext.data.Store', {
             pageSize: 30,
             storeId: 'crisisModelsStore',
-            fields: ['attribute', 'attributeID', 'auc', 'classifiedDocuments', 'modelID', 'status', 'trainingExamples', 'modelFamilyID'],
+            fields: ['attribute', 'attributeID', 'auc', 'classifiedDocuments', 'modelID', 'status', 'trainingExamples', 'modelFamilyID','retrainingThreshold'],
             proxy: {
                 type: 'ajax',
                 url: BASE_URL + '/protected/tagger/getModelsForCrisis.action',
@@ -160,7 +160,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
 
             '<tr><td>Status:</td>',
-            '<td>{[this.getStatus(values.modelID)]}</td></tr>',
+            '<td>{[this.getStatus(values.modelID, this.getNumber(values.trainingExamples), values.retrainingThreshold, values.auc)]}</td></tr>',
 
             '<tr><td>Training examples:</td>',
             '<td>{[this.getNumber(values.trainingExamples)]} &mdash; <a href="' + BASE_URL +  '/protected/'
@@ -195,11 +195,21 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                         return modelName;
                     }
                 },
-                getStatus: function (modelId) {
+                getStatus: function (modelId, trainingExamples, retrainingThreshold, auc) {
                     if (modelId && modelId != 0) {
                         return 'Running';
                     } else {
-                        return 'Waiting training examples';
+                        if(auc == 0){
+                            var reqTrainExamNumber =  retrainingThreshold - trainingExamples;
+                            if(reqTrainExamNumber < 0){
+                                reqTrainExamNumber = trainingExamples;
+                            }
+                            return 'Waiting. '+reqTrainExamNumber+' training examples are needed.';
+                        }
+                        else{
+                            return 'Waiting.';
+                        }
+
                     }
                 }
             }
@@ -356,7 +366,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         this.taggerFetchStore = Ext.create('Ext.data.Store', {
             pageSize: 10,
             storeId: 'taggerFetchStore',
-                fields: ['text', 'attribute_name', 'label_name', 'confidence']
+            fields: ['text', 'attribute_name', 'label_name', 'confidence']
         });
 
         this.taggerFetchGrid = Ext.create('Ext.grid.Panel', {

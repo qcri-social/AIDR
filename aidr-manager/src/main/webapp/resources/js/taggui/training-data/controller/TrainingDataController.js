@@ -28,7 +28,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 
     beforeRenderView: function (component, eOpts) {
         AIDRFMFunctions.initMessageContainer();
-
+        this.getRetrainingThreshold();
         this.mainComponent = component;
         taggerCollectionDetailsController = this;
 
@@ -62,6 +62,8 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                     var resp = Ext.decode(response.responseText);
                     if (resp.success && resp.data) {
                         var count = resp.data.length;
+                        retrainingThresholdCount = 0;
+                        statusMessage='';
                         if (count > 0) {
                             var totalMessages = 0,
                                 totalExamples = 0;
@@ -74,13 +76,17 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 
                                 if (r.classifiedDocumentCount && r.classifiedDocumentCount > 0) {
                                     totalMessages += r.classifiedDocumentCount;
+
                                 }
                                 if (r.trainingDocuments && r.trainingDocuments > 0) {
                                     totalExamples += r.trainingDocuments;
                                 }
                             });
-
-                            me.mainComponent.taggerDescription.setText('Status: <b>' + status + '</b>. ' +
+                            retrainingThresholdCount = me.sampleCountThreshold - totalMessages;
+                            if( retrainingThresholdCount > 0 && status !='Running'){
+                                statusMessage = '('+ retrainingThresholdCount + ' example samples are needed) ';
+                            }
+                            me.mainComponent.taggerDescription.setText('Status: <b>' + status + '</b>. ' + statusMessage +
                                 'Has classified <b>' + totalMessages + '</b> messages.&nbsp;' + detailsForModel, false);
                             me.mainComponent.taggerDescription2line.setText('<b>' + totalExamples + '</b> training examples. Click on a message to see/edit details', false);
                         }
@@ -97,6 +103,27 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
         }
     },
 
+    getRetrainingThreshold: function(){
+        var me = this;
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/tagger/getRetrainThreshold.action',
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                var resp = Ext.decode(response.responseText);
+                var data = Ext.JSON.decode(resp.data);
+                if (data.sampleCountThreshold){
+                    me.sampleCountThreshold= data.sampleCountThreshold;
+                } else {
+                    me.sampleCountThreshold= 50;
+
+                }
+            }
+        });
+    }
+    ,
     deleteTrainingExample: function(button){
         if (!button.exampleId){
             AIDRFMFunctions.setAlert("Error", "Error while delete training example. Document Id not available.");
