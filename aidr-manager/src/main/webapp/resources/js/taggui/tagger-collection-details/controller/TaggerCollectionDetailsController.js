@@ -251,12 +251,14 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         var result = {};
         var data = [];
         Ext.Array.each(tweetData, function(r, index) {
-            var row = {};
-            row.text = r.text ? r.text : '';
-            row.attribute_name = r.nominal_labels[0].attribute_name ? r.nominal_labels[0].attribute_name : '';
-            row.label_name = r.nominal_labels[0].label_name ? r.nominal_labels[0].label_name : '';
-            row.confidence = r.nominal_labels[0].confidence ? r.nominal_labels[0].confidence : '';
-            data.push(row);
+            if (r.text && r.nominal_labels) {
+                var row = {};
+                row.text = r.text ? r.text : '';
+                row.attribute_name = r.nominal_labels[0].attribute_name ? r.nominal_labels[0].attribute_name : '';
+                row.label_name = r.nominal_labels[0].label_name ? r.nominal_labels[0].label_name : '';
+                row.confidence = r.nominal_labels[0].confidence ? r.nominal_labels[0].confidence : '';
+                data.push(row);
+            }
         });
         result.data = data;
         result.totalCount = data.length;
