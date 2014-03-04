@@ -33,15 +33,15 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
     @Override
     public void saveOrUpdate(E e) {
         Session session = getCurrentSession();
-        session.buildLockRequest(LockOptions.UPGRADE);
+        session.buildLockRequest(LockOptions.UPGRADE).lock(e);
         session.saveOrUpdate(e);
     }
 
     @Override
     public void save(E e) {
         Session session = getCurrentSession();
-        session.buildLockRequest(LockOptions.UPGRADE);
-        getCurrentSession().save(e);
+        session.buildLockRequest(LockOptions.UPGRADE).lock(e);
+        session.save(e);
     }
 
     @Override
@@ -53,7 +53,9 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 
     @Override
     public void delete(E e) {
-        getCurrentSession().delete(e);
+        Session session = getCurrentSession();
+        session.buildLockRequest(LockOptions.UPGRADE).lock(e);
+        session.delete(e);
     }
 
     @Override
