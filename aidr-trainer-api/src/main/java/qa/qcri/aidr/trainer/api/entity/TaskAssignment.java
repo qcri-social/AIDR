@@ -1,9 +1,6 @@
 package qa.qcri.aidr.trainer.api.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
@@ -17,6 +14,7 @@ public class TaskAssignment {
     @Column (name = "userID", nullable = false)
     private Long userID;
 
+    @Version
     @Column (name = "assignedAt", nullable = false)
     private Date assignedAt;
 
