@@ -63,17 +63,70 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
                 click: function (btn, e, eOpts) {
                     this.addLabel();
                 }
+            },
+
+            "#nameCustomClassifier": {
+                blur: function (field, eOpts) {
+                    this.generateCustomClassifierCode(field.getValue());
+                }
+            },
+
+            "#nameCategory": {
+                blur: function (field, eOpts) {
+                    this.generateCategoryCode(field.getValue());
+                }
             }
 
         });
 
     },
 
+    generateCustomClassifierCode: function(value) {
+        var me = this;
+
+        var currentCode = me.mainComponent.codeE.getValue();
+        if (currentCode != ''){
+            return false;
+        }
+
+        var v = Ext.util.Format.trim(value);
+        v = v.replace(/ /g, '_');
+        v = Ext.util.Format.lowercase(v);
+
+        var length = value.length;
+        if (length > 64){
+            length = 64;
+        }
+
+        var result = Ext.util.Format.substr(v, 0, length);
+        me.mainComponent.codeE.setValue(result);
+    },
+
+    generateCategoryCode: function(value) {
+        var me = this;
+
+        var currentCode = me.mainComponent.codeLabelE.getValue();
+        if (currentCode != ''){
+            return false;
+        }
+
+        var v = Ext.util.Format.trim(value);
+        v = v.replace(/ /g, '_');
+        v = Ext.util.Format.lowercase(v);
+
+        var length = value.length;
+        if (length > 64){
+            length = 64;
+        }
+
+        var result = Ext.util.Format.substr(v, 0, length);
+        me.mainComponent.codeLabelE.setValue(result);
+    },
+
     beforeRenderView: function (component, eOpts) {
         AIDRFMFunctions.initMessageContainer();
 
         this.mainComponent = component;
-        taggerCollectionDetailsController = this;
 
         var me = this;
 

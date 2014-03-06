@@ -40,6 +40,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
             flex: 1,
             fieldLabel: 'Name',
             name: 'name',
+            id: 'nameCustomClassifier',
             allowBlank: false,
             emptyText: 'e.g. Donation type'
         });
@@ -67,6 +68,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
             flex: 1,
             fieldLabel: 'Name',
             name: 'name',
+            id: 'nameCategory',
             allowBlank: false,
             emptyText: 'e.g. Donation of shoes'
         });
@@ -229,7 +231,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
                             layout: 'hbox',
                             margin: '5 0',
                             items: [
-                                this.codeLabelE
+                                this.nameLabelE
                             ]
                         },
                         {
@@ -237,7 +239,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
                             layout: 'hbox',
                             margin: '5 0',
                             items: [
-                                this.nameLabelE
+                                this.codeLabelE
                             ]
                         },
                         {
