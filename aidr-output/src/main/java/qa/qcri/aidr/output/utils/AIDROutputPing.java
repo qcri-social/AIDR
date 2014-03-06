@@ -125,7 +125,7 @@ public class AIDROutputPing {
 	@Path("/ping")
 	@Produces("application/json")
 	public Response pingAIDROutput(@QueryParam("callback") String callbackName) {
-		logger.info("[pingAIDROutput] Ping request received...");
+		//logger.info("[pingAIDROutput] Ping request received...");
 		// First ensure that AIDROutput is up and running
 		String result = null;
 		Jedis jedis = null;

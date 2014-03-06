@@ -4,7 +4,6 @@
  */
 package qa.qcri.aidr.predictui.api;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
@@ -152,19 +151,16 @@ public class TrainingDataResource {
     public Response getSampleCountThreshold(){
 
         Properties prop = new Properties();
-        int sampleCountThreshold = 50;
+        int sampleCountThreshold = 20;
         try {
-                if(isFileLocated(Config.AIDR_TAGGER_CONFIG_URL)){
-                    FileInputStream is = new FileInputStream(Config.AIDR_TAGGER_CONFIG_URL);
+            prop.load(new FileInputStream(Config.AIDR_TAGGER_CONFIG_URL));
+            String value = prop.getProperty("sampleCountThreshold") ;
 
-                    prop.load(is);
-                    String value = prop.getProperty("sampleCountThreshold") ;
+            if(value != null){
+                sampleCountThreshold =   Integer.parseInt(prop
+                        .getProperty("sampleCountThreshold"));
+            }
 
-                    if(value != null){
-                        sampleCountThreshold =   Integer.parseInt(prop
-                                .getProperty("sampleCountThreshold"));
-                    }
-                }
         } catch (IOException ex) {
             System.out.println("IOException: " + ex);
             throw new RuntimeException(ex);
@@ -176,21 +172,5 @@ public class TrainingDataResource {
 
         String response = "{\"sampleCountThreshold\":\"" + sampleCountThreshold + "\"}";
         return Response.ok(response).build();
-    }
-
-    private boolean isFileLocated(String fileName){
-        try{
-            File f = new File(fileName);
-
-            if(f.exists()){
-                return true;
-            }
-            return false;
-
-        }
-        catch(Exception e){
-            return false;
-        }
-
     }
 }

@@ -27,7 +27,7 @@
 <div class="mainWraper">
     <div class="main">
         <div>
-            <p align="center">Welcome! We are redirecting you to Twitter to sign-in.</p>
+            <p align="center">Welcome! We are redirecting you to Twitter to sign-in. Please note that <strong>during the testing phase we will clean-up data and restart frequently<strong></p>
             <div>
                 <form action="signin/twitter" method="POST" id="login">
                     <input type="image" src="${pageContext.request.contextPath}/resources/img/tweeterSignin.png">

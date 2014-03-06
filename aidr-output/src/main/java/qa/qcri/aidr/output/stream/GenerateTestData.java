@@ -16,7 +16,7 @@ public class GenerateTestData {
     	if (sendCount < MAX_COUNT) {
     		StringBuilder str = new StringBuilder();
     		str.append("{").append("\"count\":").append(Integer.toString(sendCount)).append("}");
-    		//logger.info("returning to caller = " + str);
+    		
     		++sendCount;
     		return str.toString();
     	}

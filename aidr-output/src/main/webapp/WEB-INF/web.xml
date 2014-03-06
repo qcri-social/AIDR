@@ -26,7 +26,7 @@
 	<listener>
 		<listener-class>qa.qcri.aidr.output.stream.AsyncStream</listener-class>
 	</listener>
-	<listener>
+	<!-- listener>
 		<listener-class>qa.qcri.aidr.output.stream.NewTestChunkedOutput</listener-class>
-	</listener>
+	</listener -->
 </web-app>
