@@ -40,6 +40,18 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
             '#gridTrigger' : {
                 keyup : this.onTriggerKeyUp,
                 triggerClear : this.onTriggerClear
+            },
+            
+            "#generateCSVLink": {
+                click: function (btn, e, eOpts) {
+                    this.generateCSVLinkButtonHandler(btn);
+                }
+            },
+
+            "#generateTweetIdsLink": {
+                click: function (btn, e, eOpts) {
+                    this.generateTweetIdsLinkButtonHandler(btn);
+                }
             }
 
         });
@@ -53,8 +65,8 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         taggerCollectionDetailsController = this;
         this.getTemplateStatus();
 
-        this.generateCSVLink();
-        this.generateTweetIdsLink();
+//        this.generateCSVLink();
+//        this.generateTweetIdsLink();
         this.loadLatestTweets();
 
         var me = this;
@@ -291,6 +303,76 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         fetchTmpData.data = fetchData.data;
         fetchTmpData.totalCount = fetchData.totalCount;
         me.mainComponent.taggerFetchStore.load();
+    },
+
+    generateCSVLinkButtonHandler: function(btn) {
+        var me = this;
+        btn.setDisabled(true);
+        me.mainComponent.CSVLink.setText('<div class="loading-block"></div>', false);
+
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/collection/generateCSVLink.action',
+            method: 'GET',
+            params: {
+                code: CRISIS_CODE
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                btn.setDisabled(false);
+                var resp = Ext.decode(response.responseText);
+                if (resp.success) {
+                    if (resp.data && resp.data != '') {
+                        me.mainComponent.CSVLink.setText('<div class="styled-text download-link"><a href="' + resp.data + '">' + resp.data + '</a></div>', false);
+                    } else {
+                        me.mainComponent.CSVLink.setText('', false);
+                        AIDRFMFunctions.setAlert("Error", "Generate CSV service returned empty url. For further inquiries please contact admin.");
+                    }
+                } else {
+                    me.mainComponent.CSVLink.setText('', false);
+                    AIDRFMFunctions.setAlert("Error", resp.message);
+                }
+            },
+            failure: function () {
+                btn.setDisabled(false);
+            }
+        });
+    },
+
+    generateTweetIdsLinkButtonHandler: function(btn) {
+        var me = this;
+        btn.setDisabled(true);
+        me.mainComponent.tweetsIdsLink.setText('<div class="loading-block"></div>', false);
+
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/collection/generateTweetIdsLink.action',
+            method: 'GET',
+            params: {
+                code: CRISIS_CODE
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                btn.setDisabled(false);
+                var resp = Ext.decode(response.responseText);
+                if (resp.success) {
+                    if (resp.data && resp.data != '') {
+                        me.mainComponent.tweetsIdsLink.setText('<div class="styled-text download-link"><a href="' + resp.data + '">' + resp.data + '</a></div>', false);
+                    } else {
+                        me.mainComponent.tweetsIdsLink.setText('', false);
+                        AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
+                    }
+                } else {
+                    me.mainComponent.tweetsIdsLink.setText('', false);
+                    AIDRFMFunctions.setAlert("Error", resp.message);
+                }
+            },
+            failure: function () {
+                btn.setDisabled(false);
+            }
+        });
     }
 
 });

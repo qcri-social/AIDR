@@ -164,7 +164,7 @@ public class ChannelBufferManager {
 			while (it.hasNext()) {
 				ChannelBuffer temp = it.next();
 				if ((currentTime - temp.getLastAddTime()) > NO_DATA_TIMEOUT) {
-					logger.debug("[manageChannelBuffers] Deleting inactive channel = " + channelName);
+					logger.info("[manageChannelBuffers] Deleting inactive channel = " + channelName);
 					deleteChannelBuffer(temp.getChannelName());
 				}
 			}
@@ -339,7 +339,7 @@ public class ChannelBufferManager {
 				aidrSubscriber.punsubscribe();				
 			}
 		} catch (JedisConnectionException e) {
-			logger.info("[stopSubscription] Connection to REDIS seems to be lost!");
+			logger.error("[stopSubscription] Connection to REDIS seems to be lost!");
 		}
 		if (jedisConn != null && aidrSubscriber != null && aidrSubscriber.getSubscribedChannels() == 0) 
 			jedisConn.returnJedis(subscriberJedis);

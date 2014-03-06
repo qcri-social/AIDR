@@ -668,7 +668,11 @@ public class DataStore extends Loggable {
                     + "		@g:=crisisID g"
                     + "	FROM"
                     + "		(SELECT @g:=-1, @r:=-1) initvars,"
-                    + "		(SELECT documentID, crisisID FROM task_buffer) taskbuffer"
+                    + "		(SELECT D.documentID, D.crisisID FROM document D "		// replacement for task_buffer view: @koushik
+                    + "		left join task_assignment ASG on (ASG.documentID = D.documentID) "
+                    + "		where (not D.hasHumanLabels) group by D.documentID "
+                    + "		order by D.crisisID, D.valueAsTrainingSample desc, D.documentID desc"
+                    + "		) taskbuffer"
                     + "	) T"
                     + "	HAVING r < "
                     + Config.LABELING_TASK_BUFFER_MAX_LENGTH

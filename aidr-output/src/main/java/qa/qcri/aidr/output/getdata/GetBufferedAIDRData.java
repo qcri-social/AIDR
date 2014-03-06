@@ -146,7 +146,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	public Response getLatestBufferedAIDRData(@QueryParam("callback") String callbackName,
 			@DefaultValue("1") @QueryParam("count") String count) {
 
-		logger.info("[getLatestBufferedAIDRData] request received");
+		//logger.info("[getLatestBufferedAIDRData] request received");
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {		// Jedis pool is ready
 			// Get the last count number of messages for channel=channelCode
 			List<String> bufferedMessages = new ArrayList<String>();
@@ -184,7 +184,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			@QueryParam("callback") String callbackName,
 			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
 
-		logger.info("[getBufferedAIDRData] request received");
+		//logger.info("[getBufferedAIDRData] request received");
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {
 			boolean error = false;
 			// Parse the HTTP GET request and generating results for output
@@ -257,7 +257,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					bufferedMessages.clear();
 					bufferedMessages = null;
 
-					logger.info("[doGet] Sending jsonp data, count = " + sendCount);
+					//logger.info("[doGet] Sending jsonp data, count = " + sendCount);
 					return Response.ok(jsonDataList.toString()).build();
 				}
 				else {
@@ -353,6 +353,6 @@ public class GetBufferedAIDRData implements ServletContextListener {
 
 		// Most important action - setup channel buffering thread
 		cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
-		logger.info("Context Initialized");
+		logger.info("[GetBufferedAIDRData] Context Initialized");
 	}
 }

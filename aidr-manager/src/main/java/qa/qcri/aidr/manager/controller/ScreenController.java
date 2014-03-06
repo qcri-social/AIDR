@@ -260,7 +260,7 @@ public class ScreenController extends BaseController{
 
         List<TaggerModel> modelsForCrisis = taggerService.getModelsForCrisis(crisisId);
         for (TaggerModel model : modelsForCrisis) {
-            if (modelId.equals(model.getModelID())){
+            if (attributeID.equals(model.getAttributeID())){
                 modelName = model.getAttribute();
             }
         }

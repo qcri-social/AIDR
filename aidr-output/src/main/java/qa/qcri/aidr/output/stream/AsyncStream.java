@@ -28,28 +28,19 @@
  * 	6. Issue stream request from client
  *
  *
- * URL: host:port/context-path/channel?crisisCode={crisisCode}&callback={callback}&rate={rate}&duration={duration}  
+ * URL: host:port/context-path/channel/{crisisCode}?callback={callback}&rate={rate}&duration={duration}  
  * ============
  * Channel Name based examples:
- *  1. http://localhost:8080/AIDROutput/rest/crisis/stream/channel?crisisCode=clex_20131201&callback=print&rate=10  
- *  2. http://localhost:8080/AIDROutput/rest/crisis/stream/channel?crisisCode=clex_20131201&duration=1h 
- *  3. http://localhost:8080/AIDROutput/rest/crisis/stream/channel?crisisCode=clex_20131201&duration=1h&callback=print
- *  4. http://localhost:8080/AIDROutput/rest/crisis/stream/channel?crisisCode=clex_20131201&duration=1h&rate=15
- *  5. http://localhost:8080/AIDROutput/rest/crisis/stream/channel?crisisCode=clex_20131201&duration=1h&callback=print&rate=10
+ *  1. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/clex_20131201?callback=print&rate=10  
+ *  2. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/clex_20131201?duration=1h&callback=print&rate=10
  *  
  * Wildcard based examples:
- *  1. http://localhost:8080/AIDROutput/rest/crisis/stream/channel?crisisCode=*&callback=print&rate=10 
- *  2. http://localhost:8080/AIDROutput/rest/crisis/stream/channel?crisisCode=*&duration=1h 
- *  3. http://localhost:8080/AIDROutput/rest/crisis/stream/channel?crisisCode=*&duration=1h&callback=print
- *  4. http://localhost:8080/AIDROutput/rest/crisis/stream/channel?crisisCode=*&duration=1h&rate=15
- *  5. http://localhost:8080/AIDROutput/rest/crisis/stream/channel?crisisCode=*&duration=1h&callback=print&rate=10
+ *  1. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/*?callback=print&rate=10 
+ *  2. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/*?duration=1h&callback=print&rate=10
  *  
  * Fully qualified channel name examples:
- *  1. http://localhost:8080/AIDROutput/rest/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&callback=print&rate=10 
- *  2. http://localhost:8080/AIDROutput/rest/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&duration=1h 
- *  3. http://localhost:8080/AIDROutput/rest/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&duration=1h&callback=print
- *  4. http://localhost:8080/AIDROutput/rest/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&duration=1h&rate=15
- *  5. http://localhost:8080/AIDROutput/rest/crisis/stream/channel?crisisCode=aidr_predict.clex_20131201&duration=1h&callback=print&rate=10
+ *  1. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/aidr_predict.clex_20131201?callback=print&rate=10 
+ *  2. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/aidr_predict.clex_20131201?duration=1h&callback=print&rate=10
  * 
  *  
  *  Parameter explanations:
@@ -148,12 +139,12 @@ public class AsyncStream implements ServletContextListener {
 				try {
 					w.close();
 				} catch (IOException e) {
-					logger.info("Error trying to close ChunkedOutput writer");
+					logger.error("Error trying to close ChunkedOutput writer");
 				} finally {
 					try {
 						w.close();
 					} catch (IOException e) {
-						logger.info("Error trying to close ChunkedOutput writer");
+						logger.error("Error trying to close ChunkedOutput writer");
 					}
 				}
 			}
@@ -188,29 +179,29 @@ public class AsyncStream implements ServletContextListener {
 
 	// Create a subscription to specified REDIS channel: spawn a new thread
 	private void subscribeToChannel(final ExecutorService exec, final RedisSubscriber sub, final SubscriptionDataObject subData) throws NullPointerException, RejectedExecutionException {
-		logger.info("[subscribeToChannel] executorServicePool = " + exec);
+		//logger.info("[subscribeToChannel] executorServicePool = " + exec);
 		try {
 			exec.execute(new Runnable() {
 				public void run() {
 					try {
-						logger.info("[subscribeToChannel] patternSubscriptionFlag = " + subData.patternSubscriptionFlag);
+						//logger.info("[subscribeToChannel] patternSubscriptionFlag = " + subData.patternSubscriptionFlag);
 						if (!subData.patternSubscriptionFlag) { 
-							logger.info("[subscribeToChannel] Attempting subscription for " + redisHost + ":" + redisPort + "/" + subData.redisChannel);
+							logger.info("[subscribeToChannel/run] Attempting subscription for " + redisHost + ":" + redisPort + "/" + subData.redisChannel);
 							subData.subscriberJedis.subscribe(sub, subData.redisChannel);
 						} 
 						else {
-							logger.info("[subscribeToChannel] Attempting pSubscription for " + redisHost + ":" + redisPort + "/" + subData.redisChannel);
+							logger.info("[subscribeToChannel/run] Attempting pSubscription for " + redisHost + ":" + redisPort + "/" + subData.redisChannel);
 							subData.subscriberJedis.psubscribe(sub, subData.redisChannel);
 						}
 					} catch (Exception e) {
-						logger.error("[subscribeToChannel] AIDR Predict Channel Subscribing failed");
+						logger.error("[subscribeToChannel/run] AIDR Predict Channel Subscribing failed");
 						sub.setRunFlag(false);			// force any orphaned subscriber thread to exit
 						sub.stopSubscription(jedisConn, subData);
 					} finally {
 						try {
 							sub.stopSubscription(jedisConn, subData);
 						} catch (Exception e) {
-							logger.error("[subscribeToChannel] Exception occurred attempting stopSubscription: " + e.toString());
+							logger.error("[subscribeToChannel/run] Exception occurred attempting stopSubscription: " + e.toString());
 							e.printStackTrace();
 							System.exit(1);
 						}
@@ -218,7 +209,7 @@ public class AsyncStream implements ServletContextListener {
 				}
 			});
 		} catch (RejectedExecutionException|NullPointerException e) {
-			logger.info("[doGet] Fatal error executing async thread! Terminating.");
+			logger.error("[subscribeToChannel] Fatal error executing async thread! Terminating.");
 		}
 	}
 
@@ -236,11 +227,12 @@ public class AsyncStream implements ServletContextListener {
 			@PathParam("crisisCode") String channelCode,
 			@QueryParam("callback") final String callbackName,
 			@DefaultValue("-1") @QueryParam("rate") Float rate,
-			@DefaultValue("0") @QueryParam("duration") String duration) throws IOException {
+			@DefaultValue("-1") @QueryParam("duration") String duration) throws IOException {
 
 		final ChunkedOutput<String> responseWriter = new ChunkedOutput<String>(String.class);
 		writerList.add(responseWriter);
-
+		
+		//System.out.println("channelCode=" + channelCode + ", rate=" + rate + ", duration=" + duration + ", callbackName=" + callbackName);
 		if (channelCode != null) {
 			// TODO: Handle client refresh of web-page in same session				
 			if (jedisConn != null) {
@@ -257,11 +249,11 @@ public class AsyncStream implements ServletContextListener {
 				subscriptionData.patternSubscriptionFlag = isPattern(channelCode);
 				subscriptionData.callbackName = callbackName;
 				subscriptionData.rate = rate;
-				subscriptionData.duration = duration;
+				subscriptionData.duration = duration.equals("-1") ? null : duration;
 
 				RedisSubscriber aidrSubscriber = new RedisSubscriber(subscriberJedis, responseWriter, subscriptionData);
 				try {
-					logger.info("subscriberJedis = " + subscriberJedis + ", aidrSubscriber = " + aidrSubscriber);
+					//logger.debug("subscriberJedis = " + subscriberJedis + ", aidrSubscriber = " + aidrSubscriber);
 					if (null == executorService) {
 						executorService = Executors.newCachedThreadPool();                // max number of threads
 					}
@@ -273,11 +265,11 @@ public class AsyncStream implements ServletContextListener {
 					e.printStackTrace();
 					System.exit(1);
 				}
-				logger.info("[streamChunkedResponse] Attempting async response thread");
+				logger.debug("[streamChunkedResponse] Attempting async response thread");
 				try {
 					executorService.execute(aidrSubscriber);	
 				} catch (RejectedExecutionException|NullPointerException e) {
-					logger.info("[doGet] Fatal error executing async thread! Terminating.");
+					logger.error("[doGet] Fatal error executing async thread! Terminating.");
 				}
 			}
 		} 
@@ -294,14 +286,13 @@ public class AsyncStream implements ServletContextListener {
 			}
 			responseWriter.write(errorMessageString.toString());
 		}
-		logger.info("[streamChunkedResponse] Reached end of function");
+		//logger.info("[streamChunkedResponse] Reached end of function");
 
 		return responseWriter;
 	}
 
 	// cleanup all threads 
 	void shutdownAndAwaitTermination(ExecutorService threadPool) {
-		logger.info("threadPool: " + threadPool);
 		threadPool.shutdown(); // Disable new tasks from being submitted
 		try {
 			// Wait a while for existing tasks to terminate
