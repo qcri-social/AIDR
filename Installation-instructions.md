@@ -52,7 +52,10 @@ The schema name can also be changed that requires to change application configur
 
 `<prop key="hibernate.hbm2ddl.auto">create</prop>`
 
-NOTE:- If the application has previously been deployed and you have MySql schema with tables in place then just remove the above line. The above line is used to create MySQL schema during the first deployment.
+**NOTE**:- **If the application has previously been deployed and you have the MySql schema with tables in place then just remove the above line. The above line is used to create MySQL schema during the first deployment**. After the first deployment, you can instead use: 
+
+`<prop key="hibernate.hbm2ddl.auto">update</prop>`
+
 
 (c) In the same file `spring-servlet.xml` the database credentials can be specified/changed according to your installation.
 
