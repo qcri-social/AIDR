@@ -44,7 +44,7 @@ public class RedisSubscriber extends JedisPubSub implements AsyncListener, Runna
 
 	// rate control related 
 	private static final int DEFAULT_SLEEP_TIME = 0;		// in msec
-	private float messageRate = 0;							// default: <= 0 implies no rate control
+	private float messageRate = -1;							// default: <= 0 implies no rate control
 	private int sleepTime = DEFAULT_SLEEP_TIME;
 
 	// Share data structure between Jedis and Async threads
@@ -61,23 +61,27 @@ public class RedisSubscriber extends JedisPubSub implements AsyncListener, Runna
 
 		this.subData = new SubscriptionDataObject();
 		this.subData.set(subData);
-		
+	
 		this.setRunFlag(true);		
 		if (subData.duration != null) {
 			subscriptionDuration = parseTime(subData.duration);
+		} else {
+			subscriptionDuration = SUBSCRIPTION_MAX_DURATION;
 		}
-		logger.info("Client requested subscription for duration = " + subscriptionDuration);
-		if (subData.rate != -1) {
+		//System.out.println("rate=" + subData.rate + ", duration=" + subData.duration + ", callbackName=" + subData.callbackName);
+		//logger.info("Client requested subscription for duration = " + subscriptionDuration);
+		if (subData.rate > 0) {
 			messageRate = subData.rate;			// specified as messages/min (NOTE: upper-bound)
-			if (messageRate > 0) {		// otherwise, use default rate
-				sleepTime = Math.max(0, Math.round(60 * 1000 / messageRate));		// time to sleep between sends (in msecs)
-			}
+			sleepTime = Math.max(0, Math.round(60 * 1000 / messageRate));		// time to sleep between sends (in msecs)
+		} else {
+			sleepTime = DEFAULT_SLEEP_TIME;		// use default value
 		}
 	}
 
 	private long parseTime(String timeString) {
 		long duration = 0;
 		final int maxDuration = SUBSCRIPTION_MAX_DURATION > 0 ? SUBSCRIPTION_MAX_DURATION : Integer.MAX_VALUE;
+		
 		float value = Float.parseFloat(timeString.substring(0, timeString.length()-1));
 		if (value > 0) {
 			String suffix = timeString.substring(timeString.length() - 1, timeString.length());
@@ -112,25 +116,25 @@ public class RedisSubscriber extends JedisPubSub implements AsyncListener, Runna
 	@Override
 	public void onPSubscribe(String pattern, int subscribedChannels) {
 		subData.isSubscribed = true;
-		logger.info("[onPSubscribe] Started pattern subscription...");
+		//logger.info("[onPSubscribe] Started pattern subscription...");
 	}
 
 	@Override
 	public void onPUnsubscribe(String pattern, int subscribedChannels) {
 		subData.isSubscribed = false;
-		logger.info("[onPUnsubscribe] Unsubscribed from pattern subscription...");
+		//logger.info("[onPUnsubscribe] Unsubscribed from pattern subscription...");
 	}
 
 	@Override
 	public void onSubscribe(String channel, int subscribedChannels) {
 		subData.isSubscribed = true;
-		logger.info("[onSubscribe] Started channel subscription...");
+		//logger.info("[onSubscribe] Started channel subscription...");
 	}
 
 	@Override
 	public void onUnsubscribe(String channel, int subscribedChannels) {
 		subData.isSubscribed = false;
-		logger.info("[onUnsubscribe] Unusbscribed from channel " + channel);
+		//logger.info("[onUnsubscribe] Unusbscribed from channel " + channel);
 	}
 
 	// Stop subscription of this subscribed thread and return resources to the JEDIS thread pool
@@ -153,6 +157,7 @@ public class RedisSubscriber extends JedisPubSub implements AsyncListener, Runna
 	// Now to implement Async methods
 	///////////////////////////////////
 	public boolean isThreadTimeout(long startTime) {
+		// No timeout if subscriptionDuration < 0
 		if ((subscriptionDuration > 0) && (new Date().getTime() - startTime) > subscriptionDuration) {
 			logger.info("[isThreadTimeout] Exceeded Thread timeout = " + subscriptionDuration + "msec");
 			return true;
@@ -166,6 +171,15 @@ public class RedisSubscriber extends JedisPubSub implements AsyncListener, Runna
 		long lastAccessedTime = startTime; 
 
 		setRunFlag(true);
+		StringBuilder initMsg = new StringBuilder();
+		initMsg.append("{channel:").append(this.channel).append(", subscription: SUCCESS, streaming: STARTING}");
+		try {
+			responseWriter.write(initMsg.toString());
+			responseWriter.write("\n\n\n");
+		} catch (IOException e1) {
+			logger.info("Error in writing Response to client");
+			setRunFlag(false);
+		}
 		while (getRunFlag() && !isThreadTimeout(startTime)) {
 			// Here we poll a non blocking resource for updates
 			if (messageList != null && !messageList.isEmpty()) {
@@ -180,7 +194,7 @@ public class RedisSubscriber extends JedisPubSub implements AsyncListener, Runna
 							//logger.info("[run] Formatted jsonDataList: " + jsonDataList.toString());
 							if (!responseWriter.isClosed()) {
 								responseWriter.write(jsonDataList.toString());
-								responseWriter.write("\n");
+								responseWriter.write("\n\n");
 								//logger.info("[run] sent jsonp data, count = " + count);
 							}
 							else {
@@ -287,6 +301,6 @@ public class RedisSubscriber extends JedisPubSub implements AsyncListener, Runna
 
 	@Override
 	public void onComplete(AsyncEvent event) throws IOException {
-		logger.info("[run] Async thread complete...");
+		//logger.info("[run] Async thread complete...");
 	}
 }

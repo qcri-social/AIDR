@@ -3,9 +3,9 @@
 # ################################ #
 
 # MySQL connection details
-mysql_path=jdbc:mysql://localhost/aidr_predict?useUnicode=true&characterEncoding=UTF-8
-mysql_username=aidr_admin
-mysql_password=aidr_admin
+mysql_path=jdbc:mysql://localhost:3306/aidr_predict?useUnicode=true&characterEncoding=UTF-8
+mysql_username=root
+mysql_password=admin
 
 # Replace console with a filename to log to file
 log_file_name=console
@@ -42,7 +42,7 @@ redis_label_task_write_queue=label_task_write_stream
 # crisis. If the value is set too high, documents may no longer be useful
 # as training samples once they are labeled. If the value is too low, the buffer
 # may become empty if workers label items very rapidly. Default is 100.
-labeling_task_buffer_max_length=2000
+labeling_task_buffer_max_length=500
 
 # Rate limits for writing labeling tasks to the database
 max_task_write_fq_ms=2000
@@ -51,6 +51,3 @@ max_new_tasks_per_minute=50
 # Reserved value used to represent the absence of an attribute value
 # (e.g. color: {null, red, green, blue})
 nominal_attribute_null_value=null
-
-# Model default re-training threshold
-sampleCountThreshold=50

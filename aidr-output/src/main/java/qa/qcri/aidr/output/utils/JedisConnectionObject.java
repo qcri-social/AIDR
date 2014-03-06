@@ -57,24 +57,24 @@ public class JedisConnectionObject {
 				poolConfig.timeBetweenEvictionRunsMillis = 60000;
 				poolConfig.maxWait = 60000;
 				poolConfig.whenExhaustedAction = org.apache.commons.pool.impl.GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW;
-				logger.info("[connectToRedis] New Jedis poolConfig: " + poolConfig);
+				logger.debug("[connectToRedis] New Jedis poolConfig: " + poolConfig);
 			} else {
-				logger.info("[connectToRedis] Reusing existing Jedis poolConfig: " + poolConfig);
+				logger.debug("[connectToRedis] Reusing existing Jedis poolConfig: " + poolConfig);
 			}
 			if (null == pool) {
 				try {
 					pool = new JedisPool(poolConfig, redisHost, redisPort, 30000);
 					poolSetup = true;
-					logger.info("[connectToRedis] New Jedis pool: " + pool);
+					logger.debug("[connectToRedis] New Jedis pool: " + pool);
 				} catch (Exception e) {
-					logger.error("[connectToRedis] Fatal error! Could not initialize Jedis Pool!");
+					logger.debug("[connectToRedis] Fatal error! Could not initialize Jedis Pool!");
 					poolConfig = null;
 					pool = null;
 					poolSetup = false;
 				}
 			} else {
 				poolSetup = true;
-				logger.info("[connectToRedis] Reusing existing Jedis pool: " + pool);
+				logger.debug("[connectToRedis] Reusing existing Jedis pool: " + pool);
 			}
 			allotedJedis.notifyAll();
 		}
