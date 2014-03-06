@@ -197,8 +197,13 @@ public class ScreenController extends BaseController{
         try {
             String userName = getAuthenticatedUserName();
             taggerUserId = taggerService.isUserExistsByUsername(userName);
+            if(taggerUserId == null){
+                taggerUserId = 0;
+            }
+
 
         } catch (Exception e) {
+            System.out.println("e : " + e);
             e.printStackTrace();
         }
 
@@ -212,6 +217,7 @@ public class ScreenController extends BaseController{
         model.addObject("code", code);
         model.addObject("userId", taggerUserId);
         model.addObject("attributeId", attributeId);
+
         return model;
     }
 
