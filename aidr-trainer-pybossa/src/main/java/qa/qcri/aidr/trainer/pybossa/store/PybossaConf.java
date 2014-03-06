@@ -19,5 +19,5 @@ public class PybossaConf {
     public static String GEOJSON_TYPE_FEATURE_COLLECTION="FeatureCollection";
     //http://scd1.qcri.org/aidr/data/trainer/
     public static String DEFAULT_TRAINER_FILE_PATH = "/var/www/aidr/data/trainer/";
-    //public static String DEFAULT_TRAINER_FILE_PATH = "/var/www/micromappers/data/";
+   // public static String DEFAULT_TRAINER_FILE_PATH = "/";
 }

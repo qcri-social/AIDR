@@ -79,7 +79,7 @@ public class PybossaWorker implements ClientAppRunWorker {
             PYBOSSA_API_TASK_BASE_URL  = client.getHostURL() + URLPrefixCode.TASK_INFO;
             PYBOSSA_API_TASK_RUN_BASE_URL =  client.getHostURL() + URLPrefixCode.TASKRUN_INFO;
             MAX_PENDING_QUEUE_SIZE = client.getQueueSize();
-            AIDR_ASSIGNED_TASK_CLEAN_UP = client.getAidrHostURL() + URLPrefixCode.ASSIGN_TASK_CLEANUP;
+            ///AIDR_ASSIGNED_TASK_CLEAN_UP = client.getAidrHostURL() + URLPrefixCode.ASSIGN_TASK_CLEANUP;
             PYBOSSA_API_APP_DELETE_URL = client.getHostURL() + URLPrefixCode.PYBOSAA_APP ;
         }
 
@@ -99,13 +99,14 @@ public class PybossaWorker implements ClientAppRunWorker {
 
         // Do data clean up after import is completed
        // System.out.print("clean up is called : " + AIDR_ASSIGNED_TASK_CLEAN_UP);
-        pybossaCommunicator.sendGet(AIDR_ASSIGNED_TASK_CLEAN_UP);
+      //  pybossaCommunicator.sendGet(AIDR_ASSIGNED_TASK_CLEAN_UP);
     }
 
     @Override
     public void processTaskPublish() throws Exception{
        // setClassVariable();
         List<ClientApp> crisisID = clientAppService.getAllCrisis();
+
         for (int i = 0; i < crisisID.size(); i++) {
             Object obj = crisisID.get(i);
             Long id = (Long)obj;
@@ -117,24 +118,30 @@ public class PybossaWorker implements ClientAppRunWorker {
                 if(appList.size() > 0){
                     setClassVariable(appList.get(0).getClient());
                     int pushTaskNumber = calculateMinNumber(appList);
-                    System.out.println("processTaskPublish : pushTaskNumber - " + pushTaskNumber);
+                    //System.out.println("processTaskPublish : pushTaskNumber - " + pushTaskNumber);
                     if( pushTaskNumber > 0 ){
                         String inputData = pybossaCommunicator.sendGet(AIDR_API_URL + id + "/" +pushTaskNumber);
+                        //System.out.println(AIDR_API_URL + id + "/" +pushTaskNumber);
+                        //System.out.println("inputData  " + inputData);
                         if(DataFormatValidator.isValidateJson(inputData)){
                             try {
                                 for (int index = 0; index < appList.size() ; index++){
                                     ClientApp currentClientApp = appList.get(index);
                                         List<String> aidr_data = pybossaFormatter.assemblePybossaTaskPublishForm(inputData, currentClientApp);
                                         for (String temp : aidr_data) {
+                                           // System.out.println("*************************************************");
                                            // System.out.println(temp);
                                             String response = pybossaCommunicator.sendPostGet(temp, PYBOSSA_API_TASK_PUBLSIH_URL) ;
-                                            // System.out.println(response + "\n");
+                                           // System.out.println(PYBOSSA_API_TASK_PUBLSIH_URL + "\n");
+                                           // System.out.println(response + "\n");
                                             if(!response.startsWith("Exception") && !response.contains("exception_cls")){
                                                 addToTaskQueue(response, currentClientApp.getClientAppID(), StatusCodeType.TASK_PUBLISHED) ;
                                             }
                                             else{
                                                 addToTaskQueue(temp, currentClientApp.getClientAppID(), StatusCodeType.Task_NOT_PUBLISHED) ;
                                             }
+                                            //System.out.println("*************************************************");
+
                                         }
                                 }
 
