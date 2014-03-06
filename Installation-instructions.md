@@ -155,3 +155,5 @@ After the above steps have been executed, you can build the project:
 # Known Issues
 
 * aidr-manager application, when deployed on Glassfish 4 application server, does not load its default homepage (index.jsp page) on startup. In this case, complete path (e.g., http://abc.org/aidr/index.jsp) must be provided to launch the default homepage.
+
+* CDI deployment failure when attempting deployment of a module. The workaround is to toggle the `scope` of the glassfish 4.0 dependencies in the `pom.xml` file between `provided` and `compile`. 
