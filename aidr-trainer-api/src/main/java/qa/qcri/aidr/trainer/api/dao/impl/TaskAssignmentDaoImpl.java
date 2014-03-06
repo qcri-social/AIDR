@@ -3,8 +3,8 @@ package qa.qcri.aidr.trainer.api.dao.impl;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import qa.qcri.aidr.trainer.api.dao.TaskAssignmentDao;
+import qa.qcri.aidr.trainer.api.entity.Document;
 import qa.qcri.aidr.trainer.api.entity.TaskAssignment;
-import qa.qcri.aidr.trainer.api.entity.TaskBuffer;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -19,22 +19,25 @@ public class TaskAssignmentDaoImpl extends AbstractDaoImpl<TaskAssignment, Strin
     }
 
     @Override
-    public void insertTaskAssignment(List<TaskBuffer> taskBuffer, Long userID) {
+    public void insertTaskAssignment(List<Document> documents, Long userID) {
         // hard code, will create user service
 
-        for (Iterator it =taskBuffer.iterator(); it.hasNext();){
-            TaskBuffer tb = (TaskBuffer) it.next();
-            TaskAssignment taskAssignment = new TaskAssignment(tb.getDocumentID(), userID, new Date());
-            save(taskAssignment);
+        for (Iterator it =documents.iterator(); it.hasNext();){
+            Document tb = (Document) it.next();
+            List<TaskAssignment> taskAssignments = findTaskAssignmentByID(tb.getDocumentID());
+            if(taskAssignments.size()== 0){
+                TaskAssignment taskAssignment = new TaskAssignment(tb.getDocumentID(), userID, new Date());
+                save(taskAssignment);
+            }
         }
 
 
     }
 
     @Override
-    public void undoTaskAssignment(List<TaskBuffer> taskBuffer, Long userID) {
+    public void undoTaskAssignment(List<Document> taskBuffer, Long userID) {
         for (Iterator it =taskBuffer.iterator(); it.hasNext();){
-            TaskBuffer tb = (TaskBuffer) it.next();
+            Document tb = (Document) it.next();
             TaskAssignment taskAssignment = (TaskAssignment)findTaskAssignment(tb.getDocumentID(), userID);
             delete(taskAssignment);
         }
@@ -88,6 +91,12 @@ public class TaskAssignmentDaoImpl extends AbstractDaoImpl<TaskAssignment, Strin
         attMap.put("userID", userID);
 
         return  findByCriterionID(Restrictions.allEq(attMap));
+    }
+
+    @Override
+    public List<TaskAssignment> findTaskAssignmentByID(Long documentID) {
+        return findByCriteria(Restrictions.eq("documentID",documentID));  //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     @Override

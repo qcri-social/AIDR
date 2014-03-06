@@ -3,6 +3,7 @@ package qa.qcri.aidr.trainer.api.controller;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import qa.qcri.aidr.trainer.api.entity.TaskBuffer;
+import qa.qcri.aidr.trainer.api.service.DocumentService;
 import qa.qcri.aidr.trainer.api.service.TaskBufferService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ public class TaskBufferController {
 
     @Autowired
     private TaskBufferService taskBufferService;
+
 
     @GET
     @Produces( MediaType.APPLICATION_JSON )

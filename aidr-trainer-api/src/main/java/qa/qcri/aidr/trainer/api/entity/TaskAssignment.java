@@ -1,20 +1,22 @@
 package qa.qcri.aidr.trainer.api.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity
 @Table (catalog = "aidr_predict",name = "task_assignment")
-public class TaskAssignment {
+public class TaskAssignment implements Serializable {
+
+    private static final long serialVersionUID = -5527566248002296042L;
 
     @Id
-    @Column (name = "documentID")
+    @Column (name = "documentID",  nullable = false)
     private Long documentID;
 
     @Column (name = "userID", nullable = false)
     private Long userID;
 
-    @Version
     @Column (name = "assignedAt", nullable = false)
     private Date assignedAt;
 

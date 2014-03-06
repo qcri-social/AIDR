@@ -1,9 +1,7 @@
 package qa.qcri.aidr.trainer.api.dao.impl;
 
 import org.hibernate.*;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import qa.qcri.aidr.trainer.api.dao.AbstractDao;
 
@@ -33,14 +31,12 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
     @Override
     public void saveOrUpdate(E e) {
         Session session = getCurrentSession();
-        session.buildLockRequest(LockOptions.UPGRADE).lock(e);
         session.saveOrUpdate(e);
     }
 
     @Override
     public void save(E e) {
         Session session = getCurrentSession();
-        session.buildLockRequest(LockOptions.UPGRADE).lock(e);
         session.save(e);
     }
 
@@ -78,6 +74,20 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
         return criteria.list();
     }
 
+    @Override
+    public List<E> findByCriteriaWithAliasByOrder(Criterion criterion, String[] orderBy, Integer count, String aliasTable, Criterion aliasCriterion) {
+        Criteria criteria = getCurrentSession().createCriteria(entityClass);
+        criteria.add(criterion);
+        criteria.createAlias(aliasTable, aliasTable, CriteriaSpecification.LEFT_JOIN).add(aliasCriterion);
+
+        for(int i = 0; i< orderBy.length; i++){
+            criteria.addOrder(Order.desc(orderBy[i]));
+        }
+        if(count != null){
+            criteria.setMaxResults(count);
+        }
+        return criteria.list();
+    }
 
     @Override
     public List<E> findByCriteria(Criterion criterion, Integer count) {

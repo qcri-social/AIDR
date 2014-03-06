@@ -1,9 +1,12 @@
 package qa.qcri.aidr.trainer.api.dao.impl;
 
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import qa.qcri.aidr.trainer.api.dao.DocumentDao;
 import qa.qcri.aidr.trainer.api.entity.Document;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,5 +37,23 @@ public class DocumentDaoImpl extends AbstractDaoImpl<Document, String> implement
 
         return cDoc;
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public List<Document> findDocumentForTask(Long crisisID, int requestNumber) {
+
+        String[] orderby = {"valueAsTrainingSample","documentID"};
+        String aliasTable = "taskAssignment";
+        String aliasTableKey = "taskAssignment.documentID";
+
+        Criterion criterion = Restrictions.conjunction()
+                .add(Restrictions.eq("crisisID",crisisID))
+                .add(Restrictions.eq("hasHumanLabels",false))
+               ;
+
+        Criterion aliasCriterion =  (Restrictions.isNull(aliasTableKey));
+
+
+        return findByCriteriaWithAliasByOrder(criterion,orderby,requestNumber, aliasTable, aliasCriterion);  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
