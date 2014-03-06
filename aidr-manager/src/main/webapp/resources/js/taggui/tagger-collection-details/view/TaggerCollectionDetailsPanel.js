@@ -344,6 +344,20 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             html: ''
         });
 
+        this.generateCSVButton = Ext.create('Ext.Button', {
+            text: 'Export tweets (.csv) (Last 100k tweets)',
+            margin: '5 5 5 0',
+            cls:'btn btn-blue download-button',
+            id: 'generateCSVLink'
+        });
+
+        this.generateTweetIdsButton = Ext.create('Ext.Button', {
+            text: 'Export tweet-ids only (.csv) (All tweets)',
+            margin: '5 5 5 0',
+            cls:'btn btn-blue download-button',
+            id: 'generateTweetIdsLink'
+        });
+
         this.taggerFetchLink = Ext.create('Ext.form.Label', {
             flex: 1,
             padding: '15 0 0 5',
@@ -452,8 +466,33 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                     text: 'Download as CSV files',
                     cls: 'header-h2'
                 },
-                this.CSVLink,
-                this.tweetsIdsLink
+//                this.CSVLink,
+//                this.tweetsIdsLink
+                {
+                    xtype: 'container',
+                    layout: 'vbox',
+                    items: [
+                        {
+                            xtype: 'container',
+                            padding: '5 0 0 0',
+                            defaultType: 'label',
+                            layout: 'hbox',
+                            items: [
+                                this.generateCSVButton,
+                                this.CSVLink
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            defaultType: 'label',
+                            layout: 'hbox',
+                            items: [
+                                this.generateTweetIdsButton,
+                                this.tweetsIdsLink
+                            ]
+                        }
+                    ]
+                }
             ]
         });
 
