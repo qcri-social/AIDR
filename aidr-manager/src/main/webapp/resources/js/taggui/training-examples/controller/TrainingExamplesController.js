@@ -15,6 +15,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
 
             "#saveLabels": {
                 click: function (btn, e, eOpts) {
+                    btn.setDisabled();
                     this.saveLabels();
                 }
             },
@@ -101,7 +102,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                                 me.skipTask();
                             }
                         } else{
-                            AIDRFMFunctions.setAlert("Error", "Examples not available for this crisis.");
+                            AIDRFMFunctions.setAlert("Error", "No training examples available for this crisis.");
                         }
                     }
                 } else {

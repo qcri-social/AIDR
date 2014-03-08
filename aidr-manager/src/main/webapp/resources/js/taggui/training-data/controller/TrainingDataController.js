@@ -28,7 +28,6 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 
     beforeRenderView: function (component, eOpts) {
         AIDRFMFunctions.initMessageContainer();
-        this.getRetrainingThreshold();
         this.mainComponent = component;
         taggerCollectionDetailsController = this;
 
@@ -62,8 +61,6 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                     var resp = Ext.decode(response.responseText);
                     if (resp.success && resp.data) {
                         var count = resp.data.length;
-                        retrainingThresholdCount = 0;
-                        statusMessage='';
                         if (count > 0) {
                             var totalMessages = 0,
                                 totalExamples = 0;
@@ -82,13 +79,10 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                                     totalExamples += r.trainingDocuments;
                                 }
                             });
-                            retrainingThresholdCount = me.sampleCountThreshold - totalMessages;
-                            if( retrainingThresholdCount > 0 && status !='Running'){
-                                statusMessage = '('+ retrainingThresholdCount + ' example samples are needed) ';
-                            }
-                            me.mainComponent.taggerDescription.setText('Status: <b>' + status + '</b>. ' + statusMessage +
+
+                            me.mainComponent.taggerDescription.setText('Status: <b>' + status + '</b>. ' +
                                 'Has classified <b>' + totalMessages + '</b> messages.&nbsp;' + detailsForModel, false);
-                            me.mainComponent.taggerDescription2line.setText('<b>' + totalExamples + '</b> training examples. Click on a message to see/edit details', false);
+                            me.mainComponent.taggerDescription2line.setText('<b>' + totalExamples + '</b> training examples. Note: Value \"N/A\" doesn\'t count as training example.', false);
                         }
                     } else {
                         AIDRFMFunctions.setAlert("Error", resp.message);
@@ -96,10 +90,12 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                 }
             });
         } else {
+            this.getRetrainingThreshold();
             me.mainComponent.breadcrumbs.setText('<div class="bread-crumbs">' +
                 '<a href="' + BASE_URL + '/protected/tagger-home">Tagger</a><span>&nbsp;>&nbsp;</span>' +
                 '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + CRISIS_NAME + '</a><span>&nbsp;>&nbsp;' +
                 MODEL_NAME + '&nbsp;>&nbsp;Training data</span></div>', false);
+
         }
     },
 
@@ -119,6 +115,17 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                 } else {
                     me.sampleCountThreshold= 50;
 
+                }
+
+                var retrainingThresholdCount = 0;
+                var statusMessage='';
+                retrainingThresholdCount = me.sampleCountThreshold - TRAINING_EXAMPLE;
+                if(retrainingThresholdCount < 0){
+                    retrainingThresholdCount = me.sampleCountThreshold;
+                }
+                if( MODEL_AUC <= 0){
+                    statusMessage = '('+ retrainingThresholdCount + ' training examples are needed). Note: Value \"N/A\" doesn\'t count as training example.';
+                    me.mainComponent.taggerDescription2line.setText('<b>0</b> training examples.'+statusMessage, false);
                 }
             }
         });

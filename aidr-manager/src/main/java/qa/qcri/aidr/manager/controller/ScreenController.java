@@ -258,6 +258,8 @@ public class ScreenController extends BaseController{
         Integer crisisId = 0;
         String crisisName = "";
         String modelName = "";
+        double modelAuc = 0;
+        long trainingExamples = 0;
         if (crisis != null && crisis.getCrisisID() != null && crisis.getName() != null){
             crisisId = crisis.getCrisisID();
             crisisName = crisis.getName();
@@ -268,6 +270,8 @@ public class ScreenController extends BaseController{
         for (TaggerModel model : modelsForCrisis) {
             if (attributeID.equals(model.getAttributeID())){
                 modelName = model.getAttribute();
+                trainingExamples = model.getTrainingExamples();
+                modelAuc = model.getAuc();
             }
         }
 
@@ -279,6 +283,8 @@ public class ScreenController extends BaseController{
         model.addObject("modelFamilyId", modelFamilyId);
         model.addObject("attributeID", attributeID);
         model.addObject("code", code);
+        model.addObject("trainingExamples", trainingExamples);
+        model.addObject("modelAuc", modelAuc);
         return model;
     }
 

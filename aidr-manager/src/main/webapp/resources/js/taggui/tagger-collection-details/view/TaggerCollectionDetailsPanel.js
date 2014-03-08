@@ -160,7 +160,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
 
             '<tr><td>Status:</td>',
-            '<td>{[this.getStatus(values.modelID, this.getNumber(values.trainingExamples), values.retrainingThreshold, values.auc)]}</td></tr>',
+            '<td>{[this.getStatus(values.modelID, this.getNumber(values.trainingExamples), values.retrainingThreshold, values.auc, values.attribute)]}</td></tr>',
 
             '<tr><td>Training examples:</td>',
             '<td>{[this.getNumber(values.trainingExamples)]} &mdash; <a href="' + BASE_URL +  '/protected/'
@@ -195,15 +195,16 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                         return modelName;
                     }
                 },
-                getStatus: function (modelId, trainingExamples, retrainingThreshold, auc) {
+                getStatus: function (modelId, trainingExamples, retrainingThreshold, auc, modelName) {
                     if (modelId && modelId != 0) {
                         return 'Running';
                     } else {
                         if(auc == 0){
                             var reqTrainExamNumber =  retrainingThreshold - trainingExamples;
                             if(reqTrainExamNumber < 0){
-                                reqTrainExamNumber = trainingExamples;
+                                reqTrainExamNumber = retrainingThreshold;
                             }
+                            Ext.util.Cookies.set(modelName, reqTrainExamNumber);
                             return 'Waiting. '+reqTrainExamNumber+' training examples are needed.';
                         }
                         else{
