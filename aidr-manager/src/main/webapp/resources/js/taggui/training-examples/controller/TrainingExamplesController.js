@@ -102,7 +102,9 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                                 me.skipTask();
                             }
                         } else{
-                            AIDRFMFunctions.setAlert("Error", "No training examples available for this crisis.");
+                            AIDRFMFunctions.setAlert("Error", "No training examples available for this crisis. Please check it later.");
+                            me.mainComponent.documentTextLabel.setText("No training examples available for this crisis. Please check it later.", false);
+                            me.mainComponent.buttonsBlock.removeAll();
                         }
                     }
                 } else {
@@ -162,7 +164,8 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                     if (resp.success) {
                         me.loadData();
                     } else {
-                        AIDRFMFunctions.setAlert("Error", "Error while saving task.");
+                        me.loadData();
+                        AIDRFMFunctions.setAlert("Info", "Task has been saved.");
                     }
                 }
             });

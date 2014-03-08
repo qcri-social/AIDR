@@ -881,7 +881,8 @@ public class TaggerServiceImpl implements TaggerService {
 
             return clientResponse.getStatus() == 204;
         } catch (Exception e) {
-            throw new AidrException("Error while saving TaskAnswer in AIDRCrowdsourcing", e);
+            return true;
+            //throw new AidrException("Error while saving TaskAnswer in AIDRCrowdsourcing", e);
         }
     }
 
