@@ -799,7 +799,7 @@ public class TaggerServiceImpl implements TaggerService {
             int taskBufferNumber = 1;
             //WebResource webResource = client.resource(crowdsourcingAPIMainUrl + "/taskbuffer/getassignabletask/" + userName + "/" + id + "/" + taskBufferNumber);
             WebTarget webResource = client.target(crowdsourcingAPIMainUrl 
-            		+ "/taskbuffer/getassignabletask/" 
+            		+ "/document/getassignabletask/"
             		+ userName + "/" + id + "/" + taskBufferNumber);
             
             //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
