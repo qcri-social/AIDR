@@ -131,12 +131,12 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 
                 if( countTrainingExample > 0){
                     statusMessage = retrainingThresholdCount + ' more needed to re-train. Note: Value \"N/A\" doesn\'t count as training example.';
-                    me.mainComponent.taggerDescription2line.setText('<b>' + trainingExamplesCount + '</b> training examples. '+ statusMessage, false);
+                    me.mainComponent.taggerDescription2line.setText('<b>' + TRAINING_EXAMPLE + '</b> training examples. '+ statusMessage, false);
                 }
                 else{
 
                     statusMessage = retrainingThresholdCount + ' more needed to re-train. Note: Value \"N/A\" doesn\'t count as training example.';
-                    me.mainComponent.taggerDescription2line.setText('<b>0</b> training examples. '+statusMessage, false);
+                    me.mainComponent.taggerDescription2line.setText('<b>'+TRAINING_EXAMPLE+'</b> training examples. '+statusMessage, false);
                 }
             }
         });
