@@ -79,10 +79,14 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                                     totalExamples += r.trainingDocuments;
                                 }
                             });
-
+                           // var self = this;
+                            //me.getRetrainingThreshold()
+                            me.getRetrainingThreshold(totalMessages, count);
                             me.mainComponent.taggerDescription.setText('Status: <b>' + status + '</b>. ' +
                                 'Has classified <b>' + totalMessages + '</b> messages.&nbsp;' + detailsForModel, false);
-                            me.mainComponent.taggerDescription2line.setText('<b>' + totalExamples + '</b> training examples. Note: Value \"N/A\" doesn\'t count as training example.', false);
+
+
+                          //  me.mainComponent.taggerDescription2line.setText('<b>' + totalExamples + '</b> training examples. Note: Value \"N/A\" doesn\'t count as training example.', false);
                         }
                     } else {
                         AIDRFMFunctions.setAlert("Error", resp.message);
@@ -90,7 +94,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                 }
             });
         } else {
-            this.getRetrainingThreshold();
+            this.getRetrainingThreshold(0,0);
             me.mainComponent.breadcrumbs.setText('<div class="bread-crumbs">' +
                 '<a href="' + BASE_URL + '/protected/tagger-home">Tagger</a><span>&nbsp;>&nbsp;</span>' +
                 '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + CRISIS_NAME + '</a><span>&nbsp;>&nbsp;' +
@@ -99,7 +103,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
         }
     },
 
-    getRetrainingThreshold: function(){
+    getRetrainingThreshold: function(trainingExamplesCount, countTrainingExample){
         var me = this;
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/getRetrainThreshold.action',
@@ -119,13 +123,20 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 
                 var retrainingThresholdCount = 0;
                 var statusMessage='';
-                retrainingThresholdCount = me.sampleCountThreshold - TRAINING_EXAMPLE;
-                if(retrainingThresholdCount < 0){
-                    retrainingThresholdCount = me.sampleCountThreshold;
+                var y = TRAINING_EXAMPLE % data.sampleCountThreshold;
+                if(y < 0){
+                  y = y * data.sampleCountThreshold;
                 }
-                if( MODEL_AUC <= 0){
-                    statusMessage = '('+ retrainingThresholdCount + ' training examples are needed). Note: Value \"N/A\" doesn\'t count as training example.';
-                    me.mainComponent.taggerDescription2line.setText('<b>0</b> training examples.'+statusMessage, false);
+                retrainingThresholdCount = data.sampleCountThreshold - y;
+
+                if( countTrainingExample > 0){
+                    statusMessage = retrainingThresholdCount + ' more needed to re-train. Note: Value \"N/A\" doesn\'t count as training example.';
+                    me.mainComponent.taggerDescription2line.setText('<b>' + trainingExamplesCount + '</b> training examples. '+ statusMessage, false);
+                }
+                else{
+
+                    statusMessage = retrainingThresholdCount + ' more needed to re-train. Note: Value \"N/A\" doesn\'t count as training example.';
+                    me.mainComponent.taggerDescription2line.setText('<b>0</b> training examples. '+statusMessage, false);
                 }
             }
         });

@@ -196,20 +196,18 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                     }
                 },
                 getStatus: function (modelId, trainingExamples, retrainingThreshold, auc, modelName) {
+                    var reqTrainExamNumber = trainingExamples % retrainingThreshold;
+                    if(reqTrainExamNumber < 0){
+                        reqTrainExamNumber = reqTrainExamNumber * retrainingThreshold;
+                    }
+
+                    reqTrainExamNumber = retrainingThreshold - reqTrainExamNumber;
+
                     if (modelId && modelId != 0) {
-                        return 'Running';
+                        return 'Running. '+reqTrainExamNumber+' more needed to re-train.';;
                     } else {
-                        if(auc == 0){
-                            var reqTrainExamNumber =  retrainingThreshold - trainingExamples;
-                            if(reqTrainExamNumber < 0){
-                                reqTrainExamNumber = retrainingThreshold;
-                            }
-                            Ext.util.Cookies.set(modelName, reqTrainExamNumber);
-                            return 'Waiting. '+reqTrainExamNumber+' training examples are needed.';
-                        }
-                        else{
-                            return 'Waiting.';
-                        }
+                        Ext.util.Cookies.set(modelName, reqTrainExamNumber);
+                        return 'Waiting. '+reqTrainExamNumber+' more needed to re-train.';
 
                     }
                 }
