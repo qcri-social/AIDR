@@ -150,7 +150,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
             success: function (response) {
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
-                    AIDRFMFunctions.setAlert("REMOVED", "Training Example is removed successfully. Note: this removal will be reflected on the automatic classifier the next time it is retrained.");
+                    AIDRFMFunctions.setAlert("Info", "Training Example is removed successfully. Note: this removal will be reflected on the automatic classifier the next time it is retrained.");
                     me.mainComponent.trainingDataStore.load();
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);

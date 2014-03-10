@@ -119,6 +119,12 @@ public class CollectionServiceImpl implements CollectionService {
 
     @Override
     @Transactional(readOnly = true)
+    public Boolean existName(String name) throws Exception {
+        return collectionRepository.existName(name);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public AidrCollection getRunningCollectionStatusByUser(Integer userId) throws Exception {
         return collectionRepository.getRunningCollectionStatusByUser(userId);
     }

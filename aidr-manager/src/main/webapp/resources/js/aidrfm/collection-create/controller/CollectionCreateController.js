@@ -112,7 +112,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
 
             "#collectionCreate": {
                 click: function (btn, e, eOpts) {
-                    CollectionCreateController.isExist();
+                    CollectionCreateController.initNameAndCodeValidation();
                 }
             },
 
@@ -154,7 +154,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                     'Accept': 'application/json'
                 },
                 success: function (response) {
-                    AIDRFMFunctions.setAlert("Collection Created", ["Collection created successfully.", "You will be redirected to Home screen."]);
+                    AIDRFMFunctions.setAlert("Info", ["Collection created successfully.", "You will be redirected to Home screen."]);
                     mask.hide();
 
                     var maskRedirect = AIDRFMFunctions.getMask(true, 'Redirecting ...');
@@ -193,15 +193,62 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 'Accept': 'application/json'
             },
             success: function (response) {
+                me.checkCount--;
+
                 var response = Ext.decode(response.responseText);
                 if (response.data) {
                     AIDRFMFunctions.setAlert('Error', 'Collection Code already exist. Please select another code');
                     code.markInvalid("Collection Code already exist. Please select another code");
                 } else {
-                    me.saveCollection();
+                    if (me.checkCount == 0) {
+                        me.saveCollection();
+                    }
                 }
             }
         });
+    },
+
+    isExistName: function () {
+        var me = this;
+
+        var form = Ext.getCmp('collectionForm').getForm();
+        var name = form.findField('name');
+        Ext.Ajax.request({
+            url: 'collection/existName.action',
+            method: 'GET',
+            params: {
+                name: name.getValue()
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                me.checkCount--;
+
+                var response = Ext.decode(response.responseText);
+                if (response.data) {
+                    AIDRFMFunctions.setAlert('Error', [
+                        'The name of the collection you have selected is already taken. Please enter a more specific name for your collection indicating a more specific time, location, and/or purpose.',
+                        '&nbsp;',
+                        '<b>Examples:</b>',
+                        '&quot;Earthquake in Chile in Feb. 2014&quot;',
+                        '&quot;Earthquake in Concepcion, Chile in 2014&quot;',
+                        '&quot;Consequences of earthquake in Concepcion, Chile in 2014&quot;'
+                    ]);
+                    name.markInvalid("Collection Name already exist. Please select another name");
+                } else {
+                    if (me.checkCount == 0) {
+                        me.saveCollection();
+                    }
+                }
+            }
+        });
+    },
+
+    initNameAndCodeValidation: function() {
+        this.checkCount = 2;
+        this.isExist();
+        this.isExistName();
     },
 
     generateCollectionCode: function(value) {
