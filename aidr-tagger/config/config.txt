@@ -1,0 +1,53 @@
+# ################################ #
+# Settings for AIDR Predict module #
+# ################################ #
+
+# MySQL connection details
+mysql_path=jdbc:mysql://localhost:3306/aidr_predict?useUnicode=true&characterEncoding=UTF-8
+mysql_username=root
+mysql_password=admin
+
+# Replace console with a filename to log to file
+log_file_name=console
+
+# Permitted values are INFO, WARNING and ERROR
+log_level=INFO
+
+# Path to a folder where trained models are stored
+model_store_path=models
+
+# Ports used for HTTP communication with external providers and consumers
+http_input_port=8765
+http_output_port=8766
+
+# URL to Redis server
+redis_host=localhost
+
+# Name of pubsub channel to which the AIDR Fetcher module publishes tweets
+redis_input_channel=FetcherChannel.*
+
+# The predict module outputs documents to pubsub channels with the name
+# [prefix].[crisis_name] (without brackets). The value below is the prefix.
+redis_output_channel_prefix=aidr_predict
+
+# Names of redis queues used for internal message passing in the predict module
+redis_for_extraction_queue=extraction_stream
+redis_for_classification_queue=classification_stream
+redis_for_output_queue=classified_output_stream
+redis_training_sample_info_queue=training_sample_info_stream
+redis_next_model_id=next_model_id
+redis_label_task_write_queue=label_task_write_stream
+
+# Maximum number of unlabeled documents to keep as labeling tasks for each
+# crisis. If the value is set too high, documents may no longer be useful
+# as training samples once they are labeled. If the value is too low, the buffer
+# may become empty if workers label items very rapidly. Default is 100.
+labeling_task_buffer_max_length=500
+
+# Rate limits for writing labeling tasks to the database
+max_task_write_fq_ms=2000
+max_new_tasks_per_minute=50
+
+# Reserved value used to represent the absence of an attribute value
+# (e.g. color: {null, red, green, blue})
+nominal_attribute_null_value=null
