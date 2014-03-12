@@ -154,7 +154,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                     if (owner.userName == USER_NAME){
                         return '';
                     }
-                    return '<span class="styled-text-14"> (Shared by &#45; ' + owner.userName + ')</span>';
+                    return '<span class="styled-text-14"> (Shared by &#45; &#64;' + owner.userName + ')</span>';
                 }
             }
         );
