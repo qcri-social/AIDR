@@ -16,6 +16,7 @@ import qa.qcri.aidr.trainer.pybossa.service.ClientService;
 import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
 import qa.qcri.aidr.trainer.pybossa.store.URLPrefixCode;
 import qa.qcri.aidr.trainer.pybossa.store.UserAccount;
+import qa.qcri.aidr.trainer.pybossa.util.DataFormatValidator;
 
 import java.util.Iterator;
 import java.util.List;
@@ -189,7 +190,6 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
 
                         if(nominalAttributeID.equals(nominalAttID)){
                             processAppCreation(featureJsonObj, nominalAttributeID,crisisID,nominalAttID,code, name, description);
-                           // doAppUpdate(clientApp, )
                             break;
                         }
                     }
@@ -228,7 +228,10 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
         String PYBOSSA_API_CATEGORY_FIND_URL = PYBOSSA_API_CATEGORY_BASE_URL+ URLPrefixCode.PYBOSSA_CATEGORY_SHORT_NAME +  crisisCode;
         String responseData = pybossaCommunicator.sendGet(PYBOSSA_API_CATEGORY_FIND_URL);
 
-        if(responseData.trim().length() > StatusCodeType.RESPONSE_MIN_LENGTH) {
+        //System.out.println("PYBOSSA_API_CATEGORY_FIND_URL: " + PYBOSSA_API_CATEGORY_FIND_URL);
+        //System.out.println("responseData: " +  responseData );
+
+        if(DataFormatValidator.isValidateJson(responseData)) {
             categoryID = pybossaFormatter.getCategoryID(responseData,  parser, true);
         }
         else{

@@ -18,6 +18,8 @@ public class TaggerModel {
 
     private Integer attributeID;
 
+    private Integer retrainingThreshold;
+
     public Integer getModelID() {
         return modelID;
     }
@@ -86,5 +88,13 @@ public class TaggerModel {
 
     public void setAttributeID(Integer attributeID) {
         this.attributeID = attributeID;
+    }
+
+    public Integer getRetrainingThreshold() {
+        return retrainingThreshold;
+    }
+
+    public void setRetrainingThreshold(Integer retrainingThreshold) {
+        this.retrainingThreshold = retrainingThreshold;
     }
 }

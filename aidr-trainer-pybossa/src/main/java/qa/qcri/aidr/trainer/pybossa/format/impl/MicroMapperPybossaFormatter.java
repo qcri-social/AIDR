@@ -10,6 +10,7 @@ import qa.qcri.aidr.trainer.pybossa.entity.*;
 import qa.qcri.aidr.trainer.pybossa.service.ReportTemplateService;
 import qa.qcri.aidr.trainer.pybossa.store.PybossaConf;
 import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
+import qa.qcri.aidr.trainer.pybossa.util.DataFormatValidator;
 import qa.qcri.aidr.trainer.pybossa.util.JsonSorter;
 import qa.qcri.aidr.trainer.pybossa.util.LatLngUtils;
 import qa.qcri.aidr.trainer.pybossa.util.StreamConverter;
@@ -227,7 +228,7 @@ public class MicroMapperPybossaFormatter {
     public boolean isTaskStatusCompleted(String data) throws Exception{
         /// will do later for importing process
         boolean isCompleted = false;
-        if(!data.isEmpty() && data.length() > 10){
+        if(DataFormatValidator.isValidateJson(data)){
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(data);
             JSONArray jsonObject = (JSONArray) obj;
@@ -423,7 +424,7 @@ public class MicroMapperPybossaFormatter {
         double preLon = 0;
         double currentLat =0;
         double currentLon = 0;
-        double oneMileRadius = 1609.34;
+        double oneMileRadius = 1609.34;   // 1 mile
         List<Integer> list = new ArrayList<Integer>();
         ArrayList<GeoPropertyModel> geoProperties = new ArrayList<GeoPropertyModel>();
 

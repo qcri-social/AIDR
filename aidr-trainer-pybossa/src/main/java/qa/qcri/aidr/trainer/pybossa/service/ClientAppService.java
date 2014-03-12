@@ -21,5 +21,6 @@ public interface ClientAppService {
     List<ClientApp> findClientAppByStatus(Integer status);
     List<ClientApp> getAllClientAppByCrisisID(Long crisisID);
     List<ClientApp> getAllClientAppByClientIDAndStatus(Long clientID, Integer status);
-
+    List<ClientApp> getAllClientAppByCrisisIDAndStatus(Long clientID, Integer status);
+    void updateClientAppStatus(ClientApp clientApp, Integer status);
 }

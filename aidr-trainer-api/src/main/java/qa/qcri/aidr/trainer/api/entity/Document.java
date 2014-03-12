@@ -1,11 +1,9 @@
 package qa.qcri.aidr.trainer.api.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -54,6 +52,38 @@ public class Document implements Serializable {
 
     @Column (name = "wordFeatures", nullable = false)
     private String wordFeatures;
+
+    @Column (name = "geoFeatures", nullable = false)
+    private String geoFeatures;
+
+    @OneToOne(cascade=CascadeType.DETACH, fetch=FetchType.LAZY)
+    @JoinColumn(name="documentID",insertable=true,
+            updatable=true,nullable=true,unique=true)
+    private TaskAssignment taskAssignment;
+
+
+    public Document(){}
+
+    public Document(Long documentID, boolean hasHumanLabels){
+        this.documentID  = documentID;
+        this.hasHumanLabels = hasHumanLabels;
+    }
+
+    public Long getDocumentID() {
+        return documentID;
+    }
+
+    public void setDocumentID(Long documentID) {
+        this.documentID = documentID;
+    }
+
+    public boolean isHasHumanLabels() {
+        return hasHumanLabels;
+    }
+
+    public void setHasHumanLabels(boolean hasHumanLabels) {
+        this.hasHumanLabels = hasHumanLabels;
+    }
 
     public String getGeoFeatures() {
         return geoFeatures;
@@ -135,31 +165,11 @@ public class Document implements Serializable {
         this.wordFeatures = wordFeatures;
     }
 
-    @Column (name = "geoFeatures", nullable = false)
-    private String geoFeatures;
-
-    public Document(){}
-
-    public Document(Long documentID, boolean hasHumanLabels){
-        this.documentID  = documentID;
-        this.hasHumanLabels = hasHumanLabels;
+    public TaskAssignment getTaskAssignment() {
+        return taskAssignment;
     }
 
-    public Long getDocumentID() {
-        return documentID;
+    public void setTaskAssignment(TaskAssignment taskAssignment) {
+        this.taskAssignment = taskAssignment;
     }
-
-    public void setDocumentID(Long documentID) {
-        this.documentID = documentID;
-    }
-
-    public boolean isHasHumanLabels() {
-        return hasHumanLabels;
-    }
-
-    public void setHasHumanLabels(boolean hasHumanLabels) {
-        this.hasHumanLabels = hasHumanLabels;
-    }
-
-
 }

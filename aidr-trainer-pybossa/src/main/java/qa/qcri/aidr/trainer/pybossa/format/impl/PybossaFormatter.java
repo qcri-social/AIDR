@@ -5,6 +5,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import qa.qcri.aidr.trainer.pybossa.entity.ClientApp;
 import qa.qcri.aidr.trainer.pybossa.entity.TaskLog;
+import qa.qcri.aidr.trainer.pybossa.util.DataFormatValidator;
 import qa.qcri.aidr.trainer.pybossa.util.DateTimeConverter;
 import qa.qcri.aidr.trainer.pybossa.util.JsonSorter;
 import qa.qcri.aidr.trainer.pybossa.util.StreamConverter;
@@ -218,10 +219,8 @@ public class PybossaFormatter {
     }
 
     private JSONObject assemblePybossaInfoFormat(JSONObject featureJsonObj, JSONParser parser, ClientApp clientApp) throws Exception{
-        //attributeInfo
+
         String attributeInfo = (String)featureJsonObj.get("attributeInfo");
-        // ISSUE ON DATA. NEED TO RE-DO
-        //JSONObject attributeInfo = (JSONObject) parser.parse(att);
         JSONObject data = (JSONObject) parser.parse((String)featureJsonObj.get("data"));
 
         Long documentID =  (Long)featureJsonObj.get("documentID");
@@ -260,7 +259,7 @@ public class PybossaFormatter {
     public boolean isTaskStatusCompleted(String data) throws Exception{
         /// will do later for importing process
         boolean isCompleted = false;
-        if(!data.isEmpty() && data.length() > 10){
+        if(DataFormatValidator.isValidateJson(data)){
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(data);
             JSONArray jsonObject = (JSONArray) obj;
@@ -280,6 +279,33 @@ public class PybossaFormatter {
 
         }
         return isCompleted;
+    }
+
+    public Long getCategoryID(String data, JSONParser parser, boolean isJsonArray) throws Exception{
+        Long categoryID = null;
+        if(isJsonArray){
+            JSONArray array = (JSONArray) parser.parse(data);
+            Iterator itr= array.iterator();
+
+            while(itr.hasNext()){
+                JSONObject featureJsonObj = (JSONObject)itr.next();
+                categoryID = (Long)featureJsonObj.get("id");
+            }
+        }
+        else{
+            JSONObject jsonObject = (JSONObject) parser.parse(data);
+            categoryID = (Long)jsonObject.get("id");
+        }
+        return categoryID;
+    }
+
+    public String getCatagoryDataSet(String attributeName,  String attributeCode){
+        JSONObject categoryJSON = new JSONObject();
+        categoryJSON.put("name", attributeName) ;
+        categoryJSON.put("short_name", attributeCode) ;
+        categoryJSON.put("description", attributeName);
+
+        return categoryJSON.toJSONString();
     }
 
     public List<String> processPybossaCompletedTask(String data) throws Exception{
@@ -335,30 +361,4 @@ public class PybossaFormatter {
         }
     }
 
-    public Long getCategoryID(String data, JSONParser parser, boolean isJsonArray) throws Exception{
-        Long categoryID = null;
-        if(isJsonArray){
-            JSONArray array = (JSONArray) parser.parse(data);
-            Iterator itr= array.iterator();
-
-            while(itr.hasNext()){
-                JSONObject featureJsonObj = (JSONObject)itr.next();
-                categoryID = (Long)featureJsonObj.get("id");
-            }
-        }
-        else{
-            JSONObject jsonObject = (JSONObject) parser.parse(data);
-            categoryID = (Long)jsonObject.get("id");
-        }
-        return categoryID;
-    }
-
-    public String getCatagoryDataSet(String attributeName,  String attributeCode){
-        JSONObject categoryJSON = new JSONObject();
-        categoryJSON.put("name", attributeName) ;
-        categoryJSON.put("short_name", attributeCode) ;
-        categoryJSON.put("description", attributeName);
-
-        return categoryJSON.toJSONString();
-    }
 }

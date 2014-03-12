@@ -123,7 +123,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         this.crisisModelsStore = Ext.create('Ext.data.Store', {
             pageSize: 30,
             storeId: 'crisisModelsStore',
-            fields: ['attribute', 'attributeID', 'auc', 'classifiedDocuments', 'modelID', 'status', 'trainingExamples', 'modelFamilyID'],
+            fields: ['attribute', 'attributeID', 'auc', 'classifiedDocuments', 'modelID', 'status', 'trainingExamples', 'modelFamilyID','retrainingThreshold'],
             proxy: {
                 type: 'ajax',
                 url: BASE_URL + '/protected/tagger/getModelsForCrisis.action',
@@ -160,7 +160,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
 
             '<tr><td>Status:</td>',
-            '<td>{[this.getStatus(values.modelID)]}</td></tr>',
+            '<td>{[this.getStatus(values.modelID, this.getNumber(values.trainingExamples), values.retrainingThreshold, values.auc, values.attribute)]}</td></tr>',
 
             '<tr><td>Training examples:</td>',
             '<td>{[this.getNumber(values.trainingExamples)]} &mdash; <a href="' + BASE_URL +  '/protected/'
@@ -195,11 +195,20 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                         return modelName;
                     }
                 },
-                getStatus: function (modelId) {
+                getStatus: function (modelId, trainingExamples, retrainingThreshold, auc, modelName) {
+                    var reqTrainExamNumber = trainingExamples % retrainingThreshold;
+                    if(reqTrainExamNumber < 0){
+                        reqTrainExamNumber = reqTrainExamNumber * retrainingThreshold;
+                    }
+
+                    reqTrainExamNumber = retrainingThreshold - reqTrainExamNumber;
+
                     if (modelId && modelId != 0) {
-                        return 'Running';
+                        return 'Running. '+reqTrainExamNumber+' more needed to re-train.';;
                     } else {
-                        return 'Waiting training examples';
+                        Ext.util.Cookies.set(modelName, reqTrainExamNumber);
+                        return 'Waiting. '+reqTrainExamNumber+' more needed to re-train.';
+
                     }
                 }
             }
@@ -334,6 +343,20 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             html: ''
         });
 
+        this.generateCSVButton = Ext.create('Ext.Button', {
+            text: 'Export tweets (.csv) (Last 100k tweets)',
+            margin: '5 5 5 0',
+            cls:'btn btn-blue download-button',
+            id: 'generateCSVLink'
+        });
+
+        this.generateTweetIdsButton = Ext.create('Ext.Button', {
+            text: 'Export tweet-ids only (.csv) (All tweets)',
+            margin: '5 5 5 0',
+            cls:'btn btn-blue download-button',
+            id: 'generateTweetIdsLink'
+        });
+
         this.taggerFetchLink = Ext.create('Ext.form.Label', {
             flex: 1,
             padding: '15 0 0 5',
@@ -356,7 +379,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         this.taggerFetchStore = Ext.create('Ext.data.Store', {
             pageSize: 10,
             storeId: 'taggerFetchStore',
-                fields: ['text', 'attribute_name', 'label_name', 'confidence']
+            fields: ['text', 'attribute_name', 'label_name', 'confidence']
         });
 
         this.taggerFetchGrid = Ext.create('Ext.grid.Panel', {
@@ -442,8 +465,33 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                     text: 'Download as CSV files',
                     cls: 'header-h2'
                 },
-                this.CSVLink,
-                this.tweetsIdsLink
+//                this.CSVLink,
+//                this.tweetsIdsLink
+                {
+                    xtype: 'container',
+                    layout: 'vbox',
+                    items: [
+                        {
+                            xtype: 'container',
+                            padding: '5 0 0 0',
+                            defaultType: 'label',
+                            layout: 'hbox',
+                            items: [
+                                this.generateCSVButton,
+                                this.CSVLink
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            defaultType: 'label',
+                            layout: 'hbox',
+                            items: [
+                                this.generateTweetIdsButton,
+                                this.tweetsIdsLink
+                            ]
+                        }
+                    ]
+                }
             ]
         });
 

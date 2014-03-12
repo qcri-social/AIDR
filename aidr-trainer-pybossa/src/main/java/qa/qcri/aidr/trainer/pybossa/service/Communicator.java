@@ -13,4 +13,6 @@ public interface Communicator {
     public int sendPut(String data, String url);
     public int sendDelete(String data, String url);
     public String sendPostGet(String data, String url);
+    public String deleteGet(String url);
+
 }

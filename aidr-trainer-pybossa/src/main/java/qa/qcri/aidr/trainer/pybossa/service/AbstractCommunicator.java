@@ -41,4 +41,9 @@ public class AbstractCommunicator implements Communicator {
     public String sendPostGet(String data, String url){
         return null;
     }
+
+    @Override
+    public String deleteGet(String url) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

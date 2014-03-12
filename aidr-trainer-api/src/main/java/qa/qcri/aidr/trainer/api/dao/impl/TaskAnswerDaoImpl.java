@@ -21,9 +21,6 @@ public class TaskAnswerDaoImpl extends AbstractDaoImpl<TaskAnswer, String> imple
     @Override
     public void insertTaskAnswer(TaskAnswer taskAnswer) {
         save(taskAnswer);
-
-       // saveOrUpdate(taskAnswer);
-      //  System.out.println("taskID: " + taskAnswer.getTaskID() + "\n");
     }
 
 }

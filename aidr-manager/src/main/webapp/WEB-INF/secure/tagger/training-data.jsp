@@ -12,6 +12,8 @@
       MODEL_FAMILY_ID = ${modelFamilyId};
       MODEL_NAME = "${modelName}";
       ATTRIBUTE_ID = "${attributeID}";
+      TRAINING_EXAMPLE = "${trainingExamples}";
+      MODEL_AUC = "${modelAuc}";
   </script>
 
 </body>

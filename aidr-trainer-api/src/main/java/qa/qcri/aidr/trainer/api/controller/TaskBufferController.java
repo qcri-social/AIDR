@@ -1,7 +1,9 @@
 package qa.qcri.aidr.trainer.api.controller;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 import qa.qcri.aidr.trainer.api.entity.TaskBuffer;
+import qa.qcri.aidr.trainer.api.service.DocumentService;
 import qa.qcri.aidr.trainer.api.service.TaskBufferService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +20,11 @@ import java.util.List;
 @Path("/taskbuffer")
 @Component
 public class TaskBufferController {
+    protected static Logger logger = Logger.getLogger("service");
+
     @Autowired
     private TaskBufferService taskBufferService;
+
 
     @GET
     @Produces( MediaType.APPLICATION_JSON )
@@ -40,6 +45,7 @@ public class TaskBufferController {
                                                      @PathParam("userName") String userName,
                                                      @PathParam("maxresult") String maxresult){
 
+        logger.debug("getOneTaskBufferToAssign..: " + crisisID + " -" +  userName + " -" +  maxresult );
         return taskBufferService.findOneTaskBufferByCririsID(new Long(crisisID),userName, StatusCodeType.TASK_BUFFER_STATUS_AVAILABLE,Integer.valueOf(maxresult));
         //  return  taskBufferService.findAssignableTaskBuffer("assignedCount", 0, Integer.valueOf(maxresult));
     }

@@ -37,7 +37,7 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
         this.taggerDescription2line = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '0 0 15 0',
-            html: '<b>0</b> training examples. Click on a message to see/edit details',
+            html: '<b>0</b> training examples.',
             flex: 1
         });
 

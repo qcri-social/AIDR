@@ -16,6 +16,8 @@ public interface CollectionRepository extends GenericRepository<AidrCollection, 
 
     public Boolean exist(String code);
 
+    public Boolean existName(String name);
+
     public AidrCollection getRunningCollectionStatusByUser(Integer userId);
 
     public List<AidrCollection> getRunningCollections();

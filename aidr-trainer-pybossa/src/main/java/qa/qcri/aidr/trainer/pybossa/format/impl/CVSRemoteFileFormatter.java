@@ -211,8 +211,8 @@ public class CVSRemoteFileFormatter {
 
     public CSVWriter instanceToOutput(String fileName) throws Exception{
         File file = new File(fileName);
-        file.getAbsolutePath();
-        CSVWriter writer = new CSVWriter(new FileWriter(file, true));
+        //file.getAbsolutePath();
+        CSVWriter writer = new CSVWriter(new FileWriter(fileName, true));
         //  public MicromapperOuput(String tweetID, String tweet, String author, String lat, String lng, String url, String created, String answer){
 
         String[] header = {"tweetID", "tweet","author", "lat", "lng", "url", "created", "answer"};

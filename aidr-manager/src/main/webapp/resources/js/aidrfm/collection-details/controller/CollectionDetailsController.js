@@ -308,7 +308,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 OWNER_NAME = jsonData.user.userName;
 
                 me.updateDetailsPanel(jsonData);
-                me.updateDownloadPanel(jsonData.code);
+//                me.updateDownloadPanel(jsonData.code);
                 me.updateEditPanel();
                 me.setManagers(jsonData.managers);
 
@@ -372,13 +372,13 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         this.setLastDowloadedDoc(r.lastDocument);
     },
 
-    updateDownloadPanel: function (code) {
-        var downloadTabText = '<div class="styled-text">You can read the collected tweets from:<br><br>' +
-            '<b>1.</b>&nbsp;&nbsp;Tweets in JSON format: <a href="http://scd1.qcri.org/aidr/data/persister/' + code + '">http://scd1.qcri.org/aidr/data/persister/' + code + '/</a><br>' +
-            '<b>2.</b>&nbsp;&nbsp;Redis queue FetcherChannel.' + code + ' on host scd1.qcri.org port 6379<br></div>';
-
-        this.DetailsComponent.downloadText.setText(downloadTabText, false);
-    },
+//    updateDownloadPanel: function (code) {
+//        var downloadTabText = '<div class="styled-text">You can read the collected tweets from:<br><br>' +
+//            '<b>1.</b>&nbsp;&nbsp;Tweets in JSON format: <a href="http://scd1.qcri.org/aidr/data/persister/' + code + '">http://scd1.qcri.org/aidr/data/persister/' + code + '/</a><br>' +
+//            '<b>2.</b>&nbsp;&nbsp;Redis queue FetcherChannel.' + code + ' on host scd1.qcri.org port 6379<br></div>';
+//
+//        this.DetailsComponent.downloadText.setText(downloadTabText, false);
+//    },
 
     setLastDowloadedDoc: function(raw) {
         var p = this.DetailsComponent;

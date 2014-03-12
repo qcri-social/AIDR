@@ -2,9 +2,11 @@ package qa.qcri.aidr.trainer.api.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.trainer.api.dao.TaskAssignmentDao;
 import qa.qcri.aidr.trainer.api.dao.UsersDao;
+import qa.qcri.aidr.trainer.api.entity.Document;
 import qa.qcri.aidr.trainer.api.entity.TaskBuffer;
 import qa.qcri.aidr.trainer.api.entity.Users;
 import qa.qcri.aidr.trainer.api.service.TaskAssignmentService;
@@ -25,8 +27,8 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
 
     @Override
     @Transactional(readOnly = false)
-    public void revertTaskAssignment(List<TaskBuffer> taskBuffer, Long userID) {
-        taskAssignmentDao.undoTaskAssignment(taskBuffer, userID);
+    public void revertTaskAssignment(List<Document> documents, Long userID) {
+        taskAssignmentDao.undoTaskAssignment(documents, userID);
     }
 
     @Override
@@ -37,7 +39,7 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
 
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void revertTaskAssignment(Long documentID, String userName) {
         Users users = usersDao.findUserByName(userName);
         if(users!= null){

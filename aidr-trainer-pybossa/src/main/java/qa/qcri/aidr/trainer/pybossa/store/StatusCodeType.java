@@ -26,15 +26,18 @@ public class StatusCodeType {
 
     public static Integer RESPONSE_MIN_LENGTH = 10;
 
+    public static Integer CLIENT_APP_PENDING = 0;
     public static Integer MICROMAPPER_ONLY = 2;
     public static Integer AIDR_ONLY = 1;
+    public static Integer CLIENT_APP_INACTIVE_REQUEST = 3;
+    public static Integer CLIENT_APP_DISABLED = 4;
 
 
     public static Integer EXTERNAL_DATA_SOURCE_USED = 2;
     public static Integer EXTERNAL_DATA_SOURCE_ACTIVE = 1;
     public static Integer EXTERNAL_DATA_SOURCE_UPLOADED = 0;
 
-    public static Integer CLIENT_APP_ACTIVE = 1;
+
 
     public static Integer TEMPLATE_IS_READY_FOR_EXPORT = 0;
     public static Integer TEMPLATE_EXPORTED = 1;

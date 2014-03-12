@@ -149,6 +149,18 @@ public class TaggerController extends BaseController {
         }
     }
 
+    @RequestMapping(value = "/getRetrainThreshold.action", method = {RequestMethod.GET})
+    @ResponseBody
+    public Map<String, Object> getRetrainThreshold() {
+        logger.info("Getting Attributes For Crises");
+        try {
+            return getUIWrapper(taggerService.getRetainingThreshold(), true);
+        } catch (AidrException e) {
+            logger.error(e.getMessage(), e);
+            return getUIWrapper(false, e.getMessage());
+        }
+    }
+
     @RequestMapping(value = "/getAllLabelsForModel.action", method = {RequestMethod.GET})
     @ResponseBody
     public Map<String, Object> getAllLabelsForModel(Integer id) {

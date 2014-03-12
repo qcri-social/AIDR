@@ -4,11 +4,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 
 @Entity
 @Table (catalog = "aidr_predict",name = "task_buffer")
-public class TaskBuffer {
+public class TaskBuffer implements Serializable {
+
+    private static final long serialVersionUID = -5527566248002296042L;
 
     @Id
     @Column (name = "documentID")

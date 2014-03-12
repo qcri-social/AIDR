@@ -695,3 +695,37 @@ End of the tab panel styles
 .mainWraper .main div input {
     border: 0;
 }
+
+#notify {
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    -o-border-radius: 3px;
+    border-radius: 3px;
+    padding: 8px 18px;
+    font-size: 12px;
+    display: inline-block;
+}
+
+.server-error {
+    background-color: #fef1f1;
+    border: 1px solid #e2a8a8;
+    color: #D46D6D;
+}
+
+.server-success,
+.server-ok {
+    background-color: #e8f7ed;
+    border: 1px solid #30b661;
+    color: #1BA84E;
+}
+
+.server-info {
+    background-color: #e0f8ff;
+    border: 1px solid #00acee;
+    color: #00acee;
+}
+
+#notify .title{
+    font-weight:bold;
+}

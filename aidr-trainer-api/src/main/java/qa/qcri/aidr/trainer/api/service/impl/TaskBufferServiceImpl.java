@@ -2,6 +2,7 @@ package qa.qcri.aidr.trainer.api.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.trainer.api.dao.*;
 import qa.qcri.aidr.trainer.api.entity.*;
@@ -33,44 +34,27 @@ public class TaskBufferServiceImpl implements TaskBufferService {
 
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public List<TaskBuffer> findAssignableTaskBuffer(String columnName, Integer value, String userName , Integer maxresult) {
         // tractional process for get & insert
         List<TaskBuffer> taskBufferList =  taskBufferDao.findAllTaskBuffer(columnName, value, maxresult);
         // TO DO : NEED TO EXTRACT IT.
         Users users = usersDao.findUserByName(userName);
 
-        taskAssignmentDao.insertTaskAssignment(taskBufferList, users.getUserID());
+       // taskAssignmentDao.insertTaskAssignment(taskBufferList, users.getUserID());
 
         return  taskBufferList;
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = false,  propagation = Propagation.REQUIRED)
     public List<TaskBuffer> findAvailableaskBufferByCririsID(Long cririsID,String userName , Integer assignedCount, Integer maxresult) {
         // tractional process for get & insert
         List<TaskBuffer> taskBufferList = null;
-        ArrayList<Long> docID = new ArrayList<Long>();
-        boolean douplicateFound = false;
         Users users = usersDao.findUserByName(userName);
         if(users != null){
             taskBufferList =  taskBufferDao.findAllTaskBufferByCririsID(cririsID, assignedCount, maxresult);
-            for (Iterator it =taskBufferList.iterator(); it.hasNext();){
-                TaskBuffer tb = (TaskBuffer) it.next();
-                if(!docID.contains(tb.getDocumentID())){
-                    docID.add(tb.getDocumentID());
-                    // System.out.println("findAllTaskBufferByCririsID : " + tb.getDocumentID());
-                }
-                else{
-                    douplicateFound = true;
-                }
-
-            }
-
-            if(!douplicateFound){
-                taskAssignmentDao.insertTaskAssignment(taskBufferList, users.getUserID());
-            }
-
+           // taskAssignmentDao.insertTaskAssignment(taskBufferList, users.getUserID());
         }
 
         return  taskBufferList;
@@ -93,7 +77,7 @@ public class TaskBufferServiceImpl implements TaskBufferService {
                 TaskBufferJsonModel jsonModel = new TaskBufferJsonModel(taskBuffer.getDocumentID(),taskBuffer.getCrisisID(),attributeJsonModelSet,taskBuffer.getLanguage(), taskBuffer.getDoctype(), taskBuffer.getData(), taskBuffer.getValueAsTrainingSample(), taskBuffer.getAssignedCount());
                 jsonModelList.add(jsonModel);
             }
-            taskAssignmentDao.insertTaskAssignment(taskBufferList, users.getUserID());
+            //taskAssignmentDao.insertTaskAssignment(taskBufferList, users.getUserID());
         }
 
         return  jsonModelList;

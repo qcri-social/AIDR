@@ -4,42 +4,57 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
         msgCt = Ext.DomHelper.insertFirst(document.body, {id:'msg-div'}, true);
         msgCt.setStyle('position', 'absolute');
         msgCt.setStyle('z-index', 99999);
-        msgCt.setWidth(300);
+        msgCt.setWidth(400);
     },
 
     setAlert: function (status, msg) {
         var message = '<ul>';
+        var delay = 3;
         if (Ext.isArray(msg)) {
             Ext.each(msg, function (ms) {
                 message += '<li>' + ms + '</li>';
-            })
+            });
+            var arrSize  = msg.length;
+            if (arrSize  < 2) {
+                delay = 3;
+            } else {
+                delay = 9;
+            }
         } else {
             message = '<li>' + msg + '</li>';
+
+            // add some smarts to msg's duration (div by 13.3 between 3 & 9 seconds)
+            var delayMeasure  = msg.length / 13.3;
+            if (delayMeasure  < 3) {
+                delay = 3;
+            } else if (delayMeasure  > 9) {
+                delay = 9;
+            } else {
+                delay = delayMeasure ;
+            }
         }
         message += '</ul>';
-
-        // add some smarts to msg's duration (div by 13.3 between 3 & 9 seconds)
-        var delay = msg.length / 13.3;
-        if (delay < 3) {
-            delay = 3;
-        }
-        else if (delay > 9) {
-            delay = 9;
-        }
         delay = delay * 1000;
 
         msgCt.alignTo(document, 't-t');
-        Ext.DomHelper.append(msgCt, {html: this.buildMessageBox(status, message)}, true).slideIn('t').ghost("t", {delay: delay, remove: true});
+        Ext.DomHelper.append(msgCt, {html: this.buildMessageBox(status.toLowerCase(), message)}, true).slideIn('t').ghost("t", {delay: delay, remove: true});
     },
 
     buildMessageBox : function(title, msg) {
         return [
-            '<div class="app-msg">',
-            '<div class="x-box-tl"><div class="x-box-tr"><div class="x-box-tc"></div></div></div>',
-            '<div class="x-box-ml"><div class="x-box-mr"><div class="x-box-mc"><h3 class="x-icon-text icon-status-' + title + '">', title, '</h3>', msg, '</div></div></div>',
-            '<div class="x-box-bl"><div class="x-box-br"><div class="x-box-bc"></div></div></div>',
-            '</div>'
+            '<span id="notify" class="server-' + title + '">',
+                '<span class="title">',
+                    this.capitaliseFirstLetter(title),
+                '</span>',
+                '<span>',
+                    msg,
+                '</span>',
+            '</span>'
         ].join('');
+    },
+
+    capitaliseFirstLetter: function (string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
     },
 
     getMask: function (showMessage, msg) {

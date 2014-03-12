@@ -753,10 +753,10 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             id: 'generateTweetIdsLink'
         });
         
-        this.downloadText = Ext.create('Ext.form.Label', {
-            flex: 1,
-            html: ''
-        });
+//        this.downloadText = Ext.create('Ext.form.Label', {
+//            flex: 1,
+//            html: ''
+//        });
 
         this.usersCombo = Ext.create('Ext.form.field.ComboBox', {
             minChars: 0,
@@ -932,8 +932,9 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                         this.generateTweetIdsButton,
                                         this.tweetsIdsLink
                                     ]
-                                },
-                                this.downloadText
+                                }
+//                                ,
+//                                this.downloadText
                             ]
                         }
                     ]

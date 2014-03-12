@@ -138,7 +138,7 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
 
     private void addToTaskQueue(String inputData, Long clientAppID, Integer status, Long clientAppSourceID){
 
-        //System.out.println("addToTaskQueue is called");
+        System.out.println("micromapper worker addToTaskQueue is called");
 
         try {
             Object obj = parser.parse(inputData);

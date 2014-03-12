@@ -1,6 +1,9 @@
 package qa.qcri.aidr.trainer.api.service;
 
 import qa.qcri.aidr.trainer.api.entity.Document;
+import qa.qcri.aidr.trainer.api.template.TaskBufferJsonModel;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,4 +16,6 @@ public interface DocumentService {
 
     void updateHasHumanLabel(Long documentID, boolean value);
     Document findDocument(Long documentID);
+    List<Document> getDocumentForTask(Long crisisID, int count, String userName);
+    List<TaskBufferJsonModel> findOneDocumentForTaskByCririsID(Long crisisID, String userName, Integer maxresult);
 }

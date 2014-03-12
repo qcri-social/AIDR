@@ -2,6 +2,8 @@ package qa.qcri.aidr.trainer.api.dao;
 
 import qa.qcri.aidr.trainer.api.entity.Document;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jilucas
@@ -13,4 +15,5 @@ public interface DocumentDao extends AbstractDao<Document, String> {
 
     void updateHasHumanLabel(Document document);
     Document findDocument(Long documentID);
+    List<Document> findDocumentForTask(Long crisisID, int requestNumber);
 }

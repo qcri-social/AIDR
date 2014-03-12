@@ -3,6 +3,7 @@ package qa.qcri.aidr.trainer.api.service.impl;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.trainer.api.Jedis.JedisNotifier;
 import qa.qcri.aidr.trainer.api.dao.TaskAnswerDao;
@@ -22,7 +23,7 @@ import qa.qcri.aidr.trainer.api.template.TaskAnswerResponse;
  * To change this template use File | Settings | File Templates.
  */
 @Service("taskAnswerService")
-@Transactional(readOnly = true)
+@Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 public class TaskAnswerServiceImpl implements TaskAnswerService{
 
     protected static Logger logger = Logger.getLogger("service");
@@ -57,7 +58,6 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 
         if(documentService.findDocument(taskAnswerResponse.getDocumentID()) != null){
             documentService.updateHasHumanLabel(taskAnswerResponse.getDocumentID(), true);
-            taskAssignmentService.revertTaskAssignment(taskAnswerResponse.getDocumentID(), taskAnswerResponse.getUserID());
 
             for(int i = 0; i < taskAnswerList.size(); i++){
                 TaskAnswer taskAnswer = taskAnswerList.get(i);
@@ -83,8 +83,9 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
                 }
             }
 
-
             jedisNotifier.notifyToJedis(taskAnswerResponse.getJedisJson());
+
+            taskAssignmentService.revertTaskAssignment(taskAnswerResponse.getDocumentID(), taskAnswerResponse.getUserID());
 
         }
         else{

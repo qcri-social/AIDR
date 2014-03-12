@@ -43,7 +43,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             emptyText: 'e.g., Sandy2012 or EQJapan2011',
             maxLength: 64,
             maxLengthText: 'The maximum length for this field is 64',
-            maskRe: /[^ ]/
+            maskRe: /[^ \\\/]/
         });
 
         this.nameE = Ext.create('Ext.form.field.Text', {

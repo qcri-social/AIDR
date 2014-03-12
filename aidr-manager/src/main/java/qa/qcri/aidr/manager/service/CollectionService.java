@@ -27,6 +27,8 @@ public interface CollectionService {
 
     public Boolean exist(String code) throws Exception;
 
+    public Boolean existName(String name) throws Exception;
+
     public AidrCollection getRunningCollectionStatusByUser(Integer userId) throws Exception;
 
     public AidrCollection updateAndGetRunningCollectionStatusByUser(Integer userId) throws Exception;

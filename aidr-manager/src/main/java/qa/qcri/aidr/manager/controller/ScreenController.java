@@ -197,8 +197,13 @@ public class ScreenController extends BaseController{
         try {
             String userName = getAuthenticatedUserName();
             taggerUserId = taggerService.isUserExistsByUsername(userName);
+            if(taggerUserId == null){
+                taggerUserId = 0;
+            }
+
 
         } catch (Exception e) {
+            System.out.println("e : " + e);
             e.printStackTrace();
         }
 
@@ -212,6 +217,7 @@ public class ScreenController extends BaseController{
         model.addObject("code", code);
         model.addObject("userId", taggerUserId);
         model.addObject("attributeId", attributeId);
+
         return model;
     }
 
@@ -252,6 +258,8 @@ public class ScreenController extends BaseController{
         Integer crisisId = 0;
         String crisisName = "";
         String modelName = "";
+        double modelAuc = 0;
+        long trainingExamples = 0;
         if (crisis != null && crisis.getCrisisID() != null && crisis.getName() != null){
             crisisId = crisis.getCrisisID();
             crisisName = crisis.getName();
@@ -260,8 +268,10 @@ public class ScreenController extends BaseController{
 
         List<TaggerModel> modelsForCrisis = taggerService.getModelsForCrisis(crisisId);
         for (TaggerModel model : modelsForCrisis) {
-            if (modelId.equals(model.getModelID())){
+            if (attributeID.equals(model.getAttributeID())){
                 modelName = model.getAttribute();
+                trainingExamples = model.getTrainingExamples();
+                modelAuc = model.getAuc();
             }
         }
 
@@ -273,6 +283,8 @@ public class ScreenController extends BaseController{
         model.addObject("modelFamilyId", modelFamilyId);
         model.addObject("attributeID", attributeID);
         model.addObject("code", code);
+        model.addObject("trainingExamples", trainingExamples);
+        model.addObject("modelAuc", modelAuc);
         return model;
     }
 

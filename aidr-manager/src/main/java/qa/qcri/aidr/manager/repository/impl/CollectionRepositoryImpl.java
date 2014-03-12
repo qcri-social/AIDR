@@ -96,6 +96,14 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 	}
 
 	@Override
+	public Boolean existName(String name) {
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+		criteria.add(Restrictions.eq("name", name));
+	    AidrCollection collection = (AidrCollection) criteria.uniqueResult();
+	    return collection != null;
+	}
+
+	@Override
 	public AidrCollection getRunningCollectionStatusByUser(Integer userId) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
                 criteria.add(Restrictions.eq("user.id", userId));

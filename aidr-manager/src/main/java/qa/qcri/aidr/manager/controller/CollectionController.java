@@ -181,7 +181,13 @@ public class CollectionController extends BaseController{
 	@RequestMapping(value = "/exist.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> exist(@RequestParam String code) throws Exception {
-       return  getUIWrapper(collectionService.exist(code),true);
+       return getUIWrapper(collectionService.exist(code),true);
+	}
+
+	@RequestMapping(value = "/existName.action", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String,Object> existName(@RequestParam String name) throws Exception {
+       return getUIWrapper(collectionService.existName(name.trim()),true);
 	}
 	
 	@RequestMapping(value = "/getRunningCollectionStatusByUser.action", method = RequestMethod.GET)

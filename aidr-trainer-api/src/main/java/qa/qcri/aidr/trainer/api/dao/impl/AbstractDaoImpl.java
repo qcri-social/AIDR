@@ -1,11 +1,7 @@
 package qa.qcri.aidr.trainer.api.dao.impl;
 
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
+import org.hibernate.*;
+import org.hibernate.criterion.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import qa.qcri.aidr.trainer.api.dao.AbstractDao;
 
@@ -24,7 +20,6 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
     private SessionFactory sessionFactory;
 
     public Session getCurrentSession() {
-
         return sessionFactory.getCurrentSession();
     }
 
@@ -35,12 +30,14 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 
     @Override
     public void saveOrUpdate(E e) {
-        getCurrentSession().saveOrUpdate(e);
+        Session session = getCurrentSession();
+        session.saveOrUpdate(e);
     }
 
     @Override
     public void save(E e) {
-        getCurrentSession().save(e);
+        Session session = getCurrentSession();
+        session.save(e);
     }
 
     @Override
@@ -52,7 +49,9 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 
     @Override
     public void delete(E e) {
-        getCurrentSession().delete(e);
+        Session session = getCurrentSession();
+        session.buildLockRequest(LockOptions.UPGRADE).lock(e);
+        session.delete(e);
     }
 
     @Override
@@ -75,6 +74,20 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
         return criteria.list();
     }
 
+    @Override
+    public List<E> findByCriteriaWithAliasByOrder(Criterion criterion, String[] orderBy, Integer count, String aliasTable, Criterion aliasCriterion) {
+        Criteria criteria = getCurrentSession().createCriteria(entityClass);
+        criteria.add(criterion);
+        criteria.createAlias(aliasTable, aliasTable, CriteriaSpecification.LEFT_JOIN).add(aliasCriterion);
+
+        for(int i = 0; i< orderBy.length; i++){
+            criteria.addOrder(Order.desc(orderBy[i]));
+        }
+        if(count != null){
+            criteria.setMaxResults(count);
+        }
+        return criteria.list();
+    }
 
     @Override
     public List<E> findByCriteria(Criterion criterion, Integer count) {

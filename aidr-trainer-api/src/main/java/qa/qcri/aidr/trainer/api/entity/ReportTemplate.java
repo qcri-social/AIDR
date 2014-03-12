@@ -1,6 +1,7 @@
 package qa.qcri.aidr.trainer.api.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -11,7 +12,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(catalog = "aidr_scheduler",name = "reportTemplate")
-public class ReportTemplate {
+public class ReportTemplate implements Serializable {
+
+    private static final long serialVersionUID = -5527566248002296042L;
+
 
     @Id
     @GeneratedValue

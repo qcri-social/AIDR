@@ -28,7 +28,6 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 
     beforeRenderView: function (component, eOpts) {
         AIDRFMFunctions.initMessageContainer();
-
         this.mainComponent = component;
         taggerCollectionDetailsController = this;
 
@@ -74,15 +73,20 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 
                                 if (r.classifiedDocumentCount && r.classifiedDocumentCount > 0) {
                                     totalMessages += r.classifiedDocumentCount;
+
                                 }
                                 if (r.trainingDocuments && r.trainingDocuments > 0) {
                                     totalExamples += r.trainingDocuments;
                                 }
                             });
-
+                           // var self = this;
+                            //me.getRetrainingThreshold()
+                            me.getRetrainingThreshold(totalMessages, count);
                             me.mainComponent.taggerDescription.setText('Status: <b>' + status + '</b>. ' +
                                 'Has classified <b>' + totalMessages + '</b> messages.&nbsp;' + detailsForModel, false);
-                            me.mainComponent.taggerDescription2line.setText('<b>' + totalExamples + '</b> training examples. Click on a message to see/edit details', false);
+
+
+                          //  me.mainComponent.taggerDescription2line.setText('<b>' + totalExamples + '</b> training examples. Note: Value \"N/A\" doesn\'t count as training example.', false);
                         }
                     } else {
                         AIDRFMFunctions.setAlert("Error", resp.message);
@@ -90,13 +94,54 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                 }
             });
         } else {
+            this.getRetrainingThreshold(0,0);
             me.mainComponent.breadcrumbs.setText('<div class="bread-crumbs">' +
                 '<a href="' + BASE_URL + '/protected/tagger-home">Tagger</a><span>&nbsp;>&nbsp;</span>' +
                 '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + CRISIS_NAME + '</a><span>&nbsp;>&nbsp;' +
                 MODEL_NAME + '&nbsp;>&nbsp;Training data</span></div>', false);
+
         }
     },
 
+    getRetrainingThreshold: function(trainingExamplesCount, countTrainingExample){
+        var me = this;
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/tagger/getRetrainThreshold.action',
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                var resp = Ext.decode(response.responseText);
+                var data = Ext.JSON.decode(resp.data);
+                if (data.sampleCountThreshold){
+                    me.sampleCountThreshold= data.sampleCountThreshold;
+                } else {
+                    me.sampleCountThreshold= 50;
+
+                }
+
+                var retrainingThresholdCount = 0;
+                var statusMessage='';
+                var y = TRAINING_EXAMPLE % data.sampleCountThreshold;
+                if(y < 0){
+                  y = y * data.sampleCountThreshold;
+                }
+                retrainingThresholdCount = data.sampleCountThreshold - y;
+
+                if( countTrainingExample > 0){
+                    statusMessage = retrainingThresholdCount + ' more needed to re-train. Note: Value \"N/A\" doesn\'t count as training example.';
+                    me.mainComponent.taggerDescription2line.setText('<b>' + TRAINING_EXAMPLE + '</b> training examples. '+ statusMessage, false);
+                }
+                else{
+
+                    statusMessage = retrainingThresholdCount + ' more needed to re-train. Note: Value \"N/A\" doesn\'t count as training example.';
+                    me.mainComponent.taggerDescription2line.setText('<b>'+TRAINING_EXAMPLE+'</b> training examples. '+statusMessage, false);
+                }
+            }
+        });
+    }
+    ,
     deleteTrainingExample: function(button){
         if (!button.exampleId){
             AIDRFMFunctions.setAlert("Error", "Error while delete training example. Document Id not available.");
@@ -116,7 +161,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
             success: function (response) {
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
-                    AIDRFMFunctions.setAlert("REMOVED", "Training Example is removed successfully. Note: this removal will be reflected on the automatic classifier the next time it is retrained.");
+                    AIDRFMFunctions.setAlert("Info", "Training Example is removed successfully. Note: this removal will be reflected on the automatic classifier the next time it is retrained.");
                     me.mainComponent.trainingDataStore.load();
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);

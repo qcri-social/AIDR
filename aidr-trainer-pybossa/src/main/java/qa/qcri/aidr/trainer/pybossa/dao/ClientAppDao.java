@@ -14,6 +14,7 @@ import java.util.List;
 public interface ClientAppDao extends AbstractDao<ClientApp, String>  {
 
     void createClientApp(ClientApp clientApp);
+    void updateClientApp(ClientApp clientApp);
     ClientApp findClientAppByID(String columnName, Long id);
     ClientApp findClientAppByCriteria(String columnName, String value);
     List<ClientApp> findAllClientApp(Long clientID);
@@ -21,4 +22,5 @@ public interface ClientAppDao extends AbstractDao<ClientApp, String>  {
     List<ClientApp> findAllClientAppByStatus(Integer status);
     List<ClientApp> getAllCrisisID();
     List<ClientApp> getAllClientAppByClientIDAndStatus(Long clientID, Integer status);
+    List<ClientApp> getAllClientAppByCrisisIDAndStatus(Long clientID, Integer status);
 }

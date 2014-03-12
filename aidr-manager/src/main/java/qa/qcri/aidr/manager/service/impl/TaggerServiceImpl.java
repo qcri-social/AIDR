@@ -1,5 +1,9 @@
 package qa.qcri.aidr.manager.service.impl;
 
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.map.util.JSONPObject;
 import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.service.TaggerService;
@@ -362,7 +366,9 @@ public class TaggerServiceImpl implements TaggerService {
              * Rest call to Tagger
              */
             //WebResource webResource = client.resource(taggerMainUrl + "/model/crisis/" + crisisID);
-        	WebTarget webResource = client.target(taggerMainUrl + "/model/crisis/" + crisisID);
+
+            int retrainingThreshold = getCurrentRetrainingThreshold();
+            WebTarget webResource = client.target(taggerMainUrl + "/model/crisis/" + crisisID);
         	
         	ObjectMapper objectMapper = new ObjectMapper();
             //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
@@ -376,7 +382,26 @@ public class TaggerServiceImpl implements TaggerService {
             TaggerCrisisModelsResponse crisisModelsResponse = objectMapper.readValue(jsonResponse, TaggerCrisisModelsResponse.class);
             if (crisisModelsResponse.getModelWrapper() != null) {
                 logger.info("Tagger returned " + crisisModelsResponse.getModelWrapper().size() + " models for crises with ID " + crisisID);
-                return crisisModelsResponse.getModelWrapper();
+                List<TaggerModel> tempTaggerModel = new ArrayList<TaggerModel>();
+                for (TaggerModel temp : crisisModelsResponse.getModelWrapper()) {
+
+                    TaggerModel tm = new TaggerModel();
+                   // System.out.println("reset0 : " + retrainingThreshold);
+                    tm.setRetrainingThreshold(retrainingThreshold);
+                    tm.setAttributeID(temp.getAttributeID());
+                    tm.setModelID(temp.getModelID());
+                    tm.setAttribute(temp.getAttribute());
+                    tm.setAuc(temp.getAuc());
+                    tm.setStatus(temp.getStatus());
+                    tm.setTrainingExamples(temp.getTrainingExamples());
+                    tm.setClassifiedDocuments(temp.getClassifiedDocuments());
+                    tm.setModelFamilyID(temp.getModelFamilyID());
+
+                   // System.out.println("reset : " + tm.getRetrainingThreshold());
+                    tempTaggerModel.add(tm);
+                }
+
+                return tempTaggerModel;
             }
             return null;
         } catch (Exception e) {
@@ -557,6 +582,7 @@ public class TaggerServiceImpl implements TaggerService {
             /**
              * Rest call to Tagger
              */
+            deletePybossaApp(modelFamilyID);
             //WebResource webResource = client.resource(taggerMainUrl + "/modelfamily/" + modelFamilyID);
         	WebTarget webResource = client.target(taggerMainUrl + "/modelfamily/" + modelFamilyID);
         	
@@ -566,6 +592,10 @@ public class TaggerServiceImpl implements TaggerService {
             //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
             //        .accept(MediaType.APPLICATION_JSON)
             //        .delete(ClientResponse.class);
+
+            //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+            //        .accept(MediaType.APPLICATION_JSON)
+            //        .get(ClientResponse.class);
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).delete();
             
             //String jsonResponse = clientResponse.getEntity(String.class);
@@ -769,7 +799,7 @@ public class TaggerServiceImpl implements TaggerService {
             int taskBufferNumber = 1;
             //WebResource webResource = client.resource(crowdsourcingAPIMainUrl + "/taskbuffer/getassignabletask/" + userName + "/" + id + "/" + taskBufferNumber);
             WebTarget webResource = client.target(crowdsourcingAPIMainUrl 
-            		+ "/taskbuffer/getassignabletask/" 
+            		+ "/document/getassignabletask/"
             		+ userName + "/" + id + "/" + taskBufferNumber);
             
             //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
@@ -851,7 +881,8 @@ public class TaggerServiceImpl implements TaggerService {
 
             return clientResponse.getStatus() == 204;
         } catch (Exception e) {
-            throw new AidrException("Error while saving TaskAnswer in AIDRCrowdsourcing", e);
+            return true;
+            //throw new AidrException("Error while saving TaskAnswer in AIDRCrowdsourcing", e);
         }
     }
 
@@ -865,7 +896,7 @@ public class TaggerServiceImpl implements TaggerService {
         	
         	//ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
             //        .get(ClientResponse.class);
-        	Response clientResponse = webResource.request(MediaType.TEXT_PLAIN).get();
+        	Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
         	
         	//String jsonResponse = clientResponse.getEntity(String.class);
         	String jsonResponse = clientResponse.readEntity(String.class);
@@ -889,7 +920,7 @@ public class TaggerServiceImpl implements TaggerService {
         	
         	//ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
             //        .get(ClientResponse.class);
-        	Response clientResponse = webResource.request(MediaType.TEXT_PLAIN).get();
+        	Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             
         	//String jsonResponse = clientResponse.getEntity(String.class);
         	String jsonResponse = clientResponse.readEntity(String.class);
@@ -985,6 +1016,29 @@ public class TaggerServiceImpl implements TaggerService {
             throw new AidrException("Error while getting all labels for model from Tagger", e);
         }
     }
+
+    @Override
+    public String getRetainingThreshold() throws AidrException {
+        Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+
+        try {
+
+            WebTarget webResource = client.target(taggerMainUrl + "/train/samplecountthreshold");
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+
+            //String jsonResponse = clientResponse.getEntity(String.class);
+            String jsonResponse = clientResponse.readEntity(String.class);
+
+            return  jsonResponse;
+        } catch (Exception e) {
+            throw new AidrException("getRetainingThreshold : ", e);
+
+        }
+
+    }
+
 
     public Map<String, Integer> getTaggersForCollections(List<String> collectionCodes) throws AidrException {
     	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
@@ -1102,6 +1156,7 @@ public class TaggerServiceImpl implements TaggerService {
         }
     }
 
+
     private Collection<TaggerAttribute> convertTaggerCrisesAttributeToDTO (List<TaggerCrisesAttribute> attributes, Integer userId) {
         Map<Integer, TaggerAttribute> result = new HashMap<Integer, TaggerAttribute>();
         for (TaggerCrisesAttribute a : attributes) {
@@ -1123,6 +1178,64 @@ public class TaggerServiceImpl implements TaggerService {
             }
         }
         return result.values();
+    }
+
+    private int getCurrentRetrainingThreshold() throws Exception{
+        try{
+            String retrainingThreshold = this.getRetainingThreshold();
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonFactory factory = mapper.getJsonFactory(); // since 2.1 use mapper.getFactory() instead
+            JsonParser jp = factory.createJsonParser(retrainingThreshold);
+            JsonNode actualObj = mapper.readTree(jp);
+
+            JsonNode nameNode = actualObj.get("sampleCountThreshold");
+
+            int sampleCountThreshold = Integer.parseInt(nameNode.asText()) ;
+
+            return sampleCountThreshold;
+        }
+        catch(Exception e) {
+            return 50;
+
+        }
+    }
+
+    private void deletePybossaApp(Integer modelFamilyID){
+        Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+        try{
+
+            System.out.print("removeAttributeFromCrises: starting ......................................");
+            //WebResource webResource = client.resource(taggerMainUrl + "/modelfamily/" + modelFamilyID);
+            WebTarget webResource = client.target(taggerMainUrl + "/modelfamily/" + modelFamilyID);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
+
+            //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+            //        .accept(MediaType.APPLICATION_JSON)
+            //        .delete(ClientResponse.class);
+            Response resp = webResource.request(MediaType.APPLICATION_JSON).get();
+            String jsonResp = resp.readEntity(String.class);
+            TaggerModelFamily tm = objectMapper.readValue(jsonResp, TaggerModelFamily.class);
+            String crisisCode = tm.getCrisis().getCode();
+            String attributeCode = tm.getNominalAttribute().getCode();
+
+            System.out.print("crisisCode: " + crisisCode);
+            System.out.print("attributeCode: " + attributeCode);
+
+            WebTarget webResp = client.target(crowdsourcingAPIMainUrl+ "/clientapp/delete/" + crisisCode + "/" + attributeCode );
+
+            //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+            //        .accept(MediaType.APPLICATION_JSON)
+            //        .get(ClientResponse.class);
+            Response clientResp = webResource.request(MediaType.APPLICATION_JSON).get();
+            logger.info("deactivated - clientResponse : " + clientResp);
+        }
+        catch(Exception e){
+            logger.error("deactivated - deletePybossaApp : " + e);
+        }
+
     }
 
 }

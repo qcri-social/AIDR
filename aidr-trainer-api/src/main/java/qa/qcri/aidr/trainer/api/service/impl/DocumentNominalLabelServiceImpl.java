@@ -2,6 +2,7 @@ package qa.qcri.aidr.trainer.api.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.trainer.api.dao.DocumentNominalLabelDao;
 import qa.qcri.aidr.trainer.api.entity.DocumentNominalLabel;
@@ -15,7 +16,7 @@ import qa.qcri.aidr.trainer.api.service.DocumentNominalLabelService;
  * To change this template use File | Settings | File Templates.
  */
 @Service("documentNominalLabelService")
-@Transactional(readOnly = true)
+@Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 public class DocumentNominalLabelServiceImpl implements DocumentNominalLabelService {
 
     @Autowired

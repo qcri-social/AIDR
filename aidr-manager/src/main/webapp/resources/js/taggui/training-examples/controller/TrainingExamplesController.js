@@ -15,6 +15,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
 
             "#saveLabels": {
                 click: function (btn, e, eOpts) {
+                    btn.setDisabled();
                     this.saveLabels();
                 }
             },
@@ -74,7 +75,6 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                         try {
                             var obj = Ext.JSON.decode(resp.data);
                         } catch (e) {
-                            AIDRFMFunctions.setAlert("Error", "Examples not available for this crisis.");
                             me.mainComponent.saveLabelsButton.disable();
                             me.mainComponent.skipTaskButton.disable();
                         }
@@ -102,7 +102,9 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                                 me.skipTask();
                             }
                         } else{
-                            AIDRFMFunctions.setAlert("Error", "Examples not available for this crisis.");
+                            AIDRFMFunctions.setAlert("Error", "No training examples available for this crisis. Please check it later.");
+                            me.mainComponent.documentTextLabel.setText("No training examples available for this crisis. Please check it later.", false);
+                            me.mainComponent.buttonsBlock.removeAll();
                         }
                     }
                 } else {
@@ -162,7 +164,8 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                     if (resp.success) {
                         me.loadData();
                     } else {
-                        AIDRFMFunctions.setAlert("Error", "Error while saving task.");
+                        me.loadData();
+                        AIDRFMFunctions.setAlert("Info", "Task has been saved.");
                     }
                 }
             });
@@ -183,35 +186,26 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
             return false;
         }
 
-       // var mask = AIDRFMFunctions.getMask(true);
-       // mask.show();
-        var children = me.mainComponent.optionPanel.items ? me.mainComponent.optionPanel.items.items : [];
-
-        Ext.each(children, function (child) {
-            Ext.Ajax.request({
-                url: BASE_URL + '/protected/tagger/saveTaskAnswer.action',
-                method: 'POST',
-                params: {
-                    documentID: me.mainComponent.documentID,
-                    crisisID: CRISIS_ID,
-                    category: Ext.String.trim( 'null' ),
-                    taskcreated: me.mainComponent.createDate,
-                    taskcompleted: Ext.Date.format(new Date(), "c")
-                },
-                headers: {
-                    'Accept': 'application/json'
-                },
-                success: function (response) {
-                    var resp = Ext.decode(response.responseText);
-                    if (resp.success) {
-                        me.loadData();
-                    } else {
-                        AIDRFMFunctions.setAlert("Error", "Error while skip task.");
-                    }
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/tagger/saveTaskAnswer.action',
+            method: 'POST',
+            params: {
+                documentID: me.mainComponent.documentID,
+                crisisID: CRISIS_ID,
+                category: Ext.String.trim('null'),
+                taskcreated: me.mainComponent.createDate,
+                taskcompleted: Ext.Date.format(new Date(), "c")
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                var resp = Ext.decode(response.responseText);
+                if (!resp.success) {
+                    AIDRFMFunctions.setAlert("Error", "Error while skip task.");
                 }
-            });
+            }
         });
-
     }
 
 });
