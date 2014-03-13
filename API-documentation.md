@@ -424,17 +424,17 @@ POST `.../rest/crisis/fetch/channel/{crisisCode}&callback={callbackName}&count={
 
 POST request payload example: 
 
-{"constraints": [
+`{"constraints": [
 {"queryType":"date_query","comparator":"is_before","timestamp": 1275339860},
     
 {"queryType":"date_query","comparator":"is_after","timestamp": 1272339860},
-  {"queryType":"classifier_query","classifier_code":"informative_pray_personal","label_code":"praying","comparator":"is","min_confidence":0.8},
-    {"queryType":"classifier_query","classifier_code":"informative_pray_personal","label_code":"030_info","comparator":"is_not"}
+        {"queryType":"classifier_query","classifier_code":"informative_pray_personal","label_code":"praying","comparator":"is","min_confidence":0.8},
+      {"queryType":"classifier_query","classifier_code":"informative_pray_personal","label_code":"030_info","comparator":"is_not"}
 
 {"queryType":"classifier_query","classifier_code":"informative_pray_personal","label_code": null, "comparator":"has_confidence","min_confidence":0.5}]
-}
+}`
 
-Parameter details: 
+**Parameter details**: 
 
 * `queryType`: indicates type of query. Currently can take only two values - `"date_query"` and `"classifier query"`. 
 
