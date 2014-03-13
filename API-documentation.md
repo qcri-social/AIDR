@@ -425,6 +425,8 @@ POST `.../rest/crisis/fetch/channel/{crisisCode}?callback={callbackName}&count={
 POST request payload example: 
 Request Headers: `Content-Type: application/json`
 	         `Accept`:  `application/json` 
+
+
 `{
   "constraints": [
     {
