@@ -18,7 +18,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         var me = this;
 
         this.breadcrumbs = Ext.create('Ext.container.Container', {
-            html: '<div class="bread-crumbs"><a href="' + BASE_URL + '/protected/home">Home</a></div>',
+            html: '<div class="bread-crumbs"><a href="' + BASE_URL + '/protected/home">My Collections</a></div>',
             margin: 0,
             padding: 0
         });
@@ -106,7 +106,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.administrationL = Ext.create('Ext.form.Label', {
             flex: 1,
-            text: 'Administration',
+            text: 'Collaborators',
             padding: '15 0 0 0',
             cls: 'header-h2'
         });
@@ -114,7 +114,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         this.managersL = Ext.create('Ext.form.Label', {flex: 1});
 
         this.codeE = Ext.create('Ext.form.field.Text', {
-            fieldLabel: 'Code',
+            fieldLabel: 'Short name',
             name: 'code',
             allowBlank: false,
             width: 370,
@@ -213,7 +213,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.configurationsEditTabL = Ext.create('Ext.form.Label', {
             flex: 1,
-            text: 'Optional configuration',
+            text: 'Optional settings',
             padding: '15 0 0 0',
             cls: 'header-h2'
         });
@@ -240,7 +240,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
 
         this.gotoTaggerButton = Ext.create('Ext.Button', {
-            text: 'Go To Tagger',
+            text: 'Go To Classifier',
             cls:'btn btn-blue',
             id: 'goToTagger',
             margin: '0 0 0 10',
@@ -351,7 +351,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<div class="content">',
 
             '<div class="rightColumn">',
-            '<div>Downloaded items:</div>',
+            '<div>Downloaded tweets:</div>',
             '<div>Start date:</div>',
             '<div>End date:</div>',
             '{[this.showGeoLabel(values.geo)]}',
@@ -362,8 +362,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
             '<div class="leftColumn">',
             '<div>{[this.getDocNumber(values.count)]}</div>',
-            '<div>{[this.getField(values.startDate)]}</div>',
-            '<div>{[this.getField(values.endDate)]}</div>',
+            '<div>{[this.getDateTimeField(values.startDate)]}</div>',
+            '<div>{[this.getDateTimeField(values.endDate)]}</div>',
             '{[this.showValue(values.geo)]}',
             '{[this.showValue(values.follow)]}',
             '<div>{[this.getField(values.langFilters)]}</div>',
@@ -378,6 +378,10 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             {
                 getField: function (r) {
                     return r ? r : "<span class='na-text'>Not specified</span>";
+                },
+                getDateTimeField: function(r){
+                    return r ? Ext.util.Format.date(r, Ext.Date.patterns.MedumDateTime):"<span class='na-text'>Not specified</span>";
+
                 },
                 getDocNumber: function (r) {
                     return r ? Ext.util.Format.number(r,'0,000') : 0;
@@ -533,8 +537,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             layout: 'hbox',
                             padding: '15 0 0 0',
                             items: [
-                                this.saveButton,
-                                this.cancelButton
+                                this.cancelButton,
+                                this.saveButton
                             ]
                         }
                     ]
@@ -589,7 +593,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                             items: [
                                                 {
                                                     padding: '0 10 0 0',
-                                                    text: 'Code:'
+                                                    text: 'Short name:'
                                                 },
                                                 this.codeL
                                             ]
@@ -625,7 +629,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             items: [
                                 {
                                     width: 220,
-                                    html: 'Downloaded items <br/> (since last re-start):'
+                                    html: 'Downloaded tweets <br/> (since last re-start):'
                                 },
                                 this.docCountL
                             ]
@@ -637,7 +641,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             items: [
                                 {
                                     width: 220,
-                                    text: 'Total downloaded items:'
+                                    text: 'Total downloaded tweets:'
                                 },
                                 this.totalDocCountL
                             ]
@@ -650,7 +654,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             items: [
                                 {
                                     width: 220,
-                                    text: 'Last downloaded item:'
+                                    text: 'Last downloaded tweets:'
                                 },
                                 this.lastDocL
                             ]
@@ -788,7 +792,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
 
         this.addManagerButton = Ext.create('Ext.Button', {
-            text: 'Add Manager',
+            text: 'Add Collaborator',
             margin: '0 0 0 10',
             cls:'btn btn-green',
             id: 'addManager'
@@ -805,10 +809,10 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             cls: 'aidr-grid',
             columns: [
                 {
-                    xtype: 'gridcolumn', dataIndex: 'userName', text: 'Value', flex: 1
+                    xtype: 'gridcolumn', dataIndex: 'userName', text: 'Collaborator', flex: 1
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'id', text: 'Action', width: 175, sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'id', text: 'Action', width: 205, sortable: false,
                     renderer: function (recordValue, metaData, record, rowIdx, colIdx, store) {
                         var id = Ext.id();
 
@@ -817,8 +821,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 exampleId: recordValue,
                                 renderTo: id,
                                 cls: 'btn btn-red',
-                                text: 'Remove Manager',
-                                width: 150,
+                                text: 'Remove Collaborator',
+                                width: 185,
                                 action: 'removeManager'
                             });
                         }, 50);

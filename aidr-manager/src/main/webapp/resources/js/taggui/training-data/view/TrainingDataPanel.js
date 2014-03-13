@@ -14,9 +14,9 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
 
         this.breadcrumbs = Ext.create('Ext.form.Label', {
             html: '<div class="bread-crumbs">' +
-                '<a href="' + BASE_URL + '/protected/tagger-home">Tagger</a><span>&nbsp;>&nbsp;</span>' +
+                '<a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a><span>&nbsp;>&nbsp;</span>' +
                 '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + CRISIS_NAME + '</a><span>&nbsp;>&nbsp;</span>' +
-                '<a href="' + BASE_URL +  '/protected/' + CRISIS_CODE + '/' + MODEL_ID + '/model-details">' + MODEL_NAME + '</a><span>&nbsp;>&nbsp;Training data</span></div>',
+                '<a href="' + BASE_URL +  '/protected/' + CRISIS_CODE + '/' + MODEL_ID + '/model-details">' + MODEL_NAME + '</a><span>&nbsp;>&nbsp;Human-tagged items</span></div>',
             margin: 0,
             padding: 0
         });
@@ -30,19 +30,19 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
         this.taggerDescription = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '0 0 15 0',
-            html: 'Status: <b>Waiting training examples</b>. Has classified <b>0</b> messages.&nbsp;',
+            html: 'Status: <b>Waiting training examples</b>. Machine-tagged items: <b>0</b>&nbsp;',
             flex: 1
         });
 
         this.taggerDescription2line = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '0 0 15 0',
-            html: '<b>0</b> training examples.',
+            html: '<b>0</b> human-tagged items.',
             flex: 1
         });
 
         this.addTrainingData = Ext.create('Ext.Button', {
-            text: 'Add training data',
+            text: 'Tag more items',
             cls:'btn btn-blue',
             id: 'addNewTrainingData',
             width: 150,
@@ -82,19 +82,19 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
             cls: 'aidr-grid',
             columns: [
                 {
-                    xtype: 'gridcolumn', dataIndex: 'labelName', text: 'Value', width: 150,
+                    xtype: 'gridcolumn', dataIndex: 'labelName', text: 'Tag', width: 150,
                     renderer: function (value, meta, record) {
                         return me.getField(value);
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'tweetJSON', text: 'Text', flex: 1,
+                    xtype: 'gridcolumn', dataIndex: 'tweetJSON', text: 'Item', flex: 1,
                     renderer: function (value, meta, record) {
                         return me.getTwitterText(value);
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'labelerName', text: 'Labeler', width: 150,
+                    xtype: 'gridcolumn', dataIndex: 'labelerName', text: 'Tagger', width: 150,
                     renderer: function (value, meta, record) {
                         return me.getField(value);
                     }
@@ -128,7 +128,7 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
             store:'trainingDataStore',
             displayInfo:true,
             displayMsg:'Training Data records {0} - {1} of {2}',
-            emptyMsg:'No Training Data records to display'
+            emptyMsg:'No human-tagged items to display'
         });
 
         this.items = [

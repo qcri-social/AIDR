@@ -15,14 +15,14 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
         this.breadcrumbs = Ext.create('Ext.container.Container', {
             html: '<div class="bread-crumbs">' +
-                '<a href="' + BASE_URL + '/protected/tagger-home">Tagger</a><span>&nbsp;>&nbsp;Details</span></div>',
+                '<a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a><span>&nbsp;>&nbsp;Details</span></div>',
             margin: 0,
             padding: 0
         });
 
         this.taggerTitle = Ext.create('Ext.form.Label', {
             cls: 'header-h1',
-            text: 'Tagger for "' + CRISIS_NAME + '"',
+            text: 'Classifier for "' + CRISIS_NAME + '"',
             margin: '10 0 15 0',
             padding: 0,
             flex: 1
@@ -36,7 +36,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         });
 
         this.gotoCollectorButton = Ext.create('Ext.Button', {
-            text: 'Go To Collector',
+            text: 'Collection',
             cls:'btn btn-blue',
             id: 'goToCollector',
             width: 150,
@@ -96,7 +96,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         });
 
         this.aucHint = Ext.create('Ext.container.Container', {
-            html: '<span class="redInfo">*</span>If AUC is lower than 0.8-0.9, or AUC is 1.0, you urgently need more training examples.',
+            html: '<span class="redInfo">*</span>If AUC is lower than 0.8-0.9, or AUC is 1.0, you urgently need more human-tagged items.',
             margin: 0
         });
 
@@ -162,12 +162,12 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             '<tr><td>Status:</td>',
             '<td>{[this.getStatus(values.modelID, this.getNumber(values.trainingExamples), values.retrainingThreshold, values.auc, values.attribute)]}</td></tr>',
 
-            '<tr><td>Training examples:</td>',
+            '<tr><td>Human-tagged items:</td>',
             '<td>{[this.getNumber(values.trainingExamples)]} &mdash; <a href="' + BASE_URL +  '/protected/'
-                + CRISIS_CODE + '/{modelID}/{modelFamilyID}/{attributeID}/training-data">Manage training examples &raquo;</a></td></tr>',
+                + CRISIS_CODE + '/{modelID}/{modelFamilyID}/{attributeID}/training-data">Go to human-tagged items &raquo;</a></td></tr>',
 
 
-            '<tr><td>Classified elements:</td>',
+            '<tr><td>Machine-tagged items:</td>',
             '<td>{[this.getNumber(values.classifiedDocuments)]} (since last change of the classifier)</td></tr>',
 
             '<tr><td>Quality (AUC)<span class="redInfo">*</span>:</td>',
@@ -275,7 +275,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                             items: [
                                 {
                                     width: 75,
-                                    text: 'Code:'
+                                    text: 'Short name:'
                                 },
                                 {
                                     text: CRISIS_CODE

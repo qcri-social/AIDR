@@ -14,19 +14,19 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
 
         this.breadcrumbs = Ext.create('Ext.container.Container', {
             html: '<div class="bread-crumbs">' +
-                '<a href="' + BASE_URL + '/protected/tagger-home">Tagger</a><span>&nbsp;>&nbsp;New Custom Classifier</span></div>',
+                '<a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a><span>&nbsp;>&nbsp;New Classifier</span></div>',
             margin: 0,
             padding: 0
         });
 
         this.taggerTitle = Ext.create('Ext.form.Label', {
             cls: 'header-h1 bold-text',
-            text: 'New Custom Classifier',
+            text: 'New Classifier',
             flex: 1
         });
 
         this.codeE = Ext.create('Ext.form.field.Text', {
-            fieldLabel: 'Code',
+            fieldLabel: 'Short name',
             name: 'code',
             allowBlank: false,
             flex: 1,
@@ -54,7 +54,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
         });
 
         this.codeLabelE = Ext.create('Ext.form.field.Text', {
-            fieldLabel: 'Code',
+            fieldLabel: 'Short name',
             name: 'code',
             allowBlank: false,
             flex: 1,
@@ -83,7 +83,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
 
         this.newLabelL = Ext.create('Ext.form.Label', {
             flex: 1,
-            text: 'New Category',
+            text: 'New Tag',
             padding: '15 0 0 0',
             cls: 'header-h2'
         });
@@ -102,7 +102,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
         });
 
         this.addLabelButton = Ext.create('Ext.Button', {
-            text: 'Add Category',
+            text: 'Add Tag',
             cls: 'btn btn-green',
             id: 'addLabel'
         });
@@ -128,7 +128,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
             '<tpl for=".">',
 
             '<tpl if="xindex == 1">' +
-                '<div class="attributes-title"><div class="inner"><h2>Categories</h2></div></div>' +
+                '<div class="attributes-title"><div class="inner"><h2>Tags</h2></div></div>' +
             '</tpl>' +
 
             '<div class="attribute-item">',
@@ -141,7 +141,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
 
             '<div class="info">',
             '<div class="styled-text-14" id="docCountField_{id}">Name:&nbsp;&nbsp;&nbsp;{name}</div>',
-            '<div class="styled-text-14" id="docCountField_{id}">Code:&nbsp;&nbsp;&nbsp;{code}</div>',
+            '<div class="styled-text-14" id="docCountField_{id}">Short name:&nbsp;&nbsp;&nbsp;{code}</div>',
             '<div class="styled-text-14" id="docCountField_{id}">Description:&nbsp;&nbsp;&nbsp;{description}</div>',
             '</div>',
 
@@ -288,12 +288,11 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
                 layout: 'hbox',
                 margin: '15 0 0 0',
                 items: [
-                    this.saveButton,
-                    this.cancelButton
+                    this.cancelButton,
+                    this.saveButton
                 ]
             }
         ];
-
         this.callParent(arguments);
     }
 

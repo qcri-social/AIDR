@@ -21,7 +21,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
         this.collectionDescription = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '7 0 0 0',
-            text: 'Status as of ' + Ext.Date.format(new Date(), "Y F d h:i:s A"),
+            text: 'Status as of ' + Ext.Date.format(new Date(), 'F j, Y, g:i:s A'),
             flex: 1
         });
 
@@ -41,7 +41,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
         });
 
         this.manageCrisisButton = Ext.create('Ext.Button', {
-            text: 'Go to Tagger',
+            text: 'My Classifiers',
             margin: '27 0 0 15',
             cls:'btn btn-blue',
             id: 'manageCrisis'

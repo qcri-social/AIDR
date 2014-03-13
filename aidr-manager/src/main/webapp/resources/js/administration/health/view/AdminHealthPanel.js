@@ -23,8 +23,8 @@ Ext.define('ADMIN.health.view.AdminHealthPanel', {
 
         this.collectorLabel = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
-            text: 'Collector',
-            width: 120
+            text: 'My Collections',
+            width: 150
         });
 
         this.collectorStatus = Ext.create('Ext.form.Label', {
@@ -34,8 +34,8 @@ Ext.define('ADMIN.health.view.AdminHealthPanel', {
 
         this.taggerLabel = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
-            text: 'Tagger',
-            width: 120
+            text: 'My Classifiers',
+            width: 150
         });
 
         this.taggerStatus = Ext.create('Ext.form.Label', {
@@ -46,7 +46,7 @@ Ext.define('ADMIN.health.view.AdminHealthPanel', {
         this.trainerLabel = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             text: 'Trainer',
-            width: 120
+            width: 150
         });
 
         this.trainerStatus = Ext.create('Ext.form.Label', {
@@ -57,7 +57,7 @@ Ext.define('ADMIN.health.view.AdminHealthPanel', {
         this.AIDROutputLabel = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             text: 'Output',
-            width: 120
+            width: 150
         });
 
         this.AIDROutputStatus = Ext.create('Ext.form.Label', {

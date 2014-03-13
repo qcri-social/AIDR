@@ -13,19 +13,19 @@ Ext.define('TAGGUI.home.view.TaggerHomePanel', {
         var me = this;
 
         this.breadcrumbs = Ext.create('Ext.container.Container', {
-            html: '<div class="bread-crumbs"><a href="' + BASE_URL + '/protected/tagger-home">Tagger</a></div>',
+            html: '<div class="bread-crumbs"><a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a></div>',
             margin: 0,
             padding: 0
         });
 
         this.taggerTitle = Ext.create('Ext.form.Label', {
             cls: 'header-h1 bold-text',
-            text: 'Tagger',
+            text: 'My Classifiers',
             flex: 1
         });
 
         this.manageCollectionsButton = Ext.create('Ext.Button', {
-            text: 'Manage your collections',
+            text: 'My Collections',
             margin: '27 0 0 0',
             cls:'btn btn-blue',
             id: 'manageCollections'
@@ -96,7 +96,7 @@ Ext.define('TAGGUI.home.view.TaggerHomePanel', {
                     if (attr && attr.length > 0) {
                         Ext.Array.each(attr, function(r, index) {
                             if (index == 0){
-                                result = 'Classifiers being used:&nbsp;&nbsp;';
+                                result = 'Tags being used:&nbsp;&nbsp;';
                             }
                             var nominalAttribute = r.nominalAttribute;
                             if (nominalAttribute && nominalAttribute.name) {

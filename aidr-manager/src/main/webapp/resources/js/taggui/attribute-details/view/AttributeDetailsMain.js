@@ -48,8 +48,8 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
             padding: '0 10',
             items: [
                 {
-                    width: 75,
-                    html: '<b>Code:</b>'
+                    width: 150,
+                    html: '<b>Short name:</b>'
                 },
                 this.codeValue
             ]
@@ -63,7 +63,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
             padding: '0 10',
             items: [
                 {
-                    width: 75,
+                    width: 150,
                     text: 'Name:'
                 },
                 this.nameValue,
@@ -79,7 +79,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
             padding: '0 10',
             items: [
                 {
-                    width: 75,
+                    width: 150,
                     text: 'Type:'
                 },
                 this.typeValue
@@ -178,7 +178,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
 
         this.valuesLable = Ext.create('Ext.container.Container', {
             width: '100%',
-            html: '<div class="attributes-title"><div class="inner"><h2>Categories</h2></div></div>',
+            html: '<div class="attributes-title"><div class="inner"><h2>Tags</h2></div></div>',
             hidden: true
         });
 
@@ -340,7 +340,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
             success: function (response) {
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
-                    AIDRFMFunctions.setAlert("Ok", ["Attribute was deleted successfully.", "You will be redirected to Tagger Home screen."]);
+                    AIDRFMFunctions.setAlert("Ok", ["Tag was deleted successfully.", "You will be redirected to My Classifiers screen."]);
 
                     var maskRedirect = AIDRFMFunctions.getMask(true, 'Redirecting ...');
                     maskRedirect.show();
@@ -368,7 +368,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
     },
 
     removeClassifierHandler: function (btn, me) {
-        Ext.MessageBox.confirm('Confirm Remove Classifier', 'Do you want to remove Classifier <b>"' + me.attributeName + '"</b>?',
+        Ext.MessageBox.confirm('Confirm Remove Tag', 'Do you want to remove tag <b>"' + me.attributeName + '"</b>?',
             function (buttonId) {
                 if (buttonId === 'yes') {
                     me.removeClassifier(me);
@@ -392,7 +392,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
             success: function (response) {
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
-                    AIDRFMFunctions.setAlert("Ok", "Classifier was removed successfully.");
+                    AIDRFMFunctions.setAlert("Ok", "Tag was removed successfully.");
                     document.location.href = BASE_URL + '/protected/' + CRISIS_CODE +'/tagger-collection-details';
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
@@ -470,7 +470,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
                     me.nameValue.show();
                     me.editButton.show();
                 } else {
-                    AIDRFMFunctions.setAlert("Error", 'Error while updating attribute in Tagger.');
+                    AIDRFMFunctions.setAlert("Error", 'Error while updating tag in Classifier.');
                 }
                 me.cancelButton.enable();
                 me.deleteButton.enable();

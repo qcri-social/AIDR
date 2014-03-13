@@ -83,7 +83,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                             //me.getRetrainingThreshold()
                             me.getRetrainingThreshold(totalMessages, count);
                             me.mainComponent.taggerDescription.setText('Status: <b>' + status + '</b>. ' +
-                                'Has classified <b>' + totalMessages + '</b> messages.&nbsp;' + detailsForModel, false);
+                                'Machine-tagged items: <b>' + totalMessages + '</b>.&nbsp;' + detailsForModel, false);
 
 
                           //  me.mainComponent.taggerDescription2line.setText('<b>' + totalExamples + '</b> training examples. Note: Value \"N/A\" doesn\'t count as training example.', false);
@@ -96,9 +96,9 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
         } else {
             this.getRetrainingThreshold(0,0);
             me.mainComponent.breadcrumbs.setText('<div class="bread-crumbs">' +
-                '<a href="' + BASE_URL + '/protected/tagger-home">Tagger</a><span>&nbsp;>&nbsp;</span>' +
+                '<a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a><span>&nbsp;>&nbsp;</span>' +
                 '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + CRISIS_NAME + '</a><span>&nbsp;>&nbsp;' +
-                MODEL_NAME + '&nbsp;>&nbsp;Training data</span></div>', false);
+                MODEL_NAME + '&nbsp;>&nbsp;Human-tagged items</span></div>', false);
 
         }
     },
@@ -130,13 +130,13 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                 retrainingThresholdCount = data.sampleCountThreshold - y;
 
                 if( countTrainingExample > 0){
-                    statusMessage = retrainingThresholdCount + ' more needed to re-train. Note: Value \"N/A\" doesn\'t count as training example.';
-                    me.mainComponent.taggerDescription2line.setText('<b>' + TRAINING_EXAMPLE + '</b> training examples. '+ statusMessage, false);
+                    statusMessage = retrainingThresholdCount + ' more needed to re-train. Note: Value \"N/A\" doesn\'t count for training.';
+                    me.mainComponent.taggerDescription2line.setText('<b>' + TRAINING_EXAMPLE + '</b> human-tagged items. '+ statusMessage, false);
                 }
                 else{
 
-                    statusMessage = retrainingThresholdCount + ' more needed to re-train. Note: Value \"N/A\" doesn\'t count as training example.';
-                    me.mainComponent.taggerDescription2line.setText('<b>'+TRAINING_EXAMPLE+'</b> training examples. '+statusMessage, false);
+                    statusMessage = retrainingThresholdCount + ' more needed to re-train. Note: Value \"N/A\" doesn\'t count for training.';
+                    me.mainComponent.taggerDescription2line.setText('<b>'+TRAINING_EXAMPLE+'</b> human-tagged items. '+statusMessage, false);
                 }
             }
         });

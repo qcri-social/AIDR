@@ -14,7 +14,7 @@ Ext.define('TAGGUI.predict-new-attribute.view.PredictNewAttributePanel', {
 
         this.breadcrumbs = Ext.create('Ext.container.Container', {
             html: '<div class="bread-crumbs">' +
-                '<a href="' + BASE_URL + '/protected/tagger-home">Tagger</a><span>&nbsp;>&nbsp;</span>' +
+                '<a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a><span>&nbsp;>&nbsp;</span>' +
                 '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + COLLECTION_NAME + '</a><span>&nbsp;>&nbsp;Add classifier</span></div>',
             margin: 0,
             padding: 0
@@ -101,7 +101,7 @@ Ext.define('TAGGUI.predict-new-attribute.view.PredictNewAttributePanel', {
             '<div class="info">',
             '<div class="collection-title"><a href="' + BASE_URL +  '/protected/{nominalAttributeID}/attribute-details">{name}</a></div>',
             '<div class="styled-text-14" id="docCountField_{id}">Description:&nbsp;&nbsp;&nbsp;{description}</div>',
-            '<div class="styled-text-14" id="lastDocField_{id}">Categories:&nbsp;&nbsp;&nbsp;{[this.getLabels(values.nominalLabelCollection)]}</div>',
+            '<div class="styled-text-14" id="lastDocField_{id}">Tags:&nbsp;&nbsp;&nbsp;{[this.getLabels(values.nominalLabelCollection)]}</div>',
             '</div>',
 
             '</div>',
