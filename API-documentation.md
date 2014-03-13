@@ -462,6 +462,7 @@ Request Headers: `Content-Type: application/json`
   ]    
 }`   
 
+**Note**: Only those documents that satisfy ALL the constraints are returned. 
 
 **Parameter details**: 
 
