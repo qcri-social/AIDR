@@ -465,7 +465,7 @@ Request Headers: `Content-Type: application/json`
 
 **Parameter details**: 
 
-* `queryType`: indicates type of query. Currently can take only two values - `"date_query"` and `"classifier query"`. 
+* `queryType`: indicates type of query. Currently can take only two values - `"date_query"` and `"classifier_query"`. 
 
 * `comparator`: query predicate evaluation criterion. For `date_query` it can be either `is_after` or `is_before` depending on whether to filter documents that occurred after or before the specified `timestamp` value, respectively. For `classifier_query` it can be either `is` or `is_not` or `has_confidence`.   
 
