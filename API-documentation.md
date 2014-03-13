@@ -423,41 +423,43 @@ POST `.../rest/crisis/fetch/channel/{crisisCode}?callback={callbackName}&count={
 * `count` [optional]: the specified number of messages that have been buffered by the service. If unspecified or <= 0 or larger than the MAX_MESSAGES_COUNT field, the default number of messages are returned.
 
 POST request payload example: 
-
-{
+Request Headers: `Content-Type: application/json`
+	         `Accept`:  `application/json` 
+`{
   "constraints": [
     {
-      "queryType": "date_query",
-      "comparator": "is_before",
-      "timestamp": 1275339860
-    },
-    {
-      "queryType": "date_query",
-      "comparator": "is_after",
-      "timestamp": 1272339860
-    },
-    {
-      "queryType": "classifier_query",
-      "classifier_code": "informative_pray_personal",
-      "label_code": "praying",
-      "comparator": "is",
-      "min_confidence": 0.8
-    },
-    {
-      "queryType": "classifier_query",
-      "classifier_code": "informative_pray_personal",
-      "label_code": "030_info",
-      "comparator": "is_not"
-    },
-    {
-      "queryType": "classifier_query",
-      "classifier_code": "informative_pray_personal",
-      "label_code": null,
-      "comparator": "has_confidence",
-      "min_confidence": 0.5
-    }
-  ]
-}
+      "queryType": "date_query",    
+      "comparator": "is_before",     
+      "timestamp": 1275339860    
+    },                                                        
+    {    
+      "queryType": "date_query",         
+      "comparator": "is_after",      
+      "timestamp": 1272339860    
+    },    
+    {   
+      "queryType": "classifier_query",    
+      "classifier_code": "informative_pray_personal",    
+      "label_code": "praying",    
+      "comparator": "is",     
+      "min_confidence": 0.8    
+    },    
+    {     
+      "queryType": "classifier_query",     
+      "classifier_code": "informative_pray_personal",     
+      "label_code": "030_info",     
+      "comparator": "is_not"    
+    },     
+    {    
+      "queryType": "classifier_query",    
+      "classifier_code": "informative_pray_personal",    
+      "label_code": null,     
+      "comparator": "has_confidence",     
+      "min_confidence": 0.5    
+    }    
+  ]    
+}`   
+
 
 **Parameter details**: 
 
