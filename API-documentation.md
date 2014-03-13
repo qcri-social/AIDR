@@ -379,7 +379,7 @@ Base URI: `http://localhost:port/aidr-output/rest`
 
 ## Get a JSONP list of labeled tweets from a specific channel
 
-GET `.../rest/crisis/fetch/channel/{crisisCode}&callback={callbackName}&count={count}`
+GET `.../rest/crisis/fetch/channel/{crisisCode}?callback={callbackName}&count={count}`
 
 * `crisisCode` [mandatory]: Redis channel identifier to which to subscribe
 * `callback` [optional]: name of the callback function for JSONP data
@@ -416,7 +416,7 @@ Provides a method to test whether:
 
 ## Get a JSONP list of labeled tweets from a specific channel, filtered by user specified criteria. 
 
-POST `.../rest/crisis/fetch/channel/{crisisCode}&callback={callbackName}&count={count}`
+POST `.../rest/crisis/fetch/channel/{crisisCode}?callback={callbackName}&count={count}`
 
 * `crisisCode` [mandatory]: Redis channel identifier to which to subscribe
 * `callback` [optional]: name of the callback function for JSONP data
@@ -424,15 +424,40 @@ POST `.../rest/crisis/fetch/channel/{crisisCode}&callback={callbackName}&count={
 
 POST request payload example: 
 
-`{"constraints": [
-{"queryType":"date_query","comparator":"is_before","timestamp": 1275339860},
-    
-{"queryType":"date_query","comparator":"is_after","timestamp": 1272339860},
-        {"queryType":"classifier_query","classifier_code":"informative_pray_personal","label_code":"praying","comparator":"is","min_confidence":0.8},
-      {"queryType":"classifier_query","classifier_code":"informative_pray_personal","label_code":"030_info","comparator":"is_not"}
-
-{"queryType":"classifier_query","classifier_code":"informative_pray_personal","label_code": null, "comparator":"has_confidence","min_confidence":0.5}]
-}`
+{
+  "constraints": [
+    {
+      "queryType": "date_query",
+      "comparator": "is_before",
+      "timestamp": 1275339860
+    },
+    {
+      "queryType": "date_query",
+      "comparator": "is_after",
+      "timestamp": 1272339860
+    },
+    {
+      "queryType": "classifier_query",
+      "classifier_code": "informative_pray_personal",
+      "label_code": "praying",
+      "comparator": "is",
+      "min_confidence": 0.8
+    },
+    {
+      "queryType": "classifier_query",
+      "classifier_code": "informative_pray_personal",
+      "label_code": "030_info",
+      "comparator": "is_not"
+    },
+    {
+      "queryType": "classifier_query",
+      "classifier_code": "informative_pray_personal",
+      "label_code": null,
+      "comparator": "has_confidence",
+      "min_confidence": 0.5
+    }
+  ]
+}
 
 **Parameter details**: 
 
