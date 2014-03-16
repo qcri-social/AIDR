@@ -372,7 +372,7 @@ GET `.../persister/genTweetIds?collectionCode=XXX`
 
 `collectionCode` represents the code of collection for which a CSV file should be generated.
 
-## Generate CSV out of last X collected tweets, filtered by user's selection criteria
+## Generate CSV out of last X collected tweets, filtered by selection criteria
 
 POST `.../persister/filter/genCSV?collectionCode=XXX&exportLimit=34234`
 
@@ -436,7 +436,7 @@ Request Headers: `Content-Type: application/json`
 
 * `min_confidence`: Include only those documents for which the `confidence` of the specified `classifier_code` is greater than `min_confidence`. Is Java `float` type.
 
-## Generate CSV of all tweets (only tweet-ids), filtered by user's selection criteria
+## Generate CSV of all tweets (only tweet-ids), filtered by selection criteria
 
 POST `.../persister/filter/genTweetIds?collectionCode=XXX`
 
@@ -486,7 +486,7 @@ Provides a method to test whether:
 * Connection to Redis is available
 * `aidr-output` services are running as expected
 
-## Get a JSONP list of labeled tweets from a specific channel, filtered by user specified criteria. 
+## Get a JSONP list of labeled tweets from a specific channel, filtered by selection criteria. 
 
 POST `.../rest/crisis/fetch/channel/{crisisCode}?callback={callbackName}&count={count}`
 
