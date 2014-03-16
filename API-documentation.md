@@ -372,6 +372,78 @@ GET `.../persister/genTweetIds?collectionCode=XXX`
 
 `collectionCode` represents the code of collection for which a CSV file should be generated.
 
+## Generate CSV out of last X collected tweets, filtered by user's selection criteria
+
+POST `.../persister/filter/genCSV?collectionCode=XXX&exportLimit=34234`
+
+`collectionCode` represents the code of collection for which a CSV file should be generated.
+
+`exportLimit` represents limit of tweets to be exported. Datatype of this parameter is number.
+
+POST request payload example: 
+Request Headers: `Content-Type: application/json`
+	         `Accept`:  `application/json` 
+
+
+`{
+  "constraints": [
+    {
+      "queryType": "date_query",    
+      "comparator": "is_before",     
+      "timestamp": 1275339860    
+    },                                                        
+    {    
+      "queryType": "date_query",         
+      "comparator": "is_after",      
+      "timestamp": 1272339860    
+    },    
+    {   
+      "queryType": "classifier_query",    
+      "classifier_code": "informative_pray_personal",    
+      "label_code": "praying",    
+      "comparator": "is",     
+      "min_confidence": 0.8    
+    },    
+    {     
+      "queryType": "classifier_query",     
+      "classifier_code": "informative_pray_personal",     
+      "label_code": "030_info",     
+      "comparator": "is_not"    
+    },     
+    {    
+      "queryType": "classifier_query",    
+      "classifier_code": "informative_pray_personal",    
+      "label_code": null,     
+      "comparator": "has_confidence",     
+      "min_confidence": 0.5    
+    }    
+  ]    
+}`   
+
+**Note**: Only those documents that satisfy ALL the constraints are returned. 
+
+**Parameter details**: 
+
+* `queryType`: indicates type of query. Currently can take only two values - `"date_query"` and `"classifier_query"`. 
+
+* `comparator`: query predicate evaluation criterion. For `date_query` it can be either `is_after` or `is_before` depending on whether to filter documents that occurred after or before the specified `timestamp` value, respectively. For `classifier_query` it can be either `is` or `is_not` or `has_confidence`.   
+
+* `timestamp`: unix time specified in `date_query` as Java type `long`. 
+
+* `classifier_code`: corresponds to the `attribute_code`.
+
+* `label_code`: corresponds to a valid label_code for a given classifier_code. 
+
+* `min_confidence`: Include only those documents for which the `confidence` of the specified `classifier_code` is greater than `min_confidence`. Is Java `float` type.
+
+## Generate CSV of all tweets (only tweet-ids)
+
+POST `.../persister/filter/genTweetIds?collectionCode=XXX`, , filtered by user's selection criteria
+
+`collectionCode` represents the code of collection for which a CSV file should be generated.
+
+For the POST request payload details, refer to the `POST .../persister/filter/genCSV?collectionCode=XXX&exportLimit=34234` documentation.
+
 
 # OUTPUT API (aidr-output)
 
