@@ -436,7 +436,7 @@ Request Headers: `Content-Type: application/json`
 
 * `min_confidence`: Include only those documents for which the `confidence` of the specified `classifier_code` is greater than `min_confidence`. Is Java `float` type.
 
-## Generate CSV of all tweets (only tweet-ids), POST `.../persister/filter/genCSV?collectionCode=XXX&exportLimit=34234`
+## Generate CSV of all tweets (only tweet-ids), filtered by user's selection criteria
 
 POST `.../persister/filter/genTweetIds?collectionCode=XXX`
 
