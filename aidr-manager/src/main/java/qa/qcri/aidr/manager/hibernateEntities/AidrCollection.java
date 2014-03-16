@@ -27,6 +27,7 @@ public class AidrCollection implements Serializable {
     @Column(length = 64, name = "code", unique = true)
     private String code;
 
+    @Column(length = 255, name = "name", unique = true)
     private String name;
 
     private String target;
