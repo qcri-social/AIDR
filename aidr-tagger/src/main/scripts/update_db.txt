@@ -34,3 +34,6 @@ AS SELECT
    `d`.`wordFeatures` AS `wordFeatures`
 FROM ((`document` `d` join `document_nominal_label` `dnl` on((`d`.`documentID` = `dnl`.`documentID`))) join `nominal_label` `nl` on((`nl`.`nominalLabelID` = `dnl`.`nominalLabelID`))) where (`d`.`isEvaluationSet` and (`d`.`wordFeatures` is not null) and (not(nl.`nominalLabelCode`='null')));
 
+16 March 2014: Run the following script to add unique constraint on the name field of the aidr_fetch_manager database.
+=============================================================================================================================
+ALTER TABLE AIDR_COLLECTION ADD CONSTRAINT UNIQUE (name)
