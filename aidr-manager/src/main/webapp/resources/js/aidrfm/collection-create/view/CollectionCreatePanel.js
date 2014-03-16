@@ -23,7 +23,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         var me = this;
 
         this.breadcrumbs = Ext.create('Ext.container.Container', {
-            html: '<div class="bread-crumbs"><a href="home">Home</a></div>',
+            html: '<div class="bread-crumbs"><a href="home">My Collections</a></div>',
             margin: 0,
             padding: 0
         });
@@ -36,7 +36,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         });
 
         this.codeE = Ext.create('Ext.form.field.Text', {
-            fieldLabel: 'Code',
+            fieldLabel: 'Short name',
             name: 'code',
             allowBlank: false,
             width: 370,
@@ -131,7 +131,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 
         this.configurationsL = Ext.create('Ext.form.Label', {
             flex: 1,
-            text: 'Optional configuration',
+            text: 'Optional settings',
             padding: '15 0 0 0',
             cls: 'header-h2 bordered-top'
         });
@@ -291,8 +291,8 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                             layout: 'hbox',
                             padding: '15 0 0 0',
                             items: [
-                                this.saveButton,
-                                this.cancelButton
+                                 this.cancelButton,
+                                 this.saveButton
                             ]
                         }
                     ]
