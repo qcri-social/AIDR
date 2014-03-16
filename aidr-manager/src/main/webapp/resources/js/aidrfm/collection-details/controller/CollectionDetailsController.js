@@ -363,8 +363,18 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             p.followL.setText(this.ns, false);
             p.followContainer.hide();
         }
+        var languageFull = r.langFilters;
+        if(languageFull != ''){
+            for(var i=0; i < LANG.length; i++){
+                var s = LANG[i];
+                var a = s[0] + s[1];
+                if(s[1] == languageFull) {
+                    languageFull = s[0];
+                }
+            }
+        }
 
-        p.languageFiltersL.setText(r.langFilters ? r.langFilters : this.ns, false);
+        p.languageFiltersL.setText(languageFull ? languageFull : this.ns, false);
 
         p.createdL.setText(Ext.util.Format.date(r.createdDate, Ext.Date.patterns.MedumDateTime));
 

@@ -366,7 +366,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<div>{[this.getDateTimeField(values.endDate)]}</div>',
             '{[this.showValue(values.geo)]}',
             '{[this.showValue(values.follow)]}',
-            '<div>{[this.getField(values.langFilters)]}</div>',
+            '<div>{[this.getLanguageField(values.langFilters)]}</div>',
             '<div class="word-wrap-class">{[this.getField(values.track)]}</div>',
             '</div>',
 
@@ -378,6 +378,15 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             {
                 getField: function (r) {
                     return r ? r : "<span class='na-text'>Not specified</span>";
+                },
+                getLanguageField: function (r) {
+                    var languageFull = r;
+                    if(r != ''){
+                        var index = me.langComboStore.find('name', r);
+                        var s =  me.langComboStore.getAt(index);
+                        languageFull = s.data.name;
+                    }
+                    return r ? languageFull : "<span class='na-text'>Not specified</span>";
                 },
                 getDateTimeField: function(r){
                     return r ? Ext.util.Format.date(r, Ext.Date.patterns.MedumDateTime):"<span class='na-text'>Not specified</span>";

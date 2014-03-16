@@ -15,7 +15,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
 
         this.breadcrumbs = Ext.create('Ext.container.Container', {
             html: '<div class="bread-crumbs">' +
-                '<a href="' + BASE_URL + '/protected/tagger-home">Tagger</a><span>&nbsp;>&nbsp;</span>' +
+                '<a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a><span>&nbsp;>&nbsp;</span>' +
                 '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + CRISIS_NAME + '</a><span>&nbsp;>&nbsp;Classifier details</span></div>',
             margin: 0,
             padding: 0
@@ -30,14 +30,14 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
         this.modelDetails = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '0 0 15 0',
-            html: 'Has classified <b>0</b> messages.&nbsp;<a href="' + BASE_URL +  '/protected/'
+            html: 'Machine has tagged <b>0</b> item.&nbsp;<a href="' + BASE_URL +  '/protected/'
                 + CRISIS_CODE + '/' + MODEL_ID + '/' + MODEL_FAMILY_ID + '/' + ATTRIBUTE_ID +
-                + '/training-data">Manage training examples &raquo;</a>',
+                + '/training-data">Go to human-tagged items &raquo;</a>',
             flex: 1
         });
 
         this.aucHint = Ext.create('Ext.container.Container', {
-            html: '<span class="redInfo">*</span>If AUC is lower than 0.8-0.9, or AUC is 1.0, you urgently need more training examples.'
+            html: '<span class="redInfo">*</span>If AUC is lower than 0.8-0.9, or AUC is 1.0, you urgently need more human tagged items.'
         });
 
         this.modelLabelsStore = Ext.create('Ext.data.JsonStore', {
@@ -74,14 +74,14 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
 
             '<div class="rightColumn">',
             '<tpl if="xindex != xcount">' +
-                '<div class="styled-text-17">Category:</div>',
+                '<div class="styled-text-17">Classifier:</div>',
             '</tpl>',
             '<tpl if="xindex == xcount">' +
                 '<div class="styled-text-17">Summary:</div>',
             '</tpl>',
             
-            '<div>Training examples:</div>',
-            '<div>Classified messages:</div>',
+            '<div>Human-tagged items:</div>',
+            '<div>Machine-tagged items:</div>',
             '<div>Precision:</div>',
             '<div>Recall:</div>',
             '<tpl if="xindex != xcount">' +
@@ -189,7 +189,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             '<div>Precision:</div>',
             '<div>Recall:</div>',
             '<div>AUC:</div>',
-            '<div>Training Examples:</div>',
+            '<div>Human-tagged items:</div>',
             '<div>Date/Time:</div>',
             '</div>',
 
@@ -208,7 +208,8 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             '</div>',
             {
                 getDateField: function (r) {
-                    return r ? Ext.Date.format(new Date(r), "Y-m-d H:i:s") : "<span class='na-text'>Not specified</span>";
+                    var s = new Date(r);
+                    return r ? Ext.util.Format.date(s, Ext.Date.patterns.MedumDateTime) : "<span class='na-text'>Not specified</span>";
                 },
                 getTotal: function (r) {
                     return r ? r.format() : 0;
