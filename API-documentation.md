@@ -436,13 +436,13 @@ Request Headers: `Content-Type: application/json`
 
 * `min_confidence`: Include only those documents for which the `confidence` of the specified `classifier_code` is greater than `min_confidence`. Is Java `float` type.
 
-## Generate CSV of all tweets (only tweet-ids)
+## Generate CSV of all tweets (only tweet-ids), POST `.../persister/filter/genCSV?collectionCode=XXX&exportLimit=34234`
 
-POST `.../persister/filter/genTweetIds?collectionCode=XXX`, , filtered by user's selection criteria
+POST `.../persister/filter/genTweetIds?collectionCode=XXX`
 
 `collectionCode` represents the code of collection for which a CSV file should be generated.
 
-For the POST request payload details, refer to the `POST .../persister/filter/genCSV?collectionCode=XXX&exportLimit=34234` documentation.
+For the POST request payload details, refer to the `POST .../persister/filter/genCSV` documentation above.
 
 
 # OUTPUT API (aidr-output)
