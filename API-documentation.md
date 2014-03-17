@@ -619,10 +619,13 @@ Response Example:
 
 **Important parameter details**
 
-`nominalAttributeID`: unique ID of a nominal attribute
-`norminalLabelID`: unique ID of a label associated with a particular nominal attribute
-`code`: code associated with a nominal attribute
-`norminalLabelCode`: code of a label associated with a particular nominal attribute
+* `nominalAttributeID`: unique ID of a nominal attribute
+
+* `norminalLabelID`: unique ID of a label associated with a particular nominal attribute
+
+* `code`: code associated with a nominal attribute
+
+* `norminalLabelCode`: code of a label associated with a particular nominal attribute
 
 
 
