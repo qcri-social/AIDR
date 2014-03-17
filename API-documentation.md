@@ -556,7 +556,7 @@ Request Headers: `Content-Type: application/json`
 Base URI: `http://localhost:port/AIDRTrainerAPI/rest`
 
 
-## Retrieve all labels of all nominal attributes associated with a crisis
+## For a given crisisID, retrieve all nominal attributes and their labels
 
 GET `.../rest/crisis/id/{crisisID}`
 
