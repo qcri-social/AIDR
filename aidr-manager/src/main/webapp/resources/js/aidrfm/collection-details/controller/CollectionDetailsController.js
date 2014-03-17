@@ -341,8 +341,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         p.collectionTitle.setText('<b>' + r.name + '</b>', false);
 
         this.setStatus(r.status);
-        this.setStartDate(Ext.util.Format.date(r.startDate, Ext.Date.patterns.MedumDateTime));
-        this.setEndDate(Ext.util.Format.date(r.endDate, Ext.Date.patterns.MedumDateTime));
+
+        this.setStartDate(r.startDate);
+        this.setEndDate(r.endDate);
 
         COLLECTION_CODE = r.code;
         p.codeL.setText(r.code);
@@ -376,7 +377,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         p.languageFiltersL.setText(languageFull ? languageFull : this.ns, false);
 
-        p.createdL.setText(Ext.util.Format.date(r.createdDate, Ext.Date.patterns.MedumDateTime));
+       // p.createdL.setText(Ext.util.Format.date(r.createdDate, Ext.Date.patterns.MedumDateTime));
+        p.createdL.setText(r.createdDate);
 
         this.setCountOfDocuments(r.count);
         this.setTotalCountOfDocuments(r.totalCount);
