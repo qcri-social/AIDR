@@ -456,15 +456,18 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var me = this;
 
         if (status == "RUNNING" || status == "RUNNING-WARNNING"){
-            var willEndDate = new Date(startDate).addHours(duration);
+            var willEndDate = moment(startDate);
+            willEndDate.add('h', duration);
 
 //            round to the next hour
-            willEndDate.setSeconds(0);
-            if (willEndDate.getMinutes() > 0) {
-                willEndDate.addHours(1);
-                willEndDate.setMinutes(0)
+            willEndDate.second(0);
+            if (willEndDate.minute() > 0) {
+                willEndDate.add('h', 1);
+                willEndDate.minute(0)
             }
-            willEndDate = Ext.util.Format.date(willEndDate, Ext.Date.patterns.MedumDateTime);
+
+//            "F d, Y g:i:s A" equivalent is 'MMMM D, YYYY h:mm:ss A'
+            willEndDate = willEndDate.format('MMMM D, YYYY h:mm:ss A');
 
             this.DetailsComponent.willStoppedL.setText(willEndDate ? willEndDate : me.na, false);
             this.DetailsComponent.willStoppedContainer.show();

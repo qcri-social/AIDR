@@ -213,8 +213,3 @@ Ext.Date.patterns = {
     UniversalSortableDateTime: "Y-m-d H:i:sO",
     YearMonth: "F, Y"
 };
-
-Date.prototype.addHours= function(h){
-    this.setHours(this.getHours()+h);
-    return this;
-};
