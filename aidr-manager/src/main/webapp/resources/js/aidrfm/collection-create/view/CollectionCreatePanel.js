@@ -152,7 +152,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         		 	+ '<li><span class="blueInfo">*</span>   You understand the data you collect will be made available for research purposes.</span></li>'
         		 	+ '</ul>'
         		 	+ '<br> If you have questions, please contact us before starting a collection.',
-            padding: '25 0 0 0',
+            padding: '0 0 0 0',
         });
         
         this.saveButton = Ext.create('Ext.Button', {
