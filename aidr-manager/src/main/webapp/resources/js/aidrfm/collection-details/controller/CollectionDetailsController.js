@@ -466,8 +466,6 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 willEndDate.minute(0)
             }
 
-//            "F d, Y g:i:s A" equivalent is 'MMMM D, YYYY h:mm:ss A'
-            //willEndDate = willEndDate.format('MMMM D, YYYY h:mm:ss A');
             willEndDate = moment(willEndDate).calendar();
             this.DetailsComponent.willStoppedL.setText(willEndDate ? willEndDate : me.na, false);
             this.DetailsComponent.willStoppedContainer.show();
