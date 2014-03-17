@@ -135,9 +135,28 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             padding: '15 0 0 0',
             cls: 'header-h2 bordered-top'
         });
-
+        
+        this.notesL = Ext.create('Ext.form.Label', {
+            flex: 1,
+            text: 'Note',
+            padding: '15 0 0 0',
+            cls: 'header-h2 bordered-top'
+        });
+        
+        this.notetextL = Ext.create('Ext.form.Label', {
+        	flex: 1,
+        	html: 'By creating a collection you agree to our <a href="http://aidr.qcri.org/r/tos/" target=_blank>Terms of Service</a>, which basically state that:<br>'
+        		 	+ '<ul>'
+        			+ '<li><span class="blueInfo">*</span>   You are using AIDR for humanitarian and crisis response purposes.</span></li>'
+        		 	+ '<li><span class="blueInfo">*</span>   You understand your collections can be stopped and removed at any time, and that we do not keep data from inactive collections for more than 7 days.</span></li>'
+        		 	+ '<li><span class="blueInfo">*</span>   You understand the data you collect will be made available for research purposes.</span></li>'
+        		 	+ '</ul>'
+        		 	+ '<br> If you have questions, please contact us before starting a collection.',
+            padding: '25 0 0 0',
+        });
+        
         this.saveButton = Ext.create('Ext.Button', {
-            text: 'Save',
+            text: 'Create Collection',
             margin: '0 10 0 10',
             cls: 'btn btn-green',
             id: 'collectionCreate'
@@ -265,13 +284,15 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                                 }
                             ]
                         },
+                        this.notesL, 
+                        this.notetextL,
                         {
                             xtype: 'container',
                             layout: 'hbox',
                             padding: '15 0 0 0',
                             items: [
-                                this.cancelButton,
-                                this.saveButton
+                                 this.cancelButton,
+                                 this.saveButton
                             ]
                         }
                     ]

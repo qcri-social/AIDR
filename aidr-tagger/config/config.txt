@@ -42,7 +42,7 @@ redis_label_task_write_queue=label_task_write_stream
 # crisis. If the value is set too high, documents may no longer be useful
 # as training samples once they are labeled. If the value is too low, the buffer
 # may become empty if workers label items very rapidly. Default is 100.
-labeling_task_buffer_max_length=500
+labeling_task_buffer_max_length=10000
 
 # Rate limits for writing labeling tasks to the database
 max_task_write_fq_ms=2000
