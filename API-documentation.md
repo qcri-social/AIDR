@@ -486,7 +486,7 @@ Provides a method to test whether:
 * Connection to Redis is available
 * `aidr-output` services are running as expected
 
-## Get a JSONP list of labeled tweets from a specific channel, filtered by selection criteria. 
+## Get a JSONP list of labeled tweets from a specific channel, filtered by selection criteria 
 
 POST `.../rest/crisis/fetch/channel/{crisisCode}?callback={callbackName}&count={count}`
 
