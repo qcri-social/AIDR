@@ -617,7 +617,7 @@ Response Example:
 }`
 
 
-** Important parameter details **
+**Important parameter details**
 
 `nominalAttributeID`: unique ID of a nominal attribute
 `norminalLabelID`: unique ID of a label associated with a particular nominal attribute
