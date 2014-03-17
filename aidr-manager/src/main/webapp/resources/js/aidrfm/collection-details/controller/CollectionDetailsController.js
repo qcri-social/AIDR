@@ -77,6 +77,17 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 }
             },
 
+            "#collectionDurationInfo": {
+                render: function (infoPanel, eOpts) {
+                    var tip = Ext.create('Ext.tip.ToolTip', {
+                        trackMouse: true,
+                        html: "Collection duration of up to 7 days. The system will stop the collection after that interval. ",
+                        target: infoPanel.el,
+                        dismissDelay: 0
+                    });
+                }
+            },
+
             "#collectionLangInfo": {
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
@@ -341,8 +352,10 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         p.collectionTitle.setText('<b>' + r.name + '</b>', false);
 
         this.setStatus(r.status);
-        this.setStartDate(Ext.util.Format.date(r.startDate, Ext.Date.patterns.MedumDateTime));
-        this.setEndDate(Ext.util.Format.date(r.endDate, Ext.Date.patterns.MedumDateTime));
+
+        this.setStartDate(r.startDate);
+        this.setEndDate(r.endDate);
+        this.setWillStoppedDate(r.status, r.startDate, r.durationHours);
 
         COLLECTION_CODE = r.code;
         p.codeL.setText(r.code);
@@ -376,7 +389,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         p.languageFiltersL.setText(languageFull ? languageFull : this.ns, false);
 
-        p.createdL.setText(Ext.util.Format.date(r.createdDate, Ext.Date.patterns.MedumDateTime));
+       // p.createdL.setText(Ext.util.Format.date(r.createdDate, Ext.Date.patterns.MedumDateTime));
+        p.createdL.setText(r.createdDate);
 
         this.setCountOfDocuments(r.count);
         this.setTotalCountOfDocuments(r.totalCount);
@@ -406,6 +420,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         p.geoE.setValue(r.geo ? r.geo : '');
         p.followE.setValue(r.follow ? r.follow : '');
+//        default duration is 2 days (48 hours)
+        var duration = r.durationHours ? r.durationHours : 48;
+        p.duration.setValue({rb: duration});
         p.langCombo.setValue(r.langFilters ? r.langFilters.split(',') : '');
     },
 
@@ -433,6 +450,30 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
     setEndDate: function (raw) {
         var me = this;
         this.DetailsComponent.lastStoppedL.setText(raw ? raw : me.na, false);
+    },
+
+    setWillStoppedDate: function (status, startDate, duration) {
+        var me = this;
+
+        if (status == "RUNNING" || status == "RUNNING-WARNNING"){
+            var willEndDate = moment(startDate);
+            willEndDate.add('h', duration);
+
+//            round to the next hour
+            willEndDate.second(0);
+            if (willEndDate.minute() > 0) {
+                willEndDate.add('h', 1);
+                willEndDate.minute(0)
+            }
+
+//            "F d, Y g:i:s A" equivalent is 'MMMM D, YYYY h:mm:ss A'
+            willEndDate = willEndDate.format('MMMM D, YYYY h:mm:ss A');
+
+            this.DetailsComponent.willStoppedL.setText(willEndDate ? willEndDate : me.na, false);
+            this.DetailsComponent.willStoppedContainer.show();
+        } else {
+            this.DetailsComponent.willStoppedContainer.hide();
+        }
     },
 
     setCountOfDocuments: function (raw) {
@@ -544,7 +585,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 status: status,
                 fromDate: startDate,
                 endDate: endDate,
-                langFilters: form.findField('langFilters').getValue()
+                langFilters: form.findField('langFilters').getValue(),
+                durationHours: form.findField('durationHours').getValue()
             },
             headers: {
                 'Accept': 'application/json'
@@ -598,6 +640,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                         me.setStatus(data.status);
                         me.setStartDate(data.startDate);
                         me.setEndDate(data.endDate);
+                        me.setWillStoppedDate(data.status, data.startDate, data.durationHours);
                         me.setCountOfDocuments(data.count);
                         me.setTotalCountOfDocuments(data.totalCount);
                         me.setLastDowloadedDoc(data.lastDocument);

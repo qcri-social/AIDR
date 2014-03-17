@@ -90,6 +90,24 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             emptyText: 'e.g., 47423744, 53324456 (max 5000)'
         });
 
+        this.duration = Ext.create('Ext.form.RadioGroup', {
+            fieldLabel: 'Collection duration',
+            columns: 2,
+            flex: 1,
+            labelWidth: 130,
+            vertical: false,
+            name: 'durationHours',
+            items: [
+                { boxLabel: '12 hours', name: 'rb', inputValue: '12' },
+                { boxLabel: '1 day', name: 'rb', inputValue: '24'},
+                { boxLabel: '1 day 12 hours', name: 'rb', inputValue: '36' },
+                { boxLabel: '2 days', name: 'rb', inputValue: '48', checked: true },
+                { boxLabel: '2 days 12 hours', name: 'rb', inputValue: '60' },
+                { boxLabel: '3 days', name: 'rb', inputValue: '72' },
+                { boxLabel: '7 days', name: 'rb', inputValue: '168' }
+            ]
+        });
+
         this.langComboStore = Ext.create('Ext.data.ArrayStore', {
             autoDestroy: true,
             storeId: 'langComboStore',
@@ -281,6 +299,22 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                                     height: 22,
                                     width: 22,
                                     id: 'collectionFollowInfo'
+                                }
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            layout: 'hbox',
+                            margin: '5 0',
+                            items: [
+                                this.duration,
+                                {
+                                    border: false,
+                                    bodyStyle: 'background:none',
+                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+                                    height: 22,
+                                    width: 22,
+                                    id: 'collectionDurationInfo'
                                 }
                             ]
                         },

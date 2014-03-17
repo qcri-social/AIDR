@@ -36,7 +36,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         });
 
         this.gotoCollectorButton = Ext.create('Ext.Button', {
-            text: 'Collection',
+            text: 'Go To Collection',
             cls:'btn btn-blue',
             id: 'goToCollector',
             width: 150,

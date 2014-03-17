@@ -46,6 +46,8 @@ public class AidrCollectionTotalDTO {
 
     private List<UserEntity> managers;
 
+    private Integer durationHours;
+
     public Integer getId() {
         return id;
     }
@@ -191,5 +193,13 @@ public class AidrCollectionTotalDTO {
 
     public void setManagers(List<UserEntity> managers) {
         this.managers = managers;
+    }
+
+    public Integer getDurationHours() {
+        return durationHours;
+    }
+
+    public void setDurationHours(Integer durationHours) {
+        this.durationHours = durationHours;
     }
 }
