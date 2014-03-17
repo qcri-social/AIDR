@@ -393,8 +393,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
             '<div class="leftColumn">',
             '<div>{[this.getDocNumber(values.count)]}</div>',
-            '<div>{[this.getField(values.startDate)]}</div>',
-            '<div>{[this.getField(values.endDate)]}</div>',
+            '<div>{[this.getDateTimeField(values.startDate)]}</div>',
+            '<div>{[this.getDateTimeField(values.endDate)]}</div>',
             '{[this.showValue(values.geo)]}',
             '{[this.showValue(values.follow)]}',
             '<div>{[this.getLanguageField(values.langFilters)]}</div>',
@@ -420,11 +420,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     return r ? languageFull : "<span class='na-text'>Not specified</span>";
                 },
                 getDateTimeField: function(r){
-                    var fulldateTime = r;
-                    if(r!=''){
-                        fulldateTime = new Date(r);
-                    }
-                    return fulldateTime ? Ext.util.Format.date(fulldateTime, Ext.Date.patterns.MedumDateTime):"<span class='na-text'>Not specified</span>";
+                    return r ? moment(r).calendar():"<span class='na-text'>Not specified</span>";
 
                 },
                 getDocNumber: function (r) {

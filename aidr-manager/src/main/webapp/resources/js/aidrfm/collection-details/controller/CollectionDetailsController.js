@@ -389,8 +389,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         p.languageFiltersL.setText(languageFull ? languageFull : this.ns, false);
 
-       // p.createdL.setText(Ext.util.Format.date(r.createdDate, Ext.Date.patterns.MedumDateTime));
-        p.createdL.setText(r.createdDate);
+        p.createdL.setText(moment(r.createdDate).calendar());
 
         this.setCountOfDocuments(r.count);
         this.setTotalCountOfDocuments(r.totalCount);
@@ -444,12 +443,13 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
     setStartDate: function (raw) {
         var me = this;
-        this.DetailsComponent.lastStartedL.setText(raw ? raw : me.na, false);
+
+        this.DetailsComponent.lastStartedL.setText(raw ? moment(raw).calendar() : me.na, false);
     },
 
     setEndDate: function (raw) {
         var me = this;
-        this.DetailsComponent.lastStoppedL.setText(raw ? raw : me.na, false);
+        this.DetailsComponent.lastStoppedL.setText(raw ? moment(raw).calendar() : me.na, false);
     },
 
     setWillStoppedDate: function (status, startDate, duration) {
@@ -467,8 +467,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             }
 
 //            "F d, Y g:i:s A" equivalent is 'MMMM D, YYYY h:mm:ss A'
-            willEndDate = willEndDate.format('MMMM D, YYYY h:mm:ss A');
-
+            //willEndDate = willEndDate.format('MMMM D, YYYY h:mm:ss A');
+            willEndDate = moment(willEndDate).calendar();
             this.DetailsComponent.willStoppedL.setText(willEndDate ? willEndDate : me.na, false);
             this.DetailsComponent.willStoppedContainer.show();
         } else {

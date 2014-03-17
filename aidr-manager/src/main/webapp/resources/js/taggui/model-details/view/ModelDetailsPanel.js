@@ -209,8 +209,8 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             {
                 getDateField: function (r) {
                    // var s = new Date(r);
-                   // return r ? Ext.util.Format.date(s, Ext.Date.patterns.MedumDateTime) : "<span class='na-text'>Not specified</span>";
-                    return r ? Ext.Date.format(new Date(r), "Y-m-d H:i:s") : "<span class='na-text'>Not specified</span>";
+                    return r ? moment(r).calendar() : "<span class='na-text'>Not specified</span>";
+                    //return r ? Ext.Date.format(new Date(r), "Y-m-d H:i:s") : "<span class='na-text'>Not specified</span>";
 
                 },
                 getTotal: function (r) {
