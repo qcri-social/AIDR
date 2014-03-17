@@ -58,6 +58,8 @@ public class AidrCollection implements Serializable {
     @Column(length = 1000, name = "last_document")
     private String lastDocument;
 
+    private Integer durationHours;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "AIDR_COLLECTION_TO_MANAGER",
@@ -206,4 +208,11 @@ public class AidrCollection implements Serializable {
         this.managers = managers;
     }
 
+    public Integer getDurationHours() {
+        return durationHours;
+    }
+
+    public void setDurationHours(Integer durationHours) {
+        this.durationHours = durationHours;
+    }
 }

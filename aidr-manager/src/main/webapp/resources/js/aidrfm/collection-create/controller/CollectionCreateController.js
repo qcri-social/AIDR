@@ -77,6 +77,17 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 }
             },
 
+            "#collectionDurationInfo": {
+                render: function (infoPanel, eOpts) {
+                    var tip = Ext.create('Ext.tip.ToolTip', {
+                        trackMouse: true,
+                        html: "Collection duration of up to 7 days. The system will stop the collection after that interval. ",
+                        target: infoPanel.el,
+                        dismissDelay: 0
+                    });
+                }
+            },
+
             "#collectionLangInfo": {
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
@@ -148,7 +159,8 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                     track: Ext.String.trim( form.findField('track').getValue() ),
                     follow: Ext.String.trim( form.findField('follow').getValue() ),
                     geo: Ext.String.trim( form.findField('geo').getValue() ),
-                    langFilters: form.findField('langFilters').getValue()
+                    langFilters: form.findField('langFilters').getValue(),
+                    durationHours: form.findField('durationHours').getValue()
                 },
                 headers: {
                     'Accept': 'application/json'

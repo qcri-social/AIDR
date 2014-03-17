@@ -37,3 +37,8 @@ FROM ((`document` `d` join `document_nominal_label` `dnl` on((`d`.`documentID` =
 16 March 2014: Run the following script to add unique constraint on the name field of the aidr_fetch_manager database.
 =============================================================================================================================
 ALTER TABLE AIDR_COLLECTION ADD CONSTRAINT UNIQUE (name)
+
+
+17 March 2014: Run the following script to add default running duration to the collection table in aidr_fetch_manager database.
+=============================================================================================================================
+UPDATE AIDR_COLLECTION SET durationHours=48 WHERE durationHours IS NULL;
