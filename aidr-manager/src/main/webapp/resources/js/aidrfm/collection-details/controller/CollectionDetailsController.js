@@ -463,7 +463,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             willEndDate.second(0);
             if (willEndDate.minute() > 0) {
                 willEndDate.add('h', 1);
-                willEndDate.minute(0)
+                willEndDate.minute(0);
             }
 
             willEndDate = moment(willEndDate).calendar();
