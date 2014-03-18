@@ -309,11 +309,8 @@ public class ScreenController extends BaseController{
 
         List<TaggerModel> modelsForCrisis = taggerService.getModelsForCrisis(crisisId);
         for (TaggerModel model : modelsForCrisis) {
-            if (modelId.equals(model.getModelID())){
+            if (nominalAttributeId.equals(model.getAttributeID())){
                 modelName = model.getAttribute();
-                if (model.getModelFamilyID() != null) {
-                    modelFamilyId = model.getModelFamilyID();
-                }
             }
         }
 
