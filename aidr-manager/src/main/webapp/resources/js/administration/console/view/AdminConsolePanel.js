@@ -240,7 +240,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
         this.stoppedCollectionsStore = Ext.create('Ext.data.Store', {
             pageSize: 10,
             storeId: 'stoppedCollectionsStore',
-            fields: ['id', 'name', 'code', 'count', 'startDate', 'user', 'totalCount', 'taggersCount'],
+            fields: ['id', 'name', 'code', 'count', 'startDate', 'user', 'totalCount', 'taggersCount', 'durationHours'],
             remoteSort: true,
             proxy: {
                 type: 'ajax',
@@ -303,6 +303,52 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                         } else {
                             return me.getField(false);
                         }
+                    }
+                },
+                {
+                    xtype: 'gridcolumn', dataIndex: 'durationHours', text: 'Duration', width: 140, sortable: false,
+                    renderer: function (value, meta, record) {
+                        var id = Ext.id();
+
+                        Ext.defer(function () {
+                            var widget = Ext.widget('combo', {
+                                renderTo: id,
+                                editable: false,
+                                text: 'Edit',
+                                valueField: 'val',
+                                displayField: 'label',
+                                width: 125,
+                                store: me.durationStore,
+                                listeners: {
+                                    select: function (cmp, selectedValues, options) {
+                                        var selectedVal = selectedValues[0].data.val;
+                                        if (selectedVal) {
+                                            Ext.Ajax.request({
+                                                url: BASE_URL + '/protected/collection/updateDuration.action',
+                                                method: 'POST',
+                                                params: {
+                                                    id: record.data.id,
+                                                    durationHours: selectedVal
+                                                },
+                                                headers: {
+                                                    'Accept': 'application/json'
+                                                },
+                                                success: function (response) {
+                                                    AIDRFMFunctions.setAlert("Info", "Collection <b>" + record.data.name + "</b> new duration has been updated");
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+                            });
+
+                            if (value) {
+                                widget.setValue(value);
+                            } else {
+                                widget.setValue(48);
+                            }
+                        }, 10);
+                        return Ext.String.format('<div id="{0}" class="no-padding"></div>', id);
                     }
                 },
                 {
