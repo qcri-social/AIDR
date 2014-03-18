@@ -1,5 +1,5 @@
 <jsp:include page="../header.jsp"/>
-<title>AIDR - Add training examples</title>
+<title>AIDR - Human-tagged items</title>
 </head>
 <body class="mainbody">
   <script type="text/javascript" src="<%=request.getContextPath()%>/resources/js/taggui/training-examples/Application.js"></script>

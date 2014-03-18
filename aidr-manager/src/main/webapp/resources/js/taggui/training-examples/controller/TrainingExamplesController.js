@@ -47,9 +47,9 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
 
         if (!MODEL_ID || MODEL_ID == 0) {
             me.mainComponent.breadcrumbs.setText('<div class="bread-crumbs">' +
-                '<a href="' + BASE_URL + '/protected/tagger-home">Tagger</a><span>&nbsp;>&nbsp;</span>' +
+                '<a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a><span>&nbsp;>&nbsp;</span>' +
                 '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + CRISIS_NAME + '</a><span>&nbsp;>&nbsp;' +
-                MODEL_NAME + '&nbsp;>&nbsp;New training example</span></div>', false);
+                MODEL_NAME + '&nbsp;>&nbsp;Tag more items</span></div>', false);
         }
     },
 
@@ -102,8 +102,8 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                                 me.skipTask();
                             }
                         } else{
-                            AIDRFMFunctions.setAlert("Error", "No training examples available for this crisis. Please check it later.");
-                            me.mainComponent.documentTextLabel.setText("No training examples available for this crisis. Please check it later.", false);
+                            AIDRFMFunctions.setAlert("Error", "No items to tag available for this crisis. Please come back to this page later.");
+                            me.mainComponent.documentTextLabel.setText("No items to tag available for this crisis. Please come back to this page later.", false);
                             me.mainComponent.buttonsBlock.removeAll();
                         }
                     }
