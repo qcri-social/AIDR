@@ -144,7 +144,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
     ,
     deleteTrainingExample: function(button){
         if (!button.exampleId){
-            AIDRFMFunctions.setAlert("Error", "Error while delete training example. Document Id not available.");
+            AIDRFMFunctions.setAlert("Error", "Error while delete human-tagged item. Document Id not available.");
         }
 
         var me = this;
@@ -161,7 +161,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
             success: function (response) {
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
-                    AIDRFMFunctions.setAlert("Info", "Training Example is removed successfully. Note: this removal will be reflected on the automatic classifier the next time it is retrained.");
+                    AIDRFMFunctions.setAlert("Info", "Human-tagged item is removed successfully. Note: this removal will be reflected on the automatic classifier the next time it is retrained.");
                     me.mainComponent.trainingDataStore.load();
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);

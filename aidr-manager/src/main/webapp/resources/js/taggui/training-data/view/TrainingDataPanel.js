@@ -23,14 +23,14 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
 
         this.taggerTitle = Ext.create('Ext.form.Label', {
             cls: 'header-h1 bold-text',
-            text: 'Training data for "' + MODEL_NAME + '" in collection "' + CRISIS_NAME + '"',
+            text: 'Human-tagged items for "' + MODEL_NAME + '" in collection "' + CRISIS_NAME + '"',
             flex: 1
         });
 
         this.taggerDescription = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '0 0 15 0',
-            html: 'Status: <b>Waiting training examples</b>. Machine-tagged items: <b>0</b>&nbsp;',
+            html: 'Status: <b>Waiting human-tagged items</b>. Machine-tagged items: <b>0</b>&nbsp;',
             flex: 1
         });
 
@@ -127,7 +127,7 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
             margin: '12 2 0 2',
             store:'trainingDataStore',
             displayInfo:true,
-            displayMsg:'Training Data records {0} - {1} of {2}',
+            displayMsg:'Human-tagged items  {0} - {1} of {2}',
             emptyMsg:'No human-tagged items to display'
         });
 
