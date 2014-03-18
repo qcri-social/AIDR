@@ -135,7 +135,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'durationHours', text: 'Duration', width: 140, sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'durationHours', text: 'Max Duration', width: 140, sortable: false,
                     renderer: function (value, meta, record) {
                         var id = Ext.id();
 
