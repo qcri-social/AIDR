@@ -147,7 +147,7 @@ public class Persister4TaggerAPI {
 				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 				.build();
 	}  
-
+	
 	@GET
 	@Produces("application/json")
 	@Path("/genTweetIds")
@@ -232,6 +232,7 @@ public class Persister4TaggerAPI {
 				.build();
 	}
 
+	
 
 	// Also set response header in OPTIONS pre-flight to enable CORS
 	@OPTIONS

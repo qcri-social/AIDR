@@ -5,10 +5,19 @@
 package qa.qcri.aidr.utils;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
+
+import qa.qcri.aidr.persister.filter.NominalLabel;
 
 /**
  *
- * @author Imran
+ * @author Imran, modified by Koushik
  */
 public class ClassifiedTweet  implements Document, Serializable{
     
@@ -29,7 +38,14 @@ public class ClassifiedTweet  implements Document, Serializable{
     private String confidence;
     private String humanLabeled;
     
+    // Added by koushik
+    @JsonIgnore
+    public ArrayList<NominalLabel> nominal_labels;
 
+    public ClassifiedTweet() {
+    	nominal_labels = new ArrayList<NominalLabel>();
+    }
+    
     /**
      * @return the userURL
      */
@@ -202,4 +218,30 @@ public class ClassifiedTweet  implements Document, Serializable{
     public void setHumanLabeled(String humanLabeled) {
         this.humanLabeled = humanLabeled;
     }
+    
+    
+    // Added by koushik
+	public Date getDate(String timeString) {
+		SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZ yyyy");
+		formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+		try {
+			return formatter.parse(timeString);
+		} catch (ParseException e) {
+			System.err.println("[createDate] Error in parsing Date string");
+		}
+		return null;
+	}
+	
+    public ArrayList<NominalLabel> getNominalLabels() {
+		ArrayList<NominalLabel> arr = new ArrayList<NominalLabel>();
+		if (nominal_labels != null) 
+			arr.addAll(nominal_labels);
+		return arr;
+	}
+	
+	public void setNominalLabels(ArrayList<NominalLabel> nLabels) {
+		if (nominal_labels != null) {
+			nominal_labels.addAll(nLabels);
+		}
+	}
 }
