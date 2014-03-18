@@ -15,9 +15,9 @@ Ext.define('TAGGUI.training-examples.view.TrainingExamplesPanel', {
 
         this.breadcrumbs = Ext.create('Ext.form.Label', {
             html: '<div class="bread-crumbs">' +
-                '<a href="' + BASE_URL + '/protected/tagger-home">Tagger</a><span>&nbsp;>&nbsp;</span>' +
+                '<a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a><span>&nbsp;>&nbsp;</span>' +
                 '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + CRISIS_NAME + '</a><span>&nbsp;>&nbsp;</span>' +
-                '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/' + MODEL_ID + '/model-details">' + MODEL_NAME + '</a><span>&nbsp;>&nbsp;New training example</span></div>',
+                '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/' + MODEL_ID + '/model-details">' + MODEL_NAME + '</a><span>&nbsp;>&nbsp;Tag more items</span></div>',
             margin: 0,
             padding: 0
         });
@@ -38,7 +38,7 @@ Ext.define('TAGGUI.training-examples.view.TrainingExamplesPanel', {
         this.labelsLabel = Ext.create('Ext.form.Label', {
             cls: 'styled-text bold-text',
             margin: '10 0 5 0',
-            html: 'Indicate the label for: ',
+            html: 'Indicate the tag for: ',
             flex: 1
         });
 
@@ -63,7 +63,7 @@ Ext.define('TAGGUI.training-examples.view.TrainingExamplesPanel', {
         });
 
         this.cancelButton = Ext.create('Ext.Button', {
-            text: 'Back to training data',
+            text: 'Back to list of human-tagged items',
             cls:'btn btn-blue',
             id: 'cancel',
             margin: '7 0 0 15'

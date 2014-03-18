@@ -389,8 +389,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         p.languageFiltersL.setText(languageFull ? languageFull : this.ns, false);
 
-       // p.createdL.setText(Ext.util.Format.date(r.createdDate, Ext.Date.patterns.MedumDateTime));
-        p.createdL.setText(r.createdDate);
+        p.createdL.setText(moment(r.createdDate).calendar());
 
         this.setCountOfDocuments(r.count);
         this.setTotalCountOfDocuments(r.totalCount);
@@ -444,18 +443,19 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
     setStartDate: function (raw) {
         var me = this;
-        this.DetailsComponent.lastStartedL.setText(raw ? raw : me.na, false);
+
+        this.DetailsComponent.lastStartedL.setText(raw ? moment(raw).calendar() : me.na, false);
     },
 
     setEndDate: function (raw) {
         var me = this;
-        this.DetailsComponent.lastStoppedL.setText(raw ? raw : me.na, false);
+        this.DetailsComponent.lastStoppedL.setText(raw ? moment(raw).calendar() : me.na, false);
     },
 
     setWillStoppedDate: function (status, startDate, duration) {
         var me = this;
 
-        if (status == "RUNNING" || status == "RUNNING-WARNNING"){
+        if (status == "RUNNING" || status == "RUNNING-WARNNING" || "INITIALIZING"){
             var willEndDate = moment(startDate);
             willEndDate.add('h', duration);
 
@@ -463,12 +463,10 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             willEndDate.second(0);
             if (willEndDate.minute() > 0) {
                 willEndDate.add('h', 1);
-                willEndDate.minute(0)
+                willEndDate.minute(0);
             }
 
-//            "F d, Y g:i:s A" equivalent is 'MMMM D, YYYY h:mm:ss A'
-            willEndDate = willEndDate.format('MMMM D, YYYY h:mm:ss A');
-
+            willEndDate = moment(willEndDate).calendar();
             this.DetailsComponent.willStoppedL.setText(willEndDate ? willEndDate : me.na, false);
             this.DetailsComponent.willStoppedContainer.show();
         } else {

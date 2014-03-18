@@ -6,7 +6,6 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.hibernateEntities.Role;
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
 import qa.qcri.aidr.manager.util.CollectionStatus;
@@ -120,7 +119,9 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
     @SuppressWarnings("unchecked")
     @Override
     public List<AidrCollection> getRunningCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) {
-        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+        Criteria criteriaIds = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+        criteriaIds.setProjection(Projections.projectionList()
+                .add(Projections.property("id"), "id"));
 
         LogicalExpression or = Restrictions.or(
                 Restrictions.eq("status", CollectionStatus.RUNNING),
@@ -132,16 +133,24 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
                 Restrictions.eq("status", CollectionStatus.INITIALIZING)
         );
 
-        criteria.add(orAll);
-        addCollectionSearchCriteria(terms, criteria);
-        searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
+        criteriaIds.add(orAll);
+        addCollectionSearchCriteria(terms, criteriaIds);
+        searchCollectionsAddOrder(sortColumn, sortDirection, criteriaIds);
 
         if (start != null) {
-            criteria.setFirstResult(start);
+            criteriaIds.setFirstResult(start);
         }
         if (limit != null) {
-            criteria.setMaxResults(limit);
+            criteriaIds.setMaxResults(limit);
         }
+
+        List<Integer> ids = (List<Integer>) criteriaIds.list();
+
+        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+
+        criteria.add(Restrictions.in("id", ids));
+        searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
 
         return (List<AidrCollection>) criteria.list();
     }
@@ -150,7 +159,8 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
     @Override
     public Long getRunningCollectionsCount(String terms) {
         Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        criteria.setProjection(Projections.projectionList()
+                .add(Projections.property("id"), "id"));
 
         LogicalExpression or = Restrictions.or(
                 Restrictions.eq("status", CollectionStatus.RUNNING),
@@ -173,20 +183,30 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
     @SuppressWarnings("unchecked")
     @Override
     public List<AidrCollection> getStoppedCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) {
-        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+        Criteria criteriaIds = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+        criteriaIds.setProjection(Projections.projectionList()
+                .add(Projections.property("id"), "id"));
 
-        criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING));
-        criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING_WARNING));
-        criteria.add(Restrictions.ne("status", CollectionStatus.INITIALIZING));
-        addCollectionSearchCriteria(terms, criteria);
-        searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
+        criteriaIds.add(Restrictions.ne("status", CollectionStatus.RUNNING));
+        criteriaIds.add(Restrictions.ne("status", CollectionStatus.RUNNING_WARNING));
+        criteriaIds.add(Restrictions.ne("status", CollectionStatus.INITIALIZING));
+        addCollectionSearchCriteria(terms, criteriaIds);
+        searchCollectionsAddOrder(sortColumn, sortDirection, criteriaIds);
 
         if (start != null) {
-            criteria.setFirstResult(start);
+            criteriaIds.setFirstResult(start);
         }
         if (limit != null) {
-            criteria.setMaxResults(limit);
+            criteriaIds.setMaxResults(limit);
         }
+
+        List<Integer> ids = (List<Integer>) criteriaIds.list();
+
+        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+
+        criteria.add(Restrictions.in("id", ids));
+        searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
 
         return (List<AidrCollection>) criteria.list();
     }
@@ -195,7 +215,8 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
     @Override
     public Long getStoppedCollectionsCount(String terms) {
         Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        criteria.setProjection(Projections.projectionList()
+                .add(Projections.property("id"), "id"));
 
         criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING));
         criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING_WARNING));
