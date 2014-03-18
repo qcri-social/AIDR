@@ -35,7 +35,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
         this.runningCollectionsStore = Ext.create('Ext.data.Store', {
             pageSize: 10,
             storeId: 'runningCollectionsStore',
-            fields: ['id', 'name', 'code', 'count', 'startDate', 'user', 'totalCount', 'taggersCount'],
+            fields: ['id', 'name', 'code', 'count', 'startDate', 'user', 'totalCount', 'taggersCount', 'durationHours'],
             remoteSort: true,
             proxy: {
                 type: 'ajax',
@@ -93,17 +93,40 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                 {
                     xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Last re-started on', width: 150,
                     renderer: function (value, meta, record) {
-                        return me.getField(value);
+                        if (value) {
+                            return moment(value).calendar();
+                        } else {
+                            return me.getField(false);
+                        }
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 150, sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Will be stopped at', width: 140,
+                    renderer: function (value, meta, record) {
+                        var duration = record.data.durationHours;
+
+                        var willEndDate = moment(value);
+                        willEndDate.add('h', duration);
+
+//                      round to the next hour
+                        willEndDate.second(0);
+                        if (willEndDate.minute() > 0) {
+                            willEndDate.add('h', 1);
+                            willEndDate.minute(0);
+                        }
+
+                        willEndDate = moment(willEndDate).calendar();
+                        return me.getField(willEndDate);
+                    }
+                },
+                {
+                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 140, sortable: false,
                     renderer: function (value, meta, record) {
                         return value ? Ext.util.Format.number(value, '0,000') : 0;
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'taggersCount', text: 'Taggers', width: 100, sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'taggersCount', text: 'Taggers', width: 70, sortable: false,
                     renderer: function (value, meta, record) {
                         if (value){
                             var result = Ext.util.Format.number(value, '0,000');
@@ -214,17 +237,21 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                 {
                     xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Last re-started on', width: 150,
                     renderer: function (value, meta, record) {
-                        return me.getField(value);
+                        if (value) {
+                            return moment(value).calendar();
+                        } else {
+                            return me.getField(false);
+                        }
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 150, sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 130, sortable: false,
                     renderer: function (value, meta, record) {
                         return value ? Ext.util.Format.number(value, '0,000') : 0;
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'taggersCount', text: 'Taggers', width: 100, sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'taggersCount', text: 'Taggers', width: 70, sortable: false,
                     renderer: function (value, meta, record) {
                         if (value){
                             var result = Ext.util.Format.number(value, '0,000');
