@@ -455,7 +455,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
     setWillStoppedDate: function (status, startDate, duration) {
         var me = this;
 
-        if (status == "RUNNING" || status == "RUNNING-WARNNING"){
+        if (status == "RUNNING" || status == "RUNNING-WARNNING" || "INITIALIZING"){
             var willEndDate = moment(startDate);
             willEndDate.add('h', duration);
 
