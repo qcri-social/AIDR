@@ -59,6 +59,21 @@ public class CollectionController extends BaseController{
 			return getUIWrapper(false); 
 		}
 	}
+
+    @RequestMapping(value = "/updateDuration.action", method={RequestMethod.POST})
+    @ResponseBody
+    public Map<String,Object> updateDuration(AidrCollection collection) throws Exception {
+        logger.info("Save AidrCollection to Database having code : "+collection.getCode());
+        try{
+            AidrCollection dbCollection = collectionService.findById(collection.getId());
+            dbCollection.setDurationHours(collection.getDurationHours());
+            collectionService.update(dbCollection);
+            return getUIWrapper(true);
+        }catch(Exception e){
+            logger.error("Error while updating collection duration", e);
+            return getUIWrapper(false);
+        }
+    }
 	
 	@RequestMapping(value = "/delete.action", method = { RequestMethod.POST ,RequestMethod.GET })
 	@ResponseBody
