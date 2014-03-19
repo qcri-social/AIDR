@@ -12,6 +12,8 @@ public class TaskAnswerRequest {
 
     private String taskcompleted;
 
+    private Integer attributeID;
+
     public Integer getCrisisID() {
         return crisisID;
     }
@@ -50,5 +52,13 @@ public class TaskAnswerRequest {
 
     public void setTaskcompleted(String taskcompleted) {
         this.taskcompleted = taskcompleted;
+    }
+
+    public Integer getAttributeID() {
+        return attributeID;
+    }
+
+    public void setAttributeID(Integer attributeID) {
+        this.attributeID = attributeID;
     }
 }

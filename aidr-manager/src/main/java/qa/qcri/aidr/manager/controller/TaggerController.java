@@ -581,6 +581,7 @@ public class TaggerController extends BaseController {
         taskInfo.setAidrID(taggerUserId);
         taskInfo.setTweetid("");
         taskInfo.setCrisisID(taskAnswerRequest.getCrisisID());
+        taskInfo.setAttributeID(taskAnswerRequest.getAttributeID());
 
         taskAnswer.setDateHistory(dateHistory);
         taskAnswer.setInfo(taskInfo);

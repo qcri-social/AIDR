@@ -14,6 +14,8 @@ public class TaskInfo {
 
     private Integer crisisID;
 
+    private Integer attributeID;
+
     public Integer getDocumentID() {
         return documentID;
     }
@@ -60,5 +62,13 @@ public class TaskInfo {
 
     public void setCrisisID(Integer crisisID) {
         this.crisisID = crisisID;
+    }
+
+    public Integer getAttributeID() {
+        return attributeID;
+    }
+
+    public void setAttributeID(Integer attributeID) {
+        this.attributeID = attributeID;
     }
 }
