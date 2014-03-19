@@ -155,7 +155,8 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                     crisisID: CRISIS_ID,
                     category: Ext.String.trim( values[0].code ),
                     taskcreated: me.mainComponent.createDate,
-                    taskcompleted: Ext.Date.format(new Date(), "c")
+                    taskcompleted: Ext.Date.format(new Date(), "c"),
+                    attributeID: NOMINAL_ATTRIBUTE_ID
                 },
                 headers: {
                     'Accept': 'application/json'
@@ -195,7 +196,8 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                 crisisID: CRISIS_ID,
                 category: Ext.String.trim('null'),
                 taskcreated: me.mainComponent.createDate,
-                taskcompleted: Ext.Date.format(new Date(), "c")
+                taskcompleted: Ext.Date.format(new Date(), "c"),
+                attributeID: NOMINAL_ATTRIBUTE_ID
             },
             headers: {
                 'Accept': 'application/json'
