@@ -65,7 +65,6 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public List<Document> getDocumentForTask(Long crisisID, int count, String userName) {
 
         List<Document> documents = null;
@@ -73,14 +72,14 @@ public class DocumentServiceImpl implements DocumentService {
 
         if(users != null){
             documents =  documentDao.findDocumentForTask(crisisID, count)  ;
-            taskAssignmentDao.insertTaskAssignment(documents, users.getUserID());
+            //taskAssignmentDao.insertTaskAssignment(documents, users.getUserID());
+            this.addToTaskAssignment(documents, users.getUserID());
         }
 
         return documents;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public List<TaskBufferJsonModel> findOneDocumentForTaskByCririsID(Long crisisID, String userName, Integer maxresult) {
         List<TaskBufferJsonModel> jsonModelList = new ArrayList<TaskBufferJsonModel>();
 
@@ -98,12 +97,17 @@ public class DocumentServiceImpl implements DocumentService {
                     jsonModelList.add(jsonModel);
                 }
             }
-
-            taskAssignmentDao.insertTaskAssignment(documents, users.getUserID());
+            this.addToTaskAssignment(documents, users.getUserID());
+            //taskAssignmentDao.insertTaskAssignment(documents, users.getUserID());
 
         }
 
         return  jsonModelList;
+    }
+
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    private void addToTaskAssignment(List<Document> documents, long userID){
+        taskAssignmentDao.insertTaskAssignment(documents, userID);
     }
 
 }

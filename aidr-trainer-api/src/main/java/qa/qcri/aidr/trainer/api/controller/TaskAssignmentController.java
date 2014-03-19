@@ -36,36 +36,4 @@ public class TaskAssignmentController {
         return  taskAssignmentService.getPendingTaskCount(new Long(userID));
     }
 
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/revert/searchByDocUserID/{userID}/{documentID}")
-    public Response revertTaskAssignmentWithUserID(@PathParam("userID") Long userID,
-                                               @PathParam("documentID") Long documentID){
-        taskAssignmentService.revertTaskAssignment(documentID, userID);
-
-        return Response.status(200).entity(StatusCodeType.TASK_COMMIT_SUCCESS).build();
-    }
-
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/revert/searchByDocUserName/{userName}/{documentID}")
-    public Response revertTaskAssignmentWithUserName(@PathParam("userName") String userName,
-                                                 @PathParam("documentID") Long documentID){
-
-        taskAssignmentService.revertTaskAssignment(documentID, userName);
-
-        return Response.status(200).entity(StatusCodeType.TASK_COMMIT_SUCCESS).build();
-
-    }
-
-     //processTaskAssignmentCleanUp
-
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/revert/timeout")
-    public Response releaseTaskAssignmentBatch(){
-        taskAssignmentService.processTaskAssignmentCleanUp();
-        return Response.status(200).entity(StatusCodeType.TASK_COMMIT_SUCCESS).build();
-
-    }
 }

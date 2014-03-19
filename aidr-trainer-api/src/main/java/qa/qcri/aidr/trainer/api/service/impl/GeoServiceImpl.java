@@ -83,7 +83,8 @@ public class GeoServiceImpl implements GeoService {
             JSONObject jsonObject = new JSONObject();
 
             jsonObject.put("info", (JSONObject)parser.parse(item.getGeoJsonInfo()));
-            jsonObject.put("features", (JSONArray)parser.parse(item.getGeoJson()));
+
+            jsonObject.put("features", (JSONObject)parser.parse(item.getGeoJson()));
             jsonArray.add(jsonObject);
         }
 
@@ -103,36 +104,60 @@ public class GeoServiceImpl implements GeoService {
             if(taskQueueResponses.size() > 0){
 
                 if(taskQueueResponses.get(0).getTaskInfo() != null){
-                    List<ReportTemplate>templateList =  reportTemplateDao.getReportTemplateSearchBy("tweetID", taskQueueResponses.get(0).getTaskInfo());
+                    if(!isEmptyGeoJson(taskQueueResponses.get(0).getResponse()) ){
 
-                    if(taskQueueResponses.size() > 0 && templateList.size() > 0 ){
-                        GeoJsonOutputModel model = new GeoJsonOutputModel(templateList.get(0), taskQueueResponses.get(0));
+                        List<ReportTemplate>templateList =  reportTemplateDao.getReportTemplateSearchBy("tweetID", taskQueueResponses.get(0).getTaskInfo());
 
-                        if(model.getGeoJson().contains("No Location Information")){
-                            JSONArray newFeatures = new JSONArray();
-                            JSONArray features  = (JSONArray)parser.parse(model.getGeoJson()) ;
-                            for(int i =0; i < features.size(); i++){
-                                if(!features.get(i).equals("No Location Information")){
-                                    newFeatures.add(features.get(i));
+                        if(taskQueueResponses.size() > 0 && templateList.size() > 0 ){
+                            GeoJsonOutputModel model = new GeoJsonOutputModel(templateList.get(0), taskQueueResponses.get(0));
+                            if(model.getGeoJson().contains("No Location Information")){
+                                JSONArray newFeatures = new JSONArray();
+                                JSONArray features  = (JSONArray)parser.parse(model.getGeoJson()) ;
+                                for(int i =0; i < features.size(); i++){
+                                    if(!features.get(i).equals("No Location Information")){
+                                        newFeatures.add(features.get(i));
+                                    }
                                 }
-                            }
-                            if(newFeatures.size() > 0){
-                                model.setGeoJson(newFeatures.toJSONString());
-                            }
-                            else{
-                                isItOkToAdd = false;
-                            }
+                                if(newFeatures.size() > 0){
+                                    model.setGeoJson(newFeatures.toJSONString());
+                                }
+                                else{
+                                    isItOkToAdd = false;
+                                }
 
+                            }
+                            if(isItOkToAdd){
+                                geoJsonOutputModels.add( model );
+                            }
                         }
-                        if(isItOkToAdd){
-                            geoJsonOutputModels.add( model );
-                        }
-
                     }
                 }
             }
         }
 
         return geoJsonOutputModels;
+    }
+
+
+    private boolean isEmptyGeoJson(String jsonString){
+        boolean isEmpty = false;
+        //geometry
+        try{
+            JSONObject geometry  = (JSONObject)parser.parse(jsonString) ;
+
+            if(geometry.size() == 0){
+                isEmpty = true;
+            }
+
+            JSONObject a = (JSONObject)geometry.get("geometry");
+
+            if(a.size() == 0){
+                isEmpty = true;
+            }
+        }
+        catch(Exception e){
+            isEmpty = true;
+        }
+        return isEmpty;
     }
 }

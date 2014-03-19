@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import qa.qcri.aidr.trainer.api.entity.Document;
-import qa.qcri.aidr.trainer.api.entity.TaskBuffer;
 import qa.qcri.aidr.trainer.api.service.DocumentService;
 import qa.qcri.aidr.trainer.api.store.StatusCodeType;
 import qa.qcri.aidr.trainer.api.template.TaskBufferJsonModel;

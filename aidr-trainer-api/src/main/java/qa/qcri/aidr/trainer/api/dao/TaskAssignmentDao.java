@@ -2,7 +2,6 @@ package qa.qcri.aidr.trainer.api.dao;
 
 import qa.qcri.aidr.trainer.api.entity.Document;
 import qa.qcri.aidr.trainer.api.entity.TaskAssignment;
-import qa.qcri.aidr.trainer.api.entity.TaskBuffer;
 
 import java.util.List;
 import java.util.Map;

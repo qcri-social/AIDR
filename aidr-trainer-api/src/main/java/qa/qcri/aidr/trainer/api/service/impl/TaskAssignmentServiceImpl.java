@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.trainer.api.dao.TaskAssignmentDao;
 import qa.qcri.aidr.trainer.api.dao.UsersDao;
 import qa.qcri.aidr.trainer.api.entity.Document;
-import qa.qcri.aidr.trainer.api.entity.TaskBuffer;
 import qa.qcri.aidr.trainer.api.entity.Users;
 import qa.qcri.aidr.trainer.api.service.TaskAssignmentService;
 
@@ -26,19 +25,6 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
     private UsersDao usersDao;
 
     @Override
-    @Transactional(readOnly = false)
-    public void revertTaskAssignment(List<Document> documents, Long userID) {
-        taskAssignmentDao.undoTaskAssignment(documents, userID);
-    }
-
-    @Override
-    @Transactional(readOnly = false)
-    public void revertTaskAssignmentByIDList(Map<Long, Long> taskMap) {
-        taskAssignmentDao.undoTaskAssignment(taskMap);
-    }
-
-
-    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void revertTaskAssignment(Long documentID, String userName) {
         Users users = usersDao.findUserByName(userName);
@@ -51,7 +37,7 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
 
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void revertTaskAssignment(Long documentID, Long userID) {
         taskAssignmentDao.undoTaskAssignment(documentID,userID);
     }
@@ -62,9 +48,4 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
         return taskAssignmentDao.getPendingTaskCount(userID);
     }
 
-    @Override
-    @Transactional(readOnly = false)
-    public void processTaskAssignmentCleanUp() {
-        taskAssignmentDao.undoTaskAssignmentByTimer();
-    }
 }

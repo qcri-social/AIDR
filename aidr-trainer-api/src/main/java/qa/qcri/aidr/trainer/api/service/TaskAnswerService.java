@@ -1,5 +1,7 @@
 package qa.qcri.aidr.trainer.api.service;
 
+import qa.qcri.aidr.trainer.api.template.TaskAnswerResponse;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jilucas
@@ -9,5 +11,11 @@ package qa.qcri.aidr.trainer.api.service;
  */
 public interface TaskAnswerService {
     //insertTaskAnswer
-    void insertTaskAnswer(String taskAnswer);
+    void insertTaskAnswer(TaskAnswerResponse taskAnswerResponse);
+    public TaskAnswerResponse getTaskAnswerResponseData(String taskAnswer);
+
+    public void addToTaskAnswer(TaskAnswerResponse taskAnswerResponse);
+    public void addToDocumentNominalLabel(TaskAnswerResponse taskAnswerResponse);
+    public void markOnHasHumanTag(long documentID);
+    public void removeTaskAssignment(TaskAnswerResponse taskAnswerResponse);
 }

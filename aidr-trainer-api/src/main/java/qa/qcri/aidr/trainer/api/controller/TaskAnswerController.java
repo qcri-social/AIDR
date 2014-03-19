@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import qa.qcri.aidr.trainer.api.service.TaskAnswerService;
+import qa.qcri.aidr.trainer.api.template.TaskAnswerResponse;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -31,7 +32,13 @@ public class TaskAnswerController {
     public void saveTaskAnswer(String data){
         logger.debug("saveTaskAnswer start: " + new Date());
         logger.debug("saveTaskAnswer..: " + data);
-        taskAnswerService.insertTaskAnswer(data);
+
+        TaskAnswerResponse taskAnswerResponse =  taskAnswerService.getTaskAnswerResponseData(data);
+        taskAnswerService.insertTaskAnswer(taskAnswerResponse);
+        taskAnswerService.addToTaskAnswer( taskAnswerResponse);
+        taskAnswerService.addToDocumentNominalLabel(taskAnswerResponse);
+        taskAnswerService.markOnHasHumanTag(taskAnswerResponse.getDocumentID());
+        taskAnswerService.removeTaskAssignment(taskAnswerResponse);
 
     }
 }
