@@ -179,22 +179,39 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             emptyText: 'e.g., 47423744, 53324456 (max 5000)'
         });
 
-        this.duration = Ext.create('Ext.form.RadioGroup', {
+        this.durationDescription = Ext.create('Ext.form.Label', {
+            flex: 1,
+            html: 'If you need to run your collection for more than 7 days, please contact the AIDR team.',
+            padding: '12 0 2 0'
+        });
+
+        this.durationStore = Ext.create('Ext.data.Store', {
+            fields: ['val', 'label'],
+            data : [
+                { "val": 12, "label": '12 hours' },
+                { "val": 24, "label": '1 day' },
+                { "val": 36, "label": '1 day 12 hours' },
+                { "val": 48, "label": '2 days'},
+                { "val": 60, "label": '2 days 12 hours' },
+                { "val": 72, "label": '3 days' },
+                { "val": 168, "label": '7 days' }
+            ]
+        });
+
+        this.duration = Ext.create('Ext.form.ComboBox', {
             fieldLabel: 'Collection duration',
-            columns: 2,
             flex: 1,
             labelWidth: 130,
-            vertical: false,
             name: 'durationHours',
-            items: [
-                { boxLabel: '12 hours', name: 'rb', inputValue: '12' },
-                { boxLabel: '1 day', name: 'rb', inputValue: '24'},
-                { boxLabel: '1 day 12 hours', name: 'rb', inputValue: '36' },
-                { boxLabel: '2 days', name: 'rb', inputValue: '48' },
-                { boxLabel: '2 days 12 hours', name: 'rb', inputValue: '60' },
-                { boxLabel: '3 days', name: 'rb', inputValue: '72' },
-                { boxLabel: '7 days', name: 'rb', inputValue: '168' }
-            ]
+            editable: false,
+            text: 'Edit',
+            valueField: 'val',
+            displayField: 'label',
+            width: 125,
+            store: this.durationStore,
+//            default duration is 2 days (48 hours)
+            value: 48,
+            queryMode: 'local'
         });
 
         this.langComboStore = Ext.create('Ext.data.ArrayStore', {
@@ -571,6 +588,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 }
                             ]
                         },
+                        this.durationDescription,
                         {
                             xtype: 'container',
                             layout: 'hbox',
