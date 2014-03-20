@@ -83,7 +83,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             items: [
                 {
                     width: 220,
-                    text: 'Will be stopped at:'
+                    text: 'Scheduled stop:'
                 },
                 this.willStoppedL
             ]
@@ -202,7 +202,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
 
         this.duration = Ext.create('Ext.form.ComboBox', {
-            fieldLabel: 'Collection duration',
+            fieldLabel: 'Automatically stop after',
             flex: 1,
             labelWidth: 130,
             name: 'durationHours',
@@ -746,7 +746,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             items: [
                                 {
                                     width: 220,
-                                    text: 'Created on:'
+                                    text: 'Created:'
                                 },
                                 this.createdL
                             ]
@@ -758,7 +758,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             items: [
                                 {
                                     width: 220,
-                                    text: 'Last started on:'
+                                    text: 'Last started:'
                                 },
                                 this.lastStartedL
                             ]
@@ -770,7 +770,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             items: [
                                 {
                                     width: 220,
-                                    text: 'Last stopped on:'
+                                    text: 'Last stopped:'
                                 },
                                 this.lastStoppedL
                             ]

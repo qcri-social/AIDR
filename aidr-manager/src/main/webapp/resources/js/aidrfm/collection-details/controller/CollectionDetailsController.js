@@ -81,7 +81,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
                         trackMouse: true,
-                        html: "Collection duration of up to 7 days. The system will stop the collection after that interval. ",
+                        html: "Collection duration specifies the length in days after which the collection will be automatically stopped. An increase in duration up to 30days can be requested from AIDR admin.",
                         target: infoPanel.el,
                         dismissDelay: 0
                     });

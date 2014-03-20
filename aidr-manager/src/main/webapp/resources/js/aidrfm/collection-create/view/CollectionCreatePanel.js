@@ -114,7 +114,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         });
 
         this.duration = Ext.create('Ext.form.ComboBox', {
-            fieldLabel: 'Collection duration',
+            fieldLabel: 'Automatically stop after',
             flex: 1,
             labelWidth: 130,
             name: 'durationHours',
