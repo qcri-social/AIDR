@@ -103,10 +103,10 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 change: function(field, newValue, oldValue){
                      var selectedValue = newValue;
                      if(field.value.length == 0){
-                         this.CollectionCreateComponent.langNote.setText('<span class="redInfo">*</span>Note: if you want to use the automatic tagger, it is best that you collect for a specific language.', false);
+                         this.CollectionCreateComponent.langNote.setText('<span class="redInfo">*</span> Note: if you want to use the automatic tagger, it is best that you collect for a specific language.', false);
                      }
                      else if(field.value.length > 1){
-                         this.CollectionCreateComponent.langNote.setText('<span class="redInfo">*</span>Note: if you want to use the automatic tagger, it is best that you collect for one specific language.', false);
+                         this.CollectionCreateComponent.langNote.setText('<span class="redInfo">*</span> Note: if you want to use the automatic tagger, it is best that you collect for one specific language.', false);
                      }
                     else{
                          this.CollectionCreateComponent.langNote.setText('');

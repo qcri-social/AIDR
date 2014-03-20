@@ -135,7 +135,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             maxLength: 64,
             maxLengthText: 'The maximum length for this field is 64',
             maskRe: /[^ ]/,
-            disabled: true
+            disabled: true,
+            labelWidth: 130
         });
 
         this.nameE = Ext.create('Ext.form.field.Text', {
@@ -143,7 +144,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             fieldLabel: 'Name',
             name: 'name',
             allowBlank: false,
-            emptyText: 'e.g., Hurricane Sandy'
+            emptyText: 'e.g., Hurricane Sandy',
+            labelWidth: 130
         });
 
         this.keywordsE = Ext.create('Ext.form.field.TextArea', {
@@ -154,6 +156,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             maxLengthText: 'The maximum length for this field is 400',
             flex: 1,
             rows: 4,
+            labelWidth: 130,
             emptyText: 'e.g., #sandy, #newyork,#joplin (max 400)'
         });
 
@@ -181,8 +184,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.durationDescription = Ext.create('Ext.form.Label', {
             flex: 1,
-            html: 'If you need to run your collection for more than 7 days, please contact the AIDR team.',
-            padding: '12 0 2 0'
+            html: '<span class="redInfo">*</span> If you need to run your collection for more than 7 days, please contact the AIDR team.',
+            padding: '2 0 2 135'
         });
 
         this.durationStore = Ext.create('Ext.data.Store', {
@@ -232,7 +235,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             valueField: 'code',
             multiSelect: true,
             fieldLabel: 'Language(s)',
-            labelWidth: 100,
+            labelWidth: 130,
             name: 'langFilters',
             flex: 1,
             emptyText: 'e.g., en, ar, ja',
@@ -522,8 +525,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         {
                             xtype: 'container',
                             layout: 'hbox',
-                            margin: '5 0 0 0',
-                            padding: '0 0 8 0',
+                            margin: '5 0',
                             items: [
                                 this.keywordsE,
                                 {
@@ -539,8 +541,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             xtype: 'container',
                             layout: 'hbox',
                             margin: '5 0 0 0',
-                            padding: '0 0 20 0',
-                            cls: 'bordered-bottom',
+                            padding: '0 0 8 0',
                             items: [
                                 this.langCombo,
                                 {
@@ -553,7 +554,29 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 }
                             ]
                         },
-                        
+                        {
+                            xtype: 'container',
+                            layout: 'hbox',
+                            margin: '5 0',
+                            items: [
+                                this.duration,
+                                {
+                                    border: false,
+                                    bodyStyle: 'background:none',
+                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+                                    height: 22,
+                                    width: 22,
+                                    id: 'collectionDurationInfo'
+                                }
+                            ]
+                        },
+                        this.durationDescription,
+                        {
+                            xtype: 'container',
+                            margin: '5 0 0 0',
+                            html: '<div class="horizontalLine"></div>'
+                        },
+
                         this.configurationsEditTabL,
                         {
                             xtype: 'container',
@@ -585,23 +608,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     height: 22,
                                     width: 22,
                                     id: 'collectionFollowInfo'
-                                }
-                            ]
-                        },
-                        this.durationDescription,
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            margin: '5 0',
-                            items: [
-                                this.duration,
-                                {
-                                    border: false,
-                                    bodyStyle: 'background:none',
-                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
-                                    height: 22,
-                                    width: 22,
-                                    id: 'collectionDurationInfo'
                                 }
                             ]
                         },
