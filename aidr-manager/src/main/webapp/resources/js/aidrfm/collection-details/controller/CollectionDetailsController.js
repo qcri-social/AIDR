@@ -81,7 +81,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
                         trackMouse: true,
-                        html: "Collection duration of up to 7 days. The system will stop the collection after that interval. ",
+                        html: "Collection duration specifies the length in days after which the collection will be automatically stopped. An increase in duration up to 30days can be requested from AIDR admin.",
                         target: infoPanel.el,
                         dismissDelay: 0
                     });
@@ -421,7 +421,16 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         p.followE.setValue(r.follow ? r.follow : '');
 //        default duration is 2 days (48 hours)
         var duration = r.durationHours ? r.durationHours : 48;
-        p.duration.setValue({rb: duration});
+
+        var storeIndex = p.durationStore.findExact("val", duration);
+        if (storeIndex == -1){
+            p.durationStore.add({
+                "val": duration,
+                "label": duration / 24 + ' days'
+            });
+        }
+
+        p.duration.setValue(duration);
         p.langCombo.setValue(r.langFilters ? r.langFilters.split(',') : '');
     },
 
@@ -455,7 +464,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
     setWillStoppedDate: function (status, startDate, duration) {
         var me = this;
 
-        if (status == "RUNNING" || status == "RUNNING-WARNNING" || "INITIALIZING"){
+        if (status == "RUNNING" || status == "RUNNING-WARNNING" || status == "INITIALIZING"){
             var willEndDate = moment(startDate);
             willEndDate.add('h', duration);
 

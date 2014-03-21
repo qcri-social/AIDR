@@ -81,7 +81,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
                         trackMouse: true,
-                        html: "Collection duration of up to 7 days. The system will stop the collection after that interval. ",
+                        html: "Collection duration specifies the length in days after which the collection will be automatically stopped. An increase in duration up to 30days can be requested from AIDR admin.",
                         target: infoPanel.el,
                         dismissDelay: 0
                     });
@@ -103,10 +103,10 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 change: function(field, newValue, oldValue){
                      var selectedValue = newValue;
                      if(field.value.length == 0){
-                         this.CollectionCreateComponent.langNote.setText('<span class="redInfo">*</span>Note: if you want to use the automatic tagger, it is best that you collect for a specific language.', false);
+                         this.CollectionCreateComponent.langNote.setText('<span class="redInfo">*</span> Note: if you want to use the automatic tagger, it is best that you collect for a specific language.', false);
                      }
                      else if(field.value.length > 1){
-                         this.CollectionCreateComponent.langNote.setText('<span class="redInfo">*</span>Note: if you want to use the automatic tagger, it is best that you collect for one specific language.', false);
+                         this.CollectionCreateComponent.langNote.setText('<span class="redInfo">*</span> Note: if you want to use the automatic tagger, it is best that you collect for one specific language.', false);
                      }
                     else{
                          this.CollectionCreateComponent.langNote.setText('');

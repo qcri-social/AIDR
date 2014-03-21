@@ -43,6 +43,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             emptyText: 'e.g., Sandy2012 or EQJapan2011',
             maxLength: 64,
             maxLengthText: 'The maximum length for this field is 64',
+            labelWidth: 130,
             maskRe: /[^ \\\/]/
         });
 
@@ -52,6 +53,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             id: 'nameTextField',
             name: 'name',
             allowBlank: false,
+            labelWidth: 130,
             emptyText: 'e.g., Hurricane Sandy'
         });
 
@@ -63,6 +65,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             maxLengthText: 'The maximum length for this field is 400',
             flex: 1,
             rows: 4,
+            labelWidth: 130,
             emptyText: 'e.g., #sandy, #newyork,#joplin (max 400)'
         });
 
@@ -90,22 +93,39 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             emptyText: 'e.g., 47423744, 53324456 (max 5000)'
         });
 
-        this.duration = Ext.create('Ext.form.RadioGroup', {
-            fieldLabel: 'Collection duration',
-            columns: 2,
+        this.durationDescription = Ext.create('Ext.form.Label', {
+            flex: 1,
+            html: '<span class="redInfo">*</span> Note: If you need to run your collection for more than 7 days, please contact the AIDR team.',
+            padding: '2 0 2 135'
+        });
+
+        this.durationStore = Ext.create('Ext.data.Store', {
+            fields: ['val', 'label'],
+            data : [
+                { "val": 12, "label": '12 hours' },
+                { "val": 24, "label": '1 day' },
+                { "val": 36, "label": '1 day 12 hours' },
+                { "val": 48, "label": '2 days'},
+                { "val": 60, "label": '2 days 12 hours' },
+                { "val": 72, "label": '3 days' },
+                { "val": 168, "label": '7 days' },
+                { "val": 336, "label": '14 days' }
+            ]
+        });
+
+        this.duration = Ext.create('Ext.form.ComboBox', {
+            fieldLabel: 'Automatically stop after',
             flex: 1,
             labelWidth: 130,
-            vertical: false,
             name: 'durationHours',
-            items: [
-                { boxLabel: '12 hours', name: 'rb', inputValue: '12' },
-                { boxLabel: '1 day', name: 'rb', inputValue: '24'},
-                { boxLabel: '1 day 12 hours', name: 'rb', inputValue: '36' },
-                { boxLabel: '2 days', name: 'rb', inputValue: '48', checked: true },
-                { boxLabel: '2 days 12 hours', name: 'rb', inputValue: '60' },
-                { boxLabel: '3 days', name: 'rb', inputValue: '72' },
-                { boxLabel: '7 days', name: 'rb', inputValue: '168' }
-            ]
+            editable: false,
+            text: 'Edit',
+            valueField: 'val',
+            displayField: 'label',
+            width: 125,
+            store: this.durationStore,
+//            default duration is 2 days (48 hours)
+            value: 48
         });
 
         this.langComboStore = Ext.create('Ext.data.ArrayStore', {
@@ -127,7 +147,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             multiSelect: true,
             editable: false,
             fieldLabel: 'Language(s)',
-            labelWidth: 100,
+            labelWidth: 130,
             name: 'langFilters',
             flex: 1,
             id: 'CollectionLang',
@@ -144,7 +164,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         this.langNote = Ext.create('Ext.form.Label', {
             flex: 1,
             html:'<div></div>',
-            padding: '2 0 2 105'
+            padding: '2 0 2 135'
         });
 
         this.configurationsL = Ext.create('Ext.form.Label', {
@@ -171,7 +191,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         		 	+ '<li><span class="blueInfo">*</span>   You understand the data you collect will be made available for research purposes.</span></li>'
         		 	+ '</ul>'
         		 	+ '<br> If you have questions, please contact us before starting a collection.',
-            padding: '0 0 0 0',
+            padding: '0 0 0 0'
         });
         
         this.saveButton = Ext.create('Ext.Button', {
@@ -267,7 +287,23 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                             ]
                         },
                         this.langNote,
-
+                        {
+                            xtype: 'container',
+                            layout: 'hbox',
+                            margin: '5 0',
+                            items: [
+                                this.duration,
+                                {
+                                    border: false,
+                                    bodyStyle: 'background:none',
+                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+                                    height: 22,
+                                    width: 22,
+                                    id: 'collectionDurationInfo'
+                                }
+                            ]
+                        },
+                        this.durationDescription,
                         this.configurationsL,
                         {
                             xtype: 'container',
@@ -303,23 +339,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                                 }
                             ]
                         },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            margin: '5 0',
-                            items: [
-                                this.duration,
-                                {
-                                    border: false,
-                                    bodyStyle: 'background:none',
-                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
-                                    height: 22,
-                                    width: 22,
-                                    id: 'collectionDurationInfo'
-                                }
-                            ]
-                        },
-                        this.notesL, 
+                        this.notesL,
                         this.notetextL,
                         {
                             xtype: 'container',

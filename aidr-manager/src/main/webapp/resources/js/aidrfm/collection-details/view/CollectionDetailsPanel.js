@@ -83,7 +83,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             items: [
                 {
                     width: 220,
-                    text: 'Will be stopped at:'
+                    text: 'Scheduled stop:'
                 },
                 this.willStoppedL
             ]
@@ -135,7 +135,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             maxLength: 64,
             maxLengthText: 'The maximum length for this field is 64',
             maskRe: /[^ ]/,
-            disabled: true
+            disabled: true,
+            labelWidth: 130
         });
 
         this.nameE = Ext.create('Ext.form.field.Text', {
@@ -143,7 +144,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             fieldLabel: 'Name',
             name: 'name',
             allowBlank: false,
-            emptyText: 'e.g., Hurricane Sandy'
+            emptyText: 'e.g., Hurricane Sandy',
+            labelWidth: 130
         });
 
         this.keywordsE = Ext.create('Ext.form.field.TextArea', {
@@ -154,6 +156,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             maxLengthText: 'The maximum length for this field is 400',
             flex: 1,
             rows: 4,
+            labelWidth: 130,
             emptyText: 'e.g., #sandy, #newyork,#joplin (max 400)'
         });
 
@@ -179,22 +182,39 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             emptyText: 'e.g., 47423744, 53324456 (max 5000)'
         });
 
-        this.duration = Ext.create('Ext.form.RadioGroup', {
-            fieldLabel: 'Collection duration',
-            columns: 2,
+        this.durationDescription = Ext.create('Ext.form.Label', {
+            flex: 1,
+            html: '<span class="redInfo">*</span> If you need to run your collection for more than 7 days, please contact the AIDR team.',
+            padding: '2 0 2 135'
+        });
+
+        this.durationStore = Ext.create('Ext.data.Store', {
+            fields: ['val', 'label'],
+            data : [
+                { "val": 12, "label": '12 hours' },
+                { "val": 24, "label": '1 day' },
+                { "val": 36, "label": '1 day 12 hours' },
+                { "val": 48, "label": '2 days'},
+                { "val": 60, "label": '2 days 12 hours' },
+                { "val": 72, "label": '3 days' },
+                { "val": 168, "label": '7 days' }
+            ]
+        });
+
+        this.duration = Ext.create('Ext.form.ComboBox', {
+            fieldLabel: 'Automatically stop after',
             flex: 1,
             labelWidth: 130,
-            vertical: false,
             name: 'durationHours',
-            items: [
-                { boxLabel: '12 hours', name: 'rb', inputValue: '12' },
-                { boxLabel: '1 day', name: 'rb', inputValue: '24'},
-                { boxLabel: '1 day 12 hours', name: 'rb', inputValue: '36' },
-                { boxLabel: '2 days', name: 'rb', inputValue: '48' },
-                { boxLabel: '2 days 12 hours', name: 'rb', inputValue: '60' },
-                { boxLabel: '3 days', name: 'rb', inputValue: '72' },
-                { boxLabel: '7 days', name: 'rb', inputValue: '168' }
-            ]
+            editable: false,
+            text: 'Edit',
+            valueField: 'val',
+            displayField: 'label',
+            width: 125,
+            store: this.durationStore,
+//            default duration is 2 days (48 hours)
+            value: 48,
+            queryMode: 'local'
         });
 
         this.langComboStore = Ext.create('Ext.data.ArrayStore', {
@@ -215,7 +235,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             valueField: 'code',
             multiSelect: true,
             fieldLabel: 'Language(s)',
-            labelWidth: 100,
+            labelWidth: 130,
             name: 'langFilters',
             flex: 1,
             emptyText: 'e.g., en, ar, ja',
@@ -505,8 +525,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         {
                             xtype: 'container',
                             layout: 'hbox',
-                            margin: '5 0 0 0',
-                            padding: '0 0 8 0',
+                            margin: '5 0',
                             items: [
                                 this.keywordsE,
                                 {
@@ -522,8 +541,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             xtype: 'container',
                             layout: 'hbox',
                             margin: '5 0 0 0',
-                            padding: '0 0 20 0',
-                            cls: 'bordered-bottom',
+                            padding: '0 0 8 0',
                             items: [
                                 this.langCombo,
                                 {
@@ -536,7 +554,29 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 }
                             ]
                         },
-                        
+                        {
+                            xtype: 'container',
+                            layout: 'hbox',
+                            margin: '5 0',
+                            items: [
+                                this.duration,
+                                {
+                                    border: false,
+                                    bodyStyle: 'background:none',
+                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+                                    height: 22,
+                                    width: 22,
+                                    id: 'collectionDurationInfo'
+                                }
+                            ]
+                        },
+                        this.durationDescription,
+                        {
+                            xtype: 'container',
+                            margin: '5 0 0 0',
+                            html: '<div class="horizontalLine"></div>'
+                        },
+
                         this.configurationsEditTabL,
                         {
                             xtype: 'container',
@@ -568,22 +608,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     height: 22,
                                     width: 22,
                                     id: 'collectionFollowInfo'
-                                }
-                            ]
-                        },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            margin: '5 0',
-                            items: [
-                                this.duration,
-                                {
-                                    border: false,
-                                    bodyStyle: 'background:none',
-                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
-                                    height: 22,
-                                    width: 22,
-                                    id: 'collectionDurationInfo'
                                 }
                             ]
                         },
@@ -722,7 +746,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             items: [
                                 {
                                     width: 220,
-                                    text: 'Created on:'
+                                    text: 'Created:'
                                 },
                                 this.createdL
                             ]
@@ -734,7 +758,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             items: [
                                 {
                                     width: 220,
-                                    text: 'Last started on:'
+                                    text: 'Last started:'
                                 },
                                 this.lastStartedL
                             ]
@@ -746,7 +770,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             items: [
                                 {
                                     width: 220,
-                                    text: 'Last stopped on:'
+                                    text: 'Last stopped:'
                                 },
                                 this.lastStoppedL
                             ]

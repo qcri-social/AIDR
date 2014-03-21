@@ -31,40 +31,39 @@ public class TaskBufferScannerImp implements TaskBufferScannerFacade {
 	public void ScanTaskBuffer(final String maxTaskAge, final String scanInterval) {
 		// TODO Auto-generated method stub
 		try {
-			String deleteStaleDocsSql = "DELETE * FROM aidr_predict.document t LEFT JOIN "
-					+ "aidr_predict.task_assignment b ON t.documentID = b.documentID WHERE "
-					+ "(b.documentID IS NULL && TIMESTAMPDIFF(" 
-					+ getMetric(scanInterval) + ", t.receivedAt, now()) > :task_expiry_age);";
-			
-				Query querySelect = em.createNativeQuery(deleteStaleDocsSql);
-				querySelect.setParameter("task_expiry_age", Integer.parseInt(getTimeValue(maxTaskAge)));
-				
-				// no need - Hibernate automatically acquires LockModeType.WRITE lock
-				// Also, test showed that the problem is still coming from trainer-api
-				//querySelect.setLockMode(LockModeType.PESSIMISTIC_FORCE_INCREMENT);		
-				int result = querySelect.executeUpdate();
-				logger.info("[ScanTaskBuffer] number of deleted records = " + result);
+			String deleteStaleDocsSql = "DELETE d FROM aidr_predict.document d LEFT JOIN "
+					+ "aidr_predict.task_assignment t ON d.documentID = t.documentID WHERE "
+					+ "(!d.hasHumanLabels && t.documentID IS NULL && TIMESTAMPDIFF(" 
+					+ getMetric(scanInterval) + ", d.receivedAt, now()) > :task_expiry_age);";
+
+			Query querySelect1 = em.createNativeQuery(deleteStaleDocsSql);
+			querySelect1.setParameter("task_expiry_age", Integer.parseInt(getTimeValue(maxTaskAge)));
+
+			// no need - Hibernate automatically acquires LockModeType.WRITE lock
+			// Also, test showed that the problem is still coming from trainer-api
+			//querySelect1.setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT);		
+			int result = querySelect1.executeUpdate();
+			System.out.println("[ScanTaskBuffer] number of deleted stale records = " + result);
 		} catch (Exception e) {
-			logger.error("[ScanTaskBuffer] Exception in executing SQL query");
+			System.err.println("[ScanTaskBuffer] Exception in executing SQL delete stale docs query");
 			e.printStackTrace();
 		}
 		try {
-			String deleteNoAnswerDocsSql = "DELETE * FROM aidr_predict.document d WHERE "
-					+ " (d.documentID IN (SELECT t.documentID from task_assignment t "
-					+ " LEFT JOIN aidr_predict.task_answer s ON t.documentID = s.documentID WHERE " 
-					+ " ((s.documentID IS NULL) && (TIMESTAMPDIFF(" 
-					+ getMetric(scanInterval) + ", t.assignedAt, now()) > :task_expiry_age))));";
+			String deleteNoAnswerDocsSql = "DELETE d FROM aidr_predict.document d JOIN "
+					+ "aidr_predict.task_assignment t ON d.documentID = t.documentID WHERE "
+					+ "(!d.hasHumanLabels && TIMESTAMPDIFF(" 
+					+ getMetric(scanInterval) + ", t.assignedAt, now()) > :task_expiry_age);";
 			
-				Query querySelect = em.createNativeQuery(deleteNoAnswerDocsSql);
-				querySelect.setParameter("task_expiry_age", Integer.parseInt(getTimeValue(maxTaskAge)));
-				
-				// no need - Hibernate automatically acquires LockModeType.WRITE lock
-				// Also, test showed that the problem is still coming from trainer-api
-				//querySelect.setLockMode(LockModeType.PESSIMISTIC_FORCE_INCREMENT);		
-				int result = querySelect.executeUpdate();
-				logger.info("[ScanTaskBuffer] number of deleted records = " + result);
+			Query querySelect2 = em.createNativeQuery(deleteNoAnswerDocsSql);
+			querySelect2.setParameter("task_expiry_age", Integer.parseInt(getTimeValue(maxTaskAge)));
+
+			// no need - Hibernate automatically acquires LockModeType.WRITE lock
+			// Also, test showed that the problem is still coming from trainer-api
+			//querySelect2.setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT);		
+			int result = querySelect2.executeUpdate();
+			System.out.println("[ScanTaskBuffer] number of deleted no answer records = " + result);
 		} catch (Exception e) {
-			logger.error("[ScanTaskBuffer] Exception in executing SQL query");
+			System.err.println("[ScanTaskBuffer] Exception in executing SQL delete no answer docs query");
 			e.printStackTrace();
 		}
 	}
