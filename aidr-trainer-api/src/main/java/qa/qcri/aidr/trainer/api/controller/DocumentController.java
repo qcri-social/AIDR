@@ -39,7 +39,6 @@ public class DocumentController {
             @PathParam("maxresult") String maxresult){
 
         return documentService.getDocumentForTask(new Long(crisisID), Integer.valueOf(maxresult), userName);
-        //  return  taskBufferService.findAssignableTaskBuffer("assignedCount", 0, Integer.valueOf(maxresult));
 
     }
 
@@ -51,7 +50,16 @@ public class DocumentController {
                                                               @PathParam("maxresult") String maxresult){
 
         logger.debug("getOneTaskBufferToAssign..: " + crisisID + " -" +  userName + " -" +  maxresult );
-        return documentService.findOneDocumentForTaskByCririsID(new Long(crisisID),userName,Integer.valueOf(maxresult));
-        //  return  taskBufferService.findAssignableTaskBuffer("assignedCount", 0, Integer.valueOf(maxresult));
+        Document document = null;
+        Long id = new Long(crisisID);
+        if(userName != null){
+            List<Document> documents =  documentService.getDocumentForTask(id,Integer.valueOf(maxresult),userName )  ;
+            if(documents.size() > 0){
+                document = documents.get(0);
+            }
+        }
+
+        return documentService.findOneDocumentForTaskByCririsID(document, id);
+
     }
 }

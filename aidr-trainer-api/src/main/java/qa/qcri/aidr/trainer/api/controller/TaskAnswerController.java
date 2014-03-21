@@ -34,7 +34,7 @@ public class TaskAnswerController {
         logger.debug("saveTaskAnswer..: " + data);
 
         TaskAnswerResponse taskAnswerResponse =  taskAnswerService.getTaskAnswerResponseData(data);
-        taskAnswerService.insertTaskAnswer(taskAnswerResponse);
+        taskAnswerService.pushTaskAnswerToJedis(taskAnswerResponse);
         taskAnswerService.addToTaskAnswer( taskAnswerResponse);
         taskAnswerService.addToDocumentNominalLabel(taskAnswerResponse);
         taskAnswerService.markOnHasHumanTag(taskAnswerResponse.getDocumentID());

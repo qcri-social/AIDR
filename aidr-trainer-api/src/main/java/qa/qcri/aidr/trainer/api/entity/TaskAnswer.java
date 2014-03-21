@@ -98,16 +98,5 @@ public class TaskAnswer implements Serializable {
     @Column (name = "fromTrustedUser", nullable = false)
     private boolean fromTrustedUser;
 
-    /**
-    public DocumentNominalLabel getDocumentNominalLabel() {
-        return documentNominalLabel;
-    }
-
-    public void setDocumentNominalLabel(DocumentNominalLabel documentNominalLabel) {
-        this.documentNominalLabel = documentNominalLabel;
-    }
-
-    @OneToOne(cascade=CascadeType.ALL, mappedBy = "taskAnswer")
-    private DocumentNominalLabel documentNominalLabel;  **/
 
 }

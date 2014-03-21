@@ -35,6 +35,15 @@ public class TaskAssignmentDaoImpl extends AbstractDaoImpl<TaskAssignment, Strin
     }
 
     @Override
+    public void insertOneTaskAssignment(Long documentID, Long userID) {
+        List<TaskAssignment> taskAssignments = findTaskAssignmentByID(documentID);
+        if(taskAssignments.size()== 0){
+            TaskAssignment taskAssignment = new TaskAssignment(documentID, userID, new Date());
+            save(taskAssignment);
+        }
+    }
+
+    @Override
     public void undoTaskAssignment(List<Document> taskBuffer, Long userID) {
         for (Iterator it =taskBuffer.iterator(); it.hasNext();){
             Document tb = (Document) it.next();

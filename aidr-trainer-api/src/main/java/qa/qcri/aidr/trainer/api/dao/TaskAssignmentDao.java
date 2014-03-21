@@ -10,6 +10,7 @@ import java.util.Map;
 public interface TaskAssignmentDao extends AbstractDao<TaskAssignment, String>  {
 
     void insertTaskAssignment(List<Document> taskBuffer, Long userID);
+    void insertOneTaskAssignment(Long documentID, Long userID);
     void undoTaskAssignment(List<Document> taskBuffer, Long userID);
     void undoTaskAssignment(Map<Long, Long> taskMap);
     void undoTaskAssignment(Long documentID, Long userID);
