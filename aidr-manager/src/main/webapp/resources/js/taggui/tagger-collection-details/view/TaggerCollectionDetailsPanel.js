@@ -30,7 +30,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
         this.classifiersTitle = Ext.create('Ext.form.Label', {
             cls: 'header-h1 bold-text',
-            text: 'Classifiers',
+            text: '',
             margin: '17 0 5 0',
             flex: 1
         });
@@ -155,7 +155,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             '<td class="content"><table><tr>',
 
 
-            '<td class="styled-text-17">Name:</td>',
+            '<td class="styled-text-17">Classifier:</td>',
             '<td class="styled-text-17">{[this.getModelName(values.modelID, values.attribute)]}</td></tr>',
 
 
@@ -521,6 +521,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                             margin: '15 0 0 0',
                             html: '<div class="horizontalLine"></div>'
                         },
+
                         {
                             xtype: 'container',
                             layout: 'hbox',

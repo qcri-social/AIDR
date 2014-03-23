@@ -74,7 +74,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
 
             '<div class="rightColumn">',
             '<tpl if="xindex != xcount">' +
-                '<div class="styled-text-17">Classifier:</div>',
+                '<div class="styled-text-17">Tag:</div>',
             '</tpl>',
             '<tpl if="xindex == xcount">' +
                 '<div class="styled-text-17">Summary:</div>',
