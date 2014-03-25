@@ -92,7 +92,6 @@ public class PybossaCommunicator extends AbstractCommunicator {
 
                     String output;
                     while ((output = br.readLine()) != null) {
-                        System.out.println(output);
                         responseOutput.append(output);
                     }
                 }
@@ -110,6 +109,9 @@ public class PybossaCommunicator extends AbstractCommunicator {
             httpClient.getConnectionManager().shutdown();
         }
 
+        if(responseCode == -1){
+            return "Exception";
+        }
         return responseOutput.toString();
 
     }
@@ -135,7 +137,7 @@ public class PybossaCommunicator extends AbstractCommunicator {
                             new InputStreamReader((response.getEntity().getContent())));
 
                     String output;
-                    System.out.println("Output from Server ...." + response.getStatusLine().getStatusCode() + "\n");
+                    //System.out.println("Output from Server ...." + response.getStatusLine().getStatusCode() + "\n");
                     while ((output = br.readLine()) != null) {
                         System.out.println(output);
                     }

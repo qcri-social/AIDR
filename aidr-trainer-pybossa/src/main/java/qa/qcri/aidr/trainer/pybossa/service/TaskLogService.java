@@ -16,4 +16,5 @@ public interface TaskLogService {
     void updateTaskLog(TaskLog taskLog);
     List<TaskLog> getTaskLog(Long taskQueueID);
     List<TaskLog> getTaskLogByStatus(Long taskQueueID, int status);
+    void deleteAbandonedTaskLog(Long taskQueueID);
 }

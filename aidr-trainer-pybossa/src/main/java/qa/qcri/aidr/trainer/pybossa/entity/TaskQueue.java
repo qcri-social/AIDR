@@ -16,14 +16,6 @@ import java.util.Date;
 public class TaskQueue implements Serializable {
     private static final long serialVersionUID = -5527566248002296042L;
 
-    public Long getTaskQueueID() {
-        return taskQueueID;
-    }
-
-    public void setTaskQueueID(Long taskQueueID) {
-        this.taskQueueID = taskQueueID;
-    }
-
     @Id
     @GeneratedValue
     @Column(name = "taskQueueID")
@@ -62,6 +54,14 @@ public class TaskQueue implements Serializable {
     public TaskQueue(Long clientAppID,int status){
         this.clientAppID = clientAppID;
         this.status = status;
+    }
+
+    public Long getTaskQueueID() {
+        return taskQueueID;
+    }
+
+    public void setTaskQueueID(Long taskQueueID) {
+        this.taskQueueID = taskQueueID;
     }
 
     public Long getTaskID() {

@@ -24,4 +24,7 @@ public class URLPrefixCode {
     public static String PYBOSSA_APP_UPDATE_KEY = "?api_key=";
     public static String PYBOSSA_CATEGORY = "/category";
     public static String PYBOSSA_CATEGORY_SHORT_NAME = "?short_name=";
+
+    public static String PYBOSSA_TASK_DELETE = "/task/";
+
 }

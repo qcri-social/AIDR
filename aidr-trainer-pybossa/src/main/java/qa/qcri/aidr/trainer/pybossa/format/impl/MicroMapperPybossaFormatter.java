@@ -379,12 +379,14 @@ public class MicroMapperPybossaFormatter {
     }
 
     public TaskQueueResponse getAnswerResponseForGeo(String pybossaResult, JSONParser parser, Long taskQueueID) throws Exception{
+        boolean noLocationFound  = isContainNoLocationInfo( pybossaResult,  parser);
 
         JSONArray array = (JSONArray) parser.parse(pybossaResult) ;
 
         Iterator itr= array.iterator();
         JSONArray locations  =  new JSONArray();
         String tweetID = null;
+
         while(itr.hasNext()){
             JSONObject featureJsonObj = (JSONObject)itr.next();
 
@@ -409,54 +411,69 @@ public class MicroMapperPybossaFormatter {
 
         }
 
-        locations =  calculateDistance(locations) ;
+        JSONObject geoLocations;
+        if(!noLocationFound) {
+            geoLocations =  calculateCentralPoint(locations);
+        }
+        else{
+            geoLocations = new JSONObject();
+        }
 
-        TaskQueueResponse taskQueueResponse = new TaskQueueResponse(taskQueueID, locations.toJSONString(), tweetID);
+        TaskQueueResponse taskQueueResponse = new TaskQueueResponse(taskQueueID, geoLocations.toJSONString(), tweetID);
+
         return  taskQueueResponse;
     }
 
-    private JSONArray calculateDistance(JSONArray locations){
+    private JSONObject calculateCentralPoint(JSONArray locations){
+        JSONObject geoResponse = new JSONObject();
         if(locations.size() < 2){
-            return locations;
+            return geoResponse;
         }
 
-        double preLat = 0;
-        double preLon = 0;
-        double currentLat =0;
-        double currentLon = 0;
-        double oneMileRadius = 1609.34;   // 1 mile
-        List<Integer> list = new ArrayList<Integer>();
-        ArrayList<GeoPropertyModel> geoProperties = new ArrayList<GeoPropertyModel>();
+        if(locations.size() == 3){
 
-        if(locations.size() > 1){
-            for(int i=0; i < locations.size(); i++){
-                JSONObject loc = (JSONObject)locations.get(i);
-                JSONObject geometry = (JSONObject)loc.get("geometry");
-                JSONArray coordinates =  (JSONArray)geometry.get("coordinates");
-                preLat = currentLat;
-                preLon = currentLon;
-                currentLat = (Double)coordinates.get(1);
-                currentLon = (Double)coordinates.get(0);
+            JSONObject loc = (JSONObject)locations.get(0);
+            JSONObject geometry = (JSONObject)loc.get("geometry");
+            JSONArray coordinates =  (JSONArray)geometry.get("coordinates");
+            System.out.println(coordinates.get(0) + "," + coordinates.get(1));
 
-                if(i > 0){
-                    double[] result= new double[2];
-                    LatLngUtils.computeDistanceAndBearing(preLat, preLon, currentLat, currentLon, result);
+            double lat1 = (Double)coordinates.get(1);
+            double lon1 = (Double)coordinates.get(0);
 
-                    if(result[0] > oneMileRadius){
-                        geoProperties.add(new GeoPropertyModel(i-1, i, result[0]));
-                        list.add(i);
-                        list.add(i-1);
-                    }
-                }
+            loc = (JSONObject)locations.get(1);
+            geometry = (JSONObject)loc.get("geometry");
+            coordinates =  (JSONArray)geometry.get("coordinates");
+            System.out.println(coordinates.get(0) + "," + coordinates.get(1));
+            double lat2 = (Double)coordinates.get(1);
+            double lon2 = (Double)coordinates.get(0);
+
+            loc = (JSONObject)locations.get(2);
+            geometry = (JSONObject)loc.get("geometry");
+            coordinates =  (JSONArray)geometry.get("coordinates");
+            System.out.println(coordinates.get(0) + "," + coordinates.get(1));
+            double lat3 = (Double)coordinates.get(1);
+            double lon3 = (Double)coordinates.get(0);
+
+            double results[] = new double[2];
+
+            LatLngUtils.geoMidPointFor3Points(lat1, lon1,lat2,  lon2, lat3,  lon3, results);
+
+            double maxDistanceLength = getMaxDistance(locations, results);
+
+            if(maxDistanceLength <= PybossaConf.ONE_MILE_DISTANCE){
+                JSONObject jsonObject = new JSONObject();
+                JSONArray jsonCoordinate = new JSONArray();
+                jsonCoordinate.add(results[0]);
+                jsonCoordinate.add(results[1]);
+                jsonObject.put("coordinates", jsonCoordinate);
+                jsonObject.put("type", "Point");
+                jsonObject.put("distance", maxDistanceLength );
+                geoResponse.put("geometry", jsonObject);
+                geoResponse.put("type","Feature");
             }
-
-            if(geoProperties.size() > 1){
-                getFrequencyOverOne(list, locations);
-            }
-
         }
 
-        return locations;
+        return geoResponse;
     }
 
     private int getFrequencyOverOne(List<Integer> list, JSONArray locations){
@@ -466,7 +483,6 @@ public class MicroMapperPybossaFormatter {
 
         for (Integer temp : uniqueSet) {
             int frequency = Collections.frequency(list, temp);
-           // System.out.println(temp + ": " + frequency);
 
             if(frequency > 1){
                 returnValue = temp;
@@ -622,6 +638,117 @@ public class MicroMapperPybossaFormatter {
         }
 
         return timeStampList;
+    }
+
+    private boolean isContainNoLocationInfo(String pybossaResult, JSONParser parser) throws ParseException {
+        boolean found = false;
+        JSONArray array = (JSONArray) parser.parse(pybossaResult) ;
+
+        Iterator itr= array.iterator();
+
+        while(itr.hasNext()){
+            JSONObject featureJsonObj = (JSONObject)itr.next();
+
+            JSONObject info = (JSONObject)featureJsonObj.get("info");
+            String locValue = info.get("loc").toString();
+            if(locValue.equalsIgnoreCase("No Location Information")){
+                found = true;
+            }
+
+        }
+        return  found;
+    }
+
+    private double getMaxDistance(JSONArray locations, double[] centralPoint){
+          double maxDistance = 0;
+          if(locations.size() == 3) {
+
+              double lon = centralPoint[0];
+              double lat = centralPoint[1];
+
+              double[] distance = new double[3];
+              JSONObject loc = (JSONObject)locations.get(0);
+              JSONObject geometry = (JSONObject)loc.get("geometry");
+              JSONArray coordinates =  (JSONArray)geometry.get("coordinates");
+
+              double lat1 = (Double)coordinates.get(1);
+              double lon1 = (Double)coordinates.get(0);
+
+              loc = (JSONObject)locations.get(1);
+              geometry = (JSONObject)loc.get("geometry");
+              coordinates =  (JSONArray)geometry.get("coordinates");
+
+              double lat2 = (Double)coordinates.get(1);
+              double lon2 = (Double)coordinates.get(0);
+
+              loc = (JSONObject)locations.get(2);
+              geometry = (JSONObject)loc.get("geometry");
+              coordinates =  (JSONArray)geometry.get("coordinates");
+
+              double lat3 = (Double)coordinates.get(1);
+              double lon3 = (Double)coordinates.get(0);
+
+              double[] distanceInMiles = new double[1];
+
+              LatLngUtils.computeDistanceInMile(lat, lon, lat1, lon1, distanceInMiles);
+              distance[0] = distanceInMiles[0];
+              LatLngUtils.computeDistanceInMile(lat, lon, lat2, lon2, distanceInMiles);
+              distance[1] = distanceInMiles[0];
+              LatLngUtils.computeDistanceInMile(lat, lon, lat3, lon3, distanceInMiles);
+              distance[2] = distanceInMiles[0];
+
+              Arrays.sort(distance) ;
+
+              maxDistance = distance[2];
+
+        }
+
+
+        return maxDistance;
+    }
+
+    private JSONArray calculateDistance(JSONArray locations){
+        if(locations.size() < 2){
+            return locations;
+        }
+
+        double preLat = 0;
+        double preLon = 0;
+        double currentLat =0;
+        double currentLon = 0;
+
+        List<Integer> list = new ArrayList<Integer>();
+        ArrayList<GeoPropertyModel> geoProperties = new ArrayList<GeoPropertyModel>();
+
+        if(locations.size() > 1){
+            for(int i=0; i < locations.size(); i++){
+                JSONObject loc = (JSONObject)locations.get(i);
+                JSONObject geometry = (JSONObject)loc.get("geometry");
+                JSONArray coordinates =  (JSONArray)geometry.get("coordinates");
+                preLat = currentLat;
+                preLon = currentLon;
+                currentLat = (Double)coordinates.get(1);
+                currentLon = (Double)coordinates.get(0);
+
+                if(i > 0){
+                    double[] result= new double[2];
+                    LatLngUtils.computeDistanceAndBearing(preLat, preLon, currentLat, currentLon, result);
+
+                    if(result[0] > PybossaConf.ONE_MILE_RADIUS){
+                        geoProperties.add(new GeoPropertyModel(i-1, i, result[0]));
+                        list.add(i);
+                        list.add(i-1);
+                    }
+                }
+            }
+
+            if(geoProperties.size() > 1){
+                getFrequencyOverOne(list, locations);
+            }
+
+        }
+
+        return locations;
     }
 
     public List<String> processPybossaCompletedTask(String data) throws Exception{

@@ -27,7 +27,7 @@ public class TaskLogServiceImpl implements TaskLogService {
     @Transactional(readOnly = false)
     public void createTaskLog(TaskLog taskLog) {
         try{
-            taskLogDao.saveOrUpdate(taskLog);
+            taskLogDao.save(taskLog);
         }
         catch(Exception ex){
             System.out.println("createTaskLog exception : " + ex.getMessage());
@@ -56,6 +56,12 @@ public class TaskLogServiceImpl implements TaskLogService {
     @Override
     public List<TaskLog> getTaskLogByStatus(Long taskQueueID, int status) {
         return taskLogDao.getTaskLogByStatus(taskQueueID, status);  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void deleteAbandonedTaskLog(Long taskQueueID) {
+        taskLogDao.deleteTaskLog(taskQueueID);
     }
 
 }

@@ -79,4 +79,10 @@ public class TaskQueueServiceImpl implements TaskQueueService {
             return taskQueueList.size();  //To change body of implemented methods use File | Settings | File Templates.
         return 0;
     }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void deleteAbandonedTaskQueue(Long taskQueueID) {
+        taskQueueDao.deleteTaskQueue(taskQueueID);
+    }
 }
