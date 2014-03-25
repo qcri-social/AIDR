@@ -94,12 +94,12 @@ function setPybossaCookie(cookieName){
 
         $.cookie(cookieName, 'seen', {
             path    : '/',
-            domain  : 'http://pybossa.qcri.org/'
+            domain  : 'http://clickers.micromappers.org/'
         });
 
         $.cookie(tutorialCookie, 'seen', {
             path    : '/',
-            domain  : 'http://pybossa.qcri.org/'
+            domain  : 'http://clickers.micromappers.org/'
         });
 
         $.cookie(cookieName, 'seen', {

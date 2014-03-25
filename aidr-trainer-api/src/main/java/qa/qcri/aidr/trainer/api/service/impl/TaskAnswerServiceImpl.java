@@ -47,6 +47,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 
     @Override
     public TaskAnswerResponse getTaskAnswerResponseData(String data){
+        System.out.print("getTaskAnswerResponseData: " + data);
         PybossaTemplate pybossaTemplate = new PybossaTemplate();
         TaskAnswerResponse taskAnswerResponse = pybossaTemplate.getPybossaTaskAnswer(data, crisisService);
 
@@ -54,7 +55,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
     }
 
     @Override
-    public void insertTaskAnswer(TaskAnswerResponse taskAnswerResponse) {
+    public void pushTaskAnswerToJedis(TaskAnswerResponse taskAnswerResponse) {
 
 
         if(documentService.findDocument(taskAnswerResponse.getDocumentID()) != null){
@@ -76,9 +77,6 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
         else{
             logger.debug("************************** Document doesn't exist ************************** ****************************************************");
         }
-
-
-
     }
 
     @Override
@@ -92,8 +90,8 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
     public void addToTaskAnswer(TaskAnswerResponse taskAnswerResponse){
         List<TaskAnswer> taskAnswerList = taskAnswerResponse.getTaskAnswerList();
 
-        for(int i = 0; i < taskAnswerList.size(); i++){
-            TaskAnswer taskAnswer = taskAnswerList.get(i);
+        if(taskAnswerList.size() > 0){
+            TaskAnswer taskAnswer = taskAnswerList.get(0);
             taskAnswerDao.insertTaskAnswer(taskAnswer);
         }
 
@@ -104,12 +102,15 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
     public void addToDocumentNominalLabel(TaskAnswerResponse taskAnswerResponse){
         List<DocumentNominalLabel> documentNominalLabelSet =   taskAnswerResponse.getDocumentNominalLabelList();
 
-        for(int i = 0; i < documentNominalLabelSet.size(); i++){
-            DocumentNominalLabel documentNominalLabel = documentNominalLabelSet.get(i);
+        //for(int i = 0; i < documentNominalLabelSet.size(); i++){
+        if(documentNominalLabelSet.size() > 0){
+            DocumentNominalLabel documentNominalLabel = documentNominalLabelSet.get(0);
             if(!documentNominalLabelService.foundDuplicateEntry(documentNominalLabel)){
                 documentNominalLabelService.saveDocumentNominalLabel(documentNominalLabel);
             }
         }
+
+       // }
     }
 
     @Override

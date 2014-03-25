@@ -10,7 +10,7 @@ import qa.qcri.aidr.trainer.api.service.TaskQueueService;
 import java.util.List;
 
 @Service("taskStatusLookUpService")
-@Transactional(readOnly = false)
+@Transactional(readOnly = true)
 public class TaskQueueServiceImpl implements TaskQueueService {
 
     @Autowired
@@ -53,6 +53,11 @@ public class TaskQueueServiceImpl implements TaskQueueService {
     @Override
     public List<TaskQueue> getTaskQueueByClientApp(Long clientAppID) {
         return taskQueueDao.findTaskQueueSetByclientApp(clientAppID);
+    }
+
+    @Override
+    public List<TaskQueue> getTotalNumberOfTaskQueue(Long clientAppID) {
+        return taskQueueDao.findTotalTaskQueueSet(clientAppID);  //To change body of implemented methods use File | Settings | File Templates.
     }
 
 

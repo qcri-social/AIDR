@@ -2,6 +2,7 @@ package qa.qcri.aidr.trainer.api.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.trainer.api.dao.TaskAssignmentDao;
@@ -25,19 +26,18 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
     private UsersDao usersDao;
 
     @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
     public void revertTaskAssignment(Long documentID, String userName) {
         Users users = usersDao.findUserByName(userName);
         if(users!= null){
             Long userID = users.getUserID();
             taskAssignmentDao.undoTaskAssignment(documentID,userID);
         }
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
 
     @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
     public void revertTaskAssignment(Long documentID, Long userID) {
         taskAssignmentDao.undoTaskAssignment(documentID,userID);
     }
@@ -47,5 +47,18 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
     public Integer getPendingTaskCount(Long userID) {
         return taskAssignmentDao.getPendingTaskCount(userID);
     }
+
+    @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
+    public void addToTaskAssignment(List<Document> documents, long userID){
+        taskAssignmentDao.insertTaskAssignment(documents, userID);
+    }
+
+    @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
+    public void addToOneTaskAssignment(long documentID, long userID){
+        taskAssignmentDao.insertOneTaskAssignment(documentID, userID);
+    }
+
 
 }

@@ -21,5 +21,6 @@ public interface TaskQueueService {
     Integer getCountTaskQeueByStatus(String column, Integer status);
     Integer getCountTaskQeueByStatusAndClientApp(Long clientAppID, Integer status);
     List<TaskQueue> getTaskQueueByClientApp(Long clientAppID);
+    List<TaskQueue> getTotalNumberOfTaskQueue(Long clientAppID);
 
 }

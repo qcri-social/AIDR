@@ -43,35 +43,41 @@ public class PybossaTemplate {
                 Long crisisID = (Long)info.get("crisisID");
                 Long documentID = (Long)info.get("documentID");
                 Long userID = (Long)info.get("aidrID");
+                Long attributeID = (Long)info.get("attributeID");
 
                 Crisis crisis = crisisService.findByCrisisID(crisisID) ;
                 Set<ModelFamily> modelFamilySet= crisis.getModelFamilySet();
 
                 DocumentNominalLabel documentNominalLabel = null;
                 // String category ="Food and water";
+
                 for (ModelFamily modelFamily : modelFamilySet){
+                    if(modelFamily.getNominalAttributeID().equals(attributeID)){
+                        ModelFamily currentModelFamily = modelFamily;
 
                         Set<NominalLabel> nominalLabelSet = modelFamily.getNominalAttribute().getNominalLabelSet();
-                      //  System.out.print("attribute name : "   + modelFamily.getNominalAttribute().getName() + "\n");
+                        System.out.print("attribute name : "   + modelFamily.getNominalAttribute().getName() + "\n");
                         for (NominalLabel nominalLabel : nominalLabelSet){
                             JSONObject taskAnswerElement = new JSONObject();
-
-                            if(findMatchingLabel(categorySet, nominalLabel.getNorminalLabelCode())) {
-                                Long attributeID = nominalLabel.getNominalAttributeID();
-                                Long labelID = nominalLabel.getNorminalLabelID();
-
+                            if(nominalLabel.getNominalAttributeID().equals(attributeID)) {
+                                if(findMatchingLabel(categorySet, nominalLabel.getNorminalLabelCode())) {
+                                    Long labelID = nominalLabel.getNorminalLabelID();
                                     if(!attributeIDJson.contains(attributeID) ){
                                         attributeIDJson.add(attributeID ) ;
                                     }
 
-                                taskAnswerElement.put("attributeID", attributeID) ;
-                                taskAnswerElement.put("labelID", labelID) ;
+                                    taskAnswerElement.put("attributeID", attributeID) ;
+                                    taskAnswerElement.put("labelID", labelID) ;
 
-                                taskAnswerJson.add(taskAnswerElement);
-                                documentNominalLabel = new DocumentNominalLabel(documentID,labelID);
-                                taskAnswerResponse.setDocumentNominalLabelList(documentNominalLabel);
+                                    taskAnswerJson.add(taskAnswerElement);
+                                    documentNominalLabel = new DocumentNominalLabel(documentID,labelID);
+                                    taskAnswerResponse.setDocumentNominalLabelList(documentNominalLabel);
+                                }
                             }
+
                         }
+                    }
+
                 }
 
                 taskAnswerJson.add(getUtilDatJson(featureJsonObj));
@@ -81,7 +87,7 @@ public class PybossaTemplate {
                 taskAnswerResponse.setDocumentID(documentID);
                 taskAnswerResponse.setUserID(userID);
 
-              //  System.out.print("category: " + category + " crisisID:" + crisisID+  "   documentID:" + documentID);
+                System.out.print("category: " + category + " crisisID:" + crisisID+  "   documentID:" + documentID + "taskAnswerJson" + taskAnswerJson.toJSONString());
 
             }
         } catch (ParseException e) {
