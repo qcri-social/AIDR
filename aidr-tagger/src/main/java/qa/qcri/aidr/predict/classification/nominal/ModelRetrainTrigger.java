@@ -37,6 +37,12 @@ class ModelRetrainTrigger extends Loggable implements Runnable {
             parseTrainingSamples();
             checkRetrainThresholds();
             forceRetrains.clear();
+            try {
+				Thread.sleep(10000);	// sleep for 10sec before next attempt
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}		
         }
     }
 

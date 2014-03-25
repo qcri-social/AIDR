@@ -146,6 +146,10 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 
         List<Integer> ids = (List<Integer>) criteriaIds.list();
 
+        if (ids.size() == 0){
+            return Collections.emptyList();
+        }
+
         Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 
@@ -201,6 +205,10 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
         }
 
         List<Integer> ids = (List<Integer>) criteriaIds.list();
+
+        if (ids.size() == 0){
+            return Collections.emptyList();
+        }
 
         Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
