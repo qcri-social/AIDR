@@ -465,8 +465,6 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                     text: 'Download as CSV files',
                     cls: 'header-h2'
                 },
-//                this.CSVLink,
-//                this.tweetsIdsLink
                 {
                     xtype: 'container',
                     layout: 'vbox',

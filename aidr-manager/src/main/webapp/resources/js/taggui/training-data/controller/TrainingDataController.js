@@ -140,8 +140,8 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                 }
             }
         });
-    }
-    ,
+    },
+
     deleteTrainingExample: function(button){
         if (!button.exampleId){
             AIDRFMFunctions.setAlert("Error", "Error while delete human-tagged item. Document Id not available.");
