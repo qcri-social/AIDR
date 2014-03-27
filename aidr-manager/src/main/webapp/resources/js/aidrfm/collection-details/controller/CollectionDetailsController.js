@@ -219,6 +219,12 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 click: function (btn, e, eOpts) {
                     this.removeManager(btn);
                 }
+            },
+
+            "#toMyClassifiersToDownload": {
+                click: function (btn, e, eOpts) {
+                    this.toMyClassifiersToDownloadHandler(btn);
+                }
             }
 
         });
@@ -242,14 +248,19 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             },
             success: function (response) {
                 var resp = Ext.decode(response.responseText);
+                var cmp = me.DetailsComponent;
                 if (resp.success) {
                     if (resp.data) {
-                        me.DetailsComponent.gotoTaggerButton.show();
-                        me.DetailsComponent.enableTaggerButton.hide();
+                        cmp.gotoTaggerButton.show();
+                        cmp.enableTaggerButton.hide();
+                        cmp.downloadExportTaggerDisabledPanel.hide();
+                        cmp.downloadExportTaggerEnabledPanel.show();
                     }
                 } else {
-                    me.DetailsComponent.gotoTaggerButton.hide();
-                    me.DetailsComponent.enableTaggerButton.hide();
+                    cmp.gotoTaggerButton.hide();
+                    cmp.enableTaggerButton.hide();
+                    cmp.downloadExportTaggerDisabledPanel.hide();
+                    cmp.downloadExportTaggerEnabledPanel.hide();
                 }
             }
         });
@@ -868,6 +879,10 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 btn.setDisabled(false);
             }
         });
+    },
+
+    toMyClassifiersToDownloadHandler: function(btn) {
+        alert("Will be implemented soon.");
     }
 
 });
