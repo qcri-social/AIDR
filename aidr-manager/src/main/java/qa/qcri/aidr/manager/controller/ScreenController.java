@@ -346,4 +346,26 @@ public class ScreenController extends BaseController{
         return new ModelAndView("administration/health");
     }
 
+    @RequestMapping("protected/{code}/interactive-view-download")
+    public ModelAndView interactiveViewDownload(@PathVariable(value="code") String code) throws Exception {
+        if (!isHasPermissionForCollection(code)){
+            return new ModelAndView("redirect:/protected/access-error");
+        }
+
+        TaggerCrisis crisis = taggerService.getCrisesByCode(code);
+
+        Integer crisisId = 0;
+        String crisisName = "";
+        if (crisis != null && crisis.getCrisisID() != null && crisis.getName() != null){
+            crisisId = crisis.getCrisisID();
+            crisisName = crisis.getName();
+        }
+
+        ModelAndView model = new ModelAndView("tagger/interactive-view-download");
+        model.addObject("crisisId", crisisId);
+        model.addObject("crisisName", crisisName);
+        model.addObject("code", code);
+        return model;
+    }
+
 }
