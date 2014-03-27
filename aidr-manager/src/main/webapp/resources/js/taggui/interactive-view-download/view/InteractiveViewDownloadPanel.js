@@ -2,7 +2,8 @@ Ext.require([
     'AIDRFM.common.AIDRFMFunctions',
     'AIDRFM.common.StandardLayout',
     'AIDRFM.common.Header',
-    'AIDRFM.common.Footer'
+    'AIDRFM.common.Footer',
+    'Ext.ux.data.PagingMemoryProxy'
 ]);
 
 Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel', {
@@ -27,7 +28,70 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
             flex: 1
         });
 
+        this.taggerFetchStore = Ext.create('Ext.data.Store', {
+            pageSize: 10,
+            storeId: 'taggerFetchStore',
+            fields: ['text', 'attribute_name', 'label_name', 'confidence']
+        });
 
+        this.taggerFetchGrid = Ext.create('Ext.grid.Panel', {
+            store: this.taggerFetchStore,
+            itemId: 'taggerFetchGrid',
+            cls: 'aidr-grid',
+            columns: [
+                {
+                    xtype: 'gridcolumn', dataIndex: 'text', text: 'Tweet', flex: 1
+                },
+                {
+                    xtype: 'gridcolumn', dataIndex: 'attribute_name', text: 'Attribute', width: 150
+                },
+                {
+                    xtype: 'gridcolumn', dataIndex: 'label_name', text: 'Label', width: 150
+                },
+                {
+                    xtype: 'gridcolumn', dataIndex: 'confidence', text: 'Confidence', width: 150
+                }
+            ]
+        });
+
+        this.taggerFetchPaging = Ext.create('Ext.toolbar.Paging', {
+            cls: 'aidr-paging',
+            margin: '12 2 0 2',
+            store:'taggerFetchStore',
+            displayInfo:true,
+            displayMsg:'Collection history records {0} - {1} of {2}',
+            emptyMsg:'No collection history records to display',
+            items: [
+                {
+                    xtype: 'tbseparator'
+                },
+                {
+                    xtype : 'trigger',
+                    itemId : 'gridTrigger',
+                    fieldLabel: 'Filter Grid Data',
+                    triggerCls : 'x-form-clear-trigger',
+                    emptyText : 'Start typing to filter data',
+                    size : 30,
+                    minChars : 1,
+                    enableKeyEvents : true,
+                    onTriggerClick : function(){
+                        this.reset();
+                        this.fireEvent('triggerClear');
+                    }
+                }
+            ]
+        });
+
+        this.taggerFetchPanel = Ext.create('Ext.container.Container', {
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            items: [
+                this.taggerFetchGrid,
+                this.taggerFetchPaging
+            ]
+        });
 
         this.items = [
             this.breadcrumbs,
@@ -41,13 +105,13 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
 
                 layout: {
                     type: 'vbox',
-                    align: 'stretch',
-                    padding: '0 0 10 0'
+                    align: 'stretch'
                 },
                 items: [
                     this.screenTitle
                 ]
-            }
+            },
+            this.taggerFetchPanel
         ];
 
         this.callParent(arguments);

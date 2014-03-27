@@ -68,10 +68,6 @@ public interface TaggerService {
 
     public boolean saveTaskAnswer(List<TaskAnswer> taskAnswer) throws AidrException;
 
-    public String generateCSVLink(String code) throws Exception;
-
-    public String generateTweetIdsLink(String code) throws Exception;
-
     public String loadLatestTweets(String code) throws Exception;
 
     public ModelHistoryWrapper getModelHistoryByModelFamilyID(Integer start, Integer limit, Integer id) throws Exception;

@@ -1,34 +1,29 @@
 package qa.qcri.aidr.manager.service.impl;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.map.util.JSONPObject;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.service.TaggerService;
 
-//import com.sun.jersey.api.client.Client;
-//import com.sun.jersey.api.client.ClientResponse;
-//import com.sun.jersey.api.client.WebResource;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-
-import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-
-import org.glassfish.jersey.jackson.JacksonFeature;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.*;
+
+//import com.sun.jersey.api.client.Client;
+//import com.sun.jersey.api.client.ClientResponse;
+//import com.sun.jersey.api.client.WebResource;
 
 @Service("taggerService")
 public class TaggerServiceImpl implements TaggerService {
@@ -883,56 +878,6 @@ public class TaggerServiceImpl implements TaggerService {
         } catch (Exception e) {
             return true;
             //throw new AidrException("Error while saving TaskAnswer in AIDRCrowdsourcing", e);
-        }
-    }
-
-    @Override
-    public String generateCSVLink(String code) throws AidrException {
-    	Client client = ClientBuilder.newBuilder().build();
-    	try {
-            //WebResource webResource = client.resource(persisterMainUrl + "/taggerPersister/genCSV?collectionCode=" + code + "&exportLimit=100000");
-        	WebTarget webResource = client.target(persisterMainUrl + 
-        			"/taggerPersister/genCSV?collectionCode=" + code + "&exportLimit=100000");
-        	
-        	//ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
-            //        .get(ClientResponse.class);
-        	Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-        	
-        	//String jsonResponse = clientResponse.getEntity(String.class);
-        	String jsonResponse = clientResponse.readEntity(String.class);
-
-            if (jsonResponse != null && "http".equals(jsonResponse.substring(0, 4))) {
-                return jsonResponse;
-            } else {
-                return "";
-            }
-        } catch (Exception e) {
-            throw new AidrException("Error while generating CSV link in taggerPersister", e);
-        }
-    }
-
-    @Override
-    public String generateTweetIdsLink(String code) throws AidrException {
-    	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
-    	try {
-            //WebResource webResource = client.resource(persisterMainUrl + "/taggerPersister/genTweetIds?collectionCode=" + code);
-        	WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/genTweetIds?collectionCode=" + code);
-        	
-        	//ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
-            //        .get(ClientResponse.class);
-        	Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-            
-        	//String jsonResponse = clientResponse.getEntity(String.class);
-        	String jsonResponse = clientResponse.readEntity(String.class);
-
-
-            if (jsonResponse != null && "http".equals(jsonResponse.substring(0, 4))) {
-                return jsonResponse;
-            } else {
-                return "";
-            }
-        } catch (Exception e) {
-            throw new AidrException("Error while generating Tweet Ids link in taggerPersister", e);
         }
     }
 
