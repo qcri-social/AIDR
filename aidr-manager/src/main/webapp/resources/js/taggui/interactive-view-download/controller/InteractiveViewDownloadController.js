@@ -16,6 +16,18 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
             '#gridTrigger' : {
                 keyup : this.onTriggerKeyUp,
                 triggerClear : this.onTriggerClear
+            },
+
+            "#downloadButton": {
+                click: function (btn, e, eOpts) {
+                    this.downloadButtonHandler(btn);
+                }
+            },
+
+            "#applyFilterButton": {
+                click: function (btn, e, eOpts) {
+                    this.applyFilterButtonHandler(btn);
+                }
             }
 
         });
@@ -26,7 +38,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
         AIDRFMFunctions.initMessageContainer();
         this.mainComponent = component;
 
-//        this.loadCollectionData();
+        this.loadCollection();
         this.loadLatestTweets();
     },
 
@@ -34,9 +46,9 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
         var me = this;
 
         var thisRegEx = new RegExp(t.getValue(), "i");
-        var grid = me.mainComponent.taggerFetchGrid;
+        var grid = me.mainComponent.tweetsGrid;
         var records = [];
-        Ext.each(fetchData.data, function (record) {
+        Ext.each(tweetsData.data, function (record) {
             if (thisRegEx.test(record[grid.columns[0].dataIndex])) {
                 if (!grid.filterHidden && grid.columns[0].isHidden()) {
                 } else {
@@ -44,17 +56,17 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                 }
             }
         });
-        fetchTmpData.data = records;
-        fetchTmpData.totalCount = records.length;
-        me.mainComponent.taggerFetchStore.load();
+        tweetsTmpData.data = records;
+        tweetsTmpData.totalCount = records.length;
+        me.mainComponent.tweetsStore.load();
     },
 
     onTriggerClear : function() {
         var me = this;
 
-        fetchTmpData.data = fetchData.data;
-        fetchTmpData.totalCount = fetchData.totalCount;
-        me.mainComponent.taggerFetchStore.load();
+        tweetsTmpData.data = tweetsData.data;
+        tweetsTmpData.totalCount = tweetsData.totalCount;
+        me.mainComponent.tweetsStore.load();
     },
 
     loadLatestTweets: function () {
@@ -76,12 +88,12 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                 var tweetData = Ext.JSON.decode(jsonData.data);
 
                 var data = me.transformTweetData(tweetData);
-                fetchData = data;
-                fetchTmpData = Ext.clone(data);
+                tweetsData = data;
+                tweetsTmpData = Ext.clone(data);
 
-                me.mainComponent.taggerFetchStore.setProxy({
+                me.mainComponent.tweetsStore.setProxy({
                     type: 'pagingmemory',
-                    data: fetchTmpData,
+                    data: tweetsTmpData,
                     reader: {
                         type: 'json',
                         totalProperty: 'totalCount',
@@ -89,7 +101,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                         successProperty: 'success'
                     }
                 });
-                me.mainComponent.taggerFetchStore.load();
+                me.mainComponent.tweetsStore.load();
             }
         });
     },
@@ -111,6 +123,60 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
         result.totalCount = data.length;
         result.success = true;
         return result;
+    },
+
+    loadCollection: function () {
+        var me = this;
+
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/collection/findById.action',
+            method: 'GET',
+            params: {
+                id: COLLECTION_ID
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                var jsonData = Ext.decode(response.responseText);
+
+                var managers = jsonData.managers;
+                var ownerUserName = jsonData.user.userName;
+                if (!me.isCurrentUserManagerOrOwner(managers, ownerUserName)){
+                    me.mainComponent.suspendLayout = true;
+                    me.mainComponent.downloadPanel.hide();
+
+                    var contactToText = 'Contact <a target="_blank" href="https://twitter.com/' + ownerUserName + '">&#64;' + ownerUserName + '</a> to get download permissions.';
+                    me.mainComponent.contactOwnerL.setText(contactToText, false);
+
+                    me.mainComponent.contactOwnerPanel.show();
+                    me.mainComponent.suspendLayout = false;
+                    me.mainComponent.forceComponentLayout();
+                }
+            }
+        });
+    },
+
+    isCurrentUserManagerOrOwner: function(managers, ownerUserName){
+        if (ownerUserName == USER_NAME){
+            return true;
+        }
+        var result = false;
+        Ext.Array.each(managers, function(r) {
+            if (r.userName == USER_NAME){
+                result = true;
+                return false; // to stop loop iteration
+            }
+        });
+        return result;
+    },
+
+    downloadButtonHandler: function(){
+        alert("Will be implemented soon.");
+    },
+
+    applyFilterButtonHandler: function(){
+        alert("Will be implemented soon.");
     }
 
 });

@@ -28,15 +28,96 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
             flex: 1
         });
 
-        this.taggerFetchStore = Ext.create('Ext.data.Store', {
+        this.applyFilterButton = Ext.create('Ext.Button', {
+            text: 'Apply Filter',
+            cls:'btn btn-blue',
+            id: 'applyFilterButton',
+            margin: '10 0 0 0'
+        });
+
+        this.filterBlock = Ext.create('Ext.form.FieldSet', {
+            title: 'Filter',
+            defaultType: 'textfield',
+            defaults: {anchor: '100%'},
+            layout: 'anchor',
+            items: [
+                {
+                    fieldLabel: 'Field 1',
+                    name: 'field1',
+                    value: 'This text is just for test'
+                },
+                {
+                    fieldLabel: 'Field 2',
+                    name: 'field2',
+                    value: 'This text is just for test'
+                },
+                {
+                    xtype: 'container',
+                    layout: {
+                        type: 'vbox',
+                        align: 'right'
+                    },
+                    items: [
+                        this.applyFilterButton
+                    ]
+                }
+            ]
+        });
+
+        this.downloadTweetsL = Ext.create('Ext.form.Label', {
+            flex: 1,
+            text: 'Download selected tweets',
+            padding: '0 0 0 0',
+            cls: 'header-h2'
+        });
+
+        this.contactOwnerL = Ext.create('Ext.form.Label', {
+            cls: 'styled-text',
+            margin: '10 0 0 0',
+            html: '',
+            flex: 1
+        });
+
+        this.downloadType = Ext.create('Ext.form.RadioGroup', {
+            columns: 1,
+            vertical: true,
+            items: [
+                {
+                    boxLabel: 'Up to 1,000 tweets - as shown above',
+                    name: 'rb',
+                    inputValue: '1',
+                    checked: true
+                },
+                {
+                    boxLabel: 'Latest 100,000 tweets',
+                    name: 'rb',
+                    inputValue: '2'
+                },
+                {
+                    boxLabel: 'All tweets (tweet-ids only)',
+                    name: 'rb',
+                    inputValue: '3'
+                }
+            ]
+        });
+
+        this.downloadButton = Ext.create('Ext.Button', {
+            text: 'Download as .csv',
+            cls:'btn btn-blue',
+            id: 'downloadButton',
+            margin: '10 0 0 0'
+        });
+
+        this.tweetsStore = Ext.create('Ext.data.Store', {
             pageSize: 10,
-            storeId: 'taggerFetchStore',
+            storeId: 'tweetsStore',
             fields: ['text', 'attribute_name', 'label_name', 'confidence']
         });
 
-        this.taggerFetchGrid = Ext.create('Ext.grid.Panel', {
-            store: this.taggerFetchStore,
-            itemId: 'taggerFetchGrid',
+        this.tweetsGrid = Ext.create('Ext.grid.Panel', {
+            store: this.tweetsStore,
+            itemId: 'tweetsGrid',
+            margin: '10 0 0 0',
             cls: 'aidr-grid',
             columns: [
                 {
@@ -54,10 +135,10 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
             ]
         });
 
-        this.taggerFetchPaging = Ext.create('Ext.toolbar.Paging', {
+        this.tweetsPaging = Ext.create('Ext.toolbar.Paging', {
             cls: 'aidr-paging',
             margin: '12 2 0 2',
-            store:'taggerFetchStore',
+            store:'tweetsStore',
             displayInfo:true,
             displayMsg:'Collection history records {0} - {1} of {2}',
             emptyMsg:'No collection history records to display',
@@ -82,14 +163,46 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
             ]
         });
 
-        this.taggerFetchPanel = Ext.create('Ext.container.Container', {
+        this.tweetsPanel = Ext.create('Ext.container.Container', {
             layout: {
                 type: 'vbox',
                 align: 'stretch'
             },
             items: [
-                this.taggerFetchGrid,
-                this.taggerFetchPaging
+                this.tweetsGrid,
+                this.tweetsPaging
+            ]
+        });
+
+        this.downloadPanel = Ext.create('Ext.container.Container', {
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            items: [
+                this.downloadTweetsL,
+                this.downloadType,
+                {
+                    xtype: 'container',
+                    layout: {
+                        type: 'vbox',
+                        align: 'left'
+                    },
+                    items: [
+                        this.downloadButton
+                    ]
+                }
+            ]
+        });
+
+        this.contactOwnerPanel = Ext.create('Ext.container.Container', {
+            hidden: true,
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            items: [
+                this.contactOwnerL
             ]
         });
 
@@ -111,7 +224,16 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
                     this.screenTitle
                 ]
             },
-            this.taggerFetchPanel
+            this.filterBlock,
+            this.tweetsPanel,
+            {
+                xtype: 'container',
+                width: '100%',
+                margin: '20 0 0 0',
+                html: '<div class="horizontalLine"></div>'
+            },
+            this.downloadPanel,
+            this.contactOwnerPanel
         ];
 
         this.callParent(arguments);

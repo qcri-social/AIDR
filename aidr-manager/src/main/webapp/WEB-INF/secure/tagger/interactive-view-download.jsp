@@ -6,8 +6,10 @@
 
   <script type="text/javascript">
       CRISIS_ID = ${crisisId};
+      COLLECTION_ID = ${collectionId};
       CRISIS_CODE = "${code}";
       CRISIS_NAME = "${crisisName}";
+      USER_NAME = "${userName}";
   </script>
 
 </body>

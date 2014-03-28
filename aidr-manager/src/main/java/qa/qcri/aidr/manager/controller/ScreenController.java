@@ -352,7 +352,10 @@ public class ScreenController extends BaseController{
             return new ModelAndView("redirect:/protected/access-error");
         }
 
+        String userName = getAuthenticatedUserName();
+
         TaggerCrisis crisis = taggerService.getCrisesByCode(code);
+        AidrCollection collection = collectionService.findByCode(code);
 
         Integer crisisId = 0;
         String crisisName = "";
@@ -361,10 +364,17 @@ public class ScreenController extends BaseController{
             crisisName = crisis.getName();
         }
 
+        Integer collectionId = 0;
+        if (collection != null && collection.getId() != null){
+            collectionId = collection.getId();
+        }
+
         ModelAndView model = new ModelAndView("tagger/interactive-view-download");
+        model.addObject("collectionId", collectionId);
         model.addObject("crisisId", crisisId);
         model.addObject("crisisName", crisisName);
         model.addObject("code", code);
+        model.addObject("userName", userName);
         return model;
     }
 
