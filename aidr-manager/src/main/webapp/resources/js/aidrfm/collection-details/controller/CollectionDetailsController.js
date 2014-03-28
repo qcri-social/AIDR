@@ -223,7 +223,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
             "#toMyClassifiersToDownload": {
                 click: function (btn, e, eOpts) {
-                    this.toMyClassifiersToDownloadHandler(btn);
+                    this.goToTagger(btn);
                 }
             }
 
@@ -879,10 +879,6 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 btn.setDisabled(false);
             }
         });
-    },
-
-    toMyClassifiersToDownloadHandler: function(btn) {
-        alert("Will be implemented soon.");
     }
 
 });
