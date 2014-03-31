@@ -390,7 +390,7 @@ Request Headers: `Content-Type: application/json`
     {
       "queryType": "date_query",    
       "comparator": "is_before",     
-      "timestamp": 1275339860    
+      "timestamp": 1495339860    
     },                                                        
     {    
       "queryType": "date_query",         
@@ -504,7 +504,7 @@ Request Headers: `Content-Type: application/json`
     {
       "queryType": "date_query",    
       "comparator": "is_before",     
-      "timestamp": 1275339860    
+      "timestamp": 1575339860    
     },                                                        
     {    
       "queryType": "date_query",         
