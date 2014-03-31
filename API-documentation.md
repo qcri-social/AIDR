@@ -471,7 +471,7 @@ When query parameter `confidence` is specified, then only a tweet which has at l
 
 ## Stream jsonp data from Redis for a specific channel
 
-GET `...rest/crisis/stream/channel/{crisisCode}?callback={callback}&rate={rate}&duration={duration}`
+GET `...rest/crisis/stream/filter/channel/{crisisCode}?callback={callback}&rate={rate}&duration={duration}`
 
 * `crisisCode` [mandatory]: Redis channel identifier to which to subscribe
 * `callback` [optional]: name of the callback function for JSONP data
@@ -488,7 +488,7 @@ Provides a method to test whether:
 
 ## Get a JSONP list of labeled tweets from a specific channel, filtered by selection criteria 
 
-POST `.../rest/crisis/fetch/channel/{crisisCode}?callback={callbackName}&count={count}`
+POST `.../rest/crisis/fetch/channel/filter/{crisisCode}?callback={callbackName}&count={count}`
 
 * `crisisCode` [mandatory]: Redis channel identifier to which to subscribe
 * `callback` [optional]: name of the callback function for JSONP data
