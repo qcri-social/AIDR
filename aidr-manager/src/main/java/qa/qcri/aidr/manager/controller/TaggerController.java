@@ -442,10 +442,10 @@ public class TaggerController extends BaseController {
 
     @RequestMapping(value = "/loadLatestTweets.action", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String,Object> loadLatestTweets(@RequestParam String code) throws Exception {
+    public Map<String,Object> loadLatestTweets(@RequestParam String code, @RequestParam String constraints) throws Exception {
         String result = "";
         try {
-            result = taggerService.loadLatestTweets(code);
+            result = taggerService.loadLatestTweets(code, constraints);
         } catch (Exception e) {
             e.printStackTrace();
             return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
@@ -514,6 +514,19 @@ public class TaggerController extends BaseController {
             return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
         }
         return getUIWrapper(result, true);
+    }
+
+    @RequestMapping(value = "/getAttributesAndLabelsByCrisisId.action", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> getAttributesAndLabelsByCrisisId(@RequestParam Integer id) throws Exception {
+        String result = "";
+        try {
+            result = taggerService.getAttributesAndLabelsByCrisisId(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+        }
+        return getUIWrapper(result,true);
     }
 
     private TaggerCrisisRequest transformCrisesRequestToTaggerCrises (CrisisRequest request, Integer taggerUserId) throws Exception{

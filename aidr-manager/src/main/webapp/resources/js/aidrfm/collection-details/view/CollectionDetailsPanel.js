@@ -822,6 +822,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             padding: '5 5 5 5',
             html: ''
         });
+
         this.tweetsIdsLink = Ext.create('Ext.form.Label', {
             flex: 1,
             margin: '5 5 5 5',

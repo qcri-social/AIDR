@@ -28,6 +28,24 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                 click: function (btn, e, eOpts) {
                     this.applyFilterButtonHandler(btn);
                 }
+            },
+
+            "#resetFilters": {
+                click: function (btn, e, eOpts) {
+                    this.resetFiltersHandler(btn);
+                }
+            },
+
+            "#addFilter": {
+                click: function (btn, e, eOpts) {
+                    this.addFilterHandler(btn);
+                }
+            },
+
+            "#filterBlock": {
+                filterchange: function (isValid) {
+                    this.reflectFilterBlockState(isValid);
+                }
             }
 
         });
@@ -39,7 +57,8 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
         this.mainComponent = component;
 
         this.loadCollection();
-        this.loadLatestTweets();
+        this.loadLatestTweets("{[]}");
+        this.getAttributesAndLabelsByCrisisId();
     },
 
     onTriggerKeyUp : function(t) {
@@ -69,16 +88,17 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
         me.mainComponent.tweetsStore.load();
     },
 
-    loadLatestTweets: function () {
+    loadLatestTweets: function (constraintsString) {
         var me = this;
 
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/loadLatestTweets.action',
             method: 'GET',
             params: {
-                code: CRISIS_CODE
+                code: CRISIS_CODE,
 //                code: "2014-02-uk_floods"
-//                code: "2014-03-mh370"
+//                code: "2014-03-mh370",
+                constraints: constraintsString
             },
             headers: {
                 'Accept': 'application/json'
@@ -171,12 +191,151 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
         return result;
     },
 
-    downloadButtonHandler: function(){
-        alert("Will be implemented soon.");
+    downloadButtonHandler: function(btn){
+        var me = this;
+        var value = me.mainComponent.downloadType.getValue();
+
+        if (!value && !value.type) {
+            AIDRFMFunctions.setAlert("Error", "Type of the download not selected.");
+        }
+
+//        TODO finish this section - use correct ajax with constraints
+        if (value.type == '1000_TWEETS'){
+            console.log('1000_TWEETS');
+        } else if (value.type == '100000_TWEETS') {
+            console.log('100000_TWEETS');
+        } else {
+            console.log('ALL');
+            me.generateTweetIdsLink(btn)
+        }
     },
 
     applyFilterButtonHandler: function(){
-        alert("Will be implemented soon.");
+        var me = this;
+        var constraints = [];
+        Ext.each(me.mainComponent.filterBlock.items.items, function (r) {
+            constraints.push(r.getValue());
+        });
+        var result = {
+            constraints: constraints
+        };
+
+        var constraintString = JSON.stringify(result);
+//        TODO finish this section - refresh grid with constraints
+        console.log("Constraints: " + constraintString);
+    },
+
+    resetFiltersHandler: function () {
+        var me = this;
+
+        me.mainComponent.suspendLayout = true;
+
+        me.mainComponent.filterBlock.removeAll(true);
+        me.mainComponent.filterBlock.insert(0, {
+            rawData: me.mainComponent.attributesAndLabels
+        });
+
+        me.mainComponent.suspendLayout = false;
+        me.mainComponent.forceComponentLayout();
+    },
+
+    addFilterHandler: function(){
+        var me = this;
+        me.mainComponent.suspendLayout = true;
+
+        var position = me.mainComponent.filterBlock.items.length;
+        me.mainComponent.filterBlock.insert(position, {
+            rawData : me.mainComponent.attributesAndLabels
+        });
+
+//        Disable Apply Filter Button as we added new filter which is not valid yet
+        me.mainComponent.applyFilterButton.disable();
+
+        me.mainComponent.suspendLayout = false;
+        me.mainComponent.forceComponentLayout();
+    },
+
+    generateTweetIdsLink: function(btn) {
+        var me = this;
+
+        btn.setDisabled(true);
+        me.mainComponent.downloadLink.setText('<div class="loading-block"></div>', false);
+
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/collection/generateTweetIdsLink.action',
+            method: 'GET',
+            params: {
+                code: CRISIS_CODE
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                btn.setDisabled(false);
+                var resp = Ext.decode(response.responseText);
+                if (resp.success) {
+                    if (resp.data && resp.data != '') {
+                        me.mainComponent.downloadLink.setText('<div class="styled-text download-link"><a href="' + resp.data + '">' + resp.data + '</a></div>', false);
+                    } else {
+                        me.mainComponent.downloadLink.setText('', false);
+                        AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
+                    }
+                } else {
+                    me.mainComponent.downloadLink.setText('', false);
+                    AIDRFMFunctions.setAlert("Error", resp.message);
+                }
+            },
+            failure: function () {
+                btn.setDisabled(false);
+            }
+        });
+    },
+
+    getAttributesAndLabelsByCrisisId: function () {
+        var me = this;
+
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/tagger/getAttributesAndLabelsByCrisisId.action',
+            method: 'GET',
+            params: {
+                id: CRISIS_ID
+//                id: 117
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                var jsonData = Ext.decode(response.responseText);
+                var data = Ext.JSON.decode(jsonData.data);
+                me.mainComponent.attributesAndLabels = data;
+                me.mainComponent.addFilterButton.enable();
+
+                me.mainComponent.suspendLayout = true;
+                me.mainComponent.filterBlock.insert(0, {
+                    rawData : data
+                });
+                me.mainComponent.suspendLayout = false;
+                me.mainComponent.forceComponentLayout();
+            }
+        });
+    },
+
+    reflectFilterBlockState: function(filterBlock){
+        var isValid = true;
+
+        Ext.each(filterBlock.items.items, function (r) {
+            var v = r.isValid();
+            if (!v){
+                isValid = false;
+            }
+        });
+
+        var me = this;
+        if (isValid){
+            me.mainComponent.applyFilterButton.enable();
+        } else {
+            me.mainComponent.applyFilterButton.disable();
+        }
     }
 
 });

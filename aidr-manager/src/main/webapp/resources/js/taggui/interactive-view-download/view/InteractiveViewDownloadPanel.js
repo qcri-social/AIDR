@@ -3,7 +3,8 @@ Ext.require([
     'AIDRFM.common.StandardLayout',
     'AIDRFM.common.Header',
     'AIDRFM.common.Footer',
-    'Ext.ux.data.PagingMemoryProxy'
+    'Ext.ux.data.PagingMemoryProxy',
+    'TAGGUI.interactive-view-download.view.SingleFilterPanel'
 ]);
 
 Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel', {
@@ -32,32 +33,62 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
             text: 'Apply Filter',
             cls:'btn btn-blue',
             id: 'applyFilterButton',
-            margin: '10 0 0 0'
+            disabled: true
         });
 
-        this.filterBlock = Ext.create('Ext.form.FieldSet', {
+        this.resetFiltersButton = Ext.create('Ext.Button', {
+            text: 'Reset Filters',
+            cls:'btn btn-red',
+            id: 'resetFilters',
+            margin: '0 10 0 0',
+            disabled: true
+        });
+
+        this.addFilterButton = Ext.create('Ext.button.Button', {
+            iconCls: 'add',
+            margin: '1 10 0 0',
+            text : null,
+            scale: 'small',
+            id: 'addFilter',
+            tooltip: 'Add new filter',
+            disabled: true
+        });
+
+        this.filterBlock = Ext.create('Ext.container.Container', {
+            margin: 0,
+            padding: 0,
+            defaultType: 'single-filter-panel',
+            id: 'filterBlock',
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            items: []
+        });
+
+        this.filterFieldSet = Ext.create('Ext.form.FieldSet', {
             title: 'Filter',
-            defaultType: 'textfield',
-            defaults: {anchor: '100%'},
-            layout: 'anchor',
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
             items: [
-                {
-                    fieldLabel: 'Field 1',
-                    name: 'field1',
-                    value: 'This text is just for test'
-                },
-                {
-                    fieldLabel: 'Field 2',
-                    name: 'field2',
-                    value: 'This text is just for test'
-                },
+                this.filterBlock,
                 {
                     xtype: 'container',
+                    margin: '10 0 0 0',
                     layout: {
-                        type: 'vbox',
-                        align: 'right'
+                        type: 'hbox',
+                        align: 'stretch'
                     },
                     items: [
+                        this.addFilterButton,
+                        {
+                            xtype: 'container',
+                            layout: 'hbox',
+                            flex: 1
+                        },
+                        this.resetFiltersButton,
                         this.applyFilterButton
                     ]
                 }
@@ -84,19 +115,19 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
             items: [
                 {
                     boxLabel: 'Up to 1,000 tweets - as shown above',
-                    name: 'rb',
-                    inputValue: '1',
+                    name: 'type',
+                    inputValue: '1000_TWEETS',
                     checked: true
                 },
                 {
                     boxLabel: 'Latest 100,000 tweets',
-                    name: 'rb',
-                    inputValue: '2'
+                    name: 'type',
+                    inputValue: '100000_TWEETS'
                 },
                 {
                     boxLabel: 'All tweets (tweet-ids only)',
-                    name: 'rb',
-                    inputValue: '3'
+                    name: 'type',
+                    inputValue: 'ALL'
                 }
             ]
         });
@@ -106,6 +137,12 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
             cls:'btn btn-blue',
             id: 'downloadButton',
             margin: '10 0 0 0'
+        });
+
+        this.downloadLink = Ext.create('Ext.form.Label', {
+            flex: 1,
+            margin: '10 5 5 5',
+            html: ''
         });
 
         this.tweetsStore = Ext.create('Ext.data.Store', {
@@ -184,12 +221,10 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
                 this.downloadType,
                 {
                     xtype: 'container',
-                    layout: {
-                        type: 'vbox',
-                        align: 'left'
-                    },
+                    layout: 'hbox',
                     items: [
-                        this.downloadButton
+                        this.downloadButton,
+                        this.downloadLink
                     ]
                 }
             ]
@@ -224,7 +259,7 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
                     this.screenTitle
                 ]
             },
-            this.filterBlock,
+            this.filterFieldSet,
             this.tweetsPanel,
             {
                 xtype: 'container',

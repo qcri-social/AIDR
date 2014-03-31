@@ -882,17 +882,15 @@ public class TaggerServiceImpl implements TaggerService {
     }
 
     @Override
-    public String loadLatestTweets(String code) throws AidrException {
+    public String loadLatestTweets(String code, String constraints) throws AidrException {
     	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
     	try {
-            //WebResource webResource = client.resource(outputAPIMainUrl + "/crisis/fetch/channel/" + code + "?count=1000");
         	WebTarget webResource = client.target(outputAPIMainUrl + "/crisis/fetch/channel/" + code + "?count=1000");
-            
-            //ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
-            //        .get(ClientResponse.class);
+
+//            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
+//                    .post(Entity.json(constraints), Response.class);
+
         	Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-        	
-            //String jsonResponse = clientResponse.getEntity(String.class);
         	String jsonResponse = clientResponse.readEntity(String.class);
 
             if (jsonResponse != null && jsonResponse.startsWith("[")) {
@@ -1180,7 +1178,24 @@ public class TaggerServiceImpl implements TaggerService {
         catch(Exception e){
             logger.error("deactivated - deletePybossaApp : " + e);
         }
+    }
 
+    @Override
+    public String getAttributesAndLabelsByCrisisId(Integer id) throws AidrException {
+        Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+        try {
+//            http://scd1.qcri.org:8084/AIDRTrainerAPI/rest/crisis/id/117
+            WebTarget webResource = client.target(crowdsourcingAPIMainUrl + "/crisis/id/" + id);
+
+            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+            logger.info("getAssignableTask - clientResponse : " + clientResponse);
+
+            String jsonResponse = clientResponse.readEntity(String.class);
+
+            return jsonResponse;
+        } catch (Exception e) {
+            throw new AidrException("Error while getting all nominal attributes and their labels for a given crisisID", e);
+        }
     }
 
 }
