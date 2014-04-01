@@ -57,7 +57,8 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
         this.mainComponent = component;
 
         this.loadCollection();
-        this.loadLatestTweets("{[]}");
+        this.mainComponent.constraintsString = '{"constraints":[]}';
+        this.loadLatestTweets();
         this.getAttributesAndLabelsByCrisisId();
     },
 
@@ -88,7 +89,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
         me.mainComponent.tweetsStore.load();
     },
 
-    loadLatestTweets: function (constraintsString) {
+    loadLatestTweets: function () {
         var me = this;
 
         Ext.Ajax.request({
@@ -98,13 +99,16 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                 code: CRISIS_CODE,
 //                code: "2014-02-uk_floods"
 //                code: "2014-03-mh370",
-                constraints: constraintsString
+                constraints: me.mainComponent.constraintsString
             },
             headers: {
                 'Accept': 'application/json'
             },
             success: function (response) {
                 var jsonData = Ext.decode(response.responseText);
+                if (jsonData.data == ""){
+                    return true;
+                }
                 var tweetData = Ext.JSON.decode(jsonData.data);
 
                 var data = me.transformTweetData(tweetData);
@@ -211,6 +215,12 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
     },
 
     applyFilterButtonHandler: function(){
+        this.mainComponent.constraintsString = this.getAllFilters();
+        this.loadLatestTweets();
+        this.mainComponent.resetFiltersButton.enable();
+    },
+
+    getAllFilters: function(){
         var me = this;
         var constraints = [];
         Ext.each(me.mainComponent.filterBlock.items.items, function (r) {
@@ -220,20 +230,22 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
             constraints: constraints
         };
 
-        var constraintString = JSON.stringify(result);
-//        TODO finish this section - refresh grid with constraints
-        console.log("Constraints: " + constraintString);
+        return Ext.JSON.encode(result);
     },
 
-    resetFiltersHandler: function () {
+    resetFiltersHandler: function (btn) {
         var me = this;
-
         me.mainComponent.suspendLayout = true;
 
         me.mainComponent.filterBlock.removeAll(true);
         me.mainComponent.filterBlock.insert(0, {
             rawData: me.mainComponent.attributesAndLabels
         });
+        btn.disable();
+//        Disable Apply Filter Button as we added new filter which is not valid yet
+        me.mainComponent.applyFilterButton.disable();
+        this.mainComponent.constraintsString = '{"constraints":[]}';
+        this.loadLatestTweets();
 
         me.mainComponent.suspendLayout = false;
         me.mainComponent.forceComponentLayout();
@@ -265,7 +277,9 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
             url: BASE_URL + '/protected/collection/generateTweetIdsLink.action',
             method: 'GET',
             params: {
-                code: CRISIS_CODE
+                code: CRISIS_CODE,
+//                code: "2014-03-mh370",
+                constraints: me.mainComponent.constraintsString
             },
             headers: {
                 'Accept': 'application/json'

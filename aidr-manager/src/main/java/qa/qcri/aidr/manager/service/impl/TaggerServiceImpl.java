@@ -885,12 +885,11 @@ public class TaggerServiceImpl implements TaggerService {
     public String loadLatestTweets(String code, String constraints) throws AidrException {
     	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
     	try {
-        	WebTarget webResource = client.target(outputAPIMainUrl + "/crisis/fetch/channel/" + code + "?count=1000");
+        	WebTarget webResource = client.target(outputAPIMainUrl + "/crisis/fetch/channel/filter/" + code + "?count=1000");
 
-//            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
-//                    .post(Entity.json(constraints), Response.class);
+            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
+                    .post(Entity.json(constraints), Response.class);
 
-        	Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
         	String jsonResponse = clientResponse.readEntity(String.class);
 
             if (jsonResponse != null && jsonResponse.startsWith("[")) {
