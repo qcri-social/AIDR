@@ -91,7 +91,7 @@ public class TaggerJsonOutputAdapter {
 			return false;
 	}
 
-	private class JsonReturnClass {
+	public class JsonReturnClass {
 		private JsonElement created_at = null;
 		private JsonElement text = null;
 		private JsonElement crisis_code = null;

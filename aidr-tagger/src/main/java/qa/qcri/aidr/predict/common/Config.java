@@ -35,6 +35,7 @@ public class Config extends Loggable {
     public static final int MAX_TASK_WRITE_FQ_MS;
     public static final int MAX_NEW_TASKS_PER_MINUTE;
     public static final int SAMPLE_COUNT_THRESHOLD;
+    public static final int MIN_TRUNCATE_INTERVAL;
 
     static {
         Properties prop = new Properties();
@@ -86,7 +87,8 @@ public class Config extends Loggable {
                 .getProperty("max_task_write_fq_ms"));
         MAX_NEW_TASKS_PER_MINUTE = Integer.parseInt(prop
                 .getProperty("max_new_tasks_per_minute"));
-
+        MIN_TRUNCATE_INTERVAL = Integer.parseInt(prop
+                .getProperty("min_truncate_interval_ms"));
         SAMPLE_COUNT_THRESHOLD =   Integer.parseInt(prop
                 .getProperty("sampleCountThreshold"));
     }

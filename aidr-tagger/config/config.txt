@@ -47,6 +47,7 @@ labeling_task_buffer_max_length=10000
 # Rate limits for writing labeling tasks to the database
 max_task_write_fq_ms=2000
 max_new_tasks_per_minute=150
+min_truncate_interval_ms=500
 
 # Reserved value used to represent the absence of an attribute value
 # (e.g. color: {null, red, green, blue})
