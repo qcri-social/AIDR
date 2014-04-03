@@ -2,8 +2,10 @@ package qa.qcri.aidr.predict.classification;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.common.Config;
@@ -106,14 +108,16 @@ public class LabelingTaskWriter extends PipelineProcess {
 		//DataStore
 		//        .truncateLabelingTaskBuffer(Config.LABELING_TASK_BUFFER_MAX_LENGTH);
 		if (!isTruncateRunLimited()) {
-			for (int crisisID: activeCrisisIDList.keySet()) {
+			for (Iterator<Map.Entry<Integer, Long>> it = activeCrisisIDList.entrySet().iterator();it.hasNext(); ) {
+				Map.Entry<Integer, Long> entry = it.next();
+				int crisisID = entry.getKey();
 				if (!isTruncateRateLimited() || 
 						activeCrisisIDList.get(crisisID) > Config.MAX_NEW_TASKS_PER_MINUTE) {
 					System.out.println("[writeToDB] Going to truncate for crisisID = " + crisisID + " [" + activeCrisisIDList.get(crisisID) + "] new docs");
 					DataStore
 					.truncateLabelingTaskBufferForCrisis(crisisID, Config.LABELING_TASK_BUFFER_MAX_LENGTH);
 					lastTruncateTime = System.currentTimeMillis();
-					activeCrisisIDList.remove(crisisID);
+					it.remove();
 					try {
 						Thread.sleep(200);
 					} catch (InterruptedException e) {}

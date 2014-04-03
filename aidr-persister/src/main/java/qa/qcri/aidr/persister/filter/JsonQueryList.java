@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 //import org.codehaus.jackson.annotate.JsonProperty;
 
 @SuppressWarnings("serial")
@@ -26,7 +28,7 @@ public class JsonQueryList implements Serializable {
 		constraints.add(query);
 	}
 	
-	//@JsonProperty("constraints")
+	@JsonProperty("constraints")
 	public ArrayList<QueryJsonObject> getConstraints() {
 		ArrayList<QueryJsonObject> temp = new ArrayList<QueryJsonObject>();
 		for (GenericInputQuery g: constraints) {
