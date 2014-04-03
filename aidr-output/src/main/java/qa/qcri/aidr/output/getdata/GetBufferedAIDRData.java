@@ -60,22 +60,31 @@ import java.util.Set;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 
 //import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
+import qa.qcri.aidr.output.filter.FilterQueryMatcher;
+import qa.qcri.aidr.output.filter.JsonQueryList;
+import qa.qcri.aidr.output.filter.NominalLabel;
+import qa.qcri.aidr.output.filter.QueryType;
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
+
 
 @Path("/crisis/fetch/")
 public class GetBufferedAIDRData implements ServletContextListener {
@@ -138,13 +147,16 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	 * 
 	 * @param callbackName  JSONP callback name
 	 * @param count number of messages to fetch
+	 * @param confidence minimum confidence threshold across all classifiers of a tweet
 	 * @return the latest tweet data as a jsonp object from across all active channels
+	 * subject to maximum confidence across all classifiers of a tweet >= confidence
 	 */
 	@GET
 	@Path("/channels/latest")
 	@Produces("application/json")
 	public Response getLatestBufferedAIDRData(@QueryParam("callback") String callbackName,
-			@DefaultValue("1") @QueryParam("count") String count) {
+			@DefaultValue("1") @QueryParam("count") String count,
+			@DefaultValue("0.7") @QueryParam("confidence") float confidence) {
 
 		//logger.info("[getLatestBufferedAIDRData] request received");
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {		// Jedis pool is ready
@@ -157,20 +169,44 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				temp.clear();
 				temp = null;
 			}
+			
+			// Added code as per new feature: pivotal #67373070
+			List<String> filteredMessages = new ArrayList<String>();
+			ClassifiedFilteredTweet classifiedTweet = new ClassifiedFilteredTweet();
+			for (String tweet: bufferedMessages) {
+				classifiedTweet.deserialize(tweet);
+				if (getMaxConfidence(classifiedTweet) >= confidence) {
+					filteredMessages.add(tweet);
+				}
+			}
+			
 			final JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
-			final StringBuilder jsonDataList = taggerOutput.createList(bufferedMessages, messageCount, rejectNullFlag);
+			final StringBuilder jsonDataList = taggerOutput.createList(filteredMessages, messageCount, rejectNullFlag);
 			final int sendCount = taggerOutput.getMessageCount();
 
 			// Reset the messageList buffer and return
 			bufferedMessages.clear();
 			bufferedMessages = null;
-
+			
+			filteredMessages.clear();
+			filteredMessages = null;
+			
 			// Finally, send the retrieved list to client and close connection
 			return Response.ok(jsonDataList.toString()).build();
 		}
 		return Response.ok(new String("[{}]")).build();
 	}
-
+	
+	float getMaxConfidence(ClassifiedFilteredTweet tweet) {
+		float maxConfidence = 0;
+		for (NominalLabel nLabel: tweet.getNominalLabels()) {
+			if (nLabel.confidence > maxConfidence) {
+				maxConfidence = nLabel.confidence;
+			}
+		}
+		return maxConfidence;
+	}
+	
 	/**
 	 * 
 	 * @param callbackName  JSONP callback name
@@ -194,7 +230,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			}
 			if (!error && channelCode.contains("*")) {
 				// Got a wildcard fetch request - fetch from all channels
-				return getLatestBufferedAIDRData(callbackName, count);
+				return getLatestBufferedAIDRData(callbackName, count, (float) 0.0);
 			}
 			if (channelCode != null && channelCode.contains("?")) { 
 				error = true;
@@ -272,6 +308,129 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		}
 		return Response.ok(new String("[{}]")).build();
 	}
+
+
+	@OPTIONS
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/channel/filter/{crisisCode}")
+	public Response getBufferedAIDRDataPostFilter(@PathParam("crisisCode") String channelCode,
+			@QueryParam("callback") String callbackName,
+			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
+		return Response.ok()
+				.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
+				.header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Credentials", "true")
+				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
+				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
+				.build();
+	}
+
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/channel/filter/{crisisCode}")
+	public Response getBufferedAIDRDataPostFilter(JsonQueryList queryList, @PathParam("crisisCode") String channelCode,
+			@QueryParam("callback") String callbackName,
+			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
+
+		logger.info("[getBufferedAIDRDataPostFilter] request received");
+		logger.info("[getBufferedAIDRDataPostFilter] Received POST list: " + queryList.toString());
+
+		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {
+			boolean error = false;
+			// Parse the HTTP GET request and generating results for output
+			// Set the response MIME type of the response message
+			if (null == channelCode) {
+				error = true;
+			}
+			if (!error && (channelCode.contains("?") || channelCode.contains("*"))) { 
+				error = true;
+			}
+			if (!error)
+			{	
+				// Form fully qualified channelName and get other parameter values, if any
+				String channelName = null;
+				if (channelCode.startsWith(CHANNEL_PREFIX_STRING) || channelCode.contains(".")) {
+					channelName = channelCode;		// fully qualified channel name provided
+				}
+				else {
+					channelName = CHANNEL_PREFIX_STRING.concat(channelCode);	// fully qualified channel name - same as REDIS channel
+				}
+				if (isChannelPresent(channelName)) {
+					int msgCount = Integer.parseInt(count);
+					int messageCount = DEFAULT_COUNT;
+					if (msgCount > 0) {
+						messageCount = Math.min(msgCount, MAX_MESSAGES_COUNT);
+					}
+					// Get the last messageCount messages for channel=channelCode
+					List<String> bufferedMessages = new ArrayList<String>();
+					List<String> temp = cbManager.getLastMessages(channelName, messageCount);
+					bufferedMessages.addAll(temp != null ? temp : new ArrayList<String>());
+
+					// Now filter the retrieved bufferedMessages list
+					FilterQueryMatcher tweetFilter = new FilterQueryMatcher();
+					tweetFilter.queryList.setConstraints(queryList);
+					tweetFilter.buildMatcherArray();
+
+					// Now to serially filter each tweet in the bufferedMessages list
+					List<String> filteredMessages = new ArrayList<String>();
+					if (null == queryList || queryList.getConstraints().isEmpty()
+							|| (queryList.getConstraints().get(0).queryType != QueryType.classifier_query
+							&& queryList.getConstraints().get(0).queryType != QueryType.date_query)) {
+						// default behavior - no filtering if no POST payload
+						filteredMessages.addAll(bufferedMessages);
+					} else {
+						ClassifiedFilteredTweet classifiedTweet = new ClassifiedFilteredTweet();
+						for (String tweet: bufferedMessages) {
+							classifiedTweet.deserialize(tweet);
+							if (tweetFilter.getMatcherResult(classifiedTweet)) {
+								logger.info("[getBufferedAIDRDataPostFilter] adding tweet to filteredMessages");
+								filteredMessages.add(tweet);
+							}
+						}
+						logger.info("[getBufferedAIDRDataPostFilter] Fetched bufferedMessages size = " + bufferedMessages.size());
+						logger.info("[getBufferedAIDRDataPostFilter] Final filteredMessages size = " + filteredMessages.size());
+					}
+					// Finally the usual stuff - format tweets for tagger specific output
+					final JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
+					final StringBuilder jsonDataList = taggerOutput.createList(filteredMessages, messageCount, rejectNullFlag);
+					final int sendCount = taggerOutput.getMessageCount();
+					logger.info("[getBufferedAIDRDataPostFilter] Sending jsonp data, count = " + sendCount);
+
+					// Cleanup, send the retrieved list to client and close connection
+					if (temp != null) { 
+						temp.clear();
+						temp = null;
+					}
+					bufferedMessages.clear();
+					bufferedMessages = null;
+
+					filteredMessages.clear();
+					filteredMessages = null;
+
+					//logger.info("[doGet] Sending jsonp data, count = " + sendCount);
+					return Response.ok(jsonDataList.toString())
+							.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
+							.header("Access-Control-Allow-Origin", "*")
+							.header("Access-Control-Allow-Credentials", "true")
+							.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
+							.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
+							.build();
+				}
+				else {
+					if (callbackName != null) {
+						StringBuilder respStr = new StringBuilder();
+						respStr.append(callbackName).append("([{}])");
+						return Response.ok(respStr.toString()).build();
+					} else
+						return Response.ok(new String("[{}]")).build();
+				}
+			}
+		}
+		return Response.ok(new String("[{}]")).build();
+	}
+
+
 
 	/**
 	 * 

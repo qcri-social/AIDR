@@ -82,9 +82,9 @@ public class LabelingTaskWriter extends PipelineProcess {
 
 	void save(Document item) {
 		writeBuffer.add(item);
-		Long currentCrisisIDItemCount = 
-				(null == activeCrisisIDList.get(item.getCrisisID())) ? 0L 
-						: activeCrisisIDList.get(item.getCrisisID());
+		Long currentCrisisIDItemCount =  
+					activeCrisisIDList.containsKey(item.getCrisisID()) ? 
+							activeCrisisIDList.get(item.getCrisisID()) : 0L;
 		activeCrisisIDList.put(item.getCrisisID(), currentCrisisIDItemCount+1);
 		if (!isWriteRateLimited()) {
 			writeToDB();

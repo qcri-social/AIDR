@@ -713,7 +713,7 @@ public class DataStore extends Loggable {
 			while (rs.next()) {
 				documentIDList.add(rs.getInt("documentID"));
 			}
-			System.out.println("[truncateLabelingTaskBufferForCrisis] CrisisID = " + crisisID + ", from SELECT statement, number of documents to delete = " + documentIDList.size());
+			System.out.println("[truncateLabelingTaskBufferForCrisis] CrisisID = " + crisisID + ", from SELECT statement retrieved docs count = " + documentIDList.size());
 		} catch (SQLException e) {
 			log("DataStore",
 					"Exception when attempting to get crisis docs count from document table",
@@ -730,9 +730,9 @@ public class DataStore extends Loggable {
 		int docsToDelete = documentIDList.size() - Config.LABELING_TASK_BUFFER_MAX_LENGTH;
 		if (docsToDelete > ERROR_MARGIN) {
 			String sqlDeleteStmt = "DELETE FROM document WHERE documentID = ?";
-			System.out.println("Number of Documents to delete = " + docsToDelete);
 			try {
 				conn = getMySqlConnection();
+				conn.setAutoCommit(false);
 				sqlDelete = conn.prepareStatement(sqlDeleteStmt);
 				// Delete the top confidence documents from document table
 				for (int i = 0;i < docsToDelete;i++) {
@@ -741,7 +741,16 @@ public class DataStore extends Loggable {
 					System.out.println("[truncateLabelingTaskBufferForCrisis] To delete: CrisisID = " + crisisID + ", documentID = " + documentIDList.get(i));
 				}
 				int[] affectedRecords = sqlDelete.executeBatch();
-				System.out.println("truncateLabelingTaskBufferForCrisis] Executed batch delete for crisisID = " + crisisID);
+				conn.commit();
+				System.out.println("[truncateLabelingTaskBufferForCrisis] Number of Documents to delete = " + docsToDelete);
+				System.out.println("[truncateLabelingTaskBufferForCrisis] Executed batch delete for crisisID = " + crisisID);
+				int deleteCount = 0;
+				for (int i = 0;i < affectedRecords.length;i++) {
+					if (affectedRecords[i] > 0) {
+						++deleteCount;
+					}
+				}
+				System.out.println("[truncateLabelingTaskBufferForCrisis] Number of documents actually deleted = " + deleteCount);
 			} catch (Exception e) {
 				log("DataStore",
 						"Exception when attempting to batch delete for trimming the document table",

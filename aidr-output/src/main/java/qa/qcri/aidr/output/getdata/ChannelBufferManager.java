@@ -29,11 +29,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import qa.qcri.aidr.output.filter.JsonQueryList;
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
+
 
 //import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
@@ -298,7 +300,7 @@ public class ChannelBufferManager {
 		String offsetString = "\"created_at\":\"";
 		StringBuffer strBuff = new StringBuffer();
 		strBuff.append(tweet.substring(tweet.indexOf(offsetString) + offsetString.length(), tweet.indexOf("\",", tweet.indexOf(offsetString))));
-		
+
 		// Tweet date format: Tue Feb 18 08:46:03 +0000 2014
 		SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZ yyyy");
 		formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -310,7 +312,7 @@ public class ChannelBufferManager {
 		}
 		return null;
 	}
-	
+
 
 	private void subscribeToChannel(final String channelRegEx) throws Exception {
 		executorServicePool.submit(new Runnable() {
@@ -385,4 +387,5 @@ public class ChannelBufferManager {
 			logger.info("[onPSubscribe] Subscribed to channel pattern:" + pattern);
 		}
 	}
+
 }
