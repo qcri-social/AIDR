@@ -646,6 +646,7 @@ public class DataStore extends Loggable {
 		return crisisIDs;
 	}
 
+	/*
 	public static void truncateLabelingTaskBuffer(int maxLength) {
 		if (maxLength < 0) {
 			throw new RuntimeException(
@@ -688,7 +689,8 @@ public class DataStore extends Loggable {
 			close(conn);
 		}
 	}
-
+	*/
+	
 	public static void truncateLabelingTaskBufferForCrisis(int crisisID, int maxLength) {
 		if (maxLength < 0 || crisisID < 0) {
 			throw new RuntimeException(
@@ -732,18 +734,26 @@ public class DataStore extends Loggable {
 			String sqlDeleteStmt = "DELETE FROM document WHERE documentID = ?";
 			try {
 				conn = getMySqlConnection();
-				conn.setAutoCommit(false);
+				//conn.setAutoCommit(false);
 				sqlDelete = conn.prepareStatement(sqlDeleteStmt);
 				// Delete the top confidence documents from document table
+				StringBuilder sqlDeleteStmt2 = new StringBuilder();
+				sqlDeleteStmt2.append("DELETE FROM document WHERE documentID IN (");
 				for (int i = 0;i < docsToDelete;i++) {
 					sqlDelete.setLong(1, documentIDList.get(i));
 					sqlDelete.addBatch();
 					System.out.println("[truncateLabelingTaskBufferForCrisis] To delete: CrisisID = " + crisisID + ", documentID = " + documentIDList.get(i));
+					sqlDeleteStmt2.append(documentIDList.get(i)).append(",");
 				}
+				sqlDeleteStmt2.deleteCharAt(sqlDeleteStmt2.lastIndexOf(",")).append(")");
+				long startTime = System.currentTimeMillis();
 				int[] affectedRecords = sqlDelete.executeBatch();
-				conn.commit();
+				long endTime = System.currentTimeMillis();
+				long elapsed = endTime - startTime;
+				//conn.commit();
 				System.out.println("[truncateLabelingTaskBufferForCrisis] Number of Documents to delete = " + docsToDelete);
 				System.out.println("[truncateLabelingTaskBufferForCrisis] Executed batch delete for crisisID = " + crisisID);
+				System.out.println("[truncateLabelingTaskBufferForCrisis] Time taken = " + elapsed);
 				int deleteCount = 0;
 				for (int i = 0;i < affectedRecords.length;i++) {
 					if (affectedRecords[i] > 0) {
