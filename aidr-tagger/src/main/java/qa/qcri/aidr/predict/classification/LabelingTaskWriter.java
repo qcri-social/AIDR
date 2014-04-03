@@ -1,7 +1,9 @@
 package qa.qcri.aidr.predict.classification;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.common.Config;
@@ -20,77 +22,108 @@ import qa.qcri.aidr.predict.featureextraction.WordSet;
  */
 public class LabelingTaskWriter extends PipelineProcess {
 
-    class DocumentHistory {
-        LinkedList<WordSet> recentWordVectors = new LinkedList<WordSet>();
-        int bufferSize = 50;
+	class DocumentHistory {
+		LinkedList<WordSet> recentWordVectors = new LinkedList<WordSet>();
+		int bufferSize = 50;
 
-        public boolean addItemIfNovel(Document doc) {
-            WordSet w1 = doc.getFeatures(WordSet.class).get(0);
+		public boolean addItemIfNovel(Document doc) {
+			WordSet w1 = doc.getFeatures(WordSet.class).get(0);
 
-            double maxSim = 0;
-            for (WordSet w2 : recentWordVectors) {
-                double sim = w2.getSimilarity(w1);
-                if (sim > maxSim) {
-                    if (sim > 0.5) // TODO: This threshold needs some tuning,
-                                   // probably
-                        return false;
-                    maxSim = sim;
-                }
-            }
+			double maxSim = 0;
+			for (WordSet w2 : recentWordVectors) {
+				double sim = w2.getSimilarity(w1);
+				if (sim > maxSim) {
+					if (sim > 0.5) // TODO: This threshold needs some tuning,
+						// probably
+						return false;
+					maxSim = sim;
+				}
+			}
 
-            recentWordVectors.add(w1);
-            if (recentWordVectors.size() > bufferSize)
-                recentWordVectors.remove();
+			recentWordVectors.add(w1);
+			if (recentWordVectors.size() > bufferSize)
+				recentWordVectors.remove();
 
-            return true;
-        }
-    }
+			return true;
+		}
+	}
 
-    long lastDBWrite = 0;
-    public long writeCount = 0;
-    ArrayList<Document> writeBuffer = new ArrayList<Document>();
-    RateLimiter taskRateLimiter = new RateLimiter(
-            Config.MAX_NEW_TASKS_PER_MINUTE);
-    DocumentHistory history = new DocumentHistory();
+	long lastDBWrite = 0;
+	long lastTruncateTime = 0;
+	public long writeCount = 0;
+	ArrayList<Document> writeBuffer = new ArrayList<Document>();
 
-    protected void processItem(Document item) {
-        // Write novel DocumentSets to the database at a maximum rate of up to N
-        // items per minute
-        if (item.hasHumanLabels()
-                || (!taskRateLimiter.isLimited() && item.isNovel() && history
-                        .addItemIfNovel(item))) {
-            // log(LogLevel.INFO, "LabelingTaskWriter recieved an item");
-            save(item);
-            taskRateLimiter.logEvent();
-        }
-    }
+	// Maintain a hash table of currently seen <key> = crisisIDs that are
+	// being saved to the DB, with <value> being the number of items per crisisID
+	// being saved to the DB. 
+	Map<Integer, Long> activeCrisisIDList = new HashMap<Integer, Long>();	
+	Map<Integer, Double>activeCrisisMaxConf = new HashMap<Integer, Double>();
 
-    void save(Document item) {
-        writeBuffer.add(item);
+	RateLimiter taskRateLimiter = new RateLimiter(
+			Config.MAX_NEW_TASKS_PER_MINUTE);
+	DocumentHistory history = new DocumentHistory();
 
-        if (!isWriteRateLimited()) {
-            writeToDB();
-        }
-    }
+	protected void processItem(Document item) {
+		// Write novel DocumentSets to the database at a maximum rate of up to N
+		// items per minute
+		if (item.hasHumanLabels()
+				|| (!taskRateLimiter.isLimited() && item.isNovel() && history
+						.addItemIfNovel(item))) {
+			// log(LogLevel.INFO, "LabelingTaskWriter recieved an item");
+			//if (item.getValueAsTrainingSample() < activeCrisisMaxConf.get(item.getCrisisID())) 
+			{
+				//activeCrisisMaxConf.put(item.getCrisisID(), item.getValueAsTrainingSample());
+				save(item);
+				taskRateLimiter.logEvent();
+			}
+			
+		}
+	}
 
-    @Override
-    protected void idle() {
-        if (writeBuffer.size() > 0)
-            writeToDB();
-    }
+	void save(Document item) {
+		writeBuffer.add(item);
+		Long currentCrisisIDItemCount = activeCrisisIDList.get(item.getCrisisID());
+		activeCrisisIDList.put(item.getCrisisID(), currentCrisisIDItemCount+1);
+		if (!isWriteRateLimited()) {
+			writeToDB();
+		}
+	}
 
-    void writeToDB() {
-        // log(LogLevel.INFO, "Writing " + writeBuffer.size() +
-        // " tasks/labeled items from pipeline to DB");
-        DataStore.saveDocumentsToDatabase(writeBuffer);
-        writeCount += writeBuffer.size(); 
-        writeBuffer.clear();
-        DataStore
-                .truncateLabelingTaskBuffer(Config.LABELING_TASK_BUFFER_MAX_LENGTH);
-        lastDBWrite = System.currentTimeMillis();
-    }
+	@Override
+	protected void idle() {
+		if (writeBuffer.size() > 0)
+			writeToDB();
+	}
 
-    boolean isWriteRateLimited() {
-        return (System.currentTimeMillis() - lastDBWrite) < Config.MAX_TASK_WRITE_FQ_MS;
-    }
+	void writeToDB() {
+		// log(LogLevel.INFO, "Writing " + writeBuffer.size() +
+		// " tasks/labeled items from pipeline to DB");
+		DataStore.saveDocumentsToDatabase(writeBuffer);
+		writeCount += writeBuffer.size(); 
+		writeBuffer.clear();
+		//DataStore
+		//        .truncateLabelingTaskBuffer(Config.LABELING_TASK_BUFFER_MAX_LENGTH);
+		for (int crisisID: activeCrisisIDList.keySet()) {
+			if (!isTruncateRateLimited() || 
+					activeCrisisIDList.get(crisisID) > Config.MAX_NEW_TASKS_PER_MINUTE) {
+				DataStore
+				.truncateLabelingTaskBufferForCrisis(crisisID, Config.LABELING_TASK_BUFFER_MAX_LENGTH);
+				lastTruncateTime = System.currentTimeMillis();
+				activeCrisisIDList.remove(crisisID);
+				try {
+					Thread.sleep(200);
+				} catch (InterruptedException e) {}
+			}
+		}
+		lastDBWrite = System.currentTimeMillis();
+	}
+
+
+	boolean isWriteRateLimited() {
+		return (System.currentTimeMillis() - lastDBWrite) < Config.MAX_TASK_WRITE_FQ_MS;
+	}
+
+	boolean isTruncateRateLimited() {
+		return (System.currentTimeMillis() - lastTruncateTime) < Config.MIN_TRUNCATE_INTERVAL;
+	}
 }
