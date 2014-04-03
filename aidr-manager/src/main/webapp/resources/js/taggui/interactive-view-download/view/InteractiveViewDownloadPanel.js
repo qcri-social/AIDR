@@ -261,13 +261,14 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
             },
             this.filterFieldSet,
             this.tweetsPanel,
-            {
-                xtype: 'container',
-                width: '100%',
-                margin: '20 0 0 0',
-                html: '<div class="horizontalLine"></div>'
-            },
-            this.downloadPanel,
+//            TODO uncomment this when generate download link API will be OK
+//            {
+//                xtype: 'container',
+//                width: '100%',
+//                margin: '20 0 0 0',
+//                html: '<div class="horizontalLine"></div>'
+//            },
+//            this.downloadPanel,
             this.contactOwnerPanel
         ];
 
