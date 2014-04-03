@@ -76,19 +76,19 @@ public class LabelingTaskWriter extends PipelineProcess {
 				save(item);
 				taskRateLimiter.logEvent();
 			}
-			
+
 		}
 	}
 
 	void save(Document item) {
 		writeBuffer.add(item);
 		Long currentCrisisIDItemCount =  
-					activeCrisisIDList.containsKey(item.getCrisisID()) ? 
-							activeCrisisIDList.get(item.getCrisisID()) : 0L;
-		activeCrisisIDList.put(item.getCrisisID(), currentCrisisIDItemCount+1);
-		if (!isWriteRateLimited()) {
-			writeToDB();
-		}
+				activeCrisisIDList.containsKey(item.getCrisisID()) ? 
+						activeCrisisIDList.get(item.getCrisisID()) : 0L;
+						activeCrisisIDList.put(item.getCrisisID(), currentCrisisIDItemCount+1);
+						if (!isWriteRateLimited()) {
+							writeToDB();
+						}
 	}
 
 	@Override
@@ -105,17 +105,19 @@ public class LabelingTaskWriter extends PipelineProcess {
 		writeBuffer.clear();
 		//DataStore
 		//        .truncateLabelingTaskBuffer(Config.LABELING_TASK_BUFFER_MAX_LENGTH);
-		for (int crisisID: activeCrisisIDList.keySet()) {
-			if (!isTruncateRateLimited() || 
-					activeCrisisIDList.get(crisisID) > Config.MAX_NEW_TASKS_PER_MINUTE) {
-				System.out.println("[writeToDB] Going to truncate for crisisID = " + crisisID + " [" + activeCrisisIDList.get(crisisID) + "] new docs");
-				DataStore
-				.truncateLabelingTaskBufferForCrisis(crisisID, Config.LABELING_TASK_BUFFER_MAX_LENGTH);
-				lastTruncateTime = System.currentTimeMillis();
-				activeCrisisIDList.remove(crisisID);
-				try {
-					Thread.sleep(200);
-				} catch (InterruptedException e) {}
+		if (!isTruncateRunLimited()) {
+			for (int crisisID: activeCrisisIDList.keySet()) {
+				if (!isTruncateRateLimited() || 
+						activeCrisisIDList.get(crisisID) > Config.MAX_NEW_TASKS_PER_MINUTE) {
+					System.out.println("[writeToDB] Going to truncate for crisisID = " + crisisID + " [" + activeCrisisIDList.get(crisisID) + "] new docs");
+					DataStore
+					.truncateLabelingTaskBufferForCrisis(crisisID, Config.LABELING_TASK_BUFFER_MAX_LENGTH);
+					lastTruncateTime = System.currentTimeMillis();
+					activeCrisisIDList.remove(crisisID);
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {}
+				}
 			}
 		}
 		lastDBWrite = System.currentTimeMillis();
@@ -128,5 +130,9 @@ public class LabelingTaskWriter extends PipelineProcess {
 
 	boolean isTruncateRateLimited() {
 		return (System.currentTimeMillis() - lastTruncateTime) < Config.MIN_TRUNCATE_INTERVAL;
+	}
+	
+	boolean isTruncateRunLimited() {
+		return (System.currentTimeMillis() - lastTruncateTime) < Config.TRUNCATE_RUN_INTERVAL;
 	}
 }
