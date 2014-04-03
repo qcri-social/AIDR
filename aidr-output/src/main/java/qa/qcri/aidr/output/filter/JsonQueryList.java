@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 //import org.codehaus.jackson.annotate.JsonProperty;
 
 @SuppressWarnings("serial")
-@XmlRootElement(name="QueryJsonObject")
+@XmlRootElement(name="JsonQueryList")
 public class JsonQueryList implements Serializable {
 	@XmlElement private ArrayList<GenericInputQuery> constraints;
 	
