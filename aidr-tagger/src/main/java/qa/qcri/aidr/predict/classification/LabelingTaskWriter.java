@@ -108,6 +108,7 @@ public class LabelingTaskWriter extends PipelineProcess {
 		for (int crisisID: activeCrisisIDList.keySet()) {
 			if (!isTruncateRateLimited() || 
 					activeCrisisIDList.get(crisisID) > Config.MAX_NEW_TASKS_PER_MINUTE) {
+				System.out.println("[writeToDB] Going to truncate for crisisID = " + crisisID + " [" + activeCrisisIDList.get(crisisID) + "] new docs");
 				DataStore
 				.truncateLabelingTaskBufferForCrisis(crisisID, Config.LABELING_TASK_BUFFER_MAX_LENGTH);
 				lastTruncateTime = System.currentTimeMillis();

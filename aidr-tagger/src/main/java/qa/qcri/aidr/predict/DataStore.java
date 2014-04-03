@@ -713,6 +713,7 @@ public class DataStore extends Loggable {
 			while (rs.next()) {
 				documentIDList.add(rs.getInt("documentID"));
 			}
+			System.out.println("[truncateLabelingTaskBufferForCrisis] CrisisID = " + crisisID + ", from SELECT statement, number of documents to delete = " + documentIDList.size());
 		} catch (SQLException e) {
 			log("DataStore",
 					"Exception when attempting to get crisis docs count from document table",
@@ -725,10 +726,11 @@ public class DataStore extends Loggable {
 		// Next trim the document table for the given crisisID to the 
 		// Config.LABELING_TASK_BUFFER_MAX_LENGTH size
 		PreparedStatement sqlDelete = null;
-		int docsToDelete = documentIDList.size() - Config.LABELING_TASK_BUFFER_MAX_LENGTH;
 		int ERROR_MARGIN = 0;		// if less than this, then skip delete
+		int docsToDelete = documentIDList.size() - Config.LABELING_TASK_BUFFER_MAX_LENGTH;
 		if (docsToDelete > ERROR_MARGIN) {
 			String sqlDeleteStmt = "DELETE FROM document WHERE documentID = ?";
+			System.out.println("Number of Documents to delete = " + docsToDelete);
 			try {
 				conn = getMySqlConnection();
 				sqlDelete = conn.prepareStatement(sqlDeleteStmt);
@@ -736,8 +738,10 @@ public class DataStore extends Loggable {
 				for (int i = 0;i < docsToDelete;i++) {
 					sqlDelete.setLong(1, documentIDList.get(i));
 					sqlDelete.addBatch();
+					System.out.println("[truncateLabelingTaskBufferForCrisis] To delete: CrisisID = " + crisisID + ", documentID = " + documentIDList.get(i));
 				}
 				int[] affectedRecords = sqlDelete.executeBatch();
+				System.out.println("truncateLabelingTaskBufferForCrisis] Executed batch delete for crisisID = " + crisisID);
 			} catch (Exception e) {
 				log("DataStore",
 						"Exception when attempting to batch delete for trimming the document table",
