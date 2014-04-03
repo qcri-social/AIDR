@@ -135,6 +135,7 @@ public class Persister4TaggerAPI {
 			@QueryParam("collectionCode") String collectionCode, 
 			@QueryParam("exportLimit") int exportLimit) throws UnknownHostException {
 		JsonDeserializer jsonD = new JsonDeserializer();
+		System.out.println("[generateCSVFromLastestJSONFiltered] request received");
 		System.out.println("[generateCSVFromLastestJSONFiltered] Received POST list: " + queryList.toString());
 
 		String fileName = jsonD.taggerGenerateJSON2CSV_100K_BasedOnTweetCountFiltered(collectionCode, exportLimit, queryList);
