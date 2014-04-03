@@ -66,7 +66,7 @@ public class PybossaFormatter {
         return appID;
     }
 
-    public String getTaskLogDateHistory(List<TaskLog> taskLogList, String pybossaResult, JSONParser parser) throws Exception{
+    public String getTaskLogDateHistory(List<TaskLog> taskLogList, String pybossaResult, JSONParser parser, Long attributeID) throws Exception{
         //JSONObject aModified = new JSONObject();
         JSONObject dateJSON = new JSONObject();
 
@@ -86,6 +86,14 @@ public class PybossaFormatter {
 
         while(itr.hasNext()){
             JSONObject featureJsonObj = (JSONObject)itr.next();
+            if(attributeID != null){
+                JSONObject jsonInfo = (JSONObject)featureJsonObj.get("info");
+                jsonInfo.put("attributeID", attributeID);
+
+                //featureJsonObj.remove("info");
+                featureJsonObj.put("info", jsonInfo);
+            }
+
 
             String taskPresented = (String)featureJsonObj.get("created");
           //  taskPresented = DateTimeConverter.utcToDefault(taskPresented);
@@ -95,6 +103,7 @@ public class PybossaFormatter {
 
             dateJSON.put("taskpresented",taskPresented) ;
             dateJSON.put("taskcompleted",taskCompleted) ;
+
 
             featureJsonObj.put("dateHistory",dateJSON) ;
         }

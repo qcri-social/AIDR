@@ -1,5 +1,9 @@
 package qa.qcri.aidr.trainer.pybossa.util;
 
+import com.javadocmd.simplelatlng.LatLng;
+import com.javadocmd.simplelatlng.LatLngTool;
+import com.javadocmd.simplelatlng.util.LengthUnit;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jlucas
@@ -9,6 +13,16 @@ package qa.qcri.aidr.trainer.pybossa.util;
  */
 public class LatLngUtils {
 
+    public static void computeDistanceInMile(double lat1, double lon1,
+                                       double lat2, double lon2,
+                                       double distanceInMiles[]) {
+
+        LatLng point1 = new LatLng(lat1, lon1);
+        LatLng point2 = new LatLng(lat2, lon2);
+
+        distanceInMiles[0] = LatLngTool.distance(point1, point2, LengthUnit.MILE);
+
+    }
     /**
      * @param lat1
      *          Initial latitude
@@ -214,6 +228,72 @@ public class LatLngUtils {
 
     private static double toDegrees(double radians) {
         return radians * 180 / Math.PI;
+    }
+
+
+    public static void geoMidPointFor3Points(double lat1, double lon1,
+                                     double lat2, double lon2,
+                                     double lat3, double lon3,
+                                     double results[]) {
+
+        // Convert lat/long to radians
+        lat1 = toRad(lat1);
+        lat2 = toRad(lat2);
+        lat3 = toRad(lat3);
+        lon1 = toRad(lon1);
+        lon2 = toRad(lon2);
+        lon3 = toRad(lon3);
+
+        double x1 = Math.cos(lat1) * Math.cos(lon1);
+        double y1 = Math.cos(lat1) * Math.sin(lon1);
+        double z1 = Math.sin(lat1);
+
+        double x2 = Math.cos(lat2) * Math.cos(lon2);
+        double y2 = Math.cos(lat2) * Math.sin(lon2);
+        double z2 = Math.sin(lat2);
+
+
+        double x3 = Math.cos(lat3) * Math.cos(lon3);
+        double y3 = Math.cos(lat3) * Math.sin(lon3);
+        double z3 = Math.sin(lat3);
+        // no consideration on weight. so, put on 1 on 3 loc on weight assumption.
+        double w = 1;
+        double totWeight = 3;
+
+        double x = (x1 + x2 + x3)/totWeight;
+        double y = (y1 + y2 + y3) /totWeight;
+        double z = (z1 + z2 + z3) / totWeight;
+
+        double lon = Math.atan2(y,x);
+        double hyp = Math.sqrt(x*x+y*y);
+        double lat = Math.atan2(z,hyp);
+
+        lat = toDegrees(lat);
+        lon = toDegrees(lon);
+
+        results[0] = lon;
+        results[1] = lat;
+
+       // System.out.println(lat + " " + lon);
+
+    }
+
+    public static void geoMidPointFor2Points(double lat1,double lon1,double lat2,double lon2){
+
+        double dLon = Math.toRadians(lon2 - lon1);
+
+        //convert to radians
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+        lon1 = Math.toRadians(lon1);
+
+        double Bx = Math.cos(lat2) * Math.cos(dLon);
+        double By = Math.cos(lat2) * Math.sin(dLon);
+        double lat3 = Math.atan2(Math.sin(lat1) + Math.sin(lat2), Math.sqrt((Math.cos(lat1) + Bx) * (Math.cos(lat1) + Bx) + By * By));
+        double lon3 = lon1 + Math.atan2(By, Math.cos(lat1) + Bx);
+
+        //print out in degrees
+        System.out.println(Math.toDegrees(lat3) + " " + Math.toDegrees(lon3));
     }
 
 }

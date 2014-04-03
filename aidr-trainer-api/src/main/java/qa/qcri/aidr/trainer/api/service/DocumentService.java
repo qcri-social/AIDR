@@ -17,5 +17,7 @@ public interface DocumentService {
     void updateHasHumanLabel(Long documentID, boolean value);
     Document findDocument(Long documentID);
     List<Document> getDocumentForTask(Long crisisID, int count, String userName);
-    List<TaskBufferJsonModel> findOneDocumentForTaskByCririsID(Long crisisID, String userName, Integer maxresult);
+    List<TaskBufferJsonModel> findOneDocumentForTaskByCririsID(Document document, Long crisisID);
+    public void addToOneTaskAssignmentWithUserName(long documentID, String userName) ;
+    public void addToOneTaskAssignment(long documentID, long userID) ;
 }

@@ -55,19 +55,26 @@ public class TemplateServiceImpl implements TemplateService {
                 client = clientService.findClientbyID("clientID", clientAppList.get(0).getClientID());
                 for(int i=0; i < clientAppList.size(); i++){
                     ClientApp clientApp = clientAppList.get(i);
-                    CrisisApplicationListFormatter formatter = new CrisisApplicationListFormatter(clientApp,client,taskQueueService) ;
-                    String url = formatter.getURLLink();
-                    Integer remaining = formatter.getRemaining();
-                    Integer totalCount = formatter.getTotalTaskNumber();
-                    String attNameValue = clientApp.getName();
-                    String[] array = attNameValue.split("\\:");
-                    String attName =null;
 
-                    if(array.length > 1){
-                        attName = array[1];
+                    if(!clientApp.getStatus().equals(StatusCodeType.CLIENT_APP_INACTIVE) && !clientApp.getStatus().equals(StatusCodeType.CLIENT_APP_DISABLED)){
+
+                        CrisisApplicationListFormatter formatter = new CrisisApplicationListFormatter(clientApp,client,taskQueueService) ;
+                        String url = formatter.getURLLink();
+                        Integer remaining = formatter.getRemaining();
+                        Integer totalCount = formatter.getTotalTaskNumber() - formatter.getRemaining();
+                        if(totalCount < 0){
+                            totalCount = 0;
+                        }
+                        String attNameValue = clientApp.getName();
+                        String[] array = attNameValue.split("\\:");
+                        String attName =null;
+
+                        if(array.length > 1){
+                            attName = array[1];
+                        }
+
+                        applicationListModelList.add(new CrisisApplicationListModel(clientApp.getNominalAttributeID(),attName.trim(),url,remaining, totalCount));
                     }
-
-                    applicationListModelList.add(new CrisisApplicationListModel(clientApp.getNominalAttributeID(),attName.trim(),url,remaining, totalCount));
 
                 }
 

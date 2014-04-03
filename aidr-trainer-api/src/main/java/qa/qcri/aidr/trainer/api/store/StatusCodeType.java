@@ -21,10 +21,15 @@ public class StatusCodeType {
     public static Integer TASK_PUBLISHED = 1;
     public static Integer TASK_LIFECYCLE_COMPLETED = 2;
     public static Integer TASK_EXPORTED = 3;
+    public static Integer TASK_ABANDONED = 4;
+
 
     public static Integer MICROMAPPER_ONLY = 2;
     public static Integer AIDR_ONLY = 1;
     public static Integer CLIENT_APP_INACTIVE = 3;
+    public static Integer CLIENT_APP_PENDING = 0;
+    public static Integer CLIENT_APP_DISABLED = 4;
+
 
 
 

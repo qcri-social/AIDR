@@ -3,6 +3,7 @@ package qa.qcri.aidr.trainer.api.service.impl;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.trainer.api.dao.CrisisDao;
@@ -12,7 +13,10 @@ import qa.qcri.aidr.trainer.api.dao.UsersDao;
 import qa.qcri.aidr.trainer.api.entity.Crisis;
 import qa.qcri.aidr.trainer.api.entity.Document;
 import qa.qcri.aidr.trainer.api.entity.Users;
+import qa.qcri.aidr.trainer.api.service.CrisisService;
 import qa.qcri.aidr.trainer.api.service.DocumentService;
+import qa.qcri.aidr.trainer.api.service.TaskAssignmentService;
+import qa.qcri.aidr.trainer.api.service.UsersService;
 import qa.qcri.aidr.trainer.api.template.CrisisJsonModel;
 import qa.qcri.aidr.trainer.api.template.CrisisJsonOutput;
 import qa.qcri.aidr.trainer.api.template.NominalAttributeJsonModel;
@@ -39,13 +43,13 @@ public class DocumentServiceImpl implements DocumentService {
     private DocumentDao documentDao;
 
     @Autowired
-    private TaskAssignmentDao taskAssignmentDao;
+    private TaskAssignmentService taskAssignmentService;
 
     @Autowired
-    private UsersDao usersDao;
+    private UsersService usersService;
 
     @Autowired
-    private CrisisDao crisisDao;
+    private CrisisService crisisService;
 
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
@@ -65,49 +69,63 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
     public List<Document> getDocumentForTask(Long crisisID, int count, String userName) {
 
         List<Document> documents = null;
-        Users users = usersDao.findUserByName(userName);
+        Users users = usersService.findUserByName(userName);
 
         if(users != null){
-            documents =  documentDao.findDocumentForTask(crisisID, count)  ;
-            //taskAssignmentDao.insertTaskAssignment(documents, users.getUserID());
-            this.addToTaskAssignment(documents, users.getUserID());
+            documents =  this.getAvailableDocument(crisisID, count)  ;
+            if(documents != null && documents.size() > 0){
+                taskAssignmentService.addToTaskAssignment(documents, users.getUserID());
+            }
         }
 
         return documents;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public List<TaskBufferJsonModel> findOneDocumentForTaskByCririsID(Long crisisID, String userName, Integer maxresult) {
+    public List<TaskBufferJsonModel> findOneDocumentForTaskByCririsID(Document document, Long crisisID) {
         List<TaskBufferJsonModel> jsonModelList = new ArrayList<TaskBufferJsonModel>();
-
-        Users users = usersDao.findUserByName(userName);
-
-        if(users != null){
-            List<Document> documents =  documentDao.findDocumentForTask(crisisID, maxresult)  ;
-            if(documents.size() > 0){
-                Crisis crisis =  crisisDao.findByCrisisID(crisisID) ;
-                CrisisJsonModel jsonOutput = new CrisisJsonOutput().crisisJsonModelGenerator(crisis);
-                Set<NominalAttributeJsonModel> attributeJsonModelSet = jsonOutput.getNominalAttributeJsonModelSet() ;
-                for(int i =0; i < documents.size(); i++){
-                    Document document = documents.get(0);
-                    TaskBufferJsonModel jsonModel = new TaskBufferJsonModel(document.getDocumentID(),document.getCrisisID(),attributeJsonModelSet,document.getLanguage(), document.getDoctype(), document.getData(), document.getValueAsTrainingSample(),0);
-                    jsonModelList.add(jsonModel);
-                }
-            }
-            this.addToTaskAssignment(documents, users.getUserID());
-            //taskAssignmentDao.insertTaskAssignment(documents, users.getUserID());
-
+        if(document != null){
+            jsonModelList = getJsonModeForTask(crisisID, document);
         }
-
         return  jsonModelList;
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    private void addToTaskAssignment(List<Document> documents, long userID){
-        taskAssignmentDao.insertTaskAssignment(documents, userID);
+
+    @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
+    public void addToOneTaskAssignment(long documentID, long userID){
+       // addToOneTaskAssignment(documentID, userID);
+        taskAssignmentService.addToOneTaskAssignment(documentID, userID);
+    }
+
+    @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
+    public void addToOneTaskAssignmentWithUserName(long documentID, String userName){
+        Users users = usersService.findUserByName(userName);
+        taskAssignmentService.addToOneTaskAssignment(documentID, users.getUserID());
+    }
+
+
+    private List<TaskBufferJsonModel> getJsonModeForTask(long crisisID, Document document){
+        List<TaskBufferJsonModel> jsonModelList = new ArrayList<TaskBufferJsonModel>();
+        Crisis crisis =  crisisService.findByCrisisID(crisisID) ;
+        CrisisJsonModel jsonOutput = new CrisisJsonOutput().crisisJsonModelGenerator(crisis);
+        Set<NominalAttributeJsonModel> attributeJsonModelSet = jsonOutput.getNominalAttributeJsonModelSet() ;
+
+        TaskBufferJsonModel jsonModel = new TaskBufferJsonModel(document.getDocumentID(),document.getCrisisID(),attributeJsonModelSet,document.getLanguage(), document.getDoctype(), document.getData(), document.getValueAsTrainingSample(),0);
+        jsonModelList.add(jsonModel);
+
+        return jsonModelList;
+    }
+
+
+    private  List<Document> getAvailableDocument(long crisisID, int maxresult){
+        return documentDao.findDocumentForTask(crisisID, maxresult)  ;
+
     }
 
 }

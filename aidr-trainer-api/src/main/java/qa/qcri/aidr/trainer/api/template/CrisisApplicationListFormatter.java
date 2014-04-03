@@ -41,7 +41,7 @@ public class CrisisApplicationListFormatter {
     public Integer getTotalTaskNumber(){
         Integer totalTask = 0;
         if(taskQueueService.getTaskQueueByClientApp(clientApp.getClientAppID()) != null){
-            totalTask =   taskQueueService.getTaskQueueByClientApp(clientApp.getClientAppID()).size();
+            totalTask =   taskQueueService.getTotalNumberOfTaskQueue(clientApp.getClientAppID()).size();
         }
 
         return totalTask;

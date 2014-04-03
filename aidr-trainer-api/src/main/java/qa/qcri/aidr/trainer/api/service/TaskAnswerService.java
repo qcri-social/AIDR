@@ -11,7 +11,7 @@ import qa.qcri.aidr.trainer.api.template.TaskAnswerResponse;
  */
 public interface TaskAnswerService {
     //insertTaskAnswer
-    void insertTaskAnswer(TaskAnswerResponse taskAnswerResponse);
+    void pushTaskAnswerToJedis(TaskAnswerResponse taskAnswerResponse);
     public TaskAnswerResponse getTaskAnswerResponseData(String taskAnswer);
 
     public void addToTaskAnswer(TaskAnswerResponse taskAnswerResponse);

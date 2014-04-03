@@ -1,34 +1,29 @@
 package qa.qcri.aidr.manager.service.impl;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.map.util.JSONPObject;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.service.TaggerService;
 
-//import com.sun.jersey.api.client.Client;
-//import com.sun.jersey.api.client.ClientResponse;
-//import com.sun.jersey.api.client.WebResource;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-
-import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-
-import org.glassfish.jersey.jackson.JacksonFeature;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.*;
+
+//import com.sun.jersey.api.client.Client;
+//import com.sun.jersey.api.client.ClientResponse;
+//import com.sun.jersey.api.client.WebResource;
 
 @Service("taggerService")
 public class TaggerServiceImpl implements TaggerService {
@@ -887,67 +882,14 @@ public class TaggerServiceImpl implements TaggerService {
     }
 
     @Override
-    public String generateCSVLink(String code) throws AidrException {
-    	Client client = ClientBuilder.newBuilder().build();
-    	try {
-            //WebResource webResource = client.resource(persisterMainUrl + "/taggerPersister/genCSV?collectionCode=" + code + "&exportLimit=100000");
-        	WebTarget webResource = client.target(persisterMainUrl + 
-        			"/taggerPersister/genCSV?collectionCode=" + code + "&exportLimit=100000");
-        	
-        	//ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
-            //        .get(ClientResponse.class);
-        	Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-        	
-        	//String jsonResponse = clientResponse.getEntity(String.class);
-        	String jsonResponse = clientResponse.readEntity(String.class);
-
-            if (jsonResponse != null && "http".equals(jsonResponse.substring(0, 4))) {
-                return jsonResponse;
-            } else {
-                return "";
-            }
-        } catch (Exception e) {
-            throw new AidrException("Error while generating CSV link in taggerPersister", e);
-        }
-    }
-
-    @Override
-    public String generateTweetIdsLink(String code) throws AidrException {
+    public String loadLatestTweets(String code, String constraints) throws AidrException {
     	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
     	try {
-            //WebResource webResource = client.resource(persisterMainUrl + "/taggerPersister/genTweetIds?collectionCode=" + code);
-        	WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/genTweetIds?collectionCode=" + code);
-        	
-        	//ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
-            //        .get(ClientResponse.class);
-        	Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-            
-        	//String jsonResponse = clientResponse.getEntity(String.class);
-        	String jsonResponse = clientResponse.readEntity(String.class);
+        	WebTarget webResource = client.target(outputAPIMainUrl + "/crisis/fetch/channel/filter/" + code + "?count=1000");
 
+            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
+                    .post(Entity.json(constraints), Response.class);
 
-            if (jsonResponse != null && "http".equals(jsonResponse.substring(0, 4))) {
-                return jsonResponse;
-            } else {
-                return "";
-            }
-        } catch (Exception e) {
-            throw new AidrException("Error while generating Tweet Ids link in taggerPersister", e);
-        }
-    }
-
-    @Override
-    public String loadLatestTweets(String code) throws AidrException {
-    	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
-    	try {
-            //WebResource webResource = client.resource(outputAPIMainUrl + "/crisis/fetch/channel/" + code + "?count=1000");
-        	WebTarget webResource = client.target(outputAPIMainUrl + "/crisis/fetch/channel/" + code + "?count=1000");
-            
-            //ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
-            //        .get(ClientResponse.class);
-        	Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-        	
-            //String jsonResponse = clientResponse.getEntity(String.class);
         	String jsonResponse = clientResponse.readEntity(String.class);
 
             if (jsonResponse != null && jsonResponse.startsWith("[")) {
@@ -1235,7 +1177,24 @@ public class TaggerServiceImpl implements TaggerService {
         catch(Exception e){
             logger.error("deactivated - deletePybossaApp : " + e);
         }
+    }
 
+    @Override
+    public String getAttributesAndLabelsByCrisisId(Integer id) throws AidrException {
+        Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+        try {
+//            http://scd1.qcri.org:8084/AIDRTrainerAPI/rest/crisis/id/117
+            WebTarget webResource = client.target(crowdsourcingAPIMainUrl + "/crisis/id/" + id);
+
+            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+            logger.info("getAssignableTask - clientResponse : " + clientResponse);
+
+            String jsonResponse = clientResponse.readEntity(String.class);
+
+            return jsonResponse;
+        } catch (Exception e) {
+            throw new AidrException("Error while getting all nominal attributes and their labels for a given crisisID", e);
+        }
     }
 
 }

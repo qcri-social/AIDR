@@ -20,5 +20,6 @@ public interface TaskQueueService {
     List<TaskQueue> getTaskQueueByClientAppStatus(Long clientAppID,Integer status);
     Integer getCountTaskQeueByStatus(String column,Integer status);
     Integer getCountTaskQeueByStatusAndClientApp(Long clientAppID,Integer status);
+    void deleteAbandonedTaskQueue(Long taskQueueID);
 
 }

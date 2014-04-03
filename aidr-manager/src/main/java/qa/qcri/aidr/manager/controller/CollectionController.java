@@ -188,7 +188,7 @@ public class CollectionController extends BaseController{
 	public List<AidrCollection> search(@RequestParam String query) throws Exception {
 		UserEntity userEntity = getAuthenticatedUser();
 		if(userEntity!=null){
-			return collectionService.searchByName(query , userEntity.getId());
+			return collectionService.searchByName(query, userEntity.getId());
 		}
 		return new ArrayList<AidrCollection>();
 	}
