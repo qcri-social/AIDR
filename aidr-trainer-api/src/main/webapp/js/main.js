@@ -44,6 +44,9 @@ function renderList(data) {
         var appList =  list[0].app== null ? [] : (list[0].app instanceof Array ? list[0].app : [list[0].app]);
         var template = '';
         var crisisTitle = '<h2>' + list[0].crisisName +'</h2>';
+        var curator = list[0].curator;
+        var topStory = list[0].topStory;
+        var bottomStory = list[0].bottomStory;
         document.title = "Help us classifying tweets related to " + list[0].crisisName + " - AIDR/MicroMappers";
         $.each(appList, function(index, item) {
             var respURL = item.url.split("/");
@@ -74,6 +77,9 @@ function renderList(data) {
 
         });
         desc = desc + list[0].crisisName;
+        $('#curator').append(curator);
+        $('#topStory').append(topStory);
+        $('#bottomStory').append(bottomStory);
         $('#title').append(crisisTitle);
         $('#description').append(desc);
         $('#crisisAppList').append(template);

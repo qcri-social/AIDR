@@ -19,4 +19,21 @@ public class CodeLookUp {
 
     public static Integer APP_SERVICE_SUCCESSFUL = 200;
     public static Integer APP_SERVICE_REQUST_FOUND_DUPLICATION_ENTRY = 500;
+
+
+    public static Integer PUBLIC_LANDING_PAGE_TOP = 1;
+    public static Integer PUBLIC_LANDING_PAGE_BOTTOM = 2;
+    public static Integer CURATOR_NAME = 6;
+
+
+    // pybossa upate
+    public static Integer CLASSIFIER_WELCOME_PAGE = 3;
+    public static Integer CLASSIFIER_TUTORIAL_ONE = 4;
+    public static Integer CLASSIFIER_TUTORIAL_TWO = 5;
+    public static Integer CLASSIFIER_SKIN = 7;
+
+
+    public static Integer DEFAULT_SKIN = 0;
+    public static Integer IPHONE_SKIN = 1;
+
 }

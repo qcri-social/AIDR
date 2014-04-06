@@ -17,7 +17,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 @Service("clientAppService")
-@Transactional(readOnly = false)
+@Transactional(readOnly = true)
 public class ClientAppServiceImpl implements ClientAppService {
 
     @Autowired
@@ -61,5 +61,15 @@ public class ClientAppServiceImpl implements ClientAppService {
            clientApp.setStatus(status);
            clientAppDao.saveOrUpdate(clientApp);
        }
+    }
+
+    @Override
+    public ClientApp getClientAppByCrisisAndAttribute(Long crisisID, Long attributeID) {
+        List<ClientApp> appList = clientAppDao.findClientAppByCrisisAndAttribute(crisisID, attributeID);
+        if(appList.size() > 0){
+            return appList.get(0);
+        }
+        return null;
+        //ClientApp getClientAppByCrisisAndAttribute(Long crisisID, Long attributeID);
     }
 }

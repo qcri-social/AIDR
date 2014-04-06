@@ -22,5 +22,6 @@ public interface ClientAppService {
     List<ClientApp> getAllClientAppByCrisisID(Long crisisID);
     List<ClientApp> findClientAppByAppType(String columnName, Integer typeID);
     void updateClientAppByShortName(String shortName, Integer status);
+    ClientApp getClientAppByCrisisAndAttribute(Long crisisID, Long attributeID);
 
 }

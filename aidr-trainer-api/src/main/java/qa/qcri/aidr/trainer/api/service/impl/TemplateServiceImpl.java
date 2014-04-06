@@ -8,7 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.trainer.api.entity.Client;
 import qa.qcri.aidr.trainer.api.entity.ClientApp;
 import qa.qcri.aidr.trainer.api.entity.Crisis;
+import qa.qcri.aidr.trainer.api.entity.CustomUITemplate;
 import qa.qcri.aidr.trainer.api.service.*;
+import qa.qcri.aidr.trainer.api.store.CodeLookUp;
 import qa.qcri.aidr.trainer.api.store.StatusCodeType;
 import qa.qcri.aidr.trainer.api.store.URLReference;
 import qa.qcri.aidr.trainer.api.template.CrisisApplicationListFormatter;
@@ -42,6 +44,9 @@ public class TemplateServiceImpl implements TemplateService {
 
     @Autowired
     private CrisisService crisisService;
+
+    @Autowired
+    private CustomUITemplateService customUITemplateService;
 
     @Override
     public List<CrisisApplicationListModel> getApplicationListHtmlByCrisisID(Long cririsID) {
@@ -137,6 +142,7 @@ public class TemplateServiceImpl implements TemplateService {
         JSONObject json = new JSONObject();
         Crisis crisis =  crisisService.findByCrisisID(crisisID);
         List<ClientApp> clientAppList = clientAppService.getAllClientAppByCrisisID(crisisID);
+       // customUITemplateService
         if(clientAppList != null & crisis!= null){
             if(clientAppList.size() > 0){
                 Client client = clientService.findClientbyID("clientID", clientAppList.get(0).getClientID());
@@ -161,8 +167,24 @@ public class TemplateServiceImpl implements TemplateService {
                 }
 
                 json.put("app", list);
+
             }
         }
+
+        List<CustomUITemplate> uiTemps =  customUITemplateService.getCustomTemplateForLandingPage(crisisID);
+
+        for(CustomUITemplate iTemplate: uiTemps){
+            if(iTemplate.getTemplateType().equals(CodeLookUp.CURATOR_NAME)){
+                json.put("curator", iTemplate.getTemplateValue());
+            }
+            if(iTemplate.getTemplateType().equals(CodeLookUp.PUBLIC_LANDING_PAGE_TOP)){
+                json.put("topStory", iTemplate.getTemplateValue());
+            }
+            if(iTemplate.getTemplateType().equals(CodeLookUp.PUBLIC_LANDING_PAGE_BOTTOM)){
+                json.put("bottomStory", iTemplate.getTemplateValue());
+            }
+        }
+
 
         String returnValue = "";
         if(json.toString().trim().length() > 5){

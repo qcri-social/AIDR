@@ -52,6 +52,15 @@ public class ClientAppDaoImpl extends AbstractDaoImpl<ClientApp, String> impleme
     }
 
     @Override
+    public List<ClientApp> findClientAppByCrisisAndAttribute(Long crisisID, Long attributeID) {
+
+        return findByCriteria(Restrictions.conjunction()
+                .add(Restrictions.eq("crisisID",crisisID))
+                .add(Restrictions.eq("attributeID",attributeID)));
+    }
+
+
+    @Override
     public List<ClientApp> findClientAppByAppType(String columnName, Integer typeID) {
 
         return findByCriteria(Restrictions.conjunction()
