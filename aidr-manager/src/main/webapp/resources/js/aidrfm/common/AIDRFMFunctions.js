@@ -195,7 +195,9 @@ Ext.Ajax.on('requestexception', function (conn, response, options) {
     if (response.status == 901) {
         document.location.href = BASE_URL + '/index.jsp'
     } else{
-        AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
+        if(response.status != 0){
+            AIDRFMFunctions.setAlert("Error", "System is down or under maintenance. For further inquiries please contact admin.");
+        }
     }
 });
 
