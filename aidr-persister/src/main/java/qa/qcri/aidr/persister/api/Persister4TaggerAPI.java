@@ -127,7 +127,7 @@ public class Persister4TaggerAPI {
 		System.out.println("In tagger-persister genCSV");
 		JsonDeserializer jsonD = new JsonDeserializer();
 		String fileName = jsonD.taggerGenerateJSON2CSV_100K_BasedOnTweetCount(collectionCode, exportLimit);
-		fileName = Config.SCD1_URL + collectionCode + "/" + fileName;
+		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
 		return Response.ok(fileName).build();
 	}
 
@@ -150,7 +150,7 @@ public class Persister4TaggerAPI {
 		System.out.println("[generateCSVFromLastestJSONFiltered] Received POST list: " + queryList.toString());
 
 		String fileName = jsonD.taggerGenerateJSON2CSV_100K_BasedOnTweetCountFiltered(collectionCode, exportLimit, queryList);
-		fileName = Config.SCD1_URL + collectionCode + "/" + fileName;
+		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
 		return Response.ok(fileName)
 				.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
 				.header("Access-Control-Allow-Origin", "*")
@@ -161,13 +161,13 @@ public class Persister4TaggerAPI {
 	}  
 	
 	@GET
-	@Produces("application/json")
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/genTweetIds")
 	public Response generateTweetsIDSCSVFromAllJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
 		System.out.println("In tagger-persister genTweetIds");
 		JsonDeserializer jsonD = new JsonDeserializer();
 		String fileName = jsonD.generateClassifiedJson2TweetIdsCSV(collectionCode);
-		fileName = Config.SCD1_URL + collectionCode + "/" + fileName;
+		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
 		return Response.ok(fileName).build();
 	}
 
@@ -188,7 +188,7 @@ public class Persister4TaggerAPI {
 		System.out.println("[generateTweetsIDSCSVFromAllJSONFiltered] Received POST list: " + queryList.toString());
 
 		String fileName = jsonD.generateClassifiedJson2TweetIdsCSVFiltered(collectionCode, queryList);
-		fileName = Config.SCD1_URL + collectionCode + "/" + fileName;
+		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
 		return Response.ok(fileName)
 				.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
 				.header("Access-Control-Allow-Origin", "*")

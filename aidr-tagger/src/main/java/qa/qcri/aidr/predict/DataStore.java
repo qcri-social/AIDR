@@ -732,7 +732,7 @@ public class DataStore extends Loggable {
 		int docsToDelete = documentIDList.size() - Config.LABELING_TASK_BUFFER_MAX_LENGTH;
 		if (docsToDelete > ERROR_MARGIN) {
 			String sqlDeleteStmt = "DELETE FROM document WHERE (documentID = ? && "
-					+ " NOT EXISTS (SELECT documentID FROM task_assignment) "
+					+ " documentID NOT IN (SELECT documentID FROM task_assignment) "
 					+ " && !hasHumanLabels)";
 			try {
 				conn = getMySqlConnection();
@@ -749,7 +749,7 @@ public class DataStore extends Loggable {
 					sqlDeleteStmt2.append(documentIDList.get(i)).append(",");
 				}
 				sqlDeleteStmt2.deleteCharAt(sqlDeleteStmt2.lastIndexOf(",")).append(")");
-				sqlDeleteStmt2.append(" && NOT EXISTS (SELECT documentID FROM task_assignment) && !hasHumanLabels)");
+				sqlDeleteStmt2.append(" && documentID NOT IN (SELECT documentID FROM task_assignment) && !hasHumanLabels)");
 				long startTime = System.currentTimeMillis();
 				int[] affectedRecords = sqlDelete.executeBatch();
 				long endTime = System.currentTimeMillis();

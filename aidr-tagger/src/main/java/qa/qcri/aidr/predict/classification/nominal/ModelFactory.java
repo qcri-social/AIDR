@@ -33,6 +33,8 @@ public class ModelFactory extends Loggable {
      * model.
      * @throws Exception
      */
+	private static final double EPSILON = 0.05;		// Tolerance for comparing two models: added by koushik
+	
     public static Model buildModel(int crisisID, int attributeID, Model oldModel)
             throws Exception {
 
@@ -76,7 +78,7 @@ public class ModelFactory extends Loggable {
             oldPerformance = oldModel.getWeightedPerformance();
         }
 
-        if (newPerformance > oldPerformance) {
+        if (newPerformance > oldPerformance - EPSILON) {
             return model;
         } else {
             return oldModel;
