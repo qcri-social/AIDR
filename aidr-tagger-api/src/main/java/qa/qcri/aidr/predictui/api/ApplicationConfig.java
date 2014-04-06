@@ -41,6 +41,7 @@ public class ApplicationConfig extends Application {
         resources.add(qa.qcri.aidr.predictui.api.UserResource.class);
         resources.add(qa.qcri.aidr.predictui.util.JAXBContextResolver.class);
         resources.add(qa.qcri.aidr.predictui.api.TaskBufferScanner.class);
+        resources.add(qa.qcri.aidr.predictui.api.CustomUITemplateResource.class);
         
     }
     

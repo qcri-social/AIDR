@@ -19,4 +19,13 @@ public class Config {
 	public static final String TASK_EXPIRY_AGE_LIMIT = "6h";
 	public static final String TASK_BUFFER_SCAN_INTERVAL = "1h";
 
+    public static final int PUBLIC_LANDING_PAGE_TOP = 1;
+    public static final int PUBLIC_LANDING_PAGE_BOTTOM = 2;
+    public static final int CLASSIFIER_DESCRIPTION_PAGE = 3;
+    public static final int CLASSIFIER_TUTORIAL_ONE = 4;
+    public static final int CLASSIFIER_TUTORIAL_TWO = 5;
+    public static final int CUSTOM_CURATOR = 6;
+    public static final int CLASSIFIER_SKIN = 7;
+
+
 }
