@@ -729,3 +729,11 @@ End of the tab panel styles
 #notify .title{
     font-weight:bold;
 }
+
+.x-btn-default-small .add {
+    background-image: url(../img/add.png) !important;
+}
+
+.x-btn-default-small .remove {
+    background-image: url(../img/remove.png) !important;
+}

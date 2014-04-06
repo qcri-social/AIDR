@@ -822,6 +822,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             padding: '5 5 5 5',
             html: ''
         });
+
         this.tweetsIdsLink = Ext.create('Ext.form.Label', {
             flex: 1,
             margin: '5 5 5 5',
@@ -841,11 +842,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             cls:'btn btn-blue download-button',
             id: 'generateTweetIdsLink'
         });
-        
-//        this.downloadText = Ext.create('Ext.form.Label', {
-//            flex: 1,
-//            html: ''
-//        });
 
         this.usersCombo = Ext.create('Ext.form.field.ComboBox', {
             minChars: 0,
@@ -939,6 +935,60 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             ]
         });
 
+        this.downloadExportTaggerDisabledPanel = Ext.create('Ext.container.Container', {
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            items: [
+                {
+                    xtype: 'container',
+                    padding: '15 0 0 0',
+                    defaultType: 'label',
+                    layout: 'hbox',
+                    items: [
+                        this.generateCSVButton,
+                        this.CSVLink
+                    ]
+                },
+                {
+                    xtype: 'container',
+                    defaultType: 'label',
+                    layout: 'hbox',
+                    items: [
+                        this.generateTweetIdsButton,
+                        this.tweetsIdsLink
+                    ]
+                }
+            ]
+        });
+
+        this.classifierIsRunningText = Ext.create('Ext.form.Label', {
+            cls: 'styled-text',
+            margin: '7 0 0 0',
+            html: 'A classifier is running.',
+            flex: 1
+        });
+
+        this.toMyClassifiersToDownload = Ext.create('Ext.Button', {
+            text: 'Go to my classifiers to download',
+            cls:'btn btn-blue',
+            id: 'toMyClassifiersToDownload',
+            margin: '10 0 0 0'
+        });
+
+        this.downloadExportTaggerEnabledPanel = Ext.create('Ext.container.Container', {
+            hidden: true,
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            items: [
+                this.classifierIsRunningText,
+                this.toMyClassifiersToDownload
+            ]
+        });
+
         this.tabPanel = Ext.create('Ext.tab.Panel', {
             cls: 'tabPanel',
             width: '100%',
@@ -1003,27 +1053,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             xtype: 'container',
                             layout: 'vbox',
                             items: [
-                                {
-                                    xtype: 'container',
-                                    padding: '15 0 0 0',
-                                    defaultType: 'label',
-                                    layout: 'hbox',
-                                    items: [
-                                        this.generateCSVButton,
-                                        this.CSVLink
-                                    ]
-                                },
-                                {
-                                    xtype: 'container',
-                                    defaultType: 'label',
-                                    layout: 'hbox',
-                                    items: [
-                                        this.generateTweetIdsButton,
-                                        this.tweetsIdsLink
-                                    ]
-                                }
-//                                ,
-//                                this.downloadText
+                                this.downloadExportTaggerDisabledPanel,
+                                this.downloadExportTaggerEnabledPanel
                             ]
                         }
                     ]

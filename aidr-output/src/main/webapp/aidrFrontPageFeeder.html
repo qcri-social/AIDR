@@ -101,7 +101,7 @@
                 {
                     $.ajax({
                         type: 'GET',
-                        url: 'http://aidr-dev.qcri.org/AIDROutput/rest/crisis/fetch/channels/latest?callback=jsonp',
+                        url: 'http://aidr-dev.qcri.org/AIDROutput/rest/crisis/fetch/channels/latest?callback=jsonp&confidence=0.7',
                         dataType: 'jsonp',
                         success: renderList,
                         error: FailedRenderList,

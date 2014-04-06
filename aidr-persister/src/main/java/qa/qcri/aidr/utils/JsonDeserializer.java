@@ -139,7 +139,7 @@ public class JsonDeserializer {
 		List<ClassifiedTweet> tweetsList = new ArrayList<ClassifiedTweet>();
 		ReadWriteCSV csv = new ReadWriteCSV();
 		BufferedReader br = null;
-		String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/" + "Classified_" + collectionCode + "_tweetIds.csv";
+		String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds.csv";
 		System.out.println("Deleteing file : " + fileToDelete);
 		FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
 		

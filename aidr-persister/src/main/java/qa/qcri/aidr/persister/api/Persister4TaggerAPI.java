@@ -37,6 +37,9 @@ import org.apache.commons.lang.StringUtils;
 
 
 
+
+import org.codehaus.jackson.map.ObjectMapper;
+
 import qa.qcri.aidr.persister.filter.JsonQueryList;
 import qa.qcri.aidr.persister.collector.RedisCollectorPersister;
 import qa.qcri.aidr.persister.tagger.RedisTaggerPersister;
@@ -108,7 +111,15 @@ public class Persister4TaggerAPI {
 		response = "Unable to locate a running persister with the given collection code:[" + collectionCode + "]";
 		return Response.ok(response).build();
 	}
-
+	
+	@GET
+    @Produces("application/json")
+    @Path("/ping")
+    public Response ping() throws UnknownHostException {
+        String response = "{\"application\":\"aidr-taggerPersister\", \"status\":\"RUNNING\"}";
+        return Response.ok(response).build();
+    }
+	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/genCSV")
@@ -135,6 +146,7 @@ public class Persister4TaggerAPI {
 			@QueryParam("collectionCode") String collectionCode, 
 			@QueryParam("exportLimit") int exportLimit) throws UnknownHostException {
 		JsonDeserializer jsonD = new JsonDeserializer();
+		//System.out.println("[generateCSVFromLastestJSONFiltered] request received");
 		System.out.println("[generateCSVFromLastestJSONFiltered] Received POST list: " + queryList.toString());
 
 		String fileName = jsonD.taggerGenerateJSON2CSV_100K_BasedOnTweetCountFiltered(collectionCode, exportLimit, queryList);

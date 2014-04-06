@@ -2,8 +2,7 @@ Ext.require([
     'AIDRFM.common.AIDRFMFunctions',
     'AIDRFM.common.StandardLayout',
     'AIDRFM.common.Header',
-    'AIDRFM.common.Footer',
-    'Ext.ux.data.PagingMemoryProxy'
+    'AIDRFM.common.Footer'
 ]);
 
 Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel', {
@@ -331,15 +330,14 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             ]
         });
 
-
         this.CSVLink = Ext.create('Ext.form.Label', {
             flex: 1,
-            padding: '0 0 0 5',
+            margin: '5 5 5 5',
             html: ''
         });
         this.tweetsIdsLink = Ext.create('Ext.form.Label', {
             flex: 1,
-            margin: '0 0 0 5',
+            margin: '5 5 5 5',
             html: ''
         });
 
@@ -357,90 +355,11 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             id: 'generateTweetIdsLink'
         });
 
-        this.taggerFetchLink = Ext.create('Ext.form.Label', {
+        this.toInteractiveViewDownloadLink = Ext.create('Ext.form.Label', {
             flex: 1,
-            padding: '15 0 0 5',
-            html: '<div class="styled-text download-link"><a href="http://aidr-dev.qcri.org/AIDROutput/aidrTaggerLatest.html?crisisCode='
-                + CRISIS_CODE + '">View latest tagger collection details</a></div>'
-        });
-
-        this.taggerRealtimeLink = Ext.create('Ext.form.Label', {
-            flex: 1,
-            padding: '15 0 0 5',
-            html: '<div class="styled-text download-link"><a href="http://aidr-dev.qcri.org/AIDROutput/aidrTaggerStream.html?crisisCode='
-                + CRISIS_CODE + '">View realtime tagger collection details</a></div>'
-        });
-
-        this.taggerFetchInfo = Ext.create('Ext.form.Label', {
-            cls: 'styled-text',
-            html: '<p>Latest tweets.</p>'
-        });
-
-        this.taggerFetchStore = Ext.create('Ext.data.Store', {
-            pageSize: 10,
-            storeId: 'taggerFetchStore',
-            fields: ['text', 'attribute_name', 'label_name', 'confidence']
-        });
-
-        this.taggerFetchGrid = Ext.create('Ext.grid.Panel', {
-            store: this.taggerFetchStore,
-            padding: '20 0 00 0',
-            itemId: 'taggerFetchGrid',
-            cls: 'aidr-grid',
-            columns: [
-                {
-                    xtype: 'gridcolumn', dataIndex: 'text', text: 'Tweet', flex: 1
-                },
-                {
-                    xtype: 'gridcolumn', dataIndex: 'attribute_name', text: 'Attribute', width: 150
-                },
-                {
-                    xtype: 'gridcolumn', dataIndex: 'label_name', text: 'Label', width: 150
-                },
-                {
-                    xtype: 'gridcolumn', dataIndex: 'confidence', text: 'Confidence', width: 150
-                }
-            ]
-        });
-
-        this.taggerFetchPaging = Ext.create('Ext.toolbar.Paging', {
-            cls: 'aidr-paging',
-            margin: '12 2 0 2',
-            store:'taggerFetchStore',
-            displayInfo:true,
-            displayMsg:'Collection history records {0} - {1} of {2}',
-            emptyMsg:'No collection history records to display',
-            items: [
-                {
-                    xtype: 'tbseparator'
-                },
-                {
-                    xtype : 'trigger',
-                    itemId : 'gridTrigger',
-                    fieldLabel: 'Filter Grid Data',
-                    triggerCls : 'x-form-clear-trigger',
-                    emptyText : 'Start typing to filter data',
-                    size : 30,
-                    minChars : 1,
-                    enableKeyEvents : true,
-                    onTriggerClick : function(){
-                        this.reset();
-                        this.fireEvent('triggerClear');
-                    }
-                }
-            ]
-        });
-
-        this.taggerFetchPanel = Ext.create('Ext.container.Container', {
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
-            items: [
-                this.taggerFetchInfo,
-                this.taggerFetchGrid,
-                this.taggerFetchPaging
-            ]
+            padding: '15 0 0 0',
+            html: '<div class="styled-text download-link"><a href="' + BASE_URL + '/protected/' + CRISIS_CODE
+                + '/interactive-view-download">Go to interactive view/download</a></div>'
         });
 
         this.downloadsBlock = Ext.create('Ext.container.Container', {
@@ -452,21 +371,10 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                 {
                     xtype: 'label',
                     flex: 1,
-                    text: 'View',
-                    cls: 'header-h2'
-                },
-                this.taggerFetchPanel,
-                this.taggerFetchLink,
-                this.taggerRealtimeLink,
-                {
-                    xtype: 'label',
-                    flex: 1,
                     padding: '15 0 0 0',
                     text: 'Download as CSV files',
                     cls: 'header-h2'
                 },
-//                this.CSVLink,
-//                this.tweetsIdsLink
                 {
                     xtype: 'container',
                     layout: 'vbox',
@@ -491,7 +399,8 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                             ]
                         }
                     ]
-                }
+                },
+                this.toInteractiveViewDownloadLink
             ]
         });
 
