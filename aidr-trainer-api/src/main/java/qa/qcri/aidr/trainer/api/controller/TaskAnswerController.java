@@ -33,12 +33,18 @@ public class TaskAnswerController {
         logger.debug("saveTaskAnswer start: " + new Date());
         logger.debug("saveTaskAnswer..: " + data);
 
-        TaskAnswerResponse taskAnswerResponse =  taskAnswerService.getTaskAnswerResponseData(data);
-        taskAnswerService.pushTaskAnswerToJedis(taskAnswerResponse);
-        taskAnswerService.addToTaskAnswer( taskAnswerResponse);
-        taskAnswerService.addToDocumentNominalLabel(taskAnswerResponse);
-        taskAnswerService.markOnHasHumanTag(taskAnswerResponse.getDocumentID());
-        taskAnswerService.removeTaskAssignment(taskAnswerResponse);
+        try{
+            TaskAnswerResponse taskAnswerResponse =  taskAnswerService.getTaskAnswerResponseData(data);
+            taskAnswerService.markOnHasHumanTag(taskAnswerResponse.getDocumentID());
+            taskAnswerService.addToTaskAnswer( taskAnswerResponse);
+            taskAnswerService.addToDocumentNominalLabel(taskAnswerResponse);
+            taskAnswerService.removeTaskAssignment(taskAnswerResponse);
+            taskAnswerService.pushTaskAnswerToJedis(taskAnswerResponse);
+
+        }
+        catch(Exception e){
+            System.out.println("saveTaskAnswer : " +  e);
+        }
 
     }
 }
