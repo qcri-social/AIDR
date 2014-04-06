@@ -3,7 +3,7 @@
 </head>
 <body class="mainbody">
   <script type="text/javascript" src="<%=request.getContextPath()%>/resources/js/taggui/tagger-collection-details/Application.js"></script>
-
+  <script type="text/javascript" src="<%=request.getContextPath()%>/resources/js/taggui/common/uiTemplate.js"></script>
   <script type="text/javascript">
       CRISIS_ID = ${crisisId};
       CRISIS_NAME = "${name}";

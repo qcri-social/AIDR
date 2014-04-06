@@ -119,6 +119,25 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             }
         });
 
+
+        this.crysisTypesCombo = Ext.create('Ext.form.ComboBox', {
+            hideLabel: true,
+            store: this.crisisTypesStore,
+            queryMode: 'local',
+            displayField: 'name',
+            valueField: 'crisisTypeID',
+            width: 280,
+            listeners: {
+                change: function(combo, newValue, oldValue, eOpts) {
+                    if (newValue == CRISIS_TYPE_ID) {
+                        me.saveButton.hide();
+                    } else {
+                        me.saveButton.show();
+                    }
+                }
+            }
+        });
+
         this.crisisModelsStore = Ext.create('Ext.data.Store', {
             pageSize: 30,
             storeId: 'crisisModelsStore',
@@ -159,7 +178,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
 
             '<tr><td>Status:</td>',
-            '<td>{[this.getStatus(values.modelID, this.getNumber(values.trainingExamples), values.retrainingThreshold, values.auc, values.attribute)]}</td></tr>',
+            '<td>{[this.getStatus(values.modelID, values.trainingExamples, values.retrainingThreshold, values.auc, values.attribute)]}</td></tr>',
 
             '<tr><td>Human-tagged items:</td>',
             '<td>{[this.getNumber(values.trainingExamples)]} &mdash; <a href="' + BASE_URL +  '/protected/'
@@ -203,7 +222,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                     reqTrainExamNumber = retrainingThreshold - reqTrainExamNumber;
 
                     if (modelId && modelId != 0) {
-                        return 'Running. '+reqTrainExamNumber+' more needed to re-train.';;
+                        return 'Running. '+reqTrainExamNumber+' more needed to re-train.';
                     } else {
                         Ext.util.Cookies.set(modelName, reqTrainExamNumber);
                         return 'Waiting. '+reqTrainExamNumber+' more needed to re-train.';
@@ -213,29 +232,12 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             }
         );
 
+
         this.crisisModelsView = Ext.create('Ext.view.View', {
             store: this.crisisModelsStore,
             tpl: this.crisisModelsTpl,
             itemSelector: 'div.active',
             loadMask: false
-        });
-
-        this.crysisTypesCombo = Ext.create('Ext.form.ComboBox', {
-            hideLabel: true,
-            store: this.crisisTypesStore,
-            queryMode: 'local',
-            displayField: 'name',
-            valueField: 'crisisTypeID',
-            width: 280,
-            listeners: {
-                change: function(combo, newValue, oldValue, eOpts) {
-                    if (newValue == CRISIS_TYPE_ID) {
-                        me.saveButton.hide();
-                    } else {
-                        me.saveButton.show();
-                    }
-                }
-            }
         });
 
         this.saveButton = Ext.create('Ext.Button', {
@@ -404,6 +406,544 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             ]
         });
 
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        this.classifierComboForSkinType = Ext.create('Ext.form.ComboBox', {
+            store: this.crisisModelsStore,
+            queryMode: 'local',
+            displayField: 'attribute',
+            valueField: 'attributeID',
+            multiSelect: false,
+            editable: false,
+            emptyText: 'Select a classifier',
+            labelWidth: 250,
+            name: 'skinClassifierFilters',
+            id: 'skinClassifierFilters',
+            margin: '0 0 0 10',
+            flex: 1,
+            hidden: true
+        });
+        this.uiTypeStore = Ext.create('Ext.data.ArrayStore', {
+            autoDestroy: true,
+            storeId: 'uiTypeStore',
+            idIndex: 0,
+            fields: [
+                'name',
+                'code'
+            ],
+            data: uiTemplate
+        });
+        this.uiTypeCombo = Ext.create('Ext.form.ComboBox', {
+            store: this.uiTypeStore,
+            queryMode: 'local',
+            displayField: 'name',
+            valueField: 'code',
+            multiSelect: false,
+            editable: false,
+            emptyText: 'Select a template type',
+            labelWidth: 250,
+            flex: 1,
+            name: 'uiTypeFilters',
+            id: 'uiTypeFilters'
+
+        });
+        this.classifierCombo = Ext.create('Ext.form.ComboBox', {
+            store: this.crisisModelsStore,
+            queryMode: 'local',
+            displayField: 'attribute',
+            valueField: 'attributeID',
+            multiSelect: false,
+            editable: false,
+            emptyText: 'Select a classifier',
+            labelWidth: 250,
+            name: 'classifierFilters',
+            id: 'classifierFilters',
+            margin: '0 0 0 10',
+            hidden: true,
+            flex: 1
+        });
+
+        this.uiTemplate = Ext.create('Ext.form.HtmlEditor',{
+            width: 550,
+            height: 200,
+            frame: true,
+            layout: 'fit',
+            id:'uiTemplatePage',
+            enableColors: false,
+            enableAlignments: false,
+            enableFont:false,
+            enableFontSize:false
+        });
+        this.templateSaveButton = Ext.create('Ext.Button', {
+            text: 'Save',
+            cls:'btn btn-green',
+            id: 'templateSave',
+            margin: '0 0 0 10',
+            hidden: true
+        });
+        this.uiSkinTypeSaveButton = Ext.create('Ext.Button', {
+            text: 'Save',
+            cls:'btn btn-green',
+            id: 'uiSkinTypeSave',
+            margin: '0 0 0 10'
+        });
+        this.uiTemplateBlock = Ext.create('Ext.container.Container', {
+            layout: {
+                type: 'vbox',
+                align: 'stretch',
+                margin: '5 0 5 0'
+            },
+            items: [
+                {
+                    xtype: 'container',
+                    padding: '0 0 0 0',
+                    margin: '0 0 10 10',
+                    layout: 'hbox',
+                    items: [
+                        this.uiTypeCombo,
+                        this.classifierCombo,
+                        this.templateSaveButton
+                    ]
+                }
+                ,
+                this.uiTemplate
+
+
+            ]
+        });
+
+
+        this.optionRG = Ext.create('Ext.form.RadioGroup', {
+            columns: 3,
+            vertical: true,
+            width: 700,
+            items: [
+                {   boxLabel: '<span class="styled-text"><b>Default UI Skin</b></span>&nbsp;<span class="img"><img alt="Collection image" height="364" src="/AIDRFetchManager/resources/img/defaultSkin.png" width="500"></span>',
+                    name: 'skintype',
+                    inputValue: 0
+                },
+                {   boxLabel: '<span class="styled-text"><b>iPhone UI Skin</b></span>&nbsp;<span class="img"><img alt="Collection image" height="364" src="/AIDRFetchManager/resources/img/iphoneSkin.png" width="500"></span>',
+                    name: 'skintype',
+                    inputValue: 1}
+            ]
+        });
+
+        this.optionPanel = Ext.create('Ext.container.Container', {
+            flex: 1,
+            margin: '30 0 0 0',
+            layout: 'hbox',
+            items: [
+                this.optionRG
+            ]
+        });
+
+        this.uiSkinTypeBlock = Ext.create('Ext.container.Container', {
+            layout: {
+                type: 'vbox',
+                align: 'stretch',
+                margin: '0 0 0 0'
+            },
+            items: [
+                {
+                    xtype: 'container',
+                    padding: '0 0 0 0',
+                    margin: '0 0 0 0',
+                    layout: 'hbox',
+                    items: [
+                        this.uiSkinTypeSaveButton
+                    ]
+                },
+                this.optionPanel
+            ]
+        });
+
+        this.classifierComboForPybossaApp = Ext.create('Ext.form.ComboBox', {
+            store: this.crisisModelsStore,
+            queryMode: 'local',
+            displayField: 'attribute',
+            valueField: 'attributeID',
+            multiSelect: false,
+            editable: false,
+            emptyText: 'Select a classifier',
+            labelWidth: 250,
+            name: 'pybossaClassifierFilters',
+            id: 'pybossaClassifierFilters',
+            margin: '0 0 0 10',
+            flex: 1
+        });
+
+        this.uiLandingTemplateOne = Ext.create('Ext.form.HtmlEditor',{
+            width: 350,
+            height: 150,
+            frame: true,
+            layout: 'fit',
+            id:'uiLandingOneTemplate',
+            enableColors: false,
+            enableAlignments: false,
+            enableFont:false,
+            enableFontSize:false,
+            margin: '10 0 10 0'
+        });
+        this.uiLandingTemplateTwo = Ext.create('Ext.form.HtmlEditor',{
+            width: 350,
+            height: 150,
+            frame: true,
+            layout: 'fit',
+            id:'uiLandingTwoTemplate',
+            enableColors: false,
+            enableAlignments: false,
+            enableFont:false,
+            enableFontSize:false ,
+            margin: '10 0 10 0'
+        });
+        this.curatorInfo = Ext.create('Ext.form.HtmlEditor',{
+            width: 350,
+            height: 150,
+            frame: true,
+            layout: 'fit',
+            id:'curatorInfo',
+            enableColors: false,
+            enableAlignments: false,
+            enableFont:false,
+            enableFontSize:false,
+            margin: '10 0 10 0'
+        });
+
+
+        this.welcomePageUI = Ext.create('Ext.form.HtmlEditor',{
+            width: 350,
+            height: 150,
+            frame: true,
+            layout: 'fit',
+            id:'welcomePage',
+            enableColors: false,
+            enableAlignments: false,
+            enableFont:false,
+            enableFontSize:false,
+            margin: '10 0 10 0'
+        });
+        this.tutorial1UI = Ext.create('Ext.form.HtmlEditor',{
+            width: 350,
+            height: 150,
+            frame: true,
+            layout: 'fit',
+            id:'tutorialFirst',
+            enableColors: false,
+            enableAlignments: false,
+            enableFont:false,
+            enableFontSize:false,
+            margin: '10 0 10 0'
+        });
+        this.tutorial2UI = Ext.create('Ext.form.HtmlEditor',{
+            width: 350,
+            height: 150,
+            frame: true,
+            layout: 'fit',
+            id:'tutorialSecond',
+            enableColors: false,
+            enableAlignments: false,
+            enableFont:false,
+            enableFontSize:false,
+            margin: '10 0 10 0'
+        });
+
+        this.numFirst =  Ext.create('Ext.form.Label', {
+            padding: '0 0 0 0',
+            html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/welcomeOne.png" width="150" height="30"></span>'
+        });
+        this.numSecond =  Ext.create('Ext.form.Label', {
+            html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/tutorialOne.png" width="150" height="30"></span>'
+        });
+        this.numThird =  Ext.create('Ext.form.Label', {
+            html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/tutorialTwo.png" width="150" height="30""></span>'
+        });
+
+        this.uiWelcomeSaveButton = Ext.create('Ext.Button', {
+            text: 'Save',
+            cls:'btn btn-green',
+            id: 'uiWelcomeSave',
+            margin: '0 0 0 10'
+
+        });
+        this.uiTutorialOneSaveButton = Ext.create('Ext.Button', {
+            text: 'Save',
+            cls:'btn btn-green',
+            id: 'uiTutorialOneSave',
+            margin: '0 0 0 10'
+        });
+        this.uiTutorialTwoSaveButton = Ext.create('Ext.Button', {
+            text: 'Save',
+            cls:'btn btn-green',
+            id: 'uiTutorialTwoSave',
+            margin: '0 0 0 10'
+        });
+
+        this.landingTopSaveButton = Ext.create('Ext.Button', {
+            text: 'Save',
+            cls:'btn btn-green',
+            id: 'landingTopSave',
+            margin: '0 0 0 10'
+        });
+        this.landingBtnSaveButton = Ext.create('Ext.Button', {
+            text: 'Save',
+            cls:'btn btn-green',
+            id: 'landingBtnSave',
+            margin: '0 0 0 10'
+        });
+        this.curatorSaveButton = Ext.create('Ext.Button', {
+            text: 'Save',
+            cls:'btn btn-green',
+            id: 'curatorSave',
+            margin: '0 0 0 10'
+        });
+
+        this.welcomePageBlock = Ext.create('Ext.container.Container', {
+            layout: {
+                type: 'hbox',
+                align: 'stretch'
+            },
+            items: [
+                this.numFirst,
+                this.uiWelcomeSaveButton
+            ]
+        });
+
+        this.tutorialOneBlock = Ext.create('Ext.container.Container', {
+            layout: {
+                type: 'hbox',
+                align: 'stretch'
+            },
+            items: [
+                this.numSecond,
+                this.uiTutorialOneSaveButton
+            ]
+        });
+
+        this.tutorialTwoBlock = Ext.create('Ext.container.Container', {
+            layout: {
+                type: 'hbox',
+                align: 'stretch'
+            },
+            items: [
+                this.numThird,
+                this.uiTutorialTwoSaveButton
+            ]
+        });
+
+        this.pybossaUIEditorBlock = Ext.create('Ext.container.Container', {
+            layout: {
+                type: 'hbox',
+                align: 'stretch',
+                margin: '50 0 0 0',
+                flex: 1
+            },
+            items: [
+                {
+                    xtype: 'container',
+                    layout: 'vbox',
+                    margin: '20 0 0 0',
+                    flex: 1,
+                    items: [
+                        {
+                            xtype: 'container',
+                            layout: 'vbox',
+                            margin: '20 0 0 0',
+                            items: [
+                                this.welcomePageBlock
+                                , this.welcomePageUI
+
+                            ]
+                        },
+
+                        {
+                            xtype: 'container',
+                            layout: 'vbox',
+                            margin: '40 0 0 0',
+                            items: [
+                                this.tutorialOneBlock
+                                , this.tutorial1UI
+
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            layout: 'vbox',
+                            margin: '40 0 0 0',
+                            items: [
+                                this.tutorialTwoBlock
+                                , this.tutorial2UI
+
+                            ]
+                        }
+                    ]
+                }
+                ,
+                {
+                    xtype: 'label',
+                    html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/pybossaAppPage.png"></span>',
+                    margins: '50 0 0 40'
+                }
+            ]
+        });
+
+        this.pybossaUIBlock = Ext.create('Ext.container.Container', {
+            layout: {
+                type: 'vbox',
+                align: 'stretch',
+                margin: '60 0 0 0',
+                flex:1
+            },
+            items: [
+                this.classifierComboForPybossaApp
+                ,
+                this.pybossaUIEditorBlock
+            ]
+        });
+
+        this.landingTopPageBlock =  Ext.create('Ext.container.Container', {
+            layout: {
+                type: 'hbox',
+                align: 'stretch'
+            },
+            items: [
+                {
+                    xtype: 'label',
+                    html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/landingOne.png" width="150" height="30"></span>'
+                },
+                this.landingTopSaveButton
+            ]
+        });
+
+        this.landingBtnPageBlock =  Ext.create('Ext.container.Container', {
+            layout: {
+                type: 'hbox',
+                align: 'stretch'
+            },
+            items: [
+                {
+                    xtype: 'label',
+                    html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/landingTwo.png" width="150" height="30"></span>'
+                },
+                this.landingBtnSaveButton
+            ]
+        });
+
+        this.curatorPageBlock =  Ext.create('Ext.container.Container', {
+            layout: {
+                type: 'hbox',
+                align: 'stretch'
+            },
+            items: [
+                {
+                    xtype: 'label',
+                    html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/curator.png" width="150" height="30"></span>'
+                },
+                this.curatorSaveButton
+            ]
+        });
+
+        this.uiLandingPageBlock = Ext.create('Ext.container.Container', {
+            layout: {
+                type: 'hbox',
+                align: 'stretch',
+                margin: '50 0 0 0',
+                flex: 1
+            },
+            items: [
+                {
+                    xtype: 'container',
+                    layout: 'vbox',
+                    margin: '20 0 0 0',
+                    flex: 1,
+                    items: [
+                        {
+                            xtype: 'container',
+                            layout: 'vbox',
+                            margin: '20 0 0 0',
+                            items: [
+                                this.landingTopPageBlock
+                                , this.uiLandingTemplateOne
+
+                            ]
+                        },
+
+                        {
+                            xtype: 'container',
+                            layout: 'vbox',
+                            margin: '40 0 0 0',
+                            items: [
+                                this.landingBtnPageBlock
+                                , this.uiLandingTemplateTwo
+
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            layout: 'vbox',
+                            margin: '40 0 0 0',
+                            items: [
+                                this.curatorPageBlock
+                                , this.curatorInfo
+
+                            ]
+                        }
+                    ]
+                }
+                ,
+                {
+                    xtype: 'label',
+                    html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/landingPage.png"></span>',
+                    margin: '50 0 0 10'
+                }
+            ]
+        });
+
+
+
+        this.UIBlock = Ext.create('Ext.container.Container',{
+            cls: 'accordion',
+            width: '100%',
+            minHeight: 700,
+            layout:'accordion',
+            defaults: {
+                // applied to each contained panel
+                bodyStyle: 'padding:15px'
+            },
+            layoutConfig: {
+                // layout-specific configs go here
+                titleCollapse: false,
+                animate: true,
+                activeOnTop: true
+            },
+            items: [
+                {
+                    title:'Select MicroMappers UI Skin',
+                    items:[this.uiSkinTypeBlock]
+
+                }
+                ,
+                {
+                    title:'Customized Public Landing Page',
+                    items:[this.uiLandingPageBlock]
+
+                },
+                {
+                    title:'Customized MicroMappers App UI',
+                    items:[this.pybossaUIBlock]
+                }
+
+            ]
+
+        });
+
+
+
+
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
         this.tabPanel = Ext.create('Ext.tab.Panel', {
             cls: 'tabPanel',
             width: '100%',
@@ -463,6 +1003,11 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                     items: [
                         this.detailsBlock
                     ]
+                },
+                {
+                    title: 'Customized MicroMappers UI',
+                    padding: '10 0 0 0',
+                    items: this.UIBlock
                 },
                 {
                     title: 'View/Download',
