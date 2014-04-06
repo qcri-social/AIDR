@@ -6,6 +6,7 @@ package qa.qcri.aidr.utils;
 
 import org.supercsv.io.ICsvBeanWriter;
 
+import qa.qcri.aidr.persister.filter.GenericInputQuery;
 import qa.qcri.aidr.persister.filter.JsonQueryList;
 import qa.qcri.aidr.persister.filter.FilterQueryMatcher;
 import qa.qcri.aidr.persister.filter.NominalLabel;
@@ -14,6 +15,9 @@ import qa.qcri.aidr.utils.Config;
 import java.io.*;
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.map.ObjectMapper;
+
+import com.google.gson.Gson;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -92,7 +96,7 @@ public class JsonDeserializer {
         String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds.csv";
         System.out.println("Deleteing file : " + fileToDelete);
         FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
-        //System.out.println(fileNames);
+        System.out.println(fileNames);
         for (String file : fileNames) {
             String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
             System.out.println("Reading file " + fileLocation);
@@ -102,7 +106,7 @@ public class JsonDeserializer {
                 while ((line = br.readLine()) != null) {
                     ClassifiedTweet tweet = getClassifiedTweet(line);
                     tweetsList.add(tweet);
-                    //System.out.println(tweet.getTweetID());
+                    System.out.println(tweet.getTweetID());
                     if (tweetsList.size() <= 10000) { //after every 10k write to CSV file
                         tweetsList.add(tweet);
                     } else {
@@ -139,7 +143,7 @@ public class JsonDeserializer {
 		List<ClassifiedTweet> tweetsList = new ArrayList<ClassifiedTweet>();
 		ReadWriteCSV csv = new ReadWriteCSV();
 		BufferedReader br = null;
-		String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds.csv";
+		String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds_filtered.csv";
 		System.out.println("Deleteing file : " + fileToDelete);
 		FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
 		
@@ -149,7 +153,7 @@ public class JsonDeserializer {
 		tweetFilter.buildMatcherArray();
 		
 		for (String file : fileNames) {
-			String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/" + file;
+			String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
 			System.out.println("Reading file " + fileLocation);
 			try {
 				br = new BufferedReader(new FileReader(fileLocation));
@@ -166,7 +170,7 @@ public class JsonDeserializer {
 							tweetsList.add(tweet);		// Question: WHY DUPLICATE ADDITION? 
 						}
 					} else {
-						fileName = csv.writeClassifiedTweetIDsCSV(tweetsList, collectionCode, "Classified_" + collectionCode + "_tweetIds");
+						fileName = csv.writeClassifiedTweetIDsCSV(tweetsList, collectionCode, "Classified_" + collectionCode + "_tweetIds_filtered");
 						tweetsList.clear();
 					}
 
@@ -180,7 +184,7 @@ public class JsonDeserializer {
 				Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
-		fileName = csv.writeClassifiedTweetIDsCSV(tweetsList, collectionCode, "Classified_" + collectionCode + "_tweetIds");
+		fileName = csv.writeClassifiedTweetIDsCSV(tweetsList, collectionCode, "Classified_" + collectionCode + "_tweetIds_filtered");
 		tweetsList.clear();
 
 		return fileName;
@@ -392,7 +396,7 @@ public class JsonDeserializer {
 		try {
 
 			String folderLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output";
-			String fileNameforCSVGen = "Classified_" + collectionCode + "_last_100k_tweets";
+			String fileNameforCSVGen = "Classified_" + collectionCode + "_last_100k_tweets_filtered";
 			fileName = fileNameforCSVGen + ".csv";
 			FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforCSVGen + ".csv");
 
@@ -603,14 +607,51 @@ public class JsonDeserializer {
     
     public static void main(String[] args) {
         JsonDeserializer jc = new JsonDeserializer();
-        String fileName = jc.generateClassifiedJson2TweetIdsCSV("2014-03-harlem_explosion");
+        String fileName = jc.generateClassifiedJson2TweetIdsCSV("2014-04-chile_earthquake_2014");
+        //String fileName = jc.taggerGenerateJSON2CSV_100K_BasedOnTweetCount("2014-04-chile_earthquake_2014", 10);
         //String fileName = jc.generateJson2TweetIdsCSV("prism_nsa");
         System.out.println("File name: " + fileName);
-
+        
+        //testFilterAPIs();
         //jc.generateJson2TweetIdsCSV("syria_en");
         //FileSystemOperations.deleteFile("CandFlood2013_20130922_vol-1.json.csv");
     }
-
+    
+    public void testFilterAPIs() {
+    	ArrayList<String> temp = new ArrayList<String>();
+		temp.add("{\"queryType\":\"date_query\",\"comparator\":\"is_before\",\"time\":\"2014-03-04\"}");
+		temp.add("{\"queryType\":\"date_query\",\"comparator\":\"is_after\",\"time\":\"2013-05-01\"}");
+		temp.add("{\"queryType\":\"classifier_query\",\"classifier_code\":\"informative_v1\","
+				+ "\"label_code\":\"030_not_info\","  
+				+ "\"comparator\":\"is\","
+				+ "\"min_confidence\":0.5}");
+		temp.add("{\"queryType\":\"classifier_query\",\"classifier_code\":\"informative_v1\","
+				+ "\"label_code\":\"030_info\","  
+				+ "\"comparator\":\"is_not\","
+				+ "\"min_confidence\":0.64}");
+		temp.add("{\"queryType\":\"classifier_query\",\"classifier_code\":\"informative_v1\","
+				+ "\"label_code\":\"null\","  
+				+ "\"comparator\":\"has_confidence\","
+				+ "\"min_confidence\":0.75}");
+		
+		JsonQueryList testQueryList = new JsonQueryList();
+		ObjectMapper mapper = new ObjectMapper();
+		//testQueryList = mapper.readValue(temp, JsonQueryList.class);
+		
+		FilterQueryMatcher testFilter = new FilterQueryMatcher();
+		Gson gson = new Gson();
+		for (int i = 0; i < temp.size();i++) {
+			testFilter.queryList.createConstraint(gson.fromJson(temp.get(i), GenericInputQuery.class));
+		}
+		testFilter.buildMatcherArray();
+    	
+		JsonDeserializer jc = new JsonDeserializer();
+        //String fileName = jc.generateClassifiedJson2TweetIdsCSVFiltered("2014-04-chile_earthquake_2014", testFilter);
+        //String fileName = jc.taggerGenerateJSON2CSV_100K_BasedOnTweetCountFiltered("2014-04-chile_earthquake_2014", 10);
+    
+        //System.out.println("File name: " + fileName);
+    }
+    
     private Tweet getTweet(String line) throws ParseException {
         Tweet tweet = new Tweet();
         Object obj = JSONValue.parseStrict(line);

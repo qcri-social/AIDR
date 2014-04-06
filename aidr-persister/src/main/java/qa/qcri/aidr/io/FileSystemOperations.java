@@ -140,7 +140,7 @@ public class FileSystemOperations {
     
     public static List<String> getClassifiedFileVolumes(String collectionCode) {
 
-        String filesPath = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/";
+        String filesPath = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/";
         List<String> fileNames = new ArrayList();
         File folder = new File(filesPath);
         File[] listOfFiles = folder.listFiles();
@@ -157,7 +157,7 @@ public class FileSystemOperations {
         }
         return fileNames;
     }
-
+    
     public static boolean deleteFile(String fileName) {
         boolean isDeleted = false;
         try {
