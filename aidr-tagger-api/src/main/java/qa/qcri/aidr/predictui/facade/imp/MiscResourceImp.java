@@ -57,7 +57,7 @@ public class MiscResourceImp implements MiscResourceFacade {
             orderSQLPart += " ORDER BY dnl.timestamp DESC";
         }
 
-        String sql = " SELECT lbl.nominalLabelID, lbl.name labelName, d.data tweetJSON, u.userID, u.name labelerName, dnl.timestamp, d.documentID "
+        String sql = " SELECT distinct lbl.nominalLabelID, lbl.name labelName, d.data tweetJSON, u.userID, u.name labelerName, dnl.timestamp, d.documentID "
                 + " FROM document_nominal_label dnl "
                 + " JOIN nominal_label lbl on lbl.nominalLabelID=dnl.nominalLabelID "
                 + " JOIN model_family mf on mf.nominalAttributeID=lbl.nominalAttributeID "
@@ -68,7 +68,7 @@ public class MiscResourceImp implements MiscResourceFacade {
                 + " WHERE mf.modelFamilyID = :modelFamilyID AND d.crisisID = :crisisID " + orderSQLPart
                 + " LIMIT :fromRecord, :limit";
 
-        String sqlCount = " SELECT count(*) "
+        String sqlCount = " SELECT count(distinct lbl.nominalLabelID, lbl.name, d.data, u.userID, u.name, dnl.timestamp, d.documentID) "
                 + " FROM document_nominal_label dnl "
                 + " JOIN nominal_label lbl on lbl.nominalLabelID=dnl.nominalLabelID "
                 + " JOIN model_family mf on mf.nominalAttributeID=lbl.nominalAttributeID "
