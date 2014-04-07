@@ -30,6 +30,9 @@ public class StatusCodeType {
     public static Integer CLIENT_APP_PENDING = 0;
     public static Integer CLIENT_APP_DISABLED = 4;
 
+    public static Integer CUSTOM_UI_UPDATE_REQUEST = 0;
+    public static Integer CUSTOM_UI_UPDATE_COMPLETED = 1;
+
 
 
 

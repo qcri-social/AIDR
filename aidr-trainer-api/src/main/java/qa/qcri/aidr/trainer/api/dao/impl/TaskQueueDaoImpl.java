@@ -4,6 +4,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import qa.qcri.aidr.trainer.api.dao.TaskQueueDao;
 import qa.qcri.aidr.trainer.api.entity.TaskQueue;
+import qa.qcri.aidr.trainer.api.store.StatusCodeType;
 
 
 import java.util.List;
@@ -55,6 +56,13 @@ public class TaskQueueDaoImpl extends AbstractDaoImpl<TaskQueue, String> impleme
     @Override
     public List<TaskQueue> findTaskQueueSetByclientApp(Long clientAppID) {
         return findByCriteria(Restrictions.eq("clientAppID", clientAppID));
+    }
+
+    @Override
+    public List<TaskQueue> findTotalTaskQueueSet(Long clientAppID) {
+        return findByCriteria(Restrictions.conjunction()
+                .add(Restrictions.eq("clientAppID", clientAppID))
+                .add(Restrictions.ne("status", StatusCodeType.TASK_ABANDONED)));
     }
 
 }
