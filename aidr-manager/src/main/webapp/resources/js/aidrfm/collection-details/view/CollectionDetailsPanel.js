@@ -49,7 +49,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.statusL = Ext.create('Ext.form.Label', {padding: '0 10 0 0'});
         this.lastStartedL = Ext.create('Ext.form.Label', {flex: 1});
-        this.lastStoppedL = Ext.create('Ext.form.Label', {flex: 1});
+        this.lastStoppedL = -Ext.create('Ext.form.Label', {flex: 1});
         this.willStoppedL = Ext.create('Ext.form.Label', {flex: 1});
         this.codeL = Ext.create('Ext.form.Label', {flex: 1});
         this.keywordsL = Ext.create('Ext.form.Label', {
@@ -283,7 +283,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
 
         this.enableTaggerButton = Ext.create('Ext.Button', {
-            text: 'Enable Tagger',
+            text: 'Enable Classifier',
             cls:'btn btn-blue',
             id: 'enableTagger',
             margin: '0 0 0 10',

@@ -106,7 +106,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Last re-started on', width: 150,
+                    xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Last started', width: 150,
                     renderer: function (value, meta, record) {
                         if (value) {
                             return moment(value).calendar();
@@ -116,7 +116,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Will be stopped at', width: 140,
+                    xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Last stopped', width: 140,
                     renderer: function (value, meta, record) {
                         var duration = record.data.durationHours;
 
@@ -181,7 +181,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 140, sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 140, align: 'right', sortable: false,
                     renderer: function (value, meta, record) {
                         return value ? Ext.util.Format.number(value, '0,000') : 0;
                     }
@@ -296,7 +296,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Last re-started on', width: 150,
+                    xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Last started', width: 150,
                     renderer: function (value, meta, record) {
                         if (value) {
                             return moment(value).calendar();

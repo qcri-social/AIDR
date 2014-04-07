@@ -95,7 +95,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         });
 
         this.aucHint = Ext.create('Ext.container.Container', {
-            html: '<span class="redInfo">*</span>If AUC is lower than 0.8-0.9, or AUC is 1.0, you urgently need more human-tagged items.',
+            html: '<span class="redInfo">*</span>If AUC is lower than 80-90%, or AUC is 100%, you urgently need more human-tagged items.',
             margin: 0
         });
 
@@ -189,7 +189,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             '<td>{[this.getNumber(values.classifiedDocuments)]} (since last change of the classifier)</td></tr>',
 
             '<tr><td>Quality (AUC)<span class="redInfo">*</span>:</td>',
-            '<td>{[AIDRFMFunctions.getAucNumberWithColors(values.auc)]}</td>',
+            '<td>{[AIDRFMFunctions.getAucNumberWithColors(values.auc) * 100 + '%']}</td>',
 
             '</td></tr></table></td>',
 

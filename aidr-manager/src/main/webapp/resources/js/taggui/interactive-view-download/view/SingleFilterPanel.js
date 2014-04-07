@@ -114,12 +114,12 @@ Ext.define('TAGGUI.interactive-view-download.view.SingleFilterPanel', {
         this.confidenceStore = Ext.create('Ext.data.Store', {
             fields: ['val', 'label'],
             data: [
-                { val: 0.5, label: '0.5' },
-                { val: 0.6, label: '0.6' },
-                { val: 0.7, label: '0.7' },
-                { val: 0.8, label: '0.8' },
-                { val: 0.9, label: '0.9' },
-                { val: 1.0, label: '1.0' }
+                { val: 0.5, label: '50%' },
+                { val: 0.6, label: '60%' },
+                { val: 0.7, label: '70%' },
+                { val: 0.8, label: '80%' },
+                { val: 0.9, label: '90%' },
+                { val: 1.0, label: '100%' }
             ]
         });
 
