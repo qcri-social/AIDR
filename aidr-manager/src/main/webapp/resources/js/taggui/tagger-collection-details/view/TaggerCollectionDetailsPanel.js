@@ -548,8 +548,15 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                     xtype: 'container',
                     padding: '0 0 0 0',
                     margin: '0 0 0 0',
-                    layout: 'hbox',
+                    layout: {
+                        type: 'hbox',
+                        align: 'stretch'
+                    },
                     items: [
+                        {
+                            xtype: 'container',
+                            flex: 1
+                        },
                         this.uiSkinTypeSaveButton
                     ]
                 },
@@ -649,52 +656,55 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
         this.numFirst =  Ext.create('Ext.form.Label', {
             padding: '0 0 0 0',
-            html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/welcomeOne.png" width="150" height="30"></span>'
+            html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/welcomeOne.png" width="150" height="30"></span>',
+            flex: 1
         });
         this.numSecond =  Ext.create('Ext.form.Label', {
-            html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/tutorialOne.png" width="150" height="30"></span>'
+            html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/tutorialOne.png" width="150" height="30"></span>',
+            flex: 1
         });
         this.numThird =  Ext.create('Ext.form.Label', {
-            html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/tutorialTwo.png" width="150" height="30""></span>'
+            html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/tutorialTwo.png" width="150" height="30""></span>',
+            flex: 1
         });
 
         this.uiWelcomeSaveButton = Ext.create('Ext.Button', {
             text: 'Save',
             cls:'btn btn-green',
             id: 'uiWelcomeSave',
-            margin: '0 0 0 10'
+            margin: '3 0 0 10'
 
         });
         this.uiTutorialOneSaveButton = Ext.create('Ext.Button', {
             text: 'Save',
             cls:'btn btn-green',
             id: 'uiTutorialOneSave',
-            margin: '0 0 0 10'
+            margin: '3 0 0 10'
         });
         this.uiTutorialTwoSaveButton = Ext.create('Ext.Button', {
             text: 'Save',
             cls:'btn btn-green',
             id: 'uiTutorialTwoSave',
-            margin: '0 0 0 10'
+            margin: '3 0 0 10'
         });
 
         this.landingTopSaveButton = Ext.create('Ext.Button', {
             text: 'Save',
             cls:'btn btn-green',
             id: 'landingTopSave',
-            margin: '0 0 0 10'
+            margin: '3 0 0 10'
         });
         this.landingBtnSaveButton = Ext.create('Ext.Button', {
             text: 'Save',
             cls:'btn btn-green',
             id: 'landingBtnSave',
-            margin: '0 0 0 10'
+            margin: '3 0 0 10'
         });
         this.curatorSaveButton = Ext.create('Ext.Button', {
             text: 'Save',
             cls:'btn btn-green',
             id: 'curatorSave',
-            margin: '0 0 0 10'
+            margin: '3 0 0 10'
         });
 
         this.welcomePageBlock = Ext.create('Ext.container.Container', {
@@ -704,7 +714,13 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             },
             items: [
                 this.numFirst,
-                this.uiWelcomeSaveButton
+                {
+                    xtype: 'container',
+                    items: [
+                        this.uiWelcomeSaveButton
+                    ]
+                }
+
             ]
         });
 
@@ -715,7 +731,12 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             },
             items: [
                 this.numSecond,
-                this.uiTutorialOneSaveButton
+                {
+                    xtype: 'container',
+                    items: [
+                        this.uiTutorialOneSaveButton
+                    ]
+                }
             ]
         });
 
@@ -726,7 +747,12 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             },
             items: [
                 this.numThird,
-                this.uiTutorialTwoSaveButton
+                {
+                    xtype: 'container',
+                    items: [
+                        this.uiTutorialTwoSaveButton
+                    ]
+                }
             ]
         });
 
@@ -746,7 +772,10 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                     items: [
                         {
                             xtype: 'container',
-                            layout: 'vbox',
+                            layout: {
+                                type: 'vbox',
+                                align: 'stretch'
+                            },
                             margin: '20 0 0 0',
                             items: [
                                 this.welcomePageBlock
@@ -757,7 +786,10 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
                         {
                             xtype: 'container',
-                            layout: 'vbox',
+                            layout: {
+                                type: 'vbox',
+                                align: 'stretch'
+                            },
                             margin: '40 0 0 0',
                             items: [
                                 this.tutorialOneBlock
@@ -767,7 +799,10 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                         },
                         {
                             xtype: 'container',
-                            layout: 'vbox',
+                            layout: {
+                                type: 'vbox',
+                                align: 'stretch'
+                            },
                             margin: '40 0 0 0',
                             items: [
                                 this.tutorialTwoBlock
@@ -808,9 +843,14 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             items: [
                 {
                     xtype: 'label',
-                    html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/landingOne.png" width="150" height="30"></span>'
-                },
-                this.landingTopSaveButton
+                    html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/landingOne.png" width="150" height="30"></span>',
+                    flex: 1
+                },{
+                    xtype: 'container',
+                    items: [
+                        this.landingTopSaveButton
+                    ]
+                }
             ]
         });
 
@@ -822,9 +862,14 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             items: [
                 {
                     xtype: 'label',
-                    html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/landingTwo.png" width="150" height="30"></span>'
-                },
-                this.landingBtnSaveButton
+                    html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/landingTwo.png" width="150" height="30"></span>',
+                    flex: 1
+                },{
+                    xtype: 'container',
+                    items: [
+                        this.landingBtnSaveButton
+                    ]
+                }
             ]
         });
 
@@ -836,9 +881,14 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             items: [
                 {
                     xtype: 'label',
-                    html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/curator.png" width="150" height="30"></span>'
-                },
-                this.curatorSaveButton
+                    html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/curator.png" width="150" height="30"></span>',
+                    flex: 1
+                },{
+                    xtype: 'container',
+                    items: [
+                        this.curatorSaveButton
+                    ]
+                }
             ]
         });
 
@@ -858,7 +908,10 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                     items: [
                         {
                             xtype: 'container',
-                            layout: 'vbox',
+                            layout: {
+                                type: 'vbox',
+                                align: 'stretch'
+                            },
                             margin: '20 0 0 0',
                             items: [
                                 this.landingTopPageBlock
@@ -869,7 +922,10 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
                         {
                             xtype: 'container',
-                            layout: 'vbox',
+                            layout: {
+                                type: 'vbox',
+                                align: 'stretch'
+                            },
                             margin: '40 0 0 0',
                             items: [
                                 this.landingBtnPageBlock
@@ -879,7 +935,10 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                         },
                         {
                             xtype: 'container',
-                            layout: 'vbox',
+                            layout: {
+                                type: 'vbox',
+                                align: 'stretch'
+                            },
                             margin: '40 0 0 0',
                             items: [
                                 this.curatorPageBlock
