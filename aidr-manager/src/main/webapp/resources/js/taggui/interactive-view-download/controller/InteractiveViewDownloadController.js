@@ -139,7 +139,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                 row.text = r.text ? r.text : '';
                 row.attribute_name = r.nominal_labels[0].attribute_name ? r.nominal_labels[0].attribute_name : '';
                 row.label_name = r.nominal_labels[0].label_name ? r.nominal_labels[0].label_name : '';
-                row.confidence = r.nominal_labels[0].confidence ? r.nominal_labels[0].confidence : '';
+                row.confidence = r.nominal_labels[0].confidence ? (r.nominal_labels[0].confidence * 100) + '%' : '0%';
                 data.push(row);
             }
         });

@@ -81,7 +81,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 
         this.geoDescription = Ext.create('Ext.form.Label', {
             flex: 1,
-            html: '<span class="redInfo">*</span> <a href="http://boundingbox.klokantech.com/" target="_blank">boundingbox.klokantech.com</a> ("Copy/paste CSV format of a boundingbox")',
+            html: '<span class="redInfo">*</span> <a href="http://boundingbox.klokantech.com/" target="_blank">boundingbox.klokantech.com</a> ("Copy/paste CSV format of a boundingbox")<div><span class="redInfo">*</span>The collection will include <strong>all items from these regions</strong>, independently on whether they contain the keywords or not.</div>',
             padding: '2 0 2 135'
         });
 

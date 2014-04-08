@@ -460,7 +460,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
     setEndDate: function (raw) {
         var me = this;
-        this.DetailsComponent.lastStoppedL.setText(raw ? moment(raw).calendar() : me.na, false);
+        this.DetailsComponent.lastStoppedL.setText(raw ? moment(raw).calendar() : 'Still running', false);
     },
 
     setWillStoppedDate: function (status, startDate, duration) {

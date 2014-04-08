@@ -49,14 +49,18 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.statusL = Ext.create('Ext.form.Label', {padding: '0 10 0 0'});
         this.lastStartedL = Ext.create('Ext.form.Label', {flex: 1});
-        this.lastStoppedL = Ext.create('Ext.form.Label', {flex: 1});
+        this.lastStoppedL = -Ext.create('Ext.form.Label', {flex: 1});
         this.willStoppedL = Ext.create('Ext.form.Label', {flex: 1});
         this.codeL = Ext.create('Ext.form.Label', {flex: 1});
         this.keywordsL = Ext.create('Ext.form.Label', {
             flex: 1,
             cls: 'word-wrap-class'
         });
-        this.geoL = Ext.create('Ext.form.Label', {flex: 1});
+        this.geoL = Ext.create('Ext.form.Label', {
+        	flex: 1, 
+        	html: '<span class="redInfo">*</span>The collection will include <strong>all items from these regions</strong>, independently on whether they contain the keywords or not.',
+        	padding: '2 0 2 135'
+        });
         this.followL = Ext.create('Ext.form.Label', {flex: 1});
         this.languageFiltersL = Ext.create('Ext.form.Label', {flex: 1});
         this.createdL = Ext.create('Ext.form.Label', {flex: 1});
@@ -283,7 +287,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
 
         this.enableTaggerButton = Ext.create('Ext.Button', {
-            text: 'Enable Tagger',
+            text: 'Enable Classifier',
             cls:'btn btn-blue',
             id: 'enableTagger',
             margin: '0 0 0 10',

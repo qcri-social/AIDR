@@ -227,8 +227,9 @@ public class ClassifiedTweet  implements Document, Serializable{
 		try {
 			return formatter.parse(timeString);
 		} catch (ParseException e) {
-			System.err.println("[createDate] Error in parsing Date string");
+			System.err.println("[createDate] Error in parsing Date string = " + timeString);
 		}
+		System.out.println("[createDate] Warning! returning Date = null for time String = " + timeString);
 		return null;
 	}
 	

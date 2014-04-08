@@ -83,12 +83,22 @@ public class FilterQueryMatcher {
 		if (q instanceof DateQueryJsonObject) {
 			// check DateQueryJsonObject fields
 			if (q.getComparator().equals(ComparatorType.is_after)) {
-				boolean matchResult = tweet.getCreatedAt().after(q.getDate());
+				boolean matchResult;
+				if (null == tweet.getCreatedAt()) {
+					System.out.println("[isQueryMatch] No createdAt field in Tweet!!!");
+					return false;		// default behavior
+				}
+				matchResult = tweet.getCreatedAt().after(q.getDate());
 				//System.out.println("For " + tweet.getCreatedAt().toString() + " comparing after date " + q.getDate().toString() + " : " + matchResult);
 				return matchResult;
 			}
 			if (q.getComparator().equals(ComparatorType.is_before)) {
-				boolean matchResult = tweet.getCreatedAt().before(q.getDate());
+				boolean matchResult;
+				if (null == tweet.getCreatedAt()) {
+					System.out.println("[isQueryMatch] No createdAt field in Tweet!!!");
+					return false;		// default behavior
+				}
+				matchResult = tweet.getCreatedAt().before(q.getDate());
 				//System.out.println("For " + tweet.getCreatedAt().toString() + " comparing before date" + q.getDate().toString() + " : " + matchResult);
 				return matchResult;
 			}
