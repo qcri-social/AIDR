@@ -36,4 +36,9 @@ public class CodeLookUp {
     public static Integer DEFAULT_SKIN = 0;
     public static Integer IPHONE_SKIN = 1;
 
+
+    public static String WELCOMPAGE_UPDATE = "long_description";
+    public static String TUTORIAL = "tutorial";
+    public static String TASK_PRESENTER = "task_presenter";
+
 }

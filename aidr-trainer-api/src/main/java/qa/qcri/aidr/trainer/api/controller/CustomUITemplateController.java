@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import qa.qcri.aidr.trainer.api.entity.CustomUITemplate;
 import qa.qcri.aidr.trainer.api.service.CustomUITemplateService;
+import qa.qcri.aidr.trainer.api.store.CodeLookUp;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -53,20 +54,30 @@ public class CustomUITemplateController {
         logger.debug("updateWelcomePage..: " + data);
         //updateCustomTemplateByAttribute(Long crisisID, Long attributeID, int customUIType, int skinType)
         try{
+            logger.debug("updateWelcomePage. before parse: " + data);
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(data);
 
             JSONObject jsonObject = (JSONObject)obj;
 
-            long crisisID = (Long)jsonObject.get("crisisID");
-            long attributeID = (Long)jsonObject.get("attributeID");
-            int customUIType = (Integer)jsonObject.get("customUIType");
+            Long crisisID = (Long)jsonObject.get("crisisID");
+
+
+            Long attributeID = (Long)jsonObject.get("nominalAttributeID");
+
+
+            int customUIType = ((Long)jsonObject.get("templateType")).intValue();
+
+
+            logger.debug("crisisID..: " + crisisID);
+            logger.debug("attributeID..: " + attributeID);
+            logger.debug("customUIType..: " + customUIType);
 
             customUITemplateService.updateCustomTemplateByAttribute(crisisID,attributeID,customUIType,0);
 
         }
         catch(Exception e){
-
+            logger.debug("updateWelcomePage. Exception: " + e);
         }
     }
 
@@ -85,21 +96,29 @@ public class CustomUITemplateController {
             JSONObject jsonObject = (JSONObject)obj;
 
             long crisisID = (Long)jsonObject.get("crisisID");
-            long attributeID = (Long)jsonObject.get("attributeID");
-            int customUIType = (Integer)jsonObject.get("customUIType");
-            int skinType = (Integer)jsonObject.get("skinType");
+            long attributeID = (Long)jsonObject.get("nominalAttributeID");
+            int customUIType = ((Long)jsonObject.get("templateType")).intValue();
+            int skinType = CodeLookUp.DEFAULT_SKIN;
+            List<CustomUITemplate> templates = customUITemplateService.getCustomTemplateSkinType(crisisID,attributeID);
+
+            if(templates.size() > 0){
+                CustomUITemplate c = templates.get(0);
+                skinType = Integer.parseInt(c.getTemplateValue());
+            }
 
             customUITemplateService.updateCustomTemplateByAttribute(crisisID,attributeID,customUIType,skinType);
 
-
         }
         catch(Exception e){
+            logger.debug("updateTutorial. Exception: " + e);
 
         }
 
         //updateCustomTemplateByAttribute(Long crisisID, Long attributeID, int customUIType, int skinType)
 
     }
+
+
     // update landing page
     // update tutorial
     // update long description
