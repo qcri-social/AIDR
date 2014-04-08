@@ -173,7 +173,6 @@ public class JsonDeserializer {
 						fileName = csv.writeClassifiedTweetIDsCSV(tweetsList, collectionCode, "Classified_" + collectionCode + "_tweetIds_filtered");
 						tweetsList.clear();
 					}
-
 				}
 
 				br.close();

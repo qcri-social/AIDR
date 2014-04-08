@@ -56,7 +56,11 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             flex: 1,
             cls: 'word-wrap-class'
         });
-        this.geoL = Ext.create('Ext.form.Label', {flex: 1});
+        this.geoL = Ext.create('Ext.form.Label', {
+        	flex: 1, 
+        	html: '<span class="redInfo">*</span>The collection will include <strong>all items from these regions</strong>, independently on whether they contain the keywords or not.',
+        	padding: '2 0 2 135'
+        });
         this.followL = Ext.create('Ext.form.Label', {flex: 1});
         this.languageFiltersL = Ext.create('Ext.form.Label', {flex: 1});
         this.createdL = Ext.create('Ext.form.Label', {flex: 1});
