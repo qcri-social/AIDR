@@ -10,6 +10,7 @@ import qa.qcri.aidr.manager.dto.UITemplateRequest;
 import qa.qcri.aidr.manager.dto.UITemplateResponse;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.service.UITemplateService;
+import qa.qcri.aidr.manager.util.CustomUITemplateLookup;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -63,6 +64,27 @@ public class UITemplateServiceImpl implements UITemplateService {
             System.out.println("jsonResponse: " + jsonResponse);
             UITemplateRequest response = objectMapper.readValue(jsonResponse, UITemplateRequest.class);
             if (response != null) {
+
+                if(uiTemplateRequest.getTemplateType().equals(CustomUITemplateLookup.CLASSIFIER_WELCOME_PAGE)){
+                    webResource = client.target(crowdsourcingAPIMainUrl + "/customUI/welcome/update");
+                    Response clientResponse2 = webResource.request(MediaType.APPLICATION_JSON)
+                            .post(Entity.json(objectMapper.writeValueAsString(uiTemplateRequest)), Response.class);
+                }
+
+                if(uiTemplateRequest.getTemplateType().equals(CustomUITemplateLookup.CLASSIFIER_SKIN)){
+                    webResource = client.target(crowdsourcingAPIMainUrl + "/customUI/skin/update");
+                    Response clientResponse2 = webResource.request(MediaType.APPLICATION_JSON)
+                            .post(Entity.json(objectMapper.writeValueAsString(uiTemplateRequest)), Response.class);
+                }
+
+                if(uiTemplateRequest.getTemplateType().equals(CustomUITemplateLookup.CLASSIFIER_TUTORIAL_ONE) ||
+                        uiTemplateRequest.getTemplateType().equals(CustomUITemplateLookup.CLASSIFIER_TUTORIAL_ONE) ){
+                    webResource = client.target(crowdsourcingAPIMainUrl + "/customUI/tutorial/update");
+                    Response clientResponse2 = webResource.request(MediaType.APPLICATION_JSON)
+                            .post(Entity.json(objectMapper.writeValueAsString(uiTemplateRequest)), Response.class);
+                }
+
+
                 logger.info("updateTemplate - updateTemplate with ID " + response + " was created in Tagger");
                 return response;
             }
