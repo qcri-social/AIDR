@@ -13,7 +13,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public interface CustomUITemplateService {
-    public List<CustomUITemplate> getCustomTemplateSkinType(Long crisisID, Long attributeID);
+    public List<CustomUITemplate> getCustomTemplateSkinType(Long crisisID);
     List<CustomUITemplate> getCustomTemplateForLandingPage (Long crisisID);
     List<CustomUITemplate> getCustomTemplateByCrisis(Long crisisID);
     void updateCustomTemplateByCrisis(Long crisisID, int customUIType) throws Exception ;

@@ -50,10 +50,18 @@ body {
 
 }
 
+ui-icon-myapp-starthere {
+    background-image: url("../../image/starthere.png") !important;
+    background-repeat: no-repeat;
+}
+
+
 #page{
     background: url("../../image/aidr-bg-clouds.jpg") no-repeat;
 }
 p.big {line-height:140%;}
+
+
 
 
 

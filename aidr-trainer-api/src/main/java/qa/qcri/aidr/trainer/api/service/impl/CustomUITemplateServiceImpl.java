@@ -46,9 +46,10 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
     ClientAppService clientAppService;
 
     @Override
-    public List<CustomUITemplate> getCustomTemplateSkinType(Long crisisID, Long attributeID){
+    public List<CustomUITemplate> getCustomTemplateSkinType(Long crisisID){
         //
-        return customUITemplateDao.getTemplateByAttributeAndType(crisisID, attributeID,null,CodeLookUp.CLASSIFIER_SKIN) ;
+        return  customUITemplateDao.getTemplateByCrisisWithType(crisisID, CodeLookUp.CLASSIFIER_SKIN);
+
     }
 
 
@@ -99,7 +100,7 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
 
         List<CustomUITemplate> cList ;
         if(customUIType== CodeLookUp.CLASSIFIER_WELCOME_PAGE){
-            logger.debug("updateCustomTemplateByAttribute");
+            logger.debug("CLASSIFIER_WELCOME_PAGE");
             cList =  customUITemplateDao.getTemplateByAttributeAndType(crisisID,attributeID, StatusCodeType.CUSTOM_UI_UPDATE_REQUEST, customUIType);
             if(cList.size() > 0){
                 ClientApp clientApp = clientAppService.getClientAppByCrisisAndAttribute(crisisID,  attributeID);
@@ -113,6 +114,7 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
         }
 
         if(customUIType== CodeLookUp.CLASSIFIER_TUTORIAL_ONE || customUIType== CodeLookUp.CLASSIFIER_TUTORIAL_TWO){
+            logger.debug("CLASSIFIER_TUTORIAL");
             cList =  customUITemplateDao.getTemplateByAttribute( crisisID,  attributeID);
             ClientApp clientApp = clientAppService.getClientAppByCrisisAndAttribute(crisisID,  attributeID);
             if(cList.size() > 0){
@@ -128,24 +130,30 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
                     }
                 }
                String tutorialPage;
-               if(tutorialOne == null || tutorialTwo == null){
-                   tutorialPage = this.buildDefaultTutorialTemplate(clientApp);
-               }
-               else{
-                   tutorialPage =  buildTutorialTemplate(clientApp, tutorialOne, tutorialTwo);
+               if(tutorialOne == null ){
+                   tutorialOne = this.buildDefaultTutorialPartOne(clientApp);
                }
 
+               if(tutorialTwo == null ){
+                   tutorialTwo = this.buildDefaultTutorialPartTwo(clientApp);
+               }
+
+               tutorialPage =  buildTutorialTemplate(clientApp, tutorialOne, tutorialTwo);
+               logger.debug("CLASSIFIER_TUTORIAL - Context : " + tutorialPage);
                String jsonData = this.assembleTPybossaJson(clientApp,CodeLookUp.TUTORIAL,  tutorialPage);
                this.sendToPybossa(jsonData, clientApp );
+
             }
             else{
                String defaultTutorialPage = this.buildDefaultTutorialTemplate(clientApp);
+               logger.debug("CLASSIFIER_TUTORIAL - Context : " + defaultTutorialPage);
                String jsonData = this.assembleTPybossaJson(clientApp,CodeLookUp.TUTORIAL,  defaultTutorialPage);
                this.sendToPybossa(jsonData, clientApp );
             }
         }
 
         if(customUIType== CodeLookUp.CLASSIFIER_SKIN){
+            logger.debug("CLASSIFIER_SKIN");
             List<ClientApp> apps = clientAppService.getAllClientAppByCrisisID(crisisID);
             for(ClientApp clientApp : apps){
                 //ClientApp clientApp = clientAppService.getClientAppByCrisisAndAttribute(crisisID,  attributeID);
@@ -159,10 +167,7 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
                     }
                 }
             }
-
         }
-
-
     }
 
 
@@ -322,6 +327,61 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
 
 
         return displayLabel.toString();
+    }
+
+    public String buildDefaultTutorialPartOne(ClientApp clientApp) throws  Exception{
+        long crisisID = clientApp.getCrisisID();
+
+        CrisisJsonModel crisisJsonModel = crisisService.findByOptimizedCrisisID(crisisID);
+
+
+        StringBuffer partOne = new StringBuffer();
+        partOne.append("<b>Hi!</b>  Many thanks for volunteering your time as a Digital Humanitarian, in order to learn more about ");
+        partOne.append(crisisJsonModel.getName());
+        partOne.append(".");
+        partOne.append(" Critical information is often shared on Twitter in real time, which is where you come in.");
+
+        return partOne.toString();
+    }
+
+    public String buildDefaultTutorialPartTwo(ClientApp clientApp) throws  Exception{
+        long crisisID = clientApp.getCrisisID();
+        long attributeID = clientApp.getNominalAttributeID();
+        CrisisJsonModel crisisJsonModel = crisisService.findByOptimizedCrisisID(crisisID);
+        Set<NominalAttributeJsonModel> nominalAttributes = crisisJsonModel.getNominalAttributeJsonModelSet();
+        Set<NominalLabelJsonModel> labelJsonModelSet = null;
+
+        for(NominalAttributeJsonModel a : nominalAttributes){
+            if(a.getNominalAttributeID().equals(attributeID)) {
+                labelJsonModelSet = a.getNominalLabelJsonModelSet();
+            }
+        }
+
+        StringBuffer partTwo = new StringBuffer();
+        partTwo.append("Being a Digital Humanitarian is as easy and fast as a click of the mouse. ");
+        partTwo.append("If you want to keep track of your progress and points, make sure to login! ");
+        partTwo.append("This Clicker will simply load a tweet and ask you to click on the category that best describes the tweet.<br/>");
+
+        if(labelJsonModelSet != null ){
+            partTwo.append("<table>");
+            for(NominalLabelJsonModel labelJsonModel : labelJsonModelSet) {
+                partTwo.append("<tr><td>");
+                partTwo.append("<b>" + labelJsonModel.getName() + "</b></td>") ;
+                if(!labelJsonModel.getDescription().isEmpty()){
+                    partTwo.append("<td>: " + labelJsonModel.getDescription() + "</td>") ;
+                }
+                partTwo.append("</tr>");
+            }
+            partTwo.append("</table>");
+
+        }
+        partTwo.append("<br/><br/>");
+        partTwo.append("Note that these tweets come directly from twitter and may on rare occasions include disturbing content. Only start clicking if you understand this and still wish to volunteer.");
+        partTwo.append("<br/><br/>");
+        partTwo.append("Thank you!");
+
+        return partTwo.toString();
+
     }
 
     private String buildDefaultTutorialTemplate(ClientApp clientApp) throws  Exception{

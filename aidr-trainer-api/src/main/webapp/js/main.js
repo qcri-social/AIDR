@@ -67,7 +67,7 @@ function renderList(data) {
             if(item.remaining > 0){
                 template = template +  ' There are <b><font color="#8d222c">' + item.remaining + '</font></b> tweets waiting to be classified.' + '</p>';
                 if(item.remaining > 0){
-                    template = template + '</a>';
+                    template = template + '<span class="ui-li-count">&nbsp;&nbsp;&nbsp;Start Here &#10140;&nbsp;&nbsp;&nbsp;</span></a>';
                 }
                 template = template + '</li>';
             }

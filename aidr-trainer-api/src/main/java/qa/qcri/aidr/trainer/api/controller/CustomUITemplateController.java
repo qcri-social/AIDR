@@ -99,7 +99,43 @@ public class CustomUITemplateController {
             long attributeID = (Long)jsonObject.get("nominalAttributeID");
             int customUIType = ((Long)jsonObject.get("templateType")).intValue();
             int skinType = CodeLookUp.DEFAULT_SKIN;
-            List<CustomUITemplate> templates = customUITemplateService.getCustomTemplateSkinType(crisisID,attributeID);
+            List<CustomUITemplate> templates = customUITemplateService.getCustomTemplateSkinType(crisisID);
+
+            if(templates.size() > 0){
+                CustomUITemplate c = templates.get(0);
+                skinType = Integer.parseInt(c.getTemplateValue());
+            }
+
+            customUITemplateService.updateCustomTemplateByAttribute(crisisID,attributeID,customUIType,skinType);
+
+        }
+        catch(Exception e){
+            logger.debug("updateTutorial. Exception: " + e);
+
+        }
+
+        //updateCustomTemplateByAttribute(Long crisisID, Long attributeID, int customUIType, int skinType)
+
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/skin/update")
+    public void updateSkin(String data){
+        logger.debug("updateSkin start: " + new Date());
+        logger.debug("updateSkin..: " + data);
+
+        try{
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(data);
+
+            JSONObject jsonObject = (JSONObject)obj;
+
+            long crisisID = (Long)jsonObject.get("crisisID");
+            long attributeID = 0;
+            int customUIType = ((Long)jsonObject.get("templateType")).intValue();
+            int skinType = CodeLookUp.DEFAULT_SKIN;
+            List<CustomUITemplate> templates = customUITemplateService.getCustomTemplateSkinType(crisisID);
 
             if(templates.size() > 0){
                 CustomUITemplate c = templates.get(0);

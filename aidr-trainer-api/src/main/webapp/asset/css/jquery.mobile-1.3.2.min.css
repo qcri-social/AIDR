@@ -1774,11 +1774,11 @@ to {
 }
 
 .ui-select .ui-btn-icon-right.ui-li-has-count .ui-li-count {
-    right:45px;
+    right:5px;
 }
 
 .ui-select .ui-mini.ui-btn-icon-right.ui-li-has-count .ui-li-count {
-    right:32px;
+    right:2px;
 }
 
 .ui-select .ui-btn-text,.ui-selectmenu .ui-btn-text {
@@ -2157,7 +2157,7 @@ ol.ui-listview>.ui-li .ui-li-desc:not(.ui-li-aside) {
 
 .ui-li-has-count .ui-li-count {
     position:absolute;
-    font-size:11px;
+    font-size:13px;
     font-weight:700;
     top:50%;
     margin-top:-.9em;
@@ -2170,11 +2170,11 @@ ol.ui-listview>.ui-li .ui-li-desc:not(.ui-li-aside) {
 }
 
 .ui-li-has-arrow.ui-li-has-count .ui-li-count {
-    right:40px;
+    right:0px;
 }
 
 .ui-li-has-alt.ui-li-has-count .ui-li-count {
-    right:53px;
+    right:3px;
 }
 
 .ui-li-link-alt {

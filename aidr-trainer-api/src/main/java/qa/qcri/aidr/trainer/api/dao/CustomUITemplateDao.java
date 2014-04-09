@@ -18,6 +18,6 @@ public interface CustomUITemplateDao extends AbstractDao<CustomUITemplate, Strin
     List<CustomUITemplate> getTemplateByAttribute(Long crisisID,Long attributeID);
     List<CustomUITemplate> getTemplateByAttributeWithStatus(Long crisisID,Long attributeID, Integer status);
     List<CustomUITemplate> getTemplateByAttributeAndType(Long crisisID,Long attributeID, Integer status, Integer type);
-
+    public List<CustomUITemplate> getTemplateByCrisisWithType(Long crisisID, Integer templateType);
     void updateTemplateStatus(Long customUITemplateID, int status);
 }
