@@ -408,45 +408,14 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        this.classifierComboForSkinType = Ext.create('Ext.form.ComboBox', {
-            store: this.crisisModelsStore,
-            queryMode: 'local',
-            displayField: 'attribute',
-            valueField: 'attributeID',
-            multiSelect: false,
-            editable: false,
-            emptyText: 'Select a classifier',
-            labelWidth: 250,
-            name: 'skinClassifierFilters',
-            id: 'skinClassifierFilters',
-            margin: '0 0 0 10',
-            flex: 1,
-            hidden: true
-        });
-        this.uiTypeStore = Ext.create('Ext.data.ArrayStore', {
-            autoDestroy: true,
-            storeId: 'uiTypeStore',
-            idIndex: 0,
-            fields: [
-                'name',
-                'code'
-            ],
-            data: uiTemplate
-        });
-        this.uiTypeCombo = Ext.create('Ext.form.ComboBox', {
-            store: this.uiTypeStore,
-            queryMode: 'local',
-            displayField: 'name',
-            valueField: 'code',
-            multiSelect: false,
-            editable: false,
-            emptyText: 'Select a template type',
-            labelWidth: 250,
-            flex: 1,
-            name: 'uiTypeFilters',
-            id: 'uiTypeFilters'
 
+        this.curatorDesc = Ext.create('Ext.form.Label', {
+            html: '<div>* Curator name. Your name or the name of your organization, to display to volunteers and to people who use your collection.</div>',
+            margin: '5 0 5 0',
+            width: 350,
+            height: 150
         });
+
         this.classifierCombo = Ext.create('Ext.form.ComboBox', {
             store: this.crisisModelsStore,
             queryMode: 'local',
@@ -486,30 +455,6 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             cls:'btn btn-green',
             id: 'uiSkinTypeSave',
             margin: '0 0 0 10'
-        });
-        this.uiTemplateBlock = Ext.create('Ext.container.Container', {
-            layout: {
-                type: 'vbox',
-                align: 'stretch',
-                margin: '5 0 5 0'
-            },
-            items: [
-                {
-                    xtype: 'container',
-                    padding: '0 0 0 0',
-                    margin: '0 0 10 10',
-                    layout: 'hbox',
-                    items: [
-                        this.uiTypeCombo,
-                        this.classifierCombo,
-                        this.templateSaveButton
-                    ]
-                }
-                ,
-                this.uiTemplate
-
-
-            ]
         });
 
 
@@ -672,20 +617,23 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             text: 'Save',
             cls:'btn btn-green',
             id: 'uiWelcomeSave',
-            margin: '3 0 0 10'
+            margin: '3 0 0 10',
+            hidden: true
 
         });
         this.uiTutorialOneSaveButton = Ext.create('Ext.Button', {
             text: 'Save',
             cls:'btn btn-green',
             id: 'uiTutorialOneSave',
-            margin: '3 0 0 10'
+            margin: '3 0 0 10' ,
+            hidden: true
         });
         this.uiTutorialTwoSaveButton = Ext.create('Ext.Button', {
             text: 'Save',
             cls:'btn btn-green',
             id: 'uiTutorialTwoSave',
-            margin: '3 0 0 10'
+            margin: '3 0 0 10',
+            hidden: true
         });
 
         this.landingTopSaveButton = Ext.create('Ext.Button', {
@@ -943,7 +891,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                             items: [
                                 this.curatorPageBlock
                                 , this.curatorInfo
-
+                                ,this.curatorDesc
                             ]
                         }
                     ]

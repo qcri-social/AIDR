@@ -1,7 +1,9 @@
 package qa.qcri.aidr.trainer.api.service.impl;
 
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,7 @@ import qa.qcri.aidr.trainer.api.store.CodeLookUp;
 import qa.qcri.aidr.trainer.api.store.StatusCodeType;
 import qa.qcri.aidr.trainer.api.template.CrisisJsonModel;
 import qa.qcri.aidr.trainer.api.template.NominalAttributeJsonModel;
+import qa.qcri.aidr.trainer.api.template.NominalLabelJsonModel;
 import qa.qcri.aidr.trainer.api.util.Communicator;
 import qa.qcri.aidr.trainer.api.util.DataSorterUtil;
 import qa.qcri.aidr.trainer.api.util.StreamConverter;
@@ -31,6 +34,7 @@ import java.util.*;
 @Service("customUITemplateService")
 @Transactional(readOnly = true)
 public class CustomUITemplateServiceImpl implements CustomUITemplateService {
+    protected static Logger logger = Logger.getLogger("service");
 
     @Autowired
     CustomUITemplateDao customUITemplateDao;
@@ -40,6 +44,14 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
 
     @Autowired
     ClientAppService clientAppService;
+
+    @Override
+    public List<CustomUITemplate> getCustomTemplateSkinType(Long crisisID){
+        //
+        return  customUITemplateDao.getTemplateByCrisisWithType(crisisID, CodeLookUp.CLASSIFIER_SKIN);
+
+    }
+
 
     @Override
     public List<CustomUITemplate> getCustomTemplateByCrisis(Long crisisID){
@@ -64,7 +76,6 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
         return tempList ;
     }
 
-
     @Override
     public void updateCustomTemplateByCrisis(Long crisisID, int customUIType) {
 
@@ -81,27 +92,34 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
 
     @Override
     public void updateCustomTemplateByAttribute(Long crisisID, Long attributeID, int customUIType, int skinType) throws Exception {
+        logger.debug("updateCustomTemplateByAttribute");
+        logger.debug("crisisID : " + crisisID);
+        logger.debug("attributeID" + attributeID);
+        logger.debug("customUIType" + customUIType);
+        logger.debug("skinType" + skinType);
 
         List<CustomUITemplate> cList ;
         if(customUIType== CodeLookUp.CLASSIFIER_WELCOME_PAGE){
+            logger.debug("CLASSIFIER_WELCOME_PAGE");
             cList =  customUITemplateDao.getTemplateByAttributeAndType(crisisID,attributeID, StatusCodeType.CUSTOM_UI_UPDATE_REQUEST, customUIType);
             if(cList.size() > 0){
                 ClientApp clientApp = clientAppService.getClientAppByCrisisAndAttribute(crisisID,  attributeID);
                 CustomUITemplate c = cList.get(0);
-                String welcomePage = buildWelcomePage(c.getTemplateValue());
+                String longDescString = buildWelcomePage(c.getTemplateValue());
                 //ClientApp clientApp, int customUIType, String updateTemplateValue
-                String jsonData = this.assembleToPybossaFormat(clientApp, customUIType, welcomePage);
+                String jsonData = this.assembleTPybossaJson(clientApp, CodeLookUp.WELCOMPAGE_UPDATE, longDescString);
                 this.sendToPybossa(jsonData, clientApp );
             }
 
         }
 
         if(customUIType== CodeLookUp.CLASSIFIER_TUTORIAL_ONE || customUIType== CodeLookUp.CLASSIFIER_TUTORIAL_TWO){
+            logger.debug("CLASSIFIER_TUTORIAL");
             cList =  customUITemplateDao.getTemplateByAttribute( crisisID,  attributeID);
+            ClientApp clientApp = clientAppService.getClientAppByCrisisAndAttribute(crisisID,  attributeID);
             if(cList.size() > 0){
-                ClientApp clientApp = clientAppService.getClientAppByCrisisAndAttribute(crisisID,  attributeID);
-                String tutorialOne = "";
-                String tutorialTwo = "";
+                String tutorialOne = null ;
+                String tutorialTwo  = null;
                 for(CustomUITemplate c : cList){
                     if(c.getTemplateType().equals(CodeLookUp.CLASSIFIER_TUTORIAL_ONE) ){
                         tutorialOne = c.getTemplateValue();
@@ -111,32 +129,107 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
                         tutorialTwo = c.getTemplateValue();
                     }
                 }
+               String tutorialPage;
+               if(tutorialOne == null ){
+                   tutorialOne = this.buildDefaultTutorialPartOne(clientApp);
+               }
 
-               String tutorialPage =  buildTutorialTemplate(clientApp, tutorialOne, tutorialTwo);
-               String jsonData = this.assembleToPybossaFormat(clientApp,customUIType,  tutorialPage);
+               if(tutorialTwo == null ){
+                   tutorialTwo = this.buildDefaultTutorialPartTwo(clientApp);
+               }
+
+               tutorialPage =  buildTutorialTemplate(clientApp, tutorialOne, tutorialTwo);
+               logger.debug("CLASSIFIER_TUTORIAL - Context : " + tutorialPage);
+               String jsonData = this.assembleTPybossaJson(clientApp,CodeLookUp.TUTORIAL,  tutorialPage);
+               this.sendToPybossa(jsonData, clientApp );
+
+            }
+            else{
+               String defaultTutorialPage = this.buildDefaultTutorialTemplate(clientApp);
+               logger.debug("CLASSIFIER_TUTORIAL - Context : " + defaultTutorialPage);
+               String jsonData = this.assembleTPybossaJson(clientApp,CodeLookUp.TUTORIAL,  defaultTutorialPage);
                this.sendToPybossa(jsonData, clientApp );
             }
         }
 
         if(customUIType== CodeLookUp.CLASSIFIER_SKIN){
-            cList =  customUITemplateDao.getTemplateByAttribute( crisisID,  attributeID);
-            if(cList.size() > 0){
-                ClientApp clientApp = clientAppService.getClientAppByCrisisAndAttribute(crisisID,  attributeID);
+            logger.debug("CLASSIFIER_SKIN");
+            List<ClientApp> apps = clientAppService.getAllClientAppByCrisisID(crisisID);
+            for(ClientApp clientApp : apps){
+                //ClientApp clientApp = clientAppService.getClientAppByCrisisAndAttribute(crisisID,  attributeID);
                 Set<ModelFamily> families = crisisService.findByCrisisID(crisisID).getModelFamilySet();
                 for(ModelFamily family : families){
-                    if(family.getNominalAttributeID().equals(attributeID)){
+                    if(family.getNominalAttributeID().equals(clientApp.getNominalAttributeID())){
                         NominalAttribute nom = family.getNominalAttribute();
                         String skinUpdate = buildAppSkin(clientApp, nom, skinType);
-                        String jsonData = this.assembleToPybossaFormat(clientApp,customUIType,  skinUpdate);
+                        String jsonData = this.assembleTPybossaJson(clientApp,CodeLookUp.TASK_PRESENTER,  skinUpdate);
                         this.sendToPybossa(jsonData, clientApp );
                     }
                 }
-
-
             }
         }
+    }
 
 
+    @Override
+    public String assembleTPybossaJson(ClientApp clientApp, String key, String value) throws Exception{
+
+        String getInfo = this.getAppInfo(clientApp);
+        JSONParser parser = new JSONParser();
+
+        JSONObject data = (JSONObject) parser.parse(getInfo);
+
+
+        String created = (String)data.get("created");
+
+        JSONObject info  = (JSONObject)data.get("info");
+        String long_description = (String)data.get("long_description");
+        String tutorial = (String)info.get("tutorial");
+        String task_presenter = (String)info.get("task_presenter");
+
+        if(key.equalsIgnoreCase(CodeLookUp.WELCOMPAGE_UPDATE)){
+            long_description = value;
+        }
+
+        if(key.equalsIgnoreCase(CodeLookUp.TUTORIAL)){
+            tutorial = value;
+        }
+
+        if(key.equalsIgnoreCase(CodeLookUp.TASK_PRESENTER)){
+            task_presenter = value;
+        }
+
+        JSONObject app = new JSONObject();
+
+        app.put("task_presenter", task_presenter);
+
+        app.put("tutorial", tutorial);
+        app.put("thumbnail", "http://i.imgur.com/lgZAWIc.png");
+
+        JSONObject app2 = new JSONObject();
+        app2.put("info", app );
+
+        app2.put("long_description", long_description);
+        app2.put("name", clientApp.getName());
+        app2.put("short_name", clientApp.getShortName());
+        app2.put("description", clientApp.getShortName());
+        app2.put("id", clientApp.getPlatformAppID());
+        app2.put("time_limit", 0);
+        app2.put("long_tasks", 0);
+        app2.put("created", created);
+        app2.put("calibration_frac", 0);
+        app2.put("bolt_course_id", 0);
+        app2.put("link", "<link rel='self' title='app' href='http://localhost:5000/api/app/2'/>");
+        app2.put("allow_anonymous_contributors", true);
+        app2.put("time_estimate", 0);
+        app2.put("hidden", 0);
+        if(data.get("category_id")!=null){
+            int category_id = (Integer)data.get("category_id");
+            app2.put("category_id", category_id);
+        }
+        app2.put("owner_id", 1);
+
+        return  app2.toJSONString();
     }
 
     public String buildTutorialTemplate(ClientApp clientApp, String partOne, String partTwo) throws Exception{
@@ -194,16 +287,20 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
 
         StringBuffer displayLabel = new StringBuffer();
         Iterator itr= mapData.entrySet().iterator();
-        while(itr.hasNext()){
 
-            NominalLabel featureJsonObj = (NominalLabel) itr.next();
+        Set<String> numbers = mapData.keySet();
+
+        for (String number : numbers) {
+            //System.out.println(mapData.get(number));
+            NominalLabel featureJsonObj =(NominalLabel) mapData.get(number);
+
             String labelName = featureJsonObj.getName()  ;
             String lableCode = featureJsonObj.getNorminalLabelCode() ;
             String description = featureJsonObj.getDescription();
             Long norminalLabelID = featureJsonObj.getNorminalLabelID();
 
             if(skinType == CodeLookUp.IPHONE_SKIN) {
-                    displayLabel.append("<<li id=")  ;
+                    displayLabel.append("<li id='")  ;
                     displayLabel.append(lableCode) ;
                     displayLabel.append("'>") ;
                     displayLabel.append(labelName) ;
@@ -232,34 +329,115 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
         return displayLabel.toString();
     }
 
-    public String assembleToPybossaFormat(ClientApp clientApp, int customUIType, String updateTemplateValue){
-        JSONObject app = new JSONObject();
+    public String buildDefaultTutorialPartOne(ClientApp clientApp) throws  Exception{
+        long crisisID = clientApp.getCrisisID();
 
-        if(CodeLookUp.CLASSIFIER_SKIN.equals(customUIType))  {
-            app.put("task_presenter", updateTemplateValue);
+        CrisisJsonModel crisisJsonModel = crisisService.findByOptimizedCrisisID(crisisID);
+
+
+        StringBuffer partOne = new StringBuffer();
+        partOne.append("<b>Hi!</b>  Many thanks for volunteering your time as a Digital Humanitarian, in order to learn more about ");
+        partOne.append(crisisJsonModel.getName());
+        partOne.append(".");
+        partOne.append(" Critical information is often shared on Twitter in real time, which is where you come in.");
+
+        return partOne.toString();
+    }
+
+    public String buildDefaultTutorialPartTwo(ClientApp clientApp) throws  Exception{
+        long crisisID = clientApp.getCrisisID();
+        long attributeID = clientApp.getNominalAttributeID();
+        CrisisJsonModel crisisJsonModel = crisisService.findByOptimizedCrisisID(crisisID);
+        Set<NominalAttributeJsonModel> nominalAttributes = crisisJsonModel.getNominalAttributeJsonModelSet();
+        Set<NominalLabelJsonModel> labelJsonModelSet = null;
+
+        for(NominalAttributeJsonModel a : nominalAttributes){
+            if(a.getNominalAttributeID().equals(attributeID)) {
+                labelJsonModelSet = a.getNominalLabelJsonModelSet();
+            }
         }
 
-        if(customUIType== CodeLookUp.CLASSIFIER_TUTORIAL_ONE || customUIType== CodeLookUp.CLASSIFIER_TUTORIAL_TWO){
-            app.put("tutorial", updateTemplateValue);
+        StringBuffer partTwo = new StringBuffer();
+        partTwo.append("Being a Digital Humanitarian is as easy and fast as a click of the mouse. ");
+        partTwo.append("If you want to keep track of your progress and points, make sure to login! ");
+        partTwo.append("This Clicker will simply load a tweet and ask you to click on the category that best describes the tweet.<br/>");
+
+        if(labelJsonModelSet != null ){
+            partTwo.append("<table>");
+            for(NominalLabelJsonModel labelJsonModel : labelJsonModelSet) {
+                partTwo.append("<tr><td>");
+                partTwo.append("<b>" + labelJsonModel.getName() + "</b></td>") ;
+                if(!labelJsonModel.getDescription().isEmpty()){
+                    partTwo.append("<td>: " + labelJsonModel.getDescription() + "</td>") ;
+                }
+                partTwo.append("</tr>");
+            }
+            partTwo.append("</table>");
+
+        }
+        partTwo.append("<br/><br/>");
+        partTwo.append("Note that these tweets come directly from twitter and may on rare occasions include disturbing content. Only start clicking if you understand this and still wish to volunteer.");
+        partTwo.append("<br/><br/>");
+        partTwo.append("Thank you!");
+
+        return partTwo.toString();
+
+    }
+
+    private String buildDefaultTutorialTemplate(ClientApp clientApp) throws  Exception{
+
+        long crisisID = clientApp.getCrisisID();
+        long attributeID = clientApp.getNominalAttributeID();
+        CrisisJsonModel crisisJsonModel = crisisService.findByOptimizedCrisisID(crisisID);
+        Set<NominalAttributeJsonModel> nominalAttributes = crisisJsonModel.getNominalAttributeJsonModelSet();
+        Set<NominalLabelJsonModel> labelJsonModelSet = null;
+
+        for(NominalAttributeJsonModel a : nominalAttributes){
+            if(a.getNominalAttributeID().equals(attributeID)) {
+                labelJsonModelSet = a.getNominalLabelJsonModelSet();
+            }
         }
 
-        JSONObject app2 = new JSONObject();
 
-        if(app.size() > 0){
-            app2.put("info", app );
+        StringBuffer partOne = new StringBuffer();
+        partOne.append("<b>Hi!</b>  Many thanks for volunteering your time as a Digital Humanitarian, in order to learn more about ");
+        partOne.append(crisisJsonModel.getName());
+        partOne.append(".");
+        partOne.append(" Critical information is often shared on Twitter in real time, which is where you come in.");
+
+        StringBuffer partTwo = new StringBuffer();
+        partTwo.append("Being a Digital Humanitarian is as easy and fast as a click of the mouse. ");
+        partTwo.append("If you want to keep track of your progress and points, make sure to login! ");
+        partTwo.append("This Clicker will simply load a tweet and ask you to click on the category that best describes the tweet.<br/>");
+
+        if(labelJsonModelSet != null ){
+            partTwo.append("<table>");
+            for(NominalLabelJsonModel labelJsonModel : labelJsonModelSet) {
+                partTwo.append("<tr><td>");
+                partTwo.append("<b>" + labelJsonModel.getName() + "</b></td>") ;
+                if(!labelJsonModel.getDescription().isEmpty()){
+                    partTwo.append("<td>: " + labelJsonModel.getDescription() + "</td>") ;
+                }
+                partTwo.append("</tr>");
+            }
+            partTwo.append("</table>");
+
         }
+        partTwo.append("<br/><br/>");
+        partTwo.append("Note that these tweets come directly from twitter and may on rare occasions include disturbing content. Only start clicking if you understand this and still wish to volunteer.");
+        partTwo.append("<br/><br/>");
+        partTwo.append("Thank you!");
 
-        if(CodeLookUp.CLASSIFIER_WELCOME_PAGE.equals(customUIType))  {
-            app2.put("long_description", updateTemplateValue);
-        }
+        return buildTutorialTemplate(clientApp, partOne.toString(), partTwo.toString());
+    }
 
+    private String getAppInfo(ClientApp clientApp){
+        Communicator pybossaCommunicator = new Communicator();
+        String url = clientApp.getClient().getHostURL()  + "/app/" + clientApp.getPlatformAppID();
 
-        app2.put("name", clientApp.getName());
-        app2.put("short_name", clientApp.getShortName());
-        app2.put("id", clientApp.getPlatformAppID());
+        String response = pybossaCommunicator.sendGet(url);
 
-        //long_description
-        return  app2.toJSONString();
+        return response;
     }
 
     private void sendToPybossa(String jsonData,ClientApp clientApp){
@@ -267,7 +445,8 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
         String url = clientApp.getClient().getHostURL()  + "/app/" + clientApp.getPlatformAppID() + "?api_key=" + clientApp.getClient().getHostAPIKey();
 
         int responseCode = pybossaCommunicator.sendPut(jsonData, url);
-
+        logger.info("pybossa UI update response:" + responseCode);
     }
+
 
 }

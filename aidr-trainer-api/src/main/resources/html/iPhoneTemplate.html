@@ -252,16 +252,18 @@
             // $("#question h1").text(task.info.question); //date
 
             task.answer = {
+                'crisisID':task.info.crisisID,
+                'documentID':task.info.documentID,
                 'category': null,
-                'tweet': task.info.tweet,
+                'text': task.info.text,
                 'tweetid': task.info.tweetid,
-                'taskid': task.id,
-                'timestamp': task.info.timestamp,
-                'author': task.info.author,
-                'lon': task.info.lon,
-                'lat': task.info.lat,
-                'url': task.info.url
+                'date': task.info.date,
+                'username': task.info.username,
+                'userid': task.info.userid,
+                'aidrID': task.info.aidrID
             };
+            localtask = task.answer;
+
             deferred.resolve(task);
         }
         else {
@@ -278,11 +280,11 @@
             localtask = task.answer;
 ////////////////////////////////////////////////////////////////////////////////////////////////
             $("#task-id").text(task.id);
-            $("#tweettext").html("<p><img src=\"../../../static/img/tweet.png\" width=\"18px\"> "+replaceURLWithHTMLLinks(task.info.tweet) +"</p>");
+            $("#tweettext").html("<p><img src=\"../../../static/img/tweet.png\" width=\"18px\"> "+replaceURLWithHTMLLinks(task.info.text) +"</p>");
 
             $('#tweetDescription li').unbind("click").click(function(evt) {
                 // evt.preventDefault();
-                var answer = $(evt.currentTarget).text();
+                var answer = evt.target.id;
                 if (typeof answer != 'undefined' ) {
                     console.log("answer is : " + answer);
                     if(answer !=""){
