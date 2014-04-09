@@ -58,6 +58,9 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 change: function(field, newValue, oldValue, eOpts) {
                     var me = this;
                     var attID = me.mainComponent.classifierComboForPybossaApp.getValue();
+                    me.mainComponent.uiWelcomeSaveButton.show();
+                    me.mainComponent.uiTutorialOneSaveButton.show();
+                    uiTutorialOneSaveButton.uiTutorialTwoSaveButton.show();
                     me.getUITemplateWithAttributeID(attID);
                 }
             },
@@ -110,21 +113,12 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 change: function(field, newValue, oldValue, eOpts) {
                     var me = this;
                     me.mainComponent.templateSaveButton.show();
+
                     if(field.value != ''){
                         this.getUITemplate();
                     }
                     else{
                         me.mainComponent.uiTemplate.setValue('', false);
-                    }
-                }
-            },
-            "#skinClassifierFilters":{
-                change: function(field, newValue, oldValue, eOpts) {
-                    var me = this;
-
-                    if(field.value != '' ){
-                        me.mainComponent.uiSkinTypeSaveButton.show();
-                        this.getUISkinTemplate();
                     }
                 }
             },
@@ -268,17 +262,9 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         else{
             var templateContent = me.mainComponent.uiTemplate.getValue();
             var attID = me.mainComponent.classifierCombo.getValue();
-            var type = me.mainComponent.uiTypeCombo.getValue();
             var noCustomizationRequired = false;
             var status = true;
 
-            if(type == '' ){
-                noCustomizationRequired = true;
-            }
-
-            if(type == '1' || type == '2' || type == '6' ){
-                attID = 0;
-            }
 
             if(!noCustomizationRequired) {
                 Ext.Ajax.request({
