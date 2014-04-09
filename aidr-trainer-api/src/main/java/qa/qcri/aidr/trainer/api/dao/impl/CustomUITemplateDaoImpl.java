@@ -29,6 +29,14 @@ public class CustomUITemplateDaoImpl  extends AbstractDaoImpl<CustomUITemplate, 
     }
 
     @Override
+    public List<CustomUITemplate> getTemplateByCrisisWithType(Long crisisID, Integer templateType) {
+        return findByCriteria(Restrictions.conjunction()
+                .add(Restrictions.eq("crisisID",crisisID))
+                .add(Restrictions.eq("templateType", templateType)));
+    }
+
+
+    @Override
     public List<CustomUITemplate> getTemplateByAttributeWithStatus(Long crisisID, Long attributeID, Integer status) {
         return findByCriteria(Restrictions.conjunction()
                 .add(Restrictions.eq("nominalAttributeID", attributeID))
