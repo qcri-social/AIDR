@@ -224,6 +224,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                     if (modelId && modelId != 0) {
                         return 'Running. '+reqTrainExamNumber+' more needed to re-train.';
                     } else {
+                        // the next line is for debugging by JLUCAS 04/09/2014
                         Ext.util.Cookies.set(modelName, reqTrainExamNumber);
                         return 'Waiting. '+reqTrainExamNumber+' more needed to re-train.';
 
