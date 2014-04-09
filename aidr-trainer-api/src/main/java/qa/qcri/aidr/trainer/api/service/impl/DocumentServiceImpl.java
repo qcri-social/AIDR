@@ -17,6 +17,7 @@ import qa.qcri.aidr.trainer.api.service.CrisisService;
 import qa.qcri.aidr.trainer.api.service.DocumentService;
 import qa.qcri.aidr.trainer.api.service.TaskAssignmentService;
 import qa.qcri.aidr.trainer.api.service.UsersService;
+import qa.qcri.aidr.trainer.api.store.CodeLookUp;
 import qa.qcri.aidr.trainer.api.template.CrisisJsonModel;
 import qa.qcri.aidr.trainer.api.template.CrisisJsonOutput;
 import qa.qcri.aidr.trainer.api.template.NominalAttributeJsonModel;
@@ -76,9 +77,16 @@ public class DocumentServiceImpl implements DocumentService {
         Users users = usersService.findUserByName(userName);
 
         if(users != null){
-            documents =  this.getAvailableDocument(crisisID, count)  ;
-            if(documents != null && documents.size() > 0){
-                taskAssignmentService.addToTaskAssignment(documents, users.getUserID());
+            int availableRequestSize = this.getAvailableDocumentCount(crisisID) - CodeLookUp.DOCUMENT_REMAINING_COUNT;
+
+            if(availableRequestSize > 0){
+                if(availableRequestSize < count){
+                    count = availableRequestSize;
+                }
+                documents =  this.getAvailableDocument(crisisID, count) ;
+                if(documents != null && documents.size() > 0){
+                    taskAssignmentService.addToTaskAssignment(documents, users.getUserID());
+                }
             }
         }
 
@@ -122,10 +130,15 @@ public class DocumentServiceImpl implements DocumentService {
         return jsonModelList;
     }
 
-
-    private  List<Document> getAvailableDocument(long crisisID, int maxresult){
+    @Override
+    @Transactional(readOnly = true)
+    public  List<Document> getAvailableDocument(long crisisID, int maxresult){
         return documentDao.findDocumentForTask(crisisID, maxresult)  ;
 
+    }
+
+    private int getAvailableDocumentCount(long crisisID){
+       return documentDao.getAvailableTaskDocumentCount(crisisID);
     }
 
 }

@@ -56,4 +56,23 @@ public class DocumentDaoImpl extends AbstractDaoImpl<Document, String> implement
 
         return findByCriteriaWithAliasByOrder(criterion,orderby,requestNumber, aliasTable, aliasCriterion);  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    @Override
+    public int getAvailableTaskDocumentCount(Long crisisID) {
+
+        String[] orderby = {"valueAsTrainingSample","documentID"};
+        String aliasTable = "taskAssignment";
+        String aliasTableKey = "taskAssignment.documentID";
+
+        Criterion criterion = Restrictions.conjunction()
+                .add(Restrictions.eq("crisisID",crisisID))
+                .add(Restrictions.eq("hasHumanLabels",false))
+                ;
+
+        Criterion aliasCriterion =  (Restrictions.isNull(aliasTableKey));
+
+        List<Document>  documents = findByCriteriaWithAliasByOrder(criterion,orderby,null, aliasTable, aliasCriterion);
+
+        return documents.size();  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

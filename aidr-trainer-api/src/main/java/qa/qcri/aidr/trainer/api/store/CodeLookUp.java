@@ -41,4 +41,6 @@ public class CodeLookUp {
     public static String TUTORIAL = "tutorial";
     public static String TASK_PRESENTER = "task_presenter";
 
+    public static Integer DOCUMENT_REMAINING_COUNT = 20;
+
 }

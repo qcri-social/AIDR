@@ -443,7 +443,7 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
     private void sendToPybossa(String jsonData,ClientApp clientApp){
         Communicator pybossaCommunicator = new Communicator();
         String url = clientApp.getClient().getHostURL()  + "/app/" + clientApp.getPlatformAppID() + "?api_key=" + clientApp.getClient().getHostAPIKey();
-
+        logger.info("pybossa UI update url:" + url);
         int responseCode = pybossaCommunicator.sendPut(jsonData, url);
         logger.info("pybossa UI update response:" + responseCode);
     }
