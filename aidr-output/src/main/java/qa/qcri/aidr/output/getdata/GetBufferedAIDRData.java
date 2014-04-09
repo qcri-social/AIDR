@@ -156,7 +156,8 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	@Produces("application/json")
 	public Response getLatestBufferedAIDRData(@QueryParam("callback") String callbackName,
 			@DefaultValue("1") @QueryParam("count") String count,
-			@DefaultValue("0.7") @QueryParam("confidence") float confidence) {
+			@DefaultValue("0.7") @QueryParam("confidence") float confidence,
+			@DefaultValue("true") @QueryParam("balanced_sampling") boolean balanced_sampling) {
 
 		//logger.info("[getLatestBufferedAIDRData] request received");
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {		// Jedis pool is ready
@@ -172,16 +173,17 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			
 			// Added code as per new feature: pivotal #67373070
 			List<String> filteredMessages = new ArrayList<String>();
+			List<Long> tweetTimestamps = new ArrayList<Long>();
 			ClassifiedFilteredTweet classifiedTweet = new ClassifiedFilteredTweet();
 			for (String tweet: bufferedMessages) {
 				classifiedTweet.deserialize(tweet);
 				if (getMaxConfidence(classifiedTweet) >= confidence) {
 					filteredMessages.add(tweet);
+					tweetTimestamps.add(classifiedTweet.getCreatedAt() != null ? classifiedTweet.getCreatedAt().getTime() : 0L);
 				}
 			}
-			
 			final JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
-			final StringBuilder jsonDataList = taggerOutput.createList(filteredMessages, messageCount, rejectNullFlag);
+			final StringBuilder jsonDataList = taggerOutput.createFairList(filteredMessages, tweetTimestamps, messageCount, rejectNullFlag, balanced_sampling);
 			final int sendCount = taggerOutput.getMessageCount();
 
 			// Reset the messageList buffer and return
@@ -230,7 +232,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			}
 			if (!error && channelCode.contains("*")) {
 				// Got a wildcard fetch request - fetch from all channels
-				return getLatestBufferedAIDRData(callbackName, count, (float) 0.0);
+				return getLatestBufferedAIDRData(callbackName, count, (float) 0.0, false);
 			}
 			if (channelCode != null && channelCode.contains("?")) { 
 				error = true;

@@ -63,4 +63,46 @@ public class JsonDataFormatter {
 		}
 		return jsonDataList;
 	}
+	
+	public StringBuilder createFairList(List<String> bufferedMessages, List<Long> Timestamps, int messageCount, boolean rejectNullFlag, boolean fairness) {
+		// Now, build the jsonp object to be sent - data in reverse chronological order.
+		// The entire collection of json objects are wrapped with a single callback function.
+		StringBuilder jsonDataList = new StringBuilder();
+		//synchronized (bufferedMessages) 
+		{
+			count = 0;		
+			if (callbackName != null) 
+				jsonDataList.append(callbackName).append("([");
+			else 
+				jsonDataList.append("[");
+			
+			while (count < messageCount && fairness) {
+				// we use uniform sampling to strike a sense of fairness
+				// in our selection of channels
+				int index = (int) Math.random() * Timestamps.size();
+				if (System.currentTimeMillis() - Timestamps.get(index) <)
+				final TaggerJsonOutputAdapter jsonOutput = new TaggerJsonOutputAdapter();
+				final String jsonData = (msg != null) ? jsonOutput.buildJsonString(msg, rejectNullFlag) : null;
+				//logger.info("[createList] json string: " + jsonData);
+				if (jsonData != null) {
+					jsonDataList.append(jsonData);
+					++count;
+					if (count < messageCount) jsonDataList.append(",");		// otherwise, this was the last message to append
+				}
+			}
+			if (count == 0) {
+				// send empty jsonp object
+				jsonDataList.append(callbackName != null ? new String("{}])") : new String("{}]"));
+			} 
+			else {
+				// there are json objects to send
+				//jsonDataList.deleteCharAt(jsonDataList.lastIndexOf(","));		// delete the extra "," at the end of the json string
+				if (callbackName != null) 
+					jsonDataList.append("])");
+				else 
+					jsonDataList.append("]");
+			}
+		}
+		return jsonDataList;
+	}
 }

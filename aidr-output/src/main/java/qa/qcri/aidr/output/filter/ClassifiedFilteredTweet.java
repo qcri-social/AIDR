@@ -33,13 +33,13 @@ public class ClassifiedFilteredTweet implements Serializable {
 	}
 
 	public ClassifiedFilteredTweet deserialize(String rawJsonString) {
-		
+
 		created_at = null;
 		text = null;
 		crisis_code = null;
 		crisis_name = null;
 		nominal_labels.clear();
-		
+
 		if (rawJsonString.startsWith("["))		// should never happen 
 			rawJsonString = rawJsonString.substring(1, rawJsonString.length()-1);	
 
@@ -74,16 +74,16 @@ public class ClassifiedFilteredTweet implements Serializable {
 				}
 
 				ClassifiedFilteredTweet jsonObj = new ClassifiedFilteredTweet();
-				
+
 				jsonObj.text = tweetData.getAsString(); 
 				text = tweetData.getAsString(); 
-				
+
 				jsonObj.crisis_code = crisisCode.getAsString(); 
 				crisis_code = crisisCode.getAsString();
-				
+
 				jsonObj.crisis_name = crisisName.getAsString(); 
 				crisis_name = crisisName.getAsString();
-				
+
 				for (int i = 0;i < nominalLabels.size();i++) {
 					NominalLabel nLabel = new NominalLabel();
 					JsonObject temp = (JsonObject) nominalLabels.get(i);
@@ -99,7 +99,7 @@ public class ClassifiedFilteredTweet implements Serializable {
 
 					jsonObj.nominal_labels.add(nLabel); 
 					nominal_labels.add(nLabel);
-					
+
 					jsonObj.created_at = createDate(timestamp.getAsString()); 
 					created_at = createDate(timestamp.getAsString());
 				}
@@ -112,55 +112,58 @@ public class ClassifiedFilteredTweet implements Serializable {
 	public Date getCreatedAt() {
 		return created_at;
 	}
-	
+
 	public String getCreatedAtAsString() {
 		SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZ yyyy");
 		formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
 		return formatter.format(created_at);
 	}
-	
+
 	protected Date createDate(String timestamp) {
 		SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZ yyyy");
 		formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-		try {
-			return formatter.parse(timestamp);
-		} catch (ParseException e) {
-			System.err.println("[createDate] Error in parsing Date string");
+		if (null != timestamp) {
+			try {
+				return formatter.parse(timestamp);
+			} catch (ParseException e) {
+				System.err.println("[createDate] Error in parsing Date string");
+			}
 		}
+		System.out.println("[createDate] Warning, tweet has no createdAt field!");
 		return null;
 	}
-	
+
 	public String getText() {
 		return text;
 	}
-	
+
 	public void setText(String text) {
 		this.text = text;
 	}
-	
+
 	public String getCrisisCode() {
 		return crisis_code;
 	}
-	
+
 	public void setCrisisCode(String crisisCode) {
 		crisis_code = crisisCode;
 	}
-	
+
 	public String getCrisisName() {
 		return crisis_name;
 	}
-	
+
 	public void setCrisisName(String crisisName) {
 		crisis_name = crisisName;
 	}
-	
+
 	public ArrayList<NominalLabel> getNominalLabels() {
 		ArrayList<NominalLabel> arr = new ArrayList<NominalLabel>();
 		if (nominal_labels != null) 
 			arr.addAll(nominal_labels);
 		return arr;
 	}
-	
+
 	public void setNominalLabels(ArrayList<NominalLabel> nLabels) {
 		if (nominal_labels != null) {
 			nominal_labels.addAll(nLabels);
