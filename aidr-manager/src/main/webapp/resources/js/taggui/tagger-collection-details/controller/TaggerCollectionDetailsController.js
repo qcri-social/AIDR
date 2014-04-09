@@ -133,7 +133,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     var attID = 0;
                     var type = 1;
                     var templateContent = me.mainComponent.uiLandingTemplateOne.getValue();
-                    this.templateUIUpdateSave(0, 1, templateContent);
+                    this.templateUIUpdateSave(0, 1, templateContent, 'Saving landing page 1 ...');
                 }
             },
             "#landingBtnSave":{
@@ -142,7 +142,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     var attID = 0;
                     var type = 2;
                     var templateContent = me.mainComponent.uiLandingTemplateTwo.getValue();
-                    this.templateUIUpdateSave(0, type, templateContent);
+                    this.templateUIUpdateSave(0, type, templateContent, 'Saving landing page 2 ...');
                 }
             },
             "#curatorSave":{
@@ -151,7 +151,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     var attID = 0;
                     var type = 6;
                     var templateContent = me.mainComponent.curatorInfo.getValue();
-                    this.templateUIUpdateSave(0, type, templateContent);
+                    this.templateUIUpdateSave(0, type, templateContent, 'Saving Curator information ...');
                 }
                 //curatorInfo
             },
@@ -161,7 +161,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     var attID = me.mainComponent.classifierComboForPybossaApp.getValue();
                     var type = 3;
                     var templateContent = me.mainComponent.welcomePageUI.getValue();
-                    this.templateUIUpdateSave(attID, type, templateContent);
+                    this.templateUIUpdateSave(attID, type, templateContent, 'Saving MicroMappers welcome page ...');
                 }
             },
             "#uiTutorialOneSave":{
@@ -170,7 +170,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     var attID = me.mainComponent.classifierComboForPybossaApp.getValue();
                     var type = 4;
                     var templateContent = me.mainComponent.tutorial1UI.getValue();
-                    this.templateUIUpdateSave(attID, type, templateContent);
+                    this.templateUIUpdateSave(attID, type, templateContent, 'Saving Tutorial Page 1 ...');
                 }
             },
             "#uiTutorialTwoSave":{
@@ -179,7 +179,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     var attID = me.mainComponent.classifierComboForPybossaApp.getValue();
                     var type = 5;
                     var templateContent = me.mainComponent.tutorial2UI.getValue();
-                    this.templateUIUpdateSave(attID, type, templateContent);
+                    this.templateUIUpdateSave(attID, type, templateContent, 'Saving Tutorial Page 2 ...');
                 }
             }
 
@@ -267,6 +267,8 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
 
 
             if(!noCustomizationRequired) {
+                var mask = AIDRFMFunctions.getMask(true, 'Saving data ...');
+                mask.show();
                 Ext.Ajax.request({
                     url: BASE_URL + '/protected/uitemplate/updateTemplate.action',
                     method: 'POST',
@@ -288,6 +290,11 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                         } else {
                             AIDRFMFunctions.setAlert("Error", 'Error while updating templateSave.');
                         }
+                        mask.hide();
+                    }
+                    ,
+                    failure: function () {
+                        mask.hide();
                     }
                 });
             }
@@ -299,6 +306,8 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
     templateSkinTypeSave:function(){
         var me = this;
          //me.mainComponent.optionRG.items.items[
+        var mask = AIDRFMFunctions.getMask(true, 'Saving custom UI skin type ...');
+        mask.show();
         var value = me.mainComponent.optionRG.getChecked();
         Ext.Ajax.request({
             url: BASE_URL + '/protected/uitemplate/updateTemplate.action',
@@ -320,13 +329,17 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 } else {
                     AIDRFMFunctions.setAlert("Error", 'Error while updating templateSave.');
                 }
+                mask.hide();
+            },
+            failure: function () {
+                mask.hide();
             }
         });
 
 
     },
 
-    templateUIUpdateSave:function(attID, type, templateContent){
+    templateUIUpdateSave:function(attID, type, templateContent, mask){
         var me = this;
         var status = true;
 
@@ -351,6 +364,15 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 } else {
                     AIDRFMFunctions.setAlert("Error", 'Error while updating templateSave.');
                 }
+                //mask.hide();
+                AIDRFMFunctions.setAlert("Confirmation", mask);
+
+
+            },
+            failure: function () {
+               // mask.hide();
+                mask = " Requst failed : " + mask ;
+                AIDRFMFunctions.setAlert("Error", mask);
             }
         });
 
