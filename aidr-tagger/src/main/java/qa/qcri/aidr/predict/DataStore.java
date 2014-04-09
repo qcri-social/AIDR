@@ -709,7 +709,7 @@ public class DataStore extends Loggable {
 							+ " ON (D.documentID = T.documentID) WHERE (D.crisisID = ?"
 							+ "  && T.documentID IS NULL && " 
 							+ " !D.hasHumanLabels) ORDER BY "
-							+ " D.valueAsTrainingSample DESC, D.documentID");
+							+ " D.valueAsTrainingSample, D.documentID");
 			sqlSelect.setInt(1, crisisID);
 			ResultSet rs = sqlSelect.executeQuery();
 			while (rs.next()) {
@@ -740,16 +740,16 @@ public class DataStore extends Loggable {
 				sqlDelete = conn.prepareStatement(sqlDeleteStmt);
 				
 				// Delete the top confidence documents from document table
-				StringBuilder sqlDeleteStmt2 = new StringBuilder();
-				sqlDeleteStmt2.append("DELETE FROM document WHERE (documentID IN (");
+				//StringBuilder sqlDeleteStmt2 = new StringBuilder();
+				//sqlDeleteStmt2.append("DELETE FROM document WHERE (documentID IN (");
 				for (int i = 0;i < docsToDelete;i++) {
 					sqlDelete.setLong(1, documentIDList.get(i));
 					sqlDelete.addBatch();
 					System.out.println("[truncateLabelingTaskBufferForCrisis] To delete: CrisisID = " + crisisID + ", documentID = " + documentIDList.get(i));
-					sqlDeleteStmt2.append(documentIDList.get(i)).append(",");
+					//sqlDeleteStmt2.append(documentIDList.get(i)).append(",");
 				}
-				sqlDeleteStmt2.deleteCharAt(sqlDeleteStmt2.lastIndexOf(",")).append(")");
-				sqlDeleteStmt2.append(" && documentID NOT IN (SELECT documentID FROM task_assignment) && !hasHumanLabels)");
+				//sqlDeleteStmt2.deleteCharAt(sqlDeleteStmt2.lastIndexOf(",")).append(")");
+				//sqlDeleteStmt2.append(" && documentID NOT IN (SELECT documentID FROM task_assignment) && !hasHumanLabels)");
 				long startTime = System.currentTimeMillis();
 				int[] affectedRecords = sqlDelete.executeBatch();
 				long endTime = System.currentTimeMillis();
