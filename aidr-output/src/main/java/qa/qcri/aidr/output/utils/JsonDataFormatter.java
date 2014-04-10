@@ -64,6 +64,7 @@ public class JsonDataFormatter {
 		return jsonDataList;
 	}
 	
+	/*
 	public StringBuilder createFairList(List<String> bufferedMessages, List<Long> Timestamps, int messageCount, boolean rejectNullFlag, boolean fairness) {
 		// Now, build the jsonp object to be sent - data in reverse chronological order.
 		// The entire collection of json objects are wrapped with a single callback function.
@@ -105,4 +106,5 @@ public class JsonDataFormatter {
 		}
 		return jsonDataList;
 	}
+	*/
 }

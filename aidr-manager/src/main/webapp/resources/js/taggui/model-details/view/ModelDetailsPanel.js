@@ -105,7 +105,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             '<div>{[this.getNumber(values.classifiedDocumentCount)]}</div>',
             '<div>{[this.getNumber(values.labelPrecision)]}</div>',
             '<div>{[this.getNumber(values.labelRecall)]}</div>',
-            '<div>{[this.getNumber(values.labelAuc)) * 100 + '%']}</div>',
+            '<div>{[this.getAUC(values.labelAuc))]}</div>',
 
             '</div>',
 
@@ -120,6 +120,9 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
                 },
                 getNumber: function (r) {
                     return r ? r : 0;
+                },
+                getAUC: function (r) {
+                    return r ? (r * 100).toFixed(2) + '%' : '0.00%';
                 }
             }
         );
@@ -168,6 +171,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
                         me.modelHistoryTitle.hide();
                         me.modelHistoryView.hide();
                         me.modelHistoryPaging.hide();
+                        me.tabPanel.html = '<div style="padding-top:150px"><center><div style="font-size:16pt">This collection has not changed since it was created.</div></center></div>';
                     }
                 }
             }
@@ -196,7 +200,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             '<div class="leftColumn">',
             '<div>{[this.getDocNumber(values.avgPrecision)]}</div>',
             '<div>{[this.getDocNumber(values.avgRecall)]}</div>',
-            '<div>{[this.getDocNumber(values.avgAuc)]}</div>',
+            '<div>{[this.getAUC(values.avgAuc)]}</div>',
             '<div>{[this.getTotal(values.trainingCount)]}</div>',
             '<div>{[this.getDateField(values.trainingTime)]}</div>',
             '</div>',
@@ -218,6 +222,9 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
                 },
                 getDocNumber: function (r) {
                     return r ? r.toFixed(2) : 0.00;
+                },
+                getAUC: function (r) {
+                    return r ? (r * 100).toFixed(2) + '%' : '0.00%';
                 }
             }
         );

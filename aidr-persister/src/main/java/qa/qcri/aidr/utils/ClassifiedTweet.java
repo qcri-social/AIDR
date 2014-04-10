@@ -5,6 +5,7 @@
 package qa.qcri.aidr.utils;
 
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -128,7 +129,7 @@ public class ClassifiedTweet  implements Document, Serializable{
      * @param createdAt the createdAt to set
      */
     public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
+        this.createdAt = setDateString(createdAt);
     }
 
     /**
@@ -222,7 +223,8 @@ public class ClassifiedTweet  implements Document, Serializable{
     
     // Added by koushik
 	public Date getDate(String timeString) {
-		SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZ yyyy");
+		//DateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZ yyyy");
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
 		formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
 		try {
 			return formatter.parse(timeString);
@@ -230,6 +232,14 @@ public class ClassifiedTweet  implements Document, Serializable{
 			System.err.println("[createDate] Error in parsing Date string = " + timeString);
 		}
 		System.out.println("[createDate] Warning! returning Date = null for time String = " + timeString);
+		return null;
+	}
+	
+	public String setDateString(String timeString) {
+		DateFormat dateFormatISO = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+		if (timeString != null) {
+			return dateFormatISO.format(getDate(timeString));
+		}
 		return null;
 	}
 	

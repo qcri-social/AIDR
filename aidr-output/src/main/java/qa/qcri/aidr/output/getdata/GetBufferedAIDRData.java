@@ -183,7 +183,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				}
 			}
 			final JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
-			final StringBuilder jsonDataList = taggerOutput.createFairList(filteredMessages, tweetTimestamps, messageCount, rejectNullFlag, balanced_sampling);
+			final StringBuilder jsonDataList = taggerOutput.createList(filteredMessages, messageCount, rejectNullFlag);
 			final int sendCount = taggerOutput.getMessageCount();
 
 			// Reset the messageList buffer and return

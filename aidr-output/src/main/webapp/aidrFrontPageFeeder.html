@@ -134,7 +134,7 @@
 
                 $.each(appList, function(index, item) {
 
-                    template = template +  '<tr><td class="msg" width="100px">Label/Confidence </td><td class="msg">' + item.label_name + '  ( Confidence : ' +  item.confidence  + ' )</td></tr>';
+                    template = template +  '<tr><td class="msg" width="100px">Label/Confidence </td><td class="msg">' + item.label_name + '  ( Confidence : ' +  (item.confidence * 100).toFixed(0)  + '% )</td></tr>';
                 });
                 template =  template + '</table>';
                 logger.log(template);

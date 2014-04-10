@@ -141,29 +141,36 @@
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
 			<version>2.0</version>
-			<scope>compile</scope> 
+			<scope>provided</scope> 
 		</dependency>
 		<!-- if you are using Jersey client specific features -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.1.0</version>
-			<scope>compile</scope> 
+			<scope>provided</scope> 
 		</dependency>
-		
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.0</version>
+			<scope>provided</scope>
+		</dependency>
                 
                 <dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet</artifactId>
 			<version>2.5.1</version>
-			
-		</dependency>
+
+			<scope>provided</scope>
+                </dependency>
 		
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
 			<version>2.5.1</version>
-			
+
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- log4j -->
@@ -199,19 +206,19 @@
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
 			<version>2.5.1</version>
-			<scope>compile</scope> 
+			<scope>provided</scope> 
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-server</artifactId>
 			<version>2.5.1</version>
-			<scope>compile</scope> 
+			<scope>provided</scope> 
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-moxy</artifactId>
 			<version>2.5.1</version>
-                        <scope>compile</scope> 
+                        <scope>provided</scope> 
 			
 		</dependency>
                 
@@ -247,9 +254,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 			<plugin>

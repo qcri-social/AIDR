@@ -189,7 +189,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             '<td>{[this.getNumber(values.classifiedDocuments)]} (since last change of the classifier)</td></tr>',
 
             '<tr><td>Quality (AUC)<span class="redInfo">*</span>:</td>',
-            '<td>{[AIDRFMFunctions.getAucNumberWithColors(values.auc) * 100 + '%']}</td>',
+            '<td>{[AIDRFMFunctions.getAucNumberAsPercentageWithColors(values.auc)]}</td>',
 
             '</td></tr></table></td>',
 

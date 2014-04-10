@@ -111,7 +111,7 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
 
 //                        old calculation, now we get this value from ModelFamily.auc
 //                        totalModel.labelAuc = (totalAUC / count).toFixed(2) + ' avg';
-                        totalModel.labelAuc = AIDRFMFunctions.getAucNumberWithColors(MODEL_AUC);
+                        totalModel.labelAuc = AIDRFMFunctions.getAucNumberAsPercentageWithColors(MODEL_AUC);
 
                         totalModel.labelPrecision = (totalPrecision / count).toFixed(2) + ' avg';
                         totalModel.labelRecall = (totalRecall / count).toFixed(2) + ' avg';

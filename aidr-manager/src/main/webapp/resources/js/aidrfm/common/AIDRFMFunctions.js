@@ -159,7 +159,25 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
             style = 'redInfo';
         }
         return '<span class="' + style + '">' + r.toFixed(2) + '</span>';
+    },
+    
+    getAucNumberAsPercentageWithColors: function(r) {
+        var style;
+        if (r){
+            if (r < 0.6){
+                style = 'redInfo';
+            } else if (r <= 0.8){
+                style = 'warningFont';
+            } else {
+                style = 'greenInfo';
+            }
+        } else {
+            r = 0;
+            style = 'redInfo';
+        }
+        return '<span class="' + style + '">' + (r * 100).toFixed(2) + '%</span>';
     }
+    
 
 });
 

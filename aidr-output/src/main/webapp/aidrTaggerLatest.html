@@ -71,7 +71,7 @@
                             rowInput.createdAt =  $.format.date(createdAt,"yyyy-MM-dd HH:mm:ss");
                             rowInput.label_name = x.label_name;
                             rowInput.label_code = x.label_code;
-                            rowInput.confidence = x.confidence.toFixed(2);
+                            rowInput.confidence = (x.confidence * 100).toFixed(0) + '%';
                             rowInput.label_description = x.label_description;
                             rowInput.attribute_code = x.attribute_code;
                             rowInput.attribute_name  = x.attribute_name;

@@ -49,7 +49,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.statusL = Ext.create('Ext.form.Label', {padding: '0 10 0 0'});
         this.lastStartedL = Ext.create('Ext.form.Label', {flex: 1});
-        this.lastStoppedL = -Ext.create('Ext.form.Label', {flex: 1});
+        this.lastStoppedL = Ext.create('Ext.form.Label', {flex: 1});
         this.willStoppedL = Ext.create('Ext.form.Label', {flex: 1});
         this.codeL = Ext.create('Ext.form.Label', {flex: 1});
         this.keywordsL = Ext.create('Ext.form.Label', {
@@ -57,10 +57,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             cls: 'word-wrap-class'
         });
         this.geoL = Ext.create('Ext.form.Label', {
-        	flex: 1, 
-        	html: '<span class="redInfo">*</span>The collection will include <strong>all items from these regions</strong>, independently on whether they contain the keywords or not.',
-        	padding: '2 0 2 135'
-        });
+        	flex: 1});
         this.followL = Ext.create('Ext.form.Label', {flex: 1});
         this.languageFiltersL = Ext.create('Ext.form.Label', {flex: 1});
         this.createdL = Ext.create('Ext.form.Label', {flex: 1});
@@ -174,7 +171,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.geoDescription = Ext.create('Ext.form.Label', {
             flex: 1,
-            html: '<span class="redInfo">*</span> <a href="http://boundingbox.klokantech.com/" target="_blank">boundingbox.klokantech.com</a> ("Copy/paste CSV format of a boundingbox")',
+            html: '<span class="redInfo">*</span> <a href="http://boundingbox.klokantech.com/" target="_blank">boundingbox.klokantech.com</a> ("Copy/paste CSV format of a boundingbox")<div><span class="redInfo">*</span>The collection will include <strong>all items from these regions</strong>, independent of whether they contain the keywords or not</div>',
             padding: '2 0 2 135'
         });
 
@@ -348,6 +345,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         me.collectionHistoryTitle.hide();
                         me.collectionLogView.hide();
                         me.collectionLogPaging.hide();
+                        me.tabPanel.html = '<div style="padding-top:150px"><center><div style="font-size:16pt">This collection has not changed since it was created.</div></center></div>';
                     }
                 }
             }
@@ -466,6 +464,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             store: this.collectionLogStore,
             tpl: this.collectionLogTpl,
             itemSelector: 'div.active',
+            emptyText: 'This collection has not changed since it was created.',
             loadMask: false
         });
 
@@ -1013,7 +1012,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             layout: {
                                 type: 'vbox',
                                 align: 'stretch'
-                            },
+                            },                    
                             items: [
                                 this.collectionHistoryTitle,
                                 this.collectionLogView,
