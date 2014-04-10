@@ -1,10 +1,12 @@
 package qa.qcri.aidr.trainer.api.service;
 
 import qa.qcri.aidr.trainer.api.entity.Crisis;
+import qa.qcri.aidr.trainer.api.entity.NominalLabel;
 import qa.qcri.aidr.trainer.api.template.CrisisJsonModel;
 import qa.qcri.aidr.trainer.api.template.CrisisNominalAttributeModel;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,4 +23,5 @@ public interface CrisisService {
     List<Crisis> findByCriteria(String columnName, Long value);
     List<Crisis> findAllActiveCrisis();
     List<CrisisNominalAttributeModel> getAllActiveCrisisNominalAttribute();
+    Set<NominalLabel> getNominalLabelByCrisisID(Long crisisID, Long nominalAtrributeID);
 }
