@@ -32,7 +32,18 @@ public class TaskAnswerController {
     public void saveTaskAnswer(String data){
         logger.debug("saveTaskAnswer start: " + new Date());
         logger.debug("saveTaskAnswer..: " + data);
+        // place into transaction block
+        try{
+            taskAnswerService.processTaskAnswer(data);
+        }
+        catch(Exception e){
+            logger.error("saveTaskAnswer got exception : " + e);
+        }
 
+
+
+       // below is non transaction block
+       /**
         try{
             TaskAnswerResponse taskAnswerResponse =  taskAnswerService.getTaskAnswerResponseData(data);
             taskAnswerService.markOnHasHumanTag(taskAnswerResponse.getDocumentID());
@@ -44,7 +55,7 @@ public class TaskAnswerController {
         }
         catch(Exception e){
             System.out.println("saveTaskAnswer : " +  e);
-        }
+        }  **/
 
     }
 }
