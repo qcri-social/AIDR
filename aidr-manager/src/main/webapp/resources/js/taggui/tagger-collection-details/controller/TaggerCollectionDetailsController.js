@@ -610,7 +610,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                             var sText = '';
                             var iMax = nominalEle.length -1;
                             for(var i=0; i < nominalEle.length; i++){
-                                var temp = nominalEle.name;
+                                var temp = nominalEle[i].name;
                                 if(i == 0){
                                     sText = sText + temp;
                                 }

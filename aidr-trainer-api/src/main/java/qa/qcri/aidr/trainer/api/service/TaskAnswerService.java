@@ -18,4 +18,5 @@ public interface TaskAnswerService {
     public void addToDocumentNominalLabel(TaskAnswerResponse taskAnswerResponse);
     public void markOnHasHumanTag(long documentID);
     public void removeTaskAssignment(TaskAnswerResponse taskAnswerResponse);
+    public void processTaskAnswer(String taskAnswer);
 }

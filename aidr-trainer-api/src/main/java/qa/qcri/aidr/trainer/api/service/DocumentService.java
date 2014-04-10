@@ -20,4 +20,5 @@ public interface DocumentService {
     List<TaskBufferJsonModel> findOneDocumentForTaskByCririsID(Document document, Long crisisID);
     public void addToOneTaskAssignmentWithUserName(long documentID, String userName) ;
     public void addToOneTaskAssignment(long documentID, long userID) ;
+    public List<Document> getAvailableDocument(long crisisID, int maxresult);
 }

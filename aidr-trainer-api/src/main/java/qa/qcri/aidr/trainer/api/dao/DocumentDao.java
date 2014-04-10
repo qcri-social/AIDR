@@ -16,4 +16,5 @@ public interface DocumentDao extends AbstractDao<Document, String> {
     void updateHasHumanLabel(Document document);
     Document findDocument(Long documentID);
     List<Document> findDocumentForTask(Long crisisID, int requestNumber);
+    int getAvailableTaskDocumentCount(Long crisisID);
 }

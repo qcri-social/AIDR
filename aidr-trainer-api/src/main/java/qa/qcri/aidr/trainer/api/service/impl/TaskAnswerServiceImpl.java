@@ -118,4 +118,57 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
     public void removeTaskAssignment(TaskAnswerResponse taskAnswerResponse){
         taskAssignmentService.revertTaskAssignment(taskAnswerResponse.getDocumentID(), taskAnswerResponse.getUserID());
     }
+
+    @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
+    public void processTaskAnswer(String data) {
+        logger.debug("processTaskAnswer..: " + data);
+        try{
+            PybossaTemplate pybossaTemplate = new PybossaTemplate();
+            TaskAnswerResponse taskAnswerResponse = pybossaTemplate.getPybossaTaskAnswer(data, crisisService);
+
+            List<TaskAnswer> taskAnswerList = taskAnswerResponse.getTaskAnswerList();
+
+            if(documentService.findDocument(taskAnswerResponse.getDocumentID()) != null){
+                documentService.updateHasHumanLabel(taskAnswerResponse.getDocumentID(), true);
+
+                for(int i = 0; i < taskAnswerList.size(); i++){
+                    TaskAnswer taskAnswer = taskAnswerList.get(i);
+                    taskAnswerDao.insertTaskAnswer(taskAnswer);
+                }
+
+
+                List<DocumentNominalLabel> documentNominalLabelSet =   taskAnswerResponse.getDocumentNominalLabelList();
+
+                for(int i = 0; i < documentNominalLabelSet.size(); i++){
+                    DocumentNominalLabel documentNominalLabel = documentNominalLabelSet.get(i);
+                    if(!documentNominalLabelService.foundDuplicateEntry(documentNominalLabel)){
+                        documentNominalLabelService.saveDocumentNominalLabel(documentNominalLabel);}
+                }
+
+                if(jedisNotifier == null) {
+                    try {
+                        jedisNotifier= new JedisNotifier();
+                        // logger.debug("jedisNotifier created : " + jedisNotifier);
+                    }
+                    catch (Exception e){
+                        logger.error("jedisNotifier creation : " + e);
+                    }
+                }
+
+                jedisNotifier.notifyToJedis(taskAnswerResponse.getJedisJson());
+
+                taskAssignmentService.revertTaskAssignment(taskAnswerResponse.getDocumentID(), taskAnswerResponse.getUserID());
+
+            }
+            else{
+                logger.debug("************************** Document doesn't exist ************************** ****************************************************");
+            }
+
+        }
+        catch(Exception e){
+            logger.error("Exception : " + e + "  data : " + data);
+        }
+
+    }
 }
