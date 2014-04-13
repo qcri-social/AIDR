@@ -21,238 +21,259 @@ import qa.qcri.aidr.persister.filter.NominalLabel;
  * @author Imran, modified by Koushik
  */
 public class ClassifiedTweet  implements Document, Serializable{
-    
-    private String tweetID;
-    private String message;
-    //private String reTweeted;
-    //private String reTweetCount;
-    private String createdAt;
-    
-    private String userID;
-    private String userName;
-    private String userURL;
-    private String tweetURL;
-    
-    private String crisisName;
-    private String labelName;
-    private String labelDescription;
-    private String confidence;
-    private String humanLabeled;
-    
-    // Added by koushik
-    @JsonIgnore
-    public ArrayList<NominalLabel> nominal_labels;
 
-    public ClassifiedTweet() {
-    	nominal_labels = new ArrayList<NominalLabel>();
-    }
-    
-    /**
-     * @return the userURL
-     */
-    public String getUserURL() {
-        return userURL;
-    }
+	private String tweetID;
+	private String message;
+	//private String reTweeted;
+	//private String reTweetCount;
+	private String createdAt;
 
-    /**
-     * @param userURL the userURL to set
-     */
-    public void setUserURL(String userURL) {
-        this.userURL = userURL;
-    }
+	private String userID;
+	private String userName;
+	private String userURL;
+	private String tweetURL;
 
-    /**
-     * @return the tweetID
-     */
-    public String getTweetID() {
-        return tweetID;
-    }
+	private String crisisName;
+	private String labelName;
+	private String labelDescription;
+	private String confidence;
+	private String humanLabeled;
 
-    /**
-     * @param tweetID the tweetID to set
-     */
-    public void setTweetID(String tweetID) {
-        this.tweetID = tweetID;
-    }
+	// Added by koushik
+	@JsonIgnore
+	public ArrayList<NominalLabel> nominal_labels;
 
-    /**
-     * @return the message
-     */
-    public String getMessage() {
-        return message;
-    }
+	public ClassifiedTweet() {
+		nominal_labels = new ArrayList<NominalLabel>();
+	}
 
-    /**
-     * @param message the message to set
-     */
-    public void setMessage(String message) {
-        this.message = message;
-    }
+	/**
+	 * @return the userURL
+	 */
+	public String getUserURL() {
+		return userURL;
+	}
 
-    /**
-     * @return the userID
-     */
-    public String getUserID() {
-        return userID;
-    }
+	/**
+	 * @param userURL the userURL to set
+	 */
+	public void setUserURL(String userURL) {
+		this.userURL = userURL;
+	}
 
-    /**
-     * @param userID the userID to set
-     */
-    public void setUserID(String userID) {
-        this.userID = userID;
-    }
+	/**
+	 * @return the tweetID
+	 */
+	public String getTweetID() {
+		return tweetID;
+	}
 
-    /**
-     * @return the userName
-     */
-    public String getUserName() {
-        return userName;
-    }
+	/**
+	 * @param tweetID the tweetID to set
+	 */
+	public void setTweetID(String tweetID) {
+		this.tweetID = tweetID;
+	}
 
-    /**
-     * @param userName the userName to set
-     */
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+	/**
+	 * @return the message
+	 */
+	public String getMessage() {
+		return message;
+	}
 
-    
-    /**
-     * @return the createdAt
-     */
-    public String getCreatedAt() {
-        return createdAt;
-    }
+	/**
+	 * @param message the message to set
+	 */
+	public void setMessage(String message) {
+		this.message = message;
+	}
 
-    /**
-     * @param createdAt the createdAt to set
-     */
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = setDateString(createdAt);
-    }
+	/**
+	 * @return the userID
+	 */
+	public String getUserID() {
+		return userID;
+	}
 
-    /**
-     * @return the tweetURL
-     */
-    public String getTweetURL() {
-        return tweetURL;
-    }
+	/**
+	 * @param userID the userID to set
+	 */
+	public void setUserID(String userID) {
+		this.userID = userID;
+	}
 
-    /**
-     * @param tweetURL the tweetURL to set
-     */
-    public void setTweetURL(String tweetURL) {
-        this.tweetURL = tweetURL;
-    }
+	/**
+	 * @return the userName
+	 */
+	public String getUserName() {
+		return userName;
+	}
 
-    public String toString(){
-        return tweetID+","+message+","+createdAt+","+userID+","+userName+","+userURL+","+tweetURL;
-    }
+	/**
+	 * @param userName the userName to set
+	 */
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 
-    /**
-     * @return the crisisName
-     */
-    public String getCrisisName() {
-        return crisisName;
-    }
 
-    /**
-     * @param crisisName the crisisName to set
-     */
-    public void setCrisisName(String crisisName) {
-        this.crisisName = crisisName;
-    }
+	/**
+	 * @return the createdAt
+	 */
+	public String getCreatedAt() {
+		return createdAt;
+	}
 
-    /**
-     * @return the labelName
-     */
-    public String getLabelName() {
-        return labelName;
-    }
+	/**
+	 * @param createdAt the createdAt to set
+	 */
+	public void setCreatedAt(String createdAt) {
+		this.createdAt = setDateString(createdAt);
+	}
 
-    /**
-     * @param labelName the labelName to set
-     */
-    public void setLabelName(String labelName) {
-        this.labelName = labelName;
-    }
+	/**
+	 * @return the tweetURL
+	 */
+	public String getTweetURL() {
+		return tweetURL;
+	}
 
-    /**
-     * @return the labelDescription
-     */
-    public String getLabelDescription() {
-        return labelDescription;
-    }
+	/**
+	 * @param tweetURL the tweetURL to set
+	 */
+	public void setTweetURL(String tweetURL) {
+		this.tweetURL = tweetURL;
+	}
 
-    /**
-     * @param labelDescription the labelDescription to set
-     */
-    public void setLabelDescription(String labelDescription) {
-        this.labelDescription = labelDescription;
-    }
+	public String toString(){
+		return tweetID+","+message+","+createdAt+","+userID+","+userName+","+userURL+","+tweetURL;
+	}
 
-    /**
-     * @return the confidence
-     */
-    public String getConfidence() {
-        return confidence;
-    }
+	/**
+	 * @return the crisisName
+	 */
+	public String getCrisisName() {
+		return crisisName;
+	}
 
-    /**
-     * @param confidence the confidence to set
-     */
-    public void setConfidence(String confidence) {
-        this.confidence = confidence;
-    }
+	/**
+	 * @param crisisName the crisisName to set
+	 */
+	public void setCrisisName(String crisisName) {
+		this.crisisName = crisisName;
+	}
 
-    /**
-     * @return the humanLabeled
-     */
-    public String getHumanLabeled() {
-        return humanLabeled;
-    }
+	/**
+	 * @return the labelName
+	 */
+	public String getLabelName() {
+		return labelName;
+	}
 
-    /**
-     * @param humanLabeled the humanLabeled to set
-     */
-    public void setHumanLabeled(String humanLabeled) {
-        this.humanLabeled = humanLabeled;
-    }
-    
-    
-    // Added by koushik
+	/**
+	 * @param labelName the labelName to set
+	 */
+	public void setLabelName(String labelName) {
+		this.labelName = labelName;
+	}
+
+	/**
+	 * @return the labelDescription
+	 */
+	public String getLabelDescription() {
+		return labelDescription;
+	}
+
+	/**
+	 * @param labelDescription the labelDescription to set
+	 */
+	public void setLabelDescription(String labelDescription) {
+		this.labelDescription = labelDescription;
+	}
+
+	/**
+	 * @return the confidence
+	 */
+	public String getConfidence() {
+		return confidence;
+	}
+
+	/**
+	 * @param confidence the confidence to set
+	 */
+	public void setConfidence(String confidence) {
+		this.confidence = confidence;
+	}
+
+	/**
+	 * @return the humanLabeled
+	 */
+	public String getHumanLabeled() {
+		return humanLabeled;
+	}
+
+	/**
+	 * @param humanLabeled the humanLabeled to set
+	 */
+	public void setHumanLabeled(String humanLabeled) {
+		this.humanLabeled = humanLabeled;
+	}
+
+
+	// Added by koushik
 	public Date getDate(String timeString) {
-		//DateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZ yyyy");
+		//SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZ yyyy");
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
 		formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-		try {
-			return formatter.parse(timeString);
-		} catch (ParseException e) {
-			System.err.println("[createDate] Error in parsing Date string = " + timeString);
-		}
-		System.out.println("[createDate] Warning! returning Date = null for time String = " + timeString);
-		return null;
-	}
-	
-	public String setDateString(String timeString) {
-		DateFormat dateFormatISO = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
 		if (timeString != null) {
-			return dateFormatISO.format(getDate(timeString));
+			try {
+				Date newDate = formatter.parse(timeString);
+				//System.out.println("[getDate] Converted date: " + newDate.toString());
+				return newDate;
+			} catch (ParseException e) {
+				System.err.println("[getDate] Error in parsing Date string = " + timeString);
+			}
+		}
+		System.out.println("[getDate] Warning! returning Date = null for time String = " + timeString);
+		return null;
+	} 
+
+	public String setDateString(String timeString) {
+		//System.out.println("[setDateString] Received time string: " + timeString);
+
+		DateFormat dateFormatISO = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+		dateFormatISO.setTimeZone(TimeZone.getTimeZone("GMT"));
+		if (timeString != null) {
+			try {
+				SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZ yyyy");
+				Date newDate = formatter.parse(timeString);
+				//System.out.println("[setDateString] Converted date: " + newDate.toString());
+				return dateFormatISO.format(newDate);
+			} catch (ParseException e) {
+				System.err.println("[setDateString] Error in parsing Date string = " + timeString);
+			}
 		}
 		return null;
 	}
-	
-    public ArrayList<NominalLabel> getNominalLabels() {
+
+	public ArrayList<NominalLabel> getNominalLabels() {
 		ArrayList<NominalLabel> arr = new ArrayList<NominalLabel>();
 		if (nominal_labels != null) 
 			arr.addAll(nominal_labels);
 		return arr;
 	}
-	
+
 	public void setNominalLabels(ArrayList<NominalLabel> nLabels) {
 		if (nominal_labels != null) {
 			nominal_labels.addAll(nLabels);
 		}
 	}
+
+	/*
+	public static void main(String[] args) {
+		String timeString = "Thu Apr 03 23:31:12 +0000 2014";
+		System.out.println("ISO Format: " + setDateString(timeString));
+	}
+	 */
 }
