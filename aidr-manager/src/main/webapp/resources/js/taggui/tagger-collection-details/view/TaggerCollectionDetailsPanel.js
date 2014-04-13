@@ -925,18 +925,18 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             },
             items: [
                 {
-                    title:'Select MicroMappers UI Skin',
+                    title:'Custom MicroMappers App UI Skin',
                     items:[this.uiSkinTypeBlock]
 
                 }
                 ,
                 {
-                    title:'Customized Public Landing Page',
+                    title:'Custom Public Landing Page',
                     items:[this.uiLandingPageBlock]
 
                 },
                 {
-                    title:'Customized MicroMappers App UI',
+                    title:'Custom MicroMappers App UI Tutorial & Welcome Page',
                     items:[this.pybossaUIBlock]
                 }
 
