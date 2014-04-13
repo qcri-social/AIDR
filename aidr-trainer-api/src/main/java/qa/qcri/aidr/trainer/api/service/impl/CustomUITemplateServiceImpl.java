@@ -227,7 +227,7 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
             int category_id = (Integer)data.get("category_id");
             app2.put("category_id", category_id);
         }
-        app2.put("owner_id", 1);
+        //app2.put("owner_id", 1);
 
         return  app2.toJSONString();
     }
