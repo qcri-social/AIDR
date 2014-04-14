@@ -3,8 +3,9 @@ package qa.qcri.aidr.trainer.pybossa.format.impl;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import qa.qcri.aidr.trainer.pybossa.entity.ClientApp;
-import qa.qcri.aidr.trainer.pybossa.entity.TaskLog;
+import org.json.simple.parser.ParseException;
+import qa.qcri.aidr.trainer.pybossa.entity.*;
+import qa.qcri.aidr.trainer.pybossa.service.ReportTemplateService;
 import qa.qcri.aidr.trainer.pybossa.util.DataFormatValidator;
 import qa.qcri.aidr.trainer.pybossa.util.DateTimeConverter;
 import qa.qcri.aidr.trainer.pybossa.util.JsonSorter;
@@ -66,8 +67,9 @@ public class PybossaFormatter {
         return appID;
     }
 
-    public String getTaskLogDateHistory(List<TaskLog> taskLogList, String pybossaResult, JSONParser parser, Long attributeID) throws Exception{
+    public String getTaskLogDateHistory(List<TaskLog> taskLogList, String pybossaResult, JSONParser parser, ClientApp clientApp, ClientAppAnswer clientAppAnswer) throws Exception{
         //JSONObject aModified = new JSONObject();
+        JSONArray outJson = new JSONArray();
         JSONObject dateJSON = new JSONObject();
 
         for(int i=0; i < taskLogList.size(); i++){
@@ -82,34 +84,116 @@ public class PybossaFormatter {
 
         JSONArray array = (JSONArray) parser.parse(pybossaResult) ;
 
-        Iterator itr= array.iterator();
+        if(array.size() > 0){
+            JSONObject oneFeatureJsonObj = (JSONObject) array.get(0);
 
-        while(itr.hasNext()){
-            JSONObject featureJsonObj = (JSONObject)itr.next();
-            if(attributeID != null){
-                JSONObject jsonInfo = (JSONObject)featureJsonObj.get("info");
-                jsonInfo.put("attributeID", attributeID);
+            String taskPresented = (String)oneFeatureJsonObj.get("created");
 
-                //featureJsonObj.remove("info");
-                featureJsonObj.put("info", jsonInfo);
-            }
-
-
-            String taskPresented = (String)featureJsonObj.get("created");
-          //  taskPresented = DateTimeConverter.utcToDefault(taskPresented);
-
-            String taskCompleted = (String)featureJsonObj.get("finish_time");
-          //  taskCompleted = DateTimeConverter.utcToDefault(taskCompleted);
+            String taskCompleted = (String)oneFeatureJsonObj.get("finish_time");
 
             dateJSON.put("taskpresented",taskPresented) ;
             dateJSON.put("taskcompleted",taskCompleted) ;
 
 
-            featureJsonObj.put("dateHistory",dateJSON) ;
+            oneFeatureJsonObj.put("dateHistory",dateJSON) ;
+
+            String finalAnswer = this.getAnswerResponse(clientApp,pybossaResult,parser,clientAppAnswer);
+            Long attributeID = clientApp.getNominalAttributeID();
+            JSONObject infoJson =  this.buildInfoJson( (JSONObject)oneFeatureJsonObj.get("info"), finalAnswer, attributeID );
+
+            oneFeatureJsonObj.put("info", infoJson);
+
+
+            outJson.add(oneFeatureJsonObj);
+
         }
 
-        return  array.toJSONString();
+        return  outJson.toJSONString();
     }
+
+
+
+    ///////////////////////////////////////////////////////////////////////
+
+    private JSONObject buildInfoJson(JSONObject infoJson,  String finalAnswer, Long attributeID){
+
+        JSONObject obj = new JSONObject();
+        obj.put("documentID", infoJson.get("documentID"));
+        obj.put("category", finalAnswer);
+        obj.put("aidrID", infoJson.get("aidrID"));
+        obj.put("crisisID", infoJson.get("crisisID"));
+        obj.put("attributeID", attributeID);
+        return obj;
+    }
+
+    public String getAnswerResponse(ClientApp clientApp, String pybossaResult, JSONParser parser, ClientAppAnswer clientAppAnswer) throws Exception{
+        JSONObject responseJSON = new JSONObject();
+
+        String[] questions = getQuestion( clientAppAnswer,  parser);
+        int[] responses = new int[questions.length];
+
+        JSONArray array = (JSONArray) parser.parse(pybossaResult) ;
+
+        Iterator itr= array.iterator();
+        String answer = null;
+
+        while(itr.hasNext()){
+            JSONObject featureJsonObj = (JSONObject)itr.next();
+            answer = this.getUserAnswer(featureJsonObj, clientApp);
+            for(int i=0; i < questions.length; i++ ){
+                if(questions[i].trim().equalsIgnoreCase(answer.trim())){
+                    responses[i] = responses[i] + 1;
+                }
+            }
+        }
+
+        String finalAnswer = "";
+
+        for(int i=0; i < questions.length; i++ ){
+            if(responses[i] >= clientAppAnswer.getVoteCutOff()){
+                finalAnswer =  questions[i];
+            }
+        }
+
+        return  finalAnswer;
+    }
+
+
+    private String getUserAnswer(JSONObject featureJsonObj, ClientApp clientApp){
+        String answer = null;
+        JSONObject info = (JSONObject)featureJsonObj.get("info");
+
+        if(info.get("category")!=null) {
+            answer = (String)info.get("category");
+        }
+
+        return answer;
+    }
+
+    private String[] getQuestion(ClientAppAnswer clientAppAnswer, JSONParser parser) throws ParseException {
+        JSONArray questionArrary =   (JSONArray) parser.parse(clientAppAnswer.getAnswer()) ;
+        int questionSize =  questionArrary.size();
+        String[] questions = new String[questionSize];
+
+        for(int i=0; i< questionSize; i++){
+            JSONObject obj = (JSONObject)questionArrary.get(i);
+            questions[i] =   (String)obj.get("qa");
+        }
+
+        return questions;
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
 
     public List<String> assemblePybossaTaskPublishForm(String inputData, ClientApp clientApp) throws Exception {
 
@@ -220,7 +304,7 @@ public class PybossaFormatter {
         app2.put("time_estimate", 0);
         app2.put("hidden", 0);
         app2.put("category_id", categoryID);
-        app2.put("owner_id", 1);
+      //  app2.put("owner_id", 1);
 
         //long_description
         return  app2.toJSONString();

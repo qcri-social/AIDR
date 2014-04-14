@@ -17,7 +17,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 @Service("clientAppSourceService")
-@Transactional(readOnly = false)
+@Transactional(readOnly = true)
 public class ClientAppSourceServiceImpl implements ClientAppSourceService {
 
     @Autowired

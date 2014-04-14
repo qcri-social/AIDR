@@ -17,7 +17,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 @Service("taskLogService")
-@Transactional(readOnly = false)
+@Transactional(readOnly = true)
 public class TaskLogServiceImpl implements TaskLogService {
 
     @Autowired

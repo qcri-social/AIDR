@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 @Service("taskStatusLookUpService")
-@Transactional(readOnly = false)
+@Transactional(readOnly = true)
 public class TaskQueueServiceImpl implements TaskQueueService {
 
     @Autowired

@@ -19,7 +19,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 @Service("ClientAppResponseService")
-@Transactional(readOnly = false)
+@Transactional(readOnly = true)
 public class ClientAppResponseServiceImpl implements ClientAppResponseService {
 
     @Autowired
@@ -49,4 +49,11 @@ public class ClientAppResponseServiceImpl implements ClientAppResponseService {
     public List<TaskQueueResponse> getTaskQueueResponseByContent() {
         return taskQueueResponseDao.getTaskQueueResponseByContent();
     }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void saveClientAppAnswer(Long clientAppID, String answerJson, int cutOffValue) {
+        clientAppAnswerDao.addClientAppAnswer(clientAppID, answerJson, cutOffValue);
+    }
+
 }
