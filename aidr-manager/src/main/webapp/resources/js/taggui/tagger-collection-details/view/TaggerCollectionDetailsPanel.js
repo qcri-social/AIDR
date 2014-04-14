@@ -460,15 +460,16 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
 
         this.optionRG = Ext.create('Ext.form.RadioGroup', {
-            columns: 3,
+            columns: 2,
             vertical: true,
-            width: 700,
+            width: 1000,
+            height:440,
             items: [
-                {   boxLabel: '<span class="styled-text"><b>Default UI Skin</b></span>&nbsp;<span class="img"><img alt="Collection image" height="364" src="/AIDRFetchManager/resources/img/defaultSkin.png" width="500"></span>',
+                {   boxLabel: '<span class="styled-text"><b>Default UI Skin</b></span>&nbsp;<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/defaultSkin.png" class="skinPane"></span>',
                     name: 'skintype',
                     inputValue: 0
                 },
-                {   boxLabel: '<span class="styled-text"><b>iPhone UI Skin</b></span>&nbsp;<span class="img"><img alt="Collection image" height="364" src="/AIDRFetchManager/resources/img/iphoneSkin.png" width="500"></span>',
+                {   boxLabel: '<span class="styled-text"><b>iPhone UI Skin</b></span>&nbsp;<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/iphoneSkin.png" class="skinPane"></span>',
                     name: 'skintype',
                     inputValue: 1}
             ]
@@ -476,7 +477,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
         this.optionPanel = Ext.create('Ext.container.Container', {
             flex: 1,
-            margin: '30 0 0 0',
+            margin: '0 0 0 0',
             layout: 'hbox',
             items: [
                 this.optionRG
