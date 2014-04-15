@@ -84,4 +84,10 @@ public interface TaggerService {
 
     public String getAttributesAndLabelsByCrisisId(Integer id) throws Exception;
 
+    // Added by koushik
+	public String generateCSVLink(String code) throws AidrException;
+
+	// Added by koushik
+	public String generateTweetIdsLink(String code) throws AidrException;
+
 }

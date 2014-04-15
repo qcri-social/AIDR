@@ -3,7 +3,7 @@ package qa.qcri.aidr.manager.util;
 public enum CollectionStatus {
 	RUNNING("RUNNING"), STOPPED("STOPPED"), INITIALIZING("INITIALIZING"), FATAL_ERROR(
 			"FATAL-ERROR"), NOT_FOUND("NOT-FOUND"), RUNNING_WARNING("RUNNING-WARNNING"), NOT_RUNNING(
-			"NOT_RUNNING");
+			"NOT_RUNNING"), TRASHED("DELETED");
 
 	private CollectionStatus(String status) {
 		this.status = status;

@@ -270,10 +270,4 @@ public class ClassifiedTweet  implements Document, Serializable{
 		}
 	}
 
-	/*
-	public static void main(String[] args) {
-		String timeString = "Thu Apr 03 23:31:12 +0000 2014";
-		System.out.println("ISO Format: " + setDateString(timeString));
-	}
-	 */
 }

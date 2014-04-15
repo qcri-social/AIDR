@@ -42,7 +42,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
                 String sql = " SELECT DISTINCT c.id FROM AIDR_COLLECTION c " +
                         " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
                         " ON c.id = c_m.id_collection " +
-                        " WHERE c.user_id =:userId OR c_m.id_manager = :userId " +
+                        " WHERE (!c.isTrashed AND (c.user_id =:userId OR c_m.id_manager = :userId)) " +
                         " order by c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
 
                 SQLQuery sqlQuery = session.createSQLQuery(sql);
@@ -76,7 +76,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
                         " FROM AIDR_COLLECTION c " +
                         " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
                         " ON c.id = c_m.id_collection " +
-                        " WHERE c.user_id = :userId or c_m.id_manager = :userId ";
+                        " WHERE (!c.isTrashed and (c.user_id = :userId or c_m.id_manager = :userId)) ";
 
                 SQLQuery sqlQuery = session.createSQLQuery(sql);
                 sqlQuery.setParameter("userId", userId);
@@ -107,6 +107,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
                 criteria.add(Restrictions.eq("user.id", userId));
 		criteria.add(Restrictions.eq("status", CollectionStatus.RUNNING));
+		criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
 		return (AidrCollection) criteria.uniqueResult();
 	}
 
@@ -132,8 +133,12 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
                 or,
                 Restrictions.eq("status", CollectionStatus.INITIALIZING)
         );
-
-        criteriaIds.add(orAll);
+        LogicalExpression andAll = Restrictions.and(
+        		orAll,
+        		Restrictions.ne("status", CollectionStatus.TRASHED)
+        );
+        
+        criteriaIds.add(andAll);
         addCollectionSearchCriteria(terms, criteriaIds);
         searchCollectionsAddOrder(sortColumn, sortDirection, criteriaIds);
 
@@ -175,8 +180,13 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
                 or,
                 Restrictions.eq("status", CollectionStatus.INITIALIZING)
         );
-
-        criteria.add(orAll);
+        
+        LogicalExpression andAll = Restrictions.and(
+        		orAll,
+        		Restrictions.ne("status", CollectionStatus.TRASHED)
+        );
+        
+        criteria.add(andAll);
         addCollectionSearchCriteria(terms, criteria);
 
         ScrollableResults scroll = criteria.scroll();
@@ -194,6 +204,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
         criteriaIds.add(Restrictions.ne("status", CollectionStatus.RUNNING));
         criteriaIds.add(Restrictions.ne("status", CollectionStatus.RUNNING_WARNING));
         criteriaIds.add(Restrictions.ne("status", CollectionStatus.INITIALIZING));
+        criteriaIds.add(Restrictions.ne("status", CollectionStatus.TRASHED));
         addCollectionSearchCriteria(terms, criteriaIds);
         searchCollectionsAddOrder(sortColumn, sortDirection, criteriaIds);
 
@@ -229,6 +240,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
         criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING));
         criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING_WARNING));
         criteria.add(Restrictions.ne("status", CollectionStatus.INITIALIZING));
+        criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
         addCollectionSearchCriteria(terms, criteria);
 
         ScrollableResults scroll = criteria.scroll();

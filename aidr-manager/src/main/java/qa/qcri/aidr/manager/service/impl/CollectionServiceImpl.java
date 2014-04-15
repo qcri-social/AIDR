@@ -83,13 +83,23 @@ public class CollectionServiceImpl implements CollectionService {
     @Override
     @Transactional(readOnly = true)
     public AidrCollection findById(Integer id) throws Exception {
-        return collectionRepository.findById(id);
+        AidrCollection temp = collectionRepository.findById(id);
+        if (!temp.getIsTrashed()) {
+        	return temp;
+        }
+        return null;
+        	
     }
 
     @Override
     @Transactional(readOnly = true)
     public AidrCollection findByCode(String code) throws Exception {
-        return collectionRepository.findByCode(code);
+    	AidrCollection temp = collectionRepository.findByCode(code);
+        if (!temp.getIsTrashed()) {
+        	return temp;
+        }
+        return null;
+    	
     }
 
      @Override
@@ -334,7 +344,7 @@ public class CollectionServiceImpl implements CollectionService {
             //String jsonResponse = clientResponse.getEntity(String.class);
         	String jsonResponse = clientResponse.readEntity(String.class);
         	
-            logger.info("jsonResponse" + jsonResponse);
+            //logger.info("jsonResponse" + jsonResponse);
             ObjectMapper objectMapper = new ObjectMapper();
             FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);
             if (response != null) {

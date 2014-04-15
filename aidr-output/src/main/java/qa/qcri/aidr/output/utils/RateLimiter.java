@@ -10,7 +10,11 @@ public class RateLimiter {
 	public static final double MIN_INTERVAL_VAL = 0.01;		// [0,1]
 	private double[] interval = null;		
 	private TreeMap<String, Double> channelLambdaList = null;	// values must be all +ve
-
+	
+	public RateLimiter() {
+		this.channelLambdaList = new TreeMap<String, Double>();
+	}
+	
 	public RateLimiter(TreeMap<String, Double> channelLambdaList) {
 		interval = new double[channelLambdaList.size() + 1];
 		this.channelLambdaList = new TreeMap<String, Double>();

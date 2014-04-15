@@ -31,7 +31,17 @@ public class ClassifiedFilteredTweet implements Serializable {
 	public ClassifiedFilteredTweet() {
 		nominal_labels = new ArrayList<NominalLabel>();
 	}
-
+	
+	public float getMaxConfidence() {
+		float maxConfidence = 0;
+		for (NominalLabel nLabel: nominal_labels) {
+			if (nLabel.confidence > maxConfidence) {
+				maxConfidence = nLabel.confidence;
+			}
+		}
+		return maxConfidence;
+	}
+	
 	public ClassifiedFilteredTweet deserialize(String rawJsonString) {
 
 		created_at = null;
@@ -83,7 +93,10 @@ public class ClassifiedFilteredTweet implements Serializable {
 
 				jsonObj.crisis_name = crisisName.getAsString(); 
 				crisis_name = crisisName.getAsString();
-
+				
+				jsonObj.created_at = createDate(timestamp.getAsString()); 
+				created_at = createDate(timestamp.getAsString());
+				
 				for (int i = 0;i < nominalLabels.size();i++) {
 					NominalLabel nLabel = new NominalLabel();
 					JsonObject temp = (JsonObject) nominalLabels.get(i);
@@ -99,9 +112,6 @@ public class ClassifiedFilteredTweet implements Serializable {
 
 					jsonObj.nominal_labels.add(nLabel); 
 					nominal_labels.add(nLabel);
-
-					jsonObj.created_at = createDate(timestamp.getAsString()); 
-					created_at = createDate(timestamp.getAsString());
 				}
 				return jsonObj;
 			}

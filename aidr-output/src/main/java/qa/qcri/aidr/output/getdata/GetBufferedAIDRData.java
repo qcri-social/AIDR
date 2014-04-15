@@ -72,9 +72,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+
+
 //import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+
 
 
 import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
@@ -84,6 +88,7 @@ import qa.qcri.aidr.output.filter.NominalLabel;
 import qa.qcri.aidr.output.filter.QueryType;
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
+import qa.qcri.aidr.output.utils.SimpleRateLimiter;
 
 
 @Path("/crisis/fetch/")
@@ -98,7 +103,9 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	private static final int MAX_MESSAGES_COUNT = 1000;
 	private static final int DEFAULT_COUNT = 50;		// default number of messages to fetch
 	private static final String DEFAULT_COUNT_STR = "50";
-
+	
+	private static SimpleRateLimiter channelSelector;		// select a channel to display
+	
 	private static ChannelBufferManager cbManager; 			// managing buffers for each publishing channel
 	private static final boolean rejectNullFlag = true;
 	/////////////////////////////////////////////////////////////////////////////
@@ -171,19 +178,25 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				temp = null;
 			}
 			
-			// Added code as per new feature: pivotal #67373070
-			List<String> filteredMessages = new ArrayList<String>();
-			List<Long> tweetTimestamps = new ArrayList<Long>();
-			ClassifiedFilteredTweet classifiedTweet = new ClassifiedFilteredTweet();
+			// Added code for filteredMessages as per new feature: pivotal #67373070
+			List<String> filteredMessages = new ArrayList<String>();			
+			ClassifiedFilteredTweet workingTweet = new ClassifiedFilteredTweet(); 
 			for (String tweet: bufferedMessages) {
-				classifiedTweet.deserialize(tweet);
-				if (getMaxConfidence(classifiedTweet) >= confidence) {
+				ClassifiedFilteredTweet classifiedTweet = workingTweet.deserialize(tweet);
+				if (classifiedTweet.getMaxConfidence() >= confidence) {
 					filteredMessages.add(tweet);
-					tweetTimestamps.add(classifiedTweet.getCreatedAt() != null ? classifiedTweet.getCreatedAt().getTime() : 0L);
+					channelSelector.initializeNew(classifiedTweet.getCrisisCode());
 				}
 			}
+			
 			final JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
-			final StringBuilder jsonDataList = taggerOutput.createList(filteredMessages, messageCount, rejectNullFlag);
+			final StringBuilder jsonDataList;
+			if (!balanced_sampling) {
+				jsonDataList = taggerOutput.createList(filteredMessages, messageCount, rejectNullFlag);
+			} else {
+				//System.out.println("[getLatestBufferedAIDRData] going for Rate Limited");
+				jsonDataList = taggerOutput.createRateLimitedList(filteredMessages, channelSelector, messageCount, rejectNullFlag);
+			}
 			final int sendCount = taggerOutput.getMessageCount();
 
 			// Reset the messageList buffer and return
@@ -514,6 +527,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 
 		// Most important action - setup channel buffering thread
 		cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
+		channelSelector = new SimpleRateLimiter();
 		logger.info("[GetBufferedAIDRData] Context Initialized");
 	}
 }

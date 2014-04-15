@@ -24,6 +24,18 @@ import org.slf4j.LoggerFactory;
 
 public class TaggerJsonOutputAdapter {
 	
+	private String crisisCode = null;
+	
+	public TaggerJsonOutputAdapter() {}
+	
+	public String getCrisisCode() {
+		return crisisCode;
+	}
+	
+	public void setCrisisCode(String crisisCode) {
+		this.crisisCode = crisisCode;
+	}
+	
 	public String buildJsonString(String rawJsonString, boolean rejectNullFlag) {
 		Gson jsonObject = new GsonBuilder().serializeNulls().disableHtmlEscaping()
 				.serializeSpecialFloatingPointValues()	//.setPrettyPrinting()
@@ -38,7 +50,8 @@ public class TaggerJsonOutputAdapter {
 		JsonElement timestamp = null;
 		JsonObject aidrData = null;
 		JsonArray nominalLabels; 
-
+		crisisCode = null;
+		
 		if (obj.has("text")) {					// should always be true
 			tweetData = obj.get("text");		// get the tweet text string
 			
@@ -51,8 +64,10 @@ public class TaggerJsonOutputAdapter {
 
 				// extract relevant fields from the aidr JSON object
 				JsonElement crisisCode = null;
-				if (aidrData.has("crisis_code"))				// should always be true
+				if (aidrData.has("crisis_code")) {				// should always be true
 					crisisCode = aidrData.get("crisis_code");
+					setCrisisCode(crisisCode.getAsString());
+				}
 				JsonElement crisisName = null;					
 				if (aidrData.has("crisis_name"))				// should always be true
 					crisisName = aidrData.get("crisis_name");	

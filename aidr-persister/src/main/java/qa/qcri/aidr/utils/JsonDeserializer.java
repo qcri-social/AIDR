@@ -616,40 +616,6 @@ public class JsonDeserializer {
         //FileSystemOperations.deleteFile("CandFlood2013_20130922_vol-1.json.csv");
     }
     
-    public void testFilterAPIs() {
-    	ArrayList<String> temp = new ArrayList<String>();
-		temp.add("{\"queryType\":\"date_query\",\"comparator\":\"is_before\",\"time\":\"2014-03-04\"}");
-		temp.add("{\"queryType\":\"date_query\",\"comparator\":\"is_after\",\"time\":\"2013-05-01\"}");
-		temp.add("{\"queryType\":\"classifier_query\",\"classifier_code\":\"informative_v1\","
-				+ "\"label_code\":\"030_not_info\","  
-				+ "\"comparator\":\"is\","
-				+ "\"min_confidence\":0.5}");
-		temp.add("{\"queryType\":\"classifier_query\",\"classifier_code\":\"informative_v1\","
-				+ "\"label_code\":\"030_info\","  
-				+ "\"comparator\":\"is_not\","
-				+ "\"min_confidence\":0.64}");
-		temp.add("{\"queryType\":\"classifier_query\",\"classifier_code\":\"informative_v1\","
-				+ "\"label_code\":\"null\","  
-				+ "\"comparator\":\"has_confidence\","
-				+ "\"min_confidence\":0.75}");
-		
-		JsonQueryList testQueryList = new JsonQueryList();
-		ObjectMapper mapper = new ObjectMapper();
-		//testQueryList = mapper.readValue(temp, JsonQueryList.class);
-		
-		FilterQueryMatcher testFilter = new FilterQueryMatcher();
-		Gson gson = new Gson();
-		for (int i = 0; i < temp.size();i++) {
-			testFilter.queryList.createConstraint(gson.fromJson(temp.get(i), GenericInputQuery.class));
-		}
-		testFilter.buildMatcherArray();
-    	
-		JsonDeserializer jc = new JsonDeserializer();
-        //String fileName = jc.generateClassifiedJson2TweetIdsCSVFiltered("2014-04-chile_earthquake_2014", testFilter);
-        //String fileName = jc.taggerGenerateJSON2CSV_100K_BasedOnTweetCountFiltered("2014-04-chile_earthquake_2014", 10);
-    
-        //System.out.println("File name: " + fileName);
-    }
     
     private Tweet getTweet(String line) throws ParseException {
         Tweet tweet = new Tweet();

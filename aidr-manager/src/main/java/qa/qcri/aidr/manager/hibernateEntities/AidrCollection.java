@@ -54,7 +54,9 @@ public class AidrCollection implements Serializable {
     private Date endDate;
 
     private Date createdDate;
-
+    
+    private Boolean isTrashed;
+    
     @Column(length = 1000, name = "last_document")
     private String lastDocument;
 
@@ -214,5 +216,13 @@ public class AidrCollection implements Serializable {
 
     public void setDurationHours(Integer durationHours) {
         this.durationHours = durationHours;
+    }
+    
+    public Boolean getIsTrashed() {
+    	return isTrashed;
+    }
+    
+    public void setIsTrashed(Boolean isTrashed) {
+    	this.isTrashed = isTrashed;
     }
 }

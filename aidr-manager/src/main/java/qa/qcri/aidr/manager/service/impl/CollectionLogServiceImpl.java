@@ -138,5 +138,5 @@ public class CollectionLogServiceImpl implements CollectionLogService {
             throw new AidrException("Error while generating Tweet Ids link in Persister", e);
         }
     }
-
+    
 }
