@@ -329,10 +329,6 @@ public class MicroMapperPybossaFormatter {
             return null;
         }
 
-        if(clientApp.getClientAppID()==47){
-            System.out.println(clientApp.getName());
-        }
-
         JSONObject responseJSON = new JSONObject();
 
         String[] questions = getQuestion( clientAppAnswer,  parser);

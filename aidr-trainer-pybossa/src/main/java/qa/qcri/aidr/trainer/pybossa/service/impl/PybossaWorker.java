@@ -1,16 +1,14 @@
 package qa.qcri.aidr.trainer.pybossa.service.impl;
 
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import qa.qcri.aidr.trainer.pybossa.entity.Client;
-import qa.qcri.aidr.trainer.pybossa.entity.ClientApp;
-import qa.qcri.aidr.trainer.pybossa.entity.TaskLog;
-import qa.qcri.aidr.trainer.pybossa.entity.TaskQueue;
+import qa.qcri.aidr.trainer.pybossa.entity.*;
 import qa.qcri.aidr.trainer.pybossa.format.impl.PybossaFormatter;
 import qa.qcri.aidr.trainer.pybossa.service.*;
 import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
@@ -39,11 +37,15 @@ public class PybossaWorker implements ClientAppRunWorker {
     @Autowired
     private TaskLogService taskLogService;
 
+    @Autowired
+    private ClientAppResponseService clientAppResponseService;
+
     private Client client;
     private int MAX_PENDING_QUEUE_SIZE = StatusCodeType.MAX_PENDING_QUEUE_SIZE;
     private String PYBOSSA_API_TASK_PUBLSIH_URL;
     private String AIDR_API_URL;
     private String AIDR_TASK_ANSWER_URL;
+    private String AIDR_NOMINAL_ATTRIBUTE_LABEL_URL;
     private String PYBOSSA_API_TASK_RUN_BASE_URL;
     private String PYBOSSA_API_TASK_BASE_URL;
     private String AIDR_ASSIGNED_TASK_CLEAN_UP;
@@ -79,6 +81,9 @@ public class PybossaWorker implements ClientAppRunWorker {
             ///AIDR_ASSIGNED_TASK_CLEAN_UP = client.getAidrHostURL() + URLPrefixCode.ASSIGN_TASK_CLEANUP;
             PYBOSSA_API_APP_DELETE_URL = client.getHostURL() + URLPrefixCode.PYBOSAA_APP ;
             PYBOSSA_TASK_DELETE_URL = client.getHostURL() + URLPrefixCode.PYBOSSA_TASK_DELETE;
+
+            AIDR_NOMINAL_ATTRIBUTE_LABEL_URL = client.getAidrHostURL() + URLPrefixCode.AIDR_NOMINAL_ATTRIBUTE_LABEL;
+
         }
 
     }
@@ -111,34 +116,34 @@ public class PybossaWorker implements ClientAppRunWorker {
             if(id!=null){
                 deactivateClientApp(id);
                 List<ClientApp> appList = clientAppService.getAllClientAppByCrisisIDAndStatus(id , StatusCodeType.AIDR_ONLY);
-               // System.out.println("processTaskPublish : crisisID - " + id);
-               // System.out.println("processTaskPublish : appList - " + appList.size());
+                System.out.println("processTaskPublish : crisisID - " + id);
+                System.out.println("processTaskPublish : appList - " + appList.size());
                 if(appList.size() > 0){
                     setClassVariable(appList.get(0).getClient());
                     int pushTaskNumber = calculateMinNumber(appList);
-                    //System.out.println("processTaskPublish : pushTaskNumber - " + pushTaskNumber);
+                    System.out.println("processTaskPublish : pushTaskNumber - " + pushTaskNumber);
                     if( pushTaskNumber > 0 ){
                         String inputData = pybossaCommunicator.sendGet(AIDR_API_URL + id + "/" +pushTaskNumber);
-                        //System.out.println(AIDR_API_URL + id + "/" +pushTaskNumber);
-                        //System.out.println("inputData  " + inputData);
+                        System.out.println(AIDR_API_URL + id + "/" +pushTaskNumber);
+                        System.out.println("inputData  " + inputData);
                         if(DataFormatValidator.isValidateJson(inputData)){
                             try {
                                 for (int index = 0; index < appList.size() ; index++){
                                     ClientApp currentClientApp = appList.get(index);
                                         List<String> aidr_data = pybossaFormatter.assemblePybossaTaskPublishForm(inputData, currentClientApp);
                                         for (String temp : aidr_data) {
-                                           // System.out.println("*************************************************");
-                                           // System.out.println(temp);
+                                            System.out.println("*************************************************");
+                                            System.out.println(temp);
                                             String response = pybossaCommunicator.sendPostGet(temp, PYBOSSA_API_TASK_PUBLSIH_URL) ;
-                                           // System.out.println(PYBOSSA_API_TASK_PUBLSIH_URL + "\n");
-                                           // System.out.println(response + "\n");
+                                            System.out.println(PYBOSSA_API_TASK_PUBLSIH_URL + "\n");
+                                            System.out.println(response + "\n");
                                             if(!response.startsWith("Exception") && !response.contains("exception_cls")){
                                                 addToTaskQueue(response, currentClientApp.getClientAppID(), StatusCodeType.TASK_PUBLISHED) ;
                                             }
                                             else{
                                                 addToTaskQueue(temp, currentClientApp.getClientAppID(), StatusCodeType.Task_NOT_PUBLISHED) ;
                                             }
-                                            //System.out.println("*************************************************");
+                                            System.out.println("*************************************************");
 
                                         }
                                 }
@@ -193,11 +198,22 @@ public class PybossaWorker implements ClientAppRunWorker {
         String PYBOSSA_API_TASK_RUN = PYBOSSA_API_TASK_RUN_BASE_URL + clientApp.getPlatformAppID() + "&task_id=" + taskID;
         String importResult = pybossaCommunicator.sendGet(PYBOSSA_API_TASK_RUN) ;
 
-       // System.out.println("importResult: " + importResult);
+        System.out.println("importResult: " + importResult);
+        ClientAppAnswer clientAppAnswer = clientAppResponseService.getClientAppAnswer(clientApp.getClientAppID());
+        if(clientAppAnswer == null){
+            int cutOffValue = StatusCodeType.MAX_VOTE_CUT_OFF_VALUE;
+            String AIDR_NOMINAL_ATTRIBUTE_LABEL_URL_PER_APP = AIDR_NOMINAL_ATTRIBUTE_LABEL_URL + clientApp.getCrisisID() + "/" + clientApp.getNominalAttributeID();
+            String answerSet = pybossaCommunicator.sendGet(AIDR_NOMINAL_ATTRIBUTE_LABEL_URL_PER_APP) ;
 
+            if(clientApp.getTaskRunsPerTask() < StatusCodeType.MAX_VOTE_CUT_OFF_VALUE){
+                cutOffValue = StatusCodeType.MIN_VOTE_CUT_OFF_VALUE;
+            }
+            clientAppResponseService.saveClientAppAnswer(clientApp.getClientAppID(), answerSet, cutOffValue);
+            clientAppAnswer = clientAppResponseService.getClientAppAnswer(clientApp.getClientAppID());
+        }
         if(DataFormatValidator.isValidateJson(importResult)){
             List<TaskLog> taskLogList = taskLogService.getTaskLog(taskQueue.getTaskQueueID());
-            String pybossaResult = pybossaFormatter.getTaskLogDateHistory(taskLogList,importResult, parser, clientApp.getNominalAttributeID());
+            String pybossaResult = pybossaFormatter.getTaskLogDateHistory(taskLogList,importResult, parser, clientApp, clientAppAnswer);
             int responseCode = pybossaCommunicator.sendPost(pybossaResult, AIDR_TASK_ANSWER_URL);
 
             if(responseCode ==StatusCodeType.HTTP_OK ||responseCode ==StatusCodeType.HTTP_OK_NO_CONTENT ){

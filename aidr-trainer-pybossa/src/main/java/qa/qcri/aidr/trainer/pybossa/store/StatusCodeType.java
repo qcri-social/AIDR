@@ -49,4 +49,7 @@ public class StatusCodeType {
 
     public static long TASK_CLEANUP_CUT_OFF_HOUR = 12;
 
+    public static Integer MIN_VOTE_CUT_OFF_VALUE = 1;
+    public static Integer MAX_VOTE_CUT_OFF_VALUE = 2;
+
 }

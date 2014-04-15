@@ -77,6 +77,7 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
         return (E) criteria.uniqueResult();
     }
 
+    /**  do not use this method. it is for app live testing **/
     @Override
     public List<E> findAll() {
         Criteria criteria = getCurrentSession().createCriteria(entityClass);

@@ -61,4 +61,13 @@ public class TaskQueueDaoImpl extends AbstractDaoImpl<TaskQueue, String> impleme
                 .add(Restrictions.eq("clientAppID", clientAppID))
                 .add(Restrictions.eq("taskID", taskID)));
     }
+
+    @Override
+    public void deleteTaskQueue(Long taskQueueID) {
+        List<TaskQueue> taskQueues = findByCriteria(Restrictions.eq("taskQueueID", taskQueueID));
+        if(taskQueues.size() > 0){
+            delete(taskQueues.get(0));
+        }
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

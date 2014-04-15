@@ -39,4 +39,13 @@ public class TaskLogDaoImpl extends AbstractDaoImpl<TaskLog, String> implements 
                 .add(Restrictions.eq("status", status)));
 
     }
+
+    @Override
+    public void deleteTaskLog(Long taskQueueID) {
+        List<TaskLog> logs = this.getTaskLog(taskQueueID) ;
+        for(int i=0; i < logs.size(); i++){
+            delete(logs.get(i));
+        }
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

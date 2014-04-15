@@ -60,7 +60,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     var attID = me.mainComponent.classifierComboForPybossaApp.getValue();
                     me.mainComponent.uiWelcomeSaveButton.show();
                     me.mainComponent.uiTutorialOneSaveButton.show();
-                    uiTutorialOneSaveButton.uiTutorialTwoSaveButton.show();
+                    me.mainComponent.uiTutorialTwoSaveButton.show();
                     me.getUITemplateWithAttributeID(attID);
                 }
             },
@@ -365,7 +365,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     AIDRFMFunctions.setAlert("Error", 'Error while updating templateSave.');
                 }
                 //mask.hide();
-                AIDRFMFunctions.setAlert("Confirmation", mask);
+                AIDRFMFunctions.setAlert("Info", mask);
 
 
             },

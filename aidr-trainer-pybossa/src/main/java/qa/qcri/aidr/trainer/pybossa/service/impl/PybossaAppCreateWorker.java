@@ -75,7 +75,7 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
             String crisisSet = pybossaCommunicator.sendGet(AIDR_ALL_ACTIVE_CRISIS_URL);
 
             if(crisisSet != null ){
-
+                System.out.println(crisisSet) ;
                 JSONArray array = (JSONArray) parser.parse(crisisSet);
 
                 for(int i = 0 ; i < array.size(); i++){

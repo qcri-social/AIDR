@@ -18,4 +18,5 @@ public interface ClientAppResponseService {
     void processTaskQueueResponse(TaskQueueResponse taskQueueResponse);
     List<TaskQueueResponse> getTaskQueueResponse(Long taskQueueID);
     List<TaskQueueResponse> getTaskQueueResponseByContent();
+    void saveClientAppAnswer(Long clientAppID, String answerJson, int cutOffValue);
 }

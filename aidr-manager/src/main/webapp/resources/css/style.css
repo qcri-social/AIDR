@@ -737,3 +737,11 @@ End of the tab panel styles
 .x-btn-default-small .remove {
     background-image: url(../img/remove.png) !important;
 }
+.skinPane{
+    border: 1px solid #bbb;
+    color: #888;
+    margin-top: 20px;
+    padding: 20px;
+    text-align: left;
+    width: 410px;
+}

@@ -18,7 +18,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 @Service("clientAppEventService")
-@Transactional(readOnly = false)
+@Transactional(readOnly = true)
 public class ClientAppEventServiceImpl implements ClientAppEventService {
     @Autowired
     ClientAppEventDao clientAppEventDao;

@@ -17,7 +17,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 @Service("clientAppService")
-@Transactional(readOnly = false)
+@Transactional(readOnly = true)
 public class ClientAppServiceImpl implements ClientAppService {
 
     @Autowired
@@ -74,6 +74,7 @@ public class ClientAppServiceImpl implements ClientAppService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public void updateClientAppStatus(ClientApp clientApp, Integer status) {
         ClientApp app = findClientAppByID("clientAppID", clientApp.getClientAppID());
         if(app != null){
