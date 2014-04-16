@@ -155,10 +155,15 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
         if(customUIType== CodeLookUp.CLASSIFIER_SKIN){
             logger.debug("CLASSIFIER_SKIN");
             List<ClientApp> apps = clientAppService.getAllClientAppByCrisisID(crisisID);
+            logger.debug("skim. app count: " + apps.size());
             for(ClientApp clientApp : apps){
+                logger.debug("skim. clientApp: " + clientApp.getClientAppID());
                 //ClientApp clientApp = clientAppService.getClientAppByCrisisAndAttribute(crisisID,  attributeID);
                 Set<ModelFamily> families = crisisService.findByCrisisID(crisisID).getModelFamilySet();
+                logger.debug("skim. families: " + families.size());
                 for(ModelFamily family : families){
+                    logger.debug("skim. families: " + family.getNominalAttributeID());
+                    logger.debug("skim. clientApp: " + clientApp.getNominalAttributeID());
                     if(family.getNominalAttributeID().equals(clientApp.getNominalAttributeID())){
                         NominalAttribute nom = family.getNominalAttribute();
                         String skinUpdate = buildAppSkin(clientApp, nom, skinType);
@@ -224,7 +229,7 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
         app2.put("time_estimate", 0);
         app2.put("hidden", 0);
         if(data.get("category_id")!=null){
-            int category_id = (Integer)data.get("category_id");
+            long category_id = (Long)data.get("category_id");
             app2.put("category_id", category_id);
         }
         //app2.put("owner_id", 1);
@@ -441,11 +446,12 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
     }
 
     private void sendToPybossa(String jsonData,ClientApp clientApp){
+        logger.info("sendToPybossa jsonData : " + jsonData);
         Communicator pybossaCommunicator = new Communicator();
         String url = clientApp.getClient().getHostURL()  + "/app/" + clientApp.getPlatformAppID() + "?api_key=" + clientApp.getClient().getHostAPIKey();
-        logger.info("pybossa UI update url:" + url);
+        logger.info("sendToPybossa url:" + url);
         int responseCode = pybossaCommunicator.sendPut(jsonData, url);
-        logger.info("pybossa UI update response:" + responseCode);
+        logger.info("sendToPybossa response:" + responseCode);
     }
 
 

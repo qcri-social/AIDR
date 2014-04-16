@@ -20,9 +20,10 @@ public class DocumentNominalLabel implements Serializable {
     private static final long serialVersionUID = -5527566248002296042L;
 
     public  DocumentNominalLabel() {}
-    public  DocumentNominalLabel(Long documentID, Long nominalLabelID){
+    public  DocumentNominalLabel(Long documentID, Long nominalLabelID, Long userID){
         this.documentID = documentID;
         this.nominalLabelID = nominalLabelID;
+        this.userID = userID;
         this.timestamp = new Date();
     }
 
@@ -42,6 +43,14 @@ public class DocumentNominalLabel implements Serializable {
         this.nominalLabelID = nominalLabelID;
     }
 
+    public Long getUserID() {
+        return userID;
+    }
+
+    public void setUserID(Long userID) {
+        this.userID = userID;
+    }
+
     public Date getTimestamp() {
         return timestamp;
     }
@@ -58,6 +67,10 @@ public class DocumentNominalLabel implements Serializable {
     @Id
     @Column (name = "nominalLabelID", nullable = false)
     private Long nominalLabelID;
+
+    @Id
+    @Column (name = "userID", nullable = false)
+    private Long userID;
 
     @Column (name = "timestamp", nullable = false)
     private Date timestamp;

@@ -33,6 +33,8 @@ public class StatusCodeType {
     public static Integer CUSTOM_UI_UPDATE_REQUEST = 0;
     public static Integer CUSTOM_UI_UPDATE_COMPLETED = 1;
 
+    public static String POST_COMPLETED = "{\"status\":200}";
+
 
 
 
