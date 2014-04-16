@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+  <persistence-unit name="qa.qcri.aidr.predictui-EJBS" transaction-type="JTA">
+    <provider>org.hibernate.ejb.HibernatePersistence</provider>
+    <jta-data-source>JNDI/aidr_task_manager</jta-data-source>
+    <class>qa.qcri.aidr.task.entities.Document</class>
+    <class>qa.qcri.aidr.task.entities.Crisis</class>
+    <class>qa.qcri.aidr.task.entities.DocumentNominalLabel</class>
+    <class>qa.qcri.aidr.task.entities.TaskAnswer</class>
+    <class>qa.qcri.aidr.task.entities.TaskAssignment</class>
+    <properties>
+        <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
+    </properties>
+    
+  
+  </persistence-unit>
+  <persistence-unit name="qa.qcri.aidr.TaskManager-PU" transaction-type="JTA">
+    <provider>org.hibernate.ejb.HibernatePersistence</provider>
+    <jta-data-source>JNDI/aidr_task_manager</jta-data-source>
+    <properties>
+      <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
+    </properties>
+  </persistence-unit>
+</persistence>
