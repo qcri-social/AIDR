@@ -23,4 +23,10 @@ public class PybossaConf {
 
     public static double ONE_MILE_RADIUS =  1609.34;
     public static double ONE_MILE_DISTANCE =  1;
+
+    public static String TASK_STATUS_COMPLETED = "completed";
+
+    public static String TASK_QUEUE_GEO_INFO_NOT_FOUND = "No Location Information";
+
+    public static int DEFAULT_GEO_N_ANSWERS = 3;
 }

@@ -31,8 +31,6 @@ public class DateTimeConverter {
 
     public static String utcToDefault(String input) throws ParseException {
 
-
-
         DateFormat currentFormat =  DateFormat.getDateInstance();
         Date date = currentFormat.parse(input);
 

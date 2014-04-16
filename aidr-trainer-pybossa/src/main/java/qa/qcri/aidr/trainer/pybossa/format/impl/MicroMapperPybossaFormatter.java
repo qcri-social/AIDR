@@ -240,7 +240,7 @@ public class MicroMapperPybossaFormatter {
               //  logger.debug("featureJsonObj : " +  featureJsonObj);
                 String status = (String)featureJsonObj.get("state") ;
               //  logger.debug("status : "  + status);
-                if(status.equalsIgnoreCase("completed"))
+                if(status.equalsIgnoreCase(PybossaConf.TASK_STATUS_COMPLETED))
                 {
                     isCompleted = true;
                 }
@@ -389,7 +389,7 @@ public class MicroMapperPybossaFormatter {
             JSONObject info = (JSONObject)featureJsonObj.get("info");
             tweetID = (String) info.get("tweetid");
             String locValue = info.get("loc").toString();
-            if(!locValue.equalsIgnoreCase("No Location Information")){
+            if(!locValue.equalsIgnoreCase(PybossaConf.TASK_QUEUE_GEO_INFO_NOT_FOUND)){
                 JSONObject loc = (JSONObject)info.get("loc");
                 String locType = (String)loc.get("type");
                 if(locType.equalsIgnoreCase(PybossaConf.GEOJSON_TYPE_FEATURE_COLLECTION)){
@@ -422,11 +422,12 @@ public class MicroMapperPybossaFormatter {
 
     private JSONObject calculateCentralPoint(JSONArray locations){
         JSONObject geoResponse = new JSONObject();
-        if(locations.size() < 2){
+        // Min 3 votes are required
+        if(locations.size() < PybossaConf.DEFAULT_GEO_N_ANSWERS){
             return geoResponse;
         }
 
-        if(locations.size() == 3){
+        if(locations.size() == PybossaConf.DEFAULT_GEO_N_ANSWERS){
 
             JSONObject loc = (JSONObject)locations.get(0);
             JSONObject geometry = (JSONObject)loc.get("geometry");
@@ -647,7 +648,7 @@ public class MicroMapperPybossaFormatter {
 
             JSONObject info = (JSONObject)featureJsonObj.get("info");
             String locValue = info.get("loc").toString();
-            if(locValue.equalsIgnoreCase("No Location Information")){
+            if(locValue.equalsIgnoreCase(PybossaConf.TASK_QUEUE_GEO_INFO_NOT_FOUND)){
                 found = true;
             }
 
