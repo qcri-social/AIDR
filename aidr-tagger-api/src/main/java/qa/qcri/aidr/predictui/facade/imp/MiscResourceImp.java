@@ -63,8 +63,8 @@ public class MiscResourceImp implements MiscResourceFacade {
                 + " JOIN model_family mf on mf.nominalAttributeID=lbl.nominalAttributeID "
                 //+ " JOIN model m on m.modelFamilyID= mf.modelFamilyID "
                 + " JOIN document d on d.documentID = dnl.documentID "
-                + " JOIN task_answer ta on ta.documentID = d.documentID "
-                + " JOIN users u on u.userID = ta.userID "
+               // + " JOIN task_answer ta on ta.documentID = d.documentID "
+                + " JOIN users u on u.userID = dnl.userID "
                 + " WHERE mf.modelFamilyID = :modelFamilyID AND d.crisisID = :crisisID " + orderSQLPart
                 + " LIMIT :fromRecord, :limit";
 
@@ -74,8 +74,8 @@ public class MiscResourceImp implements MiscResourceFacade {
                 + " JOIN model_family mf on mf.nominalAttributeID=lbl.nominalAttributeID "
                 //+ " JOIN model m on m.modelFamilyID= mf.modelFamilyID "
                 + " JOIN document d on d.documentID = dnl.documentID "
-                + " JOIN task_answer ta on ta.documentID = d.documentID "
-                + " JOIN users u on u.userID = ta.userID "
+               // + " JOIN task_answer ta on ta.documentID = d.documentID "
+                + " JOIN users u on u.userID = dnl.userID "
                 + " WHERE mf.modelFamilyID = :modelFamilyID AND d.crisisID = :crisisID ";
 
         System.out.println("getTraningDataByCrisisAndAttribute : " + sql);
