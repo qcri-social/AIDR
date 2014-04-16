@@ -181,7 +181,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 140, align: 'right', sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 140, css: 'text-align: right;', sortable: false,
                     renderer: function (value, meta, record) {
                         return value ? Ext.util.Format.number(value, '0,000') : 0;
                     }
@@ -352,7 +352,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 130, sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 130, css: 'text-align: right;', sortable: false,
                     renderer: function (value, meta, record) {
                         return value ? Ext.util.Format.number(value, '0,000') : 0;
                     }

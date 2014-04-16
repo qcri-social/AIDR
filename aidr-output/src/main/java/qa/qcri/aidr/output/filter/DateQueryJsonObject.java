@@ -97,9 +97,9 @@ public class DateQueryJsonObject extends QueryJsonObject {
 	@Override
 	public String toString() {
 		StringBuilder object = new StringBuilder();
-		object.append("{query_type: ").append(queryType).append(", ");
-		object.append("comparator: ").append(comparator).append(", ");
-		object.append("timestamp: ").append(getDate()).append("}");
+		object.append("{\"query_type\": \"").append(queryType).append("\", ");
+		object.append("\"comparator\": \"").append(comparator).append("\", ");
+		object.append("\"timestamp\": ").append(getDate()).append("}");
 		return object.toString();
 	}
 

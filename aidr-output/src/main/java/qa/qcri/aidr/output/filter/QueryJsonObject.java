@@ -60,12 +60,20 @@ public abstract class QueryJsonObject implements Serializable {
 	public String toString() {
 		StringBuilder object = new StringBuilder();
 		
-		object.append("{query_type: ").append(queryType).append(", ");
-		object.append("classifier_code: ").append(classifier_code).append(", ");
-		object.append("timestamp: ").append(timestamp).append(", ");
-		object.append("label_code: ").append(label_code).append(", ");
-		object.append("comparator: ").append(comparator).append(", ");
-		object.append("min_confidence: ").append(min_confidence).append("}");
+		object.append("{\"query_type\": \"").append(queryType).append("\", ");
+		if (classifier_code != null) {
+			object.append("\"classifier_code\": \"").append(classifier_code).append("\", ");
+		} else {
+			object.append("\"classifier_code\": null, ");
+		}
+		object.append("\"timestamp\": ").append(timestamp).append(", ");
+		object.append("\"comparator\": \"").append(comparator).append("\", ");
+		if (label_code != null) {
+			object.append("\"label_code\": \"").append(label_code).append("\", ");
+		} else {
+			object.append("\"label_code\": null, ");
+		}
+		object.append("\"min_confidence\": ").append(min_confidence).append("}");
 		
 		return object.toString();
 	}

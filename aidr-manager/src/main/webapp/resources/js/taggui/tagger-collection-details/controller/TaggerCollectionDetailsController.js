@@ -988,8 +988,8 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
             url: BASE_URL + '/protected/tagger/loadLatestTweets.action',
             method: 'GET',
             params: {
-                code: CRISIS_CODE
-//                code: "2014-02-uk_floods"
+                code: CRISIS_CODE,
+                constraints: '{"constraints": []}'
             },
             headers: {
                 'Accept': 'application/json'

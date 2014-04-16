@@ -55,7 +55,10 @@ public class AidrCollection implements Serializable {
 
     private Date createdDate;
     
+    private Boolean publiclyListed;
+    
     private Boolean isTrashed;
+    
     
     @Column(length = 1000, name = "last_document")
     private String lastDocument;
@@ -224,5 +227,13 @@ public class AidrCollection implements Serializable {
     
     public void setIsTrashed(Boolean isTrashed) {
     	this.isTrashed = isTrashed;
+    }
+    
+    public Boolean getIsPubliclyListed() {
+    	return publiclyListed;
+    }
+    
+    public void setIsPubliclyListed(Boolean publiclyListed) {
+    	this.publiclyListed = publiclyListed;
     }
 }

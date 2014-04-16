@@ -888,13 +888,15 @@ public class TaggerServiceImpl implements TaggerService {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
 			WebTarget webResource = client.target(outputAPIMainUrl + "/crisis/fetch/channel/filter/" + code + "?count=1000");
-
+			System.out.println("Invoking: " + outputAPIMainUrl + "/crisis/fetch/channel/filter/" + code + "?count=1000");
+			System.out.println("constraints: " + constraints);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(constraints), Response.class);
 
 			String jsonResponse = clientResponse.readEntity(String.class);
-
-			if (jsonResponse != null && jsonResponse.startsWith("[")) {
+			System.out.println("jsonResponse: " + jsonResponse);
+			
+			if (jsonResponse != null && jsonResponse.startsWith("{")) {
 				return jsonResponse;
 			} else {
 				return "";
