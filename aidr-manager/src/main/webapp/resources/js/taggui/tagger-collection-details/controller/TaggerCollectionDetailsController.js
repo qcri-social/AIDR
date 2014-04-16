@@ -36,11 +36,6 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     this.addNewClassifier();
                 }
             },
-
-            '#gridTrigger' : {
-                keyup : this.onTriggerKeyUp,
-                triggerClear : this.onTriggerClear
-            },
             
             "#generateCSVLink": {
                 click: function (btn, e, eOpts) {
@@ -202,11 +197,6 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         this.getTemplateStatus();
 
         this.loadUITemplate();
-
-//        this.generateCSVLink();
-//        this.generateTweetIdsLink();
-        this.loadLatestTweets();
-
 
         var me = this;
     },
@@ -981,42 +971,6 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         });
     },
 
-    loadLatestTweets: function () {
-        var me = this;
-
-        Ext.Ajax.request({
-            url: BASE_URL + '/protected/tagger/loadLatestTweets.action',
-            method: 'GET',
-            params: {
-                code: CRISIS_CODE
-//                code: "2014-02-uk_floods"
-            },
-            headers: {
-                'Accept': 'application/json'
-            },
-            success: function (response) {
-                var jsonData = Ext.decode(response.responseText);
-                var tweetData = Ext.JSON.decode(jsonData.data);
-
-                var data = me.transformTweetData(tweetData);
-                fetchData = data;
-                fetchTmpData = Ext.clone(data);
-
-                me.mainComponent.taggerFetchStore.setProxy({
-                    type: 'pagingmemory',
-                    data: fetchTmpData,
-                    reader: {
-                        type: 'json',
-                        totalProperty: 'totalCount',
-                        root: 'data',
-                        successProperty: 'success'
-                    }
-                });
-                me.mainComponent.taggerFetchStore.load();
-            }
-        });
-    },
-
     transformTweetData: function(tweetData) {
         var result = {};
         var data = [];
@@ -1034,33 +988,6 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         result.totalCount = data.length;
         result.success = true;
         return result;
-    },
-
-    onTriggerKeyUp : function(t) {
-        var me = this;
-
-        var thisRegEx = new RegExp(t.getValue(), "i");
-        var grid = me.mainComponent.taggerFetchGrid;
-        var records = [];
-        Ext.each(fetchData.data, function (record) {
-            if (thisRegEx.test(record[grid.columns[0].dataIndex])) {
-                if (!grid.filterHidden && grid.columns[0].isHidden()) {
-                } else {
-                    records.push(record);
-                }
-            }
-        });
-        fetchTmpData.data = records;
-        fetchTmpData.totalCount = records.length;
-        me.mainComponent.taggerFetchStore.load();
-    },
-
-    onTriggerClear : function() {
-        var me = this;
-
-        fetchTmpData.data = fetchData.data;
-        fetchTmpData.totalCount = fetchData.totalCount;
-        me.mainComponent.taggerFetchStore.load();
     },
 
     generateCSVLinkButtonHandler: function(btn) {
