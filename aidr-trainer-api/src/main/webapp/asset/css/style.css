@@ -59,7 +59,9 @@ ui-icon-myapp-starthere {
 #page{
     background: url("../../image/aidr-bg-clouds.jpg") no-repeat;
 }
-p.big {line-height:140%;}
+p.big {
+    line-height:140%;
+}
 
 
 
