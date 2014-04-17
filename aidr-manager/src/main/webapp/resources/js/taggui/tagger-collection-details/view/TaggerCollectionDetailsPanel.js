@@ -907,8 +907,6 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             ]
         });
 
-
-
         this.UIBlock = Ext.create('Ext.container.Container',{
             cls: 'accordion',
             width: '100%',
@@ -945,8 +943,6 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             ]
 
         });
-
-
 
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
