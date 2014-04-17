@@ -296,7 +296,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
     templateSkinTypeSave:function(){
         var me = this;
          //me.mainComponent.optionRG.items.items[
-        var mask = AIDRFMFunctions.getMask(true, 'Saving custom UI skin type ...');
+        var mask = AIDRFMFunctions.getMask(true, 'Saving custom skin ...');
         mask.show();
         var value = me.mainComponent.optionRG.getChecked();
         Ext.Ajax.request({
@@ -319,7 +319,20 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 } else {
                     AIDRFMFunctions.setAlert("Error", 'Error while updating templateSave.');
                 }
-                mask.hide();
+
+                var run = function (delay) {
+                    Ext.create('Ext.util.DelayedTask', function () {
+                       // console.log('run');
+                        run(delay);
+                        mask.hide();
+                    }).delay(delay);
+                };
+
+                run(2000);
+
+
+
+
             },
             failure: function () {
                 mask.hide();
@@ -329,10 +342,11 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
 
     },
 
-    templateUIUpdateSave:function(attID, type, templateContent, mask){
+    templateUIUpdateSave:function(attID, type, templateContent, maskText){
         var me = this;
         var status = true;
-
+        var mask = AIDRFMFunctions.getMask(true, maskText);
+        mask.show();
         Ext.Ajax.request({
             url: BASE_URL + '/protected/uitemplate/updateTemplate.action',
             method: 'POST',
@@ -352,17 +366,27 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     me.mainComponent.uiTemplate.setReadOnly(true);
                     me.mainComponent.templateSaveButton.setText('Edit',false);
                 } else {
-                    AIDRFMFunctions.setAlert("Error", 'Error while updating templateSave.');
+                    mask.hide();
+                    AIDRFMFunctions.setAlert("Error",  'Requst failed : ' + maskText );
                 }
                 //mask.hide();
-                AIDRFMFunctions.setAlert("Info", mask);
+               // AIDRFMFunctions.setAlert("Info", mask);
+                var run = function (delay) {
+                    Ext.create('Ext.util.DelayedTask', function () {
+                      //  console.log('run');
+                        run(delay);
+                        mask.hide();
+                    }).delay(delay);
+                };
+
+                run(2000);
 
 
             },
             failure: function () {
-               // mask.hide();
-                mask = " Requst failed : " + mask ;
-                AIDRFMFunctions.setAlert("Error", mask);
+                mask.hide();
+                maskText = " Requst failed : " + maskText ;
+                AIDRFMFunctions.setAlert("Error", maskText);
             }
         });
 
@@ -490,7 +514,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                                             }
                                         }
                                     }
-                                    console.log('svar: ' + sText);
+                                   // console.log('svar: ' + sText);
                                     if(sVar!=''){
                                         sText = 'Being a Digital Humanitarian is as easy and fast as a click of the mouse. If you want to keep track of your progress and points, make sure to login! This Clicker will simply load a tweet and ask you to click on the category that best describes the tweet<br/><br/>';
                                         sText = sText + sVar;
@@ -500,7 +524,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                                     }
 
                                 } catch (e) {
-                                    console.log("resp:" + resp);
+                                    //console.log("resp:" + resp);
                                 }
                             } else {
 
@@ -566,7 +590,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
 
 
                         } catch (e) {
-                            console.log("resp:" + resp);
+                            //console.log("resp:" + resp);
                         }
                     } else {
 
@@ -619,7 +643,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                             }
 
                         } catch (e) {
-                            console.log("resp:" + resp);
+                            //console.log("resp:" + resp);
                         }
                     } else {
 
@@ -691,7 +715,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                             if(!typeSevenFound){me.loadUITemplateDisplayDefaultComponent(6)}
                         }
                     } catch (e) {
-                        console.log("resp:" + resp);
+                        //console.log("resp:" + resp);
                         //me.mainComponent.pyBossaLink.setText('<div class="gray-backgrpund"><i>Initializing crowdsourcing task. Please come back in a few minutes.</i></div>', false);
                     }
                 } else {
@@ -799,7 +823,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
 
 
                     } catch (e) {
-                        console.log("resp:" + resp);
+                        //console.log("resp:" + resp);
                     }
                 }
                 else {}
@@ -852,7 +876,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                         }
 
                     } catch (e) {
-                        console.log("resp:" + resp);
+                        //console.log("resp:" + resp);
                     }
                 }
                 else {}
@@ -900,7 +924,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                         }
 
                     } catch (e) {
-                        console.log("resp:" + resp);
+                       // console.log("resp:" + resp);
                         //me.mainComponent.pyBossaLink.setText('<div class="gray-backgrpund"><i>Initializing crowdsourcing task. Please come back in a few minutes.</i></div>', false);
                     }
                 } else {
