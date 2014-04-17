@@ -467,7 +467,8 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             items: [
                 {   boxLabel: '<span class="styled-text"><b>Plain (Default)</b></span>&nbsp;<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/defaultSkin.png" class="skinPane"></span>',
                     name: 'skintype',
-                    inputValue: 0
+                    inputValue: 0,
+                    checked   : true
                 },
                 {   boxLabel: '<span class="styled-text"><b>Mobile phone and hand</b></span>&nbsp;<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/iphoneSkin.png" class="skinPane"></span>',
                     name: 'skintype',

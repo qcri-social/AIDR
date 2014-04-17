@@ -322,13 +322,13 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
 
                 var run = function (delay) {
                     Ext.create('Ext.util.DelayedTask', function () {
-                        console.log('run');
+                       // console.log('run');
                         run(delay);
                         mask.hide();
                     }).delay(delay);
                 };
 
-                run(4000);
+                run(2000);
 
 
 
@@ -373,13 +373,13 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                // AIDRFMFunctions.setAlert("Info", mask);
                 var run = function (delay) {
                     Ext.create('Ext.util.DelayedTask', function () {
-                        console.log('run');
+                      //  console.log('run');
                         run(delay);
                         mask.hide();
                     }).delay(delay);
                 };
 
-                run(4000);
+                run(2000);
 
 
             },
@@ -514,7 +514,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                                             }
                                         }
                                     }
-                                    console.log('svar: ' + sText);
+                                   // console.log('svar: ' + sText);
                                     if(sVar!=''){
                                         sText = 'Being a Digital Humanitarian is as easy and fast as a click of the mouse. If you want to keep track of your progress and points, make sure to login! This Clicker will simply load a tweet and ask you to click on the category that best describes the tweet<br/><br/>';
                                         sText = sText + sVar;
@@ -524,7 +524,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                                     }
 
                                 } catch (e) {
-                                    console.log("resp:" + resp);
+                                    //console.log("resp:" + resp);
                                 }
                             } else {
 
@@ -590,7 +590,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
 
 
                         } catch (e) {
-                            console.log("resp:" + resp);
+                            //console.log("resp:" + resp);
                         }
                     } else {
 
@@ -643,7 +643,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                             }
 
                         } catch (e) {
-                            console.log("resp:" + resp);
+                            //console.log("resp:" + resp);
                         }
                     } else {
 
@@ -715,7 +715,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                             if(!typeSevenFound){me.loadUITemplateDisplayDefaultComponent(6)}
                         }
                     } catch (e) {
-                        console.log("resp:" + resp);
+                        //console.log("resp:" + resp);
                         //me.mainComponent.pyBossaLink.setText('<div class="gray-backgrpund"><i>Initializing crowdsourcing task. Please come back in a few minutes.</i></div>', false);
                     }
                 } else {
@@ -823,7 +823,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
 
 
                     } catch (e) {
-                        console.log("resp:" + resp);
+                        //console.log("resp:" + resp);
                     }
                 }
                 else {}
@@ -876,7 +876,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                         }
 
                     } catch (e) {
-                        console.log("resp:" + resp);
+                        //console.log("resp:" + resp);
                     }
                 }
                 else {}
@@ -924,7 +924,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                         }
 
                     } catch (e) {
-                        console.log("resp:" + resp);
+                       // console.log("resp:" + resp);
                         //me.mainComponent.pyBossaLink.setText('<div class="gray-backgrpund"><i>Initializing crowdsourcing task. Please come back in a few minutes.</i></div>', false);
                     }
                 } else {
