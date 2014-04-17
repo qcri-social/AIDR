@@ -465,11 +465,11 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             width: 1000,
             height:440,
             items: [
-                {   boxLabel: '<span class="styled-text"><b>Default UI Skin</b></span>&nbsp;<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/defaultSkin.png" class="skinPane"></span>',
+                {   boxLabel: '<span class="styled-text"><b>Plain (Default)</b></span>&nbsp;<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/defaultSkin.png" class="skinPane"></span>',
                     name: 'skintype',
                     inputValue: 0
                 },
-                {   boxLabel: '<span class="styled-text"><b>iPhone UI Skin</b></span>&nbsp;<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/iphoneSkin.png" class="skinPane"></span>',
+                {   boxLabel: '<span class="styled-text"><b>Mobile phone and hand</b></span>&nbsp;<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/iphoneSkin.png" class="skinPane"></span>',
                     name: 'skintype',
                     inputValue: 1}
             ]
@@ -925,19 +925,20 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                 activeOnTop: true
             },
             items: [
+
                 {
-                    title:'Custom MicroMappers App UI Skin',
+                    title:'Custom Public Page for Volunteers',
+                    items:[this.uiLandingPageBlock]
+
+                },
+                {
+                    title:'Custom Skin',
                     items:[this.uiSkinTypeBlock]
 
                 }
                 ,
                 {
-                    title:'Custom Public Landing Page',
-                    items:[this.uiLandingPageBlock]
-
-                },
-                {
-                    title:'Custom MicroMappers App UI Tutorial & Welcome Page',
+                    title:'Custom Tutorial and Welcome Message',
                     items:[this.pybossaUIBlock]
                 }
 
@@ -1014,7 +1015,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                     ]
                 },
                 {
-                    title: 'Customized MicroMappers UI',
+                    title: 'Customize MicroMappers',
                     padding: '10 0 0 0',
                     items: this.UIBlock
                 },
