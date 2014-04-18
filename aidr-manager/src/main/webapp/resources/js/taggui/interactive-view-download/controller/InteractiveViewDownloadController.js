@@ -314,6 +314,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
             params: {
                 id: CRISIS_ID
 //                id: 117
+//                id: 71
             },
             headers: {
                 'Accept': 'application/json'
