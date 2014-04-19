@@ -52,7 +52,7 @@ The following fields are mandatory:
 
 Name: a name for your collection, typically the name of a crisis/disaster, e.g. "Typhoon Haiyan"
 
-Code: a machine-readable code for your collection, which allows AIDR to uniquely identify your collection. A suggested code will appear in the field which you can use or change to suit your requirements. Conventionally a code in the format Year-Month-Name is used for this code. It is important to remember that this field can not be edited later.
+Short name: Collection code consists of alpha-numeric shortcode name to a collection. Space are not allowed. For example, Sandy2012. This is a machine-readable code for your collection that allows AIDR to uniquely identify your collection. A suggested code will appear in the field which you can use or change to suit your requirements. Conventionally a code in the format Year-Month-Name is used for this code. It is important to remember that this field can not be edited later.
 
 Keywords: comma-separated keywords to filter the Twitter stream. You can specify up to 400 keywords in this field.
 
@@ -71,28 +71,23 @@ Queries with or without hashtags:
 If you don't include “#”, you also match hashtags ("bridge" matches "#bridge")
 If you do include “#”, you only match hashtags ("#bridge" does not match "bridge")
 
+Language: filters results only by the specified languages. You can chose more than one language. Although not mandatory, specifying a language or languages is recommended if you intend to use the automatic tagger.
+
+Automatically stop after: Collection duration specifies the length in days after which the collection will be automatically stopped. 
 
 There are also some optional fields. They are:
 
-Language: 
-filters results only by the specified languages. You can chose more than one language. Although not mandatory, specifying a language or languages is recommended if you intend to use the automatic tagger.
-Geographical regions: 
-comma-separated pairs of latitude or longitude. If you specify a geographical region, all messages from within the region will be collected. This is independent of whether or not they contain the keywords.
+Geographical regions: comma-separated pairs of latitude or longitude. If you specify a geographical region, all messages from within the region will be collected. This is independent of whether or not they contain the keywords.
+
 Follow specific users: comma-separated list of twitter user IDs to be followed.
 
-A geographical boundary, or both A filter based on keywords and geographical coordinates includes tweets that either match the keywords or fall within the geographical bounding box.
-For the geographical boundary, one or several regions can be specified. Each one should be indicated by a rectangle in coordinate space.
-The following website can help you determine these coordinates: http://boundingbox.klokantech.com/
-
+A geographical boundary, or both a filter based on keywords and geographical coordinates, includes tweets that either match the keywords or fall within the geographical bounding box. When setting a geographical boundary, one or more regions can be specified. Each region is determined establishing a rectangle over the determined space on the map. To do this, click the link (http://boundingbox.klokantech.com/) below the geographical regions drop-down. On the BoundingBox page, Click on the area of the map you want to cover and expand the box that appears. After you have the box drawn over the region you wish to collect tweets from, click the drop-down on the bottom left-hand corner of the page under “Copy & Paste” [Figure 5]. This will convert the coordinates to a CSV format. Once in a CSV format, paste the link into the geographical regions section of the form.
 
 # 2.2. Starting and stopping a collection
 
-Once you create a collection, you need to start it. Do this by click on the "Start" button next to the collection. You can monitor the progress of a collection by clicking on its name on the "My Collections" page and looking at the number of downloaded items and the latest downloaded item. 
+Once you create a collection, you need to start it. Do this by click on the "Start" button next to the collection [Figure 6]. You can monitor the progress of a collection by clicking on its name on the "My Collections" page and looking at the number of downloaded items and the latest downloaded item.
 
-You can click on the "Refresh" button on the upper-right corner of that page to view up-to-date information.
-
-To stop a collection, click on the "Stop" button next to it. Note that currently only one collection per user is allowed. If you start a new collection, you need to stop the currently-running ones.
-
+You can click on the "Refresh" button on the upper-right corner of that page to view up-to-date information. To stop a collection, click on the "Stop" button next to it. Note that you can currently only run one collection at a time. If you start a new collection, you need to stop the currently-running ones.
 
 # 3. Automatically tagging data
 
@@ -100,18 +95,17 @@ Automatic taggers require training examples, which are items that have been clas
 
 # 3.1. Starting the automatic tagger
 
-From the collection details page, click on "Enable Tagger" or "Go To Tagger" button if the tagger is already enabled [Figure 7] . A tagger is a set of classifiers. Each classifier corresponds to one way of sorting out tweets into user-defined categories. Before enabling automatic tagging, you must chose a crisis type to define your collection [Figure 8]. 
+From the collection details page, click on "Enable Tagger" or "Go To Tagger" button if the tagger is already enabled [Figure 7]. A tagger is a set of classifiers. Each classifier corresponds to one way of sorting out tweets into user-defined categories. Before enabling automatic tagging, you must chose a crisis type to define your collection [Figure 8]. 
 
-To start the tagger, you must then add a classifier to it. Click on the "Add a new classifier" button under the collection you wish to start. A list of standard classifiers that are useful in disaster scenarios will appear [Figure 9]. You can also create your own one, by specifying the different labels in that classifier [Figure 10]. You will chose the classier based on what types of tweets you are interested in. Click on the "Add" button next to a classifier to add it. We recommend you to add only one classifier at the beginning -- it will be easier to handle for you.
+To start the tagger, you must then add a classifier to it. Click on the "Add a new classifier" button under the collection you wish to start. A list of standard classifiers that are useful in disaster scenarios will appear [Figure 9]. You can also create your own one, by specifying the different labels in that classifier [Figure 10]. You will chose the classier based on what types of tweets you are interested in. Click on the "Add" button next to a classifier to add it. We recommend you to add only one classifier at the beginning -- it will be easier for you to handle.
 
 # 3.2. Collecting training examples
 
-At this stage, you can copy-paste the "Public link for volunteers" and share it with your organization or volunteers. All users with the link will then be able to apply training labels for your tagger. If you do not have others to tag the tweets, then proceed with the training examples yourself.
+At this stage, you can copy-paste the "Public link for volunteers" and share it with your organization or volunteers. All users with the link will then be able to apply training labels for your tagger. If you do not have others to tag the tweets, then proceed with the training examples yourself. If your collection has not acquired enough tweets for the training, try again in a few minutes. 
 
- To do this, click on "Manage Training Examples" [Figure 11]. On the next screen, click "Add training data." If your collection has not acquired enough tweets for the training, this screen below will show. After a few minutes, try again. 
+To complete the training data, click on "Go to human-tagged items" [Figure 11]. On the next screen, click "Tag more items" [Figure 12].
 
-Once you click to add training data, you will begin to label training examples. To complete the training data, you will be asked to indicate the proper label for tweets gathered as part of your collection. The labels are determined by the classifier you chose for your collection based on what type of information you are looking to collect from the tweets [Figure 12]. Again, these training examples provide the basis for your automatic tagger.
-
+Once you click to tag more items, you will begin to label training examples. To complete the training data, you will be asked to indicate the proper label for tweets gathered as part of your collection. The labels are determined by the classifier you chose for your collection based on what type of information you are looking to collect from the tweets [Figure 13]. Again, these training examples provide the basis for your automatic tagger.
 
 # 3.3. Monitoring the automatic tagger
 
