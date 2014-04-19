@@ -38,15 +38,29 @@ Once you have signed in, you will receive a prompt asking you to authorize AIDR 
 
 Every time you log into AIDR you will have to authorize the platform to use your account. 
 
+![](http://i.imgur.com/pK2IJN9.png)
+
+Figure 1: Logging in with Twitter
+
+![](http://i.imgur.com/WNXY3Pt.png)
+
+Figure 2: Authorizing AIDR
 
 # 2. Collecting data 
 
 After authorizing AIDR to access you account, you will be redirected back to the application. This will bring you to your “My Collections” page. To start, click on "Create a New Collection" [Figure 3].
 
+![](http://i.imgur.com/iSTqOrP.png)
+
+Figure 3: Create a new collection
 
 # 2.1. Creating a collection
 
 The "Create New Collection" form appears [Figure 4].
+
+![](http://i.imgur.com/JUfvcOm.png)
+
+Figure 4: Create a new collection
 
 The following fields are mandatory:
 
@@ -83,11 +97,19 @@ Follow specific users: comma-separated list of twitter user IDs to be followed.
 
 A geographical boundary, or both a filter based on keywords and geographical coordinates, includes tweets that either match the keywords or fall within the geographical bounding box. When setting a geographical boundary, one or more regions can be specified. Each region is determined establishing a rectangle over the determined space on the map. To do this, click the link (http://boundingbox.klokantech.com/) below the geographical regions drop-down. On the BoundingBox page, Click on the area of the map you want to cover and expand the box that appears. After you have the box drawn over the region you wish to collect tweets from, click the drop-down on the bottom left-hand corner of the page under “Copy & Paste” [Figure 5]. This will convert the coordinates to a CSV format. Once in a CSV format, paste the link into the geographical regions section of the form.
 
+![](http://i.imgur.com/SPDNcaH.png)
+
+Figure 5: Convert coordinates to CSV format 
+
 # 2.2. Starting and stopping a collection
 
 Once you create a collection, you need to start it. Do this by click on the "Start" button next to the collection [Figure 6]. You can monitor the progress of a collection by clicking on its name on the "My Collections" page and looking at the number of downloaded items and the latest downloaded item.
 
 You can click on the "Refresh" button on the upper-right corner of that page to view up-to-date information. To stop a collection, click on the "Stop" button next to it. Note that you can currently only run one collection at a time. If you start a new collection, you need to stop the currently-running ones.
+
+![](http://i.imgur.com/D66K2zA.png)
+
+Figure 6: Starting a collection
 
 # 3. Automatically tagging data
 
@@ -97,7 +119,23 @@ Automatic taggers require training examples, which are items that have been clas
 
 From the collection details page, click on "Enable Tagger" or "Go To Tagger" button if the tagger is already enabled [Figure 7]. A tagger is a set of classifiers. Each classifier corresponds to one way of sorting out tweets into user-defined categories. Before enabling automatic tagging, you must chose a crisis type to define your collection [Figure 8]. 
 
-To start the tagger, you must then add a classifier to it. Click on the "Add a new classifier" button under the collection you wish to start. A list of standard classifiers that are useful in disaster scenarios will appear [Figure 9]. You can also create your own one, by specifying the different labels in that classifier [Figure 10]. You will chose the classier based on what types of tweets you are interested in. Click on the "Add" button next to a classifier to add it. We recommend you to add only one classifier at the beginning -- it will be easier for you to handle.
+![](http://i.imgur.com/bElpH8e.png)
+
+Figure 7: Enable Tagger
+
+![](http://i.imgur.com/N6UTQZT.png)
+
+Figure 8: Choose a crisis type
+
+To start the tagger, you must then add a classifier to it. Click on the "Add a new classifier" button under the collection you wish to start. A list of standard classifiers that are useful in disaster scenarios will appear [Figure 9]. You can also create your own one, by specifying the different labels in that classifier [Figure 10]. You will chose the classifier based on what types of tweets you are interested in. Click on the "Add" button next to a classifier to add it. We recommend that you only add one classifier at the beginning -- it will be easier for you to handle.
+
+![](http://i.imgur.com/JSxjukW.png)
+
+Figure 9: Adding a standard classifier
+
+![](http://i.imgur.com/Am00LE1.png)
+
+Figure 10: Adding a custom classifier
 
 # 3.2. Collecting training examples
 
@@ -105,7 +143,19 @@ At this stage, you can copy-paste the "Public link for volunteers" and share it 
 
 To complete the training data, click on "Go to human-tagged items" [Figure 11]. On the next screen, click "Tag more items" [Figure 12].
 
+![](http://i.imgur.com/AWSyOTs.png)
+
+Figure 11: Manage training examples
+
+![](http://i.imgur.com/u0PbbSZ.png)
+
+Figure 12: Start the training data
+
 Once you click to tag more items, you will begin to label training examples. To complete the training data, you will be asked to indicate the proper label for tweets gathered as part of your collection. The labels are determined by the classifier you chose for your collection based on what type of information you are looking to collect from the tweets [Figure 13]. Again, these training examples provide the basis for your automatic tagger.
+
+![](http://i.imgur.com/q2gMu98.png)
+
+Figure 13: Label training examples
 
 # 3.3. Monitoring the automatic tagger
 
