@@ -30,7 +30,7 @@ The Tagger displays a list of automatically tagged tweets updated in real-time. 
 This manual covers the working procedures for an operator of AIDR using Twitter for collection. The following section contains step-by-step instructions for using the platform.
 
 # 1. Logging in
-![Figure 1. AIDR Logging](https://dl.dropboxusercontent.com/u/7614003/aidr-login.png)
+
 To enter AIDR, go to http://aidr.qcri.org/ -- you will be asked to log-in using your Twitter credentials [Figure 1]. 
 You need a Twitter account to be able to use AIDR.
 
