@@ -90,7 +90,7 @@ Ext.define('TAGGUI.interactive-view-download.view.SingleFilterPanel', {
         this.dateField = Ext.create('Ext.form.field.Date', {
             padding: '0 0 0 15',
             hidden: true,
-            format: 'Y-m-d T',
+            format: 'Y-m-d',
             width: 150,
             listeners: {
                 select: function (cmp, value) {
@@ -125,12 +125,8 @@ Ext.define('TAGGUI.interactive-view-download.view.SingleFilterPanel', {
             padding: '0 0 0 15',
             width: 70,
             store: this.confidenceStore,
-            fieldStyle: "text-align:right;",
             hidden: true,
             value: 0.7,
-            listConfig: {
-                cls: 'align-right'
-            },
             listeners: {
                 select: function (cmp, selectedValues) {
                     me.onConfidenceComboSelect(cmp, selectedValues);

@@ -148,7 +148,7 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
         this.tweetsStore = Ext.create('Ext.data.Store', {
             pageSize: 10,
             storeId: 'tweetsStore',
-            fields: ['text', 'attribute_name', 'label_name', 'confidence']
+            fields: ['text', 'attribute_name', 'label_name', 'confidence', 'createdAt']
         });
 
         this.tweetsGrid = Ext.create('Ext.grid.Panel', {
@@ -161,13 +161,20 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
                     xtype: 'gridcolumn', dataIndex: 'text', text: 'Tweet', flex: 1
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'attribute_name', text: 'Classifier', width: 150
+                    xtype: 'gridcolumn', dataIndex: 'createdAt', text: 'Created at', width: 175
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'label_name', text: 'Tag', width: 150
+                    xtype: 'gridcolumn', dataIndex: 'attribute_name', text: 'Classifier', width: 130
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'confidence', text: 'Confidence', width: 150
+                    xtype: 'gridcolumn', dataIndex: 'label_name', text: 'Tag', width: 130
+                },
+                {
+                    xtype: 'gridcolumn', dataIndex: 'confidence', text: 'Confidence', width: 95, align: "right",
+                    renderer: function (value, meta, record) {
+                        meta.style = "float:right; padding-top: 9px;";
+                        return value;
+                    }
                 }
             ]
         });
