@@ -109,9 +109,7 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
                         totalModel.classifiedDocumentCount = totalMessages.format() + ' total';
                         totalModel.trainingDocumentsCount = totalExamples.format() + ' total';
 
-//                        old calculation, now we get this value from ModelFamily.auc
-//                        totalModel.labelAuc = (totalAUC / count).toFixed(2) + ' avg';
-                        totalModel.labelAuc = AIDRFMFunctions.getAucNumberAsPercentageWithColors(MODEL_AUC);
+                        totalModel.labelAuc = MODEL_AUC;
 
                         totalModel.labelPrecision = (totalPrecision / count).toFixed(2) + ' avg';
                         totalModel.labelRecall = (totalRecall / count).toFixed(2) + ' avg';

@@ -140,6 +140,11 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                 row.attribute_name = r.nominal_labels[0].attribute_name ? r.nominal_labels[0].attribute_name : '';
                 row.label_name = r.nominal_labels[0].label_name ? r.nominal_labels[0].label_name : '';
                 row.confidence = r.nominal_labels[0].confidence ? (r.nominal_labels[0].confidence * 100) + '%' : '0%';
+                if (r.created_at) {
+                    row.createdAt = moment(r.created_at).format("YYYY-MM-DD HH:mm Z");
+                } else {
+                    row.createdAt = "<span class='na-text'>Not specified</span>";
+                }
                 data.push(row);
             }
         });
@@ -314,6 +319,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
             params: {
                 id: CRISIS_ID
 //                id: 117
+//                id: 71
             },
             headers: {
                 'Accept': 'application/json'

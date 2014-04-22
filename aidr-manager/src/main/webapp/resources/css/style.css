@@ -745,3 +745,7 @@ End of the tab panel styles
     text-align: left;
     width: 410px;
 }
+
+.align-right {
+    text-align: right;
+}
