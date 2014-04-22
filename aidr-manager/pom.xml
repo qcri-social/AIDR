@@ -141,14 +141,14 @@
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
 			<version>2.0</version>
-			<scope>provided</scope> 
+			<scope>compile</scope> 
 		</dependency>
 		<!-- if you are using Jersey client specific features -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.1.0</version>
-			<scope>provided</scope> 
+			<scope>compile</scope> 
 		</dependency>
 
 
@@ -157,15 +157,13 @@
 			<artifactId>jersey-container-servlet</artifactId>
 			<version>2.5.1</version>
 
-			<scope>provided</scope>
-        </dependency>
-		
+		</dependency>
+
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
 			<version>2.5.1</version>
 
-			<scope>provided</scope>
 		</dependency>
 
 		<!-- log4j -->
@@ -196,25 +194,25 @@
 		<!-- junit -->
 		<!-- <dependency> <groupId>junit</groupId> <artifactId>junit</artifactId> 
 			<version>3.8.1</version> <scope>test</scope> </dependency> -->
-		
+
         <dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
 			<version>2.5.1</version>
-			<scope>provided</scope> 
+			<scope>compile</scope> 
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-server</artifactId>
 			<version>2.5.1</version>
-			<scope>provided</scope> 
+			<scope>compile</scope> 
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-moxy</artifactId>
 			<version>2.5.1</version>
-            <scope>provided</scope>
-			
+            <scope>compile</scope>
+
 		</dependency>
                 
 	</dependencies>
