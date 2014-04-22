@@ -8,15 +8,30 @@ import qa.qcri.aidr.task.entities.Document;
 
 /**
  *
- * @author Imran
+ * @author Koushik
  */
 @Local
 public interface DocumentFacade {
     
-    public List<Document> getAllDocuments();
-    public Document getDocumentByID(long id);
-    public List<Document> getAllLabeledDocumentbyCrisisID(long crisisID, long attributeID);
+    public Document getDocumentByID(Long documentID);
+    
+    public List<Document> getAllDocumentsByCrisisID(Long crisisID);
+    public List<Document> getAllLabeledDocumentsbyCrisisID(Long crisisID);
+    public List<Document> getAllUnlabeledDocumentsbyCrisisID(Long crisisID);
+    
+    public int getAllDocumentsCountByCrisisID(Long crisisID);
+    public int getAllLabeledDocumentsCountbyCrisisID(Long crisisID);
+    public int getAllUnlabeledDocumentsCountbyCrisisID(Long crisisID);
+    
     public void deleteDocument(Long documentID);
-    public void removeTrainingExample(Long documentID);
+    public void deleteDocumentCollectionByCrisisID(Long crisisID);
+    public void deleteDocumentCollection(List<Document> documentCollection);
+    
+    public void updateDocument(Document document);
+    public void updateDocumentCollection(List<Document> documentCollection);
+    
+    public void saveDocument(Document document);
+    public void saveDocumentCollection(List<Document> documentCollection);
+    
 
 }

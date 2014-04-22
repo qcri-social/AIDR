@@ -11,6 +11,6 @@ import qa.qcri.aidr.task.entities.TaskAnswer;
  * Time: 7:34 AM
  * To change this template use File | Settings | File Templates.
  */
-public interface TaskAnswerDao {
+public interface TaskAnswerService{
     void insertTaskAnswer(TaskAnswer taskAnswer);
 }

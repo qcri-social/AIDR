@@ -11,7 +11,7 @@ import qa.qcri.aidr.task.entities.DocumentNominalLabel;
  * Time: 5:44 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface DocumentNominalLabelDao {
+public interface DocumentNominalLabelService {
 
     void saveDocumentNominalLabel(DocumentNominalLabel documentNominalLabel);
     boolean foundDuplicate(DocumentNominalLabel documentNominalLabel);

@@ -12,7 +12,7 @@ import qa.qcri.aidr.task.entities.Crisis;
  * Time: 7:57 AM
  * To change this template use File | Settings | File Templates.
  */
-    public interface CrisisDao extends AbstractDao<Crisis, String> {
+    public interface CrisisService extends AbstractTaskManagerService<Crisis, String> {
 
         Crisis findByCrisisID(Long id);
         List<Crisis> findByCriteria(String columnName, Long value);

@@ -9,7 +9,7 @@ import qa.qcri.aidr.task.entities.Document;
 import qa.qcri.aidr.task.entities.TaskAssignment;
 
 
-public interface TaskAssignmentDao extends AbstractDao<TaskAssignment, String>  {
+public interface TaskAssignmentService extends AbstractTaskManagerService<TaskAssignment, String>  {
 
     void insertTaskAssignment(List<Document> taskBuffer, Long userID);
     void insertOneTaskAssignment(Long documentID, Long userID);

@@ -1,12 +1,24 @@
-package qa.qcri.aidr.predictui.facade.imp;
+package qa.qcri.aidr.task.facade.imp;
 
-import qa.qcri.aidr.predictui.facade.*;
 import java.util.List;
+
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
-import qa.qcri.aidr.predictui.entities.Document;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
+
+import qa.qcri.aidr.task.entities.Document;
+import qa.qcri.aidr.task.facade.DocumentFacade;
+
 
 /**
  *
@@ -15,11 +27,12 @@ import qa.qcri.aidr.predictui.entities.Document;
 @Stateless
 public class DocumentFacadeImp implements DocumentFacade{
     
-    @PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
+    @PersistenceContext(unitName = "qa.qcri.aidr.taskmanager-EJBS") org.hibernate.Session session;
+    @PersistenceUnit(unitName = "qa.qcri.aidr.taskmanager-EJBS") SessionFactory sessionFactory;
     private EntityManager em;
-
+	
     public List<Document> getAllDocuments() {
-        Query query = em.createNamedQuery("Document.findAll", Document.class);
+    	Query query = em.createNamedQuery("Document.findAll", Document.class);
         List<Document> documentList = query.getResultList();
         return documentList;
         
@@ -50,14 +63,92 @@ public class DocumentFacadeImp implements DocumentFacade{
         }
     }
 
-    @Override
-    public void removeTrainingExample(Long documentID) {
-        Document document = em.find(Document.class, documentID);
-        if (document != null) {
-            document = em.merge(document);
-            document.setHasHumanLabels(false);
-            document.setNominalLabelCollection(null);
-        }
-    }
+
+	@Override
+	public List<Document> getAllLabeledDocumentsbyCrisisID(Long crisisID) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Document> getAllUnlabeledDocumentsbyCrisisID(Long crisisID) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void deleteDocumentCollectionByCrisisID(Long crisisID) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteDocumentCollection(List<Document> documentCollection) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Document getDocumentByID(Long documentID) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Document> getAllDocumentsByCrisisID(Long crisisID) {
+		Session session = (Session) em.getDelegate();
+		Criteria criteria = session.createCriteria(Document.class);
+        criteria.add(Restrictions.eq("crisisID", crisisID));
+        return (List<Document>) criteria.list();
+	
+		
+		//CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        //CriteriaQuery<Document> criteriaQuery = criteriaBuilder.createQuery(Document.class);
+        //Root<Document> doc = criteriaQuery.from(Document.class);
+        //criteriaQuery.where(criteriaBuilder.equal(, y))
+        //criteriaQuery(Restrictions.eq("crisisID", crisisID));
+	}
+
+	@Override
+	public int getAllDocumentsCountByCrisisID(Long crisisID) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getAllLabeledDocumentsCountbyCrisisID(Long crisisID) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getAllUnlabeledDocumentsCountbyCrisisID(Long crisisID) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void updateDocument(Document document) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateDocumentCollection(List<Document> documentCollection) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void saveDocument(Document document) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void saveDocumentCollection(List<Document> documentCollection) {
+		// TODO Auto-generated method stub
+		
+	}
     
 }

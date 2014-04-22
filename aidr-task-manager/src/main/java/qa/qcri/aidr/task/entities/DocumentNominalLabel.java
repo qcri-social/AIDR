@@ -2,7 +2,7 @@ package qa.qcri.aidr.task.entities;
 
 import javax.persistence.*;
 
-import qa.qcri.aidr.task.entities.keychain.DocumentNominalLabelKey;
+
 
 import java.io.Serializable;
 import java.util.Date;
@@ -15,7 +15,7 @@ import java.util.Date;
  * Time: 5:32 PM
  * To change this template use File | Settings | File Templates.
  */
-@Entity @IdClass(DocumentNominalLabelKey.class)
+@Entity 	//@IdClass(DocumentNominalLabelKey.class)
 @Table(catalog = "aidr_predict",name = "document_nominal_label")
 public class DocumentNominalLabel implements Serializable {
 
@@ -57,7 +57,8 @@ public class DocumentNominalLabel implements Serializable {
     @Column(name = "documentID")
     private Long documentID;
 
-    @Id
+    
+    //@Id
     @Column (name = "nominalLabelID", nullable = false)
     private Long nominalLabelID;
 
