@@ -94,6 +94,26 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
+    public List<Document> getDocumentForOneTask(Long crisisID, int count, String userName) {
+        logger.info("getDocumentForOneTask is called");
+        List<Document> documents = null;
+        Users users = usersService.findUserByName(userName);
+
+        if(users != null){
+            documents =  this.getAvailableDocument(crisisID, count) ;
+            logger.info("documents : " + documents.size());
+            if(documents != null && documents.size() > 0){
+                taskAssignmentService.addToTaskAssignment(documents, users.getUserID());
+            }
+
+        }
+
+        return documents;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+
+    @Override
     public List<TaskBufferJsonModel> findOneDocumentForTaskByCririsID(Document document, Long crisisID) {
         List<TaskBufferJsonModel> jsonModelList = new ArrayList<TaskBufferJsonModel>();
         if(document != null){

@@ -4,12 +4,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import qa.qcri.aidr.trainer.api.service.TaskAssignmentService;
+import qa.qcri.aidr.trainer.api.store.CodeLookUp;
 import qa.qcri.aidr.trainer.api.store.StatusCodeType;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -34,6 +32,24 @@ public class TaskAssignmentController {
     @Path("/get/searchByUserID/{userID}")
     public Integer getCrisisByID(@PathParam("userID") String userID){
         return  taskAssignmentService.getPendingTaskCount(new Long(userID));
+    }
+
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/revert/id/{userID}/{documentID}")
+    public Response revertTaskAssignment(@PathParam("userID") Long userID, @PathParam("documentID") Long documentID){
+        taskAssignmentService.revertTaskAssignment(documentID, userID);
+        return Response.status(CodeLookUp.APP_STATUS_ALIVE).entity(StatusCodeType.POST_COMPLETED).build();
+    }
+
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/revert/name/{userName}/{documentID}")
+    public Response revertTaskAssignmentByUserName(@PathParam("userName") String userName, @PathParam("documentID") Long documentID){
+
+        taskAssignmentService.revertTaskAssignmentByUserName(documentID, userName);
+
+        return Response.status(CodeLookUp.APP_STATUS_ALIVE).entity(StatusCodeType.POST_COMPLETED).build();
     }
 
 }

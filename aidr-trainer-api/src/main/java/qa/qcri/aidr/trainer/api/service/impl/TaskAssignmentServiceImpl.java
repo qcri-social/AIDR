@@ -27,10 +27,11 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
 
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
-    public void revertTaskAssignment(Long documentID, String userName) {
+    public void revertTaskAssignmentByUserName(Long documentID, String userName) {
         Users users = usersDao.findUserByName(userName);
         if(users!= null){
             Long userID = users.getUserID();
+            System.out.println("userID : " + userID);
             taskAssignmentDao.undoTaskAssignment(documentID,userID);
         }
     }

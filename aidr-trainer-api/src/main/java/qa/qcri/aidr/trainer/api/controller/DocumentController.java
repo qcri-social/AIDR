@@ -49,14 +49,17 @@ public class DocumentController {
                                                               @PathParam("userName") String userName,
                                                               @PathParam("maxresult") String maxresult){
 
-        logger.debug("getOneTaskBufferToAssign..: " + crisisID + " -" +  userName + " -" +  maxresult );
         Document document = null;
         Long id = new Long(crisisID);
         if(userName != null){
-            List<Document> documents =  documentService.getDocumentForTask(id,Integer.valueOf(maxresult),userName )  ;
-            if(documents.size() > 0){
-                document = documents.get(0);
+            List<Document> documents =  documentService.getDocumentForOneTask(id,Integer.valueOf(maxresult),userName )  ;
+
+            if(documents!= null){
+                if(documents.size() > 0){
+                    document = documents.get(0);
+                }
             }
+
         }
 
         return documentService.findOneDocumentForTaskByCririsID(document, id);

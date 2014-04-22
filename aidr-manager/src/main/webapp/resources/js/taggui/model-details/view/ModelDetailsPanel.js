@@ -79,7 +79,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             '<tpl if="xindex == xcount">' +
                 '<div class="styled-text-17">Summary:</div>',
             '</tpl>',
-            
+
             '<div>Human-tagged items:</div>',
             '<div>Machine-tagged items:</div>',
             '<div>Precision:</div>',
@@ -105,7 +105,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             '<div>{[this.getNumber(values.classifiedDocumentCount)]}</div>',
             '<div>{[this.getNumber(values.labelPrecision)]}</div>',
             '<div>{[this.getNumber(values.labelRecall)]}</div>',
-            '<div>{[this.getAUC(values.labelAuc))]}</div>',
+            '<div>{[this.getAUC(values.labelAuc)]}</div>',
 
             '</div>',
 
@@ -122,7 +122,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
                     return r ? r : 0;
                 },
                 getAUC: function (r) {
-                    return r ? (r * 100).toFixed(2) + '%' : '0.00%';
+                    return AIDRFMFunctions.getAucNumberAsPercentageWithColors(r);
                 }
             }
         );

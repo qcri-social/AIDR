@@ -105,12 +105,6 @@ Ext.define('TAGGUI.interactive-view-download.view.SingleFilterPanel', {
             hidden: true
         });
 
-        this.confidenceHint = Ext.create('Ext.form.Label', {
-            padding: '3 0 0 15',
-            html: 'with confidence at least',
-            hidden: true
-        });
-
         this.confidenceStore = Ext.create('Ext.data.Store', {
             fields: ['val', 'label'],
             data: [
@@ -129,7 +123,7 @@ Ext.define('TAGGUI.interactive-view-download.view.SingleFilterPanel', {
             valueField: 'val',
             displayField: 'label',
             padding: '0 0 0 15',
-            width: 60,
+            width: 70,
             store: this.confidenceStore,
             hidden: true,
             value: 0.7,
@@ -190,7 +184,7 @@ Ext.define('TAGGUI.interactive-view-download.view.SingleFilterPanel', {
             height: 16,
             width: 16,
             html: '<image src="/AIDRFetchManager/resources/img/exclamation_red.png" />' ,
-            margin: '3 10 0 0',
+            margin: '3 0 0 0',
             listeners: {
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
@@ -205,8 +199,8 @@ Ext.define('TAGGUI.interactive-view-download.view.SingleFilterPanel', {
 
         this.removeButton = Ext.create('Ext.button.Button', {
             iconCls: 'remove',
-            text : 'Remove',
             scale: 'small',
+            margin: '0 10 0 0',
             tooltip: 'Remove this filter',
             listeners: {
                 click: function (cmp) {
@@ -216,21 +210,20 @@ Ext.define('TAGGUI.interactive-view-download.view.SingleFilterPanel', {
         });
 
         this.items = [
+            this.removeButton,
             this.mainCombo,
             this.dateTypeCombo,
             this.dateField,
             this.dateFieldHint,
             this.classifierTypeCombo,
             this.labelCombo,
-            this.confidenceHint,
             this.confidenceCombo,
             {
                 xtype: 'container',
                 layout: 'hbox',
                 flex: 1
             },
-            this.invalidSign,
-            this.removeButton
+            this.invalidSign
         ];
 
         this.callParent(arguments);
@@ -252,7 +245,6 @@ Ext.define('TAGGUI.interactive-view-download.view.SingleFilterPanel', {
                 this.dateFieldHint.show();
             }
             this.classifierTypeCombo.hide();
-            this.confidenceHint.hide();
             this.confidenceCombo.hide();
             this.labelCombo.hide();
         } else {
@@ -261,7 +253,6 @@ Ext.define('TAGGUI.interactive-view-download.view.SingleFilterPanel', {
             this.dateFieldHint.hide();
             this.classifierTypeCombo.setValue();
             this.classifierTypeCombo.show();
-            this.confidenceHint.hide();
             this.confidenceCombo.hide();
             this.confidenceCombo.setValue(0.7);
             this.labelCombo.hide();
@@ -309,12 +300,10 @@ Ext.define('TAGGUI.interactive-view-download.view.SingleFilterPanel', {
         this.suspendLayout = true;
 
         if (val == 'has_confidence'){
-            this.confidenceHint.show();
             this.confidenceCombo.show();
             this.labelCombo.hide();
         } else {
             if (!this.labelCombo.getValue()) {
-                this.confidenceHint.hide();
                 this.confidenceCombo.hide();
             }
 
@@ -342,7 +331,6 @@ Ext.define('TAGGUI.interactive-view-download.view.SingleFilterPanel', {
 
         this.suspendLayout = true;
 
-        this.confidenceHint.show();
         this.confidenceCombo.show();
 
         this.suspendLayout = false;

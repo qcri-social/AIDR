@@ -18,6 +18,7 @@ public class URLPrefixCode {
     public static String AIDR_ACTIVE_NOMINAL_ATTRIBUTE ="/crisis/getnominalAttribute";
     public static String AIDR_CRISIS_INFO="/crisis/id/";
     public static String AIDR_NOMINAL_ATTRIBUTE_LABEL = "/crisis/getnominalLabels/";
+    public static String AIDR_TASKASSIGNMENT_REVERT= "/taskassignment/revert/name/";
 
     public static String PYBOSAA_APP = "/app/";
     public static String PYBOSSA_APP_KEY ="/app?api_key=";

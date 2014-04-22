@@ -25,7 +25,7 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
 
         this.screenTitle = Ext.create('Ext.form.Label', {
             cls: 'header-h1 bold-text',
-            text: 'Interactive View/Download for collection "' + CRISIS_NAME + '"',
+            text: CRISIS_NAME,
             flex: 1
         });
 
@@ -148,7 +148,7 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
         this.tweetsStore = Ext.create('Ext.data.Store', {
             pageSize: 10,
             storeId: 'tweetsStore',
-            fields: ['text', 'attribute_name', 'label_name', 'confidence']
+            fields: ['text', 'attribute_name', 'label_name', 'confidence', 'createdAt']
         });
 
         this.tweetsGrid = Ext.create('Ext.grid.Panel', {
@@ -161,13 +161,20 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
                     xtype: 'gridcolumn', dataIndex: 'text', text: 'Tweet', flex: 1
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'attribute_name', text: 'Attribute', width: 150
+                    xtype: 'gridcolumn', dataIndex: 'createdAt', text: 'Created at', width: 175
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'label_name', text: 'Label', width: 150
+                    xtype: 'gridcolumn', dataIndex: 'attribute_name', text: 'Classifier', width: 130
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'confidence', text: 'Confidence', width: 150
+                    xtype: 'gridcolumn', dataIndex: 'label_name', text: 'Tag', width: 130
+                },
+                {
+                    xtype: 'gridcolumn', dataIndex: 'confidence', text: 'Confidence', width: 95, align: "right",
+                    renderer: function (value, meta, record) {
+                        meta.style = "float:right; padding-top: 9px;";
+                        return value;
+                    }
                 }
             ]
         });
@@ -177,8 +184,8 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
             margin: '12 2 0 2',
             store:'tweetsStore',
             displayInfo:true,
-            displayMsg:'Collection history records {0} - {1} of {2}',
-            emptyMsg:'No collection history records to display',
+            displayMsg:'Items {0} - {1} of {2}',
+            emptyMsg:'No items to display',
             items: [
                 {
                     xtype: 'tbseparator'
@@ -186,8 +193,9 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
                 {
                     xtype : 'trigger',
                     itemId : 'gridTrigger',
-                    fieldLabel: 'Filter Grid Data',
+                    fieldLabel: 'Filter by keywords',
                     triggerCls : 'x-form-clear-trigger',
+                    labelWidth: 110,
                     emptyText : 'Start typing to filter data',
                     size : 30,
                     minChars : 1,

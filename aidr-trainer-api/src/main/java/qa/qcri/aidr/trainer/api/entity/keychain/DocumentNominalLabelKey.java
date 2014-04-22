@@ -8,14 +8,16 @@ package qa.qcri.aidr.trainer.api.entity.keychain;
  * To change this template use File | Settings | File Templates.
  */
 public class DocumentNominalLabelKey implements java.io.Serializable{
-    //documentID, nominalLabelID
+    //documentID, nominalLabelID, userID
     private Long documentID;
     private Long nominalLabelID;
+    private Long userID;
     public DocumentNominalLabelKey() { }
 
-    public DocumentNominalLabelKey(Long documentID, Long nominalLabelID) {
+    public DocumentNominalLabelKey(Long documentID, Long nominalLabelID, Long userID) {
         this.documentID = documentID;
         this.nominalLabelID = nominalLabelID;
+        this.userID = userID;
     }
 
     public Long getNominalLabelID() {
@@ -33,13 +35,21 @@ public class DocumentNominalLabelKey implements java.io.Serializable{
         this.documentID = documentID;
     }
 
+    public Long getUserID() {
+        return userID;
+    }
+
+    public void setUserID(Long userID) {
+        this.userID = userID;
+    }
+
     public boolean equals(Object key) {
         boolean result = true;
         if (!(key instanceof DocumentNominalLabelKey)) {return false;}
 
         Long otherDocumentID = ((DocumentNominalLabelKey)key).getDocumentID();
         Long otherNominalLabelID = ((DocumentNominalLabelKey)key).getNominalLabelID();
-
+        Long otherUserID = ((DocumentNominalLabelKey)key).getUserID();
         if (nominalLabelID == null || otherNominalLabelID == null) {
             result = false;
         }else {
@@ -52,6 +62,12 @@ public class DocumentNominalLabelKey implements java.io.Serializable{
             result = documentID.equals(otherDocumentID);
         }
 
+        if (userID == null || otherUserID == null) {
+            result = false;
+        }else {
+            result = userID.equals(otherUserID);
+        }
+
         return result;
     }
 
@@ -59,6 +75,7 @@ public class DocumentNominalLabelKey implements java.io.Serializable{
         int code = 0;
         if (documentID!=null) {code +=documentID;}
         if (nominalLabelID!=null) {code +=nominalLabelID;}
+        if (userID!=null) {code +=userID;}
         return code;
     }
 }

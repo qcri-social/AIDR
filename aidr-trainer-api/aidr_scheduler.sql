@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Feb 04, 2014 at 04:37 PM
+-- Generation Time: Apr 22, 2014 at 01:35 PM
 -- Server version: 5.5.29
 -- PHP Version: 5.4.10
 
@@ -56,9 +56,8 @@ CREATE TABLE `clientApp` (
   `status` int(11) unsigned NOT NULL DEFAULT '1',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `appType` int(11) DEFAULT '1',
-  PRIMARY KEY (`clientAppID`),
-  UNIQUE KEY `shortName_UNIQUE` (`shortName`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=61 ;
+  PRIMARY KEY (`clientAppID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=83 ;
 
 -- --------------------------------------------------------
 
@@ -103,7 +102,7 @@ CREATE TABLE `clientAppSource` (
   `status` int(10) unsigned NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`clientAppSourceID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=70 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=73 ;
 
 -- --------------------------------------------------------
 
@@ -143,7 +142,7 @@ CREATE TABLE `reportTemplate` (
   `status` int(11) NOT NULL DEFAULT '0',
   `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`reportTemplateID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2941 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2961 ;
 
 -- --------------------------------------------------------
 
@@ -174,7 +173,7 @@ CREATE TABLE `taskQueue` (
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`taskQueueID`,`clientAppID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=65016 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=86993 ;
 
 -- --------------------------------------------------------
 

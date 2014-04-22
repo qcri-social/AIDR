@@ -70,7 +70,7 @@ public class PybossaTemplate {
                                     taskAnswerElement.put("labelID", labelID) ;
 
                                     taskAnswerJson.add(taskAnswerElement);
-                                    documentNominalLabel = new DocumentNominalLabel(documentID,labelID);
+                                    documentNominalLabel = new DocumentNominalLabel(documentID,labelID, userID);
                                     taskAnswerResponse.setDocumentNominalLabelList(documentNominalLabel);
                                 }
                             }

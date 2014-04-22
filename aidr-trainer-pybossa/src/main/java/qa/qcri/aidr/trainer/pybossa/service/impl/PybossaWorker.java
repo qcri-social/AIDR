@@ -48,7 +48,7 @@ public class PybossaWorker implements ClientAppRunWorker {
     private String AIDR_NOMINAL_ATTRIBUTE_LABEL_URL;
     private String PYBOSSA_API_TASK_RUN_BASE_URL;
     private String PYBOSSA_API_TASK_BASE_URL;
-    private String AIDR_ASSIGNED_TASK_CLEAN_UP;
+    private String AIDR_ASSIGNED_TASK_CLEAN_UP_URL;
     private String PYBOSSA_API_APP_DELETE_URL;
     private String PYBOSSA_TASK_DELETE_URL;
 
@@ -73,6 +73,7 @@ public class PybossaWorker implements ClientAppRunWorker {
 
         if(resetVariable){
             AIDR_API_URL =  client.getAidrHostURL() + URLPrefixCode.ASSINGN_TASK + UserAccount.SYSTEM_USER_NAME + "/";
+            AIDR_ASSIGNED_TASK_CLEAN_UP_URL = client.getAidrHostURL()  + URLPrefixCode.AIDR_TASKASSIGNMENT_REVERT + UserAccount.SYSTEM_USER_NAME + "/";
             PYBOSSA_API_TASK_PUBLSIH_URL = client.getHostURL() + URLPrefixCode.TASK_PUBLISH + client.getHostAPIKey();
             AIDR_TASK_ANSWER_URL = client.getAidrHostURL() + URLPrefixCode.TASK_ANSWER_SAVE;
             PYBOSSA_API_TASK_BASE_URL  = client.getHostURL() + URLPrefixCode.TASK_INFO;
@@ -116,35 +117,34 @@ public class PybossaWorker implements ClientAppRunWorker {
             if(id!=null){
                 deactivateClientApp(id);
                 List<ClientApp> appList = clientAppService.getAllClientAppByCrisisIDAndStatus(id , StatusCodeType.AIDR_ONLY);
-                System.out.println("processTaskPublish : crisisID - " + id);
-                System.out.println("processTaskPublish : appList - " + appList.size());
+              //  System.out.println("processTaskPublish : crisisID - " + id);
+              //  System.out.println("processTaskPublish : appList - " + appList.size());
                 if(appList.size() > 0){
                     setClassVariable(appList.get(0).getClient());
                     int pushTaskNumber = calculateMinNumber(appList);
-                    System.out.println("processTaskPublish : pushTaskNumber - " + pushTaskNumber);
+                 //   System.out.println("processTaskPublish : pushTaskNumber - " + pushTaskNumber);
                     if( pushTaskNumber > 0 ){
                         String inputData = pybossaCommunicator.sendGet(AIDR_API_URL + id + "/" +pushTaskNumber);
-                        System.out.println(AIDR_API_URL + id + "/" +pushTaskNumber);
-                        System.out.println("inputData  " + inputData);
+                     //   System.out.println(AIDR_API_URL + id + "/" +pushTaskNumber);
+                     //   System.out.println("inputData  " + inputData);
                         if(DataFormatValidator.isValidateJson(inputData)){
                             try {
                                 for (int index = 0; index < appList.size() ; index++){
                                     ClientApp currentClientApp = appList.get(index);
                                         List<String> aidr_data = pybossaFormatter.assemblePybossaTaskPublishForm(inputData, currentClientApp);
                                         for (String temp : aidr_data) {
-                                            System.out.println("*************************************************");
-                                            System.out.println(temp);
+                                            //System.out.println("*************************************************");
+                                            //System.out.println(temp);
                                             String response = pybossaCommunicator.sendPostGet(temp, PYBOSSA_API_TASK_PUBLSIH_URL) ;
-                                            System.out.println(PYBOSSA_API_TASK_PUBLSIH_URL + "\n");
-                                            System.out.println(response + "\n");
+                                           // System.out.println(PYBOSSA_API_TASK_PUBLSIH_URL + "\n");
+                                            //System.out.println(response + "\n");
                                             if(!response.startsWith("Exception") && !response.contains("exception_cls")){
                                                 addToTaskQueue(response, currentClientApp.getClientAppID(), StatusCodeType.TASK_PUBLISHED) ;
                                             }
                                             else{
                                                 addToTaskQueue(temp, currentClientApp.getClientAppID(), StatusCodeType.Task_NOT_PUBLISHED) ;
                                             }
-                                            System.out.println("*************************************************");
-
+                                            //System.out.println("*************************************************");
                                         }
                                 }
 
@@ -167,32 +167,46 @@ public class PybossaWorker implements ClientAppRunWorker {
         if(taskQueues != null ){
             for(int i=0; i < taskQueues.size(); i++){
                 TaskQueue taskQueue = taskQueues.get(i);
-                Long taskID =  taskQueue.getTaskID();
-                String taskQueryURL = PYBOSSA_API_TASK_BASE_URL + clientApp.getPlatformAppID() + "&id=" + taskID;
-                String inputData = pybossaCommunicator.sendGet(taskQueryURL);
+                if(!this.isExpiredTaskQueue(taskQueue)){
+                    Long taskID =  taskQueue.getTaskID();
+                    String taskQueryURL = PYBOSSA_API_TASK_BASE_URL + clientApp.getPlatformAppID() + "&id=" + taskID;
+                    String inputData = pybossaCommunicator.sendGet(taskQueryURL);
 
-                try {
-                    boolean isFound = pybossaFormatter.isTaskStatusCompleted(inputData);
+                    try {
+                        boolean isFound = pybossaFormatter.isTaskStatusCompleted(inputData);
 
-                    if(isFound){
-                        processTaskQueueImport(clientApp, taskQueue, taskID);
-                    }
-                    else{
-                        long diffHours = DateTimeConverter.getHourDifference(taskQueue.getCreated(), null);
-                        if(diffHours >= StatusCodeType.TASK_CLEANUP_CUT_OFF_HOUR){
-                            String returnValue = this.removeAbandonedTask(taskID, taskQueue.getTaskQueueID());
-                            if(returnValue.equalsIgnoreCase("Exception")){
-                                taskQueue.setStatus(StatusCodeType.TASK_ABANDONED);
-                                taskQueueService.updateTaskQueue(taskQueue);
-                            }
+                        if(isFound){
+                            processTaskQueueImport(clientApp, taskQueue, taskID);
                         }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
+
             }
         }
      }
+
+    private boolean isExpiredTaskQueue(TaskQueue taskQueue){
+        boolean isExpired = false;
+        try{
+            long diffHours = DateTimeConverter.getHourDifference(taskQueue.getCreated(), null);
+            if(diffHours >= StatusCodeType.TASK_CLEANUP_CUT_OFF_HOUR){
+                String returnValue = this.removeAbandonedTask(taskQueue.getTaskID(), taskQueue.getTaskQueueID());
+                isExpired = true;
+                if(returnValue.equalsIgnoreCase("Exception")){
+                    taskQueue.setStatus(StatusCodeType.TASK_ABANDONED);
+                    taskQueueService.updateTaskQueue(taskQueue);
+                }
+
+            }
+        }
+        catch(Exception e){
+            logger.error("isExpiredTaskQueue : " + e);
+        }
+        return isExpired;
+    }
 
     private void processTaskQueueImport(ClientApp clientApp, TaskQueue taskQueue, Long taskID) throws Exception {
         String PYBOSSA_API_TASK_RUN = PYBOSSA_API_TASK_RUN_BASE_URL + clientApp.getPlatformAppID() + "&task_id=" + taskID;
@@ -228,17 +242,21 @@ public class PybossaWorker implements ClientAppRunWorker {
         try {
                 Object obj = parser.parse(inputData);
 
-
                 JSONObject jsonObject = (JSONObject) obj;
 
                 Long taskID  = (Long)jsonObject.get("id");
                 JSONObject info = (JSONObject)jsonObject.get("info");
                 Long documentID = (Long)info.get("documentID");
 
-                TaskQueue taskQueue = new TaskQueue(taskID, clientAppID, documentID, status);
-                taskQueueService.createTaskQueue(taskQueue);
-                TaskLog taskLog = new TaskLog(taskQueue.getTaskQueueID(), taskQueue.getStatus());
-                taskLogService.createTaskLog(taskLog);
+                if(status.equals(StatusCodeType.Task_NOT_PUBLISHED)){
+                    pybossaCommunicator.sendGet(AIDR_ASSIGNED_TASK_CLEAN_UP_URL+ documentID) ;
+                }
+                else{
+                    TaskQueue taskQueue = new TaskQueue(taskID, clientAppID, documentID, status);
+                    taskQueueService.createTaskQueue(taskQueue);
+                    TaskLog taskLog = new TaskLog(taskQueue.getTaskQueueID(), taskQueue.getStatus());
+                    taskLogService.createTaskLog(taskLog);
+                }
 
         } catch (ParseException e) {
             e.printStackTrace();
@@ -249,19 +267,6 @@ public class PybossaWorker implements ClientAppRunWorker {
         taskQueueService.updateTaskQueue(taskQueue);
         TaskLog taskLog = new TaskLog(taskQueue.getTaskQueueID(), taskQueue.getStatus());
         taskLogService.createTaskLog(taskLog);
-    }
-
-    private TaskQueue getTaskQueue(Long clientAppID, Long documentID){
-        TaskQueue taskQueue = null;
-
-        List<TaskQueue> queSet = taskQueueService.getTaskQueueByDocument(clientAppID, documentID);
-        if(queSet!=null){
-            if(queSet.size() > 0){
-                taskQueue =  queSet.get(0);
-            }
-        }
-
-        return taskQueue;
     }
 
     private int calculateMinNumber(List<ClientApp> clientAppList){
@@ -297,22 +302,38 @@ public class PybossaWorker implements ClientAppRunWorker {
         }
     }
 
+    public String removeAbandonedTask(long taskID, long taskQueueID) throws Exception {
+        String deleteTaskURL =  PYBOSSA_TASK_DELETE_URL + taskID + URLPrefixCode.PYBOSSA_APP_UPDATE_KEY + client.getHostAPIKey();
+        //System.out.println(deleteTaskURL);
+        String returnValue = pybossaCommunicator.deleteGet(deleteTaskURL);
+
+        if(!returnValue.equalsIgnoreCase("Exception")) {
+            taskLogService.deleteAbandonedTaskLog(taskQueueID);
+            taskQueueService.deleteAbandonedTaskQueue(taskQueueID);
+        }
+        return returnValue;
+    }
+
     public void doCleanAbandonedTask() throws Exception{
         List<TaskQueue> taskQueues =  taskQueueService.getTaskQueueByStatus("status",StatusCodeType.TASK_ABANDONED);
         for(int i = 0; i < taskQueues.size(); i++){
             String returnValue = removeAbandonedTask(taskQueues.get(i).getTaskID(), taskQueues.get(i).getTaskQueueID());
         }
     }
-    public String removeAbandonedTask(long taskID, long taskQueueID) throws Exception {
-       String deleteTaskURL =  PYBOSSA_TASK_DELETE_URL + taskID + URLPrefixCode.PYBOSSA_APP_UPDATE_KEY + client.getHostAPIKey();
-       //System.out.println(deleteTaskURL);
-       String returnValue = pybossaCommunicator.deleteGet(deleteTaskURL);
 
-        if(!returnValue.equalsIgnoreCase("Exception")) {
-            taskLogService.deleteAbandonedTaskLog(taskQueueID);
-            taskQueueService.deleteAbandonedTaskQueue(taskQueueID);
+    private TaskQueue getTaskQueue(Long clientAppID, Long documentID){
+        TaskQueue taskQueue = null;
+
+        List<TaskQueue> queSet = taskQueueService.getTaskQueueByDocument(clientAppID, documentID);
+        if(queSet!=null){
+            if(queSet.size() > 0){
+                taskQueue =  queSet.get(0);
+            }
         }
-       return returnValue;
+
+        return taskQueue;
     }
+
+
 
 }

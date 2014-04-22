@@ -21,4 +21,5 @@ public interface DocumentService {
     public void addToOneTaskAssignmentWithUserName(long documentID, String userName) ;
     public void addToOneTaskAssignment(long documentID, long userID) ;
     public List<Document> getAvailableDocument(long crisisID, int maxresult);
+    public List<Document> getDocumentForOneTask(Long crisisID, int count, String userName);
 }
