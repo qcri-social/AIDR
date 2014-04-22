@@ -12,7 +12,7 @@ public class Config {
 	public static final String STATUS_CODE_FAILED = "FAILED";
 
 	//TODO : THIS PATH HAS TO BE UPDATED BASED ON aidr-tagger location
-	public static final String AIDR_TAGGER_CONFIG_URL = "/home/koushik/aidr_predict/config/config.txt";
+	public static final String AIDR_TAGGER_CONFIG_URL = "/home/imran/aidr_predict/config/config.txt";
 	public static final String LOG_FILE_NAME = "AIDR-Predict-logs.txt";//
 
 	//For deleting stale tasks from Document entity/table
