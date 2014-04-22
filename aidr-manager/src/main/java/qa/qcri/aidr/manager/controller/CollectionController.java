@@ -75,6 +75,22 @@ public class CollectionController extends BaseController{
         }
     }
 	
+    @RequestMapping(value = "/updatePublicListing.action", method={RequestMethod.POST})
+    @ResponseBody
+    public Map<String,Object> updatePubliclyListed(AidrCollection collection) throws Exception {
+        logger.info("[updatePubliclyListed] Save AidrCollection to Database having code : "+collection.getCode());
+        try{
+            AidrCollection dbCollection = collectionService.findById(collection.getId());
+            System.out.println("[updatePubliclyListed] old status: " + dbCollection.getPubliclyListed() + ", new status: " + collection.getPubliclyListed());
+            //dbCollection.setPubliclyListed(collection.getPubliclyListed()); 
+            //collectionService.update(dbCollection);
+            return getUIWrapper(true);
+        }catch(Exception e){
+            logger.error("Error while updating collection publicly Listed status", e);
+            return getUIWrapper(false);
+        }
+    }
+    
 	@RequestMapping(value = "/delete.action", method = { RequestMethod.POST ,RequestMethod.GET })
 	@ResponseBody
 	public Map<String,Object> delete( AidrCollection collection) throws Exception {

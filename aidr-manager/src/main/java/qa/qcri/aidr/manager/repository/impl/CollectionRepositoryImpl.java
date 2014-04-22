@@ -5,6 +5,7 @@ import org.hibernate.criterion.*;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
+
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
@@ -42,13 +43,14 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
                 String sql = " SELECT DISTINCT c.id FROM AIDR_COLLECTION c " +
                         " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
                         " ON c.id = c_m.id_collection " +
-                        " WHERE (!c.isTrashed AND (c.user_id =:userId OR c_m.id_manager = :userId)) " +
+                        " WHERE (c.status != :statusValue AND (c.user_id =:userId OR c_m.id_manager = :userId)) " +
                         " order by c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
 
                 SQLQuery sqlQuery = session.createSQLQuery(sql);
                 sqlQuery.setParameter("userId", userId);
                 sqlQuery.setParameter("start", start);
                 sqlQuery.setParameter("limit", limit);
+                sqlQuery.setParameter("statusValue", CollectionStatus.TRASHED.ordinal());
                 List<Integer> ids = (List<Integer>) sqlQuery.list();
                 return ids != null ? ids : Collections.emptyList();
             }
@@ -76,10 +78,11 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
                         " FROM AIDR_COLLECTION c " +
                         " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
                         " ON c.id = c_m.id_collection " +
-                        " WHERE (!c.isTrashed and (c.user_id = :userId or c_m.id_manager = :userId)) ";
+                        " WHERE (c.status != :statusValue and (c.user_id = :userId or c_m.id_manager = :userId)) ";
 
                 SQLQuery sqlQuery = session.createSQLQuery(sql);
                 sqlQuery.setParameter("userId", userId);
+                sqlQuery.setParameter("statusValue", CollectionStatus.TRASHED.ordinal());
                 BigInteger total = (BigInteger) sqlQuery.uniqueResult();
                 return total != null ? total.intValue() : 0;
             }
@@ -90,6 +93,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 	public Boolean exist(String code) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
 		criteria.add(Restrictions.eq("code", code));
+		criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
 	    AidrCollection collection = (AidrCollection) criteria.uniqueResult();
 	    return collection != null;
 	}
@@ -98,6 +102,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 	public Boolean existName(String name) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
 		criteria.add(Restrictions.eq("name", name));
+		criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
 	    AidrCollection collection = (AidrCollection) criteria.uniqueResult();
 	    return collection != null;
 	}
@@ -318,5 +323,16 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
         criteria.add(Restrictions.eq("code", code));
         return (AidrCollection) criteria.uniqueResult();
     }
+
+	@Override
+	public AidrCollection trashCollectionById(Integer collectionId) {
+		AidrCollection collection = stop(collectionId);
+		collection.setStatus(CollectionStatus.TRASHED);
+		this.update(collection);
+		
+		// TODO: add code for modifying the aidr_predict tables 
+		// @koushik: make REST call to aidr-tagger-api?
+		return collection;
+	}
 
 }

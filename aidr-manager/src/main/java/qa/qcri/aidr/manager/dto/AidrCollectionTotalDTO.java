@@ -3,6 +3,7 @@ package qa.qcri.aidr.manager.dto;
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.JsonDateSerializer;
+
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import java.util.Date;
@@ -47,7 +48,9 @@ public class AidrCollectionTotalDTO {
     private List<UserEntity> managers;
 
     private Integer durationHours;
-
+    
+    private Boolean publiclyListed;
+    
     public Integer getId() {
         return id;
     }
@@ -201,5 +204,13 @@ public class AidrCollectionTotalDTO {
 
     public void setDurationHours(Integer durationHours) {
         this.durationHours = durationHours;
+    }
+    
+    public Boolean getPubliclyListed() {
+    	return publiclyListed;
+    }
+    
+    public void setPubliclyListed(Boolean publiclyListed) {
+    	this.publiclyListed = publiclyListed;
     }
 }

@@ -84,7 +84,7 @@ public class CollectionServiceImpl implements CollectionService {
     @Transactional(readOnly = true)
     public AidrCollection findById(Integer id) throws Exception {
         AidrCollection temp = collectionRepository.findById(id);
-        if (!temp.getIsTrashed()) {
+        if (!temp.getStatus().equals(CollectionStatus.TRASHED)) {
         	return temp;
         }
         return null;
@@ -95,7 +95,7 @@ public class CollectionServiceImpl implements CollectionService {
     @Transactional(readOnly = true)
     public AidrCollection findByCode(String code) throws Exception {
     	AidrCollection temp = collectionRepository.findByCode(code);
-        if (!temp.getIsTrashed()) {
+        if (!temp.getStatus().equals(CollectionStatus.TRASHED)) {
         	return temp;
         }
         return null;

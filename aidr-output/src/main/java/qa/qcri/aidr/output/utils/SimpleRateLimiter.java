@@ -30,10 +30,10 @@ public class SimpleRateLimiter extends RateLimiter {
 		 */
 		public void initializeNew(String key) {
 			if (!freq.containsKey(key)) {
-				System.out.println("[initializeNew] new key = " + key);
+				//System.out.println("[initializeNew] new key = " + key);
 				freq.put(key, 0);
 			} else {
-				System.out.println("[initializeNew] skipping existing key = " + key);
+				//System.out.println("[initializeNew] skipping existing key = " + key);
 			}
 		}
 		

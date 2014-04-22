@@ -2,11 +2,14 @@ package qa.qcri.aidr.manager.hibernateEntities;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.JsonDateDeSerializer;
 import qa.qcri.aidr.manager.util.JsonDateSerializer;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -55,9 +58,10 @@ public class AidrCollection implements Serializable {
 
     private Date createdDate;
     
+    @NotNull
     private Boolean publiclyListed;
     
-    private Boolean isTrashed;
+    //private Boolean isTrashed;
     
     
     @Column(length = 1000, name = "last_document")
@@ -221,6 +225,7 @@ public class AidrCollection implements Serializable {
         this.durationHours = durationHours;
     }
     
+    /*
     public Boolean getIsTrashed() {
     	return isTrashed;
     }
@@ -228,12 +233,13 @@ public class AidrCollection implements Serializable {
     public void setIsTrashed(Boolean isTrashed) {
     	this.isTrashed = isTrashed;
     }
+    */
     
-    public Boolean getIsPubliclyListed() {
+    public Boolean getPubliclyListed() {
     	return publiclyListed;
     }
     
-    public void setIsPubliclyListed(Boolean publiclyListed) {
+    public void setPubliclyListed(Boolean publiclyListed) {
     	this.publiclyListed = publiclyListed;
     }
 }
