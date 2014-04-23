@@ -42,29 +42,36 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "NominalLabel.findByDescription", query = "SELECT n FROM NominalLabel n WHERE n.description = :description"),
     @NamedQuery(name = "NominalLabel.findByNominalAttribute", query = "SELECT n FROM NominalLabel n WHERE n.nominalAttribute = :nominalAttribute")})
 public class NominalLabel implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "nominalLabelID")
     private Integer nominalLabelID;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "nominalLabelCode")
     private String nominalLabelCode;
+
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 45)
+    @Size(min = 1, max = 140)
     @Column(name = "name")
     private String name;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 600)
     @Column(name = "description")
     private String description;
+
     @ManyToMany(mappedBy = "nominalLabelCollection")
     private Collection<Document> documentCollection;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "nominalLabel")
     private Collection<ModelNominalLabel> modelNominalLabelCollection;
     

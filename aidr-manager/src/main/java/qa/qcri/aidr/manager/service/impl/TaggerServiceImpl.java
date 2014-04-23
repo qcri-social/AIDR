@@ -709,8 +709,9 @@ public class TaggerServiceImpl implements TaggerService {
 			if (response != null) {
 				logger.info("Label with ID " + response.getNominalLabelID() + " was created in Tagger");
 				return response;
-			}
-			return null;
+			} else {
+                throw new AidrException("Error while creating new label in Tagger");
+            }
 		} catch (Exception e) {
 			throw new AidrException("Error while creating new label in Tagger", e);
 		}
