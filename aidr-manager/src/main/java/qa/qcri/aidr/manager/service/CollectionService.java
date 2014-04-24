@@ -58,4 +58,5 @@ public interface CollectionService {
     public List<AidrCollection> getStoppedCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) throws Exception;
 
     public Long getStoppedCollectionsCount(String terms) throws Exception;
+
 }

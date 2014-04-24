@@ -2,6 +2,7 @@ package qa.qcri.aidr.manager.service;
 
 import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
+import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 
 import java.util.Collection;
 import java.util.List;
@@ -89,5 +90,11 @@ public interface TaggerService {
 
 	// Added by koushik
 	public String generateTweetIdsLink(String code) throws AidrException;
+
+	//Added by koushik
+	public int trashCollection(AidrCollection collection) throws Exception;
+	
+	//Added by koushik
+	public int untrashCollection(AidrCollection collection) throws Exception;
 
 }

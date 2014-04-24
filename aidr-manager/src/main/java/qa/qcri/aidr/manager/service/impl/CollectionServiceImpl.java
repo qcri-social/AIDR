@@ -33,6 +33,7 @@ import qa.qcri.aidr.manager.util.CollectionStatus;
 
 
 
+
 //import com.sun.jersey.api.client.Client;		// gf 3 way
 //import com.sun.jersey.api.client.ClientResponse;
 //import com.sun.jersey.api.client.WebResource;
@@ -40,6 +41,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 
 @Service("collectionService")
@@ -409,4 +411,5 @@ public class CollectionServiceImpl implements CollectionService {
         return collectionRepository.getCollectionsCount(user);
     }
 
+	
 }

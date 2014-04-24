@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
+import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.service.TaggerService;
 
 import javax.ws.rs.client.Client;
@@ -895,7 +896,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			String jsonResponse = clientResponse.readEntity(String.class);
 			System.out.println("jsonResponse: " + jsonResponse);
-			
+
 			if (jsonResponse != null && jsonResponse.startsWith("{")) {
 				return jsonResponse;
 			} else {
@@ -1250,6 +1251,68 @@ public class TaggerServiceImpl implements TaggerService {
 			return jsonResponse;
 		} catch (Exception e) {
 			throw new AidrException("Error while getting all nominal attributes and their labels for a given crisisID", e);
+		}
+	}
+
+	@Override
+	public int trashCollection(AidrCollection collection) throws Exception {
+		int retVal = 0;
+		// First clean up the aidr-predict database
+		try {
+			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+			WebTarget webResource = client.target(taggerMainUrl + "/manage/collection/trash/crisis/" + collection.getCode());
+
+			ObjectMapper objectMapper = new ObjectMapper();
+			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+
+			String jsonResponse = clientResponse.readEntity(String.class);
+			if (jsonResponse != null && jsonResponse.equalsIgnoreCase("{\"status\": \"TRASHED\"}")) {
+				retVal = 1;
+			} else {
+				retVal = 0;
+			}
+		} catch (Exception e) {
+			throw new AidrException("Error while attempting /trash REST call for aidr_predict", e);
+		}
+		if (retVal > 0) {
+			// Final DB task - cleanup the aidr-scheduler database for micromapper tasks
+			try {
+				Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+				WebTarget webResource = client.target(crowdsourcingAPIMainUrl + "/clientapp/delete/crisis/" + collection.getCode());
+
+				ObjectMapper objectMapper = new ObjectMapper();
+				Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+
+				String jsonResponse = clientResponse.readEntity(String.class);
+				if (jsonResponse != null && jsonResponse.equalsIgnoreCase("{\"status\": \"TRASHED\"}")) {
+					return 1;
+				} else {
+					return 0;
+				}
+			} catch (Exception e) {
+				throw new AidrException("Error while attempting /trash REST call for aidr_predict", e);
+			}
+		}
+		return 0;
+	}
+
+	@Override
+	public int untrashCollection(AidrCollection collection) throws Exception {
+		try {
+			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+			WebTarget webResource = client.target(taggerMainUrl + "/manage/collection/untrash/crisis/" + collection.getCode());
+
+			ObjectMapper objectMapper = new ObjectMapper();
+			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+
+			String jsonResponse = clientResponse.readEntity(String.class);
+			if (jsonResponse != null && jsonResponse.equalsIgnoreCase("{\"status\": \"UNTRASHED\"}")) {
+				return 1;
+			} else {
+				return 0;
+			}
+		} catch (Exception e) {
+			throw new AidrException("Error while attempting /untrash REST call", e);
 		}
 	}
 

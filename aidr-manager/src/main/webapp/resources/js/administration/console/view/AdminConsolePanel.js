@@ -218,9 +218,10 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 140, css: 'text-align: right;', sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 140, align: "right", sortable: false,
                     renderer: function (value, meta, record) {
-                        return value ? Ext.util.Format.number(value, '0,000') : 0;
+                    	meta.style = "float:right; padding-top: 9px;";
+                    	return value ? Ext.util.Format.number(value, '0,000') : 0;
                     }
                 },
                 {
@@ -357,7 +358,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                 {
                     xtype: 'gridcolumn', dataIndex: 'name', text: 'Collection', flex: 1,
                     renderer: function (value, meta, record) {
-                        return me.getCollectionNameAsLink(value, record.data.code);
+                    	return me.getCollectionNameAsLink(value, record.data.code);
                     }
                 },
                 {
@@ -426,9 +427,10 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 130, css: 'text-align: right;', sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 130, align: "right", sortable: false,
                     renderer: function (value, meta, record) {
-                        return value ? Ext.util.Format.number(value, '0,000') : 0;
+                    	meta.style = "float:right; padding-top: 9px;";
+                    	return value ? Ext.util.Format.number(value, '0,000') : 0;
                     }
                 },
                 {
@@ -536,5 +538,5 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
     getField: function (r) {
         return r ? r : "<span class='na-text'>Not specified</span>";
     }
-
+    
 });

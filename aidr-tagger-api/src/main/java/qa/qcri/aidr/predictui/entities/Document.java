@@ -46,7 +46,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "Document.findByValueAsTrainingSample", query = "SELECT d FROM Document d WHERE d.valueAsTrainingSample = :valueAsTrainingSample"),
     @NamedQuery(name = "Document.findByReceivedAt", query = "SELECT d FROM Document d WHERE d.receivedAt = :receivedAt"),
     @NamedQuery(name = "Document.findByLanguage", query = "SELECT d FROM Document d WHERE d.language = :language"),
-    @NamedQuery(name = "Document.findByDoctype", query = "SELECT d FROM Document d WHERE d.doctype = :doctype")})
+    @NamedQuery(name = "Document.findByDoctype", query = "SELECT d FROM Document d WHERE d.doctype = :doctype"),
+    @NamedQuery(name = "Document.findByCrisisID", query = "SELECT d FROM Document d WHERE d.crisis.crisisID = :crisisID AND d.hasHumanLabels = :hasHumanLabels")})
 public class Document implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

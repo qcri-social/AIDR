@@ -13,21 +13,26 @@ public class TaggerCrisis {
     private TaggerUser users;
 
     private Integer crisisID;
-
+    
+    private Boolean isTrashed;
+    
     private List<TaggerModelFamilyCollection> modelFamilyCollection;
 
     public TaggerCrisis() {
+    	this.isTrashed = false;
     }
 
     public TaggerCrisis(Integer crisisID) {
         this.crisisID = crisisID;
+        this.isTrashed = false;
     }
 
-    public TaggerCrisis(String code, String name, TaggerCrisisType crisisType, TaggerUser users) {
+    public TaggerCrisis(String code, String name, TaggerCrisisType crisisType, TaggerUser users, Boolean isTrashed) {
         this.code = code;
         this.name = name;
         this.crisisType = crisisType;
         this.users = users;
+        this.isTrashed = isTrashed;
     }
 
     public String getCode() {
@@ -76,6 +81,14 @@ public class TaggerCrisis {
 
     public void setModelFamilyCollection(List<TaggerModelFamilyCollection> modelFamilyCollection) {
         this.modelFamilyCollection = modelFamilyCollection;
+    }
+    
+    public Boolean getIsTrashed() {
+    	return isTrashed;
+    }
+    
+    public void setIsTrashed(Boolean isTrashed) {
+    	this.isTrashed = (isTrashed == null) ? false : isTrashed; 
     }
 
 }

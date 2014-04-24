@@ -46,16 +46,22 @@ public class Crisis implements Serializable {
     @Basic(optional = false)
     @Column(name = "crisisID")
     private Integer crisisID;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 140)
     @Column(name = "name")
     private String name;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "code")
     private String code;
+    
+    @Column(name = "isTrashed")
+    private Boolean isTrashed;
+    
 //    @JoinTable(name = "crisis_nominal_attribute", joinColumns = {
 //        @JoinColumn(name = "crisisID", referencedColumnName = "crisisID")}, inverseJoinColumns = {
 //        @JoinColumn(name = "nominalAttributeID", referencedColumnName = "nominalAttributeID")})
@@ -77,10 +83,12 @@ public class Crisis implements Serializable {
     private Users users;
 
     public Crisis() {
+    	this.setIsTrashed(false);
     }
 
     public Crisis(Integer crisisID) {
         this.crisisID = crisisID;
+        this.setIsTrashed(false);
     }
 
     public Crisis(Integer crisisID, String name, String code) {
@@ -97,6 +105,14 @@ public class Crisis implements Serializable {
         this.crisisID = crisisID;
     }
 
+    public Boolean getIsTrashed() {
+    	return isTrashed;
+    }
+    
+    public void setIsTrashed(Boolean isTrashed) {
+    	this.isTrashed = (isTrashed == null) ? false : isTrashed;
+    }
+    
     public String getName() {
         return name;
     }

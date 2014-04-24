@@ -43,14 +43,14 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
                 String sql = " SELECT DISTINCT c.id FROM AIDR_COLLECTION c " +
                         " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
                         " ON c.id = c_m.id_collection " +
-                        " WHERE (c.status != :statusValue AND (c.user_id =:userId OR c_m.id_manager = :userId)) " +
+                        " WHERE (c.user_id =:userId OR c_m.id_manager = :userId) " +
                         " order by c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
 
                 SQLQuery sqlQuery = session.createSQLQuery(sql);
                 sqlQuery.setParameter("userId", userId);
                 sqlQuery.setParameter("start", start);
                 sqlQuery.setParameter("limit", limit);
-                sqlQuery.setParameter("statusValue", CollectionStatus.TRASHED.ordinal());
+                //sqlQuery.setParameter("statusValue", CollectionStatus.TRASHED.ordinal());
                 List<Integer> ids = (List<Integer>) sqlQuery.list();
                 return ids != null ? ids : Collections.emptyList();
             }
