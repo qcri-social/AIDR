@@ -70,6 +70,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
             name: 'name',
             id: 'nameCategory',
             allowBlank: false,
+            maxLength: 140,
             emptyText: 'e.g. Donation of shoes'
         });
 
@@ -77,6 +78,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
             fieldLabel: 'Description',
             name: 'description',
             allowBlank: false,
+            maxLength: 600,
             flex: 1,
             emptyText: 'e.g. Footwear in general, shoes, boots, etc.'
         });

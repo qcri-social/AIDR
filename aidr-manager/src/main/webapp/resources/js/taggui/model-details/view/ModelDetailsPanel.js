@@ -36,8 +36,8 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             flex: 1
         });
 
-        this.aucHint = Ext.create('Ext.container.Container', {
-            html: '<span class="redInfo">*</span>If AUC is lower than 80%, or AUC is 100%, you urgently need more human tagged items.'
+        this.aucHint = Ext.create('Ext.form.Label', {
+            html: '<span class="redInfo">*</span><span style="color: #00acee;"> If AUC is lower than 80%, or AUC is 100%, you urgently need more human tagged items.</span>'
         });
 
         this.modelLabelsStore = Ext.create('Ext.data.JsonStore', {

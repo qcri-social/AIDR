@@ -17,9 +17,9 @@ Ext.define('TAGGUI.attribute-details.view.AttributeValuePanel', {
         var me = this;
 
         this.nameValue = Ext.create('Ext.form.Label', {
-            flex: 1,
-            cls: 'styled-text-14',
-            text: this.name
+            cls: 'styled-text-14 normal-white-space',
+            text: this.name,
+            width: 770
         });
 
         this.nameTextBox = Ext.create('Ext.form.field.Text', {
@@ -27,6 +27,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeValuePanel', {
             allowBlank: false,
             hidden: true,
             value: this.name,
+            maxLength: 140,
             listeners: {
                 change: function(combo, newValue) {
                     if (newValue != '' && newValue != me.name) {
@@ -41,6 +42,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeValuePanel', {
             allowBlank: false,
             hidden: true,
             value: this.description,
+            maxLength: 600,
             listeners: {
                 change: function(combo, newValue) {
                     if (newValue != '' && newValue != me.description) {
@@ -57,9 +59,9 @@ Ext.define('TAGGUI.attribute-details.view.AttributeValuePanel', {
         });
 
         this.descriptionValue = Ext.create('Ext.form.Label', {
-            flex: 1,
-            cls: 'styled-text-14',
-            text: this.description
+            cls: 'styled-text-14 normal-white-space',
+            text: this.description,
+            width: 770
         });
 
         this.items = [
@@ -77,7 +79,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeValuePanel', {
                     {
                         xtype: 'container',
                         layout: 'hbox',
-                        height: 22,
+                        margin: '2 0 2 0',
                         items: [
                             {
                                 xtype: 'label',
@@ -92,7 +94,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeValuePanel', {
                     {
                         xtype: 'container',
                         layout: 'hbox',
-                        height: 22,
+                        margin: '2 0 2 0',
                         items: [
                             {
                                 xtype: 'label',
@@ -106,7 +108,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeValuePanel', {
                     {
                         xtype: 'container',
                         layout: 'hbox',
-                        height: 22,
+                        margin: '2 0 2 0',
                         items: [
                             {
                                 xtype: 'label',

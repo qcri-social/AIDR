@@ -59,6 +59,18 @@ public class ClientAppDaoImpl extends AbstractDaoImpl<ClientApp, String> impleme
                 .add(Restrictions.eq("nominalAttributeID",attributeID)));
     }
 
+    @Override
+    public void updateClientAppStatus(ClientApp clientApp, Integer status) {
+        //To change body of implemented methods use File | Settings | File Templates.
+        ClientApp thisClientApp = findClientAppByID("clientAppID", clientApp.getClientAppID());
+
+        if(thisClientApp!= null){
+            thisClientApp.setStatus(status);
+            saveOrUpdate(thisClientApp);
+        }
+
+    }
+
 
     @Override
     public List<ClientApp> findClientAppByAppType(String columnName, Integer typeID) {

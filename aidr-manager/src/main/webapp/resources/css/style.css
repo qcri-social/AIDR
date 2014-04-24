@@ -749,3 +749,7 @@ End of the tab panel styles
 .align-right {
     text-align: right;
 }
+
+.normal-white-space {
+    white-space: normal;
+}
