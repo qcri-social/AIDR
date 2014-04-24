@@ -237,6 +237,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             multiSelect: true,
             fieldLabel: 'Language(s)',
             labelWidth: 130,
+            editable: false,
             name: 'langFilters',
             flex: 1,
             emptyText: 'e.g., en, ar, ja',
