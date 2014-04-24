@@ -128,8 +128,8 @@ public class ClassifiedTweet  implements Document, Serializable{
 	/**
 	 * @param createdAt the createdAt to set
 	 */
-	public void setCreatedAt(String createdAt) {
-		this.createdAt = setDateString(createdAt);
+	public void setCreatedAt(String createdAtString) {
+		this.createdAt = setDateString(createdAtString);
 	}
 
 	/**
@@ -254,6 +254,7 @@ public class ClassifiedTweet  implements Document, Serializable{
 				System.err.println("[setDateString] Error in parsing Date string = " + timeString);
 			}
 		}
+		System.out.println("[setDateString] Null createdAt Warning! time String = " + timeString);
 		return null;
 	}
 
@@ -270,10 +271,4 @@ public class ClassifiedTweet  implements Document, Serializable{
 		}
 	}
 
-	/*
-	public static void main(String[] args) {
-		String timeString = "Thu Apr 03 23:31:12 +0000 2014";
-		System.out.println("ISO Format: " + setDateString(timeString));
-	}
-	 */
 }

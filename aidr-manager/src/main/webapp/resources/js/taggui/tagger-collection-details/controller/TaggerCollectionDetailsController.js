@@ -995,6 +995,42 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         });
     },
 
+    loadLatestTweets: function () {
+        var me = this;
+
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/tagger/loadLatestTweets.action',
+            method: 'GET',
+            params: {
+                code: CRISIS_CODE,
+                constraints: '{"constraints": []}'
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                var jsonData = Ext.decode(response.responseText);
+                var tweetData = Ext.JSON.decode(jsonData.data);
+
+                var data = me.transformTweetData(tweetData);
+                fetchData = data;
+                fetchTmpData = Ext.clone(data);
+
+                me.mainComponent.taggerFetchStore.setProxy({
+                    type: 'pagingmemory',
+                    data: fetchTmpData,
+                    reader: {
+                        type: 'json',
+                        totalProperty: 'totalCount',
+                        root: 'data',
+                        successProperty: 'success'
+                    }
+                });
+                me.mainComponent.taggerFetchStore.load();
+            }
+        });
+    },
+
     transformTweetData: function(tweetData) {
         var result = {};
         var data = [];

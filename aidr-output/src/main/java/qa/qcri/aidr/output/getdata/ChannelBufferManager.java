@@ -29,12 +29,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
 import qa.qcri.aidr.output.filter.JsonQueryList;
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
+
 
 
 //import org.apache.log4j.BasicConfigurator;
@@ -140,8 +142,8 @@ public class ChannelBufferManager {
 	// 3. Else, first calls createChannelBuffer() and then executes step (2).
 	// 4. Deletes channelName and channel buffer if channelName not seen for TIMEOUT duration.
 	private void manageChannelBuffers(final String subscriptionPattern, 
-			final String channelName, 
-			final String receivedMessage) {
+									  final String channelName, 
+									  final String receivedMessage) {
 		if (null == channelName) {
 			logger.error("[manageChannelBuffers] Something terribly wrong! Fatal error in: " + channelName);
 			//System.exit(1);
@@ -262,38 +264,49 @@ public class ChannelBufferManager {
 	 * @return List of latest tweets seen on all active channels, one tweet/channel, null if none found
 	 */
 	public List<String> getLatestFromAllChannels(final int msgCount) {
-		TreeMap<Long, String>dataSet = new TreeMap<Long, String>();
 		final List<ChannelBuffer>cbList = new ArrayList<ChannelBuffer>();
-
+		List<String>dataSet = new ArrayList<String>();
+		
 		cbList.addAll(ChannelBufferManager.subscribedChannels.values());
+		int k = -1;
 		for (ChannelBuffer temp: cbList) {
+			//System.out.println("cbList size = " + cbList.size() + ", Channel buffer: " + temp.getChannelName());
 			final List<String> tempList = temp.getLIFOMessages(msgCount+4);		// reverse-chronologically ordered list
 			if (!tempList.isEmpty()) {
-				for (int i = 0;i < Math.min(msgCount+4,tempList.size());i++) {
-					// By virtue of FIFO and serial buffering of messages, messages from same channel as
-					// well as different channels are guaranteed to have different getLastAddTime(). 
-					// But, this does not hold if we use actual tweet Time as below.
-					long tweetTime = extractTweetTimestampField(tempList.get(i)).getTime();
-					if (!dataSet.containsKey(tweetTime))		// we keep only the first one we have seen		
-					{
-						dataSet.put(tweetTime, tempList.get(i));		// automatically sorted by tweetTime - TreeMap implementation
-						//logger.info("Timestamp" + tweetTime + ": Added tweet from " + temp.getChannelName() + " : " + tempList.get(i));
+				int channelFetchSize = Math.min(msgCount+4,tempList.size());
+				for (int i = 0;i < channelFetchSize;i++) {
+					//System.out.println("TWEET: " + tempList.get(i));
+					ClassifiedFilteredTweet tweet = new ClassifiedFilteredTweet().deserialize(tempList.get(i));
+					//System.out.println("Channel: " + tweet.getCrisisCode() + ", time: " + tweet.getCreatedAt() + ", conf=" + tweet.getMaxConfidence());
+					long tweetTime = tweet.getCreatedAt().getTime();
+					if (k < 0) {
+						dataSet.add(k+1, tempList.get(i));
+						++k;
+					}
+					else {
+						ClassifiedFilteredTweet lastStoredTweet = new ClassifiedFilteredTweet()
+																		.deserialize(dataSet.get(k));
+						// rule 1: if more recent, include
+						if (lastStoredTweet.getCreatedAt().getTime() < tweetTime) {
+							dataSet.add(k+1, tempList.get(i));
+							++k;
+							//System.out.println("Added using rule 1 from channel: " + tweet.getCrisisCode());
+						}
+						
+						// rule 2: if not recent but from another channel, include
+						if (lastStoredTweet.getCreatedAt().getTime() >= tweetTime
+								&& !lastStoredTweet.getCrisisCode().equals(tweet.getCrisisCode())) {
+							String tempTweet = dataSet.remove(k);
+							dataSet.add(k, tempList.get(i));
+							dataSet.add(k+1,tempTweet);
+							++k;
+							//System.out.println("Added using rule 2 from channel: " + tweet.getCrisisCode());
+						}
 					}
 				}
-				tempList.clear();
 			}
 		}
-		// We need to send msgCount number of message from all active buffers
-		// since we do not know which ones will be rejected, based on the 
-		// rejectNullFlag setting used in the output handler
-		final List<String> msgList = new ArrayList<String>(); 
-		if (!dataSet.isEmpty()) {
-			//msgList.addAll(dataSet.descendingMap().values());
-			msgList.addAll(dataSet.values());		// inversion will happen in client output handler
-			dataSet.clear();
-			dataSet = null;
-		}
-		return msgList;
+		return dataSet;
 	}
 
 	public Date extractTweetTimestampField(String tweet) {

@@ -67,13 +67,15 @@ public class ChannelBuffer {
 	 */
 	public List<String> getMessages(int msgCount) {
 		List<String> msgList = new ArrayList<String>(); 
-		synchronized(messageBuffer) {
+		synchronized(messageBuffer) 
+		{
 			Iterator<String>itr = messageBuffer.iterator();
 			int count = 0;
 			while (itr.hasNext() && count < msgCount) {
 				msgList.add(itr.next());
 				++count;
 			}
+			//System.out.println("[getMessages] channel = " + channelName + ", count = " + msgList.size());
 		}
 		return msgList;
 	}
@@ -88,11 +90,14 @@ public class ChannelBuffer {
 		List<String> tempList = new ArrayList<String>();
 		tempList.addAll(getMessages(MAX_BUFFER_SIZE));
 		int count = 0;
-		synchronized (tempList) {
-			ListIterator<String>itr = tempList.listIterator(tempList.size()-1);
+		synchronized (tempList) 
+		{
+			ListIterator<String>itr = tempList.listIterator(tempList.size());
+			//System.out.println("[getLIFOMessages] channel = " + channelName + ", size = " + tempList.size());
 			while (itr.hasPrevious() && count < msgCount) {
 				msgList.add(itr.previous());
 				++count;
+				//System.out.println("[getLIFOMessages] channel = " + channelName + ", count = " + count);
 			}
 		}
 		tempList.clear();

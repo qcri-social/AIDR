@@ -57,6 +57,26 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
         return string.charAt(0).toUpperCase() + string.slice(1);
     },
 
+    maskCount: 0,
+
+    showMask: function(mask){
+        if (mask) {
+            if (this.maskCount == 0) {
+                mask.show();
+            }
+            this.maskCount++;
+        }
+    },
+
+    hideMask: function(mask){
+        if (mask) {
+            this.maskCount--;
+            if (this.maskCount == 0) {
+                mask.hide();
+            }
+        }
+    },
+
     getMask: function (showMessage, msg) {
         if (showMessage) {
             if (!msg) {

@@ -153,7 +153,6 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             id: 'CollectionLang',
             value: 'en',
             emptyText: 'e.g., en, ar, ja',
-
             tpl: '<tpl for=".">' +
                 '<li role="option" class="x-boundlist-item">{name}</li>' +
                 '<tpl if="xindex == 9"><hr/></tpl>' +

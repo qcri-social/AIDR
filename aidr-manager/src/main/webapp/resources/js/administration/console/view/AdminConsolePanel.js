@@ -35,7 +35,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
         this.runningCollectionsStore = Ext.create('Ext.data.Store', {
             pageSize: 10,
             storeId: 'runningCollectionsStore',
-            fields: ['id', 'name', 'code', 'count', 'startDate', 'user', 'totalCount', 'taggersCount', 'durationHours'],
+            fields: ['id', 'name', 'code', 'count', 'startDate', 'user', 'totalCount', 'taggersCount', 'durationHours', 'publiclyListed'],
             remoteSort: true,
             proxy: {
                 type: 'ajax',
@@ -90,6 +90,43 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
             store: this.runningCollectionsStore,
             cls: 'aidr-grid',
             columns: [
+               {
+                      xtype: 'gridcolumn', dataIndex: 'publiclyListed', text: 'Public', width: 60,                      
+                      renderer: function (value, meta, record) {
+                    	  var id = Ext.id();
+                    	  Ext.defer(function () {
+					      var widget = Ext.widget('checkboxfield', {
+					    	  renderTo: Ext.getBody(),	 					    	 
+					    	  valueField: 'publiclyListed',
+                              displayField: 'publiclyListed',
+					    	  store: me.runningCollectionsStore,
+					    	  listeners: {
+					    		  checkChange: function (rowIndex, checked, eOpts) {
+					    			  var record = me.runningCollectionsStore.getAt(rowIndex);                             
+					    			  Ext.Ajax.request({
+					    				  url: BASE_URL + '/protected/collection/updatePublicListing.action',
+					    				  method: 'POST',
+					    				  params: {
+					    					  id: record.data.id,
+					    					  publiclyListed: checked
+					    				  },
+					    				  headers: {
+					    					  'Accept': 'application/json'
+					    				  },
+					    				  success: function (response) {
+					    					  AIDRFMFunctions.setAlert("Info", "Collection <b>" + record.data.name + "</b> Listing status has been updated");
+					    				  }
+					    			  }); 
+					    		  }
+                              }
+                          });
+                    
+					      widget.setValue(value);
+					      
+					}, 10);
+                    return value; 
+                 }
+        		},  
                 {
                     xtype: 'gridcolumn', dataIndex: 'name', text: 'Collection', flex: 1,
                     renderer: function (value, meta, record) {
@@ -181,7 +218,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 140, align: 'right', sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 140, css: 'text-align: right;', sortable: false,
                     renderer: function (value, meta, record) {
                         return value ? Ext.util.Format.number(value, '0,000') : 0;
                     }
@@ -240,7 +277,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
         this.stoppedCollectionsStore = Ext.create('Ext.data.Store', {
             pageSize: 10,
             storeId: 'stoppedCollectionsStore',
-            fields: ['id', 'name', 'code', 'count', 'startDate', 'user', 'totalCount', 'taggersCount', 'durationHours'],
+            fields: ['id', 'name', 'code', 'count', 'startDate', 'user', 'totalCount', 'taggersCount', 'durationHours', 'publiclyListed'],
             remoteSort: true,
             proxy: {
                 type: 'ajax',
@@ -280,6 +317,43 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
             store: this.stoppedCollectionsStore,
             cls: 'aidr-grid',
             columns: [
+                 {
+                      xtype: 'gridcolumn', dataIndex: 'publiclyListed', text: 'Public', width: 60,                      
+                      renderer: function (value, meta, record) {
+                    	  var id = Ext.id();
+                    	  Ext.defer(function () {
+					      var widget = Ext.widget('checkboxfield', {
+					    	  renderTo: Ext.getBody(),	 
+					    	  valueField: 'publiclyListed',
+                              displayField: 'publiclyListed',
+					    	  store: me.stoppedCollectionsStore,
+					    	  listeners: {
+					    		  checkChange: function (rowIndex, checked, eOpts) {
+					    			  var record = me.stoppedCollectionsStore.getAt(rowIndex);                             
+					    			  Ext.Ajax.request({
+					    				  url: BASE_URL + '/protected/collection/updatePublicListing.action',
+					    				  method: 'POST',
+					    				  params: {
+					    					  id: record.data.id,
+					    					  publiclyListed: checked
+					    				  },
+					    				  headers: {
+					    					  'Accept': 'application/json'
+					    				  },
+					    				  success: function (response) {
+					    					  AIDRFMFunctions.setAlert("Info", "Collection <b>" + record.data.name + "</b> Listing status has been updated");
+					    				  }
+					    			  }); 
+					    		  }
+                              }
+                          });
+					      
+					      widget.setValue(value);
+					      
+					}, 10);
+                    return value; 
+                 }
+        		},  
                 {
                     xtype: 'gridcolumn', dataIndex: 'name', text: 'Collection', flex: 1,
                     renderer: function (value, meta, record) {
@@ -352,7 +426,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 130, sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 130, css: 'text-align: right;', sortable: false,
                     renderer: function (value, meta, record) {
                         return value ? Ext.util.Format.number(value, '0,000') : 0;
                     }

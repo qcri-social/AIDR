@@ -39,16 +39,29 @@ public class JsonQueryList implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder object = new StringBuilder();
-		object.append("{constraints: [");
+		int constraintCount = 0;
+		object.append("{\"constraints\": [");
 		for (GenericInputQuery q: constraints) {
-			object.append("{query_type: ").append(q.queryType).append(", ");
-			object.append("classifier_code: ").append(q.classifier_code).append(", ");
-			object.append("time: ").append(q.timestamp).append(", ");
-			object.append("label_code: ").append(q.label_code).append(", ");
-			object.append("comparator: ").append(q.comparator).append(", ");
-			object.append("min_confidence: ").append(q.min_confidence).append("},");
+			object.append("{\"query_type\": \"").append(q.queryType).append("\", ");
+			if (q.classifier_code != null) {
+				object.append("\"classifier_code\": \"").append(q.classifier_code).append("\", ");
+			} else {
+				object.append("\"classifier_code\": null, ");
+			}
+			object.append("\"comparator\": \"").append(q.comparator).append("\", ");
+			object.append("\"timestamp\": ").append(q.timestamp).append(", ");
+			if (q.label_code != null) {
+				object.append("\"label_code\": \"").append(q.label_code).append("\", ");
+			} else {
+				object.append("\"label_code\": null, ");
+			}
+			object.append("\"min_confidence\": ").append(q.min_confidence).append("},");
+			++constraintCount;
 		}
-		object.deleteCharAt(object.length()-1).append("]}");
+		if (constraintCount == 0)  
+			object.append("]}");
+		else 
+			object.deleteCharAt(object.length()-1).append("]}");
 		return object.toString();
 	}
 }

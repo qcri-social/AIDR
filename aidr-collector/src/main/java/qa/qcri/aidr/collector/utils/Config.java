@@ -20,12 +20,14 @@ public class Config {
         
         // gf 3 way
         //public static final String FETCHER_REST_URI="http://localhost:8080/AIDRFetcher/webresources/fetcher";
-        public static final String FETCHER_REST_URI="http://localhost:8084/AIDRCollector/webresources/";
+        //public static final String FETCHER_REST_URI="http://localhost:8084/AIDRCollector/webresources/";		// scd1
+        public static final String FETCHER_REST_URI="http://localhost:8080/AIDRCollector/webresources/";		// koushik
         
         // Default persister related parameters
         public static final boolean DEFAULT_PERSISTER_ENABLED = true;
         public static final String DEFAULT_PERSISTER_FILE_LOCATION = "/var/www/aidr/data/persister/";
-        public static final String PERSISTER_REST_URI="http://localhost:8084/AIDRPersister/webresources/";
+        public static final String PERSISTER_REST_URI="http://localhost:8084/AIDRPersister/webresources/";	// scd1
+        //public static final String PERSISTER_REST_URI="http://localhost:8080/AIDRPersister/webresources/";		// koushik
     
         // Redis paramters
         public static final int INPUT_PORT = 4320;
