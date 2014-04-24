@@ -354,8 +354,14 @@ public class ScreenController extends BaseController{
 
         String userName = getAuthenticatedUserName();
 
-        TaggerCrisis crisis = taggerService.getCrisesByCode(code);
-        AidrCollection collection = collectionService.findByCode(code);
+        TaggerCrisis crisis = null;
+        AidrCollection collection = null;
+        try {
+            crisis = taggerService.getCrisesByCode(code);
+            collection = collectionService.findByCode(code);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Integer crisisId = 0;
         String crisisName = "";
