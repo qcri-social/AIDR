@@ -56,7 +56,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
     loadData: function(fromSkipAction) {
         var me = this;
 
-        var mask = AIDRFMFunctions.getMask();
+        var mask = AIDRFMFunctions.getMask(true);
         AIDRFMFunctions.showMask(mask);
 
         Ext.Ajax.request({
@@ -91,9 +91,8 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                             if (r.attributeInfo){
                                 Ext.each(r.attributeInfo, function (attr) {
 //                                    Show labels from only one Category (the one user clicks on previous screen).
-                                    if (NOMINAL_ATTRIBUTE_ID == 0 ||
-                                        attr.nominalAttributeID == NOMINAL_ATTRIBUTE_ID) {
-//                                        attr.nominalAttributeID == 533) {
+                                    if (NOMINAL_ATTRIBUTE_ID == 0 || attr.nominalAttributeID == NOMINAL_ATTRIBUTE_ID) {
+//                                    if (NOMINAL_ATTRIBUTE_ID == 0 || attr.nominalAttributeID == 533) {
                                         var labelPanel = Ext.create('TAGGUI.training-examples.view.LabelPanel', {});
                                         labelPanel.showData(attr);
                                         me.mainComponent.optionPanel.add(labelPanel);
@@ -147,7 +146,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
             return false;
         }
 
-        var mask = AIDRFMFunctions.getMask();
+        var mask = AIDRFMFunctions.getMask(true);
         AIDRFMFunctions.showMask(mask);
 
         Ext.each(children, function (child) {
@@ -197,7 +196,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
             return false;
         }
 
-        var mask = AIDRFMFunctions.getMask();
+        var mask = AIDRFMFunctions.getMask(true);
         AIDRFMFunctions.showMask(mask);
 
         Ext.Ajax.request({
