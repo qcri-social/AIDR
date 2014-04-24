@@ -23,5 +23,7 @@ public interface ClientAppService {
     List<ClientApp> findClientAppByAppType(String columnName, Integer typeID);
     void updateClientAppByShortName(String shortName, Integer status);
     ClientApp getClientAppByCrisisAndAttribute(Long crisisID, Long attributeID);
+    void deactivateClientAppByCrisis(Long crisisID) throws Exception;
+    void deactivateClientAppByAttribute(Long crisisID, Long attributeID) throws Exception;
 
 }

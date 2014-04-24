@@ -40,4 +40,39 @@ public class ClientAppController {
 
     }
 
+    @GET
+    @Produces( MediaType.APPLICATION_JSON )
+    @Path("/delete/crisis/{crisisID}")
+    public Response disableClientApps(@PathParam("crisisID") Long crisisID){
+
+        try{
+            clientAppService.deactivateClientAppByCrisis(crisisID);
+        }
+        catch(Exception e){
+            System.out.println("disableClientApps : " + e);
+        }
+
+
+        return Response.status(CodeLookUp.APP_SERVICE_COMPLETED).entity(StatusCodeType.POST_COMPLETED).build();
+    }
+
+    @GET
+    @Produces( MediaType.APPLICATION_JSON )
+    @Path("/delete/attribute/{crisisID}/{attributeID}")
+    public Response disableClientApp(@PathParam("crisisID") Long crisisID, @PathParam("attributeID") Long attributeID){
+
+        try{
+            clientAppService.deactivateClientAppByAttribute(crisisID, attributeID);
+        }
+        catch(Exception e){
+            System.out.println("disableClientApps : " + e);
+        }
+
+
+        return Response.status(CodeLookUp.APP_SERVICE_COMPLETED).entity(StatusCodeType.POST_COMPLETED).build();
+    }
+
+
+
+
 }
