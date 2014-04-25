@@ -499,6 +499,7 @@ public class CollectionController extends BaseController{
         dto.setCreatedDate(collection.getCreatedDate());
         dto.setLastDocument(collection.getLastDocument());
         dto.setDurationHours(collection.getDurationHours());
+        dto.setPubliclyListed(collection.getPubliclyListed());
 
         List<UserEntity> managers = collection.getManagers();
         for (UserEntity manager : managers) {
