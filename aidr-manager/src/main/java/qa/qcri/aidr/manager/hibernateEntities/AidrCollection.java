@@ -58,10 +58,7 @@ public class AidrCollection implements Serializable {
 
     private Date createdDate;
     
-    @NotNull
     private Boolean publiclyListed;
-    
-    //private Boolean isTrashed;
     
     
     @Column(length = 1000, name = "last_document")
@@ -225,21 +222,12 @@ public class AidrCollection implements Serializable {
         this.durationHours = durationHours;
     }
     
-    /*
-    public Boolean getIsTrashed() {
-    	return isTrashed;
-    }
-    
-    public void setIsTrashed(Boolean isTrashed) {
-    	this.isTrashed = isTrashed;
-    }
-    */
     
     public Boolean getPubliclyListed() {
     	return publiclyListed;
     }
     
     public void setPubliclyListed(Boolean publiclyListed) {
-    	this.publiclyListed = publiclyListed;
+    	this.publiclyListed = (publiclyListed == null) ? true : publiclyListed;
     }
 }

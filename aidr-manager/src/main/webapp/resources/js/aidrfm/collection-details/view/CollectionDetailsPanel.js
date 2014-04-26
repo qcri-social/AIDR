@@ -121,7 +121,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         this.administrationL = Ext.create('Ext.form.Label', {
             flex: 1,
             text: 'Collaborators',
-            padding: '15 0 0 0',
+            padding: '0 0 0 0',
             cls: 'header-h2'
         });
 
@@ -262,6 +262,14 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             id: 'collectionStop',
             margin: '0 0 0 10',
             hidden: true
+        });
+        
+        this.trashButton = Ext.create('Ext.Button', {
+            text: 'Trash Collection',
+            cls:'btn btn-black',
+            id: 'collectionTrash',
+            margin: '25 0 0 0',
+            hidden: false
         });
 
         this.configurationsEditTabL = Ext.create('Ext.form.Label', {
@@ -814,8 +822,30 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 this.languageFiltersL
                             ]
                         },
-                        this.administrationL,
-                        this.managersL
+                        
+                        {
+                            xtype: 'container',
+                            defaultType: 'label', 
+                            padding: '5 0 0 0',
+                            layout: 'hbox',
+                            items: [
+                                    {
+                                    	xtype: 'container',
+                                    	defaultType: 'label',
+                                    	layout: 'vbox',
+                                    	items: [
+                                    	        this.administrationL,
+                                    	        this.managersL        
+                                    	]
+                                    },
+                                    {
+                                    	width: 750,                                    	
+                                    	text: ''
+                                    },                                
+                                    this.trashButton
+                            ]
+                        }
+                                
                     ]
                 }
             ]

@@ -85,9 +85,11 @@ public class TaggerController extends BaseController {
 				TaggerUser taggerUser = new TaggerUser(userName, "normal");
 				taggerUserId = taggerService.addNewUser(taggerUser);
 			}
-
+			System.out.println("userID = " + taggerUserId + ", name = " + userName);
 			TaggerCrisisRequest crisis = transformCrisesRequestToTaggerCrises(crisisRequest, taggerUserId);
+			System.out.println("After transformation:, crisis = " + crisis.getCode() + ": " + crisis.getCrisisType() + ":" + crisis.getName());
 			String response = taggerService.createNewCrises(crisis);
+			System.out.println("createNewCrises: " + response);
 			if ("SUCCESS".equals(response)){
 				return getUIWrapper(true);
 			} else {

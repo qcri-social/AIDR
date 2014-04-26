@@ -151,7 +151,13 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     datailsController.stopCollection();
                 }
             },
-
+            
+            "#collectionTrash": {
+                click: function (btn, e, eOpts) {
+                    datailsController.trashCollection();
+                }
+            },
+            
             '#collectionUpdate': {
                 click: function (btn, e, eOpts) {
                     if (AIDRFMFunctions.mandatoryFieldsEntered()) {
@@ -405,6 +411,53 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         this.setTotalCountOfDocuments(r.totalCount);
         this.setLastDowloadedDoc(r.lastDocument);
     },
+    
+    updateTrashedDetailsPanel: function (r) {
+        var p = this.DetailsComponent;
+        p.currentCollection = r;
+
+        p.collectionTitle.setText('<b>' + r.name + '</b>', false);
+
+        this.setStatus('TRASHED');
+
+        this.setStartDate('');
+        this.setEndDate('');
+        this.setWillStoppedDate('TRASHED','',0);
+
+        COLLECTION_CODE = r.code;
+        p.codeL.setText(r.code);
+        p.keywordsL.setText(r.track);
+
+        if (r.geo){
+            p.geoL.setText(r.geo, false);
+            p.geoContainer.show();
+        } else {
+            p.geoL.setText(this.ns, false);
+            p.geoContainer.hide();
+        }
+
+        p.followL.setText(this.ns, false);
+        p.followContainer.hide();
+        
+        var languageFull = r.langFilters;
+        if(languageFull != ''){
+            for(var i=0; i < LANG.length; i++){
+                var s = LANG[i];
+                var a = s[0] + s[1];
+                if(s[1] == languageFull) {
+                    languageFull = s[0];
+                }
+            }
+        }
+
+        p.languageFiltersL.setText(languageFull ? languageFull : this.ns, false);
+
+        p.createdL.setText('');
+
+        this.setCountOfDocuments(0);
+        this.setTotalCountOfDocuments(0);
+        this.setLastDowloadedDoc('');
+    },
 
     setLastDowloadedDoc: function(raw) {
         var p = this.DetailsComponent;
@@ -566,6 +619,40 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     if (resp.data) {
                         var data = resp.data;
                         me.updateDetailsPanel(data);
+                    }
+                } else {
+                    AIDRFMFunctions.setAlert("Error", resp.message);
+                }
+            },
+            failure: function () {
+                mask.hide();
+            }
+        });
+    },
+
+    trashCollection: function () {
+        var me = this;
+        var id = datailsController.DetailsComponent.currentCollection.id;
+
+        var mask = AIDRFMFunctions.getMask();
+        mask.show();
+
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/collection/trash.action',
+            method: 'GET',
+            params: {
+                id: id
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                mask.hide();
+                var resp = Ext.decode(response.responseText);
+                if (resp.success) {
+                    if (resp.data) {
+                        var data = resp.data;
+                        me.updateTrashedDetailsPanel(data);
                     }
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);

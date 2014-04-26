@@ -1,0 +1,27 @@
+# Koushik's
+#twitter.consumerKey=N7rabH3deIdq9Lv7yVSQ
+#twitter.consumerSecret=y9oK24PlIjO60Xb3iqO0v7yY7mqFr29CmGeVsCPbwRY
+
+# Ji's 
+twitter.consumerKey=J38ZBu6Ayb0KymzG6pP6g
+twitter.consumerSecret=Z6kYfnv990gBuUkGeNoH71b7GCIT7AY225669INe5U
+
+twitter.RequesttokenURL= https://api.twitter.com/oauth/request_token
+twitter.AuthorizeURL=https://api.twitter.com/oauth/authorize
+twitter.AccessTokenURL=https://api.twitter.com/oauth/access_token
+
+#twitter.callBackURL=http://127.0.0.1:8080/AIDRFetchManager
+twitter.callBackURL=http://localhost:8080/AIDRFetchManager
+
+#spring social security
+application.secureUrl=http://localhost:8080/AIDRFetchManager
+
+socialsignin.signUpView=/signUpForm
+socialsignin.defaultAuthenticationSuccessUrl=/protected/home
+socialsignin.defaultAccessDeniedUrl=/oauthconnect.jsp
+
+fetchMainUrl=http://localhost:8080/AIDRCollector/webresources
+taggerMainUrl=http://localhost:8080/AIDRTaggerAPI/rest
+persisterMainUrl=http://localhost:8080/AIDRPersister/webresources
+crowdsourcingAPIMainUrl=http://localhost:8080/AIDRCrowdsourcingAPI/rest
+outputAPIMainUrl=http://localhost:8080/AIDROutput/rest
