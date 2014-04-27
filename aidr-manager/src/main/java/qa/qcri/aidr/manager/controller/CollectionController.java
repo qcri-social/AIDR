@@ -189,6 +189,7 @@ public class CollectionController extends BaseController{
 				collection.setUser(dbCollection.getUser());
 				collection.setManagers(dbCollection.getManagers());
 				collection.setCreatedDate(dbCollection.getCreatedDate());
+				collection.setPubliclyListed(dbCollection.getPubliclyListed());
 				collectionService.update(collection);
 
 				//              start collection
@@ -199,6 +200,7 @@ public class CollectionController extends BaseController{
 				collection.setUser(dbCollection.getUser());
 				collection.setManagers(dbCollection.getManagers());
 				collection.setCreatedDate(dbCollection.getCreatedDate());
+				collection.setPubliclyListed(dbCollection.getPubliclyListed());
 				collectionService.update(collection);
 			}
 			return getUIWrapper(true);

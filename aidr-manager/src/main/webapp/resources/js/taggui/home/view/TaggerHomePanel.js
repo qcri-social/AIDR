@@ -41,7 +41,7 @@ Ext.define('TAGGUI.home.view.TaggerHomePanel', {
         this.crisesStore = Ext.create('Ext.data.JsonStore', {
             pageSize: 10,
             storeId: 'crisesStore',
-            fields: ['crisisID', 'code', 'name', 'crisisType', 'users', 'modelFamilyCollection'],
+            fields: ['crisisID', 'code', 'name', 'crisisType', 'users', 'modelFamilyCollection', 'isTrashed'],
             proxy: {
                 type: 'ajax',
                 url: 'tagger/getCrisesByUserId.action',
