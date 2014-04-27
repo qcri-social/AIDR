@@ -140,8 +140,7 @@
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
-			<version>2.0</version>
-			<scope>provided</scope> 
+			<version>2.0</version> 
 		</dependency>
 		<!-- if you are using Jersey client specific features -->
 		<dependency>
@@ -156,7 +155,6 @@
 			<artifactId>jersey-container-servlet</artifactId>
 			<version>2.5.1</version>
 
-			<scope>provided</scope>
                 </dependency>
 		
 		<dependency>
@@ -164,7 +162,6 @@
 			<artifactId>jersey-client</artifactId>
 			<version>2.5.1</version>
 
-			<scope>provided</scope>
 		</dependency>
 
 		<!-- log4j -->
@@ -199,20 +196,17 @@
                 <dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
-			<version>2.5.1</version>
-			<scope>provided</scope> 
+			<version>2.5.1</version> 
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-server</artifactId>
-			<version>2.5.1</version>
-			<scope>provided</scope> 
+			<version>2.5.1</version> 
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-moxy</artifactId>
-			<version>2.5.1</version>
-                        <scope>provided</scope> 
+			<version>2.5.1</version> 
 			
 		</dependency>
                 
