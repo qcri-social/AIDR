@@ -89,52 +89,15 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
             flex:1,
             store: this.runningCollectionsStore,
             cls: 'aidr-grid',
-            columns: [
-               {
-                      xtype: 'gridcolumn', dataIndex: 'publiclyListed', text: 'Public', width: 60,                      
-                      renderer: function (value, meta, record) {
-                    	  var id = Ext.id();
-                    	  Ext.defer(function () {
-					      var widget = Ext.widget('checkboxfield', {
-					    	  renderTo: Ext.getBody(),	 					    	 
-					    	  valueField: 'publiclyListed',
-                              displayField: 'publiclyListed',
-					    	  store: me.runningCollectionsStore,
-					    	  listeners: {
-					    		  checkChange: function (rowIndex, checked, eOpts) {
-					    			  var record = me.runningCollectionsStore.getAt(rowIndex);                             
-					    			  Ext.Ajax.request({
-					    				  url: BASE_URL + '/protected/collection/updatePublicListing.action',
-					    				  method: 'POST',
-					    				  params: {
-					    					  id: record.data.id,
-					    					  publiclyListed: checked
-					    				  },
-					    				  headers: {
-					    					  'Accept': 'application/json'
-					    				  },
-					    				  success: function (response) {
-					    					  AIDRFMFunctions.setAlert("Info", "Collection <b>" + record.data.name + "</b> Listing status has been updated");
-					    				  }
-					    			  }); 
-					    		  }
-                              }
-                          });
-                    
-					      widget.setValue(value);
-					      
-					}, 10);
-                    return value; 
-                 }
-        		},  
+            columns: [  
                 {
-                    xtype: 'gridcolumn', dataIndex: 'name', text: 'Collection', flex: 1,
+                    xtype: 'gridcolumn', dataIndex: 'name', text: 'Collection', width: 240,
                     renderer: function (value, meta, record) {
                         return me.getCollectionNameAsLink(value, record.data.code);
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'user', text: 'User', width: 200,
+                    xtype: 'gridcolumn', dataIndex: 'user', text: 'User', width: 130,
                     renderer: function (value, meta, record) {
                         if (value.userName){
                             return value.userName;
@@ -153,7 +116,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Last stopped', width: 140,
+                    xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Scheduled stop', width: 140,
                     renderer: function (value, meta, record) {
                         var duration = record.data.durationHours;
 
@@ -172,7 +135,25 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'durationHours', text: 'Max Duration', width: 140, sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Items', width: 90, align: "center", sortable: false,
+                    renderer: function (value, meta, record) {
+                    	meta.style = "float:right; padding-top: 9px;";
+                    	return value ? Ext.util.Format.number(value, '0,000') : 0;
+                    }
+                },
+                {
+                    xtype: 'gridcolumn', dataIndex: 'taggersCount', text: 'Taggers', width: 70, sortable: false,
+                    renderer: function (value, meta, record) {
+                        if (value){
+                            var result = Ext.util.Format.number(value, '0,000');
+                            return me.getTaggerLink(value, record.data.code);
+                        } else {
+                            return 0;
+                        }
+                    }
+                },
+                {
+                    xtype: 'gridcolumn', dataIndex: 'durationHours', text: 'Max Duration', width: 150, sortable: false,
                     renderer: function (value, meta, record) {
                         var id = Ext.id();
 
@@ -216,25 +197,44 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                         }, 10);
                         return Ext.String.format('<div id="{0}" class="no-padding"></div>', id);
                     }
-                },
+                },                
                 {
-                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 140, align: "right", sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'publiclyListed', text: 'Public', width: 50,                      
                     renderer: function (value, meta, record) {
-                    	meta.style = "float:right; padding-top: 9px;";
-                    	return value ? Ext.util.Format.number(value, '0,000') : 0;
-                    }
-                },
-                {
-                    xtype: 'gridcolumn', dataIndex: 'taggersCount', text: 'Taggers', width: 70, sortable: false,
-                    renderer: function (value, meta, record) {
-                        if (value){
-                            var result = Ext.util.Format.number(value, '0,000');
-                            return me.getTaggerLink(value, record.data.code);
-                        } else {
-                            return 0;
-                        }
-                    }
-                }
+                  	  var id = Ext.id();
+                  	  Ext.defer(function () {
+					      var widget = Ext.widget('checkboxfield', {
+					    	  renderTo: Ext.getBody(),	 					    	 
+					    	  valueField: 'publiclyListed',
+                            displayField: 'publiclyListed',
+					    	  store: me.runningCollectionsStore,
+					    	  listeners: {
+					    		  checkChange: function (rowIndex, checked, eOpts) {
+					    			  var record = me.runningCollectionsStore.getAt(rowIndex);                             
+					    			  Ext.Ajax.request({
+					    				  url: BASE_URL + '/protected/collection/updatePublicListing.action',
+					    				  method: 'POST',
+					    				  params: {
+					    					  id: record.data.id,
+					    					  publiclyListed: checked
+					    				  },
+					    				  headers: {
+					    					  'Accept': 'application/json'
+					    				  },
+					    				  success: function (response) {
+					    					  AIDRFMFunctions.setAlert("Info", "Collection <b>" + record.data.name + "</b> Listing status has been updated");
+					    				  }
+					    			  }); 
+					    		  }
+                            }
+                        });
+                  
+					      widget.setValue(value);
+					      
+					}, 10);
+                  return value; 
+               }
+      		}
             ]
         });
 
@@ -317,52 +317,15 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
             flex:1,
             store: this.stoppedCollectionsStore,
             cls: 'aidr-grid',
-            columns: [
-                 {
-                      xtype: 'gridcolumn', dataIndex: 'publiclyListed', text: 'Public', width: 60,                      
-                      renderer: function (value, meta, record) {
-                    	  var id = Ext.id();
-                    	  Ext.defer(function () {
-					      var widget = Ext.widget('checkboxfield', {
-					    	  renderTo: Ext.getBody(),	 
-					    	  valueField: 'publiclyListed',
-                              displayField: 'publiclyListed',
-					    	  store: me.stoppedCollectionsStore,
-					    	  listeners: {
-					    		  checkChange: function (rowIndex, checked, eOpts) {
-					    			  var record = me.stoppedCollectionsStore.getAt(rowIndex);                             
-					    			  Ext.Ajax.request({
-					    				  url: BASE_URL + '/protected/collection/updatePublicListing.action',
-					    				  method: 'POST',
-					    				  params: {
-					    					  id: record.data.id,
-					    					  publiclyListed: checked
-					    				  },
-					    				  headers: {
-					    					  'Accept': 'application/json'
-					    				  },
-					    				  success: function (response) {
-					    					  AIDRFMFunctions.setAlert("Info", "Collection <b>" + record.data.name + "</b> Listing status has been updated");
-					    				  }
-					    			  }); 
-					    		  }
-                              }
-                          });
-					      
-					      widget.setValue(value);
-					      
-					}, 10);
-                    return value; 
-                 }
-        		},  
+            columns: [           
                 {
-                    xtype: 'gridcolumn', dataIndex: 'name', text: 'Collection', flex: 1,
+                    xtype: 'gridcolumn', dataIndex: 'name', text: 'Collection', width: 240,
                     renderer: function (value, meta, record) {
                     	return me.getCollectionNameAsLink(value, record.data.code);
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'user', text: 'User', width: 200,
+                    xtype: 'gridcolumn', dataIndex: 'user', text: 'User', width: 130,
                     renderer: function (value, meta, record) {
                         if (value.userName){
                             return value.userName;
@@ -381,7 +344,25 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'durationHours', text: 'Duration', width: 140, sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Items', width: 90, align: "center", sortable: false,
+                    renderer: function (value, meta, record) {
+                    	meta.style = "float:right; padding-top: 9px;";
+                    	return value ? Ext.util.Format.number(value, '0,000') : 0;
+                    }
+                },
+                {
+                    xtype: 'gridcolumn', dataIndex: 'taggersCount', text: 'Taggers', width: 70, sortable: false,
+                    renderer: function (value, meta, record) {
+                        if (value){
+                            var result = Ext.util.Format.number(value, '0,000');
+                            return me.getTaggerLink(value, record.data.code);
+                        } else {
+                            return 0;
+                        }
+                    }
+                },
+                {
+                    xtype: 'gridcolumn', dataIndex: 'durationHours', text: 'Duration', width: 150, sortable: false,
                     renderer: function (value, meta, record) {
                         var id = Ext.id();
 
@@ -425,25 +406,44 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                         }, 10);
                         return Ext.String.format('<div id="{0}" class="no-padding"></div>', id);
                     }
-                },
+                },                
                 {
-                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Collected tweets', width: 130, align: "right", sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'publiclyListed', text: 'Public', width: 50,                      
                     renderer: function (value, meta, record) {
-                    	meta.style = "float:right; padding-top: 9px;";
-                    	return value ? Ext.util.Format.number(value, '0,000') : 0;
-                    }
-                },
-                {
-                    xtype: 'gridcolumn', dataIndex: 'taggersCount', text: 'Taggers', width: 70, sortable: false,
-                    renderer: function (value, meta, record) {
-                        if (value){
-                            var result = Ext.util.Format.number(value, '0,000');
-                            return me.getTaggerLink(value, record.data.code);
-                        } else {
-                            return 0;
-                        }
-                    }
-                }
+                  	  var id = Ext.id();
+                  	  Ext.defer(function () {
+					      var widget = Ext.widget('checkboxfield', {
+					    	  renderTo: Ext.getBody(),	 
+					    	  valueField: 'publiclyListed',
+                            displayField: 'publiclyListed',
+					    	  store: me.stoppedCollectionsStore,
+					    	  listeners: {
+					    		  checkChange: function (rowIndex, checked, eOpts) {
+					    			  var record = me.stoppedCollectionsStore.getAt(rowIndex);                             
+					    			  Ext.Ajax.request({
+					    				  url: BASE_URL + '/protected/collection/updatePublicListing.action',
+					    				  method: 'POST',
+					    				  params: {
+					    					  id: record.data.id,
+					    					  publiclyListed: checked
+					    				  },
+					    				  headers: {
+					    					  'Accept': 'application/json'
+					    				  },
+					    				  success: function (response) {
+					    					  AIDRFMFunctions.setAlert("Info", "Collection <b>" + record.data.name + "</b> Listing status has been updated");
+					    				  }
+					    			  }); 
+					    		  }
+                            }
+                        });
+					      
+					      widget.setValue(value);
+					      
+					}, 10);
+                  return value; 
+               }
+      		}
             ]
         });
 
