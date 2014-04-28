@@ -63,7 +63,7 @@
 
             function renderList(data) {
                 console.log(data);
-                var appList = new Array();
+                var appList = [];
                 var crisisName ;
                 var createdAt;
                 var index = 0;
@@ -78,7 +78,7 @@
                     else{
                         $.each(v.nominal_labels, function (j,x)
                         {
-                            rowInput = new Object();
+                            rowInput = {};
                             rowInput.createdAt =  moment(createdAt).format("YYYY-MM-DD HH:mm:ss Z");
                             rowInput.label_name = x.label_name;
                             rowInput.label_code = x.label_code;
@@ -86,7 +86,7 @@
                             rowInput.label_description = x.label_description;
                             rowInput.attribute_code = x.attribute_code;
                             rowInput.attribute_name  = x.attribute_name;
-                            rowInput.text = v.text;
+                            rowInput.text = '<a target="_blank" href="https://twitter.com/' + v.screen_name + '/status/' + v.id + '" class="tweet">' + v.text + '</a>';
 
                             appList[index] = rowInput;
                             index = index + 1;
