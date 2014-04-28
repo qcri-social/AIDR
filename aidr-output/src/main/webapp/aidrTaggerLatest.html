@@ -22,9 +22,20 @@
     </style>
     <script type="text/javascript" language="javascript" src="media/js/jquery.js"></script>
     <script type="text/javascript" language="javascript" src="media/js/jquery.dataTables.js"></script>
-    <script type="text/javascript" language="javascript" src="media/js/dateFormat.js"></script>
+    <script type="text/javascript" language="javascript" src="media/js/moment-with-langs.js"></script>
     <script src="media/js/purl.js"></script>
     <script type="text/javascript" charset="utf-8">
+        moment.lang('en', {
+            calendar : {
+                lastDay : '[Yesterday at] LT',
+                sameDay : '[Today at] LT',
+                nextDay : '[Tomorrow at] LT',
+                lastWeek : '[last] dddd [at] LT',
+                nextWeek : 'dddd [at] LT',
+                sameElse : 'LL'
+            }
+        });
+
         $(document).ready(function() {
             var searchKey = $.url().param('crisisCode');
             //searchKey = 'dolphins_slaughter' ;
@@ -39,6 +50,7 @@
                     jsonpCallback: "jsonp"
                 });
 
+                $("#helpUsLink").attr("href", "http://clickers.micromappers.org/aidr/" + searchKey)
             }
             else{
                 var e = document.getElementById("dynamic");
@@ -55,7 +67,6 @@
                 var crisisName ;
                 var createdAt;
                 var index = 0;
-                $.format = DateFormat.format;
                 $.each(data, function (i,v)
                 {
                     crisisName = v.crisis_name;
@@ -68,7 +79,7 @@
                         $.each(v.nominal_labels, function (j,x)
                         {
                             rowInput = new Object();
-                            rowInput.createdAt =  $.format.date(createdAt,"yyyy-MM-dd HH:mm:ss");
+                            rowInput.createdAt =  moment(createdAt).format("YYYY-MM-DD HH:mm:ss Z");
                             rowInput.label_name = x.label_name;
                             rowInput.label_code = x.label_code;
                             rowInput.confidence = (x.confidence * 100).toFixed(0) + '%';
@@ -105,6 +116,7 @@
 
                         ]
                     } );
+                    oTable.fnSort( [ [0,'asc'] ] );
                 }
                 else{
                     var e = document.getElementById("dynamic");
@@ -131,10 +143,10 @@
                 <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
                     <thead>
                     <tr>
-                        <th width="10%">Date/Time</th>
+                        <th width="13%">Date/Time</th>
                         <th width="50%">Tweet</th>
                         <th width="15%">Classifier</th>
-                        <th width="15%">Category</th>
+                        <th width="12%">Tag</th>
                         <th width="10%">Confidence</th>
                     </tr>
                     </thead>
@@ -146,8 +158,8 @@
 
                 </table>
             </div>
-            <div style="float: right; padding-top: 10px; font-size: 0.8em;"><strong>These messages have been automatically classified based on volunteer-provided labels</strong>. <a href="http://aidr.qcri.org">Help us improve these results</a></div>
-            <div class="spacer"></div>            
+            <div style="height: 18px; margin-right: 15px; text-align: right; font-size: 0.8em;"><strong>These messages have been automatically classified based on volunteer-provided labels</strong>. <a href="http://aidr.qcri.org" id="helpUsLink">Help us improve these results</a></div>
+            <div class="spacer"></div>
         </div>
     </div>
 
