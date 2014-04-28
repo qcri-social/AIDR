@@ -26,6 +26,9 @@ public class ClassifiedFilteredTweet implements Serializable {
 	private String crisis_code = null;
 	private String crisis_name = null;
 	private ArrayList<NominalLabel> nominal_labels;
+	
+	private String id = null;
+	private String screen_name = null;
 
 
 	public ClassifiedFilteredTweet() {
@@ -48,6 +51,8 @@ public class ClassifiedFilteredTweet implements Serializable {
 		text = null;
 		crisis_code = null;
 		crisis_name = null;
+		id = null;
+		screen_name = null;
 		nominal_labels.clear();
 
 		if (rawJsonString.startsWith("["))		// should never happen 
@@ -60,6 +65,10 @@ public class ClassifiedFilteredTweet implements Serializable {
 		JsonObject aidrData = null;
 		JsonArray nominalLabels; 
 
+		JsonElement tweetId = null;
+		JsonObject userData = null;
+		JsonElement screenName = null;
+		
 		if (obj.has("text")) {					// should always be true
 			tweetData = obj.get("text");		// get the tweet text string
 
@@ -67,6 +76,15 @@ public class ClassifiedFilteredTweet implements Serializable {
 				timestamp = obj.get("created_at");
 			}
 
+			if (obj.has("id")) {
+				tweetId = obj.get("id");
+			}
+			
+			if (obj.has("user")) {
+				userData = (JsonObject) obj.get("user");
+				screenName = userData.get("screen_name");
+			}
+			
 			if (obj.has("aidr")) {								// should always be true
 				aidrData = (JsonObject) obj.get("aidr");		// get the aidr JSON object
 
@@ -96,6 +114,12 @@ public class ClassifiedFilteredTweet implements Serializable {
 				
 				jsonObj.created_at = createDate(timestamp.getAsString()); 
 				created_at = createDate(timestamp.getAsString());
+				
+				jsonObj.id = tweetId.getAsString();
+				id = tweetId.getAsString();
+				
+				jsonObj.screen_name = screenName.getAsString();
+				screen_name = screenName.getAsString();
 				
 				for (int i = 0;i < nominalLabels.size();i++) {
 					NominalLabel nLabel = new NominalLabel();
@@ -178,5 +202,21 @@ public class ClassifiedFilteredTweet implements Serializable {
 		if (nominal_labels != null) {
 			nominal_labels.addAll(nLabels);
 		}
+	}
+	
+	public String getId() {
+		return id;
+	}
+	
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	public String getScreenName() {
+		return screen_name;
+	}
+	
+	public void setScreenName(String screenName) {
+		this.screen_name = screenName;
 	}
 }

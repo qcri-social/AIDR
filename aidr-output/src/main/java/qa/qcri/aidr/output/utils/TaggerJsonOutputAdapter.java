@@ -48,6 +48,11 @@ public class TaggerJsonOutputAdapter {
 		JsonObject obj = (JsonObject) parser.parse(rawJsonString);
 		JsonElement tweetData = null;
 		JsonElement timestamp = null;
+		
+		JsonElement id = null;
+		JsonObject userData = null;
+		JsonElement screen_name = null;
+		
 		JsonObject aidrData = null;
 		JsonArray nominalLabels; 
 		crisisCode = null;
@@ -59,6 +64,15 @@ public class TaggerJsonOutputAdapter {
 				timestamp = obj.get("created_at");
 			}
 			
+			if (obj.has("id")) {
+				id = obj.get("id");
+			}
+			
+			if (obj.has("user")) {
+				userData = (JsonObject) obj.get("user");
+				screen_name = userData.get("screen_name");
+			}
+					
 			if (obj.has("aidr")) {								// should always be true
 				aidrData = (JsonObject) obj.get("aidr");		// get the aidr JSON object
 
@@ -82,6 +96,9 @@ public class TaggerJsonOutputAdapter {
 				jsonObj.crisis_code = crisisCode;
 				jsonObj.crisis_name = crisisName;
 				jsonObj.nominal_labels.addAll(nominalLabels);
+				
+				jsonObj.id = id;
+				jsonObj.screen_name = screen_name;
 				
 				if (!isemptyNominalLabels(nominalLabels)) 
 					return jsonObject.toJson(jsonObj);
@@ -111,6 +128,10 @@ public class TaggerJsonOutputAdapter {
 		private JsonElement text = null;
 		private JsonElement crisis_code = null;
 		private JsonElement crisis_name = null;
+		
+		private JsonElement id = null;
+		private JsonElement screen_name = null;
+		
 		private JsonArray nominal_labels;
 
 		public JsonReturnClass() {
@@ -138,6 +159,14 @@ public class TaggerJsonOutputAdapter {
 			if (nominal_labels != null) 
 				arr.addAll(nominal_labels);
 			return arr;
+		}
+		
+		public JsonElement getId() {
+			return id;
+		}
+		
+		public JsonElement getScreenName() {
+			return screen_name;
 		}
 	}
 }
