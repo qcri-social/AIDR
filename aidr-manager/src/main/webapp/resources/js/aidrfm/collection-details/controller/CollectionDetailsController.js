@@ -371,7 +371,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         this.setStatus(r.status);
 
         this.setStartDate(r.startDate);
-        this.setEndDate(r.endDate);
+        this.setEndDate(r.endDate, r.status);
         this.setWillStoppedDate(r.status, r.startDate, r.durationHours);
 
         COLLECTION_CODE = r.code;
@@ -513,10 +513,11 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         this.DetailsComponent.lastStartedL.setText(raw ? moment(raw).calendar() : me.na, false);
     },
 
-    setEndDate: function (raw) {
+    setEndDate: function (raw, status) {
         var me = this;
-        if (this.DetailsComponent.lastStartedL.html != me.na) {
-        	this.DetailsComponent.lastStoppedL.setText(raw ? moment(raw).calendar() : 'Still running', false);
+        if (status == "RUNNING" || status == "RUNNING-WARNNING" || status == "INITIALIZING") {
+        	//this.DetailsComponent.lastStoppedL.setText(raw ? moment(raw).calendar() : 'Still running', false);
+        	this.DetailsComponent.lastStoppedL.setText('Still running', false);
         }
         else {
         	this.DetailsComponent.lastStoppedL.setText(raw ? moment(raw).calendar() : me.na, false);
@@ -744,7 +745,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                         me.DetailsComponent.currentCollection.status = data.status;
                         me.setStatus(data.status);
                         me.setStartDate(data.startDate);
-                        me.setEndDate(data.endDate);
+                        me.setEndDate(data.endDate, data.status);
                         me.setWillStoppedDate(data.status, data.startDate, data.durationHours);
                         me.setCountOfDocuments(data.count);
                         me.setTotalCountOfDocuments(data.totalCount);
