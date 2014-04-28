@@ -512,7 +512,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         this.DetailsComponent.lastStartedL.setText(raw ? moment(raw).calendar() : me.na, false);
     },
-
+    
     setEndDate: function (raw, status) {
         var me = this;
         if (status == "RUNNING" || status == "RUNNING-WARNNING" || status == "INITIALIZING") {
