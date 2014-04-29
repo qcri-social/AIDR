@@ -14,11 +14,9 @@ The **Collector** simply allows you to collect and save a collection of tweets p
 
 ### Trainer
 
-While the Collector is a word-filter, the **Trainer** is a topic-filter. The more tweets are tagged, the more accurate the automatic classifier will be. When enough tweets have been classified (20 minimum), the Tagger automatically begins to tag new tweets by topic of interest.
+While the Collector is a word-filter, the **Trainer** is a topic-filter. The more tweets are tagged, the more accurate the automatic classifier will be. When enough tweets have been classified (20 minimum), the Tagger automatically begins to tag new tweets by topic of interest. AIDR creates two types of trainers for a collection automatically: 1) Internal Trainer, which is used by collection owners to tag tweets without using volunteers. 2) PyBossa trainer, which is used to crowdsource tweets to involve volunteers or third parties to help tag tweets. 
 
-AIDR creates two types of trainers for a collection automatically: 1) Internal Trainer, which is used by collection owners to tag tweets without using volunteers. 2) PyBossa trainer, which is used to crowdsource tweets to involve volunteers or third parties to help tag tweets. 
-
-With the Trainer, users classify collected tweets by topics of interest, such as "Infrastructure Damage," and "Urgent needs," for example. Any number of users can participate in classifying these tweets. Once AIDR has created  a Trainer, the user can classify the tweets herself, invite your organization to help classify, utilize the crowd to help classify the tweets, or all of the above. To do this, the user simply shares a link to the users training page with whoever you like. If you choose to crowdsource the classification of tweets, AIDR includes a built-in quality control mechanism to ensure that the crowdsourced classification is accurate. 
+With the Trainer, users classify collected tweets by topics of interest, such as "Infrastructure Damage," and "Urgent needs," for example. Once AIDR has created  a Trainer, the user can classify the tweets herself, invite her organization to help classify, utilize volunteers to help classify the tweets, or all of the above. The trainer part of AIDR occurs in MicroMappers, a platform for digital volunteers, which is a partner of AIDR. To invite volunteers or your organization to tag tweets, just send the "Public link for volunteers." Any number of users can participate in classifying these tweets. AIDR then receives the tagged tweets from MicroMappers with their labels and uses them to learn. Additionally, AIDR includes a built-in quality control mechanism to ensure that the crowdsourced classification is accurate.  
 
 ### Tagger
 
@@ -117,7 +115,7 @@ Automatic taggers require training examples, which are items that have been clas
 
 ### 3.1. Starting the automatic tagger
 
-From the collection details page, click on "Enable Tagger" or "Go To Tagger" button if the tagger is already enabled [Figure 7]. A tagger is a set of classifiers. Each classifier corresponds to one way of sorting out tweets into user-defined categories. Before enabling automatic tagging, you must chose a crisis type to define your collection [Figure 8]. 
+From the collection details page, you can give others access to manage your collection. To do this, click on the permissions tab on the collection details page. You can then enter the Twitter user name of the person you would like to add as a collaborator.  To begin the collection, click on "Enable Tagger" or “Go to Classifier” if the tagger is already enabled [Figure 7]. A tagger is a set of classifiers. Each classifier corresponds to one way of sorting out tweets into user-defined categories. Before enabling automatic tagging, you must chose a crisis type to define your collection [Figure 8]. 
 
 ![](http://i.imgur.com/bElpH8e.png)
 
@@ -139,23 +137,29 @@ Figure 10: Adding a custom classifier
 
 ### 3.2. Collecting training examples
 
-At this stage, you can copy-paste the "Public link for volunteers" and share it with your organization or volunteers. All users with the link will then be able to apply training labels for your tagger. If you do not have others to tag the tweets, then proceed with the training examples yourself. If your collection has not acquired enough tweets for the training, try again in a few minutes. 
+At this stage, you can copy-paste the "Public link for volunteers" and share it with your organization or digital volunteers. All users with the link will then be able to apply training labels for your tagger. This tagging occurs in MicroMappers. If you do not have others to tag the tweets, then proceed with the training examples yourself. If your collection has not acquired enough tweets for the training, try again in a few minutes. 
 
-To complete the training data, click on "Go to human-tagged items" [Figure 11]. On the next screen, click "Tag more items" [Figure 12].
+You can also customize MicroMappers by click the “Customize MicroMappers” tab [Figure 11]. This allows you to customize what the volunteers will see in their public page for volunteers when working in MicroMappers. For example, you can customize the message they will see when first arriving to the public page. To do this, just change any text and click on “Save.” You can also click “Custom Skin” at the bottom of the page to change the visual presentation of the tasks. Simply chose the style you want and click save. Additionally, clicking on “Custom Tutorial and Welcome Message” will allow you to customize what the volunteers see when they click on your classifier. Before starting to fill-in the information, choose the classifier you want to customize and fill-in the requested information. [Figure 12]. 
 
-![](http://i.imgur.com/AWSyOTs.png)
+After doing this, proceed to complete the training data from the Details tab. To do so, click on "Go to human-tagged items" [Figure 11]. On the next screen, click "Tag more items" [Figure 13]. 
+
+![](http://i.imgur.com/7eVSqkm.png)
 
 Figure 11: Manage training examples
 
+![](http://i.imgur.com/lOJNlMs.png)
+
+Figure 12: Customizing MicroMappers
+
 ![](http://i.imgur.com/u0PbbSZ.png)
 
-Figure 12: Start the training data
+Figure 13: Start the training data
 
-Once you click to tag more items, you will begin to label training examples. To complete the training data, you will be asked to indicate the proper label for tweets gathered as part of your collection. The labels are determined by the classifier you chose for your collection based on what type of information you are looking to collect from the tweets [Figure 13]. Again, these training examples provide the basis for your automatic tagger.
+Once you click to tag more items, you will begin to label training examples. To complete the training data, you will be asked to indicate the proper label for tweets gathered as part of your collection. The labels are determined by the classifier you chose for your collection based on what type of information you are looking to collect from the tweets [Figure 14]. Again, these training examples provide the basis for your automatic tagger.
 
 ![](http://i.imgur.com/q2gMu98.png)
 
-Figure 13: Label training examples
+Figure 14: Label training examples
 
 ### 3.3. Monitoring the automatic tagger
 
@@ -163,10 +167,45 @@ The automatic tagger will not run until a minimum number of training examples (2
 
 The more examples you provide, the better the classification accuracy will be. An AUC of 0.5 or lower indicates a very bad classifier that is not doing anything better than random guessing -- this is expected when you have few training examples, but may also signal errors or inconsistencies in your examples. An AUC of 0.8 or higher indicates reasonable classification accuracy and 0.9 is sometimes attainable with a few thousands examples.
 
-### 3.4. Downloading collected data
+### 4. Managing Collected Data
 
-To download/export the data gathered click the Download/Export button
+### 4.1. View and Delete Human-tagged items
 
-Choose which format to download/export. Click relevant button
+Once your collection is running, you are able to view and remove human-tagged items. On your collection’s page, click “Go to Classifier” [Figure 15]. Then click “Go to human-tagged items.” [Figure 16]. You can now view, delete, or add human-tagged items [Figure 17]. 
+
+![](http://i.imgur.com/fSgZqts.png)
+
+Figure 15: Go to Classifier
+
+![](http://i.imgur.com/Z0VroUI.png)
+
+Figure 16: Human-tagged items
+
+![](http://i.imgur.com/5S8eDfj.png)
+
+Figure 17: View and delete items
+
+### 4.2. Downloading collected data
+
+To download/export the data gathered click the Download/Export button. Choose which format to download/export. Click relevant button
 
 Note that Twitter’s Terms of Service allow you to download up to 100,000 tweets per day. But you can download as many tweet IDs as you’d like. Tweet IDs are simply unique identifiers for every posted tweet. You can then convert  tweet IDs back into their original tweets. This is permissible according to Twitter’s Terms of Service
+
+### 4.3. Operating the Interactive View/Download
+
+From your classifier’s page [Figure 16], click on the “View/Download” tab. On the next page, click “Go to interactive view/download” [Figure 17]. You will now be able to see the latest 1,000 items. 
+
+The page shows the tweet, classifier, and the tag that was automatically associated to that tweet. As the classification is automatic, it also displays the confidence with which the classification was done as a percentage. The percentage is out of 100, so a 100% means the classifier is completely accurate. It is important to note that the classifier is never perfect, but becomes more accurate as more human-tagged examples are provided.
+ 
+At the top of the page, you can filter the data to obtain messages fitting only selected criteria according to the fields displayed. Add additional fields by clicking the blue plus sign [Figure 18]. 
+
+![](http://i.imgur.com/P4a9Yv4.png)
+
+Figure 17: Interactive view/download
+
+![](http://i.imgur.com/JMgVtW2.png)
+
+Figure 18: View and sort tagged data 
+
+
+
