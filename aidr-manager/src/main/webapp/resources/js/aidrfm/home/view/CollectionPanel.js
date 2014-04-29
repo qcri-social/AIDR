@@ -216,4 +216,4 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
         this.callParent(arguments);
     }
 
-})
+});
