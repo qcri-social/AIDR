@@ -49,7 +49,7 @@ public class TaggerJsonOutputAdapter {
 		JsonElement tweetData = null;
 		JsonElement timestamp = null;
 		
-		JsonElement id = null;
+		String id = null;
 		JsonObject userData = null;
 		JsonElement screen_name = null;
 		
@@ -65,7 +65,7 @@ public class TaggerJsonOutputAdapter {
 			}
 			
 			if (obj.has("id")) {
-				id = obj.get("id");
+				id = obj.get("id").getAsString();
 			}
 			
 			if (obj.has("user")) {
@@ -129,7 +129,7 @@ public class TaggerJsonOutputAdapter {
 		private JsonElement crisis_code = null;
 		private JsonElement crisis_name = null;
 		
-		private JsonElement id = null;
+		private String id = null;
 		private JsonElement screen_name = null;
 		
 		private JsonArray nominal_labels;
@@ -161,7 +161,7 @@ public class TaggerJsonOutputAdapter {
 			return arr;
 		}
 		
-		public JsonElement getId() {
+		public String getId() {
 			return id;
 		}
 		
