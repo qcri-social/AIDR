@@ -177,13 +177,30 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
 
                     var contactToText = 'Contact <a target="_blank" href="https://twitter.com/' + ownerUserName + '">&#64;' + ownerUserName + '</a> to get download permissions.';
                     me.mainComponent.contactOwnerL.setText(contactToText, false);
-
                     me.mainComponent.contactOwnerPanel.show();
+
                     me.mainComponent.suspendLayout = false;
                     me.mainComponent.forceComponentLayout();
                 }
+                me.updateStatusInfo(jsonData.status, jsonData.endDate);
             }
         });
+    },
+
+    updateStatusInfo: function(status, endDate){
+        var statusText = '';
+
+        if (status == 'RUNNING-WARNNING' || status == 'RUNNING' || status == 'INITIALIZING'){
+            statusText = '<div class="styled-text">Status: running</div>';
+        } else {
+            if (endDate) {
+                statusText = '<div class="styled-text">This collection is not running since ' + moment(endDate).calendar() +'.</div>';
+            } else {
+                statusText = '<div class="styled-text">This collection was never running.</div>';
+            }
+        }
+
+        this.mainComponent.statusL.setText(statusText, false);
     },
 
     isCurrentUserManagerOrOwner: function(managers, ownerUserName){

@@ -26,7 +26,11 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
         this.screenTitle = Ext.create('Ext.form.Label', {
             cls: 'header-h1 bold-text',
             text: CRISIS_NAME,
-            flex: 1
+            margin: '10 0 10 0'
+        });
+
+        this.statusL = Ext.create('Ext.form.Label', {
+            padding: '0 0 10 0'
         });
 
         this.applyFilterButton = Ext.create('Ext.Button', {
@@ -258,13 +262,15 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
             },
             {
                 xtype: 'container',
-
                 layout: {
                     type: 'vbox',
                     align: 'stretch'
                 },
+                margin: 0,
+                padding: 0,
                 items: [
-                    this.screenTitle
+                    this.screenTitle,
+                    this.statusL
                 ]
             },
             this.filterFieldSet,
