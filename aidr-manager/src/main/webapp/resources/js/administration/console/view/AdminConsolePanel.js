@@ -144,6 +144,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                 {
                     xtype: 'gridcolumn', dataIndex: 'taggersCount', text: 'Taggers', width: 70, sortable: false,
                     renderer: function (value, meta, record) {
+                        meta.style = "float:right; padding-top: 9px;";
                         if (value){
                             var result = Ext.util.Format.number(value, '0,000');
                             return me.getTaggerLink(value, record.data.code);
@@ -339,6 +340,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                 {
                     xtype: 'gridcolumn', dataIndex: 'taggersCount', text: 'Taggers', width: 70, sortable: false,
                     renderer: function (value, meta, record) {
+                        meta.style = "float:right; padding-top: 9px;";
                         if (value){
                             var result = Ext.util.Format.number(value, '0,000');
                             return me.getTaggerLink(value, record.data.code);
