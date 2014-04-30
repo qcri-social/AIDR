@@ -150,7 +150,7 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
         });
 
         this.tweetsStore = Ext.create('Ext.data.Store', {
-            pageSize: 10,
+            pageSize: 25,
             storeId: 'tweetsStore',
             fields: ['text', 'attribute_name', 'label_name', 'confidence', 'createdAt']
         });
@@ -160,6 +160,9 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
             itemId: 'tweetsGrid',
             margin: '10 0 0 0',
             cls: 'aidr-grid',
+            viewConfig: {
+                loadMask: false
+            },
             columns: [
                 {
                     xtype: 'gridcolumn', dataIndex: 'text', text: 'Tweet', flex: 1
