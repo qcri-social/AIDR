@@ -203,7 +203,7 @@ At the top of the page, you can filter the data to obtain messages fitting only 
 
 Figure 18: Interactive view/download
 
-![](http://i.imgur.com/JMgVtW2.png)
+![](http://i.imgur.com/MlEDCk2.png)
 
 Figure 19: View and sort tagged data 
 
