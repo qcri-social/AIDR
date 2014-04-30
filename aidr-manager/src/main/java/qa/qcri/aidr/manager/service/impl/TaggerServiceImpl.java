@@ -898,8 +898,8 @@ public class TaggerServiceImpl implements TaggerService {
 			String jsonResponse = clientResponse.readEntity(String.class);
 			System.out.println("jsonResponse: " + jsonResponse);
 
-			if (jsonResponse != null && jsonResponse.startsWith("{")) {
-				return jsonResponse;
+            if (jsonResponse != null && (jsonResponse.startsWith("{") || jsonResponse.startsWith("["))) {
+                return jsonResponse;
 			} else {
 				return "";
 			}
