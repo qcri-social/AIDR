@@ -69,9 +69,14 @@ public class CrisisManagementResource {
 			em.remove(document);
 		}
 		List<Document> temp = documentLocalEJB.getAllUnlabeledDocumentbyCrisisID(crisis);
-		System.out.println("Post Trashing: found for " + crisisCode + ", unlabeled docs  = " + temp.size());
+		System.out.println("Post Trashing: found for " + crisisCode + ", unlabeled docs  = " + temp.size());		
 		
-		return Response.ok("{\"status\": \"TRASHED\"}").build();
+		if (temp.isEmpty()) {
+			StringBuilder sb = new StringBuilder().append("{\"TRASHED\":").append(crisis.getCrisisID());
+			return Response.ok(sb.toString()).build();
+		} else {
+			return Response.ok("{\"status\": \"FAILED\"}").build();
+		}
 	}
 	
 	@GET
@@ -94,4 +99,5 @@ public class CrisisManagementResource {
 		System.out.println("Found for " + crisisCode + ", model families  = " + associatedModels.size());
 		return Response.ok("{\"status\": \"UNTRASHED\"}").build();
 	}
+	
 }
