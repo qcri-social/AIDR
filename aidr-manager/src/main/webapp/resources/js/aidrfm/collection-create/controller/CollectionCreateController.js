@@ -99,6 +99,17 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 }
             },
 
+            "#crisisTypesInfo": {
+                render: function (infoPanel, eOpts) {
+                    var tip = Ext.create('Ext.tip.ToolTip', {
+                        trackMouse: true,
+                        html: "Collection type specifies a type of the crisis.",
+                        target: infoPanel.el,
+                        dismissDelay: 0
+                    });
+                }
+            },
+
             "#CollectionLang":{
                 change: function(field, newValue, oldValue){
                      var selectedValue = newValue;
@@ -160,7 +171,8 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                     follow: Ext.String.trim( form.findField('follow').getValue() ),
                     geo: Ext.String.trim( form.findField('geo').getValue() ),
                     langFilters: form.findField('langFilters').getValue(),
-                    durationHours: form.findField('durationHours').getValue()
+                    durationHours: form.findField('durationHours').getValue(),
+                    crisisType: form.findField('crisisType').getValue()
                 },
                 headers: {
                     'Accept': 'application/json'

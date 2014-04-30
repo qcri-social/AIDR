@@ -66,6 +66,8 @@ public class AidrCollection implements Serializable {
 
     private Integer durationHours;
 
+    private Integer crisisType;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "AIDR_COLLECTION_TO_MANAGER",
@@ -221,8 +223,15 @@ public class AidrCollection implements Serializable {
     public void setDurationHours(Integer durationHours) {
         this.durationHours = durationHours;
     }
-    
-    
+
+    public Integer getCrisisType() {
+        return crisisType;
+    }
+
+    public void setCrisisType(Integer crisisType) {
+        this.crisisType = crisisType;
+    }
+
     public Boolean getPubliclyListed() {
     	return publiclyListed;
     }

@@ -99,6 +99,17 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 }
             },
 
+            "#crisisTypesInfo": {
+                render: function (infoPanel, eOpts) {
+                    var tip = Ext.create('Ext.tip.ToolTip', {
+                        trackMouse: true,
+                        html: "Collection type specifies a type of the crisis.",
+                        target: infoPanel.el,
+                        dismissDelay: 0
+                    });
+                }
+            },
+
             "#collectionStart": {
                 click: function (btn, e, eOpts) {
                     var mask = AIDRFMFunctions.getMask();
@@ -182,25 +193,13 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
             "#enableTagger": {
                 click: function (btn, e, eOpts) {
-                    this.getAllCrisisTypesFromTagger();
+                    this.enableTagger();
                 }
             },
 
             "#goToTagger": {
                 click: function (btn, e, eOpts) {
                     this.goToTagger();
-                }
-            },
-
-            "#crisesTypeViewId": {
-                itemclick: function (view, record, item, index, e, eOpts) {
-                    this.crisisTypeSelectHandler(view, record, item, index, e, eOpts);
-                }
-            },
-
-            "#crisesTypeWin": {
-                hide: function (btn, e, eOpts) {
-                    AIDRFMFunctions.getMask().hide();
                 }
             },
 
@@ -489,6 +488,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         p.duration.setValue(duration);
         p.langCombo.setValue(r.langFilters ? r.langFilters.split(',') : '');
+        p.crisisTypesCombo.setValue(r.crisisType);
     },
 
     setStatus: function (raw) {
@@ -692,7 +692,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 fromDate: startDate,
                 endDate: endDate,
                 langFilters: form.findField('langFilters').getValue(),
-                durationHours: form.findField('durationHours').getValue()
+                durationHours: form.findField('durationHours').getValue(),
+                crisisType: form.findField('crisisType').getValue()
             },
             headers: {
                 'Accept': 'application/json'
@@ -758,45 +759,17 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         });
     },
 
-    getAllCrisisTypesFromTagger: function() {
-        var me = this,
-            mask = AIDRFMFunctions.getMask();
+    enableTagger: function(view, record, item, index, e, eOpts) {
+        var collection = this.DetailsComponent.currentCollection;
 
-        mask.show();
+        var crisisTypeID = collection.crisisType;
+        if (!crisisTypeID) {
+            AIDRFMFunctions.setAlert("Error", "Collection type is not selected. Please select type of the collection and save it.");
+            return false;
+        }
 
-        Ext.Ajax.request({
-            url: BASE_URL + '/protected/tagger/getAllCrisisTypes.action',
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json'
-            },
-            success: function (response) {
-                var resp = Ext.decode(response.responseText);
-                if (resp.success && resp.data && resp.data.length > 0) {
-                    var count = resp.data.length;
-                    if (count > 0) {
-                        me.DetailsComponent.crisesTypeStore.loadData(resp.data);
-                        me.DetailsComponent.crisesTypeWin.show();
-                    } else {
-                        AIDRFMFunctions.setAlert("Error", "Crises types list received from Tagger is empty");
-                    }
-                } else {
-                    mask.hide();
-                    AIDRFMFunctions.setAlert("Error", resp.message);
-                }
-            },
-            failure: function () {
-                mask.hide();
-            }
-        });
-    },
-
-    crisisTypeSelectHandler: function(view, record, item, index, e, eOpts) {
-        var me = this,
-            collection = this.DetailsComponent.currentCollection,
-            code = collection.code,
-            name = collection.name,
-            crisisTypeID = record.data.crisisTypeID;
+        var code = collection.code;
+        var name = collection.name;
 
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/createCrises.action',

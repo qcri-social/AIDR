@@ -220,6 +220,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
             url: BASE_URL + '/protected/tagger/updateCrisis.action',
             method: 'POST',
             params: {
+                code: CRISIS_CODE,
                 crisisID: CRISIS_ID,
                 crisisTypeID: crisisTypeId,
                 crisisTypeName: Ext.String.trim( crisisTypeName )

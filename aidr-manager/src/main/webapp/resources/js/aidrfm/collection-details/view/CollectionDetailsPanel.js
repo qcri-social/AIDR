@@ -309,21 +309,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             hidden: true
         });
 
-        this.crisesTypeStore = Ext.create('Ext.data.JsonStore', {
-            pageSize: 100,
-            storeId: 'crisesTypeStore',
-            fields: ['crisisTypeID', 'name'],
-            proxy: {
-                type: 'ajax',
-                url: '',
-                reader: {
-                    root: 'data',
-                    totalProperty: 'total'
-                }
-            },
-            autoLoad: false
-        });
-
         this.collectionLogStore = Ext.create('Ext.data.Store', {
             pageSize: 10,
             storeId: 'collectionLogStore',
@@ -381,25 +366,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
             '</div>'
         );
-
-        this.crisesTypeView = Ext.create('Ext.view.View', {
-            store: this.crisesTypeStore,
-            id: 'crisesTypeViewId',
-            tpl: this.crisesTypeTpl,
-            itemSelector: 'li.crisesItem'
-        });
-
-        this.crisesTypeWin = Ext.create('Ext.window.Window', {
-            bodyStyle: 'background:none; background-color: white;',
-            height: 400,
-            width: 700,
-            layout: 'fit',
-            id: 'crisesTypeWin',
-            closeAction: 'hide',
-            items: [
-                this.crisesTypeView
-            ]
-        });
 
         this.collectionLogTpl = new Ext.XTemplate(
             '<div class="collections-list">',
@@ -487,6 +453,34 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             emptyMsg:'No collection history records to display'
         });
 
+        this.crisisTypesStore = Ext.create('Ext.data.Store', {
+            pageSize: 30,
+            storeId: 'crisisTypesStore',
+            fields: ['crisisTypeID', 'name'],
+            proxy: {
+                type: 'ajax',
+                url: BASE_URL + '/protected/tagger/getAllCrisisTypes.action',
+                reader: {
+                    root: 'data',
+                    totalProperty: 'total'
+                }
+            },
+            autoLoad: true
+        });
+
+        this.crisisTypesCombo = Ext.create('Ext.form.ComboBox', {
+            store: this.crisisTypesStore,
+            queryMode: 'local',
+            displayField: 'name',
+            valueField: 'crisisTypeID',
+            fieldLabel: 'Type',
+            flex: 1,
+            name: 'crisisType',
+            editable: false,
+            allowBlank: true,
+            labelWidth: 130
+        });
+
         this.editForm = {
             xtype: 'form',
             border: false,
@@ -550,7 +544,24 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     id: 'collectionkeywordsInfo'
                                 }
                             ]
-                        },{
+                        },
+                        {
+                            xtype: 'container',
+                            layout: 'hbox',
+                            margin: '5 0',
+                            items: [
+                                this.crisisTypesCombo,
+                                {
+                                    border: false,
+                                    bodyStyle: 'background:none',
+                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+                                    height: 22,
+                                    width: 22,
+                                    id: 'crisisTypesInfo'
+                                }
+                            ]
+                        },
+                        {
                             xtype: 'container',
                             layout: 'hbox',
                             margin: '5 0 0 0',
@@ -575,6 +586,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 this.duration,
                                 {
                                     border: false,
+                                    margin: '5 0 0 0',
                                     bodyStyle: 'background:none',
                                     html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
                                     height: 22,

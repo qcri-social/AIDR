@@ -8,6 +8,10 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import qa.qcri.aidr.manager.dto.AidrCollectionTotalDTO;
+import qa.qcri.aidr.manager.dto.TaggerCrisis;
+import qa.qcri.aidr.manager.dto.TaggerCrisisExist;
+import qa.qcri.aidr.manager.dto.TaggerCrisisType;
+import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
@@ -166,8 +170,8 @@ public class CollectionController extends BaseController{
 		logger.info("Updating AidrCollection into Database having id " + collectionId);
 		try{
 			CollectionStatus status = collection.getStatus();
+            AidrCollection dbCollection = collectionService.findById(collectionId);
 			if (CollectionStatus.RUNNING_WARNING.equals(status) || CollectionStatus.RUNNING.equals(status)) {
-				AidrCollection dbCollection = collectionService.findById(collectionId);
 				//              stop collection
 				AidrCollection collectionAfterStop = collectionService.stopAidrFetcher(dbCollection);
 
@@ -195,7 +199,6 @@ public class CollectionController extends BaseController{
 				//              start collection
 				collectionService.startFetcher(collectionService.prepareFetcherRequest(collection), collection);
 			} else {
-				AidrCollection dbCollection = collectionService.findById(collection.getId());
 				collection.setStartDate(dbCollection.getStartDate());
 				collection.setUser(dbCollection.getUser());
 				collection.setManagers(dbCollection.getManagers());
@@ -203,6 +206,22 @@ public class CollectionController extends BaseController{
 				collection.setPubliclyListed(dbCollection.getPubliclyListed());
 				collectionService.update(collection);
 			}
+
+            // if collection type was changed and if crisis for this collection exists so we need to update crisis type
+            if (dbCollection.getCrisisType() != null && collection.getCrisisType() != null){
+                if (!dbCollection.getCrisisType().equals(collection.getCrisisType())){
+                    try {
+                        TaggerCrisisExist taggerCrisisExist = taggerService.isCrisesExist(collection.getCode());
+                        TaggerCrisis crisis = new TaggerCrisis(taggerCrisisExist.getCrisisId());
+                        TaggerCrisisType crisisType = new TaggerCrisisType(collection.getCrisisType());
+                        crisis.setCrisisType(crisisType);
+                        taggerService.updateCode(crisis);
+                    } catch (AidrException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
 			return getUIWrapper(true);
 		}catch(Exception e){
 			logger.error("Error while Updating AidrCollection  Info into database", e);
@@ -570,6 +589,7 @@ public class CollectionController extends BaseController{
 		dto.setLastDocument(collection.getLastDocument());
 		dto.setDurationHours(collection.getDurationHours());
         dto.setPubliclyListed(collection.getPubliclyListed());
+        dto.setCrisisType(collection.getCrisisType());
 
 		List<UserEntity> managers = collection.getManagers();
 		for (UserEntity manager : managers) {

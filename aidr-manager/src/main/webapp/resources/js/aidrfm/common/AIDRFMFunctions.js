@@ -111,6 +111,11 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
             AIDRFMFunctions.setAlert('Error', 'Collection Name is mandatory');
             isValid = false;
         }
+        if (!form.findField('crisisType').getValue()) {
+            form.findField('crisisType').markInvalid(['Collection Type is mandatory']);
+            AIDRFMFunctions.setAlert('Error', 'Collection Type is mandatory');
+            isValid = false;
+        }
         if (!(form.findField('track').getValue() || form.findField('geo').getValue() || form.findField('follow').getValue())) {
             AIDRFMFunctions.setAlert('Error', 'One of Keywords, Geo or Follow field is mandatory');
             isValid = false;
