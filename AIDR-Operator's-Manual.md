@@ -193,19 +193,19 @@ Note that Twitter’s Terms of Service allow you to download up to 100,000 tweet
 
 ### 4.3. Operating the Interactive View/Download
 
-From your classifier’s page [Figure 16], click on the “View/Download” tab. On the next page, click “Go to interactive view/download” [Figure 17]. You will now be able to see the latest 1,000 items. 
+From your classifier’s page [Figure 16], click on the “View/Download” tab. On the next page, click “Go to interactive view/download” [Figure 18]. You will now be able to see the latest 1,000 items. 
 
 The page shows the tweet, classifier, and the tag that was automatically associated to that tweet. As the classification is automatic, it also displays the confidence with which the classification was done as a percentage. The percentage is out of 100, so a 100% means the classifier is completely accurate. It is important to note that the classifier is never perfect, but becomes more accurate as more human-tagged examples are provided.
  
-At the top of the page, you can filter the data to obtain messages fitting only selected criteria according to the fields displayed. Add additional fields by clicking the blue plus sign [Figure 18]. 
+At the top of the page, you can filter the data to obtain messages fitting only selected criteria according to the fields displayed. Add additional fields by clicking the blue plus sign [Figure 19]. 
 
 ![](http://i.imgur.com/P4a9Yv4.png)
 
-Figure 17: Interactive view/download
+Figure 18: Interactive view/download
 
 ![](http://i.imgur.com/JMgVtW2.png)
 
-Figure 18: View and sort tagged data 
+Figure 19: View and sort tagged data 
 
 
 
