@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
+import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 
@@ -85,9 +86,11 @@ public class TaggerController extends BaseController {
 				TaggerUser taggerUser = new TaggerUser(userName, "normal");
 				taggerUserId = taggerService.addNewUser(taggerUser);
 			}
-
+			System.out.println("userID = " + taggerUserId + ", name = " + userName);
 			TaggerCrisisRequest crisis = transformCrisesRequestToTaggerCrises(crisisRequest, taggerUserId);
+			System.out.println("After transformation:, crisis = " + crisis.getCode() + ": " + crisis.getCrisisType() + ":" + crisis.getName());
 			String response = taggerService.createNewCrises(crisis);
+			System.out.println("createNewCrises: " + response);
 			if ("SUCCESS".equals(response)){
 				return getUIWrapper(true);
 			} else {
@@ -138,7 +141,13 @@ public class TaggerController extends BaseController {
 		TaggerCrisis crisis = transformCrisisDTOToCrisis(dto);
 		try{
 			TaggerCrisis updatedCrisis = taggerService.updateCode(crisis);
-			return getUIWrapper(updatedCrisis != null);
+
+            // update collection crisisType to keep data consistent
+            AidrCollection collection = collectionService.findByCode(dto.getCode());
+            collection.setCrisisType(dto.getCrisisTypeID());
+            collectionService.update(collection);
+
+            return getUIWrapper(updatedCrisis != null);
 		}catch(Exception e){
 			logger.error("Error while Updating Crisis in Tagger", e);
 			return getUIWrapper(false);

@@ -26,7 +26,11 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
         this.screenTitle = Ext.create('Ext.form.Label', {
             cls: 'header-h1 bold-text',
             text: CRISIS_NAME,
-            flex: 1
+            margin: '10 0 10 0'
+        });
+
+        this.statusL = Ext.create('Ext.form.Label', {
+            padding: '0 0 10 0'
         });
 
         this.applyFilterButton = Ext.create('Ext.Button', {
@@ -146,7 +150,7 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
         });
 
         this.tweetsStore = Ext.create('Ext.data.Store', {
-            pageSize: 10,
+            pageSize: 25,
             storeId: 'tweetsStore',
             fields: ['text', 'attribute_name', 'label_name', 'confidence', 'createdAt']
         });
@@ -156,12 +160,15 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
             itemId: 'tweetsGrid',
             margin: '10 0 0 0',
             cls: 'aidr-grid',
+            viewConfig: {
+                loadMask: false
+            },
             columns: [
                 {
-                    xtype: 'gridcolumn', dataIndex: 'text', text: 'Tweet', flex: 1
+                    xtype: 'gridcolumn', dataIndex: 'createdAt', text: 'Date/Time', width: 175
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'createdAt', text: 'Created at', width: 175
+                    xtype: 'gridcolumn', dataIndex: 'text', text: 'Tweet', flex: 1
                 },
                 {
                     xtype: 'gridcolumn', dataIndex: 'attribute_name', text: 'Classifier', width: 130
@@ -258,13 +265,15 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
             },
             {
                 xtype: 'container',
-
                 layout: {
                     type: 'vbox',
                     align: 'stretch'
                 },
+                margin: 0,
+                padding: 0,
                 items: [
-                    this.screenTitle
+                    this.screenTitle,
+                    this.statusL
                 ]
             },
             this.filterFieldSet,

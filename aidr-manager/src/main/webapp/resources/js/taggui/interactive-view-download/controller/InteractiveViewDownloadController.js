@@ -91,6 +91,8 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
 
     loadLatestTweets: function () {
         var me = this;
+        var mask = AIDRFMFunctions.getMask(true);
+        mask.show();
 
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/loadLatestTweets.action',
@@ -98,7 +100,8 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
             params: {
                 code: CRISIS_CODE,
 //                code: "2014-02-uk_floods"
-//                code: "2014-03-mh370",
+//                code: "2014-03-mh370"
+//                code: "2014-04-mers"
                 constraints: me.mainComponent.constraintsString
             },
             headers: {
@@ -126,6 +129,10 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                     }
                 });
                 me.mainComponent.tweetsStore.load();
+                mask.hide();
+            },
+            failure: function () {
+                mask.hide();
             }
         });
     },
@@ -139,7 +146,12 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                 row.text = r.text ? r.text : '';
                 row.attribute_name = r.nominal_labels[0].attribute_name ? r.nominal_labels[0].attribute_name : '';
                 row.label_name = r.nominal_labels[0].label_name ? r.nominal_labels[0].label_name : '';
-                row.confidence = r.nominal_labels[0].confidence ? (r.nominal_labels[0].confidence * 100) + '%' : '0%';
+                if (r.nominal_labels[0].confidence) {
+                    var confidence = (r.nominal_labels[0].confidence * 100).toFixed(2);
+                    row.confidence = confidence + '%';
+                } else {
+                    row.confidence = '0%';
+                }
                 if (r.created_at) {
                     row.createdAt = moment(r.created_at).format("YYYY-MM-DD HH:mm Z");
                 } else {
@@ -177,13 +189,30 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
 
                     var contactToText = 'Contact <a target="_blank" href="https://twitter.com/' + ownerUserName + '">&#64;' + ownerUserName + '</a> to get download permissions.';
                     me.mainComponent.contactOwnerL.setText(contactToText, false);
-
                     me.mainComponent.contactOwnerPanel.show();
+
                     me.mainComponent.suspendLayout = false;
                     me.mainComponent.forceComponentLayout();
                 }
+                me.updateStatusInfo(jsonData.status, jsonData.endDate);
             }
         });
+    },
+
+    updateStatusInfo: function(status, endDate){
+        var statusText = '';
+
+        if (status == 'RUNNING-WARNNING' || status == 'RUNNING' || status == 'INITIALIZING'){
+            statusText = '<div class="styled-text">Status: running</div>';
+        } else {
+            if (endDate) {
+                statusText = '<div class="styled-text">This collection is not running since ' + moment(endDate).calendar() +'.</div>';
+            } else {
+                statusText = '<div class="styled-text">This collection was never running.</div>';
+            }
+        }
+
+        this.mainComponent.statusL.setText(statusText, false);
     },
 
     isCurrentUserManagerOrOwner: function(managers, ownerUserName){
@@ -209,6 +238,9 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
         }
 
 //        TODO finish this section - use correct ajax with constraints
+//        var constraints = me.mainComponent.constraintsString;
+//        console.log("Constraints: " + constraints);
+
         if (value.type == '1000_TWEETS'){
             console.log('1000_TWEETS');
         } else if (value.type == '100000_TWEETS') {
@@ -284,6 +316,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
             params: {
                 code: CRISIS_CODE,
 //                code: "2014-03-mh370",
+//                code: "2014-04-mers",
                 constraints: me.mainComponent.constraintsString
             },
             headers: {
@@ -320,6 +353,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                 id: CRISIS_ID
 //                id: 117
 //                id: 71
+//                id: 149
             },
             headers: {
                 'Accept': 'application/json'

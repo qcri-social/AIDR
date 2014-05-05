@@ -50,7 +50,9 @@ public class AidrCollectionTotalDTO {
     private Integer durationHours;
     
     private Boolean publiclyListed;
-    
+
+    private Integer crisisType;
+
     public Integer getId() {
         return id;
     }
@@ -212,5 +214,13 @@ public class AidrCollectionTotalDTO {
     
     public void setPubliclyListed(Boolean publiclyListed) {
     	this.publiclyListed = publiclyListed;
+    }
+
+    public Integer getCrisisType() {
+        return crisisType;
+    }
+
+    public void setCrisisType(Integer crisisType) {
+        this.crisisType = crisisType;
     }
 }

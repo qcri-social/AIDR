@@ -162,8 +162,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
         this.collectionView = Ext.create('Ext.view.View', {
             store: this.collectionStore,
             tpl: this.collectionTpl,
-            itemSelector: 'div.active',
-            loadMask: false
+            itemSelector: 'div.active'
         });
 
         this.collectionPaging = Ext.create('Ext.toolbar.Paging', {
@@ -217,4 +216,4 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
         this.callParent(arguments);
     }
 
-})
+});

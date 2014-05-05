@@ -99,6 +99,17 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 }
             },
 
+            "#crisisTypesInfo": {
+                render: function (infoPanel, eOpts) {
+                    var tip = Ext.create('Ext.tip.ToolTip', {
+                        trackMouse: true,
+                        html: "Collection type specifies a type of the crisis.",
+                        target: infoPanel.el,
+                        dismissDelay: 0
+                    });
+                }
+            },
+
             "#collectionStart": {
                 click: function (btn, e, eOpts) {
                     var mask = AIDRFMFunctions.getMask();
@@ -151,7 +162,14 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     datailsController.stopCollection();
                 }
             },
-
+            
+            /*
+            "#collectionTrash": {
+                click: function (btn, e, eOpts) {
+                    datailsController.trashCollection();
+                }
+            },
+            */
             '#collectionUpdate': {
                 click: function (btn, e, eOpts) {
                     if (AIDRFMFunctions.mandatoryFieldsEntered()) {
@@ -175,25 +193,13 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
             "#enableTagger": {
                 click: function (btn, e, eOpts) {
-                    this.getAllCrisisTypesFromTagger();
+                    this.enableTagger();
                 }
             },
 
             "#goToTagger": {
                 click: function (btn, e, eOpts) {
                     this.goToTagger();
-                }
-            },
-
-            "#crisesTypeViewId": {
-                itemclick: function (view, record, item, index, e, eOpts) {
-                    this.crisisTypeSelectHandler(view, record, item, index, e, eOpts);
-                }
-            },
-
-            "#crisesTypeWin": {
-                hide: function (btn, e, eOpts) {
-                    AIDRFMFunctions.getMask().hide();
                 }
             },
 
@@ -364,7 +370,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         this.setStatus(r.status);
 
         this.setStartDate(r.startDate);
-        this.setEndDate(r.endDate);
+        this.setEndDate(r.endDate, r.status);
         this.setWillStoppedDate(r.status, r.startDate, r.durationHours);
 
         COLLECTION_CODE = r.code;
@@ -405,7 +411,55 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         this.setTotalCountOfDocuments(r.totalCount);
         this.setLastDowloadedDoc(r.lastDocument);
     },
+    
+    /*
+    updateTrashedDetailsPanel: function (r) {
+        var p = this.DetailsComponent;
+        p.currentCollection = r;
 
+        p.collectionTitle.setText('<b>' + r.name + '</b>', false);
+
+        this.setStatus('TRASHED');
+
+        this.setStartDate('');
+        this.setEndDate('');
+        this.setWillStoppedDate('TRASHED','',0);
+
+        COLLECTION_CODE = r.code;
+        p.codeL.setText(r.code);
+        p.keywordsL.setText(r.track);
+
+        if (r.geo){
+            p.geoL.setText(r.geo, false);
+            p.geoContainer.show();
+        } else {
+            p.geoL.setText(this.ns, false);
+            p.geoContainer.hide();
+        }
+
+        p.followL.setText(this.ns, false);
+        p.followContainer.hide();
+        
+        var languageFull = r.langFilters;
+        if(languageFull != ''){
+            for(var i=0; i < LANG.length; i++){
+                var s = LANG[i];
+                var a = s[0] + s[1];
+                if(s[1] == languageFull) {
+                    languageFull = s[0];
+                }
+            }
+        }
+
+        p.languageFiltersL.setText(languageFull ? languageFull : this.ns, false);
+
+        p.createdL.setText('');
+
+        this.setCountOfDocuments(0);
+        this.setTotalCountOfDocuments(0);
+        this.setLastDowloadedDoc('');
+    },
+	*/
     setLastDowloadedDoc: function(raw) {
         var p = this.DetailsComponent;
         p.lastDocL.setText(raw ? raw : this.na, false);
@@ -434,6 +488,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         p.duration.setValue(duration);
         p.langCombo.setValue(r.langFilters ? r.langFilters.split(',') : '');
+        p.crisisTypesCombo.setValue(r.crisisType);
     },
 
     setStatus: function (raw) {
@@ -457,11 +512,12 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         this.DetailsComponent.lastStartedL.setText(raw ? moment(raw).calendar() : me.na, false);
     },
-
-    setEndDate: function (raw) {
+    
+    setEndDate: function (raw, status) {
         var me = this;
-        if (this.DetailsComponent.lastStartedL.html != me.na) {
-        	this.DetailsComponent.lastStoppedL.setText(raw ? moment(raw).calendar() : 'Still running', false);
+        if (status == "RUNNING" || status == "RUNNING-WARNNING" || status == "INITIALIZING") {
+        	//this.DetailsComponent.lastStoppedL.setText(raw ? moment(raw).calendar() : 'Still running', false);
+        	this.DetailsComponent.lastStoppedL.setText('Still running', false);
         }
         else {
         	this.DetailsComponent.lastStoppedL.setText(raw ? moment(raw).calendar() : me.na, false);
@@ -577,6 +633,42 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         });
     },
 
+    /*
+    trashCollection: function () {
+        var me = this;
+        var id = datailsController.DetailsComponent.currentCollection.id;
+
+        var mask = AIDRFMFunctions.getMask();
+        mask.show();
+
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/collection/trash.action',
+            method: 'GET',
+            params: {
+                id: id
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                mask.hide();
+                var resp = Ext.decode(response.responseText);
+                if (resp.success) {
+                    if (resp.data) {
+                        var data = resp.data;
+                        me.updateTrashedDetailsPanel(data);
+                    }
+                } else {
+                    AIDRFMFunctions.setAlert("Error", resp.message);
+                }
+            },
+            failure: function () {
+                mask.hide();
+            }
+        });
+    },
+    */
+
     updateCollection: function (running) {
         var me = this;
 
@@ -600,7 +692,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 fromDate: startDate,
                 endDate: endDate,
                 langFilters: form.findField('langFilters').getValue(),
-                durationHours: form.findField('durationHours').getValue()
+                durationHours: form.findField('durationHours').getValue(),
+                crisisType: form.findField('crisisType').getValue()
             },
             headers: {
                 'Accept': 'application/json'
@@ -653,7 +746,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                         me.DetailsComponent.currentCollection.status = data.status;
                         me.setStatus(data.status);
                         me.setStartDate(data.startDate);
-                        me.setEndDate(data.endDate);
+                        me.setEndDate(data.endDate, data.status);
                         me.setWillStoppedDate(data.status, data.startDate, data.durationHours);
                         me.setCountOfDocuments(data.count);
                         me.setTotalCountOfDocuments(data.totalCount);
@@ -666,45 +759,17 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         });
     },
 
-    getAllCrisisTypesFromTagger: function() {
-        var me = this,
-            mask = AIDRFMFunctions.getMask();
+    enableTagger: function(view, record, item, index, e, eOpts) {
+        var collection = this.DetailsComponent.currentCollection;
 
-        mask.show();
+        var crisisTypeID = collection.crisisType;
+        if (!crisisTypeID) {
+            AIDRFMFunctions.setAlert("Error", "Collection type is not selected. Please select type of the collection and save it.");
+            return false;
+        }
 
-        Ext.Ajax.request({
-            url: BASE_URL + '/protected/tagger/getAllCrisisTypes.action',
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json'
-            },
-            success: function (response) {
-                var resp = Ext.decode(response.responseText);
-                if (resp.success && resp.data && resp.data.length > 0) {
-                    var count = resp.data.length;
-                    if (count > 0) {
-                        me.DetailsComponent.crisesTypeStore.loadData(resp.data);
-                        me.DetailsComponent.crisesTypeWin.show();
-                    } else {
-                        AIDRFMFunctions.setAlert("Error", "Crises types list received from Tagger is empty");
-                    }
-                } else {
-                    mask.hide();
-                    AIDRFMFunctions.setAlert("Error", resp.message);
-                }
-            },
-            failure: function () {
-                mask.hide();
-            }
-        });
-    },
-
-    crisisTypeSelectHandler: function(view, record, item, index, e, eOpts) {
-        var me = this,
-            collection = this.DetailsComponent.currentCollection,
-            code = collection.code,
-            name = collection.name,
-            crisisTypeID = record.data.crisisTypeID;
+        var code = collection.code;
+        var name = collection.name;
 
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/createCrises.action',

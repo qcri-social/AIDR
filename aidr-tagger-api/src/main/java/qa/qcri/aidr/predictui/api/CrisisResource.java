@@ -106,7 +106,9 @@ public class CrisisResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response addCrisis(Crisis crisis) {
-        try {
+    	try {
+    		// koushik: set default 
+    		crisis.setIsTrashed(false);
             crisisLocalEJB.addCrisis(crisis);
         } catch (RuntimeException e) {
             return Response.ok("Error while adding Crisis. Possible causes could be duplication of primary key, incomplete data, incompatible data format.").build();

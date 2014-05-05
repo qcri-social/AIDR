@@ -206,6 +206,34 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             id: 'collectionCancelCreate'
         });
 
+        this.crisisTypesStore = Ext.create('Ext.data.Store', {
+            pageSize: 30,
+            storeId: 'crisisTypesStore',
+            fields: ['crisisTypeID', 'name'],
+            proxy: {
+                type: 'ajax',
+                url: BASE_URL + '/protected/tagger/getAllCrisisTypes.action',
+                reader: {
+                    root: 'data',
+                    totalProperty: 'total'
+                }
+            },
+            autoLoad: true
+        });
+
+        this.crisisTypesCombo = Ext.create('Ext.form.ComboBox', {
+            store: this.crisisTypesStore,
+            queryMode: 'local',
+            displayField: 'name',
+            valueField: 'crisisTypeID',
+            fieldLabel: 'Type',
+            flex: 1,
+            name: 'crisisType',
+            editable: false,
+            allowBlank: true,
+            labelWidth: 130
+        });
+
         this.editForm = Ext.create('Ext.form.Panel', {
             id: 'collectionForm',
             bodyCls: 'no-border',
@@ -274,6 +302,22 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                             layout: 'hbox',
                             margin: '5 0',
                             items: [
+                                this.crisisTypesCombo,
+                                {
+                                    border: false,
+                                    bodyStyle: 'background:none',
+                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+                                    height: 22,
+                                    width: 22,
+                                    id: 'crisisTypesInfo'
+                                }
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            layout: 'hbox',
+                            margin: '5 0',
+                            items: [
                                 this.langCombo,
                                 {
                                     border: false,
@@ -294,6 +338,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                                 this.duration,
                                 {
                                     border: false,
+                                    margin: '5 0 0 0',
                                     bodyStyle: 'background:none',
                                     html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
                                     height: 22,

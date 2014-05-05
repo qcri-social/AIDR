@@ -130,3 +130,11 @@ body.main .footerwrapper .footer {
 .footer a.underlined {
     text-decoration: underline;
 }
+
+a.tweet:hover {
+    text-decoration: none;
+}
+
+a.tweet {
+    color: rgb(17, 17, 17);
+}

@@ -1,11 +1,15 @@
 package qa.qcri.aidr.predictui.facade.imp;
 
 import qa.qcri.aidr.predictui.facade.*;
+
 import java.util.List;
+
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import qa.qcri.aidr.predictui.entities.Crisis;
 import qa.qcri.aidr.predictui.entities.Document;
 
 /**
@@ -59,5 +63,15 @@ public class DocumentFacadeImp implements DocumentFacade{
             document.setNominalLabelCollection(null);
         }
     }
+
+	@Override
+	public List<Document> getAllUnlabeledDocumentbyCrisisID(Crisis crisis) {
+		Query query = em.createNamedQuery("Document.findByCrisisID", Document.class);
+        query.setParameter("crisisID", crisis.getCrisisID());
+        query.setParameter("hasHumanLabels", false);
+        List<Document> documentList = query.getResultList();
+        
+        return documentList;
+	}
     
 }

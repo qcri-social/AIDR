@@ -58,16 +58,15 @@ public class AidrCollection implements Serializable {
 
     private Date createdDate;
     
-    @NotNull
     private Boolean publiclyListed;
-    
-    //private Boolean isTrashed;
     
     
     @Column(length = 1000, name = "last_document")
     private String lastDocument;
 
     private Integer durationHours;
+
+    private Integer crisisType;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -224,22 +223,20 @@ public class AidrCollection implements Serializable {
     public void setDurationHours(Integer durationHours) {
         this.durationHours = durationHours;
     }
-    
-    /*
-    public Boolean getIsTrashed() {
-    	return isTrashed;
+
+    public Integer getCrisisType() {
+        return crisisType;
     }
-    
-    public void setIsTrashed(Boolean isTrashed) {
-    	this.isTrashed = isTrashed;
+
+    public void setCrisisType(Integer crisisType) {
+        this.crisisType = crisisType;
     }
-    */
-    
+
     public Boolean getPubliclyListed() {
     	return publiclyListed;
     }
     
     public void setPubliclyListed(Boolean publiclyListed) {
-    	this.publiclyListed = publiclyListed;
+    	this.publiclyListed = (publiclyListed == null) ? true : publiclyListed;
     }
 }
