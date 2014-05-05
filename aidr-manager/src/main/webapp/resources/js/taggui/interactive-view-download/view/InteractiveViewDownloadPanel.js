@@ -165,10 +165,10 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
             },
             columns: [
                 {
-                    xtype: 'gridcolumn', dataIndex: 'text', text: 'Tweet', flex: 1
+                    xtype: 'gridcolumn', dataIndex: 'createdAt', text: 'Date/Time', width: 175
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'createdAt', text: 'Created at', width: 175
+                    xtype: 'gridcolumn', dataIndex: 'text', text: 'Tweet', flex: 1
                 },
                 {
                     xtype: 'gridcolumn', dataIndex: 'attribute_name', text: 'Classifier', width: 130
