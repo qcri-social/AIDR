@@ -49,7 +49,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
                         " order by c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
 
 
-
+                // query to get never started collection
                 String sql2 = " SELECT DISTINCT c.id FROM AIDR_COLLECTION c " +
                         " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
                         " ON c.id = c_m.id_collection " +
