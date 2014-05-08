@@ -104,10 +104,17 @@ public class CollectionServiceImpl implements CollectionService {
     	
     }
 
-     @Override
+    @Override
     @Transactional(readOnly = true)
     public List<AidrCollection> findAll(Integer start, Integer limit, UserEntity user) throws Exception {
         return collectionRepository.getPaginatedData(start, limit, user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AidrCollection> findAllForPublic(Integer start, Integer limit, Enum statusValue) throws Exception {
+        //logger.info("statusValue: " + statusValue);
+        return collectionRepository.getPaginatedDataForPublic(start, limit, statusValue);
     }
 
 
@@ -409,6 +416,12 @@ public class CollectionServiceImpl implements CollectionService {
     @Transactional(readOnly = true)
     public Integer getCollectionsCount(UserEntity user) throws Exception {
         return collectionRepository.getCollectionsCount(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Integer getPublicCollectionsCount(Enum statusValue) throws Exception {
+        return collectionRepository.getPublicCollectionsCount(statusValue);
     }
 
 	

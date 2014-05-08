@@ -1,6 +1,7 @@
 package qa.qcri.aidr.manager.repository.impl;
 
 import org.apache.commons.collections.ListUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.*;
 import org.hibernate.criterion.*;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @Repository("collectionRepository")
 public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollection, Serializable> implements CollectionRepository{
+    private Logger logger = Logger.getLogger(getClass());
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -33,7 +35,64 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 		return (List<AidrCollection>) criteria.list();
 	}
 
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<AidrCollection> getPaginatedDataForPublic(final Integer start, final Integer limit, final Enum statusValue) {
+//        Workaround as criteria query gets result for different managers and in the end we get less then limit records.
+        List<Integer> collectionIds = (List<Integer>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
+            @Override
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+
+              //  logger.info("start: " + start);
+              //  logger.info("limit: " + limit);
+               // logger.info("statusValue: " + statusValue.ordinal());
+                String sql = " SELECT DISTINCT c.id FROM AIDR_COLLECTION c" +
+                        " WHERE (c.publiclyListed = 1 and c.status = :statusValue) " +
+                        " order by c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
+
+
+                SQLQuery sqlQuery = session.createSQLQuery(sql);
+                sqlQuery.setParameter("start", start);
+                sqlQuery.setParameter("limit", limit);
+                sqlQuery.setParameter("statusValue", statusValue.ordinal());
+                List<Integer> ids = (List<Integer>) sqlQuery.list();
+
+                //logger.info("ids count: " + ids.size());
+                return ids != null ? ids : Collections.emptyList();
+            }
+        });
+
+        List<AidrCollection> a = new ArrayList<AidrCollection>();
+
+        //logger.info("collectionIds: " + collectionIds.size());
+        for(int i =0; i < collectionIds.size(); i++){
+            AidrCollection collection =	this.findById(collectionIds.get(i));
+            a.add(collection) ;
+        }
+        return a;
+
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Integer getPublicCollectionsCount(final Enum statusValue) {
+        return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
+            @Override
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+
+                String sql = " SELECT count(distinct c.id) FROM AIDR_COLLECTION c" +
+                        " WHERE (c.publiclyListed = 1 and c.status = :statusValue) " ;
+
+                SQLQuery sqlQuery = session.createSQLQuery(sql);
+                sqlQuery.setParameter("statusValue", statusValue.ordinal());
+                BigInteger total = (BigInteger) sqlQuery.uniqueResult();
+                return total != null ? total.intValue() : 0;
+            }
+        });
+    }
+
+
+    @SuppressWarnings("unchecked")
 	@Override
 	public List<AidrCollection> getPaginatedData(final Integer start, final Integer limit, final UserEntity user) {
         final Integer userId = user.getId();

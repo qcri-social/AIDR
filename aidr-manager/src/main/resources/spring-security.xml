@@ -9,6 +9,7 @@
 	  <http pattern="/resources/**" security="none"/>
       <http pattern="/index.jsp" security="none"/>
       <http pattern="/signin" security="none"/>
+      <http pattern="/public/**" security="none" />
 
       <http entry-point-ref="springSocialSecurityEntryPoint" use-expressions="true" auto-config="false" >
         <intercept-url pattern="/protected/twitter" access="hasRole('ROLE_USER_TWITTER')" />

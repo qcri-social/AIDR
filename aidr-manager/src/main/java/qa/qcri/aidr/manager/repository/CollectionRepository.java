@@ -7,6 +7,8 @@ import java.io.Serializable;
 import java.util.List;
 
 public interface CollectionRepository extends GenericRepository<AidrCollection, Serializable> {
+    public Integer getPublicCollectionsCount(final Enum statusValue);
+    public List<AidrCollection> getPaginatedDataForPublic( Integer start,  Integer limit, Enum statusValue);
 
     public List<AidrCollection> searchByName(String query, Integer userId) throws Exception;
 

@@ -9,6 +9,10 @@ import java.util.List;
 
 public interface CollectionService {
 
+    public Integer getPublicCollectionsCount(Enum statusValue) throws Exception;
+
+    public List<AidrCollection> findAllForPublic(Integer start, Integer limit, Enum statusValue) throws Exception;
+
     public void update(AidrCollection collection) throws Exception;
 
     public void delete(AidrCollection collection) throws Exception;
