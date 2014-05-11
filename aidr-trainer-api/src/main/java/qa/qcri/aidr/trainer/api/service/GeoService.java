@@ -16,4 +16,5 @@ import java.util.List;
 public interface GeoService {
     List<GeoJsonOutputModel> getGeoJsonOutput() throws Exception;
     String getGeoJsonOuputJSONP(Date updated) throws Exception;
+    String getGeoJsonOuputJSON(Date updated) throws Exception;
 }
