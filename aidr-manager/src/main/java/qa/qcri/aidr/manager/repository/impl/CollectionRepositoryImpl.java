@@ -208,6 +208,14 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 		return (AidrCollection) criteria.uniqueResult();
 	}
 
+    @Override
+    public List<AidrCollection> getAllCollectionByUser(Integer userId) {
+        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+        criteria.add(Restrictions.eq("user.id", userId));
+
+        return (List<AidrCollection>) criteria.list();
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public List<AidrCollection> getRunningCollections() {

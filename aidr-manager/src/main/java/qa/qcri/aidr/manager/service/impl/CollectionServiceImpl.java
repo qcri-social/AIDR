@@ -1,6 +1,8 @@
 package qa.qcri.aidr.manager.service.impl;
 
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.ws.rs.core.MediaType;
@@ -22,6 +24,7 @@ import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
 import qa.qcri.aidr.manager.hibernateEntities.UserConnection;
+import qa.qcri.aidr.manager.repository.AuthenticateTokenRepository;
 import qa.qcri.aidr.manager.repository.CollectionLogRepository;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
 import qa.qcri.aidr.manager.repository.UserConnectionRepository;
@@ -43,6 +46,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.util.JsonDataValidator;
 
 @Service("collectionService")
 public class CollectionServiceImpl implements CollectionService {
@@ -54,6 +58,10 @@ public class CollectionServiceImpl implements CollectionService {
     private CollectionLogRepository collectionLogRepository;
     @Autowired
     private UserConnectionRepository userConnectionRepository;
+
+    @Autowired
+    private AuthenticateTokenRepository authenticateTokenRepository;
+
     //@Autowired	// gf 3 way
     //private Client client;
     //private Client client = ClientBuilder.newClient();
@@ -424,5 +432,15 @@ public class CollectionServiceImpl implements CollectionService {
         return collectionRepository.getPublicCollectionsCount(statusValue);
     }
 
-	
+    @Override
+    @Transactional(readOnly = true)
+    public Boolean isValidToken(String token) throws Exception {
+        return authenticateTokenRepository.isAuthorized(token);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AidrCollection> geAllCollectionByUser(Integer userId) throws Exception{
+        return collectionRepository.getAllCollectionByUser(userId);
+    }
 }

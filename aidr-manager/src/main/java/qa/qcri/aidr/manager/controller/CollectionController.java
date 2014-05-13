@@ -18,6 +18,7 @@ import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
+import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 
 import java.text.SimpleDateFormat;
@@ -41,11 +42,15 @@ public class CollectionController extends BaseController{
 	@Autowired
 	private TaggerService taggerService;
 
+    @Autowired
+    private UserService userService;
+
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
 	}
+
 
 	@RequestMapping(value = "/save.action", method={RequestMethod.POST})
 	@ResponseBody

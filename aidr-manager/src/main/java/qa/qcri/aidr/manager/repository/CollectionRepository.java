@@ -41,4 +41,7 @@ public interface CollectionRepository extends GenericRepository<AidrCollection, 
     public AidrCollection findByCode(String code);
     
     public AidrCollection trashCollectionById(Integer collectionId);
+
+    public List<AidrCollection> getAllCollectionByUser(Integer userId);
+
 }

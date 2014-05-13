@@ -63,4 +63,8 @@ public interface CollectionService {
 
     public Long getStoppedCollectionsCount(String terms) throws Exception;
 
+    public Boolean isValidToken(String token) throws Exception;
+
+    public List<AidrCollection> geAllCollectionByUser(Integer userId) throws Exception;
+
 }
