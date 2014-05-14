@@ -16,27 +16,34 @@ import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
 
 @Stateless(name = "AbstractTaskManagerServiceBean")
-public class AbstractTaskManagerServiceBean<E, I extends Serializable> implements AbstractTaskManagerService<E,I> {
+public abstract class AbstractTaskManagerServiceBean<E, I extends Serializable> implements AbstractTaskManagerService<E,I> {
 
 	@PersistenceContext(unitName = "qa.qcri.aidr.taskmanager-EJBS") 
-	private EntityManager em;
+	protected EntityManager em;
 	//@PersistenceContext(unitName = "qa.qcri.aidr.taskmanager-EJBS") org.hibernate.Session session;
     
 	//@PersistenceContext(unitName = "qa.qcri.aidr.taskmanager-EJBS") SessionFactory sessionFactory;
     
 
     private Class<E> entityClass;
+	private SessionFactory sessionFactory;
 
     public AbstractTaskManagerServiceBean(Class<E> entityClass) {
     	this.entityClass = entityClass;
     }
     
-    public AbstractTaskManagerServiceBean() {}
+    public AbstractTaskManagerServiceBean() {
+    	getSessionFactory();
+    }
     
     
     public Session getCurrentSession() {
-        //return sessionFactory.getCurrentSession();
-    	return em.unwrap(Session.class);
+    	//return em.unwrap(Session.class);
+    	return sessionFactory.getCurrentSession();
+    }
+    
+    private void getSessionFactory() {
+    	this.sessionFactory = em.unwrap(SessionFactory.class);
     }
     
     @SuppressWarnings("unchecked")

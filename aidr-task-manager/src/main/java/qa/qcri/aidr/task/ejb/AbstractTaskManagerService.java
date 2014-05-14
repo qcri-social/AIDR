@@ -1,5 +1,6 @@
 package qa.qcri.aidr.task.ejb;
 
+import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 
 import qa.qcri.aidr.task.entities.Document;
@@ -11,7 +12,9 @@ import javax.ejb.Local;
 
 @Local
 public interface AbstractTaskManagerService<E, I extends Serializable> {
-
+	
+	public Session getCurrentSession();
+	
 	public E getById(I id);
 	public E getByCriteria(Criterion criterion);
 	
