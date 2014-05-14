@@ -60,20 +60,14 @@ public class RedisTaggerPersister implements Runnable {
 			while (suspendFlag) {
 				// koushik: Added a finally block to gracefully unsubscribe
 				try {
-					System.out.println("Started collecting Tagger data to -> " + fileName + "/output");
+					System.out.println("Started collecting Tagger data to -> " + fileName);
 					System.out.println("Channel to Listen  to: " + Config.TAGGER_CHANNEL + collectionCode);
 					subscriberJedis.psubscribe(subscriber, Config.TAGGER_CHANNEL + collectionCode);
-					System.out.println("Stopped collecting data -> " + fileName + "/output");
+					System.out.println("Stopped collecting data -> " + fileName);
 					Thread.sleep(200);
 				} finally {
 					if (subscriber != null && subscriber.isSubscribed()) {
 						subscriber.punsubscribe(Config.TAGGER_CHANNEL + collectionCode);
-						try {
-							connObject.close(subscriberJedis);		// return jedis resource to JedisPool
-							Thread.sleep(200);
-						} catch (InterruptedException ex) {
-							Logger.getLogger(RedisTaggerPersister.class.getName()).log(Level.SEVERE, null, ex);
-						}
 					}
 				}
 			}
@@ -91,12 +85,12 @@ public class RedisTaggerPersister implements Runnable {
 			//subscriber.punsubscribe(Config.FETCHER_CHANNEL+ "."+collectionCode);
 			subscriber.punsubscribe(Config.TAGGER_CHANNEL + collectionCode);
 		}
-		/*try {
+		try {
 			connObject.close(subscriberJedis);		// return jedis resource to JedisPool
 			Thread.sleep(200);
 		} catch (InterruptedException ex) {
 			Logger.getLogger(RedisTaggerPersister.class.getName()).log(Level.SEVERE, null, ex);
-		}*/
+		}
 		//t.stop();		// koushik: replaced by t.join()
 		try {
 			t.join();

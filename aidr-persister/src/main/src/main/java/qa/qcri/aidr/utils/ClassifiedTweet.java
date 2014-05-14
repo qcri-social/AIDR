@@ -41,7 +41,8 @@ public class ClassifiedTweet  implements Document, Serializable{
 	
 	// Added by koushik
 	//@JsonIgnore
-	public ArrayList<NominalLabel> nominal_labels;		// transient?
+	
+	public transient ArrayList<NominalLabel> nominal_labels;
 
 	public ClassifiedTweet() {
 		nominal_labels = new ArrayList<NominalLabel>();

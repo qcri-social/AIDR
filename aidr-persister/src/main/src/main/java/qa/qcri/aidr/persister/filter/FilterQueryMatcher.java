@@ -84,9 +84,9 @@ public class FilterQueryMatcher {
 			if (q.getComparator().equals(ComparatorType.is_after)) {
 				boolean matchResult;
 				if (null == tweet.getCreatedAt()) {
-					System.err.println("[isQueryMatch] No createdAt field in Tweet!!!");
-					System.err.println("OFFENDING TWEET: " + tweet);
-					System.err.println("\n");
+					System.out.println("[isQueryMatch] No createdAt field in Tweet!!!");
+					System.out.println("OFFENDING TWEET: " + tweet);
+					System.out.println("\n");
 					return false;		// default behavior
 				}
 				matchResult = tweet.getDate(tweet.getCreatedAt()).after(q.getDate());
@@ -96,9 +96,9 @@ public class FilterQueryMatcher {
 			if (q.getComparator().equals(ComparatorType.is_before)) {
 				boolean matchResult;
 				if (null == tweet.getCreatedAt()) {
-					System.err.println("[isQueryMatch] No createdAt field in Tweet!!!");
-					System.err.println("OFFENDING TWEET: " + tweet);
-					System.err.println("\n");
+					System.out.println("[isQueryMatch] No createdAt field in Tweet!!!");
+					System.out.println("OFFENDING TWEET: " + tweet);
+					System.out.println("\n");
 					return false;		// default behavior
 				}
 				matchResult = tweet.getDate(tweet.getCreatedAt()).before(q.getDate());

@@ -42,7 +42,7 @@ public class TaggerSubscriber extends JedisPubSub {
     private File file;
     private long itemsWrittenToFile = 0;
     private int fileVolumnNumber = 1;
-    
+
     public TaggerSubscriber() {
     }
 
@@ -75,13 +75,13 @@ public class TaggerSubscriber extends JedisPubSub {
 
     @Override
     public void onPUnsubscribe(String pattern, int subscribedChannels) {
-        System.out.println("Tagger persister: Unsubscribed Successfully to channel = " + pattern);
+        System.out.println("Tagger persister: Unsubscribed Successfully to channel = " + collectionCode);
         closeFileWriting();
     }
 
     @Override
     public void onPSubscribe(String pattern, int subscribedChannels) {
-        System.out.println("Tagger persister: Subscribed Successfully to persist channel = " + pattern);
+        System.out.println("Tagger persister: Subscribed Successfully to persist channel = " + collectionCode);
     }
 
     private void createNewFile() {

@@ -14,23 +14,15 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 public class JedisConnectionPool  {
 
     static JedisPool jedisPool;
-    
-    public JedisConnectionPool() {
-    	jedisPool = null;
-    }
 
-    public synchronized Jedis getJedisConnection() throws Exception {		// koushik: removed static
+    public Jedis getJedisConnection() throws Exception {		// koushik: removed static
         try {
             if (jedisPool == null) {
                 JedisPoolConfig config = new JedisPoolConfig();
-                //config.maxActive = 1000;
-                //config.maxIdle = 10;
-                //config.minIdle = 1;
-                config.setMaxTotal(1000);
-				config.setMaxIdle(10);
-				config.setMinIdle(1);
-				config.setMaxWaitMillis(30000);
-				
+                config.maxActive = 1000;
+                config.maxIdle = 10;
+                config.minIdle = 1;
+                config.maxWait = 30000;
                 jedisPool = new JedisPool(config, Config.REDIS_HOST, Config.REDIS_PORT);
                 
             }
@@ -41,22 +33,19 @@ public class JedisConnectionPool  {
         }
     }
 
-    public synchronized void close(Jedis resource) {		// koushik: removed static, added code to increase robustness
+    public void close(Jedis resource) {		// koushik: removed static, added code to increase robustness
         //jedisPool.returnResource(resource);
         
         if (jedisPool != null) {
 			try {
-				if (resource != null) {
+				if (null != resource) {
 					jedisPool.returnResource(resource);
-					resource = null;
 				}
 			} catch (JedisConnectionException e) {
 				jedisPool.returnBrokenResource(resource);
-				resource = null;
 			} finally {
-				if (resource != null) 
+				if (null != resource) 
 					jedisPool.returnResource(resource);
-					resource = null;
 			}
 		}
     }

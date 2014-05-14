@@ -67,7 +67,7 @@ public class Persister4TaggerAPI {
 	@Consumes("application/json")
 	@Path("/start")
 	public Response startPersister(@QueryParam("file") String fileLocation, @QueryParam("collectionCode") String collectionCode) {
-		System.out.println("In tagger persister start");
+		System.out.println("In tagger-persister start");
 		String response = "";
 		try {
 			fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH; //OVERRIDING PATH RECEIVED FROM EXTERNAL REQUEST
@@ -80,7 +80,7 @@ public class Persister4TaggerAPI {
 				RedisTaggerPersister p = new RedisTaggerPersister(fileLocation, collectionCode);
 				p.startMe();
 				GenericCache.getInstance().setTaggerPersisterMap(collectionCode, p);
-				response = "Started tagger persisting to " + fileLocation + "/output";
+				response = "Started tagger persisting to " + fileLocation;
 				return Response.ok(response).build();
 			}
 		} catch (Exception ex) {
@@ -94,7 +94,6 @@ public class Persister4TaggerAPI {
 	@Consumes("application/json")
 	@Path("/stop")
 	public Response stopPersister(@QueryParam("collectionCode") String collectionCode) {
-		System.out.println("In tagger persister stop");
 		String response;
 		RedisTaggerPersister p = (RedisTaggerPersister) GenericCache.getInstance().getTaggerPersisterMap(collectionCode);
 		if (p != null) {

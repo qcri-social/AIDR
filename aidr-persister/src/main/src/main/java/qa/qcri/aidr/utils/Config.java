@@ -26,11 +26,11 @@ public class Config {
 	public static final String REDIS_HOST = "localhost";
 	//public static final String REDIS_HOST = "78.100.128.137";
 
-	public static final int REDIS_PORT = 6379;		// default is 6379 - koushik
+	public static final int REDIS_PORT = 1978;		// default is 6379 - koushik
 	
 	public static final String LOG_FILE_NAME = "AIDR_Persister_Log.txt";//"errorlog.txt";
 
-	public static final String SCD1_URL = "http://scd1.qcri.org/aidr/data/persister/";	// scd1
-	//public static final String SCD1_URL = "http://localhost/aidr/data/persister/";		// koushik
+	//public static final String SCD1_URL = "http://scd1.qcri.org/aidr/data/persister/";	// scd1
+	public static final String SCD1_URL = "http://localhost/aidr/data/persister/";		// koushik
 
 }
