@@ -9,5 +9,6 @@
         <mapping class="qa.qcri.aidr.manager.hibernateEntities.AidrCollection"/>
         <mapping class="qa.qcri.aidr.manager.hibernateEntities.UserConnection"/>
         <mapping class="qa.qcri.aidr.manager.hibernateEntities.Role"/>
+        <mapping class="qa.qcri.aidr.manager.hibernateEntities.AidrAuthenticateToken"/>
     </session-factory>
 </hibernate-configuration>

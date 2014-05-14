@@ -91,7 +91,7 @@ public class UITemplateController extends BaseController {
             String userName = getAuthenticatedUserName();
             String sVar = uiTemplateService.getCrisisChildrenElement(id);
 
-            logger.info("sVar : " + sVar);
+           // logger.info("sVar : " + sVar);
             return getUIWrapper(sVar, true);
         } catch (AidrException e) {
             e.printStackTrace();

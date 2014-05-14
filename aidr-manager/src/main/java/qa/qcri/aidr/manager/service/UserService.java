@@ -1,5 +1,6 @@
 package qa.qcri.aidr.manager.service;
 
+import org.json.simple.JSONArray;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 
@@ -20,5 +21,7 @@ public interface UserService {
     public boolean isUserInCollectionManagersList(UserEntity user, AidrCollection collection);
 
     public boolean isUserAdmin(UserEntity user);
+
+    public UserEntity getAvailableUser(JSONArray users);
 
 }

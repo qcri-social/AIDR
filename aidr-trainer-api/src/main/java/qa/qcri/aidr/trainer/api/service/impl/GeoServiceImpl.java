@@ -93,6 +93,34 @@ public class GeoServiceImpl implements GeoService {
         return returnValue;
     }
 
+    @Override
+    public String getGeoJsonOuputJSON(Date updated) throws Exception {
+        List<GeoJsonOutputModel> geoJsonOutputModels =  new ArrayList<GeoJsonOutputModel>();
+        List<ClientApp> clientApps =  clientAppService.findClientAppByAppType("appType",CodeLookUp.APP_MAP)  ;
+
+        for(int i=0; i < clientApps.size(); i++){
+
+            ClientApp clientApp = clientApps.get(i);
+            List<TaskQueue> taskQueues = taskQueueService.getTaskQueueByClientAppStatus(clientApp.getClientAppID(), StatusCodeType.TASK_LIFECYCLE_COMPLETED);
+            geoJsonOutputModels = processTaskQueue(taskQueues, geoJsonOutputModels, updated);
+
+        }
+
+        JSONArray jsonArray = new JSONArray();
+        for(GeoJsonOutputModel item : geoJsonOutputModels) {
+            JSONObject jsonObject = new JSONObject();
+
+            jsonObject.put("info", (JSONObject)parser.parse(item.getGeoJsonInfo()));
+
+            jsonObject.put("features", (JSONObject)parser.parse(item.getGeoJson()));
+            jsonArray.add(jsonObject);
+        }
+
+        String returnValue = jsonArray.toJSONString() ;
+
+        return returnValue;
+    }
+
 
     private List<GeoJsonOutputModel> processTaskQueue(List<TaskQueue> taskQueues, List<GeoJsonOutputModel> geoJsonOutputModels, Date updated) throws ParseException {
         boolean isItOkToAdd = true;

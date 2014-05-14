@@ -29,9 +29,11 @@
                 paths : {
                     AIDRFM: '${pageContext.request.contextPath}/resources/js/aidrfm',
                     TAGGUI: '${pageContext.request.contextPath}/resources/js/taggui',
-                    ADMIN: '${pageContext.request.contextPath}/resources/js/administration'
+                    ADMIN: '${pageContext.request.contextPath}/resources/js/administration',
+                    AIDRPUBLIC: '${pageContext.request.contextPath}/resources/js/aidrpublic'
                 }
             }
         );
+
         var BASE_URL = '<%=request.getContextPath() %>';
     </script>

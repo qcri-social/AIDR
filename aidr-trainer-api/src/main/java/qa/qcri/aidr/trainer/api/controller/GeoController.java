@@ -29,6 +29,48 @@ public class GeoController {
 
     @GET
     @Produces( MediaType.APPLICATION_JSON )
+    @Path("/JSON/geoMap/qdate/{lastupdated}")
+    public String getMapGeoJSONBasedOnDate(@PathParam("lastupdated") String lastupdated) {
+        System.out.print("updated : " + lastupdated);
+
+        String returnValue = "";
+        try {
+            Date queryDate = null;
+            if(!lastupdated.isEmpty() && lastupdated!= null) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                //String dateInString = "2014-01-26 13:44:48";
+                queryDate = sdf.parse(lastupdated);
+            }
+
+            returnValue =  geoService.getGeoJsonOuputJSON(queryDate);
+
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        return returnValue;
+    }
+
+
+    @GET
+    @Produces( MediaType.APPLICATION_JSON )
+    @Path("/JSON/geoMap")
+    public String getMapGeoJSON() {
+
+        String returnValue = "";
+        try {
+
+            returnValue =  geoService.getGeoJsonOuputJSON(null);
+
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        return returnValue;
+    }
+
+    @GET
+    @Produces( MediaType.APPLICATION_JSON )
     @Path("/JSONP/geoMap/qdate/{lastupdated}")
     public String getMapGeoJSONPBasedOnDate(@PathParam("lastupdated") String lastupdated) {
         System.out.print("updated : " + lastupdated);
@@ -67,5 +109,7 @@ public class GeoController {
 
         return returnValue;
     }
+
+
 
 }
