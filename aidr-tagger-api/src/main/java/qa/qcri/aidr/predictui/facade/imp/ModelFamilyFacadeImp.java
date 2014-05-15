@@ -40,7 +40,7 @@ public class ModelFamilyFacadeImp implements ModelFamilyFacade{
         return modelFamily;
     }
 
-    public List<ModelFamily> getAllModelFamiliesByCrisis(int crisisID) {
+    public List<ModelFamily> getAllModelFamiliesByCrisis(long crisisID) {
         Query query = em.createNamedQuery("Crisis.findByCrisisID", Crisis.class);
         query.setParameter("crisisID", crisisID);
         Crisis crisis = (Crisis)query.getSingleResult();

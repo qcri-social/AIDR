@@ -1,18 +1,14 @@
 package qa.qcri.aidr.predictui.facade.imp;
 
-import java.util.Iterator;
-import java.util.List;
-
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.predictui.facade.TaskBufferScannerFacade;
+import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 
 /**
@@ -24,14 +20,15 @@ public class TaskBufferScannerImp implements TaskBufferScannerFacade {
 
 	private static Logger logger = LoggerFactory.getLogger(TaskBufferScannerImp.class);
 	
-	@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
-	private EntityManager em;
+	//@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
+	//private EntityManager em;
+	@EJB
+	private TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
 
 	@Override
 	public void ScanTaskBuffer(final String maxTaskAge, final String scanInterval) {
-		// TODO Auto-generated method stub
 		try {
-			String deleteStaleDocsSql = "DELETE d FROM aidr_predict.document d LEFT JOIN "
+			/*String deleteStaleDocsSql = "DELETE d FROM aidr_predict.document d LEFT JOIN "
 					+ "aidr_predict.task_assignment t ON d.documentID = t.documentID WHERE "
 					+ "(!d.hasHumanLabels && t.documentID IS NULL && TIMESTAMPDIFF(" 
 					+ getMetric(scanInterval) + ", d.receivedAt, now()) > :task_expiry_age);";
@@ -43,12 +40,17 @@ public class TaskBufferScannerImp implements TaskBufferScannerFacade {
 			// Also, test showed that the problem is still coming from trainer-api
 			//querySelect1.setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT);		
 			int result = querySelect1.executeUpdate();
+			*/
+			int result = taskManager.deleteStaleTasks("LEFT JOIN", 
+											"aidr_predict.task_assignment", "documentID", 
+											"ASC", null, maxTaskAge, scanInterval);
 			System.out.println("[ScanTaskBuffer] number of deleted stale records = " + result);
 		} catch (Exception e) {
 			System.err.println("[ScanTaskBuffer] Exception in executing SQL delete stale docs query");
 			e.printStackTrace();
 		}
 		try {
+			/*
 			String deleteNoAnswerDocsSql = "DELETE d FROM aidr_predict.document d JOIN "
 					+ "aidr_predict.task_assignment t ON d.documentID = t.documentID WHERE "
 					+ "(!d.hasHumanLabels && TIMESTAMPDIFF(" 
@@ -61,6 +63,10 @@ public class TaskBufferScannerImp implements TaskBufferScannerFacade {
 			// Also, test showed that the problem is still coming from trainer-api
 			//querySelect2.setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT);		
 			int result = querySelect2.executeUpdate();
+			*/
+			int result = taskManager.deleteStaleTasks("JOIN", 
+										"aidr_predict.task_assignment", "documentID", 
+										"ASC", null, maxTaskAge, scanInterval);
 			System.out.println("[ScanTaskBuffer] number of deleted no answer records = " + result);
 		} catch (Exception e) {
 			System.err.println("[ScanTaskBuffer] Exception in executing SQL delete no answer docs query");
@@ -68,11 +74,13 @@ public class TaskBufferScannerImp implements TaskBufferScannerFacade {
 		}
 	}
 
+
 	/**
 	 * 
 	 * @param timeString
 	 * @return duration in milliseconds. Negative indicates an invalid parse result
 	 */
+	
 	@Override
 	public long parseTime(final String timeString) {
 		long duration = -1;		
@@ -121,4 +129,5 @@ public class TaskBufferScannerImp implements TaskBufferScannerFacade {
 		}
 		return metric;
 	}
+	
 }

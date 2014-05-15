@@ -19,11 +19,10 @@ import qa.qcri.aidr.task.entities.Document;
 @Local
 public interface DocumentService extends AbstractTaskManagerService<Document, Long>{
 
-	public EntityManager getEntityManager(); 
     public void updateHasHumanLabel(Document document);
     
-    public int deleteDocument(Document document);
-    public int deleteDocument(List<Document> collection);
+    public int deleteNoLabelDocument(Document document);
+    public int deleteNoLabelDocument(List<Document> collection);
     public int deleteUnassignedDocument(Document document);
     public int deleteUnassignedDocumentCollection(List<Document> collection);
     public int deleteStaleDocuments(String joinType, String joinTable, String joinColumn,

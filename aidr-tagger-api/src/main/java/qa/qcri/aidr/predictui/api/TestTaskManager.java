@@ -15,19 +15,20 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-//import qa.qcri.aidr.task.api.TaskManagerRemote;
-//import qa.qcri.aidr.task.entities.Document;
+import org.codehaus.jackson.map.ObjectMapper;
 
+import qa.qcri.aidr.predictui.entities.Document;
+import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 
 @Path("/test")
 
 public class TestTaskManager {
-/*
+
 	@Context
-    private UriInfo context;
+	private UriInfo context;
 	@EJB
-	private TaskManagerRemote<Document, Serializable> taskManager;
+	private TaskManagerRemote<qa.qcri.aidr.predictui.entities.Document, Long> taskManager;
 
 	public TestTaskManager() {
 	}
@@ -48,13 +49,23 @@ public class TestTaskManager {
 			props.setProperty("org.omg.CORBA.ORBInitialPort", "3700");
 
 			InitialContext ctx = new InitialContext(props);
-			this.taskManager = (TaskManagerRemote<Document, Serializable>) ctx.lookup("java:global/aidr-task-manager/TaskManagerBean!qa.qcri.aidr.task.api.TaskManagerRemote");
-			Document document = taskManager.getNewTask(117L);
-			long elapsed = System.currentTimeMillis() - startTime;
-			if (document != null) {
-				respString.append(document.getDocumentID());
-			} else {
-				respString.append("null");
+			this.taskManager = (TaskManagerRemote<Document, Long>) ctx.lookup("java:global/aidr-task-manager/TaskManagerBean!qa.qcri.aidr.task.api.TaskManagerRemote");
+			String jsonString = taskManager.getNewTask(117L);
+			if (jsonString != null) {
+				ObjectMapper mapper = new ObjectMapper();
+				Document document = null;
+				try {
+					document = mapper.readValue(jsonString, Document.class);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				long elapsed = System.currentTimeMillis() - startTime;
+				if (document != null) {
+					respString.append(document.getDocumentID());
+				} else {
+					respString.append("null");
+				}
 			}
 			System.out.println("[main] " + respString.toString() + ", time taken = " + elapsed);
 		} catch (NamingException e) {
@@ -69,5 +80,4 @@ public class TestTaskManager {
 		TestTaskManager tc = new TestTaskManager(); 
 		System.out.println("Result: " + tc.test().toString());
 	}
-	*/
 }

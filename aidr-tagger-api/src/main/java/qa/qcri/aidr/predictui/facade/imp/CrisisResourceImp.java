@@ -119,7 +119,7 @@ public class CrisisResourceImp implements CrisisResourceFacade {
         
         if (query.getSingleResult() != null) {
             Crisis crisis = (Crisis) query.getSingleResult();
-            return crisis.getCrisisID();
+            return crisis.getCrisisID().intValue();
         }
         }catch(NoResultException e){
             return null;

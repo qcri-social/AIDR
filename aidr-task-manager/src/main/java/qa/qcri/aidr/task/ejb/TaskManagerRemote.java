@@ -16,9 +16,12 @@ public interface TaskManagerRemote<T, Serializable> {
 	
 	public Class<T> getClassType();
 	
+	public String getAllTasks();
+	
 	public void insertNewTask(T task);
 	public void insertNewTask(List<T> collection);
 	
+	public int deleteTaskById(Long id);
 	public int deleteTask(T task);
 	public int deleteTask(List<T> collection);
 	public int deleteUnassignedTaskCollection(List<T> collection);
@@ -27,23 +30,25 @@ public interface TaskManagerRemote<T, Serializable> {
 						  	    String sortOrder, String[] orderBy,
 						  	    final String maxTaskAge, final String scanInterval);
 	
-	public void updateTask(T task, Criterion criterion);
-	public void updateTask(List<T> collection, Criterion criterion);
+	public void updateTask(T task);
+	public void updateTask(List<T> collection);
 	public void taskUpdate(Criterion criterion, String joinType, String joinTable, 
 			  			   String joinColumn, String sortOrder, String[] orderBy);
 	
-	public Document getNewTask(Long crisisID);
-	public Document getNewTask(Long crisisID, Criterion criterion);
-	public List<Document> getNewTaskCollection(Long crisisID, Criterion criterion);
+	public String getNewTask(Long crisisID);
+	public String getNewTask(Long crisisID, Criterion criterion);
+	public String getNewTaskCollection(Long crisisID, Criterion criterion);
 	
-	public Document getTaskByCriterion(Long crisisID, Criterion criterion);
-	public List<Document> getTaskCollectionByCriterion(Long crisisID, Criterion criterion);
+	public String getTaskById(Long id);
+	
+	public String getTaskByCriterion(Long crisisID, Criterion criterion);
+	public String getTaskCollectionByCriterion(Long crisisID, Criterion criterion);
 	//public List<T> getByCriterion(Criterion criterion, String joinType, String[] joinTables, 
 	//							  String joinColumn, String sortOrder, String[] orderBy);
 	
-	public Boolean isTaskAssigned(T task);
-	public Boolean isTaskNew(T task);
-	public Boolean isTaskDone(T task);
-	public Boolean isExists(T task);
+	public <E> Boolean isTaskAssigned(E task);
+	public <E> Boolean isTaskNew(E task);
+	public <E> Boolean isTaskDone(E task);
+	public <E> Boolean isExists(E task);
 	
 }

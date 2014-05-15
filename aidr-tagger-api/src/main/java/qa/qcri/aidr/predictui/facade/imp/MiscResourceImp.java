@@ -8,13 +8,22 @@ import qa.qcri.aidr.predictui.dto.ItemToLabelDTO;
 import qa.qcri.aidr.predictui.dto.NominalAttributeDTO;
 import qa.qcri.aidr.predictui.dto.NominalLabelDTO;
 import qa.qcri.aidr.predictui.dto.TrainingDataDTO;
+import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.facade.MiscResourceFacade;
+import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.codehaus.jackson.map.ObjectMapper;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
+
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +39,9 @@ public class MiscResourceImp implements MiscResourceFacade {
 
     @PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
     private EntityManager em;
+    
+    @EJB
+	private TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
 
     @Override
     public List<TrainingDataDTO> getTraningDataByCrisisAndAttribute(int crisisID,
@@ -113,7 +125,8 @@ public class MiscResourceImp implements MiscResourceFacade {
         }
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public ItemToLabelDTO getItemToLabel(int crisisID, int modelFamilyID) {
         // with attributeID get attribute and labels details
         // with crisisID get an item from document table for which hasHumanLabel is FALSE
@@ -150,18 +163,33 @@ public class MiscResourceImp implements MiscResourceFacade {
             attributeDTO.setNominalLabelCollection(labelDTOList);
             
             //here retrieve data from document table
-            String sqlToGetItem = "SELECT documentID, data FROM document WHERE crisisID = :crisisID AND hasHumanLabels = 0 ORDER BY RAND() LIMIT 0, 1";
-            Query documentQuery = em.createNativeQuery(sqlToGetItem);
-            documentQuery.setParameter("crisisID", crisisID);
-            List<Object[]> documentResult = documentQuery.getResultList();
-            itemToLabel.setItemID(((BigInteger) documentResult.get(0)[0]));
-            itemToLabel.setItemText(documentResult.get(0)[1].toString());
+            //String sqlToGetItem = "SELECT documentID, data FROM document WHERE crisisID = :crisisID AND hasHumanLabels = 0 ORDER BY RAND() LIMIT 0, 1";
+            //Query documentQuery = em.createNativeQuery(sqlToGetItem);
+            //documentQuery.setParameter("crisisID", crisisID);
+            //List<Object[]> documentResult = documentQuery.getResultList();
+            //itemToLabel.setItemID(((BigInteger) documentResult.get(0)[0]));
+            //itemToLabel.setItemText(documentResult.get(0)[1].toString());
             
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonString = taskManager.getNewTask(new Long(crisisID));
+            Document documentResult = null;
+            try {
+    			if (jsonString != null) {
+    				documentResult = mapper.readValue(jsonString, Document.class);
+    				System.out.println("Converted doc id: " + documentResult.getDocumentID());
+    			} else {
+    				System.out.println("doc id: null");
+    			}
+    		} catch (IOException e) {
+    			System.err.println("JSON deserialization parse error!");
+    			e.printStackTrace();
+    		}
+            itemToLabel.setItemID(BigInteger.valueOf(documentResult.getDocumentID()));
+            itemToLabel.setItemText(documentResult.getData());
             itemToLabel.setAttribute(attributeDTO);
             
-        }catch(NoResultException e) {
-            return null;
-            
+        } catch(NoResultException e) {
+            return null;  
         }
         return itemToLabel;
     }

@@ -1,8 +1,8 @@
 package qa.qcri.aidr.task.entities;
 
 import javax.persistence.*;
-
-
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -15,6 +15,7 @@ import java.util.Date;
  * Time: 5:32 PM
  * To change this template use File | Settings | File Templates.
  */
+@XmlRootElement
 @Entity 	//@IdClass(DocumentNominalLabelKey.class)
 @Table(catalog = "aidr_predict",name = "document_nominal_label")
 public class DocumentNominalLabel implements Serializable {
@@ -53,15 +54,18 @@ public class DocumentNominalLabel implements Serializable {
     }
 
 
+    @XmlElement
     @Id
     @Column(name = "documentID")
     private Long documentID;
 
     
     //@Id
+    @XmlElement
     @Column (name = "nominalLabelID", nullable = false)
     private Long nominalLabelID;
 
+    @XmlElement
     @Column (name = "timestamp", nullable = false)
     private Date timestamp;
 

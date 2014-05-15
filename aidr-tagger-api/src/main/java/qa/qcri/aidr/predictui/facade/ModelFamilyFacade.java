@@ -18,7 +18,7 @@ import qa.qcri.aidr.predictui.entities.ModelFamily;
 public interface ModelFamilyFacade {
     
     public List<ModelFamily> getAllModelFamilies();
-    public List<ModelFamily> getAllModelFamiliesByCrisis(int crisisID);
+    public List<ModelFamily> getAllModelFamiliesByCrisis(long crisisID);
     public ModelFamily getModelFamilyByID(int id);
     public ModelFamily addCrisisAttribute(ModelFamily modelFamily);
     public void deleteModelFamily(int modelFamilyID);

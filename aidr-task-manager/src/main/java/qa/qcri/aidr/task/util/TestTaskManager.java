@@ -1,5 +1,6 @@
 package qa.qcri.aidr.task.util;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Properties;
 
@@ -13,14 +14,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
+import qa.qcri.aidr.task.entities.Crisis;
 import qa.qcri.aidr.task.entities.Document;
 
 @Path("/test")
-public class TestTaskManager {
-
+public class TestTaskManager<E> {
+	
 	@EJB
-	private TaskManagerRemote<Document, Serializable> taskManager;
+	private TaskManagerRemote<E, Serializable> taskManager;
 
 	public TestTaskManager() {
 	}
@@ -28,7 +34,7 @@ public class TestTaskManager {
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/remoteEJB")
-	public String test() {
+	public <T> String test() {
 		StringBuilder respString = new StringBuilder().append("Fetched new doc = ");
 		try {
 			Properties props = new Properties();
@@ -39,12 +45,25 @@ public class TestTaskManager {
 			props.setProperty("org.omg.CORBA.ORBInitialPort", "3700");
 
 			InitialContext ctx = new InitialContext(props);
-			this.taskManager = (TaskManagerRemote<Document, Serializable>) ctx.lookup("java:global/aidr-task-manager/TaskManagerBean!qa.qcri.aidr.task.api.TaskManagerRemote");
-			Document document = taskManager.getNewTask(117L);
-			if (document != null) {
-				respString.append(document.getDocumentID());
-			} else {
-				respString.append("null");
+			//this.taskManager = (TaskManagerRemote<Document, Serializable>) ctx.lookup("java:global/aidr-task-manager/TaskManagerBean!qa.qcri.aidr.task.api.TaskManagerRemote");
+			//String jsonString = taskManager.getNewTask(117L);
+			
+			this.taskManager = (TaskManagerRemote<E, Serializable>) ctx.lookup("java:global/aidr-task-manager/TaskManagerBean");
+			String jsonString = taskManager.getTaskById(103L);
+			
+			if (jsonString != null) {
+				ObjectMapper mapper = new ObjectMapper();
+				Object obj = null;
+				try {
+					obj = mapper.readValue(jsonString, obj.getClass());
+				} catch (Exception e) {
+					e.printStackTrace();
+				} 
+				if (obj != null) {
+					respString.append(obj);
+				} else {
+					respString.append("null");
+				}
 			}
 			System.out.println("[main] " + respString.toString());
 		} catch (NamingException e) {
@@ -57,7 +76,7 @@ public class TestTaskManager {
 	}
 
 	public static void main(String[] args) throws Exception {
-		TestTaskManager tc = new TestTaskManager(); 
+		TestTaskManager tc = new TestTaskManager<Crisis>(); 
 		System.out.println("Result: " + tc.test().toString());
 	}
 }
