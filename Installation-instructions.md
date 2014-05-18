@@ -118,6 +118,8 @@ After the above steps have been executed, you can build the project:
 
 * Create JDBC resources in server (e.g., Glassfish) to match the JNDI names (JNDI/aidr_predict and JNDI/aidr_fetch_manager) used in src/main/resource/META-INF/persistence.xml.
 * Appropriately set the `taggerMainUrl` in the `system.properties` file under `aidr-manager`. 
+* Copy the `aidr-task-manager.jar` file generated as per the instructions in `aidr-task-manager` to the WEB-INF/lib folder.
+* Include the `aidr-task-manager.jar` file in the build path.
 * Build using maven following the instructions above; this should generate a file `aidr-tagger-api-X.war`
 * Deploy `aidr-tagger-api-X.war` to Glassfish using the instructions above.
 
@@ -151,6 +153,19 @@ After the above steps have been executed, you can build the project:
 * Appropriately set the `crowdsourcingAPIMainUrl` in the `system.properties` file under `aidr-manager`.     
 * Build using maven following the instructions above; this should generate a file `aidr-trainer-pybossa-X.war`
 * Deploy `aidr-trainer-pybossa-X.war` to Glassfish using the instructions above. 
+
+
+# Task Manager
+
+The `aidr-task-manager` module is meant to provide a unified view of the `aidr_predict` database tables that are related to 'aidr tasks' - namely, `document`, `task_assignment`, `document_nominal_labels` and `crisis` tables. The various modules of AIDR such as `aidr-tagger-api`, `aidr-tagger` and `aidr-trainer-api` that access these tables will use the aidr-task-manager as the single access point (in phases). To enable this, `aidr-task-manager` uses remote EJBs. The instructions for enabling access through `-aidr-task-manager` are outlined below:
+
+
+* Build using maven the `aidr-task-manager.war` file and deploy to glassfish in the usual way.
+* Next build `aidr-task-manager.jar` file excluding the `ejb/bean` directory from the jar. 
+* Create a new directory `WEB-INF/lib` in the module that will use aidr-task-manager.
+* Copy the `aidr-task-manager.jar` file to the `WEB-INF/lib` directory. 
+
+
 
 # Known Issues
 
