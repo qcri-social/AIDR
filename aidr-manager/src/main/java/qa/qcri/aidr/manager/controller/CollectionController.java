@@ -120,28 +120,39 @@ public class CollectionController extends BaseController{
 
 	@RequestMapping(value = "/trash.action", method = { RequestMethod.POST ,RequestMethod.GET })
 	@ResponseBody
-	public Map<String,Object> trash( AidrCollection collection) throws Exception {
-		if (collection.getStatus().equals(CollectionStatus.STOPPED)) {
-			logger.info("Trashing collection having code " + collection.getCode());
-			try{
-				AidrCollection c = collectionService.stop(collection.getId());
-				collection.setStatus(CollectionStatus.TRASHED);
-				collectionService.update(collection);
-				if (taggerService.trashCollection(collection) > 0) {
-					return getUIWrapper(true);
-				} else {
-					logger.error("Attempting to trash collection " + collection.getCode() + " failed!");
-					return getUIWrapper(false);
-				}
-			}catch(Exception e){
-				logger.error("Error while trashing AIDR Collection ", e);
-				return getUIWrapper(false); 
-			}
-		} else {
-			logger.error("Attempting to trash a running collection. Collection must be in stopped state!");
-			return getUIWrapper(false);
-		}
-	}
+	public Map<String,Object> trash(@RequestParam Integer id) throws Exception {
+        try {
+            AidrCollection collection = collectionService.findById(id);
+            if (collection.getStatus().equals(CollectionStatus.RUNNING) && collection.getStatus().equals(CollectionStatus.RUNNING_WARNING)) {
+                String msg = "Attempting to trash a running collection. Collection must be in stopped state!";
+                logger.error(msg);
+                return getUIWrapper(false, msg);
+            } else {
+                logger.info("Trashing collection having code " + collection.getCode());
+                try{
+                    collection = collectionService.stop(collection.getId());
+                    collection.setStatus(CollectionStatus.TRASHED);
+                    collectionService.update(collection);
+                    if (taggerService.trashCollection(collection) > 0) {
+                        AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
+                        return getUIWrapper(dto, true);
+                    } else {
+                        String msg = "Attempting to trash collection " + collection.getCode() + " failed!";
+                        logger.error(msg);
+                        return getUIWrapper(false, msg);
+                    }
+                } catch(Exception e) {
+                    String msg = "Error while trashing AIDR Collection.";
+                    logger.error(msg, e);
+                    return getUIWrapper(false, msg);
+                }
+            }
+        }catch(Exception e){
+            String msg = "Error while trashing AIDR Collection ";
+            logger.error(msg, e);
+            return getUIWrapper(false, msg);
+        }
+    }
 
 	@RequestMapping(value = "/untrash.action", method = { RequestMethod.POST ,RequestMethod.GET })
 	@ResponseBody
