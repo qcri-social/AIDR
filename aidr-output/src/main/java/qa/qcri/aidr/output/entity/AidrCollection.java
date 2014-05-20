@@ -1,21 +1,26 @@
-package qa.qcri.aidr.manager.hibernateEntities;
+package qa.qcri.aidr.output.entity;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-import qa.qcri.aidr.manager.util.CollectionStatus;
-import qa.qcri.aidr.manager.util.JsonDateDeSerializer;
-import qa.qcri.aidr.manager.util.JsonDateSerializer;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import qa.qcri.aidr.output.utils.CollectionStatus;
+import qa.qcri.aidr.output.utils.JsonDateDeSerializer;
+import qa.qcri.aidr.output.utils.JsonDateSerializer;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "AIDR_COLLECTION")
+@Table(catalog = "aidr_fetch_manager", name = "AIDR_COLLECTION")
+@XmlRootElement
 public class AidrCollection implements Serializable {
 
     /**
@@ -35,10 +40,13 @@ public class AidrCollection implements Serializable {
 
     private String target;
 
-    @OneToOne(targetEntity = UserEntity.class, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private UserEntity user;
-
+    //@OneToOne(targetEntity = UserEntity.class, cascade = CascadeType.ALL)
+    //@JoinColumn(name = "user_id", referencedColumnName = "id")
+    //private UserEntity user;
+    
+    @Column(name = "user_id")
+    private Integer userId;
+    
     private Integer count;
 
     private CollectionStatus status;
@@ -68,14 +76,17 @@ public class AidrCollection implements Serializable {
 
     private Integer crisisType;
 
+    /*
     @ManyToMany(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     @JoinTable(
             name = "AIDR_COLLECTION_TO_MANAGER",
             joinColumns = {@JoinColumn(name = "id_collection")},
             inverseJoinColumns = {@JoinColumn(name = "id_manager")}
     )
     private List<UserEntity> managers;
-
+	*/
+    
     public Integer getId() {
         return id;
     }
@@ -108,12 +119,12 @@ public class AidrCollection implements Serializable {
         this.target = target;
     }
 
-    public UserEntity getUser() {
-        return user;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setUser(UserEntity user) {
-        this.user = user;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public Integer getCount() {
@@ -208,6 +219,7 @@ public class AidrCollection implements Serializable {
         this.langFilters = langFilter;
     }
 
+    /*
     public List<UserEntity> getManagers() {
         return managers;
     }
@@ -215,7 +227,8 @@ public class AidrCollection implements Serializable {
     public void setManagers(List<UserEntity> managers) {
         this.managers = managers;
     }
-
+	*/
+    
     public Integer getDurationHours() {
         return durationHours;
     }

@@ -32,20 +32,28 @@ public class ChannelBuffer {
 	int size = 0;
 	private static Logger logger = LoggerFactory.getLogger(ChannelBuffer.class);
 
+	public ChannelBuffer(final String name, final int bufferSize) {
+		//BasicConfigurator.configure();			// setup log4j logging
+		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
+		this.channelName = name;
+		this.messageBuffer = BufferUtils.synchronizedBuffer(new CircularFifoBuffer(bufferSize));
+		this.size = bufferSize;
+	}
+	
 	public ChannelBuffer(final String name) {
 		//BasicConfigurator.configure();			// setup log4j logging
 		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
-		channelName = name;
+		this.channelName = name;
 	}
-
+	
 	public void createChannelBuffer() {
-		messageBuffer = BufferUtils.synchronizedBuffer(new CircularFifoBuffer(MAX_BUFFER_SIZE));
-		size = MAX_BUFFER_SIZE;
+		this.messageBuffer = BufferUtils.synchronizedBuffer(new CircularFifoBuffer(MAX_BUFFER_SIZE));
+		this.size = MAX_BUFFER_SIZE;
 	}
 
 	public void createChannelBuffer(final int bufferSize) {
-		messageBuffer = BufferUtils.synchronizedBuffer(new CircularFifoBuffer(bufferSize));
-		size = bufferSize;
+		this.messageBuffer = BufferUtils.synchronizedBuffer(new CircularFifoBuffer(bufferSize));
+		this.size = bufferSize;
 	}
 
 	@SuppressWarnings("unchecked")

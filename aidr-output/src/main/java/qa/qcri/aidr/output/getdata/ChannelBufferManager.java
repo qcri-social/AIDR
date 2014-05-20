@@ -24,20 +24,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import qa.qcri.aidr.output.entity.AidrCollection;
 import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
-import qa.qcri.aidr.output.filter.JsonQueryList;
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
+import qa.qcri.aidr.output.utils.DatabaseController;
+import qa.qcri.aidr.output.utils.DatabaseInterface;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
-
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 
 //import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
@@ -71,6 +73,10 @@ public class ChannelBufferManager {
 	// Channel Buffering Algorithm related
 	private final String CHANNEL_PREFIX_STRING = "aidr_predict.";
 	public static ConcurrentHashMap<String, ChannelBuffer> subscribedChannels;
+
+	// DB access related
+	private static DatabaseInterface dbController;
+
 	//////////////////////////////////////////
 	// ********* Method definitions *********
 	//////////////////////////////////////////
@@ -128,6 +134,15 @@ public class ChannelBufferManager {
 				logger.debug("[ChannelBufferManager] Created HashMap");
 			}
 		}
+		
+		try {
+			dbController = new DatabaseController();
+			logger.info("[ChannelBufferManager] Created dbController = " + dbController);
+		} catch (Exception e) {
+			logger.error("[ChannelBufferManager] Couldn't initiate DB access to aidr_fetch_manager");
+			e.printStackTrace();
+		}
+		
 	}
 
 	public ChannelBufferManager(final int bufferSize, final String channelRegEx) {
@@ -142,8 +157,8 @@ public class ChannelBufferManager {
 	// 3. Else, first calls createChannelBuffer() and then executes step (2).
 	// 4. Deletes channelName and channel buffer if channelName not seen for TIMEOUT duration.
 	private void manageChannelBuffers(final String subscriptionPattern, 
-									  final String channelName, 
-									  final String receivedMessage) {
+			final String channelName, 
+			final String receivedMessage) {
 		if (null == channelName) {
 			logger.error("[manageChannelBuffers] Something terribly wrong! Fatal error in: " + channelName);
 			//System.exit(1);
@@ -215,6 +230,7 @@ public class ChannelBufferManager {
 		else {
 			logger.error("[createChannelQueue] Trying to create an existing channel! Should never be here!");
 		}
+		//isChannelPublic(channelName);
 	}
 
 	public void deleteChannelBuffer(final String channelName) {
@@ -261,51 +277,79 @@ public class ChannelBufferManager {
 	}
 
 	/**
+	 * 
+	 * @param channelName
+	 * @return true if channel is publicly listed, false otherwise
+	 */
+	private boolean isChannelPublic(String channelName) {
+		//logger.info("[isChannelPublic] Received request for channel: " + channelName);
+		//first strip off the prefix aidr_predict.
+		String channelCode = channelName;
+		if (channelName.startsWith(CHANNEL_PREFIX_STRING)) {
+			String[] strs = channelName.split(CHANNEL_PREFIX_STRING);
+			channelCode = (strs != null) ? strs[1] : channelName;
+		}
+		//logger.info("[isChannelPublic] Querying for: " + channelCode);
+		Criterion criterion = Restrictions.eq("code", channelCode);
+		AidrCollection collection = dbController.getByCriteria(criterion);
+		if (collection != null) {
+			//logger.info("[isChannelPublic] channel: " + channelName + ", code = " + collection.getCode() + ", public = " + collection.getPubliclyListed());
+			return collection.getPubliclyListed();
+		} else {
+			logger.info("[isChannelPublic] channel: " + channelName + ", fetched collection = " + collection);
+		}
+		return false;
+	}
+
+
+	/**
 	 * @return List of latest tweets seen on all active channels, one tweet/channel, null if none found
 	 */
 	public List<String> getLatestFromAllChannels(final int msgCount) {
 		final List<ChannelBuffer>cbList = new ArrayList<ChannelBuffer>();
 		List<String>dataSet = new ArrayList<String>();
-		
+
 		cbList.addAll(ChannelBufferManager.subscribedChannels.values());
 		int k = -1;
 		for (ChannelBuffer temp: cbList) {
 			//System.out.println("cbList size = " + cbList.size() + ", Channel buffer: " + temp.getChannelName());
-			final List<String> tempList = temp.getLIFOMessages(msgCount+4);		// reverse-chronologically ordered list
-			if (!tempList.isEmpty()) {
-				int channelFetchSize = Math.min(msgCount+4,tempList.size());
-				for (int i = 0;i < channelFetchSize;i++) {
-					//System.out.println("TWEET: " + tempList.get(i));
-					ClassifiedFilteredTweet tweet = new ClassifiedFilteredTweet().deserialize(tempList.get(i));
-					//System.out.println("Channel: " + tweet.getCrisisCode() + ", time: " + tweet.getCreatedAt() + ", conf=" + tweet.getMaxConfidence());
-					long tweetTime = tweet.getCreatedAt().getTime();
-					if (k < 0) {
-						dataSet.add(k+1, tempList.get(i));
-						++k;
-					}
-					else {
-						ClassifiedFilteredTweet lastStoredTweet = new ClassifiedFilteredTweet()
-																		.deserialize(dataSet.get(k));
-						// rule 1: if more recent, include
-						if (lastStoredTweet.getCreatedAt().getTime() < tweetTime) {
+			if (isChannelPublic(temp.getChannelName())) {
+				final List<String> tempList = temp.getLIFOMessages(msgCount+4);		// reverse-chronologically ordered list
+				if (!tempList.isEmpty()) {
+					int channelFetchSize = Math.min(msgCount+4,tempList.size());
+					for (int i = 0;i < channelFetchSize;i++) {
+						//System.out.println("TWEET: " + tempList.get(i));
+						ClassifiedFilteredTweet tweet = new ClassifiedFilteredTweet().deserialize(tempList.get(i));
+						//System.out.println("Channel: " + tweet.getCrisisCode() + ", time: " + tweet.getCreatedAt() + ", conf=" + tweet.getMaxConfidence());
+						long tweetTime = tweet.getCreatedAt().getTime();
+						if (k < 0) {
 							dataSet.add(k+1, tempList.get(i));
 							++k;
-							//System.out.println("Added using rule 1 from channel: " + tweet.getCrisisCode());
 						}
-						
-						// rule 2: if not recent but from another channel, include
-						if (lastStoredTweet.getCreatedAt().getTime() >= tweetTime
-								&& !lastStoredTweet.getCrisisCode().equals(tweet.getCrisisCode())) {
-							String tempTweet = dataSet.remove(k);
-							dataSet.add(k, tempList.get(i));
-							dataSet.add(k+1,tempTweet);
-							++k;
-							//System.out.println("Added using rule 2 from channel: " + tweet.getCrisisCode());
+						else {
+							ClassifiedFilteredTweet lastStoredTweet = new ClassifiedFilteredTweet()
+							.deserialize(dataSet.get(k));
+							// rule 1: if more recent, include
+							if (lastStoredTweet.getCreatedAt().getTime() < tweetTime) {
+								dataSet.add(k+1, tempList.get(i));
+								++k;
+								//System.out.println("Added using rule 1 from channel: " + tweet.getCrisisCode());
+							}
+
+							// rule 2: if not recent but from another channel, include
+							if (lastStoredTweet.getCreatedAt().getTime() >= tweetTime
+									&& !lastStoredTweet.getCrisisCode().equals(tweet.getCrisisCode())) {
+								String tempTweet = dataSet.remove(k);
+								dataSet.add(k, tempList.get(i));
+								dataSet.add(k+1,tempTweet);
+								++k;
+								//System.out.println("Added using rule 2 from channel: " + tweet.getCrisisCode());
+							}
 						}
 					}
 				}
-			}
-		}
+			}	// end if (isChannelPublic)
+		}	// end for
 		return dataSet;
 	}
 
