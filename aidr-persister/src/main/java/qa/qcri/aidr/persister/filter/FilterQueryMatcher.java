@@ -115,7 +115,7 @@ public class FilterQueryMatcher {
 				//System.out.println("Going for matching nLabel#" + i); 
 				++i;
 				if (q.getClassifierCode() != null && 
-					q.getClassifierCode().equalsIgnoreCase(nLabel.attibute_code)) {
+					q.getClassifierCode().equalsIgnoreCase(nLabel.attribute_code)) {
 					// classifier code matches, next match comparator
 					
 					// First check confidence parameter
@@ -261,7 +261,7 @@ public class FilterQueryMatcher {
 		int i = 0;
 		for (NominalLabel t: testTweet.getNominalLabels()) {
 			System.out.println("i = " + i + ": createAt = " + testTweet.getCreatedAt()  
-					+ ", attribute code = " + t.attibute_code 
+					+ ", attribute code = " + t.attribute_code 
 					+ ", label_code = " + t.label_code + ", confidence = " + t.confidence);
 			++i;
 		}

@@ -163,7 +163,7 @@ public class Persister4TaggerAPI {
 	}  
 	
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_HTML)
 	@Path("/genTweetIds")
 	public Response generateTweetsIDSCSVFromAllJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
 		System.out.println("In tagger-persister genTweetIds");

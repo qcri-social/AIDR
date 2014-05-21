@@ -168,7 +168,7 @@ public class JsonDeserializer {
 		ICsvBeanWriter beanWriter = null;
 		String fileNameforCSVGen = "Classified_" + collectionCode + "_tweetIds_filtered";
 		String fileName = fileNameforCSVGen + ".csv";
-		
+
 		// Added by koushik - first build the FilterQueryMatcher
 		FilterQueryMatcher tweetFilter = new FilterQueryMatcher();
 		tweetFilter.queryList.setConstraints(queryList);
@@ -681,89 +681,118 @@ public class JsonDeserializer {
 		//System.out.println("Tweet to PARSE: " + line);
 		ClassifiedTweet tweet = new ClassifiedTweet();
 		try {
+			if (line != null && !line.isEmpty()) {
+				//System.out.println("[getClassifiedTweet] input tweet: " + line);
+				Object obj = JSONValue.parseStrict(line);
+				JSONObject jsonObj = (JSONObject) obj;
 
-			Object obj = JSONValue.parseStrict(line);
-			JSONObject jsonObj = (JSONObject) obj;
-
-			if (jsonObj.get("id") != null) {
-				tweet.setTweetID(jsonObj.get("id").toString());
-			}
-
-			if (jsonObj.get("text") != null) {
-				tweet.setMessage(jsonObj.get("text").toString());
-			}
-
-			if (jsonObj.get("created_at") != null) {
-				tweet.setCreatedAt(jsonObj.get("created_at").toString());
-			}
-
-			JSONObject jsonUserObj = null;
-			if (jsonObj.get("user") != null) {
-				jsonUserObj = (JSONObject) jsonObj.get("user");
-				if (jsonUserObj.get("id") != null) {
-					tweet.setUserID(jsonUserObj.get("id").toString());
+				if (jsonObj.get("id") != null) {
+					tweet.setTweetID(jsonObj.get("id").toString());
 				}
 
-				if (jsonUserObj.get("screen_name") != null) {
-					tweet.setUserName(jsonUserObj.get("screen_name").toString());
-					tweet.setTweetURL("https://twitter.com/" + tweet.getUserName() + "/status/" + tweet.getTweetID());
-				}
-				if (jsonUserObj.get("url") != null) {
-					tweet.setUserURL(jsonUserObj.get("url").toString());
-				}
-			}
-
-			JSONObject aidrObject = null;
-			if (jsonObj.get("aidr") != null) {
-				aidrObject = (JSONObject) jsonObj.get("aidr");				
-				if (aidrObject.get("crisis_name") != null) {
-					tweet.setCrisisName(aidrObject.get("crisis_name").toString());
+				if (jsonObj.get("text") != null) {
+					tweet.setMessage(jsonObj.get("text").toString());
 				}
 
-				if (aidrObject.get("nominal_labels") != null) {
-					JSONArray nominalLabels = (JSONArray) aidrObject.get("nominal_labels");					
-					String allLabelNames = "";
-					String allLabelDescriptinos = "";
-					String allConfidences = "";
-					String humanLabeled = "";
-					for (int i = 0; i < nominalLabels.size(); i++) {
-						JSONObject label = (JSONObject) nominalLabels.get(i);						
-						allLabelNames += label.get("label_name") + ";";
-						allLabelDescriptinos += label.get("label_description") + ";";
-						allConfidences += label.get("confidence") + ";";
-						humanLabeled += label.get("from_human") + ";";
+				if (jsonObj.get("created_at") != null) {
+					tweet.setCreatedAt(jsonObj.get("created_at").toString());
+				}
 
-						// Added by koushik
-						NominalLabel nLabel = new NominalLabel();
-						nLabel.attibute_code = label.get("attribute_code").toString();
-						nLabel.label_code = label.get("label_code") != null ? label.get("label_code").toString() : null;
-						nLabel.confidence = Float.parseFloat(label.get("confidence").toString());
-
-						nLabel.attribute_name = label.get("attribute_name").toString();
-						nLabel.label_name = label.get("label_name").toString();
-						nLabel.attribute_description = label.get("attribute_description").toString();
-						nLabel.label_description = label.get("label_description").toString();
-						nLabel.from_human = Boolean.parseBoolean(label.get("from_human").toString());
-
-						tweet.nominal_labels.add(nLabel);
+				JSONObject jsonUserObj = null;
+				if (jsonObj.get("user") != null) {
+					if (jsonObj.get("user") instanceof JSONObject) {
+						jsonUserObj = (JSONObject) jsonObj.get("user");
+					} else if (jsonObj.get("user") instanceof JSONArray) {
+						JSONArray temp = (JSONArray) jsonObj.get("user");
+						jsonUserObj = (JSONObject) temp.get(0);
+					}
+					if (jsonUserObj.get("id") != null) {
+						tweet.setUserID(jsonUserObj.get("id").toString());
 					}
 
-					tweet.setLabelName(allLabelNames);
-					tweet.setLabelDescription(allLabelDescriptinos);
-					tweet.setConfidence(allConfidences);
-					tweet.setHumanLabeled(humanLabeled);
-				} else {
-					//System.err.println("[getClassifiedTweet] tweet without label: " + line);		        	
+					if (jsonUserObj.get("screen_name") != null) {
+						tweet.setUserName(jsonUserObj.get("screen_name").toString());
+						tweet.setTweetURL("https://twitter.com/" + tweet.getUserName() + "/status/" + tweet.getTweetID());
+					}
+					if (jsonUserObj.get("url") != null) {
+						tweet.setUserURL(jsonUserObj.get("url").toString());
+					}
 				}
-			}
-			//System.out.println("Parsed tweet: " + tweet.toString());
 
+				JSONObject aidrObject = null;
+				if (jsonObj.get("aidr") != null) {
+					aidrObject = (JSONObject) jsonObj.get("aidr");				
+					if (aidrObject.get("crisis_name") != null) {
+						tweet.setCrisisName(aidrObject.get("crisis_name").toString());
+					}
+
+					if (aidrObject.get("nominal_labels") != null) {
+						JSONArray nominalLabels = (JSONArray) aidrObject.get("nominal_labels");					
+						String allLabelNames = "";
+						String allLabelDescriptinos = "";
+						String allConfidences = "";
+						String humanLabeled = "";
+						for (int i = 0; i < nominalLabels.size(); i++) {
+							JSONObject label = (JSONObject) nominalLabels.get(i);						
+							allLabelNames += label.get("label_name") + ";";
+							allLabelDescriptinos += label.get("label_description") + ";";
+							allConfidences += label.get("confidence") + ";";
+							humanLabeled += label.get("from_human") + ";";
+
+							// Added by koushik
+							NominalLabel nLabel = new NominalLabel();
+							nLabel.attribute_code = label.get("attribute_code") != null ? label.get("attribute_code").toString() : null;
+							nLabel.label_code = label.get("label_code") != null ? label.get("label_code").toString() : null;
+							try {
+								float conf = 0;
+								if (label.get("confidence") instanceof Float) { 
+									conf = (float) label.get("confidence");
+								} else if (label.get("confidence") instanceof Integer) {
+									Integer temp = (Integer) label.get("confidence");
+									conf = temp.floatValue();
+									//System.out.println("confidence as Integer!!!");
+								} 
+								nLabel.confidence = conf;
+							} catch (Exception ex) {
+								ex.printStackTrace();
+								//System.err.println("Error in parsing float confidence field");
+								nLabel.confidence = 1;
+							}
+
+							nLabel.attribute_name = label.get("attribute_name") != null ? label.get("attribute_name").toString() : null;
+							nLabel.label_name = label.get("label_name") != null ? label.get("label_name").toString() : null;
+							nLabel.attribute_description = label.get("attribute_description") != null ? label.get("attribute_description").toString() : null;
+							nLabel.label_description = label.get("label_description") != null ? label.get("label_description").toString() : null;
+							try {	
+								nLabel.from_human = label.get("from_human") != null ? Boolean.parseBoolean(label.get("from_human").toString()) : false;
+							} catch (Exception ex) {
+								System.err.println("Error in parsing from_human field");
+								ex.printStackTrace();
+								nLabel.from_human = false;
+							}
+							tweet.nominal_labels.add(nLabel);
+						}
+
+						tweet.setLabelName(allLabelNames);
+						tweet.setLabelDescription(allLabelDescriptinos);
+						tweet.setConfidence(allConfidences);
+						tweet.setHumanLabeled(humanLabeled);
+					} else {
+						//System.err.println("[getClassifiedTweet] tweet without label: " + line);		        	
+					}
+				}
+				//System.out.println("Parsed tweet: " + tweet.toString());
+				return tweet;
+			} else {
+				System.err.println("Input line: " + line);
+				return null;
+			}
 		} catch (ParseException ex) {
 			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
 			System.out.println("[getClassifiedTweet] Offending tweet: " + line);
+			System.out.println("[getClassifiedTweet] Returning null");
 			return null;
 		}
-		return tweet;
 	}
 
 	/*

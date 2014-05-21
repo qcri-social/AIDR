@@ -1140,7 +1140,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			//ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
 			//        .get(ClientResponse.class);
-			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+			Response clientResponse = webResource.request(MediaType.TEXT_HTML).get();
 
 			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
