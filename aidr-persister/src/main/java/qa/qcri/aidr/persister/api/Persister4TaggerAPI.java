@@ -122,11 +122,13 @@ public class Persister4TaggerAPI {
     }
 	
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	//@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_HTML)
 	@Path("/genCSV")
 	public Response generateCSVFromLastestJSON(@QueryParam("collectionCode") String collectionCode, @QueryParam("exportLimit") int exportLimit) throws UnknownHostException {
 		System.out.println("In tagger-persister genCSV");
 		JsonDeserializer jsonD = new JsonDeserializer();
+		exportLimit = Config.TWEETS_EXPORT_LIMIT_100K;		// Koushik: added to override user specs
 		String fileName = jsonD.taggerGenerateJSON2CSV_100K_BasedOnTweetCount(collectionCode, exportLimit);
 		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
 		return Response.ok(fileName).build();
@@ -141,7 +143,7 @@ public class Persister4TaggerAPI {
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_HTML)
 	@Path("/filter/genCSV")
 	public Response generateCSVFromLastestJSONFiltered(JsonQueryList queryList, 
 			@QueryParam("collectionCode") String collectionCode, 
@@ -179,7 +181,7 @@ public class Persister4TaggerAPI {
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_HTML)
 	@Path("/filter/genTweetIds")
 	public Response generateTweetsIDSCSVFromAllJSONFiltered(JsonQueryList queryList, 
 			@QueryParam("collectionCode") String collectionCode) 

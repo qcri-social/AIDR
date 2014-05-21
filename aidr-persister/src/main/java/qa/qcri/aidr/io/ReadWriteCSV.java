@@ -105,7 +105,7 @@ public class ReadWriteCSV {
 			String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
 			fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
 			String fileToWrite = persisterDIR + collectionDIR + "/" + fileName + ".csv";
-			System.out.println("Writing CSV file : " + fileToWrite);
+			System.out.println("[writeCollectorTweetIDSCSV] Writing CSV file : " + fileToWrite);
 			//beanWriter = new CsvBeanWriter(new FileWriter(fileToWrite, true),
 			//        CsvPreference.EXCEL_PREFERENCE);
 			if (null == beanWriter) { 
@@ -121,18 +121,20 @@ public class ReadWriteCSV {
 				try {
 					beanWriter.write(twt, header, processors);
 				} catch (SuperCsvCellProcessorException e) {
+					e.printStackTrace();
 				}
 			}
 
 		} catch (IOException ex) {
-			Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "IO Exception occured");
-
+			Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeCollectorTweetIDSCSV] IO Exception occured");
+			ex.printStackTrace();
 		} finally {
 			if (beanWriter != null) {
 				try {
 					beanWriter.close();
 				} catch (IOException ex) {
 					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, null, ex);
+					ex.printStackTrace();
 				}
 			}
 		}
@@ -148,7 +150,7 @@ public class ReadWriteCSV {
 			String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
 			fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
 			String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName + ".csv";
-			System.out.println("Writing CSV file : " + fileToWrite);
+			System.out.println("[writeClassifiedTweetIDsCSV] Writing CSV file : " + fileToWrite);
 			//beanWriter = new CsvBeanWriter(new FileWriter(fileToWrite, true),
 			//        CsvPreference.EXCEL_PREFERENCE);
 			if (null == beanWriter) {
@@ -165,11 +167,14 @@ public class ReadWriteCSV {
 				try {
 					beanWriter.write(twt, header, processors);
 				} catch (SuperCsvCellProcessorException e) {
+					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeClassifiedTweetIDsCSV] SuperCSV error");
+					e.printStackTrace();
 				}
 			}
 
 		} catch (IOException ex) {
-			Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "IO Exception occured");
+			Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeClassifiedTweetIDsCSV] IO Exception occured");
+			ex.printStackTrace();
 
 		} finally {
 			if (beanWriter != null) {
@@ -177,6 +182,8 @@ public class ReadWriteCSV {
 					beanWriter.close();
 				} catch (IOException ex) {
 					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, null, ex);
+					System.err.println("[writeClassifiedTweetIDsCSV] Error in closing beanWriter");
+					ex.printStackTrace();
 				}
 			}
 		}
@@ -194,7 +201,7 @@ public class ReadWriteCSV {
 				String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
 				fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
 				String fileToWrite = persisterDIR + collectionDIR + "/" + fileName + ".csv";
-				System.out.println("Writing CSV file : " + fileToWrite);
+				System.out.println("[writeCollectorTweetsCSV] Writing CSV file : " + fileToWrite);
 				//beanWriter = new CsvBeanWriter(new FileWriter(fileToWrite, true),
 				//        CsvPreference.EXCEL_PREFERENCE);
 				beanWriter = getCSVBeanWriter(fileToWrite);
@@ -204,12 +211,14 @@ public class ReadWriteCSV {
 			for (final Tweet twt : twtList) {
 				try {
 					beanWriter.write(twt, header, processors);
-				} catch (SuperCsvCellProcessorException e) {}
+				} catch (SuperCsvCellProcessorException e) {
+					e.printStackTrace();
+				}
 			}
 
 		} catch (IOException ex) {
-			Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "IO Exception occured");
-
+			Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeCollectorTweetsCSV] IO Exception occured");
+			ex.printStackTrace();
 		}
 		return beanWriter;
 	}
@@ -225,7 +234,7 @@ public class ReadWriteCSV {
 				String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
 				fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
 				String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName + ".csv";
-				System.out.println("Writing CSV file : " + fileToWrite);
+				System.out.println("[writeClassifiedTweetsCSV] Writing CSV file : " + fileToWrite);
 				//beanWriter = new CsvBeanWriter(new FileWriter(fileToWrite, true),
 				//        CsvPreference.EXCEL_PREFERENCE);
 				beanWriter = getCSVBeanWriter(fileToWrite);
@@ -237,11 +246,12 @@ public class ReadWriteCSV {
 					//System.out.println("To WRITE TWEET: " + twt);
 					beanWriter.write(twt, header, processors);
 				} catch (SuperCsvCellProcessorException e) {
+					e.printStackTrace();
 				}
 			}
 
 		} catch (IOException ex) {
-			Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "IO Exception occured");
+			Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeClassifiedTweetsCSV] IO Exception occured");
 
 		}
 		return beanWriter;

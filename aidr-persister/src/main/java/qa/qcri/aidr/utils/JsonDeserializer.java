@@ -107,7 +107,8 @@ public class JsonDeserializer {
 		System.out.println(fileNames);
 
 		ICsvBeanWriter beanWriter = null;
-		String fileName = collectionCode + "_tweetIds" + ".csv";
+		String fileNameforCSVGen = "Classified_" + collectionCode + "_tweetIds";
+		String fileName = fileNameforCSVGen + ".csv";
 
 		for (String file : fileNames) {
 			String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
@@ -127,7 +128,7 @@ public class JsonDeserializer {
 								tweetsList.add(tweet);
 							}
 						} else {
-							beanWriter = csv.writeClassifiedTweetIDsCSV(beanWriter, tweetsList, collectionCode, "Classified_" + collectionCode + "_tweetIds");
+							beanWriter = csv.writeClassifiedTweetIDsCSV(beanWriter, tweetsList, collectionCode, fileNameforCSVGen);
 							tweetsList.clear();
 						}
 					}
@@ -141,7 +142,7 @@ public class JsonDeserializer {
 				Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
-		beanWriter = csv.writeClassifiedTweetIDsCSV(beanWriter, tweetsList, collectionCode, "Classified_" + collectionCode + "_tweetIds");
+		beanWriter = csv.writeClassifiedTweetIDsCSV(beanWriter, tweetsList, collectionCode, fileNameforCSVGen);
 		tweetsList.clear();
 
 		return fileName;
@@ -165,8 +166,9 @@ public class JsonDeserializer {
 		FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
 
 		ICsvBeanWriter beanWriter = null;
-		String fileName = collectionCode + "_tweetIds_filtered" + ".csv";
-
+		String fileNameforCSVGen = "Classified_" + collectionCode + "_tweetIds_filtered";
+		String fileName = fileNameforCSVGen + ".csv";
+		
 		// Added by koushik - first build the FilterQueryMatcher
 		FilterQueryMatcher tweetFilter = new FilterQueryMatcher();
 		tweetFilter.queryList.setConstraints(queryList);
@@ -191,7 +193,7 @@ public class JsonDeserializer {
 								tweetsList.add(tweet);		// Question: WHY DUPLICATE ADDITION? 
 							}
 						} else {
-							beanWriter = csv.writeClassifiedTweetIDsCSV(beanWriter, tweetsList, collectionCode, "Classified_" + collectionCode + "_tweetIds_filtered");
+							beanWriter = csv.writeClassifiedTweetIDsCSV(beanWriter, tweetsList, collectionCode, fileNameforCSVGen);
 							tweetsList.clear();
 						}
 					}
@@ -205,7 +207,7 @@ public class JsonDeserializer {
 				Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
-		beanWriter = csv.writeClassifiedTweetIDsCSV(beanWriter, tweetsList, collectionCode, "Classified_" + collectionCode + "_tweetIds_filtered");
+		beanWriter = csv.writeClassifiedTweetIDsCSV(beanWriter, tweetsList, collectionCode, fileNameforCSVGen);
 		tweetsList.clear();
 
 		return fileName;

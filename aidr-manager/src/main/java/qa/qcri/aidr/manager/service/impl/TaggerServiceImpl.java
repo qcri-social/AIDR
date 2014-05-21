@@ -1111,7 +1111,7 @@ public class TaggerServiceImpl implements TaggerService {
 		try {
 			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 			//WebResource webResource = client.resource(persisterMainUrl + "/persister/genCSV?collectionCode=" + code);
-			WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/genCSV?collectionCode=" + code);
+			WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/genCSV?collectionCode=" + code + "&exportLimit=100000");
 			//ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
 			//        .get(ClientResponse.class);
 			Response clientResponse = webResource.request(MediaType.TEXT_HTML).get();
