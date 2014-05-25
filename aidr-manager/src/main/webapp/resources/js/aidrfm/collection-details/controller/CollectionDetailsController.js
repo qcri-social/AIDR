@@ -163,13 +163,12 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 }
             },
             
-            /*
             "#collectionTrash": {
                 click: function (btn, e, eOpts) {
                     datailsController.trashCollection();
                 }
             },
-            */
+
             '#collectionUpdate': {
                 click: function (btn, e, eOpts) {
                     if (AIDRFMFunctions.mandatoryFieldsEntered()) {
@@ -412,7 +411,6 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         this.setLastDowloadedDoc(r.lastDocument);
     },
     
-    /*
     updateTrashedDetailsPanel: function (r) {
         var p = this.DetailsComponent;
         p.currentCollection = r;
@@ -459,7 +457,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         this.setTotalCountOfDocuments(0);
         this.setLastDowloadedDoc('');
     },
-	*/
+
     setLastDowloadedDoc: function(raw) {
         var p = this.DetailsComponent;
         p.lastDocL.setText(raw ? raw : this.na, false);
@@ -633,7 +631,6 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         });
     },
 
-    /*
     trashCollection: function () {
         var me = this;
         var id = datailsController.DetailsComponent.currentCollection.id;
@@ -667,7 +664,6 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             }
         });
     },
-    */
 
     updateCollection: function (running) {
         var me = this;

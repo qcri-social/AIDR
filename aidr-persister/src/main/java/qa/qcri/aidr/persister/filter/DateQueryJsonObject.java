@@ -1,5 +1,6 @@
 package qa.qcri.aidr.persister.filter;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -52,11 +53,25 @@ public class DateQueryJsonObject extends QueryJsonObject {
 
 	@Override
 	public Date getDate() {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-		Date date = new Date(this.timestamp * 1000L);
+		//SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		//dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		//Date date = new Date(this.timestamp * 1000L);
 		
-		return date;
+		//return date;
+		
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+		formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+		if (timestamp > 0) {
+			try {
+				Date date = new Date(this.timestamp * 1000L);
+				//System.out.println("[getDate] Converted date: " + date.toString());
+				return date;
+			} catch (Exception e) {
+				System.err.println("[getDate] Error in creating Date from " + timestamp);
+			}
+		}
+		System.out.println("[getDate] Warning! returning Date = null for time String = " + timestamp);
+		return null;
 	}
 
 	@Override

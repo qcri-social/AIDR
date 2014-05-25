@@ -140,7 +140,7 @@ public class TrainingDataResource {
         CrisisDTO dto = new CrisisDTO();
         dto.setCode(c.getCode());
         dto.setName(c.getName());
-        dto.setCrisisID(c.getCrisisID());
+        dto.setCrisisID(c.getCrisisID().intValue());
         dto.setCrisisType(typeDTO);
         return dto;
     }

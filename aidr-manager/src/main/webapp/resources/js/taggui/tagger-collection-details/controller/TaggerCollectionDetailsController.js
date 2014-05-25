@@ -1002,7 +1002,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         me.mainComponent.CSVLink.setText('<div class="loading-block"></div>', false);
 
         Ext.Ajax.request({
-            url: BASE_URL + '/protected/collection/generateCSVLink.action',
+            url: BASE_URL + '/protected/tagger/taggerGenerateCSVLink.action',
             method: 'GET',
             params: {
                 code: CRISIS_CODE
@@ -1037,7 +1037,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         me.mainComponent.tweetsIdsLink.setText('<div class="loading-block"></div>', false);
 
         Ext.Ajax.request({
-            url: BASE_URL + '/protected/collection/generateTweetIdsLink.action',
+            url: BASE_URL + '/protected/tagger/taggerGenerateTweetIdsLink.action',
             method: 'GET',
             params: {
                 code: CRISIS_CODE

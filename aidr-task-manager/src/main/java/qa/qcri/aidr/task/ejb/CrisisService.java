@@ -2,7 +2,6 @@ package qa.qcri.aidr.task.ejb;
 
 
 import java.util.List;
-
 import qa.qcri.aidr.task.entities.Crisis;
 
 /**
@@ -12,10 +11,9 @@ import qa.qcri.aidr.task.entities.Crisis;
  * Time: 7:57 AM
  * To change this template use File | Settings | File Templates.
  */
-    public interface CrisisService extends AbstractTaskManagerService<Crisis, String> {
+public interface CrisisService extends AbstractTaskManagerService<Crisis, Long> {
 
-        Crisis findByCrisisID(Long id);
-        List<Crisis> findByCriteria(String columnName, Long value);
-        List<Crisis> findByCriteria(String columnName, String value);
-        //List<Crisis> findAllActiveCrisis();
+	Crisis findByCrisisID(Long id);
+	List<Crisis> findByCriteria(String columnName, Long value);
+	List<Crisis> findByCriteria(String columnName, String value);
 }

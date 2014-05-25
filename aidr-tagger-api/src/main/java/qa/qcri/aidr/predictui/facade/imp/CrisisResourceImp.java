@@ -32,7 +32,7 @@ public class CrisisResourceImp implements CrisisResourceFacade {
         return crisis;
     }
 
-    public Crisis getCrisisByID(int id) {
+    public Crisis getCrisisByID(long id) {
         Crisis crisis = null;
         Query query = em.createNamedQuery("Crisis.findByCrisisID", Crisis.class);
         query.setParameter("crisisID", id);
@@ -119,7 +119,7 @@ public class CrisisResourceImp implements CrisisResourceFacade {
         
         if (query.getSingleResult() != null) {
             Crisis crisis = (Crisis) query.getSingleResult();
-            return crisis.getCrisisID();
+            return crisis.getCrisisID().intValue();
         }
         }catch(NoResultException e){
             return null;

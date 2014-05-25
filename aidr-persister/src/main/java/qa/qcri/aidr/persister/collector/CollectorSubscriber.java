@@ -66,13 +66,13 @@ public class CollectorSubscriber extends JedisPubSub {
 
     @Override
     public void onPUnsubscribe(String pattern, int subscribedChannels) {
-        System.out.println("Unsubscribed Successfully to channel = " + collectionCode);
+        System.out.println("Unsubscribed Successfully to channel = " + pattern);
         closeFileWriting();
     }
 
     @Override
     public void onPSubscribe(String pattern, int subscribedChannels) {
-        System.out.println("Subscribed Successfully to persist channel = " + collectionCode);
+        System.out.println("Subscribed Successfully to persist channel = " + pattern);
     }
 
     private void createNewFile() {

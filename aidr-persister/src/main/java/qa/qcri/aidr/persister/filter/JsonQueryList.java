@@ -50,7 +50,11 @@ public class JsonQueryList implements Serializable {
 			object.append("comparator: ").append(q.comparator).append(", ");
 			object.append("min_confidence: ").append(q.min_confidence).append("},");
 		}
-		object.deleteCharAt(object.length()-1).append("]}");
+		if (!constraints.isEmpty()) { 
+			object.deleteCharAt(object.length()-1).append("]}");
+		} else {
+			object.append("]}");
+		}			
 		return object.toString();
 	}
 }

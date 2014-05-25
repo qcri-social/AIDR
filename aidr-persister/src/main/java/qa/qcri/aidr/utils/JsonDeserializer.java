@@ -4,9 +4,13 @@
  */
 package qa.qcri.aidr.utils;
 
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
+import net.minidev.json.parser.ParseException;
+
 import org.supercsv.io.ICsvBeanWriter;
 
-import qa.qcri.aidr.persister.filter.GenericInputQuery;
 import qa.qcri.aidr.persister.filter.JsonQueryList;
 import qa.qcri.aidr.persister.filter.FilterQueryMatcher;
 import qa.qcri.aidr.persister.filter.NominalLabel;
@@ -15,9 +19,6 @@ import qa.qcri.aidr.utils.Config;
 import java.io.*;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
-
-import com.google.gson.Gson;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -25,16 +26,19 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.minidev.json.JSONObject;
-import net.minidev.json.JSONValue;
-import net.minidev.json.parser.ParseException;
 import qa.qcri.aidr.utils.Tweet;
 import qa.qcri.aidr.io.FileSystemOperations;
 import qa.qcri.aidr.io.ReadWriteCSV;
 
 import java.nio.charset.Charset;
 
-import net.minidev.json.JSONArray;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 
 /**
  *
@@ -44,88 +48,133 @@ public class JsonDeserializer {
 
 	//This method generates tweetIds csv from all the jsons of a collection
 	public String generateJson2TweetIdsCSV(String collectionCode) {
-		String fileName = "";
 		List<String> fileNames = FileSystemOperations.getAllJSONFileVolumes(collectionCode);
-		List<Tweet> tweetsList = new ArrayList();
-		ReadWriteCSV csv = new ReadWriteCSV();
-		BufferedReader br = null;
-		String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/" + collectionCode + "_tweetIds.csv";
-		FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
-		for (String file : fileNames) {
-			String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/" + file;
-			try {
-				br = new BufferedReader(new FileReader(fileLocation));
-				String line;
-				while ((line = br.readLine()) != null) {
-					Tweet tweet = new Tweet();
-					try {
-						Object obj = JSONValue.parseStrict(line);
-						JSONObject jsonObj = (JSONObject) obj;
-						tweet.setTweetID(jsonObj.get("id").toString());
-						tweetsList.add(tweet);
-						if (tweetsList.size() <= 10000) { //after every 10k write to CSV file
-							tweetsList.add(tweet);
-						} else {
-							fileName = csv.writeCollectorTweetIDSCSV(tweetsList, collectionCode, collectionCode + "_tweetIds");
-							tweetsList.clear();
+		List<Tweet> tweetsList = new ArrayList<Tweet>(10000);
+
+		ICsvBeanWriter beanWriter = null;
+		//String fileName = collectionCode + "_tweetIds" + ".csv";		
+		String fileNameforCSVGen = collectionCode + "_tweetIds";
+		String fileName = fileNameforCSVGen + ".csv";
+
+		try {
+			ReadWriteCSV csv = new ReadWriteCSV();
+			BufferedReader br = null;
+			String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/" + collectionCode + "_tweetIds.csv";
+			FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
+
+			for (String file : fileNames) {
+				String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/" + file;
+				try {
+					br = new BufferedReader(new FileReader(fileLocation));
+					String line;
+					while ((line = br.readLine()) != null) {
+						Tweet tweet = new Tweet();
+						try {
+							Object obj = JSONValue.parseStrict(line);
+							JSONObject jsonObj = (JSONObject) obj;
+							tweet.setTweetID(jsonObj.get("id").toString());
+							//tweetsList.add(tweet);
+							if (tweetsList.size() < 10000) { //after every 10k write to CSV file
+								tweetsList.add(tweet);
+							} else {
+								beanWriter = csv.writeCollectorTweetIDSCSV(beanWriter, tweetsList, collectionCode, fileNameforCSVGen);
+								tweetsList.clear();
+
+							}
+						} catch (ParseException ex) {
 						}
-					} catch (ParseException ex) {
 					}
+
+					br.close();
+
+				} catch (FileNotFoundException ex) {
+					Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+				} catch (IOException ex) {
+					Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+				} 
+			}
+		} finally {
+			if (beanWriter != null) {
+				try {
+					beanWriter.close();
+				} catch (IOException ex) {
+					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, null, ex);
+					ex.printStackTrace();
 				}
-
-				br.close();
-
-			} catch (FileNotFoundException ex) {
-				Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (IOException ex) {
-				Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
-		fileName = csv.writeCollectorTweetIDSCSV(tweetsList, collectionCode, collectionCode + "_tweetIds");
+		//beanWriter = csv.writeCollectorTweetIDSCSV(beanWriter, tweetsList, collectionCode, collectionCode + "_tweetIds");
 		tweetsList.clear();
 
 		return fileName;
 	}
 
 	public String generateClassifiedJson2TweetIdsCSV(String collectionCode) {
-		String fileName = "";
-		List<String> fileNames = FileSystemOperations.getClassifiedFileVolumes(collectionCode);
-		List<ClassifiedTweet> tweetsList = new ArrayList();
-		ReadWriteCSV csv = new ReadWriteCSV();
-		BufferedReader br = null;
-		String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds.csv";
-		System.out.println("Deleteing file : " + fileToDelete);
-		FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
-		System.out.println(fileNames);
-		for (String file : fileNames) {
-			String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
-			System.out.println("Reading file " + fileLocation);
-			try {
-				br = new BufferedReader(new FileReader(fileLocation));
-				String line;
-				while ((line = br.readLine()) != null) {
-					ClassifiedTweet tweet = getClassifiedTweet(line);
-					tweetsList.add(tweet);
-					System.out.println(tweet.getTweetID());
-					if (tweetsList.size() <= 10000) { //after every 10k write to CSV file
-						tweetsList.add(tweet);
-					} else {
-						fileName = csv.writeClassifiedTweetIDsCSV(tweetsList, collectionCode, "Classified_" + collectionCode + "_tweetIds");
-						tweetsList.clear();
+
+		ICsvBeanWriter beanWriter = null;
+		String fileNameforCSVGen = "Classified_" + collectionCode + "_tweetIds";
+		String fileName = fileNameforCSVGen + ".csv";
+
+		try {
+			List<String> fileNames = FileSystemOperations.getClassifiedFileVolumes(collectionCode);
+			List<ClassifiedTweet> tweetsList = new ArrayList<ClassifiedTweet>(10000);
+
+			ReadWriteCSV csv = new ReadWriteCSV();
+			BufferedReader br = null;
+			String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds.csv";
+			System.out.println("Deleteing file : " + fileToDelete);
+			FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
+			System.out.println(fileNames);
+
+			long lastCount = 0;
+			long currentCount = 0;
+			for (String file : fileNames) {
+				String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
+				System.out.println("[generateClassifiedJson2TweetIdsCSV] Reading file " + fileLocation);
+				try {
+					br = new BufferedReader(new FileReader(fileLocation));
+					String line;
+					while ((line = br.readLine()) != null) {
+						ClassifiedTweet tweet = getClassifiedTweet(line);
+						if (tweet != null) {
+							/*
+						if (!tweet.getNominalLabels().isEmpty()) {
+							tweetsList.add(tweet);
+						}*/
+							//System.out.println(tweet.getTweetID());
+							if (tweetsList.size() < 10000) { //after every 10k write to CSV file
+								if (!tweet.getNominalLabels().isEmpty()) {
+									tweetsList.add(tweet);
+
+								}
+							} else {
+								beanWriter = csv.writeClassifiedTweetIDsCSV(beanWriter, tweetsList, collectionCode, fileNameforCSVGen);
+								lastCount = currentCount;
+								currentCount += tweetsList.size();
+								System.out.println("[generateClassifiedJson2TweetIdsCSV] Writing_tweetIds: " + lastCount + " to " + currentCount);
+								tweetsList.clear();
+							}
+						} 
 					}
+					br.close();
 
+				} catch (FileNotFoundException ex) {
+					Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+				} catch (IOException ex) {
+					Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+				} 
+				//beanWriter = csv.writeClassifiedTweetIDsCSV(beanWriter, tempList, collectionCode, fileNameforCSVGen);
+			}	// end for 
+		} finally {
+			if (beanWriter != null) {
+				try {
+					beanWriter.close();
+				} catch (IOException ex) {
+					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, null, ex);
+					ex.printStackTrace();
 				}
-
-				br.close();
-
-			} catch (FileNotFoundException ex) {
-				Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (IOException ex) {
-				Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
-		fileName = csv.writeClassifiedTweetIDsCSV(tweetsList, collectionCode, "Classified_" + collectionCode + "_tweetIds");
-		tweetsList.clear();
 
 		return fileName;
 	}
@@ -138,52 +187,71 @@ public class JsonDeserializer {
 	 */
 	public String generateClassifiedJson2TweetIdsCSVFiltered(final String collectionCode, 
 			final JsonQueryList queryList) {
-		String fileName = "";
-		List<String> fileNames = FileSystemOperations.getClassifiedFileVolumes(collectionCode);
-		List<ClassifiedTweet> tweetsList = new ArrayList<ClassifiedTweet>();
-		ReadWriteCSV csv = new ReadWriteCSV();
-		BufferedReader br = null;
-		String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds_filtered.csv";
-		System.out.println("Deleteing file : " + fileToDelete);
-		FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
+		ICsvBeanWriter beanWriter = null;
+		String fileNameforCSVGen = "Classified_" + collectionCode + "_tweetIds_filtered";
+		String fileName = fileNameforCSVGen + ".csv";
+		List<ClassifiedTweet> tweetsList = new ArrayList<ClassifiedTweet>(10000);
+		
+		try {
+			List<String> fileNames = FileSystemOperations.getClassifiedFileVolumes(collectionCode);
+			
+			ReadWriteCSV csv = new ReadWriteCSV();
+			BufferedReader br = null;
+			String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds_filtered.csv";
+			System.out.println("Deleteing file : " + fileToDelete);
+			FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
 
-		// Added by koushik - first build the FilterQueryMatcher
-		FilterQueryMatcher tweetFilter = new FilterQueryMatcher();
-		tweetFilter.queryList.setConstraints(queryList);
-		tweetFilter.buildMatcherArray();
+			// Added by koushik - first build the FilterQueryMatcher
+			FilterQueryMatcher tweetFilter = new FilterQueryMatcher();
+			tweetFilter.queryList.setConstraints(queryList);
+			tweetFilter.buildMatcherArray();
 
-		for (String file : fileNames) {
-			String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
-			System.out.println("Reading file " + fileLocation);
-			try {
-				br = new BufferedReader(new FileReader(fileLocation));
-				String line;
-				while ((line = br.readLine()) != null) {
-					ClassifiedTweet tweet = getClassifiedTweet(line);
-					// Apply filter on tweet
-					if (tweetFilter.getMatcherResult(tweet)) {
-						tweetsList.add(tweet);		
-					}
-					if (tweetsList.size() <= 10000) { //after every 10k write to CSV file
-						// Apply filter on tweet
-						if (tweetFilter.getMatcherResult(tweet)) {
-							tweetsList.add(tweet);		// Question: WHY DUPLICATE ADDITION? 
+			for (String file : fileNames) {
+				String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
+				System.out.println("Reading file " + fileLocation);
+				try {
+					br = new BufferedReader(new FileReader(fileLocation));
+					String line;
+					while ((line = br.readLine()) != null) {
+						ClassifiedTweet tweet = getClassifiedTweet(line);
+						if (tweet != null) {
+							// Apply filter on tweet
+							/*
+						if (!tweet.getNominalLabels().isEmpty() && tweetFilter.getMatcherResult(tweet)) {
+							tweetsList.add(tweet);		
+						}*/
+							if (tweetsList.size() < 10000) { //after every 10k write to CSV file
+								// Apply filter on tweet
+								if (!tweet.getNominalLabels().isEmpty() && tweetFilter.getMatcherResult(tweet)) {
+									tweetsList.add(tweet);		// Question: WHY DUPLICATE ADDITION? 
+								}
+							} else {
+								beanWriter = csv.writeClassifiedTweetIDsCSV(beanWriter, tweetsList, collectionCode, fileNameforCSVGen);
+								tweetsList.clear();
+							}
 						}
-					} else {
-						fileName = csv.writeClassifiedTweetIDsCSV(tweetsList, collectionCode, "Classified_" + collectionCode + "_tweetIds_filtered");
-						tweetsList.clear();
 					}
+
+					br.close();
+
+				} catch (FileNotFoundException ex) {
+					Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+				} catch (IOException ex) {
+					Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+				} 		
+			}
+		} finally {
+			if (beanWriter != null) {
+				try {
+					beanWriter.close();
+				} catch (IOException ex) {
+					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, null, ex);
+					ex.printStackTrace();
 				}
-
-				br.close();
-
-			} catch (FileNotFoundException ex) {
-				Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (IOException ex) {
-				Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
-		fileName = csv.writeClassifiedTweetIDsCSV(tweetsList, collectionCode, "Classified_" + collectionCode + "_tweetIds_filtered");
+
+		//beanWriter = csv.writeClassifiedTweetIDsCSV(beanWriter, tweetsList, collectionCode, fileNameforCSVGen);
 		tweetsList.clear();
 
 		return fileName;
@@ -236,28 +304,28 @@ public class JsonDeserializer {
 						while ((line = br.readLine()) != null) {
 							try {
 								Tweet tweet = getTweet(line);
+								if (tweet != null) {
+									if (tweetsList.size() <= maxCSVWriteSize && currentSize <= Config.TWEETS_EXPORT_LIMIT_100K) {
+										//write to arrayList
+										tweetsList.add(tweet);
+										currentSize++;
+										// System.out.println("currentSize  : " + currentSize);
+									} else {
 
-								if (tweetsList.size() <= maxCSVWriteSize && currentSize <= Config.TWEETS_EXPORT_LIMIT_100K) {
-									//write to arrayList
-									tweetsList.add(tweet);
-									currentSize++;
-									// System.out.println("currentSize  : " + currentSize);
-								} else {
+										//write csv file
+										beanWriter = csv.writeCollectorTweetsCSV(tweetsList, collectionCode, fileNameforCSVGen, beanWriter);
+										// empty arraylist
+										tweetsList.clear();
 
-									//write csv file
-									beanWriter = csv.writeCollectorTweetsCSV(tweetsList, collectionCode, fileNameforCSVGen, beanWriter);
-									// empty arraylist
-									tweetsList.clear();
-
-								}
-								if (beanWriter != null) {
-									// System.out.println("beanWriter  : " +beanWriter.getLineNumber());
-									if (currentSize >= Config.TWEETS_EXPORT_LIMIT_100K) {
-										// write to the csv file
-										break createTweetList;
+									}
+									if (beanWriter != null) {
+										// System.out.println("beanWriter  : " +beanWriter.getLineNumber());
+										if (currentSize >= Config.TWEETS_EXPORT_LIMIT_100K) {
+											// write to the csv file
+											break createTweetList;
+										}
 									}
 								}
-
 							} catch (ParseException ex) {
 								//Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, "JSON file parsing exception at line {0}", lineNumber);
 							}
@@ -314,7 +382,7 @@ public class JsonDeserializer {
 			File[] taggerFiles = Arrays.copyOf(objectsArray, objectsArray.length, File[].class);
 			Arrays.sort(taggerFiles, new Comparator<File>() {
 				public int compare(File f1, File f2) {
-					return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
+					return Long.valueOf(f2.lastModified()).compareTo(f1.lastModified());	// koushik: changed sort order?
 				}
 			});
 
@@ -335,22 +403,26 @@ public class JsonDeserializer {
 						br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 						while ((line = br.readLine()) != null) {
 							ClassifiedTweet tweet = getClassifiedTweet(line);
+							if (tweet != null) {
+								if (tweetsList.size() <= maxCSVWriteSize && currentSize <= exportLimit) {
+									//write to arrayList
+									if (!tweet.getNominalLabels().isEmpty()) {
+										tweetsList.add(tweet);
+										//System.out.println("Added TWEET: " + tweet.getLabelName() + ", " + tweet.getConfidence());
+										currentSize++;
+									}
+								} else {
 
-							if (tweetsList.size() <= maxCSVWriteSize && currentSize <= exportLimit) {
-								//write to arrayList
-								tweetsList.add(tweet);
-								currentSize++;
-							} else {
+									//write csv file
+									beanWriter = csv.writeClassifiedTweetsCSV(tweetsList, collectionCode, fileNameforCSVGen, beanWriter);
+									// empty arraylist
+									tweetsList.clear();
 
-								//write csv file
-								beanWriter = csv.writeClassifiedTweetsCSV(tweetsList, collectionCode, fileNameforCSVGen, beanWriter);
-								// empty arraylist
-								tweetsList.clear();
-
-							}
-							if (beanWriter != null) {
-								if (currentSize >= exportLimit) {
-									break createTweetList;
+								}
+								if (beanWriter != null) {
+									if (currentSize >= exportLimit) {
+										break createTweetList;
+									}
 								}
 							}
 						}
@@ -439,25 +511,27 @@ public class JsonDeserializer {
 						br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 						while ((line = br.readLine()) != null) {
 							ClassifiedTweet tweet = getClassifiedTweet(line);
+							if (tweet != null) {
+								if (tweetsList.size() <= maxCSVWriteSize && currentSize <= exportLimit) {
+									// Apply filter on tweet
+									if (!tweet.getNominalLabels().isEmpty() && tweetFilter.getMatcherResult(tweet)) { 
+										//write to arrayList
+										tweetsList.add(tweet);
+										//System.out.println("filtered TWEET with label: " + tweet.getLabelName() + ", " + tweet.getConfidence());
+										currentSize++;
+									}
+								} else {
 
-							if (tweetsList.size() <= maxCSVWriteSize && currentSize <= exportLimit) {
-								// Apply filter on tweet
-								if (tweetFilter.getMatcherResult(tweet)) { 
-									//write to arrayList
-									tweetsList.add(tweet);
-									currentSize++;
+									//write csv file
+									beanWriter = csv.writeClassifiedTweetsCSV(tweetsList, collectionCode, fileNameforCSVGen, beanWriter);
+									// empty arraylist
+									tweetsList.clear();
+
 								}
-							} else {
-
-								//write csv file
-								beanWriter = csv.writeClassifiedTweetsCSV(tweetsList, collectionCode, fileNameforCSVGen, beanWriter);
-								// empty arraylist
-								tweetsList.clear();
-
-							}
-							if (beanWriter != null) {
-								if (currentSize >= exportLimit) {
-									break createTweetList;
+								if (beanWriter != null) {
+									if (currentSize >= exportLimit) {
+										break createTweetList;
+									}
 								}
 							}
 						}
@@ -621,51 +695,187 @@ public class JsonDeserializer {
 
 	private Tweet getTweet(String line) throws ParseException {
 		Tweet tweet = new Tweet();
-		Object obj = JSONValue.parseStrict(line);
-		JSONObject jsonObj = (JSONObject) obj;
-		tweet.setTweetID(jsonObj.get("id").toString());
-		tweet.setMessage(jsonObj.get("text").toString());
-		tweet.setCreatedAt(jsonObj.get("created_at").toString());
+		try {
+			Object obj = JSONValue.parseStrict(line);
+			JSONObject jsonObj = (JSONObject) obj;
+			tweet.setTweetID(jsonObj.get("id").toString());
+			tweet.setMessage(jsonObj.get("text").toString());
+			tweet.setCreatedAt(jsonObj.get("created_at").toString());
 
-		JSONObject jsonUserObj = (JSONObject) jsonObj.get("user");
-		tweet.setUserID(jsonUserObj.get("id").toString());
-		String userScreenName = jsonUserObj.get("screen_name").toString();
-		tweet.setUserName(userScreenName);
-		tweet.setTweetURL("https://twitter.com/" + userScreenName + "/status/" + tweet.getTweetID());
-		if (jsonUserObj.get("url") != null) {
-			tweet.setUserURL(jsonUserObj.get("url").toString());
+			JSONObject jsonUserObj = (JSONObject) jsonObj.get("user");
+			tweet.setUserID(jsonUserObj.get("id").toString());
+			String userScreenName = jsonUserObj.get("screen_name").toString();
+			tweet.setUserName(userScreenName);
+			tweet.setTweetURL("https://twitter.com/" + userScreenName + "/status/" + tweet.getTweetID());
+			if (jsonUserObj.get("url") != null) {
+				tweet.setUserURL(jsonUserObj.get("url").toString());
+			}
+		} catch (ParseException ex) {
+			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+			System.out.println("[getTweet] Offending tweet: " + line);
+			return null;
 		}
 
 		return tweet;
 	}
 
+
+	// getClassifiedTweet method using net.minidev.json library for parsing JSON string
+	/*
 	public ClassifiedTweet getClassifiedTweet(String line) {
+		//System.out.println("Tweet to PARSE: " + line);
 		ClassifiedTweet tweet = new ClassifiedTweet();
 		try {
+			if (line != null && !line.isEmpty()) {
+				//System.out.println("[getClassifiedTweet] input tweet: " + line);
+				Object obj = JSONValue.parseStrict(line);
+				JSONObject jsonObj = (JSONObject) obj;
 
-			Object obj = JSONValue.parseStrict(line);
-			JSONObject jsonObj = (JSONObject) obj;
+				if (jsonObj.get("id") != null) {
+					tweet.setTweetID(jsonObj.get("id").toString());
+				}
+
+				if (jsonObj.get("text") != null) {
+					tweet.setMessage(jsonObj.get("text").toString());
+				}
+
+				if (jsonObj.get("created_at") != null) {
+					tweet.setCreatedAt(jsonObj.get("created_at").toString());
+				}
+
+				JSONObject jsonUserObj = null;
+				if (jsonObj.get("user") != null) {
+					if (jsonObj.get("user") instanceof JSONObject) {
+						jsonUserObj = (JSONObject) jsonObj.get("user");
+					} else if (jsonObj.get("user") instanceof JSONArray) {
+						JSONArray temp = (JSONArray) jsonObj.get("user");
+						jsonUserObj = (JSONObject) temp.get(0);
+					}
+					if (jsonUserObj.get("id") != null) {
+						tweet.setUserID(jsonUserObj.get("id").toString());
+					}
+
+					if (jsonUserObj.get("screen_name") != null) {
+						tweet.setUserName(jsonUserObj.get("screen_name").toString());
+						tweet.setTweetURL("https://twitter.com/" + tweet.getUserName() + "/status/" + tweet.getTweetID());
+					}
+					if (jsonUserObj.get("url") != null) {
+						tweet.setUserURL(jsonUserObj.get("url").toString());
+					}
+				}
+
+				JSONObject aidrObject = null;
+				if (jsonObj.get("aidr") != null) {
+					aidrObject = (JSONObject) jsonObj.get("aidr");				
+					if (aidrObject.get("crisis_name") != null) {
+						tweet.setCrisisName(aidrObject.get("crisis_name").toString());
+					}
+
+					if (aidrObject.get("nominal_labels") != null) {
+						JSONArray nominalLabels = (JSONArray) aidrObject.get("nominal_labels");					
+						String allLabelNames = "";
+						String allLabelDescriptinos = "";
+						String allConfidences = "";
+						String humanLabeled = "";
+						for (int i = 0; i < nominalLabels.size(); i++) {
+							JSONObject label = (JSONObject) nominalLabels.get(i);						
+							allLabelNames += label.get("label_name") + ";";
+							allLabelDescriptinos += label.get("label_description") + ";";
+							allConfidences += label.get("confidence") + ";";
+							humanLabeled += label.get("from_human") + ";";
+
+							// Added by koushik
+							NominalLabel nLabel = new NominalLabel();
+							nLabel.attribute_code = label.get("attribute_code") != null ? label.get("attribute_code").toString() : null;
+							nLabel.label_code = label.get("label_code") != null ? label.get("label_code").toString() : null;
+							try {
+								float conf = 0;
+								if (label.get("confidence") instanceof Float) { 
+									conf = (float) label.get("confidence");
+								} else if (label.get("confidence") instanceof Integer) {
+									Integer temp = (Integer) label.get("confidence");
+									conf = temp.floatValue();
+									//System.out.println("confidence as Integer!!!");
+								} 
+								nLabel.confidence = conf;
+							} catch (Exception ex) {
+								ex.printStackTrace();
+								//System.err.println("Error in parsing float confidence field");
+								nLabel.confidence = 1;
+							}
+
+							nLabel.attribute_name = label.get("attribute_name") != null ? label.get("attribute_name").toString() : null;
+							nLabel.label_name = label.get("label_name") != null ? label.get("label_name").toString() : null;
+							nLabel.attribute_description = label.get("attribute_description") != null ? label.get("attribute_description").toString() : null;
+							nLabel.label_description = label.get("label_description") != null ? label.get("label_description").toString() : null;
+							try {	
+								nLabel.from_human = (label.get("from_human") != null) ? (boolean) label.get("from_human") : false;
+							} catch (Exception ex) {
+								System.err.println("Error in parsing from_human field");
+								ex.printStackTrace();
+								nLabel.from_human = false;
+							}
+							tweet.nominal_labels.add(nLabel);
+						}
+
+						tweet.setLabelName(allLabelNames);
+						tweet.setLabelDescription(allLabelDescriptinos);
+						tweet.setConfidence(allConfidences);
+						tweet.setHumanLabeled(humanLabeled);
+					} else {
+						//System.err.println("[getClassifiedTweet] tweet without label: " + line);		        	
+					}
+				}
+				//System.out.println("Parsed tweet: " + tweet.toString());
+				return tweet;
+			} else {
+				System.err.println("Input line: " + line);
+				return null;
+			}
+		} catch (ParseException ex) {
+			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+			System.out.println("[getClassifiedTweet] Offending tweet: " + line);
+			System.out.println("[getClassifiedTweet] Returning null");
+			return null;
+		}
+	}
+	 */
+
+
+	// getClassifiedTweet method using Gson library for parsing JSON string
+	public ClassifiedTweet getClassifiedTweet(String line) {
+		//System.out.println("Tweet to PARSE: " + line);
+
+		ClassifiedTweet tweet = new ClassifiedTweet();
+		try {
+			Gson jsonObject = new GsonBuilder().serializeNulls().disableHtmlEscaping()
+					.serializeSpecialFloatingPointValues()	//.setPrettyPrinting()
+					.create();
+			JsonParser parser = new JsonParser();
+			JsonObject jsonObj = (JsonObject) parser.parse(line);
+
+
 			if (jsonObj.get("id") != null) {
-				tweet.setTweetID(jsonObj.get("id").toString());
+				tweet.setTweetID(jsonObj.get("id").getAsString());
 			}
 
 			if (jsonObj.get("text") != null) {
-				tweet.setMessage(jsonObj.get("text").toString());
+				tweet.setMessage(jsonObj.get("text").getAsString());
 			}
 
 			if (jsonObj.get("created_at") != null) {
-				tweet.setCreatedAt(jsonObj.get("created_at").toString());
+				tweet.setCreatedAt(jsonObj.get("created_at").getAsString());
 			}
 
-			JSONObject jsonUserObj = null;
-			if (jsonObj.get("user") != null) {
-				jsonUserObj = (JSONObject) jsonObj.get("user");
+			JsonObject jsonUserObj = null;
+			if (jsonObj.get("user") != null) {				
+				jsonUserObj = jsonObj.get("user").getAsJsonObject();
 				if (jsonUserObj.get("id") != null) {
-					tweet.setUserID(jsonUserObj.get("id").toString());
+					tweet.setUserID(jsonUserObj.get("id").getAsString());
 				}
 
 				if (jsonUserObj.get("screen_name") != null) {
-					tweet.setUserName(jsonUserObj.get("screen_name").toString());
+					tweet.setUserName(jsonUserObj.get("screen_name").getAsString());
 					tweet.setTweetURL("https://twitter.com/" + tweet.getUserName() + "/status/" + tweet.getTweetID());
 				}
 				if (jsonUserObj.get("url") != null) {
@@ -673,21 +883,23 @@ public class JsonDeserializer {
 				}
 			}
 
-			JSONObject aidrObject = null;
+			JsonObject aidrObject = null;
 			if (jsonObj.get("aidr") != null) {
-				aidrObject = (JSONObject) jsonObj.get("aidr");
+				aidrObject = jsonObj.get("aidr").getAsJsonObject();
 				if (aidrObject.get("crisis_name") != null) {
-					tweet.setCrisisName(aidrObject.get("crisis_name").toString());
+					tweet.setCrisisName(aidrObject.get("crisis_name").getAsString());
 				}
 
 				if (aidrObject.get("nominal_labels") != null) {
-					JSONArray nominalLabels = (JSONArray) aidrObject.get("nominal_labels");
+					//JSONArray nominalLabels = (JSONArray) aidrObject.get("nominal_labels");
+					JsonArray nominalLabels = aidrObject.get("nominal_labels").getAsJsonArray();
 					String allLabelNames = "";
 					String allLabelDescriptinos = "";
 					String allConfidences = "";
 					String humanLabeled = "";
 					for (int i = 0; i < nominalLabels.size(); i++) {
-						JSONObject label = (JSONObject) nominalLabels.get(i);
+						//JSONObject label = (JSONObject) nominalLabels.get(i);
+						JsonObject label = nominalLabels.get(i).getAsJsonObject();
 						allLabelNames += label.get("label_name") + ";";
 						allLabelDescriptinos += label.get("label_description") + ";";
 						allConfidences += label.get("confidence") + ";";
@@ -695,15 +907,15 @@ public class JsonDeserializer {
 
 						// Added by koushik
 						NominalLabel nLabel = new NominalLabel();
-						nLabel.attibute_code = label.get("attribute_code").toString();
-						nLabel.label_code = label.get("label_code") != null ? label.get("label_code").toString() : null;
-						nLabel.confidence = Float.parseFloat(label.get("confidence").toString());
+						nLabel.attribute_code = label.get("attribute_code").getAsString();
+						nLabel.label_code = label.get("label_code") != null ? label.get("label_code").getAsString() : null;
+						nLabel.confidence = Float.parseFloat(label.get("confidence").getAsString());
 
-						nLabel.attribute_name = label.get("attribute_name").toString();
-						nLabel.label_name = label.get("label_name").toString();
-						nLabel.attribute_description = label.get("attribute_description").toString();
-						nLabel.label_description = label.get("label_description").toString();
-						nLabel.from_human = Boolean.parseBoolean(label.get("from_human").toString());
+						nLabel.attribute_name = label.get("attribute_name").getAsString();
+						nLabel.label_name = label.get("label_name").getAsString();
+						nLabel.attribute_description = label.get("attribute_description").getAsString();
+						nLabel.label_description = label.get("label_description").getAsString();
+						nLabel.from_human = Boolean.parseBoolean(label.get("from_human").getAsString());
 
 						tweet.nominal_labels.add(nLabel);
 					}
@@ -712,13 +924,18 @@ public class JsonDeserializer {
 					tweet.setLabelDescription(allLabelDescriptinos);
 					tweet.setConfidence(allConfidences);
 					tweet.setHumanLabeled(humanLabeled);
+				} else {
+					//System.err.println("[getClassifiedTweet] tweet without label: " + line);		        	
 				}
-
 			}
+			//System.out.println("Parsed tweet: " + tweet.toString());
 
-		} catch (ParseException ex) {
+		} catch (Exception ex) {
 			//Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+			//System.out.println("[getClassifiedTweet] Offending tweet: " + line);
+			return null;
 		}
 		return tweet;
 	}
+
 }

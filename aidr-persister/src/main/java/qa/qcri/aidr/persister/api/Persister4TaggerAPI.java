@@ -67,20 +67,20 @@ public class Persister4TaggerAPI {
 	@Consumes("application/json")
 	@Path("/start")
 	public Response startPersister(@QueryParam("file") String fileLocation, @QueryParam("collectionCode") String collectionCode) {
-		System.out.println("In tagger-persister start");
+		System.out.println("In tagger persister start");
 		String response = "";
 		try {
 			fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH; //OVERRIDING PATH RECEIVED FROM EXTERNAL REQUEST
 			if (StringUtils.isNotEmpty(fileLocation) && StringUtils.isNotEmpty(collectionCode)) {
 				if (GenericCache.getInstance().getTaggerPersisterMap(collectionCode) != null) {
-					response = "A persister is already running for this collection code [" + collectionCode + "]";
+					response = "A tagger persister is already running for this collection code [" + collectionCode + "]";
 					return Response.ok(response).build();
 				}
 
 				RedisTaggerPersister p = new RedisTaggerPersister(fileLocation, collectionCode);
 				p.startMe();
 				GenericCache.getInstance().setTaggerPersisterMap(collectionCode, p);
-				response = "Started tagger persisting to " + fileLocation;
+				response = "Started tagger persisting to " + fileLocation + "/output";
 				return Response.ok(response).build();
 			}
 		} catch (Exception ex) {
@@ -94,21 +94,22 @@ public class Persister4TaggerAPI {
 	@Consumes("application/json")
 	@Path("/stop")
 	public Response stopPersister(@QueryParam("collectionCode") String collectionCode) {
+		System.out.println("In tagger persister stop");
 		String response;
-		RedisCollectorPersister p = (RedisCollectorPersister) GenericCache.getInstance().getPersisterObject(collectionCode);
+		RedisTaggerPersister p = (RedisTaggerPersister) GenericCache.getInstance().getTaggerPersisterMap(collectionCode);
 		if (p != null) {
 			try {
-				System.out.println("Aborting persister...");
-				GenericCache.getInstance().delPersisterObject(collectionCode);
+				System.out.println("Aborting tagger persister...");
+				GenericCache.getInstance().delTaggerPersisterMap(collectionCode);
 				p.suspendMe();
 				System.out.println("Aborting done for " + collectionCode);
-				response = "Persistance of [" + collectionCode + "] has been stopped.";
+				response = "Tagger Persistance of [" + collectionCode + "] has been stopped.";
 				return Response.ok(response).build();
 			} catch (InterruptedException ex) {
 				Logger.getLogger(Persister4TaggerAPI.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
-		response = "Unable to locate a running persister with the given collection code:[" + collectionCode + "]";
+		response = "Unable to locate a running tagger persister with the given collection code:[" + collectionCode + "]";
 		return Response.ok(response).build();
 	}
 	
@@ -121,11 +122,13 @@ public class Persister4TaggerAPI {
     }
 	
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	//@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_HTML)
 	@Path("/genCSV")
 	public Response generateCSVFromLastestJSON(@QueryParam("collectionCode") String collectionCode, @QueryParam("exportLimit") int exportLimit) throws UnknownHostException {
 		System.out.println("In tagger-persister genCSV");
 		JsonDeserializer jsonD = new JsonDeserializer();
+		exportLimit = Config.TWEETS_EXPORT_LIMIT_100K;		// Koushik: added to override user specs
 		String fileName = jsonD.taggerGenerateJSON2CSV_100K_BasedOnTweetCount(collectionCode, exportLimit);
 		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
 		return Response.ok(fileName).build();
@@ -140,28 +143,27 @@ public class Persister4TaggerAPI {
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_HTML)
 	@Path("/filter/genCSV")
 	public Response generateCSVFromLastestJSONFiltered(JsonQueryList queryList, 
 			@QueryParam("collectionCode") String collectionCode, 
 			@QueryParam("exportLimit") int exportLimit) throws UnknownHostException {
 		JsonDeserializer jsonD = new JsonDeserializer();
-		//System.out.println("[generateCSVFromLastestJSONFiltered] request received");
 		System.out.println("[generateCSVFromLastestJSONFiltered] Received POST list: " + queryList.toString());
 
 		String fileName = jsonD.taggerGenerateJSON2CSV_100K_BasedOnTweetCountFiltered(collectionCode, exportLimit, queryList);
 		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
 		return Response.ok(fileName)
-				.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
+				.allow("POST", "OPTIONS", "HEAD")
 				.header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Credentials", "true")
-				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
+				.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
 				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 				.build();
 	}  
 	
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_HTML)
 	@Path("/genTweetIds")
 	public Response generateTweetsIDSCSVFromAllJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
 		System.out.println("In tagger-persister genTweetIds");
@@ -179,7 +181,7 @@ public class Persister4TaggerAPI {
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_HTML)
 	@Path("/filter/genTweetIds")
 	public Response generateTweetsIDSCSVFromAllJSONFiltered(JsonQueryList queryList, 
 			@QueryParam("collectionCode") String collectionCode) 
@@ -190,10 +192,10 @@ public class Persister4TaggerAPI {
 		String fileName = jsonD.generateClassifiedJson2TweetIdsCSVFiltered(collectionCode, queryList);
 		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
 		return Response.ok(fileName)
-				.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
+				.allow("POST", "OPTIONS", "HEAD")
 				.header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Credentials", "true")
-				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
+				.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
 				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 				.build();
 	}
@@ -236,10 +238,10 @@ public class Persister4TaggerAPI {
 
 		List<ClassifiedTweet> tweets = jsonD.getNClassifiedTweetsJSONFiltered(collectionCode, exportLimit, queryList);
 		return Response.ok(new GenericEntity<List<ClassifiedTweet>>(tweets) {}, callback)
-				.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
+				.allow("POST", "OPTIONS", "HEAD")
 				.header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Credentials", "true")
-				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
+				.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
 				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 				.build();
 	}
@@ -253,10 +255,10 @@ public class Persister4TaggerAPI {
 	public Response generateCSVFromLastestJSONFiltered(@QueryParam("collectionCode") String collectionCode, 
 			@QueryParam("exportLimit") int exportLimit) throws UnknownHostException {
 		return Response.ok()
-				.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
+				.allow("POST", "OPTIONS", "HEAD")
 				.header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Credentials", "true")
-				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
+				.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
 				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 				.build();
 	}
@@ -267,10 +269,10 @@ public class Persister4TaggerAPI {
 	public Response generateTweetsIDSCSVFromAllJSONFiltered(@QueryParam("collectionCode") String collectionCode) 
 			throws UnknownHostException {
 		return Response.ok()
-				.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
+				.allow("POST", "OPTIONS", "HEAD")
 				.header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Credentials", "true")
-				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
+				.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
 				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 				.build();
 	}
@@ -282,10 +284,10 @@ public class Persister4TaggerAPI {
 			@QueryParam("exportLimit") int exportLimit, 
 			@QueryParam("callback") String callback) throws UnknownHostException {
 		return Response.ok()
-				.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
+				.allow("POST", "OPTIONS", "HEAD")
 				.header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Credentials", "true")
-				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
+				.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
 				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 				.build();
 	}

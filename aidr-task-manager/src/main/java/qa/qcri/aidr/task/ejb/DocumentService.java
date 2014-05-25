@@ -5,6 +5,7 @@ package qa.qcri.aidr.task.ejb;
 import java.util.List;
 
 import javax.ejb.Local;
+import javax.persistence.EntityManager;
 
 import qa.qcri.aidr.task.entities.Document;
 
@@ -16,7 +17,15 @@ import qa.qcri.aidr.task.entities.Document;
  * To change this template use File | Settings | File Templates.
  */
 @Local
-public interface DocumentService extends AbstractTaskManagerService<Document, String>{
+public interface DocumentService extends AbstractTaskManagerService<Document, Long>{
 
     public void updateHasHumanLabel(Document document);
+    
+    public int deleteNoLabelDocument(Document document);
+    public int deleteNoLabelDocument(List<Document> collection);
+    public int deleteUnassignedDocument(Document document);
+    public int deleteUnassignedDocumentCollection(List<Document> collection);
+    public int deleteStaleDocuments(String joinType, String joinTable, String joinColumn,
+			 					    String sortOrder, String[] orderBy,
+			 					    final String maxTaskAge, final String scanInterval);
 }

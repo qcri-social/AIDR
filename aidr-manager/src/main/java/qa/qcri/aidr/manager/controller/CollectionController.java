@@ -42,8 +42,8 @@ public class CollectionController extends BaseController{
 	@Autowired
 	private TaggerService taggerService;
 
-    @Autowired
-    private UserService userService;
+	@Autowired
+	private UserService userService;
 
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
@@ -120,26 +120,56 @@ public class CollectionController extends BaseController{
 
 	@RequestMapping(value = "/trash.action", method = { RequestMethod.POST ,RequestMethod.GET })
 	@ResponseBody
-	public Map<String,Object> trash( AidrCollection collection) throws Exception {
-		if (collection.getStatus().equals(CollectionStatus.STOPPED)) {
-			logger.info("Trashing collection having code " + collection.getCode());
-			try{
-				AidrCollection c = collectionService.stop(collection.getId());
-				collection.setStatus(CollectionStatus.TRASHED);
-				collectionService.update(collection);
-				if (taggerService.trashCollection(collection) > 0) {
-					return getUIWrapper(true);
+	public Map<String,Object> trash(@RequestParam Integer id) throws Exception {
+		try {
+			AidrCollection collection = collectionService.findById(id);
+			if (collection.getStatus().equals(CollectionStatus.INITIALIZING) || 
+					collection.getStatus().equals(CollectionStatus.RUNNING) || 
+					collection.getStatus().equals(CollectionStatus.RUNNING_WARNING)) {
+				String msg = "Attempting to trash a running collection. Collection must be in stopped state!";
+				logger.error(msg);
+				return getUIWrapper(false, msg);
+			} else {
+				// Trash collection
+				CollectionStatus oldStatus = collection.getStatus();
+				if (oldStatus.equals(CollectionStatus.STOPPED)
+						|| oldStatus.equals(CollectionStatus.NOT_RUNNING)) {
+					logger.info("Trashing collection having code " + collection.getCode());
+					try {
+						collection = collectionService.stop(collection.getId());
+						collection.setStatus(CollectionStatus.TRASHED);
+						collectionService.update(collection);
+						if (taggerService.trashCollection(collection) > 0) {
+							AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
+							return getUIWrapper(dto, true);
+						} else {
+							String msg = "Attempting to trash collection " + collection.getCode() + " failed!";
+							logger.error(msg);
+							// restore collection status to STOPPED
+							collection.setStatus(oldStatus);
+							collectionService.update(collection);
+							return getUIWrapper(false, msg);
+						}
+					} catch(Exception e) {
+						String msg = "Error while trashing AIDR Collection - couldn't stop!";
+						logger.error(msg, e);
+						if (!collection.getStatus().equals(oldStatus)) {
+							// restore collection status
+							collection.setStatus(oldStatus);
+							collectionService.update(collection);
+						}
+						return getUIWrapper(false, msg);
+					}
 				} else {
-					logger.error("Attempting to trash collection " + collection.getCode() + " failed!");
-					return getUIWrapper(false);
+					String msg = "Attempting to trash collection " + collection.getCode() + " failed as collection status = " + oldStatus.getStatus();
+					logger.error(msg);
+					return getUIWrapper(false, msg);
 				}
-			}catch(Exception e){
-				logger.error("Error while trashing AIDR Collection ", e);
-				return getUIWrapper(false); 
 			}
-		} else {
-			logger.error("Attempting to trash a running collection. Collection must be in stopped state!");
-			return getUIWrapper(false);
+		} catch(Exception e){
+			String msg = "Error while attempting to trash AIDR Collection - not found! ";
+			logger.error(msg, e);
+			return getUIWrapper(false, msg);
 		}
 	}
 
@@ -175,7 +205,7 @@ public class CollectionController extends BaseController{
 		logger.info("Updating AidrCollection into Database having id " + collectionId);
 		try{
 			CollectionStatus status = collection.getStatus();
-            AidrCollection dbCollection = collectionService.findById(collectionId);
+			AidrCollection dbCollection = collectionService.findById(collectionId);
 			if (CollectionStatus.RUNNING_WARNING.equals(status) || CollectionStatus.RUNNING.equals(status)) {
 				//              stop collection
 				AidrCollection collectionAfterStop = collectionService.stopAidrFetcher(dbCollection);
@@ -212,20 +242,20 @@ public class CollectionController extends BaseController{
 				collectionService.update(collection);
 			}
 
-            // if collection type was changed and if crisis for this collection exists so we need to update crisis type
-            if (dbCollection.getCrisisType() != null && collection.getCrisisType() != null){
-                if (!dbCollection.getCrisisType().equals(collection.getCrisisType())){
-                    try {
-                        TaggerCrisisExist taggerCrisisExist = taggerService.isCrisesExist(collection.getCode());
-                        TaggerCrisis crisis = new TaggerCrisis(taggerCrisisExist.getCrisisId());
-                        TaggerCrisisType crisisType = new TaggerCrisisType(collection.getCrisisType());
-                        crisis.setCrisisType(crisisType);
-                        taggerService.updateCode(crisis);
-                    } catch (AidrException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+			// if collection type was changed and if crisis for this collection exists so we need to update crisis type
+			if (dbCollection.getCrisisType() != null && collection.getCrisisType() != null){
+				if (!dbCollection.getCrisisType().equals(collection.getCrisisType())){
+					try {
+						TaggerCrisisExist taggerCrisisExist = taggerService.isCrisesExist(collection.getCode());
+						TaggerCrisis crisis = new TaggerCrisis(taggerCrisisExist.getCrisisId());
+						TaggerCrisisType crisisType = new TaggerCrisisType(collection.getCrisisType());
+						crisis.setCrisisType(crisisType);
+						taggerService.updateCode(crisis);
+					} catch (AidrException e) {
+						e.printStackTrace();
+					}
+				}
+			}
 
 			return getUIWrapper(true);
 		}catch(Exception e){
@@ -593,8 +623,8 @@ public class CollectionController extends BaseController{
 		dto.setCreatedDate(collection.getCreatedDate());
 		dto.setLastDocument(collection.getLastDocument());
 		dto.setDurationHours(collection.getDurationHours());
-        dto.setPubliclyListed(collection.getPubliclyListed());
-        dto.setCrisisType(collection.getCrisisType());
+		dto.setPubliclyListed(collection.getPubliclyListed());
+		dto.setCrisisType(collection.getCrisisType());
 
 		List<UserEntity> managers = collection.getManagers();
 		for (UserEntity manager : managers) {

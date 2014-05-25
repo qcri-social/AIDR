@@ -72,12 +72,10 @@ public class FilterQueryMatcher {
 				++i;
 				boolean matchResult = isQueryMatch(q, tweet);
 				//System.out.println("Result of matching query with tweet = " + matchResult);
-				if (!matchResult) {
-					return false;
-				}
+				return matchResult;
 			}
 		}
-		return true;
+		return true;		// no filter to apply - default is "selected"
 	}
 
 	public boolean isQueryMatch(QueryJsonObject q, ClassifiedTweet tweet) {
@@ -86,7 +84,9 @@ public class FilterQueryMatcher {
 			if (q.getComparator().equals(ComparatorType.is_after)) {
 				boolean matchResult;
 				if (null == tweet.getCreatedAt()) {
-					System.out.println("[isQueryMatch] No createdAt field in Tweet!!!");
+					System.err.println("[isQueryMatch] No createdAt field in Tweet!!!");
+					System.err.println("OFFENDING TWEET: " + tweet);
+					System.err.println("\n");
 					return false;		// default behavior
 				}
 				matchResult = tweet.getDate(tweet.getCreatedAt()).after(q.getDate());
@@ -96,7 +96,9 @@ public class FilterQueryMatcher {
 			if (q.getComparator().equals(ComparatorType.is_before)) {
 				boolean matchResult;
 				if (null == tweet.getCreatedAt()) {
-					System.out.println("[isQueryMatch] No createdAt field in Tweet!!!");
+					System.err.println("[isQueryMatch] No createdAt field in Tweet!!!");
+					System.err.println("OFFENDING TWEET: " + tweet);
+					System.err.println("\n");
 					return false;		// default behavior
 				}
 				matchResult = tweet.getDate(tweet.getCreatedAt()).before(q.getDate());
@@ -113,7 +115,7 @@ public class FilterQueryMatcher {
 				//System.out.println("Going for matching nLabel#" + i); 
 				++i;
 				if (q.getClassifierCode() != null && 
-					q.getClassifierCode().equalsIgnoreCase(nLabel.attibute_code)) {
+					q.getClassifierCode().equalsIgnoreCase(nLabel.attribute_code)) {
 					// classifier code matches, next match comparator
 					
 					// First check confidence parameter
@@ -259,7 +261,7 @@ public class FilterQueryMatcher {
 		int i = 0;
 		for (NominalLabel t: testTweet.getNominalLabels()) {
 			System.out.println("i = " + i + ": createAt = " + testTweet.getCreatedAt()  
-					+ ", attribute code = " + t.attibute_code 
+					+ ", attribute code = " + t.attribute_code 
 					+ ", label_code = " + t.label_code + ", confidence = " + t.confidence);
 			++i;
 		}

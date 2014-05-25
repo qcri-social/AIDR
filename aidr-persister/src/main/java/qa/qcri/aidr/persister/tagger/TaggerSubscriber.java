@@ -9,9 +9,11 @@ package qa.qcri.aidr.persister.tagger;
  * @author Imran
  */
 import qa.qcri.aidr.persister.collector.*;
+
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import redis.clients.jedis.JedisPubSub;
 
 import java.io.OutputStreamWriter;
@@ -19,10 +21,16 @@ import java.io.FileOutputStream;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
+
+import qa.qcri.aidr.utils.ClassifiedTweet;
 import qa.qcri.aidr.utils.Config;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import qa.qcri.aidr.utils.JsonDeserializer;
+
 import qa.qcri.aidr.io.FileSystemOperations;
 
 public class TaggerSubscriber extends JedisPubSub {
@@ -34,7 +42,7 @@ public class TaggerSubscriber extends JedisPubSub {
     private File file;
     private long itemsWrittenToFile = 0;
     private int fileVolumnNumber = 1;
-
+    
     public TaggerSubscriber() {
     }
 
@@ -67,13 +75,13 @@ public class TaggerSubscriber extends JedisPubSub {
 
     @Override
     public void onPUnsubscribe(String pattern, int subscribedChannels) {
-        System.out.println("Tagger persister: Unsubscribed Successfully to channel = " + collectionCode);
+        System.out.println("Tagger persister: Unsubscribed Successfully to channel = " + pattern);
         closeFileWriting();
     }
 
     @Override
     public void onPSubscribe(String pattern, int subscribedChannels) {
-        System.out.println("Tagger persister: Subscribed Successfully to persist channel = " + collectionCode);
+        System.out.println("Tagger persister: Subscribed Successfully to persist channel = " + pattern);
     }
 
     private void createNewFile() {
@@ -83,7 +91,7 @@ public class TaggerSubscriber extends JedisPubSub {
                 file.createNewFile();
             }
         } catch (IOException ex) {
-            Logger.getLogger(CollectorSubscriber.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TaggerSubscriber.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -106,7 +114,7 @@ public class TaggerSubscriber extends JedisPubSub {
         try {
             out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file, true), Charset.forName("UTF-8")), Config.DEFAULT_FILE_WRITER_BUFFER_SIZE);
         } catch (IOException ex) {
-            Logger.getLogger(CollectorSubscriber.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TaggerSubscriber.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -117,7 +125,18 @@ public class TaggerSubscriber extends JedisPubSub {
             itemsWrittenToFile++;
             isTimeToCreateNewFile();
         } catch (IOException ex) {
-            Logger.getLogger(CollectorSubscriber.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TaggerSubscriber.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        // Debug code added by koushik
+        JsonDeserializer jsd = new JsonDeserializer();
+        ClassifiedTweet tweet = jsd.getClassifiedTweet(message);
+        if (null == tweet) {
+        	//System.err.println("[writeToFile] REDIS output JSON data format error!!! Offending tweet: " + tweet.getTweetID());
+        } else {
+        	if (null == tweet.getLabelName() && tweet.getNominalLabels().isEmpty()) {
+        		//System.err.println("[writeToFile] REDIS output faulty tweet with empty nominal label: " + tweet.getTweetID());
+        	}
         }
     }
 
@@ -136,7 +155,7 @@ public class TaggerSubscriber extends JedisPubSub {
             out.flush();
             out.close();
         } catch (IOException ex) {
-            Logger.getLogger(CollectorSubscriber.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TaggerSubscriber.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

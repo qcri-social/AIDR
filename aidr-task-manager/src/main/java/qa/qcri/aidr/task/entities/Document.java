@@ -5,6 +5,7 @@
 package qa.qcri.aidr.task.entities;
 
 import java.io.Serializable;
+import java.util.Collection;
 //import java.util.Collection;
 import java.util.Date;
 
@@ -17,8 +18,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 //import javax.persistence.JoinTable;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 //import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -29,9 +32,13 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import qa.qcri.aidr.task.entities.NominalLabel;
 import qa.qcri.aidr.task.entities.TaskAssignment;
 
 /**
@@ -47,50 +54,69 @@ public class Document implements Serializable {
 
     private static final long serialVersionUID = -5527566248002296042L;
 
+    @XmlElement
     @Id
     @Column(name = "documentID")
     private Long documentID;
 
-
+    @XmlElement
     @Column (name = "hasHumanLabels", nullable = false)
     private boolean hasHumanLabels;
 
+    @XmlElement
     @Column (name = "crisisID", nullable = false)
     private Long crisisID;
 
+    @XmlElement
     @Column (name = "isEvaluationSet", nullable = false)
     private boolean isEvaluationSet;
 
+    @XmlElement
     @Column (name = "sourceIP", nullable = false)
     private Integer sourceIP;
 
+    @XmlElement
     @Column (name = "valueAsTrainingSample", nullable = false)
     private Double valueAsTrainingSample;
 
+    @XmlElement
     @Column (name = "receivedAt", nullable = false)
     private Date receivedAt;
 
+    @XmlElement
     @Column (name = "language", nullable = false)
     private String language;
 
+    @XmlElement
     @Column (name = "doctype", nullable = false)
     private String doctype;
 
+    @XmlElement
     @Column (name = "data", nullable = false)
     private String data;
 
+    @XmlElement
     @Column (name = "wordFeatures", nullable = false)
     private String wordFeatures;
 
+    @XmlElement
     @Column (name = "geoFeatures", nullable = false)
     private String geoFeatures;
 
+    @XmlElement
     @OneToOne(cascade=CascadeType.DETACH, fetch=FetchType.LAZY)
     @JoinColumn(name="documentID",insertable=true,
             updatable=true,nullable=true,unique=true)
     private TaskAssignment taskAssignment;
-
-
+    
+    
+    @XmlElement
+    @JoinTable(name = "document_nominal_label", joinColumns = {
+			@JoinColumn(name = "documentID", referencedColumnName = "documentID")}, inverseJoinColumns = {
+			@JoinColumn(name = "nominalLabelID", referencedColumnName = "nominalLabelID")})
+	@ManyToMany(cascade=CascadeType.MERGE, fetch=FetchType.LAZY)
+	private Collection<NominalLabel> nominalLabelCollection;
+    
     public Document(){}
 
     public Document(Long documentID, boolean hasHumanLabels){
@@ -201,6 +227,18 @@ public class Document implements Serializable {
     public void setTaskAssignment(TaskAssignment taskAssignment) {
         this.taskAssignment = taskAssignment;
     }
+    
+    
+    @XmlTransient
+    @JsonIgnore
+    public Collection<NominalLabel> getNominalLabelCollection() {
+        return nominalLabelCollection;
+    }
+
+    public void setNominalLabelCollection(Collection<NominalLabel> nominalLabelCollection) {
+        this.nominalLabelCollection = nominalLabelCollection;
+    }
+    
 }
 
 

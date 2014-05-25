@@ -50,7 +50,7 @@ public class MiscResource {
         System.out.println("received modelFID :" + modelFamilyID);
         ResponseWrapper response = new ResponseWrapper();
         try {
-            List<TrainingDataDTO> trainingDataList = miscEJB.getTraningDataByCrisisAndAttribute(crisisID, modelFamilyID, fromRecord, limit, sortColumn, sortDirection);
+            List<TrainingDataDTO> trainingDataList = miscEJB.getTraningDataByCrisisAndAttribute((long) crisisID, modelFamilyID, fromRecord, limit, sortColumn, sortDirection);
             response.setTrainingData(trainingDataList);
         } catch (RuntimeException e) {
             return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
@@ -64,7 +64,7 @@ public class MiscResource {
     public Response getItemToLabel(@QueryParam("crisisID") int crisisID, @QueryParam("attributeID") int attributeID) {
         ItemToLabelDTO item = new ItemToLabelDTO();
         try {
-            item = miscEJB.getItemToLabel(crisisID, attributeID);
+            item = miscEJB.getItemToLabel((long) crisisID, attributeID);
         } catch (RuntimeException e) {
             System.out.println("Exception : " +  e);
         }

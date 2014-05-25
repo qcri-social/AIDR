@@ -24,6 +24,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -81,20 +82,25 @@ public class Crisis implements Serializable {
     public void setUserID(Long userID) {
         this.userID = userID;
     }
-
+    
+    @XmlElement
     @Id
     @Column(name = "crisisID")
     private Long crisisID;
 
+    @XmlElement
     @Column (name = "name", nullable = false)
     private String name;
 
+    @XmlElement
     @Column (name = "crisisTypeID", nullable = false)
     private Long crisisTypeID;
 
+    @XmlElement
     @Column (name = "code", nullable = false)
     private String code;
 
+    @XmlElement
     @Column (name = "userID", nullable = false)
     private Long userID;
 

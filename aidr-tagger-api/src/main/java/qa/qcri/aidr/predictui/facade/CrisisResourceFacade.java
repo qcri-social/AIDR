@@ -20,7 +20,7 @@ public interface CrisisResourceFacade {
    
    public Crisis editCrisis(Crisis crisis); 
    
-   public Crisis getCrisisByID(int id);
+   public Crisis getCrisisByID(long id);
 
    public Crisis getCrisisByCode(String code);
 

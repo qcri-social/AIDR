@@ -92,7 +92,7 @@ public class ModelFacadeImp implements ModelFacade {
         return modelWrapperList;
     }
 
-    public List<ModelWrapper> getModelByCrisisID(int crisisID) {
+    public List<ModelWrapper> getModelByCrisisID(long crisisID) {
         List<ModelWrapper> modelWrapperList = new ArrayList<ModelWrapper>();
         Crisis crisis = em.find(Crisis.class, crisisID);
         Collection<ModelFamily> modelFamilyList = crisis.getModelFamilyCollection();

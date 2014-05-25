@@ -45,6 +45,17 @@ public class GenericCache {
         taggerPersisterMap.put(key, taggerPersister);
     }
 
+    /**
+     * Delete persister entry for given collectionCode
+     * @param key is collectionCode
+     * @throws InterruptedException
+     */
+    public void delTaggerPersisterMap(String key) throws InterruptedException {
+    	RedisTaggerPersister p = taggerPersisterMap.get(key);
+        p.suspendMe();
+        taggerPersisterMap.remove(key);
+    }
+    
     private static class GenericSingletonHolder {
 
         private static final GenericCache INSTANCE = new GenericCache();
@@ -63,12 +74,30 @@ public class GenericCache {
         p.suspendMe();
         persisterMap.remove(key);
     }
-
+    
+    /**
+     * 
+     * @return List of active collector persisters
+     */
     public List<RedisCollectorPersister> getAllPersisters() {
         List<RedisCollectorPersister> persistersList = new ArrayList<RedisCollectorPersister>();
         if (persisterMap != null) {
             for (Map.Entry pairs : persisterMap.entrySet()) {
                 persistersList.add((RedisCollectorPersister) pairs.getValue());
+            }
+        }
+        return persistersList;
+    }
+    
+    /**
+     * 
+     * @return List of active tagger persisters
+     */
+    public List<RedisTaggerPersister> getAllTaggerPersisters() {
+        List<RedisTaggerPersister> persistersList = new ArrayList<RedisTaggerPersister>();
+        if (taggerPersisterMap != null) {
+            for (Map.Entry pairs : taggerPersisterMap.entrySet()) {
+                persistersList.add((RedisTaggerPersister) pairs.getValue());
             }
         }
         return persistersList;

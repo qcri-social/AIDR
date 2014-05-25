@@ -38,10 +38,10 @@ public class ClassifiedTweet  implements Document, Serializable{
 	private String labelDescription;
 	private String confidence;
 	private String humanLabeled;
-
+	
 	// Added by koushik
-	@JsonIgnore
-	public ArrayList<NominalLabel> nominal_labels;
+	//@JsonIgnore
+	public ArrayList<NominalLabel> nominal_labels;		// transient?
 
 	public ClassifiedTweet() {
 		nominal_labels = new ArrayList<NominalLabel>();
@@ -147,7 +147,24 @@ public class ClassifiedTweet  implements Document, Serializable{
 	}
 
 	public String toString(){
-		return tweetID+","+message+","+createdAt+","+userID+","+userName+","+userURL+","+tweetURL;
+		StringBuffer tweetString = new StringBuffer();
+		tweetString.append(tweetID).append(",")
+				   .append(message).append(",")
+				   .append(createdAt).append(",")
+				   .append(userID).append(",")
+				   .append(userName).append(",")
+				   .append(userURL).append(",")
+				   .append(tweetURL).append(",")
+				   .append(crisisName).append(",")
+				   .append(labelName).append(",")
+				   .append(labelDescription).append(",")
+				   .append(confidence).append(",")
+				   .append(humanLabeled);
+		if (tweetString != null) {
+			return tweetString.toString();	
+		} 
+		return null;
+		//return tweetID+","+message+","+createdAt+","+userID+","+userName+","+userURL+","+tweetURL;
 	}
 
 	/**
@@ -259,16 +276,12 @@ public class ClassifiedTweet  implements Document, Serializable{
 	}
 
 	public ArrayList<NominalLabel> getNominalLabels() {
-		ArrayList<NominalLabel> arr = new ArrayList<NominalLabel>();
-		if (nominal_labels != null) 
-			arr.addAll(nominal_labels);
-		return arr;
+		return nominal_labels;
 	}
 
 	public void setNominalLabels(ArrayList<NominalLabel> nLabels) {
-		if (nominal_labels != null) {
-			nominal_labels.addAll(nLabels);
+		if (this.nominal_labels != null) {
+			this.nominal_labels = nLabels;
 		}
 	}
-
-}
+ }

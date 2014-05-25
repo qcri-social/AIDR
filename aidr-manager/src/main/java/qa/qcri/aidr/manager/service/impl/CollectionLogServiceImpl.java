@@ -97,7 +97,7 @@ public class CollectionLogServiceImpl implements CollectionLogService {
         try {
             Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
             //WebResource webResource = client.resource(persisterMainUrl + "/persister/genCSV?collectionCode=" + code);
-            WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/genCSV?collectionCode=" + code + "&exportLimit=100000");
+            WebTarget webResource = client.target(persisterMainUrl + "/persister/genCSV?collectionCode=" + code);
             //ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
             //        .get(ClientResponse.class);
             Response clientResponse = webResource.request(MediaType.TEXT_HTML).get();
@@ -120,11 +120,11 @@ public class CollectionLogServiceImpl implements CollectionLogService {
         try {
             //Client client = ClientBuilder.newClient();
             //WebResource webResource = client.resource(persisterMainUrl + "/persister/genTweetIds?collectionCode=" + code);
-        	WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/genTweetIds?collectionCode=" + code);
+        	WebTarget webResource = client.target(persisterMainUrl + "/persister/genTweetIds?collectionCode=" + code);
         	
         	//ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
             //        .get(ClientResponse.class);
-        	Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+        	Response clientResponse = webResource.request(MediaType.TEXT_HTML).get();
         	
         	//String jsonResponse = clientResponse.getEntity(String.class);
         	String jsonResponse = clientResponse.readEntity(String.class);

@@ -98,7 +98,7 @@ public class Persister4CollectorAPI {
     }
     
     @GET
-    @Produces("application/json")
+    @Produces(MediaType.TEXT_HTML)
     @Path("/genTweetIds")
     public Response generateTweetsIDSCSVFromAllJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
         JsonDeserializer jsonD = new JsonDeserializer();

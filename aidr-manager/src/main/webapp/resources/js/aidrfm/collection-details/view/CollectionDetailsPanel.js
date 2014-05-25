@@ -264,15 +264,13 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             hidden: true
         });
         
-        /*
         this.trashButton = Ext.create('Ext.Button', {
             text: 'Trash Collection',
-            cls:'btn btn-black',
+            cls:'btn btn-grey',
             id: 'collectionTrash',
-            margin: '25 0 0 0',
-            hidden: false
+            margin: '25 0 0 0'
         });
-		*/
+
         this.configurationsEditTabL = Ext.create('Ext.form.Label', {
             flex: 1,
             text: 'Optional settings',
@@ -852,10 +850,10 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     	]
                                     },
                                     {
-                                    	width: 750,                                    	
-                                    	text: ''
-                                    },                                
-                                    //this.trashButton
+                                        xtype: 'container',
+                                        flex: 1
+                                    },
+                                    this.trashButton
                             ]
                         }
                                 

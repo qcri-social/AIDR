@@ -128,7 +128,7 @@ public class AidrCollection implements Serializable {
         return status;
     }
 
-    public void setStatus(CollectionStatus status) {
+    public synchronized void setStatus(CollectionStatus status) {
         this.status = status;
     }
 
@@ -237,6 +237,6 @@ public class AidrCollection implements Serializable {
     }
     
     public void setPubliclyListed(Boolean publiclyListed) {
-    	this.publiclyListed = (publiclyListed == null) ? true : publiclyListed;
+    	this.publiclyListed = publiclyListed;
     }
 }
