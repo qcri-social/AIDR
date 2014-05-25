@@ -61,6 +61,10 @@ public class JsonDataValidator {
                 return false;
             }
 
+            if(jsonObject.get("shareWithAccounts") == null ){
+                return false;
+            }
+
             valid = true;
 
         } catch (Exception ioe) {
