@@ -17,13 +17,13 @@ import java.util.List;
 @Local
 public interface MiscResourceFacade {
     
-   public List<TrainingDataDTO> getTraningDataByCrisisAndAttribute(int crisisID,
+   public List<TrainingDataDTO> getTraningDataByCrisisAndAttribute(long crisisID,
                                                                    int modelFamilyID,
                                                                    int fromRecord,
                                                                    int limit,
                                                                    String sortColumn,
                                                                    String sortDirection);
 
-   public ItemToLabelDTO getItemToLabel(int crisisID, int attributeID);
+   public ItemToLabelDTO getItemToLabel(long crisisID, int attributeID);
    
 }

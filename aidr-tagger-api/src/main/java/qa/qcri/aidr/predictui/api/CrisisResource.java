@@ -43,7 +43,7 @@ public class CrisisResource {
     public Response getCrisisByID(@PathParam("id") int id) {
         Crisis crisis = null;
         try {
-            crisis = crisisLocalEJB.getCrisisByID(id);
+            crisis = crisisLocalEJB.getCrisisByID((long) id);
         } catch (RuntimeException e) {
             return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
         }

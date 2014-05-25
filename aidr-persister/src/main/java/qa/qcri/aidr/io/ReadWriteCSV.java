@@ -10,6 +10,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -102,6 +103,10 @@ public class ReadWriteCSV {
 		List<Tweet> twtList = tweetsList;
 		//ICsvBeanWriter beanWriter = null;
 		try {
+			// the header elements are used to map the bean values to each column (names must match)
+			final String[] header = new String[]{"tweetID", "message","userID", "userName", "userURL", "createdAt", "tweetURL"};
+			final CellProcessor[] processors = getProcessors();
+
 			String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
 			fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
 			String fileToWrite = persisterDIR + collectionDIR + "/" + fileName + ".csv";
@@ -110,13 +115,10 @@ public class ReadWriteCSV {
 			//        CsvPreference.EXCEL_PREFERENCE);
 			if (null == beanWriter) { 
 				beanWriter = getCSVBeanWriter(fileToWrite);
+				// write the header
+				beanWriter.writeHeader(header);
 			}
 
-			// the header elements are used to map the bean values to each column (names must match)
-			final String[] header = new String[]{"tweetID", "message","userID", "userName", "userURL", "createdAt", "tweetURL"};
-			final CellProcessor[] processors = getProcessors();
-			// write the header
-			beanWriter.writeHeader(header);
 			for (final Tweet twt : twtList) {
 				try {
 					beanWriter.write(twt, header, processors);
@@ -128,25 +130,20 @@ public class ReadWriteCSV {
 		} catch (IOException ex) {
 			Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeCollectorTweetIDSCSV] IO Exception occured");
 			ex.printStackTrace();
-		} finally {
-			if (beanWriter != null) {
-				try {
-					beanWriter.close();
-				} catch (IOException ex) {
-					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, null, ex);
-					ex.printStackTrace();
-				}
-			}
-		}
+		} 
 		//return fileName+".csv";
 		return beanWriter;
 	}
 
-	public ICsvBeanWriter writeClassifiedTweetIDsCSV(ICsvBeanWriter beanWriter, List<ClassifiedTweet> tweetsList, String collectionDIR, String fileName) {
-		List<ClassifiedTweet> twtList = tweetsList;//new ArrayList<Tweet>(); 
+	public ICsvBeanWriter writeClassifiedTweetIDsCSV(ICsvBeanWriter beanWriter, final List<ClassifiedTweet> tweetsList, String collectionDIR, String fileName) {
+		//List<ClassifiedTweet> twtList = tweetsList;//new ArrayList<Tweet>(); 
 
 		//ICsvBeanWriter beanWriter = null;
 		try {
+			// the header elements are used to map the bean values to each column (names must match)
+			final String[] header = new String[]{"tweetID", "labelName","labelDescription", "confidence"};
+			final CellProcessor[] processors = getProcessors4ClassifiedTweetIDSCCSV();
+
 			String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
 			fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
 			String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName + ".csv";
@@ -155,15 +152,11 @@ public class ReadWriteCSV {
 			//        CsvPreference.EXCEL_PREFERENCE);
 			if (null == beanWriter) {
 				beanWriter = getCSVBeanWriter(fileToWrite);
-			}
-			// the header elements are used to map the bean values to each column (names must match)
-			final String[] header = new String[]{"tweetID", "labelName","labelDescription", "confidence"};
-			final CellProcessor[] processors = getProcessors4ClassifiedTweetIDSCCSV();
+				// write the header
+				beanWriter.writeHeader(header);
+			} 
 
-			// write the header
-			beanWriter.writeHeader(header);
-
-			for (final ClassifiedTweet twt : twtList) {
+			for (final ClassifiedTweet twt : tweetsList) {
 				try {
 					beanWriter.write(twt, header, processors);
 				} catch (SuperCsvCellProcessorException e) {
@@ -176,17 +169,7 @@ public class ReadWriteCSV {
 			Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeClassifiedTweetIDsCSV] IO Exception occured");
 			ex.printStackTrace();
 
-		} finally {
-			if (beanWriter != null) {
-				try {
-					beanWriter.close();
-				} catch (IOException ex) {
-					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, null, ex);
-					System.err.println("[writeClassifiedTweetIDsCSV] Error in closing beanWriter");
-					ex.printStackTrace();
-				}
-			}
-		}
+		} 
 		//return fileName+".csv";
 		return beanWriter;
 	}

@@ -80,12 +80,12 @@ public class CustomUITemplateResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/crisisID/{crisisID}")
-    public Response getCrisisByCode(@PathParam("crisisID") long crisisID) {
+    public Response getCrisisByCode(@PathParam("crisisID") int crisisID) {
 
         List<CustomUITemplate> customUITemplate = null;
 
         try {
-            customUITemplate = customUITemplateFacade.getAllCustomUITemplateByCrisisID(crisisID);
+            customUITemplate = customUITemplateFacade.getAllCustomUITemplateByCrisisID((long) crisisID);
         } catch (RuntimeException e) {
             return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
         }

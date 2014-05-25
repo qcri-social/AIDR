@@ -60,7 +60,7 @@ public class ModelFamilyResource {
     @Produces("application/json")
     @Path("/crisis/{id}")
     public Response getAllModelFamiliesByCrisisID(@PathParam("id") int crisisID) {
-        List<ModelFamily> modelFamilyList = modelFamilyLocalEJB.getAllModelFamiliesByCrisis(crisisID);
+        List<ModelFamily> modelFamilyList = modelFamilyLocalEJB.getAllModelFamiliesByCrisis((long) crisisID);
         ResponseWrapper response = new ResponseWrapper();
         response.setMessage("SUCCESS");
         response.setModelFamilies(modelFamilyList);

@@ -63,16 +63,6 @@ public class Crisis implements Serializable {
         this.name = name;
     }
 
-    /*
-    public Long getCrisisTypeID() {
-        return crisisTypeID;
-    }
-
-    public void setCrisisTypeID(Long crisisTypeID) {
-        this.crisisTypeID = crisisTypeID;
-    }
-	*/
-    
     public CrisisType getCrisisType() {
         return crisisType;
     }
@@ -88,16 +78,6 @@ public class Crisis implements Serializable {
     public void setCode(String code) {
         this.code = code;
     }
-
-    /*
-    public Long getUserID() {
-        return userID;
-    }
-
-    public void setUserID(Long userID) {
-        this.userID = userID;
-    }
-    */
     
   //@XmlTransient
     public Users getUsers() {
@@ -109,10 +89,15 @@ public class Crisis implements Serializable {
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
     @Column(name = "crisisID")
     private Long crisisID;
 
-    @Column (name = "name", nullable = false)
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 140)
+    @Column(name = "name")
     private String name;
 
     //@Column (name = "crisisTypeID", nullable = false)
@@ -122,7 +107,9 @@ public class Crisis implements Serializable {
     @ManyToOne(optional = false)
     private CrisisType crisisType;
     
-    @Column (name = "code", nullable = false)
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 64)
     private String code;
 
     //@Column (name = "userID", nullable = false)
@@ -135,6 +122,7 @@ public class Crisis implements Serializable {
     @OneToMany( cascade = CascadeType.ALL, mappedBy = "crisis")
     private Collection<ModelFamily> modelFamilyCollection;
     
+  
     private Boolean isTrashed;
     
     //@XmlTransient
@@ -153,6 +141,32 @@ public class Crisis implements Serializable {
 	public void setIsTrashed(Boolean isTrashed) {
 		this.isTrashed = isTrashed;
 	}
+	
+	@Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (crisisID != null ? crisisID.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Crisis)) {
+            return false;
+        }
+        Crisis other = (Crisis) object;
+        if ((this.crisisID == null && other.crisisID != null) || (this.crisisID != null && !this.crisisID.equals(other.crisisID))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "qa.qcri.aidr.predictui.entities.Crisis[ crisisID=" + crisisID + " ]";
+    }
+
 }
 
 

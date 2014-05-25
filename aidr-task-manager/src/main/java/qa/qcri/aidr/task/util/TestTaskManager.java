@@ -23,10 +23,10 @@ import qa.qcri.aidr.task.entities.Crisis;
 import qa.qcri.aidr.task.entities.Document;
 
 @Path("/test")
-public class TestTaskManager<E> {
+public class TestTaskManager {
 	
 	@EJB
-	private TaskManagerRemote<E, Serializable> taskManager;
+	private TaskManagerRemote<Document, Serializable> taskManager;
 
 	public TestTaskManager() {
 	}
@@ -45,11 +45,11 @@ public class TestTaskManager<E> {
 			props.setProperty("org.omg.CORBA.ORBInitialPort", "3700");
 
 			InitialContext ctx = new InitialContext(props);
-			//this.taskManager = (TaskManagerRemote<Document, Serializable>) ctx.lookup("java:global/aidr-task-manager/TaskManagerBean!qa.qcri.aidr.task.api.TaskManagerRemote");
-			//String jsonString = taskManager.getNewTask(117L);
+			this.taskManager = (TaskManagerRemote<Document, Serializable>) ctx.lookup("java:global/aidr-task-manager/TaskManagerBean!qa.qcri.aidr.task.api.TaskManagerRemote");
+			String jsonString = taskManager.getNewTask(117L);
 			
-			this.taskManager = (TaskManagerRemote<E, Serializable>) ctx.lookup("java:global/aidr-task-manager/TaskManagerBean");
-			String jsonString = taskManager.getTaskById(103L);
+			//this.taskManager = (TaskManagerRemote<Document, Serializable>) ctx.lookup("java:global/aidr-task-manager/TaskManagerBean");
+			//String jsonString = taskManager.getTaskById(103L);
 			
 			if (jsonString != null) {
 				ObjectMapper mapper = new ObjectMapper();
@@ -76,7 +76,7 @@ public class TestTaskManager<E> {
 	}
 
 	public static void main(String[] args) throws Exception {
-		TestTaskManager tc = new TestTaskManager<Crisis>(); 
+		TestTaskManager tc = new TestTaskManager(); 
 		System.out.println("Result: " + tc.test().toString());
 	}
 }

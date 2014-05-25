@@ -40,6 +40,7 @@ public class NominalLabel implements Serializable {
 	
 	public NominalLabel() {}
 	
+	/*
 	public String getLabelName() {
 		return label_name;
 	}
@@ -111,4 +112,5 @@ public class NominalLabel implements Serializable {
 	public void setAttributeName(String attribute_name) {
 		this.attribute_name = attribute_name;
 	}
+	*/
 }

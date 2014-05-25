@@ -26,6 +26,6 @@ public interface ModelFacade {
 
     public List<ModelHistoryWrapper> getModelByModelFamilyID(int modelFamilyID, Integer start, Integer limit);
 
-    public List<ModelWrapper> getModelByCrisisID(int crisisID);
+    public List<ModelWrapper> getModelByCrisisID(long crisisID);
 
 }

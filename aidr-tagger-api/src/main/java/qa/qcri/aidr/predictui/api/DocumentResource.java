@@ -97,12 +97,12 @@ public class DocumentResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/{crisisID}/{attributeID}/labeled/all")
-	public Response getAllLabeledDocumentByCrisisID(@PathParam("crisisID") long crisisID, @PathParam("attributeID") long attributeID){
+	public Response getAllLabeledDocumentByCrisisID(@PathParam("crisisID") int crisisID, @PathParam("attributeID") long attributeID){
 
 		//List<Document> documentList = documentLocalEJB.getAllLabeledDocumentbyCrisisID(crisisID, attributeID);
 		
 		Criterion criterion = Restrictions.eq("hasHumanLabels", true);
-		String jsonString = taskManager.getTaskCollectionByCriterion(crisisID, criterion);
+		String jsonString = taskManager.getTaskCollectionByCriterion((long) crisisID, criterion);
 		ObjectMapper mapper = new ObjectMapper();
 		List<Document> docList = null;
 		if (jsonString != null) {

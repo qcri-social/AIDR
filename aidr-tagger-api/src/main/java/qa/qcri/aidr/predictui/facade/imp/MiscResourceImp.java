@@ -44,7 +44,7 @@ public class MiscResourceImp implements MiscResourceFacade {
 	private TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
 
     @Override
-    public List<TrainingDataDTO> getTraningDataByCrisisAndAttribute(int crisisID,
+    public List<TrainingDataDTO> getTraningDataByCrisisAndAttribute(long crisisID,
                                                                     int modelFamilyID,
                                                                     int fromRecord,
                                                                     int limit,
@@ -127,7 +127,7 @@ public class MiscResourceImp implements MiscResourceFacade {
 
     @SuppressWarnings("unchecked")
 	@Override
-    public ItemToLabelDTO getItemToLabel(int crisisID, int modelFamilyID) {
+    public ItemToLabelDTO getItemToLabel(long crisisID, int modelFamilyID) {
         // with attributeID get attribute and labels details
         // with crisisID get an item from document table for which hasHumanLabel is FALSE
         // packup both info into one class DTO and return

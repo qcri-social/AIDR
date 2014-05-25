@@ -132,10 +132,10 @@ public class TaggerSubscriber extends JedisPubSub {
         JsonDeserializer jsd = new JsonDeserializer();
         ClassifiedTweet tweet = jsd.getClassifiedTweet(message);
         if (null == tweet) {
-        	System.err.println("[writeToFile] REDIS output JSON data format error!!! Offending tweet: " + message);
+        	//System.err.println("[writeToFile] REDIS output JSON data format error!!! Offending tweet: " + tweet.getTweetID());
         } else {
-        	if (null == tweet.getLabelName() || tweet.getNominalLabels().isEmpty()) {
-        		System.err.println("[writeToFile] REDIS output faulty tweet without label: " + message);
+        	if (null == tweet.getLabelName() && tweet.getNominalLabels().isEmpty()) {
+        		//System.err.println("[writeToFile] REDIS output faulty tweet with empty nominal label: " + tweet.getTweetID());
         	}
         }
     }

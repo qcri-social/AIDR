@@ -1,4 +1,4 @@
-package qa.qcri.aidr.predictui.api;
+package qa.qcri.aidr.predictui.util;
 
 import java.io.Serializable;
 import java.util.Properties;
@@ -51,6 +51,7 @@ public class TestTaskManager {
 			InitialContext ctx = new InitialContext(props);
 			this.taskManager = (TaskManagerRemote<Document, Long>) ctx.lookup("java:global/aidr-task-manager/TaskManagerBean!qa.qcri.aidr.task.api.TaskManagerRemote");
 			String jsonString = taskManager.getNewTask(117L);
+			long elapsed = 0L;
 			if (jsonString != null) {
 				ObjectMapper mapper = new ObjectMapper();
 				Document document = null;
@@ -60,7 +61,7 @@ public class TestTaskManager {
 					e.printStackTrace();
 				}
 
-				long elapsed = System.currentTimeMillis() - startTime;
+				elapsed = System.currentTimeMillis() - startTime;
 				if (document != null) {
 					respString.append(document.getDocumentID());
 				} else {

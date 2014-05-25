@@ -564,6 +564,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/taggerGenerateTweetIdsLink.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> generateTweetIdsLink(@RequestParam String code) throws Exception {
+		System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
 		String result = "";
 		try {
 			result = taggerService.generateTweetIdsLink(code);
@@ -571,6 +572,7 @@ public class TaggerController extends BaseController {
 			e.printStackTrace();
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
+		System.out.println("[Controller generateTweetIdsLink] Returning success: " + result);
 		return getUIWrapper(result,true);
 	}
 
