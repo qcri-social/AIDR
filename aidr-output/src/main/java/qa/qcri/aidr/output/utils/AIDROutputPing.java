@@ -71,7 +71,7 @@ public class AIDROutputPing {
 		// TODO: Add code to register streaming API
 		try {
 			APIHashMap.put("fetch", qa.qcri.aidr.output.getdata.GetBufferedAIDRData.class.getMethod("getLatestBufferedAIDRData", 
-					String.class , String.class));
+					String.class , String.class, Float.class, Boolean.class));
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -95,7 +95,7 @@ public class AIDROutputPing {
 					if (s.equalsIgnoreCase("fetch")) {
 						Class<?> c = Class.forName("qa.qcri.aidr.output.getdata.GetBufferedAIDRData");
 						Object t = c.newInstance();
-						apiResult = APIHashMap.get(s).invoke(t, "JSONP", "1").toString();
+						apiResult = APIHashMap.get(s).invoke(t, "JSONP", "1", 0, true).toString();
 						// TODO: Add code for deeper testing of returned result?
 					}	
 					

@@ -282,7 +282,7 @@ public class ChannelBufferManager {
 	 * @return true if channel is publicly listed, false otherwise
 	 */
 	private boolean isChannelPublic(String channelName) {
-		//logger.info("[isChannelPublic] Received request for channel: " + channelName);
+		logger.info("[isChannelPublic] Received request for channel: " + channelName);
 		//first strip off the prefix aidr_predict.
 		String channelCode = channelName;
 		if (channelName.startsWith(CHANNEL_PREFIX_STRING)) {
@@ -293,7 +293,7 @@ public class ChannelBufferManager {
 		Criterion criterion = Restrictions.eq("code", channelCode);
 		AidrCollection collection = dbController.getByCriteria(criterion);
 		if (collection != null) {
-			//logger.info("[isChannelPublic] channel: " + channelName + ", code = " + collection.getCode() + ", public = " + collection.getPubliclyListed());
+			logger.info("[isChannelPublic] channel: " + channelName + ", code = " + collection.getCode() + ", public = " + collection.getPubliclyListed());
 			return collection.getPubliclyListed();
 		} else {
 			logger.info("[isChannelPublic] channel: " + channelName + ", fetched collection = " + collection);
