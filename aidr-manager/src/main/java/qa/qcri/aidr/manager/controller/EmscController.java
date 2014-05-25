@@ -23,8 +23,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Controller
-@RequestMapping("cea/collection")
-public class CeaController extends BaseController{
+@RequestMapping("emsc/collection")
+public class EmscController extends BaseController{
 
     private Logger logger = Logger.getLogger(getClass());
 
@@ -42,7 +42,7 @@ public class CeaController extends BaseController{
     @ResponseBody
     public Map<String,Object> saveStart(@RequestBody final String jsonString) throws Exception {
         //
-        logger.info("saveStart CeaController  : "+jsonString);
+       // logger.info("saveStart CeaController  : "+jsonString);
         try{
             if(jsonString == null){
                 return getUIWrapper(false);
@@ -59,18 +59,21 @@ public class CeaController extends BaseController{
                     String code = (String) jsonObject.get("code");
                     String geo = (String) jsonObject.get("geo");
                     long defaultHours = (Long)jsonObject.get("durationInHours") ;
+                    JSONArray adminAccount = (JSONArray) jsonObject.get("shareWithAccounts");
 
                     JSONArray account = (JSONArray) jsonObject.get("account");
                     UserEntity userEntity= userService.getAvailableUser(account) ;
+
                     if(userEntity != null){
-                        logger.info("userEntity CeaController  : "+userEntity.getUserName());
+                        List<UserEntity> adminEntities =  getAdminUsers(adminAccount, userEntity);
+                        //logger.info("userEntity CeaController  : "+userEntity.getUserName());
                         List<AidrCollection> collectionList = collectionService.geAllCollectionByUser(userEntity.getId()) ;
 
                         if(collectionList != null && collectionList.size() > 0){
                             for(int i=0; i < collectionList.size() ; i++){
                                 AidrCollection aCol = collectionList.get(i);
                                 if(aCol.getStatus().equals(CollectionStatus.INITIALIZING) || aCol.getStatus().equals(CollectionStatus.RUNNING) ){
-                                    logger.info("collectionService.stop : " + aCol.getId());
+                                   // logger.info("collectionService.stop : " + aCol.getId());
                                     try{
                                         collectionService.stop(aCol.getId());
                                     }
@@ -97,9 +100,7 @@ public class CeaController extends BaseController{
                         collection.setName(name);
                         collection.setDurationHours((int)defaultHours);
                         collection.setLangFilters("");
-                        List<UserEntity> managers = new ArrayList<UserEntity>();
-                        managers.add(userEntity);
-                        collection.setManagers(managers);
+                        collection.setManagers(adminEntities);
 
                         try{
                             collectionService.create(collection);
@@ -111,6 +112,7 @@ public class CeaController extends BaseController{
                             logger.error("failing to create or start collection", e);
                             return getUIWrapper(e.getMessage(), false);
                         }
+
                     }
                     else{
                         return getUIWrapper("bad user account info", false);
@@ -127,6 +129,23 @@ public class CeaController extends BaseController{
             return getUIWrapper(e.getMessage(), false);
         }
     }
+
+    private List<UserEntity> getAdminUsers(JSONArray adminAccounts, UserEntity owneraccount){
+        List<UserEntity> adminUsers = new ArrayList<UserEntity>();
+        adminUsers.add(owneraccount);
+        for(int i = 0; i < adminAccounts.size(); i++){
+            String fetchedName = (String)adminAccounts.get(i);
+            UserEntity userEntity= userService.fetchByUserName(fetchedName) ;
+            if(userEntity != null){
+                if(!userEntity.getUserName().equalsIgnoreCase(owneraccount.getUserName())) {
+                    adminUsers.add(userEntity);
+                }
+            }
+        }
+
+        return adminUsers;
+    }
+
 
 
 }
