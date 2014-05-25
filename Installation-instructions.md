@@ -160,6 +160,7 @@ After the above steps have been executed, you can build the project:
 The `aidr-task-manager` module is meant to provide a unified view of the `aidr_predict` database tables that are related to 'aidr tasks' - namely, `document`, `task_assignment`, `document_nominal_labels` and `crisis` tables. The various modules of AIDR such as `aidr-tagger-api`, `aidr-tagger` and `aidr-trainer-api` that access these tables will use the aidr-task-manager as the single access point (in phases). To enable this, `aidr-task-manager` uses remote EJBs. The instructions for enabling access through `aidr-task-manager` are outlined below:
 
 
+* Create a new JDBC resource in the server called `JNDI/aidr_task_manager` to match the entry in the `persistence.xml` file with `connection pool` set to that of the `aidr-predict database`.
 * Build using maven the `aidr-task-manager.war` file and deploy to glassfish in the usual way.
 * Next build `aidr-task-manager.jar` file excluding the `ejb/bean` directory from the jar. 
 * Create a new directory `WEB-INF/lib` in the module that will use aidr-task-manager.
