@@ -22,11 +22,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import qa.qcri.aidr.output.entity.AidrCollection;
 import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
@@ -38,12 +45,21 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
 //import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonArray;
 
 public class ChannelBufferManager {
 
@@ -76,6 +92,7 @@ public class ChannelBufferManager {
 
 	// DB access related
 	private static DatabaseInterface dbController;
+	private String managerMainUrl = "http://localhost:8080/AIDRFetchManager";
 
 	//////////////////////////////////////////
 	// ********* Method definitions *********
@@ -134,7 +151,7 @@ public class ChannelBufferManager {
 				logger.debug("[ChannelBufferManager] Created HashMap");
 			}
 		}
-		
+
 		try {
 			dbController = new DatabaseController();
 			logger.info("[ChannelBufferManager] Created dbController = " + dbController);
@@ -142,7 +159,7 @@ public class ChannelBufferManager {
 			logger.error("[ChannelBufferManager] Couldn't initiate DB access to aidr_fetch_manager");
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	public ChannelBufferManager(final int bufferSize, final String channelRegEx) {
@@ -293,12 +310,78 @@ public class ChannelBufferManager {
 		Criterion criterion = Restrictions.eq("code", channelCode);
 		AidrCollection collection = dbController.getByCriteria(criterion);
 		if (collection != null) {
-			logger.info("[isChannelPublic] channel: " + channelName + ", code = " + collection.getCode() + ", public = " + collection.getPubliclyListed());
+			//logger.info("[isChannelPublic] channel: " + channelName + ", code = " + collection.getCode() + ", public = " + collection.getPubliclyListed());
 			return collection.getPubliclyListed();
 		} else {
 			logger.info("[isChannelPublic] channel: " + channelName + ", fetched collection = " + collection);
 		}
 		return false;
+	}
+
+	private boolean isChannelPublic(String channelName, Map<String, Boolean> collectionList) {
+		//logger.info("[isChannelPublic] Received request for channel: " + channelName);
+		
+		//first strip off the prefix aidr_predict.
+		String channelCode = channelName;
+		if (channelName.startsWith(CHANNEL_PREFIX_STRING)) {
+			String[] strs = channelName.split(CHANNEL_PREFIX_STRING);
+			channelCode = (strs != null) ? strs[1] : channelName;
+		}
+		if (collectionList != null) {
+			if (collectionList.containsKey(channelCode)) {
+				//logger.info("[isChannelPublic] channel: " + channelName + ", code = " + channelCode + ", public = " + collectionList.get(channelCode));
+				return collectionList.get(channelCode);
+			}
+		} else {
+			logger.info("[isChannelPublic] collection list is null !!! Returning false");
+		}
+		return false;
+	}
+
+	public Map<String, Boolean> getAllRunningCollections() {
+		Map<String, Boolean> collectionList = null;
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		try {
+			//System.out.println("[getAllRunningCollections] Request received");
+			WebTarget webResource = client.target(managerMainUrl 
+					+ "/public/collection/findAllRunning.action?start=0&limit=10000");
+
+			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+			//System.out.println("[getAllRunningCollections] Response received");
+			
+			String jsonResponse = clientResponse.readEntity(String.class); 
+			if (jsonResponse != null) {
+				try {
+					Gson jsonObject = new GsonBuilder().serializeNulls().disableHtmlEscaping()
+							.serializeSpecialFloatingPointValues()	
+							.create();
+
+					JsonParser parser = new JsonParser();
+					JsonObject obj = (JsonObject) parser.parse(jsonResponse);
+					//System.out.println("[getAllRunningCollections] Response parsed");
+					
+					JsonArray jsonData= null;
+					if (obj.has("data")) {			// if false, then something wrong in AIDR setup
+						jsonData = obj.get("data").getAsJsonArray();
+						collectionList = new HashMap<String, Boolean>();
+						for (int i = 0;i < jsonData.size();i++) {
+							JsonObject collection = (JsonObject) jsonData.get(i);
+							String collectionCode = collection.get("code").getAsString();
+							Boolean status = collection.get("publiclyListed").getAsBoolean();
+							collectionList.put(collectionCode, status);
+							//System.out.println("[getAllRunningCollections] Retrieved collection: code = " + collectionCode + ", status = " + status);
+						}
+					}
+				} catch (Exception e) {
+					logger.error("[getAllRunningCollections] Error in parsing received resposne from manager: " + jsonResponse);
+					e.printStackTrace();
+				}
+			}
+		} catch (Exception e) {
+			logger.error("[getAllRunningCollections] Error in making REST call");
+			e.printStackTrace();
+		}
+		return collectionList;
 	}
 
 
@@ -309,11 +392,14 @@ public class ChannelBufferManager {
 		final List<ChannelBuffer>cbList = new ArrayList<ChannelBuffer>();
 		List<String>dataSet = new ArrayList<String>();
 
+		// First get a list of all running collections from aidr-manager through REST call
+		Map<String, Boolean> collectionList = getAllRunningCollections();
+
 		cbList.addAll(ChannelBufferManager.subscribedChannels.values());
 		int k = -1;
 		for (ChannelBuffer temp: cbList) {
 			//System.out.println("cbList size = " + cbList.size() + ", Channel buffer: " + temp.getChannelName());
-			if (isChannelPublic(temp.getChannelName())) {
+			if (isChannelPublic(temp.getChannelName(), collectionList)) {
 				final List<String> tempList = temp.getLIFOMessages(msgCount+4);		// reverse-chronologically ordered list
 				if (!tempList.isEmpty()) {
 					int channelFetchSize = Math.min(msgCount+4,tempList.size());
