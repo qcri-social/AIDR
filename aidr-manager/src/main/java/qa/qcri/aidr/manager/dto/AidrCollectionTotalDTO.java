@@ -53,6 +53,8 @@ public class AidrCollectionTotalDTO {
 
     private Integer crisisType;
 
+    private String crisisTypeName;
+
     public Integer getId() {
         return id;
     }
@@ -222,5 +224,13 @@ public class AidrCollectionTotalDTO {
 
     public void setCrisisType(Integer crisisType) {
         this.crisisType = crisisType;
+    }
+
+    public String getCrisisTypeName() {
+        return crisisTypeName;
+    }
+
+    public void setCrisisTypeName(String crisisTypeName) {
+        this.crisisTypeName = crisisTypeName;
     }
 }

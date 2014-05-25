@@ -8,6 +8,8 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import qa.qcri.aidr.manager.dto.AidrCollectionTotalDTO;
+import qa.qcri.aidr.manager.dto.TaggerCrisisType;
+import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 import qa.qcri.aidr.manager.service.CollectionLogService;
@@ -27,6 +29,9 @@ public class PublicController extends BaseController{
 
     @Autowired
     private CollectionService collectionService;
+
+    @Autowired
+    private TaggerService taggerService;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -151,6 +156,10 @@ public class PublicController extends BaseController{
         dto.setPubliclyListed(collection.getPubliclyListed());
         dto.setCrisisType(collection.getCrisisType());
 
+        if(collection.getCrisisType() != null){
+            dto.setCrisisTypeName(getCrisisTypeName(collection.getCrisisType()));
+        }
+
         List<UserEntity> managers = collection.getManagers();
         for (UserEntity manager : managers) {
             manager.setRoles(null);
@@ -158,6 +167,25 @@ public class PublicController extends BaseController{
         dto.setManagers(managers);
 
         return dto;
+    }
+
+    private String getCrisisTypeName(int typeID){
+        String name = "Not specified";
+        System.out.println("getCrisisTypeName: " + typeID);
+        try {
+            List<TaggerCrisisType> crisisTypes = taggerService.getAllCrisisTypes();
+
+            for (TaggerCrisisType cType : crisisTypes) {
+                if(cType.getCrisisTypeID() == typeID) {
+                    name = cType.getName();
+                }
+            }
+
+        } catch (AidrException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        return name;
     }
 
 }
