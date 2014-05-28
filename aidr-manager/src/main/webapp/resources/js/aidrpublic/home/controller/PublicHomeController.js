@@ -18,7 +18,6 @@ Ext.define('AIDRPUBLIC.home.controller.PublicHomeController', {
                     document.location.href = BASE_URL + '/protected/home';
                 }
             }
-
         });
 
     },

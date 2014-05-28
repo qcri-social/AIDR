@@ -14,7 +14,7 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
 
         this.pageTitle = Ext.create('Ext.form.Label', {
             cls: 'header-h1 bold-text',
-            text: 'Public Crisis Collection List',
+            text: 'Browse Data',
             flex: 1
         });
 
@@ -76,6 +76,32 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
                         me.collectionPaging.show();
                     } else {
                         me.collectionPaging.hide();
+                    }
+                }
+            }
+        });
+
+        this.runningOnlyCollectionStore = Ext.create('Ext.data.JsonStore', {
+            pageSize: 10,
+            storeId: 'runningOnlyCollectionStore',
+            fields: ['id', 'code', 'name', 'startDate', 'endDate', 'createdDate','status', 'crisisType', 'user','crisisTypeName'],
+            proxy: {
+                type: 'ajax',
+                url: 'public/collection/findAllRunningWithNoOutput.action',
+                reader: {
+                    root: 'data',
+                    totalProperty: 'total'
+                }
+            },
+            autoLoad: true,
+            listeners: {
+                load: function (store, records, successful, operation, eOpts) {
+                    var count = store.getCount();
+
+                    if (count > 0) {
+                           me.runningOnlyCollectionPaging.show();
+                    } else {
+                          me.runningOnlyCollectionPaging.hide();
                     }
                 }
             }
@@ -147,13 +173,20 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
         });
 
 
+        this.runningOnlyCollectionView = Ext.create('Ext.view.View', {
+            store: this.runningOnlyCollectionStore,
+            tpl: this.collectionTpl,
+            itemSelector: 'div.active'
+        });
+
+
         this.collectionPaging = Ext.create('Ext.toolbar.Paging', {
             cls: 'aidr-paging',
             margin: '12 2 0 2',
             store:'collectionStore',
             displayInfo: true,
-            displayMsg:'Running crisis collection records {0} - {1} of {2}',
-            emptyMsg:'No running crisis collection records to display'
+            displayMsg:'Running collector and tagger records {0} - {1} of {2}',
+            emptyMsg:'No running collector and tagger records to display'
         });
 
         this.stoppedCollectionPaging = Ext.create('Ext.toolbar.Paging', {
@@ -161,11 +194,36 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
             margin: '12 2 0 2',
             store:'stoppedCollectionStore',
             displayInfo: true,
+            displayMsg:'Running collector only records {0} - {1} of {2}',
+            emptyMsg:'No running collector only records to display'
+        });
+
+        this.runningOnlyCollectionPaging = Ext.create('Ext.toolbar.Paging', {
+            cls: 'aidr-paging',
+            margin: '12 2 0 2',
+            store:'runningOnlyCollectionStore',
+            displayInfo: true,
             displayMsg:'Stopped crisis collection records {0} - {1} of {2}',
             emptyMsg:'No stopped crisis collection records to display'
         });
 
+        this.tab1Desc = Ext.create('Ext.form.Label', {
+            flex: 1,
+            html: '<span class="redInfo">*</span> AIDR is currently collecting and tagging new items in these collections.</div>',
+            padding: '0 0 2 10'
+        });
 
+        this.tab2Desc = Ext.create('Ext.form.Label', {
+            flex: 1,
+            html: '<span class="redInfo">*</span> AIDR is currently collecting new items in these collections, but not tagging them.</div>',
+            padding: '0 0 2 10'
+        });
+
+        this.tab3Desc = Ext.create('Ext.form.Label', {
+            flex: 1,
+            html: '<span class="redInfo">*</span> AIDR has stopped collecting items in these collections.</div>',
+            padding: '0 0 2 10'
+        });
 
         this.tabPanel = Ext.create('Ext.tab.Panel', {
             cls: 'tabPanel',
@@ -174,15 +232,26 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
             activeTab: 0,
             items: [
                 {
-                    title: 'Running collections',
+                    id:"tab1",
+                    title: 'Collector and Tagger',
                     items: [
+                        this.tab1Desc,
                         this.collectionView,
                         this.collectionPaging
                     ]
                 },
                 {
-                    title: 'Stopped collections',
+                       title: 'Collector only',
+                       items: [
+                           this.tab2Desc,
+                           this.runningOnlyCollectionView,
+                           this.runningOnlyCollectionPaging
+                       ]
+                },
+                {
+                    title: 'Archived data',
                     items: [
+                        this.tab3Desc,
                         this.stoppedCollectionView,
                         this.stoppedCollectionPaging
                     ]

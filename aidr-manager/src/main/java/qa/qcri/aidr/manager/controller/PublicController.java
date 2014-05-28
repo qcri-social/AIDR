@@ -16,6 +16,7 @@ import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
+import qa.qcri.aidr.manager.util.JsonDataValidator;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
@@ -76,10 +77,50 @@ public class PublicController extends BaseController{
         //    logger.info("*************************************************  CollectionStatus.RUNNING ****************************");
             List<AidrCollection> data = collectionService.findAllForPublic(start, limit, CollectionStatus.RUNNING);
        //     logger.info("data size : " + data.size());
-            count = collectionService.getPublicCollectionsCount(CollectionStatus.RUNNING);
+
             for (AidrCollection collection : data) {
-                AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
-                dtoList.add(dto);
+                String taggingOutPut = taggerService.loadLatestTweetsWithCount(collection.getCode(), 1);
+                //System.out.println("taggingOutPut : " + taggingOutPut);
+                if(!JsonDataValidator.isEmptySON(taggingOutPut))  {
+                    AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
+                    dtoList.add(dto);
+                    count = count +1;
+                }
+            }
+
+            return getUIWrapper(dtoList, count.longValue());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getUIWrapper(false);
+        }
+
+        //return getUIWrapper(false);
+    }
+
+    @RequestMapping(value = "/findAllRunningWithNoOutput.action", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object>  findAllRunningWithNoOutput(@RequestParam Integer start, @RequestParam Integer limit,
+                                              @DefaultValue("no") @QueryParam("trashed") String trashed) throws Exception {
+        // logger.info("public findAllRunning is called");
+        start = (start != null) ? start : 0;
+        limit = (limit != null) ? limit : 50;
+        Integer count = 0;
+        List<AidrCollectionTotalDTO> dtoList = new ArrayList<AidrCollectionTotalDTO>();
+
+        try {
+            //    logger.info("*************************************************  CollectionStatus.RUNNING ****************************");
+            List<AidrCollection> data = collectionService.findAllForPublic(start, limit, CollectionStatus.RUNNING);
+            //     logger.info("data size : " + data.size());
+            //count = collectionService.getPublicCollectionsCount(CollectionStatus.RUNNING);
+            for (AidrCollection collection : data) {
+                String taggingOutPut = taggerService.loadLatestTweetsWithCount(collection.getCode(), 1);
+                //System.out.println("taggingOutPut : " + taggingOutPut);
+                if(JsonDataValidator.isEmptySON(taggingOutPut))  {
+                    AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
+                    dtoList.add(dto);
+                    count = count +1;
+                }
             }
 
             return getUIWrapper(dtoList, count.longValue());
@@ -171,7 +212,7 @@ public class PublicController extends BaseController{
 
     private String getCrisisTypeName(int typeID){
         String name = "Not specified";
-        System.out.println("getCrisisTypeName: " + typeID);
+       // System.out.println("getCrisisTypeName: " + typeID);
         try {
             List<TaggerCrisisType> crisisTypes = taggerService.getAllCrisisTypes();
 
