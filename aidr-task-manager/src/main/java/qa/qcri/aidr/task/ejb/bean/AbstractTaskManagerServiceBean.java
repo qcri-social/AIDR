@@ -41,49 +41,87 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 	public EntityManager getEntityManager() {
 		return em;
 	}
-	
+
 	public Session getCurrentSession() {
-		return em.unwrap(Session.class);
-		//return getSessionFactory().getCurrentSession();
+		try { 
+			return em.unwrap(Session.class);
+			//return getSessionFactory().getCurrentSession();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private SessionFactory getSessionFactory() {
-		this.sessionFactory = em.unwrap(SessionFactory.class);
-		return this.sessionFactory;
+		try {
+			this.sessionFactory = em.unwrap(SessionFactory.class);
+			return this.sessionFactory;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
 	public E getById(I id) {
-		return (E) getCurrentSession().get(entityClass, id);
+		try {
+			return (E) getCurrentSession().get(entityClass, id);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
-    public E getByCriterionID(Criterion criterion) {
-        Criteria criteria = getCurrentSession().createCriteria(entityClass);
-        criteria.add(criterion);
-        return (E) criteria.uniqueResult();
-    }
-	
+	public E getByCriterionID(Criterion criterion) {
+		try {
+			Criteria criteria = getCurrentSession().createCriteria(entityClass);
+			criteria.add(criterion);
+			return (E) criteria.uniqueResult();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	@SuppressWarnings("unchecked")
 	public E getByCriteria(Criterion criterion) {
-		Criteria criteria = getCurrentSession().createCriteria(entityClass);
-		criteria.add(criterion);
-		return (E) criteria.list().get(0);
+		try {
+			Criteria criteria = getCurrentSession().createCriteria(entityClass);
+			criteria.add(criterion);
+			List<E> fetchedList = criteria.list();
+			return (fetchedList != null) ? (E) fetchedList.get(0) : null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<E> getAll() {
 		Criteria criteria = getCurrentSession().createCriteria(entityClass);
 		//criteria.setProjection(Projections.distinct(Projections.property("id")));
-		return (List<E>) criteria.list();
+		try {	
+			List<E> fetchedList = criteria.list();
+			return (fetchedList != null) ? (List<E>) fetchedList : null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<E> getAllByCriteria(Criterion criterion) {
 		Criteria criteria = getCurrentSession().createCriteria(entityClass);
 		criteria.add(criterion);
-		return (List<E>) criteria.list();
+		try {	
+			List<E> fetchedList = criteria.list();
+			return (fetchedList != null) ? (List<E>) fetchedList : null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -93,7 +131,13 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		if(count != null){
 			criteria.setMaxResults(count);
 		}
-		return (List<E>) criteria.list();
+		try {	
+			List<E> fetchedList = criteria.list();
+			return (fetchedList != null) ? (List<E>) fetchedList : null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -110,7 +154,13 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		if(count != null){
 			criteria.setMaxResults(count);
 		}
-		return (List<E>) criteria.list();
+		try {	
+			List<E> fetchedList = criteria.list();
+			return (fetchedList != null) ? (List<E>) fetchedList : null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -133,12 +183,22 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			criteria.setMaxResults(count);
 		}
 		//System.out.println("fetched List count = " + (fetchedList != null ? fetchedList.size() : null));
-		return criteria.list();
+		try {	
+			List<E> fetchedList = criteria.list();
+			return (fetchedList != null) ? (List<E>) fetchedList : null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public void update(E e) {
-		Session session = getCurrentSession();
-		session.saveOrUpdate(e);
+		try {
+			Session session = getCurrentSession();
+			session.saveOrUpdate(e);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public void update(List<E> entityCollection) {
@@ -149,17 +209,27 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		}
 		tx.commit();
 	}
-	
+
 	public void save(E e) {
-		Session session = getCurrentSession();
-		session.save(e);
+		try {
+			Session session = getCurrentSession();
+			session.save(e);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
 	}
-	
+
 	public void merge(E e) {
-		Session session = getCurrentSession();
-		session.merge(e);
+		try {
+			Session session = getCurrentSession();
+			session.merge(e);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
 	}
-	
+
 	public void merge(List<E> entityCollection) {
 		Session session = getCurrentSession();
 		Transaction tx = session.beginTransaction();
@@ -168,7 +238,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		}
 		tx.commit();
 	}
-	
+
 	public void save(List<E> entityCollection) {
 		Session session = getCurrentSession();
 		Transaction tx = session.beginTransaction();
@@ -179,9 +249,14 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 	}
 
 	public void delete(E e) {
-		Session session = getCurrentSession();
-		session.buildLockRequest(LockOptions.UPGRADE).lock(e);
-		session.delete(e);
+		try {
+			Session session = getCurrentSession();
+			session.buildLockRequest(LockOptions.UPGRADE).lock(e);
+			session.delete(e);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
 	}
 
 	public void delete(List<E> entityCollection) {
@@ -195,8 +270,12 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 	}
 
 	public void deleteByCriteria(Criterion criterion) {
-		List<E> entityCollection = getAllByCriteria(criterion);
-		delete(entityCollection);
+		try {
+			List<E> entityCollection = getAllByCriteria(criterion);
+			delete(entityCollection);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	@Override

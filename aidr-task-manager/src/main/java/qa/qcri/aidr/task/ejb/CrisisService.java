@@ -2,15 +2,13 @@ package qa.qcri.aidr.task.ejb;
 
 
 import java.util.List;
+
+import javax.ejb.Local;
+
 import qa.qcri.aidr.task.entities.Crisis;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jilucas
- * Date: 9/11/13
- * Time: 7:57 AM
- * To change this template use File | Settings | File Templates.
- */
+
+@Local
 public interface CrisisService extends AbstractTaskManagerService<Crisis, Long> {
 
 	Crisis findByCrisisID(Long id);

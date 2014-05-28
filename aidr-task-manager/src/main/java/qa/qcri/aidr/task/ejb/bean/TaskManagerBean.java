@@ -2,32 +2,31 @@ package qa.qcri.aidr.task.ejb.bean;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
-import org.hibernate.Query;
-import org.hibernate.Transaction;
+
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
+import qa.qcri.aidr.task.ejb.CrisisService;
+import qa.qcri.aidr.task.ejb.DocumentNominalLabelService;
 import qa.qcri.aidr.task.ejb.DocumentService;
+import qa.qcri.aidr.task.ejb.TaskAnswerService;
 import qa.qcri.aidr.task.ejb.TaskAssignmentService;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
+import qa.qcri.aidr.task.ejb.UsersService;
 import qa.qcri.aidr.task.entities.Document;
 import qa.qcri.aidr.task.entities.TaskAssignment;
 
@@ -39,6 +38,18 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 	@EJB
 	private TaskAssignmentService taskAssignmentEJB;
+
+	@EJB
+	private TaskAnswerService taskAnswerEJB;
+
+	@EJB
+	private UsersService usersLocalEJB;
+
+	@EJB
+	private DocumentNominalLabelService documentNominalLabelEJB;
+
+	@EJB
+	private CrisisService crisisEJB;
 
 	private Class<T> entityType;
 
@@ -177,7 +188,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			String sortOrder, String[] orderBy,
 			final String maxTaskAge, final String scanInterval) {
 		System.out.println("[deleteStaleTasks] received request: " + joinType + ", " + joinTable + ", " 
-							+ joinColumn + ", " + maxTaskAge + ", " + scanInterval);
+				+ joinColumn + ", " + maxTaskAge + ", " + scanInterval);
 		try {
 			int docDeleteCount = documentLocalEJB
 					.deleteStaleDocuments(joinType, joinTable, joinColumn, 
@@ -251,8 +262,9 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 						.add(Restrictions.eq("crisisID",crisisID))
 						.add(Restrictions.eq("hasHumanLabels",false));
 			}
-			
+
 			Document document = documentLocalEJB.getByCriteria(newCriterion);
+			System.out.println("[getNewTask] New task: " + document);
 			if (document != null && !isTaskAssigned(document)) {
 				System.out.println("[getNewTask] New task: " + document.getDocumentID());
 			} else {
@@ -417,7 +429,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			List<Document> docList =  documentLocalEJB.getAll();
 			System.out.println("[getAllTasks] Fetched documents count: " + docList.size());
 
-			ObjectMapper mapper = new ObjectMapper();
 			String jsonString = serializeTask(docList);
 			return jsonString;
 		} catch (Exception e) {
@@ -427,7 +438,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		return null;
 	}
 
-	private <E> String serializeTask(E task) {
+	@Override
+	public <E> String serializeTask(E task) {
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonString = null;
 		try {
@@ -437,5 +449,252 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			e.printStackTrace();
 		}
 		return jsonString;
+	}
+
+	/**
+	 * Example method call: deSerializeList(jsonString2, new TypeReference<List<Document>>() {}) 
+	 */
+	@Override
+	public <E> E deSerializeList(String jsonString, TypeReference<E> type) {
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			if (jsonString != null) {
+				E docList = mapper.readValue(jsonString, type);
+				return docList;
+			}	
+		} catch (IOException e) {
+			System.err.println("JSON deserialization exception");
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * Example method call: deSerialize(jsonString, Document.class)
+	 */
+	@Override
+	public <E> E deSerialize(String jsonString, Class<E> entityType) {
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			if (jsonString != null) {
+				E entity = mapper.readValue(jsonString, entityType);
+				return entity;
+			}	
+		} catch (IOException e) {
+			System.err.println("JSON deserialization exception");
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	////////////////////////////////////////////////////////////
+	// Trainer API Task Assignment related APIs
+	////////////////////////////////////////////////////////////
+	@Override
+	public void assignNewTaskToUser(Long id, Long userId) throws Exception {
+		int retVal = taskAssignmentEJB.insertOneTaskAssignment(id, userId);
+		if (retVal <= 0) {
+			throw new Exception("[assignNewTaskToUser] Couldn't undo task assignment");
+		}
+	}
+
+	@Override
+	public void assignNewTaskToUser(List<T> collection, Long userId) throws Exception {
+		int retVal = taskAssignmentEJB.insertTaskAssignment((List<Document>) collection, userId);
+		if (retVal <= 0) {
+			throw new Exception("[assignNewTaskToUser] Couldn't undo task assignment");
+		}
+	}
+
+	@Override
+	public void undoTaskAssignment(Map<Long, Long> taskMap) throws Exception {
+		int retVal = taskAssignmentEJB.undoTaskAssignment(taskMap);
+		if (retVal <= 0) {
+			throw new Exception("[undoTaskAssignment] Couldn't undo task assignment");
+		}
+	}
+
+	@Override
+	public void undoTaskAssignment(Long id, Long userId) throws Exception {
+		int retVal = taskAssignmentEJB.undoTaskAssignment(id, userId);
+		if (retVal <= 0) {
+			throw new Exception("[undoTaskAssignment] Couldn't undo task assignment");
+		}
+	}
+
+	@Override
+	public Integer getPendingTaskCountByUser(Long userId) {
+		return taskAssignmentEJB.getPendingTaskCount(userId);
+	}
+
+	@Override
+	public String getAssignedTasksById(Long id) {
+		List<TaskAssignment> docList = taskAssignmentEJB.findTaskAssignmentByID(id);
+		if (docList != null || !docList.isEmpty()) {
+			try {
+				String jsonString = serializeTask(docList);
+				return jsonString;
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.err.println("[getAssignedTasksById] Error in serializing collection");
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public String getAssignedTaskByUserId(Long id, Long userId) {
+		TaskAssignment assignedUserTask = taskAssignmentEJB.findTaskAssignment(id, userId);
+		if (assignedUserTask != null) {
+			try {
+				String jsonString = serializeTask(assignedUserTask);
+				return jsonString;
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.err.println("[getAssignedTaskByUserId] Error in serializing collection");
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public <T> T setTaskParameter(Class<T> entityType, Long id, Map<String, String> paramMap) {
+		Object doc = null;
+		try {
+			if (entityType.getName().contains("qa.qcri.aidr.task.entities.Document")) {
+				System.out.println("Detected of type Document.class, id = " + id);
+				doc = (qa.qcri.aidr.task.entities.Document) documentLocalEJB.getById(id);
+			} 
+			if (entityType.getName().contains("qa.qcri.aidr.task.entities.TaskAssignment")) {
+				System.out.println("Detected of type TaskAssignment.class");
+				doc = (qa.qcri.aidr.task.entities.TaskAssignment) taskAssignmentEJB.getById(id);
+			}
+			if (entityType.getName().contains("qa.qcri.aidr.task.entities.TaskAnswer")) {
+				System.out.println("Detected of type TaskAnswer.class");
+				List<qa.qcri.aidr.task.entities.TaskAnswer> docList = taskAnswerEJB.getTaskAnswer(id);
+				if (docList != null) 
+					doc = docList.get(0);			
+			}
+			if (entityType.getName().contains("qa.qcri.aidr.task.entities.Users")) {
+				System.out.println("Detected of type Users.class");
+				doc = (qa.qcri.aidr.task.entities.Users) usersLocalEJB.getById(id);
+			}
+			if (entityType.getName().contains("qa.qcri.aidr.task.entities.DocumentNominalLabel")) {
+				System.out.println("Detected of type DocumentNominalLabel.class");
+				doc = (qa.qcri.aidr.task.entities.DocumentNominalLabel) documentNominalLabelEJB.getById(id);
+			}
+			if (entityType.getName().contains("qa.qcri.aidr.task.entities.Crisis")) {
+				System.out.println("Detected of type Crisis.class");
+				doc = (qa.qcri.aidr.task.entities.Crisis) crisisEJB.getById(id);
+			}
+		} catch (Exception e) {
+			System.err.println("Error in detecting Class Type");
+			e.printStackTrace();
+			return null;
+		}
+		
+		if (doc != null) {
+			Class docClass = null;
+			//Object obj = null;
+			Method[] methods = null;
+			Class[] paramTypes = null;
+			try {
+				//docClass = Class.forName(className);
+				docClass = entityType;
+				//obj = docClass.newInstance();
+				methods = docClass.getDeclaredMethods();
+				for (int i = 0; i < methods.length;i++) {
+					System.out.println("discovered method: " + methods[i].getName());
+				}
+			} catch (Exception e) {
+				System.err.println("[setTaskParameter] Error in instantiating method class");
+				e.printStackTrace();
+				return null;
+			}
+
+			Iterator<String> itr = paramMap.keySet().iterator();
+			while (itr.hasNext()) {
+				String name = itr.next();
+				try {
+					int pointer = -1;
+					for (int j = 0;j < methods.length;j++) {
+						if (methods[j].getName().equals(name)) {
+							pointer = j;
+							break;
+						}
+					}
+					paramTypes = methods[pointer].getParameterTypes(); 
+					for (int j = 0; j < paramTypes.length;j++) {
+						System.out.println(methods[pointer].getName() + ": discovered parameter types: " + paramTypes[j].getName());
+					}
+					// Convert parameter to paramType
+					if (paramTypes[0].getName().toLowerCase().contains("long")) {
+						methods[pointer].invoke(doc, Long.parseLong(paramMap.get(name)));
+						System.out.println("Invoking with Long parameter type");
+					}
+					if (paramTypes[0].getName().toLowerCase().contains("int")) {
+						methods[pointer].invoke(doc, Integer.parseInt(paramMap.get(name)));
+						System.out.println("Invoking with Integer parameter type");
+					}
+					if (paramTypes[0].getName().toLowerCase().contains("boolean")) {
+						methods[pointer].invoke(doc, Boolean.parseBoolean(paramMap.get(name)));
+						System.out.println("Invoking with Boolean parameter type");
+					}
+					if (paramTypes[0].getName().contains("String")) {
+						methods[pointer].invoke(doc, paramMap.get(name));
+						System.out.println("Invoking with String parameter type");
+					}
+					System.out.println("[setTaskParameter] Invoked method: " + methods[pointer].getName() + " with parameter: " + paramMap.get(name));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					System.err.println("[setTaskParameter] Error in invoking method via reflection: ");
+					e.printStackTrace();
+					return null;
+				} 
+			}	
+		}
+		
+		try {
+			if (entityType.getName().contains("qa.qcri.aidr.task.entities.Document")) {
+				System.out.println("Detected of type Document.class, id = " + id);
+				documentLocalEJB.update((qa.qcri.aidr.task.entities.Document) doc); 
+			} 
+			if (entityType.getName().contains("qa.qcri.aidr.task.entities.TaskAssignment")) {
+				System.out.println("Detected of type TaskAssignment.class");
+				taskAssignmentEJB.update((qa.qcri.aidr.task.entities.TaskAssignment) doc);
+			}
+			if (entityType.getName().contains("qa.qcri.aidr.task.entities.TaskAnswer")) {
+				System.out.println("Detected of type TaskAnswer.class");
+				taskAnswerEJB.update((qa.qcri.aidr.task.entities.TaskAnswer) doc);		
+			}
+			if (entityType.getName().contains("qa.qcri.aidr.task.entities.Users")) {
+				System.out.println("Detected of type Users.class");
+				usersLocalEJB.update((qa.qcri.aidr.task.entities.Users) doc);
+			}
+			if (entityType.getName().contains("qa.qcri.aidr.task.entities.DocumentNominalLabel")) {
+				System.out.println("Detected of type DocumentNominalLabel.class");
+				documentNominalLabelEJB.update((qa.qcri.aidr.task.entities.DocumentNominalLabel) doc);
+			}
+			if (entityType.getName().contains("qa.qcri.aidr.task.entities.Crisis")) {
+				System.out.println("Detected of type Crisis.class");
+				crisisEJB.update((qa.qcri.aidr.task.entities.Crisis) doc);
+			}
+		} catch (Exception e) {
+			System.err.println("Error in updating entity on DB");
+			e.printStackTrace();
+			return null;
+		}
+		return (T) doc;
+	}
+
+
+
+	public static void main(String args[]) {
+		TaskManagerRemote<Document, Serializable> tm = new TaskManagerBean<Document, Long>();
+		Map<String, String> paramMap = new HashMap<String, String>();
+		paramMap.put("setHasHumanLabels", new Boolean(false).toString());
+		paramMap.put("setCrisisID", new Long(117L).toString());
+		qa.qcri.aidr.task.entities.Document newDoc = tm.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, 4579275L, paramMap);
+		System.out.println("newDoc = " + newDoc.getDocumentID() + ": " + newDoc.isHasHumanLabels());
 	}
 }
