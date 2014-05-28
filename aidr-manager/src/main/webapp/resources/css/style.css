@@ -245,6 +245,11 @@ body{
     color: #919191;
 }
 
+.collection-title {
+    font-size: 22px ;
+    color: #00acee;
+}
+
 .collection-title a {
     font-size: 22px ;
     color: #00acee;
