@@ -82,7 +82,7 @@ public class PublicController extends BaseController{
                 String taggingOutPut = taggerService.loadLatestTweetsWithCount(collection.getCode(), 1);
                 //System.out.println("taggingOutPut : " + taggingOutPut);
                 if(!JsonDataValidator.isEmptySON(taggingOutPut))  {
-                    AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
+                    AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, true);
                     dtoList.add(dto);
                     count = count +1;
                 }
@@ -117,7 +117,7 @@ public class PublicController extends BaseController{
                 String taggingOutPut = taggerService.loadLatestTweetsWithCount(collection.getCode(), 1);
                 //System.out.println("taggingOutPut : " + taggingOutPut);
                 if(JsonDataValidator.isEmptySON(taggingOutPut))  {
-                    AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
+                    AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, false);
                     dtoList.add(dto);
                     count = count +1;
                 }
@@ -147,9 +147,18 @@ public class PublicController extends BaseController{
             List<AidrCollection> data = collectionService.findAllForPublic(start, limit, CollectionStatus.STOPPED);
             count = collectionService.getPublicCollectionsCount(CollectionStatus.STOPPED);
           //  logger.info("data size : " + data.size());
-
+            boolean hasTagggerOutput;
             for (AidrCollection collection : data) {
-                AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
+                String taggingOutPut = taggerService.loadLatestTweetsWithCount(collection.getCode(), 1);
+                //System.out.println("taggingOutPut : " + taggingOutPut);
+                if(JsonDataValidator.isEmptySON(taggingOutPut))  {
+                    hasTagggerOutput = false;
+                }
+                else{
+                    hasTagggerOutput = true;
+                }
+
+                AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, hasTagggerOutput);
                 dtoList.add(dto);
             }
 
@@ -163,7 +172,7 @@ public class PublicController extends BaseController{
         //return getUIWrapper(false);
     }
 
-    private AidrCollectionTotalDTO convertAidrCollectionToDTO(AidrCollection collection){
+    private AidrCollectionTotalDTO convertAidrCollectionToDTO(AidrCollection collection, boolean hasTaggerOutput){
         if (collection == null){
             return null;
         }
@@ -196,6 +205,8 @@ public class PublicController extends BaseController{
         dto.setDurationHours(collection.getDurationHours());
         dto.setPubliclyListed(collection.getPubliclyListed());
         dto.setCrisisType(collection.getCrisisType());
+        dto.setHasTaggerOutput(hasTaggerOutput);
+
 
         if(collection.getCrisisType() != null){
             dto.setCrisisTypeName(getCrisisTypeName(collection.getCrisisType()));

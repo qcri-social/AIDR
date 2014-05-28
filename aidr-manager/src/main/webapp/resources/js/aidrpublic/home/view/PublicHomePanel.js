@@ -32,7 +32,7 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
         this.stoppedCollectionStore = Ext.create('Ext.data.JsonStore', {
             pageSize: 10,
             storeId: 'stoppedCollectionStore',
-            fields: ['id', 'code', 'name', 'startDate', 'endDate', 'createdDate','status', 'crisisType', 'user','crisisTypeName'],
+            fields: ['id', 'code', 'name', 'startDate', 'endDate', 'createdDate','status', 'crisisType', 'user','crisisTypeName','hasTaggerOutput'],
             proxy: {
                 type: 'ajax',
                 url: 'public/collection/findAllStoped.action',
@@ -58,7 +58,7 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
         this.collectionStore = Ext.create('Ext.data.JsonStore', {
             pageSize: 10,
             storeId: 'collectionStore',
-            fields: ['id', 'code', 'name', 'startDate', 'endDate', 'createdDate','status', 'crisisType', 'user','crisisTypeName'],
+            fields: ['id', 'code', 'name', 'startDate', 'endDate', 'createdDate','status', 'crisisType', 'user','crisisTypeName','hasTaggerOutput'],
             proxy: {
                 type: 'ajax',
                 url: 'public/collection/findAllRunning.action',
@@ -84,7 +84,7 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
         this.runningOnlyCollectionStore = Ext.create('Ext.data.JsonStore', {
             pageSize: 10,
             storeId: 'runningOnlyCollectionStore',
-            fields: ['id', 'code', 'name', 'startDate', 'endDate', 'createdDate','status', 'crisisType', 'user','crisisTypeName'],
+            fields: ['id', 'code', 'name', 'startDate', 'endDate', 'createdDate','status', 'crisisType', 'user','crisisTypeName','hasTaggerOutput'],
             proxy: {
                 type: 'ajax',
                 url: 'public/collection/findAllRunningWithNoOutput.action',
@@ -116,10 +116,10 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
             '<div class="content">',
 
             '<div class="img">',
-            '<a href="http://aidr-dev.qcri.org/AIDROutput/aidrTaggerLatest.html?crisisCode={[this.getEncodedCode(values.code)]}"><img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/collection-icon.png" width="70"></a>',
+            '{[this.getImageLink(values.code,values.name ,values.hasTaggerOutput)]}',
             '</div>',
             '<div class="info">',
-            '<div class="collection-title"><a href="http://aidr-dev.qcri.org/AIDROutput/aidrTaggerLatest.html?crisisCode={[this.getEncodedCode(values.code)]}">{name}</a></div>',
+            '<div class="collection-title">{[this.getOutputLink(values.code,values.name ,values.hasTaggerOutput)]}</div>',
             '<div class="styled-text-14" id="statusField_{id}">{[this.getCrisisType(values.crisisTypeName)]} &nbsp; {[this.getSharedBy(values.user)]}</div>',
             '<div class="styled-text-14" id="docCountField_{id}">{[this.getDateTimeSet(values.startDate, values.status)]}</div>',
             '</div>',
@@ -130,6 +130,27 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
             '</tpl>',
             '</div>',
             {
+                getImageLink: function (rawCode, rawName, hasTaggerOutput) {
+                    //<a href="http://aidr-dev.qcri.org/AIDROutput/aidrTaggerLatest.html?crisisCode={[this.getEncodedCode(values.code)]}">{name}</a>
+                    if(hasTaggerOutput){
+                        return '<a href="http://aidr-dev.qcri.org/AIDROutput/aidrTaggerLatest.html?crisisCode='+ encodeURI(rawCode) +'"><img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/collection-icon.png" width="70"></a>';
+                    }
+                    else{
+                        return '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/collection-icon.png" width="70">';
+                    }
+                    // return AIDRFMFunctions.getStatusWithStyle(raw);
+                },
+                getOutputLink: function (rawCode, rawName, hasTaggerOutput) {
+                   //<a href="http://aidr-dev.qcri.org/AIDROutput/aidrTaggerLatest.html?crisisCode={[this.getEncodedCode(values.code)]}">{name}</a>
+                    if(hasTaggerOutput){
+
+                       return '<a href="http://aidr-dev.qcri.org/AIDROutput/aidrTaggerLatest.html?crisisCode='+ encodeURI(rawCode) +'">'+ rawName +'</a>';
+                    }
+                    else{
+                        return  rawName;
+                    }
+                   // return AIDRFMFunctions.getStatusWithStyle(raw);
+                },
                 getStatus: function (raw) {
                     return AIDRFMFunctions.getStatusWithStyle(raw);
                 },
