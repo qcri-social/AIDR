@@ -10,6 +10,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -37,6 +38,10 @@ public class GeoController {
         try {
             Date queryDate = null;
             if(!lastupdated.isEmpty() && lastupdated!= null) {
+                //System.out.println("lastupdated :  " + lastupdated);
+                if(lastupdated.contains("%20")) {
+                    lastupdated = lastupdated.replace("%20"," ");
+                }
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 //String dateInString = "2014-01-26 13:44:48";
                 queryDate = sdf.parse(lastupdated);
@@ -45,6 +50,7 @@ public class GeoController {
             returnValue =  geoService.getGeoJsonOuputJSON(queryDate);
 
         } catch (Exception e) {
+            System.out.println("Exception : " + e.getMessage());
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
