@@ -15,7 +15,7 @@ import qa.qcri.aidr.trainer.pybossa.service.Worker;
 @Component("syncWorker")
 public class SyncWorker implements Worker {
 
-	protected static Logger logger = Logger.getLogger("service");
+	protected static Logger logger = Logger.getLogger("SyncWorker");
 
     @Autowired
     ClientAppCreateWorker pybossaWorker;

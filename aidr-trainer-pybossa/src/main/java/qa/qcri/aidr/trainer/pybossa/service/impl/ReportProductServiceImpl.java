@@ -2,17 +2,25 @@ package qa.qcri.aidr.trainer.pybossa.service.impl;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.trainer.pybossa.entity.*;
 import qa.qcri.aidr.trainer.pybossa.format.impl.CVSRemoteFileFormatter;
+import qa.qcri.aidr.trainer.pybossa.format.impl.GeoJsonOutputModel;
 import qa.qcri.aidr.trainer.pybossa.service.*;
 import qa.qcri.aidr.trainer.pybossa.store.PybossaConf;
 import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
 import qa.qcri.aidr.trainer.pybossa.store.UserAccount;
 import qa.qcri.aidr.trainer.pybossa.util.DateTimeConverter;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,7 +35,7 @@ import java.util.List;
 @Transactional(readOnly = false)
 public class ReportProductServiceImpl implements ReportProductService {
 
-    protected static Logger logger = Logger.getLogger("service");
+    protected static Logger logger = Logger.getLogger("reportProductService");
 
     @Autowired
     private ClientService clientService;
@@ -84,6 +92,52 @@ public class ReportProductServiceImpl implements ReportProductService {
             // insert into source for file
         }
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void generateGeoJsonForESRI(List<GeoJsonOutputModel> geoJsonOutputModels) throws Exception {
+        //To change body of implemented methods use File | Settings | File Templates.
+        JSONParser parser = new JSONParser();
+
+        JSONArray jsonArray ;
+        FileWriter fw ;
+        BufferedWriter bw;
+
+        if(geoJsonOutputModels.size() > 0){
+            CVSRemoteFileFormatter formatter = new CVSRemoteFileFormatter();
+
+            String fileName = PybossaConf.DEFAULT_TRAINER_GEO_FILE_PATH + DateTimeConverter.reformattedCurrentDateForFileName()+"export.geojson";
+            File file = new File(fileName);
+            if (!file.exists()) {
+                file.createNewFile();
+                jsonArray = new JSONArray();
+            }
+            else{
+                fw = new FileWriter(file.getAbsoluteFile());
+                bw = new BufferedWriter(fw);
+                bw.write("");
+                bw.close();
+
+                Object obj = parser.parse(new FileReader(fileName));
+                jsonArray = (JSONArray) obj;
+            }
+
+
+            for(GeoJsonOutputModel item : geoJsonOutputModels) {
+                JSONObject jsonObject = new JSONObject();
+
+                jsonObject.put("info", (JSONObject)parser.parse(item.getGeoJsonInfo()));
+
+                jsonObject.put("features", (JSONObject)parser.parse(item.getGeoJson()));
+                jsonArray.add(jsonObject);
+            }
+
+            fw = new FileWriter(file.getAbsoluteFile());
+            bw = new BufferedWriter(fw);
+            bw.write(jsonArray.toJSONString());
+            bw.close();
+        }
+
     }
 
     private String[] generateOutputData(ReportTemplate rpt){

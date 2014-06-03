@@ -178,11 +178,18 @@ public class MicroMapperPybossaFormatter {
         JSONObject pybossaData = new JSONObject();
         pybossaData.put("question","please tag it.");
 
-        if(clientApp.getShortName().toLowerCase().contains("geo")){
+        if(clientApp.getAppType() == StatusCodeType.APP_MAP ){
             pybossaData = createGeoClickerInfo(pybossaData, micromapperInput);
         }
         else{
-            pybossaData = createNonGeoClickerInfo(pybossaData, micromapperInput);
+
+            if(clientApp.getAppType() == StatusCodeType.APP_AERIAL){
+                pybossaData = createAerialClickerInfo(pybossaData, micromapperInput);
+            }
+            else{
+                pybossaData = createNonGeoClickerInfo(pybossaData, micromapperInput);
+            }
+
         }
 
         //pybossaData.put("n_answers",n_answers);
@@ -219,6 +226,18 @@ public class MicroMapperPybossaFormatter {
         pybossaData.put("lon",micromapperInput.getLng());
         pybossaData.put("url",micromapperInput.getUrl());
         pybossaData.put("imgurl",micromapperInput.getUrl());
+        pybossaData.put("category",micromapperInput.getUrl());
+
+        return pybossaData;
+    }
+
+
+    private JSONObject createAerialClickerInfo(JSONObject pybossaData, MicromapperInput micromapperInput ){
+
+        pybossaData.put("url",micromapperInput.getUrl());
+        pybossaData.put("imgurl",micromapperInput.getUrl());
+        pybossaData.put("geo",micromapperInput.getGeo());
+        pybossaData.put("mediaSize",micromapperInput.getMediaSize());
         pybossaData.put("category",micromapperInput.getUrl());
 
         return pybossaData;
@@ -416,6 +435,30 @@ public class MicroMapperPybossaFormatter {
         }
 
         TaskQueueResponse taskQueueResponse = new TaskQueueResponse(taskQueueID, geoLocations.toJSONString(), tweetID);
+
+        return  taskQueueResponse;
+    }
+
+    public TaskQueueResponse getAnswerResponseForAerial(String pybossaResult, JSONParser parser, Long taskQueueID) throws Exception{
+        JSONArray array = (JSONArray) parser.parse(pybossaResult) ;
+
+        Iterator itr= array.iterator();
+        JSONArray locations  =  new JSONArray();
+        String tweetID = null;
+
+        while(itr.hasNext()){
+            JSONObject featureJsonObj = (JSONObject)itr.next();
+
+            JSONObject info = (JSONObject)featureJsonObj.get("info");
+            String locValue = info.get("loc").toString();
+            if(!locValue.equalsIgnoreCase(PybossaConf.TASK_QUEUE_GEO_INFO_NOT_FOUND)){
+                JSONObject loc = (JSONObject)info.get("loc");
+                locations.add(info.get("loc"))   ;
+            }
+
+        }
+
+        TaskQueueResponse taskQueueResponse = new TaskQueueResponse(taskQueueID, locations.toJSONString(), tweetID);
 
         return  taskQueueResponse;
     }

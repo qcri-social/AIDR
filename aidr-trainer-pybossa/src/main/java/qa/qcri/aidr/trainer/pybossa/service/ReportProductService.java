@@ -1,5 +1,9 @@
 package qa.qcri.aidr.trainer.pybossa.service;
 
+import qa.qcri.aidr.trainer.pybossa.format.impl.GeoJsonOutputModel;
+
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jlucas
@@ -10,4 +14,5 @@ package qa.qcri.aidr.trainer.pybossa.service;
 public interface ReportProductService {
 
     void generateCVSReportForGeoClicker() throws Exception;
+    void generateGeoJsonForESRI(List<GeoJsonOutputModel> geoJsonOutputModels) throws Exception;
 }

@@ -1,6 +1,7 @@
 package qa.qcri.aidr.trainer.pybossa.service.impl;
 
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -9,13 +10,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.trainer.pybossa.entity.*;
 import qa.qcri.aidr.trainer.pybossa.format.impl.CVSRemoteFileFormatter;
+import qa.qcri.aidr.trainer.pybossa.format.impl.GeoJsonOutputModel;
 import qa.qcri.aidr.trainer.pybossa.format.impl.MicroMapperPybossaFormatter;
 import qa.qcri.aidr.trainer.pybossa.format.impl.MicromapperInput;
 import qa.qcri.aidr.trainer.pybossa.service.*;
 import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
 import qa.qcri.aidr.trainer.pybossa.store.URLPrefixCode;
 import qa.qcri.aidr.trainer.pybossa.store.UserAccount;
+import qa.qcri.aidr.trainer.pybossa.util.DataFormatValidator;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -91,25 +95,33 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
         if(appList.size() > 0){
             for(int i=0; i < appList.size(); i++){
                 ClientApp currentClientApp =  appList.get(i);
-                List<ClientAppSource> datasources = clientAppSourceService.getClientAppSourceByStatus(currentClientApp.getClientAppID(),StatusCodeType.EXTERNAL_DATA_SOURCE_ACTIVE);
-                for(int j=0; j < datasources.size(); j++){
-                    List<MicromapperInput> micromapperInputList = null;
-                    String url = datasources.get(j).getSourceURL();
-                    if(currentClientApp.getAppType() == StatusCodeType.APP_MAP){
-                        micromapperInputList = cvsRemoteFileFormatter.getGeoClickerInputData(url);
-                    }
-                    else{
-                        micromapperInputList = cvsRemoteFileFormatter.getClickerInputData(url);
-                    }
-                    if(micromapperInputList != null){
-                        if(micromapperInputList.size() > 0) {
-                            ClientAppSource source = datasources.get(j);
-                            publishToPybossa(currentClientApp, micromapperInputList , source.getClientAppSourceID());
-                            clientAppSourceService.updateClientAppSourceStatus(source.getClientAppSourceID(), StatusCodeType.EXTERNAL_DATA_SOURCE_USED);
+                if(currentClientApp.getStatus().equals(StatusCodeType.MICROMAPPER_ONLY)){
+                    List<ClientAppSource> datasources = clientAppSourceService.getClientAppSourceByStatus(currentClientApp.getClientAppID(),StatusCodeType.EXTERNAL_DATA_SOURCE_ACTIVE);
+
+                    for(int j=0; j < datasources.size(); j++){
+                        List<MicromapperInput> micromapperInputList = null;
+                        String url = datasources.get(j).getSourceURL();
+                        if(currentClientApp.getAppType() == StatusCodeType.APP_MAP){
+                            micromapperInputList = cvsRemoteFileFormatter.getGeoClickerInputData(url);
+                        }
+                        else{
+                            if(currentClientApp.getAppType() == StatusCodeType.APP_AERIAL){
+                                micromapperInputList = cvsRemoteFileFormatter.getAerialClickerInputData(url);
+                            }
+                            else{
+                                micromapperInputList = cvsRemoteFileFormatter.getClickerInputData(url);
+                            }
+
+                        }
+                        if(micromapperInputList != null){
+                            if(micromapperInputList.size() > 0) {
+                                ClientAppSource source = datasources.get(j);
+                                publishToPybossa(currentClientApp, micromapperInputList , source.getClientAppSourceID());
+                                clientAppSourceService.updateClientAppSourceStatus(source.getClientAppSourceID(), StatusCodeType.EXTERNAL_DATA_SOURCE_USED);
+                            }
                         }
                     }
                 }
-
             }
         }
 
@@ -168,7 +180,7 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
             return;
         }
         List<ClientApp> appList = clientAppService.getAllClientAppByClientID(client.getClientID() );
-
+        List<GeoJsonOutputModel> geoJsonOutputModels =  new ArrayList<GeoJsonOutputModel>();
         Iterator itr= appList.iterator();
         while(itr.hasNext()){
             ClientApp clientApp = (ClientApp)itr.next();
@@ -191,7 +203,7 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
 
                             boolean isFound = pybossaFormatter.isTaskStatusCompleted(inputData);
                             if(isFound){
-                                processTaskQueueImport(clientApp,taskQueue,taskID) ;
+                                processTaskQueueImport(clientApp,taskQueue,taskID, geoJsonOutputModels) ;
                             }
 
                         } catch (Exception e) {
@@ -201,6 +213,10 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
                 }
             }
         }
+        //            // create or update File  & we will hold the implementation for anther usage
+        //if(geoJsonOutputModels.size() > 0){
+            //reportProductService.generateGeoJsonForESRI(geoJsonOutputModels);
+        //}
 
     }
 
@@ -209,7 +225,7 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
         reportProductService.generateCVSReportForGeoClicker();
     }
 
-    private void processTaskQueueImport(ClientApp clientApp,TaskQueue taskQueue, Long taskID) throws Exception {
+    private void processTaskQueueImport(ClientApp clientApp,TaskQueue taskQueue, Long taskID, List<GeoJsonOutputModel> geoJsonOutputModels) throws Exception {
         String PYBOSSA_API_TASK_RUN = PYBOSSA_API_TASK_RUN_BASE_URL + clientApp.getPlatformAppID() + "&task_id=" + taskID;
         String importResult = pybossaCommunicator.sendGet(PYBOSSA_API_TASK_RUN) ;
 
@@ -224,9 +240,24 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
             {
                 TaskQueueResponse taskQueueResponse = pybossaFormatter.getAnswerResponseForGeo(importResult, parser, taskQueue.getTaskQueueID());
                 clientAppResponseService.processTaskQueueResponse(taskQueueResponse);
+
+                if(taskQueueResponse.getTaskInfo() != null && !taskQueueResponse.getResponse().equalsIgnoreCase("No Location Information")) {
+                    if(!DataFormatValidator.isEmptyGeoJson(taskQueueResponse.getResponse()) ){
+                        List<ReportTemplate>templateList =  reportTemplateService.getReportTemplateSearchByTwittID("tweetID", taskQueueResponse.getTaskInfo());
+                        if(templateList.size() > 0 ){
+                            GeoJsonOutputModel model = new GeoJsonOutputModel(templateList.get(0), taskQueueResponse);
+                            //geoJsonOutputModels.add(model);
+                        }
+                    }
+                }
+            }
+            else if(clientApp.getAppType().equals(StatusCodeType.APP_AERIAL))
+            {
+                TaskQueueResponse taskQueueResponse = pybossaFormatter.getAnswerResponseForAerial(importResult, parser, taskQueue.getTaskQueueID());
+                clientAppResponseService.processTaskQueueResponse(taskQueueResponse);
             }
             else{
-                TaskQueueResponse taskQueueResponse = pybossaFormatter.getAnswerResponse(clientApp, importResult, parser, taskQueue.getTaskQueueID(), clientAppAnswer,reportTemplateService);
+                TaskQueueResponse taskQueueResponse = pybossaFormatter.getAnswerResponse(clientApp, importResult, parser, taskQueue.getTaskQueueID(), clientAppAnswer, reportTemplateService);
                 clientAppResponseService.processTaskQueueResponse(taskQueueResponse);
             }
 

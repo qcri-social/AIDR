@@ -18,8 +18,11 @@ public class PybossaConf {
     public static String GEOJSON_TYPE_POINT="point";
     public static String GEOJSON_TYPE_FEATURE_COLLECTION="FeatureCollection";
     //http://scd1.qcri.org/aidr/data/trainer/
-   // public static String DEFAULT_TRAINER_FILE_PATH = "/var/www/aidr/data/trainer/";
+    //public static String DEFAULT_TRAINER_FILE_PATH = "/var/www/aidr/data/trainer/";
+    //public static String DEFAULT_TRAINER_GEO_FILE_PATH = "/var/www/aidr/data/trainer/geo/";
+   // user local setting
     public static String DEFAULT_TRAINER_FILE_PATH = "/Users/jlucas/Documents/pybossa/";
+    public static String DEFAULT_TRAINER_GEO_FILE_PATH = "/Users/jlucas/Documents/pybossa/";
 
     public static double ONE_MILE_RADIUS =  1609.34;
     public static double ONE_MILE_DISTANCE =  1;

@@ -17,6 +17,8 @@ public class MicromapperInput {
     private String url;
     private String created;
     private String answer;
+    private String geo;
+    private String mediaSize;
 
     public MicromapperInput(){
 
@@ -41,6 +43,13 @@ public class MicromapperInput {
         this.url = url;
         this.created = created;
         this.answer = answer;
+    }
+
+    public MicromapperInput(String url, String geo, String mediaSize){
+        this.geo = geo;
+        this.url = url;
+        this.mediaSize = mediaSize;
+
     }
 
     public String getTweetID() {
@@ -105,5 +114,21 @@ public class MicromapperInput {
 
     public void setAnswer(String answer) {
         this.answer = answer;
+    }
+
+    public String getGeo() {
+        return geo;
+    }
+
+    public void setGeo(String geo) {
+        this.geo = geo;
+    }
+
+    public String getMediaSize() {
+        return mediaSize;
+    }
+
+    public void setMediaSize(String mediaSize) {
+        this.mediaSize = mediaSize;
     }
 }

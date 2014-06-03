@@ -53,6 +53,11 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    public List<ReportTemplate> getReportTemplateSearchByTwittID(String field, String value) {
+        return reportTemplateDao.getReportTemplateSearchBy(field, value);  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     private boolean isNumeric(String data){
         boolean returnValue = false;
         try{

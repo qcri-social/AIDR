@@ -28,4 +28,27 @@ public class DataFormatValidator {
 
         return isVaildJsonObject;
     }
+
+    public static boolean isEmptyGeoJson(String jsonString){
+        boolean isEmpty = false;
+        //geometry
+        JSONParser parser = new JSONParser();
+        try{
+            JSONObject geometry  = (JSONObject)parser.parse(jsonString) ;
+
+            if(geometry.size() == 0){
+                isEmpty = true;
+            }
+
+            JSONObject a = (JSONObject)geometry.get("geometry");
+
+            if(a.size() == 0){
+                isEmpty = true;
+            }
+        }
+        catch(Exception e){
+            isEmpty = true;
+        }
+        return isEmpty;
+    }
 }

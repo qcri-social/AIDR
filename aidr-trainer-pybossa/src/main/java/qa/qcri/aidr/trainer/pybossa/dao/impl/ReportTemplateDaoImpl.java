@@ -50,4 +50,10 @@ public class ReportTemplateDaoImpl extends AbstractDaoImpl<ReportTemplate, Strin
                 .add(Restrictions.eq("status", status)));
 
     }
+
+    @Override
+    public List<ReportTemplate> getReportTemplateSearchBy(String field, String value) {
+        return findByCriteria(Restrictions.eq(field, value));
+
+    }
 }

@@ -26,7 +26,7 @@ import java.util.List;
 @Transactional(readOnly = false)
 public class PybossaWorker implements ClientAppRunWorker {
 
-    protected static Logger logger = Logger.getLogger("service");
+    protected static Logger logger = Logger.getLogger("PybossaWorker");
 
     @Autowired
     private ClientAppService clientAppService;
@@ -91,7 +91,6 @@ public class PybossaWorker implements ClientAppRunWorker {
 
     @Override
     public void processTaskRunImport() throws Exception{
-
 
         List<ClientApp> clientAppList = clientAppService.findClientAppByStatus(StatusCodeType.AIDR_ONLY);
         Iterator itr= clientAppList.iterator();

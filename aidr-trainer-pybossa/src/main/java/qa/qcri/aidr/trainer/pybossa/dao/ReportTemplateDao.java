@@ -15,4 +15,5 @@ public interface ReportTemplateDao  extends AbstractDao<ReportTemplate, String>{
     void saveReportItem(ReportTemplate reportTemplate);
     void updateReportItem(ReportTemplate reportTemplate);
     List<ReportTemplate> getReportTemplateByClientApp(Long clientAppID, Integer status);
+    List<ReportTemplate> getReportTemplateSearchBy(String field, String value);
 }

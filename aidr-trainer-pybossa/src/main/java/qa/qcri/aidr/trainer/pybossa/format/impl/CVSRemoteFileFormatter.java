@@ -2,6 +2,9 @@ package qa.qcri.aidr.trainer.pybossa.format.impl;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.io.*;
 import java.net.*;
@@ -59,6 +62,30 @@ public class CVSRemoteFileFormatter {
         }
 
         return csvReader;
+    }
+
+    private String getAerialClickerJsonData(String source) throws Exception{
+        StringBuffer responseOutput = new StringBuffer();
+        if(source.toLowerCase().startsWith("http")){
+            URL stockURL = new URL(source);
+            BufferedReader in = new BufferedReader(new InputStreamReader(stockURL.openStream()));
+
+            String output;
+
+            // System.out.println("Output from Server ...." + response.getStatusLine().getStatusCode() + "\n");
+            while ((output = in.readLine()) != null) {
+                responseOutput.append(output);
+            };
+
+        }
+        else{
+            BufferedReader br = new BufferedReader(new FileReader(source));
+            String sCurrentLine;
+            while ((sCurrentLine = br.readLine()) != null) {
+                responseOutput.append(sCurrentLine);
+            }
+        }
+        return responseOutput.toString();
     }
 
     public List<MicromapperInput> getClickerInputData(String url) throws Exception{
@@ -134,6 +161,31 @@ public class CVSRemoteFileFormatter {
 
         if(sourceSet.size() > 1){
             sourceSet.remove(0);
+        }
+
+        return sourceSet;
+    }
+
+
+    public List<MicromapperInput> getAerialClickerInputData(String url) throws Exception{
+        //"tweetID","tweet","author","lat","lng","url","created","answer"
+        String[] row = null;
+        List<MicromapperInput> sourceSet = new ArrayList<MicromapperInput>();
+
+        String geoJsonString = getAerialClickerJsonData(url);
+        JSONParser parser = new JSONParser();
+
+        JSONArray tileJson = (JSONArray)parser.parse(geoJsonString);
+
+        for (Object object : tileJson) {
+            JSONObject aJson = (JSONObject) object;
+            JSONArray bounds = (JSONArray) aJson.get("bounds");
+            String imgURL = (String) aJson.get("url");
+            JSONArray imgSize = (JSONArray) aJson.get("size");
+
+            MicromapperInput source = new MicromapperInput( imgURL, bounds.toJSONString(), imgSize.toJSONString());
+            sourceSet.add(source);
+
         }
 
         return sourceSet;

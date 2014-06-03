@@ -16,7 +16,7 @@ import qa.qcri.aidr.trainer.pybossa.service.Worker;
 @Component("asyncWorker")
 public class AsyncWorker implements Worker {
 
-	protected static Logger logger = Logger.getLogger("service");
+	protected static Logger logger = Logger.getLogger("AsyncWorker");
 	/**
      * @Component("asyncWorker")
 	 * This method will be wrapped in a proxy so that the method is 

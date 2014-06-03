@@ -46,6 +46,7 @@ public class StatusCodeType {
     public static Integer APP_IMAGE = 2;
     public static Integer APP_VIDEO = 3;
     public static Integer APP_MAP = 4;
+    public static Integer APP_AERIAL = 5;
 
     public static long TASK_CLEANUP_CUT_OFF_HOUR = 12;
 
