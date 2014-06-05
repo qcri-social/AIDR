@@ -941,10 +941,11 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
     generateCSVLink: function() {
         var me = this;
         me.mainComponent.CSVLink.setText('<div class="loading-block"></div>', false);
-
+        Ext.Ajax.timeout=600000;
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/taggerGenerateCSVLink.action',
             method: 'GET',
+            timeout:600000,
             params: {
                 code: CRISIS_CODE
             },

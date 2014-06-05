@@ -806,10 +806,11 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var me = this;
         btn.setDisabled(true);
         me.DetailsComponent.CSVLink.setText('<div class="loading-block"></div>', false);
-
+        Ext.Ajax.timeout=600000;
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/generateCSVLink.action',
             method: 'GET',
+            timeout:600000,
             params: {
                 code: COLLECTION_CODE
             },
