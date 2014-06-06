@@ -20,8 +20,8 @@ public class SchedulerService {
 	@Qualifier("syncWorker")
 	private Worker syncWorker;
 
-	//@Scheduled(cron="0 0/30 * * * ?")
-    @Scheduled(cron="0/3 * * * * ?")
+	@Scheduled(cron="0 0/30 * * * ?")
+   // @Scheduled(cron="0/3 * * * * ?")
     public void doSchedule() {
 
         syncWorker.work();

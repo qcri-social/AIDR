@@ -27,8 +27,8 @@ public class SyncWorker implements Worker {
         try {
 
             esriWorker.generateGeoJson();
-            //Thread.sleep(1800000); // simulates work
-            Thread.sleep(180000);
+            Thread.sleep(1800000); // simulates work
+            //Thread.sleep(180000);
 
         }
         catch (InterruptedException e) {

@@ -9,7 +9,8 @@ package qa.qcri.aidr.gis.store;
  */
 public class LookUp {
 
-    public static String MAP_GEOJSON_URL = "http://localhost:8084/AIDRTrainerAPI/rest/geo/JSON/geoMap";
-    public static String DEFAULT_ESRI_GEO_FILE_PATH = "/var/www/aidr/data/trainer/";
-    public static String DEFAULT_ESRI_STORY_MAP_FILE_NAME = "esri_micromappers.geojson";
+    public static String MAP_GEOJSON_URL = "http://10.5.4.51:8084/AIDRTrainerAPI/rest/geo/JSON/geoMap";
+    public static String DEFAULT_ESRI_GEO_FILE_PATH = "/var/www/esri_data/";
+    public static String DEFAULT_ESRI_STORY_MAP_FILE_NAME = "esri";
+    public static String DEFAULT_ESRI_STORY_MAP_FILE_EXTENSION = ".geojson";
 }
