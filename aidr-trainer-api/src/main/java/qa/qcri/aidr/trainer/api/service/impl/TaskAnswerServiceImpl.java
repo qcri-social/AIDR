@@ -27,7 +27,7 @@ import qa.qcri.aidr.trainer.api.template.TaskAnswerResponse;
 @Transactional(readOnly = true)
 public class TaskAnswerServiceImpl implements TaskAnswerService{
 
-    protected static Logger logger = Logger.getLogger("service");
+    protected static Logger logger = Logger.getLogger("TaskAnswerServiceImpl");
     private JedisNotifier jedisNotifier ;
 
     @Autowired
@@ -47,7 +47,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 
     @Override
     public TaskAnswerResponse getTaskAnswerResponseData(String data){
-        System.out.print("getTaskAnswerResponseData: " + data);
+        //System.out.print("getTaskAnswerResponseData: " + data);
         PybossaTemplate pybossaTemplate = new PybossaTemplate();
         TaskAnswerResponse taskAnswerResponse = pybossaTemplate.getPybossaTaskAnswer(data, crisisService);
 

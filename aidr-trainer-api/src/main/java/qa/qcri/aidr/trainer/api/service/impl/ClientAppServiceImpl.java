@@ -26,7 +26,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ClientAppServiceImpl implements ClientAppService {
 
-    protected static Logger logger = Logger.getLogger("service");
+    protected static Logger logger = Logger.getLogger("ClientAppService");
 
     @Autowired
     private ClientAppDao clientAppDao;
@@ -95,9 +95,9 @@ public class ClientAppServiceImpl implements ClientAppService {
                 ClientApp currentClientApp = clientAppList.get(i);
                 if(!currentClientApp.getStatus().equals(StatusCodeType.CLIENT_APP_DISABLED)){
                     String deleteURL = client.getHostURL() + URLReference.PYBOSAA_APP + currentClientApp.getPlatformAppID()+ URLReference.PYBOSSA_APP_UPDATE_KEY + client.getHostAPIKey();
-                    logger.debug("deactivateClientAppByCrisis deleteURL : " + deleteURL);
+                    //logger.debug("deactivateClientAppByCrisis deleteURL : " + deleteURL);
                     String returnValue = pybossaCommunicator.deleteGet(deleteURL);
-                    logger.debug("deactivateClientAppByCrisis deleteURL  returnValue: " + returnValue);
+                    //logger.debug("deactivateClientAppByCrisis deleteURL  returnValue: " + returnValue);
                     clientAppDao.updateClientAppStatus(currentClientApp, StatusCodeType.CLIENT_APP_DISABLED);
                 }
             }
@@ -118,7 +118,7 @@ public class ClientAppServiceImpl implements ClientAppService {
                 ClientApp currentClientApp = clientAppList.get(i);
                 if(!currentClientApp.getStatus().equals(StatusCodeType.CLIENT_APP_DISABLED)){
                     String deleteURL = client.getHostURL() + URLReference.PYBOSAA_APP + currentClientApp.getPlatformAppID()+ URLReference.PYBOSSA_APP_UPDATE_KEY + client.getHostAPIKey();
-                    logger.debug("deactivateClientAppByAttribute : deleteURL : " + deleteURL);
+                    //logger.debug("deactivateClientAppByAttribute : deleteURL : " + deleteURL);
                     String returnValue = pybossaCommunicator.deleteGet(deleteURL);
                     logger.debug("deactivateClientAppByAttribute : deleteURL  returnValue: " + returnValue);
                     clientAppDao.updateClientAppStatus(currentClientApp, StatusCodeType.CLIENT_APP_DISABLED);

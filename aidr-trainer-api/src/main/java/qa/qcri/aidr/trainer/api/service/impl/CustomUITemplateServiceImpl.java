@@ -34,7 +34,7 @@ import java.util.*;
 @Service("customUITemplateService")
 @Transactional(readOnly = true)
 public class CustomUITemplateServiceImpl implements CustomUITemplateService {
-    protected static Logger logger = Logger.getLogger("service");
+    protected static Logger logger = Logger.getLogger("CustomUITemplateServiceImpl");
 
     @Autowired
     CustomUITemplateDao customUITemplateDao;
@@ -92,12 +92,12 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
 
     @Override
     public void updateCustomTemplateByAttribute(Long crisisID, Long attributeID, int customUIType, int skinType) throws Exception {
-        logger.debug("updateCustomTemplateByAttribute");
+       /** logger.debug("updateCustomTemplateByAttribute");
         logger.debug("crisisID : " + crisisID);
         logger.debug("attributeID" + attributeID);
         logger.debug("customUIType" + customUIType);
         logger.debug("skinType" + skinType);
-
+         **/
         List<CustomUITemplate> cList ;
         if(customUIType== CodeLookUp.CLASSIFIER_WELCOME_PAGE){
             logger.debug("CLASSIFIER_WELCOME_PAGE");
@@ -139,31 +139,31 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
                }
 
                tutorialPage =  buildTutorialTemplate(clientApp, tutorialOne, tutorialTwo);
-               logger.debug("CLASSIFIER_TUTORIAL - Context : " + tutorialPage);
+               //logger.debug("CLASSIFIER_TUTORIAL - Context : " + tutorialPage);
                String jsonData = this.assembleTPybossaJson(clientApp,CodeLookUp.TUTORIAL,  tutorialPage);
                this.sendToPybossa(jsonData, clientApp );
 
             }
             else{
                String defaultTutorialPage = this.buildDefaultTutorialTemplate(clientApp);
-               logger.debug("CLASSIFIER_TUTORIAL - Context : " + defaultTutorialPage);
+              // logger.debug("CLASSIFIER_TUTORIAL - Context : " + defaultTutorialPage);
                String jsonData = this.assembleTPybossaJson(clientApp,CodeLookUp.TUTORIAL,  defaultTutorialPage);
                this.sendToPybossa(jsonData, clientApp );
             }
         }
 
         if(customUIType== CodeLookUp.CLASSIFIER_SKIN){
-            logger.debug("CLASSIFIER_SKIN");
+            //logger.debug("CLASSIFIER_SKIN");
             List<ClientApp> apps = clientAppService.getAllClientAppByCrisisID(crisisID);
-            logger.debug("skim. app count: " + apps.size());
+            //logger.debug("skim. app count: " + apps.size());
             for(ClientApp clientApp : apps){
-                logger.debug("skim. clientApp: " + clientApp.getClientAppID());
+               // logger.debug("skim. clientApp: " + clientApp.getClientAppID());
                 //ClientApp clientApp = clientAppService.getClientAppByCrisisAndAttribute(crisisID,  attributeID);
                 Set<ModelFamily> families = crisisService.findByCrisisID(crisisID).getModelFamilySet();
-                logger.debug("skim. families: " + families.size());
+               // logger.debug("skim. families: " + families.size());
                 for(ModelFamily family : families){
-                    logger.debug("skim. families: " + family.getNominalAttributeID());
-                    logger.debug("skim. clientApp: " + clientApp.getNominalAttributeID());
+                   // logger.debug("skim. families: " + family.getNominalAttributeID());
+                   // logger.debug("skim. clientApp: " + clientApp.getNominalAttributeID());
                     if(family.getNominalAttributeID().equals(clientApp.getNominalAttributeID())){
                         NominalAttribute nom = family.getNominalAttribute();
                         String skinUpdate = buildAppSkin(clientApp, nom, skinType);
@@ -446,12 +446,12 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
     }
 
     private void sendToPybossa(String jsonData,ClientApp clientApp){
-        logger.info("sendToPybossa jsonData : " + jsonData);
+       // logger.info("sendToPybossa jsonData : " + jsonData);
         Communicator pybossaCommunicator = new Communicator();
         String url = clientApp.getClient().getHostURL()  + "/app/" + clientApp.getPlatformAppID() + "?api_key=" + clientApp.getClient().getHostAPIKey();
-        logger.info("sendToPybossa url:" + url);
+       // logger.info("sendToPybossa url:" + url);
         int responseCode = pybossaCommunicator.sendPut(jsonData, url);
-        logger.info("sendToPybossa response:" + responseCode);
+       // logger.info("sendToPybossa response:" + responseCode);
     }
 
 

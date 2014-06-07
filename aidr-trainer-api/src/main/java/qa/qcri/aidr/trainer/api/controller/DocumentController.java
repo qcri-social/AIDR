@@ -25,7 +25,7 @@ import java.util.List;
 @Path("/document")
 @Component
 public class DocumentController {
-    protected static Logger logger = Logger.getLogger("service");
+    protected static Logger logger = Logger.getLogger("DocumentController");
 
     @Autowired
     private DocumentService documentService;

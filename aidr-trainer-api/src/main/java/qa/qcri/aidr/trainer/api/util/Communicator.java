@@ -3,6 +3,7 @@ package qa.qcri.aidr.trainer.api.util;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
@@ -201,8 +202,6 @@ public class Communicator {
         return responseOutput.toString();
     }
 
-
-
     public String sendGet(String url) {
         HttpURLConnection con = null;
         StringBuffer response = new StringBuffer();
@@ -234,6 +233,47 @@ public class Communicator {
         }
 
         return response.toString();
+    }
+
+    public String requestGet(String url, String contentType) {
+
+        HttpClient httpClient = new DefaultHttpClient();
+        StringBuffer responseOutput = new StringBuffer();
+
+        try {
+
+            HttpGet request = new HttpGet(url);
+            request.addHeader("content-type", contentType);
+            HttpResponse response = httpClient.execute(request);
+
+            int responseCode = response.getStatusLine().getStatusCode();
+
+            if (responseCode == 200 || responseCode == 204) {
+                BufferedReader br = new BufferedReader(
+                        new InputStreamReader((response.getEntity().getContent())));
+
+                String output;
+                // System.out.println("Output from Server ...." + response.getStatusLine().getStatusCode() + "\n");
+                while ((output = br.readLine()) != null) {
+                    responseOutput.append(output);
+                }
+            }
+            else{
+
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + response.getStatusLine().getStatusCode());
+            }
+
+
+        }catch (Exception ex) {
+            // System.out.println("Exception Code : " + ex);
+            responseOutput.append("Exception Code : " + ex);
+
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+
+        return responseOutput.toString();
     }
 
 }

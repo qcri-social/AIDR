@@ -1,8 +1,13 @@
 package qa.qcri.aidr.trainer.api.controller;
 
+import org.apache.log4j.Logger;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ResponseBody;
 import qa.qcri.aidr.trainer.api.service.GeoService;
 
 import javax.ws.rs.GET;
@@ -24,27 +29,33 @@ import java.util.Date;
 @Path("/geo")
 @Component
 public class GeoController {
+    protected static Logger logger = Logger.getLogger("GeoController");
 
     @Autowired
     GeoService geoService;
 
     @GET
-    @Produces( MediaType.APPLICATION_JSON )
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/JSON/geoMap/qdate/{lastupdated}")
     public String getMapGeoJSONBasedOnDate(@PathParam("lastupdated") String lastupdated) {
-        System.out.print("updated : " + lastupdated);
-
+        ///System.out.print("updated : " + lastupdated);
+        String requestedDate = null;
         String returnValue = "";
+
+
         try {
             Date queryDate = null;
             if(!lastupdated.isEmpty() && lastupdated!= null) {
-                //System.out.println("lastupdated :  " + lastupdated);
-                if(lastupdated.contains("%20")) {
-                    lastupdated = lastupdated.replace("%20"," ");
-                }
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 //String dateInString = "2014-01-26 13:44:48";
-                queryDate = sdf.parse(lastupdated);
+                if(requestedDate != null){
+                    try{
+                        queryDate = sdf.parse(lastupdated);
+                    }
+                    catch(Exception e){
+                        queryDate = null;
+                    }
+                }
             }
 
             returnValue =  geoService.getGeoJsonOuputJSON(queryDate);
@@ -53,7 +64,6 @@ public class GeoController {
             System.out.println("Exception : " + e.getMessage());
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-
         return returnValue;
     }
 
@@ -62,7 +72,6 @@ public class GeoController {
     @Produces( MediaType.APPLICATION_JSON )
     @Path("/JSON/geoMap")
     public String getMapGeoJSON() {
-
         String returnValue = "";
         try {
 
@@ -71,7 +80,6 @@ public class GeoController {
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-
         return returnValue;
     }
 

@@ -21,7 +21,7 @@ import java.util.Date;
 @Component
 public class TaskAnswerController {
 
-    protected static Logger logger = Logger.getLogger("service");
+    protected static Logger logger = Logger.getLogger("TaskAnswerController");
 
     @Autowired
     private TaskAnswerService taskAnswerService;

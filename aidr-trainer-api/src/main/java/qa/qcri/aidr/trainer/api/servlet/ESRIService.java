@@ -1,5 +1,6 @@
 package qa.qcri.aidr.trainer.api.servlet;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import qa.qcri.aidr.trainer.api.service.GeoService;
 import qa.qcri.aidr.trainer.api.util.Communicator;
@@ -23,9 +24,7 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 public class ESRIService extends HttpServlet {
-
-    @Autowired
-    GeoService geoService;
+    protected static Logger logger = Logger.getLogger("ESRIService");
 
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
@@ -48,15 +47,15 @@ public class ESRIService extends HttpServlet {
             if (value != null) {
                 if(isValidDateFormat(value)){
                     url = "http://localhost:8084/AIDRTrainerAPI/rest/geo/JSON/geoMap/qdate/" + value;
-                    //url = "http://pybossa-dev.qcri.org/AIDRTrainerAPI/rest/geo/JSON/geoMap/qdate/2014-02-26 13:44:48";
-                    System.out.println(url);
+                    //System.out.println(url);
                 }
             }
 
             Communicator com = new Communicator();
             com.sendGet(url);
-            String returnValue =  com.sendGet(url);
-            System.out.println("esri: " + returnValue);
+            String returnValue =  com.requestGet(url,"application/json");
+            //String returnValue =  com.sendGet(url);
+
             final byte[] content = returnValue.getBytes("UTF-8");
 
             response.setContentType("application/json");
@@ -66,10 +65,12 @@ public class ESRIService extends HttpServlet {
             final OutputStream out = response.getOutputStream();
             out.write(content);
 
+            System.out.println("esri: output:  " + returnValue);
 
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            //e.printStackTrace();
+            logger.error("processRequest : error found " + e.getMessage());
         }
 
     }

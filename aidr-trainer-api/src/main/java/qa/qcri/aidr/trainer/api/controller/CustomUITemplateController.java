@@ -50,11 +50,11 @@ public class CustomUITemplateController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/welcome/update")
     public void updateWelcomePage(String data){
-        logger.debug("updateWelcomePage start: " + new Date());
-        logger.debug("updateWelcomePage..: " + data);
+        //logger.debug("updateWelcomePage start: " + new Date());
+        //logger.debug("updateWelcomePage..: " + data);
         //updateCustomTemplateByAttribute(Long crisisID, Long attributeID, int customUIType, int skinType)
         try{
-            logger.debug("updateWelcomePage. before parse: " + data);
+            //logger.debug("updateWelcomePage. before parse: " + data);
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(data);
 
@@ -69,9 +69,9 @@ public class CustomUITemplateController {
             int customUIType = ((Long)jsonObject.get("templateType")).intValue();
 
 
-            logger.debug("crisisID..: " + crisisID);
-            logger.debug("attributeID..: " + attributeID);
-            logger.debug("customUIType..: " + customUIType);
+            //logger.debug("crisisID..: " + crisisID);
+            //logger.debug("attributeID..: " + attributeID);
+            //logger.debug("customUIType..: " + customUIType);
 
             customUITemplateService.updateCustomTemplateByAttribute(crisisID,attributeID,customUIType,0);
 
@@ -86,8 +86,8 @@ public class CustomUITemplateController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/tutorial/update")
     public void updateTutorial(String data){
-        logger.debug("updateTutorial start: " + new Date());
-        logger.debug("updateTutorial..: " + data);
+        //logger.debug("updateTutorial start: " + new Date());
+        //logger.debug("updateTutorial..: " + data);
 
         try{
             JSONParser parser = new JSONParser();
@@ -122,8 +122,8 @@ public class CustomUITemplateController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/skin/update")
     public void updateSkin(String data){
-        logger.debug("updateSkin start: " + new Date());
-        logger.debug("updateSkin..: " + data);
+        //logger.debug("updateSkin start: " + new Date());
+        //logger.debug("updateSkin..: " + data);
 
         try{
             JSONParser parser = new JSONParser();

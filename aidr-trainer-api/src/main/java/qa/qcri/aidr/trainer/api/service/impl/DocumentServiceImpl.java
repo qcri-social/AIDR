@@ -38,7 +38,7 @@ import java.util.Set;
 @Transactional(readOnly = true)
 public class DocumentServiceImpl implements DocumentService {
 
-    protected static Logger logger = Logger.getLogger("service");
+    protected static Logger logger = Logger.getLogger("DocumentServiceImpl");
 
     @Autowired
     private DocumentDao documentDao;
@@ -96,13 +96,13 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
     public List<Document> getDocumentForOneTask(Long crisisID, int count, String userName) {
-        logger.info("getDocumentForOneTask is called");
+        //logger.info("getDocumentForOneTask is called");
         List<Document> documents = null;
         Users users = usersService.findUserByName(userName);
 
         if(users != null){
             documents =  this.getAvailableDocument(crisisID, count) ;
-            logger.info("documents : " + documents.size());
+            //logger.info("documents : " + documents.size());
             if(documents != null && documents.size() > 0){
                 taskAssignmentService.addToTaskAssignment(documents, users.getUserID());
             }
