@@ -806,9 +806,13 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var me = this;
         btn.setDisabled(true);
         me.DetailsComponent.CSVLink.setText('<div class="loading-block"></div>', false);
-
+        Ext.Ajax.timeout = 900000;
+        Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+        Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+        Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/generateCSVLink.action',
+            timeout: 900000,
             method: 'GET',
             params: {
                 code: COLLECTION_CODE
@@ -830,9 +834,17 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     me.DetailsComponent.CSVLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             },
             failure: function () {
                 btn.setDisabled(false);
+                Ext.Ajax.timeout = 30000;
+                Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             }
         });
     },
@@ -842,8 +854,13 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         btn.setDisabled(true);
         me.DetailsComponent.tweetsIdsLink.setText('<div class="loading-block"></div>', false);
 
+        Ext.Ajax.timeout = 900000;
+        Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+        Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+        Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/generateTweetIdsLink.action',
+            timeout: 900000,
             method: 'GET',
             params: {
                 code: COLLECTION_CODE
@@ -865,9 +882,17 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     me.DetailsComponent.tweetsIdsLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             },
             failure: function () {
                 btn.setDisabled(false);
+                Ext.Ajax.timeout = 30000;
+                Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             }
         });
     },

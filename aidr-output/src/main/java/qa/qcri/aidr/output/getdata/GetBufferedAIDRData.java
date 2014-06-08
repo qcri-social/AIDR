@@ -74,9 +74,11 @@ import javax.ws.rs.core.Response;
 
 
 
+
 //import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 
 
@@ -166,7 +168,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			@DefaultValue("0.7") @QueryParam("confidence") float confidence,
 			@DefaultValue("true") @QueryParam("balanced_sampling") boolean balanced_sampling) {
 
-		//logger.info("[getLatestBufferedAIDRData] request received");
+		logger.info("[getLatestBufferedAIDRData] request received");
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {		// Jedis pool is ready
 			// Get the last count number of messages for channel=channelCode
 			List<String> bufferedMessages = new ArrayList<String>();
@@ -324,7 +326,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		return Response.ok(new String("[{}]")).build();
 	}
 
-
+	
 	@OPTIONS
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/channel/filter/{crisisCode}")
@@ -339,7 +341,8 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 				.build();
 	}
-
+	
+	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -348,7 +351,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			@QueryParam("callback") String callbackName,
 			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
 
-		logger.info("[getBufferedAIDRDataPostFilter] request received");
+		logger.info("[getBufferedAIDRDataPostFilter] request received :" + channelCode);
 		logger.info("[getBufferedAIDRDataPostFilter] Received POST list: " + queryList.toString());
 
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {
@@ -372,6 +375,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					channelName = CHANNEL_PREFIX_STRING.concat(channelCode);	// fully qualified channel name - same as REDIS channel
 				}
 				if (isChannelPresent(channelName)) {
+					System.out.println("[getBufferedAIDRDataPostFilter] Going for channel data fetch: " + channelName);
 					int msgCount = Integer.parseInt(count);
 					int messageCount = DEFAULT_COUNT;
 					if (msgCount > 0) {
@@ -455,6 +459,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	public boolean isChannelPresent(String channel) {
 		Set<String> channelList = cbManager.getActiveChannelsList();
 		if (channelList != null) {
+			System.out.println("[isChannelPresent] channels: " + channelList);
 			return channelList.contains(channel);
 		}
 		return false;

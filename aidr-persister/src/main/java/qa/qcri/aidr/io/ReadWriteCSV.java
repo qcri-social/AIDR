@@ -15,7 +15,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.supercsv.cellprocessor.Optional;
-import org.supercsv.cellprocessor.constraint.UniqueHashCode;
+import org.supercsv.cellprocessor.constraint.NotNull;
+//import org.supercsv.cellprocessor.constraint.UniqueHashCode;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
@@ -39,7 +40,8 @@ public class ReadWriteCSV {
 	private static CellProcessor[] getProcessors() {
 
 		final CellProcessor[] processors = new CellProcessor[]{
-				new UniqueHashCode(), // tweetID (must be unique)
+				//new UniqueHashCode(), // tweetID (must be unique)
+				new NotNull(),	// tweetID (must be unique)
 				new Optional(), // message
 				//new FmtDate("dd/MM/yyyy"), // birthDate
 				new Optional(), // userID
@@ -58,7 +60,8 @@ public class ReadWriteCSV {
 	private static CellProcessor[] getProcessors4ClassifiedCCSV() {
 
 		final CellProcessor[] processors = new CellProcessor[]{
-				new UniqueHashCode(), // tweetID (must be unique)
+				//new UniqueHashCode(), // tweetID (must be unique)
+				new NotNull(),	// tweetID (must be unique)
 				new Optional(), // message
 				new Optional(), // userID
 				new Optional(), // userName
@@ -77,7 +80,8 @@ public class ReadWriteCSV {
 	private static CellProcessor[] getProcessors4ClassifiedTweetIDSCCSV() {
 
 		final CellProcessor[] processors = new CellProcessor[]{
-				new UniqueHashCode(), // tweetID (must be unique)
+				//new UniqueHashCode(), // tweetID (must be unique)
+				new NotNull(),	// tweetID (must be unique)
 				new Optional(), // labelname
 				new Optional(), // labeldescription
 				new Optional(), // confidence
@@ -123,13 +127,14 @@ public class ReadWriteCSV {
 				try {
 					beanWriter.write(twt, header, processors);
 				} catch (SuperCsvCellProcessorException e) {
-					e.printStackTrace();
+					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeCollectorTweetIDSCSV] SuperCSV error");
+					//e.printStackTrace();
 				}
 			}
 
 		} catch (IOException ex) {
 			Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeCollectorTweetIDSCSV] IO Exception occured");
-			ex.printStackTrace();
+			//ex.printStackTrace();
 		} 
 		//return fileName+".csv";
 		return beanWriter;
@@ -161,13 +166,13 @@ public class ReadWriteCSV {
 					beanWriter.write(twt, header, processors);
 				} catch (SuperCsvCellProcessorException e) {
 					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeClassifiedTweetIDsCSV] SuperCSV error");
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 
 		} catch (IOException ex) {
 			Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeClassifiedTweetIDsCSV] IO Exception occured");
-			ex.printStackTrace();
+			//ex.printStackTrace();
 
 		} 
 		//return fileName+".csv";
@@ -195,13 +200,14 @@ public class ReadWriteCSV {
 				try {
 					beanWriter.write(twt, header, processors);
 				} catch (SuperCsvCellProcessorException e) {
-					e.printStackTrace();
+					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeCollectorTweetsCSV] SuperCSV error");
+					//e.printStackTrace();
 				}
 			}
 
 		} catch (IOException ex) {
 			Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeCollectorTweetsCSV] IO Exception occured");
-			ex.printStackTrace();
+			//ex.printStackTrace();
 		}
 		return beanWriter;
 	}
@@ -229,13 +235,14 @@ public class ReadWriteCSV {
 					//System.out.println("To WRITE TWEET: " + twt);
 					beanWriter.write(twt, header, processors);
 				} catch (SuperCsvCellProcessorException e) {
-					e.printStackTrace();
+					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeClassifiedTweetsCSV] SuperCSV error");
+					//e.printStackTrace();
 				}
 			}
 
 		} catch (IOException ex) {
 			Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeClassifiedTweetsCSV] IO Exception occured");
-
+			//ex.printStackTrace();
 		}
 		return beanWriter;
 	}

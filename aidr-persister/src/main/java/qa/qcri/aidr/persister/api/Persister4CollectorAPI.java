@@ -9,6 +9,7 @@ package qa.qcri.aidr.persister.api;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
@@ -18,7 +19,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import org.apache.commons.lang.StringUtils;
+
 import qa.qcri.aidr.persister.collector.RedisCollectorPersister;
 import qa.qcri.aidr.utils.Config;
 import qa.qcri.aidr.utils.GenericCache;
@@ -91,9 +94,13 @@ public class Persister4CollectorAPI {
     @Produces(MediaType.TEXT_HTML)
     @Path("/genCSV")
     public Response generateCSVFromLastestJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
-        JsonDeserializer jsonD = new JsonDeserializer();
+    	System.out.println("[generateCSVFromLastestJSON] received request for collection: " + collectionCode);
+    	JsonDeserializer jsonD = new JsonDeserializer();
         String fileName = jsonD.generateJSON2CSV_100K_BasedOnTweetCount(collectionCode);
         fileName = Config.SCD1_URL + collectionCode+"/"+fileName;
+        
+        System.out.println("[generateCSVFromLastestJSON] done processing request for collection: " + collectionCode);
+        System.out.println("[generateCSVFromLastestJSON] returning created file: " + fileName);
         return Response.ok(fileName).build();
     }
     
@@ -101,9 +108,12 @@ public class Persister4CollectorAPI {
     @Produces(MediaType.TEXT_HTML)
     @Path("/genTweetIds")
     public Response generateTweetsIDSCSVFromAllJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
-        JsonDeserializer jsonD = new JsonDeserializer();
+        System.out.println("[generateTweetsIDSCSVFromAllJSON] received request for collection: " + collectionCode);
+    	JsonDeserializer jsonD = new JsonDeserializer();
         String fileName = jsonD.generateJson2TweetIdsCSV(collectionCode);
         fileName = Config.SCD1_URL + collectionCode+"/"+fileName;
+        System.out.println("[generateTweetsIDSCSVFromAllJSON] done processing request for collection: " + collectionCode);
+        System.out.println("[generateTweetsIDSCSVFromAllJSON] returning created file: " + fileName);
         return Response.ok(fileName).build();
     }
     

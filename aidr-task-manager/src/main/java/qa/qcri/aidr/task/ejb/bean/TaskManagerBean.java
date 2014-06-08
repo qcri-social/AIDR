@@ -16,7 +16,6 @@ import javax.ejb.Stateless;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
-
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
@@ -28,7 +27,11 @@ import qa.qcri.aidr.task.ejb.TaskAssignmentService;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 import qa.qcri.aidr.task.ejb.UsersService;
 import qa.qcri.aidr.task.entities.Document;
+import qa.qcri.aidr.task.entities.DocumentNominalLabel;
+import qa.qcri.aidr.task.entities.TaskAnswer;
 import qa.qcri.aidr.task.entities.TaskAssignment;
+import qa.qcri.aidr.task.entities.Users;
+
 
 @Stateless
 public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable> {
@@ -280,9 +283,11 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 
 	@Override
-	public String getNewTaskCollection(Long crisisID, Criterion criterion) {
+	public String getNewTaskCollection(Long crisisID, Integer count, String order, Criterion criterion) {
+		System.out.println("[getNewTaskCollection] recied request for crisisID = " + crisisID + ", count = " + count);
 		String aliasTable = "taskAssignment";
 		String aliasTableKey = "taskAssignment.documentID";
+		String[] orderBy = {"valueAsTrainingSample","documentID"};
 		Criterion newCriterion = null;
 		if (criterion != null) {
 			newCriterion = Restrictions.conjunction()
@@ -295,9 +300,14 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 					.add(Restrictions.eq("hasHumanLabels",false));
 		}
 		Criterion aliasCriterion =  (Restrictions.isNull(aliasTableKey));
-		List<Document> docList = documentLocalEJB.getByCriteriaWithAliasByOrder(newCriterion, "ASC", null, null, aliasTable, aliasCriterion);
-		String jsonString = serializeTask(docList);
-		return jsonString;
+		List<Document> docList = documentLocalEJB.getByCriteriaWithAliasByOrder(newCriterion, order, orderBy, count, aliasTable, aliasCriterion);
+		System.out.println("[getNewTaskCollection] docList = " + docList);
+		if (docList != null) {
+			System.out.println("[getNewTaskCollection] Fetched size = " + docList.size());
+			String jsonString = serializeTask(docList);
+			return jsonString;
+		}
+		return null;
 	}
 
 
@@ -384,13 +394,13 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 	@Override
-	public String getTaskCollectionByCriterion(Long crisisID, Criterion criterion) {
+	public String getTaskCollectionByCriterion(Long crisisID, Integer count, Criterion criterion) {
 		try {
 			if (criterion != null) {
 				Criterion newCriterion = Restrictions.conjunction()
 						.add(criterion)
 						.add(Restrictions.eq("crisisID", crisisID));
-				List<Document> docList =  documentLocalEJB.getAllByCriteria(newCriterion);
+				List<Document> docList =  documentLocalEJB.getByCriteriaWithLimit(newCriterion, count);
 				String jsonString = serializeTask(docList);
 				return jsonString;
 			}
@@ -557,6 +567,10 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		return null;
 	}
 
+	/**
+	 * Takes as input a map consisting of the setter methods and their corresponding parameters
+	 * of the entity to be modified. Returns the modified entity.
+	 */
 	@Override
 	public <T> T setTaskParameter(Class<T> entityType, Long id, Map<String, String> paramMap) {
 		Object doc = null;
@@ -592,7 +606,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			e.printStackTrace();
 			return null;
 		}
-		
+
 		if (doc != null) {
 			Class docClass = null;
 			//Object obj = null;
@@ -653,7 +667,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				} 
 			}	
 		}
-		
+
 		try {
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.Document")) {
 				System.out.println("Detected of type Document.class, id = " + id);
@@ -688,7 +702,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 
-
+/*
 	public static void main(String args[]) {
 		TaskManagerRemote<Document, Serializable> tm = new TaskManagerBean<Document, Long>();
 		Map<String, String> paramMap = new HashMap<String, String>();
@@ -696,5 +710,62 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		paramMap.put("setCrisisID", new Long(117L).toString());
 		qa.qcri.aidr.task.entities.Document newDoc = tm.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, 4579275L, paramMap);
 		System.out.println("newDoc = " + newDoc.getDocumentID() + ": " + newDoc.isHasHumanLabels());
+	}
+*/
+
+	////////////////////////////////////////////
+	// User service related APIs
+	////////////////////////////////////////////
+	@Override
+	public String getUserByName(String name) {
+		Users user = usersLocalEJB.findUserByName(name);
+		return serializeTask(user);
+	}
+
+	@Override
+	public String getUserById(Long id) {
+		Users user = usersLocalEJB.findUserByID(id);
+		return serializeTask(user);
+	}
+
+	@Override
+	public String getAllUserByName(String name) {
+		List<Users> userList = usersLocalEJB.findAllUsersByName(name);
+		return serializeTask(userList);
+	}
+
+	@Override
+	public void insertTaskAnswer(TaskAnswer taskAnswer) {
+		try {
+			taskAnswerEJB.save(taskAnswer);
+		} catch (Exception e) {
+			System.err.println("[insertTaskAnswer] Error in saving task answer : " + taskAnswer);
+			e.printStackTrace();
+		}
+	}
+
+
+	@Override
+	public void saveDocumentNominalLabel(DocumentNominalLabel documentNominalLabel) {
+		try {
+			documentNominalLabelEJB.save(documentNominalLabel);
+		} catch (Exception e) {
+			System.err.println("[saveDocumentNominalLabel] Error in saving document nominal label : " + documentNominalLabel);
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public boolean foundDuplicateDocumentNominalLabel(DocumentNominalLabel documentNominalLabel) {
+		Map<String, Long> attMap = new HashMap<String, Long>();
+		attMap.put("documentID", documentNominalLabel.getDocumentID());
+		attMap.put("nominalLabelID", documentNominalLabel.getNominalLabelID());
+
+		DocumentNominalLabel obj =  documentNominalLabelEJB.getByCriterionID(Restrictions.allEq(attMap));
+
+		if(obj != null)
+			return true;
+
+		return false;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 }

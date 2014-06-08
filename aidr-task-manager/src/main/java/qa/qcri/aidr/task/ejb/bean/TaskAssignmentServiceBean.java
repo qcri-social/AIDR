@@ -166,6 +166,7 @@ public class TaskAssignmentServiceBean extends AbstractTaskManagerServiceBean<Ta
 	public Integer getPendingTaskCount(Long userID) {
 		try {
 			List<TaskAssignment> taskAssignments = getAllByCriteria(Restrictions.eq("userID",userID));
+			System.out.println("[getPendingTaskCount] pending for userID " + userID + "tasks = " + taskAssignments.size());
 			return taskAssignments.size();
 		} catch (Exception e) {
 			System.err.println("[getPendingTaskCount] Error in find operation: userID = " + userID);
