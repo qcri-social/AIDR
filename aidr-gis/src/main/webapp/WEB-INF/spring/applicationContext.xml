@@ -3,12 +3,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:beans="http://www.springframework.org/schema/beans"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
 	   		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 	   		http://www.springframework.org/schema/context
 	   		http://www.springframework.org/schema/context/spring-context-3.0.xsd
 			http://www.springframework.org/schema/mvc 
-			http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+			http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd"
+            >
 	
 	<!-- Activates various annotations to be detected in bean classes -->
 	<context:annotation-config />
@@ -19,8 +21,8 @@
 	
 	<!-- Configures the annotation-driven Spring MVC Controller programming model.
 	Note that, with Spring 3.0, this tag works in Servlet MVC only!  -->
-	<mvc:annotation-driven /> 
-	
+	<mvc:annotation-driven />
+
 	<!-- Loads Spring Task Scheduler related configurations -->
 	<import resource="springSchedulerContext.xml" />
 	

@@ -10,4 +10,5 @@ package qa.qcri.aidr.gis.service;
 public interface ESRIWorker {
 
     void generateGeoJson() throws Exception;
+    String getLastCreatedFileName();
 }
