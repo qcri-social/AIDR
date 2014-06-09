@@ -18,7 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
-import qa.qcri.aidr.task.ejb.bean.TaskManagerBean;
+//import qa.qcri.aidr.task.ejb.bean.TaskManagerBean;
 import qa.qcri.aidr.task.entities.Crisis;
 import qa.qcri.aidr.task.entities.Document;
 
