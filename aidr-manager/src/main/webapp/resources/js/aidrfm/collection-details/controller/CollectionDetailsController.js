@@ -165,7 +165,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
             "#collectionTrash": {
                 click: function (btn, e, eOpts) {
-                    datailsController.trashCollection();
+                    datailsController.trashCollectionHandler();
                 }
             },
 
@@ -629,6 +629,16 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 mask.hide();
             }
         });
+    },
+
+    trashCollectionHandler: function () {
+        var me = this;
+        Ext.MessageBox.confirm('Confirm Collection Delete', 'Are you sure you want to move this collection to the trash bin?',
+            function (buttonId) {
+                if (buttonId === 'yes') {
+                    me.trashCollection();
+                }
+            });
     },
 
     trashCollection: function () {
