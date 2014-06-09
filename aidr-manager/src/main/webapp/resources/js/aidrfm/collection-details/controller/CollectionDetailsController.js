@@ -145,7 +145,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                                 AIDRFMFunctions.setAlert(
                                     "Error",
                                     ['Error while starting Collection .',
-                                        'Please try again later or contact Support']
+                                    'Please try again later or contact Support']
                                 );
                             }
                         },
@@ -162,7 +162,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     datailsController.stopCollection();
                 }
             },
-
+            
             "#collectionTrash": {
                 click: function (btn, e, eOpts) {
                     datailsController.trashCollectionHandler();
@@ -410,7 +410,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         this.setTotalCountOfDocuments(r.totalCount);
         this.setLastDowloadedDoc(r.lastDocument);
     },
-
+    
     updateTrashedDetailsPanel: function (r) {
         var p = this.DetailsComponent;
         p.currentCollection = r;
@@ -437,7 +437,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         p.followL.setText(this.ns, false);
         p.followContainer.hide();
-
+        
         var languageFull = r.langFilters;
         if(languageFull != ''){
             for(var i=0; i < LANG.length; i++){
@@ -500,8 +500,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             this.DetailsComponent.startButton.show();
             this.DetailsComponent.enableTaggerButton.disable();
             this.DetailsComponent.stopButton.hide();
-        }
-
+        } 
+        
         this.DetailsComponent.statusL.setText(statusText, false);
     },
 
@@ -510,15 +510,15 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         this.DetailsComponent.lastStartedL.setText(raw ? moment(raw).calendar() : me.na, false);
     },
-
+    
     setEndDate: function (raw, status) {
         var me = this;
         if (status == "RUNNING" || status == "RUNNING-WARNNING" || status == "INITIALIZING") {
-            //this.DetailsComponent.lastStoppedL.setText(raw ? moment(raw).calendar() : 'Still running', false);
-            this.DetailsComponent.lastStoppedL.setText('Still running', false);
+        	//this.DetailsComponent.lastStoppedL.setText(raw ? moment(raw).calendar() : 'Still running', false);
+        	this.DetailsComponent.lastStoppedL.setText('Still running', false);
         }
         else {
-            this.DetailsComponent.lastStoppedL.setText(raw ? moment(raw).calendar() : me.na, false);
+        	this.DetailsComponent.lastStoppedL.setText(raw ? moment(raw).calendar() : me.na, false);
         }
     },
 
@@ -899,10 +899,6 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             },
             failure: function () {
                 btn.setDisabled(false);
-                Ext.Ajax.timeout = 30000;
-                Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
-                Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
-                Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
                 Ext.Ajax.timeout = 30000;
                 Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
                 Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
