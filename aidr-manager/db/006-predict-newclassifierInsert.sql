@@ -1,4 +1,3 @@
-
 /** userID = 1 indicates system userID WITH Admin Role. check you user table first **/
 /** Informative **/
 INSERT INTO `aidr_predict`.`nominal_attribute`

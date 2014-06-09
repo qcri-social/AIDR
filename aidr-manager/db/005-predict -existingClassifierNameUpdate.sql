@@ -1,4 +1,6 @@
-/**  userID = 83 is non system userID. You can use any of non-system userID instead **/
+/**  userID = 83 is non system userID. You can use any of non-system userID instead
+
+**/
 UPDATE nominal_attribute
 SET name = 'Clusters (v1)', userID = 83
 where userID =1 AND code = 'unclusters_v1';
