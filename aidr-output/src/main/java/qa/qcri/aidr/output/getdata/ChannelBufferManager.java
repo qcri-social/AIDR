@@ -151,7 +151,7 @@ public class ChannelBufferManager {
 				logger.debug("[ChannelBufferManager] Created HashMap");
 			}
 		}
-
+		
 		try {
 			dbController = new DatabaseController();
 			logger.info("[ChannelBufferManager] Created dbController = " + dbController);
@@ -159,7 +159,6 @@ public class ChannelBufferManager {
 			logger.error("[ChannelBufferManager] Couldn't initiate DB access to aidr_fetch_manager");
 			e.printStackTrace();
 		}
-
 	}
 
 	public ChannelBufferManager(final int bufferSize, final String channelRegEx) {
@@ -298,6 +297,7 @@ public class ChannelBufferManager {
 	 * @param channelName
 	 * @return true if channel is publicly listed, false otherwise
 	 */
+	
 	private boolean isChannelPublic(String channelName) {
 		logger.info("[isChannelPublic] Received request for channel: " + channelName);
 		//first strip off the prefix aidr_predict.
@@ -317,7 +317,8 @@ public class ChannelBufferManager {
 		}
 		return false;
 	}
-
+	
+	
 	private boolean isChannelPublic(String channelName, Map<String, Boolean> collectionList) {
 		//logger.info("[isChannelPublic] Received request for channel: " + channelName);
 		
@@ -347,9 +348,9 @@ public class ChannelBufferManager {
 					+ "/public/collection/findAllRunning.action?start=0&limit=10000");
 
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-			//System.out.println("[getAllRunningCollections] Response received");
 			
-			String jsonResponse = clientResponse.readEntity(String.class); 
+			String jsonResponse = clientResponse.readEntity(String.class);
+			//System.out.println("[getAllRunningCollections] Response received" + jsonResponse);
 			if (jsonResponse != null) {
 				try {
 					Gson jsonObject = new GsonBuilder().serializeNulls().disableHtmlEscaping()
@@ -371,6 +372,8 @@ public class ChannelBufferManager {
 							collectionList.put(collectionCode, status);
 							//System.out.println("[getAllRunningCollections] Retrieved collection: code = " + collectionCode + ", status = " + status);
 						}
+					} else {
+						logger.error("[getAllRunningCollections] Error in received response from AIDRFetchManager: " + jsonData);
 					}
 				} catch (Exception e) {
 					logger.error("[getAllRunningCollections] Error in parsing received resposne from manager: " + jsonResponse);
@@ -393,13 +396,13 @@ public class ChannelBufferManager {
 		List<String>dataSet = new ArrayList<String>();
 
 		// First get a list of all running collections from aidr-manager through REST call
-		Map<String, Boolean> collectionList = getAllRunningCollections();
+		//Map<String, Boolean> collectionList = getAllRunningCollections();
 
 		cbList.addAll(ChannelBufferManager.subscribedChannels.values());
 		int k = -1;
 		for (ChannelBuffer temp: cbList) {
 			//System.out.println("cbList size = " + cbList.size() + ", Channel buffer: " + temp.getChannelName());
-			if (isChannelPublic(temp.getChannelName(), collectionList)) {
+			if (isChannelPublic(temp.getChannelName())) {
 				final List<String> tempList = temp.getLIFOMessages(msgCount+4);		// reverse-chronologically ordered list
 				if (!tempList.isEmpty()) {
 					int channelFetchSize = Math.min(msgCount+4,tempList.size());

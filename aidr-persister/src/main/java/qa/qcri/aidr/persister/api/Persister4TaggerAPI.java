@@ -127,10 +127,14 @@ public class Persister4TaggerAPI {
 	@Path("/genCSV")
 	public Response generateCSVFromLastestJSON(@QueryParam("collectionCode") String collectionCode, @QueryParam("exportLimit") int exportLimit) throws UnknownHostException {
 		System.out.println("In tagger-persister genCSV");
+		System.out.println("[tagger-generateCSVFromLastestJSON] received request for collection: " + collectionCode);
 		JsonDeserializer jsonD = new JsonDeserializer();
 		exportLimit = Config.TWEETS_EXPORT_LIMIT_100K;		// Koushik: added to override user specs
 		String fileName = jsonD.taggerGenerateJSON2CSV_100K_BasedOnTweetCount(collectionCode, exportLimit);
 		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
+		
+		System.out.println("[tagger-generateCSVFromLastestJSON] done processing request for collection: " + collectionCode);
+        System.out.println("[tagger-generateCSVFromLastestJSON] returning created file: " + fileName);
 		return Response.ok(fileName).build();
 	}
 
@@ -149,10 +153,15 @@ public class Persister4TaggerAPI {
 			@QueryParam("collectionCode") String collectionCode, 
 			@QueryParam("exportLimit") int exportLimit) throws UnknownHostException {
 		JsonDeserializer jsonD = new JsonDeserializer();
-		System.out.println("[generateCSVFromLastestJSONFiltered] Received POST list: " + queryList.toString());
+		System.out.println("[tagger-generateCSVFromLastestJSONFiltered] received request for collection: " + collectionCode);
+		System.out.println("[tagger-generateCSVFromLastestJSONFiltered] Received POST list: " + queryList.toString());
 
 		String fileName = jsonD.taggerGenerateJSON2CSV_100K_BasedOnTweetCountFiltered(collectionCode, exportLimit, queryList);
 		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
+		
+		System.out.println("[tagger-generateCSVFromLastestJSONFiltered] done processing request for collection: " + collectionCode);
+        System.out.println("[tagger-generateCSVFromLastestJSONFiltered] returning created file: " + fileName);
+        
 		return Response.ok(fileName)
 				.allow("POST", "OPTIONS", "HEAD")
 				.header("Access-Control-Allow-Origin", "*")
@@ -167,9 +176,14 @@ public class Persister4TaggerAPI {
 	@Path("/genTweetIds")
 	public Response generateTweetsIDSCSVFromAllJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
 		System.out.println("In tagger-persister genTweetIds");
+		System.out.println("[tagger-generateTweetsIDSCSVFromAllJSON] received request for collection: " + collectionCode);
+		
 		JsonDeserializer jsonD = new JsonDeserializer();
 		String fileName = jsonD.generateClassifiedJson2TweetIdsCSV(collectionCode);
 		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
+		
+		System.out.println("[tagger-generateTweetsIDSCSVFromAllJSON] done processing request for collection: " + collectionCode);
+        System.out.println("[tagger-generateTweetsIDSCSVFromAllJSON] returning created file: " + fileName);
 		return Response.ok(fileName).build();
 	}
 
@@ -187,10 +201,15 @@ public class Persister4TaggerAPI {
 			@QueryParam("collectionCode") String collectionCode) 
 					throws UnknownHostException {
 		JsonDeserializer jsonD = new JsonDeserializer();
-		System.out.println("[generateTweetsIDSCSVFromAllJSONFiltered] Received POST list: " + queryList.toString());
+		System.out.println("[tagger-generateTweetsIDSCSVFromAllJSONFiltered] received request for collection: " + collectionCode);
+		System.out.println("[tagger-generateTweetsIDSCSVFromAllJSONFiltered] Received POST list: " + queryList.toString());
 
 		String fileName = jsonD.generateClassifiedJson2TweetIdsCSVFiltered(collectionCode, queryList);
 		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
+		
+		System.out.println("[tagger-generateTweetsIDSCSVFromAllJSONFiltered] done processing request for collection: " + collectionCode);
+        System.out.println("[tagger-generateTweetsIDSCSVFromAllJSONFiltered] returning created file: " + fileName);
+        
 		return Response.ok(fileName)
 				.allow("POST", "OPTIONS", "HEAD")
 				.header("Access-Control-Allow-Origin", "*")
@@ -247,7 +266,7 @@ public class Persister4TaggerAPI {
 	}
 
 	
-
+	/*
 	// Also set response header in OPTIONS pre-flight to enable CORS
 	@OPTIONS
 	@Produces(MediaType.APPLICATION_JSON)
@@ -291,5 +310,5 @@ public class Persister4TaggerAPI {
 				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 				.build();
 	}
-
+	*/
 }

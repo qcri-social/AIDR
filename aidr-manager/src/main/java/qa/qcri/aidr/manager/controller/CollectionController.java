@@ -136,7 +136,7 @@ public class CollectionController extends BaseController{
 						|| oldStatus.equals(CollectionStatus.NOT_RUNNING)) {
 					logger.info("Trashing collection having code " + collection.getCode());
 					try {
-						collection = collectionService.stop(collection.getId());
+						//collection = collectionService.stop(collection.getId());
 						collection.setStatus(CollectionStatus.TRASHED);
 						collectionService.update(collection);
 						if (taggerService.trashCollection(collection) > 0) {

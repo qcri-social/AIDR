@@ -1296,7 +1296,7 @@ public class TaggerServiceImpl implements TaggerService {
 			System.out.println("[trashCollection] response from tagger-api: " + jsonResponse);
 			if (jsonResponse != null && jsonResponse.contains("TRASHED")) {
 				retVal = 1;
-				crisisID = Long.parseLong(jsonResponse.substring(jsonResponse.indexOf(":")+1));
+				crisisID = Long.parseLong(jsonResponse.substring(jsonResponse.indexOf(":")+1, jsonResponse.indexOf("}")));
 			} else {
 				retVal = 0;
 			}
@@ -1304,6 +1304,9 @@ public class TaggerServiceImpl implements TaggerService {
 			throw new AidrException("Error while attempting /trash REST call for aidr_predict", e);
 		}
 		System.out.println("[trashCollection] result of cleaning aidr-predict: " + crisisID);
+		if (retVal > 0 && crisisID < 0) {
+			return 1;		// crisis does not exist in aidr_predict table. Reason: no classifier attached
+		}
 		if (retVal > 0 && crisisID > 0) {
 			// Final DB task - cleanup the aidr-scheduler database of micromapper tasks
 			try {
@@ -1312,7 +1315,7 @@ public class TaggerServiceImpl implements TaggerService {
 				Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
 				String jsonResponse = clientResponse.readEntity(String.class);
-				System.out.println("[trashCollection] response from tagger-api: " + jsonResponse);
+				System.out.println("[trashCollection] response from trainer-api: " + jsonResponse);
 				if (jsonResponse != null && jsonResponse.equalsIgnoreCase("{\"status\":200}")) {
 					System.out.println("[trashCollection] Success in trashing + " + collection.getCode());
 					return 1;

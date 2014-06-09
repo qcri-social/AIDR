@@ -1,17 +1,14 @@
 package qa.qcri.aidr.task.ejb;
 
+import javax.ejb.Local;
+
+
 import qa.qcri.aidr.task.entities.DocumentNominalLabel;
 
 
 
-/**
- * Created with IntelliJ IDEA.
- * User: jilucas
- * Date: 9/15/13
- * Time: 5:44 PM
- * To change this template use File | Settings | File Templates.
- */
-public interface DocumentNominalLabelService {
+@Local
+public interface DocumentNominalLabelService extends AbstractTaskManagerService<DocumentNominalLabel, Long> {
 
     void saveDocumentNominalLabel(DocumentNominalLabel documentNominalLabel);
     boolean foundDuplicate(DocumentNominalLabel documentNominalLabel);
