@@ -2,6 +2,8 @@ package qa.qcri.aidr.task.util;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.ejb.EJB;
@@ -11,31 +13,23 @@ import javax.naming.NamingException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
+import qa.qcri.aidr.task.ejb.bean.TaskManagerBean;
 import qa.qcri.aidr.task.entities.Crisis;
 import qa.qcri.aidr.task.entities.Document;
 
 @Path("/test")
 public class TestTaskManager {
-	
+
 	@EJB
 	private TaskManagerRemote<Document, Serializable> taskManager;
 
 	public TestTaskManager() {
-	}
-
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	@Path("/remoteEJB")
-	public <T> String test() {
-		StringBuilder respString = new StringBuilder().append("Fetched new doc = ");
+		/*
 		try {
 			Properties props = new Properties();
 			props.setProperty("java.naming.factory.initial", "com.sun.enterprise.naming.SerialInitContextFactory");
@@ -45,38 +39,70 @@ public class TestTaskManager {
 			props.setProperty("org.omg.CORBA.ORBInitialPort", "3700");
 
 			InitialContext ctx = new InitialContext(props);
-			this.taskManager = (TaskManagerRemote<Document, Serializable>) ctx.lookup("java:global/aidr-task-manager/TaskManagerBean!qa.qcri.aidr.task.api.TaskManagerRemote");
-			String jsonString = taskManager.getNewTask(117L);
-			
-			//this.taskManager = (TaskManagerRemote<Document, Serializable>) ctx.lookup("java:global/aidr-task-manager/TaskManagerBean");
-			//String jsonString = taskManager.getTaskById(103L);
-			
-			if (jsonString != null) {
-				ObjectMapper mapper = new ObjectMapper();
-				Object obj = null;
-				try {
-					obj = mapper.readValue(jsonString, obj.getClass());
-				} catch (Exception e) {
-					e.printStackTrace();
-				} 
-				if (obj != null) {
-					respString.append(obj);
-				} else {
-					respString.append("null");
-				}
-			}
-			System.out.println("[main] " + respString.toString());
+			//this.taskManager = (TaskManagerRemote<Document, Serializable>) ctx.lookup("java:global/aidr-task-manager/TaskManagerBean!qa.qcri.aidr.task.api.TaskManagerRemote");
+			//String jsonString = taskManager.getNewTask(117L);
+
+			this.taskManager = (TaskManagerRemote<Document, Serializable>) ctx.lookup("java:global/aidr-task-manager/TaskManagerBean");
 		} catch (NamingException e) {
 			System.err.println("Error in JNDI lookup");
-			respString.append("Error in JNDI lookup");
 			e.printStackTrace();
 		}
-		//return Response.ok(respString.toString()).build();
-		return respString.toString();
+		*/
+	}
+
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/remoteEJB")
+	public <T> Response test(@QueryParam("id") Long id) {
+		StringBuilder respString = new StringBuilder().append("Fetched new doc = ");
+
+		String jsonString = taskManager.getTaskById((id != null) ? id : new Long(4579254));
+		if (jsonString != null) {
+			respString.append(jsonString);
+		} else {
+			respString.append("Error in JNDI lookup");
+		}
+		System.out.println("[main] " + respString.toString());
+		return Response.ok(respString.toString()).build();
+	}
+	
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/getNewTask")
+	public <T> Response getNewTask(@QueryParam("id") Long id) {
+		StringBuilder respString = new StringBuilder().append("Fetched new doc = ");
+
+		String jsonString = taskManager.getNewTask(id != null ? id : new Long(117));
+		if (jsonString != null) {
+			respString.append(jsonString);
+		} else {
+			respString.append("Error in JNDI lookup");
+		}
+		System.out.println("[main] " + respString.toString());
+		return Response.ok(respString.toString()).build();
+	}
+	
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/testSetParameters")
+	public Response testSetParameters(@QueryParam("id") Long id) {
+		Map<String, String> paramMap = new HashMap<String, String>();
+		paramMap.put("setHasHumanLabels", new Boolean(true).toString());
+		paramMap.put("setCrisisID", new Long(117L).toString());
+		qa.qcri.aidr.task.entities.Document newDoc = taskManager.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, (id != null) ? id : new Long(4579250), paramMap);
+		if (newDoc != null) {
+			System.out.println("newDoc = " + newDoc.getDocumentID() + ": " + newDoc.isHasHumanLabels());
+			String jsonString = taskManager.serializeTask(newDoc);
+			return Response.ok(jsonString).build();
+		} else {
+			return null;
+		}
 	}
 
 	public static void main(String[] args) throws Exception {
 		TestTaskManager tc = new TestTaskManager(); 
-		System.out.println("Result: " + tc.test().toString());
+		System.out.println("Result: " + tc.test(null).toString());
+
+		tc.testSetParameters(null);
 	}
 }

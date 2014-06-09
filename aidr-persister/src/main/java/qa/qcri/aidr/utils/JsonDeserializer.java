@@ -4,10 +4,7 @@
  */
 package qa.qcri.aidr.utils;
 
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
-import net.minidev.json.JSONValue;
-import net.minidev.json.parser.ParseException;
+
 
 import org.supercsv.io.ICsvBeanWriter;
 
@@ -35,7 +32,6 @@ import java.nio.charset.Charset;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -55,7 +51,8 @@ public class JsonDeserializer {
 		//String fileName = collectionCode + "_tweetIds" + ".csv";		
 		String fileNameforCSVGen = collectionCode + "_tweetIds";
 		String fileName = fileNameforCSVGen + ".csv";
-
+		long lastCount = 0;
+		long currentCount = 0;
 		try {
 			ReadWriteCSV csv = new ReadWriteCSV();
 			BufferedReader br = null;
@@ -68,25 +65,21 @@ public class JsonDeserializer {
 					br = new BufferedReader(new FileReader(fileLocation));
 					String line;
 					while ((line = br.readLine()) != null) {
-						Tweet tweet = new Tweet();
-						try {
-							Object obj = JSONValue.parseStrict(line);
-							JSONObject jsonObj = (JSONObject) obj;
-							tweet.setTweetID(jsonObj.get("id").toString());
-							//tweetsList.add(tweet);
+						Tweet tweet = getTweet(line);
+						if (tweet != null) {
 							if (tweetsList.size() < 10000) { //after every 10k write to CSV file
 								tweetsList.add(tweet);
 							} else {
 								beanWriter = csv.writeCollectorTweetIDSCSV(beanWriter, tweetsList, collectionCode, fileNameforCSVGen);
+								lastCount = currentCount;
+								currentCount += tweetsList.size();
+								System.out.println("[generateJson2TweetIdsCSV] Writing_tweetIds: " + lastCount + " to " + currentCount);
 								tweetsList.clear();
 
 							}
-						} catch (ParseException ex) {
 						}
 					}
-
 					br.close();
-
 				} catch (FileNotFoundException ex) {
 					Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
 				} catch (IOException ex) {
@@ -326,7 +319,7 @@ public class JsonDeserializer {
 										}
 									}
 								}
-							} catch (ParseException ex) {
+							} catch (Exception ex) {
 								//Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, "JSON file parsing exception at line {0}", lineNumber);
 							}
 						}
@@ -692,7 +685,7 @@ public class JsonDeserializer {
 		//FileSystemOperations.deleteFile("CandFlood2013_20130922_vol-1.json.csv");
 	}
 
-
+	/*
 	private Tweet getTweet(String line) throws ParseException {
 		Tweet tweet = new Tweet();
 		try {
@@ -716,6 +709,52 @@ public class JsonDeserializer {
 			return null;
 		}
 
+		return tweet;
+	}
+	*/
+	
+	private Tweet getTweet(String line) {
+		Tweet tweet = new Tweet();
+		try {
+			Gson jsonObject = new GsonBuilder().serializeNulls().disableHtmlEscaping()
+					.serializeSpecialFloatingPointValues()	//.setPrettyPrinting()
+					.create();
+			JsonParser parser = new JsonParser();
+			JsonObject jsonObj = (JsonObject) parser.parse(line);
+
+
+			if (jsonObj.get("id") != null) {
+				tweet.setTweetID(jsonObj.get("id").getAsString());
+			}
+
+			if (jsonObj.get("text") != null) {
+				tweet.setMessage(jsonObj.get("text").getAsString());
+			}
+
+			if (jsonObj.get("created_at") != null) {
+				tweet.setCreatedAt(jsonObj.get("created_at").getAsString());
+			}
+
+			JsonObject jsonUserObj = null;
+			if (jsonObj.get("user") != null) {				
+				jsonUserObj = jsonObj.get("user").getAsJsonObject();
+				if (jsonUserObj.get("id") != null) {
+					tweet.setUserID(jsonUserObj.get("id").getAsString());
+				}
+
+				if (jsonUserObj.get("screen_name") != null) {
+					tweet.setUserName(jsonUserObj.get("screen_name").getAsString());
+					tweet.setTweetURL("https://twitter.com/" + tweet.getUserName() + "/status/" + tweet.getTweetID());
+				}
+				if (jsonUserObj.get("url") != null) {
+					tweet.setUserURL(jsonUserObj.get("url").toString());
+				}
+			}
+		} catch (Exception ex) {
+			//Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+			//System.out.println("[getTweet] Offending tweet: " + line);
+			return null;
+		}
 		return tweet;
 	}
 

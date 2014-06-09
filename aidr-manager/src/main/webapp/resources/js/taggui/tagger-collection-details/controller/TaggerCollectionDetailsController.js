@@ -36,7 +36,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     this.addNewClassifier();
                 }
             },
-            
+
             "#generateCSVLink": {
                 click: function (btn, e, eOpts) {
                     this.generateCSVLinkButtonHandler(btn);
@@ -68,7 +68,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
             "#uiTypeFilters":{
                 change: function(field, newValue, oldValue, eOpts) {
                     var me = this;
-                     //type == '1' || type == '2' || type == '6'
+                    //type == '1' || type == '2' || type == '6'
                     if(field.value == '' || field.value == '1' || field.value == '2' || field.value == '6'){
                         me.mainComponent.classifierCombo.hide();
                     }
@@ -204,10 +204,10 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
     crisisDelete: function () {
         Ext.MessageBox.confirm('Confirm Crisis Delete', 'Do you want to delete <b>"' + CRISIS_NAME + '"</b>?',
             function (buttonId) {
-            if (buttonId === 'yes') {
-                AIDRFMFunctions.setAlert("Ok", 'Will be implemented later');
-            }
-        });
+                if (buttonId === 'yes') {
+                    AIDRFMFunctions.setAlert("Ok", 'Will be implemented later');
+                }
+            });
     },
 
     crisisSave: function () {
@@ -296,7 +296,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
 
     templateSkinTypeSave:function(){
         var me = this;
-         //me.mainComponent.optionRG.items.items[
+        //me.mainComponent.optionRG.items.items[
         var mask = AIDRFMFunctions.getMask(true, 'Saving custom skin ...');
         mask.show();
         var value = me.mainComponent.optionRG.getChecked();
@@ -323,7 +323,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
 
                 var run = function (delay) {
                     Ext.create('Ext.util.DelayedTask', function () {
-                       // console.log('run');
+                        // console.log('run');
                         run(delay);
                         mask.hide();
                     }).delay(delay);
@@ -371,10 +371,10 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     AIDRFMFunctions.setAlert("Error",  'Requst failed : ' + maskText );
                 }
                 //mask.hide();
-               // AIDRFMFunctions.setAlert("Info", mask);
+                // AIDRFMFunctions.setAlert("Info", mask);
                 var run = function (delay) {
                     Ext.create('Ext.util.DelayedTask', function () {
-                      //  console.log('run');
+                        //  console.log('run');
                         run(delay);
                         mask.hide();
                     }).delay(delay);
@@ -515,7 +515,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                                             }
                                         }
                                     }
-                                   // console.log('svar: ' + sText);
+                                    // console.log('svar: ' + sText);
                                     if(sVar!=''){
                                         sText = 'Being a Digital Humanitarian is as easy and fast as a click of the mouse. If you want to keep track of your progress and points, make sure to login! This Clicker will simply load a tweet and ask you to click on the category that best describes the tweet<br/><br/>';
                                         sText = sText + sVar;
@@ -733,7 +733,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
     renderUpdatedUITemplateDisplayComponent: function(templateType, sText){
         var me = this;
         if(templateType == 1){
-                me.mainComponent.uiLandingTemplateOne.setValue(sText, false);
+            me.mainComponent.uiLandingTemplateOne.setValue(sText, false);
         }
         if(templateType == 2){
             me.mainComponent.uiLandingTemplateTwo.setValue(sText, false);
@@ -925,7 +925,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                         }
 
                     } catch (e) {
-                       // console.log("resp:" + resp);
+                        // console.log("resp:" + resp);
                         //me.mainComponent.pyBossaLink.setText('<div class="gray-backgrpund"><i>Initializing crowdsourcing task. Please come back in a few minutes.</i></div>', false);
                     }
                 } else {
@@ -941,11 +941,15 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
     generateCSVLink: function() {
         var me = this;
         me.mainComponent.CSVLink.setText('<div class="loading-block"></div>', false);
-        Ext.Ajax.timeout=600000;
+
+        Ext.Ajax.timeout = 900000;
+        Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+        Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+        Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/taggerGenerateCSVLink.action',
+            timeout: 900000,
             method: 'GET',
-            timeout:600000,
             params: {
                 code: CRISIS_CODE
             },
@@ -964,6 +968,17 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     me.mainComponent.CSVLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
+            },
+            failure: function () {
+                btn.setDisabled(false);
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             }
         });
     },
@@ -972,8 +987,13 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         var me = this;
         me.mainComponent.tweetsIdsLink.setText('<div class="loading-block"></div>', false);
 
+        Ext.Ajax.timeout = 900000;
+        Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+        Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+        Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/taggerGenerateTweetIdsLink.action',
+            timeout: 900000,
             method: 'GET',
             params: {
                 code: CRISIS_CODE
@@ -993,6 +1013,17 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     me.mainComponent.tweetsIdsLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
+            },
+            failure: function () {
+                btn.setDisabled(false);
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             }
         });
     },
@@ -1002,8 +1033,13 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         btn.setDisabled(true);
         me.mainComponent.CSVLink.setText('<div class="loading-block"></div>', false);
 
+        Ext.Ajax.timeout = 900000;
+        Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+        Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+        Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/taggerGenerateCSVLink.action',
+            timeout: 900000,
             method: 'GET',
             params: {
                 code: CRISIS_CODE
@@ -1025,9 +1061,17 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     me.mainComponent.CSVLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             },
             failure: function () {
                 btn.setDisabled(false);
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             }
         });
     },
@@ -1037,8 +1081,13 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         btn.setDisabled(true);
         me.mainComponent.tweetsIdsLink.setText('<div class="loading-block"></div>', false);
 
+        Ext.Ajax.timeout = 900000;
+        Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+        Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+        Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/taggerGenerateTweetIdsLink.action',
+            timeout: 900000,
             method: 'GET',
             params: {
                 code: CRISIS_CODE
@@ -1060,9 +1109,21 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     me.mainComponent.tweetsIdsLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             },
             failure: function () {
                 btn.setDisabled(false);
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             }
         });
     }

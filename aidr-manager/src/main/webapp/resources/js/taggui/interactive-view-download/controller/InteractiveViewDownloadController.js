@@ -93,9 +93,14 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
         var me = this;
         var mask = AIDRFMFunctions.getMask(true);
         mask.show();
-
+        
+        Ext.Ajax.timeout = 900000;
+        Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+        Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+        Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/loadLatestTweets.action',
+            timeout: 900000,
             method: 'GET',
             params: {
                 code: CRISIS_CODE,
@@ -130,9 +135,17 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                 });
                 me.mainComponent.tweetsStore.load();
                 mask.hide();
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             },
             failure: function () {
                 mask.hide();
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             }
         });
     },
@@ -168,7 +181,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
 
     loadCollection: function () {
         var me = this;
-
+       
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/findById.action',
             method: 'GET',
@@ -194,7 +207,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                     me.mainComponent.suspendLayout = false;
                     me.mainComponent.forceComponentLayout();
                 }
-                me.updateStatusInfo(jsonData.status, jsonData.endDate);
+                me.updateStatusInfo(jsonData.status, jsonData.endDate);                
             }
         });
     },
@@ -247,7 +260,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
             console.log('100000_TWEETS');
         } else {
             console.log('ALL');
-            me.generateTweetIdsLink(btn)
+            me.generateTweetIdsLink(btn);
         }
     },
 
@@ -309,9 +322,14 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
 
         btn.setDisabled(true);
         me.mainComponent.downloadLink.setText('<div class="loading-block"></div>', false);
-
+        
+        Ext.Ajax.timeout = 900000;
+        Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+        Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+        Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/generateTweetIdsLink.action',
+            timeout: 900000,
             method: 'GET',
             params: {
                 code: CRISIS_CODE,
@@ -336,9 +354,17 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                     me.mainComponent.downloadLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             },
             failure: function () {
                 btn.setDisabled(false);
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             }
         });
     },

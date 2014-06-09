@@ -110,11 +110,13 @@ public class Document implements Serializable {
     private TaskAssignment taskAssignment;
     
     
-    @XmlElement
+    //@XmlElement
     @JoinTable(name = "document_nominal_label", joinColumns = {
 			@JoinColumn(name = "documentID", referencedColumnName = "documentID")}, inverseJoinColumns = {
 			@JoinColumn(name = "nominalLabelID", referencedColumnName = "nominalLabelID")})
-	@ManyToMany(cascade=CascadeType.MERGE, fetch=FetchType.LAZY)
+	@ManyToMany(cascade=CascadeType.MERGE, fetch=FetchType.EAGER)
+    @JsonIgnore
+    @XmlTransient
 	private Collection<NominalLabel> nominalLabelCollection;
     
     public Document(){}

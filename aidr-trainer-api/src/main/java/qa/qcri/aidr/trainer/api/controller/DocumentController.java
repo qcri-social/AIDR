@@ -3,16 +3,20 @@ package qa.qcri.aidr.trainer.api.controller;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 import qa.qcri.aidr.trainer.api.entity.Document;
 import qa.qcri.aidr.trainer.api.service.DocumentService;
 import qa.qcri.aidr.trainer.api.store.StatusCodeType;
 import qa.qcri.aidr.trainer.api.template.TaskBufferJsonModel;
 
+import javax.ejb.EJB;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
 import java.util.List;
 
 /**
@@ -29,7 +33,7 @@ public class DocumentController {
 
     @Autowired
     private DocumentService documentService;
-
+    
     @GET
     @Produces( MediaType.APPLICATION_JSON )
     @Path("/getbatchtaskbuffer/{userName}/{crisisID}/{maxresult}")
@@ -37,7 +41,8 @@ public class DocumentController {
             @PathParam("userName") String userName,
             @PathParam("crisisID") String crisisID,
             @PathParam("maxresult") String maxresult){
-
+    	
+    	
         return documentService.getDocumentForTask(new Long(crisisID), Integer.valueOf(maxresult), userName);
 
     }

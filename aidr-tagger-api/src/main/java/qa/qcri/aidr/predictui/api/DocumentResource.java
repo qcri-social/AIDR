@@ -13,10 +13,12 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+
 
 import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.facade.DocumentFacade;
@@ -102,7 +104,7 @@ public class DocumentResource {
 		//List<Document> documentList = documentLocalEJB.getAllLabeledDocumentbyCrisisID(crisisID, attributeID);
 		
 		Criterion criterion = Restrictions.eq("hasHumanLabels", true);
-		String jsonString = taskManager.getTaskCollectionByCriterion((long) crisisID, criterion);
+		String jsonString = taskManager.getTaskCollectionByCriterion(new Long(crisisID), null, criterion);
 		ObjectMapper mapper = new ObjectMapper();
 		List<Document> docList = null;
 		if (jsonString != null) {
@@ -168,51 +170,5 @@ public class DocumentResource {
 		return Response.ok(new ResponseWrapper(Config.STATUS_CODE_SUCCESS)).build();
 	}
 
-	/*
-	public qa.qcri.aidr.predictui.entities.Document transformTaskToDocument(qa.qcri.aidr.task.entities.Document document) {
-		qa.qcri.aidr.predictui.entities.Document doc = new qa.qcri.aidr.predictui.entities.Document();
-		doc.setDocumentID(document.getDocumentID());
-		doc.setCrisisID(document.getCrisisID());
-		doc.setDoctype(document.getDoctype());
-		doc.setData(document.getData());
-		doc.setEvaluationSet(document.isEvaluationSet());
-		doc.setGeoFeatures(document.getGeoFeatures());
-		doc.setLanguage(document.getLanguage());
-		doc.setHasHumanLabels(document.isHasHumanLabels());
-		//doc.setNominalLabelCollection((Collection<NominalLabel>) document.getNominalLabelCollection());
-		doc.setReceivedAt(document.getReceivedAt());
-		doc.setSourceIP(document.getSourceIP());
-		doc.setWordFeatures(document.getWordFeatures());
-		doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
-		//doc.setTaskAssignment((List<TaskAssignment>) document.getTaskAssignment());
-
-		return doc;
-
-	}
-
-	public List<qa.qcri.aidr.predictui.entities.Document> transformTaskToDocument(List<qa.qcri.aidr.task.entities.Document> documentList) {
-
-		List<qa.qcri.aidr.predictui.entities.Document> docList = new ArrayList<qa.qcri.aidr.predictui.entities.Document>();
-
-		for (qa.qcri.aidr.task.entities.Document document: documentList) {
-			qa.qcri.aidr.predictui.entities.Document doc = new qa.qcri.aidr.predictui.entities.Document();
-			doc.setDocumentID(document.getDocumentID());
-			doc.setCrisisID(document.getCrisisID());
-			doc.setDoctype(document.getDoctype());
-			doc.setData(document.getData());
-			doc.setEvaluationSet(document.isEvaluationSet());
-			doc.setGeoFeatures(document.getGeoFeatures());
-			doc.setLanguage(document.getLanguage());
-			doc.setHasHumanLabels(document.isHasHumanLabels());
-			//doc.setNominalLabelCollection(transformNominalLabelCollection(document.getNominalLabelCollection()));
-			doc.setReceivedAt(document.getReceivedAt());
-			doc.setSourceIP(document.getSourceIP());
-			doc.setWordFeatures(document.getWordFeatures());
-			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
-			//doc.setTaskAssignment((List<TaskAssignment>) document.getTaskAssignment());
-			docList.add(doc);
-		}
-		return docList;
-	}
-	 */
+	
 }

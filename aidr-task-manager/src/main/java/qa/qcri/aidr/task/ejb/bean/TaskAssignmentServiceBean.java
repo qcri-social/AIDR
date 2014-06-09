@@ -27,57 +27,92 @@ public class TaskAssignmentServiceBean extends AbstractTaskManagerServiceBean<Ta
 	}
 
 	@Override
-	public void insertTaskAssignment(List<Document> taskList, Long userID) {
+	public int insertTaskAssignment(List<Document> taskList, Long userID) {
 		// hard code, will create user service
-
-		for (Iterator it = taskList.iterator(); it.hasNext();){
-			Document tb = (Document) it.next();
-			List<TaskAssignment> taskAssignments = findTaskAssignmentByID(tb.getDocumentID());
-			if(taskAssignments.size()== 0){
-				TaskAssignment taskAssignment = new TaskAssignment(tb.getDocumentID(), userID, new Date());
-				save(taskAssignment);
+		try {
+			for (Iterator it = taskList.iterator(); it.hasNext();){
+				Document tb = (Document) it.next();
+				List<TaskAssignment> taskAssignments = findTaskAssignmentByID(tb.getDocumentID());
+				if(taskAssignments.size()== 0){
+					// No assigned tasks currently for user
+					TaskAssignment taskAssignment = new TaskAssignment(tb.getDocumentID(), userID, new Date());
+					save(taskAssignment);
+					return 1;
+				}
 			}
+		} catch (Exception e) {
+			System.err.println("[insertTaskAssignment] Error in insert operation!");
+			e.printStackTrace();
 		}
+		return 0;
 
 
 	}
 
 	@Override
-	public void insertOneTaskAssignment(Long documentID, Long userID) {
-		List<TaskAssignment> taskAssignments = findTaskAssignmentByID(documentID);
-		if(taskAssignments.size()== 0){
-			TaskAssignment taskAssignment = new TaskAssignment(documentID, userID, new Date());
-			save(taskAssignment);
+	public int insertOneTaskAssignment(Long documentID, Long userID) {
+		try {
+			List<TaskAssignment> taskAssignments = findTaskAssignmentByID(documentID);
+			if(taskAssignments.size()== 0){
+				TaskAssignment taskAssignment = new TaskAssignment(documentID, userID, new Date());
+				save(taskAssignment);
+				return 1;
+			}
+		} catch (Exception e) {
+			System.err.println("[insertOneTaskAssignment] Error in insert operation!");
+			e.printStackTrace();
 		}
+		return 0;
 	}
 
 	@Override
-	public void undoTaskAssignment(List<Document> taskList, Long userID) {
-		for (Iterator it = taskList.iterator(); it.hasNext();){
-			Document tb = (Document) it.next();
-			TaskAssignment taskAssignment = (TaskAssignment)findTaskAssignment(tb.getDocumentID(), userID);
-			delete(taskAssignment);
+	public int undoTaskAssignment(List<Document> taskList, Long userID) {
+		try {
+			for (Iterator it = taskList.iterator(); it.hasNext();){
+				Document tb = (Document) it.next();
+				TaskAssignment taskAssignment = (TaskAssignment)findTaskAssignment(tb.getDocumentID(), userID);
+				delete(taskAssignment);
+				return 1;
+			}
+		} catch (Exception e) {
+			System.err.println("[undoTaskAssignment] Error in undo operation!");
+			e.printStackTrace();
 		}
+		return 0;
 	}
 
 	@Override
-	public void undoTaskAssignment(Map<Long, Long> taskMap) {
-		Iterator entries = taskMap.entrySet().iterator();
-		while (entries.hasNext()) {
-			Map.Entry entry = (Map.Entry) entries.next();
-			Long key = (Long)entry.getKey();
-			Long value = (Long)entry.getValue();
-			TaskAssignment taskAssignment = (TaskAssignment)findTaskAssignment(key, value);
-			delete(taskAssignment);
+	public int undoTaskAssignment(Map<Long, Long> taskMap) {
+		try {
+			Iterator entries = taskMap.entrySet().iterator();
+			while (entries.hasNext()) {
+				Map.Entry entry = (Map.Entry) entries.next();
+				Long key = (Long)entry.getKey();
+				Long value = (Long)entry.getValue();
+				TaskAssignment taskAssignment = (TaskAssignment)findTaskAssignment(key, value);
+				delete(taskAssignment);
+				return 1;
+			}
+		} catch (Exception e) {
+			System.err.println("[undoTaskAssignment] Error in undo operation!");
+			e.printStackTrace();
 		}
+		return 0;
 	}
 
 	@Override
-	public void undoTaskAssignment(Long documentID, Long userID) {
-		TaskAssignment taskAssignment = (TaskAssignment)findTaskAssignment(documentID, userID);
-		if(taskAssignment!=null){
-			delete(taskAssignment);
+	public int undoTaskAssignment(Long documentID, Long userID) {
+		try {
+			TaskAssignment taskAssignment = (TaskAssignment)findTaskAssignment(documentID, userID);
+			if(taskAssignment!=null){
+				delete(taskAssignment);
+				return 1;
+			}
+		} catch (Exception e) {
+			System.err.println("[undoTaskAssignment] Error in undo operation!");
+			e.printStackTrace();
 		}
+		return 0;
 	}
 
 	@Override
@@ -106,20 +141,38 @@ public class TaskAssignmentServiceBean extends AbstractTaskManagerServiceBean<Ta
 		Map<String, Long> attMap = new HashMap<String, Long>();
 		attMap.put("documentID", documentID);
 		attMap.put("userID", userID);
-
-		return getByCriteria(Restrictions.allEq(attMap));
+		try {
+			return getByCriteria(Restrictions.allEq(attMap));
+		} catch (Exception e) {
+			System.err.println("[findTaskAssignment] Error in find operation: documentID = " + documentID + ", userID = " + userID);
+			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		}
+		return null;
 	}
 
 	@Override
 	public List<TaskAssignment> findTaskAssignmentByID(Long documentID) {
-		return getAllByCriteria(Restrictions.eq("documentID", documentID));  
+		try {
+			return getAllByCriteria(Restrictions.eq("documentID", documentID));  
+		} catch (Exception e) {
+			System.err.println("[findTaskAssignmentByID] Error in find operation: documentID = " + documentID);
+			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		}
+		return null;
 
 	}
 
 	@Override
 	public Integer getPendingTaskCount(Long userID) {
-		List<TaskAssignment> taskAssignments = getAllByCriteria(Restrictions.eq("userID",userID));
-		return taskAssignments.size();  
+		try {
+			List<TaskAssignment> taskAssignments = getAllByCriteria(Restrictions.eq("userID",userID));
+			System.out.println("[getPendingTaskCount] pending for userID " + userID + "tasks = " + taskAssignments.size());
+			return taskAssignments.size();
+		} catch (Exception e) {
+			System.err.println("[getPendingTaskCount] Error in find operation: userID = " + userID);
+			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		}
+		return -1;
 	}
 
 }

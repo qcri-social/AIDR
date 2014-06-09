@@ -28,7 +28,14 @@ public class DocumentNominalLabel implements Serializable {
         this.nominalLabelID = nominalLabelID;
         this.timestamp = new Date();
     }
-
+    
+    public  DocumentNominalLabel(Long documentID, Long nominalLabelID, Long userID){
+        this.documentID = documentID;
+        this.nominalLabelID = nominalLabelID;
+        this.userID = userID;
+        this.timestamp = new Date();
+    }
+    
     public Long getDocumentID() {
         return documentID;
     }
@@ -43,6 +50,14 @@ public class DocumentNominalLabel implements Serializable {
 
     public void setNominalLabelID(Long nominalLabelID) {
         this.nominalLabelID = nominalLabelID;
+    }
+    
+    public Long getUserID() {
+        return userID;
+    }
+
+    public void setUserID(Long userID) {
+        this.userID = userID;
     }
 
     public Date getTimestamp() {
@@ -64,7 +79,12 @@ public class DocumentNominalLabel implements Serializable {
     @XmlElement
     @Column (name = "nominalLabelID", nullable = false)
     private Long nominalLabelID;
-
+    
+    //@Id
+    @XmlElement
+    @Column (name = "userID", nullable = false)
+    private Long userID;
+    
     @XmlElement
     @Column (name = "timestamp", nullable = false)
     private Date timestamp;

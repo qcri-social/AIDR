@@ -14,11 +14,11 @@ import qa.qcri.aidr.task.entities.TaskAssignment;
 @Local
 public interface TaskAssignmentService extends AbstractTaskManagerService<TaskAssignment, Long>  {
 
-    public void insertTaskAssignment(List<Document> taskList, Long userID);
-    public void insertOneTaskAssignment(Long documentID, Long userID);
-    public void undoTaskAssignment(List<Document> taskList, Long userID);
-    public void undoTaskAssignment(Map<Long, Long> taskMap);
-    public void undoTaskAssignment(Long documentID, Long userID);
+    public int insertTaskAssignment(List<Document> taskList, Long userID);
+    public int insertOneTaskAssignment(Long documentID, Long userID);
+    public int undoTaskAssignment(List<Document> taskList, Long userID);
+    public int undoTaskAssignment(Map<Long, Long> taskMap);
+    public int undoTaskAssignment(Long documentID, Long userID);
     public void undoTaskAssignmentByTimer();
     public TaskAssignment findTaskAssignment(Long documentID, Long userID);
     public List<TaskAssignment> findTaskAssignmentByID(Long documentID);
