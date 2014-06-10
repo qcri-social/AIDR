@@ -908,30 +908,6 @@ public class TaggerServiceImpl implements TaggerService {
 		}
 	}
 
-    @Override
-    public String loadLatestTweetsWithCount(String code, int count) throws AidrException {
-        Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
-        try {
-            String constraints = "";
-            WebTarget webResource = client.target(outputAPIMainUrl + "/crisis/fetch/channel/filter/" + code + "?count=" + count);
-            System.out.println("Invoking: " + outputAPIMainUrl + "/crisis/fetch/channel/filter/" + code + "?count=" + count);
-            System.out.println("constraints: " + constraints);
-            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
-                    .post(Entity.json(constraints), Response.class);
-
-            String jsonResponse = clientResponse.readEntity(String.class);
-            System.out.println("jsonResponse: " + jsonResponse);
-
-            if (jsonResponse != null && (jsonResponse.startsWith("{") || jsonResponse.startsWith("["))) {
-                return jsonResponse;
-            } else {
-                return "";
-            }
-        } catch (Exception e) {
-            throw new AidrException("Error while loadLatestTweetsWithCount", e);
-        }
-    }
-
 	@Override
 	public ModelHistoryWrapper getModelHistoryByModelFamilyID(Integer start, Integer limit, Integer id) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
@@ -1349,5 +1325,29 @@ public class TaggerServiceImpl implements TaggerService {
 			throw new AidrException("Error while attempting /untrash REST call", e);
 		}
 	}
+
+    @Override
+    public String loadLatestTweetsWithCount(String code, int count) throws AidrException {
+        Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+        try {
+            String constraints = "";
+            WebTarget webResource = client.target(outputAPIMainUrl + "/crisis/fetch/channel/filter/" + code + "?count=" + count);
+            System.out.println("Invoking: " + outputAPIMainUrl + "/crisis/fetch/channel/filter/" + code + "?count=" + count);
+            System.out.println("constraints: " + constraints);
+            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
+                    .post(Entity.json(constraints), Response.class);
+
+            String jsonResponse = clientResponse.readEntity(String.class);
+            System.out.println("jsonResponse: " + jsonResponse);
+
+            if (jsonResponse != null && (jsonResponse.startsWith("{") || jsonResponse.startsWith("["))) {
+                return jsonResponse;
+            } else {
+                return "";
+            }
+        } catch (Exception e) {
+            throw new AidrException("Error while loadLatestTweetsWithCount", e);
+        }
+    }
 
 }

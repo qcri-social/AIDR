@@ -941,11 +941,15 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
     generateCSVLink: function() {
         var me = this;
         me.mainComponent.CSVLink.setText('<div class="loading-block"></div>', false);
-        Ext.Ajax.timeout=600000;
+        
+        Ext.Ajax.timeout = 900000;
+        Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+        Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+        Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/taggerGenerateCSVLink.action',
+            timeout: 900000,
             method: 'GET',
-            timeout:600000,
             params: {
                 code: CRISIS_CODE
             },
@@ -964,6 +968,17 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     me.mainComponent.CSVLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
+            },
+            failure: function () {
+                btn.setDisabled(false);
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             }
         });
     },
@@ -971,9 +986,14 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
     generateTweetIdsLink: function() {
         var me = this;
         me.mainComponent.tweetsIdsLink.setText('<div class="loading-block"></div>', false);
-
+        
+        Ext.Ajax.timeout = 900000;
+        Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+        Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+        Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/taggerGenerateTweetIdsLink.action',
+            timeout: 900000,
             method: 'GET',
             params: {
                 code: CRISIS_CODE
@@ -993,6 +1013,17 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     me.mainComponent.tweetsIdsLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
+            },
+            failure: function () {
+                btn.setDisabled(false);
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             }
         });
     },
@@ -1002,8 +1033,13 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         btn.setDisabled(true);
         me.mainComponent.CSVLink.setText('<div class="loading-block"></div>', false);
 
+        Ext.Ajax.timeout = 900000;
+        Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+        Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+        Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/taggerGenerateCSVLink.action',
+            timeout: 900000,
             method: 'GET',
             params: {
                 code: CRISIS_CODE
@@ -1025,9 +1061,17 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     me.mainComponent.CSVLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             },
             failure: function () {
                 btn.setDisabled(false);
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             }
         });
     },
@@ -1036,9 +1080,14 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         var me = this;
         btn.setDisabled(true);
         me.mainComponent.tweetsIdsLink.setText('<div class="loading-block"></div>', false);
-
+        
+        Ext.Ajax.timeout = 900000;
+        Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+        Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+        Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/taggerGenerateTweetIdsLink.action',
+            timeout: 900000,
             method: 'GET',
             params: {
                 code: CRISIS_CODE
@@ -1060,9 +1109,17 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     me.mainComponent.tweetsIdsLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             },
             failure: function () {
                 btn.setDisabled(false);
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             }
         });
     }

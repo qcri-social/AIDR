@@ -265,8 +265,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
         
         this.trashButton = Ext.create('Ext.Button', {
-            text: 'Trash Collection',
-            cls:'btn btn-grey',
+            text: 'Delete Collection',
+            cls:'btn btn-red',
             id: 'collectionTrash',
             margin: '25 0 0 0'
         });
