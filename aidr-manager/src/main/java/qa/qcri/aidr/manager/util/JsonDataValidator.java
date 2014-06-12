@@ -38,6 +38,24 @@ public class JsonDataValidator {
         return valid;
     }
 
+    public static boolean isEmptySON(String json) {
+        boolean isEmpty = true;
+        try {
+            final JsonParser parser = new ObjectMapper().getJsonFactory()
+                    .createJsonParser(json);
+            if(parser.hasCurrentToken()){
+                isEmpty = false;
+            }
+
+        } catch (JsonParseException jpe) {
+            jpe.printStackTrace();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+
+        return isEmpty;
+    }
+
     public static boolean isValidCeaJSON(String json) {
         boolean valid = false;
         try {

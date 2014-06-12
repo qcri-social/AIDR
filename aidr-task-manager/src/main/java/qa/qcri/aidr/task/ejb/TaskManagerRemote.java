@@ -10,6 +10,7 @@ import javax.ejb.Remote;
 import org.codehaus.jackson.type.TypeReference;
 import org.hibernate.criterion.Criterion;
 
+import qa.qcri.aidr.task.entities.Document;
 import qa.qcri.aidr.task.entities.DocumentNominalLabel;
 import qa.qcri.aidr.task.entities.TaskAnswer;
 
@@ -54,6 +55,8 @@ public interface TaskManagerRemote<T, Serializable> {
 	public String getAssignedTasksById(Long id);
 	public String getAssignedTaskByUserId(Long id, Long userId);
 	
+	public qa.qcri.aidr.task.entities.Document getDocumentById(Long id);
+	
 	public String getUserByName(String name);
 	public String getUserById(Long id);
 	public String getAllUserByName(String name);
@@ -65,6 +68,9 @@ public interface TaskManagerRemote<T, Serializable> {
 	
 	public String getTaskByCriterion(Long crisisID, Criterion criterion);
 	public String getTaskCollectionByCriterion(Long crisisID, Integer count, Criterion criterion);
+	
+	public qa.qcri.aidr.task.entities.Document getNewDocumentByCriterion(Long id, Criterion criterion);
+	public qa.qcri.aidr.task.entities.Document getNewDocumentByCrisisId(Long crisisID);
 	
 	public <T> T setTaskParameter(Class<T> entityType, Long id, Map<String, String> paramMap);
 	
@@ -78,4 +84,7 @@ public interface TaskManagerRemote<T, Serializable> {
 
 	public <E> String serializeTask(E task);
 	
+	// for testing purpose
+	public String pingRemoteEJB();
+	public String getNewDefaultTask();
 }

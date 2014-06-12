@@ -67,4 +67,8 @@ public interface CollectionService {
 
     public List<AidrCollection> geAllCollectionByUser(Integer userId) throws Exception;
 
+    public AidrCollection findTrashedByCode(String code) throws Exception;
+
+    public AidrCollection findTrashedById(Integer id) throws Exception;
+
 }

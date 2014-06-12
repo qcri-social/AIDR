@@ -55,6 +55,8 @@ public class AidrCollectionTotalDTO {
 
     private String crisisTypeName;
 
+    private boolean hasTaggerOutput;
+
     public Integer getId() {
         return id;
     }
@@ -232,5 +234,13 @@ public class AidrCollectionTotalDTO {
 
     public void setCrisisTypeName(String crisisTypeName) {
         this.crisisTypeName = crisisTypeName;
+    }
+
+    public boolean isHasTaggerOutput() {
+        return hasTaggerOutput;
+    }
+
+    public void setHasTaggerOutput(boolean hasTaggerOutput) {
+        this.hasTaggerOutput = hasTaggerOutput;
     }
 }

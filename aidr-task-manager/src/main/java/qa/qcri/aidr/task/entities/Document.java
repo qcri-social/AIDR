@@ -114,7 +114,7 @@ public class Document implements Serializable {
     @JoinTable(name = "document_nominal_label", joinColumns = {
 			@JoinColumn(name = "documentID", referencedColumnName = "documentID")}, inverseJoinColumns = {
 			@JoinColumn(name = "nominalLabelID", referencedColumnName = "nominalLabelID")})
-	@ManyToMany(cascade=CascadeType.MERGE, fetch=FetchType.EAGER)
+	@ManyToMany(cascade=CascadeType.MERGE, fetch=FetchType.LAZY)
     @JsonIgnore
     @XmlTransient
 	private Collection<NominalLabel> nominalLabelCollection;

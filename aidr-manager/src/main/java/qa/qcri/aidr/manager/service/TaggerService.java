@@ -97,4 +97,6 @@ public interface TaggerService {
 	//Added by koushik
 	public int untrashCollection(AidrCollection collection) throws Exception;
 
+    public String loadLatestTweetsWithCount(String code, int count) throws AidrException;
+
 }

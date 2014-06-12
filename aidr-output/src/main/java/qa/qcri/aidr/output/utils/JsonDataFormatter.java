@@ -43,7 +43,7 @@ public class JsonDataFormatter {
 				if (jsonData != null) {
 					jsonDataList.append(jsonData);
 					++count;
-					if (count < messageCount) jsonDataList.append(",");		// otherwise, this was the last message to append
+					if ((count < messageCount) && itr.hasPrevious()) jsonDataList.append(",");		// otherwise, this was the last message to append
 				}
 			}
 			if (count == 0) {
@@ -92,7 +92,7 @@ public class JsonDataFormatter {
 	
 					//System.out.println("[createRateLimitedList] Added tweet to send list, freq = " + channelSelector.getValue(jsonOutput.getCrisisCode()));
 					++count;
-					if (count < messageCount) jsonDataList.append(",");		// otherwise, this was the last message to append
+					if (count < messageCount && itr.hasPrevious()) jsonDataList.append(",");		// otherwise, this was the last message to append
 				}
 			}
 			if (count == 0) { 

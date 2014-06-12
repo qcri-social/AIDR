@@ -112,6 +112,28 @@ public class CollectionServiceImpl implements CollectionService {
     	
     }
 
+   @Override
+    @Transactional(readOnly = true)
+    public AidrCollection findTrashedById(Integer id) throws Exception {
+        AidrCollection temp = collectionRepository.findById(id);
+        if (temp.getStatus().equals(CollectionStatus.TRASHED)) {
+        	return temp;
+        }
+        return null;
+        	
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AidrCollection findTrashedByCode(String code) throws Exception {
+    	AidrCollection temp = collectionRepository.findByCode(code);
+        if (temp.getStatus().equals(CollectionStatus.TRASHED)) {
+        	return temp;
+        }
+        return null;
+    	
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<AidrCollection> findAll(Integer start, Integer limit, UserEntity user) throws Exception {
