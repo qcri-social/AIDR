@@ -43,13 +43,21 @@ public class JsonDataValidator {
         try {
             final JsonParser parser = new ObjectMapper().getJsonFactory()
                     .createJsonParser(json);
-            if(parser.hasCurrentToken()){
-                isEmpty = false;
+            while (parser.nextToken() != null) {
+                String fieldname = parser.getCurrentName();
+                if(fieldname != null){
+                    //System.out.println("fieldname: " + fieldname);
+                    isEmpty = false;
+                    break;
+                }
+
             }
 
         } catch (JsonParseException jpe) {
+            System.out.println("isEmptySON: " + jpe.getMessage());
             jpe.printStackTrace();
         } catch (IOException ioe) {
+            System.out.println("isEmptySON: " + ioe.getMessage());
             ioe.printStackTrace();
         }
 

@@ -74,15 +74,15 @@ public class PublicController extends BaseController{
         List<AidrCollectionTotalDTO> dtoList = new ArrayList<AidrCollectionTotalDTO>();
 
         try {
-        //    logger.info("*************************************************  CollectionStatus.RUNNING ****************************");
+           logger.info("*************************************************  CollectionStatus.RUNNING ****************************");
             List<AidrCollection> data = collectionService.findAllForPublic(start, limit, CollectionStatus.RUNNING);
-       //     logger.info("data size : " + data.size());
+            logger.info("data size : " + data.size());
 
             for (AidrCollection collection : data) {
                 String taggingOutPut = taggerService.loadLatestTweetsWithCount(collection.getCode(), 1);
-                String stripped = taggingOutPut.substring(1, taggingOutPut.lastIndexOf("]"));
-                System.out.println("stripped taggingOutPut : " + stripped + ", jsonValidator output:" + JsonDataValidator.isEmptySON(stripped));
-                if(!JsonDataValidator.isEmptySON(stripped))  {
+                //String stripped = taggingOutPut.substring(1, taggingOutPut.lastIndexOf("]"));
+                System.out.println("stripped taggingOutPut : " + taggingOutPut );
+                if(!JsonDataValidator.isEmptySON(taggingOutPut))  {
                     AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, true);
                     dtoList.add(dto);
                     count = count +1;
@@ -96,7 +96,6 @@ public class PublicController extends BaseController{
             return getUIWrapper(false);
         }
 
-        //return getUIWrapper(false);
     }
 
     @RequestMapping(value = "/findAllRunningWithNoOutput.action", method = RequestMethod.GET)
