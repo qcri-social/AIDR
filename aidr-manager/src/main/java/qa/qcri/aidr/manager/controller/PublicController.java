@@ -52,7 +52,7 @@ public class PublicController extends BaseController{
         try {
 
             List<AidrCollection> data = collectionService.findAllForPublic(start, limit, statusValue);
-           // logger.info("data size : " + data.size());
+            logger.info("[findAll] fetched data size: " + ((data != null) ? data.size() : 0));
             return getUIWrapper(data, true);
 
         } catch (Exception e) {
@@ -80,16 +80,17 @@ public class PublicController extends BaseController{
 
             for (AidrCollection collection : data) {
                 String taggingOutPut = taggerService.loadLatestTweetsWithCount(collection.getCode(), 1);
-                //System.out.println("taggingOutPut : " + taggingOutPut);
-                if(!JsonDataValidator.isEmptySON(taggingOutPut))  {
+                String stripped = taggingOutPut.substring(1, taggingOutPut.lastIndexOf("]"));
+                System.out.println("stripped taggingOutPut : " + stripped + ", jsonValidator output:" + JsonDataValidator.isEmptySON(stripped));
+                if(!JsonDataValidator.isEmptySON(stripped))  {
                     AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, true);
                     dtoList.add(dto);
                     count = count +1;
                 }
             }
-
+            System.out.println("[findAllRunning] count = " + count);
             return getUIWrapper(dtoList, count.longValue());
-
+            
         } catch (Exception e) {
             e.printStackTrace();
             return getUIWrapper(false);
@@ -122,7 +123,7 @@ public class PublicController extends BaseController{
                     count = count +1;
                 }
             }
-
+            System.out.println("[findAllRunningWithNoOutput] count = " + count);
             return getUIWrapper(dtoList, count.longValue());
 
         } catch (Exception e) {
@@ -161,7 +162,7 @@ public class PublicController extends BaseController{
                 AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, hasTagggerOutput);
                 dtoList.add(dto);
             }
-
+            System.out.println("[findAllStop] count = " + count);
             return getUIWrapper(dtoList, count.longValue());
 
         } catch (Exception e) {

@@ -19,6 +19,7 @@ import org.codehaus.jackson.type.TypeReference;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
+import qa.qcri.aidr.task.ejb.AbstractTaskManagerService;
 import qa.qcri.aidr.task.ejb.CrisisService;
 import qa.qcri.aidr.task.ejb.DocumentNominalLabelService;
 import qa.qcri.aidr.task.ejb.DocumentService;
@@ -768,4 +769,78 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 		return false;  //To change body of implemented methods use File | Settings | File Templates.
 	}
+
+	@Override
+	public qa.qcri.aidr.task.entities.Document getDocumentById(Long id) {
+		try {
+			qa.qcri.aidr.task.entities.Document document = documentLocalEJB.getById(id);
+			System.out.println("[getDocumentById] Fetched document: " + document);
+			
+			return document;
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("[getDocumentById] Error in finding task");
+		}
+		return null;
+	}
+
+	
+	@Override
+	public qa.qcri.aidr.task.entities.Document getNewDocumentByCrisisId(Long crisisID) {
+		//Document document = (Document) getNewTask(crisisID, null);
+		try {
+			return getNewDocumentByCriterion(crisisID, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@Override
+	public qa.qcri.aidr.task.entities.Document getNewDocumentByCriterion(Long crisisID, Criterion criterion) {
+		Criterion newCriterion = null;
+		try {
+			if (criterion != null) {
+				newCriterion = Restrictions.conjunction()
+						.add(criterion)
+						.add(Restrictions.eq("crisisID",crisisID))
+						.add(Restrictions.eq("hasHumanLabels",false));
+			} else {
+				newCriterion = Restrictions.conjunction()
+						.add(Restrictions.eq("crisisID",crisisID))
+						.add(Restrictions.eq("hasHumanLabels",false));
+			}
+
+			qa.qcri.aidr.task.entities.Document document = documentLocalEJB.getByCriteria(newCriterion);
+			System.out.println("[getNewDocumentByCriterion] New task: " + document);
+			if (document != null && !isTaskAssigned(document)) {
+				System.out.println("[getNewDocumentByCriterion] New document: " + document.getDocumentID());
+			} else {
+				System.out.println("[getNewDocumentByCriterion] New document: " + document);
+			}
+			return document;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public String pingRemoteEJB() {
+		StringBuilder sb = new StringBuilder("{status: RUNNING}");
+		return sb.toString();
+	}
+	
+	@Override
+	public String getNewDefaultTask() {
+		//Document document = (Document) getNewTask(crisisID, null);
+		Long crisisID = new Long(117);
+		try {
+			return getNewTask(crisisID, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 }

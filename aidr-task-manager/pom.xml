@@ -30,6 +30,31 @@
 			<version>4.3.1.Final</version> <exclusions> <exclusion> <groupId>cglib</groupId> 
 			<artifactId>cglib</artifactId> </exclusion> <exclusion> <groupId>dom4j</groupId> 
 			<artifactId>dom4j</artifactId> </exclusion> </exclusions> </dependency -->
+		
+		<!-- dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-bundle</artifactId>
+            <version>1.17.1</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-core</artifactId>
+            <version>1.17.1</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>1.17.1</version>
+            <scope>runtime</scope>
+        </dependency>
+		<dependency>
+			<groupId>org.glassfish.corba</groupId>
+			<artifactId>glassfish-corba-orb</artifactId>
+			<version>4.0.0-b008</version>
+		</dependency -->
+		
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
@@ -95,6 +120,12 @@
 			<version>2.5.1</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- dependency>
+			<groupId>org.glassfish.jersey.ext</groupId>
+			<artifactId>jersey-servlet-portability</artifactId>
+			<version>2.5.1</version>
+			<scope>provided</scope>
+		</dependency -->
 		<!-- if you are using Jersey client specific features -->
 		<dependency>
 			<groupId>junit</groupId>

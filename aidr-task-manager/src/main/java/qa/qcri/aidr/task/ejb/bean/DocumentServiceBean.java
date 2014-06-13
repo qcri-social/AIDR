@@ -38,13 +38,30 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 
 	@Override
 	public int deleteNoLabelDocument(Document document) {
-		//String hql = "delete Document where (documentID = :documentID AND hasHumanLabels= :hasHumanLabels)";
 		System.out.println("[deleteNoLabelDocument]) Received request for : " + document.getDocumentID());
+		int deleteCount = 0;
 		if (!document.isHasHumanLabels()) {
 			try {
-				delete(document);
-				System.out.println("[deleteNoLabelDocument]) deletion success");
+				//delete(document);
+				String hql = "DELETE from document WHERE documentID = :documentID";
+				Session session = getCurrentSession();
+				Query collectionDeleteQuery = session.createSQLQuery(hql);
+				try {
+					//Transaction tx = (session.getTransaction() != null) ? session.getTransaction(): session.beginTransaction();
+					collectionDeleteQuery.setParameter("documentID", document.getDocumentID());
+					deleteCount = collectionDeleteQuery.executeUpdate();
+					//tx.commit();
+			
+					System.out.println("[deleteNoLabelDocument]) deleted count = " + deleteCount);
+				} catch (Exception e) {
+					System.err.println("[deleteNoLabelDocument] deletion query failed");
+					e.printStackTrace();
+					return 0;
+				}
+				System.out.println("[deleteNoLabelDocument]) deletion success, deleted count = " + deleteCount);
+				session.flush();
 				return 1;
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.err.println("[deleteNoLabelDocument] Deletion query failed");

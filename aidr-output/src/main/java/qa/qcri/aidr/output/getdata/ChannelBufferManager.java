@@ -299,7 +299,7 @@ public class ChannelBufferManager {
 	 */
 	
 	private boolean isChannelPublic(String channelName) {
-		logger.info("[isChannelPublic] Received request for channel: " + channelName);
+		//logger.info("[isChannelPublic] Received request for channel: " + channelName);
 		//first strip off the prefix aidr_predict.
 		String channelCode = channelName;
 		if (channelName.startsWith(CHANNEL_PREFIX_STRING)) {
@@ -313,7 +313,7 @@ public class ChannelBufferManager {
 			//logger.info("[isChannelPublic] channel: " + channelName + ", code = " + collection.getCode() + ", public = " + collection.getPubliclyListed());
 			return collection.getPubliclyListed();
 		} else {
-			logger.info("[isChannelPublic] channel: " + channelName + ", fetched collection = " + collection);
+			//logger.info("[isChannelPublic] channel: " + channelName + ", fetched collection = " + collection);
 		}
 		return false;
 	}
@@ -334,7 +334,7 @@ public class ChannelBufferManager {
 				return collectionList.get(channelCode);
 			}
 		} else {
-			logger.info("[isChannelPublic] collection list is null !!! Returning false");
+			logger.error("[isChannelPublic] collection list is null !!! Returning false");
 		}
 		return false;
 	}
