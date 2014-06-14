@@ -26,7 +26,7 @@ import java.util.*;
  * To change this template use File | Settings | File Templates.
  */
 public class MicroMapperPybossaFormatter {
-    protected static Logger logger = Logger.getLogger("service");
+    protected static Logger logger = Logger.getLogger("MicroMapperPybossaFormatter");
     public MicroMapperPybossaFormatter(){}
 
     public String assmeblePybossaAppCreationForm(String name, String shortName, String description) throws Exception{

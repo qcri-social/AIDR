@@ -184,7 +184,7 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
         Iterator itr= appList.iterator();
         while(itr.hasNext()){
             ClientApp clientApp = (ClientApp)itr.next();
-            if(clientApp.getStatus().equals(StatusCodeType.MICROMAPPER_ONLY)){
+            if(clientApp.getStatus().equals(StatusCodeType.MICROMAPPER_ONLY) || clientApp.getStatus().equals(StatusCodeType.AIDR_MICROMAPPER_BOTH)){
                 List<TaskQueue> taskQueues =  taskQueueService.getTaskQueueByClientAppStatus(clientApp.getClientAppID(),StatusCodeType.TASK_PUBLISHED);
                 if(taskQueues != null ){
                     int queueSize = MAX_IMPORT_PROCESS_QUEUE_SIZE;
@@ -213,11 +213,6 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
                 }
             }
         }
-        //            // create or update File  & we will hold the implementation for anther usage
-        //if(geoJsonOutputModels.size() > 0){
-            //reportProductService.generateGeoJsonForESRI(geoJsonOutputModels);
-        //}
-
     }
 
     @Override
@@ -230,6 +225,7 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
         String importResult = pybossaCommunicator.sendGet(PYBOSSA_API_TASK_RUN) ;
 
         if(!importResult.isEmpty() && importResult.length() > StatusCodeType.RESPONSE_MIN_LENGTH  ){
+
             ClientAppAnswer clientAppAnswer = clientAppResponseService.getClientAppAnswer(clientApp.getClientAppID());
 
             if(clientApp.getAppType().equals(StatusCodeType.APP_VIDEO)){
@@ -240,16 +236,6 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
             {
                 TaskQueueResponse taskQueueResponse = pybossaFormatter.getAnswerResponseForGeo(importResult, parser, taskQueue.getTaskQueueID());
                 clientAppResponseService.processTaskQueueResponse(taskQueueResponse);
-
-                if(taskQueueResponse.getTaskInfo() != null && !taskQueueResponse.getResponse().equalsIgnoreCase("No Location Information")) {
-                    if(!DataFormatValidator.isEmptyGeoJson(taskQueueResponse.getResponse()) ){
-                        List<ReportTemplate>templateList =  reportTemplateService.getReportTemplateSearchByTwittID("tweetID", taskQueueResponse.getTaskInfo());
-                        if(templateList.size() > 0 ){
-                            GeoJsonOutputModel model = new GeoJsonOutputModel(templateList.get(0), taskQueueResponse);
-                            //geoJsonOutputModels.add(model);
-                        }
-                    }
-                }
             }
             else if(clientApp.getAppType().equals(StatusCodeType.APP_AERIAL))
             {
@@ -270,20 +256,6 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
         taskQueueService.updateTaskQueue(taskQueue);
         TaskLog taskLog = new TaskLog(taskQueue.getTaskQueueID(), taskQueue.getStatus());
         taskLogService.createTaskLog(taskLog);
-    }
-
-
-    private TaskQueue getTaskQueue(Long clientAppID, Long documentID){
-        TaskQueue taskQueue = null;
-
-        List<TaskQueue> queSet = taskQueueService.getTaskQueueByDocument(clientAppID, documentID);
-        if(queSet!=null){
-            if(queSet.size() > 0){
-                taskQueue =  queSet.get(0);
-            }
-        }
-
-        return taskQueue;
     }
 
 }

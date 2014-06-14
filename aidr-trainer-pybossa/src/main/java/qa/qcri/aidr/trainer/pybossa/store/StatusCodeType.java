@@ -31,6 +31,7 @@ public class StatusCodeType {
     public static Integer AIDR_ONLY = 1;
     public static Integer CLIENT_APP_INACTIVE_REQUEST = 3;
     public static Integer CLIENT_APP_DISABLED = 4;
+    public static Integer AIDR_MICROMAPPER_BOTH = 5;
 
 
     public static Integer EXTERNAL_DATA_SOURCE_USED = 2;

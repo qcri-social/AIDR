@@ -211,7 +211,7 @@ public class PybossaWorker implements ClientAppRunWorker {
         String PYBOSSA_API_TASK_RUN = PYBOSSA_API_TASK_RUN_BASE_URL + clientApp.getPlatformAppID() + "&task_id=" + taskID;
         String importResult = pybossaCommunicator.sendGet(PYBOSSA_API_TASK_RUN) ;
 
-        System.out.println("importResult: " + importResult);
+        //System.out.println("importResult: " + importResult);
         ClientAppAnswer clientAppAnswer = clientAppResponseService.getClientAppAnswer(clientApp.getClientAppID());
         if(clientAppAnswer == null){
             int cutOffValue = StatusCodeType.MAX_VOTE_CUT_OFF_VALUE;
