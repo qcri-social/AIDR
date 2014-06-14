@@ -11,8 +11,10 @@ import qa.qcri.aidr.trainer.api.entity.ClientApp;
 import qa.qcri.aidr.trainer.api.service.ClientAppService;
 import qa.qcri.aidr.trainer.api.store.StatusCodeType;
 import qa.qcri.aidr.trainer.api.store.URLReference;
+import qa.qcri.aidr.trainer.api.template.ClientAppModel;
 import qa.qcri.aidr.trainer.api.util.Communicator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -79,7 +81,7 @@ public class ClientAppServiceImpl implements ClientAppService {
             return appList.get(0);
         }
         return null;
-        //ClientApp getClientAppByCrisisAndAttribute(Long crisisID, Long attributeID);
+
     }
 
     @Override
@@ -126,6 +128,21 @@ public class ClientAppServiceImpl implements ClientAppService {
             }
         }
 
+    }
+
+    @Override
+    public List<ClientAppModel> getAllActiveClientApps() {
+        List<ClientApp> appList = clientAppDao.getAllActiveClientApp();
+        List<ClientAppModel> aList = new ArrayList<ClientAppModel>();
+
+        for (ClientApp t : appList) {
+            //System.out.println(temp);
+            //Long id, Long platformID, Long crisisID, String name, String shortName, Integer appType
+            ClientAppModel model = new ClientAppModel(t.getClientAppID(),t.getPlatformAppID(),t.getCrisisID(),t.getName(), t.getShortName(), t.getAppType());
+            aList.add(model);
+        }
+
+        return aList;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
 }

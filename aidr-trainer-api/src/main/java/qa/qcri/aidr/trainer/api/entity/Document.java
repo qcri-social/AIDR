@@ -1,15 +1,7 @@
 package qa.qcri.aidr.trainer.api.entity;
 
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
-
-import qa.qcri.aidr.task.entities.NominalLabel;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
@@ -68,14 +60,7 @@ public class Document implements Serializable {
     @JoinColumn(name="documentID",insertable=true,
             updatable=true,nullable=true,unique=true)
     private TaskAssignment taskAssignment;
-    
-    @XmlElement
-    @JoinTable(name = "document_nominal_label", joinColumns = {
-			@JoinColumn(name = "documentID", referencedColumnName = "documentID")}, inverseJoinColumns = {
-			@JoinColumn(name = "nominalLabelID", referencedColumnName = "nominalLabelID")})
-	@ManyToMany(cascade=CascadeType.MERGE, fetch=FetchType.LAZY)
-	private Collection<NominalLabel> nominalLabelCollection;
-    
+
 
     public Document(){}
 
@@ -186,15 +171,5 @@ public class Document implements Serializable {
 
     public void setTaskAssignment(TaskAssignment taskAssignment) {
         this.taskAssignment = taskAssignment;
-    }
-    
-    @XmlTransient
-    @JsonIgnore
-    public Collection<NominalLabel> getNominalLabelCollection() {
-        return nominalLabelCollection;
-    }
-
-    public void setNominalLabelCollection(Collection<NominalLabel> nominalLabelCollection) {
-        this.nominalLabelCollection = nominalLabelCollection;
     }
 }

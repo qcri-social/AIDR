@@ -35,7 +35,7 @@ public class GeoController {
     GeoService geoService;
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.WILDCARD})
     @Path("/JSON/geoMap/qdate/{lastupdated}")
     public String getMapGeoJSONBasedOnDate(@PathParam("lastupdated") String lastupdated) {
         ///System.out.print("updated : " + lastupdated);
@@ -61,15 +61,15 @@ public class GeoController {
             returnValue =  geoService.getGeoJsonOuputJSON(queryDate);
 
         } catch (Exception e) {
-            System.out.println("Exception : " + e.getMessage());
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            System.out.println("Exception getMapGeoJSONBasedOnDate: " + e.getMessage());
+           // e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         return returnValue;
     }
 
 
     @GET
-    @Produces( MediaType.APPLICATION_JSON )
+    @Produces({MediaType.APPLICATION_JSON, MediaType.WILDCARD})
     @Path("/JSON/geoMap")
     public String getMapGeoJSON() {
         String returnValue = "";
@@ -78,16 +78,17 @@ public class GeoController {
             returnValue =  geoService.getGeoJsonOuputJSON(null);
 
         } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            System.out.println("Exception getMapGeoJSON : " + e.getMessage());
+           // e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         return returnValue;
     }
 
     @GET
-    @Produces( MediaType.APPLICATION_JSON )
+    @Produces({MediaType.APPLICATION_JSON, MediaType.WILDCARD})
     @Path("/JSONP/geoMap/qdate/{lastupdated}")
     public String getMapGeoJSONPBasedOnDate(@PathParam("lastupdated") String lastupdated) {
-        System.out.print("updated : " + lastupdated);
+        //System.out.print("updated : " + lastupdated);
 
         String returnValue = "";
         try {
@@ -101,14 +102,15 @@ public class GeoController {
             returnValue =  geoService.getGeoJsonOuputJSONP(queryDate);
 
         } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            System.out.println("Exception getMapGeoJSONPBasedOnDate : " + e.getMessage());
+            //e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
         return returnValue;
     }
 
     @GET
-    @Produces( MediaType.APPLICATION_JSON )
+    @Produces({MediaType.APPLICATION_JSON, MediaType.WILDCARD})
     @Path("/JSONP/geoMap")
     public String getMapGeoJSONP() {
 
@@ -118,7 +120,8 @@ public class GeoController {
             returnValue =  geoService.getGeoJsonOuputJSONP(null);
 
         } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            System.out.println("Exception getMapGeoJSONP : " + e.getMessage());
+           // e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
         return returnValue;

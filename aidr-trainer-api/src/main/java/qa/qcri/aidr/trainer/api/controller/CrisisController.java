@@ -44,6 +44,13 @@ public class CrisisController {
 
     @GET
     @Produces( MediaType.APPLICATION_JSON )
+    @Path("/get/active")
+    public List<Crisis> getActiveCrisis(){
+        return  crisisService.findActiveCrisisInfo();
+    }
+
+    @GET
+    @Produces( MediaType.APPLICATION_JSON )
     @Path("/getnominalAttribute")
     public List<CrisisNominalAttributeModel> getAllActiveCrisisNominalAttribute(){
         return  crisisService.getAllActiveCrisisNominalAttribute();

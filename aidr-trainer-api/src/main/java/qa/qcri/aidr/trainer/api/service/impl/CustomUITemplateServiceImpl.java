@@ -114,7 +114,7 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
         }
 
         if(customUIType== CodeLookUp.CLASSIFIER_TUTORIAL_ONE || customUIType== CodeLookUp.CLASSIFIER_TUTORIAL_TWO){
-            logger.debug("CLASSIFIER_TUTORIAL");
+            //logger.debug("CLASSIFIER_TUTORIAL");
             cList =  customUITemplateDao.getTemplateByAttribute( crisisID,  attributeID);
             ClientApp clientApp = clientAppService.getClientAppByCrisisAndAttribute(crisisID,  attributeID);
             if(cList.size() > 0){

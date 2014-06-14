@@ -87,7 +87,7 @@ public class PybossaTemplate {
                 taskAnswerResponse.setDocumentID(documentID);
                 taskAnswerResponse.setUserID(userID);
 
-                System.out.print("category: " + category + " crisisID:" + crisisID+  "   documentID:" + documentID + "taskAnswerJson" + taskAnswerJson.toJSONString());
+               // System.out.print("category: " + category + " crisisID:" + crisisID+  "   documentID:" + documentID + "taskAnswerJson" + taskAnswerJson.toJSONString());
 
             }
         } catch (ParseException e) {

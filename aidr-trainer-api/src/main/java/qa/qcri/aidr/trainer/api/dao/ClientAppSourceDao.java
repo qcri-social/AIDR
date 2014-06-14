@@ -13,6 +13,5 @@ import java.util.List;
  */
 public interface ClientAppSourceDao extends AbstractDao<ClientAppSource, String>  {
     List<ClientAppSource> findActiveSourcePerClient(Long clientAppID);
-    void acceptSource(String fileURL, String clientAppName);
     void acceptSource(String fileURL, Long clientAppID);
 }

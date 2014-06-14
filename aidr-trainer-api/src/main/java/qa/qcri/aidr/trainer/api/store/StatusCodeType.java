@@ -29,11 +29,16 @@ public class StatusCodeType {
     public static Integer CLIENT_APP_INACTIVE = 3;
     public static Integer CLIENT_APP_PENDING = 0;
     public static Integer CLIENT_APP_DISABLED = 4;
+    public static Integer AIDR_MICROMAPPER_BOTH = 5;
 
     public static Integer CUSTOM_UI_UPDATE_REQUEST = 0;
     public static Integer CUSTOM_UI_UPDATE_COMPLETED = 1;
 
     public static String POST_COMPLETED = "{\"status\":200}";
+
+    public static Integer EXTERNAL_DATA_SOURCE_USED = 2;
+    public static Integer EXTERNAL_DATA_SOURCE_ACTIVE = 1;
+    public static Integer EXTERNAL_DATA_SOURCE_UPLOADED = 0;
 
 
 

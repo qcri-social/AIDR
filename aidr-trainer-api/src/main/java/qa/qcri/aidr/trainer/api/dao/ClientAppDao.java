@@ -23,5 +23,6 @@ public interface ClientAppDao extends AbstractDao<ClientApp, String>  {
     List<ClientApp> findClientAppByAppType(String columnName, Integer typeID);
     List<ClientApp> findClientAppByCrisisAndAttribute(Long crisisID, Long attributeID);
     void updateClientAppStatus(ClientApp clientApp, Integer status);
+    List<ClientApp> getAllActiveClientApp();
 
 }

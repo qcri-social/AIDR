@@ -4,6 +4,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import qa.qcri.aidr.trainer.api.dao.ClientAppDao;
 import qa.qcri.aidr.trainer.api.entity.ClientApp;
+import qa.qcri.aidr.trainer.api.store.StatusCodeType;
 
 
 import java.util.List;
@@ -69,6 +70,14 @@ public class ClientAppDaoImpl extends AbstractDaoImpl<ClientApp, String> impleme
             saveOrUpdate(thisClientApp);
         }
 
+    }
+
+    @Override
+    public List<ClientApp> getAllActiveClientApp() {
+        return findByCriteria(Restrictions.disjunction()
+                .add(Restrictions.eq("status", StatusCodeType.AIDR_ONLY))
+                .add(Restrictions.eq("status", StatusCodeType.MICROMAPPER_ONLY))
+                .add(Restrictions.eq("status", StatusCodeType.AIDR_MICROMAPPER_BOTH)));
     }
 
 

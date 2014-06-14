@@ -24,4 +24,5 @@ public interface CrisisService {
     List<Crisis> findAllActiveCrisis();
     List<CrisisNominalAttributeModel> getAllActiveCrisisNominalAttribute();
     Set<NominalLabel> getNominalLabelByCrisisID(Long crisisID, Long nominalAtrributeID);
+    List<Crisis> findActiveCrisisInfo();
 }

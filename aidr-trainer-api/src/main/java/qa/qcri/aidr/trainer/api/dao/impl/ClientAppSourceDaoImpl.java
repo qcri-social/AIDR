@@ -1,8 +1,10 @@
 package qa.qcri.aidr.trainer.api.dao.impl;
 
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import qa.qcri.aidr.trainer.api.dao.ClientAppSourceDao;
 import qa.qcri.aidr.trainer.api.entity.ClientAppSource;
+import qa.qcri.aidr.trainer.api.store.StatusCodeType;
 
 import java.util.List;
 
@@ -22,16 +24,29 @@ public class ClientAppSourceDaoImpl extends AbstractDaoImpl<ClientAppSource, Str
 
     @Override
     public List<ClientAppSource> findActiveSourcePerClient(Long clientAppID) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+        return findByCriteria(Restrictions.conjunction()
+                        .add(Restrictions.eq("clientAppID",clientAppID))
+                        .add(Restrictions.eq("status", 1)));
 
-    @Override
-    public void acceptSource(String fileURL, String clientAppName) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
+
     }
 
     @Override
     public void acceptSource(String fileURL, Long clientAppID) {
+        List<ClientAppSource>  sources = findActiveSourcePerClient( clientAppID );
+        ClientAppSource ca = null;
+        if(sources.size() > 0){
+            ca = new ClientAppSource(clientAppID, StatusCodeType.EXTERNAL_DATA_SOURCE_UPLOADED, fileURL);
+        }
+        else{
+            ca = new ClientAppSource(clientAppID, StatusCodeType.EXTERNAL_DATA_SOURCE_ACTIVE, fileURL);
+        }
+
+        if(ca != null){
+            save(ca);
+        }
         //To change body of implemented methods use File | Settings | File Templates.
     }
+
 }

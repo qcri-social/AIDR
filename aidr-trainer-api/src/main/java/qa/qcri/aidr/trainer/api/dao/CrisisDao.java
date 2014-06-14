@@ -17,4 +17,5 @@ import java.util.List;
         List<Crisis> findByCriteria(String columnName, Long value);
         List<Crisis> findByCriteria(String columnName, String value);
         List<Crisis> findAllActiveCrisis();
+        List<Crisis> findActiveCrisis();
 }

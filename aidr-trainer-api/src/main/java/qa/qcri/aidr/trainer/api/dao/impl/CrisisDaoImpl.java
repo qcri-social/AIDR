@@ -6,6 +6,7 @@ import qa.qcri.aidr.trainer.api.dao.CrisisDao;
 import qa.qcri.aidr.trainer.api.entity.Crisis;
 import qa.qcri.aidr.trainer.api.entity.ModelFamily;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -65,5 +66,30 @@ public class CrisisDaoImpl extends AbstractDaoImpl<Crisis, String> implements Cr
 
         return crisisList;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    @Override
+    public List<Crisis> findActiveCrisis() {
+
+        List<Crisis> crisisList = findByCriteria(Restrictions.eq("isTrashed", false));
+        List<Crisis> filteredCrises = new ArrayList<Crisis>();
+
+        for (Crisis crisis : crisisList) {
+            Set<ModelFamily> modelFamilyList = crisis.getModelFamilySet();
+            Iterator it = modelFamilyList.iterator();
+            while (it.hasNext()) {
+                ModelFamily modelFamily = (ModelFamily)it.next();
+                if(modelFamily.isActive()){
+                    Crisis aCrisis = new Crisis(crisis.getCrisisID(), crisis.getName(), crisis.getCode(), crisis.getTrashed());
+                    filteredCrises.add(aCrisis) ;
+                    break;
+                }
+            }
+
+        }
+
+        return filteredCrises;
+    }
+
+
 
 }

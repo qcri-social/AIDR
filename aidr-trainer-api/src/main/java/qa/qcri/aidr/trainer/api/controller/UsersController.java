@@ -22,7 +22,7 @@ import javax.ws.rs.core.MediaType;
 @Path("/users")
 @Component
 public class UsersController {
-    protected static Logger logger = Logger.getLogger("service");
+    protected static Logger logger = Logger.getLogger("UsersController");
 
     @Autowired
     private UsersService usersService;
