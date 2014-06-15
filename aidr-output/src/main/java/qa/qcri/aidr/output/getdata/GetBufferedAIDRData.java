@@ -168,7 +168,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			@DefaultValue("0.7") @QueryParam("confidence") float confidence,
 			@DefaultValue("true") @QueryParam("balanced_sampling") boolean balanced_sampling) {
 
-		logger.info("[getLatestBufferedAIDRData] request received");
+		//logger.info("[getLatestBufferedAIDRData] request received");
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {		// Jedis pool is ready
 			// Get the last count number of messages for channel=channelCode
 			List<String> bufferedMessages = new ArrayList<String>();
@@ -334,10 +334,10 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			@QueryParam("callback") String callbackName,
 			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
 		return Response.ok()
-				.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
+				.allow("POST", "OPTIONS", "HEAD")
 				.header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Credentials", "true")
-				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
+				.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
 				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 				.build();
 	}
@@ -403,7 +403,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 						for (String tweet: bufferedMessages) {
 							classifiedTweet.deserialize(tweet);
 							if (tweetFilter.getMatcherResult(classifiedTweet)) {
-								logger.info("[getBufferedAIDRDataPostFilter] adding tweet to filteredMessages");
+								//logger.info("[getBufferedAIDRDataPostFilter] adding tweet to filteredMessages");
 								filteredMessages.add(tweet);
 							}
 						}
@@ -429,10 +429,10 @@ public class GetBufferedAIDRData implements ServletContextListener {
 
 					//logger.info("[doGet] Sending jsonp data, count = " + sendCount);
 					return Response.ok(jsonDataList.toString())
-							.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
+							.allow("POST", "OPTIONS", "HEAD")
 							.header("Access-Control-Allow-Origin", "*")
 							.header("Access-Control-Allow-Credentials", "true")
-							.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
+							.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
 							.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 							.build();
 				}
@@ -459,7 +459,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	public boolean isChannelPresent(String channel) {
 		Set<String> channelList = cbManager.getActiveChannelsList();
 		if (channelList != null) {
-			System.out.println("[isChannelPresent] channels: " + channelList);
+			//System.out.println("[isChannelPresent] channels: " + channelList);
 			return channelList.contains(channel);
 		}
 		return false;

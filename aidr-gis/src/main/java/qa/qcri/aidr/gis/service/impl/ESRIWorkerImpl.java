@@ -7,6 +7,7 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Service;
 import qa.qcri.aidr.gis.service.ESRIWorker;
 import qa.qcri.aidr.gis.store.LookUp;
+import qa.qcri.aidr.gis.util.Communicator;
 import qa.qcri.aidr.gis.util.DateTimeConverter;
 
 import java.io.*;
@@ -30,7 +31,7 @@ public class ESRIWorkerImpl implements ESRIWorker{
 
         try{
             logger.info("generateGeoJson started ");
-            GISCommunicator com = new GISCommunicator();
+            Communicator com = new Communicator();
 
             String output = com.sendGet(LookUp.MAP_GEOJSON_URL) ;
             logger.info("generateGeoJson output :  " + output);
@@ -140,5 +141,10 @@ public class ESRIWorkerImpl implements ESRIWorker{
             }
         }
         return choise;
+    }
+
+    @Override
+    public String getLastCreatedFileName(){
+        return lastCreatedFileName;
     }
 }

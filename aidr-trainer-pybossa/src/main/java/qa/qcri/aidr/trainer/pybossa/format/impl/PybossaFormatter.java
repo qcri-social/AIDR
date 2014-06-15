@@ -414,7 +414,7 @@ public class PybossaFormatter {
                 JSONObject featureJsonObj = (JSONObject)itr.next();
                 Long id = (Long)featureJsonObj.get("id") ;
                 String taskID =  id.toString();
-                System.out.println(taskID);
+               // System.out.println(taskID);
                 completedTaskID.add(taskID);
             }
 
@@ -425,7 +425,7 @@ public class PybossaFormatter {
     }
 
     private void assembleToAIDRImportFormat(String data) throws Exception{
-        System.out.println(data);
+       // System.out.println(data);
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(data);
         JSONArray jsonObject = (JSONArray) obj;
@@ -450,7 +450,7 @@ public class PybossaFormatter {
             //]'
             //outputFormatData.add(processPybossaOutputFormat(pybossaData));
 
-            System.out.println(featureJsonObj.toString());
+            //System.out.println(featureJsonObj.toString());
         }
     }
 

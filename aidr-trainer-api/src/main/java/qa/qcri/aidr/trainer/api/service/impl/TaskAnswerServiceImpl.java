@@ -122,7 +122,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
     public void processTaskAnswer(String data) {
-        logger.debug("processTaskAnswer..: " + data);
+       // logger.debug("processTaskAnswer..: " + data);
         try{
             PybossaTemplate pybossaTemplate = new PybossaTemplate();
             TaskAnswerResponse taskAnswerResponse = pybossaTemplate.getPybossaTaskAnswer(data, crisisService);
@@ -162,7 +162,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 
             }
             else{
-                logger.debug("************************** Document doesn't exist ************************** ****************************************************");
+              //  logger.debug("************************** Document doesn't exist ************************** ****************************************************");
             }
 
         }

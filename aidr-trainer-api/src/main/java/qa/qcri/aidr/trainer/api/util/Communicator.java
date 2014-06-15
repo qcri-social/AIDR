@@ -234,7 +234,7 @@ public class Communicator {
 
         return response.toString();
     }
-
+     /**
     public String requestGet(String url, String contentType) {
 
         HttpClient httpClient = new DefaultHttpClient();
@@ -274,6 +274,6 @@ public class Communicator {
         }
 
         return responseOutput.toString();
-    }
+    }   **/
 
 }

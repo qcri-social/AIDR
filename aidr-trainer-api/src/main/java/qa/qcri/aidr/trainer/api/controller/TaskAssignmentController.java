@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
 @Component
 public class TaskAssignmentController {
 
-    protected static Logger logger = Logger.getLogger("service");
+    protected static Logger logger = Logger.getLogger("TaskAssignmentController");
 
     @Autowired
     private TaskAssignmentService taskAssignmentService;

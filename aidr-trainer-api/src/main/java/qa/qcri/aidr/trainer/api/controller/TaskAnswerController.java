@@ -37,7 +37,7 @@ public class TaskAnswerController {
             taskAnswerService.processTaskAnswer(data);
         }
         catch(Exception e){
-            logger.error("saveTaskAnswer got exception : " + e);
+            logger.error("saveTaskAnswer got exception : " + e.getMessage());
         }
 
 

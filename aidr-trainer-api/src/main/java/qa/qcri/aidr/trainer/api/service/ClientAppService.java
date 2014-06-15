@@ -3,6 +3,7 @@ package qa.qcri.aidr.trainer.api.service;
 
 
 import qa.qcri.aidr.trainer.api.entity.ClientApp;
+import qa.qcri.aidr.trainer.api.template.ClientAppModel;
 
 import java.util.List;
 
@@ -25,5 +26,6 @@ public interface ClientAppService {
     ClientApp getClientAppByCrisisAndAttribute(Long crisisID, Long attributeID);
     void deactivateClientAppByCrisis(Long crisisID) throws Exception;
     void deactivateClientAppByAttribute(Long crisisID, Long attributeID) throws Exception;
+    List<ClientAppModel> getAllActiveClientApps();
 
 }

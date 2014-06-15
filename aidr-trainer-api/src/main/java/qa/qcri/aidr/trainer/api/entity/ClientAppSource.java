@@ -58,6 +58,12 @@ public class ClientAppSource implements Serializable {
         this.status = status;
     }
 
+    public ClientAppSource(Long clientAppID, Integer status, String sourceURL) {
+        this.clientAppID = clientAppID;
+        this.status = status;
+        this.sourceURL = sourceURL;
+    }
+
     @Id
     @Column (name = "clientAppID", nullable = false)
     private Long clientAppID;

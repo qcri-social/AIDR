@@ -88,4 +88,9 @@ public class CrisisServiceImpl implements CrisisService {
 
     }
 
+    @Override
+    public List<Crisis> findActiveCrisisInfo() {
+        return crisisDao.findActiveCrisis();
+    }
+
 }

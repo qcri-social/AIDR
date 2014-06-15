@@ -123,6 +123,18 @@ public class CollectionController extends BaseController{
 	public Map<String,Object> trash(@RequestParam Integer id) throws Exception {
 		try {
 			AidrCollection collection = collectionService.findById(id);
+			if (null == collection) {
+				collection = collectionService.findTrashedById(id);
+				if (collection != null) {
+					AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
+					return getUIWrapper(dto, true);
+				} else {
+					String msg = "Attempting to trash collection " + collection.getCode() + " failed as collection not found!";
+					logger.error(msg);
+					return getUIWrapper(false, msg);
+				}
+			}
+			//Otherwise, collection exists and needs trashing
 			if (collection.getStatus().equals(CollectionStatus.INITIALIZING) || 
 					collection.getStatus().equals(CollectionStatus.RUNNING) || 
 					collection.getStatus().equals(CollectionStatus.RUNNING_WARNING)) {
@@ -176,7 +188,8 @@ public class CollectionController extends BaseController{
 	@RequestMapping(value = "/untrash.action", method = { RequestMethod.POST ,RequestMethod.GET })
 	@ResponseBody
 	public Map<String,Object> untrash( AidrCollection collection) throws Exception {
-		if (collection.getStatus().equals(CollectionStatus.TRASHED)) {
+		AidrCollection trashedCollection = collectionService.findTrashedById(collection.getId());
+		if (trashedCollection != null) {
 			logger.info("Untrashing collection having code " + collection.getCode());
 			try{
 				if (taggerService.untrashCollection(collection) > 0) {
@@ -189,11 +202,11 @@ public class CollectionController extends BaseController{
 					return getUIWrapper(false);
 				}
 			}catch(Exception e){
-				logger.error("Error while untrashing AIDR Collection ", e);
+				logger.error("Error while untrashing AIDR Collection " + collection.getCode());
 				return getUIWrapper(false); 
 			}
 		} else {
-			logger.error("Attempting to untrash collection " + collection.getCode() + " failed! ");
+			logger.error("Attempting to untrash collection " + collection.getCode() + " that does not exist.");
 			return getUIWrapper(false);
 		}
 	}

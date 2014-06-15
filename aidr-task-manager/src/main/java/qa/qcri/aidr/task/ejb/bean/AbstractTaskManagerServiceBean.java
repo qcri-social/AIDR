@@ -45,13 +45,12 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 	public Session getCurrentSession() {
 		try { 
 			return em.unwrap(Session.class);
-			//return getSessionFactory().getCurrentSession();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-
+	
 	private SessionFactory getSessionFactory() {
 		try {
 			this.sessionFactory = em.unwrap(SessionFactory.class);
@@ -196,6 +195,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		try {
 			Session session = getCurrentSession();
 			session.saveOrUpdate(e);
+			session.flush();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -206,6 +206,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		Transaction tx = session.beginTransaction();
 		for (E e: entityCollection) {
 			session.saveOrUpdate(e);
+			session.flush();
 		}
 		tx.commit();
 	}
@@ -214,6 +215,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		try {
 			Session session = getCurrentSession();
 			session.save(e);
+			session.flush();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -224,6 +226,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		try {
 			Session session = getCurrentSession();
 			session.merge(e);
+			session.flush();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -235,6 +238,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		Transaction tx = session.beginTransaction();
 		for (E e: entityCollection) {
 			session.merge(e);
+			session.flush();
 		}
 		tx.commit();
 	}
@@ -244,6 +248,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		Transaction tx = session.beginTransaction();
 		for (E e: entityCollection) {
 			session.save(e);
+			session.flush();
 		}
 		tx.commit();
 	}
@@ -253,10 +258,10 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			Session session = getCurrentSession();
 			session.buildLockRequest(LockOptions.UPGRADE).lock(e);
 			session.delete(e);
+			session.flush();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-
 	}
 
 	public void delete(List<E> entityCollection) {
@@ -265,6 +270,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		for (E e: entityCollection) {
 			session.buildLockRequest(LockOptions.UPGRADE).lock(e);
 			session.delete(e);
+			session.flush();
 		}
 		tx.commit();
 	}

@@ -19,6 +19,13 @@ public class Crisis implements Serializable {
 
     public Crisis(){}
 
+    public Crisis(Long crisisID, String name, String code, boolean isTrashed){
+        this.crisisID = crisisID;
+        this.name = name;
+        this.code = code;
+        this.isTrashed = isTrashed;
+    }
+
     public Long getCrisisID() {
         return crisisID;
     }
@@ -59,6 +66,14 @@ public class Crisis implements Serializable {
         this.userID = userID;
     }
 
+    public Boolean getTrashed() {
+        return isTrashed;
+    }
+
+    public void setTrashed(Boolean trashed) {
+        isTrashed = trashed;
+    }
+
     public Set<ModelFamily> getModelFamilySet() {
         return modelFamilySet;
     }
@@ -82,6 +97,10 @@ public class Crisis implements Serializable {
 
     @Column (name = "userID", nullable = false)
     private Long userID;
+
+    @Column (name = "isTrashed", nullable = false)
+    private Boolean isTrashed;
+    //isTrashed
 
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinColumn(name="crisisID")

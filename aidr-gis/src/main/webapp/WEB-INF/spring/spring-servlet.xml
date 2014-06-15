@@ -7,6 +7,6 @@
 	
 	<!-- Declare a view resolver -->
 	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver" 
-    		p:prefix="/WEB-INF/jsp/" p:suffix=".jsp" />
+    		p:prefix="/WEB-INF/" p:suffix=".html" />
 
 </beans>

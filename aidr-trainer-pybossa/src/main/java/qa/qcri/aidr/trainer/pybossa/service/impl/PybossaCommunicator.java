@@ -25,7 +25,7 @@ import java.net.URL;
 
 public class PybossaCommunicator extends AbstractCommunicator {
     // will be placed on config.
-    protected static Logger logger = Logger.getLogger("service");
+    protected static Logger logger = Logger.getLogger("PybossaCommunicator");
 
     public PybossaCommunicator(){
         super(PybossaCommunicator.class);
