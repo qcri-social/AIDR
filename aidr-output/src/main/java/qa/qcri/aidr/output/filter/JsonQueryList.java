@@ -38,7 +38,6 @@ public class JsonQueryList implements Serializable {
 	
 	@Override
 	public String toString() {
-		/*
 		StringBuilder object = new StringBuilder();
 		int constraintCount = 0;
 		object.append("{\"constraints\": [");
@@ -64,7 +63,5 @@ public class JsonQueryList implements Serializable {
 		else 
 			object.deleteCharAt(object.length()-1).append("]}");
 		return object.toString();
-		*/
-		return new String("\"constraints\": []");
 	}
 }

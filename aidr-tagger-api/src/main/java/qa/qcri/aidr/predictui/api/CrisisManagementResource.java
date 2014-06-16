@@ -60,10 +60,12 @@ public class CrisisManagementResource {
 		System.out.println("[trashByCrisisCode] Received request to trash collection: " + crisisCode);
 		try {
 			Crisis crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
+			System.out.println("[trashByCrisisCode] crisis returned: " + crisis);
 			if (null == crisis) {
 				StringBuilder sb = new StringBuilder().append("{\"TRASHED\":").append(new Long(-1)).append("}");
 				return Response.ok(sb.toString()).build();
 			}
+			//Otherwise go ahead with trashing
 			crisis.setIsTrashed(true);
 			em.merge(crisis);
 
@@ -117,13 +119,17 @@ public class CrisisManagementResource {
 		// 1. set aidr_predict.crisis.isTrashed = false
 		// 2. set model_family.isActive = 1
 		System.out.println("Received request to trash collection: " + crisisCode);
+		Crisis crisis = null;
 		try {
-			Crisis crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
+			crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
+		} catch (Exception e) {
+			return Response.ok("{\"status\": \"UNTRASHED\"}").build();
+		}
+		try {
 			if (crisis != null) {
-
 				crisis.setIsTrashed(false);
 				em.merge(crisis);
-
+				
 				List<ModelFamily> associatedModels = modelFamilyLocalEJB.getAllModelFamiliesByCrisis(crisis.getCrisisID());
 				if (associatedModels != null) {
 					for (ModelFamily model: associatedModels) {

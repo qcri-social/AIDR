@@ -10,7 +10,11 @@ import java.util.Map;
 
 import javax.ejb.Stateless;
 
-
+/**
+ * 
+ * @author Koushik
+ *
+ */
 @Stateless(name="DocumentNominalLabelServiceBean")
 public class DocumentNominalLabelServiceBean extends AbstractTaskManagerServiceBean<DocumentNominalLabel, Long> implements DocumentNominalLabelService {
 

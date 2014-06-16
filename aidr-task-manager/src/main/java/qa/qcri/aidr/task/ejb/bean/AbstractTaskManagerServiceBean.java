@@ -17,6 +17,11 @@ import javax.persistence.Query;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+/**
+ * 
+ * @author Koushik
+ *
+ */
 @Stateless(name = "AbstractTaskManagerServiceBean")
 public class AbstractTaskManagerServiceBean<E, I extends Serializable> implements ServletContextListener, AbstractTaskManagerService<E,I> {
 

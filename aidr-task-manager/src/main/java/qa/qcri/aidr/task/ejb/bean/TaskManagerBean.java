@@ -19,7 +19,6 @@ import org.codehaus.jackson.type.TypeReference;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
-import qa.qcri.aidr.task.ejb.AbstractTaskManagerService;
 import qa.qcri.aidr.task.ejb.CrisisService;
 import qa.qcri.aidr.task.ejb.DocumentNominalLabelService;
 import qa.qcri.aidr.task.ejb.DocumentService;
@@ -33,6 +32,11 @@ import qa.qcri.aidr.task.entities.TaskAnswer;
 import qa.qcri.aidr.task.entities.TaskAssignment;
 import qa.qcri.aidr.task.entities.Users;
 
+/**
+ * 
+ * @author Koushik
+ *
+ */
 
 @Stateless
 public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable> {

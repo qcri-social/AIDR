@@ -12,11 +12,7 @@ import qa.qcri.aidr.task.entities.Users;
 
 
 /**
- * Created with IntelliJ IDEA.
- * User: jilucas
- * Date: 9/20/13
- * Time: 3:01 PM
- * To change this template use File | Settings | File Templates.
+ * @author Koushik
  */
 
 @Stateless(name="UsersServiceBean")

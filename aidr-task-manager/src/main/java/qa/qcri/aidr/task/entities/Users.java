@@ -7,11 +7,7 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 /**
- * Created with IntelliJ IDEA.
- * User: jilucas
- * Date: 9/20/13
- * Time: 2:35 PM
- * To change this template use File | Settings | File Templates.
+ * @author Koushik
  */
 @Entity
 @Table(catalog = "aidr_predict",name = "users")

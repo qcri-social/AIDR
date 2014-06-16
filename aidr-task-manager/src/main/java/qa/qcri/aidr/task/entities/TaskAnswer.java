@@ -5,11 +5,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Created with IntelliJ IDEA.
- * User: jilucas
- * Date: 9/15/13
- * Time: 7:12 AM
- * To change this template use File | Settings | File Templates.
+ * @author Koushik
  */
 @Entity
 @Table(catalog = "aidr_predict",name = "task_answer")

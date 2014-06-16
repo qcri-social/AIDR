@@ -19,6 +19,11 @@ import org.hibernate.criterion.Restrictions;
 import qa.qcri.aidr.task.ejb.DocumentService;
 import qa.qcri.aidr.task.entities.Document;
 
+/**
+ * 
+ * @author Koushik
+ *
+ */
 @Stateless(name="DocumentServiceBean")
 public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document, Long> implements DocumentService {
 

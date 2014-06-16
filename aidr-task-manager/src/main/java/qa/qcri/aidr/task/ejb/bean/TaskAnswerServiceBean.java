@@ -11,6 +11,11 @@ import org.hibernate.criterion.Restrictions;
 import qa.qcri.aidr.task.ejb.TaskAnswerService;
 import qa.qcri.aidr.task.entities.TaskAnswer;
 
+/**
+ * 
+ * @author Koushik
+ *
+ */
 @Stateless(name="TaskAnswerServiceBean")
 public class TaskAnswerServiceBean extends AbstractTaskManagerServiceBean<TaskAnswer, String> implements TaskAnswerService {
 

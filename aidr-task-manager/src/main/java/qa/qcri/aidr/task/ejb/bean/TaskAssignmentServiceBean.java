@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
+
 
 import org.hibernate.criterion.Restrictions;
 
@@ -18,7 +18,11 @@ import qa.qcri.aidr.task.ejb.TaskAssignmentService;
 import qa.qcri.aidr.task.entities.Document;
 import qa.qcri.aidr.task.entities.TaskAssignment;
 
-
+/**
+ * 
+ * @author Koushik
+ *
+ */
 @Stateless(name="TaskAssignmentServiceBean")
 public class TaskAssignmentServiceBean extends AbstractTaskManagerServiceBean<TaskAssignment, Long> implements TaskAssignmentService {
 
