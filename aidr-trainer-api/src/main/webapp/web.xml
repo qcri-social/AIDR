@@ -27,14 +27,5 @@
         <servlet-name>Jersey Web Application</servlet-name>
         <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
-
-    <servlet>
-        <servlet-name>esriService</servlet-name>
-        <servlet-class>qa.qcri.aidr.trainer.api.servlet.ESRIService</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>esriService</servlet-name>
-        <url-pattern>/esri/getGeoJson</url-pattern>
-    </servlet-mapping>
 </web-app>
 
