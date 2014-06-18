@@ -26,8 +26,19 @@ public class ClientAppSourceDaoImpl extends AbstractDaoImpl<ClientAppSource, Str
     public List<ClientAppSource> findActiveSourcePerClient(Long clientAppID) {
         return findByCriteria(Restrictions.conjunction()
                         .add(Restrictions.eq("clientAppID",clientAppID))
-                        .add(Restrictions.eq("status", 1)));
+                        .add(Restrictions.eq("status", StatusCodeType.EXTERNAL_DATA_SOURCE_ACTIVE)));
+    }
 
+    @Override
+    public boolean findDuplicateSource(String fileURL, Long clientAppID) {
+        List<ClientAppSource>  sources  = findByCriteria(Restrictions.conjunction()
+                .add(Restrictions.eq("clientAppID",clientAppID))
+                .add(Restrictions.eq("sourceURL", fileURL)));
+
+        if(sources.size() > 0)    {
+            return true;
+        }
+        return false;
 
 
     }
@@ -35,18 +46,24 @@ public class ClientAppSourceDaoImpl extends AbstractDaoImpl<ClientAppSource, Str
     @Override
     public void acceptSource(String fileURL, Long clientAppID) {
         List<ClientAppSource>  sources = findActiveSourcePerClient( clientAppID );
-        ClientAppSource ca = null;
+
         if(sources.size() > 0){
-            ca = new ClientAppSource(clientAppID, StatusCodeType.EXTERNAL_DATA_SOURCE_UPLOADED, fileURL);
+            System.out.println("sources : EXTERNAL_DATA_SOURCE_UPLOADED");
+            ClientAppSource ca1 = new ClientAppSource(clientAppID, StatusCodeType.EXTERNAL_DATA_SOURCE_UPLOADED, fileURL);
+            save(ca1);
         }
         else{
-            ca = new ClientAppSource(clientAppID, StatusCodeType.EXTERNAL_DATA_SOURCE_ACTIVE, fileURL);
+            System.out.println("sources : EXTERNAL_DATA_SOURCE_ACTIVE");
+            ClientAppSource ca2 = new ClientAppSource(clientAppID, StatusCodeType.EXTERNAL_DATA_SOURCE_ACTIVE, fileURL);
+            save(ca2);
         }
+    }
 
-        if(ca != null){
-            save(ca);
-        }
-        //To change body of implemented methods use File | Settings | File Templates.
+
+    @Override
+    public void createNewSource(ClientAppSource clientAppSource) {
+           // save(clientAppSource);
+            save(clientAppSource);
     }
 
 }

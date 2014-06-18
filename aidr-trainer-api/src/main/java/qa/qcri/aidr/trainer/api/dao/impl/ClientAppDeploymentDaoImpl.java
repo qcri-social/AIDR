@@ -5,6 +5,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import qa.qcri.aidr.trainer.api.dao.ClientAppDeploymentDao;
 import qa.qcri.aidr.trainer.api.entity.ClientAppDeployment;
+import qa.qcri.aidr.trainer.api.store.StatusCodeType;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class ClientAppDeploymentDaoImpl extends AbstractDaoImpl<ClientAppDeploym
 
     @Override
     public ClientAppDeployment findClientAppDeploymentByStatus(Long clientAppID, int status) {
+
         List<ClientAppDeployment> clientAppDeployments =
                 findByCriteria(Restrictions.conjunction()
                         .add(Restrictions.eq("clientAppID",clientAppID))
@@ -32,13 +34,21 @@ public class ClientAppDeploymentDaoImpl extends AbstractDaoImpl<ClientAppDeploym
         if(clientAppDeployments.size() > 0){
             return clientAppDeployments.get(0);
         }
-        return null ;  //To change body of implemented methods use File | Settings | File Templates.
+
+        return null ;
     }
 
     @Override
     public List<ClientAppDeployment> findClientAppDeploymentByClientAppID(Long clientAppID) {
         return findByCriteria(Restrictions.eq("clientAppID", clientAppID));
-        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public List<ClientAppDeployment> findClientAppDeploymentByAppType(int appType) {
+
+        return findByCriteria(Restrictions.conjunction()
+                        .add(Restrictions.eq("appType",appType))
+                        .add(Restrictions.eq("status", StatusCodeType.DEPLOYMENT_ACTIVE)));
     }
 
     @Override
@@ -49,5 +59,10 @@ public class ClientAppDeploymentDaoImpl extends AbstractDaoImpl<ClientAppDeploym
             ca.setStatus(status);
             saveOrUpdate(ca);
         }
+    }
+
+    @Override
+    public List<ClientAppDeployment> findClientAppDeploymentByStatus(int status) {
+        return findByCriteria(Restrictions.eq("status", status));
     }
 }

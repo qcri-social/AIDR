@@ -12,6 +12,7 @@ public interface AbstractDao<E, I extends Serializable> {
     List<E> findAll();
     void saveOrUpdate(E e);
     void delete(E e);
+    void saveOrMerge(E e);
     List<E> findByCriteria(Criterion criterion);
     E findByCriterionID(Criterion criterion);
     List<E> findByCriteria(Criterion criterion, Integer count) ;

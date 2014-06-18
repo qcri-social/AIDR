@@ -35,6 +35,12 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
     }
 
     @Override
+    public void saveOrMerge(E e) {
+        Session session = getCurrentSession();
+        session.merge(e);
+    }
+
+    @Override
     public void save(E e) {
         Session session = getCurrentSession();
         session.save(e);

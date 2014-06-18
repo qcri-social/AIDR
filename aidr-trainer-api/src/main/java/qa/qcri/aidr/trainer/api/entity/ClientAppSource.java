@@ -1,9 +1,6 @@
 package qa.qcri.aidr.trainer.api.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -19,12 +16,30 @@ import java.util.Date;
 public class ClientAppSource implements Serializable {
     private static final long serialVersionUID = -5527566248002296042L;
 
+    @Id
+    @GeneratedValue
+    @Column (name = "clientAppSourceID", nullable = false)
+    private Long clientAppSourceID;
+
+    @Column (name = "clientAppID", nullable = false)
+    private Long clientAppID;
+
+    @Column (name = "status", nullable = false)
+    private Integer status;
+
+    @Column (name = "sourceURL", nullable = false)
+    private String sourceURL;
+
+    @Column (name = "created", nullable = false)
+    private Date created;
+
     public ClientAppSource(){}
-
-    public ClientAppSource(Long clientAppID) {
+    public ClientAppSource(Long clientAppID, Integer status, String sourceURL) {
         this.clientAppID = clientAppID;
-
+        this.status = status;
+        this.sourceURL = sourceURL;
     }
+
 
     public Date getCreated() {
         return created;
@@ -58,24 +73,11 @@ public class ClientAppSource implements Serializable {
         this.status = status;
     }
 
-    public ClientAppSource(Long clientAppID, Integer status, String sourceURL) {
-        this.clientAppID = clientAppID;
-        this.status = status;
-        this.sourceURL = sourceURL;
+    public Long getClientAppSourceID() {
+        return clientAppSourceID;
     }
 
-    @Id
-    @Column (name = "clientAppID", nullable = false)
-    private Long clientAppID;
-
-    @Column (name = "status", nullable = false)
-    private Integer status;
-
-    @Column (name = "sourceURL", nullable = false)
-    private String sourceURL;
-
-    @Column (name = "created", nullable = false)
-    private Date created;
-
-
+    public void setClientAppSourceID(Long clientAppSourceID) {
+        this.clientAppSourceID = clientAppSourceID;
+    }
 }

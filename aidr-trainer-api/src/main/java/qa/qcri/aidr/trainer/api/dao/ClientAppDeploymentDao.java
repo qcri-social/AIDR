@@ -15,7 +15,8 @@ public interface ClientAppDeploymentDao extends AbstractDao<ClientAppDeployment,
 
     ClientAppDeployment findClientAppDeploymentByStatus(Long clientAppID, int status);
     List<ClientAppDeployment> findClientAppDeploymentByClientAppID(Long clientAppID);
-
-    void updateClientAppDeploymentStatus(Long clientAppID, int status);
+    List<ClientAppDeployment> findClientAppDeploymentByAppType(int appType);
+    void updateClientAppDeploymentStatus(Long clientAppDeploymentID, int status);
+    List<ClientAppDeployment> findClientAppDeploymentByStatus(int status);
 
 }
