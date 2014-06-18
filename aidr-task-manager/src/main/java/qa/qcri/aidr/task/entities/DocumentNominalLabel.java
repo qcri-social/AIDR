@@ -9,11 +9,7 @@ import java.util.Date;
 
 
 /**
- * Created with IntelliJ IDEA.
- * User: jilucas
- * Date: 9/15/13
- * Time: 5:32 PM
- * To change this template use File | Settings | File Templates.
+ * @author Koushik
  */
 @XmlRootElement
 @Entity 	//@IdClass(DocumentNominalLabelKey.class)

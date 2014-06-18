@@ -8,18 +8,12 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -27,24 +21,17 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+
 //import org.codehaus.jackson.annotate.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
- * @author Imran
+ * @author Koushik
  */
 @Entity
 @Table(name = "nominal_label")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "NominalLabel.findAll", query = "SELECT n FROM NominalLabel n"),
-    @NamedQuery(name = "NominalLabel.findByNominalLabelID", query = "SELECT n FROM NominalLabel n WHERE n.nominalLabelID = :nominalLabelID"),
-    @NamedQuery(name = "NominalLabel.findByNominalLabelCode", query = "SELECT n FROM NominalLabel n WHERE n.nominalLabelCode = :nominalLabelCode"),
-    @NamedQuery(name = "NominalLabel.findByName", query = "SELECT n FROM NominalLabel n WHERE n.name = :name"),
-    @NamedQuery(name = "NominalLabel.findByDescription", query = "SELECT n FROM NominalLabel n WHERE n.description = :description"),
-    })
-//@NamedQuery(name = "NominalLabel.findByNominalAttribute", query = "SELECT n FROM NominalLabel n WHERE n.nominalAttribute = :nominalAttribute")
 public class NominalLabel implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -12,6 +12,11 @@ import java.util.Set;
 
 import javax.ejb.Stateless;
 
+/**
+ * 
+ * @author Koushik
+ *
+ */
 @Stateless(name="CrisisServiceBean")
 public class CrisisServiceBean extends AbstractTaskManagerServiceBean<Crisis, Long> implements CrisisService {
 
@@ -22,7 +27,7 @@ public class CrisisServiceBean extends AbstractTaskManagerServiceBean<Crisis, Lo
     @Override
     public Crisis findByCrisisID(Long id) {
         Crisis crisis = getByCriterionID(Restrictions.eq("crisisID",id));
-        return crisis;  //To change body of implemented methods use File | Settings | File Templates.
+        return crisis;  
     }
 
     @Override
