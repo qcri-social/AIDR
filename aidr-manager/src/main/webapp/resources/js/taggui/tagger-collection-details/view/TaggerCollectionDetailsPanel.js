@@ -379,6 +379,13 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                     cls: 'header-h2'
                 },
                 {
+                    xtype: 'label',
+                    flex: 1,
+                    padding: '0 0 0 0',
+                    html: "Depending on the size of your collection, this may take a few minutes.<br>" +
+                        "Please be patient and do not click 'Stop' or 'Refresh' in your browser after requesting to export a file."
+                },
+                {
                     xtype: 'container',
                     layout: 'vbox',
                     items: [
