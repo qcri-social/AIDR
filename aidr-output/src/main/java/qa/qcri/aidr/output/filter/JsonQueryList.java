@@ -6,39 +6,43 @@ import java.util.ArrayList;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 //import org.codehaus.jackson.annotate.JsonProperty;
 
 @SuppressWarnings("serial")
 @XmlRootElement(name="JsonQueryList")
 public class JsonQueryList implements Serializable {
 	@XmlElement private ArrayList<GenericInputQuery> constraints;
-	
+
 	public JsonQueryList() {
 		constraints = new ArrayList<GenericInputQuery>();
 	}
-	
+
 	public void setConstraints(JsonQueryList query) {
 		constraints.addAll(query.constraints);
 	}
-	
-	
+
+
 	public void createConstraint(GenericInputQuery query) {
 		constraints.add(query);
 	}
-	
-	//@JsonProperty("constraints")
+
+	@JsonProperty("constraints")
 	public ArrayList<QueryJsonObject> getConstraints() {
 		ArrayList<QueryJsonObject> temp = new ArrayList<QueryJsonObject>();
-		for (GenericInputQuery g: constraints) {
-			QueryJsonObject t = (QueryJsonObject) g;
-			temp.add(t);
+		if (constraints != null) {
+			for (GenericInputQuery g: constraints) {
+				QueryJsonObject t = (QueryJsonObject) g;
+				temp.add(t);
+			}
 		}
 		return temp;
 	}
-	
+
 	@Override
 	public String toString() {
-		/*
+
 		StringBuilder object = new StringBuilder();
 		int constraintCount = 0;
 		object.append("{\"constraints\": [");
@@ -64,7 +68,6 @@ public class JsonQueryList implements Serializable {
 		else 
 			object.deleteCharAt(object.length()-1).append("]}");
 		return object.toString();
-		*/
-		return new String("\"constraints\": []");
+
 	}
 }

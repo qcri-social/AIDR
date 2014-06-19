@@ -318,7 +318,12 @@ public class ChannelBufferManager {
 		return false;
 	}
 	
-	
+	/**
+	 * Used in conjunction with getAllRunningCollections()
+	 * @param channelName: channel code of channel to test
+	 * @param collectionList: list of all public channels returned by getAllRunningCollections()
+	 * @return true if public, false otherwise
+	 */
 	private boolean isChannelPublic(String channelName, Map<String, Boolean> collectionList) {
 		//logger.info("[isChannelPublic] Received request for channel: " + channelName);
 		

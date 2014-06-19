@@ -52,6 +52,7 @@
 
 package qa.qcri.aidr.output.getdata;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -72,25 +73,27 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-
-
-
 //import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
 import qa.qcri.aidr.output.filter.FilterQueryMatcher;
+import qa.qcri.aidr.output.filter.GenericInputQuery;
 import qa.qcri.aidr.output.filter.JsonQueryList;
 import qa.qcri.aidr.output.filter.NominalLabel;
 import qa.qcri.aidr.output.filter.QueryType;
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
 import qa.qcri.aidr.output.utils.SimpleRateLimiter;
+
 
 
 @Path("/crisis/fetch/")
@@ -105,9 +108,9 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	private static final int MAX_MESSAGES_COUNT = 1000;
 	private static final int DEFAULT_COUNT = 50;		// default number of messages to fetch
 	private static final String DEFAULT_COUNT_STR = "50";
-	
+
 	private static SimpleRateLimiter channelSelector;		// select a channel to display
-	
+
 	private static ChannelBufferManager cbManager; 			// managing buffers for each publishing channel
 	private static final boolean rejectNullFlag = true;
 	/////////////////////////////////////////////////////////////////////////////
@@ -179,7 +182,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				temp.clear();
 				temp = null;
 			}
-			
+
 			// Added code for filteredMessages as per new feature: pivotal #67373070
 			List<String> filteredMessages = new ArrayList<String>();			
 			ClassifiedFilteredTweet workingTweet = new ClassifiedFilteredTweet(); 
@@ -190,7 +193,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					channelSelector.initializeNew(classifiedTweet.getCrisisCode());
 				}
 			}
-			
+
 			final JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
 			final StringBuilder jsonDataList;
 			if (!balanced_sampling) {
@@ -204,16 +207,16 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			// Reset the messageList buffer and return
 			bufferedMessages.clear();
 			bufferedMessages = null;
-			
+
 			filteredMessages.clear();
 			filteredMessages = null;
-			
+
 			// Finally, send the retrieved list to client and close connection
 			return Response.ok(jsonDataList.toString()).build();
 		}
 		return Response.ok(new String("[{}]")).build();
 	}
-	
+
 	float getMaxConfidence(ClassifiedFilteredTweet tweet) {
 		float maxConfidence = 0;
 		for (NominalLabel nLabel: tweet.getNominalLabels()) {
@@ -223,7 +226,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		}
 		return maxConfidence;
 	}
-	
+
 	/**
 	 * 
 	 * @param callbackName  JSONP callback name
@@ -326,7 +329,6 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		return Response.ok(new String("[{}]")).build();
 	}
 
-	
 	@OPTIONS
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/channel/filter/{crisisCode}")
@@ -334,24 +336,49 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			@QueryParam("callback") String callbackName,
 			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
 		return Response.ok()
-				.allow("POST", "OPTIONS", "HEAD")
+				.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
 				.header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Credentials", "true")
-				.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
+				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
 				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 				.build();
 	}
-	
-	
+
+
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/channel/filter/{crisisCode}")
-	public Response getBufferedAIDRDataPostFilter(JsonQueryList queryList, @PathParam("crisisCode") String channelCode,
+	public Response getBufferedAIDRDataPostFilter(String queryString, @PathParam("crisisCode") String channelCode,
 			@QueryParam("callback") String callbackName,
 			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
 
 		logger.info("[getBufferedAIDRDataPostFilter] request received :" + channelCode);
+		//logger.info("[getBufferedAIDRDataPostFilter] Received json string: " + queryString);
+		Gson jsonObject = new GsonBuilder().serializeNulls().disableHtmlEscaping()
+				.serializeSpecialFloatingPointValues()	//.setPrettyPrinting()
+				.create();
+		JsonParser parser = new JsonParser();
+		JsonObject obj = (JsonObject) parser.parse(queryString);
+		JsonArray constraintsArray = null;
+		if (obj.has("constraints")) {					// should always be true
+			constraintsArray = obj.get("constraints") != null ? obj.get("constraints").getAsJsonArray() : new JsonArray();
+			//System.out.println("constraints: " + constraintsArray);
+		}
+		JsonQueryList queryList = new JsonQueryList();
+		if (constraintsArray.size() > 0) {
+			for (int i = 0;i < constraintsArray.size();i++) {
+				try {
+					JsonElement q = constraintsArray.get(i);
+					//System.out.println("constraint " + i + ": " + q);
+					GenericInputQuery constraint = jsonObject.fromJson(q, GenericInputQuery.class);
+					queryList.createConstraint(constraint);
+				} catch (Exception e) {
+					logger.error("[getBufferedAIDRDataPostFilter] Error in deserializing received constraints");
+					e.printStackTrace();
+				}
+			}
+		}
 		logger.info("[getBufferedAIDRDataPostFilter] Received POST list: " + queryList.toString());
 
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {
@@ -393,10 +420,11 @@ public class GetBufferedAIDRData implements ServletContextListener {
 
 					// Now to serially filter each tweet in the bufferedMessages list
 					List<String> filteredMessages = new ArrayList<String>();
-					if (null == queryList || queryList.getConstraints().isEmpty()
-							|| (queryList.getConstraints().get(0).queryType != QueryType.classifier_query
-							&& queryList.getConstraints().get(0).queryType != QueryType.date_query)) {
+					if (null == queryList || queryList.getConstraints().isEmpty()) {
+						//|| (queryList.getConstraints().get(0).queryType != QueryType.classifier_query
+						//&& queryList.getConstraints().get(0).queryType != QueryType.date_query)) {
 						// default behavior - no filtering if no POST payload
+						logger.info("[getBufferedAIDRDataPostFilter] No filtering...");
 						filteredMessages.addAll(bufferedMessages);
 					} else {
 						ClassifiedFilteredTweet classifiedTweet = new ClassifiedFilteredTweet();
@@ -429,10 +457,10 @@ public class GetBufferedAIDRData implements ServletContextListener {
 
 					//logger.info("[doGet] Sending jsonp data, count = " + sendCount);
 					return Response.ok(jsonDataList.toString())
-							.allow("POST", "OPTIONS", "HEAD")
+							.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
 							.header("Access-Control-Allow-Origin", "*")
 							.header("Access-Control-Allow-Credentials", "true")
-							.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
+							.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
 							.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 							.build();
 				}
@@ -440,13 +468,31 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					if (callbackName != null) {
 						StringBuilder respStr = new StringBuilder();
 						respStr.append(callbackName).append("([{}])");
-						return Response.ok(respStr.toString()).build();
+						return Response.ok(respStr.toString())
+								.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
+								.header("Access-Control-Allow-Origin", "*")
+								.header("Access-Control-Allow-Credentials", "true")
+								.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
+								.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
+								.build();
 					} else
-						return Response.ok(new String("[{}]")).build();
+						return Response.ok(new String("[{}]"))
+								.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
+								.header("Access-Control-Allow-Origin", "*")
+								.header("Access-Control-Allow-Credentials", "true")
+								.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
+								.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
+								.build();
 				}
 			}
 		}
-		return Response.ok(new String("[{}]")).build();
+		return Response.ok(new String("[{}]"))
+				.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
+				.header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Credentials", "true")
+				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
+				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
+				.build();
 	}
 
 
@@ -508,6 +554,17 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			return Response.ok(statusStr).build();
 		}
 		return Response.ok(new String("{\"password\":\"invalid\"}")).build();
+	}
+
+	@POST
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/channel/test/{crisisCode}")
+	public Response testPost(String testString, @PathParam("crisisCode") String channelCode) {
+		logger.info("[testPost] request received :" + channelCode);
+		logger.info("[testPost] Received string: " + testString);
+
+		return Response.ok(new String("{\"test\":\"passed\"}")).build();
 	}
 
 	@Override

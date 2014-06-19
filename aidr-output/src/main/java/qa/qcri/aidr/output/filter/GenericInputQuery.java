@@ -1,16 +1,19 @@
 package qa.qcri.aidr.output.filter;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+//import org.codehaus.jackson.annotate.JsonProperty;
 
 @SuppressWarnings("serial")
 @XmlRootElement(name="GenericInputQuery")
-public class GenericInputQuery extends QueryJsonObject {
+public class GenericInputQuery extends QueryJsonObject implements Serializable {
 	
 	public GenericInputQuery() {
 		min_confidence = DEFAULT_CONFIDENCE_VALUE;
