@@ -663,7 +663,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 if (resp.success) {
                     if (resp.data) {
                         var data = resp.data;
-                        me.updateTrashedDetailsPanel(data);
+//                        me.updateTrashedDetailsPanel(data);
+                        document.location.href = BASE_URL + '/protected/home';
                     }
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
