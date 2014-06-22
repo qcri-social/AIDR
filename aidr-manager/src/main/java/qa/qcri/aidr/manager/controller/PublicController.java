@@ -34,6 +34,9 @@ public class PublicController extends BaseController{
     @Autowired
     private TaggerService taggerService;
 
+    @Autowired
+    private CollectionLogService collectionLogService;
+
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -170,6 +173,63 @@ public class PublicController extends BaseController{
         }
 
         //return getUIWrapper(false);
+    }
+
+    @RequestMapping(value = "/findById.action", method = RequestMethod.GET)
+    @ResponseBody
+    public AidrCollectionTotalDTO findById(Integer id) throws Exception {
+
+        AidrCollection collection = collectionService.findById(id);
+        AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, false);
+        if (dto != null) {
+            Integer totalCount = collectionLogService.countTotalDownloadedItemsForCollection(id);
+            if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())){
+                totalCount += dto.getCount();
+            }
+            dto.setTotalCount(totalCount);
+        }
+        return dto;
+    }
+
+
+    @RequestMapping(value = "/generateTweetIdsLink.action", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> generateTweetIdsLink(@RequestParam String code) throws Exception {
+        String result = "";
+        try {
+            result = collectionLogService.generateTweetIdsLink(code);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+        }
+        return getUIWrapper(result,true);
+    }
+
+    @RequestMapping(value = "/getAttributesAndLabelsByCrisisId.action", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> getAttributesAndLabelsByCrisisId(@RequestParam Integer id) throws Exception {
+        String result = "";
+        try {
+            result = taggerService.getAttributesAndLabelsByCrisisId(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+        }
+        return getUIWrapper(result,true);
+    }
+
+
+    @RequestMapping(value = "/loadLatestTweets.action", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> loadLatestTweets(@RequestParam String code, @RequestParam String constraints) throws Exception {
+        String result = "";
+        try {
+            result = taggerService.loadLatestTweets(code, constraints);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+        }
+        return getUIWrapper(result,true);
     }
 
     private AidrCollectionTotalDTO convertAidrCollectionToDTO(AidrCollection collection, boolean hasTaggerOutput){
