@@ -1,6 +1,7 @@
 Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownloadController', {
     extend: 'Ext.app.Controller',
 
+
     views: [
         'InteractiveViewDownloadPanel'
     ],
