@@ -35,7 +35,7 @@ import twitter4j.json.DataObjectFactory;
  *
  * @author Imran
  */
-public class TwitterStreamTracker extends Loggable implements Serializable{
+public class TwitterStreamTracker extends Loggable implements Serializable {
 
     private TwitterStream twitterStream;
     private ConfigurationBuilder configBuilder;
@@ -48,8 +48,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable{
 
     public TwitterStreamTracker() {
     }
-    
-    
+
     public TwitterStreamTracker(TwitterStreamQueryBuilder streamFilterQuery, ConfigurationBuilder configurationBuilder, CollectionTask collectionTask) throws Exception {
 
         this.publisherJedis = JedisConnectionPool.getJedisConnection();
@@ -67,7 +66,6 @@ public class TwitterStreamTracker extends Loggable implements Serializable{
     }
 
     private void collectThroughStreaming() {
-
 
         StatusListener listener = new StatusListener() {
             JSONObject tweetJSONObject = null;
@@ -89,6 +87,8 @@ public class TwitterStreamTracker extends Loggable implements Serializable{
                     }
                 } catch (JSONException ex) {
                     Logger.getLogger(TwitterStreamTracker.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception exp) {
+                    Logger.getLogger(TwitterStreamTracker.class.getName()).log(Level.SEVERE, null, exp);
                 }
             }
 
@@ -121,10 +121,11 @@ public class TwitterStreamTracker extends Loggable implements Serializable{
             @Override
             public void onStallWarning(StallWarning arg0) {
                 System.out.println("Stall Warning: " + arg0.getMessage());
+                log(LogLevel.ERROR, arg0.toString());
             }
 
             public void publishMessage(Status status, String rawTweetJSON) {
-                
+
                 StringBuilder tweet = new StringBuilder(rawTweetJSON);
                 JSONObject aidrObject = new JSONObject(new FetcherResponseToStringChannel(new AIDR(getCollectionCode(), getCollectionName(), "twitter")));
                 String aidrJson = StringUtils.replace(aidrObject.toString(), "{", ",", 1); // replacing first occurance of { with ,
@@ -138,7 +139,6 @@ public class TwitterStreamTracker extends Loggable implements Serializable{
                 }
             }
         };
-
 
         twitterStream = new TwitterStreamFactory(getConfigBuilder().build()).getInstance();
         twitterStream.addListener(listener);
@@ -161,7 +161,6 @@ public class TwitterStreamTracker extends Loggable implements Serializable{
         coll.setStatusCode(Config.STATUS_CODE_COLLECTION_RUNNING);
         coll.setStatusMessage(null);
         GenericCache.getInstance().setTwtConfigMap(getCacheKey(), coll);
-
 
     }
     volatile boolean finished = false;
