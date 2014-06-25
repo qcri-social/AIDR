@@ -73,26 +73,20 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+
 //import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
 import qa.qcri.aidr.output.filter.FilterQueryMatcher;
-import qa.qcri.aidr.output.filter.GenericInputQuery;
 import qa.qcri.aidr.output.filter.JsonQueryList;
 import qa.qcri.aidr.output.filter.NominalLabel;
-import qa.qcri.aidr.output.filter.QueryType;
+
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
 import qa.qcri.aidr.output.utils.SimpleRateLimiter;
+import qa.qcri.aidr.output.filter.DeserializeFilters;
 
 
 
@@ -355,30 +349,9 @@ public class GetBufferedAIDRData implements ServletContextListener {
 
 		logger.info("[getBufferedAIDRDataPostFilter] request received :" + channelCode);
 		//logger.info("[getBufferedAIDRDataPostFilter] Received json string: " + queryString);
-		Gson jsonObject = new GsonBuilder().serializeNulls().disableHtmlEscaping()
-				.serializeSpecialFloatingPointValues()	//.setPrettyPrinting()
-				.create();
-		JsonParser parser = new JsonParser();
-		JsonObject obj = (JsonObject) parser.parse(queryString);
-		JsonArray constraintsArray = null;
-		if (obj.has("constraints")) {					// should always be true
-			constraintsArray = obj.get("constraints") != null ? obj.get("constraints").getAsJsonArray() : new JsonArray();
-			//System.out.println("constraints: " + constraintsArray);
-		}
-		JsonQueryList queryList = new JsonQueryList();
-		if (constraintsArray.size() > 0) {
-			for (int i = 0;i < constraintsArray.size();i++) {
-				try {
-					JsonElement q = constraintsArray.get(i);
-					//System.out.println("constraint " + i + ": " + q);
-					GenericInputQuery constraint = jsonObject.fromJson(q, GenericInputQuery.class);
-					queryList.createConstraint(constraint);
-				} catch (Exception e) {
-					logger.error("[getBufferedAIDRDataPostFilter] Error in deserializing received constraints");
-					e.printStackTrace();
-				}
-			}
-		}
+		DeserializeFilters des = new DeserializeFilters();
+		JsonQueryList queryList = des.deserializeConstraints(queryString);
+		
 		logger.info("[getBufferedAIDRDataPostFilter] Received POST list: " + queryList.toString());
 
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {

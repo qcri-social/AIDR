@@ -30,7 +30,8 @@ public class FileSystemOperations {
             if (listOfFiles[i].isFile()) {
                 String currentFileName = listOfFiles[i].getName();
                 if (StringUtils.contains(currentFileName, collectionCode)) {
-                    if (!(StringUtils.contains(currentFileName, ".csv"))) { //do not consider CSV files here, only consider JSON files
+                    if (!(StringUtils.contains(currentFileName, ".csv"))
+                    		&& StringUtils.containsIgnoreCase(listOfFiles[i].getName(), "vol")) { //do not consider CSV files here, only consider JSON files
                         Integer currentVolN = Integer.parseInt(StringUtils.substringBetween(currentFileName, "vol-", ".json"));
                         if (currentVolN >= volNum) {
                             volNum = currentVolN;
@@ -56,7 +57,8 @@ public class FileSystemOperations {
             if (listOfFiles[i].isFile()) {
                 String currentFileName = listOfFiles[i].getName();
                 if (StringUtils.contains(currentFileName, collectionCode)) {
-                    if (!(StringUtils.contains(currentFileName, ".csv"))) { //do not consider CSV files here, only consider JSON files
+                    if (!(StringUtils.contains(currentFileName, ".csv"))
+                    		&& StringUtils.containsIgnoreCase(listOfFiles[i].getName(), "vol")) { //do not consider CSV files here, only consider JSON files
                         Integer currentVolN = Integer.parseInt(StringUtils.substringBetween(currentFileName, "vol-", ".json"));
                         if (currentVolN >= volNum) {
                             volNum = currentVolN;
@@ -81,7 +83,8 @@ public class FileSystemOperations {
                 if (listOfFiles[i].isFile()) {
                     String currentFileName = listOfFiles[i].getName();
                     if (StringUtils.contains(currentFileName, collectionCode)) {
-                        if (!(StringUtils.contains(currentFileName, ".csv"))) { //do not consider CSV files here, only consider JSON files
+                        if (!(StringUtils.contains(currentFileName, ".csv"))
+                        		&& StringUtils.containsIgnoreCase(listOfFiles[i].getName(), "vol")) { //do not consider CSV files here, only consider JSON files
                             Integer currentVolN = Integer.parseInt(StringUtils.substringBetween(currentFileName, "vol-", ".json"));
                             if (currentVolN > volNum) {
                                 volNum = currentVolN;
@@ -106,7 +109,8 @@ public class FileSystemOperations {
                 if (listOfFiles[i].isFile()) {
                     String currentFileName = listOfFiles[i].getName();
                     if (StringUtils.contains(currentFileName, collectionCode) && StringUtils.startsWith("Classified_", fileName)) {
-                        if (!(StringUtils.contains(currentFileName, ".csv"))) { //do not consider CSV files here, only consider JSON files
+                        if (!(StringUtils.contains(currentFileName, ".csv"))
+                        		&& StringUtils.containsIgnoreCase(listOfFiles[i].getName(), "vol")) { //do not consider CSV files here, only consider JSON files
                             Integer currentVolN = Integer.parseInt(StringUtils.substringBetween(currentFileName, "vol-", ".json"));
                             if (currentVolN > volNum) {
                                 volNum = currentVolN;
@@ -129,7 +133,8 @@ public class FileSystemOperations {
             if (listOfFiles[i].isFile()) {
                 String currentFileName = listOfFiles[i].getName();
                 if (StringUtils.contains(currentFileName, collectionCode)) {
-                    if (!(StringUtils.contains(currentFileName, ".csv"))) { //do not consider CSV files here, only consider JSON files
+                    if (!(StringUtils.contains(currentFileName, ".csv"))
+                    		&& StringUtils.containsIgnoreCase(listOfFiles[i].getName(), "vol")) { //do not consider CSV files here, only consider JSON files
                         fileNames.add(currentFileName);
                     }
                 }
@@ -149,7 +154,8 @@ public class FileSystemOperations {
                 String currentFileName = listOfFiles[i].getName();
                 if (StringUtils.contains(currentFileName, collectionCode)) {
                     if (!(StringUtils.contains(currentFileName, ".csv"))) { //do not consider CSV files here, only consider JSON files
-                        if (StringUtils.startsWith(currentFileName, "Classified_"))
+                        if (StringUtils.startsWith(currentFileName, "Classified_")
+                        		&& StringUtils.containsIgnoreCase(listOfFiles[i].getName(), "vol"))
                             fileNames.add(currentFileName);
                     }
                 }
