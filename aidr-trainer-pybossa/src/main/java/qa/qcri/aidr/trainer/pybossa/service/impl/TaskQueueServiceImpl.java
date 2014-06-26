@@ -85,4 +85,10 @@ public class TaskQueueServiceImpl implements TaskQueueService {
     public void deleteAbandonedTaskQueue(Long taskQueueID) {
         taskQueueDao.deleteTaskQueue(taskQueueID);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TaskQueue> getLastActiveTaskQueue(Long clientAppID) {
+        return taskQueueDao.findLatestTaskQueue(clientAppID);  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

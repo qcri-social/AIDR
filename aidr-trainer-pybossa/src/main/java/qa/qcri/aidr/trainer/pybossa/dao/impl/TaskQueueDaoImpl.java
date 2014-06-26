@@ -1,5 +1,6 @@
 package qa.qcri.aidr.trainer.pybossa.dao.impl;
 
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import qa.qcri.aidr.trainer.pybossa.dao.TaskQueueDao;
@@ -69,5 +70,11 @@ public class TaskQueueDaoImpl extends AbstractDaoImpl<TaskQueue, String> impleme
             delete(taskQueues.get(0));
         }
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public List<TaskQueue> findLatestTaskQueue(Long clientAppID) {
+        Criterion criterion = Restrictions.eq("clientAppID",clientAppID);
+        return getMaxOrderByCriteria(criterion, "updated");
     }
 }

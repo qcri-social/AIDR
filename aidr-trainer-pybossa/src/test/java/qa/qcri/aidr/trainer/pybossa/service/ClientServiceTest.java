@@ -17,8 +17,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = {"classpath:spring/applicationContext.xml", "classpath:spring/hibernateContext.xml"})
 public class ClientServiceTest {
 
-    @Autowired
-    private ClientService clientService;
+   // @Autowired
+   // private ClientService clientService;
 
     @Test
     public void testFindClientbyID() throws Exception {

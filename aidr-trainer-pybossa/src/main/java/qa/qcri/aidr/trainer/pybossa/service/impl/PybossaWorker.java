@@ -18,6 +18,7 @@ import qa.qcri.aidr.trainer.pybossa.util.DataFormatValidator;
 import qa.qcri.aidr.trainer.pybossa.util.DateTimeConverter;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -287,18 +288,41 @@ public class PybossaWorker implements ClientAppRunWorker {
     }
 
     private void deactivateClientApp(Long crisisID) throws Exception {
-        List<ClientApp> clientAppList = clientAppService.getAllClientAppByCrisisIDAndStatus(crisisID , StatusCodeType.CLIENT_APP_INACTIVE_REQUEST);
+        //List<ClientApp> clientAppList = clientAppService.getAllClientAppByCrisisIDAndStatus(crisisID , StatusCodeType.CLIENT_APP_INACTIVE_REQUEST);
+        List<ClientApp> clientAppList = clientAppService.getAllClientAppByCrisisID(crisisID);
 
         for (int i = 0; i < clientAppList.size(); i++) {
             ClientApp currentClientApp = clientAppList.get(i);
             setClassVariable(currentClientApp.getClient());
-            if(currentClientApp.getStatus().equals(StatusCodeType.CLIENT_APP_INACTIVE_REQUEST)){
+            if(isEligibleForDeactivationRule(currentClientApp))  {
                 String deleteURL = PYBOSSA_API_APP_DELETE_URL + currentClientApp.getPlatformAppID()+ URLPrefixCode.PYBOSSA_APP_UPDATE_KEY + client.getHostAPIKey();
                 String returnValue = pybossaCommunicator.deleteGet(deleteURL);
                 clientAppService.updateClientAppStatus(currentClientApp, StatusCodeType.CLIENT_APP_DISABLED);
             }
-
         }
+    }
+
+
+    private boolean isEligibleForDeactivationRule(ClientApp currentClientApp){
+        if(currentClientApp.getStatus().equals(StatusCodeType.CLIENT_APP_INACTIVE_REQUEST)){
+            return true;
+        }
+
+        if(isActiveClientApp(currentClientApp)){
+            List<TaskQueue> latestTaskQueue = taskQueueService.getLastActiveTaskQueue(currentClientApp.getClientAppID());
+
+            if(latestTaskQueue.size() > 0){
+                Date s1 = latestTaskQueue.get(0).getUpdated();
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DAY_OF_MONTH, StatusCodeType.MAX_APP_HOLD_PERIOD_DAY);
+                if(s1.getTime() < calendar.getTime().getTime()){
+                    return true;
+                }
+            }
+        }
+
+        return false;
+
     }
 
     public String removeAbandonedTask(long taskID, long taskQueueID) throws Exception {
@@ -333,6 +357,20 @@ public class PybossaWorker implements ClientAppRunWorker {
         return taskQueue;
     }
 
+    private boolean isActiveClientApp(ClientApp currentClientApp){
+        if(currentClientApp.getStatus().equals(StatusCodeType.AIDR_MICROMAPPER_BOTH)){
+            return true;
+        }
+
+        if(currentClientApp.getStatus().equals(StatusCodeType.MICROMAPPER_ONLY)){
+            return true;
+        }
+
+        if(currentClientApp.getStatus().equals(StatusCodeType.AIDR_ONLY)){
+            return true;
+        }
+        return false;
+    }
 
 
 }

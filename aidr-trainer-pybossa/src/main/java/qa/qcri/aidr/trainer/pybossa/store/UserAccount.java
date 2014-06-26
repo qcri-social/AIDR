@@ -8,6 +8,6 @@ package qa.qcri.aidr.trainer.pybossa.store;
  * To change this template use File | Settings | File Templates.
  */
 public class UserAccount {
-    public static String SYSTEM_USER_NAME = "Pybossa";
-    public static String MIROMAPPER_USER_NAME = "micromappers";
+    public static String SYSTEM_USER_NAME = "MicroMappers";
+    public static String MIROMAPPER_USER_NAME = "micromappers_custom";
 }

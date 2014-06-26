@@ -22,4 +22,5 @@ public interface AbstractDao<E, I extends Serializable> {
     List<E> findByCriteria(Criterion criterion);
     E findByCriterionID(Criterion criterion);
     List<E> findByCriteria(Criterion criterion, Integer count) ;
+    List<E> getMaxOrderByCriteria(Criterion criterion, String orderBy) ;
 }

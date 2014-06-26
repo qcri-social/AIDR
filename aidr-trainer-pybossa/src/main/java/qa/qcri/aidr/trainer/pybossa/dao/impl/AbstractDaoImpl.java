@@ -4,6 +4,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -82,6 +83,16 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
     public List<E> findAll() {
         Criteria criteria = getCurrentSession().createCriteria(entityClass);
         criteria.setProjection(Projections.distinct(Projections.property("crisisID")));
+
+        return criteria.list();
+    }
+
+    @Override
+    public List<E> getMaxOrderByCriteria(Criterion criterion, String orderBy) {
+        Criteria criteria = getCurrentSession().createCriteria(entityClass);
+        criteria.add(criterion);
+        criteria.addOrder(Order.desc(orderBy));
+        criteria.setMaxResults(1);
 
         return criteria.list();
     }

@@ -17,11 +17,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = {"classpath:spring/applicationContext.xml", "classpath:spring/hibernateContext.xml"})
 public class ReportProductServiceTest {
 
-    @Autowired
-     ReportProductService reportProductService;
+    //@Autowired
+     //ReportProductService reportProductService;
 
     @Test
     public void testGenerateCVSReportForGeoClicker() throws Exception {
-       // reportProductService.generateCVSReportForGeoClicker();
+      //  reportProductService.generateCVSReportForGeoClicker();
     }
 }
