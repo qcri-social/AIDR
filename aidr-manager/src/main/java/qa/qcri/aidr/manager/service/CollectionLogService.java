@@ -1,6 +1,7 @@
 package qa.qcri.aidr.manager.service;
 
 import qa.qcri.aidr.manager.dto.CollectionLogDataResponse;
+import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
 
 import java.util.List;
@@ -27,5 +28,9 @@ public interface CollectionLogService {
     public String generateCSVLink(String code) throws Exception;
 
     public String generateTweetIdsLink(String code) throws Exception;
+
+	public String generateJSONLink(String code) throws AidrException;
+
+	public String generateJsonTweetIdsLink(String code) throws AidrException;
 
 }

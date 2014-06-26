@@ -316,7 +316,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
     },
 
     attributeDeleteHandler: function (btn, me) {
-        Ext.MessageBox.confirm('Confirm Attribute Delete', 'Do you want to delete <b>"' + me.attributeName + '"</b>?',
+        Ext.MessageBox.confirm('Confirm Category Delete', 'Do you want to delete <b>"' + me.attributeName + '"</b>?',
             function (buttonId) {
                 if (buttonId === 'yes') {
                     me.attributeDelete(me);

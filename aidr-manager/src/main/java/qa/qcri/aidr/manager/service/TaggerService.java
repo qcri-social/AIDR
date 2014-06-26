@@ -99,4 +99,10 @@ public interface TaggerService {
 
     public String loadLatestTweetsWithCount(String code, int count) throws AidrException;
 
+    //Added by koushik
+	public String generateJSONLink(String code) throws AidrException;
+
+	//Added by koushik
+	public String generateJsonTweetIdsLink(String code) throws AidrException;
+
 }

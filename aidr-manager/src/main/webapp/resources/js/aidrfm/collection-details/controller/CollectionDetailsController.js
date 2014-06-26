@@ -213,7 +213,19 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     this.generateTweetIdsLink(btn);
                 }
             },
+            
+            "#generateJSONLink": {
+                click: function (btn, e, eOpts) {
+                    this.generateJSONLink(btn);
+                }
+            },
 
+            "#generateJsonTweetIdsLink": {
+                click: function (btn, e, eOpts) {
+                    this.generateJsonTweetIdsLink(btn);
+                }
+            },
+            
             "#addManager": {
                 click: function (btn, e, eOpts) {
                     this.addManager(btn);
@@ -890,6 +902,101 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     }
                 } else {
                     me.DetailsComponent.tweetsIdsLink.setText('', false);
+                    AIDRFMFunctions.setAlert("Error", resp.message);
+                }
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
+            },
+            failure: function () {
+                btn.setDisabled(false);
+                Ext.Ajax.timeout = 30000;
+                Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
+            }
+        });
+    },
+    
+    generateJSONLink: function(btn) {
+        var me = this;
+        btn.setDisabled(true);
+        me.DetailsComponent.JSONLink.setText('<div class="loading-block"></div>', false);
+        Ext.Ajax.timeout = 900000;
+        Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+        Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+        Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/collection/generateJSONLink.action',
+            timeout: 900000,
+            method: 'GET',
+            params: {
+                code: COLLECTION_CODE
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                btn.setDisabled(false);
+                var resp = Ext.decode(response.responseText);
+                if (resp.success) {
+                    if (resp.data && resp.data != '') {
+                        me.DetailsComponent.JSONLink.setText('<div class="styled-text download-link"><a href="' + resp.data + '">' + resp.data + '</a></div>', false);
+                    } else {
+                        me.DetailsComponent.JSONLink.setText('', false);
+                        AIDRFMFunctions.setAlert("Error", "Generate JSON service returned empty url. For further inquiries please contact admin.");
+                    }
+                } else {
+                    me.DetailsComponent.JSONLink.setText('', false);
+                    AIDRFMFunctions.setAlert("Error", resp.message);
+                }
+                //Ext.Ajax.timeout = 30000;
+                //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
+            },
+            failure: function () {
+                btn.setDisabled(false);
+                Ext.Ajax.timeout = 30000;
+                Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
+            }
+        });
+    },
+
+    generateJsonTweetIdsLink: function(btn) {
+        var me = this;
+        btn.setDisabled(true);
+        me.DetailsComponent.JsonTweetsIdsLink.setText('<div class="loading-block"></div>', false);
+
+        Ext.Ajax.timeout = 900000;
+        Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+        Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+        Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/collection/generateJsonTweetIdsLink.action',
+            timeout: 900000,
+            method: 'GET',
+            params: {
+                code: COLLECTION_CODE
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                btn.setDisabled(false);
+                var resp = Ext.decode(response.responseText);
+                if (resp.success) {
+                    if (resp.data && resp.data != '') {
+                        me.DetailsComponent.JsonTweetsIdsLink.setText('<div class="styled-text download-link"><a href="' + resp.data + '">' + resp.data + '</a></div>', false);
+                    } else {
+                        me.DetailsComponent.JsonTweetsIdsLink.setText('', false);
+                        AIDRFMFunctions.setAlert("Error", "Generate JSON Tweet Ids service returned empty url. For further inquiries please contact admin.");
+                    }
+                } else {
+                    me.DetailsComponent.JsonTweetsIdsLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
                 //Ext.Ajax.timeout = 30000;

@@ -40,6 +40,7 @@ import org.apache.commons.lang.StringUtils;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
+import qa.qcri.aidr.persister.filter.DeserializeFilters;
 import qa.qcri.aidr.persister.filter.JsonQueryList;
 import qa.qcri.aidr.persister.collector.RedisCollectorPersister;
 import qa.qcri.aidr.persister.tagger.RedisTaggerPersister;
@@ -149,10 +150,13 @@ public class Persister4TaggerAPI {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_HTML)
 	@Path("/filter/genCSV")
-	public Response generateCSVFromLastestJSONFiltered(JsonQueryList queryList, 
+	public Response generateCSVFromLastestJSONFiltered(String queryString, 
 			@QueryParam("collectionCode") String collectionCode, 
 			@QueryParam("exportLimit") int exportLimit) throws UnknownHostException {
+		DeserializeFilters des = new DeserializeFilters();
+		JsonQueryList queryList = des.deserializeConstraints(queryString);
 		JsonDeserializer jsonD = new JsonDeserializer();
+		
 		System.out.println("[tagger-generateCSVFromLastestJSONFiltered] received request for collection: " + collectionCode);
 		System.out.println("[tagger-generateCSVFromLastestJSONFiltered] Received POST list: " + queryList.toString());
 
@@ -197,9 +201,12 @@ public class Persister4TaggerAPI {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_HTML)
 	@Path("/filter/genTweetIds")
-	public Response generateTweetsIDSCSVFromAllJSONFiltered(JsonQueryList queryList, 
+	public Response generateTweetsIDSCSVFromAllJSONFiltered(String queryString, 
 			@QueryParam("collectionCode") String collectionCode) 
 					throws UnknownHostException {
+		DeserializeFilters des = new DeserializeFilters();
+		JsonQueryList queryList = des.deserializeConstraints(queryString);
+		
 		JsonDeserializer jsonD = new JsonDeserializer();
 		System.out.println("[tagger-generateTweetsIDSCSVFromAllJSONFiltered] received request for collection: " + collectionCode);
 		System.out.println("[tagger-generateTweetsIDSCSVFromAllJSONFiltered] Received POST list: " + queryList.toString());
@@ -248,11 +255,15 @@ public class Persister4TaggerAPI {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)		// {application/json} ?
 	@Path("/filter/getClassifiedTweets")
-	public Response get_N_LatestClassifiedTweetsFiltered(JsonQueryList queryList, 
+	public Response get_N_LatestClassifiedTweetsFiltered(String queryString, 
 			@QueryParam("collectionCode") String collectionCode, 
 			@QueryParam("exportLimit") int exportLimit, 
 			@QueryParam("callback") String callback) throws UnknownHostException {
+		
+		DeserializeFilters des = new DeserializeFilters();
+		JsonQueryList queryList = des.deserializeConstraints(queryString);
 		JsonDeserializer jsonD = new JsonDeserializer();
+		
 		System.out.println("[get_N_LatestClassifiedTweetsFiltered] Received POST list: " + queryList.toString());
 
 		List<ClassifiedTweet> tweets = jsonD.getNClassifiedTweetsJSONFiltered(collectionCode, exportLimit, queryList);
@@ -266,7 +277,42 @@ public class Persister4TaggerAPI {
 	}
 
 	
-	/*
+	@GET
+	//@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_HTML)
+	@Path("/genJson")
+	public Response generateJSONFromLastestJSON(@QueryParam("collectionCode") String collectionCode, @QueryParam("exportLimit") int exportLimit) throws UnknownHostException {
+		System.out.println("In tagger-persister genCSV");
+		System.out.println("[tagger-generateJSONFromLastestJSON] received request for collection: " + collectionCode);
+		JsonDeserializer jsonD = new JsonDeserializer();
+		exportLimit = Config.TWEETS_EXPORT_LIMIT_100K;		// Koushik: added to override user specs
+		String fileName = jsonD.taggerGenerateJSON2JSON_100K_BasedOnTweetCount(collectionCode, exportLimit);
+		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
+		
+		System.out.println("[tagger-generateJSONFromLastestJSON] done processing request for collection: " + collectionCode);
+        System.out.println("[tagger-generateJSONFromLastestJSON] returning created file: " + fileName);
+		return Response.ok(fileName).build();
+	}
+	
+	@GET
+	@Produces(MediaType.TEXT_HTML)
+	@Path("/genJsonTweetIds")
+	public Response generateTweetsIDSJSONFromAllJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
+		System.out.println("In tagger-persister genTweetIds");
+		System.out.println("[tagger-generateTweetsIDSJSONFromAllJSON] received request for collection: " + collectionCode);
+		
+		JsonDeserializer jsonD = new JsonDeserializer();
+		String fileName = jsonD.generateClassifiedJson2TweetIdsJSON(collectionCode);
+		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
+		
+		System.out.println("[tagger-generateTweetsIDSJSONFromAllJSON] done processing request for collection: " + collectionCode);
+        System.out.println("[tagger-generateTweetsIDSJSONFromAllJSON] returning created file: " + fileName);
+		return Response.ok(fileName).build();
+	}
+	
+	
+	/////////////////////////////////////////////////////////////////////////
+
 	// Also set response header in OPTIONS pre-flight to enable CORS
 	@OPTIONS
 	@Produces(MediaType.APPLICATION_JSON)
@@ -310,5 +356,5 @@ public class Persister4TaggerAPI {
 				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 				.build();
 	}
-	*/
+	
 }

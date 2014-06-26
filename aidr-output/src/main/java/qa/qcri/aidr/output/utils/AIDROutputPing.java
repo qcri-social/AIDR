@@ -71,7 +71,7 @@ public class AIDROutputPing {
 		// TODO: Add code to register streaming API
 		try {
 			APIHashMap.put("fetch", qa.qcri.aidr.output.getdata.GetBufferedAIDRData.class.getMethod("getLatestBufferedAIDRData", 
-					String.class , String.class, Float.class, Boolean.class));
+					String.class , String.class, float.class, boolean.class));
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
