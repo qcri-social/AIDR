@@ -23,9 +23,9 @@ public interface CollectionService {
 
     public AidrCollection findByCode(String code) throws Exception;
 
-    public List<AidrCollection> findAll(Integer start, Integer limit, UserEntity user) throws Exception;
+    public List<AidrCollection> findAll(Integer start, Integer limit, UserEntity user, boolean onlyTrashed) throws Exception;
 
-    public Integer getCollectionsCount(UserEntity user) throws Exception;
+    public Integer getCollectionsCount(UserEntity user, boolean onlyTrashed) throws Exception;
 
     public List<AidrCollection> searchByName(String query, Integer userId) throws Exception;
 

@@ -94,8 +94,14 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 
     @SuppressWarnings("unchecked")
 	@Override
-	public List<AidrCollection> getPaginatedData(final Integer start, final Integer limit, final UserEntity user) {
+	public List<AidrCollection> getPaginatedData(final Integer start, final Integer limit, final UserEntity user, final boolean onlyTrashed) {
         final Integer userId = user.getId();
+        final String conditionTrashed;
+        if (onlyTrashed) {
+            conditionTrashed = "=";
+        } else {
+            conditionTrashed = "!=";
+        }
 
 //        Workaround as criteria query gets result for different managers and in the end we get less then limit records.
         List<Integer> collectionIds = (List<Integer>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
@@ -104,73 +110,47 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
                 String sql = " SELECT DISTINCT c.id FROM AIDR_COLLECTION c " +
                         " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
                         " ON c.id = c_m.id_collection " +
-                        " WHERE (c.user_id =:userId OR c_m.id_manager = :userId) " +
-                        " order by c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
-
-
-                // query to get never started collection
-                String sql2 = " SELECT DISTINCT c.id FROM AIDR_COLLECTION c " +
-                        " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
-                        " ON c.id = c_m.id_collection " +
-                        " WHERE (c.startDate IS NULL and c.status != :statusValue AND (c.user_id =:userId OR c_m.id_manager = :userId)) " +
-                        " order by c.createdDate DESC LIMIT :start, :limit ";
+                        " WHERE ((c.user_id =:userId OR c_m.id_manager = :userId) AND c.status " + conditionTrashed + " :statusValue) " +
+                        " order by c.startDate IS NULL DESC, c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
 
                 SQLQuery sqlQuery = session.createSQLQuery(sql);
                 sqlQuery.setParameter("userId", userId);
                 sqlQuery.setParameter("start", start);
                 sqlQuery.setParameter("limit", limit);
-                //sqlQuery.setParameter("statusValue", CollectionStatus.TRASHED.ordinal());
+                sqlQuery.setParameter("statusValue", CollectionStatus.TRASHED.ordinal());
                 List<Integer> ids = (List<Integer>) sqlQuery.list();
 
-                SQLQuery sqlQuery2 = session.createSQLQuery(sql2);
-                sqlQuery2.setParameter("userId", userId);
-                sqlQuery2.setParameter("start", start);
-                sqlQuery2.setParameter("limit", limit);
-                sqlQuery2.setParameter("statusValue", CollectionStatus.TRASHED.ordinal());
-                List<Integer> ids2 = (List<Integer>) sqlQuery2.list();
-
-                // first, remove duplicate
-                if(!ids.isEmpty() && ids != null){
-                    ids.removeAll(ids2) ;
-                    // add
-                    ids2.addAll(ids) ;
-                }
-
-                return ids2 != null ? ids2 : Collections.emptyList();
+                return ids != null ? ids : Collections.emptyList();
             }
         });
 
-       // Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
-       // criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-       // System.out.println("out");
-        List<AidrCollection> a = new ArrayList<AidrCollection>();
-        for(int i =0; i < collectionIds.size(); i++){
-          //  System.out.println(collectionIds.get(i));
-            AidrCollection collection =	this.findById(collectionIds.get(i));
-            a.add(collection) ;
+        List<AidrCollection> result = new ArrayList<AidrCollection>();
+        for(Integer id : collectionIds){
+            AidrCollection collection =	this.findById(id);
+            result.add(collection) ;
         }
-        // by default, criteria sort is by id asc. so, change logic to get each aidr_collection
-       // criteria.add(Restrictions.in("id", collectionIds));
-		//criteria.addOrder(Order.desc("startDate"));
-		//criteria.addOrder(Order.desc("createdDate"));
-        //List<AidrCollection> a = (List<AidrCollection>) criteria.list();
-        return a;
-		//return (List<AidrCollection>) criteria.list();
+        return result;
 	}
 
     @SuppressWarnings("unchecked")
     @Override
-    public Integer getCollectionsCount(final UserEntity user) {
+    public Integer getCollectionsCount(final UserEntity user, final boolean onlyTrashed) {
         return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
             @Override
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
                 Integer userId = user.getId();
+                final String conditionTrashed;
+                if (onlyTrashed) {
+                    conditionTrashed = "=";
+                } else {
+                    conditionTrashed = "!=";
+                }
 
                 String sql = " select count(distinct c.id) " +
                         " FROM AIDR_COLLECTION c " +
                         " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
                         " ON c.id = c_m.id_collection " +
-                        " WHERE (c.status != :statusValue and (c.user_id = :userId or c_m.id_manager = :userId)) ";
+                        " WHERE (c.status " + conditionTrashed + " :statusValue and (c.user_id = :userId or c_m.id_manager = :userId)) ";
 
                 SQLQuery sqlQuery = session.createSQLQuery(sql);
                 sqlQuery.setParameter("userId", userId);

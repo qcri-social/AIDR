@@ -136,8 +136,8 @@ public class CollectionServiceImpl implements CollectionService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AidrCollection> findAll(Integer start, Integer limit, UserEntity user) throws Exception {
-        return collectionRepository.getPaginatedData(start, limit, user);
+    public List<AidrCollection> findAll(Integer start, Integer limit, UserEntity user, boolean onlyTrashed) throws Exception {
+        return collectionRepository.getPaginatedData(start, limit, user, onlyTrashed);
     }
 
     @Override
@@ -444,8 +444,8 @@ public class CollectionServiceImpl implements CollectionService {
 
     @Override
     @Transactional(readOnly = true)
-    public Integer getCollectionsCount(UserEntity user) throws Exception {
-        return collectionRepository.getCollectionsCount(user);
+    public Integer getCollectionsCount(UserEntity user, boolean onlyTrashed) throws Exception {
+        return collectionRepository.getCollectionsCount(user, onlyTrashed);
     }
 
     @Override

@@ -12,9 +12,9 @@ public interface CollectionRepository extends GenericRepository<AidrCollection, 
 
     public List<AidrCollection> searchByName(String query, Integer userId) throws Exception;
 
-    public List<AidrCollection> getPaginatedData(Integer start, Integer limit, UserEntity user);
+    public List<AidrCollection> getPaginatedData(Integer start, Integer limit, UserEntity user, boolean onlyTrashed);
 
-    public Integer getCollectionsCount(UserEntity user);
+    public Integer getCollectionsCount(UserEntity user, boolean onlyTrashed);
 
     public Boolean exist(String code);
 

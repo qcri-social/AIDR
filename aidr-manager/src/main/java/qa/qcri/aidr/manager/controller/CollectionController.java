@@ -303,26 +303,20 @@ public class CollectionController extends BaseController{
 		if (userEntity != null) {
 			List<AidrCollectionTotalDTO> dtoList = new ArrayList<AidrCollectionTotalDTO>();
 			Integer count = 0;
+            boolean onlyTrashed = false;
+            if (trashed != null && trashed.equalsIgnoreCase("yes")) {
+                onlyTrashed = true;
+            }
 			try {
 				Integer userId = userEntity.getId();
-				//                Call update from Fetcher and then get list with updated items
+				// Call update from Fetcher and then get list with updated items
 				collectionService.updateAndGetRunningCollectionStatusByUser(userId);
-
-				count = collectionService.getCollectionsCount(userEntity);
+				count = collectionService.getCollectionsCount(userEntity, onlyTrashed);
 				if (count > 0) {
-					List<AidrCollection> data = collectionService.findAll(start, limit, userEntity);
+                    List<AidrCollection> data = collectionService.findAll(start, limit, userEntity, onlyTrashed);
 					for (AidrCollection collection : data) {
-						if (trashed != null && trashed.equalsIgnoreCase("yes")) {
-							AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
-							dtoList.add(dto);
-						} else {
-							if (!CollectionStatus.TRASHED.equals(collection.getStatus())) {
-								AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
-								dtoList.add(dto);
-							}
-						}
-
-
+                        AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
+                        dtoList.add(dto);
 					}
 				}
 			} catch (Exception e) {
