@@ -54,4 +54,7 @@ public class StatusCodeType {
     public static Integer MIN_VOTE_CUT_OFF_VALUE = 1;
     public static Integer MAX_VOTE_CUT_OFF_VALUE = 2;
 
+
+    public static Integer MAX_APP_HOLD_PERIOD_DAY = -7;
+
 }

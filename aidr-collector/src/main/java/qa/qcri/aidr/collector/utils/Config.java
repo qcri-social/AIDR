@@ -20,8 +20,8 @@ public class Config {
         
         // gf 3 way
         //public static final String FETCHER_REST_URI="http://localhost:8080/AIDRFetcher/webresources/fetcher";
-        //public static final String FETCHER_REST_URI="http://localhost:8084/AIDRCollector/webresources/";		// scd1
-        public static final String FETCHER_REST_URI="http://localhost:8080/AIDRCollector/webresources/";		// koushik
+        public static final String FETCHER_REST_URI="http://localhost:8084/AIDRCollector/webresources/";		// scd1
+        //public static final String FETCHER_REST_URI="http://localhost:8080/AIDRCollector/webresources/";		// koushik
         
         // Default persister related parameters
         public static final boolean DEFAULT_PERSISTER_ENABLED = true;

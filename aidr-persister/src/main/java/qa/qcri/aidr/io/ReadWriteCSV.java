@@ -4,6 +4,7 @@
  */
 package qa.qcri.aidr.io;
 
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -36,12 +37,26 @@ import qa.qcri.aidr.utils.ClassifiedTweet;
  * @author Imran
  */
 public class ReadWriteCSV {
-
-	private static CellProcessor[] getProcessors() {
+	
+	//private static final int BUFFER_SIZE = 10 * 1024 * 1024;
+	
+	private static CellProcessor[] getProcessors4TweetIDSCCSV() {
 
 		final CellProcessor[] processors = new CellProcessor[]{
 				//new UniqueHashCode(), // tweetID (must be unique)
 				new NotNull(),	// tweetID (must be unique)
+		};
+
+
+		return processors;
+	}
+	
+	private static CellProcessor[] getProcessors() {
+
+		final CellProcessor[] processors = new CellProcessor[]{
+				//new UniqueHashCode(), // tweetID (must be unique)
+				//new NotNull(),	// tweetID (must be unique)
+				new Optional(),		// data shows that sometimes tweetID CAN be null!
 				new Optional(), // message
 				//new FmtDate("dd/MM/yyyy"), // birthDate
 				new Optional(), // userID
@@ -61,7 +76,8 @@ public class ReadWriteCSV {
 
 		final CellProcessor[] processors = new CellProcessor[]{
 				//new UniqueHashCode(), // tweetID (must be unique)
-				new NotNull(),	// tweetID (must be unique)
+				//new NotNull(),	// tweetID (must be unique)
+				new Optional(),		// data shows that sometimes tweetID CAN be null!
 				new Optional(), // message
 				new Optional(), // userID
 				new Optional(), // userName
@@ -81,7 +97,7 @@ public class ReadWriteCSV {
 
 		final CellProcessor[] processors = new CellProcessor[]{
 				//new UniqueHashCode(), // tweetID (must be unique)
-				new NotNull(),	// tweetID (must be unique)
+				new NotNull(),	// tweetID (must be unique): sometimes CAN be null!
 				new Optional(), // labelname
 				new Optional(), // labeldescription
 				new Optional(), // confidence
@@ -108,9 +124,14 @@ public class ReadWriteCSV {
 		//ICsvBeanWriter beanWriter = null;
 		try {
 			// the header elements are used to map the bean values to each column (names must match)
-			final String[] header = new String[]{"tweetID", "message","userID", "userName", "userURL", "createdAt", "tweetURL"};
-			final CellProcessor[] processors = getProcessors();
-
+			//final String[] header = new String[]{"tweetID", "message","userID", "userName", "userURL", "createdAt", "tweetURL"};
+			//final CellProcessor[] processors = getProcessors();
+			
+			// koushik: shouldn't we be writing only the tweetIDs?
+			final String[] header = new String[]{"tweetID"};
+			
+			final CellProcessor[] processors = getProcessors4TweetIDSCCSV();
+			
 			String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
 			fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
 			String fileToWrite = persisterDIR + collectionDIR + "/" + fileName + ".csv";
@@ -125,7 +146,9 @@ public class ReadWriteCSV {
 
 			for (final Tweet twt : twtList) {
 				try {
-					beanWriter.write(twt, header, processors);
+					if (twt.getTweetID() != null) {
+						beanWriter.write(twt, header, processors);
+					}
 				} catch (SuperCsvCellProcessorException e) {
 					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeCollectorTweetIDSCSV] SuperCSV error");
 					//e.printStackTrace();
@@ -163,7 +186,9 @@ public class ReadWriteCSV {
 
 			for (final ClassifiedTweet twt : tweetsList) {
 				try {
-					beanWriter.write(twt, header, processors);
+					if (twt.getTweetID() != null) {
+						beanWriter.write(twt, header, processors);
+					}
 				} catch (SuperCsvCellProcessorException e) {
 					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeClassifiedTweetIDsCSV] SuperCSV error");
 					//e.printStackTrace();
@@ -235,7 +260,7 @@ public class ReadWriteCSV {
 					//System.out.println("To WRITE TWEET: " + twt);
 					beanWriter.write(twt, header, processors);
 				} catch (SuperCsvCellProcessorException e) {
-					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeClassifiedTweetsCSV] SuperCSV error");
+					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeClassifiedTweetsCSV] SuperCSV error. Offending tweet: " + twt.getMessage());
 					//e.printStackTrace();
 				}
 			}
@@ -247,9 +272,11 @@ public class ReadWriteCSV {
 		return beanWriter;
 	}
 
+	/*
 	private final static String getDateTime() {
 		DateFormat df = new SimpleDateFormat("yyyyMMdd");  //yyyy-MM-dd_hh:mm:ss
 		//df.setTimeZone(TimeZone.getTimeZone("PST"));  
 		return df.format(new Date());
 	}
+	*/
 }

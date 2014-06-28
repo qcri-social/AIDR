@@ -124,4 +124,31 @@ public class Persister4CollectorAPI {
         String response = "{\"application\":\"aidr-persister\", \"status\":\"RUNNING\"}";
         return Response.ok(response).build();
     }
+    
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    @Path("/genJson")
+    public Response generateJSONFromLastestJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
+    	System.out.println("[generateJSONFromLastestJSON] received request for collection: " + collectionCode);
+    	JsonDeserializer jsonD = new JsonDeserializer();
+        String fileName = jsonD.generateJSON2JSON_100K_BasedOnTweetCount(collectionCode);
+        fileName = Config.SCD1_URL + collectionCode+"/"+fileName;
+        
+        System.out.println("[generateJSONFromLastestJSON] done processing request for collection: " + collectionCode);
+        System.out.println("[generateJSONFromLastestJSON] returning created file: " + fileName);
+        return Response.ok(fileName).build();
+    }
+    
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    @Path("/genJsonTweetIds")
+    public Response generateTweetsIDSJSONFromAllJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
+        System.out.println("[generateTweetsIDSCSVFromAllJSON] received request for collection: " + collectionCode);
+    	JsonDeserializer jsonD = new JsonDeserializer();
+        String fileName = jsonD.generateJson2TweetIdsJson(collectionCode);
+        fileName = Config.SCD1_URL + collectionCode+"/"+fileName;
+        System.out.println("[generateTweetsIDSCSVFromAllJSON] done processing request for collection: " + collectionCode);
+        System.out.println("[generateTweetsIDSCSVFromAllJSON] returning created file: " + fileName);
+        return Response.ok(fileName).build();
+    }
 }

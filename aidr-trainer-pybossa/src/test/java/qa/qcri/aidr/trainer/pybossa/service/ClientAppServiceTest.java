@@ -17,8 +17,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = {"classpath:spring/applicationContext.xml", "classpath:spring/hibernateContext.xml"})
 public class ClientAppServiceTest {
 
-    @Autowired
-    private ClientAppService clientAppService;
+   // @Autowired
+   // private ClientAppService clientAppService;
 
     @Test
     public void testGetAllCrisis() throws Exception {

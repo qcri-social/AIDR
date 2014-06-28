@@ -347,12 +347,31 @@ public class ScreenController extends BaseController{
     }
 
     @RequestMapping("protected/{code}/interactive-view-download")
-    public ModelAndView interactiveViewDownload(@PathVariable(value="code") String code) throws Exception {
-        if (!isHasPermissionForCollection(code)){
-            return new ModelAndView("redirect:/protected/access-error");
+         public ModelAndView interactiveViewDownload(@PathVariable(value="code") String code) throws Exception {
+
+        String userName ="";
+        System.out.println("interactiveViewDownload : ");
+
+        if (isHasPermissionForCollection(code)){
+            userName = getAuthenticatedUserName();
         }
 
-        String userName = getAuthenticatedUserName();
+        return getInteractiveViewDownload(code,userName);
+    }
+
+    @RequestMapping("public/{code}/interactive-view-download")
+    public ModelAndView publicInteractiveViewDownload(@PathVariable(value="code") String code) throws Exception {
+        return getInteractiveViewDownload(code, "");
+    }
+
+    @RequestMapping("public/{code}/{username}/interactive-view-download")
+    public ModelAndView privateInteractiveViewDownload(@PathVariable(value="code") String code,
+                                                       @PathVariable(value="username") String username) throws Exception {
+
+        return getInteractiveViewDownload(code, username);
+    }
+
+    private ModelAndView getInteractiveViewDownload(String code, String userName){
 
         TaggerCrisis crisis = null;
         AidrCollection collection = null;
@@ -375,12 +394,13 @@ public class ScreenController extends BaseController{
             collectionId = collection.getId();
         }
 
-        ModelAndView model = new ModelAndView("tagger/interactive-view-download");
+        ModelAndView model = new ModelAndView("../public/interactive-view-download");
         model.addObject("collectionId", collectionId);
         model.addObject("crisisId", crisisId);
         model.addObject("crisisName", crisisName);
         model.addObject("code", code);
         model.addObject("userName", userName);
+
         return model;
     }
 

@@ -887,6 +887,32 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             cls:'btn btn-blue download-button',
             id: 'generateTweetIdsLink'
         });
+        
+        this.JSONLink = Ext.create('Ext.form.Label', {
+            flex: 1,
+            padding: '5 5 5 5',
+            html: ''
+        });
+
+        this.JsonTweetsIdsLink = Ext.create('Ext.form.Label', {
+            flex: 1,
+            margin: '5 5 5 5',
+            html: ''
+        });
+
+        this.generateJSONButton = Ext.create('Ext.Button', {
+            text: 'Export tweets (.json) (Last 100k tweets)',
+            margin: 5,
+            cls:'btn btn-blue download-button',
+            id: 'generateJSONLink'
+        });
+
+        this.generateJsonTweetIdsButton = Ext.create('Ext.Button', {
+            text: 'Export tweet-ids only (.json) (All tweets)',
+            margin: 5,
+            cls:'btn btn-blue download-button',
+            id: 'generateJsonTweetIdsLink'
+        });
 
         this.usersCombo = Ext.create('Ext.form.field.ComboBox', {
             minChars: 0,
@@ -998,11 +1024,30 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 },
                 {
                     xtype: 'container',
+                    padding: '15 0 0 0',
+                    defaultType: 'label',
+                    layout: 'hbox',
+                    items: [                        
+                        this.generateJSONButton,
+                        this.JSONLink
+                    ]
+                },
+                {
+                    xtype: 'container',
                     defaultType: 'label',
                     layout: 'hbox',
                     items: [
                         this.generateTweetIdsButton,
                         this.tweetsIdsLink
+                    ]
+                },                
+                {
+                    xtype: 'container',
+                    defaultType: 'label',
+                    layout: 'hbox',
+                    items: [                        
+                        this.generateJsonTweetIdsButton,
+                        this.JsonTweetsIdsLink
                     ]
                 }
             ]

@@ -255,6 +255,7 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
                 {
                     id:"tab1",
                     title: 'Collector and Tagger',
+                    margin: '50 0 0 0',
                     items: [
                         this.tab1Desc,
                         this.collectionView,
@@ -263,6 +264,7 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
                 },
                 {
                        title: 'Collector only',
+                       margin: '50 0 0 0',
                        items: [
                            this.tab2Desc,
                            this.runningOnlyCollectionView,
@@ -271,6 +273,7 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
                 },
                 {
                     title: 'Archived data',
+                    margin: '50 0 0 0',
                     items: [
                         this.tab3Desc,
                         this.stoppedCollectionView,

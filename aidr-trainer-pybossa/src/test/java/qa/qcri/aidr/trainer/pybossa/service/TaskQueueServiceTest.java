@@ -24,14 +24,19 @@ import java.util.List;
 @ContextConfiguration(locations = {"classpath:spring/applicationContext.xml", "classpath:spring/hibernateContext.xml"})
 public class TaskQueueServiceTest {
 
-    @Autowired
-    TaskQueueService taskQueueService;
+    //@Autowired
+    //TaskQueueService taskQueueService;
 
-    @Autowired
-    TaskLogService taskLogService;
+   // @Autowired
+   // TaskLogService taskLogService;
 
     @Test
     public void testCreateTaskQueue() throws Exception {
+
+        //long taskQueueID = 86526;
+       // taskLogService.deleteAbandonedTaskLog(taskQueueID);
+       // taskQueueService.deleteAbandonedTaskQueue(taskQueueID);
+
         /**
             JSONParser parser = new JSONParser();
             List<Long> arrayList = new ArrayList<Long>();

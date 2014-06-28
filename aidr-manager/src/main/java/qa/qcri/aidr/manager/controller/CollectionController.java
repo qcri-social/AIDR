@@ -647,5 +647,31 @@ public class CollectionController extends BaseController{
 
 		return dto;
 	}
+	
+	
+	@RequestMapping(value = "/generateJSONLink.action", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String,Object> generateJSONLink(@RequestParam String code) throws Exception {
+		String result = "";
+		try {
+			result = collectionLogService.generateJSONLink(code);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+		}
+		return getUIWrapper(result,true);
+	}
 
+	@RequestMapping(value = "/generateJsonTweetIdsLink.action", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String,Object> generateJsonTweetIdsLink(@RequestParam String code) throws Exception {
+		String result = "";
+		try {
+			result = collectionLogService.generateJsonTweetIdsLink(code);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+		}
+		return getUIWrapper(result,true);
+	}
 }

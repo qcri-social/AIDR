@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 
+import org.eclipse.persistence.sessions.Session;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -70,5 +72,17 @@ public class BaseController {
 			throw new Exception("No user logged in ");
 		}
 	}
+
+    protected String getPublicUserName() throws Exception{
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+
+        if(authentication != null){
+            return authentication.getName();
+        }else{
+            return null;
+        }
+    }
 
 }

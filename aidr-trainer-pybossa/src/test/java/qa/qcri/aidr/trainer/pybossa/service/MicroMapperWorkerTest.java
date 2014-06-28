@@ -18,20 +18,19 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 public class MicroMapperWorkerTest {
 
-    @Autowired
-    private MicroMapperWorker microMapperWorker;
+  //  @Autowired
+  //  private MicroMapperWorker microMapperWorker;
 
-    @Autowired
-    private ClientAppResponseService clientAppResponseService;
+  //  @Autowired
+  //  private ClientAppResponseService clientAppResponseService;
 
     @Test
     public void testProcessTaskPublish() throws Exception {
 
       //  List<TaskQueueResponse> responseList =  clientAppResponseService.getTaskQueueResponseByContent();
-     //
-     //   microMapperWorker.processTaskPublish();
-      //microMapperWorker.processTaskImport();
-      //  microMapperWorker.processTaskExport();
+     // microMapperWorker.processTaskPublish();
+     // microMapperWorker.processTaskImport();
+     // microMapperWorker.processTaskExport();
     }
 
 }

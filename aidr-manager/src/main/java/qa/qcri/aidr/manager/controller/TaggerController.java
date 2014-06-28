@@ -623,5 +623,34 @@ public class TaggerController extends BaseController {
 		result.add(taskAnswer);
 		return result;
 	}
+	
+	@RequestMapping(value = "/taggerGenerateJSONLink.action", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String,Object> generateJSONLink(@RequestParam String code) throws Exception {
+		String result = "";
+		try {
+			result = taggerService.generateJSONLink(code);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+		}
+		return getUIWrapper(result,true);
+	}
+
+	// Added by koushik
+	@RequestMapping(value = "/taggerGenerateJsonTweetIdsLink.action", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String,Object> generateJsonTweetIdsLink(@RequestParam String code) throws Exception {
+		System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
+		String result = "";
+		try {
+			result = taggerService.generateJsonTweetIdsLink(code);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+		}
+		System.out.println("[Controller generateTweetIdsLink] Returning success: " + result);
+		return getUIWrapper(result,true);
+	}
 
 }
