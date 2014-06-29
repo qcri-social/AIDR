@@ -17,5 +17,6 @@ public interface AbstractDao<E, I extends Serializable> {
     E findByCriterionID(Criterion criterion);
     List<E> findByCriteria(Criterion criterion, Integer count) ;
     List<E> findByCriteriaByOrder(Criterion criterion, String[] orderBy, Integer count);
+    List<E> getMaxOrderByCriteria(Criterion criterion, String orderBy) ;
     List<E> findByCriteriaWithAliasByOrder(Criterion criterion, String[] orderBy, Integer count, String aliasTable, Criterion aliasCriterion);
 }

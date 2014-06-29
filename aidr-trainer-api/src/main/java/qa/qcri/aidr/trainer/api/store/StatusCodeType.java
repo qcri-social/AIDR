@@ -48,6 +48,8 @@ public class StatusCodeType {
     public static String RETURN_SUCCESS = "{\"return\": \"success\"}";
     public static String RETURN_FAIL = "{\"return\": \"failed\"}";
 
-
+    public static Integer DRONE_VIDEO_PENDING = 0;
+    public static Integer DRONE_VIDEO_APPROVED = 1;
+    public static Integer DRONE_VIDEO_REJECTED = 2;
 
 }

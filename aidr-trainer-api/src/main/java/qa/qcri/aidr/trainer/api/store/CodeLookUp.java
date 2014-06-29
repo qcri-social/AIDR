@@ -28,6 +28,7 @@ public class CodeLookUp {
     public static Integer APP_SERVICE_SUCCESSFUL = 200;
     public static Integer APP_SERVICE_REQUST_FOUND_DUPLICATION_ENTRY = 500;
 
+    public static Integer APP_REQUEST_SUCCESS = 200;
 
     public static Integer PUBLIC_LANDING_PAGE_TOP = 1;
     public static Integer PUBLIC_LANDING_PAGE_BOTTOM = 2;
@@ -52,6 +53,6 @@ public class CodeLookUp {
     public static Integer DOCUMENT_REMAINING_COUNT = 20;
 
 
-    public static Integer APP_REQUEST_SUCCESS = 200;
+    public static Integer MAX_APP_HOLD_PERIOD_DAY = 7;
 
 }

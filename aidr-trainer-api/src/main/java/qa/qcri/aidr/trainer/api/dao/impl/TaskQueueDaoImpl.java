@@ -1,5 +1,6 @@
 package qa.qcri.aidr.trainer.api.dao.impl;
 
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import qa.qcri.aidr.trainer.api.dao.TaskQueueDao;
@@ -63,6 +64,12 @@ public class TaskQueueDaoImpl extends AbstractDaoImpl<TaskQueue, String> impleme
         return findByCriteria(Restrictions.conjunction()
                 .add(Restrictions.eq("clientAppID", clientAppID))
                 .add(Restrictions.ne("status", StatusCodeType.TASK_ABANDONED)));
+    }
+
+    @Override
+    public List<TaskQueue> findLatestTaskQueue(Long clientAppID) {
+        Criterion criterion = Restrictions.eq("clientAppID",clientAppID);
+        return getMaxOrderByCriteria(criterion, "updated");
     }
 
 }

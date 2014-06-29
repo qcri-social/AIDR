@@ -68,7 +68,17 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
     }
 
     @Override
-    public List<E> findByCriteriaByOrder(Criterion criterion, String[] orderBy, Integer count) {
+    public List<E> getMaxOrderByCriteria(Criterion criterion, String orderBy) {
+        Criteria criteria = getCurrentSession().createCriteria(entityClass);
+        criteria.add(criterion);
+        criteria.addOrder(Order.desc(orderBy));
+        criteria.setMaxResults(1);
+
+        return criteria.list();
+    }
+
+    @Override
+     public List<E> findByCriteriaByOrder(Criterion criterion, String[] orderBy, Integer count) {
         Criteria criteria = getCurrentSession().createCriteria(entityClass);
         criteria.add(criterion);
         for(int i = 0; i< orderBy.length; i++){
