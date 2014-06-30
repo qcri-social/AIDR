@@ -169,6 +169,12 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 }
             },
 
+            "#collectionUntrash": {
+                click: function (btn, e, eOpts) {
+                    datailsController.untrashCollection();
+                }
+            },
+
             '#collectionUpdate': {
                 click: function (btn, e, eOpts) {
                     if (AIDRFMFunctions.mandatoryFieldsEntered()) {
@@ -506,12 +512,25 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         if (raw == 'RUNNING-WARNNING' || raw == 'RUNNING' || raw == 'INITIALIZING'){
             this.DetailsComponent.startButton.hide();
+            this.DetailsComponent.enableTaggerButton.show();
             this.DetailsComponent.enableTaggerButton.enable();
             this.DetailsComponent.stopButton.show();
+            this.DetailsComponent.trashButton.show();
+            this.DetailsComponent.untrashButton.hide();
+        } else if (raw == 'TRASHED') {
+            this.DetailsComponent.startButton.hide();
+            this.DetailsComponent.stopButton.hide();
+            this.DetailsComponent.enableTaggerButton.hide();
+            this.DetailsComponent.enableTaggerButton.disable();
+            this.DetailsComponent.trashButton.hide();
+            this.DetailsComponent.untrashButton.show();
         } else {
             this.DetailsComponent.startButton.show();
+            this.DetailsComponent.enableTaggerButton.show();
             this.DetailsComponent.enableTaggerButton.disable();
             this.DetailsComponent.stopButton.hide();
+            this.DetailsComponent.trashButton.show();
+            this.DetailsComponent.untrashButton.hide();
         } 
         
         this.DetailsComponent.statusL.setText(statusText, false);
@@ -677,6 +696,40 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                         var data = resp.data;
 //                        me.updateTrashedDetailsPanel(data);
                         document.location.href = BASE_URL + '/protected/home';
+                    }
+                } else {
+                    AIDRFMFunctions.setAlert("Error", resp.message);
+                }
+            },
+            failure: function () {
+                mask.hide();
+            }
+        });
+    },
+
+    untrashCollection: function () {
+        var me = this;
+        var id = datailsController.DetailsComponent.currentCollection.id;
+
+        var mask = AIDRFMFunctions.getMask();
+        mask.show();
+
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/collection/untrash.action',
+            method: 'GET',
+            params: {
+                id: id
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                mask.hide();
+                var resp = Ext.decode(response.responseText);
+                if (resp.success) {
+                    if (resp.data) {
+                        var data = resp.data;
+                        me.refreshStatus(id);
                     }
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);

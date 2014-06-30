@@ -268,7 +268,16 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             text: 'Delete Collection',
             cls:'btn btn-red',
             id: 'collectionTrash',
-            margin: '25 0 0 0'
+            margin: '25 0 0 0',
+            hidden: true
+        });
+
+        this.untrashButton = Ext.create('Ext.Button', {
+            text: 'Untrash Collection',
+            cls:'btn btn-red',
+            id: 'collectionUntrash',
+            margin: '25 0 0 0',
+            hidden: true
         });
 
         this.configurationsEditTabL = Ext.create('Ext.form.Label', {
@@ -296,7 +305,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             cls:'btn btn-blue',
             id: 'enableTagger',
             margin: '0 0 0 10',
-            disabled: true
+            disabled: true,
+            hidden: true
         });
 
         this.gotoTaggerButton = Ext.create('Ext.Button', {
@@ -853,7 +863,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                         xtype: 'container',
                                         flex: 1
                                     },
-                                    this.trashButton
+                                    this.trashButton,
+                                    this.untrashButton
                             ]
                         }
                                 

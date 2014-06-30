@@ -1358,17 +1358,17 @@ public class TaggerServiceImpl implements TaggerService {
 	}
 
 	@Override
-	public int untrashCollection(AidrCollection collection) throws Exception {
-		System.out.println("[untrashCollection] request received for collection: " + collection.getCode());
+	public int untrashCollection(String collectionCode) throws Exception {
+		System.out.println("[untrashCollection] request received for collection: " + collectionCode);
 		try {
 			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
-			WebTarget webResource = client.target(taggerMainUrl + "/manage/collection/untrash/crisis/" + collection.getCode());
+			WebTarget webResource = client.target(taggerMainUrl + "/manage/collection/untrash/crisis/" + collectionCode);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
 			String jsonResponse = clientResponse.readEntity(String.class);
 			System.out.println("[untrashCollection] response from tagger-api: " + jsonResponse);
 			if (jsonResponse != null && jsonResponse.equalsIgnoreCase("{\"status\": \"UNTRASHED\"}")) {
-				System.out.println("[trashCollection] Success in untrashing + " + collection.getCode());
+				System.out.println("[trashCollection] Success in untrashing + " + collectionCode);
 				return 1;
 			} else {
 				return 0;

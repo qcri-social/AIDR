@@ -90,26 +90,18 @@ public class CollectionServiceImpl implements CollectionService {
         collectionRepository.save(collection);
     }
 
+//  this method is common to get collection and should not filter by status
     @Override
     @Transactional(readOnly = true)
     public AidrCollection findById(Integer id) throws Exception {
-        AidrCollection temp = collectionRepository.findById(id);
-        if (!temp.getStatus().equals(CollectionStatus.TRASHED)) {
-        	return temp;
-        }
-        return null;
-        	
+        return collectionRepository.findById(id);
     }
 
+//  this method is common to get collection and should not filter by status
     @Override
     @Transactional(readOnly = true)
     public AidrCollection findByCode(String code) throws Exception {
-    	AidrCollection temp = collectionRepository.findByCode(code);
-        if (!temp.getStatus().equals(CollectionStatus.TRASHED)) {
-        	return temp;
-        }
-        return null;
-    	
+        return collectionRepository.findByCode(code);
     }
 
    @Override

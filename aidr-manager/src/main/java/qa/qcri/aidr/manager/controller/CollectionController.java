@@ -190,12 +190,13 @@ public class CollectionController extends BaseController{
 	public Map<String,Object> untrash( AidrCollection collection) throws Exception {
 		AidrCollection trashedCollection = collectionService.findTrashedById(collection.getId());
 		if (trashedCollection != null) {
+//            in collection object we will have only id field, all required data it trashedCollection which we get from DB
 			logger.info("Untrashing collection having code " + collection.getCode());
 			try{
-				if (taggerService.untrashCollection(collection) > 0) {
-					collection.setStatus(CollectionStatus.STOPPED);
-					collectionService.update(collection);
-					AidrCollection c = collectionService.start(collection.getId());
+				if (taggerService.untrashCollection(trashedCollection.getCode()) > 0) {
+                    trashedCollection.setStatus(CollectionStatus.STOPPED);
+					collectionService.update(trashedCollection);
+					AidrCollection c = collectionService.start(trashedCollection.getId());
 					return getUIWrapper(true);  
 				} else {
 					logger.error("Attempting to untrash collection " + collection.getCode() + " failed! ");

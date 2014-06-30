@@ -95,7 +95,7 @@ public interface TaggerService {
 	public int trashCollection(AidrCollection collection) throws Exception;
 	
 	//Added by koushik
-	public int untrashCollection(AidrCollection collection) throws Exception;
+	public int untrashCollection(String collectionCode) throws Exception;
 
     public String loadLatestTweetsWithCount(String code, int count) throws AidrException;
 
