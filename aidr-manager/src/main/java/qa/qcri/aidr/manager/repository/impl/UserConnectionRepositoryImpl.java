@@ -1,6 +1,7 @@
 package qa.qcri.aidr.manager.repository.impl;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
@@ -20,4 +21,10 @@ public class UserConnectionRepositoryImpl  extends GenericRepositoryImpl<UserCon
 		return (UserConnection) criteria.uniqueResult();
 	}
 
+    @Override
+    public List<UserConnection> getByUserId(String userId) {
+        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(UserConnection.class);
+        criteria.add(Restrictions.eq("userId", userId));
+        return criteria.list();
+    }
 }
