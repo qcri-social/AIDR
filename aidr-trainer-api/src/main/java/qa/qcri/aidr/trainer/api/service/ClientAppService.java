@@ -27,5 +27,6 @@ public interface ClientAppService {
     void deactivateClientAppByCrisis(Long crisisID) throws Exception;
     void deactivateClientAppByAttribute(Long crisisID, Long attributeID) throws Exception;
     List<ClientAppModel> getAllActiveClientApps();
+    String enableForClientAppStatusByCrisisID(Long crisisID, Integer status);
 
 }

@@ -24,6 +24,7 @@ public class CodeLookUp {
 
     public static Integer APP_STATUS_ALIVE = 200;
     public static Integer APP_SERVICE_COMPLETED = 200;
+    public static Integer APP_SERVICE_FAIL = 500;
 
     public static Integer APP_SERVICE_SUCCESSFUL = 200;
     public static Integer APP_SERVICE_REQUST_FOUND_DUPLICATION_ENTRY = 500;

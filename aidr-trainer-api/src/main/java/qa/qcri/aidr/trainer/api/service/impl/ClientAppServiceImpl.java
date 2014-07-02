@@ -75,6 +75,45 @@ public class ClientAppServiceImpl implements ClientAppService {
     }
 
     @Override
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    public String enableForClientAppStatusByCrisisID(Long crisisID, Integer status) {
+
+        if(findActiveMobilePushClientApp()){
+            return StatusCodeType.MOBILE_STATUS_UPDATE_FAIL_RUNING_APP;
+        }
+
+        String returnValue = "";
+
+        List<ClientApp> apps = getAllClientAppByCrisisID(crisisID);
+        int count = 0;
+        ClientApp clientApp = null;
+        for(ClientApp app : apps){
+            if(app.getStatus().equals(StatusCodeType.AIDR_MICROMAPPER_BOTH)){
+                clientApp = app;
+                count++;
+            }
+            if(app.getStatus().equals(StatusCodeType.AIDR_ONLY)){
+                clientApp = app;
+                count++;
+            }
+        }
+        if(clientApp == null){
+            returnValue = StatusCodeType.MOBILE_STATUS_UPDATE_FAIL_WITH_NO_APP ;
+        }
+
+        if(count > 1){
+            returnValue = StatusCodeType.MOBILE_STATUS_UPDATE_FAIL_MULTI_APP ;
+        }
+
+        if(clientApp != null && count == 1){
+            clientAppDao.updateClientAppStatus(clientApp, status);
+            returnValue = StatusCodeType.RETURN_SUCCESS;
+        }
+
+        return returnValue;
+    }
+
+    @Override
     public ClientApp getClientAppByCrisisAndAttribute(Long crisisID, Long attributeID) {
         List<ClientApp> appList = clientAppDao.findClientAppByCrisisAndAttribute(crisisID, attributeID);
         if(appList.size() > 0){
@@ -145,4 +184,16 @@ public class ClientAppServiceImpl implements ClientAppService {
         return aList;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+
+    private boolean findActiveMobilePushClientApp(){
+        List<ClientApp> appList = clientAppDao.getAllActiveClientApp();
+        if(appList.isEmpty() || appList.size() > 0){
+            for(ClientApp app : appList){
+                if(app.getStatus().equals(StatusCodeType.AIDR_MICROMAPPER_BOTH)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

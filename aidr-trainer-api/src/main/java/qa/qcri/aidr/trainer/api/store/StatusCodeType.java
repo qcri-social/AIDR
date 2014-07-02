@@ -46,10 +46,13 @@ public class StatusCodeType {
     public static Integer DEPLOYMENT_INACTIVE = 3;
 
     public static String RETURN_SUCCESS = "{\"return\": \"success\"}";
-    public static String RETURN_FAIL = "{\"return\": \"failed\"}";
+    public static String RETURN_FAIL = "{\"return\": \"failed\", , \"status\":500}";
 
     public static Integer DRONE_VIDEO_PENDING = 0;
     public static Integer DRONE_VIDEO_APPROVED = 1;
     public static Integer DRONE_VIDEO_REJECTED = 2;
 
+    public static String MOBILE_STATUS_UPDATE_FAIL_WITH_NO_APP = "{\"return\": \"no clientApp found\", \"status\":500}";
+    public static String MOBILE_STATUS_UPDATE_FAIL_MULTI_APP = "{\"return\": \"more than 1 active clientApp found\", \"status\":500}";
+    public static String MOBILE_STATUS_UPDATE_FAIL_RUNING_APP = "{\"return\": \"running clientApp found\", \"status\":500}";
 }
