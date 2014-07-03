@@ -174,4 +174,4 @@ The `aidr-task-manager` module is meant to provide a unified view of the `aidr_p
 
 * CDI deployment failure when attempting deployment of a module. The workaround is to toggle the `scope` of the glassfish 4.0 specific dependencies in the `pom.xml` file between `provided` and `compile`. 
 
-* Tagger-API throws remote EJB exception `java.lang.NoClassDefFoundError` (org.omg.CORBA.MARSHAL: WARNING: IOP00810010: Error from readValue on ValueHandler in CDRInputStream vmcid: OMG minor code: 10 completed). `Solution`: downgrade to java version `1.7.0_51` or upgrade to `1.8.0_*`.
+* Tagger-API throws remote EJB exception `java.lang.NoClassDefFoundError` (org.omg.CORBA.MARSHAL: WARNING: IOP00810010: Error from readValue on ValueHandler in CDRInputStream vmcid: OMG minor code: 10 completed) for `AIDRTaskManger` remote EJB methods. `Solution`: downgrade to java version `1.7.0_51` or upgrade to `1.8.0_*`.
