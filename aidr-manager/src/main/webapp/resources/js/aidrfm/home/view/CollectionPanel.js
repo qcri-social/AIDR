@@ -12,19 +12,6 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
     initComponent: function () {
         var me = this;
 
-        this.collectionTitle = Ext.create('Ext.form.Label', {
-            cls: 'header-h1 bold-text',
-            text: 'My Collections',
-            flex: 1
-        });
-
-        this.collectionTrashedTitle = Ext.create('Ext.form.Label', {
-            cls: 'header-h2 bold-text',
-            text: 'Trashed Collections',
-            padding: '25 0 0 0',
-            flex: 1
-        });
-
         this.collectionDescription = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '7 0 0 0',
@@ -34,7 +21,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
 
         this.goToAdminSection = Ext.create('Ext.Button', {
             text: 'Administrator console',
-            margin: '27 0 0 15',
+            margin: '0 0 0 15',
             cls:'btn btn-blue',
             id: 'goToAdminSection',
             hidden: true
@@ -42,14 +29,14 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
 
         this.newCollectionButton = Ext.create('Ext.Button', {
             text: 'Create New Collection',
-            margin: '27 0 0 15',
+            margin: '0 0 0 15',
             cls:'btn btn-blue',
             id: 'newCollection'
         });
 
         this.manageCrisisButton = Ext.create('Ext.Button', {
             text: 'My Classifiers',
-            margin: '27 0 0 15',
+            margin: '0 0 0 15',
             cls:'btn btn-blue',
             id: 'manageCrisis'
         });
@@ -203,11 +190,11 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                 load: function (store, records, successful, operation, eOpts) {
                     var count = store.getCount();
                     if (count > 0) {
-                        me.collectionTrashedTitle.show();
+                        Ext.getCmp('collectionsTabs').child('#trashedCollection').tab.show();
                         me.collectionTrashedView.show();
                         me.collectionTrashedPaging.show();
                     } else {
-                        me.collectionTrashedTitle.hide();
+                        Ext.getCmp('collectionsTabs').child('#trashedCollection').tab.hide();
                         me.collectionTrashedView.hide();
                         me.collectionTrashedPaging.hide();
                     }
@@ -277,45 +264,57 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
 
         this.items = [
             {
-                xtype: 'container',
-                layout: {
-                    type: 'vbox',
-                    align: 'stretch'
+                xtype:'tabpanel',
+                cls: 'tabPanel',
+                id:'collectionsTabs',
+                plain: true,
+
+                tabBar: {
+                    items: [
+                        {
+                            xtype: 'tbfill'
+                        },
+                        this.goToAdminSection,
+                        this.newCollectionButton,
+                        this.manageCrisisButton
+                    ]
                 },
+
                 items: [
                     {
-                        xtype: 'container',
-                        layout: 'hbox',
-                        margin: '5 0',
-                        items: [
-                            this.collectionTitle,
-                            this.goToAdminSection,
-                            this.newCollectionButton,
-                            this.manageCrisisButton
+                        title:'My Collections',
+                        items:[
+                            {
+                                xtype: 'container',
+                                layout: 'hbox',
+                                margin: '5 0',
+                                items: [
+                                    this.collectionDescription,
+                                    this.refreshButton
+                                ]
+                            },
+                            {
+                                xtype: 'container',
+                                width: '100%',
+                                html: '<div class="horizontalLine"></div>'
+                            },
+                            this.collectionView,
+                            this.collectionPaging
                         ]
                     },
+
                     {
-                        xtype: 'container',
-                        layout: 'hbox',
-                        margin: '5 0',
+                        title:'Trashed Collections',
+                        itemId:'trashedCollection',
                         items: [
-                            this.collectionDescription,
-                            this.refreshButton
+                            this.collectionTrashedView,
+                            this.collectionTrashedPaging
                         ]
                     }
                 ]
-            },
-            {
-                xtype: 'container',
-                width: '100%',
-                html: '<div class="horizontalLine"></div>'
-            },
-            this.collectionView,
-            this.collectionPaging,
-            this.collectionTrashedTitle,
-            this.collectionTrashedView,
-            this.collectionTrashedPaging
-        ];
+            }
+
+        ]
 
         this.callParent(arguments);
     }
