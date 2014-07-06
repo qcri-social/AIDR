@@ -3,7 +3,7 @@ package qa.qcri.aidr.predict.common;
 /**
  * Helper class for error logging.
  * 
- * @author jrogstadius
+ * @author jrogstadius & Imran
  */
 public abstract class Loggable {
     public enum LogLevel {

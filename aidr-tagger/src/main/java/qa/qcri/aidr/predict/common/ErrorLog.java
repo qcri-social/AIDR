@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 /**
  * Light-weight helper class for error logging.
  * 
- * @author jrogstadius
+ * @author jrogstadius & Imran
  */
 public class ErrorLog {
 

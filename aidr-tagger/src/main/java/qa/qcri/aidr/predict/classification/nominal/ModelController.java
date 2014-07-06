@@ -18,7 +18,7 @@ import qa.qcri.aidr.predict.dbentities.ModelFamilyEC;
  * ModelController handles classification of DocumentSet objects, with the
  * assumption that feature extraction has been done previously in the pipeline.
  *
- * @author jrogstadius
+ * @author jrogstadius & Imran
  */
 public class ModelController extends PipelineProcess {
 
@@ -208,7 +208,7 @@ public class ModelController extends PipelineProcess {
     }
 
     private boolean loadModel(int eventID, int attributeID, int modelID) {
-        // Load and deserialize the model
+        // Load models from dish and deserialize
         Object[] o;
         try {
             String path = getModelPath(eventID, attributeID, modelID);
