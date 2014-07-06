@@ -190,8 +190,7 @@ public class CollectionController extends BaseController{
 	public Map<String,Object> untrash( AidrCollection collection) throws Exception {
 		AidrCollection trashedCollection = collectionService.findTrashedById(collection.getId());
 		if (trashedCollection != null) {
-//            in collection object we will have only id field, all required data it trashedCollection which we get from DB
-			logger.info("Untrashing collection having code " + collection.getCode());
+			logger.info("Untrashing collection having code " + trashedCollection.getCode());
 			try{
 				if (taggerService.untrashCollection(trashedCollection.getCode()) > 0) {
                     trashedCollection.setStatus(CollectionStatus.STOPPED);
@@ -199,16 +198,19 @@ public class CollectionController extends BaseController{
 					AidrCollection c = collectionService.start(trashedCollection.getId());
 					return getUIWrapper(true);  
 				} else {
-					logger.error("Attempting to untrash collection " + collection.getCode() + " failed! ");
-					return getUIWrapper(false);
+                    String msg = "Attempting to untrash collection " + trashedCollection.getCode() + " failed! ";
+					logger.error(msg);
+					return getUIWrapper(false, msg);
 				}
 			}catch(Exception e){
-				logger.error("Error while untrashing AIDR Collection " + collection.getCode());
-				return getUIWrapper(false); 
+                String msg = "Error while untrashing AIDR Collection " + trashedCollection.getCode();
+				logger.error(msg);
+				return getUIWrapper(false, msg);
 			}
 		} else {
-			logger.error("Attempting to untrash collection " + collection.getCode() + " that does not exist.");
-			return getUIWrapper(false);
+            String msg = "Attempting to untrash collection " + collection.getCode() + " that does not exist.";
+			logger.error(msg);
+			return getUIWrapper(false, msg);
 		}
 	}
 

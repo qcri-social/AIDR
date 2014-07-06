@@ -710,6 +710,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
     untrashCollection: function () {
         var me = this;
         var id = datailsController.DetailsComponent.currentCollection.id;
+        var code = datailsController.DetailsComponent.currentCollection.code;
 
         var mask = AIDRFMFunctions.getMask();
         mask.show();
@@ -718,7 +719,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             url: BASE_URL + '/protected/collection/untrash.action',
             method: 'GET',
             params: {
-                id: id
+                id: id,
+                code: code
             },
             headers: {
                 'Accept': 'application/json'
@@ -727,10 +729,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 mask.hide();
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
-                    if (resp.data) {
-                        var data = resp.data;
-                        me.refreshStatus(id);
-                    }
+                    me.refreshStatus(id);
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }

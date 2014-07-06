@@ -2,6 +2,7 @@ package qa.qcri.aidr.trainer.api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import qa.qcri.aidr.trainer.api.entity.ClientApp;
 import qa.qcri.aidr.trainer.api.service.ClientAppService;
 import qa.qcri.aidr.trainer.api.store.CodeLookUp;
 import qa.qcri.aidr.trainer.api.store.StatusCodeType;
@@ -29,7 +30,7 @@ public class ClientAppController {
     private ClientAppService clientAppService;
 
     @GET
-    @Produces({MediaType.APPLICATION_JSON, MediaType.WILDCARD})
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/delete/{crisiscode}/{attributecode}")
     public Response getCrisisByID(@PathParam("crisiscode") String crisiscode,
                                 @PathParam("attributecode") String attributecode){
@@ -37,13 +38,12 @@ public class ClientAppController {
         String shortName = crisiscode+"_"+ attributecode;
         clientAppService.updateClientAppByShortName(shortName, StatusCodeType.CLIENT_APP_INACTIVE);
 
-        String returnValue = "{\"status\":200}";
-        return Response.status(CodeLookUp.APP_SERVICE_COMPLETED).entity(returnValue).build();
+        return Response.status(CodeLookUp.APP_SERVICE_COMPLETED).entity(StatusCodeType.POST_COMPLETED).build();
 
     }
 
     @GET
-    @Produces({MediaType.APPLICATION_JSON, MediaType.WILDCARD})
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/delete/crisis/{crisisID}")
     public Response disableClientApps(@PathParam("crisisID") Long crisisID){
 
@@ -59,7 +59,7 @@ public class ClientAppController {
     }
 
     @GET
-    @Produces({MediaType.APPLICATION_JSON, MediaType.WILDCARD})
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/delete/attribute/{crisisID}/{attributeID}")
     public Response disableClientApp(@PathParam("crisisID") Long crisisID, @PathParam("attributeID") Long attributeID){
 
@@ -75,10 +75,28 @@ public class ClientAppController {
     }
 
     @GET
-    @Produces({MediaType.APPLICATION_JSON, MediaType.WILDCARD})
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/allactive")
     public List<ClientAppModel> getAllActive(){
         return clientAppService.getAllActiveClientApps();
+    }
+
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/get/crisis/{crisisID}")
+    public List<ClientApp> getClientAppsByCrisisID(@PathParam("crisisID") Long crisisID){
+        return clientAppService.getAllClientAppByCrisisID(crisisID);
+    }
+
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/activate/mobile/crisis/{crisisID}")
+    public Response enableMobileClientAppByCrisisID(@PathParam("crisisID") Long crisisID){
+        Integer status = StatusCodeType.AIDR_MICROMAPPER_BOTH;
+        String returnValue = clientAppService.enableForClientAppStatusByCrisisID(crisisID, status);
+        return Response.status(CodeLookUp.APP_SERVICE_COMPLETED).entity(returnValue).build();
     }
 
 
