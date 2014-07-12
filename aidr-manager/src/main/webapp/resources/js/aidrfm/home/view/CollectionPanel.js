@@ -10,7 +10,10 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
     alias: 'widget.collection-view',
 
     initComponent: function () {
-        var me = this;
+        var me = this,
+            whiteLoadingMaskCfg = {
+                maskCls: 'white-loading-mask x-mask'
+            };
 
         this.collectionDescription = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
@@ -21,7 +24,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
 
         this.goToAdminSection = Ext.create('Ext.Button', {
             text: 'Administrator console',
-            margin: '0 0 0 15',
+            margin: '6 0 0 15',
             cls:'btn btn-blue',
             id: 'goToAdminSection',
             hidden: true
@@ -29,14 +32,14 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
 
         this.newCollectionButton = Ext.create('Ext.Button', {
             text: 'Create New Collection',
-            margin: '0 0 0 15',
+            margin: '6 0 0 15',
             cls:'btn btn-blue',
             id: 'newCollection'
         });
 
         this.manageCrisisButton = Ext.create('Ext.Button', {
             text: 'My Classifiers',
-            margin: '0 0 0 15',
+            margin: '6 0 0 15',
             cls:'btn btn-blue',
             id: 'manageCrisis'
         });
@@ -45,6 +48,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
             text: null,
             height: 32,
             width: 32,
+            margin: '0 0 0 20',
             tooltip: 'Refresh',
             iconCls: 'refrashIcon',
             id: 'refreshBtn'
@@ -153,10 +157,13 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
             }
         );
 
+
         this.collectionView = Ext.create('Ext.view.View', {
             store: this.collectionStore,
             tpl: this.collectionTpl,
-            itemSelector: 'div.active'
+            itemSelector: 'div.active',
+            loadMask: whiteLoadingMaskCfg
+
         });
 
         this.collectionPaging = Ext.create('Ext.toolbar.Paging', {
@@ -250,7 +257,8 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
         this.collectionTrashedView = Ext.create('Ext.view.View', {
             store: this.collectionTrashedStore,
             tpl: this.collectionTrashedTpl,
-            itemSelector: 'div.active'
+            itemSelector: 'div.active',
+            loadMask: whiteLoadingMaskCfg
         });
 
         this.collectionTrashedPaging = Ext.create('Ext.toolbar.Paging', {
@@ -264,39 +272,43 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
 
         this.items = [
             {
+                xtype: 'container',
+                layout: 'hbox',
+                margin: '5 0 40 0',
+                items: [
+                    this.collectionDescription,
+                    this.goToAdminSection,
+                    this.newCollectionButton,
+                    this.manageCrisisButton,
+                    this.refreshButton
+                ]
+
+
+            },
+            {
                 xtype:'tabpanel',
                 cls: 'tabPanel',
                 id:'collectionsTabs',
                 plain: true,
-
-                tabBar: {
-                    items: [
-                        {
-                            xtype: 'tbfill'
-                        },
-                        this.goToAdminSection,
-                        this.newCollectionButton,
-                        this.manageCrisisButton
-                    ]
+                listeners: {
+                    tabchange: function( tabPanel, newCard, oldCard, eOpts ){
+                        if(newCard.itemId == "trashedCollection"){
+                            me.refreshButton.hide();
+                        } else {
+                            me.refreshButton.show();
+                        }
+                    }
                 },
+
 
                 items: [
                     {
                         title:'My Collections',
+                        height: '500',
                         items:[
                             {
-                                xtype: 'container',
-                                layout: 'hbox',
-                                margin: '5 0',
-                                items: [
-                                    this.collectionDescription,
-                                    this.refreshButton
-                                ]
-                            },
-                            {
-                                xtype: 'container',
-                                width: '100%',
-                                html: '<div class="horizontalLine"></div>'
+                                xtype: "container",
+                                margin: "20 0"
                             },
                             this.collectionView,
                             this.collectionPaging
@@ -307,6 +319,11 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                         title:'Trashed Collections',
                         itemId:'trashedCollection',
                         items: [
+                            {
+                                xtype: "container",
+                                margin: "20 0"
+                            },
+
                             this.collectionTrashedView,
                             this.collectionTrashedPaging
                         ]

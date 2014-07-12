@@ -453,6 +453,10 @@ Overriding of the standard ExtJs styles for tab panel
     box-shadow: 0 6px #FFF,0 0 8px #CCC;
 }
 
+.white-loading-mask {
+    background: #fff !important;
+}
+
 .x-border-box .x-tab-bar-top .x-tab-bar-body {
     height: 29px;
 }
