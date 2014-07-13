@@ -47,6 +47,11 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             text: 'Collection History'
         });
 
+        this.collectionHistoryDoNotChangeMessage = Ext.create('Ext.panel.Panel', {
+            html: '<div style="padding-top:150px"><center><div style="font-size:16pt">This collection has not changed since it was created.</div></center></div>',
+            hidden: true
+        });
+
         this.statusL = Ext.create('Ext.form.Label', {padding: '0 10 0 0'});
         this.lastStartedL = Ext.create('Ext.form.Label', {flex: 1});
         this.lastStoppedL = Ext.create('Ext.form.Label', {flex: 1});
@@ -247,7 +252,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 '<tpl if="xindex == 56"><hr/>Other ...<hr/></tpl>' +
                 '</tpl>'
         });
- 
+
         this.startButton = Ext.create('Ext.Button', {
             text: 'Start',
             margin: 0,
@@ -263,7 +268,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             margin: '0 0 0 10',
             hidden: true
         });
-        
+
         this.trashButton = Ext.create('Ext.Button', {
             text: 'Delete Collection',
             cls:'btn btn-red',
@@ -344,11 +349,12 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         me.collectionHistoryTitle.show();
                         me.collectionLogView.show();
                         me.collectionLogPaging.show();
+                        me.collectionHistoryDoNotChangeMessage.hide();
                     } else {
                         me.collectionHistoryTitle.hide();
                         me.collectionLogView.hide();
                         me.collectionLogPaging.hide();
-                        me.tabPanel.html = '<div style="padding-top:150px"><center><div style="font-size:16pt">This collection has not changed since it was created.</div></center></div>';
+                        me.collectionHistoryDoNotChangeMessage.show();
                     }
                 }
             }
@@ -843,10 +849,10 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 this.languageFiltersL
                             ]
                         },
-                        
+
                         {
                             xtype: 'container',
-                            defaultType: 'label', 
+                            defaultType: 'label',
                             padding: '5 0 0 0',
                             layout: 'hbox',
                             items: [
@@ -856,7 +862,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     	layout: 'vbox',
                                     	items: [
                                     	        this.administrationL,
-                                    	        this.managersL        
+                                    	        this.managersL
                                     	]
                                     },
                                     {
@@ -867,7 +873,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     this.untrashButton
                             ]
                         }
-                                
+
                     ]
                 }
             ]
@@ -898,7 +904,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             cls:'btn btn-blue download-button',
             id: 'generateTweetIdsLink'
         });
-        
+
         this.JSONLink = Ext.create('Ext.form.Label', {
             flex: 1,
             padding: '5 5 5 5',
@@ -1038,7 +1044,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     padding: '15 0 0 0',
                     defaultType: 'label',
                     layout: 'hbox',
-                    items: [                        
+                    items: [
                         this.generateJSONButton,
                         this.JSONLink
                     ]
@@ -1051,12 +1057,12 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         this.generateTweetIdsButton,
                         this.tweetsIdsLink
                     ]
-                },                
+                },
                 {
                     xtype: 'container',
                     defaultType: 'label',
                     layout: 'hbox',
-                    items: [                        
+                    items: [
                         this.generateJsonTweetIdsButton,
                         this.JsonTweetsIdsLink
                     ]
@@ -1110,13 +1116,14 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             layout: {
                                 type: 'vbox',
                                 align: 'stretch'
-                            },                    
+                            },
                             items: [
                                 this.collectionHistoryTitle,
                                 this.collectionLogView,
                                 this.collectionLogPaging
                             ]
-                        }
+                        },
+                        this.collectionHistoryDoNotChangeMessage
                     ]
                 },
                 {
@@ -1129,7 +1136,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         this.editForm
                     ]
                 },
-                ,
+
                 {
                     title: 'Permissions',
                     padding: '10 0 0 0',
