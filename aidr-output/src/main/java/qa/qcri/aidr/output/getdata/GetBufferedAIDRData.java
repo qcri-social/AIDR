@@ -104,7 +104,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	private static final String DEFAULT_COUNT_STR = "50";
 
 	private static SimpleRateLimiter channelSelector;		// select a channel to display
-	private static String lastSentLatestTweet = null;
+	private static StringBuffer lastSentLatestTweet = null;
 	
 	private static ChannelBufferManager cbManager; 			// managing buffers for each publishing channel
 	private static final boolean rejectNullFlag = true;
@@ -171,24 +171,21 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			// Get the last count number of messages for channel=channelCode
 			List<String> bufferedMessages = new ArrayList<String>();
 			final int messageCount = Integer.parseInt(count);		// number of latest messages across all channels to return
-			List<String> temp = cbManager.getLatestFromAllChannels(messageCount);
+			List<String> temp = cbManager.getLatestFromAllChannels(messageCount, confidence);
 			bufferedMessages.addAll(temp != null ? temp : new ArrayList<String>());
 			if (temp != null) {
 				temp.clear();
 				temp = null;
 			}
-
+			
 			// Added code for filteredMessages as per new feature: pivotal #67373070
 			List<String> filteredMessages = new ArrayList<String>();			
 			ClassifiedFilteredTweet workingTweet = new ClassifiedFilteredTweet(); 
 			for (String tweet: bufferedMessages) {
 				ClassifiedFilteredTweet classifiedTweet = workingTweet.deserialize(tweet);
-				if (classifiedTweet.getMaxConfidence() >= confidence) {
-					filteredMessages.add(tweet);
-					channelSelector.initializeNew(classifiedTweet.getCrisisCode());					
-				} else {
-					//logger.info("[getLatestBufferedAIDRData] Dropping tweet for channel " + classifiedTweet.getCrisisCode() + " due to low confidence: " + classifiedTweet.getMaxConfidence());
-				}
+				filteredMessages.add(tweet);
+				channelSelector.initializeNew(classifiedTweet.getCrisisCode());	
+				//logger.info("[getLatestBufferedAIDRData] Added tweet from channel " + classifiedTweet.getCrisisCode() + ", confidence: " + classifiedTweet.getMaxConfidence());
 			}
 			workingTweet = null;
 			
@@ -197,18 +194,17 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			if (!balanced_sampling) {
 				jsonDataList = taggerOutput.createList(filteredMessages, messageCount, rejectNullFlag);
 			} else {
-				//logger.info("[getLatestBufferedAIDRData] going for Rate Limited");
+				//logger.info("[getLatestBufferedAIDRData] going for Rate Limited, buffer size = " + filteredMessages.size() + " from original size = " + bufferedMessages.size());
 				jsonDataList = taggerOutput.createRateLimitedList(filteredMessages, channelSelector, messageCount, rejectNullFlag);
 			}
 			final int sendCount = taggerOutput.getMessageCount();
-			if (sendCount == 0) {
+			if (jsonDataList.indexOf("[{}]") > -1) {
 				// Nothing to send = so send the last sent data again!
 				jsonDataList.delete(0, jsonDataList.length());		// clear 
 				jsonDataList.append(lastSentLatestTweet);
 			} else {
-				synchronized(this) {
-					lastSentLatestTweet = new String(jsonDataList.toString());
-				}
+				lastSentLatestTweet.delete(0, lastSentLatestTweet.length());	//clear
+				lastSentLatestTweet.append(jsonDataList);
 			}
 			//logger.info("[getLatestBufferedAIDRData] send count = " + sendCount);
 			
@@ -590,6 +586,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		// Most important action - setup channel buffering thread
 		cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
 		channelSelector = new SimpleRateLimiter();
+		lastSentLatestTweet = new StringBuffer(); 
 		logger.info("[GetBufferedAIDRData] Context Initialized");
 	}
 }

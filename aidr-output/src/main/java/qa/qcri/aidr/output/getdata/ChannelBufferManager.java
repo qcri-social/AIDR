@@ -41,6 +41,7 @@ import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.DatabaseController;
 import qa.qcri.aidr.output.utils.DatabaseInterface;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
+import qa.qcri.aidr.output.utils.QuickSort;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
@@ -151,7 +152,7 @@ public class ChannelBufferManager {
 				logger.debug("[ChannelBufferManager] Created HashMap");
 			}
 		}
-		
+
 		try {
 			dbController = new DatabaseController();
 			logger.info("[ChannelBufferManager] Created dbController = " + dbController);
@@ -297,7 +298,7 @@ public class ChannelBufferManager {
 	 * @param channelName
 	 * @return true if channel is publicly listed, false otherwise
 	 */
-	
+
 	private boolean isChannelPublic(String channelName) {
 		//logger.info("[isChannelPublic] Received request for channel: " + channelName);
 		//first strip off the prefix aidr_predict.
@@ -317,7 +318,7 @@ public class ChannelBufferManager {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Used in conjunction with getAllRunningCollections()
 	 * @param channelName: channel code of channel to test
@@ -326,7 +327,7 @@ public class ChannelBufferManager {
 	 */
 	private boolean isChannelPublic(String channelName, Map<String, Boolean> collectionList) {
 		//logger.info("[isChannelPublic] Received request for channel: " + channelName);
-		
+
 		//first strip off the prefix aidr_predict.
 		String channelCode = channelName;
 		if (channelName.startsWith(CHANNEL_PREFIX_STRING)) {
@@ -353,7 +354,7 @@ public class ChannelBufferManager {
 					+ "/public/collection/findAllRunning.action?start=0&limit=10000");
 
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-			
+
 			String jsonResponse = clientResponse.readEntity(String.class);
 			//System.out.println("[getAllRunningCollections] Response received" + jsonResponse);
 			if (jsonResponse != null) {
@@ -365,7 +366,7 @@ public class ChannelBufferManager {
 					JsonParser parser = new JsonParser();
 					JsonObject obj = (JsonObject) parser.parse(jsonResponse);
 					//System.out.println("[getAllRunningCollections] Response parsed");
-					
+
 					JsonArray jsonData= null;
 					if (obj.has("data")) {			// if false, then something wrong in AIDR setup
 						jsonData = obj.get("data").getAsJsonArray();
@@ -396,17 +397,17 @@ public class ChannelBufferManager {
 	/**
 	 * @return List of latest tweets seen on all active channels, one tweet/channel, null if none found
 	 */
-	public List<String> getLatestFromAllChannels(final int msgCount) {
+	public List<String> getLatestFromAllChannels(final int msgCount, final float confidenceThreshold) {
 		final List<ChannelBuffer>cbList = new ArrayList<ChannelBuffer>();
 		List<String>dataSet = new ArrayList<String>();
 
 		// First get a list of all running collections from aidr-manager through REST call
 		//Map<String, Boolean> collectionList = getAllRunningCollections();
-		final int EXTRA = 100;
+		final int EXTRA = 10;
 		cbList.addAll(ChannelBufferManager.subscribedChannels.values());
 		int k = -1;
 		for (ChannelBuffer temp: cbList) {
-			//System.out.println("cbList size = " + cbList.size() + ", Channel buffer: " + temp.getChannelName());
+			//System.out.println("cbList size = " + cbList.size() + ", Channel buffer: " + temp.getChannelName() + "isPublic = " + isChannelPublic(temp.getChannelName()));
 			if (isChannelPublic(temp.getChannelName())) {
 				final List<String> tempList = temp.getLIFOMessages(msgCount+EXTRA);		// reverse-chronologically ordered list
 				if (!tempList.isEmpty()) {
@@ -417,36 +418,59 @@ public class ChannelBufferManager {
 						//System.out.println("Channel: " + tweet.getCrisisCode() + ", time: " + tweet.getCreatedAt() + ", conf=" + tweet.getMaxConfidence());
 						long tweetTime = tweet.getCreatedAt().getTime();
 						if (k < 0) {
-							dataSet.add(k+1, tempList.get(i));
-							++k;
+							if (tweet.getMaxConfidence() >= confidenceThreshold) {
+								dataSet.add(k+1, tempList.get(i));
+								++k;
+								//logger.info("Added the very first tweet from channel: " + tweet.getCrisisCode());
+							}
 						}
 						else {
 							// get the last stored tweet in the dataSet
 							ClassifiedFilteredTweet lastStoredTweet = new ClassifiedFilteredTweet().deserialize(dataSet.get(k));
-							
+
 							// rule 1: if more recent, include
-							if (lastStoredTweet.getCreatedAt().getTime() < tweetTime) {
+							if (lastStoredTweet.getCreatedAt().getTime() < tweetTime 
+									&& tweet.getMaxConfidence() >= confidenceThreshold) {
 								dataSet.add(k+1, tempList.get(i));
 								++k;
-								//System.out.println("Added using rule 1 from channel: " + tweet.getCrisisCode());
+								//logger.info("Added using rule 1 from channel: " + tweet.getCrisisCode());
 							}
 
 							// rule 2: if not recent but from another channel, include
 							if (lastStoredTweet.getCreatedAt().getTime() >= tweetTime
-									&& !lastStoredTweet.getCrisisCode().equals(tweet.getCrisisCode())) {
+									&& !lastStoredTweet.getCrisisCode().equals(tweet.getCrisisCode())
+									&& tweet.getMaxConfidence() >= confidenceThreshold) {
 								String tempTweet = dataSet.remove(k);
 								dataSet.add(k, tempList.get(i));
 								dataSet.add(k+1,tempTweet);
 								++k;
-								//System.out.println("Added using rule 2 from channel: " + tweet.getCrisisCode());
+								//logger.info("Added using rule 2 from channel: " + tweet.getCrisisCode());
+							}
+
+							// rule 3: if timestamps are same for same crisis, include higher confidence
+							if (lastStoredTweet.getCreatedAt().getTime() == tweetTime
+									&& lastStoredTweet.getCrisisCode().equals(tweet.getCrisisCode())
+									&& lastStoredTweet.getMaxConfidence() < tweet.getMaxConfidence()) {
+								dataSet.add(k+1, tempList.get(i));
+								++k;
+								//logger.info("Added using rule 3 from channel: " + tweet.getCrisisCode());
 							}
 						}
 					}
 				}
 			}	// end if (isChannelPublic)
 		}	// end for
+		// Now sort the dataSet in ascending order of timestamp
+		QuickSort sorter = new QuickSort();
+		sorter.sort(dataSet);
+		for (int i = 0;i < dataSet.size();i++) {
+			ClassifiedFilteredTweet tweet = new ClassifiedFilteredTweet().deserialize(dataSet.get(i));
+			//System.out.println("timestamp = " + tweet.getCreatedAt().getTime());
+		}
 		return dataSet;
 	}
+
+
 
 	public Date extractTweetTimestampField(String tweet) {
 		String offsetString = "\"created_at\":\"";

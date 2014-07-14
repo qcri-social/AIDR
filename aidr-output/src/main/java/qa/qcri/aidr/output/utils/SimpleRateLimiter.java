@@ -141,10 +141,6 @@ public class SimpleRateLimiter extends RateLimiter {
 			return false;
 		}
 		
-		public boolean existsNoRateLimitedKey() {
-			return !existsNotRateLimitedKey();
-		}
-		
 		public boolean existsNotRateLimitedKeyExclude(String excludeKey) {
 			for (String key : freq.keySet()) {
 				if (!isRateLimited(key) && !key.equalsIgnoreCase(excludeKey)) {

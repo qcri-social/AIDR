@@ -96,7 +96,7 @@ public class JsonDataFormatter {
 			}
 			if (count == 0) { 
 				//if (existsFlag || (!channelSelector.existsNotRateLimitedKey() && !bufferedMessages.isEmpty())) {
-				if (existsFlag && channelSelector.existsNoRateLimitedKey()) {
+				if (existsFlag && !channelSelector.existsNotRateLimitedKey()) {
 					// reset all rate limits
 					channelSelector.initializeAll();
 					//logger.info("Reset rate limits - again attempting, attempt = " + attempt);
