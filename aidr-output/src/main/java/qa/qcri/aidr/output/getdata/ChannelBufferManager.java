@@ -402,15 +402,15 @@ public class ChannelBufferManager {
 
 		// First get a list of all running collections from aidr-manager through REST call
 		//Map<String, Boolean> collectionList = getAllRunningCollections();
-
+		final int EXTRA = 100;
 		cbList.addAll(ChannelBufferManager.subscribedChannels.values());
 		int k = -1;
 		for (ChannelBuffer temp: cbList) {
 			//System.out.println("cbList size = " + cbList.size() + ", Channel buffer: " + temp.getChannelName());
 			if (isChannelPublic(temp.getChannelName())) {
-				final List<String> tempList = temp.getLIFOMessages(msgCount+4);		// reverse-chronologically ordered list
+				final List<String> tempList = temp.getLIFOMessages(msgCount+EXTRA);		// reverse-chronologically ordered list
 				if (!tempList.isEmpty()) {
-					int channelFetchSize = Math.min(msgCount+4,tempList.size());
+					int channelFetchSize = Math.min(msgCount+EXTRA,tempList.size());
 					for (int i = 0;i < channelFetchSize;i++) {
 						//System.out.println("TWEET: " + tempList.get(i));
 						ClassifiedFilteredTweet tweet = new ClassifiedFilteredTweet().deserialize(tempList.get(i));
@@ -421,8 +421,9 @@ public class ChannelBufferManager {
 							++k;
 						}
 						else {
-							ClassifiedFilteredTweet lastStoredTweet = new ClassifiedFilteredTweet()
-							.deserialize(dataSet.get(k));
+							// get the last stored tweet in the dataSet
+							ClassifiedFilteredTweet lastStoredTweet = new ClassifiedFilteredTweet().deserialize(dataSet.get(k));
+							
 							// rule 1: if more recent, include
 							if (lastStoredTweet.getCreatedAt().getTime() < tweetTime) {
 								dataSet.add(k+1, tempList.get(i));

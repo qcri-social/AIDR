@@ -42,3 +42,13 @@ ALTER TABLE AIDR_COLLECTION ADD CONSTRAINT UNIQUE (name)
 17 March 2014: Run the following script to add default running duration to the collection table in aidr_fetch_manager database.
 =============================================================================================================================
 UPDATE AIDR_COLLECTION SET durationHours=48 WHERE durationHours IS NULL;
+
+
+14 July, 2014: Run the following script to add isTrashed column to the crisis table in aidr_predict database.
+=============================================================================================================
+ALTER TABLE aidr_predict.crisis ADD COLUMN `isTrashed` bit(1) NOT NULL DEFAULT b'0';
+
+
+14 July, 2014: Run the following script to add publiclyListed column to the AIDR_COLLECTION table in aidr_fetch_manager database.
+=================================================================================================================================
+ALTER TABLE aidr_fetch_manager.AIDR_COLLECTION ADD COLUMN `publiclyListed` bit(1) NOT NULL DEFAULT b'1';

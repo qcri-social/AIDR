@@ -42,7 +42,7 @@
             if(searchKey !="" && typeof searchKey != 'undefined'){
                 $.ajax({
                     type: 'GET',
-                    url: 'http://aidr-dev.qcri.org/AIDROutput/rest/crisis/fetch/channel/'+searchKey+'?callback=jsonp&count=1000',
+                    url: 'http://aidr-dev.qcri.org:1055/AIDROutput/rest/crisis/fetch/channel/'+searchKey+'?callback=jsonp&count=1000',
                     dataType: 'jsonp',
                     success: renderList,
                     error: FailedRenderList,

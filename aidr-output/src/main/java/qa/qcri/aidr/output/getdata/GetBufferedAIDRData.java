@@ -104,7 +104,8 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	private static final String DEFAULT_COUNT_STR = "50";
 
 	private static SimpleRateLimiter channelSelector;		// select a channel to display
-
+	private static String lastSentLatestTweet = null;
+	
 	private static ChannelBufferManager cbManager; 			// managing buffers for each publishing channel
 	private static final boolean rejectNullFlag = true;
 	/////////////////////////////////////////////////////////////////////////////
@@ -184,20 +185,33 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				ClassifiedFilteredTweet classifiedTweet = workingTweet.deserialize(tweet);
 				if (classifiedTweet.getMaxConfidence() >= confidence) {
 					filteredMessages.add(tweet);
-					channelSelector.initializeNew(classifiedTweet.getCrisisCode());
+					channelSelector.initializeNew(classifiedTweet.getCrisisCode());					
+				} else {
+					//logger.info("[getLatestBufferedAIDRData] Dropping tweet for channel " + classifiedTweet.getCrisisCode() + " due to low confidence: " + classifiedTweet.getMaxConfidence());
 				}
 			}
-
+			workingTweet = null;
+			
 			final JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
 			final StringBuilder jsonDataList;
 			if (!balanced_sampling) {
 				jsonDataList = taggerOutput.createList(filteredMessages, messageCount, rejectNullFlag);
 			} else {
-				//System.out.println("[getLatestBufferedAIDRData] going for Rate Limited");
+				//logger.info("[getLatestBufferedAIDRData] going for Rate Limited");
 				jsonDataList = taggerOutput.createRateLimitedList(filteredMessages, channelSelector, messageCount, rejectNullFlag);
 			}
 			final int sendCount = taggerOutput.getMessageCount();
-
+			if (sendCount == 0) {
+				// Nothing to send = so send the last sent data again!
+				jsonDataList.delete(0, jsonDataList.length());		// clear 
+				jsonDataList.append(lastSentLatestTweet);
+			} else {
+				synchronized(this) {
+					lastSentLatestTweet = new String(jsonDataList.toString());
+				}
+			}
+			//logger.info("[getLatestBufferedAIDRData] send count = " + sendCount);
+			
 			// Reset the messageList buffer and return
 			bufferedMessages.clear();
 			bufferedMessages = null;
@@ -208,6 +222,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			// Finally, send the retrieved list to client and close connection
 			return Response.ok(jsonDataList.toString()).build();
 		}
+		logger.error("[getLatestBufferedAIDRData] Error in jedis connection. Bailing out...");
 		return Response.ok(new String("[{}]")).build();
 	}
 
@@ -251,6 +266,9 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			}
 			if (error)
 			{	
+				logger.warn("[getBufferedAIDRData] Error in channel name: " + channelCode);
+				return Response.ok(new String("[{}]")).build();
+				/*
 				Set<String> channelList = cbManager.getActiveChannelsList();
 				StringBuilder htmlMessageString = new StringBuilder();
 
@@ -274,6 +292,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				channelList = null;
 
 				return Response.ok(htmlMessageString.toString()).build();
+				*/
 			}
 			else {
 				// Form fully qualified channelName and get other parameter values, if any
@@ -320,6 +339,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				}
 			}
 		}
+		logger.error("[getBufferedAIDRData] Error in jedis connection. Bailing out...");
 		return Response.ok(new String("[{}]")).build();
 	}
 
@@ -352,7 +372,12 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		DeserializeFilters des = new DeserializeFilters();
 		JsonQueryList queryList = des.deserializeConstraints(queryString);
 		
-		logger.info("[getBufferedAIDRDataPostFilter] Received POST list: " + queryList.toString());
+		if (queryList != null) {
+			logger.info("[getBufferedAIDRDataPostFilter] Received POST list: " + queryList.toString());
+		} else {
+			logger.info("[getBufferedAIDRDataPostFilter] Received POST list: " + queryList);
+			//queryList = new JsonQueryList();
+		}
 
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {
 			boolean error = false;
@@ -375,7 +400,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					channelName = CHANNEL_PREFIX_STRING.concat(channelCode);	// fully qualified channel name - same as REDIS channel
 				}
 				if (isChannelPresent(channelName)) {
-					System.out.println("[getBufferedAIDRDataPostFilter] Going for channel data fetch: " + channelName);
+					logger.info("[getBufferedAIDRDataPostFilter] Going for channel data fetch: " + channelName);
 					int msgCount = Integer.parseInt(count);
 					int messageCount = DEFAULT_COUNT;
 					if (msgCount > 0) {
@@ -388,7 +413,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 
 					// Now filter the retrieved bufferedMessages list
 					FilterQueryMatcher tweetFilter = new FilterQueryMatcher();
-					tweetFilter.queryList.setConstraints(queryList);
+					if (queryList != null) tweetFilter.queryList.setConstraints(queryList);
 					tweetFilter.buildMatcherArray();
 
 					// Now to serially filter each tweet in the bufferedMessages list
@@ -438,6 +463,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 							.build();
 				}
 				else {
+					logger.warn("[getBufferedAIDRDataPostFilter] channel name doesn't exist: " + channelName);
 					if (callbackName != null) {
 						StringBuilder respStr = new StringBuilder();
 						respStr.append(callbackName).append("([{}])");
@@ -459,6 +485,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				}
 			}
 		}
+		logger.error("[getBufferedAIDRDataPostFilter] Error in jedis connection. Bailing out...");
 		return Response.ok(new String("[{}]"))
 				.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
 				.header("Access-Control-Allow-Origin", "*")

@@ -20,12 +20,12 @@ public class JsonQueryList implements Serializable {
 	}
 
 	public void setConstraints(JsonQueryList query) {
-		constraints.addAll(query.constraints);
+		if (query != null) constraints.addAll(query.constraints);
 	}
 
 
 	public void createConstraint(GenericInputQuery query) {
-		constraints.add(query);
+		if (query != null) constraints.add(query);
 	}
 
 	@JsonProperty("constraints")
@@ -46,22 +46,24 @@ public class JsonQueryList implements Serializable {
 		StringBuilder object = new StringBuilder();
 		int constraintCount = 0;
 		object.append("{\"constraints\": [");
-		for (GenericInputQuery q: constraints) {
-			object.append("{\"query_type\": \"").append(q.queryType).append("\", ");
-			if (q.classifier_code != null) {
-				object.append("\"classifier_code\": \"").append(q.classifier_code).append("\", ");
-			} else {
-				object.append("\"classifier_code\": null, ");
+		if (constraints != null) {
+			for (GenericInputQuery q: constraints) {
+				object.append("{\"query_type\": \"").append(q.queryType).append("\", ");
+				if (q.classifier_code != null) {
+					object.append("\"classifier_code\": \"").append(q.classifier_code).append("\", ");
+				} else {
+					object.append("\"classifier_code\": null, ");
+				}
+				object.append("\"comparator\": \"").append(q.comparator).append("\", ");
+				object.append("\"timestamp\": ").append(q.timestamp).append(", ");
+				if (q.label_code != null) {
+					object.append("\"label_code\": \"").append(q.label_code).append("\", ");
+				} else {
+					object.append("\"label_code\": null, ");
+				}
+				object.append("\"min_confidence\": ").append(q.min_confidence).append("},");
+				++constraintCount;
 			}
-			object.append("\"comparator\": \"").append(q.comparator).append("\", ");
-			object.append("\"timestamp\": ").append(q.timestamp).append(", ");
-			if (q.label_code != null) {
-				object.append("\"label_code\": \"").append(q.label_code).append("\", ");
-			} else {
-				object.append("\"label_code\": null, ");
-			}
-			object.append("\"min_confidence\": ").append(q.min_confidence).append("},");
-			++constraintCount;
 		}
 		if (constraintCount == 0)  
 			object.append("]}");

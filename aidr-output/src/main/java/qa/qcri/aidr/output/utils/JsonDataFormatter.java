@@ -26,39 +26,38 @@ public class JsonDataFormatter {
 		// Now, build the jsonp object to be sent - data in reverse chronological order.
 		// The entire collection of json objects are wrapped with a single callback function.
 		StringBuilder jsonDataList = new StringBuilder();
-		//synchronized (bufferedMessages) 
-		{
-			count = 0;		
-			if (callbackName != null) 
-				jsonDataList.append(callbackName).append("([");
-			else 
-				jsonDataList.append("[");
 
-			ListIterator<String> itr = bufferedMessages.listIterator(bufferedMessages.size());  // Must be in synchronized block
-			while (itr.hasPrevious() && count < messageCount) {
-				final String msg = itr.previous();
-				final TaggerJsonOutputAdapter jsonOutput = new TaggerJsonOutputAdapter();
-				final String jsonData = (msg != null) ? jsonOutput.buildJsonString(msg, rejectNullFlag) : null;
-				//logger.info("[createList] json string: " + jsonData);
-				if (jsonData != null) {
-					jsonDataList.append(jsonData);
-					++count;
-					if ((count < messageCount) && itr.hasPrevious()) jsonDataList.append(",");		// otherwise, this was the last message to append
-				}
-			}
-			if (count == 0) {
-				// send empty jsonp object
-				jsonDataList.append(callbackName != null ? new String("{}])") : new String("{}]"));
-			} 
-			else {
-				// there are json objects to send
-				//jsonDataList.deleteCharAt(jsonDataList.lastIndexOf(","));		// delete the extra "," at the end of the json string
-				if (callbackName != null) 
-					jsonDataList.append("])");
-				else 
-					jsonDataList.append("]");
+		count = 0;		
+		if (callbackName != null) 
+			jsonDataList.append(callbackName).append("([");
+		else 
+			jsonDataList.append("[");
+
+		ListIterator<String> itr = bufferedMessages.listIterator(bufferedMessages.size());  // Must be in synchronized block
+		while (itr.hasPrevious() && count < messageCount) {
+			final String msg = itr.previous();
+			final TaggerJsonOutputAdapter jsonOutput = new TaggerJsonOutputAdapter();
+			final String jsonData = (msg != null) ? jsonOutput.buildJsonString(msg, rejectNullFlag) : null;
+			//logger.info("[createList] json string: " + jsonData);
+			if (jsonData != null) {
+				jsonDataList.append(jsonData);
+				++count;
+				if ((count < messageCount) && itr.hasPrevious()) jsonDataList.append(",");		// otherwise, this was the last message to append
 			}
 		}
+		if (count == 0) {
+			// send empty jsonp object
+			jsonDataList.append(callbackName != null ? new String("{}])") : new String("{}]"));
+		} 
+		else {
+			// there are json objects to send
+			//jsonDataList.deleteCharAt(jsonDataList.lastIndexOf(","));		// delete the extra "," at the end of the json string
+			if (callbackName != null) 
+				jsonDataList.append("])");
+			else 
+				jsonDataList.append("]");
+		}
+
 		return jsonDataList;
 	}
 
@@ -75,35 +74,36 @@ public class JsonDataFormatter {
 				jsonDataList.append(callbackName).append("([");
 			else 
 				jsonDataList.append("[");
-			
+
 			ListIterator<String> itr = bufferedMessages.listIterator(bufferedMessages.size());  
 			while (itr.hasPrevious() && count < messageCount) {
 				final String msg = itr.previous();
 				final TaggerJsonOutputAdapter jsonOutput = new TaggerJsonOutputAdapter();
 				final String jsonData = (msg != null) ? jsonOutput.buildJsonString(msg, rejectNullFlag) : null;
-				
-				//System.out.println("[createRateLimitedList] channel: " + jsonOutput.getCrisisCode() + ", freq = " + channelSelector.getValue(jsonOutput.getCrisisCode()) + ", rate limited = " + channelSelector.isRateLimited(jsonOutput.getCrisisCode()));
+
+				//logger.info("[createRateLimitedList] channel: " + jsonOutput.getCrisisCode() + ", freq = " + channelSelector.getValue(jsonOutput.getCrisisCode()) + ", rate limited = " + channelSelector.isRateLimited(jsonOutput.getCrisisCode()));
 				//logger.info("[createRateLimitedList] json string: " + jsonData);
-				
-				existsFlag = jsonData != null ? true : false;
+
+				existsFlag = (jsonData != null) ? true : false;
 				if (jsonData != null && !channelSelector.isRateLimited(jsonOutput.getCrisisCode())) {
 					jsonDataList.append(jsonData);
 					channelSelector.increment(jsonOutput.getCrisisCode());
-	
-					//System.out.println("[createRateLimitedList] Added tweet to send list, freq = " + channelSelector.getValue(jsonOutput.getCrisisCode()));
+
+					//logger.info("[createRateLimitedList] Added tweet to send list, freq = " + channelSelector.getValue(jsonOutput.getCrisisCode()));
 					++count;
 					if (count < messageCount && itr.hasPrevious()) jsonDataList.append(",");		// otherwise, this was the last message to append
 				}
 			}
 			if (count == 0) { 
-				if (existsFlag || (!channelSelector.existsNotRateLimitedKey() && !bufferedMessages.isEmpty())) {
+				//if (existsFlag || (!channelSelector.existsNotRateLimitedKey() && !bufferedMessages.isEmpty())) {
+				if (existsFlag && channelSelector.existsNoRateLimitedKey()) {
 					// reset all rate limits
 					channelSelector.initializeAll();
-					//System.out.println("Reset rate limits - again attempting, attempt = " + attempt);
+					//logger.info("Reset rate limits - again attempting, attempt = " + attempt);
 				} else {
 					attempt = false;		// no point retrying
 					// send empty jsonp object
-					//System.out.println("Done attempting, attempt = " + attempt);
+					//logger.info("Giving up on attempting - no data! attempt = " + attempt);
 					jsonDataList.append(callbackName != null ? new String("{}])") : new String("{}]"));
 				}
 			} 
@@ -111,7 +111,7 @@ public class JsonDataFormatter {
 				// there are json objects to send
 				//jsonDataList.deleteCharAt(jsonDataList.lastIndexOf(","));		// delete the extra "," at the end of the json string
 				attempt = false;
-				//System.out.println("Done attempting: sending data, attempt = " + attempt);
+				//logger.info("Done attempting: sending data, attempt = " + attempt);
 				if (callbackName != null) 
 					jsonDataList.append("])");
 				else 
