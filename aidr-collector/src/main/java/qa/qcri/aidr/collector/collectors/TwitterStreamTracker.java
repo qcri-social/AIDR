@@ -26,10 +26,10 @@ import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusListener;
+import twitter4j.TwitterObjectFactory;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.conf.ConfigurationBuilder;
-import twitter4j.json.DataObjectFactory;
 
 /**
  *
@@ -69,10 +69,12 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
 
         StatusListener listener = new StatusListener() {
             JSONObject tweetJSONObject = null;
+            CollectionTask collection = GenericCache.getInstance().getTwtConfigMap(getCacheKey());
 
             @Override
             public void onStatus(Status status) {
-                String rawTweetJson = DataObjectFactory.getRawJSON(status);
+                //String rawTweetJson = DataObjectFactory.getRawJSON(status);
+                String rawTweetJson = TwitterObjectFactory.getRawJSON(status);
 
                 try {
                     tweetJSONObject = new JSONObject(rawTweetJson);
@@ -88,30 +90,30 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
                 } catch (JSONException ex) {
                     Logger.getLogger(TwitterStreamTracker.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (Exception exp) {
-                    Logger.getLogger(TwitterStreamTracker.class.getName()).log(Level.SEVERE, null, exp);
+                    Logger.getLogger("Exception for " + collectionName + " in "  + TwitterStreamTracker.class.getName()).log(Level.SEVERE, null, exp);
                 }
             }
 
             @Override
             public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-                System.out.println(statusDeletionNotice.toString());
-                log(LogLevel.ERROR, statusDeletionNotice.toString());
             }
 
             @Override
             public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-                CollectionTask coll = GenericCache.getInstance().getTwtConfigMap(getCacheKey());
-                coll.setStatusCode(Config.STATUS_CODE_COLLECTION_RUNNING_WARNING);
-                coll.setStatusMessage("Track limitation notice: " + numberOfLimitedStatuses);
-                GenericCache.getInstance().setTwtConfigMap(getCacheKey(), coll);
-                log(LogLevel.ERROR, "Track limitation notice: " + numberOfLimitedStatuses);
+                collection.setStatusCode(Config.STATUS_CODE_COLLECTION_RUNNING_WARNING);
+                collection.setStatusMessage("Track limitation notice: " + numberOfLimitedStatuses);
+                GenericCache.getInstance().setTwtConfigMap(getCacheKey(), collection);
+                log(LogLevel.WARNING, "Track limitation notice: " + numberOfLimitedStatuses);
 
             }
 
             @Override
             public void onException(Exception ex) {
-                System.out.println("Twitter Exception: " + ex.toString());
-                log(LogLevel.ERROR, ex.toString());
+                System.out.println("Twitter Exception for collection " + collection.getCollectionCode() + " - " + ex.toString());
+                log(LogLevel.WARNING, ex.toString());
+                System.out.println("Aborting collection..." + collection.getCollectionCode());
+                collection.setStatusCode(Config.STATUS_CODE_COLLECTION_ERROR);
+                abortCollection();
             }
 
             @Override
@@ -121,21 +123,25 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
             @Override
             public void onStallWarning(StallWarning arg0) {
                 System.out.println("Stall Warning: " + arg0.getMessage());
-                log(LogLevel.ERROR, arg0.toString());
+                log(LogLevel.WARNING, arg0.toString());
             }
 
             public void publishMessage(Status status, String rawTweetJSON) {
 
-                StringBuilder tweet = new StringBuilder(rawTweetJSON);
-                JSONObject aidrObject = new JSONObject(new FetcherResponseToStringChannel(new AIDR(getCollectionCode(), getCollectionName(), "twitter")));
-                String aidrJson = StringUtils.replace(aidrObject.toString(), "{", ",", 1); // replacing first occurance of { with ,
-                tweet.replace(rawTweetJSON.lastIndexOf("}"), rawTweetJSON.lastIndexOf("}") + 1, aidrJson);
-                publisherJedis.publish(Config.FETCHER_CHANNEL + "." + getCollectionCode(), tweet.toString());
-                counter++;
-                if (counter >= Config.FETCHER_REDIS_COUNTER_UPDATE_THRESHOLD) {
-                    GenericCache.getInstance().incrCounter(getCacheKey(), counter);
-                    GenericCache.getInstance().setLastDownloadedDoc(getCacheKey(), status.getText());
-                    counter = new Long(0);
+                try {
+                    StringBuilder tweet = new StringBuilder(rawTweetJSON);
+                    JSONObject aidrObject = new JSONObject(new FetcherResponseToStringChannel(new AIDR(getCollectionCode(), getCollectionName(), "twitter")));
+                    String aidrJson = StringUtils.replace(aidrObject.toString(), "{", ",", 1); // replacing first occurance of { with ,
+                    tweet.replace(rawTweetJSON.lastIndexOf("}"), rawTweetJSON.lastIndexOf("}") + 1, aidrJson);
+                    publisherJedis.publish(Config.FETCHER_CHANNEL + "." + getCollectionCode(), tweet.toString());
+                    counter++;
+                    if (counter >= Config.FETCHER_REDIS_COUNTER_UPDATE_THRESHOLD) {
+                        GenericCache.getInstance().incrCounter(getCacheKey(), counter);
+                        GenericCache.getInstance().setLastDownloadedDoc(getCacheKey(), status.getText());
+                        counter = new Long(0);
+                    }
+                } catch (Exception exp) {
+                    Logger.getLogger("Exception for " + collectionName + " in "  + TwitterStreamTracker.class.getName()).log(Level.SEVERE, null, exp);
                 }
             }
         };
