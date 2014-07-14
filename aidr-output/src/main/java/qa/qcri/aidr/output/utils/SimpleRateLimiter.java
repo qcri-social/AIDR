@@ -42,6 +42,7 @@ public class SimpleRateLimiter extends RateLimiter {
 		 */
 		public void initializeAll() {
 			for (String key: freq.keySet()) {
+				//System.out.println("[initializeAll] key = " + key);
 				freq.put(key, 0);
 			}
 		}
@@ -138,6 +139,10 @@ public class SimpleRateLimiter extends RateLimiter {
 				}
 			}
 			return false;
+		}
+		
+		public boolean existsNoRateLimitedKey() {
+			return !existsNotRateLimitedKey();
 		}
 		
 		public boolean existsNotRateLimitedKeyExclude(String excludeKey) {

@@ -37,8 +37,10 @@ public class DeserializeFilters {
 					return null;
 				}
 			}
+			System.out.println("[deserializeConstraints] Output: deserialized queryList: " + queryList);
 			return queryList;
 		}
+		System.out.println("[deserializeConstraints] Output: deserialized queryList: null" );
 		return null;
 	}
 }
