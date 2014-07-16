@@ -40,8 +40,8 @@ The AIDR Collector has a RESTFul API, that means all the operations have their c
 * If you are using Apache web server, edit the appropriate file in `/etc/apache2/sites-available` directory as follows: set `AllowOverride All` under the appropriate <Directory> section. Restart Apache web service. 
 * Create a file `.htaccess` in the `.../aidr/data/persister directory with the following two lines:
 
-            `Options -Indexes
-             AddType application/octet-stream .zip .json .csv`
+             Options -Indexes
+             AddType application/octet-stream .zip .json .csv
 
 # 4. Manager (aidr-manager)
 
