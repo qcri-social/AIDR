@@ -423,11 +423,18 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     return r ? r : "<span class='na-text'>Not specified</span>";
                 },
                 getLanguageField: function (r) {
-                    var languageFull = r;
+                    var languageFull = "";
                     if(r != ''){
-                        var index = me.langComboStore.find('name', r);
-                        var s =  me.langComboStore.getAt(index);
-                        languageFull = s.data.name;
+                        var lns = r.split(",");
+                        lns.forEach(function(val, i){
+                            var index = me.langComboStore.find('code', val);
+                            var s =  me.langComboStore.getAt(index);
+                            languageFull += s.data.name;
+                            if(i < (lns.length - 1)){
+                                languageFull +=", ";
+                            }
+                        });
+
                     }
                     return r ? languageFull : "<span class='na-text'>Not specified</span>";
                 },
