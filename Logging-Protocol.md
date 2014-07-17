@@ -27,8 +27,8 @@ log4j.appender.file.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:
 ```
  <dependency>
   <groupId>log4j</groupId>
-   <artifactId>log4j</artifactId>
-     <version>1.2.17</version>
+  <artifactId>log4j</artifactId>
+  <version>1.2.17</version>
  </dependency>
 ```
 * In your class that will use logging, add the following: `private static Logger logger = Logger.getLogger(Foo.class.getName());` where `Foo` is your class name. 
