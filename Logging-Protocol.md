@@ -20,11 +20,11 @@ For uniform logging messages across AIDR modules we will be using the Apache log
 * Create a directory `/var/log/aidr` and appropriately set the r/w permissions for it. 
 * In your pom.xml, include log4j dependency: 
 
-     <dependency>
-	<groupId>log4j</groupId>
-	<artifactId>log4j</artifactId>
-	<version>1.2.17</version>
-     </dependency>
+     `<dependency>`
+	 `<groupId>log4j</groupId>`
+	 `<artifactId>log4j</artifactId>`
+	 `<version>1.2.17</version>`
+      `</dependency>`
 
 * In your class that will use logging, add the following:
                   `private static Logger logger = Logger.getLogger(Foo.class.getName());`
