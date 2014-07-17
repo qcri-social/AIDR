@@ -14,7 +14,8 @@ public class Config {
 
 	public static final String DEFAULT_PERSISTER = "default_persister";
 	public static final String DEFAULT_PERSISTER_CODE = "default_code";
-	public static final String DEFAULT_PERSISTER_FILE_PATH = "/var/www/aidr/data/persister/";
+	//public static final String DEFAULT_PERSISTER_FILE_PATH = "/var/www/aidr/data/persister/";
+        public static final String DEFAULT_PERSISTER_FILE_PATH = "/export/sc/aidr/data/persister/";
 
 	public static final int DEFAULT_FILE_VOLUMN_LIMIT = 100000; // 100K limit imposed by Twitter
 	public static final int TWEETS_EXPORT_LIMIT_100K = 100000;
