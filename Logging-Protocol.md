@@ -1,6 +1,6 @@
 For uniform logging messages across AIDR modules we will be using the Apache log4j logger:
 
-* Create a file called log4j.properties in /src/main/resources with the following content:
+* Create a file called `log4j.properties` in `/src/main/resources` with the following content:
 
 `    
 
