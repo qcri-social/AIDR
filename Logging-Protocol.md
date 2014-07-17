@@ -19,7 +19,6 @@ For uniform logging messages across AIDR modules we will be using the Apache log
      log4j.appender.file.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:[%t][%C][%M:%L] - %m%n
     
 `
-
 * Create a directory `/var/log/aidr` and appropriately set the r/w permissions for it. 
 * In your pom.xml, include log4j dependency: 
 
