@@ -19,16 +19,11 @@ public class JedisConnectionPool extends Loggable {
         try {
             if (jedisPool == null) {
                 JedisPoolConfig config = new JedisPoolConfig();
-                //config.setmaxActive = 1000;
-                //config.maxIdle = 10;
-                //config.minIdle = 1;
-                //config.maxWait = 30000;
-                //config.setMaxIdle(100);
-                //config.setMaxWaitMillis(30000);
                 config.setTestWhileIdle(true);
                 config.setMinEvictableIdleTimeMillis(60000);
                 config.setTimeBetweenEvictionRunsMillis(30000);
                 config.setNumTestsPerEvictionRun(-1);
+                config.setMaxIdle(50000);
                 jedisPool = new JedisPool(config, Config.REDIS_HOST);
                 
             }

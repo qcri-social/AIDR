@@ -73,9 +73,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
 
             @Override
             public void onStatus(Status status) {
-                //String rawTweetJson = DataObjectFactory.getRawJSON(status);
                 String rawTweetJson = TwitterObjectFactory.getRawJSON(status);
-
                 try {
                     tweetJSONObject = new JSONObject(rawTweetJson);
                     if (getStreamQuery().isLanguageAllowed(Config.LANGUAGE_ALLOWED_ALL)) {
@@ -90,7 +88,9 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
                 } catch (JSONException ex) {
                     Logger.getLogger(TwitterStreamTracker.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (Exception exp) {
-                    Logger.getLogger("Exception for " + collectionName + " in "  + TwitterStreamTracker.class.getName()).log(Level.SEVERE, null, exp);
+                    System.out.println("Exception occured in " + collectionName);
+                    exp.printStackTrace();
+                    //Logger.getLogger("Exception in " + collectionName + ". Class -> "  + TwitterStreamTracker.class.getName()).log(Level.SEVERE, exp, null);
                 }
             }
 
@@ -111,9 +111,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
             public void onException(Exception ex) {
                 System.out.println("Twitter Exception for collection " + collection.getCollectionCode() + " - " + ex.toString());
                 log(LogLevel.WARNING, ex.toString());
-                System.out.println("Aborting collection..." + collection.getCollectionCode());
                 collection.setStatusCode(Config.STATUS_CODE_COLLECTION_ERROR);
-                abortCollection();
             }
 
             @Override
@@ -141,7 +139,9 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
                         counter = new Long(0);
                     }
                 } catch (Exception exp) {
-                    Logger.getLogger("Exception for " + collectionName + " in "  + TwitterStreamTracker.class.getName()).log(Level.SEVERE, null, exp);
+                    System.out.println("Exception occured in " + collectionName);
+                    exp.printStackTrace();
+                    //Logger.getLogger("Exception for " + collectionName + " in "  + TwitterStreamTracker.class.getName()).log(Level.SEVERE, null, exp);
                 }
             }
         };
