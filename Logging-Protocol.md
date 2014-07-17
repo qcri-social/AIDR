@@ -1,4 +1,4 @@
-For uniform logging of messages across AIDR modules we will be using the Apache log4j logger:
+For uniform logging of messages in AIDR modules we will be using the Apache log4j logger:
 
 ## To enable logging for your module
 
