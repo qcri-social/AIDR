@@ -32,5 +32,5 @@ For uniform logging messages across AIDR modules we will be using the Apache log
 `
 
 * In your class that will use logging, add the following:
-                  `private static Logger logger = Logger.getLogger(Foo.class.getName());`
+                  `private static Logger logger = Logger.getLogger(Foo.class.getName());` where `Foo` is your class name. 
 * You can log messages n your class using the above logger.
