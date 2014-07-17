@@ -23,6 +23,7 @@ For uniform logging messages across AIDR modules we will be using the Apache log
 * In your `pom.xml`, include log4j dependency: 
 
 `
+
        <dependency>
 
 	  <groupId>log4j</groupId>
