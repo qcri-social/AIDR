@@ -18,7 +18,7 @@ log4j.appender.file.File=${log}/aidr-output.log
 log4j.appender.file.MaxFileSize=30MB
 log4j.appender.file.MaxBackupIndex=100
 log4j.appender.file.layout=org.apache.log4j.PatternLayout
-log4j.appender.file.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:[%t][%C][%M:%L] - %m%n
+log4j.appender.file.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:[%t][%C][%M] - %m%n
 ```
 
 * Create a directory `/var/log/aidr` and appropriately set the r/w permissions for it. 
@@ -40,10 +40,8 @@ where `Foo` is your class name.
 
 ## Log message standards
 
-Your log message should include:
+Log messages automatically have the thread-id, class, and method name. Additionally, your log message should include:
 
-* Class name
-* Method name
 * Collection code (if available), or collection-id (if available)
 * Classifier code/id, Document id, or whatever information in case the collection code is not available.
 
