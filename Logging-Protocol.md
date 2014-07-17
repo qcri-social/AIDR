@@ -1,5 +1,9 @@
 For uniform logging messages across AIDR modules we will be using the Apache log4j logger:
 
+## To enable logging for your module
+
+Please note each module has its own log. In this case, we assume the module wants to write to aidr-output.log:
+
 * Create a file called `log4j.properties` in `/src/main/resources` with the following content:
 
 `    
@@ -33,4 +37,15 @@ For uniform logging messages across AIDR modules we will be using the Apache log
 
 * In your class that will use logging, add the following:
                   `private static Logger logger = Logger.getLogger(Foo.class.getName());` where `Foo` is your class name. 
-* You can log messages n your class using the above logger.
+* You can log messages in your class using the above logger.
+
+## Log message standards
+
+Your log message should include:
+
+* Class name
+* Method name
+* Collection code (if available), or collection-id (if available)
+* Classifier code/id, Document id, or whatever information in case the collection code is not available.
+
+Before throwing an exception, always create a log entry.
