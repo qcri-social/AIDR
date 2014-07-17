@@ -2,14 +2,14 @@ For uniform logging messages across AIDR modules we will be using the Apache log
 
 * Create a file called log4j.properties in /src/main/resources with the following content:
 
-`# Root logger option
+`# Root logger option`
 log=/var/log/aidr
 log4j.rootLogger=INFO, file
  
-# Direct log messages to a log file
+`# Direct log messages to a log file`
 log4j.appender.file=org.apache.log4j.RollingFileAppender
  
-# Replace aidr-output.log with the name of your log file
+`# Replace aidr-output.log with the name of your log file`
 log4j.appender.file.File=${log}/aidr-output.log
 log4j.appender.file.MaxFileSize=30MB
 log4j.appender.file.MaxBackupIndex=100
