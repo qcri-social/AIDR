@@ -1,8 +1,8 @@
-For uniform logging of messages in AIDR modules we will be using the Apache log4j logger:
+For uniform logging of messages in AIDR modules, we will be using the `Apache log4j` logger:
 
 ## To enable logging for your module
 
-Please note each module has its own log. In this case, we assume the module wants to write to aidr-output.log:
+Please note each module has its own log. In this case, we assume the module wants to write to `aidr-output.log`:
 
 * Create a file called `log4j.properties` in `/src/main/resources` with the following content:
 ```
@@ -22,7 +22,7 @@ log4j.appender.file.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p [%t][%
 ```
 
 * Create a directory `/var/log/aidr` and appropriately set the r/w permissions for it. 
-* In your `pom.xml`, include log4j dependency: 
+* In your `pom.xml`, include `log4j` dependency: 
 
 ```
  <dependency>
