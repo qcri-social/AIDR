@@ -31,7 +31,11 @@ log4j.appender.file.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:
   <version>1.2.17</version>
  </dependency>
 ```
-* In your class that will use logging, add the following: `private static Logger logger = Logger.getLogger(Foo.class.getName());` where `Foo` is your class name. 
+* In your class that will use logging, add the following:
+```
+private static Logger logger = Logger.getLogger(Foo.class.getName());
+```
+where `Foo` is your class name. 
 * You can log messages in your class using the above logger.
 
 ## Log message standards
