@@ -6,7 +6,7 @@ Please note each module has its own log. In this case, we assume the module want
 
 * Create a file called `log4j.properties` in `/src/main/resources` with the following content:
 
-`    
+`
 
      # Root logger option
      log=/var/log/aidr
@@ -21,8 +21,8 @@ Please note each module has its own log. In this case, we assume the module want
      log4j.appender.file.MaxBackupIndex=100
      log4j.appender.file.layout=org.apache.log4j.PatternLayout
      log4j.appender.file.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:[%t][%C][%M:%L] - %m%n
-    
 `
+
 * Create a directory `/var/log/aidr` and appropriately set the r/w permissions for it. 
 * In your `pom.xml`, include log4j dependency: 
 
