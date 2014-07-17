@@ -2,7 +2,7 @@ For uniform logging messages across AIDR modules we will be using the Apache log
 
 * Create a file called log4j.properties in /src/main/resources with the following content:
 
-    
+`    
 
      # Root logger option
      log=/var/log/aidr
@@ -18,18 +18,18 @@ For uniform logging messages across AIDR modules we will be using the Apache log
      log4j.appender.file.layout=org.apache.log4j.PatternLayout
      log4j.appender.file.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:[%t][%C][%M:%L] - %m%n
     
-
+`
 
 * Create a directory `/var/log/aidr` and appropriately set the r/w permissions for it. 
 * In your pom.xml, include log4j dependency: 
 
-
+`
        <dependency>
 	  <groupId>log4j</groupId>
 	  <artifactId>log4j</artifactId>
 	  <version>1.2.17</version>
        </dependency>
- 
+`
 
 * In your class that will use logging, add the following:
                   `private static Logger logger = Logger.getLogger(Foo.class.getName());`
