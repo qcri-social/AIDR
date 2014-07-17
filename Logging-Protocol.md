@@ -3,6 +3,7 @@ For uniform logging messages across AIDR modules we will be using the Apache log
 * Create a file called log4j.properties in /src/main/resources with the following content:
 
 `    
+
      # Root logger option
      log=/var/log/aidr
      log4j.rootLogger=INFO, file
