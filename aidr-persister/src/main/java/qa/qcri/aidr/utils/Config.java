@@ -34,6 +34,6 @@ public class Config {
 	//public static final String SCD1_URL = "http://scd1.qcri.org/aidr/data/persister/";	// scd1
 	//public static final String SCD1_URL = "http://localhost/aidr/data/persister/";	// koushik
 	//public static final String SCD1_URL = "http://94.125.228.197:1056/aidr/data/persister/";	// for local VM
-	public static final String SCD1_URL = "http://23.100.51.119/aidr/data/persister/";	// for azure VM
+	public static final String SCD1_URL = "http://23.100.51.119/data/persister/";	// for azure VM
 
 }
