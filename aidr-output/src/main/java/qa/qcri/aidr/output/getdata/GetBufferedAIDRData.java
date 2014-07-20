@@ -75,14 +75,16 @@ import javax.ws.rs.core.Response;
 
 
 //import org.apache.log4j.BasicConfigurator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+
+
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
 import qa.qcri.aidr.output.filter.FilterQueryMatcher;
 import qa.qcri.aidr.output.filter.JsonQueryList;
 import qa.qcri.aidr.output.filter.NominalLabel;
-
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
 import qa.qcri.aidr.output.utils.SimpleRateLimiter;
@@ -94,7 +96,7 @@ import qa.qcri.aidr.output.filter.DeserializeFilters;
 public class GetBufferedAIDRData implements ServletContextListener {
 
 	// Debugging
-	private static Logger logger = LoggerFactory.getLogger(GetBufferedAIDRData.class);
+	private static Logger logger = Logger.getLogger(GetBufferedAIDRData.class.getName());
 
 	// Related to channel buffer management
 	private static final String CHANNEL_REG_EX = "aidr_predict.*";
@@ -185,7 +187,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				ClassifiedFilteredTweet classifiedTweet = workingTweet.deserialize(tweet);
 				filteredMessages.add(tweet);
 				channelSelector.initializeNew(classifiedTweet.getCrisisCode());	
-				//logger.info("[getLatestBufferedAIDRData] Added tweet from channel " + classifiedTweet.getCrisisCode() + ", confidence: " + classifiedTweet.getMaxConfidence());
+				logger.info("[getLatestBufferedAIDRData] Added tweet from channel " + classifiedTweet.getCrisisCode() + ", confidence: " + classifiedTweet.getMaxConfidence());
 			}
 			workingTweet = null;
 			
@@ -579,10 +581,11 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			// PropertyConfigurator.configure("log4j.properties");      
 			//BasicConfigurator.configure();    // initialize log4j logging
 		}
+		/*
 		if (configParams.get("logger").equalsIgnoreCase("slf4j")) {
 			System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");	// set logging level for slf4j
 		}
-
+		 */
 		// Most important action - setup channel buffering thread
 		cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
 		channelSelector = new SimpleRateLimiter();

@@ -195,7 +195,7 @@ public class CollectionController extends BaseController{
 				if (taggerService.untrashCollection(trashedCollection.getCode()) > 0) {
                     trashedCollection.setStatus(CollectionStatus.STOPPED);
 					collectionService.update(trashedCollection);
-					AidrCollection c = collectionService.start(trashedCollection.getId());
+					//AidrCollection c = collectionService.start(trashedCollection.getId());
 					return getUIWrapper(true);  
 				} else {
                     String msg = "Attempting to untrash collection " + trashedCollection.getCode() + " failed! ";
