@@ -19,7 +19,7 @@ import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 
 /**
  *
- * @author Imran
+ * @author Imran, Koushik
  */
 @Stateless
 public class CrisisResourceImp implements CrisisResourceFacade {

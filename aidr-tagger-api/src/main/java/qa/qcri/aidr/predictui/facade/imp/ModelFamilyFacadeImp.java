@@ -22,6 +22,8 @@ import qa.qcri.aidr.predictui.entities.ModelFamily;
 /**
  *
  * @author Imran
+ * 
+ * Koushik: added try/catch 
  */
 @Stateless
 public class ModelFamilyFacadeImp implements ModelFamilyFacade{
@@ -31,16 +33,24 @@ public class ModelFamilyFacadeImp implements ModelFamilyFacade{
 
 	public List<ModelFamily> getAllModelFamilies() {
 		Query query = em.createNamedQuery("ModelFamily.findAll", ModelFamily.class);
-		List<ModelFamily> modelFamilyList = query.getResultList();
-		return modelFamilyList;
+		try {
+			List<ModelFamily> modelFamilyList = query.getResultList();
+			return modelFamilyList;
+		} catch (NoResultException e) {
+			return null;
+		}
 
 	}
 
 	public ModelFamily getModelFamilyByID(int id) {
 		Query query = em.createNamedQuery("ModelFamily.findByModelFamilyID", ModelFamily.class);
 		query.setParameter("modelFamilyID", id);
-		ModelFamily modelFamily = (ModelFamily)query.getSingleResult();
-		return modelFamily;
+		try {
+			ModelFamily modelFamily = (ModelFamily)query.getSingleResult();
+			return modelFamily;
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	public List<ModelFamily> getAllModelFamiliesByCrisis(long crisisID) {
