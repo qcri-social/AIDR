@@ -348,14 +348,16 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             text: 'Export tweets (.csv) (Last 100k tweets)',
             margin: '5 5 5 0',
             cls:'btn btn-blue download-button',
-            id: 'generateCSVLink'
+            id: 'generateCSVLink',
+            width: 300
         });
 
         this.generateTweetIdsButton = Ext.create('Ext.Button', {
             text: 'Export tweet-ids only (.csv) (All tweets)',
             margin: '5 5 5 0',
             cls:'btn btn-blue download-button',
-            id: 'generateTweetIdsLink'
+            id: 'generateTweetIdsLink' ,
+            width: 300
         });
         
         this.JSONLink = Ext.create('Ext.form.Label', {
@@ -373,14 +375,16 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             text: 'Export tweets (.json) (Last 100k tweets)',
             margin: '5 5 5 0',
             cls:'btn btn-blue download-button',
-            id: 'generateJSONLink'
+            id: 'generateJSONLink',
+            width: 300
         });
 
         this.generateJsonTweetIdsButton = Ext.create('Ext.Button', {
             text: 'Export tweet-ids only (.json) (All tweets)',
             margin: '5 5 5 0',
             cls:'btn btn-blue download-button',
-            id: 'generateJsonTweetIdsLink'
+            id: 'generateJsonTweetIdsLink',
+            width: 300
         });
 
         this.toInteractiveViewDownloadLink = Ext.create('Ext.form.Label', {
