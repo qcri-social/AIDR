@@ -7,8 +7,8 @@ For AIDR users:
 For AIDR system administrators:
 
 * [[Installation instructions]]
-* [[Release Notes]]
 * [[System administrator manual]]
+* [[Release Notes]]
 
 For AIDR developers:
 
