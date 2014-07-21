@@ -12,7 +12,7 @@ For AIDR system administrators:
 
 For AIDR developers:
 
-* [[Logging Protocol]]
+* [[Logging standards]]
 
 ***
 
