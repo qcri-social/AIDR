@@ -274,12 +274,14 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 var cmp = me.DetailsComponent;
                 if (resp.success) {
                     if (resp.data) {
+                        console.log('crisis exists', true);
                         cmp.gotoTaggerButton.show();
                         cmp.enableTaggerButton.hide();
                         cmp.downloadExportTaggerDisabledPanel.hide();
                         cmp.downloadExportTaggerEnabledPanel.show();
                     }
                 } else {
+                    console.log('crisis exists', false);
                     cmp.gotoTaggerButton.hide();
                     cmp.enableTaggerButton.hide();
                     cmp.downloadExportTaggerDisabledPanel.hide();
@@ -511,8 +513,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var statusText = AIDRFMFunctions.getStatusWithStyle(raw);
 
         if (raw == 'RUNNING-WARNNING' || raw == 'RUNNING' || raw == 'INITIALIZING'){
+            console.log('Set status ', raw);
             this.DetailsComponent.startButton.hide();
-            this.DetailsComponent.enableTaggerButton.show();
+//            this.DetailsComponent.enableTaggerButton.show(); TODO: Fix for https://www.pivotaltracker.com/s/projects/969960/stories/74910442
             this.DetailsComponent.enableTaggerButton.enable();
             this.DetailsComponent.stopButton.show();
             this.DetailsComponent.trashButton.show();
