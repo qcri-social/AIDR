@@ -21,6 +21,7 @@ import qa.qcri.aidr.collector.redis.JedisConnectionPool;
 import qa.qcri.aidr.collector.utils.GenericCache;
 import qa.qcri.aidr.collector.utils.TwitterStreamQueryBuilder;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 import twitter4j.FilterQuery;
 import twitter4j.StallWarning;
 import twitter4j.Status;
@@ -138,10 +139,11 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
                         GenericCache.getInstance().setLastDownloadedDoc(getCacheKey(), status.getText());
                         counter = new Long(0);
                     }
+                } catch (JedisConnectionException e) {
+                    System.out.println("JedisConnectionException: " + collectionName);
                 } catch (Exception exp) {
                     System.out.println("Exception occured in " + collectionName);
                     exp.printStackTrace();
-                    //Logger.getLogger("Exception for " + collectionName + " in "  + TwitterStreamTracker.class.getName()).log(Level.SEVERE, null, exp);
                 }
             }
         };

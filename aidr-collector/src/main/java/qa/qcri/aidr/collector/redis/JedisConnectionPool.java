@@ -18,14 +18,22 @@ public class JedisConnectionPool extends Loggable {
     public static Jedis getJedisConnection() throws Exception {
         try {
             if (jedisPool == null) {
-                JedisPoolConfig config = new JedisPoolConfig();
-                config.setTestWhileIdle(true);
-                config.setMinEvictableIdleTimeMillis(60000);
-                config.setTimeBetweenEvictionRunsMillis(30000);
-                config.setNumTestsPerEvictionRun(-1);
-                config.setMaxIdle(50000);
-                jedisPool = new JedisPool(config, Config.REDIS_HOST);
-                
+                JedisPoolConfig poolConfig = new JedisPoolConfig();
+                poolConfig.setMaxIdle(10);
+                poolConfig.setMinIdle(1);
+                poolConfig.setNumTestsPerEvictionRun(10);
+                poolConfig.setTestOnBorrow(true);
+                poolConfig.setTestOnReturn(true);
+                poolConfig.setTestWhileIdle(true);
+                poolConfig.setTimeBetweenEvictionRunsMillis(30000);
+
+//                config.setTestWhileIdle(true);
+//                config.setMinEvictableIdleTimeMillis(60000);
+//                config.setTimeBetweenEvictionRunsMillis(30000);
+//                config.setNumTestsPerEvictionRun(-1);
+//                config.setMaxIdle(50000);
+                jedisPool = new JedisPool(poolConfig, Config.REDIS_HOST);
+
             }
             return jedisPool.getResource();
         } catch (Exception e) {
