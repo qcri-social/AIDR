@@ -748,7 +748,12 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var startDate = datailsController.DetailsComponent.currentCollection.startDate;
         var endDate = datailsController.DetailsComponent.currentCollection.endDate;
 
-        var form = Ext.getCmp('collectionForm').getForm();
+        var cmp = Ext.getCmp('collectionForm');
+        var form = cmp.getForm();
+
+        var editPanelEl = cmp.up('panel').getEl();
+        editPanelEl.mask("Updating...");
+
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/update.action',
             method: 'POST',
@@ -770,22 +775,39 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 'Accept': 'application/json'
             },
             success: function (response) {
-                me.DetailsComponent.tabPanel.setActiveTab(0);
-                me.loadCollection(id);
-                me.DetailsComponent.collectionLogStore.load();
-                if (running){
-                    var ranOnce = false;
-                    var task = Ext.TaskManager.start({
-                        run: function () {
-                            if (ranOnce) {
-                                me.refreshStatus(id);
-                                Ext.TaskManager.stop(task);
-                            }
-                            ranOnce = true;
-                        },
-                        interval: 5000
-                    });
+                var respObj = Ext.decode(response.responseText);
+
+                if (respObj.success) {
+
+                    me.DetailsComponent.tabPanel.setActiveTab(0);
+                    me.loadCollection(id);
+                    me.DetailsComponent.collectionLogStore.load();
+                    if (running) {
+                        var ranOnce = false;
+                        var task = Ext.TaskManager.start({
+                            run: function () {
+                                if (ranOnce) {
+                                    me.refreshStatus(id);
+                                    Ext.TaskManager.stop(task);
+                                }
+                                ranOnce = true;
+                            },
+                            interval: 5000
+                        });
+                    }
+
+                    AIDRFMFunctions.setAlert("Info", ["Collection updated successfully."]);
+
+                } else {
+                    AIDRFMFunctions.setAlert("Error", [respObj.message]);
                 }
+
+                editPanelEl.unmask();
+            },
+
+            failure: function(response, opts) {
+                AIDRFMFunctions.setAlert("Error", ["Some error was occurred during updating the collection."]);
+                editPanelEl.unmask();
             }
         });
     },
