@@ -28,14 +28,7 @@ public class JedisConnectionPool extends Loggable {
                 poolConfig.setTestOnReturn(true);
                 poolConfig.setTestWhileIdle(true);
                 poolConfig.setTimeBetweenEvictionRunsMillis(30000);
-
-//                config.setTestWhileIdle(true);
-//                config.setMinEvictableIdleTimeMillis(60000);
-//                config.setTimeBetweenEvictionRunsMillis(30000);
-//                config.setNumTestsPerEvictionRun(-1);
-//                config.setMaxIdle(50000);
                 jedisPool = new JedisPool(poolConfig, Config.REDIS_HOST);
-
             }
             return jedisPool.getResource();
         } catch (Exception e) {
