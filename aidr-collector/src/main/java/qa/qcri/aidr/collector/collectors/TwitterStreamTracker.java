@@ -42,9 +42,9 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
     private ConfigurationBuilder configBuilder;
     private TwitterStreamQueryBuilder streamQuery;
     private Jedis publisherJedis;
-    private String collectionCode; // Also known as CrisisID
+    private String collectionCode; // CrisisID
     private String cacheKey;
-    private Long counter = new Long(1);
+    private long counter = 1;
     private String collectionName;
 
     public TwitterStreamTracker() {
@@ -71,27 +71,21 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
         StatusListener listener = new StatusListener() {
             JSONObject tweetJSONObject = null;
             CollectionTask collection = GenericCache.getInstance().getTwtConfigMap(getCacheKey());
+            JSONObject aidrObject = new JSONObject(new FetcherResponseToStringChannel(new AIDR(getCollectionCode(), getCollectionName(), "twitter")));
+            String aidrJson = StringUtils.replace(aidrObject.toString(), "{", ",", 1); // replacing the first occurance of { with ,
+            boolean allowAllLanguages = getStreamQuery().isLanguageAllowed(Config.LANGUAGE_ALLOWED_ALL);
+            String channelName = Config.FETCHER_CHANNEL + "." + getCollectionCode();
+            GenericCache cache = GenericCache.getInstance();
 
             @Override
             public void onStatus(Status status) {
-                String rawTweetJson = TwitterObjectFactory.getRawJSON(status);
-                try {
-                    tweetJSONObject = new JSONObject(rawTweetJson);
-                    if (getStreamQuery().isLanguageAllowed(Config.LANGUAGE_ALLOWED_ALL)) {
-                        publishMessage(status, rawTweetJson);
-                    } else {
-
-                        String lang = tweetJSONObject.get("lang").toString();
-                        if (getStreamQuery().isLanguageAllowed(lang)) {
-                            publishMessage(status, rawTweetJson);
-                        }
+                String lang = status.getLang();
+                if (allowAllLanguages) {
+                    publishMessage(status);
+                } else {
+                    if (getStreamQuery().isLanguageAllowed(lang)) {
+                        publishMessage(status);
                     }
-                } catch (JSONException ex) {
-                    Logger.getLogger(TwitterStreamTracker.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (Exception exp) {
-                    System.out.println("Exception occured in " + collectionName);
-                    exp.printStackTrace();
-                    //Logger.getLogger("Exception in " + collectionName + ". Class -> "  + TwitterStreamTracker.class.getName()).log(Level.SEVERE, exp, null);
                 }
             }
 
@@ -125,14 +119,28 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
                 log(LogLevel.WARNING, arg0.toString());
             }
 
-            public void publishMessage(Status status, String rawTweetJSON) {
+            public void publishMessage(Status status) {
+                    StringBuilder rawTweetJSON = new StringBuilder(TwitterObjectFactory.getRawJSON(status));
+                    int length = rawTweetJSON.length();
+                    rawTweetJSON.replace(length - 1, length, aidrJson);
+                    publishToRedis(rawTweetJSON.toString());
+                    counter++;
+                    if (counter >= Config.FETCHER_REDIS_COUNTER_UPDATE_THRESHOLD) {
+                        cache.incrCounter(collectionCode, counter);
+                        cache.setLastDownloadedDoc(collectionCode, status.getText());
+                        counter = 0;
+                    }
+            }
+
+            public void publishMessageDeprecated(Status status, String rawTweetJSON) {
 
                 try {
                     StringBuilder tweet = new StringBuilder(rawTweetJSON);
                     JSONObject aidrObject = new JSONObject(new FetcherResponseToStringChannel(new AIDR(getCollectionCode(), getCollectionName(), "twitter")));
                     String aidrJson = StringUtils.replace(aidrObject.toString(), "{", ",", 1); // replacing first occurance of { with ,
                     tweet.replace(rawTweetJSON.lastIndexOf("}"), rawTweetJSON.lastIndexOf("}") + 1, aidrJson);
-                    publisherJedis.publish(Config.FETCHER_CHANNEL + "." + getCollectionCode(), tweet.toString());
+                    //publisherJedis.publish(Config.FETCHER_CHANNEL + "." + getCollectionCode(), tweet.toString());
+                    publishToRedis(tweet.toString());
                     counter++;
                     if (counter >= Config.FETCHER_REDIS_COUNTER_UPDATE_THRESHOLD) {
                         GenericCache.getInstance().incrCounter(getCacheKey(), counter);
@@ -145,6 +153,10 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
                     System.out.println("Exception occured in " + collectionName);
                     exp.printStackTrace();
                 }
+            }
+
+            public void publishToRedis(String tweet) {
+                publisherJedis.publish(channelName, tweet);
             }
         };
 
