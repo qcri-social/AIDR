@@ -16,16 +16,16 @@ import qa.qcri.aidr.utils.Config;
 import java.io.*;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import qa.qcri.aidr.utils.Tweet;
 import qa.qcri.aidr.io.FileSystemOperations;
 import qa.qcri.aidr.io.ReadWriteCSV;
+import qa.qcri.aidr.logging.ErrorLog;
 
 import java.nio.charset.Charset;
 
@@ -42,6 +42,9 @@ import com.google.gson.JsonParser;
  */
 public class JsonDeserializer {
 
+	private static Logger logger = Logger.getLogger(JsonDeserializer.class.getName());
+	private static ErrorLog elog = new ErrorLog();
+	
 	private static final int BUFFER_SIZE = 10 * 1024 * 1024;	// buffer size to use for buffered r/w
 	private static final int LIST_BUFFER_SIZE = 50000; 
 	
@@ -76,7 +79,7 @@ public class JsonDeserializer {
 								beanWriter = csv.writeCollectorTweetIDSCSV(beanWriter, tweetsList, collectionCode, fileNameforCSVGen);
 								lastCount = currentCount;
 								currentCount += tweetsList.size();
-								System.out.println("[generateJson2TweetIdsCSV] Writing_tweetIds: " + lastCount + " to " + currentCount);
+								logger.info(collectionCode + ": Writing_tweetIds: " + lastCount + " to " + currentCount);
 								tweetsList.clear();
 
 							}
@@ -84,9 +87,11 @@ public class JsonDeserializer {
 					}
 					br.close();
 				} catch (FileNotFoundException ex) {
-					Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+					logger.error(collectionCode + ": couldn't find file = " + fileLocation);
+					logger.error(elog.toStringException(ex));
 				} catch (IOException ex) {
-					Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+					logger.error(collectionCode + ": IO Exception for file = " + fileLocation);
+					logger.error(elog.toStringException(ex));
 				} 
 			}
 		} finally {
@@ -94,8 +99,8 @@ public class JsonDeserializer {
 				try {
 					beanWriter.close();
 				} catch (IOException ex) {
-					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, null, ex);
-					ex.printStackTrace();
+					logger.error(collectionCode + ": IOException for csv file write ");
+					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -118,15 +123,15 @@ public class JsonDeserializer {
 			ReadWriteCSV csv = new ReadWriteCSV();
 			BufferedReader br = null;
 			String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds.csv";
-			System.out.println("Deleteing file : " + fileToDelete);
+			logger.info(collectionCode + ": Deleteing file : " + fileToDelete);
 			FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
-			System.out.println(fileNames);
+			//logger.info(fileNames);
 
 			long lastCount = 0;
 			long currentCount = 0;
 			for (String file : fileNames) {
 				String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
-				System.out.println("[generateClassifiedJson2TweetIdsCSV] Reading file " + fileLocation);
+				logger.info(collectionCode + ": Reading file " + fileLocation);
 				try {
 					br = new BufferedReader(new FileReader(fileLocation));
 					String line;
@@ -147,7 +152,7 @@ public class JsonDeserializer {
 								beanWriter = csv.writeClassifiedTweetIDsCSV(beanWriter, tweetsList, collectionCode, fileNameforCSVGen);
 								lastCount = currentCount;
 								currentCount += tweetsList.size();
-								System.out.println("[generateClassifiedJson2TweetIdsCSV] Writing_tweetIds: " + lastCount + " to " + currentCount);
+								logger.info(collectionCode + ": Writing_tweetIds: " + lastCount + " to " + currentCount);
 								tweetsList.clear();
 							}
 						} 
@@ -155,9 +160,11 @@ public class JsonDeserializer {
 					br.close();
 
 				} catch (FileNotFoundException ex) {
-					Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+					logger.error(collectionCode + ": couldn't find file = " + fileLocation);
+					logger.error(elog.toStringException(ex));
 				} catch (IOException ex) {
-					Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+					logger.error(collectionCode + ": IO Exception for file = " + fileLocation);
+					logger.error(elog.toStringException(ex));
 				} 
 				//beanWriter = csv.writeClassifiedTweetIDsCSV(beanWriter, tempList, collectionCode, fileNameforCSVGen);
 			}	// end for 
@@ -166,8 +173,8 @@ public class JsonDeserializer {
 				try {
 					beanWriter.close();
 				} catch (IOException ex) {
-					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, null, ex);
-					ex.printStackTrace();
+					logger.error(collectionCode + ": IOException for csv file write ");
+					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -194,7 +201,7 @@ public class JsonDeserializer {
 			ReadWriteCSV csv = new ReadWriteCSV();
 			BufferedReader br = null;
 			String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds_filtered.csv";
-			System.out.println("Deleteing file : " + fileToDelete);
+			logger.info(collectionCode + ": Deleteing file : " + fileToDelete);
 			FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
 
 			// Added by koushik - first build the FilterQueryMatcher
@@ -204,7 +211,7 @@ public class JsonDeserializer {
 
 			for (String file : fileNames) {
 				String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
-				System.out.println("Reading file " + fileLocation);
+				logger.info(collectionCode + ": Reading file " + fileLocation);
 				try {
 					br = new BufferedReader(new FileReader(fileLocation));
 					String line;
@@ -231,9 +238,11 @@ public class JsonDeserializer {
 					br.close();
 
 				} catch (FileNotFoundException ex) {
-					Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+					logger.error(collectionCode + ": couldn't find file = " + fileLocation);
+					logger.error(elog.toStringException(ex));
 				} catch (IOException ex) {
-					Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+					logger.error(collectionCode + ": IO Exception for file = " + fileLocation);
+					logger.error(elog.toStringException(ex));
 				} 		
 			}
 		} finally {
@@ -241,8 +250,8 @@ public class JsonDeserializer {
 				try {
 					beanWriter.close();
 				} catch (IOException ex) {
-					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, null, ex);
-					ex.printStackTrace();
+					logger.error(collectionCode + ": IOException for csv file write ");
+					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -294,7 +303,7 @@ public class JsonDeserializer {
 					if (currentFileName.endsWith(".json")
 							&& currentFileName.contains("vol")) {
 						String line;
-						System.out.println("Reading file : " + f.getAbsolutePath());
+						logger.info(collectionCode + ": Reading file : " + f.getAbsolutePath());
 						InputStream is = new FileInputStream(f.getAbsolutePath());
 						br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 						while ((line = br.readLine()) != null) {
@@ -305,7 +314,7 @@ public class JsonDeserializer {
 										//write to arrayList
 										tweetsList.add(tweet);
 										currentSize++;
-										// System.out.println("currentSize  : " + currentSize);
+										//logger.info("currentSize  : " + currentSize);
 									} else {
 
 										//write csv file
@@ -327,7 +336,7 @@ public class JsonDeserializer {
 							}
 						}
 						beanWriter = csv.writeCollectorTweetsCSV(tweetsList, collectionCode, fileNameforCSVGen, beanWriter);
-						System.out.println("final beanWriter  : " + beanWriter.getRowNumber());
+						logger.info(collectionCode + ": final beanWriter  : " + beanWriter.getRowNumber());
 						tweetsList.clear();
 						br.close();
 					}
@@ -336,16 +345,19 @@ public class JsonDeserializer {
 			//fileName = csv.writeCollectorTweetIDSCSV(tweetsList, collectionCode, fileNameforCSVGen);
 
 		} catch (FileNotFoundException ex) {
-			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, "File not found." + ex);
+			logger.error(collectionCode + ": couldn't find file");
+			logger.error(elog.toStringException(ex));
 			isCSVGenerated = false;
 		} catch (IOException ex) {
-			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+			logger.error(collectionCode + ": IO Exception for file");
+			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
 					beanWriter.close();
 				} catch (IOException ex) {
-					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, null, ex);
+					logger.error(collectionCode + ": IOException for csv file write ");
+					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -394,7 +406,7 @@ public class JsonDeserializer {
 					String currentFileName = f.getName();
 					if (currentFileName.endsWith(".json")) {
 						String line;
-						System.out.println("Reading file : " + f.getAbsolutePath());
+						logger.info(collectionCode + ": Reading file : " + f.getAbsolutePath());
 						InputStream is = new FileInputStream(f.getAbsolutePath());
 						br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 						while ((line = br.readLine()) != null) {
@@ -431,15 +443,18 @@ public class JsonDeserializer {
 			//fileName = csv.writeCollectorTweetIDSCSV(tweetsList, collectionCode, fileNameforCSVGen);
 
 		} catch (FileNotFoundException ex) {
-			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, "File not found." + ex);
+			logger.error(collectionCode + ": File not found.");
+			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
-			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+			logger.error(collectionCode + ": IO Exception for file read");
+			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
 					beanWriter.close();
 				} catch (IOException ex) {
-					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, null, ex);
+					logger.error(collectionCode + ": IOException for csv file write ");
+					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -540,15 +555,18 @@ public class JsonDeserializer {
 			//fileName = csv.writeCollectorTweetIDSCSV(tweetsList, collectionCode, fileNameforCSVGen);
 
 		} catch (FileNotFoundException ex) {
-			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, "File not found." + ex);
+			logger.error(collectionCode + ": couldn't find file");
+			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
-			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+			logger.error(collectionCode + ": IO Exception for file read");
+			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
 					beanWriter.close();
 				} catch (IOException ex) {
-					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, null, ex);
+					logger.error(collectionCode + ": IOException for csv file write ");
+					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -601,9 +619,11 @@ public class JsonDeserializer {
 			}
 
 		} catch (FileNotFoundException ex) {
-			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, "File not found." + ex);
+			logger.error(collectionCode + ": couldn't find file");
+			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
-			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+			logger.error(collectionCode + ": IO Exception for file read");
+			logger.error(elog.toStringException(ex));
 		} 
 		return tweetsList;
 	}
@@ -670,9 +690,11 @@ public class JsonDeserializer {
 			}
 
 		} catch (FileNotFoundException ex) {
-			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, "File not found." + ex);
+			logger.error(collectionCode + ": couldn't find file");
+			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
-			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+			logger.error(collectionCode + ": IO Exception for file read");
+			logger.error(elog.toStringException(ex));
 		} 
 		return tweetsList;
 	}
@@ -977,14 +999,14 @@ public class JsonDeserializer {
 					tweet.setConfidence(allConfidences.toString());
 					tweet.setHumanLabeled(humanLabeled.toString());
 				} else {
-					//System.err.println("[getClassifiedTweet] tweet without label: " + line);		        	
+					//logger.warn("tweet without label: " + line);		        	
 				}
 			}
-			//System.out.println("Parsed tweet: " + tweet.toString());
+			//logger.warn("Parsed tweet: " + tweet.toString());
 
 		} catch (Exception ex) {
 			//Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
-			//System.out.println("[getClassifiedTweet] Offending tweet: " + line);
+			//logger.warn("Offending tweet: " + line);
 			return null;
 		}
 		return tweet;
@@ -1024,7 +1046,7 @@ public class JsonDeserializer {
 				if (currentFileName.endsWith(".json")
 						&& currentFileName.contains("vol")) {
 					String line;
-					System.out.println("[generateJSON2JSON_100K_BasedOnTweetCount] Reading file : " + f.getAbsolutePath());
+					logger.info("Reading file : " + f.getAbsolutePath());
 					InputStream is = new FileInputStream(f.getAbsolutePath());
 					br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 					while ((line = br.readLine()) != null) {
@@ -1053,15 +1075,18 @@ public class JsonDeserializer {
 			}	// end for		
 
 		} catch (FileNotFoundException ex) {
-			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, "File not found." + ex);
+			logger.error(collectionCode + ": couldn't find file");
+			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
-			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+			logger.error(collectionCode + ": IO Exception for file read");
+			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
 					beanWriter.close();
 				} catch (IOException ex) {
-					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, null, ex);
+					logger.error(collectionCode + ": IOException for JSON file write ");
+					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -1100,7 +1125,7 @@ public class JsonDeserializer {
 				if (currentFileName.endsWith(".json") 
 						&& currentFileName.contains("vol")) {
 					String line;
-					System.out.println("[generateJson2TweetIdsJson] Reading file : " + f.getAbsolutePath());
+					logger.info("Reading file : " + f.getAbsolutePath());
 					InputStream is = new FileInputStream(f.getAbsolutePath());
 					br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 					while ((line = br.readLine()) != null) {
@@ -1126,15 +1151,18 @@ public class JsonDeserializer {
 			beanWriter.close();
 
 		} catch (FileNotFoundException ex) {
-			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, "File not found." + ex);
+			logger.error(collectionCode + ": couldn't find file");
+			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
-			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+			logger.error(collectionCode + ": IO Exception for file read");
+			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
 					beanWriter.close();
 				} catch (IOException ex) {
-					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, null, ex);
+					logger.error(collectionCode + ": IOException for JSON file write ");
+					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -1153,7 +1181,7 @@ public class JsonDeserializer {
 			fileName = fileNameforJsonGen + ".json";
 			
 			FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforJsonGen + ".json");
-			System.out.println("[taggerGenerateJSON2JSON_100K_BasedOnTweetCount] Deleted existing file: " + folderLocation + "/" + fileNameforJsonGen + ".json");
+			logger.info("Deleted existing file: " + folderLocation + "/" + fileNameforJsonGen + ".json");
 			
 			File folder = new File(folderLocation);
 			File[] listOfFiles = folder.listFiles();
@@ -1187,7 +1215,7 @@ public class JsonDeserializer {
 					if (currentFileName.endsWith(".json") 
 							&& currentFileName.contains("vol")) {
 						String line;
-						System.out.println("[taggerGenerateJSON2JSON_100K_BasedOnTweetCount] Reading file : " + f.getAbsolutePath());
+						logger.info("Reading file : " + f.getAbsolutePath());
 						InputStream is = new FileInputStream(f.getAbsolutePath());
 						br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 						while ((line = br.readLine()) != null) {
@@ -1215,15 +1243,21 @@ public class JsonDeserializer {
 					}
 				}	// end for	
 		} catch (FileNotFoundException ex) {
-			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, "File not found." + ex);
+			logger.error(collectionCode + ": couldn't find file");
+			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
-			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+			logger.error(collectionCode + ": IO Exception for file read");
+			logger.error(elog.toStringException(ex));
+		} catch (NullPointerException ex) {
+			logger.error(collectionCode + ": empty list of files to read");
+			logger.info(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
 					beanWriter.close();
 				} catch (IOException ex) {
-					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, null, ex);
+					logger.error(collectionCode + ": IOException for JSON file write ");
+					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -1252,7 +1286,7 @@ public class JsonDeserializer {
 
 			for (String file : fileNames) {
 				String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
-				System.out.println("[generateClassifiedJson2TweetIdsJSON] Reading file " + fileLocation);
+				logger.info("Reading file " + fileLocation);
 				try {
 					br = new BufferedReader(new FileReader(fileLocation)); 
 					String line;
@@ -1269,25 +1303,29 @@ public class JsonDeserializer {
 					br.close();
 
 				} catch (FileNotFoundException ex) {
-					Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+					logger.error(collectionCode + ": couldn't find file");
+					logger.error(elog.toStringException(ex));
 				} catch (IOException ex) {
-					Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+					logger.error(collectionCode + ": IO Exception for file read");
+					logger.error(elog.toStringException(ex));
 				} 
 			}	// end for 
 			beanWriter.flush();
 			beanWriter.close();
 			
 		} catch (FileNotFoundException ex) {
-			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, "File not found." + ex);
+			logger.error(collectionCode + ": couldn't find file");
+			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
-			Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+			logger.error(collectionCode + ": IO Exception for file read");
+			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
 					beanWriter.close();
 				} catch (IOException ex) {
-					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, null, ex);
-					ex.printStackTrace();
+					logger.error(collectionCode + ": IOException for JSON file write ");
+					logger.error(elog.toStringException(ex));
 				}
 			}
 		}

@@ -1,6 +1,10 @@
 package qa.qcri.aidr.persister.filter;
 
 
+import org.apache.log4j.Logger;
+
+import qa.qcri.aidr.logging.ErrorLog;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -9,6 +13,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class DeserializeFilters {
+	
+	private static Logger logger = Logger.getLogger(DeserializeFilters.class.getName());
+	private static ErrorLog elog = new ErrorLog();
 	
 	public DeserializeFilters() {}
 	
@@ -32,8 +39,8 @@ public class DeserializeFilters {
 					GenericInputQuery constraint = jsonObject.fromJson(q, GenericInputQuery.class);
 					queryList.createConstraint(constraint);
 				} catch (Exception e) {
-					System.err.println("[deserializeConstraints] Persister: Error in deserializing received constraints");
-					e.printStackTrace();
+					logger.error("Error in deserializing received constraints");
+					logger.error(elog.toStringException(e));
 					return null;
 				}
 			}

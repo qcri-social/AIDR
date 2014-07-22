@@ -9,8 +9,10 @@ package qa.qcri.aidr.persister.collector;
  * @author Imran
  */
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 import redis.clients.jedis.JedisPubSub;
 
 import java.io.OutputStreamWriter;
@@ -18,14 +20,23 @@ import java.io.FileOutputStream;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
+
 import qa.qcri.aidr.utils.Config;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.io.FileSystemOperations;
+import qa.qcri.aidr.logging.ErrorLog;
 
 public class CollectorSubscriber extends JedisPubSub {
-
+	
+	private static Logger logger = Logger.getLogger(CollectorSubscriber.class.getName());
+	private static ErrorLog elog = new ErrorLog();
+	
     private String persisterDir;
     private String collectionDir;
     private BufferedWriter out = null;
@@ -66,13 +77,13 @@ public class CollectorSubscriber extends JedisPubSub {
 
     @Override
     public void onPUnsubscribe(String pattern, int subscribedChannels) {
-        System.out.println("Unsubscribed Successfully to channel = " + pattern);
+        logger.info("Unsubscribed Successfully from channel pattern = " + pattern);
         closeFileWriting();
     }
 
     @Override
     public void onPSubscribe(String pattern, int subscribedChannels) {
-        System.out.println("Subscribed Successfully to persist channel = " + pattern);
+        logger.info("Subscribed Successfully to persist channel pattern = " + pattern);
     }
 
     private void createNewFile() {
@@ -82,18 +93,19 @@ public class CollectorSubscriber extends JedisPubSub {
                 file.createNewFile();
             }
         } catch (IOException ex) {
-            Logger.getLogger(CollectorSubscriber.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(collectionCode + " error in creating new file at location " + collectionDir);
+        	logger.error(elog.toStringException(ex));
         }
     }
 
     private String createNewDirectory() {
         File theDir = new File(persisterDir + collectionCode);
         if (!theDir.exists()) {
-            System.out.println("creating directory: " + persisterDir + collectionCode);
+            logger.info("creating directory: " + persisterDir + collectionCode);
             boolean result = theDir.mkdir();
             
             if (result) {
-                System.out.println("DIR created");
+                logger.info("DIR created for collection: " + collectionCode);
                 return persisterDir + collectionCode + "/";
             } 
             
@@ -103,9 +115,11 @@ public class CollectorSubscriber extends JedisPubSub {
 
     private void createBufferWriter() {
         try {
-            out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file, true), Charset.forName("UTF-8")), Config.DEFAULT_FILE_WRITER_BUFFER_SIZE);
+        	out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file, true), Charset.forName("UTF-8")), Config.DEFAULT_FILE_WRITER_BUFFER_SIZE);
         } catch (IOException ex) {
-            Logger.getLogger(CollectorSubscriber.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(CollectorSubscriber.class.getName()).log(Level.SEVERE, null, ex);
+        	logger.error(collectionCode + "Error in creating Buffered writer");
+        	logger.error(elog.toStringException(ex));
         }
 
     }
@@ -116,7 +130,9 @@ public class CollectorSubscriber extends JedisPubSub {
             itemsWrittenToFile++;
             isTimeToCreateNewFile();
         } catch (IOException ex) {
-            Logger.getLogger(CollectorSubscriber.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(CollectorSubscriber.class.getName()).log(Level.SEVERE, null, ex);
+        	logger.error(collectionCode + "Error in writing to file");
+        	logger.error(elog.toStringException(ex));
         }
     }
 
@@ -135,7 +151,9 @@ public class CollectorSubscriber extends JedisPubSub {
             out.flush();
             out.close();
         } catch (IOException ex) {
-            Logger.getLogger(CollectorSubscriber.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(CollectorSubscriber.class.getName()).log(Level.SEVERE, null, ex);
+        	logger.error(collectionCode + "Error in closing file writer");
+        	logger.error(elog.toStringException(ex));
         }
     }
 

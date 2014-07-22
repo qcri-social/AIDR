@@ -7,8 +7,10 @@ package qa.qcri.aidr.persister.api;
 
 
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
+
+
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -21,7 +23,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.logging.ErrorLog;
 import qa.qcri.aidr.persister.collector.RedisCollectorPersister;
 import qa.qcri.aidr.utils.Config;
 import qa.qcri.aidr.utils.GenericCache;
@@ -34,7 +38,10 @@ import qa.qcri.aidr.utils.JsonDeserializer;
  */
 @Path("persister")
 public class Persister4CollectorAPI {
-
+	
+	private static Logger logger = Logger.getLogger(Persister4CollectorAPI.class.getName());
+	private static ErrorLog elog = new ErrorLog();
+	
     @Context
     private UriInfo context;
 
@@ -62,7 +69,9 @@ public class Persister4CollectorAPI {
             return Response.ok(response).build();
         }
         }catch (Exception ex) {
-            Logger.getLogger(Persister4CollectorAPI.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(Persister4CollectorAPI.class.getName()).log(Level.SEVERE, null, ex);
+        	logger.error(collectionCode +  ": Failed to start persister");
+        	logger.error(elog.toStringException(ex));
         }
         return Response.ok(response).build();
     }
@@ -76,14 +85,16 @@ public class Persister4CollectorAPI {
         RedisCollectorPersister p = (RedisCollectorPersister) GenericCache.getInstance().getPersisterObject(collectionCode);
         if (p != null) {
             try {
-                System.out.println("Aborting persister...");
+                logger.debug(collectionCode + "Aborting persister...");
                 GenericCache.getInstance().delPersisterObject(collectionCode);
                 p.suspendMe();
-                System.out.println("Aborting done for " + collectionCode);
+                logger.info("Aborting done for " + collectionCode);
                 response = "Persistance of [" + collectionCode + "] has been stopped.";
                 return Response.ok(response).build();
             } catch (InterruptedException ex) {
-                Logger.getLogger(Persister4CollectorAPI.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(Persister4CollectorAPI.class.getName()).log(Level.SEVERE, null, ex);
+            	logger.error(collectionCode + ": Failed to stop persister");
+            	logger.error(elog.toStringException(ex));
             }
         }
         response = "Unable to locate a running persister with the given collection code:[" + collectionCode + "]";
@@ -94,13 +105,12 @@ public class Persister4CollectorAPI {
     @Produces(MediaType.TEXT_HTML)
     @Path("/genCSV")
     public Response generateCSVFromLastestJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
-    	System.out.println("[generateCSVFromLastestJSON] received request for collection: " + collectionCode);
+    	logger.info("Received request for collection: " + collectionCode);
     	JsonDeserializer jsonD = new JsonDeserializer();
         String fileName = jsonD.generateJSON2CSV_100K_BasedOnTweetCount(collectionCode);
         fileName = Config.SCD1_URL + collectionCode+"/"+fileName;
         
-        System.out.println("[generateCSVFromLastestJSON] done processing request for collection: " + collectionCode);
-        System.out.println("[generateCSVFromLastestJSON] returning created file: " + fileName);
+        logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
         return Response.ok(fileName).build();
     }
     
@@ -108,12 +118,11 @@ public class Persister4CollectorAPI {
     @Produces(MediaType.TEXT_HTML)
     @Path("/genTweetIds")
     public Response generateTweetsIDSCSVFromAllJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
-        System.out.println("[generateTweetsIDSCSVFromAllJSON] received request for collection: " + collectionCode);
+        logger.info("Received request for collection: " + collectionCode);
     	JsonDeserializer jsonD = new JsonDeserializer();
         String fileName = jsonD.generateJson2TweetIdsCSV(collectionCode);
         fileName = Config.SCD1_URL + collectionCode+"/"+fileName;
-        System.out.println("[generateTweetsIDSCSVFromAllJSON] done processing request for collection: " + collectionCode);
-        System.out.println("[generateTweetsIDSCSVFromAllJSON] returning created file: " + fileName);
+        logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
         return Response.ok(fileName).build();
     }
     
@@ -129,13 +138,12 @@ public class Persister4CollectorAPI {
     @Produces(MediaType.TEXT_HTML)
     @Path("/genJson")
     public Response generateJSONFromLastestJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
-    	System.out.println("[generateJSONFromLastestJSON] received request for collection: " + collectionCode);
+    	logger.info("Received request for collection: " + collectionCode);
     	JsonDeserializer jsonD = new JsonDeserializer();
         String fileName = jsonD.generateJSON2JSON_100K_BasedOnTweetCount(collectionCode);
         fileName = Config.SCD1_URL + collectionCode+"/"+fileName;
         
-        System.out.println("[generateJSONFromLastestJSON] done processing request for collection: " + collectionCode);
-        System.out.println("[generateJSONFromLastestJSON] returning created file: " + fileName);
+        logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
         return Response.ok(fileName).build();
     }
     
@@ -143,12 +151,11 @@ public class Persister4CollectorAPI {
     @Produces(MediaType.TEXT_HTML)
     @Path("/genJsonTweetIds")
     public Response generateTweetsIDSJSONFromAllJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
-        System.out.println("[generateTweetsIDSCSVFromAllJSON] received request for collection: " + collectionCode);
+        logger.info("Received request for collection: " + collectionCode);
     	JsonDeserializer jsonD = new JsonDeserializer();
         String fileName = jsonD.generateJson2TweetIdsJson(collectionCode);
         fileName = Config.SCD1_URL + collectionCode+"/"+fileName;
-        System.out.println("[generateTweetsIDSCSVFromAllJSON] done processing request for collection: " + collectionCode);
-        System.out.println("[generateTweetsIDSCSVFromAllJSON] returning created file: " + fileName);
+        logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
         return Response.ok(fileName).build();
     }
 }
