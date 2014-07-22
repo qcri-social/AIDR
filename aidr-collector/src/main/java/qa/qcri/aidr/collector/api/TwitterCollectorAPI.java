@@ -15,8 +15,9 @@ import javax.ws.rs.client.WebTarget;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
+
 
 import qa.qcri.aidr.collector.beans.ResponseWrapper;
 
@@ -32,6 +33,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
@@ -50,7 +52,9 @@ import twitter4j.conf.ConfigurationBuilder;
  */
 @Path("/twitter")
 public class TwitterCollectorAPI extends Loggable {
-
+	
+	private static Logger logger = Logger.getLogger(TwitterCollectorAPI.class.getName());
+	
     @Context
     private UriInfo context;
 
@@ -62,7 +66,7 @@ public class TwitterCollectorAPI extends Loggable {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/start")
     public Response startTask(CollectionTask collectionTask) {
-        System.out.println("Starting collector for " + collectionTask.getCollectionCode());
+        logger.info("Starting collector for " + collectionTask.getCollectionCode());
         ResponseWrapper response = new ResponseWrapper();
 
         //check if all twitter specific information is available in the request
@@ -88,10 +92,10 @@ public class TwitterCollectorAPI extends Loggable {
                 .setOAuthAccessTokenSecret(collectionTask.getAccessTokenSecret());
 
         //check if a task is already running with same configutations
-        System.out.println("Checking OAuth parameters");
+        logger.info(collectionTask.getCollectionCode() + ": Checking OAuth parameters");
         if (GenericCache.getInstance().isTwtConfigExists(collectionTask)) {
             String msg = "Provided OAuth configurations already in use. Please stop this collection and then start again.";
-            System.out.println(msg);
+            logger.info(collectionTask.getCollectionCode() + ": " + msg);
             response.setMessage(msg);
             response.setStatusCode(Config.STATUS_CODE_COLLECTION_ERROR);
             return Response.ok(response).build();
@@ -100,7 +104,7 @@ public class TwitterCollectorAPI extends Loggable {
         String collectionCode = collectionTask.getCollectionCode();
 
         //building filter for filtering twitter stream
-        System.out.println("Building twitter query string");
+        logger.info(collectionCode + ": Building twitter query string");
         TwitterStreamQueryBuilder queryBuilder = null;
         try {
             String langFilter = StringUtils.isNotEmpty(collectionTask.getLanguageFilter()) ? collectionTask.getLanguageFilter() : Config.LANGUAGE_ALLOWED_ALL;
@@ -116,7 +120,9 @@ public class TwitterCollectorAPI extends Loggable {
         try {
             tracker = new TwitterStreamTracker(queryBuilder, configurationBuilder, collectionTask);
         } catch (Exception ex) {
-            Logger.getLogger(TwitterCollectorAPI.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(TwitterCollectorAPI.class.getName()).log(Level.SEVERE, null, ex);
+        	logger.error(collectionCode + ": Exception in creating TwitterStreamTracker");
+        	ex.getStackTrace();
         }
 
         if (Config.DEFAULT_PERSISTER_ENABLED) {
@@ -127,7 +133,7 @@ public class TwitterCollectorAPI extends Loggable {
         //preparing callback response
         String msg = collectionTask.getCollectionName() + " -> Initializing Twitter stream tracking. \n Tracking: " + collectionTask.getToTrack()
                 + " \n Following: " + queryBuilder.getToFollow() + " \n Geo: " + queryBuilder.getGeoLocation();
-        log(LOG_LEVEL.INFO, msg);
+        logger.info(msg);
         response.setMessage(msg);
         response.setStatusCode(Config.STATUS_CODE_COLLECTION_INITIALIZING);
         return Response.ok(response).build();
@@ -155,10 +161,9 @@ public class TwitterCollectorAPI extends Loggable {
             }
 
             responseMsg = "Collector has been successfully stopped.";
-            System.out.println(collectionCode + ": " + responseMsg);
+            logger.info(collectionCode + ": " + responseMsg);
             response.setMessage(responseMsg);
             response.setStatusCode(Config.STATUS_CODE_COLLECTION_STOPPED);
-            log(LOG_LEVEL.INFO, responseMsg);
             return Response.ok(response).build();
         } else {
 
@@ -169,7 +174,7 @@ public class TwitterCollectorAPI extends Loggable {
             responseMsg = "No collector instances found to be stopped with the given id:" + collectionCode;
             response.setMessage(responseMsg);
             response.setStatusCode(Config.STATUS_CODE_COLLECTION_NOTFOUND);
-            log(LOG_LEVEL.INFO, responseMsg);
+            logger.info(responseMsg);
             return Response.ok(response).build();
         }
     }
@@ -244,13 +249,13 @@ public class TwitterCollectorAPI extends Loggable {
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             String jsonResponse = clientResponse.readEntity(String.class);
 
-            System.out.println("Collector persister response: " + jsonResponse);
+            logger.info(collectionCode + ": Collector persister response = " + jsonResponse);
         } catch (RuntimeException e) {
 
-            System.out.println("Could not start persister. Is persister running?");
+            logger.error(collectionCode + ": Could not start persister. Is persister running?");
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
-            System.out.println("Unsupported Encoding scheme used");
+            logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }
 
@@ -261,12 +266,12 @@ public class TwitterCollectorAPI extends Loggable {
                     + "persister/stop?collectionCode=" + URLEncoder.encode(collectionCode, "UTF-8"));
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             String jsonResponse = clientResponse.readEntity(String.class);
-            System.out.println("Collector persister response: " + jsonResponse);
+            logger.info(collectionCode + ": Collector persister response =  " + jsonResponse);
         } catch (RuntimeException e) {
-            System.out.println("Could not stop persister. Is persister running?");
+            logger.error(collectionCode + ": Could not stop persister. Is persister running?");
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
-            System.out.println("Unsupported Encoding scheme used");
+        	logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }
 
@@ -278,13 +283,12 @@ public class TwitterCollectorAPI extends Loggable {
                     + "&collectionCode=" + URLEncoder.encode(collectionCode, "UTF-8"));
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             String jsonResponse = clientResponse.readEntity(String.class);
-            System.out.println("Tagger persister response: " + jsonResponse);
+            logger.info(collectionCode + ": Tagger persister response = " + jsonResponse);
         } catch (RuntimeException e) {
-
-            System.out.println("Could not start persister. Is persister running?");
+        	logger.error(collectionCode + ": Could not start persister. Is persister running?");
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
-            System.out.println("Unsupported Encoding scheme used");
+        	logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }
 
@@ -295,12 +299,12 @@ public class TwitterCollectorAPI extends Loggable {
                     + "taggerPersister/stop?collectionCode=" + URLEncoder.encode(collectionCode, "UTF-8"));
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             String jsonResponse = clientResponse.readEntity(String.class);
-            System.out.println("Tagger persister response: " + jsonResponse);
+            logger.info(collectionCode + ": Tagger persister response: " + jsonResponse);
         } catch (RuntimeException e) {
-            System.out.println("Could not stop persister. Is persister running?");
+            logger.error(collectionCode + ": Could not stop persister. Is persister running?");
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
-            System.out.println("Unsupported Encoding scheme used");
+            logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }
 }

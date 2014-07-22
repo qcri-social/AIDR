@@ -79,8 +79,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.glassfish.jersey.server.ChunkedOutput;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
@@ -107,7 +109,7 @@ public class AsyncStream implements ServletContextListener {
 	private static ArrayList<ChunkedOutput<String>> writerList = null;
 
 	// Debugging
-	private static Logger logger = LoggerFactory.getLogger(AsyncStream.class);
+	private static Logger logger = Logger.getLogger(AsyncStream.class);
 
 	/////////////////////////////////////////////////////////////////////////////
 
@@ -115,7 +117,7 @@ public class AsyncStream implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent sce) {
 		AIDROutputConfig configuration = new AIDROutputConfig();
 		HashMap<String, String> configParams = configuration.getConfigProperties();
-
+		/*
 		if (configParams.get("logger").equalsIgnoreCase("log4j")) {
 			// For now: set up a simple configuration that logs on the console
 			// PropertyConfigurator.configure("log4j.properties");      
@@ -124,7 +126,8 @@ public class AsyncStream implements ServletContextListener {
 		if (configParams.get("logger").equalsIgnoreCase("slf4j")) {
 			System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");	// set logging level for slf4j
 		}
-
+		*/
+		
 		// Now initialize shared jedis connection object and thread pool object
 		jedisConn = new JedisConnectionObject(redisHost, redisPort);
 		executorService = Executors.newCachedThreadPool();
@@ -150,7 +153,7 @@ public class AsyncStream implements ServletContextListener {
 			}
 		}
 		writerList.clear();
-		logger.info("[contextDestroyed] executorService: " + executorService);
+		logger.info("executorService: " + executorService);
 		if (executorService != null) shutdownAndAwaitTermination(executorService);
 		logger.info("Context destroyed");
 	}
@@ -179,29 +182,29 @@ public class AsyncStream implements ServletContextListener {
 
 	// Create a subscription to specified REDIS channel: spawn a new thread
 	private void subscribeToChannel(final ExecutorService exec, final RedisSubscriber sub, final SubscriptionDataObject subData) throws NullPointerException, RejectedExecutionException {
-		//logger.info("[subscribeToChannel] executorServicePool = " + exec);
+		//logger.debug("executorServicePool = " + exec);
 		try {
 			exec.execute(new Runnable() {
 				public void run() {
 					try {
 						//logger.info("[subscribeToChannel] patternSubscriptionFlag = " + subData.patternSubscriptionFlag);
 						if (!subData.patternSubscriptionFlag) { 
-							logger.info("[subscribeToChannel/run] Attempting subscription for " + redisHost + ":" + redisPort + "/" + subData.redisChannel);
+							logger.info("Attempting subscription for " + redisHost + ":" + redisPort + "/" + subData.redisChannel);
 							subData.subscriberJedis.subscribe(sub, subData.redisChannel);
 						} 
 						else {
-							logger.info("[subscribeToChannel/run] Attempting pSubscription for " + redisHost + ":" + redisPort + "/" + subData.redisChannel);
+							logger.info("Attempting pSubscription for " + redisHost + ":" + redisPort + "/" + subData.redisChannel);
 							subData.subscriberJedis.psubscribe(sub, subData.redisChannel);
 						}
 					} catch (Exception e) {
-						logger.error("[subscribeToChannel/run] AIDR Predict Channel Subscribing failed");
+						logger.error(subData.redisChannel + ": AIDR Predict Channel Subscribing failed");
 						sub.setRunFlag(false);			// force any orphaned subscriber thread to exit
 						sub.stopSubscription(jedisConn, subData);
 					} finally {
 						try {
 							sub.stopSubscription(jedisConn, subData);
 						} catch (Exception e) {
-							logger.error("[subscribeToChannel/run] Exception occurred attempting stopSubscription: " + e.toString());
+							logger.error(subData.redisChannel + ": Exception occurred attempting stopSubscription: " + e.toString());
 							e.printStackTrace();
 							System.exit(1);
 						}
@@ -209,7 +212,7 @@ public class AsyncStream implements ServletContextListener {
 				}
 			});
 		} catch (RejectedExecutionException|NullPointerException e) {
-			logger.error("[subscribeToChannel] Fatal error executing async thread! Terminating.");
+			logger.error(subData.redisChannel + ": Fatal error executing async thread! Terminating.");
 		}
 	}
 
@@ -232,7 +235,7 @@ public class AsyncStream implements ServletContextListener {
 		final ChunkedOutput<String> responseWriter = new ChunkedOutput<String>(String.class);
 		writerList.add(responseWriter);
 		
-		//System.out.println("channelCode=" + channelCode + ", rate=" + rate + ", duration=" + duration + ", callbackName=" + callbackName);
+		//logger.debug("channelCode=" + channelCode + ", rate=" + rate + ", duration=" + duration + ", callbackName=" + callbackName);
 		if (channelCode != null) {
 			// TODO: Handle client refresh of web-page in same session				
 			if (jedisConn != null) {
@@ -253,7 +256,7 @@ public class AsyncStream implements ServletContextListener {
 
 				RedisSubscriber aidrSubscriber = new RedisSubscriber(subscriberJedis, responseWriter, subscriptionData);
 				try {
-					//logger.debug("subscriberJedis = " + subscriberJedis + ", aidrSubscriber = " + aidrSubscriber);
+					//logger.debug(channelCode + ": subscriberJedis = " + subscriberJedis + ", aidrSubscriber = " + aidrSubscriber);
 					if (null == executorService) {
 						executorService = Executors.newCachedThreadPool();                // max number of threads
 					}
@@ -261,15 +264,16 @@ public class AsyncStream implements ServletContextListener {
 					jedisConn.setJedisSubscription(subscriberJedis, subscriptionData.patternSubscriptionFlag);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					logger.error("[streamChunkedResponse] Fatal exception occurred attempting subscription: " + e.toString());
+					logger.error(channelCode + ": Fatal exception occurred attempting subscription: " + e.toString());
 					e.printStackTrace();
 					System.exit(1);
 				}
-				logger.debug("[streamChunkedResponse] Attempting async response thread");
+				logger.debug(channelCode + ": Attempting async response thread");
 				try {
 					executorService.execute(aidrSubscriber);	
 				} catch (RejectedExecutionException|NullPointerException e) {
-					logger.error("[doGet] Fatal error executing async thread! Terminating.");
+					logger.error(channelCode + "Fatal error executing async thread! Terminating.");
+					e.printStackTrace();
 				}
 			}
 		} 
@@ -286,7 +290,7 @@ public class AsyncStream implements ServletContextListener {
 			}
 			responseWriter.write(errorMessageString.toString());
 		}
-		//logger.info("[streamChunkedResponse] Reached end of function");
+		//logger.debug(channelCode + ": Reached end of function");
 
 		return responseWriter;
 	}
@@ -300,7 +304,7 @@ public class AsyncStream implements ServletContextListener {
 				threadPool.shutdownNow();                         // Cancel currently executing tasks
 				// Wait a while for tasks to respond to being cancelled
 				if (!threadPool.awaitTermination(5, TimeUnit.SECONDS))
-					logger.error("[shutdownAndAwaitTermination] Pool did not terminate");
+					logger.error("Executor Thread Pool did not terminate");
 			}
 		} catch (InterruptedException ie) {
 			// (Re-)Cancel if current thread also interrupted

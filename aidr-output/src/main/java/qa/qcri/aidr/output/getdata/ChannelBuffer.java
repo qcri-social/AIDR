@@ -83,7 +83,7 @@ public class ChannelBuffer {
 				msgList.add(itr.next());
 				++count;
 			}
-			//System.out.println("[getMessages] channel = " + channelName + ", count = " + msgList.size());
+			//ogger.info("channel = " + channelName + ", count = " + msgList.size());
 		}
 		return msgList;
 	}
@@ -101,11 +101,11 @@ public class ChannelBuffer {
 		synchronized (tempList) 
 		{
 			ListIterator<String>itr = tempList.listIterator(tempList.size());
-			//System.out.println("[getLIFOMessages] channel = " + channelName + ", size = " + tempList.size());
+			//logger.info("channel = " + channelName + ", size = " + tempList.size());
 			while (itr.hasPrevious() && count < msgCount) {
 				msgList.add(itr.previous());
 				++count;
-				//System.out.println("[getLIFOMessages] channel = " + channelName + ", count = " + count);
+				//logger.info("channel = " + channelName + ", count = " + count);
 			}
 		}
 		tempList.clear();
