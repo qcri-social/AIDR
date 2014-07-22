@@ -5,9 +5,11 @@
 package qa.qcri.aidr.collector.collectors;
 
 import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger; 
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -37,7 +39,9 @@ import twitter4j.conf.ConfigurationBuilder;
  * @author Imran
  */
 public class TwitterStreamTracker extends Loggable implements Serializable {
-
+	
+    private static Logger logger = Logger.getLogger(TwitterStreamTracker.class.getName());
+			
     private TwitterStream twitterStream;
     private ConfigurationBuilder configBuilder;
     private TwitterStreamQueryBuilder streamQuery;
@@ -86,7 +90,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
                     if (getStreamQuery().isLanguageAllowed(lang)) {
                         publishMessage(status);
                     }
-                }
+                } 
             }
 
             @Override
@@ -98,14 +102,13 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
                 collection.setStatusCode(Config.STATUS_CODE_COLLECTION_RUNNING_WARNING);
                 collection.setStatusMessage("Track limitation notice: " + numberOfLimitedStatuses);
                 GenericCache.getInstance().setTwtConfigMap(getCacheKey(), collection);
-                log(LogLevel.WARNING, "Track limitation notice: " + numberOfLimitedStatuses);
+                logger.info(collectionName + ": Track limitation notice: " + numberOfLimitedStatuses);
 
             }
 
             @Override
             public void onException(Exception ex) {
-                System.out.println("Twitter Exception for collection " + collection.getCollectionCode() + " - " + ex.toString());
-                log(LogLevel.WARNING, ex.toString());
+                logger.error("Twitter Exception for collection " + collection.getCollectionCode() + " - " + ex.toString());
                 collection.setStatusCode(Config.STATUS_CODE_COLLECTION_ERROR);
             }
 
@@ -115,8 +118,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
 
             @Override
             public void onStallWarning(StallWarning arg0) {
-                System.out.println("Stall Warning: " + arg0.getMessage());
-                log(LogLevel.WARNING, arg0.toString());
+                logger.error(collection.getCollectionCode() + " Stall Warning: " + arg0.getMessage());
             }
 
             public void publishMessage(Status status) {
@@ -148,9 +150,9 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
                         counter = new Long(0);
                     }
                 } catch (JedisConnectionException e) {
-                    System.out.println("JedisConnectionException: " + collectionName);
+                    logger.error("JedisConnectionException: " + collectionName);
                 } catch (Exception exp) {
-                    System.out.println("Exception occured in " + collectionName);
+                    logger.error("Exception occured in " + collectionName);
                     exp.printStackTrace();
                 }
             }
@@ -195,7 +197,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
         twitterStream.cleanUp();
         twitterStream.shutdown();
         cleanCache();
-        log(LOG_LEVEL.INFO, "AIDR-Fetcher: Collection aborted which was tracking [" + getStreamQuery().getToTrackToString() + "] AND following [" + getStreamQuery().getToFollowToString() + "]");
+        logger.info("AIDR-Fetcher: Collection aborted which was tracking [" + getStreamQuery().getToTrackToString() + "] AND following [" + getStreamQuery().getToFollowToString() + "]");
 
     }
 

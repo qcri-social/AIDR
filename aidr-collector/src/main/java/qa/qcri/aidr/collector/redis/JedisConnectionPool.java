@@ -1,7 +1,8 @@
 package qa.qcri.aidr.collector.redis;
 
-import qa.qcri.aidr.collector.utils.Config;
+import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.collector.utils.Config;
 import qa.qcri.aidr.collector.logging.Loggable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -13,6 +14,7 @@ import redis.clients.jedis.JedisPoolConfig;
  */
 public class JedisConnectionPool extends Loggable {
 
+	private static Logger logger = Logger.getLogger(JedisConnectionPool.class.getName());
     static JedisPool jedisPool;
 
     public static Jedis getJedisConnection() throws Exception {
@@ -37,7 +39,7 @@ public class JedisConnectionPool extends Loggable {
             }
             return jedisPool.getResource();
         } catch (Exception e) {
-            System.out.println("Could not establish Redis connection. Is the Redis running?");
+            logger.error("Could not establish Redis connection. Is the Redis running?");
             throw e;
         }
     }

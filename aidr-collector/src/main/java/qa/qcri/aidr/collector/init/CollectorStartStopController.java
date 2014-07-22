@@ -15,6 +15,8 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.servlet.http.HttpServlet;
 
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.collector.api.TwitterCollectorAPI;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.CollectorStatus;
@@ -28,7 +30,9 @@ import qa.qcri.aidr.collector.utils.GenericCache;
 @Singleton
 @Startup
 public class CollectorStartStopController extends HttpServlet {
-
+	
+	private static Logger logger = Logger.getLogger(CollectorStartStopController.class.getName());
+	
 	public CollectorStartStopController() {
 	}
 
@@ -36,22 +40,26 @@ public class CollectorStartStopController extends HttpServlet {
 	private void startup() { 
 		//Startup tasks go here
 		System.out.println("AIDR-Collector: Starting up...");
+		logger.info("AIDR-Collector: Starting up...");
 		//task todo
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Calendar cal = Calendar.getInstance();
 		String startDate = dateFormat.format(cal.getTime());
 		GenericCache.getInstance().setCollectorStatus(new CollectorStatus(startDate, "RUNNING", 0));
 		System.out.println("AIDR-Collector: Startup procedure completed @ " + startDate);
+		logger.info("AIDR-Collector: Startup procedure completed @ " + startDate);
 	}
 
 	@PreDestroy
 	private void shutdown() { 
 		//Shutdown tasks go here
 		System.out.println("AIDR-Collector: Shutting Down...");
+		logger.info("AIDR-Collector: Shutting Down...");
 		List<CollectionTask> collections = GenericCache.getInstance().getAllRunningCollectionTasks();
 		TwitterCollectorAPI twitterCollector = new TwitterCollectorAPI();
 		for (CollectionTask collection: collections){
 			System.out.println("Stopping " + collection.getCollectionCode());
+			logger.info("Stopping " + collection.getCollectionCode());
 			try {
 				twitterCollector.stopTask(collection.getCollectionCode());
 			} catch (InterruptedException e1) {
@@ -67,6 +75,7 @@ public class CollectorStartStopController extends HttpServlet {
 
 		}
 		System.out.println("AIDR-Collector: Shutdown procedure completed.");
+		logger.info("AIDR-Collector: Shutdown procedure completed.");
 
 	}
 
