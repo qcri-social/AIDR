@@ -109,6 +109,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
             @Override
             public void onException(Exception ex) {
                 logger.error("Twitter Exception for collection " + collection.getCollectionCode() + " - " + ex.toString());
+                //log(LogLevel.WARNING, ex.toString());
                 collection.setStatusCode(Config.STATUS_CODE_COLLECTION_ERROR);
             }
 
@@ -119,6 +120,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
             @Override
             public void onStallWarning(StallWarning arg0) {
                 logger.error(collection.getCollectionCode() + " Stall Warning: " + arg0.getMessage());
+                //log(LogLevel.WARNING, arg0.toString());
             }
 
             public void publishMessage(Status status) {
