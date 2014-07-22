@@ -26,10 +26,12 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 //import org.apache.log4j.BasicConfigurator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
-import qa.qcri.aidr.output.getdata.GetBufferedAIDRData;
+
+import org.apache.log4j.Logger;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
@@ -44,7 +46,7 @@ public class AIDROutputPing {
 	private static HashMap<String, Method>APIHashMap = null;
 
 	// Debugging
-	private static Logger logger = LoggerFactory.getLogger(AIDROutputPing.class);
+	private static Logger logger = Logger.getLogger(AIDROutputPing.class);
 
 	public AIDROutputPing() {
 		this(host, port);
@@ -56,6 +58,7 @@ public class AIDROutputPing {
 		HashMap<String, String> configParams = configuration.getConfigProperties();
 		AIDROutputPing.host = configParams.get("host");
 		AIDROutputPing.port = Integer.parseInt(configParams.get("port"));
+		/*
 		if (configParams.get("logger").equalsIgnoreCase("log4j")) {
 			// For now: set up a simple configuration that logs on the console
 			// PropertyConfigurator.configure("log4j.properties");      
@@ -64,7 +67,7 @@ public class AIDROutputPing {
 		if (configParams.get("logger").equalsIgnoreCase("slf4j")) {
 			System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");	// set logging level for slf4j
 		}
-		
+		*/
 		APIHashMap = new HashMap<String, Method>();
 
 		// Register available REST APIs
@@ -74,7 +77,7 @@ public class AIDROutputPing {
 					String.class , String.class, float.class, boolean.class));
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		}
 
 		// Initialize connection to REDIS DB
@@ -137,7 +140,7 @@ public class AIDROutputPing {
 			}
 		} catch (JedisConnectionException e) {
 			logger.error("Error! Couldn't establish connection to REDIS!");
-			e.printStackTrace();
+			logger.error(e);
 		}
 		StringBuilder jsonpRes = new StringBuilder();
 		if (callbackName != null) jsonpRes.append(callbackName).append("(");

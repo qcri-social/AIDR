@@ -52,7 +52,6 @@
 
 package qa.qcri.aidr.output.getdata;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -168,7 +167,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			@DefaultValue("0.7") @QueryParam("confidence") float confidence,
 			@DefaultValue("true") @QueryParam("balanced_sampling") boolean balanced_sampling) {
 
-		//logger.info("[getLatestBufferedAIDRData] request received");
+		//logger.info("request received");
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {		// Jedis pool is ready
 			// Get the last count number of messages for channel=channelCode
 			List<String> bufferedMessages = new ArrayList<String>();
@@ -187,7 +186,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				ClassifiedFilteredTweet classifiedTweet = workingTweet.deserialize(tweet);
 				filteredMessages.add(tweet);
 				channelSelector.initializeNew(classifiedTweet.getCrisisCode());	
-				logger.info("[getLatestBufferedAIDRData] Added tweet from channel " + classifiedTweet.getCrisisCode() + ", confidence: " + classifiedTweet.getMaxConfidence());
+				logger.debug("Added tweet from channel " + classifiedTweet.getCrisisCode() + ", confidence: " + classifiedTweet.getMaxConfidence());
 			}
 			workingTweet = null;
 			
@@ -196,7 +195,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			if (!balanced_sampling) {
 				jsonDataList = taggerOutput.createList(filteredMessages, messageCount, rejectNullFlag);
 			} else {
-				//logger.info("[getLatestBufferedAIDRData] going for Rate Limited, buffer size = " + filteredMessages.size() + " from original size = " + bufferedMessages.size());
+				logger.debug("Going for Rate Limited, buffer size = " + filteredMessages.size() + " from original size = " + bufferedMessages.size());
 				jsonDataList = taggerOutput.createRateLimitedList(filteredMessages, channelSelector, messageCount, rejectNullFlag);
 			}
 			final int sendCount = taggerOutput.getMessageCount();
@@ -208,7 +207,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				lastSentLatestTweet.delete(0, lastSentLatestTweet.length());	//clear
 				lastSentLatestTweet.append(jsonDataList);
 			}
-			//logger.info("[getLatestBufferedAIDRData] send count = " + sendCount);
+			logger.debug("send count = " + sendCount);
 			
 			// Reset the messageList buffer and return
 			bufferedMessages.clear();
@@ -220,7 +219,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			// Finally, send the retrieved list to client and close connection
 			return Response.ok(jsonDataList.toString()).build();
 		}
-		logger.error("[getLatestBufferedAIDRData] Error in jedis connection. Bailing out...");
+		logger.error("Error in jedis connection. Bailing out...");
 		return Response.ok(new String("[{}]")).build();
 	}
 
@@ -264,7 +263,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			}
 			if (error)
 			{	
-				logger.warn("[getBufferedAIDRData] Error in channel name: " + channelCode);
+				logger.warn("Error in requested channel name: " + channelCode);
 				return Response.ok(new String("[{}]")).build();
 				/*
 				Set<String> channelList = cbManager.getActiveChannelsList();
@@ -324,7 +323,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					bufferedMessages.clear();
 					bufferedMessages = null;
 
-					//logger.info("[doGet] Sending jsonp data, count = " + sendCount);
+					//logger.info(channelCode + " : sending jsonp data, count = " + sendCount);
 					return Response.ok(jsonDataList.toString()).build();
 				}
 				else {
@@ -337,7 +336,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				}
 			}
 		}
-		logger.error("[getBufferedAIDRData] Error in jedis connection. Bailing out...");
+		logger.error(channelCode + ": error in jedis connection. Bailing out...");
 		return Response.ok(new String("[{}]")).build();
 	}
 
@@ -365,15 +364,15 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			@QueryParam("callback") String callbackName,
 			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
 
-		logger.info("[getBufferedAIDRDataPostFilter] request received :" + channelCode);
-		//logger.info("[getBufferedAIDRDataPostFilter] Received json string: " + queryString);
+		logger.info("Request received for :" + channelCode);
+		logger.debug(channelCode + ": received json string: " + queryString);
 		DeserializeFilters des = new DeserializeFilters();
 		JsonQueryList queryList = des.deserializeConstraints(queryString);
 		
 		if (queryList != null) {
-			logger.info("[getBufferedAIDRDataPostFilter] Received POST list: " + queryList.toString());
+			logger.info(channelCode + ": received POST list = " + queryList.toString());
 		} else {
-			logger.info("[getBufferedAIDRDataPostFilter] Received POST list: " + queryList);
+			logger.info(channelCode + ": received POST list = " + queryList);
 			//queryList = new JsonQueryList();
 		}
 
@@ -398,7 +397,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					channelName = CHANNEL_PREFIX_STRING.concat(channelCode);	// fully qualified channel name - same as REDIS channel
 				}
 				if (isChannelPresent(channelName)) {
-					logger.info("[getBufferedAIDRDataPostFilter] Going for channel data fetch: " + channelName);
+					//logger.info("Going for channel data fetch: " + channelName);
 					int msgCount = Integer.parseInt(count);
 					int messageCount = DEFAULT_COUNT;
 					if (msgCount > 0) {
@@ -420,25 +419,25 @@ public class GetBufferedAIDRData implements ServletContextListener {
 						//|| (queryList.getConstraints().get(0).queryType != QueryType.classifier_query
 						//&& queryList.getConstraints().get(0).queryType != QueryType.date_query)) {
 						// default behavior - no filtering if no POST payload
-						logger.info("[getBufferedAIDRDataPostFilter] No filtering...");
+						logger.info(channelCode + ": no filtering...");
 						filteredMessages.addAll(bufferedMessages);
 					} else {
 						ClassifiedFilteredTweet classifiedTweet = new ClassifiedFilteredTweet();
 						for (String tweet: bufferedMessages) {
 							classifiedTweet.deserialize(tweet);
 							if (tweetFilter.getMatcherResult(classifiedTweet)) {
-								//logger.info("[getBufferedAIDRDataPostFilter] adding tweet to filteredMessages");
+								logger.debug(channelCode + ": adding tweet to filteredMessages");
 								filteredMessages.add(tweet);
 							}
 						}
-						logger.info("[getBufferedAIDRDataPostFilter] Fetched bufferedMessages size = " + bufferedMessages.size());
-						logger.info("[getBufferedAIDRDataPostFilter] Final filteredMessages size = " + filteredMessages.size());
+						logger.debug(channelCode + ": fetched bufferedMessages size = " + bufferedMessages.size());
+						logger.info(channelCode + ": Final filteredMessages size = " + filteredMessages.size());
 					}
 					// Finally the usual stuff - format tweets for tagger specific output
 					final JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
 					final StringBuilder jsonDataList = taggerOutput.createList(filteredMessages, messageCount, rejectNullFlag);
 					final int sendCount = taggerOutput.getMessageCount();
-					logger.info("[getBufferedAIDRDataPostFilter] Sending jsonp data, count = " + sendCount);
+					logger.info(channelCode + ": sending jsonp data, count = " + sendCount);
 
 					// Cleanup, send the retrieved list to client and close connection
 					if (temp != null) { 
@@ -451,7 +450,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					filteredMessages.clear();
 					filteredMessages = null;
 
-					//logger.info("[doGet] Sending jsonp data, count = " + sendCount);
+					logger.debug(channelCode + ": sending jsonp data, count = " + sendCount);
 					return Response.ok(jsonDataList.toString())
 							.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
 							.header("Access-Control-Allow-Origin", "*")
@@ -461,7 +460,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 							.build();
 				}
 				else {
-					logger.warn("[getBufferedAIDRDataPostFilter] channel name doesn't exist: " + channelName);
+					logger.warn("channel name doesn't exist: " + channelName);
 					if (callbackName != null) {
 						StringBuilder respStr = new StringBuilder();
 						respStr.append(callbackName).append("([{}])");
@@ -483,7 +482,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				}
 			}
 		}
-		logger.error("[getBufferedAIDRDataPostFilter] Error in jedis connection. Bailing out...");
+		logger.error(channelCode + ": error in jedis connection. Bailing out...");
 		return Response.ok(new String("[{}]"))
 				.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
 				.header("Access-Control-Allow-Origin", "*")
@@ -559,9 +558,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/channel/test/{crisisCode}")
 	public Response testPost(String testString, @PathParam("crisisCode") String channelCode) {
-		logger.info("[testPost] request received :" + channelCode);
-		logger.info("[testPost] Received string: " + testString);
-
+		logger.info("request received :" + channelCode + ", received string: " + testString);
 		return Response.ok(new String("{\"test\":\"passed\"}")).build();
 	}
 
@@ -575,13 +572,13 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent sce) {
 		AIDROutputConfig configuration = new AIDROutputConfig();
 		HashMap<String, String> configParams = configuration.getConfigProperties();
-		System.out.println("logger = " + configParams.get("logger"));
+		logger.info("Logger = " + configParams.get("logger"));
+		/*
 		if (configParams.get("logger").equalsIgnoreCase("log4j")) {
 			// For now: set up a simple configuration that logs on the console
 			// PropertyConfigurator.configure("log4j.properties");      
 			//BasicConfigurator.configure();    // initialize log4j logging
 		}
-		/*
 		if (configParams.get("logger").equalsIgnoreCase("slf4j")) {
 			System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");	// set logging level for slf4j
 		}
@@ -590,6 +587,6 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
 		channelSelector = new SimpleRateLimiter();
 		lastSentLatestTweet = new StringBuffer(); 
-		logger.info("[GetBufferedAIDRData] Context Initialized");
+		logger.info("Context Initialized");
 	}
 }

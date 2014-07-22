@@ -10,6 +10,8 @@ import java.util.TimeZone;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.log4j.Logger;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -20,7 +22,9 @@ import qa.qcri.aidr.output.filter.NominalLabel;
 @SuppressWarnings("serial")
 @XmlRootElement(name="ClassifiedFilteredTweet")
 public class ClassifiedFilteredTweet implements Serializable {
-
+	
+	private static Logger logger = Logger.getLogger(ClassifiedFilteredTweet.class);
+	
 	private Date created_at = null;
 	private String text = null;
 	private String crisis_code = null;
@@ -160,10 +164,10 @@ public class ClassifiedFilteredTweet implements Serializable {
 			try {
 				return formatter.parse(timestamp);
 			} catch (ParseException e) {
-				System.err.println("[createDate] Error in parsing Date string");
+				logger.error("Error in parsing Date string");
 			}
 		}
-		System.out.println("[createDate] Warning, tweet has no createdAt field!");
+		logger.error("Warning, tweet has no createdAt field!");
 		return null;
 	}
 
