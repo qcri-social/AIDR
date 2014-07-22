@@ -443,11 +443,11 @@ public class JsonDeserializer {
 			//fileName = csv.writeCollectorTweetIDSCSV(tweetsList, collectionCode, fileNameforCSVGen);
 
 		} catch (FileNotFoundException ex) {
-			logger.info(collectionCode + ": File not found.");
-			logger.info(elog.toStringException(ex));
+			logger.error(collectionCode + ": File not found.");
+			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
-			logger.info(collectionCode + ": IO Exception for file read");
-			logger.info(elog.toStringException(ex));
+			logger.error(collectionCode + ": IO Exception for file read");
+			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -558,8 +558,8 @@ public class JsonDeserializer {
 			logger.error(collectionCode + ": couldn't find file");
 			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
-			logger.info(collectionCode + ": IO Exception for file read");
-			logger.info(elog.toStringException(ex));
+			logger.error(collectionCode + ": IO Exception for file read");
+			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -622,8 +622,8 @@ public class JsonDeserializer {
 			logger.error(collectionCode + ": couldn't find file");
 			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
-			logger.info(collectionCode + ": IO Exception for file read");
-			logger.info(elog.toStringException(ex));
+			logger.error(collectionCode + ": IO Exception for file read");
+			logger.error(elog.toStringException(ex));
 		} 
 		return tweetsList;
 	}
@@ -693,8 +693,8 @@ public class JsonDeserializer {
 			logger.error(collectionCode + ": couldn't find file");
 			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
-			logger.info(collectionCode + ": IO Exception for file read");
-			logger.info(elog.toStringException(ex));
+			logger.error(collectionCode + ": IO Exception for file read");
+			logger.error(elog.toStringException(ex));
 		} 
 		return tweetsList;
 	}
@@ -1046,7 +1046,7 @@ public class JsonDeserializer {
 				if (currentFileName.endsWith(".json")
 						&& currentFileName.contains("vol")) {
 					String line;
-					System.out.println("[generateJSON2JSON_100K_BasedOnTweetCount] Reading file : " + f.getAbsolutePath());
+					logger.info("Reading file : " + f.getAbsolutePath());
 					InputStream is = new FileInputStream(f.getAbsolutePath());
 					br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 					while ((line = br.readLine()) != null) {
@@ -1078,8 +1078,8 @@ public class JsonDeserializer {
 			logger.error(collectionCode + ": couldn't find file");
 			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
-			logger.info(collectionCode + ": IO Exception for file read");
-			logger.info(elog.toStringException(ex));
+			logger.error(collectionCode + ": IO Exception for file read");
+			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -1125,7 +1125,7 @@ public class JsonDeserializer {
 				if (currentFileName.endsWith(".json") 
 						&& currentFileName.contains("vol")) {
 					String line;
-					System.out.println("[generateJson2TweetIdsJson] Reading file : " + f.getAbsolutePath());
+					logger.info("Reading file : " + f.getAbsolutePath());
 					InputStream is = new FileInputStream(f.getAbsolutePath());
 					br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 					while ((line = br.readLine()) != null) {
@@ -1154,8 +1154,8 @@ public class JsonDeserializer {
 			logger.error(collectionCode + ": couldn't find file");
 			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
-			logger.info(collectionCode + ": IO Exception for file read");
-			logger.info(elog.toStringException(ex));
+			logger.error(collectionCode + ": IO Exception for file read");
+			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -1181,7 +1181,7 @@ public class JsonDeserializer {
 			fileName = fileNameforJsonGen + ".json";
 			
 			FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforJsonGen + ".json");
-			System.out.println("[taggerGenerateJSON2JSON_100K_BasedOnTweetCount] Deleted existing file: " + folderLocation + "/" + fileNameforJsonGen + ".json");
+			logger.info("Deleted existing file: " + folderLocation + "/" + fileNameforJsonGen + ".json");
 			
 			File folder = new File(folderLocation);
 			File[] listOfFiles = folder.listFiles();
@@ -1215,7 +1215,7 @@ public class JsonDeserializer {
 					if (currentFileName.endsWith(".json") 
 							&& currentFileName.contains("vol")) {
 						String line;
-						System.out.println("[taggerGenerateJSON2JSON_100K_BasedOnTweetCount] Reading file : " + f.getAbsolutePath());
+						logger.info("Reading file : " + f.getAbsolutePath());
 						InputStream is = new FileInputStream(f.getAbsolutePath());
 						br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 						while ((line = br.readLine()) != null) {
@@ -1246,7 +1246,10 @@ public class JsonDeserializer {
 			logger.error(collectionCode + ": couldn't find file");
 			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
-			logger.info(collectionCode + ": IO Exception for file read");
+			logger.error(collectionCode + ": IO Exception for file read");
+			logger.error(elog.toStringException(ex));
+		} catch (NullPointerException ex) {
+			logger.error(collectionCode + ": empty list of files to read");
 			logger.info(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
@@ -1283,7 +1286,7 @@ public class JsonDeserializer {
 
 			for (String file : fileNames) {
 				String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
-				System.out.println("[generateClassifiedJson2TweetIdsJSON] Reading file " + fileLocation);
+				logger.info("Reading file " + fileLocation);
 				try {
 					br = new BufferedReader(new FileReader(fileLocation)); 
 					String line;
@@ -1303,8 +1306,8 @@ public class JsonDeserializer {
 					logger.error(collectionCode + ": couldn't find file");
 					logger.error(elog.toStringException(ex));
 				} catch (IOException ex) {
-					logger.info(collectionCode + ": IO Exception for file read");
-					logger.info(elog.toStringException(ex));
+					logger.error(collectionCode + ": IO Exception for file read");
+					logger.error(elog.toStringException(ex));
 				} 
 			}	// end for 
 			beanWriter.flush();
@@ -1314,8 +1317,8 @@ public class JsonDeserializer {
 			logger.error(collectionCode + ": couldn't find file");
 			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
-			logger.info(collectionCode + ": IO Exception for file read");
-			logger.info(elog.toStringException(ex));
+			logger.error(collectionCode + ": IO Exception for file read");
+			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
