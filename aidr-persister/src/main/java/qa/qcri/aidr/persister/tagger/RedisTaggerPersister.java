@@ -4,11 +4,10 @@
  */
 package qa.qcri.aidr.persister.tagger;
 
+import org.apache.log4j.Logger;
+
+import qa.qcri.aidr.logging.ErrorLog;
 import qa.qcri.aidr.persister.collector.*;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import qa.qcri.aidr.utils.Config;
 import qa.qcri.aidr.redis.JedisConnectionPool;
 import qa.qcri.aidr.utils.GenericCache;
@@ -20,6 +19,9 @@ import redis.clients.jedis.Jedis;
  */
 public class RedisTaggerPersister implements Runnable {
 
+	private static Logger logger = Logger.getLogger(RedisTaggerPersister.class.getName());
+	private static ErrorLog elog = new ErrorLog();
+	
 	String fileName;
 	Thread t;
 	boolean suspendFlag;
@@ -42,8 +44,9 @@ public class RedisTaggerPersister implements Runnable {
 			subscriberJedis = connObject.getJedisConnection();
 			subscriber = new TaggerSubscriber(fileName, collectionCode);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(collectionCode + " error in subscribing to Redis");
+        	logger.error(elog.toStringException(e));
+        	
 			connObject.close(subscriberJedis);
 			subscriberJedis = null;
 			subscriber = null;
@@ -60,10 +63,10 @@ public class RedisTaggerPersister implements Runnable {
 			while (suspendFlag) {
 				// koushik: Added a finally block to gracefully unsubscribe
 				try {
-					System.out.println("Started collecting Tagger data to -> " + fileName + "/output");
-					System.out.println("Channel to Listen  to: " + Config.TAGGER_CHANNEL + collectionCode);
+					logger.info(collectionCode + ": Started collecting Tagger data to -> " + fileName + "/output");
+					logger.info("Channel to Listen  to: " + Config.TAGGER_CHANNEL + collectionCode);
 					subscriberJedis.psubscribe(subscriber, Config.TAGGER_CHANNEL + collectionCode);
-					System.out.println("Stopped collecting data -> " + fileName + "/output");
+					logger.info(collectionCode + ": Stopped collecting data -> " + fileName + "/output");
 					Thread.sleep(200);
 				} finally {
 					if (subscriber != null && subscriber.isSubscribed()) {
@@ -72,15 +75,16 @@ public class RedisTaggerPersister implements Runnable {
 							connObject.close(subscriberJedis);		// return jedis resource to JedisPool
 							Thread.sleep(200);
 						} catch (InterruptedException ex) {
-							Logger.getLogger(RedisTaggerPersister.class.getName()).log(Level.SEVERE, null, ex);
+							logger.warn(collectionCode + ": Error in closing Redis connection");
+							logger.warn(elog.toStringException(ex));
 						}
 					}
 				}
 			}
 		} catch (InterruptedException e) {
-			System.out.println(collectionCode + " interrupted.");
+			logger.warn(collectionCode + " interrupted.");
 		}
-		System.out.println(collectionCode + " exiting.");
+		logger.info(collectionCode + " exiting.");
 	}
 
 	public void suspendMe() {
@@ -102,7 +106,7 @@ public class RedisTaggerPersister implements Runnable {
 			t.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
-			System.out.println("[InterruptedException] Tagger Persister Thread join interrupted");
+			logger.warn(collectionCode + ": Tagger Persister Thread join interrupted");
 		}
 	}
 

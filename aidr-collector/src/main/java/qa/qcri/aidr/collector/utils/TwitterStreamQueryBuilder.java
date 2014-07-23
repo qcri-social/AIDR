@@ -5,7 +5,9 @@
 package qa.qcri.aidr.collector.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -17,31 +19,36 @@ public class TwitterStreamQueryBuilder {
     private String[] toTrackArray;
     private long[] toFollowerArray;
     private double[][] geoLocations; // -180,-90,180,90 for any geo tagged tweet
-    private List<String> languageFilters;
+    //private List<String> languageFilters;
+    private Map<Integer, String> langMap;
+    
 
     // add geolocation 
     public TwitterStreamQueryBuilder(String track, String follow, String geoLocation, String langFilters) {
         setToFollow(follow);
         setToTrack(track);
         setGeoLocation(geoLocation);
-        languageFilters = new ArrayList<String>();
+        //languageFilters = new ArrayList<String>();
+        langMap = new HashMap<Integer, String>();
         setLanguageFilter(langFilters.toLowerCase());
     }
 
     public TwitterStreamQueryBuilder() {
     }
-
+    
     public void setLanguageFilter(String langFilters) {
         if (StringUtils.isNotEmpty(langFilters)) {
-            String[] indicidualFilters = langFilters.split(",");
-            for (String filter : indicidualFilters) {
-                languageFilters.add(filter.trim());
+            String[] languages = langFilters.split(",");
+            int count=1;
+            for (String language : languages) {
+                langMap.put(count++, language);
             }
         }
     }
 
     public boolean isLanguageAllowed(String lang) {
-        if (languageFilters.contains(lang.toLowerCase())) {
+        //if (languageFilters.contains(lang.toLowerCase())) {
+         if (langMap.containsValue(lang.toLowerCase())) {
             return true;
         }
 

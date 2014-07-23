@@ -380,8 +380,10 @@ public class TaggerController extends BaseController {
 			return getUIWrapper(false);
 		}
 		if (taggerCrisisExist != null && taggerCrisisExist.getCrisisId() != null && taggerCrisisExist.getCrisisId() != 0){
+            logger.debug("Classifier already exists for the code: \"" + code + "\"");
 			return getUIWrapper(true, true);
 		} else {
+            logger.debug("Classifier doesn't exists yet for the code: \"" + code + "\"");
 			return getUIWrapper(false, true);
 		}
 	}

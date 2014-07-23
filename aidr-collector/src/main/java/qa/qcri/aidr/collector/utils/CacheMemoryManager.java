@@ -4,8 +4,10 @@
  */
 package qa.qcri.aidr.collector.utils;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
+import org.apache.log4j.Logger;
+
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
@@ -17,7 +19,9 @@ import net.sf.ehcache.config.CacheConfiguration;
  * @author Muhammad Imran
  */
 public class CacheMemoryManager {
-
+	
+	private static Logger logger = Logger.getLogger(CacheMemoryManager.class.getName());
+	
     private static CacheMemoryManager instance;
     private CacheManager manager;
     private CacheConfiguration config;
@@ -89,7 +93,9 @@ public class CacheMemoryManager {
                 manager.addCache(cache);
             }
         } catch (Exception ex) {
-            Logger.getLogger(CacheMemoryManager.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(CacheMemoryManager.class.getName()).log(Level.SEVERE, null, ex);
+        	logger.error("Exception in creating cache");
+        	ex.printStackTrace();
         }
 
     }

@@ -3,10 +3,13 @@ package qa.qcri.aidr.output.utils;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
-import qa.qcri.aidr.output.getdata.ChannelBuffer;
+
+
+import org.apache.log4j.Logger;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -28,8 +31,8 @@ public class JedisConnectionObject {
 	private static boolean connectionSetup = false;
 	
 	// Logger setup
-	private static Logger logger = LoggerFactory.getLogger(JedisConnectionObject.class);
-
+	private static Logger logger = Logger.getLogger(JedisConnectionObject.class);
+	private static ErrorLog elog = new ErrorLog();
 	/**
 	 * 
 	 * @param host hostname on which REDIS resides
@@ -39,12 +42,13 @@ public class JedisConnectionObject {
 		// For now: set up a simple configuration that logs on the console
 		//PropertyConfigurator.configure("log4j.properties");		// where to place the properties file?
 		//BasicConfigurator.configure();							// initialize log4j logging
-		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
+		//System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
 
 		allotedJedis = new ConcurrentHashMap<Jedis, Boolean>();
 		redisHost = host;
 		redisPort = port;
-		synchronized (allotedJedis) {
+		//synchronized (allotedJedis) 
+		{
 			if (null == poolConfig) {
 				poolConfig = new JedisPoolConfig();
 				poolConfig.setMaxActive(200);
@@ -57,26 +61,26 @@ public class JedisConnectionObject {
 				poolConfig.timeBetweenEvictionRunsMillis = 60000;
 				poolConfig.maxWait = 60000;
 				poolConfig.whenExhaustedAction = org.apache.commons.pool.impl.GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW;
-				logger.debug("[connectToRedis] New Jedis poolConfig: " + poolConfig);
+				logger.debug("New Jedis poolConfig: " + poolConfig);
 			} else {
-				logger.debug("[connectToRedis] Reusing existing Jedis poolConfig: " + poolConfig);
+				logger.debug("Reusing existing Jedis poolConfig: " + poolConfig);
 			}
 			if (null == pool) {
 				try {
 					pool = new JedisPool(poolConfig, redisHost, redisPort, 30000);
 					poolSetup = true;
-					logger.debug("[connectToRedis] New Jedis pool: " + pool);
+					logger.debug("New Jedis pool: " + pool);
 				} catch (Exception e) {
-					logger.debug("[connectToRedis] Fatal error! Could not initialize Jedis Pool!");
+					logger.debug("Fatal error! Could not initialize Jedis Pool!");
 					poolConfig = null;
 					pool = null;
 					poolSetup = false;
 				}
 			} else {
 				poolSetup = true;
-				logger.debug("[connectToRedis] Reusing existing Jedis pool: " + pool);
+				logger.debug("Reusing existing Jedis pool: " + pool);
 			}
-			allotedJedis.notifyAll();
+			//allotedJedis.notifyAll();
 		}
 	}
 
@@ -99,7 +103,7 @@ public class JedisConnectionObject {
 	 *  Get a connection resource from JEDIS pool
 	 * @return
 	 */
-	public synchronized Jedis getJedisResource() {
+	public Jedis getJedisResource() {
 		Jedis subscriberJedis = null;
 		if (isPoolSetup()) {
 			try {
@@ -108,7 +112,7 @@ public class JedisConnectionObject {
 			} catch (Exception e) {
 				subscriberJedis = null;
 				connectionSetup = false;
-				logger.error("[getJedisResource] Fatal error! Could not get a resource from the pool.");
+				logger.error("Fatal error! Could not get a resource from the pool.");
 			}
 			if (subscriberJedis != null) {
 				allotedJedis.put(subscriberJedis, false);		// initially nothing assigned
@@ -145,7 +149,7 @@ public class JedisConnectionObject {
 	 * Returns to the Jedis pool a specific instance of allocated Jedis connection resource
 	 * @param jedisInstance a Jedis instance borrowed from the Jedis Pool
 	 */
-	public synchronized void returnJedis(Jedis jedisInstance) {
+	public void returnJedis(Jedis jedisInstance) {
 		if (pool != null) {
 			try {
 				if (null != jedisInstance) {
@@ -153,14 +157,14 @@ public class JedisConnectionObject {
 					pool.returnResource(jedisInstance);
 				}
 			} catch (JedisConnectionException e) {
-				logger.error("[returnJedis] JedisConnectionException occurred...");
+				logger.error("JedisConnectionException occurred...");
 				pool.returnBrokenResource(jedisInstance);
 			} finally {
 				if (null != jedisInstance) 
 					pool.returnResource(jedisInstance);
 			}
 		}
-		this.notifyAll();
+		//this.notifyAll();
 	}
 
 	/**
@@ -230,7 +234,7 @@ public class JedisConnectionObject {
 			pool.destroy();
 			pool = null;
 			poolConfig = null;
-			logger.info("[closeAll] Pool destroyed");
+			logger.info("Pool destroyed");
 		}
 		poolSetup = false;
 	}

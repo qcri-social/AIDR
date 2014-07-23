@@ -37,7 +37,7 @@ public class JsonLabelLists implements Serializable {
 		}
 		StringBuilder value = new StringBuilder().append("{");
 		for (String e: labelNames) {
-			System.out.println("label: " + e);
+			//System.out.println("label: " + e);
 			value.append(e).append(", ");
 		}
 		return value.substring(0, value.lastIndexOf(", ")).concat("}");

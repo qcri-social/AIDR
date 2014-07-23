@@ -5,6 +5,7 @@
 package qa.qcri.aidr.collector.api;
 
 import com.google.gson.Gson;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -24,6 +25,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
@@ -39,6 +41,8 @@ import qa.qcri.aidr.collector.utils.GenericCache;
 @Path("/manage")
 public class CollectorManageResource {
 
+	private static Logger logger = Logger.getLogger(CollectorManageResource.class.getName());
+			
     @Context
     private UriInfo context;
     
@@ -59,7 +63,7 @@ public class CollectorManageResource {
             return "No running collection found to persist.";
         }
         
-        System.out.println(collections.size() + " collections found to be persisted.");
+        logger.info(collections.size() + " collections found to be persisted.");
         Gson gson = new Gson();
         try {
             FileWriter file = new FileWriter("fetcher_running_coll.json");
@@ -90,7 +94,7 @@ public class CollectorManageResource {
             String sCurrentLine;
             br = new BufferedReader(new FileReader("fetcher_running_coll.json"));
             Gson gson = new Gson();
-            System.out.println("Strated reading from disk...");
+            logger.info("Strated reading from disk...");
             while ((sCurrentLine = br.readLine()) != null) {
                 CollectionTask collection = gson.fromJson(sCurrentLine, CollectionTask.class);
                 System.out.println("Retrieved from disk :" + gson.toJson(collection));
@@ -98,7 +102,7 @@ public class CollectorManageResource {
                 Thread.sleep(2000); // starting up collections in a polite way to avoid blocking problem from Twitter
 
             }
-            System.out.println("Done reading.");
+            logger.info("Done reading.");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -120,19 +124,15 @@ public class CollectorManageResource {
     private String runCollection(CollectionTask collection) {
     	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
-            //WebResource webResource = client.resource(Config.FETCHER_REST_URI + "/twitter/start");
+            
         	WebTarget webResource = client.target(Config.FETCHER_REST_URI + "/twitter/start");
             Gson gson = new Gson();
-            //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-            //		  .accept(MediaType.APPLICATION_JSON)
-            //        .post(ClientResponse.class, gson.toJson(collection));
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
             							.post(Entity.json(gson.toJson(collection)), Response.class);
             
-            //String jsonResponse = clientResponse.getEntity(String.class);
             String jsonResponse = clientResponse.readEntity(String.class);
             
-            System.out.println("Fetcher Response: " + jsonResponse);
+            logger.info("Fetcher Response: " + jsonResponse);
             return jsonResponse;
         } catch (Exception e) {
 

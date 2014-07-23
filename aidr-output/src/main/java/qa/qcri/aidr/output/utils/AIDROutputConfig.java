@@ -15,10 +15,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
+
 public class AIDROutputConfig {
 
 	private static String configsaveFileName = "src/main/resources/config.properties";		// default properties file
 	private static String configloadFileName = "config.properties";		
+	
+	// Debugging
+	private static Logger logger = Logger.getLogger(AIDROutputConfig.class.getName());
 	/**
 	 * 
 	 * @param propMap properties to store, in the form of a HashMap
@@ -38,14 +44,15 @@ public class AIDROutputConfig {
 			prop.store(output, null);
 
 		} catch (IOException e) {
-			System.err.println("Error in saving to property file: " + configsaveFileName);
-			e.printStackTrace();
+			logger.error("Error in saving to property file: " + configsaveFileName);
+			logger.error(e);
 		} finally {
 			if (output != null) {
 				try {
 					output.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					logger.error("Error in closing config file");
+					logger.error(e);
 				}
 			}
 		}
@@ -83,15 +90,15 @@ public class AIDROutputConfig {
 			return properties;
 
 		} catch (IOException e) {
-			System.err.println("Error in reading properties file: " + configloadFileName);
-			e.printStackTrace();
+			logger.error("Error in reading properties file: " + configloadFileName);
+			logger.error(e);
 			return null;
 		} finally {
 			if (input != null) {
 				try {
 					input.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					logger.error("Erorr in closing config file");
 				}
 			}
 		}

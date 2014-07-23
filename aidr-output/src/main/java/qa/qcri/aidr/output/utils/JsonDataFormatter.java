@@ -3,17 +3,19 @@ package qa.qcri.aidr.output.utils;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
+
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class JsonDataFormatter {
 
-	private static Logger logger = LoggerFactory.getLogger(JsonDataFormatter.class);
+	private static Logger logger = Logger.getLogger(JsonDataFormatter.class);
 	String callbackName = null;
 	int count = 0;
 	public JsonDataFormatter(String callbackName) {
 		//BasicConfigurator.configure();		// configuration for log4j logging
-		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
+		//System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
 		this.callbackName = callbackName;
 		count = 0;
 	}
@@ -38,7 +40,7 @@ public class JsonDataFormatter {
 			final String msg = itr.previous();
 			final TaggerJsonOutputAdapter jsonOutput = new TaggerJsonOutputAdapter();
 			final String jsonData = (msg != null) ? jsonOutput.buildJsonString(msg, rejectNullFlag) : null;
-			//logger.info("[createList] json string: " + jsonData);
+			//logger.info("json string: " + jsonData);
 			if (jsonData != null) {
 				jsonDataList.append(jsonData);
 				++count;
@@ -81,15 +83,15 @@ public class JsonDataFormatter {
 				final TaggerJsonOutputAdapter jsonOutput = new TaggerJsonOutputAdapter();
 				final String jsonData = (msg != null) ? jsonOutput.buildJsonString(msg, rejectNullFlag) : null;
 
-				//logger.info("[createRateLimitedList] channel: " + jsonOutput.getCrisisCode() + ", freq = " + channelSelector.getValue(jsonOutput.getCrisisCode()) + ", rate limited = " + channelSelector.isRateLimited(jsonOutput.getCrisisCode()));
-				//logger.info("[createRateLimitedList] json string: " + jsonData);
+				//logger.info("channel: " + jsonOutput.getCrisisCode() + ", freq = " + channelSelector.getValue(jsonOutput.getCrisisCode()) + ", rate limited = " + channelSelector.isRateLimited(jsonOutput.getCrisisCode()));
+				//logger.info(jsonOutput.getCrisisCode() + ": json string = " + jsonData);
 
 				existsFlag = (jsonData != null) ? true : false;
 				if (jsonData != null && !channelSelector.isRateLimited(jsonOutput.getCrisisCode())) {
 					jsonDataList.append(jsonData);
 					channelSelector.increment(jsonOutput.getCrisisCode());
 
-					//logger.info("[createRateLimitedList] Added tweet to send list, freq = " + channelSelector.getValue(jsonOutput.getCrisisCode()));
+					//logger.info("Added tweet to send list, freq = " + channelSelector.getValue(jsonOutput.getCrisisCode()));
 					++count;
 					if (count < messageCount && itr.hasPrevious()) jsonDataList.append(",");		// otherwise, this was the last message to append
 				}

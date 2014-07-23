@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -13,6 +14,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.google.gson.Gson;
 
+import qa.qcri.aidr.logging.ErrorLog;
 import qa.qcri.aidr.persister.filter.QueryType;
 import qa.qcri.aidr.persister.filter.ClassifierQueryJsonObject;
 import qa.qcri.aidr.persister.filter.DateQueryJsonObject;
@@ -22,6 +24,9 @@ import qa.qcri.aidr.persister.filter.NominalLabel;
 
 public class FilterQueryMatcher {
 
+	private static Logger logger = Logger.getLogger(FilterQueryMatcher.class.getName());
+	private static ErrorLog elog = new ErrorLog();
+	
 	public JsonQueryList queryList;
 	public int next;
 
@@ -42,8 +47,8 @@ public class FilterQueryMatcher {
 				DateQueryJsonObject dateQuery = mapper.readValue(queryString, DateQueryJsonObject.class);
 				return true;
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Error in parsing date query string");
+				logger.error(elog.toStringException(e));
 			}
 		}
 		return false;
@@ -57,8 +62,8 @@ public class FilterQueryMatcher {
 				ClassifierQueryJsonObject classiferQuery = mapper.readValue(queryString, ClassifierQueryJsonObject.class);
 				return true;
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Error in parsing classifer query string");
+				logger.error(elog.toStringException(e));
 			}
 		}
 		return false;
@@ -84,9 +89,8 @@ public class FilterQueryMatcher {
 			if (q.getComparator().equals(ComparatorType.is_after)) {
 				boolean matchResult;
 				if (null == tweet.getCreatedAt()) {
-					System.err.println("[isQueryMatch] No createdAt field in Tweet!!!");
-					System.err.println("OFFENDING TWEET: " + tweet);
-					System.err.println("\n");
+					logger.error("No createdAt field in Tweet!!!");
+					logger.error("OFFENDING TWEET: " + tweet);
 					return false;		// default behavior
 				}
 				matchResult = tweet.getDate(tweet.getCreatedAt()).after(q.getDate());
@@ -96,9 +100,8 @@ public class FilterQueryMatcher {
 			if (q.getComparator().equals(ComparatorType.is_before)) {
 				boolean matchResult;
 				if (null == tweet.getCreatedAt()) {
-					System.err.println("[isQueryMatch] No createdAt field in Tweet!!!");
-					System.err.println("OFFENDING TWEET: " + tweet);
-					System.err.println("\n");
+					logger.error("No createdAt field in Tweet!!!");
+					logger.error("OFFENDING TWEET: " + tweet);
 					return false;		// default behavior
 				}
 				matchResult = tweet.getDate(tweet.getCreatedAt()).before(q.getDate());
@@ -112,7 +115,7 @@ public class FilterQueryMatcher {
 			boolean matchResult = false;
 			int i = 0;
 			for (NominalLabel nLabel: tweet.getNominalLabels()) {
-				//System.out.println("Going for matching nLabel#" + i); 
+				//logger.debug("Going for matching nLabel#" + i); 
 				++i;
 				if (q.getClassifierCode() != null && 
 					q.getClassifierCode().equalsIgnoreCase(nLabel.attribute_code)) {
@@ -121,7 +124,7 @@ public class FilterQueryMatcher {
 					// First check confidence parameter
 					if (q.getComparator().equals(ComparatorType.has_confidence)) {
 						matchResult = nLabel.confidence >= q.getConfidence();
-						//System.out.println("comparing confidence: " + matchResult);
+						//logger.info("comparing confidence: " + matchResult);
 						if (matchResult) break;
 						continue;	// else go for next nLabel
 					}
@@ -131,7 +134,7 @@ public class FilterQueryMatcher {
 						matchResult = q.getLabelCode().equalsIgnoreCase(nLabel.label_code);
 						// Now check confidence value
 						matchResult = matchResult && (nLabel.confidence >= q.getConfidence());
-						//System.out.println("comparing tweet label '" + nLabel.label_code + "' with 'is': " + matchResult);
+						//logger.info("comparing tweet label '" + nLabel.label_code + "' with 'is': " + matchResult);
 						if (matchResult) break;
 						continue;		// else go for next nLabel
 					}
@@ -141,7 +144,7 @@ public class FilterQueryMatcher {
 						matchResult = q.getLabelCode().equalsIgnoreCase(nLabel.label_code);
 						// Now check confidence value
 						matchResult = (!matchResult) && (nLabel.confidence >= q.getConfidence());
-						//System.out.println("comparing tweet label '" + nLabel.label_code + "' with 'is_not': " + matchResult);
+						//logger.info("comparing tweet label '" + nLabel.label_code + "' with 'is_not': " + matchResult);
 						if (matchResult) break;
 						continue;		// else go for next nLabel
 					}
@@ -165,14 +168,14 @@ public class FilterQueryMatcher {
 
 			try {
 				queryObject = mapper.readValue(queryString, DateQueryJsonObject.class);
-				System.out.println("[serializeQuery] DateQueryObject: " + queryObject.toString());
+				logger.debug("DateQueryObject: " + queryObject.toString());
 			} catch (JsonParseException e) {
-				System.err.println("[serializeQuery] for DateQueryJsonObject attempt");
+				logger.error("JSONParseException for DateQueryJsonObject attempt: " + queryString);
 			} catch (JsonMappingException e) {
-				System.err.println("[serializeQuery] for DateQueryJsonObject attempt");
+				logger.error("JSONMappingException for DateQueryJsonObject attempt: " + queryString);
 			} catch (IOException e) {
-				System.err.println("[serializeQuery] for DateQueryJsonObject attempt");
-				e.printStackTrace();
+				logger.error("IO Exception for DateQueryJsonObject attempt: " + queryString);
+				logger.error(elog.toStringException(e));
 			}
 		} else if (isClassifierQuery(queryString)) {
 			queryObject = new ClassifierQueryJsonObject();
@@ -180,14 +183,14 @@ public class FilterQueryMatcher {
 
 			try {
 				queryObject = mapper.readValue(queryString, ClassifierQueryJsonObject.class);
-				System.out.println("[serializeQuery] ClassifierQueryObject: " + queryObject.toString());
+				logger.debug("ClassifierQueryObject: " + queryObject.toString());
 			} catch (JsonParseException e) {
-				System.err.println("[serializeQuery] for ClassifierQueryJsonObject attempt");
+				logger.error("JSONParseException for ClassifierQueryJsonObject attempt: " + queryString);
 			} catch (JsonMappingException e) {
-				System.err.println("[serializeQuery] for ClassifierQueryJsonObject attempt");
+				logger.error("JSONMappingException for ClassifierQueryJsonObject attempt: " + queryString);
 			} catch (IOException e) {
-				System.err.println("[serializeQuery] for ClassifierQueryJsonObject attempt");
-				e.printStackTrace();
+				logger.error("IO Exception for for ClassifierQueryJsonObject attempt: " + queryString);
+				logger.error(elog.toStringException(e));
 			}
 		}
 		return queryObject;
@@ -207,7 +210,7 @@ public class FilterQueryMatcher {
 		//System.out.println("[buildMatcherArray] Attempting to build the Matcher Array from input query");
 		String query = null;
 		while ((query = getNextQueryObject()) != null) {
-			System.out.println("[buildMatcherArray] Added query to matcher array: " + query);
+			logger.info("Added query to matcher array: " + query);
 			matcherArray.add(serializeQuery(query));
 		}
 	}
@@ -216,7 +219,7 @@ public class FilterQueryMatcher {
 		Gson gson = new Gson();
 		for (QueryJsonObject query: qList.getConstraints()) {
 			String queryString = gson.toJson(query, QueryJsonObject.class);
-			System.out.println("[buildMatcherArray] Added query to matcher array: " + queryString);
+			logger.info("Added query to matcher array: " + queryString);
 			matcherArray.add(serializeQuery(queryString));
 		}
 	}

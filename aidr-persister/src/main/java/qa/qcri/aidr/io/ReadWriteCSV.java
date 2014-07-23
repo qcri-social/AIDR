@@ -12,8 +12,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
+
+
 
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.constraint.NotNull;
@@ -25,10 +27,12 @@ import org.supercsv.prefs.CsvPreference;
 import org.supercsv.encoder.DefaultCsvEncoder;
 import org.supercsv.exception.SuperCsvCellProcessorException;
 
+import qa.qcri.aidr.logging.ErrorLog;
 import qa.qcri.aidr.utils.Config;
 import qa.qcri.aidr.utils.Tweet;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.utils.ClassifiedTweet;
 
@@ -39,6 +43,8 @@ import qa.qcri.aidr.utils.ClassifiedTweet;
 public class ReadWriteCSV {
 	
 	//private static final int BUFFER_SIZE = 10 * 1024 * 1024;
+	private static Logger logger = Logger.getLogger(ReadWriteCSV.class.getName());
+	private static ErrorLog elog = new ErrorLog();
 	
 	private static CellProcessor[] getProcessors4TweetIDSCCSV() {
 
@@ -113,8 +119,8 @@ public class ReadWriteCSV {
 			.build() );
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			System.out.println("Error in creating CSV Bean writer!");
-			e.printStackTrace();
+			logger.error("Error in creating CSV Bean writer!");
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -135,7 +141,7 @@ public class ReadWriteCSV {
 			String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
 			fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
 			String fileToWrite = persisterDIR + collectionDIR + "/" + fileName + ".csv";
-			System.out.println("[writeCollectorTweetIDSCSV] Writing CSV file : " + fileToWrite);
+			logger.error(collectionDIR + ": Writing CSV file : " + fileToWrite);
 			//beanWriter = new CsvBeanWriter(new FileWriter(fileToWrite, true),
 			//        CsvPreference.EXCEL_PREFERENCE);
 			if (null == beanWriter) { 
@@ -150,13 +156,15 @@ public class ReadWriteCSV {
 						beanWriter.write(twt, header, processors);
 					}
 				} catch (SuperCsvCellProcessorException e) {
-					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeCollectorTweetIDSCSV] SuperCSV error");
+					//Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeCollectorTweetIDSCSV] SuperCSV error");
+					logger.error(collectionDIR + ": SuperCSV error");
 					//e.printStackTrace();
 				}
 			}
 
 		} catch (IOException ex) {
-			Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeCollectorTweetIDSCSV] IO Exception occured");
+			//Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeCollectorTweetIDSCSV] IO Exception occured");
+			logger.error(collectionDIR + ": IO Exception occured");
 			//ex.printStackTrace();
 		} 
 		//return fileName+".csv";
@@ -175,7 +183,7 @@ public class ReadWriteCSV {
 			String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
 			fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
 			String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName + ".csv";
-			System.out.println("[writeClassifiedTweetIDsCSV] Writing CSV file : " + fileToWrite);
+			logger.error(collectionDIR + ": Writing CSV file : " + fileToWrite);
 			//beanWriter = new CsvBeanWriter(new FileWriter(fileToWrite, true),
 			//        CsvPreference.EXCEL_PREFERENCE);
 			if (null == beanWriter) {
@@ -190,13 +198,13 @@ public class ReadWriteCSV {
 						beanWriter.write(twt, header, processors);
 					}
 				} catch (SuperCsvCellProcessorException e) {
-					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeClassifiedTweetIDsCSV] SuperCSV error");
+					logger.error(collectionDIR + ": SuperCSV error");
 					//e.printStackTrace();
 				}
 			}
 
 		} catch (IOException ex) {
-			Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeClassifiedTweetIDsCSV] IO Exception occured");
+			logger.error(collectionDIR + ": IO Exception occured");
 			//ex.printStackTrace();
 
 		} 
@@ -214,7 +222,7 @@ public class ReadWriteCSV {
 				String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
 				fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
 				String fileToWrite = persisterDIR + collectionDIR + "/" + fileName + ".csv";
-				System.out.println("[writeCollectorTweetsCSV] Writing CSV file : " + fileToWrite);
+				logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
 				//beanWriter = new CsvBeanWriter(new FileWriter(fileToWrite, true),
 				//        CsvPreference.EXCEL_PREFERENCE);
 				beanWriter = getCSVBeanWriter(fileToWrite);
@@ -225,13 +233,13 @@ public class ReadWriteCSV {
 				try {
 					beanWriter.write(twt, header, processors);
 				} catch (SuperCsvCellProcessorException e) {
-					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeCollectorTweetsCSV] SuperCSV error");
+					logger.error(collectionDIR + ": SuperCSV error");
 					//e.printStackTrace();
 				}
 			}
 
 		} catch (IOException ex) {
-			Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeCollectorTweetsCSV] IO Exception occured");
+			logger.error(collectionDIR + ": IO Exception occured");
 			//ex.printStackTrace();
 		}
 		return beanWriter;
@@ -248,7 +256,7 @@ public class ReadWriteCSV {
 				String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
 				fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
 				String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName + ".csv";
-				System.out.println("[writeClassifiedTweetsCSV] Writing CSV file : " + fileToWrite);
+				logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
 				//beanWriter = new CsvBeanWriter(new FileWriter(fileToWrite, true),
 				//        CsvPreference.EXCEL_PREFERENCE);
 				beanWriter = getCSVBeanWriter(fileToWrite);
@@ -260,13 +268,13 @@ public class ReadWriteCSV {
 					//System.out.println("To WRITE TWEET: " + twt);
 					beanWriter.write(twt, header, processors);
 				} catch (SuperCsvCellProcessorException e) {
-					Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeClassifiedTweetsCSV] SuperCSV error. Offending tweet: " + twt.getMessage());
+					logger.error(collectionDIR + ": SuperCSV error. Offending tweet: " + twt.getMessage());
 					//e.printStackTrace();
 				}
 			}
 
 		} catch (IOException ex) {
-			Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeClassifiedTweetsCSV] IO Exception occured");
+			logger.error(collectionDIR + ": IO Exception occured");
 			//ex.printStackTrace();
 		}
 		return beanWriter;

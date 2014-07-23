@@ -15,10 +15,12 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
-import qa.qcri.aidr.output.getdata.ChannelBufferManager;
+
+import org.apache.log4j.Logger;
+
 
 public class WriteResponse {
 	public final static String DEFAULT_MIME_TYPE = "application/json";
@@ -27,7 +29,7 @@ public class WriteResponse {
 	
 	// public PrintWriter responseWriter = null;
 	public PrintStream writerHandle = null;		
-	private static Logger logger = LoggerFactory.getLogger(WriteResponse.class);
+	private static Logger logger = Logger.getLogger(WriteResponse.class);
 
 	public WriteResponse(HttpServletResponse response, boolean keepAlive) {
 		//BasicConfigurator.configure();		// configuration for log4j logging
@@ -48,8 +50,8 @@ public class WriteResponse {
 		try {
 			writerHandle = new PrintStream(response.getOutputStream(), true, "UTF-8");
 		} catch (IOException e) {
-			logger.error(this + "@[run] Error initializing PrintWriter", e);
-			e.printStackTrace();
+			logger.error("Error initializing PrintWriter", e);
+			logger.error(e);
 			return false;
 		}
 		return true;

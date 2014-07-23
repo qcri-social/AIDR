@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
@@ -14,18 +15,22 @@ import qa.qcri.aidr.output.entity.AidrCollection;
 
 public class DatabaseController implements DatabaseInterface {
 
+	// Debugging
+	private static Logger logger = Logger.getLogger(DatabaseController.class.getName());
+	private static ErrorLog elog = new ErrorLog();
+	
 	protected EntityManager em;
 	protected EntityManagerFactory emFactory;
 	
 	public DatabaseController() {
 		this.emFactory = Persistence.createEntityManagerFactory("aidr_fetch_manager-PU");
-		System.out.println("Entitymanager Factory: " + emFactory);
+		//logger.debug("Entitymanager Factory: " + emFactory);
 		try {
 			this.em = emFactory.createEntityManager();
-			System.out.println("entitymanager: " + em);
+			logger.info("entitymanager: " + em);
 		} catch (Exception e) {
-			System.err.println("Cannot create entitymanager: " + null);
-			e.printStackTrace();
+			logger.error("Cannot create entitymanager: " + null);
+			logger.error(elog.toStringException(e));
 		}
 	}
 
@@ -34,10 +39,11 @@ public class DatabaseController implements DatabaseInterface {
 		//System.out.println("[getCurrentSession] em = " + em);
 		try {
 			Session session = em.unwrap(Session.class);
-			//System.out.println("[getCurrentSession] session = " + session);
+			//logger.debug("session = " + session);
 			return session;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Failed in creating session");
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -47,7 +53,7 @@ public class DatabaseController implements DatabaseInterface {
 		try {
 			return em;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -58,7 +64,8 @@ public class DatabaseController implements DatabaseInterface {
 		try {
 			return (AidrCollection) getCurrentSession().get(AidrCollection.class, id);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception in getting AidrCollection Id = " + id);
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -74,7 +81,8 @@ public class DatabaseController implements DatabaseInterface {
 				return (AidrCollection) resultList.get(0); 
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception in getting AidrCollection entity by crtieria");
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -86,7 +94,8 @@ public class DatabaseController implements DatabaseInterface {
 			Criteria criteria = getCurrentSession().createCriteria(AidrCollection.class);
 			return criteria.list();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception in getting entire AidrCollection");
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -99,7 +108,8 @@ public class DatabaseController implements DatabaseInterface {
 			criteria.add(criterion);
 			return criteria.list();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception in getting AidrCollection entity list by crtieria");
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
