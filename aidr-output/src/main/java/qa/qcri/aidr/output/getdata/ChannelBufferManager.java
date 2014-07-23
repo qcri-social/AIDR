@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.ejb.Singleton;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -40,6 +41,7 @@ import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.DatabaseController;
 import qa.qcri.aidr.output.utils.DatabaseInterface;
+import qa.qcri.aidr.output.utils.ErrorLog;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
 import qa.qcri.aidr.output.utils.QuickSort;
 import redis.clients.jedis.Jedis;
@@ -62,22 +64,24 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonArray;
 
+//@Singleton
 public class ChannelBufferManager {
 
 	private static final int NO_DATA_TIMEOUT = 48 * 60 * 60 * 1000;		// when to delete a channel buffer
 	private static final int CHECK_INTERVAL = NO_DATA_TIMEOUT;
 
 	private static Logger logger = Logger.getLogger(ChannelBufferManager.class);
-
+	private static ErrorLog elog = new ErrorLog();
+	
 	// Thread related
-	private static ExecutorService executorServicePool;
+	private static ExecutorService executorServicePool = null;
 
 	// Redis connection related
 	public static String redisHost = "localhost";	// Current assumption: REDIS running on same m/c
 	public static int redisPort = 6379;	
 
 	// Jedis related
-	public static JedisConnectionObject jedisConn;		// we need only a single instance of JedisConnectionObject running in background
+	public static JedisConnectionObject jedisConn = null;		// we need only a single instance of JedisConnectionObject running in background
 	public Jedis subscriberJedis = null;
 	public RedisSubscriber aidrSubscriber = null;
 
@@ -92,7 +96,7 @@ public class ChannelBufferManager {
 	public static ConcurrentHashMap<String, ChannelBuffer> subscribedChannels;
 
 	// DB access related
-	private static DatabaseInterface dbController;
+	private static DatabaseInterface dbController = null;
 	private String managerMainUrl = "http://localhost:8080/AIDRFetchManager";
 
 	//////////////////////////////////////////
@@ -118,7 +122,7 @@ public class ChannelBufferManager {
 
 		bufferSize = -1;
 		executorServicePool = Executors.newCachedThreadPool();	//Executors.newFixedThreadPool(10);		// max number of threads
-		logger.info("Create thread pool: " + executorServicePool);
+		logger.info("Created thread pool: " + executorServicePool);
 
 		jedisConn = new JedisConnectionObject(redisHost, redisPort);
 		try {
@@ -144,21 +148,21 @@ public class ChannelBufferManager {
 				// TODO Auto-generated catch block
 				isSubscribed = false;
 				logger.error("Fatal exception occurred attempting subscription: " + e.toString());
-				logger.error(e);
+				logger.error(elog.toStringException(e));
 				//System.exit(1);
 			}
 			if (isSubscribed) {
-				ChannelBufferManager.subscribedChannels = new ConcurrentHashMap<String,ChannelBuffer>();
+				subscribedChannels = new ConcurrentHashMap<String,ChannelBuffer>();
 				logger.debug("Created HashMap");
 			}
 		}
-
+		
 		try {
 			dbController = new DatabaseController();
 			logger.info("Created dbController = " + dbController);
 		} catch (Exception e) {
 			logger.error("Couldn't initiate DB access to aidr_fetch_manager");
-			logger.error(e);
+			logger.error(elog.toStringException(e));
 		}
 	}
 
@@ -195,7 +199,7 @@ public class ChannelBufferManager {
 		if (currentTime - lastCheckedTime > CHECK_INTERVAL) {
 			logger.info("Periodic check for inactive channels - delete if any.");
 			List<ChannelBuffer>cbList = new ArrayList<ChannelBuffer>();
-			cbList.addAll(ChannelBufferManager.subscribedChannels.values());
+			cbList.addAll(subscribedChannels.values());
 			Iterator<ChannelBuffer>it = cbList.iterator();
 			while (it.hasNext()) {
 				ChannelBuffer temp = it.next();
@@ -211,14 +215,14 @@ public class ChannelBufferManager {
 	}
 
 	public void addMessageToChannelBuffer(final String channelName, final String msg) {
-		ChannelBuffer cb = ChannelBufferManager.subscribedChannels.get(channelName);
+		ChannelBuffer cb = subscribedChannels.get(channelName);
 		cb.addMessage(msg);
-		ChannelBufferManager.subscribedChannels.put(channelName, cb);
+		subscribedChannels.put(channelName, cb);
 	}
 
 	public List<String> getLastMessages(String channelName, int msgCount) {
 		if (isChannelPresent(channelName)) {
-			ChannelBuffer cb = ChannelBufferManager.subscribedChannels.get(channelName);
+			ChannelBuffer cb = subscribedChannels.get(channelName);
 			// Note: Ideally, we should have used the method call cb.getMessages(msgCount)
 			// However, we get all messages in buffer since we do not know how many will 
 			// eventually be valid, due to rejectNullFlag setting in caller. The filtering
@@ -231,7 +235,7 @@ public class ChannelBufferManager {
 	// Returns true if channelName present in list of channels
 	// TODO: define the appropriate collections data structure - HashMap, HashSet, ArrayList? 
 	public boolean isChannelPresent(String channelName) {
-		return ChannelBufferManager.subscribedChannels.containsKey(channelName);
+		return subscribedChannels.containsKey(channelName);
 	}
 
 	// channelName = fully qualified channel name as present in REDIS pubsub system
@@ -242,7 +246,7 @@ public class ChannelBufferManager {
 				cb.createChannelBuffer();				// use default buffer size
 			else
 				cb.createChannelBuffer(bufferSize);		// use specified buffer size
-			ChannelBufferManager.subscribedChannels.put(channelName, cb);
+			subscribedChannels.put(channelName, cb);
 		}
 		else {
 			logger.error(channelName + ": Trying to create an existing channel! Should never be here!");
@@ -252,20 +256,21 @@ public class ChannelBufferManager {
 
 	public void deleteChannelBuffer(final String channelName) {
 		if (isChannelPresent(channelName)) {
-			ChannelBuffer cb = ChannelBufferManager.subscribedChannels.get(channelName);
+			ChannelBuffer cb = subscribedChannels.get(channelName);
 			cb.deleteBuffer();
-			ChannelBufferManager.subscribedChannels.remove(channelName);
+			subscribedChannels.remove(channelName);
 			logger.info("Deleted channel buffer: " + channelName);
 		}
 	}
 
 	public void deleteAllChannelBuffers() {
-		if (ChannelBufferManager.subscribedChannels != null) {
-			for (String channelId: ChannelBufferManager.subscribedChannels.keySet()) {
-				ChannelBufferManager.subscribedChannels.get(channelId).deleteBuffer();
-				ChannelBufferManager.subscribedChannels.remove(channelId);
+		if (subscribedChannels != null) {
+			logger.info("Deleting currently subscribed list of channels: " + subscribedChannels);
+			for (String channelId: subscribedChannels.keySet()) {
+				subscribedChannels.get(channelId).deleteBuffer();
+				subscribedChannels.remove(channelId);
 			}
-			ChannelBufferManager.subscribedChannels.clear();
+			subscribedChannels.clear();
 		}
 	}
 
@@ -274,8 +279,8 @@ public class ChannelBufferManager {
 	 */
 	public Set<String> getActiveChannelsList() {
 		final Set<String> channelSet = new HashSet<String>();
-		channelSet.addAll(ChannelBufferManager.subscribedChannels.keySet().isEmpty() 
-				? new HashSet<String>() : ChannelBufferManager.subscribedChannels.keySet());
+		channelSet.addAll(subscribedChannels.keySet().isEmpty() 
+				? new HashSet<String>() : subscribedChannels.keySet());
 		return channelSet.isEmpty() ? null : channelSet;
 	}
 
@@ -344,7 +349,12 @@ public class ChannelBufferManager {
 		}
 		return false;
 	}
-
+	
+	/**
+	 * Currently unused - since earlier there were errors in the manager's
+	 * public collection REST API.
+	 * @return
+	 */
 	public Map<String, Boolean> getAllRunningCollections() {
 		Map<String, Boolean> collectionList = null;
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
@@ -383,12 +393,12 @@ public class ChannelBufferManager {
 					}
 				} catch (Exception e) {
 					logger.error("Error in parsing received resposne from manager: " + jsonResponse);
-					logger.error(e);
+					logger.error(elog.toStringException(e));
 				}
 			}
 		} catch (Exception e) {
 			logger.error("Error in making REST call");
-			logger.error(e);
+			logger.error(elog.toStringException(e));
 		}
 		return collectionList;
 	}
@@ -403,8 +413,8 @@ public class ChannelBufferManager {
 
 		// First get a list of all running collections from aidr-manager through REST call
 		//Map<String, Boolean> collectionList = getAllRunningCollections();
-		final int EXTRA = 10;
-		cbList.addAll(ChannelBufferManager.subscribedChannels.values());
+		final int EXTRA = 3;		
+		cbList.addAll(subscribedChannels.values());
 		int k = -1;
 		for (ChannelBuffer temp: cbList) {
 			//logger.debug("cbList size = " + cbList.size() + ", Channel buffer: " + temp.getChannelName() + "isPublic = " + isChannelPublic(temp.getChannelName()));
@@ -484,7 +494,7 @@ public class ChannelBufferManager {
 			return formatter.parse(strBuff.toString());
 		} catch (ParseException e) {
 			logger.error("Error in parsing string for timestamp :\n " + tweet);
-			logger.error(e);
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -504,14 +514,14 @@ public class ChannelBufferManager {
 						stopSubscription();
 					} catch (Exception e) {
 						logger.error(channelRegEx  + ": Exception occurred attempting stopSubscription: " + e.toString());
-						logger.error(e);
+						logger.error(elog.toStringException(e));
 					}
 				}
 			}
 		}); 
 	}
 
-	private synchronized void stopSubscription() {
+	private void stopSubscription() {
 		try {
 			if (aidrSubscriber != null && aidrSubscriber.getSubscribedChannels() > 0) {
 				aidrSubscriber.punsubscribe();				
@@ -519,17 +529,18 @@ public class ChannelBufferManager {
 		} catch (JedisConnectionException e) {
 			logger.error("Connection to REDIS seems to be lost!");
 		}
-		if (jedisConn != null && aidrSubscriber != null && aidrSubscriber.getSubscribedChannels() == 0) 
+		if (jedisConn != null && aidrSubscriber != null) 
 			jedisConn.returnJedis(subscriberJedis);
-		this.notifyAll();
+		//this.notifyAll();
 	}
 
 	public void close() {
 		stopSubscription();
+		dbController.getEntityManager().close();
 		//jedisConn.closeAll();
 		deleteAllChannelBuffers();
 		executorServicePool.shutdown(); // Disable new tasks from being submitted
-		logger.info("All done, shutdown fetch service...");
+		logger.info("All done, fetch service has been shutdown...");
 	}
 
 	////////////////////////////////////////////////////

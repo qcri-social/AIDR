@@ -24,14 +24,18 @@ import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import qa.qcri.aidr.output.utils.ErrorLog;
+
 public class ChannelBuffer {
 	private static int MAX_BUFFER_SIZE = 2000;		// number of elements the buffer will hold at any time
 	private String channelName = null;
 	private long lastAddTime;
 	private Buffer messageBuffer = null;
 	int size = 0;
+	
 	private static Logger logger = LoggerFactory.getLogger(ChannelBuffer.class);
-
+	private static ErrorLog elog = new ErrorLog();
+	
 	public ChannelBuffer(final String name, final int bufferSize) {
 		//BasicConfigurator.configure();			// setup log4j logging
 		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j

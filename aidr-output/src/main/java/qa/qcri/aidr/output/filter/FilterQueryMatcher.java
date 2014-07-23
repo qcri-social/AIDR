@@ -19,10 +19,12 @@ import qa.qcri.aidr.output.filter.ClassifierQueryJsonObject;
 import qa.qcri.aidr.output.filter.DateQueryJsonObject;
 import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
 import qa.qcri.aidr.output.filter.NominalLabel;
+import qa.qcri.aidr.output.utils.ErrorLog;
 
 public class FilterQueryMatcher {
 
 	private static Logger logger = Logger.getLogger(FilterQueryMatcher.class);
+	private static ErrorLog elog = new ErrorLog();
 	
 	public JsonQueryList queryList;
 	public int next;
@@ -44,7 +46,7 @@ public class FilterQueryMatcher {
 				DateQueryJsonObject dateQuery = mapper.readValue(queryString, DateQueryJsonObject.class);
 				return true;
 			} catch (IOException e) {
-				logger.error(e);
+				logger.error(elog.toStringException(e));
 			}
 		}
 		return false;
@@ -59,7 +61,7 @@ public class FilterQueryMatcher {
 				return true;
 			} catch (IOException e) {
 				logger.debug("Exception in deserializing using Jackson readValue()");
-				logger.error(e);
+				logger.error(elog.toStringException(e));
 			}
 		}
 		return false;
@@ -173,7 +175,7 @@ public class FilterQueryMatcher {
 				logger.error("JsonMappingException for DateQueryJsonObject attempt");
 			} catch (IOException e) {
 				logger.error("IOException for DateQueryJsonObject attempt");
-				logger.error(e);
+				logger.error(elog.toStringException(e));
 			}
 		} else if (isClassifierQuery(queryString)) {
 			queryObject = new ClassifierQueryJsonObject();
@@ -188,7 +190,7 @@ public class FilterQueryMatcher {
 				logger.error("JsonMappingException  for ClassifierQueryJsonObject attempt");
 			} catch (IOException e) {
 				logger.error("IOException  for ClassifierQueryJsonObject attempt");
-				logger.error(e);
+				logger.error(elog.toStringException(e));
 			}
 		}
 		return queryObject;

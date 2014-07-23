@@ -17,6 +17,7 @@ public class DatabaseController implements DatabaseInterface {
 
 	// Debugging
 	private static Logger logger = Logger.getLogger(DatabaseController.class.getName());
+	private static ErrorLog elog = new ErrorLog();
 	
 	protected EntityManager em;
 	protected EntityManagerFactory emFactory;
@@ -29,7 +30,7 @@ public class DatabaseController implements DatabaseInterface {
 			logger.info("entitymanager: " + em);
 		} catch (Exception e) {
 			logger.error("Cannot create entitymanager: " + null);
-			logger.error(e);
+			logger.error(elog.toStringException(e));
 		}
 	}
 
@@ -41,7 +42,8 @@ public class DatabaseController implements DatabaseInterface {
 			//logger.debug("session = " + session);
 			return session;
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("Failed in creating session");
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -51,7 +53,7 @@ public class DatabaseController implements DatabaseInterface {
 		try {
 			return em;
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -62,7 +64,8 @@ public class DatabaseController implements DatabaseInterface {
 		try {
 			return (AidrCollection) getCurrentSession().get(AidrCollection.class, id);
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("Exception in getting AidrCollection Id = " + id);
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -78,7 +81,8 @@ public class DatabaseController implements DatabaseInterface {
 				return (AidrCollection) resultList.get(0); 
 			}
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("Exception in getting AidrCollection entity by crtieria");
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -90,7 +94,8 @@ public class DatabaseController implements DatabaseInterface {
 			Criteria criteria = getCurrentSession().createCriteria(AidrCollection.class);
 			return criteria.list();
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("Exception in getting entire AidrCollection");
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -103,7 +108,8 @@ public class DatabaseController implements DatabaseInterface {
 			criteria.add(criterion);
 			return criteria.list();
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error("Exception in getting AidrCollection entity list by crtieria");
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}

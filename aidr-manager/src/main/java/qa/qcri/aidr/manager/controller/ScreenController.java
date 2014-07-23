@@ -260,6 +260,7 @@ public class ScreenController extends BaseController{
         String modelName = "";
         double modelAuc = 0;
         long trainingExamples = 0;
+        Integer retrainingThreshold = 50;
         if (crisis != null && crisis.getCrisisID() != null && crisis.getName() != null){
             crisisId = crisis.getCrisisID();
             crisisName = crisis.getName();
@@ -272,6 +273,7 @@ public class ScreenController extends BaseController{
                 modelName = model.getAttribute();
                 trainingExamples = model.getTrainingExamples();
                 modelAuc = model.getAuc();
+                retrainingThreshold = model.getRetrainingThreshold();
             }
         }
 
@@ -285,6 +287,7 @@ public class ScreenController extends BaseController{
         model.addObject("code", code);
         model.addObject("trainingExamples", trainingExamples);
         model.addObject("modelAuc", modelAuc);
+        model.addObject("retrainingThreshold", retrainingThreshold);
         return model;
     }
 

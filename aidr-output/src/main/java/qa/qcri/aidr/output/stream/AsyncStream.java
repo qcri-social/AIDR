@@ -84,6 +84,9 @@ import org.glassfish.jersey.server.ChunkedOutput;
 
 import org.apache.log4j.Logger;
 
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
 import qa.qcri.aidr.output.stream.RedisSubscriber;
@@ -254,7 +257,7 @@ public class AsyncStream implements ServletContextListener {
 				subscriptionData.rate = rate;
 				subscriptionData.duration = duration.equals("-1") ? null : duration;
 
-				RedisSubscriber aidrSubscriber = new RedisSubscriber(subscriberJedis, responseWriter, subscriptionData);
+				RedisSubscriber aidrSubscriber = new RedisSubscriber(subscriberJedis, responseWriter, writerList, subscriptionData);
 				try {
 					//logger.debug(channelCode + ": subscriberJedis = " + subscriberJedis + ", aidrSubscriber = " + aidrSubscriber);
 					if (null == executorService) {
@@ -279,16 +282,22 @@ public class AsyncStream implements ServletContextListener {
 		} 
 		else {
 			// No crisisCode provided...
+			JsonObject errorMessage = new JsonObject();
+			errorMessage.addProperty("crisisCode", "NOT PROVIDED");
+			errorMessage.addProperty("streaming status", "ERROR");
+			/*
 			StringBuilder errorMessageString = new StringBuilder();
 			if (callbackName != null) {
 				errorMessageString.append(callbackName).append("(");
 			}
 			errorMessageString.append("{\"crisisCode\":\"null\"");
 			errorMessageString.append("\"streaming status\":\"error\"}");
+			*/
 			if (callbackName != null) {
-				errorMessageString.append(")");
+				responseWriter.write(callbackName + "(" + errorMessage.getAsString() + ")");
+			} else {
+				responseWriter.write(errorMessage.getAsString());
 			}
-			responseWriter.write(errorMessageString.toString());
 		}
 		//logger.debug(channelCode + ": Reached end of function");
 

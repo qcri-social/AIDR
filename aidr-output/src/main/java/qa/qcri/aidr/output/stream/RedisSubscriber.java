@@ -14,6 +14,7 @@ import org.glassfish.jersey.server.ChunkedOutput;
 //import org.slf4j.LoggerFactory;
 
 
+
 import qa.qcri.aidr.output.stream.RedisSubscriber;
 import qa.qcri.aidr.output.stream.SubscriptionDataObject;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
@@ -52,18 +53,22 @@ public class RedisSubscriber extends JedisPubSub implements AsyncListener, Runna
 	// Share data structure between Jedis and Async threads
 	private List<String> messageList = Collections.synchronizedList(new ArrayList<String>());
 
+	private ArrayList<ChunkedOutput<String>> writerList = null;
+	
 	// Debugging
 	private static Logger logger = Logger.getLogger(RedisSubscriber.class);
 
-	public RedisSubscriber(final Jedis jedis, final ChunkedOutput<String> responseWriter, 
+	public RedisSubscriber(final Jedis jedis, final ChunkedOutput<String> responseWriter,
+			ArrayList<ChunkedOutput<String>> writerList,
 			final SubscriptionDataObject subData) throws IOException {
 		this.channel = subData.redisChannel;
 		this.callbackName = subData.callbackName;
 		this.responseWriter = responseWriter;
-
+		this.writerList = writerList;
+		
 		this.subData = new SubscriptionDataObject();
 		this.subData.set(subData);
-	
+
 		this.setRunFlag(true);		
 		if (subData.duration != null) {
 			subscriptionDuration = parseTime(subData.duration);
@@ -83,7 +88,7 @@ public class RedisSubscriber extends JedisPubSub implements AsyncListener, Runna
 	private long parseTime(String timeString) {
 		long duration = 0;
 		final int maxDuration = SUBSCRIPTION_MAX_DURATION > 0 ? SUBSCRIPTION_MAX_DURATION : Integer.MAX_VALUE;
-		
+
 		float value = Float.parseFloat(timeString.substring(0, timeString.length()-1));
 		if (value > 0) {
 			String suffix = timeString.substring(timeString.length() - 1, timeString.length());
@@ -101,7 +106,8 @@ public class RedisSubscriber extends JedisPubSub implements AsyncListener, Runna
 
 	@Override
 	public void onMessage(String channel, String message) {
-		synchronized (messageList) {
+		//synchronized (messageList) 
+		{
 			if (messageList.size() < DEFAULT_COUNT) messageList.add(message);
 			messageList.notifyAll();
 		}
@@ -109,9 +115,10 @@ public class RedisSubscriber extends JedisPubSub implements AsyncListener, Runna
 
 	@Override
 	public void onPMessage(String pattern, String channel, String message) {
-		synchronized (messageList) {
+		//synchronized (messageList) 
+		{
 			if (messageList.size() <  DEFAULT_COUNT) messageList.add(message);
-			messageList.notifyAll();
+			//messageList.notifyAll();
 		}
 	}
 
@@ -140,7 +147,7 @@ public class RedisSubscriber extends JedisPubSub implements AsyncListener, Runna
 	}
 
 	// Stop subscription of this subscribed thread and return resources to the JEDIS thread pool
-	public synchronized void stopSubscription(final JedisConnectionObject jedisConn, final SubscriptionDataObject subData) {
+	public void stopSubscription(final JedisConnectionObject jedisConn, final SubscriptionDataObject subData) {
 		if (this.isSubscribed()) {
 			if (!subData.patternSubscriptionFlag) { 
 				this.unsubscribe();				
@@ -188,34 +195,37 @@ public class RedisSubscriber extends JedisPubSub implements AsyncListener, Runna
 				// There are updates, send these to the waiting client
 				if (!error && !timeout) {
 					// Send updates response as JSON
+					JsonDataFormatter taggerOutput = null;
+					StringBuilder jsonDataList = null;
 					synchronized (messageList) {
-						JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
-						StringBuilder jsonDataList = taggerOutput.createList(messageList, messageList.size(), subData.rejectNullFlag);
-						int count = taggerOutput.getMessageCount();
-						try {
-							//logger.info("[run] Formatted jsonDataList: " + jsonDataList.toString());
-							if (!responseWriter.isClosed()) {
-								responseWriter.write(jsonDataList.toString());
-								responseWriter.write("\n\n");
-								//logger.info(channel + ": sent jsonp data, count = " + count);
-							}
-							else {
-								logger.info(channel + ": Possible client disconnect...");
-								messageList.notifyAll();
-								break;
-							}
-						} catch (Exception e) {
-							logger.info(channel + ": Error in write attempt - possible client disconnect");
-							setRunFlag(false);
-						} 
-						if (count != 0)									// we did not just send an empty JSONP message
-							lastAccessedTime = new Date().getTime();	// approx. time when message last received from REDIS
-
-						// Reset the messageList buffer and cleanup
-						jsonDataList = null;
-						messageList.clear();	// remove the sent message from list
-						messageList.notifyAll();
+						taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
+						jsonDataList = taggerOutput.createList(messageList, messageList.size(), subData.rejectNullFlag);
 					}
+					int count = taggerOutput.getMessageCount();
+					try {
+						//logger.info("[run] Formatted jsonDataList: " + jsonDataList.toString());
+						if (!responseWriter.isClosed()) {
+							responseWriter.write(jsonDataList.toString());
+							responseWriter.write("\n\n");
+							//logger.info(channel + ": sent jsonp data, count = " + count);
+						}
+						else {
+							logger.info(channel + ": Possible client disconnect...");
+							//messageList.notifyAll();
+							break;
+						}
+					} catch (Exception e) {
+						logger.info(channel + ": Error in write attempt - possible client disconnect");
+						setRunFlag(false);
+					} 
+					if (count != 0)									// we did not just send an empty JSONP message
+						lastAccessedTime = new Date().getTime();	// approx. time when message last received from REDIS
+
+					// Reset the messageList buffer and cleanup
+					jsonDataList = null;
+					messageList.clear();	// remove the sent message from list
+					//messageList.notifyAll();
+
 					// Now sleep for a short time before going for next message - easy to read on screen
 					try {
 						Thread.sleep(sleepTime);
@@ -239,7 +249,7 @@ public class RedisSubscriber extends JedisPubSub implements AsyncListener, Runna
 				}	
 				else {
 					try {
-						Thread.sleep(100);
+						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -262,6 +272,7 @@ public class RedisSubscriber extends JedisPubSub implements AsyncListener, Runna
 			if (!responseWriter.isClosed()) {
 				try {
 					responseWriter.close();
+					writerList.remove(responseWriter);
 				} catch (IOException e) {
 					logger.error(channel + ": Error attempting closing ChunkedOutput.");
 				}
