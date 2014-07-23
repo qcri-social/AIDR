@@ -78,6 +78,7 @@ import javax.ws.rs.core.Response;
 //import org.slf4j.LoggerFactory;
 
 
+
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
@@ -88,7 +89,7 @@ import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
 import qa.qcri.aidr.output.utils.SimpleRateLimiter;
 import qa.qcri.aidr.output.filter.DeserializeFilters;
-
+import qa.qcri.aidr.output.utils.ErrorLog;
 
 
 @Path("/crisis/fetch/")
@@ -96,7 +97,8 @@ public class GetBufferedAIDRData implements ServletContextListener {
 
 	// Debugging
 	private static Logger logger = Logger.getLogger(GetBufferedAIDRData.class.getName());
-
+	private static ErrorLog elog = new ErrorLog();
+	
 	// Related to channel buffer management
 	private static final String CHANNEL_REG_EX = "aidr_predict.*";
 	private static final String CHANNEL_PREFIX_STRING = "aidr_predict.";
@@ -104,10 +106,10 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	private static final int DEFAULT_COUNT = 50;		// default number of messages to fetch
 	private static final String DEFAULT_COUNT_STR = "50";
 
-	private static SimpleRateLimiter channelSelector;		// select a channel to display
+	private static SimpleRateLimiter channelSelector = null;		// select a channel to display
 	private static StringBuffer lastSentLatestTweet = null;
 	
-	private static ChannelBufferManager cbManager; 			// managing buffers for each publishing channel
+	private static ChannelBufferManager cbManager = null; 			// managing buffers for each publishing channel
 	private static final boolean rejectNullFlag = true;
 	/////////////////////////////////////////////////////////////////////////////
 	@POST
@@ -584,7 +586,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		}
 		 */
 		// Most important action - setup channel buffering thread
-		cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
+		if (null == cbManager) cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
 		channelSelector = new SimpleRateLimiter();
 		lastSentLatestTweet = new StringBuffer(); 
 		logger.info("Context Initialized");

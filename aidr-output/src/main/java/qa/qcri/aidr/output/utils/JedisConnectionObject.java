@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 //import org.slf4j.LoggerFactory;
 
 
+
 import org.apache.log4j.Logger;
 
 import redis.clients.jedis.Jedis;
@@ -31,7 +32,7 @@ public class JedisConnectionObject {
 	
 	// Logger setup
 	private static Logger logger = Logger.getLogger(JedisConnectionObject.class);
-
+	private static ErrorLog elog = new ErrorLog();
 	/**
 	 * 
 	 * @param host hostname on which REDIS resides
@@ -46,7 +47,8 @@ public class JedisConnectionObject {
 		allotedJedis = new ConcurrentHashMap<Jedis, Boolean>();
 		redisHost = host;
 		redisPort = port;
-		synchronized (allotedJedis) {
+		//synchronized (allotedJedis) 
+		{
 			if (null == poolConfig) {
 				poolConfig = new JedisPoolConfig();
 				poolConfig.setMaxActive(200);
@@ -78,7 +80,7 @@ public class JedisConnectionObject {
 				poolSetup = true;
 				logger.debug("Reusing existing Jedis pool: " + pool);
 			}
-			allotedJedis.notifyAll();
+			//allotedJedis.notifyAll();
 		}
 	}
 
@@ -101,7 +103,7 @@ public class JedisConnectionObject {
 	 *  Get a connection resource from JEDIS pool
 	 * @return
 	 */
-	public synchronized Jedis getJedisResource() {
+	public Jedis getJedisResource() {
 		Jedis subscriberJedis = null;
 		if (isPoolSetup()) {
 			try {
@@ -147,7 +149,7 @@ public class JedisConnectionObject {
 	 * Returns to the Jedis pool a specific instance of allocated Jedis connection resource
 	 * @param jedisInstance a Jedis instance borrowed from the Jedis Pool
 	 */
-	public synchronized void returnJedis(Jedis jedisInstance) {
+	public void returnJedis(Jedis jedisInstance) {
 		if (pool != null) {
 			try {
 				if (null != jedisInstance) {
@@ -162,7 +164,7 @@ public class JedisConnectionObject {
 					pool.returnResource(jedisInstance);
 			}
 		}
-		this.notifyAll();
+		//this.notifyAll();
 	}
 
 	/**
