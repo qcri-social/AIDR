@@ -14,6 +14,7 @@
       ATTRIBUTE_ID = "${attributeID}";
       TRAINING_EXAMPLE = "${trainingExamples}";
       MODEL_AUC = "${modelAuc}";
+      RETRAINING_THRESHOLD = "${retrainingThreshold}";
   </script>
 
 </body>

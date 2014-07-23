@@ -101,45 +101,32 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                 MODEL_NAME + '&nbsp;>&nbsp;Human-tagged items</span></div>', false);
 
         }
+
+
     },
 
     getRetrainingThreshold: function(trainingExamplesCount, countTrainingExample){
         var me = this;
-        Ext.Ajax.request({
-            url: BASE_URL + '/protected/tagger/getRetrainThreshold.action',
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json'
-            },
-            success: function (response) {
-                var resp = Ext.decode(response.responseText);
-                var data = Ext.JSON.decode(resp.data);
-                if (data.sampleCountThreshold){
-                    me.sampleCountThreshold= data.sampleCountThreshold;
-                } else {
-                    me.sampleCountThreshold= 50;
+        var sampleCountThreshold = RETRAINING_THRESHOLD;
+        var retrainingThresholdCount = 0;
+        var statusMessage='';
+        var y = TRAINING_EXAMPLE % sampleCountThreshold;
+        if(y < 0){
+          y = y * sampleCountThreshold;
+        }
+        retrainingThresholdCount = sampleCountThreshold - y;
 
-                }
+        if( countTrainingExample > 0){
+            statusMessage = retrainingThresholdCount + ' more needed to re-train. Note: Value \"N/A\" doesn\'t count for training.';
+            me.mainComponent.taggerDescription2line.setText('<b>' + TRAINING_EXAMPLE + '</b> human-tagged items. '+ statusMessage, false);
+        }
+        else{
 
-                var retrainingThresholdCount = 0;
-                var statusMessage='';
-                var y = TRAINING_EXAMPLE % data.sampleCountThreshold;
-                if(y < 0){
-                  y = y * data.sampleCountThreshold;
-                }
-                retrainingThresholdCount = data.sampleCountThreshold - y;
+            statusMessage = retrainingThresholdCount + ' more needed to re-train. Note: Value \"N/A\" doesn\'t count for training.';
+            me.mainComponent.taggerDescription2line.setText('<b>'+TRAINING_EXAMPLE+'</b> human-tagged items. '+statusMessage, false);
+        }
 
-                if( countTrainingExample > 0){
-                    statusMessage = retrainingThresholdCount + ' more needed to re-train. Note: Value \"N/A\" doesn\'t count for training.';
-                    me.mainComponent.taggerDescription2line.setText('<b>' + TRAINING_EXAMPLE + '</b> human-tagged items. '+ statusMessage, false);
-                }
-                else{
 
-                    statusMessage = retrainingThresholdCount + ' more needed to re-train. Note: Value \"N/A\" doesn\'t count for training.';
-                    me.mainComponent.taggerDescription2line.setText('<b>'+TRAINING_EXAMPLE+'</b> human-tagged items. '+statusMessage, false);
-                }
-            }
-        });
     },
 
     deleteTrainingExample: function(button){
