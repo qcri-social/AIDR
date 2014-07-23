@@ -116,6 +116,7 @@ public class JedisConnectionObject {
 			}
 			if (subscriberJedis != null) {
 				allotedJedis.put(subscriberJedis, false);		// initially nothing assigned
+				logger.info("Returning jedis resource to caller: " + subscriberJedis);
 				return subscriberJedis;
 			}
 		}
@@ -155,13 +156,16 @@ public class JedisConnectionObject {
 				if (null != jedisInstance) {
 					if (allotedJedis != null) allotedJedis.remove(jedisInstance);
 					pool.returnResource(jedisInstance);
+					logger.info("Returned jedis resource: " + jedisInstance);
 				}
 			} catch (JedisConnectionException e) {
 				logger.error("JedisConnectionException occurred...");
 				pool.returnBrokenResource(jedisInstance);
 			} finally {
-				if (null != jedisInstance) 
+				if (null != jedisInstance) { 
 					pool.returnResource(jedisInstance);
+					logger.info("Returned jedis resource in finally block: " + jedisInstance);
+				}
 			}
 		}
 		//this.notifyAll();

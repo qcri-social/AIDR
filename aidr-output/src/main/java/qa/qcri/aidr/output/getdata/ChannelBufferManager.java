@@ -28,8 +28,9 @@ import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Future;
 
-import javax.ejb.Singleton;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -64,7 +65,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonArray;
 
-//@Singleton
 public class ChannelBufferManager {
 
 	private static final int NO_DATA_TIMEOUT = 48 * 60 * 60 * 1000;		// when to delete a channel buffer
@@ -72,7 +72,7 @@ public class ChannelBufferManager {
 
 	private static Logger logger = Logger.getLogger(ChannelBufferManager.class);
 	private static ErrorLog elog = new ErrorLog();
-	
+
 	// Thread related
 	private static ExecutorService executorServicePool = null;
 
@@ -84,7 +84,7 @@ public class ChannelBufferManager {
 	public static JedisConnectionObject jedisConn = null;		// we need only a single instance of JedisConnectionObject running in background
 	public Jedis subscriberJedis = null;
 	public RedisSubscriber aidrSubscriber = null;
-
+	
 	// Runtime related
 	private boolean isConnected = false;
 	private boolean isSubscribed =false;
@@ -138,7 +138,7 @@ public class ChannelBufferManager {
 		if (isConnected) {
 			aidrSubscriber = new RedisSubscriber();
 			jedisConn.setJedisSubscription(subscriberJedis, true);		// we will be using pattern-based subscription
-			logger.info("Created new Jedis connection: " + aidrSubscriber);
+			logger.info("Created new Jedis connection: " + subscriberJedis);
 			try {
 				subscribeToChannel(channelRegEx);
 				//this.channelRegEx = channelRegEx;
@@ -156,7 +156,7 @@ public class ChannelBufferManager {
 				logger.debug("Created HashMap");
 			}
 		}
-		
+
 		try {
 			dbController = new DatabaseController();
 			logger.info("Created dbController = " + dbController);
@@ -164,6 +164,7 @@ public class ChannelBufferManager {
 			logger.error("Couldn't initiate DB access to aidr_fetch_manager");
 			logger.error(elog.toStringException(e));
 		}
+		
 	}
 
 	public ChannelBufferManager(final int bufferSize, final String channelRegEx) {
@@ -265,7 +266,7 @@ public class ChannelBufferManager {
 
 	public void deleteAllChannelBuffers() {
 		if (subscribedChannels != null) {
-			logger.info("Deleting currently subscribed list of channels: " + subscribedChannels);
+			logger.info("Deleting buffers for currently subscribed list of channels: " + subscribedChannels.keySet());
 			for (String channelId: subscribedChannels.keySet()) {
 				subscribedChannels.get(channelId).deleteBuffer();
 				subscribedChannels.remove(channelId);
@@ -349,7 +350,7 @@ public class ChannelBufferManager {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Currently unused - since earlier there were errors in the manager's
 	 * public collection REST API.
@@ -501,14 +502,17 @@ public class ChannelBufferManager {
 
 
 	private void subscribeToChannel(final String channelRegEx) throws Exception {
-		executorServicePool.submit(new Runnable() {
+		Future redisThread = executorServicePool.submit(new Runnable() {
 			public void run() {
+				Thread.currentThread().setName("ChannelBufferManager Redis subscription Thread");
+				logger.info("New thread <" +  Thread.currentThread().getName() + "> created for subscribing to redis channel: " + channelRegEx);
 				try {
 					// Execute the blocking REDIS subscription call
 					subscriberJedis.psubscribe(aidrSubscriber, channelRegEx);
 				} catch (Exception e) {
 					logger.error("AIDR Predict Channel pSubscribing failed for channel = " + channelRegEx);
 					stopSubscription();
+					Thread.currentThread().interrupt();
 				} finally {
 					try {
 						stopSubscription();
@@ -517,11 +521,13 @@ public class ChannelBufferManager {
 						logger.error(elog.toStringException(e));
 					}
 				}
+				Thread.currentThread().interrupt();
+				logger.info("Exiting thread: " + Thread.currentThread().getName());
 			}
-		}); 
+		});
 	}
 
-	private void stopSubscription() {
+	private synchronized void stopSubscription() {
 		try {
 			if (aidrSubscriber != null && aidrSubscriber.getSubscribedChannels() > 0) {
 				aidrSubscriber.punsubscribe();				
@@ -529,18 +535,59 @@ public class ChannelBufferManager {
 		} catch (JedisConnectionException e) {
 			logger.error("Connection to REDIS seems to be lost!");
 		}
-		if (jedisConn != null && aidrSubscriber != null) 
-			jedisConn.returnJedis(subscriberJedis);
+		try {
+			if (jedisConn != null && aidrSubscriber != null) { 
+				jedisConn.returnJedis(subscriberJedis);
+				logger.info("Stopsubscription completed...");
+			}
+		} catch (Exception e) {
+			logger.error("Failed to return Jedis resource");
+		}
 		//this.notifyAll();
 	}
 
 	public void close() {
 		stopSubscription();
-		dbController.getEntityManager().close();
+		try {
+			dbController.getEntityManager().close();
+		} catch (IllegalStateException e) {
+			logger.warn("attempting to close a container manager entitymanager");
+		}
 		//jedisConn.closeAll();
 		deleteAllChannelBuffers();
-		executorServicePool.shutdown(); // Disable new tasks from being submitted
+		//executorServicePool.shutdown(); // Disable new tasks from being submitted
+		shutdownAndAwaitTermination();
 		logger.info("All done, fetch service has been shutdown...");
+	}
+
+	// cleanup all threads 
+	void shutdownAndAwaitTermination() {
+		int attempts = 0;
+		executorServicePool.shutdown(); // Disable new tasks from being submitted
+		while (!executorServicePool.isTerminated() && attempts < 10) {
+			try {
+				// Wait a while for existing tasks to terminate
+				if (!executorServicePool.awaitTermination(30, TimeUnit.SECONDS)) {
+					executorServicePool.shutdownNow();                         // Cancel currently executing tasks
+					// Wait a while for tasks to respond to being cancelled
+					if (!executorServicePool.awaitTermination(5, TimeUnit.SECONDS))
+						logger.error("Executor Thread Pool did not terminate");
+				} else {
+					logger.info("All tasks completed post service shutdown");
+				}
+			} catch (InterruptedException e) {
+				// (Re-)Cancel if current thread also interrupted
+				executorServicePool.shutdownNow();
+				// Preserve interrupt status
+				Thread.currentThread().interrupt();
+			} finally {
+				executorServicePool.shutdownNow();
+			}
+			++attempts;
+			if (!executorServicePool.isTerminated()) {
+				logger.warn("Warning! Some threads not shutdown still. Trying again, attempt = " + attempts);
+			}
+		}
 	}
 
 	////////////////////////////////////////////////////
