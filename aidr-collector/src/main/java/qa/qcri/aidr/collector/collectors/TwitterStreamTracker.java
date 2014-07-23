@@ -134,10 +134,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
                         cache.setLastDownloadedDoc(collectionCode, status.getText());
                         counter = 0;
                     }
-                }else{
-                    System.out.println("Character } not found");
                 }
-                
             }
         };
 
