@@ -33,7 +33,7 @@ public class Document implements Serializable {
     private boolean isEvaluationSet;
 
     @Column (name = "sourceIP", nullable = false)
-    private Integer sourceIP;
+    private Long sourceIP;
 
     @Column (name = "valueAsTrainingSample", nullable = false)
     private Double valueAsTrainingSample;
@@ -109,11 +109,11 @@ public class Document implements Serializable {
         isEvaluationSet = evaluationSet;
     }
 
-    public Integer getSourceIP() {
+    public Long getSourceIP() {
         return sourceIP;
     }
 
-    public void setSourceIP(Integer sourceIP) {
+    public void setSourceIP(Long sourceIP) {
         this.sourceIP = sourceIP;
     }
 

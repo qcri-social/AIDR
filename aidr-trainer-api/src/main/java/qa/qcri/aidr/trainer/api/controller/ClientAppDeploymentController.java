@@ -12,6 +12,7 @@ import qa.qcri.aidr.trainer.api.template.ClientAppDeploymentModel;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
@@ -40,8 +41,8 @@ public class ClientAppDeploymentController {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/active/type")
-    public ClientAppDeploymentModel getActiveByType(int typeID){
+    @Path("/active/type/{typeID}")
+    public ClientAppDeploymentModel getActiveByType(@PathParam("typeID") Integer typeID){
         ClientAppDeployment deploy=  clientAppDeploymentService.getActiveDeploymentForAppType(typeID);
         if(deploy != null){
             ClientAppAnswer cAns = appAnswerService.getClientAppAnswer(deploy.getClientAppID()) ;
@@ -75,4 +76,27 @@ public class ClientAppDeploymentController {
 
         return null ;
     }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/active/mobile")
+    public List<ClientAppDeploymentModel> getMobileActive(){
+        List<ClientAppDeployment> cDeploys = clientAppDeploymentService.getMobileActiveDeployment();
+
+        if(cDeploys != null && cDeploys.size() > 0){
+            List<ClientAppDeploymentModel> models = new ArrayList<ClientAppDeploymentModel>();
+            for(ClientAppDeployment c : cDeploys) {
+                ClientAppAnswer cAns = appAnswerService.getClientAppAnswer(c.getClientAppID()) ;
+                ClientApp cApp = appService.findClientAppByID("clientAppID", c.getClientAppID());
+                if(cAns != null && cApp != null){
+                    ClientAppDeploymentModel aModel = new ClientAppDeploymentModel(c.getDeploymentID(), c.getClientAppID(), cAns.getAnswer(), cApp.getName(), cApp.getAppType());
+                    models.add(aModel)  ;
+                }
+            }
+            return models;
+        }
+
+        return null ;
+    }
+
 }
