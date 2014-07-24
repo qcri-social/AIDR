@@ -65,4 +65,12 @@ public class ClientAppDeploymentDaoImpl extends AbstractDaoImpl<ClientAppDeploym
     public List<ClientAppDeployment> findClientAppDeploymentByStatus(int status) {
         return findByCriteria(Restrictions.eq("status", status));
     }
+
+    @Override
+    public List<ClientAppDeployment> findActiveClientAppDeployment() {
+
+        return findByCriteria(Restrictions.disjunction()
+                .add(Restrictions.eq("status",StatusCodeType.DEPLOYMENT_MOBILE))
+                .add(Restrictions.eq("status", StatusCodeType.DEPLOYMENT_ACTIVE)));
+    }
 }

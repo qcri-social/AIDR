@@ -15,4 +15,5 @@ public interface ClientAppDeploymentService {
      ClientAppDeployment getActiveDeploymentForAppType(int appType);
      void deactivateDeployment(Long deploymentID);
      List<ClientAppDeployment> getActiveDeployment();
+     List<ClientAppDeployment> getMobileActiveDeployment();
 }

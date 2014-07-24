@@ -44,6 +44,7 @@ public class StatusCodeType {
     public static Integer DEPLOYMENT_ACTIVE = 1;
     public static Integer DEPLOYMENT_RETIRED = 2;
     public static Integer DEPLOYMENT_INACTIVE = 3;
+    public static Integer DEPLOYMENT_MOBILE = 4;
 
     public static String RETURN_SUCCESS = "{\"return\": \"success\"}";
     public static String RETURN_FAIL = "{\"return\": \"failed\", , \"status\":500}";

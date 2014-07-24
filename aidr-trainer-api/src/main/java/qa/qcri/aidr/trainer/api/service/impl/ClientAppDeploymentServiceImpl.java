@@ -48,6 +48,11 @@ public class ClientAppDeploymentServiceImpl implements ClientAppDeploymentServic
 
     @Override
     public List<ClientAppDeployment> getActiveDeployment() {
-        return clientAppDeploymentDao.findClientAppDeploymentByStatus(StatusCodeType.DEPLOYMENT_ACTIVE);
+        return clientAppDeploymentDao.findActiveClientAppDeployment();
+    }
+
+    @Override
+    public List<ClientAppDeployment> getMobileActiveDeployment() {
+        return clientAppDeploymentDao.findClientAppDeploymentByStatus(StatusCodeType.DEPLOYMENT_MOBILE);
     }
 }
