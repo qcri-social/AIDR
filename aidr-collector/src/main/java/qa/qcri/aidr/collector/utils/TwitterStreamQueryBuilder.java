@@ -19,7 +19,6 @@ public class TwitterStreamQueryBuilder {
     private String[] toTrackArray;
     private long[] toFollowerArray;
     private double[][] geoLocations; // -180,-90,180,90 for any geo tagged tweet
-    //private List<String> languageFilters;
     private Map<Integer, String> langMap;
     
 
@@ -47,7 +46,6 @@ public class TwitterStreamQueryBuilder {
     }
 
     public boolean isLanguageAllowed(String lang) {
-        //if (languageFilters.contains(lang.toLowerCase())) {
          if (langMap.containsValue(lang.toLowerCase())) {
             return true;
         }

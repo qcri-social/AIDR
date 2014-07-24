@@ -9,10 +9,9 @@ import java.io.Serializable;
 //import java.util.logging.Level;
 //import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger; 
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import qa.qcri.aidr.collector.beans.AIDR;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.FetcherResponseToStringChannel;
@@ -39,9 +38,9 @@ import twitter4j.conf.ConfigurationBuilder;
  * @author Imran
  */
 public class TwitterStreamTracker extends Loggable implements Serializable {
-	
+
     private static Logger logger = Logger.getLogger(TwitterStreamTracker.class.getName());
-			
+
     private TwitterStream twitterStream;
     private ConfigurationBuilder configBuilder;
     private TwitterStreamQueryBuilder streamQuery;
@@ -90,7 +89,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
                     if (getStreamQuery().isLanguageAllowed(lang)) {
                         publishMessage(status);
                     }
-                } 
+                }
             }
 
             @Override
@@ -124,43 +123,18 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
             }
 
             public void publishMessage(Status status) {
-                    StringBuilder rawTweetJSON = new StringBuilder(TwitterObjectFactory.getRawJSON(status));
-                    int length = rawTweetJSON.length();
+                StringBuilder rawTweetJSON = new StringBuilder(TwitterObjectFactory.getRawJSON(status));
+                int length = rawTweetJSON.length();
+                if (rawTweetJSON.charAt(length - 1) == '}') {
                     rawTweetJSON.replace(length - 1, length, aidrJson);
-                    publishToRedis(rawTweetJSON.toString());
+                    publisherJedis.publish(channelName, status.getText());
                     counter++;
                     if (counter >= Config.FETCHER_REDIS_COUNTER_UPDATE_THRESHOLD) {
                         cache.incrCounter(collectionCode, counter);
                         cache.setLastDownloadedDoc(collectionCode, status.getText());
                         counter = 0;
                     }
-            }
-
-            public void publishMessageDeprecated(Status status, String rawTweetJSON) {
-
-                try {
-                    StringBuilder tweet = new StringBuilder(rawTweetJSON);
-                    JSONObject aidrObject = new JSONObject(new FetcherResponseToStringChannel(new AIDR(getCollectionCode(), getCollectionName(), "twitter")));
-                    String aidrJson = StringUtils.replace(aidrObject.toString(), "{", ",", 1); // replacing first occurance of { with ,
-                    tweet.replace(rawTweetJSON.lastIndexOf("}"), rawTweetJSON.lastIndexOf("}") + 1, aidrJson);
-                    //publisherJedis.publish(Config.FETCHER_CHANNEL + "." + getCollectionCode(), tweet.toString());
-                    publishToRedis(tweet.toString());
-                    counter++;
-                    if (counter >= Config.FETCHER_REDIS_COUNTER_UPDATE_THRESHOLD) {
-                        GenericCache.getInstance().incrCounter(getCacheKey(), counter);
-                        GenericCache.getInstance().setLastDownloadedDoc(getCacheKey(), status.getText());
-                        counter = new Long(0);
-                    }
-                } catch (JedisConnectionException e) {
-                    logger.error("JedisConnectionException: " + collectionName);
-                } catch (Exception exp) {
-                    logger.error("Exception occured in " + collectionName);
-                    exp.printStackTrace();
                 }
-            }
-
-            public void publishToRedis(String tweet) {
-                publisherJedis.publish(channelName, tweet);
             }
         };
 

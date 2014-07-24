@@ -586,7 +586,11 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		}
 		 */
 		// Most important action - setup channel buffering thread
-		if (null == cbManager) cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
+		if (null == cbManager) {
+			logger.info("Initializing channel buffer manager");
+			cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
+			logger.info("Done initializing channel buffer manager");
+		}
 		channelSelector = new SimpleRateLimiter();
 		lastSentLatestTweet = new StringBuffer(); 
 		logger.info("Context Initialized");
