@@ -13,9 +13,6 @@ import org.glassfish.jersey.server.ChunkedOutput;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
-
-
-import qa.qcri.aidr.output.stream.RedisSubscriber;
 import qa.qcri.aidr.output.stream.SubscriptionDataObject;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
@@ -23,7 +20,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 
 
-public class RedisSubscriber extends JedisPubSub implements AsyncListener, Runnable {
+public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncListener, Runnable {
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	// The inner class that handles both Asynchronous Servlet Thread and Redis Threaded Subscription
 	//////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,9 +53,9 @@ public class RedisSubscriber extends JedisPubSub implements AsyncListener, Runna
 	private ArrayList<ChunkedOutput<String>> writerList = null;
 	
 	// Debugging
-	private static Logger logger = Logger.getLogger(RedisSubscriber.class);
+	private static Logger logger = Logger.getLogger(AsyncStreamRedisSubscriber.class);
 
-	public RedisSubscriber(final Jedis jedis, final ChunkedOutput<String> responseWriter,
+	public AsyncStreamRedisSubscriber(final Jedis jedis, final ChunkedOutput<String> responseWriter,
 			ArrayList<ChunkedOutput<String>> writerList,
 			final SubscriptionDataObject subData) throws IOException {
 		this.channel = subData.redisChannel;

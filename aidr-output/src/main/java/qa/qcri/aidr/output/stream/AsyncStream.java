@@ -89,7 +89,7 @@ import com.google.gson.JsonObject;
 
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
-import qa.qcri.aidr.output.stream.RedisSubscriber;
+import qa.qcri.aidr.output.stream.AsyncStreamRedisSubscriber;
 import redis.clients.jedis.Jedis;
 
 @Path("/crisis/stream/")
@@ -184,7 +184,7 @@ public class AsyncStream implements ServletContextListener {
 
 
 	// Create a subscription to specified REDIS channel: spawn a new thread
-	private void subscribeToChannel(final ExecutorService exec, final RedisSubscriber sub, final SubscriptionDataObject subData) throws NullPointerException, RejectedExecutionException {
+	private void subscribeToChannel(final ExecutorService exec, final AsyncStreamRedisSubscriber sub, final SubscriptionDataObject subData) throws NullPointerException, RejectedExecutionException {
 		//logger.debug("executorServicePool = " + exec);
 		try {
 			exec.execute(new Runnable() {
@@ -257,7 +257,7 @@ public class AsyncStream implements ServletContextListener {
 				subscriptionData.rate = rate;
 				subscriptionData.duration = duration.equals("-1") ? null : duration;
 
-				RedisSubscriber aidrSubscriber = new RedisSubscriber(subscriberJedis, responseWriter, writerList, subscriptionData);
+				AsyncStreamRedisSubscriber aidrSubscriber = new AsyncStreamRedisSubscriber(subscriberJedis, responseWriter, writerList, subscriptionData);
 				try {
 					//logger.debug(channelCode + ": subscriberJedis = " + subscriberJedis + ", aidrSubscriber = " + aidrSubscriber);
 					if (null == executorService) {

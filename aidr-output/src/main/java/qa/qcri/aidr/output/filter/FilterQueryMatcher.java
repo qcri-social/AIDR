@@ -199,9 +199,13 @@ public class FilterQueryMatcher {
 	public String getNextQueryObject() {
 		Gson gson = new Gson();
 		if (queryList.getConstraints() != null && next < queryList.getConstraints().size()) {
+			try {
 			String retValue = gson.toJson(queryList.getConstraints().get(next), QueryJsonObject.class);
 			++next;
 			return retValue;
+			} catch (Exception e) {
+				logger.error("Failed to serialize queryList: " + queryList.getConstraints().get(next));
+			}
 		}
 		return null;
 	}
