@@ -9,6 +9,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -50,16 +51,16 @@ public class RedisTweetInjector {
 	 * 
 	 * @return 1 on successful connection to Redis, -1 on failure
 	 */
-	public int setupRedisConnection() {
+	public Jedis setupRedisConnection() {
 		try {
 			jedis = new Jedis(host.toString(), port, 30000);
 			jedis.connect();
 		} catch (Exception e) {
 			System.err.println("Failed to connect to Redis");
 			e.printStackTrace();
-			return -1;
+			return null;
 		}
-		return 1;
+		return jedis;
 	}
 
 	public Jedis getJedis() {
@@ -87,8 +88,8 @@ public class RedisTweetInjector {
 		return fileNames;
 	}
 
-	public void publishTweet(String tweet) {
-		jedis.publish(config.channelPrefix+config.collectionCode, tweet);
+	public void publishTweet(final Jedis jedis, final String collectionCode, final String tweet) {
+		jedis.publish(config.channelPrefix+collectionCode, tweet);
 		try {
 			Thread.sleep(sleepDuration);
 		} catch (InterruptedException e) {
@@ -96,49 +97,83 @@ public class RedisTweetInjector {
 		}
 	}
 
-	public int readDataForCollectionAndPublish(int duration) {
+	public int readDataForCollectionAndPublish(final Jedis jedis, final String collectionCode, 
+											   final int duration) {
 		BufferedReader br = null;
 		int count = 0;
-		List<String> fileNames = getClassifiedFileVolumes(config.collectionCode);
+		List<String> fileNames = getClassifiedFileVolumes(collectionCode);
 
-		Long startTime = System.currentTimeMillis();
-		Long currentTime = startTime;
+		long startTime = System.currentTimeMillis();
+		long currentTime = 0;
 		do {
 			for (String file : fileNames) {
-				String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + config.collectionCode + "/output/" + file;
-				System.out.println(config.collectionCode + ": Reading file " + fileLocation);
+				String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
+				System.out.println(Thread.currentThread().getName() + ":: " + collectionCode + ": Reading file " + fileLocation);
 				try {
 					br = new BufferedReader(new FileReader(fileLocation));
 					String tweet;
 					while ((tweet = br.readLine()) != null) {
-						publishTweet(tweet);
+						publishTweet(jedis, collectionCode, tweet);
 						++count;
 					}
 					br.close();
 				} catch (FileNotFoundException e) {
 					System.err.println("File not found: " + file);
+					break;
 				} catch (IOException e) {
 					System.err.println("IO Exception on file: " + file);
+					break;
 				}
 			}
+			currentTime = System.currentTimeMillis();
 		} while ((currentTime - startTime) < duration);
 		return count;
 	}
 
-	public void injectTweets() {
+	public void injectTweets(final Jedis jedis, final String collectionCode) {
 		int duration = config.duration * 1000 * 60;		// in milliseconds
 		if (config.tweets_per_sec > 0) {
-			sleepDuration = 1000 / config.tweets_per_sec;
+			sleepDuration = 1000 / config.tweets_per_sec;			
 		}
-		System.out.println("Total tweets published in time " + config.duration 
-				+ "mins = " + readDataForCollectionAndPublish(duration));
+		System.out.println(Thread.currentThread().getName() + ": sleep interval between successive publish, determined from configuration: " + sleepDuration + "ms");
+		System.out.println(Thread.currentThread().getName() + 
+				": Total tweets published in time " + config.duration 
+				+ "mins = " + readDataForCollectionAndPublish(jedis, collectionCode, duration));
 	}
 
 	public static void main(String args[]) throws Exception {
-		RedisTweetInjector injector = new RedisTweetInjector();
-		injector.setupRedisConnection();
-		//injector.getJedis().publish(injector.config.channelPrefix+injector.config.collectionCode, "this is a test message");
-		
-		injector.injectTweets();
+		Config config = new Config();
+		final int threadsToSpawn = config.threads;
+
+		for (int i = 0; i < threadsToSpawn; i++) {
+			new Thread("<Redis Mock Injector thread " + i + ">"){
+				public void run() {
+					System.out.println("Thread: " + getName() + " will be spawned...");
+
+					RedisTweetInjector injector = new RedisTweetInjector();
+					Jedis jedis = injector.setupRedisConnection();
+
+					if (jedis != null) {
+						Config config = new Config();
+						Random randomGenerator = new Random();
+						String collectionCode = config.collection_list.get(
+								randomGenerator.nextInt(config.collection_list.size()));
+
+						System.out.println("Thread " + getName() + ":: will use collection: " + collectionCode);
+						long startTime = System.currentTimeMillis();
+						injector.injectTweets(jedis, collectionCode);
+						long elapsed = System.currentTimeMillis() - startTime;
+						System.out.println("Done thread " + getName() + ", execution time = " + elapsed + "ms");
+					} else {
+						System.err.println("Couldn't connect to Redis, aborting...");
+						System.exit(-1);
+					}
+				}
+			}.start();
+			
+			//injector.getJedis().publish(injector.config.channelPrefix+injector.config.collectionCode, "this is a test message");
+			
+		}
+
 	}
 }
