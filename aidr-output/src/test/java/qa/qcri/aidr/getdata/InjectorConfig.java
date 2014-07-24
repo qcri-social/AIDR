@@ -3,7 +3,7 @@ package qa.qcri.aidr.getdata;
 import java.util.Arrays;
 import java.util.List;
 
-public class Config {
+public class InjectorConfig {
 	
 	public final String host = "localhost";
 	public final int port = 6379;

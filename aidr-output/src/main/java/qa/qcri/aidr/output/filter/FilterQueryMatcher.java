@@ -45,7 +45,7 @@ public class FilterQueryMatcher {
 			try {
 				DateQueryJsonObject dateQuery = mapper.readValue(queryString, DateQueryJsonObject.class);
 				return true;
-			} catch (IOException e) {
+			} catch (Exception e) {
 				logger.error(elog.toStringException(e));
 			}
 		}
@@ -59,7 +59,7 @@ public class FilterQueryMatcher {
 			try {
 				ClassifierQueryJsonObject classiferQuery = mapper.readValue(queryString, ClassifierQueryJsonObject.class);
 				return true;
-			} catch (IOException e) {
+			} catch (Exception e) {
 				logger.debug("Exception in deserializing using Jackson readValue()");
 				logger.error(elog.toStringException(e));
 			}

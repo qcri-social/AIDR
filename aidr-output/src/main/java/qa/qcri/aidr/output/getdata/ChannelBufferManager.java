@@ -84,7 +84,7 @@ public class ChannelBufferManager {
 	public static JedisConnectionObject jedisConn = null;		// we need only a single instance of JedisConnectionObject running in background
 	public Jedis subscriberJedis = null;
 	public RedisSubscriber aidrSubscriber = null;
-	
+
 	// Runtime related
 	private boolean isConnected = false;
 	private boolean isSubscribed =false;
@@ -119,6 +119,7 @@ public class ChannelBufferManager {
 			System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");	// set logging level for slf4j
 		}
 		logger.info("Initializing channel buffer manager.");
+		System.out.println("[ChannelBufferManager] Initializing channel buffer manager.");
 
 		bufferSize = -1;
 		executorServicePool = Executors.newCachedThreadPool();	//Executors.newFixedThreadPool(10);		// max number of threads
@@ -162,9 +163,10 @@ public class ChannelBufferManager {
 			logger.info("Created dbController = " + dbController);
 		} catch (Exception e) {
 			logger.error("Couldn't initiate DB access to aidr_fetch_manager");
+			logger.error("[ChannelBufferManager] Couldn't initiate DB access to aidr_fetch_manager");
 			logger.error(elog.toStringException(e));
 		}
-		
+
 	}
 
 	public ChannelBufferManager(final int bufferSize, final String channelRegEx) {
@@ -194,6 +196,7 @@ public class ChannelBufferManager {
 			createChannelQueue(channelName);
 			addMessageToChannelBuffer(channelName, receivedMessage);
 			logger.info("Created new channel: " + channelName);
+			System.out.println("[manageChannelBuffers] Created new channel: " + channelName);
 		}
 		// Periodically check if any channel is down - if so, delete
 		long currentTime = new Date().getTime();
@@ -379,7 +382,7 @@ public class ChannelBufferManager {
 					//logger.debug("Response parsed");
 
 					JsonArray jsonData= null;
-					if (obj.has("data")) {			// if false, then something wrong in AIDR setup
+					if (obj != null && obj.has("data")) {			// if false, then something wrong in AIDR setup
 						jsonData = obj.get("data").getAsJsonArray();
 						collectionList = new HashMap<String, Boolean>();
 						for (int i = 0;i < jsonData.size();i++) {
@@ -427,44 +430,46 @@ public class ChannelBufferManager {
 						//logger.info("TWEET: " + tempList.get(i));
 						ClassifiedFilteredTweet tweet = new ClassifiedFilteredTweet().deserialize(tempList.get(i));
 						//logger.info("Channel: " + tweet.getCrisisCode() + ", time: " + tweet.getCreatedAt() + ", conf=" + tweet.getMaxConfidence());
-						long tweetTime = tweet.getCreatedAt().getTime();
-						if (k < 0) {
-							if (tweet.getMaxConfidence() >= confidenceThreshold) {
-								dataSet.add(k+1, tempList.get(i));
-								++k;
-								//logger.info("Added the very first tweet from channel: " + tweet.getCrisisCode());
+						if (tweet != null) {
+							long tweetTime = tweet.getCreatedAt().getTime();
+							if (k < 0) {
+								if (tweet.getMaxConfidence() >= confidenceThreshold) {
+									dataSet.add(k+1, tempList.get(i));
+									++k;
+									//logger.info("Added the very first tweet from channel: " + tweet.getCrisisCode());
+								}
 							}
-						}
-						else {
-							// get the last stored tweet in the dataSet
-							ClassifiedFilteredTweet lastStoredTweet = new ClassifiedFilteredTweet().deserialize(dataSet.get(k));
+							else {
+								// get the last stored tweet in the dataSet
+								ClassifiedFilteredTweet lastStoredTweet = new ClassifiedFilteredTweet().deserialize(dataSet.get(k));
 
-							// rule 1: if more recent, include
-							if (lastStoredTweet.getCreatedAt().getTime() < tweetTime 
-									&& tweet.getMaxConfidence() >= confidenceThreshold) {
-								dataSet.add(k+1, tempList.get(i));
-								++k;
-								//logger.info("Added using rule 1 from channel: " + tweet.getCrisisCode());
-							}
+								// rule 1: if more recent, include
+								if (lastStoredTweet != null && lastStoredTweet.getCreatedAt().getTime() < tweetTime 
+										&& tweet.getMaxConfidence() >= confidenceThreshold) {
+									dataSet.add(k+1, tempList.get(i));
+									++k;
+									//logger.info("Added using rule 1 from channel: " + tweet.getCrisisCode());
+								}
 
-							// rule 2: if not recent but from another channel, include
-							if (lastStoredTweet.getCreatedAt().getTime() >= tweetTime
-									&& !lastStoredTweet.getCrisisCode().equals(tweet.getCrisisCode())
-									&& tweet.getMaxConfidence() >= confidenceThreshold) {
-								String tempTweet = dataSet.remove(k);
-								dataSet.add(k, tempList.get(i));
-								dataSet.add(k+1,tempTweet);
-								++k;
-								//logger.info("Added using rule 2 from channel: " + tweet.getCrisisCode());
-							}
+								// rule 2: if not recent but from another channel, include
+								if (lastStoredTweet != null && lastStoredTweet.getCreatedAt().getTime() >= tweetTime
+										&& !lastStoredTweet.getCrisisCode().equals(tweet.getCrisisCode())
+										&& tweet.getMaxConfidence() >= confidenceThreshold) {
+									String tempTweet = dataSet.remove(k);
+									dataSet.add(k, tempList.get(i));
+									dataSet.add(k+1,tempTweet);
+									++k;
+									//logger.info("Added using rule 2 from channel: " + tweet.getCrisisCode());
+								}
 
-							// rule 3: if timestamps are same for same crisis, include higher confidence
-							if (lastStoredTweet.getCreatedAt().getTime() == tweetTime
-									&& lastStoredTweet.getCrisisCode().equals(tweet.getCrisisCode())
-									&& lastStoredTweet.getMaxConfidence() < tweet.getMaxConfidence()) {
-								dataSet.add(k+1, tempList.get(i));
-								++k;
-								//logger.info("Added using rule 3 from channel: " + tweet.getCrisisCode());
+								// rule 3: if timestamps are same for same crisis, include higher confidence
+								if (lastStoredTweet != null && lastStoredTweet.getCreatedAt().getTime() == tweetTime
+										&& lastStoredTweet.getCrisisCode().equals(tweet.getCrisisCode())
+										&& lastStoredTweet.getMaxConfidence() < tweet.getMaxConfidence()) {
+									dataSet.add(k+1, tempList.get(i));
+									++k;
+									//logger.info("Added using rule 3 from channel: " + tweet.getCrisisCode());
+								}
 							}
 						}
 					}
@@ -511,6 +516,7 @@ public class ChannelBufferManager {
 					subscriberJedis.psubscribe(aidrSubscriber, channelRegEx);
 				} catch (Exception e) {
 					logger.error("AIDR Predict Channel pSubscribing failed for channel = " + channelRegEx);
+					System.out.println("[subscribeToChannel] AIDR Predict Channel pSubscribing failed for channel = " + channelRegEx);
 					stopSubscription();
 					Thread.currentThread().interrupt();
 				} finally {
@@ -539,6 +545,7 @@ public class ChannelBufferManager {
 			if (jedisConn != null && aidrSubscriber != null) { 
 				jedisConn.returnJedis(subscriberJedis);
 				logger.info("Stopsubscription completed...");
+				System.out.println("[stopSubscription] Stopsubscription completed...");
 			}
 		} catch (Exception e) {
 			logger.error("Failed to return Jedis resource");
@@ -558,6 +565,7 @@ public class ChannelBufferManager {
 		//executorServicePool.shutdown(); // Disable new tasks from being submitted
 		shutdownAndAwaitTermination();
 		logger.info("All done, fetch service has been shutdown...");
+		System.out.println("[close] All done, fetch service has been shutdown...");
 	}
 
 	// cleanup all threads 

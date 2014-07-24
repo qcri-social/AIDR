@@ -21,11 +21,11 @@ public class RedisTweetInjector {
 	private int port = 6379;
 	private Jedis jedis = null;
 
-	private Config config;
+	private InjectorConfig config;
 	private int sleepDuration = 0;		// default value - no sleep
 
 	public RedisTweetInjector() {
-		config = new Config();
+		config = new InjectorConfig();
 		try {
 			this.host = new URI(config.host);
 		} catch (URISyntaxException e) {
@@ -43,7 +43,7 @@ public class RedisTweetInjector {
 			e.printStackTrace();
 		}
 		this.port = port;
-		config = new Config();
+		config = new InjectorConfig();
 	}
 
 
@@ -67,10 +67,10 @@ public class RedisTweetInjector {
 		return this.jedis;
 	}
 
-	public static List<String> getClassifiedFileVolumes(String collectionCode) {
+	public List<String> getClassifiedFileVolumes(String collectionCode) {
 
-		String filesPath = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/";
-		List<String> fileNames = new ArrayList();
+		String filesPath = config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/";
+		List<String> fileNames = new ArrayList<String>();
 		File folder = new File(filesPath);
 		File[] listOfFiles = folder.listFiles();
 		for (int i = 0; i < listOfFiles.length; i++) {
@@ -107,8 +107,8 @@ public class RedisTweetInjector {
 		long currentTime = 0;
 		do {
 			for (String file : fileNames) {
-				String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
-				System.out.println(Thread.currentThread().getName() + ":: " + collectionCode + ": Reading file " + fileLocation);
+				String fileLocation = config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
+				//System.out.println(Thread.currentThread().getName() + ":: " + collectionCode + ": Reading file " + fileLocation);
 				try {
 					br = new BufferedReader(new FileReader(fileLocation));
 					String tweet;
@@ -142,7 +142,7 @@ public class RedisTweetInjector {
 	}
 
 	public static void main(String args[]) throws Exception {
-		Config config = new Config();
+		InjectorConfig config = new InjectorConfig();
 		final int threadsToSpawn = config.threads;
 
 		for (int i = 0; i < threadsToSpawn; i++) {
@@ -154,7 +154,7 @@ public class RedisTweetInjector {
 					Jedis jedis = injector.setupRedisConnection();
 
 					if (jedis != null) {
-						Config config = new Config();
+						InjectorConfig config = new InjectorConfig();
 						Random randomGenerator = new Random();
 						String collectionCode = config.collection_list.get(
 								randomGenerator.nextInt(config.collection_list.size()));

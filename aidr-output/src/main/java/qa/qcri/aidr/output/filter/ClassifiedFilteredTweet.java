@@ -22,15 +22,15 @@ import qa.qcri.aidr.output.filter.NominalLabel;
 @SuppressWarnings("serial")
 @XmlRootElement(name="ClassifiedFilteredTweet")
 public class ClassifiedFilteredTweet implements Serializable {
-	
+
 	private static Logger logger = Logger.getLogger(ClassifiedFilteredTweet.class);
-	
+
 	private Date created_at = null;
 	private String text = null;
 	private String crisis_code = null;
 	private String crisis_name = null;
 	private ArrayList<NominalLabel> nominal_labels;
-	
+
 	private String id = null;
 	private String screen_name = null;
 
@@ -38,7 +38,7 @@ public class ClassifiedFilteredTweet implements Serializable {
 	public ClassifiedFilteredTweet() {
 		nominal_labels = new ArrayList<NominalLabel>();
 	}
-	
+
 	public float getMaxConfidence() {
 		float maxConfidence = 0;
 		for (NominalLabel nLabel: nominal_labels) {
@@ -48,7 +48,7 @@ public class ClassifiedFilteredTweet implements Serializable {
 		}
 		return maxConfidence;
 	}
-	
+
 	public ClassifiedFilteredTweet deserialize(String rawJsonString) {
 
 		created_at = null;
@@ -62,89 +62,94 @@ public class ClassifiedFilteredTweet implements Serializable {
 		if (rawJsonString.startsWith("["))		// should never happen 
 			rawJsonString = rawJsonString.substring(1, rawJsonString.length()-1);	
 
-		JsonParser parser = new JsonParser();
-		JsonObject obj = (JsonObject) parser.parse(rawJsonString);
-		JsonElement tweetData = null;
-		JsonElement timestamp = null;
-		JsonObject aidrData = null;
-		JsonArray nominalLabels; 
+		try {
+			JsonParser parser = new JsonParser();
+			JsonObject obj = (JsonObject) parser.parse(rawJsonString);
+			JsonElement tweetData = null;
+			JsonElement timestamp = null;
+			JsonObject aidrData = null;
+			JsonArray nominalLabels; 
 
-		JsonElement tweetId = null;
-		JsonObject userData = null;
-		JsonElement screenName = null;
-		
-		if (obj.has("text")) {					// should always be true
-			tweetData = obj.get("text");		// get the tweet text string
+			JsonElement tweetId = null;
+			JsonObject userData = null;
+			JsonElement screenName = null;
 
-			if (obj.has("created_at")) {
-				timestamp = obj.get("created_at");
-			}
+			if (obj.has("text")) {					// should always be true
+				tweetData = obj.get("text");		// get the tweet text string
 
-			if (obj.has("id")) {
-				tweetId = obj.get("id");
-			}
-			
-			if (obj.has("user")) {
-				userData = (JsonObject) obj.get("user");
-				screenName = userData.get("screen_name");
-			}
-			
-			if (obj.has("aidr")) {								// should always be true
-				aidrData = (JsonObject) obj.get("aidr");		// get the aidr JSON object
-
-				// extract relevant fields from the aidr JSON object
-				JsonElement crisisCode = null;
-				if (aidrData.has("crisis_code"))				// should always be true
-					crisisCode = aidrData.get("crisis_code");
-				JsonElement crisisName = null;					
-				if (aidrData.has("crisis_name"))				// should always be true
-					crisisName = aidrData.get("crisis_name");	
-				if (aidrData.has("nominal_labels")) {			// if false, then something wrong in AIDR setup
-					nominalLabels = aidrData.get("nominal_labels").getAsJsonArray();
-				} else {
-					nominalLabels = new JsonArray();
+				if (obj.has("created_at")) {
+					timestamp = obj.get("created_at");
 				}
 
-				ClassifiedFilteredTweet jsonObj = new ClassifiedFilteredTweet();
-
-				jsonObj.text = tweetData.getAsString(); 
-				text = tweetData.getAsString(); 
-
-				jsonObj.crisis_code = crisisCode.getAsString(); 
-				crisis_code = crisisCode.getAsString();
-
-				jsonObj.crisis_name = crisisName.getAsString(); 
-				crisis_name = crisisName.getAsString();
-				
-				jsonObj.created_at = createDate(timestamp.getAsString()); 
-				created_at = createDate(timestamp.getAsString());
-				
-				jsonObj.id = tweetId.getAsString();
-				id = tweetId.getAsString();
-				
-				jsonObj.screen_name = screenName.getAsString();
-				screen_name = screenName.getAsString();
-				
-				for (int i = 0;i < nominalLabels.size();i++) {
-					NominalLabel nLabel = new NominalLabel();
-					JsonObject temp = (JsonObject) nominalLabels.get(i);
-					nLabel.attibute_code = temp.get("attribute_code").getAsString();
-					nLabel.label_code = temp.get("label_code").getAsString();
-					nLabel.confidence = temp.get("confidence").getAsFloat();
-
-					nLabel.attribute_name = temp.get("attribute_name").getAsString();
-					nLabel.label_name = temp.get("label_name").getAsString();
-					nLabel.attribute_description = temp.get("attribute_description").getAsString();
-					nLabel.label_description = temp.get("label_description").getAsString();
-					nLabel.from_human = temp.get("from_human").getAsBoolean();
-
-					jsonObj.nominal_labels.add(nLabel); 
-					nominal_labels.add(nLabel);
+				if (obj.has("id")) {
+					tweetId = obj.get("id");
 				}
-				return jsonObj;
+
+				if (obj.has("user")) {
+					userData = (JsonObject) obj.get("user");
+					screenName = userData.get("screen_name");
+				}
+
+				if (obj.has("aidr")) {								// should always be true
+					aidrData = (JsonObject) obj.get("aidr");		// get the aidr JSON object
+
+					// extract relevant fields from the aidr JSON object
+					JsonElement crisisCode = null;
+					if (aidrData.has("crisis_code"))				// should always be true
+						crisisCode = aidrData.get("crisis_code");
+					JsonElement crisisName = null;					
+					if (aidrData.has("crisis_name"))				// should always be true
+						crisisName = aidrData.get("crisis_name");	
+					if (aidrData.has("nominal_labels")) {			// if false, then something wrong in AIDR setup
+						nominalLabels = aidrData.get("nominal_labels").getAsJsonArray();
+					} else {
+						nominalLabels = new JsonArray();
+					}
+
+					ClassifiedFilteredTweet jsonObj = new ClassifiedFilteredTweet();
+
+					jsonObj.text = tweetData.getAsString(); 
+					text = tweetData.getAsString(); 
+
+					jsonObj.crisis_code = crisisCode.getAsString(); 
+					crisis_code = crisisCode.getAsString();
+
+					jsonObj.crisis_name = crisisName.getAsString(); 
+					crisis_name = crisisName.getAsString();
+
+					jsonObj.created_at = createDate(timestamp.getAsString()); 
+					created_at = createDate(timestamp.getAsString());
+
+					jsonObj.id = tweetId.getAsString();
+					id = tweetId.getAsString();
+
+					jsonObj.screen_name = screenName.getAsString();
+					screen_name = screenName.getAsString();
+
+					for (int i = 0;i < nominalLabels.size();i++) {
+						NominalLabel nLabel = new NominalLabel();
+						JsonObject temp = (JsonObject) nominalLabels.get(i);
+						nLabel.attibute_code = temp.get("attribute_code").getAsString();
+						nLabel.label_code = temp.get("label_code").getAsString();
+						nLabel.confidence = temp.get("confidence").getAsFloat();
+
+						nLabel.attribute_name = temp.get("attribute_name").getAsString();
+						nLabel.label_name = temp.get("label_name").getAsString();
+						nLabel.attribute_description = temp.get("attribute_description").getAsString();
+						nLabel.label_description = temp.get("label_description").getAsString();
+						nLabel.from_human = temp.get("from_human").getAsBoolean();
+
+						jsonObj.nominal_labels.add(nLabel); 
+						nominal_labels.add(nLabel);
+					}
+					return jsonObj;
+				}
 			}
+			return null;
+		} catch (Exception e) {
+			//logger.error("Exception in json parsing for string: " + rawJsonString);
+			return null;
 		}
-		return null;
 	}
 
 	public Date getCreatedAt() {
@@ -207,19 +212,19 @@ public class ClassifiedFilteredTweet implements Serializable {
 			nominal_labels.addAll(nLabels);
 		}
 	}
-	
+
 	public String getId() {
 		return id;
 	}
-	
+
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 	public String getScreenName() {
 		return screen_name;
 	}
-	
+
 	public void setScreenName(String screenName) {
 		this.screen_name = screenName;
 	}

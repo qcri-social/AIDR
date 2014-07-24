@@ -49,20 +49,20 @@ public class TaggerJsonOutputAdapter {
 		if (rawJsonString.startsWith("["))		// should never happen 
 			rawJsonString = rawJsonString.substring(1, rawJsonString.length()-1);	
 
-		JsonParser parser = new JsonParser();
-		JsonObject obj = (JsonObject) parser.parse(rawJsonString);
-		JsonElement tweetData = null;
-		JsonElement timestamp = null;
-
-		String id = null;
-		JsonObject userData = null;
-		JsonElement screen_name = null;
-
-		JsonObject aidrData = null;
-		JsonArray nominalLabels; 
-		crisisCode = null;
-
 		try {
+			JsonParser parser = new JsonParser();
+			JsonObject obj = (JsonObject) parser.parse(rawJsonString);
+			JsonElement tweetData = null;
+			JsonElement timestamp = null;
+
+			String id = null;
+			JsonObject userData = null;
+			JsonElement screen_name = null;
+
+			JsonObject aidrData = null;
+			JsonArray nominalLabels; 
+			crisisCode = null;
+
 			if (obj.has("text")) {					// should always be true
 				tweetData = obj.get("text");		// get the tweet text string
 
@@ -116,7 +116,7 @@ public class TaggerJsonOutputAdapter {
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Exception in json parsing for string: " + rawJsonString);
+			//logger.error("Exception in json parsing for string: " + rawJsonString);
 		}
 
 		// no group label called "aidr" or "text" present
@@ -124,7 +124,7 @@ public class TaggerJsonOutputAdapter {
 			return null;			// returning "null" to meet Tagger's specific front-end requirements
 		else
 			return jsonObject.toJson(new JsonObject());
-			
+
 	}
 
 	private boolean isemptyNominalLabels(JsonArray nominalLabels) {

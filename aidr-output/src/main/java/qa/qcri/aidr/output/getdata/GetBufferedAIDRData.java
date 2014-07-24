@@ -79,6 +79,7 @@ import javax.ws.rs.core.Response;
 
 
 
+
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
@@ -98,7 +99,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	// Debugging
 	private static Logger logger = Logger.getLogger(GetBufferedAIDRData.class.getName());
 	private static ErrorLog elog = new ErrorLog();
-	
+
 	// Related to channel buffer management
 	private static final String CHANNEL_REG_EX = "aidr_predict.*";
 	private static final String CHANNEL_PREFIX_STRING = "aidr_predict.";
@@ -108,7 +109,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 
 	private static SimpleRateLimiter channelSelector = null;		// select a channel to display
 	private static StringBuffer lastSentLatestTweet = null;
-	
+
 	private static ChannelBufferManager cbManager = null; 			// managing buffers for each publishing channel
 	private static final boolean rejectNullFlag = true;
 	/////////////////////////////////////////////////////////////////////////////
@@ -169,7 +170,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			@DefaultValue("0.7") @QueryParam("confidence") float confidence,
 			@DefaultValue("true") @QueryParam("balanced_sampling") boolean balanced_sampling) {
 
-		//logger.info("request received");
+		System.out.println("[getLatestBufferedAIDRData] request received");
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {		// Jedis pool is ready
 			// Get the last count number of messages for channel=channelCode
 			List<String> bufferedMessages = new ArrayList<String>();
@@ -180,18 +181,19 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				temp.clear();
 				temp = null;
 			}
-			
+
 			// Added code for filteredMessages as per new feature: pivotal #67373070
 			List<String> filteredMessages = new ArrayList<String>();			
-			ClassifiedFilteredTweet workingTweet = new ClassifiedFilteredTweet(); 
 			for (String tweet: bufferedMessages) {
-				ClassifiedFilteredTweet classifiedTweet = workingTweet.deserialize(tweet);
-				filteredMessages.add(tweet);
-				channelSelector.initializeNew(classifiedTweet.getCrisisCode());	
-				logger.debug("Added tweet from channel " + classifiedTweet.getCrisisCode() + ", confidence: " + classifiedTweet.getMaxConfidence());
+				ClassifiedFilteredTweet classifiedTweet = new ClassifiedFilteredTweet().deserialize(tweet);
+				if (classifiedTweet != null) {
+					filteredMessages.add(tweet);
+					channelSelector.initializeNew(classifiedTweet.getCrisisCode());	
+					logger.debug("Added tweet from channel " + classifiedTweet.getCrisisCode() + ", confidence: " + classifiedTweet.getMaxConfidence());
+				}
+
 			}
-			workingTweet = null;
-			
+
 			final JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
 			final StringBuilder jsonDataList;
 			if (!balanced_sampling) {
@@ -201,16 +203,20 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				jsonDataList = taggerOutput.createRateLimitedList(filteredMessages, channelSelector, messageCount, rejectNullFlag);
 			}
 			final int sendCount = taggerOutput.getMessageCount();
-			if (jsonDataList.indexOf("[{}]") > -1) {
+			if (jsonDataList.indexOf("[{}]") > -1 && lastSentLatestTweet != null) {
 				// Nothing to send = so send the last sent data again!
 				jsonDataList.delete(0, jsonDataList.length());		// clear 
 				jsonDataList.append(lastSentLatestTweet);
 			} else {
-				lastSentLatestTweet.delete(0, lastSentLatestTweet.length());	//clear
-				lastSentLatestTweet.append(jsonDataList);
+				if (lastSentLatestTweet != null) {
+					synchronized(this) {
+						lastSentLatestTweet.delete(0, lastSentLatestTweet.length());	//clear
+						lastSentLatestTweet.append(jsonDataList);
+					}
+				}
 			}
 			logger.debug("send count = " + sendCount);
-			
+			System.out.println("[getLatestBufferedAIDRData] send count = " + sendCount);
 			// Reset the messageList buffer and return
 			bufferedMessages.clear();
 			bufferedMessages = null;
@@ -222,6 +228,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			return Response.ok(jsonDataList.toString()).build();
 		}
 		logger.error("Error in jedis connection. Bailing out...");
+		System.err.println("[getLatestBufferedAIDRData] Error in jedis connection. Bailing out...");
 		return Response.ok(new String("[{}]")).build();
 	}
 
@@ -248,7 +255,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			@QueryParam("callback") String callbackName,
 			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
 
-		//logger.info("[getBufferedAIDRData] request received");
+		System.out.println("[getBufferedAIDRData] request received");
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {
 			boolean error = false;
 			// Parse the HTTP GET request and generating results for output
@@ -291,7 +298,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				channelList = null;
 
 				return Response.ok(htmlMessageString.toString()).build();
-				*/
+				 */
 			}
 			else {
 				// Form fully qualified channelName and get other parameter values, if any
@@ -325,7 +332,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					bufferedMessages.clear();
 					bufferedMessages = null;
 
-					//logger.info(channelCode + " : sending jsonp data, count = " + sendCount);
+					System.out.println(channelCode + " : sending jsonp data, count = " + sendCount);
 					return Response.ok(jsonDataList.toString()).build();
 				}
 				else {
@@ -370,7 +377,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		logger.debug(channelCode + ": received json string: " + queryString);
 		DeserializeFilters des = new DeserializeFilters();
 		JsonQueryList queryList = des.deserializeConstraints(queryString);
-		
+
 		if (queryList != null) {
 			logger.info(channelCode + ": received POST list = " + queryList.toString());
 		} else {
@@ -426,8 +433,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					} else {
 						ClassifiedFilteredTweet classifiedTweet = new ClassifiedFilteredTweet();
 						for (String tweet: bufferedMessages) {
-							classifiedTweet.deserialize(tweet);
-							if (tweetFilter.getMatcherResult(classifiedTweet)) {
+							if (classifiedTweet.deserialize(tweet) != null && tweetFilter.getMatcherResult(classifiedTweet)) {
 								logger.debug(channelCode + ": adding tweet to filteredMessages");
 								filteredMessages.add(tweet);
 							}
@@ -588,8 +594,10 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		// Most important action - setup channel buffering thread
 		if (null == cbManager) {
 			logger.info("Initializing channel buffer manager");
+			System.out.println("[contextInitialized] Initializing channel buffer manager");
 			cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
 			logger.info("Done initializing channel buffer manager");
+			System.out.println("[contextInitialized] Done initializing channel buffer manager");
 		}
 		channelSelector = new SimpleRateLimiter();
 		lastSentLatestTweet = new StringBuffer(); 
