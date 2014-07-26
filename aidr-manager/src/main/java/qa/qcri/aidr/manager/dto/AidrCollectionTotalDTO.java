@@ -2,6 +2,7 @@ package qa.qcri.aidr.manager.dto;
 
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 import qa.qcri.aidr.manager.util.CollectionStatus;
+import qa.qcri.aidr.manager.util.CollectionType;
 import qa.qcri.aidr.manager.util.JsonDateSerializer;
 
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -56,6 +57,8 @@ public class AidrCollectionTotalDTO {
     private String crisisTypeName;
 
     private boolean hasTaggerOutput;
+
+    private CollectionType collectionType;
 
     public Integer getId() {
         return id;
@@ -242,5 +245,13 @@ public class AidrCollectionTotalDTO {
 
     public void setHasTaggerOutput(boolean hasTaggerOutput) {
         this.hasTaggerOutput = hasTaggerOutput;
+    }
+
+    public CollectionType getCollectionType() {
+        return collectionType;
+    }
+
+    public void setCollectionType(CollectionType collectionType) {
+        this.collectionType = collectionType;
     }
 }

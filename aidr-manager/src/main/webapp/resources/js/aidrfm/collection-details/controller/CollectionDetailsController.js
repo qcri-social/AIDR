@@ -110,6 +110,17 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 }
             },
 
+            "#collectionTypeInfo": {
+                render: function (infoPanel, eOpts) {
+                    var tip = Ext.create('Ext.tip.ToolTip', {
+                        trackMouse: true,
+                        html: "Collection type.",
+                        target: infoPanel.el,
+                        dismissDelay: 0
+                    });
+                }
+            },
+
             "#collectionStart": {
                 click: function (btn, e, eOpts) {
                     var mask = AIDRFMFunctions.getMask();
@@ -247,6 +258,23 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             "#toMyClassifiersToDownload": {
                 click: function (btn, e, eOpts) {
                     this.goToTagger(btn);
+                }
+            },
+            "#CollectionType":{
+                change: function(field, newValue, oldValue){
+                     if(newValue === 'SMS'){
+                         Ext.getCmp('keywordsPanel').hide();
+                         Ext.getCmp('langPanel').hide();
+                         Ext.getCmp('geoPanel').hide();
+                         Ext.getCmp('followPanel').hide();
+                         Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/sms_icon.png"/>');
+                     } else if(newValue === 'Twitter'){
+                         Ext.getCmp('keywordsPanel').show();
+                         Ext.getCmp('langPanel').show();
+                         Ext.getCmp('geoPanel').show();
+                         Ext.getCmp('followPanel').show();
+                         Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/collection-icon.png"/>');
+                     }
                 }
             }
 
@@ -394,7 +422,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         COLLECTION_CODE = r.code;
         p.codeL.setText(r.code);
-        p.keywordsL.setText(r.track);
+        p.keywordsL.setText(r.track ? r.track : this.na, false);
 
         if (r.geo){
             p.geoL.setText(r.geo, false);
@@ -422,7 +450,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             }
         }
 
-        p.languageFiltersL.setText(languageFull ? languageFull : this.ns, false);
+        p.languageFiltersL.setText(languageFull ? languageFull : this.na, false);
 
         p.createdL.setText(moment(r.createdDate).calendar());
 
@@ -507,6 +535,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         p.duration.setValue(duration);
         p.langCombo.setValue(r.langFilters ? r.langFilters.split(',') : '');
         p.crisisTypesCombo.setValue(r.crisisType);
+        p.collectionTypeCombo.setValue(r.collectionType);
+        if(r.collectionType === 'SMS')
+           Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/sms_icon.png"/>');
     },
 
     setStatus: function (raw) {
@@ -772,7 +803,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 endDate: endDate,
                 langFilters: form.findField('langFilters').getValue(),
                 durationHours: form.findField('durationHours').getValue(),
-                crisisType: form.findField('crisisType').getValue()
+                crisisType: form.findField('crisisType').getValue(),
+                collectionType: form.findField('collectionType').getValue()
             },
             headers: {
                 'Accept': 'application/json'

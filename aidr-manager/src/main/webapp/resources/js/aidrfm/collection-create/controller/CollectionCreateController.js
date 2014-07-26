@@ -99,6 +99,17 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 }
             },
 
+            "#collectionTypeInfo": {
+                render: function (infoPanel, eOpts) {
+                    var tip = Ext.create('Ext.tip.ToolTip', {
+                        trackMouse: true,
+                        html: "Collection Type.",
+                        target: infoPanel.el,
+                        dismissDelay: 0
+                    });
+                }
+            },
+
             "#crisisTypesInfo": {
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
@@ -142,8 +153,23 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 blur: function (field, eOpts) {
                     CollectionCreateController.generateCollectionCode(field.getValue());
                 }
-            }
+            },
 
+            "#CollectionType":{
+                change: function(field, newValue, oldValue){
+                     if(newValue === 'SMS'){
+                         Ext.getCmp('keywordsPanel').hide();
+                         Ext.getCmp('langPanel').hide();
+                         Ext.getCmp('geoPanel').hide();
+                         Ext.getCmp('followPanel').hide();
+                     } else if(newValue === 'Twitter'){
+                         Ext.getCmp('keywordsPanel').show();
+                         Ext.getCmp('langPanel').show();
+                         Ext.getCmp('geoPanel').show();
+                         Ext.getCmp('followPanel').show();
+                     }
+                }
+            }
         });
     },
 
@@ -172,7 +198,8 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                     geo: Ext.String.trim( form.findField('geo').getValue() ),
                     langFilters: form.findField('langFilters').getValue(),
                     durationHours: form.findField('durationHours').getValue(),
-                    crisisType: form.findField('crisisType').getValue()
+                    crisisType: form.findField('crisisType').getValue(),
+                    collectionType: form.findField('collectionType').getValue()
                 },
                 headers: {
                     'Accept': 'application/json'

@@ -57,7 +57,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
         this.collectionStore = Ext.create('Ext.data.JsonStore', {
             pageSize: 10,
             storeId: 'collectionStore',
-            fields: ['id', 'code', 'name', 'target', 'langFilters', 'startDate', 'endDate', 'status', 'count', 'track', 'geo', 'follow', 'lastDocument', 'user'],
+            fields: ['id', 'code', 'name', 'target', 'langFilters', 'startDate', 'endDate', 'status', 'count', 'track', 'geo', 'follow', 'lastDocument', 'user', 'collectionType'],
             proxy: {
                 type: 'ajax',
                 url: 'collection/findAll.action',
@@ -106,7 +106,13 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
             '<div class="content">',
 
             '<div class="img">',
-            '<a href="{[this.getEncodedCode(values.code)]}/collection-details"><img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/collection-icon.png" width="70"></a>',
+            '<a href="{[this.getEncodedCode(values.code)]}/collection-details">' +
+                    '<tpl if="this.isTwitter(values.collectionType)">'+
+                        '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/collection-icon.png" width="70">' +
+                    '<tpl else>'+
+                        '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/sms_icon.png" width="70">' +
+                    '</tpl>'+
+             '</a>',
             '</div>',
 
             '<div class="info">',
@@ -144,6 +150,9 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                     } else {
                         return 'hidden';
                     }
+                },
+                isTwitter: function (r) {
+                    return r == 'Twitter';
                 },
                 getEncodedCode: function(code) {
                     return encodeURI(code);

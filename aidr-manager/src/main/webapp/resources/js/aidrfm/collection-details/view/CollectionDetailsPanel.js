@@ -223,6 +223,42 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             queryMode: 'local'
         });
 
+        this.collectionTypeComboStore = Ext.create('Ext.data.Store', {
+            fields: ['val', 'label'],
+            data: [
+                { "val": 'Twitter', "label": 'twitter' },
+                { "val": 'SMS', "label": 'SMS' }
+            ]
+        });
+
+        this.collectionTypeCombo = Ext.create('Ext.form.ComboBox', {
+            fieldLabel: 'Collection Type',
+            flex: 1,
+            labelWidth: 130,
+            id: 'CollectionType',
+            name: 'collectionType',
+            editable: false,
+            text: 'Edit',
+            valueField: 'val',
+            displayField: 'label',
+            width: 125,
+            store: this.collectionTypeComboStore,
+            value: 'twitter'
+        });
+
+        this.collectionTypeNote = Ext.create('Ext.form.Label', {
+            flex: 1,
+            html: '<div></div>',
+            padding: '2 0 2 135'
+        });
+
+        this.configurationsL = Ext.create('Ext.form.Label', {
+            flex: 1,
+            text: 'Optional settings',
+            padding: '15 0 0 0',
+            cls: 'header-h2 bordered-top'
+        });
+
         this.langComboStore = Ext.create('Ext.data.ArrayStore', {
             autoDestroy: true,
             storeId: 'langComboStore',
@@ -554,6 +590,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             xtype: 'container',
                             layout: 'hbox',
                             margin: '5 0',
+                            id:'keywordsPanel',
                             items: [
                                 this.keywordsE,
                                 {
@@ -587,6 +624,24 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             layout: 'hbox',
                             margin: '5 0 0 0',
                             padding: '0 0 8 0',
+                            items: [
+                                this.collectionTypeCombo,
+                                {
+                                    border: false,
+                                    bodyStyle: 'background:none',
+                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+                                    height: 22,
+                                    width: 22,
+                                    id: 'collectionTypeInfo'
+                                }
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            layout: 'hbox',
+                            margin: '5 0 0 0',
+                            padding: '0 0 8 0',
+                            id:'langPanel',
                             items: [
                                 this.langCombo,
                                 {
@@ -628,6 +683,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             xtype: 'container',
                             layout: 'hbox',
                             margin: '0 0 5 0',
+                            id:'geoPanel',
                             items: [
                                 this.geoE,
                                 {
@@ -645,6 +701,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             xtype: 'container',
                             layout: 'hbox',
                             margin: '5 0',
+                            id:'followPanel',
                             items: [
                                 this.followE,
                                 {
@@ -700,6 +757,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 {
                                     xtype: 'container',
                                     padding: '0 20 0 0',
+                                    id:'iconPanel',
                                     html: '<img src="/AIDRFetchManager/resources/img/collection-icon.png"/>'
                                 },
                                 {

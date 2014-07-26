@@ -20,6 +20,7 @@ import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
+import qa.qcri.aidr.manager.util.CollectionType;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -66,6 +67,14 @@ public class CollectionController extends BaseController{
 			List<UserEntity> managers = new ArrayList<UserEntity>();
 			managers.add(entity);
 			collection.setManagers(managers);
+
+            if(collection.getCollectionType() == CollectionType.SMS){
+                collection.setTrack(null);
+                collection.setLangFilters(null);
+                collection.setGeo(null);
+                collection.setFollow(null);
+            }
+
 			collectionService.create(collection);
 			return getUIWrapper(true);  
 		}catch(Exception e){
@@ -222,6 +231,14 @@ public class CollectionController extends BaseController{
 		try{
 			CollectionStatus status = collection.getStatus();
 			AidrCollection dbCollection = collectionService.findById(collectionId);
+
+            if (collection.getCollectionType() == CollectionType.SMS) {
+                collection.setTrack(null);
+                collection.setLangFilters(null);
+                collection.setGeo(null);
+                collection.setFollow(null);
+            }
+
 			if (CollectionStatus.RUNNING_WARNING.equals(status) || CollectionStatus.RUNNING.equals(status)) {
 				//              stop collection
 				AidrCollection collectionAfterStop = collectionService.stopAidrFetcher(dbCollection);
@@ -245,7 +262,7 @@ public class CollectionController extends BaseController{
 				collection.setManagers(dbCollection.getManagers());
 				collection.setCreatedDate(dbCollection.getCreatedDate());
 				collection.setPubliclyListed(dbCollection.getPubliclyListed());
-				collectionService.update(collection);
+                collectionService.update(collection);
 
 				//              start collection
 				collectionService.startFetcher(collectionService.prepareFetcherRequest(collection), collection);
@@ -635,6 +652,7 @@ public class CollectionController extends BaseController{
 		dto.setDurationHours(collection.getDurationHours());
 		dto.setPubliclyListed(collection.getPubliclyListed());
 		dto.setCrisisType(collection.getCrisisType());
+		dto.setCollectionType(collection.getCollectionType());
 
 		List<UserEntity> managers = collection.getManagers();
 		for (UserEntity manager : managers) {

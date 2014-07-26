@@ -4,6 +4,7 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import qa.qcri.aidr.manager.util.CollectionStatus;
+import qa.qcri.aidr.manager.util.CollectionType;
 import qa.qcri.aidr.manager.util.JsonDateDeSerializer;
 import qa.qcri.aidr.manager.util.JsonDateSerializer;
 
@@ -75,6 +76,10 @@ public class AidrCollection implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "id_manager")}
     )
     private List<UserEntity> managers;
+
+    @Column(name = "collection_type")
+    @Enumerated(EnumType.STRING)
+    private CollectionType collectionType;
 
     public Integer getId() {
         return id;
@@ -238,5 +243,13 @@ public class AidrCollection implements Serializable {
     
     public void setPubliclyListed(Boolean publiclyListed) {
     	this.publiclyListed = publiclyListed;
+    }
+
+    public CollectionType getCollectionType() {
+        return collectionType;
+    }
+
+    public void setCollectionType(CollectionType collectionType) {
+        this.collectionType = collectionType;
     }
 }
