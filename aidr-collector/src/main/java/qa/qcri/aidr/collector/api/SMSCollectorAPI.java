@@ -41,11 +41,11 @@ public class SMSCollectorAPI extends Loggable {
     }
 
     @POST
-    @Path("endpoint/receive/{collection_code}")
+    @Path("/endpoint/receive/{collection_code}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response receive(@PathParam("collection_code") String code, SMS sms) {
-        return Response.ok().build();
+    public SMS receive(@PathParam("collection_code") String code, SMS sms) {
+        return sms;
     }
 
     @GET

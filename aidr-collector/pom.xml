@@ -12,7 +12,8 @@
 	<properties>
 		<endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
+        <receive.scope>provided</receive.scope>
+        <receive.version>1.7.1</receive.version>
 	</properties>
 
 	<repositories>
@@ -56,7 +57,13 @@
 			<scope>provided</scope>
 		</dependency>
 		<!-- if you are using Jersey client specific features -->
-		<dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>2.5.1</version>
+            <scope>${receive.scope}</scope>
+        </dependency>
+        <dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.1.0</version>
@@ -127,39 +134,65 @@
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.7.1</version>
+			<version>${receive.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
 			<version>2.5.1</version>
-			<scope>provided</scope>
+			<scope>${receive.scope}</scope>
 		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
-
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<archive>
-						<manifest>
-							<mainClass>qa.qcri.aidr.testers.RedisTester</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.glassfish.jersey.core</groupId>
+                        <artifactId>jersey-client</artifactId>
+                        <version>2.5.1</version>
+                    </dependency>
+                </dependencies>
 				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
+                    <execution>
+                        <id>build-RedisTester</id>
+                        <configuration>
+                            <finalName>aidr-collector</finalName>
+                            <archive>
+                                <manifest>
+                                    <mainClass>qa.qcri.aidr.testers.RedisTester</mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>build-ReceiveSMS</id>
+                        <configuration>
+                            <finalName>ReceiveSMS</finalName>
+                            <archive>
+                                <manifest>
+                                    <mainClass>qa.qcri.aidr.collector.utils.ReceiveSMS</mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
 				</executions>
 			</plugin>
 
