@@ -267,12 +267,18 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                          Ext.getCmp('langPanel').hide();
                          Ext.getCmp('geoPanel').hide();
                          Ext.getCmp('followPanel').hide();
+                         Ext.getCmp('durationDescription').hide();
+                         Ext.getCmp('configurationsL').hide();
+                         Ext.getCmp('geoDescription').hide();
                          Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/sms_icon.png"/>');
                      } else if(newValue === 'Twitter'){
                          Ext.getCmp('keywordsPanel').show();
                          Ext.getCmp('langPanel').show();
                          Ext.getCmp('geoPanel').show();
                          Ext.getCmp('followPanel').show();
+                         Ext.getCmp('durationDescription').show();
+                         Ext.getCmp('configurationsL').show();
+                         Ext.getCmp('geoDescription').show();
                          Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/collection-icon.png"/>');
                      }
                 }

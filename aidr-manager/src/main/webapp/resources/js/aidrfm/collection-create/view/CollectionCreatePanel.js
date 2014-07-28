@@ -81,6 +81,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 
         this.geoDescription = Ext.create('Ext.form.Label', {
             flex: 1,
+            id:'geoDescription',
             html: '<span class="redInfo">*</span> <a href="http://boundingbox.klokantech.com/" target="_blank">boundingbox.klokantech.com</a> ("Copy/paste CSV format of a boundingbox")<div><span class="redInfo">*</span>The collection will include <strong>all items from these regions</strong>, independent of whether they contain the keywords or not</div>',
             padding: '2 0 2 135'
         });
@@ -95,6 +96,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 
         this.durationDescription = Ext.create('Ext.form.Label', {
             flex: 1,
+            id:'durationDescription',
             html: '<span class="redInfo">*</span> Note: If you need to run your collection for more than 7 days, please contact the AIDR team.',
             padding: '2 0 2 135'
         });
@@ -176,7 +178,6 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 
         this.collectionTypeCombo = Ext.create('Ext.form.ComboBox', {
             fieldLabel: 'Collection Type',
-            flex: 1,
             labelWidth: 130,
             id: 'CollectionType',
             name: 'collectionType',
@@ -184,7 +185,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             text: 'Edit',
             valueField: 'val',
             displayField: 'label',
-            width: 125,
+            width: 370,
             store: this.collectionTypeComboStore,
             value: 'twitter'
         });
@@ -197,6 +198,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 
         this.configurationsL = Ext.create('Ext.form.Label', {
             flex: 1,
+            id:'configurationsL',
             text: 'Optional settings',
             padding: '15 0 0 0',
             cls: 'header-h2 bordered-top'
@@ -314,6 +316,23 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                             xtype: 'container',
                             layout: 'hbox',
                             margin: '5 0',
+                            items: [
+                                this.collectionTypeCombo,
+                                {
+                                    border: false,
+                                    bodyStyle: 'background:none',
+                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+                                    height: 22,
+                                    width: 22,
+                                    id: 'collectionTypeInfo'
+                                }
+                            ]
+                        },
+                        this.collectionTypeNote,
+                        {
+                            xtype: 'container',
+                            layout: 'hbox',
+                            margin: '5 0',
                             id:'keywordsPanel',
                             items: [
                                 this.keywordsE,
@@ -343,23 +362,6 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                                 }
                             ]
                         },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            margin: '5 0',
-                            items: [
-                                this.collectionTypeCombo,
-                                {
-                                    border: false,
-                                    bodyStyle: 'background:none',
-                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
-                                    height: 22,
-                                    width: 22,
-                                    id: 'collectionTypeInfo'
-                                }
-                            ]
-                        },
-                        this.collectionTypeNote,
                         {
                             xtype: 'container',
                             layout: 'hbox',

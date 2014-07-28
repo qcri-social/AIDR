@@ -176,6 +176,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.geoDescription = Ext.create('Ext.form.Label', {
             flex: 1,
+            id:'geoDescription',
             html: '<span class="redInfo">*</span> <a href="http://boundingbox.klokantech.com/" target="_blank">boundingbox.klokantech.com</a> ("Copy/paste CSV format of a boundingbox")<div><span class="redInfo">*</span>The collection will include <strong>all items from these regions</strong>, independent of whether they contain the keywords or not</div>',
             padding: '2 0 2 135'
         });
@@ -190,6 +191,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.durationDescription = Ext.create('Ext.form.Label', {
             flex: 1,
+            id:'durationDescription',
             html: '<span class="redInfo">*</span> If you need to run your collection for more than 7 days, please contact the AIDR team.',
             padding: '2 0 2 135'
         });
@@ -233,7 +235,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.collectionTypeCombo = Ext.create('Ext.form.ComboBox', {
             fieldLabel: 'Collection Type',
-            flex: 1,
+            width: 370,
             labelWidth: 130,
             id: 'CollectionType',
             name: 'collectionType',
@@ -241,7 +243,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             text: 'Edit',
             valueField: 'val',
             displayField: 'label',
-            width: 125,
             store: this.collectionTypeComboStore,
             value: 'twitter'
         });
@@ -254,6 +255,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.configurationsL = Ext.create('Ext.form.Label', {
             flex: 1,
+            id:'configurationsL',
             text: 'Optional settings',
             padding: '15 0 0 0',
             cls: 'header-h2 bordered-top'
@@ -589,6 +591,23 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         {
                             xtype: 'container',
                             layout: 'hbox',
+                            margin: '5 0 0 0',
+                            padding: '0 0 8 0',
+                            items: [
+                                this.collectionTypeCombo,
+                                {
+                                    border: false,
+                                    bodyStyle: 'background:none',
+                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+                                    height: 22,
+                                    width: 22,
+                                    id: 'collectionTypeInfo'
+                                }
+                            ]
+                        },
+                        {
+                            xtype: 'container',
+                            layout: 'hbox',
                             margin: '5 0',
                             id:'keywordsPanel',
                             items: [
@@ -616,23 +635,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     height: 22,
                                     width: 22,
                                     id: 'crisisTypesInfo'
-                                }
-                            ]
-                        },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            margin: '5 0 0 0',
-                            padding: '0 0 8 0',
-                            items: [
-                                this.collectionTypeCombo,
-                                {
-                                    border: false,
-                                    bodyStyle: 'background:none',
-                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
-                                    height: 22,
-                                    width: 22,
-                                    id: 'collectionTypeInfo'
                                 }
                             ]
                         },

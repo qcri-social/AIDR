@@ -162,11 +162,17 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                          Ext.getCmp('langPanel').hide();
                          Ext.getCmp('geoPanel').hide();
                          Ext.getCmp('followPanel').hide();
+                         Ext.getCmp('durationDescription').hide();
+                         Ext.getCmp('configurationsL').hide();
+                         Ext.getCmp('geoDescription').hide();
                      } else if(newValue === 'Twitter'){
                          Ext.getCmp('keywordsPanel').show();
                          Ext.getCmp('langPanel').show();
                          Ext.getCmp('geoPanel').show();
                          Ext.getCmp('followPanel').show();
+                         Ext.getCmp('durationDescription').show();
+                         Ext.getCmp('configurationsL').show();
+                         Ext.getCmp('geoDescription').show();
                      }
                 }
             }
