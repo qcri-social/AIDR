@@ -5,6 +5,7 @@
 package qa.qcri.aidr.collector.collectors;
 
 import java.io.Serializable;
+import java.net.SocketException;
 
 //import java.util.logging.Level;
 //import java.util.logging.Logger;
@@ -168,13 +169,11 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
     }
 
     public void abortCollection() {
-
         JedisConnectionPool.close(publisherJedis);
         twitterStream.cleanUp();
         twitterStream.shutdown();
         cleanCache();
         logger.info("AIDR-Fetcher: Collection aborted which was tracking [" + getStreamQuery().getToTrackToString() + "] AND following [" + getStreamQuery().getToFollowToString() + "]");
-
     }
 
     public void cleanCache() {
