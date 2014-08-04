@@ -61,7 +61,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 	private boolean isEvaluationSet;
 
 	@Column (name = "sourceIP", nullable = false)
-	private Integer sourceIP;
+        private Long sourceIP;
+	//private Integer sourceIP;
 
 	@Column (name = "valueAsTrainingSample", nullable = false)
 	private Double valueAsTrainingSample;
@@ -153,11 +154,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 		isEvaluationSet = evaluationSet;
 	}
 
-	public Integer getSourceIP() {
+	public Long getSourceIP() {
 		return sourceIP;
 	}
 
-	public void setSourceIP(Integer sourceIP) {
+	public void setSourceIP(Long sourceIP) {
 		this.sourceIP = sourceIP;
 	}
 
