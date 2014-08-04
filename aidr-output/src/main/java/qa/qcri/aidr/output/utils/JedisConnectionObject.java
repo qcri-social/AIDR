@@ -53,13 +53,13 @@ public class JedisConnectionObject {
 				poolConfig = new JedisPoolConfig();
 				poolConfig.setMaxActive(200);
 				poolConfig.setMaxIdle(50);
-				poolConfig.setMinIdle(5);
+				poolConfig.setMinIdle(10);
 				poolConfig.setTestWhileIdle(true);
 				poolConfig.setTestOnBorrow(true);
 				poolConfig.setTestOnReturn(true);
 				poolConfig.numTestsPerEvictionRun = 10;
 				poolConfig.timeBetweenEvictionRunsMillis = 60000;
-				poolConfig.maxWait = 60000;
+				poolConfig.maxWait = 90000;
 				poolConfig.whenExhaustedAction = org.apache.commons.pool.impl.GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW;
 				logger.debug("New Jedis poolConfig: " + poolConfig);
 			} else {
@@ -67,11 +67,12 @@ public class JedisConnectionObject {
 			}
 			if (null == pool) {
 				try {
-					pool = new JedisPool(poolConfig, redisHost, redisPort, 30000);
+					pool = new JedisPool(poolConfig, redisHost, redisPort, 90000);
 					poolSetup = true;
 					logger.debug("New Jedis pool: " + pool);
 				} catch (Exception e) {
 					logger.debug("Fatal error! Could not initialize Jedis Pool!");
+					logger.error(elog.toStringException(e));
 					poolConfig = null;
 					pool = null;
 					poolSetup = false;
@@ -113,10 +114,11 @@ public class JedisConnectionObject {
 				subscriberJedis = null;
 				connectionSetup = false;
 				logger.error("Fatal error! Could not get a resource from the pool.");
+				logger.error(elog.toStringException(e));
 			}
 			if (subscriberJedis != null) {
 				allotedJedis.put(subscriberJedis, false);		// initially nothing assigned
-				logger.info("Returning jedis resource to caller: " + subscriberJedis);
+				logger.info("Allocating jedis resource to caller: " + subscriberJedis);
 				return subscriberJedis;
 			}
 		}
@@ -160,6 +162,7 @@ public class JedisConnectionObject {
 				}
 			} catch (JedisConnectionException e) {
 				logger.error("JedisConnectionException occurred...");
+				logger.error(elog.toStringException(e));
 				pool.returnBrokenResource(jedisInstance);
 			} finally {
 				if (null != jedisInstance) { 

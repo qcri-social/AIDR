@@ -27,11 +27,14 @@ import org.slf4j.LoggerFactory;
 import qa.qcri.aidr.output.utils.ErrorLog;
 
 public class ChannelBuffer {
-	private static int MAX_BUFFER_SIZE = 2000;		// number of elements the buffer will hold at any time
+	private static int MAX_BUFFER_SIZE = 5000;		// number of elements the buffer will hold at any time
+	private static int MAX_FETCH_SIZE = 2000;		// max. number of elements to fetch in one op
 	private String channelName = null;
 	private long lastAddTime;
 	private Buffer messageBuffer = null;
 	int size = 0;
+	
+	private boolean publiclyListed = true;
 	
 	private static Logger logger = LoggerFactory.getLogger(ChannelBuffer.class);
 	private static ErrorLog elog = new ErrorLog();
@@ -59,7 +62,15 @@ public class ChannelBuffer {
 		this.messageBuffer = BufferUtils.synchronizedBuffer(new CircularFifoBuffer(bufferSize));
 		this.size = bufferSize;
 	}
-
+	
+	public void setPubliclyListed(boolean publiclyListed) {
+		this.publiclyListed = publiclyListed;
+	}
+	
+	public boolean getPubliclyListed() {
+		return publiclyListed;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void addMessage(String msg) {
 		messageBuffer.add(msg);
@@ -100,7 +111,7 @@ public class ChannelBuffer {
 	public List<String> getLIFOMessages(int msgCount) {
 		List<String> msgList = new ArrayList<String>();
 		List<String> tempList = new ArrayList<String>();
-		tempList.addAll(getMessages(MAX_BUFFER_SIZE));
+		tempList.addAll(getMessages(MAX_FETCH_SIZE));
 		int count = 0;
 		synchronized (tempList) 
 		{
@@ -139,6 +150,10 @@ public class ChannelBuffer {
 	
 	public int getMaxBufferSize() {
 		return MAX_BUFFER_SIZE;
+	}
+	
+	public int getMaxFetchSize() {
+		return MAX_FETCH_SIZE;
 	}
 	
 	public int getBufferSize() {

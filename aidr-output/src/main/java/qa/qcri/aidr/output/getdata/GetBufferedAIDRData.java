@@ -207,6 +207,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				// Nothing to send = so send the last sent data again!
 				jsonDataList.delete(0, jsonDataList.length());		// clear 
 				jsonDataList.append(lastSentLatestTweet);
+				System.out.println("[getLatestBufferedAIDRData] Warning, sending cached last sent data!");
 			} else {
 				if (lastSentLatestTweet != null) {
 					synchronized(this) {
