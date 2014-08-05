@@ -27,7 +27,7 @@ public class RedisTweetInjector {
 
 	private InjectorConfig config;
 	private int sleepDuration = 0;		// default value - no sleep
-	
+
 	private static JedisConnectionObject jedisConn = null;
 
 	public RedisTweetInjector() {
@@ -53,7 +53,7 @@ public class RedisTweetInjector {
 		config = new InjectorConfig();
 		jedisConn = setupJedisConn(host, port);
 	}
-	
+
 	public synchronized JedisConnectionObject setupJedisConn(String host, int port) {
 		if (null == jedisConn) jedisConn = new JedisConnectionObject(host, port);
 		return jedisConn;
@@ -105,8 +105,8 @@ public class RedisTweetInjector {
 		List<String> fileNames = getClassifiedFileVolumes(collectionCode);
 
 		long startTime = System.currentTimeMillis();
-		long currentTime = 0;
-		do {
+		long currentTime = startTime;
+		while ((currentTime - startTime) < duration)  {
 			for (String file : fileNames) {
 				String fileLocation = config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
 				//System.out.println(Thread.currentThread().getName() + ":: " + collectionCode + ": Reading file " + fileLocation);
@@ -127,7 +127,7 @@ public class RedisTweetInjector {
 				}
 			}
 			currentTime = System.currentTimeMillis();
-		} while ((currentTime - startTime) < duration);
+		} ;
 		System.out.println(Thread.currentThread().getName() + ": Done publishing Tweets");
 		return count;
 	}
@@ -144,6 +144,21 @@ public class RedisTweetInjector {
 				+ "mins = " + count);
 	}
 
+	public void injectSingleTweet(final Jedis jedis, final String collectionCode) {
+		long duration = config.duration * 60 * 1000;		// in milliseconds
+		if (config.tweets_per_sec > 0) {
+			sleepDuration = 1000 / config.tweets_per_sec;			
+		}
+		System.out.println(Thread.currentThread().getName() + ": sleep interval between successive publish, determined from configuration: " + sleepDuration + "ms");
+		long startTime = System.currentTimeMillis();
+		long currentTime = startTime;
+		while ((currentTime - startTime) < duration)  {
+			publishTweet(jedis, collectionCode, config.singleTweet);
+			currentTime = System.currentTimeMillis();
+		}
+	}
+
+
 	public static void main(String args[]) throws Exception {
 		InjectorConfig config = new InjectorConfig();
 		final int threadsToSpawn = config.threads;
@@ -155,7 +170,7 @@ public class RedisTweetInjector {
 
 					RedisTweetInjector injector = new RedisTweetInjector();
 					Jedis jedis = injector.setupRedisConnection();
-					
+
 					try {
 						if (jedis != null) {
 							InjectorConfig config = new InjectorConfig();
@@ -165,7 +180,11 @@ public class RedisTweetInjector {
 
 							System.out.println("Thread " + getName() + ":: will use collection: " + collectionCode);
 							long startTime = System.currentTimeMillis();
-							injector.injectTweets(jedis, collectionCode);
+							if (config.useSingleTweet) {
+								injector.injectSingleTweet(jedis, collectionCode);
+							} else {
+								injector.injectTweets(jedis, collectionCode);
+							}
 							long elapsed = System.currentTimeMillis() - startTime;
 							System.out.println("Done thread " + getName() + ", execution time = " + elapsed + "ms");
 							jedisConn.returnJedis(jedis);
