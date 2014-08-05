@@ -128,7 +128,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
                 int length = rawTweetJSON.length();
                 if (rawTweetJSON.charAt(length - 1) == '}') {
                     rawTweetJSON.replace(length - 1, length, aidrJson);
-                    publisherJedis.publish(channelName, status.getText());
+                    publisherJedis.publish(channelName, rawTweetJSON.toString());
                     counter++;
                     if (counter >= Config.FETCHER_REDIS_COUNTER_UPDATE_THRESHOLD) {
                         cache.incrCounter(collectionCode, counter);
