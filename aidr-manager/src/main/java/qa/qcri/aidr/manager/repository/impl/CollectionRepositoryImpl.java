@@ -24,7 +24,7 @@ import java.util.List;
 
 @Repository("collectionRepository")
 public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollection, Serializable> implements CollectionRepository{
-    private Logger logger = Logger.getLogger(getClass());
+	private Logger logger = Logger.getLogger(getClass());
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -35,139 +35,139 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 		return (List<AidrCollection>) criteria.list();
 	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<AidrCollection> getPaginatedDataForPublic(final Integer start, final Integer limit, final Enum statusValue) {
-//        Workaround as criteria query gets result for different managers and in the end we get less then limit records.
-        List<Integer> collectionIds = (List<Integer>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
-            @Override
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-
-              //  logger.info("start: " + start);
-              //  logger.info("limit: " + limit);
-               // logger.info("statusValue: " + statusValue.ordinal());
-                String sql = " SELECT DISTINCT c.id FROM AIDR_COLLECTION c" +
-                        " WHERE (c.publiclyListed = 1 and c.status = :statusValue) " +
-                        " order by c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
-
-
-                SQLQuery sqlQuery = session.createSQLQuery(sql);
-                sqlQuery.setParameter("start", start);
-                sqlQuery.setParameter("limit", limit);
-                sqlQuery.setParameter("statusValue", statusValue.ordinal());
-                List<Integer> ids = (List<Integer>) sqlQuery.list();
-
-                //logger.info("ids count: " + ids.size());
-                return ids != null ? ids : Collections.emptyList();
-            }
-        });
-
-        List<AidrCollection> a = new ArrayList<AidrCollection>();
-
-        //logger.info("collectionIds: " + collectionIds.size());
-        for(int i =0; i < collectionIds.size(); i++){
-            AidrCollection collection =	this.findById(collectionIds.get(i));
-            a.add(collection) ;
-        }
-        return a;
-
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Integer getPublicCollectionsCount(final Enum statusValue) {
-        return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
-            @Override
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-
-                String sql = " SELECT count(distinct c.id) FROM AIDR_COLLECTION c" +
-                        " WHERE (c.publiclyListed = 1 and c.status = :statusValue) " ;
-
-                SQLQuery sqlQuery = session.createSQLQuery(sql);
-                sqlQuery.setParameter("statusValue", statusValue.ordinal());
-                BigInteger total = (BigInteger) sqlQuery.uniqueResult();
-                return total != null ? total.intValue() : 0;
-            }
-        });
-    }
-
-
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	@Override
-	public List<AidrCollection> getPaginatedData(final Integer start, final Integer limit, final UserEntity user, final boolean onlyTrashed) {
-        final Integer userId = user.getId();
-        final String conditionTrashed;
-        if (onlyTrashed) {
-            conditionTrashed = "=";
-        } else {
-            conditionTrashed = "!=";
-        }
+	public List<AidrCollection> getPaginatedDataForPublic(final Integer start, final Integer limit, final Enum statusValue) {
+		//        Workaround as criteria query gets result for different managers and in the end we get less then limit records.
+		List<Integer> collectionIds = (List<Integer>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
-//        Workaround as criteria query gets result for different managers and in the end we get less then limit records.
-        List<Integer> collectionIds = (List<Integer>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
-            @Override
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                String sql = " SELECT DISTINCT c.id FROM AIDR_COLLECTION c " +
-                        " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
-                        " ON c.id = c_m.id_collection " +
-                        " WHERE ((c.user_id =:userId OR c_m.id_manager = :userId) AND c.status " + conditionTrashed + " :statusValue) " +
-                        " order by c.startDate IS NULL DESC, c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
+				//  logger.info("start: " + start);
+				//  logger.info("limit: " + limit);
+				// logger.info("statusValue: " + statusValue.ordinal());
+				String sql = " SELECT DISTINCT c.id FROM AIDR_COLLECTION c" +
+						" WHERE (c.publiclyListed = 1 and c.status = :statusValue) " +
+						" order by c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
 
-                SQLQuery sqlQuery = session.createSQLQuery(sql);
-                sqlQuery.setParameter("userId", userId);
-                sqlQuery.setParameter("start", start);
-                sqlQuery.setParameter("limit", limit);
-                sqlQuery.setParameter("statusValue", CollectionStatus.TRASHED.ordinal());
-                List<Integer> ids = (List<Integer>) sqlQuery.list();
 
-                return ids != null ? ids : Collections.emptyList();
-            }
-        });
+				SQLQuery sqlQuery = session.createSQLQuery(sql);
+				sqlQuery.setParameter("start", start);
+				sqlQuery.setParameter("limit", limit);
+				sqlQuery.setParameter("statusValue", statusValue.ordinal());
+				List<Integer> ids = (List<Integer>) sqlQuery.list();
 
-        List<AidrCollection> result = new ArrayList<AidrCollection>();
-        for(Integer id : collectionIds){
-            AidrCollection collection =	this.findById(id);
-            result.add(collection) ;
-        }
-        return result;
+				//logger.info("ids count: " + ids.size());
+				return ids != null ? ids : Collections.emptyList();
+			}
+		});
+
+		List<AidrCollection> a = new ArrayList<AidrCollection>();
+
+		//logger.info("collectionIds: " + collectionIds.size());
+		for(int i =0; i < collectionIds.size(); i++){
+			AidrCollection collection =	this.findById(collectionIds.get(i));
+			a.add(collection) ;
+		}
+		return a;
+
 	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Integer getCollectionsCount(final UserEntity user, final boolean onlyTrashed) {
-        return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
-            @Override
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                Integer userId = user.getId();
-                final String conditionTrashed;
-                if (onlyTrashed) {
-                    conditionTrashed = "=";
-                } else {
-                    conditionTrashed = "!=";
-                }
+	@SuppressWarnings("unchecked")
+	@Override
+	public Integer getPublicCollectionsCount(final Enum statusValue) {
+		return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
-                String sql = " select count(distinct c.id) " +
-                        " FROM AIDR_COLLECTION c " +
-                        " LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
-                        " ON c.id = c_m.id_collection " +
-                        " WHERE (c.status " + conditionTrashed + " :statusValue and (c.user_id = :userId or c_m.id_manager = :userId)) ";
+				String sql = " SELECT count(distinct c.id) FROM AIDR_COLLECTION c" +
+						" WHERE (c.publiclyListed = 1 and c.status = :statusValue) " ;
 
-                SQLQuery sqlQuery = session.createSQLQuery(sql);
-                sqlQuery.setParameter("userId", userId);
-                sqlQuery.setParameter("statusValue", CollectionStatus.TRASHED.ordinal());
-                BigInteger total = (BigInteger) sqlQuery.uniqueResult();
-                return total != null ? total.intValue() : 0;
-            }
-        });
-    }
+				SQLQuery sqlQuery = session.createSQLQuery(sql);
+				sqlQuery.setParameter("statusValue", statusValue.ordinal());
+				BigInteger total = (BigInteger) sqlQuery.uniqueResult();
+				return total != null ? total.intValue() : 0;
+			}
+		});
+	}
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<AidrCollection> getPaginatedData(final Integer start, final Integer limit, final UserEntity user, final boolean onlyTrashed) {
+		final Integer userId = user.getId();
+		final String conditionTrashed;
+		if (onlyTrashed) {
+			conditionTrashed = "=";
+		} else {
+			conditionTrashed = "!=";
+		}
+
+		//        Workaround as criteria query gets result for different managers and in the end we get less then limit records.
+		List<Integer> collectionIds = (List<Integer>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				String sql = " SELECT DISTINCT c.id FROM AIDR_COLLECTION c " +
+						" LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
+						" ON c.id = c_m.id_collection " +
+						" WHERE ((c.user_id =:userId OR c_m.id_manager = :userId) AND c.status " + conditionTrashed + " :statusValue) " +
+						" order by c.startDate IS NULL DESC, c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
+
+				SQLQuery sqlQuery = session.createSQLQuery(sql);
+				sqlQuery.setParameter("userId", userId);
+				sqlQuery.setParameter("start", start);
+				sqlQuery.setParameter("limit", limit);
+				sqlQuery.setParameter("statusValue", CollectionStatus.TRASHED.ordinal());
+				List<Integer> ids = (List<Integer>) sqlQuery.list();
+
+				return ids != null ? ids : Collections.emptyList();
+			}
+		});
+
+		List<AidrCollection> result = new ArrayList<AidrCollection>();
+		for(Integer id : collectionIds){
+			AidrCollection collection =	this.findById(id);
+			result.add(collection) ;
+		}
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Integer getCollectionsCount(final UserEntity user, final boolean onlyTrashed) {
+		return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				Integer userId = user.getId();
+				final String conditionTrashed;
+				if (onlyTrashed) {
+					conditionTrashed = "=";
+				} else {
+					conditionTrashed = "!=";
+				}
+
+				String sql = " select count(distinct c.id) " +
+						" FROM AIDR_COLLECTION c " +
+						" LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
+						" ON c.id = c_m.id_collection " +
+						" WHERE (c.status " + conditionTrashed + " :statusValue and (c.user_id = :userId or c_m.id_manager = :userId)) ";
+
+				SQLQuery sqlQuery = session.createSQLQuery(sql);
+				sqlQuery.setParameter("userId", userId);
+				sqlQuery.setParameter("statusValue", CollectionStatus.TRASHED.ordinal());
+				BigInteger total = (BigInteger) sqlQuery.uniqueResult();
+				return total != null ? total.intValue() : 0;
+			}
+		});
+	}
 
 	@Override
 	public Boolean exist(String code) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
 		criteria.add(Restrictions.eq("code", code));
 		criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
-	    AidrCollection collection = (AidrCollection) criteria.uniqueResult();
-	    return collection != null;
+		AidrCollection collection = (AidrCollection) criteria.uniqueResult();
+		return collection != null;
 	}
 
 	@Override
@@ -175,243 +175,246 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
 		criteria.add(Restrictions.eq("name", name));
 		criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
-	    AidrCollection collection = (AidrCollection) criteria.uniqueResult();
-	    return collection != null;
+		AidrCollection collection = (AidrCollection) criteria.uniqueResult();
+		return collection != null;
 	}
 
 	@Override
 	public AidrCollection getRunningCollectionStatusByUser(Integer userId) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
-                criteria.add(Restrictions.eq("user.id", userId));
+		criteria.add(Restrictions.eq("user.id", userId));
 		criteria.add(Restrictions.eq("status", CollectionStatus.RUNNING));
 		criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
 		return (AidrCollection) criteria.uniqueResult();
 	}
 
-    @Override
-    public List<AidrCollection> getAllCollectionByUser(Integer userId) {
-        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
-        criteria.add(Restrictions.eq("user.id", userId));
+	@Override
+	public List<AidrCollection> getAllCollectionByUser(Integer userId) {
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+		criteria.add(Restrictions.eq("user.id", userId));
 
-        return (List<AidrCollection>) criteria.list();
-    }
+		return (List<AidrCollection>) criteria.list();
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<AidrCollection> getRunningCollections() {
-        return getRunningCollections(null, null, null, null, null);
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<AidrCollection> getRunningCollections() {
+		return getRunningCollections(null, null, null, null, null);
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<AidrCollection> getRunningCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) {
-        Criteria criteriaIds = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
-        criteriaIds.setProjection(Projections.projectionList()
-                .add(Projections.property("id"), "id"));
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<AidrCollection> getRunningCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) {
+		Criteria criteriaIds = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+		criteriaIds.setProjection(Projections.projectionList()
+				.add(Projections.property("id"), "id"));
 
-        LogicalExpression or = Restrictions.or(
-                Restrictions.eq("status", CollectionStatus.RUNNING),
-                Restrictions.eq("status", CollectionStatus.RUNNING_WARNING)
-        );
+		LogicalExpression or = Restrictions.or(
+				Restrictions.eq("status", CollectionStatus.RUNNING),
+				Restrictions.eq("status", CollectionStatus.RUNNING_WARNING)
+				);
 
-        LogicalExpression orAll = Restrictions.or(
-                or,
-                Restrictions.eq("status", CollectionStatus.INITIALIZING)
-        );
-        LogicalExpression andAll = Restrictions.and(
-        		orAll,
-        		Restrictions.ne("status", CollectionStatus.TRASHED)
-        );
-        
-        criteriaIds.add(andAll);
-        addCollectionSearchCriteria(terms, criteriaIds);
-        searchCollectionsAddOrder(sortColumn, sortDirection, criteriaIds);
+		LogicalExpression orAll = Restrictions.or(
+				or,
+				Restrictions.eq("status", CollectionStatus.INITIALIZING)
+				);
+		LogicalExpression andAll = Restrictions.and(
+				orAll,
+				Restrictions.ne("status", CollectionStatus.TRASHED)
+				);
 
-        if (start != null) {
-            criteriaIds.setFirstResult(start);
-        }
-        if (limit != null) {
-            criteriaIds.setMaxResults(limit);
-        }
+		criteriaIds.add(andAll);
+		addCollectionSearchCriteria(terms, criteriaIds);
+		searchCollectionsAddOrder(sortColumn, sortDirection, criteriaIds);
 
-        List<Integer> ids = (List<Integer>) criteriaIds.list();
+		if (start != null) {
+			criteriaIds.setFirstResult(start);
+		}
+		if (limit != null) {
+			criteriaIds.setMaxResults(limit);
+		}
 
-        if (ids.size() == 0){
-            return Collections.emptyList();
-        }
+		List<Integer> ids = (List<Integer>) criteriaIds.list();
 
-        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
-        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+		if (ids.size() == 0){
+			return Collections.emptyList();
+		}
 
-        criteria.add(Restrictions.in("id", ids));
-        searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+		criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 
-        return (List<AidrCollection>) criteria.list();
-    }
+		criteria.add(Restrictions.in("id", ids));
+		searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Long getRunningCollectionsCount(String terms) {
-        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
-        criteria.setProjection(Projections.projectionList()
-                .add(Projections.property("id"), "id"));
+		return (List<AidrCollection>) criteria.list();
+	}
 
-        LogicalExpression or = Restrictions.or(
-                Restrictions.eq("status", CollectionStatus.RUNNING),
-                Restrictions.eq("status", CollectionStatus.RUNNING_WARNING)
-        );
+	@SuppressWarnings("unchecked")
+	@Override
+	public Long getRunningCollectionsCount(String terms) {
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+		criteria.setProjection(Projections.projectionList()
+				.add(Projections.property("id"), "id"));
 
-        LogicalExpression orAll = Restrictions.or(
-                or,
-                Restrictions.eq("status", CollectionStatus.INITIALIZING)
-        );
-        
-        LogicalExpression andAll = Restrictions.and(
-        		orAll,
-        		Restrictions.ne("status", CollectionStatus.TRASHED)
-        );
-        
-        criteria.add(andAll);
-        addCollectionSearchCriteria(terms, criteria);
+		LogicalExpression or = Restrictions.or(
+				Restrictions.eq("status", CollectionStatus.RUNNING),
+				Restrictions.eq("status", CollectionStatus.RUNNING_WARNING)
+				);
 
-        ScrollableResults scroll = criteria.scroll();
-        int i = scroll.last() ? scroll.getRowNumber() + 1 : 0;
-        return Long.valueOf(i);
-    }
+		LogicalExpression orAll = Restrictions.or(
+				or,
+				Restrictions.eq("status", CollectionStatus.INITIALIZING)
+				);
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<AidrCollection> getStoppedCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) {
-        Criteria criteriaIds = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
-        criteriaIds.setProjection(Projections.projectionList()
-                .add(Projections.property("id"), "id"));
+		LogicalExpression andAll = Restrictions.and(
+				orAll,
+				Restrictions.ne("status", CollectionStatus.TRASHED)
+				);
 
-        criteriaIds.add(Restrictions.ne("status", CollectionStatus.RUNNING));
-        criteriaIds.add(Restrictions.ne("status", CollectionStatus.RUNNING_WARNING));
-        criteriaIds.add(Restrictions.ne("status", CollectionStatus.INITIALIZING));
-        criteriaIds.add(Restrictions.ne("status", CollectionStatus.TRASHED));
-        addCollectionSearchCriteria(terms, criteriaIds);
-        searchCollectionsAddOrder(sortColumn, sortDirection, criteriaIds);
+		criteria.add(andAll);
+		addCollectionSearchCriteria(terms, criteria);
 
-        if (start != null) {
-            criteriaIds.setFirstResult(start);
-        }
-        if (limit != null) {
-            criteriaIds.setMaxResults(limit);
-        }
+		ScrollableResults scroll = criteria.scroll();
+		int i = scroll.last() ? scroll.getRowNumber() + 1 : 0;
+		return Long.valueOf(i);
+	}
 
-        List<Integer> ids = (List<Integer>) criteriaIds.list();
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<AidrCollection> getStoppedCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) {
+		Criteria criteriaIds = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+		criteriaIds.setProjection(Projections.projectionList()
+				.add(Projections.property("id"), "id"));
 
-        if (ids.size() == 0){
-            return Collections.emptyList();
-        }
+		criteriaIds.add(Restrictions.ne("status", CollectionStatus.RUNNING));
+		criteriaIds.add(Restrictions.ne("status", CollectionStatus.RUNNING_WARNING));
+		criteriaIds.add(Restrictions.ne("status", CollectionStatus.INITIALIZING));
+		criteriaIds.add(Restrictions.ne("status", CollectionStatus.TRASHED));
+		addCollectionSearchCriteria(terms, criteriaIds);
+		searchCollectionsAddOrder(sortColumn, sortDirection, criteriaIds);
 
-        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
-        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+		if (start != null) {
+			criteriaIds.setFirstResult(start);
+		}
+		if (limit != null) {
+			criteriaIds.setMaxResults(limit);
+		}
 
-        criteria.add(Restrictions.in("id", ids));
-        searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
+		List<Integer> ids = (List<Integer>) criteriaIds.list();
 
-        return (List<AidrCollection>) criteria.list();
-    }
+		if (ids.size() == 0){
+			return Collections.emptyList();
+		}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Long getStoppedCollectionsCount(String terms) {
-        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
-        criteria.setProjection(Projections.projectionList()
-                .add(Projections.property("id"), "id"));
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+		criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 
-        criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING));
-        criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING_WARNING));
-        criteria.add(Restrictions.ne("status", CollectionStatus.INITIALIZING));
-        criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
-        addCollectionSearchCriteria(terms, criteria);
+		criteria.add(Restrictions.in("id", ids));
+		searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
 
-        ScrollableResults scroll = criteria.scroll();
-        int i = scroll.last() ? scroll.getRowNumber() + 1 : 0;
-        return Long.valueOf(i);
-    }
+		return (List<AidrCollection>) criteria.list();
+	}
 
-    private void addCollectionSearchCriteria(String terms, Criteria criteria) {
-        if (StringUtils.hasText(terms)){
-            String wildcard ='%'+ URLDecoder.decode(terms.trim())+'%';
+	@SuppressWarnings("unchecked")
+	@Override
+	public Long getStoppedCollectionsCount(String terms) {
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+		criteria.setProjection(Projections.projectionList()
+				.add(Projections.property("id"), "id"));
 
-            LogicalExpression orNameCode = Restrictions.or(
-                    Restrictions.ilike("name", wildcard),
-                    Restrictions.ilike("code", wildcard)
-            );
+		criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING));
+		criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING_WARNING));
+		criteria.add(Restrictions.ne("status", CollectionStatus.INITIALIZING));
+		criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
+		addCollectionSearchCriteria(terms, criteria);
 
-            LogicalExpression orAll = Restrictions.or(
-                    orNameCode,
-                    Restrictions.ilike("track", wildcard)
-            );
+		ScrollableResults scroll = criteria.scroll();
+		int i = scroll.last() ? scroll.getRowNumber() + 1 : 0;
+		return Long.valueOf(i);
+	}
 
-            criteria.add(orAll);
-        }
-    }
+	private void addCollectionSearchCriteria(String terms, Criteria criteria) {
+		if (StringUtils.hasText(terms)){
+			String wildcard ='%'+ URLDecoder.decode(terms.trim())+'%';
 
-    private void searchCollectionsAddOrder(String sortColumn, String sortDirection, Criteria criteria) {
-        if (StringUtils.hasText(sortColumn)) {
-            if ("user".equals(sortColumn)){
-                sortColumn = "user.userName";
-                criteria.createAlias("user", "user");
-            }
-            Order order;
-            if ("ASC".equals(sortDirection)){
-                order = Order.asc(sortColumn);
-            } else {
-                order = Order.desc(sortColumn);
-            }
-            criteria.addOrder(order);
-        }
-    }
+			LogicalExpression orNameCode = Restrictions.or(
+					Restrictions.ilike("name", wildcard),
+					Restrictions.ilike("code", wildcard)
+					);
+
+			LogicalExpression orAll = Restrictions.or(
+					orNameCode,
+					Restrictions.ilike("track", wildcard)
+					);
+
+			criteria.add(orAll);
+		}
+	}
+
+	private void searchCollectionsAddOrder(String sortColumn, String sortDirection, Criteria criteria) {
+		if (StringUtils.hasText(sortColumn)) {
+			if ("user".equals(sortColumn)){
+				sortColumn = "user.userName";
+				criteria.createAlias("user", "user");
+			}
+			Order order;
+			if ("ASC".equals(sortDirection)){
+				order = Order.asc(sortColumn);
+			} else {
+				order = Order.desc(sortColumn);
+			}
+			criteria.addOrder(order);
+		}
+	}
 
 	@Override
 	public AidrCollection getInitializingCollectionStatusByUser(Integer userId) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
-                criteria.add(Restrictions.eq("user.id", userId));
+		criteria.add(Restrictions.eq("user.id", userId));
 		criteria.add(Restrictions.eq("status", CollectionStatus.INITIALIZING));
 		return (AidrCollection) criteria.uniqueResult();
 	}
 
 	@Override
 	public AidrCollection start(Integer collectionId) {
-		  AidrCollection collection =	this.findById(collectionId);
-		  Calendar now = Calendar.getInstance();
-		  collection.setStartDate(now.getTime());
-//		  collection.setEndDate(null);
-		  collection.setStatus(CollectionStatus.RUNNING);
-		  this.update(collection);
-		  return collection;
+		AidrCollection collection =	this.findById(collectionId);
+		Calendar now = Calendar.getInstance();
+		collection.setStartDate(now.getTime());
+		//		  collection.setEndDate(null);
+		collection.setStatus(CollectionStatus.RUNNING);
+		this.update(collection);
+		return collection;
 	}
 
 	@Override
 	public AidrCollection stop(Integer collectionId) {
-		  AidrCollection collection =	this.findById(collectionId);
-		  Calendar now = Calendar.getInstance();
-		  collection.setEndDate(now.getTime());
-		  collection.setStatus(CollectionStatus.STOPPED);
-		  this.update(collection);
-		  return collection;
+		AidrCollection collection =	this.findById(collectionId);
+		Calendar now = Calendar.getInstance();
+		collection.setEndDate(now.getTime());
+		collection.setStatus(CollectionStatus.STOPPED);
+		this.update(collection);
+		return collection;
 	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public AidrCollection findByCode(String code) {
-        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
-        criteria.add(Restrictions.eq("code", code));
-        return (AidrCollection) criteria.uniqueResult();
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public AidrCollection findByCode(String code) {
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+		criteria.add(Restrictions.eq("code", code));
+		try {
+			return (AidrCollection) criteria.uniqueResult();
+		} catch (HibernateException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	@Override
 	public AidrCollection trashCollectionById(Integer collectionId) {
 		AidrCollection collection = stop(collectionId);
 		collection.setStatus(CollectionStatus.TRASHED);
 		this.update(collection);
-		
-		// TODO: add code for modifying the aidr_predict tables 
-		// @koushik: make REST call to aidr-tagger-api?
+
 		return collection;
 	}
 

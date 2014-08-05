@@ -39,7 +39,7 @@ public class RedisTweetInjector {
 			e.printStackTrace();
 		}
 		this.port = config.port;
-		jedisConn = new JedisConnectionObject(this.host.toString(), this.port);
+		jedisConn = setupJedisConn(this.host.toString(), this.port);
 	}
 
 	public RedisTweetInjector(String host, int port) {
@@ -51,24 +51,20 @@ public class RedisTweetInjector {
 		}
 		this.port = port;
 		config = new InjectorConfig();
-		jedisConn = new JedisConnectionObject(this.host.toString(), this.port);
+		jedisConn = setupJedisConn(host, port);
 	}
-
+	
+	public synchronized JedisConnectionObject setupJedisConn(String host, int port) {
+		if (null == jedisConn) jedisConn = new JedisConnectionObject(host, port);
+		return jedisConn;
+	}
 
 	/** 
 	 * 
 	 * @return non-null Jedis on successful connection to Redis, null on failure
 	 */
-	public Jedis setupRedisConnection() {
-		Jedis jedis = null;
-		try {
-			jedis = new Jedis(host.toString(), port, 30000);
-			jedis.connect();
-		} catch (JedisConnectionException e) {
-			System.err.println("Failed to connect to Redis");
-			e.printStackTrace();
-			return null;
-		}
+	public synchronized Jedis setupRedisConnection() {
+		Jedis jedis = jedisConn.getJedisResource();
 		return jedis;
 	}
 
@@ -158,8 +154,8 @@ public class RedisTweetInjector {
 					System.out.println("Thread: " + getName() + " will be spawned...");
 
 					RedisTweetInjector injector = new RedisTweetInjector();
-					//Jedis jedis = injector.setupRedisConnection();
-					Jedis jedis = jedisConn.getJedisResource();
+					Jedis jedis = injector.setupRedisConnection();
+					
 					try {
 						if (jedis != null) {
 							InjectorConfig config = new InjectorConfig();

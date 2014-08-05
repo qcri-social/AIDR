@@ -231,6 +231,56 @@ public class PublicController extends BaseController{
         }
         return getUIWrapper(result,true);
     }
+    
+    
+	@RequestMapping(value = "/getPublicFlagStatus", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Boolean> getPublicFlagStatus() {
+		List<AidrCollection> resultList;
+		try {
+			long startTime = System.currentTimeMillis();
+			resultList = collectionService.getRunningCollections();
+			System.out.println("Time to retrieve map from DB: " + (System.currentTimeMillis() - startTime));
+			
+			if (resultList != null) {
+				Map<String, Boolean> runningCollections = new HashMap<String, Boolean>(resultList.size());
+				for (AidrCollection c: resultList) {
+					runningCollections.put(c.getCode(), c.getPubliclyListed());
+				}
+				logger.debug("Fetched map to send: " + runningCollections);
+				return runningCollections;
+			}
+		} catch (Exception e) {
+			logger.error("Unable to fetch list of running collections from DB");
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+	@RequestMapping(value = "/getChannelPublicFlagStatus", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Boolean> getCollectionPublicFlagStatus(@QueryParam("channelCode") String channelCode) {
+		AidrCollection collection = null;
+		try {
+			long startTime = System.currentTimeMillis();
+			collection = collectionService.findByCode(channelCode);
+			System.out.println("Time to retrieve publiclyStatus from DB: " + (System.currentTimeMillis() - startTime));
+			
+			if (collection != null) {
+				Map<String, Boolean> result = new HashMap<String, Boolean>();
+				result.put(channelCode, collection.getPubliclyListed());
+				logger.debug("Fetched map to send: " + result);
+				return result;
+			}
+		} catch (Exception e) {
+			logger.error("Unable to fetch list of running collections from DB");
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
 
     private AidrCollectionTotalDTO convertAidrCollectionToDTO(AidrCollection collection, boolean hasTaggerOutput){
         if (collection == null){

@@ -11,6 +11,8 @@
 package qa.qcri.aidr.output.getdata;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +22,7 @@ import org.apache.commons.collections.Buffer;
 import org.apache.commons.collections.BufferUtils;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 
+import org.apache.commons.lang.ArrayUtils;
 //import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,44 +92,12 @@ public class ChannelBuffer {
 	 * @return Returns a list of messages sorted in ascending order of timestamp
 	 */
 	public List<String> getMessages(int msgCount) {
-		List<String> msgList = new ArrayList<String>(); 
-		synchronized(messageBuffer) 
-		{
-			Iterator<String>itr = messageBuffer.iterator();
-			int count = 0;
-			while (itr.hasNext() && count < msgCount) {
-				msgList.add(itr.next());
-				++count;
-			}
-			//ogger.info("channel = " + channelName + ", count = " + msgList.size());
-		}
-		return msgList;
+		String[] msgArray = (String[]) messageBuffer.toArray();
+		String[] temp = new String[msgCount];
+		System.arraycopy(msgArray, (msgArray.length-msgCount), temp, 0, msgCount);
+		return Arrays.asList(temp);
 	}
 	
-	@SuppressWarnings("unchecked")
-	/**
-	 * @param msgCount: number of messages to return
-	 * @return Returns a list of messages sorted in descending order of timestamp
-	 */
-	public List<String> getLIFOMessages(int msgCount) {
-		List<String> msgList = new ArrayList<String>();
-		List<String> tempList = new ArrayList<String>();
-		tempList.addAll(getMessages(MAX_FETCH_SIZE));
-		int count = 0;
-		synchronized (tempList) 
-		{
-			ListIterator<String>itr = tempList.listIterator(tempList.size());
-			//logger.info("channel = " + channelName + ", size = " + tempList.size());
-			while (itr.hasPrevious() && count < msgCount) {
-				msgList.add(itr.previous());
-				++count;
-				//logger.info("channel = " + channelName + ", count = " + count);
-			}
-		}
-		tempList.clear();
-		tempList = null;
-		return msgList;
-	}
 
 	public void deleteBuffer() {
 		channelName = null;

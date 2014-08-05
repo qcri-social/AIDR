@@ -61,17 +61,17 @@ public class JedisConnectionObject {
 				poolConfig.timeBetweenEvictionRunsMillis = 60000;
 				poolConfig.maxWait = 90000;
 				poolConfig.whenExhaustedAction = org.apache.commons.pool.impl.GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW;
-				logger.debug("New Jedis poolConfig: " + poolConfig);
+				logger.info("New Jedis poolConfig: " + poolConfig);
 			} else {
-				logger.debug("Reusing existing Jedis poolConfig: " + poolConfig);
+				logger.info("Reusing existing Jedis poolConfig: " + poolConfig);
 			}
 			if (null == pool) {
 				try {
 					pool = new JedisPool(poolConfig, redisHost, redisPort, 90000);
 					poolSetup = true;
-					logger.debug("New Jedis pool: " + pool);
+					logger.info("New Jedis pool: " + pool);
 				} catch (Exception e) {
-					logger.debug("Fatal error! Could not initialize Jedis Pool!");
+					logger.error("Fatal error! Could not initialize Jedis Pool!");
 					logger.error(elog.toStringException(e));
 					poolConfig = null;
 					pool = null;
@@ -79,7 +79,7 @@ public class JedisConnectionObject {
 				}
 			} else {
 				poolSetup = true;
-				logger.debug("Reusing existing Jedis pool: " + pool);
+				logger.info("Reusing existing Jedis pool: " + pool);
 			}
 			//allotedJedis.notifyAll();
 		}

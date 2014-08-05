@@ -34,17 +34,18 @@ public class JsonDataFormatter {
 			jsonDataList.append(callbackName).append("([");
 		else 
 			jsonDataList.append("[");
-
-		ListIterator<String> itr = bufferedMessages.listIterator(bufferedMessages.size());  // Must be in synchronized block
-		while (itr.hasPrevious() && count < messageCount) {
-			final String msg = itr.previous();
-			final TaggerJsonOutputAdapter jsonOutput = new TaggerJsonOutputAdapter();
-			final String jsonData = (msg != null) ? jsonOutput.buildJsonString(msg, rejectNullFlag) : null;
-			//logger.info("json string: " + jsonData);
-			if (jsonData != null) {
-				jsonDataList.append(jsonData);
-				++count;
-				if ((count < messageCount) && itr.hasPrevious()) jsonDataList.append(",");		// otherwise, this was the last message to append
+		if (bufferedMessages != null) {
+			ListIterator<String> itr = bufferedMessages.listIterator(bufferedMessages.size());  // Must be in synchronized block
+			while (itr.hasPrevious() && count < messageCount) {
+				final String msg = itr.previous();
+				final TaggerJsonOutputAdapter jsonOutput = new TaggerJsonOutputAdapter();
+				final String jsonData = (msg != null) ? jsonOutput.buildJsonString(msg, rejectNullFlag) : null;
+				//logger.info("json string: " + jsonData);
+				if (jsonData != null) {
+					jsonDataList.append(jsonData);
+					++count;
+					if ((count < messageCount) && itr.hasPrevious()) jsonDataList.append(",");		// otherwise, this was the last message to append
+				}
 			}
 		}
 		if (count == 0) {
@@ -77,23 +78,25 @@ public class JsonDataFormatter {
 			else 
 				jsonDataList.append("[");
 
-			ListIterator<String> itr = bufferedMessages.listIterator(bufferedMessages.size());  
-			while (itr.hasPrevious() && count < messageCount) {
-				final String msg = itr.previous();
-				final TaggerJsonOutputAdapter jsonOutput = new TaggerJsonOutputAdapter();
-				final String jsonData = (msg != null) ? jsonOutput.buildJsonString(msg, rejectNullFlag) : null;
+			if (bufferedMessages != null) {
+				ListIterator<String> itr = bufferedMessages.listIterator(bufferedMessages.size());  
+				while (itr.hasPrevious() && count < messageCount) {
+					final String msg = itr.previous();
+					final TaggerJsonOutputAdapter jsonOutput = new TaggerJsonOutputAdapter();
+					final String jsonData = (msg != null) ? jsonOutput.buildJsonString(msg, rejectNullFlag) : null;
 
-				//logger.info("channel: " + jsonOutput.getCrisisCode() + ", freq = " + channelSelector.getValue(jsonOutput.getCrisisCode()) + ", rate limited = " + channelSelector.isRateLimited(jsonOutput.getCrisisCode()));
-				//logger.info(jsonOutput.getCrisisCode() + ": json string = " + jsonData);
+					//logger.info("channel: " + jsonOutput.getCrisisCode() + ", freq = " + channelSelector.getValue(jsonOutput.getCrisisCode()) + ", rate limited = " + channelSelector.isRateLimited(jsonOutput.getCrisisCode()));
+					//logger.info(jsonOutput.getCrisisCode() + ": json string = " + jsonData);
 
-				existsFlag = (jsonData != null) ? true : false;
-				if (jsonData != null && !channelSelector.isRateLimited(jsonOutput.getCrisisCode())) {
-					jsonDataList.append(jsonData);
-					channelSelector.increment(jsonOutput.getCrisisCode());
+					existsFlag = (jsonData != null) ? true : false;
+					if (jsonData != null && !channelSelector.isRateLimited(jsonOutput.getCrisisCode())) {
+						jsonDataList.append(jsonData);
+						channelSelector.increment(jsonOutput.getCrisisCode());
 
-					//logger.info("Added tweet to send list, freq = " + channelSelector.getValue(jsonOutput.getCrisisCode()));
-					++count;
-					if (count < messageCount && itr.hasPrevious()) jsonDataList.append(",");		// otherwise, this was the last message to append
+						//logger.info("Added tweet to send list, freq = " + channelSelector.getValue(jsonOutput.getCrisisCode()));
+						++count;
+						if (count < messageCount && itr.hasPrevious()) jsonDataList.append(",");		// otherwise, this was the last message to append
+					}
 				}
 			}
 			if (count == 0) { 

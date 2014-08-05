@@ -58,7 +58,7 @@ public class DatabaseController implements DatabaseInterface {
 		try {
 			Session session = em.unwrap(Session.class);
 			//Session session = sessionFactory.getCurrentSession();
-			System.out.println("[getCurrentSession] session = " + session);
+			//System.out.println("[getCurrentSession] session = " + session);
 			return session;
 		} catch (HibernateException e) {
 			logger.error("Failed in creating session with em: " + em);
@@ -97,7 +97,7 @@ public class DatabaseController implements DatabaseInterface {
 		try {
 			Session session = getCurrentSession();
 			Criteria criteria = null;
-			criteria = getCurrentSession().createCriteria(AidrCollection.class).add(criterion);
+			criteria = session.createCriteria(AidrCollection.class).add(criterion);
 			List<Object> resultList = criteria.list();
 			if (null == resultList) {
 				return null;
@@ -131,7 +131,7 @@ public class DatabaseController implements DatabaseInterface {
 	public AidrCollection getByCriteria(Criterion criterion) {
 		try {
 			Session session = getCurrentSession();
-			Criteria criteria = getCurrentSession().createCriteria(AidrCollection.class);
+			Criteria criteria = session.createCriteria(AidrCollection.class);
 			criteria.add(criterion);
 			Object result = criteria.uniqueResult();
 			if (result != null) {

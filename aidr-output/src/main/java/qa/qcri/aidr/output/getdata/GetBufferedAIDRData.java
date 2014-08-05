@@ -56,6 +56,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletContextEvent;
@@ -80,6 +81,8 @@ import javax.ws.rs.core.Response;
 
 
 
+
+
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
@@ -88,6 +91,7 @@ import qa.qcri.aidr.output.filter.JsonQueryList;
 import qa.qcri.aidr.output.filter.NominalLabel;
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
+import qa.qcri.aidr.output.utils.QuickSort;
 import qa.qcri.aidr.output.utils.SimpleRateLimiter;
 import qa.qcri.aidr.output.filter.DeserializeFilters;
 import qa.qcri.aidr.output.utils.ErrorLog;
@@ -109,9 +113,11 @@ public class GetBufferedAIDRData implements ServletContextListener {
 
 	private static SimpleRateLimiter channelSelector = null;		// select a channel to display
 	private static StringBuffer lastSentLatestTweet = null;
-
+	private static long lastSentGetLatestData = 0;
+	private static final int CACHE_TIME_INTERVAL = 5 * 1000;		// cache time for getLatest
 	private static ChannelBufferManager cbManager = null; 			// managing buffers for each publishing channel
 	private static final boolean rejectNullFlag = true;
+
 	/////////////////////////////////////////////////////////////////////////////
 	@POST
 	@Path("/{crisisCode}")
@@ -171,31 +177,42 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			@DefaultValue("true") @QueryParam("balanced_sampling") boolean balanced_sampling) {
 
 		System.out.println("[getLatestBufferedAIDRData] request received");
+		// Cache data - performance reasons
+		if (lastSentGetLatestData == 0) {
+			lastSentGetLatestData = System.currentTimeMillis();
+		} else {
+			if ((System.currentTimeMillis() - lastSentGetLatestData > CACHE_TIME_INTERVAL) 
+					&& lastSentLatestTweet != null) {
+				lastSentGetLatestData = System.currentTimeMillis();
+				logger.info("Sending cached data to request");
+				return Response.ok(lastSentLatestTweet.toString()).build();
+			}
+		}
+
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {		// Jedis pool is ready
 			// Get the last count number of messages for channel=channelCode
-			List<String> bufferedMessages = new ArrayList<String>();
 			final int messageCount = Integer.parseInt(count);		// number of latest messages across all channels to return
-			List<String> temp = cbManager.getLatestFromAllChannels(messageCount, confidence);
-			bufferedMessages.addAll(temp != null ? temp : new ArrayList<String>());
-			if (temp != null) {
-				temp.clear();
-				temp = null;
-			}
+			List<String> bufferedMessages = cbManager.getLatestFromAllChannels(messageCount);
 
 			// Added code for filteredMessages as per new feature: pivotal #67373070
 			List<String> filteredMessages = new ArrayList<String>();			
-			for (String tweet: bufferedMessages) {
-				ClassifiedFilteredTweet classifiedTweet = new ClassifiedFilteredTweet().deserialize(tweet);
-				if (classifiedTweet != null) {
-					filteredMessages.add(tweet);
-					channelSelector.initializeNew(classifiedTweet.getCrisisCode());	
-					logger.debug("Added tweet from channel " + classifiedTweet.getCrisisCode() + ", confidence: " + classifiedTweet.getMaxConfidence());
+			if (bufferedMessages != null) {
+				for (String tweet: bufferedMessages) {
+					ClassifiedFilteredTweet classifiedTweet = new ClassifiedFilteredTweet().deserialize(tweet);
+					if (classifiedTweet != null && classifiedTweet.getMaxConfidence() >= confidence
+							&& classifiedTweet.getCreatedAt() != null) {
+						filteredMessages.add(tweet);
+						channelSelector.initializeNew(classifiedTweet.getCrisisCode());	
+						logger.debug("Added tweet from channel " + classifiedTweet.getCrisisCode() + ", confidence: " + classifiedTweet.getMaxConfidence());
+					}
 				}
-
+				// Now sort the dataSet in ascending order of timestamp
+				QuickSort sorter = new QuickSort();
+				sorter.sort(filteredMessages);
 			}
 
 			final JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
-			final StringBuilder jsonDataList;
+			StringBuilder jsonDataList = null;
 			if (!balanced_sampling) {
 				jsonDataList = taggerOutput.createList(filteredMessages, messageCount, rejectNullFlag);
 			} else {
@@ -218,12 +235,6 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			}
 			logger.debug("send count = " + sendCount);
 			System.out.println("[getLatestBufferedAIDRData] send count = " + sendCount);
-			// Reset the messageList buffer and return
-			bufferedMessages.clear();
-			bufferedMessages = null;
-
-			filteredMessages.clear();
-			filteredMessages = null;
 
 			// Finally, send the retrieved list to client and close connection
 			return Response.ok(jsonDataList.toString()).build();
@@ -231,16 +242,6 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		logger.error("Error in jedis connection. Bailing out...");
 		System.err.println("[getLatestBufferedAIDRData] Error in jedis connection. Bailing out...");
 		return Response.ok(new String("[{}]")).build();
-	}
-
-	float getMaxConfidence(ClassifiedFilteredTweet tweet) {
-		float maxConfidence = 0;
-		for (NominalLabel nLabel: tweet.getNominalLabels()) {
-			if (nLabel.confidence > maxConfidence) {
-				maxConfidence = nLabel.confidence;
-			}
-		}
-		return maxConfidence;
 	}
 
 	/**
@@ -569,6 +570,30 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	public Response testPost(String testString, @PathParam("crisisCode") String channelCode) {
 		logger.info("request received :" + channelCode + ", received string: " + testString);
 		return Response.ok(new String("{\"test\":\"passed\"}")).build();
+	}
+
+	@GET
+	@Path("/channel/test/jsonmap")
+	public Response testJsonMap() {
+		long startTime = System.currentTimeMillis();
+		Map<String, Boolean> map = cbManager.getAllRunningCollections();
+		System.out.println("Time to retrieve map from manager: " + (System.currentTimeMillis() - startTime));
+		System.out.println("Received MAP: ");
+		for (String cName: map.keySet()) {
+			System.out.println(cName + ": " + map.get(cName));
+		}
+		return Response.ok(new Long(System.currentTimeMillis() - startTime).toString()).build();
+	}
+
+	@GET
+	@Path("/channel/test/channelpublic")
+	public Response testChannelPublicFlag(@QueryParam("channelCode") String channelCode) {
+		long startTime = System.currentTimeMillis();
+		Boolean status = cbManager.getChannelPublicStatus(CHANNEL_PREFIX_STRING+channelCode);
+		System.out.println("Time to retrieve publiclyListed status from manager: " + (System.currentTimeMillis() - startTime));
+		System.out.println(channelCode + ": " + status);
+
+		return Response.ok(new Long(System.currentTimeMillis() - startTime).toString()).build();
 	}
 
 	@Override

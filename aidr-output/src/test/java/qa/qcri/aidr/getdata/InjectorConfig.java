@@ -10,7 +10,7 @@ public class InjectorConfig {
 	
 	public final String channelPrefix = "aidr_predict.";
 	public final String collectionCode = "2014-03-mh370";	//2014-07-palestine_conflict";
-	public final int tweets_per_sec = 10;		// -1 = no throttle control
+	public final int tweets_per_sec = 5;		// -1 = no throttle control
 	public final int duration = 10;				// in mins
 	public final int threads = 5;
 	

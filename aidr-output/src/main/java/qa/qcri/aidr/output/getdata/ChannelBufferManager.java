@@ -31,6 +31,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Future;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 
 import qa.qcri.aidr.output.entity.AidrCollection;
 import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
@@ -55,11 +59,8 @@ import org.hibernate.criterion.Restrictions;
 
 import org.apache.log4j.Logger;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonArray;
+import javax.ws.rs.core.MediaType;
+
 
 public class ChannelBufferManager {
 
@@ -72,7 +73,8 @@ public class ChannelBufferManager {
 
 	// Thread related
 	private static ExecutorService executorServicePool = null;
-
+	private static boolean shutdownFlag = false;
+	
 	// Redis connection related
 	public static String redisHost = "localhost";	// Current assumption: REDIS running on same m/c
 	public static int redisPort = 6379;	
@@ -94,7 +96,7 @@ public class ChannelBufferManager {
 	public static ConcurrentHashMap<String, ChannelBuffer> subscribedChannels;
 
 	// DB access related
-	private static DatabaseInterface dbController = null;
+	//private static DatabaseInterface dbController = null;
 	private String managerMainUrl = "http://localhost:8080/AIDRFetchManager";
 
 	//////////////////////////////////////////
@@ -108,6 +110,7 @@ public class ChannelBufferManager {
 
 		redisHost = configParams.get("host");
 		redisPort = Integer.parseInt(configParams.get("port"));
+		managerMainUrl = configParams.get("managerUrl");
 		if (configParams.get("logger").equalsIgnoreCase("log4j")) {
 			// For now: set up a simple configuration that logs on the console
 			// PropertyConfigurator.configure("log4j.properties");      
@@ -140,7 +143,6 @@ public class ChannelBufferManager {
 			logger.info("Created new Jedis connection: " + subscriberJedis);
 			try {
 				subscribeToChannel(channelRegEx);
-				Thread.sleep(1000);
 				isSubscribed = true;
 				logger.info("Created pattern subscription");
 			} catch (Exception e) {
@@ -150,10 +152,11 @@ public class ChannelBufferManager {
 				//System.exit(1);
 			}
 			if (isSubscribed) {
-				subscribedChannels = new ConcurrentHashMap<String,ChannelBuffer>();
+				subscribedChannels = new ConcurrentHashMap<String,ChannelBuffer>(20);
 				logger.debug("Created HashMap");
 			}
-			
+
+			/*
 			try {
 				dbController = new DatabaseController();
 				logger.info("Created dbController = " + dbController);
@@ -162,7 +165,7 @@ public class ChannelBufferManager {
 				logger.error("[ChannelBufferManager] Couldn't initiate DB access to aidr_fetch_manager");
 				logger.error(elog.toStringException(e));
 			}
-			
+			 */
 		}
 
 	}
@@ -178,8 +181,7 @@ public class ChannelBufferManager {
 	// 2. If channel present then simply adds receivedMessage to that channel.
 	// 3. Else, first calls createChannelBuffer() and then executes step (2).
 	// 4. Deletes channelName and channel buffer if channelName not seen for TIMEOUT duration.
-	private void manageChannelBuffers(final String subscriptionPattern, 
-			final String channelName, 
+	private void manageChannelBuffers(final String subscriptionPattern, final String channelName, 
 			final String receivedMessage) {
 		if (null == channelName) {
 			logger.error("Something terribly wrong! Fatal error in: " + channelName);
@@ -201,7 +203,7 @@ public class ChannelBufferManager {
 		// Periodically check if channel's isPubliclyListed flag has changed
 		if (currentTime - lastPublicFlagCheckedTime > CHECK_CHANNEL_PUBLIC_INTERVAL) {
 			logger.info("Periodic check for publiclyListed flag of channels");
-			Map<String, Boolean> statusFlags = checkPublicFlag(subscribedChannels.keySet());	
+			Map<String, Boolean> statusFlags = getAllRunningCollections();	
 			for (String cName: statusFlags.keySet()){
 				ChannelBuffer cb = subscribedChannels.get(CHANNEL_PREFIX_STRING+cName);
 				cb.setPubliclyListed(statusFlags.get(cName));
@@ -210,23 +212,18 @@ public class ChannelBufferManager {
 			statusFlags.clear();
 			lastPublicFlagCheckedTime = new Date().getTime();
 		}
-		
+
 		// Periodically check if any channel is down - if so, delete
 		if (currentTime - lastCheckedTime > CHECK_INTERVAL) {
 			logger.info("Periodic check for inactive channels - delete if any.");
-			List<ChannelBuffer>cbList = new ArrayList<ChannelBuffer>();
-			cbList.addAll(subscribedChannels.values());
-			Iterator<ChannelBuffer>it = cbList.iterator();
-			while (it.hasNext()) {
-				ChannelBuffer temp = it.next();
+			for (String channel: subscribedChannels.keySet()) {
+				ChannelBuffer temp = subscribedChannels.get(channel);
 				if ((currentTime - temp.getLastAddTime()) > NO_DATA_TIMEOUT) {
 					logger.info("Deleting inactive channel = " + channelName);
 					deleteChannelBuffer(temp.getChannelName());
 				}
 			}
 			lastCheckedTime = new Date().getTime();
-			cbList.clear();
-			cbList = null;
 		}
 	}
 
@@ -256,35 +253,30 @@ public class ChannelBufferManager {
 
 	// channelName = fully qualified channel name as present in REDIS pubsub system
 	public void createChannelQueue(final String channelName) {
-		if (!isChannelPresent(channelName)) {
-			ChannelBuffer cb = new ChannelBuffer(channelName);
-			if (bufferSize <= 0)
-				cb.createChannelBuffer();				// use default buffer size
-			else
-				cb.createChannelBuffer(bufferSize);		// use specified buffer size
-			subscribedChannels.put(channelName, cb);
-			cb.setPubliclyListed(isChannelPublic(cb.getChannelName()));
-		}
-		else {
-			logger.error(channelName + ": Trying to create an existing channel! Should never be here!");
-		}
+		ChannelBuffer cb = new ChannelBuffer(channelName);
+		if (bufferSize <= 0)
+			cb.createChannelBuffer();				// use default buffer size
+		else
+			cb.createChannelBuffer(bufferSize);		// use specified buffer size
+		subscribedChannels.put(channelName, cb);
+		cb.setPubliclyListed(getChannelPublicStatus(channelName));
+		logger.info("Created channel buffer for channel: " + channelName + ", public = " + cb.getPubliclyListed());
 	}
 
+
 	public void deleteChannelBuffer(final String channelName) {
-		if (isChannelPresent(channelName)) {
-			ChannelBuffer cb = subscribedChannels.get(channelName);
-			cb.deleteBuffer();
-			subscribedChannels.remove(channelName);
-			logger.info("Deleted channel buffer: " + channelName);
-		}
+		ChannelBuffer cb = subscribedChannels.get(channelName);
+		cb.deleteBuffer();
+		subscribedChannels.remove(channelName);
+		logger.info("Deleted channel buffer: " + channelName);
 	}
 
 	public void deleteAllChannelBuffers() {
 		if (subscribedChannels != null) {
 			logger.info("Deleting buffers for currently subscribed list of channels: " + subscribedChannels.keySet());
-			for (String channelId: subscribedChannels.keySet()) {
-				subscribedChannels.get(channelId).deleteBuffer();
-				subscribedChannels.remove(channelId);
+			for (String channel: subscribedChannels.keySet()) {
+				subscribedChannels.get(channel).deleteBuffer();
+				subscribedChannels.remove(channel);
 			}
 			subscribedChannels.clear();
 		}
@@ -314,213 +306,83 @@ public class ChannelBufferManager {
 		return channelCodeSet.isEmpty() ? null : channelCodeSet;
 	}
 
-
 	/**
-	 * Checks the pbliclyListed flag status of all active channels in one DB call
+	 * Calls the manager's public collection REST API.
+	 * @return publiclyListed value of given channel name
 	 */
-	private Map<String, Boolean> checkPublicFlag(Set<String>cbSet) {
-		//logger.info("[isChannelPublic] Received request for channel: " + channelName);
-		//first strip off the prefix aidr_predict.
-		Map<String, Boolean> statusFlags = new HashMap<String, Boolean>(cbSet.size());
-		Disjunction disj = Restrictions.disjunction();
-		for (String channelName: cbSet) {
-			String channelCode = channelName;
-			if (channelName.startsWith(CHANNEL_PREFIX_STRING)) {
-				String[] strs = channelName.split(CHANNEL_PREFIX_STRING);
-				channelCode = (strs != null) ? strs[1] : channelName;
-			}
-			disj.add(Restrictions.eq("code", channelCode));
-		}
-		Map<String, Boolean> collectionStatus = dbController.getPubliclyListed(disj, cbSet);
-		return collectionStatus;
-	}
+	@SuppressWarnings("unchecked")
+	public Boolean getChannelPublicStatus(String channelName) {
+		String channelCode = parseChannelName(channelName);
+		Response clientResponse = null;
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		try {
+			WebTarget webResource = client.target(managerMainUrl 
+					+ "/public/collection/getChannelPublicFlagStatus?channelCode=" + channelCode);
 
-	/**
-	 * 
-	 * @param channelName
-	 * @return true if channel is publicly listed, false otherwise
-	 */
-	private boolean isChannelPublic(String channelName) {
-		//logger.info("[isChannelPublic] Received request for channel: " + channelName);
-		//first strip off the prefix aidr_predict.
-		String channelCode = channelName;
-		if (channelName.startsWith(CHANNEL_PREFIX_STRING)) {
-			String[] strs = channelName.split(CHANNEL_PREFIX_STRING);
-			channelCode = (strs != null) ? strs[1] : channelName;
-		}
-		//logger.info("[isChannelPublic] Querying for: " + channelCode);
-		Criterion criterion = Restrictions.eq("code", channelCode);
-		AidrCollection collection = dbController.getByCriteria(criterion);
-		if (collection != null) {
-			//logger.info("channel: " + channelName + ", code = " + collection.getCode() + ", public = " + collection.getPubliclyListed());
-			return collection.getPubliclyListed();
-		} else {
-			//logger.info("channel: " + channelName + ", fetched collection = " + collection);
-		}
-		return true;
-	}
+			clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+			Map<String, Boolean> collectionMap = new HashMap<String, Boolean>();
 
-
-	/**
-	 * Used in conjunction with getAllRunningCollections()
-	 * @param channelName: channel code of channel to test
-	 * @param collectionList: list of all public channels returned by getAllRunningCollections()
-	 * @return true if public, false otherwise
-	 */
-	/*
-	private boolean isChannelPublic(String channelName, Map<String, Boolean> collectionList) {
-		//logger.info("[isChannelPublic] Received request for channel: " + channelName);
-
-		//first strip off the prefix aidr_predict.
-		String channelCode = channelName;
-		if (channelName.startsWith(CHANNEL_PREFIX_STRING)) {
-			String[] strs = channelName.split(CHANNEL_PREFIX_STRING);
-			channelCode = (strs != null) ? strs[1] : channelName;
-		}
-		if (collectionList != null) {
-			if (collectionList.containsKey(channelCode)) {
-				//logger.info("channel: " + channelName + ", code = " + channelCode + ", public = " + collectionList.get(channelCode));
-				return collectionList.get(channelCode);
-			}
-		} else {
-			logger.error("[isChannelPublic] collection list is null !!! Returning false");
+			//convert JSON string to Map
+			collectionMap = clientResponse.readEntity(Map.class);
+			System.out.println("Received map: " + collectionMap);
+			return collectionMap.get(channelCode);
+		} catch (Exception e) {
+			logger.error("Error in querying manager for running collections: " + clientResponse);
+			logger.error(elog.toStringException(e));
 		}
 		return false;
 	}
-	*/
+
+
 	/**
-	 * Currently unused - since earlier there were errors in the manager's
-	 * public collection REST API.
-	 * @return
+	 * Calls the manager's public collection REST API.
+	 * @return Map<String, Boolean> containing publiclyListed value for each channel code
 	 */
-	/*
+	@SuppressWarnings("unchecked")
 	public Map<String, Boolean> getAllRunningCollections() {
 		Map<String, Boolean> collectionList = null;
+		Response clientResponse = null;
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
-			//logger.debug("Request received");
 			WebTarget webResource = client.target(managerMainUrl 
-					+ "/public/collection/findAllRunning.action?start=0&limit=10000");
+					+ "/public/collection/getPublicFlagStatus");
 
-			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+			clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+			Map<String, Boolean> collectionMap = new HashMap<String, Boolean>();
 
-			String jsonResponse = clientResponse.readEntity(String.class);
-			//logger.info(" Response received" + jsonResponse);
-			if (jsonResponse != null) {
-				try {
-					Gson jsonObject = new GsonBuilder().serializeNulls().disableHtmlEscaping()
-							.serializeSpecialFloatingPointValues()	
-							.create();
-
-					JsonParser parser = new JsonParser();
-					JsonObject obj = (JsonObject) parser.parse(jsonResponse);
-					//logger.debug("Response parsed");
-
-					JsonArray jsonData= null;
-					if (obj != null && obj.has("data")) {			// if false, then something wrong in AIDR setup
-						jsonData = obj.get("data").getAsJsonArray();
-						collectionList = new HashMap<String, Boolean>();
-						for (int i = 0;i < jsonData.size();i++) {
-							JsonObject collection = (JsonObject) jsonData.get(i);
-							String collectionCode = collection.get("code").getAsString();
-							Boolean status = collection.get("publiclyListed").getAsBoolean();
-							collectionList.put(collectionCode, status);
-							//logger.debug("Retrieved collection: code = " + collectionCode + ", status = " + status);
-						}
-					} else {
-						logger.error("Error in received response from AIDRFetchManager: " + jsonData);
-					}
-				} catch (Exception e) {
-					logger.error("Error in parsing received resposne from manager: " + jsonResponse);
-					logger.error(elog.toStringException(e));
-				}
-			}
+			//convert JSON string to Map
+			collectionMap = clientResponse.readEntity(Map.class);
+			System.out.println("Received map: " + collectionMap);
+			return collectionMap;
 		} catch (Exception e) {
-			logger.error("Error in making REST call");
+			logger.error("Error in querying manager for running collections: " + clientResponse);
 			logger.error(elog.toStringException(e));
 		}
-		return collectionList;
+		return null;
 	}
-	 */
 
 	/**
 	 * @return List of latest tweets seen on all active channels, one tweet/channel, null if none found
 	 */
-	public List<String> getLatestFromAllChannels(final int msgCount, final float confidenceThreshold) {
-		final List<ChannelBuffer>cbList = new ArrayList<ChannelBuffer>();
+	public List<String> getLatestFromAllChannels(final int msgCount) {
 		List<String>dataSet = new ArrayList<String>();
 
-		// First get a list of all running collections from aidr-manager through REST call
-		//Map<String, Boolean> collectionList = getAllRunningCollections();
 		final int EXTRA = 3;		
-		cbList.addAll(subscribedChannels.values());
-		int k = -1;
-		for (ChannelBuffer temp: cbList) {
-			//logger.debug("cbList size = " + cbList.size() + ", Channel buffer: " + temp.getChannelName() + "isPublic = " + isChannelPublic(temp.getChannelName()));
-			if (temp.getPubliclyListed()) {
-				final List<String> tempList = temp.getLIFOMessages(msgCount+EXTRA);		// reverse-chronologically ordered list
-				if (!tempList.isEmpty()) {
-					int channelFetchSize = Math.min(msgCount+EXTRA,tempList.size());
-					for (int i = 0;i < channelFetchSize;i++) {
-						//logger.info("TWEET: " + tempList.get(i));
-						ClassifiedFilteredTweet tweet = new ClassifiedFilteredTweet().deserialize(tempList.get(i));
-						//logger.info("Channel: " + tweet.getCrisisCode() + ", time: " + tweet.getCreatedAt() + ", conf=" + tweet.getMaxConfidence());
-						if (tweet != null) {
-							long tweetTime = tweet.getCreatedAt().getTime();
-							if (k < 0) {
-								if (tweet.getMaxConfidence() >= confidenceThreshold) {
-									dataSet.add(k+1, tempList.get(i));
-									++k;
-									//logger.info("Added the very first tweet from channel: " + tweet.getCrisisCode());
-								}
-							}
-							else {
-								// get the last stored tweet in the dataSet
-								ClassifiedFilteredTweet lastStoredTweet = new ClassifiedFilteredTweet().deserialize(dataSet.get(k));
-
-								// rule 1: if more recent, include
-								if (lastStoredTweet != null && lastStoredTweet.getCreatedAt().getTime() < tweetTime 
-										&& tweet.getMaxConfidence() >= confidenceThreshold) {
-									dataSet.add(k+1, tempList.get(i));
-									++k;
-									//logger.info("Added using rule 1 from channel: " + tweet.getCrisisCode());
-								}
-
-								// rule 2: if not recent but from another channel, include
-								if (lastStoredTweet != null && lastStoredTweet.getCreatedAt().getTime() >= tweetTime
-										&& !lastStoredTweet.getCrisisCode().equals(tweet.getCrisisCode())
-										&& tweet.getMaxConfidence() >= confidenceThreshold) {
-									String tempTweet = dataSet.remove(k);
-									dataSet.add(k, tempList.get(i));
-									dataSet.add(k+1,tempTweet);
-									++k;
-									//logger.info("Added using rule 2 from channel: " + tweet.getCrisisCode());
-								}
-
-								// rule 3: if timestamps are same for same crisis, include higher confidence
-								if (lastStoredTweet != null && lastStoredTweet.getCreatedAt().getTime() == tweetTime
-										&& lastStoredTweet.getCrisisCode().equals(tweet.getCrisisCode())
-										&& lastStoredTweet.getMaxConfidence() < tweet.getMaxConfidence()) {
-									dataSet.add(k+1, tempList.get(i));
-									++k;
-									//logger.info("Added using rule 3 from channel: " + tweet.getCrisisCode());
-								}
-							}
-						}
-					}
+		for (ChannelBuffer cb: subscribedChannels.values()) {
+			if (cb.getPubliclyListed()) {
+				List<String> fetchedList = cb.getMessages(msgCount+EXTRA);
+				if (fetchedList != null) {
+					dataSet.addAll(fetchedList);		
 				}
-			}	// end if (isChannelPublic)
-		}	// end for
-		// Now sort the dataSet in ascending order of timestamp
-		QuickSort sorter = new QuickSort();
-		sorter.sort(dataSet);
-		for (int i = 0;i < dataSet.size();i++) {
-			ClassifiedFilteredTweet tweet = new ClassifiedFilteredTweet().deserialize(dataSet.get(i));
-			//logger.debug("timestamp = " + tweet.getCreatedAt().getTime());
+			}
 		}
-		return dataSet;
+		return (dataSet.isEmpty() ? null : dataSet);
 	}
 
+	public String parseChannelName(String channelName) {
+		String[] strs = channelName.split(CHANNEL_PREFIX_STRING);
+		return (strs != null) ? strs[1] : channelName;
+	}
 
 
 	public Date extractTweetTimestampField(String tweet) {
@@ -590,12 +452,15 @@ public class ChannelBufferManager {
 	}
 
 	public void close() {
+		shutdownFlag = true;
 		stopSubscription();
+		/*
 		try {
 			if (dbController != null) dbController.getEntityManager().close();
 		} catch (IllegalStateException e) {
 			logger.warn("attempting to close a container manager entitymanager");
 		}
+		 */
 		//jedisConn.closeAll();
 		deleteAllChannelBuffers();
 		//executorServicePool.shutdown(); // Disable new tasks from being submitted
@@ -658,6 +523,18 @@ public class ChannelBufferManager {
 		@Override
 		public void onPUnsubscribe(String pattern, int subscribedChannels) {
 			logger.info("Unsubscribed from channel pattern:" + pattern);
+			if (!shutdownFlag) {
+				try {
+					Thread.sleep(60000);
+					subscribeToChannel(CHANNEL_PREFIX_STRING + "*");
+					isSubscribed = true;
+					logger.info("Created pattern subscription");
+				} catch (Exception e) {
+					isSubscribed = false;
+					logger.error("Fatal exception occurred attempting subscription: " + e.toString());
+					logger.error(elog.toStringException(e));
+				}
+			}
 		}
 
 		@Override
