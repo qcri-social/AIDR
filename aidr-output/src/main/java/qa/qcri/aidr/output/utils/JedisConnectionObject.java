@@ -158,18 +158,15 @@ public class JedisConnectionObject {
 				if (null != jedisInstance) {
 					if (allotedJedis != null) allotedJedis.remove(jedisInstance);
 					logger.info("Returned jedis resource: " + jedisInstance);
-					jedisInstance.flushAll();
 					pool.returnResource(jedisInstance);
 				}
 			} catch (JedisConnectionException e) {
 				logger.error("JedisConnectionException occurred...");
 				logger.error(elog.toStringException(e));
-				jedisInstance.flushAll();
 				pool.returnBrokenResource(jedisInstance);
 			} finally {
 				if (null != jedisInstance) { 
 					logger.info("Returned jedis resource in finally block: " + jedisInstance);
-					jedisInstance.flushAll();
 					pool.returnResource(jedisInstance);
 				}
 			}

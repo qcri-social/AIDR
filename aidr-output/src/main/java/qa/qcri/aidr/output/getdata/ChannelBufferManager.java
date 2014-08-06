@@ -178,13 +178,16 @@ public class ChannelBufferManager {
 		if (currentTime - lastPublicFlagCheckedTime > CHECK_CHANNEL_PUBLIC_INTERVAL) {
 			logger.info("Periodic check for publiclyListed flag of channels");
 			Map<String, Boolean> statusFlags = getAllRunningCollections();	
-			for (String cName: statusFlags.keySet()){
-				ChannelBuffer cb = subscribedChannels.get(CHANNEL_PREFIX_STRING+cName);
-				cb.setPubliclyListed(statusFlags.get(cName));
-				System.out.println("For channel: " + cb.getChannelName() + ", isChannelPublic = " + cb.getPubliclyListed());
+			if (statusFlags != null) {
+				for (String cName: statusFlags.keySet()){
+					ChannelBuffer cb = subscribedChannels.get(CHANNEL_PREFIX_STRING+cName);
+					cb.setPubliclyListed(statusFlags.get(cName));
+					System.out.println("For channel: " + cb.getChannelName() + ", isChannelPublic = " + cb.getPubliclyListed());
+				}
+				statusFlags.clear();
 			}
-			statusFlags.clear();
 			lastPublicFlagCheckedTime = new Date().getTime();
+			
 		}
 
 		// Periodically check if any channel is down - if so, delete
@@ -293,10 +296,14 @@ public class ChannelBufferManager {
 			clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 			Map<String, Boolean> collectionMap = new HashMap<String, Boolean>();
 
-			//convert JSON string to Map
-			collectionMap = clientResponse.readEntity(Map.class);
-			System.out.println("Received map: " + collectionMap);
-			return collectionMap.get(channelCode);
+			if (clientResponse.getStatus() == 200) {
+				//convert JSON string to Map
+				collectionMap = clientResponse.readEntity(Map.class);
+				System.out.println("Received map: " + collectionMap);
+				return collectionMap.get(channelCode);
+			} else {
+				logger.warn("Couldn't contact AIDRFetchManager for publiclyListed status, channel: " + channelName);
+			}
 		} catch (Exception e) {
 			logger.error("Error in querying manager for running collections: " + clientResponse);
 			logger.error(elog.toStringException(e));
@@ -322,9 +329,13 @@ public class ChannelBufferManager {
 			Map<String, Boolean> collectionMap = new HashMap<String, Boolean>();
 
 			//convert JSON string to Map
-			collectionMap = clientResponse.readEntity(Map.class);
-			System.out.println("Received map: " + collectionMap);
-			return collectionMap;
+			if (clientResponse.getStatus() == 200) {
+				collectionMap = clientResponse.readEntity(Map.class);
+				System.out.println("Received map: " + collectionMap);
+				return collectionMap;
+			} else {
+				logger.warn("Couldn't contact AIDRFetchManager for publiclyListed status of running collections");
+			}
 		} catch (Exception e) {
 			logger.error("Error in querying manager for running collections: " + clientResponse);
 			logger.error(elog.toStringException(e));
