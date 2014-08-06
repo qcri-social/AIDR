@@ -54,7 +54,7 @@ public class RedisTweetInjector {
 		jedisConn = setupJedisConn(host, port);
 	}
 
-	public synchronized JedisConnectionObject setupJedisConn(String host, int port) {
+	public static synchronized JedisConnectionObject setupJedisConn(String host, int port) {
 		if (null == jedisConn) jedisConn = new JedisConnectionObject(host, port);
 		return jedisConn;
 	}
@@ -187,6 +187,7 @@ public class RedisTweetInjector {
 							}
 							long elapsed = System.currentTimeMillis() - startTime;
 							System.out.println("Done thread " + getName() + ", execution time = " + elapsed + "ms");
+							//jedis.flushAll();
 							jedisConn.returnJedis(jedis);
 						} else {
 							System.err.println("Couldn't connect to Redis, aborting...");
@@ -195,15 +196,14 @@ public class RedisTweetInjector {
 					} catch (Exception e) {
 						e.printStackTrace();
 					} finally {
-
 						try {
 							if (jedis != null) {
+								//jedis.flushAll();
 								jedisConn.returnJedis(jedis);
 							}
 						} catch (JedisConnectionException e) {
 							System.err.println("REDIS Connection already closed");
 						}
-
 						System.out.println("Thread " + getName() + " closed open REDIS connections");
 					}
 				}

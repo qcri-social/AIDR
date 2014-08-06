@@ -29,7 +29,7 @@ public class JedisConnectionObject {
 
 	private static boolean poolSetup = false;
 	private static boolean connectionSetup = false;
-	
+
 	// Logger setup
 	private static Logger logger = Logger.getLogger(JedisConnectionObject.class);
 	private static ErrorLog elog = new ErrorLog();
@@ -54,12 +54,12 @@ public class JedisConnectionObject {
 				poolConfig.setMaxActive(200);
 				poolConfig.setMaxIdle(50);
 				poolConfig.setMinIdle(10);
-				poolConfig.setTestWhileIdle(true);
-				poolConfig.setTestOnBorrow(true);
-				poolConfig.setTestOnReturn(true);
-				poolConfig.numTestsPerEvictionRun = 10;
-				poolConfig.timeBetweenEvictionRunsMillis = 60000;
-				poolConfig.maxWait = 90000;
+				//poolConfig.setTestWhileIdle(true);
+				//poolConfig.setTestOnBorrow(true);
+				//poolConfig.setTestOnReturn(true);
+				//poolConfig.numTestsPerEvictionRun = 10;
+				//poolConfig.timeBetweenEvictionRunsMillis = 3000;
+				poolConfig.maxWait = 3000;
 				poolConfig.whenExhaustedAction = org.apache.commons.pool.impl.GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW;
 				logger.info("New Jedis poolConfig: " + poolConfig);
 			} else {
@@ -67,7 +67,7 @@ public class JedisConnectionObject {
 			}
 			if (null == pool) {
 				try {
-					pool = new JedisPool(poolConfig, redisHost, redisPort, 90000);
+					pool = new JedisPool(poolConfig, redisHost, redisPort, 30000);
 					poolSetup = true;
 					logger.info("New Jedis pool: " + pool);
 				} catch (Exception e) {
@@ -157,21 +157,24 @@ public class JedisConnectionObject {
 			try {
 				if (null != jedisInstance) {
 					if (allotedJedis != null) allotedJedis.remove(jedisInstance);
-					pool.returnResource(jedisInstance);
 					logger.info("Returned jedis resource: " + jedisInstance);
+					jedisInstance.flushAll();
+					pool.returnResource(jedisInstance);
 				}
 			} catch (JedisConnectionException e) {
 				logger.error("JedisConnectionException occurred...");
 				logger.error(elog.toStringException(e));
+				jedisInstance.flushAll();
 				pool.returnBrokenResource(jedisInstance);
 			} finally {
 				if (null != jedisInstance) { 
-					pool.returnResource(jedisInstance);
 					logger.info("Returned jedis resource in finally block: " + jedisInstance);
+					jedisInstance.flushAll();
+					pool.returnResource(jedisInstance);
 				}
 			}
+
 		}
-		//this.notifyAll();
 	}
 
 	/**
@@ -213,7 +216,7 @@ public class JedisConnectionObject {
 	public boolean isPoolSetup() {
 		return poolSetup;
 	}
-	
+
 	/**
 	 * Returns the state of Jedis connection for this JedisConnectionObject instance
 	 * @return true is Jedis connection has been established, false otherwise
@@ -221,7 +224,7 @@ public class JedisConnectionObject {
 	public boolean isConnectionSetup() {
 		return connectionSetup;
 	}
-	
+
 	/**
 	 * Closes all open jedis connections and destroys the Jedis pool. 
 	 * Warning! Not thread safe! Use with care!

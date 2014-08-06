@@ -58,6 +58,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -78,20 +80,13 @@ import javax.ws.rs.core.Response;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
-
-
-
-
-
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
 import qa.qcri.aidr.output.filter.FilterQueryMatcher;
 import qa.qcri.aidr.output.filter.JsonQueryList;
-import qa.qcri.aidr.output.filter.NominalLabel;
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
-import qa.qcri.aidr.output.utils.QuickSort;
 import qa.qcri.aidr.output.utils.SimpleRateLimiter;
 import qa.qcri.aidr.output.filter.DeserializeFilters;
 import qa.qcri.aidr.output.utils.ErrorLog;
@@ -112,21 +107,17 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	private static final String DEFAULT_COUNT_STR = "50";
 
 	private static SimpleRateLimiter channelSelector = null;		// select a channel to display
-	private static StringBuffer lastSentLatestTweet = null;
-	private static long lastSentGetLatestData = 0;
-	private static final int CACHE_TIME_INTERVAL = 5 * 1000;		// cache time for getLatest
-	private static ChannelBufferManager cbManager = null; 			// managing buffers for each publishing channel
+	private volatile static StringBuffer lastSentLatestTweet = null;
+	private volatile static long lastSentTimeGetLatestData = 0;
+	private static final int CACHE_TIME_INTERVAL = 0;		// cache time for getLatest
+	private volatile static AtomicInteger inRequests = null;
+	private final int MAX_IN_REQUESTS = 1000;
+
+	private volatile static ChannelBufferManager masterCBManager = null; 			// managing buffers for each publishing channel
 	private static final boolean rejectNullFlag = true;
 
+
 	/////////////////////////////////////////////////////////////////////////////
-	@POST
-	@Path("/{crisisCode}")
-	@Produces({"application/json", "text/html"})
-	public Response handlePost(@PathParam("crisisCode") String channelCode,
-			@QueryParam("callbackName") String callbackName,
-			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
-		return Response.ok(getBufferedAIDRData(channelCode, callbackName, count)).build();
-	}
 
 	/**
 	 * 
@@ -137,7 +128,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	@Produces("text/html")
 	public Response getActiveChannelsList() {
 
-		Set<String> channelList = cbManager.getActiveChannelsList();
+		Set<String> channelList = masterCBManager.getActiveChannelsList();
 		StringBuilder htmlMessageString = new StringBuilder();
 
 		// Build HTML doc to return
@@ -176,73 +167,111 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			@DefaultValue("0.7") @QueryParam("confidence") float confidence,
 			@DefaultValue("true") @QueryParam("balanced_sampling") boolean balanced_sampling) {
 
-		System.out.println("[getLatestBufferedAIDRData] request received");
+		//System.out.println("[getLatestBufferedAIDRData] request received");
+		//return Response.ok(new String("[{}]")).build();		// NO-OP test
+
 		// Cache data - performance reasons
-		if (lastSentGetLatestData == 0) {
-			lastSentGetLatestData = System.currentTimeMillis();
-		} else {
-			if ((System.currentTimeMillis() - lastSentGetLatestData > CACHE_TIME_INTERVAL) 
-					&& lastSentLatestTweet != null) {
-				lastSentGetLatestData = System.currentTimeMillis();
-				logger.info("Sending cached data to request");
+		if ((inRequests.incrementAndGet() > MAX_IN_REQUESTS) 
+				|| ((System.currentTimeMillis() - lastSentTimeGetLatestData) < CACHE_TIME_INTERVAL)) {
+			
+			if (inRequests.get() > MAX_IN_REQUESTS) {
+				logger.warn("WARNING! We already have max number of readers : " + inRequests.get());
+			} else {
+				logger.warn("Not sufficient time elapsed between successive requests");
+			}
+			if (lastSentLatestTweet != null && lastSentLatestTweet.length() > 0) {
+				logger.warn("Sending cached data to requester: " + lastSentLatestTweet);
+				inRequests.decrementAndGet();
 				return Response.ok(lastSentLatestTweet.toString()).build();
+			} else {
+				logger.warn("Returning null JSON as there is no data in buffers");
+				inRequests.decrementAndGet();
+				return Response.ok(new String("[{}]")).build();		// NO-OP condition, since nothing to send
 			}
 		}
+		
+		// Otherwise, go the full way...
+		//logger.info("Attempting to fetch from buffered data, for requester = " + inRequests.get());
+		//long startTime = System.currentTimeMillis();
+		ChannelBufferManager cbManager = new ChannelBufferManager();
 
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {		// Jedis pool is ready
 			// Get the last count number of messages for channel=channelCode
 			final int messageCount = Integer.parseInt(count);		// number of latest messages across all channels to return
+			//long t = System.currentTimeMillis();
 			List<String> bufferedMessages = cbManager.getLatestFromAllChannels(messageCount);
-
+			//logger.info("Total time taken to retrieve from buffers = " + (System.currentTimeMillis() - t));
 			// Added code for filteredMessages as per new feature: pivotal #67373070
 			List<String> filteredMessages = new ArrayList<String>();			
+			
 			if (bufferedMessages != null) {
+				//logger.info("Buffered messages list size = " + bufferedMessages.size());
+				Map<Long, String> sortedFilteredMessages = new TreeMap<Long, String>();
+				//long t0 = System.currentTimeMillis();
 				for (String tweet: bufferedMessages) {
+					//long t1 = System.currentTimeMillis();
 					ClassifiedFilteredTweet classifiedTweet = new ClassifiedFilteredTweet().deserialize(tweet);
+					//logger.info("Time taken to deserialize a tweet = " + (System.currentTimeMillis() - t1));
 					if (classifiedTweet != null && classifiedTweet.getMaxConfidence() >= confidence
 							&& classifiedTweet.getCreatedAt() != null) {
+						sortedFilteredMessages.put(classifiedTweet.getCreatedAt().getTime(), tweet);		// note: we may override duplicate key-values but that is acceptable in our use-case
 						filteredMessages.add(tweet);
 						channelSelector.initializeNew(classifiedTweet.getCrisisCode());	
-						logger.debug("Added tweet from channel " + classifiedTweet.getCrisisCode() + ", confidence: " + classifiedTweet.getMaxConfidence());
+						//logger.info("Added tweet from channel " + classifiedTweet.getCrisisCode() + ", confidence: " + classifiedTweet.getMaxConfidence());
 					}
 				}
+				//logger.info("Total time taken to deserialize all tweets = " + (System.currentTimeMillis() - t0));
 				// Now sort the dataSet in ascending order of timestamp
-				QuickSort sorter = new QuickSort();
-				sorter.sort(filteredMessages);
+				//long t3 = System.currentTimeMillis();
+				//QuickSort sorter = new QuickSort();
+				//sorter.sort(filteredMessages);
+				filteredMessages.clear();
+				filteredMessages = new ArrayList<String>(sortedFilteredMessages.values());
+				sortedFilteredMessages.clear();
+				//logger.info("Finished sorting the list in time = " + (System.currentTimeMillis() - t3));
 			}
 
 			final JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
 			StringBuilder jsonDataList = null;
+			//long t4 = System.currentTimeMillis();
 			if (!balanced_sampling) {
 				jsonDataList = taggerOutput.createList(filteredMessages, messageCount, rejectNullFlag);
 			} else {
-				logger.debug("Going for Rate Limited, buffer size = " + filteredMessages.size() + " from original size = " + bufferedMessages.size());
+				//logger.info("Going for Rate Limited, buffer size = " + filteredMessages.size());
 				jsonDataList = taggerOutput.createRateLimitedList(filteredMessages, channelSelector, messageCount, rejectNullFlag);
 			}
-			final int sendCount = taggerOutput.getMessageCount();
-			if (jsonDataList.indexOf("[{}]") > -1 && lastSentLatestTweet != null) {
+			int sendCount = taggerOutput.getMessageCount();
+			//logger.info("Total time taken to create send List = " + (System.currentTimeMillis() - t4));
+		
+			if (jsonDataList.indexOf("[{}]") > -1) {
 				// Nothing to send = so send the last sent data again!
-				jsonDataList.delete(0, jsonDataList.length());		// clear 
-				jsonDataList.append(lastSentLatestTweet);
-				System.out.println("[getLatestBufferedAIDRData] Warning, sending cached last sent data!");
-			} else {
-				if (lastSentLatestTweet != null) {
-					synchronized(this) {
-						lastSentLatestTweet.delete(0, lastSentLatestTweet.length());	//clear
-						lastSentLatestTweet.append(jsonDataList);
-					}
+				if (lastSentLatestTweet != null && lastSentLatestTweet.length() > 0) { 
+					jsonDataList.replace(0, jsonDataList.length(), lastSentLatestTweet.toString());
+					sendCount = 1;
+					//logger.warn("[getLatestBufferedAIDRData] Warning, sending cached last sent data: " + lastSentLatestTweet);
 				}
+			} else {
+				// Note: we risk thread-unsafe operation here		
+				lastSentLatestTweet = new StringBuffer(jsonDataList.length());
+				lastSentLatestTweet.append(jsonDataList);
 			}
-			logger.debug("send count = " + sendCount);
-			System.out.println("[getLatestBufferedAIDRData] send count = " + sendCount);
+			lastSentTimeGetLatestData = System.currentTimeMillis();
+
+			//logger.info("send count = " + sendCount);
+			//System.out.println("[getLatestBufferedAIDRData] send count = " + sendCount);
+			//System.out.println("[getLatestBufferedAIDRData] sent data: " + jsonDataList);
 
 			// Finally, send the retrieved list to client and close connection
+			inRequests.decrementAndGet();
+			//logger.info("Time taken to process request: " + (System.currentTimeMillis() - startTime));
 			return Response.ok(jsonDataList.toString()).build();
 		}
+		inRequests.decrementAndGet();
 		logger.error("Error in jedis connection. Bailing out...");
 		System.err.println("[getLatestBufferedAIDRData] Error in jedis connection. Bailing out...");
 		return Response.ok(new String("[{}]")).build();
 	}
+
 
 	/**
 	 * 
@@ -258,6 +287,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
 
 		System.out.println("[getBufferedAIDRData] request received");
+		ChannelBufferManager cbManager = new ChannelBufferManager();
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {
 			boolean error = false;
 			// Parse the HTTP GET request and generating results for output
@@ -276,31 +306,6 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			{	
 				logger.warn("Error in requested channel name: " + channelCode);
 				return Response.ok(new String("[{}]")).build();
-				/*
-				Set<String> channelList = cbManager.getActiveChannelsList();
-				StringBuilder htmlMessageString = new StringBuilder();
-
-				// Build HTML doc to return
-				htmlMessageString.append("<!DOCTYPE html>");
-				htmlMessageString.append("<html>");
-				htmlMessageString.append("<head><title>REDIS PUBSUB Channel Data Output Service</title></head>");
-				htmlMessageString.append("<body>");
-				htmlMessageString.append("<h1>Invalid/No CrisisCode Provided! </h1>");
-				htmlMessageString.append("<h2>Can not initiate REDIS channel subscription!</h2>");
-				htmlMessageString.append("<p><big>Available active channels: </big></p>");
-				htmlMessageString.append("<ul>"); 
-				if (channelList != null) {
-					Iterator<String> itr = channelList.iterator();
-					while (itr.hasNext()) {
-						htmlMessageString.append("<li>" + itr.next().substring(CHANNEL_PREFIX_STRING.length()) + "</li>");
-					}
-				}
-				htmlMessageString.append("</body></html>");
-				if (channelList != null) channelList.clear();
-				channelList = null;
-
-				return Response.ok(htmlMessageString.toString()).build();
-				 */
 			}
 			else {
 				// Form fully qualified channelName and get other parameter values, if any
@@ -318,21 +323,14 @@ public class GetBufferedAIDRData implements ServletContextListener {
 						messageCount = Math.min(msgCount, MAX_MESSAGES_COUNT);
 					}
 					// Get the last messageCount messages for channel=channelCode
-					List<String> bufferedMessages = new ArrayList<String>();
-					List<String> temp = cbManager.getLastMessages(channelName, messageCount);
-					bufferedMessages.addAll(temp != null ? temp : new ArrayList<String>());
-
-					final JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
-					final StringBuilder jsonDataList = taggerOutput.createList(bufferedMessages, messageCount, rejectNullFlag);
-					final int sendCount = taggerOutput.getMessageCount();
-
-					// Cleanup, send the retrieved list to client and close connection
-					if (temp != null) { 
-						temp.clear();
-						temp = null;
+					List<String> bufferedMessages = cbManager.getLastMessages(channelName, messageCount);
+					StringBuilder jsonDataList = null;
+					int sendCount = 0;
+					if (bufferedMessages != null) {
+						final JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
+						jsonDataList = taggerOutput.createList(bufferedMessages, messageCount, rejectNullFlag);
+						sendCount = taggerOutput.getMessageCount();
 					}
-					bufferedMessages.clear();
-					bufferedMessages = null;
 
 					System.out.println(channelCode + " : sending jsonp data, count = " + sendCount);
 					return Response.ok(jsonDataList.toString()).build();
@@ -386,7 +384,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			logger.info(channelCode + ": received POST list = " + queryList);
 			//queryList = new JsonQueryList();
 		}
-
+		ChannelBufferManager cbManager = new ChannelBufferManager();
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {
 			boolean error = false;
 			// Parse the HTTP GET request and generating results for output
@@ -510,7 +508,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	 * @return true if present, false if not
 	 */
 	public boolean isChannelPresent(String channel) {
-		Set<String> channelList = cbManager.getActiveChannelsList();
+		Set<String> channelList = masterCBManager.getActiveChannelsList();
 		if (channelList != null) {
 			//System.out.println("[isChannelPresent] channels: " + channelList);
 			return channelList.contains(channel);
@@ -522,7 +520,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	@Path("/channel/error/{crisisCode}")
 	@Produces({"text/html"})
 	public Response onErrorResponse() {
-		Set<String> channelList = cbManager.getActiveChannelsList();
+		Set<String> channelList = masterCBManager.getActiveChannelsList();
 		StringBuilder htmlMessageString = new StringBuilder();
 
 		// Build HTML doc to return
@@ -552,10 +550,12 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	public Response restartFetchService(@PathParam("passcode") String passcode) {
 		logger.info("[restartFetchService] request received");
 		if (passcode.equals("sysadmin2013")) {
-			if (cbManager != null) {
-				cbManager.close();
+			if (masterCBManager != null) {
+				masterCBManager.close();
 			}
-			cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
+			//cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
+			masterCBManager = new ChannelBufferManager();
+			masterCBManager.initiateChannelBufferManager(CHANNEL_REG_EX);
 			logger.info("aidr-output fetch service restarted...");
 			final String statusStr = "{\"aidr-output fetch service\":\"RESTARTED\"}";
 			return Response.ok(statusStr).build();
@@ -576,7 +576,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	@Path("/channel/test/jsonmap")
 	public Response testJsonMap() {
 		long startTime = System.currentTimeMillis();
-		Map<String, Boolean> map = cbManager.getAllRunningCollections();
+		Map<String, Boolean> map = masterCBManager.getAllRunningCollections();
 		System.out.println("Time to retrieve map from manager: " + (System.currentTimeMillis() - startTime));
 		System.out.println("Received MAP: ");
 		for (String cName: map.keySet()) {
@@ -589,7 +589,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	@Path("/channel/test/channelpublic")
 	public Response testChannelPublicFlag(@QueryParam("channelCode") String channelCode) {
 		long startTime = System.currentTimeMillis();
-		Boolean status = cbManager.getChannelPublicStatus(CHANNEL_PREFIX_STRING+channelCode);
+		Boolean status = masterCBManager.getChannelPublicStatus(CHANNEL_PREFIX_STRING+channelCode);
 		System.out.println("Time to retrieve publiclyListed status from manager: " + (System.currentTimeMillis() - startTime));
 		System.out.println(channelCode + ": " + status);
 
@@ -598,35 +598,28 @@ public class GetBufferedAIDRData implements ServletContextListener {
 
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
-		cbManager.close();
+		masterCBManager.close();
 		logger.info("Context destroyed");
 	}
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
+		inRequests = new AtomicInteger(0);
 		AIDROutputConfig configuration = new AIDROutputConfig();
 		HashMap<String, String> configParams = configuration.getConfigProperties();
 		logger.info("Logger = " + configParams.get("logger"));
-		/*
-		if (configParams.get("logger").equalsIgnoreCase("log4j")) {
-			// For now: set up a simple configuration that logs on the console
-			// PropertyConfigurator.configure("log4j.properties");      
-			//BasicConfigurator.configure();    // initialize log4j logging
-		}
-		if (configParams.get("logger").equalsIgnoreCase("slf4j")) {
-			System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");	// set logging level for slf4j
-		}
-		 */
+
 		// Most important action - setup channel buffering thread
-		if (null == cbManager) {
+		if (null == masterCBManager) {
 			logger.info("Initializing channel buffer manager");
 			System.out.println("[contextInitialized] Initializing channel buffer manager");
-			cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
+			//cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
+			masterCBManager = new ChannelBufferManager();
+			masterCBManager.initiateChannelBufferManager(CHANNEL_REG_EX);
 			logger.info("Done initializing channel buffer manager");
 			System.out.println("[contextInitialized] Done initializing channel buffer manager");
 		}
 		channelSelector = new SimpleRateLimiter();
-		lastSentLatestTweet = new StringBuffer(); 
 		logger.info("Context Initialized");
 	}
 }

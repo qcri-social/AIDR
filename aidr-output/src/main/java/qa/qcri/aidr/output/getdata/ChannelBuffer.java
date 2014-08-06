@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
 import qa.qcri.aidr.output.utils.ErrorLog;
 
 public class ChannelBuffer {
-	private static int MAX_BUFFER_SIZE = 5000;		// number of elements the buffer will hold at any time
-	private static int MAX_FETCH_SIZE = 2000;		// max. number of elements to fetch in one op
+	public static int MAX_BUFFER_SIZE = 2000;		// number of elements the buffer will hold at any time
+	public static int MAX_FETCH_SIZE = 2000;		// max. number of elements to fetch in one op
 	private String channelName = null;
 	private long lastAddTime;
 	private Buffer messageBuffer = null;
@@ -43,16 +43,12 @@ public class ChannelBuffer {
 	private static ErrorLog elog = new ErrorLog();
 	
 	public ChannelBuffer(final String name, final int bufferSize) {
-		//BasicConfigurator.configure();			// setup log4j logging
-		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
 		this.channelName = name;
 		this.messageBuffer = BufferUtils.synchronizedBuffer(new CircularFifoBuffer(bufferSize));
 		this.size = bufferSize;
 	}
 	
 	public ChannelBuffer(final String name) {
-		//BasicConfigurator.configure();			// setup log4j logging
-		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
 		this.channelName = name;
 	}
 	
@@ -91,10 +87,21 @@ public class ChannelBuffer {
 	 * @param msgCount: number of messages to return
 	 * @return Returns a list of messages sorted in ascending order of timestamp
 	 */
-	public List<String> getMessages(int msgCount) {
-		String[] msgArray = (String[]) messageBuffer.toArray();
+	public List<String> getMessages(int msgCount) { 
+		//long startTime = System.currentTimeMillis();
+		Object[] msgArray = null;
+		synchronized(this) {
+			msgArray = messageBuffer.toArray();
+		}
 		String[] temp = new String[msgCount];
-		System.arraycopy(msgArray, (msgArray.length-msgCount), temp, 0, msgCount);
+		try {
+			System.arraycopy(msgArray, Math.max(0, (msgArray.length-msgCount)), temp, 0, Math.min(msgCount, msgArray.length));
+		} catch (Exception e) {
+			logger.error("msgArray length = " + msgArray.length + ", start = " + Math.max(0, (msgArray.length-msgCount)) + ", count = " + Math.min(msgCount, msgArray.length));
+			logger.error("temp array length = " + temp.length);
+			logger.error(elog.toStringException(e));
+		}
+		//logger.info("Actual time taken to retrieve from channel " + channelName + " = " + (System.currentTimeMillis() - startTime));
 		return Arrays.asList(temp);
 	}
 	
