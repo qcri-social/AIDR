@@ -13,7 +13,9 @@ import org.glassfish.jersey.server.ChunkedOutput;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
+
 import qa.qcri.aidr.output.stream.SubscriptionDataObject;
+import qa.qcri.aidr.output.utils.ErrorLog;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
 import redis.clients.jedis.Jedis;
@@ -29,7 +31,7 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 	private String callbackName = null;
 
 	// Constants
-	public static final int REDIS_CALLBACK_TIMEOUT = 5 * 60 * 1000;	// in ms
+	public static final int REDIS_CALLBACK_TIMEOUT = 30 * 60 * 1000;	// in ms
 	public static final int SUBSCRIPTION_MAX_DURATION = -1;			//default = no expiry
 
 	public final int DEFAULT_COUNT = 1;
@@ -51,9 +53,10 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 	private List<String> messageList = Collections.synchronizedList(new ArrayList<String>());
 
 	private ArrayList<ChunkedOutput<String>> writerList = null;
-	
+
 	// Debugging
 	private static Logger logger = Logger.getLogger(AsyncStreamRedisSubscriber.class);
+	private static ErrorLog elog = new ErrorLog();
 
 	public AsyncStreamRedisSubscriber(final Jedis jedis, final ChunkedOutput<String> responseWriter,
 			ArrayList<ChunkedOutput<String>> writerList,
@@ -62,7 +65,7 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 		this.callbackName = subData.callbackName;
 		this.responseWriter = responseWriter;
 		this.writerList = writerList;
-		
+
 		this.subData = new SubscriptionDataObject();
 		this.subData.set(subData);
 
@@ -73,13 +76,14 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 			subscriptionDuration = SUBSCRIPTION_MAX_DURATION;
 		}
 		//System.out.println("rate=" + subData.rate + ", duration=" + subData.duration + ", callbackName=" + subData.callbackName);
-		//logger.info("Client requested subscription for duration = " + subscriptionDuration);
+		logger.info("Client requested subscription for duration = " + subscriptionDuration);
 		if (subData.rate > 0) {
 			messageRate = subData.rate;			// specified as messages/min (NOTE: upper-bound)
 			sleepTime = Math.max(0, Math.round(60 * 1000 / messageRate));		// time to sleep between sends (in msecs)
 		} else {
 			sleepTime = DEFAULT_SLEEP_TIME;		// use default value
 		}
+		messageList = new ArrayList<String>(DEFAULT_COUNT);
 	}
 
 	private long parseTime(String timeString) {
@@ -103,44 +107,54 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 
 	@Override
 	public void onMessage(String channel, String message) {
-		//synchronized (messageList) 
-		{
-			if (messageList.size() < DEFAULT_COUNT) messageList.add(message);
-			messageList.notifyAll();
+		try {
+			if (messageList != null) {
+				synchronized(messageList) {
+					if (messageList.size() < DEFAULT_COUNT) messageList.add(message);
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Error in onPMessage");
+			logger.error(elog.toStringException(e));
 		}
 	}
 
 	@Override
 	public void onPMessage(String pattern, String channel, String message) {
-		//synchronized (messageList) 
-		{
-			if (messageList.size() <  DEFAULT_COUNT) messageList.add(message);
-			//messageList.notifyAll();
+		try {
+			if (messageList != null) {
+				synchronized(messageList) {
+					if (messageList.size() < DEFAULT_COUNT) messageList.add(message);
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Error in onPMessage");
+			logger.error(elog.toStringException(e));
 		}
 	}
 
 	@Override
 	public void onPSubscribe(String pattern, int subscribedChannels) {
 		subData.isSubscribed = true;
-		//logger.info("Started pattern subscription for pattern: " + pattern);
+		logger.info("Started pattern subscription for pattern: " + pattern);
 	}
 
 	@Override
 	public void onPUnsubscribe(String pattern, int subscribedChannels) {
 		subData.isSubscribed = false;
-		//logger.info("Unsubscribed from pattern subscription: " + pattern);
+		logger.info("Unsubscribed from pattern subscription: " + pattern);
 	}
 
 	@Override
 	public void onSubscribe(String channel, int subscribedChannels) {
 		subData.isSubscribed = true;
-		//logger.info("Started channel subscription for " + channel);
+		logger.info("Started channel subscription for " + channel);
 	}
 
 	@Override
 	public void onUnsubscribe(String channel, int subscribedChannels) {
 		subData.isSubscribed = false;
-		//logger.info("Unsubscribed from channel " + channel);
+		logger.info("Unsubscribed from channel " + channel);
 	}
 
 	// Stop subscription of this subscribed thread and return resources to the JEDIS thread pool
@@ -154,7 +168,6 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 			}
 		}
 		subData.jedisConn.returnJedis(subData.subscriberJedis);
-		this.notifyAll();
 		logger.info("Subscription ended for Channel=" + subData.redisChannel);
 	}
 
@@ -182,10 +195,13 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 		try {
 			responseWriter.write(initMsg.toString());
 			responseWriter.write("\n\n\n");
-		} catch (IOException e1) {
-			logger.info("Error in writing Response to client");
+		} catch (IOException e) {
 			setRunFlag(false);
+			logger.error("Error in writing Response to client");
+			logger.error(elog.toStringException(e));
 		}
+		logger.info(channel + ": Async Thread ready to send messsages to client");
+		long messageCount = 0;
 		while (getRunFlag() && !isThreadTimeout(startTime)) {
 			// Here we poll a non blocking resource for updates
 			if (messageList != null && !messageList.isEmpty()) {
@@ -194,35 +210,43 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 					// Send updates response as JSON
 					JsonDataFormatter taggerOutput = null;
 					StringBuilder jsonDataList = null;
+					List<String> localCopy = null; 
 					synchronized (messageList) {
-						taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
-						jsonDataList = taggerOutput.createList(messageList, messageList.size(), subData.rejectNullFlag);
+						localCopy = new ArrayList<String>(messageList.size());
+						localCopy.addAll(messageList);
 					}
+					taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
+					jsonDataList = taggerOutput.createList(localCopy, localCopy.size(), subData.rejectNullFlag);
+
 					int count = taggerOutput.getMessageCount();
 					try {
 						//logger.info("[run] Formatted jsonDataList: " + jsonDataList.toString());
 						if (!responseWriter.isClosed()) {
-							responseWriter.write(jsonDataList.toString());
-							responseWriter.write("\n\n");
-							//logger.info(channel + ": sent jsonp data, count = " + count);
+							if (count > 0) {
+								// data present to send
+								responseWriter.write(jsonDataList.toString());
+								responseWriter.write("\n\n");
+								messageCount += count;
+								//logger.info(channel + ": sending to client message #" + messageCount);
+							}
 						}
 						else {
-							logger.info(channel + ": Possible client disconnect...");
-							//messageList.notifyAll();
+							logger.warn(channel + ": No responseWriter available!");
 							break;
 						}
 					} catch (Exception e) {
-						logger.info(channel + ": Error in write attempt - possible client disconnect");
 						setRunFlag(false);
+						logger.warn(channel + ": Error in write attempt - possible client disconnect");
 					} 
-					if (count != 0)									// we did not just send an empty JSONP message
+					if (count != 0)	{								// we did not just send an empty JSONP message
 						lastAccessedTime = new Date().getTime();	// approx. time when message last received from REDIS
-
+					}
 					// Reset the messageList buffer and cleanup
 					jsonDataList = null;
-					messageList.clear();	// remove the sent message from list
-					//messageList.notifyAll();
-
+					synchronized(messageList) {
+						messageList.clear();	// remove the sent message from list
+					}
+					localCopy.clear();
 					// Now sleep for a short time before going for next message - easy to read on screen
 					try {
 						Thread.sleep(sleepTime);
@@ -241,15 +265,14 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 				long currentTime = new Date().getTime();
 				long elapsed = currentTime - lastAccessedTime;
 				if (elapsed > REDIS_CALLBACK_TIMEOUT) {
-					logger.error(channel + ": Exceeded REDIS timeout = " + REDIS_CALLBACK_TIMEOUT + "msec");
+					logger.error(channel + ": Exceeded REDIS timeout for a message to appear on channel = " + REDIS_CALLBACK_TIMEOUT + "msec");
 					setRunFlag(false);
 				}	
 				else {
 					try {
-						Thread.sleep(1000);
+						Thread.sleep(10);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
 					}
 				}
 			}
@@ -260,6 +283,7 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 			}
 		}	// end-while
 
+		logger.info(channel + ": total sent message count = " + messageCount);
 		// clean-up and exit thread
 		if (!error && !timeout) {
 			if (messageList != null) {
@@ -272,6 +296,7 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 					writerList.remove(responseWriter);
 				} catch (IOException e) {
 					logger.error(channel + ": Error attempting closing ChunkedOutput.");
+					logger.error(elog.toStringException(e));
 				}
 			}
 			try {
@@ -279,7 +304,7 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				logger.error(channel + ": Attempting clean-up. Exception occurred attempting stopSubscription: " + e.toString());
-				e.printStackTrace();
+				logger.error(elog.toStringException(e));
 			}
 		}
 	}
@@ -308,11 +333,11 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 
 	@Override
 	public void onStartAsync(AsyncEvent event) throws IOException {
-		//logger.debug(channel + ": Async thread started...");
+		logger.info(channel + ": Async thread started...");
 	}
 
 	@Override
 	public void onComplete(AsyncEvent event) throws IOException {
-		//logger.debug(channel + ": Async thread complete...");
+		logger.info(channel + ": Async thread complete...");
 	}
 }

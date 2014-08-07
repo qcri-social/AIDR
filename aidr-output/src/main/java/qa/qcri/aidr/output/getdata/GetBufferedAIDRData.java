@@ -243,7 +243,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			int sendCount = taggerOutput.getMessageCount();
 			//logger.info("Total time taken to create send List = " + (System.currentTimeMillis() - t4));
 		
-			if (jsonDataList.indexOf("[{}]") > -1) {
+			if (0 == sendCount) {
 				// Nothing to send = so send the last sent data again!
 				if (lastSentLatestTweet != null && lastSentLatestTweet.length() > 0) { 
 					jsonDataList.replace(0, jsonDataList.length(), lastSentLatestTweet.toString());
@@ -413,10 +413,8 @@ public class GetBufferedAIDRData implements ServletContextListener {
 						messageCount = Math.min(msgCount, MAX_MESSAGES_COUNT);
 					}
 					// Get the last messageCount messages for channel=channelCode
-					List<String> bufferedMessages = new ArrayList<String>();
-					List<String> temp = cbManager.getLastMessages(channelName, messageCount);
-					bufferedMessages.addAll(temp != null ? temp : new ArrayList<String>());
-
+					List<String> bufferedMessages = cbManager.getLastMessages(channelName, messageCount);
+				
 					// Now filter the retrieved bufferedMessages list
 					FilterQueryMatcher tweetFilter = new FilterQueryMatcher();
 					if (queryList != null) tweetFilter.queryList.setConstraints(queryList);
@@ -446,14 +444,6 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					final StringBuilder jsonDataList = taggerOutput.createList(filteredMessages, messageCount, rejectNullFlag);
 					final int sendCount = taggerOutput.getMessageCount();
 					logger.info(channelCode + ": sending jsonp data, count = " + sendCount);
-
-					// Cleanup, send the retrieved list to client and close connection
-					if (temp != null) { 
-						temp.clear();
-						temp = null;
-					}
-					bufferedMessages.clear();
-					bufferedMessages = null;
 
 					filteredMessages.clear();
 					filteredMessages = null;

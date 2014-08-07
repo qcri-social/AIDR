@@ -63,9 +63,9 @@ public class ChannelBufferManager {
 	public static int redisPort = 6379;	
 
 	// Jedis related
-	public volatile static JedisConnectionObject jedisConn = null;		// we need only a single instance of JedisConnectionObject running in background
-	public volatile static Jedis subscriberJedis = null;
-	public volatile static RedisSubscriber aidrSubscriber = null;
+	public static JedisConnectionObject jedisConn = null;		// we need only a single instance of JedisConnectionObject running in background
+	public static Jedis subscriberJedis = null;
+	public static RedisSubscriber aidrSubscriber = null;
 
 	// Runtime related
 	private static boolean isConnected = false;
@@ -76,7 +76,7 @@ public class ChannelBufferManager {
 
 	// Channel Buffering Algorithm related
 	private static final String CHANNEL_PREFIX_STRING = "aidr_predict.";
-	public volatile static ConcurrentHashMap<String, ChannelBuffer> subscribedChannels;
+	public static ConcurrentHashMap<String, ChannelBuffer> subscribedChannels;
 
 	// DB access related
 	//private static DatabaseInterface dbController = null;
@@ -178,16 +178,23 @@ public class ChannelBufferManager {
 		if (currentTime - lastPublicFlagCheckedTime > CHECK_CHANNEL_PUBLIC_INTERVAL) {
 			logger.info("Periodic check for publiclyListed flag of channels");
 			Map<String, Boolean> statusFlags = getAllRunningCollections();	
+			logger.info("Retrieved list from aidr-manager, size = " + statusFlags.size());
 			if (statusFlags != null) {
-				for (String cName: statusFlags.keySet()){
-					ChannelBuffer cb = subscribedChannels.get(CHANNEL_PREFIX_STRING+cName);
-					cb.setPubliclyListed(statusFlags.get(cName));
-					System.out.println("For channel: " + cb.getChannelName() + ", isChannelPublic = " + cb.getPubliclyListed());
+				try {
+					for (String cName: statusFlags.keySet()) {
+						if (subscribedChannels.containsKey(CHANNEL_PREFIX_STRING+cName)) {
+							ChannelBuffer cb = subscribedChannels.get(CHANNEL_PREFIX_STRING+cName);
+							cb.setPubliclyListed(statusFlags.get(cName));
+							logger.info("For channel: " + cb.getChannelName() + ", isChannelPublic = " + cb.getPubliclyListed());
+						}
+					}
+					statusFlags.clear();
+				} catch (Exception e) {
+					logger.error(elog.toStringException(e));
 				}
-				statusFlags.clear();
 			}
 			lastPublicFlagCheckedTime = new Date().getTime();
-			
+
 		}
 
 		// Periodically check if any channel is down - if so, delete
@@ -205,7 +212,11 @@ public class ChannelBufferManager {
 	}
 
 	public void addMessageToChannelBuffer(final String channelName, final String msg) {
+		try {
 		subscribedChannels.get(channelName).addMessage(msg);
+		} catch (Exception e) {
+			logger.error("Unable to add message to buffer for channel: " + channelName);
+		}
 	}
 
 	public List<String> getLastMessages(String channelName, int msgCount) {
@@ -215,7 +226,11 @@ public class ChannelBufferManager {
 			// However, we get all messages in buffer since we do not know how many will 
 			// eventually be valid, due to rejectNullFlag setting in caller. The filtering
 			// to send msgCount number of messages will happen in the caller. 
-			return cb != null ? cb.getMessages(Math.min(2 * msgCount, ChannelBuffer.MAX_FETCH_SIZE)) : null;		
+			try {
+			return cb != null ? cb.getMessages(Math.min(2 * msgCount, ChannelBuffer.MAX_FETCH_SIZE)) : null;
+			} catch (Exception e) {
+				logger.error("Failed to retrieve messages from buffer for channel: " + channelName);
+			}
 		}
 		return null;
 	}
@@ -223,11 +238,17 @@ public class ChannelBufferManager {
 	// Returns true if channelName present in list of channels
 	// TODO: define the appropriate collections data structure - HashMap, HashSet, ArrayList? 
 	public boolean isChannelPresent(String channelName) {
+		try {
 		return (subscribedChannels != null) ? subscribedChannels.containsKey(channelName) : false;
+		} catch (Exception e) {
+			logger.error("Unable to check if channel present: " + channelName);
+			return false;
+		}
 	}
 
 	// channelName = fully qualified channel name as present in REDIS pubsub system
 	public void createChannelQueue(final String channelName) {
+		try {
 		ChannelBuffer cb = new ChannelBuffer(channelName);
 		if (bufferSize <= 0)
 			cb.createChannelBuffer();				// use default buffer size
@@ -236,17 +257,25 @@ public class ChannelBufferManager {
 		subscribedChannels.put(channelName, cb);
 		cb.setPubliclyListed(getChannelPublicStatus(channelName));
 		logger.info("Created channel buffer for channel: " + channelName + ", public = " + cb.getPubliclyListed());
+		} catch (Exception e) {
+			logger.error("Unable to create buffer for channel: " + channelName);
+		}
 	}
 
 
 	public void deleteChannelBuffer(final String channelName) {
+		try {
 		ChannelBuffer cb = subscribedChannels.get(channelName);
 		cb.deleteBuffer();
 		subscribedChannels.remove(channelName);
 		logger.info("Deleted channel buffer: " + channelName);
+		} catch (Exception e) {
+			logger.error("Unable to delete buffer for channel: " + channelName);
+		}
 	}
 
 	public void deleteAllChannelBuffers() {
+		try {
 		if (subscribedChannels != null) {
 			logger.info("Deleting buffers for currently subscribed list of channels: " + subscribedChannels.keySet());
 			for (String channel: subscribedChannels.keySet()) {
@@ -255,20 +284,29 @@ public class ChannelBufferManager {
 			}
 			subscribedChannels.clear();
 		}
+		} catch (Exception e) {
+			logger.error("Unable to delete all channel buffers");
+		}
 	}
 
 	/** 
 	 * @return A set of fully qualified channel names, null if none found
 	 */
 	public Set<String> getActiveChannelsList() {
+		try {
 		final Set<String> channelSet = (subscribedChannels != null) ? subscribedChannels.keySet() : null;
 		return channelSet.isEmpty() ? null : channelSet;
+		} catch (Exception e) {
+			logger.error("Unable to fetch list of active channels");
+			return null;
+		}
 	}
 
 	/** 
 	 * @return A set of only the channel codes - stripped of CHANNEL_PREFIX_STRING, null if none found
 	 */
 	public Set<String> getActiveChannelCodes() {
+		try {
 		Set<String> channelCodeSet = new HashSet<String>();
 		final Set<String> tempSet = (subscribedChannels != null) ? subscribedChannels.keySet() : null;
 		if (tempSet != null) {
@@ -276,6 +314,9 @@ public class ChannelBufferManager {
 				channelCodeSet.add(s.substring(CHANNEL_PREFIX_STRING.length()));
 			}
 			return channelCodeSet.isEmpty() ? null : channelCodeSet;
+		}
+		} catch (Exception e) {
+			logger.error("Unable to get active channel codes");
 		}
 		return null;
 	}
@@ -299,7 +340,7 @@ public class ChannelBufferManager {
 			if (clientResponse.getStatus() == 200) {
 				//convert JSON string to Map
 				collectionMap = clientResponse.readEntity(Map.class);
-				System.out.println("Received map: " + collectionMap);
+				logger.info("Channel info received from manager: " + collectionMap);
 				return collectionMap.get(channelCode);
 			} else {
 				logger.warn("Couldn't contact AIDRFetchManager for publiclyListed status, channel: " + channelName);
@@ -327,11 +368,11 @@ public class ChannelBufferManager {
 
 			clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 			Map<String, Boolean> collectionMap = new HashMap<String, Boolean>();
-
+			logger.info("Response from manager: " + clientResponse);
 			//convert JSON string to Map
 			if (clientResponse.getStatus() == 200) {
 				collectionMap = clientResponse.readEntity(Map.class);
-				System.out.println("Received map: " + collectionMap);
+				logger.info("Received from nanager: " + collectionMap);
 				return collectionMap;
 			} else {
 				logger.warn("Couldn't contact AIDRFetchManager for publiclyListed status of running collections");
@@ -348,8 +389,9 @@ public class ChannelBufferManager {
 	 */
 	public List<String> getLatestFromAllChannels(final int msgCount) {
 		List<String>dataSet = new ArrayList<String>();
-
+		
 		final int EXTRA = 3;		
+		try {
 		if (subscribedChannels != null) {
 			for (ChannelBuffer cb: subscribedChannels.values()) {
 				if (cb.getPubliclyListed()) {
@@ -364,12 +406,20 @@ public class ChannelBufferManager {
 				}
 			}
 		}
+		} catch (Exception e) {
+			logger.error("Unable to get list of latest messages across channels");
+		}
 		return (dataSet.isEmpty() ? null : dataSet);
 	}
 
 	public String parseChannelName(String channelName) {
+		try {
 		String[] strs = channelName.split(CHANNEL_PREFIX_STRING);
 		return (strs != null) ? strs[1] : channelName;
+		} catch (Exception e) {
+			logger.error("Failed to parse channel name for channel: " + channelName);
+		}
+		return null;
 	}
 
 

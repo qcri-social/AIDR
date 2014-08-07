@@ -20,12 +20,13 @@
 		<servlet-name>javax.ws.rs.core.Application</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
-  <listener>
+    
+    <listener>
 		<listener-class>qa.qcri.aidr.output.getdata.GetBufferedAIDRData</listener-class>
 	</listener>
-	<!-- listener>
+	<listener>
 		<listener-class>qa.qcri.aidr.output.stream.AsyncStream</listener-class>
-	</listener -->
+	</listener>
 	<!-- listener>
 		<listener-class>qa.qcri.aidr.output.stream.NewTestChunkedOutput</listener-class>
 	</listener -->

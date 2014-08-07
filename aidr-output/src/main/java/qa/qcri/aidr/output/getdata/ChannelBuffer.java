@@ -37,7 +37,7 @@ public class ChannelBuffer {
 	private Buffer messageBuffer = null;
 	int size = 0;
 	
-	private boolean publiclyListed = true;
+	private Boolean publiclyListed = true;
 	
 	private static Logger logger = LoggerFactory.getLogger(ChannelBuffer.class);
 	private static ErrorLog elog = new ErrorLog();
@@ -62,11 +62,11 @@ public class ChannelBuffer {
 		this.size = bufferSize;
 	}
 	
-	public void setPubliclyListed(boolean publiclyListed) {
+	public void setPubliclyListed(Boolean publiclyListed) {
 		this.publiclyListed = publiclyListed;
 	}
 	
-	public boolean getPubliclyListed() {
+	public Boolean getPubliclyListed() {
 		return publiclyListed;
 	}
 	
