@@ -173,7 +173,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		// Cache data - performance reasons
 		if ((inRequests.incrementAndGet() > MAX_IN_REQUESTS) 
 				|| ((System.currentTimeMillis() - lastSentTimeGetLatestData) < CACHE_TIME_INTERVAL)) {
-			
+
 			if (inRequests.get() > MAX_IN_REQUESTS) {
 				logger.warn("WARNING! We already have max number of readers : " + inRequests.get());
 			} else {
@@ -186,10 +186,10 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			} else {
 				logger.warn("Returning null JSON as there is no data in buffers");
 				inRequests.decrementAndGet();
-				return Response.ok(new String("[{}]")).build();		// NO-OP condition, since nothing to send
+				return returnEmptyJson(callbackName);		// NO-OP condition, since nothing to send
 			}
 		}
-		
+
 		// Otherwise, go the full way...
 		//logger.info("Attempting to fetch from buffered data, for requester = " + inRequests.get());
 		//long startTime = System.currentTimeMillis();
@@ -201,9 +201,10 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			//long t = System.currentTimeMillis();
 			List<String> bufferedMessages = cbManager.getLatestFromAllChannels(messageCount);
 			//logger.info("Total time taken to retrieve from buffers = " + (System.currentTimeMillis() - t));
-			// Added code for filteredMessages as per new feature: pivotal #67373070
-			List<String> filteredMessages = new ArrayList<String>();			
 			
+			// Added code for filteredMessages as per new feature: pivotal #67373070
+			List<String> filteredMessages = null;			
+
 			if (bufferedMessages != null) {
 				//logger.info("Buffered messages list size = " + bufferedMessages.size());
 				Map<Long, String> sortedFilteredMessages = new TreeMap<Long, String>();
@@ -215,17 +216,17 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					if (classifiedTweet != null && classifiedTweet.getMaxConfidence() >= confidence
 							&& classifiedTweet.getCreatedAt() != null) {
 						sortedFilteredMessages.put(classifiedTweet.getCreatedAt().getTime(), tweet);		// note: we may override duplicate key-values but that is acceptable in our use-case
-						filteredMessages.add(tweet);
 						channelSelector.initializeNew(classifiedTweet.getCrisisCode());	
 						//logger.info("Added tweet from channel " + classifiedTweet.getCrisisCode() + ", confidence: " + classifiedTweet.getMaxConfidence());
 					}
 				}
 				//logger.info("Total time taken to deserialize all tweets = " + (System.currentTimeMillis() - t0));
+				
 				// Now sort the dataSet in ascending order of timestamp
 				//long t3 = System.currentTimeMillis();
 				//QuickSort sorter = new QuickSort();
 				//sorter.sort(filteredMessages);
-				filteredMessages.clear();
+				
 				filteredMessages = new ArrayList<String>(sortedFilteredMessages.values());
 				sortedFilteredMessages.clear();
 				//logger.info("Finished sorting the list in time = " + (System.currentTimeMillis() - t3));
@@ -242,7 +243,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			}
 			int sendCount = taggerOutput.getMessageCount();
 			//logger.info("Total time taken to create send List = " + (System.currentTimeMillis() - t4));
-		
+
 			if (0 == sendCount) {
 				// Nothing to send = so send the last sent data again!
 				if (lastSentLatestTweet != null && lastSentLatestTweet.length() > 0) { 
@@ -269,7 +270,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		inRequests.decrementAndGet();
 		logger.error("Error in jedis connection. Bailing out...");
 		System.err.println("[getLatestBufferedAIDRData] Error in jedis connection. Bailing out...");
-		return Response.ok(new String("[{}]")).build();
+		return returnEmptyJson(callbackName);
 	}
 
 
@@ -333,20 +334,19 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					}
 
 					System.out.println(channelCode + " : sending jsonp data, count = " + sendCount);
-					return Response.ok(jsonDataList.toString()).build();
+					if (jsonDataList != null) {
+					return Response.ok(jsonDataList.toString()).build(); 
+					} else {
+						return returnEmptyJson(callbackName);
+					}
 				}
 				else {
-					if (callbackName != null) {
-						StringBuilder respStr = new StringBuilder();
-						respStr.append(callbackName).append("([{}])");
-						return Response.ok(respStr.toString()).build();
-					} else
-						return Response.ok(new String("[{}]")).build();
+					return returnEmptyJson(callbackName);
 				}
 			}
 		}
 		logger.error(channelCode + ": error in jedis connection. Bailing out...");
-		return Response.ok(new String("[{}]")).build();
+		return returnEmptyJson(callbackName);
 	}
 
 	@OPTIONS
@@ -414,83 +414,88 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					}
 					// Get the last messageCount messages for channel=channelCode
 					List<String> bufferedMessages = cbManager.getLastMessages(channelName, messageCount);
-				
-					// Now filter the retrieved bufferedMessages list
-					FilterQueryMatcher tweetFilter = new FilterQueryMatcher();
-					if (queryList != null) tweetFilter.queryList.setConstraints(queryList);
-					tweetFilter.buildMatcherArray();
+					if (bufferedMessages != null) {
+						logger.info("Fetched unfiltered message List: " + bufferedMessages.size());
+						// Now filter the retrieved bufferedMessages list
+						FilterQueryMatcher tweetFilter = new FilterQueryMatcher();
+						if (queryList != null) tweetFilter.queryList.setConstraints(queryList);
+						tweetFilter.buildMatcherArray();
 
-					// Now to serially filter each tweet in the bufferedMessages list
-					List<String> filteredMessages = new ArrayList<String>();
-					if (null == queryList || queryList.getConstraints().isEmpty()) {
-						//|| (queryList.getConstraints().get(0).queryType != QueryType.classifier_query
-						//&& queryList.getConstraints().get(0).queryType != QueryType.date_query)) {
-						// default behavior - no filtering if no POST payload
-						logger.info(channelCode + ": no filtering...");
-						filteredMessages.addAll(bufferedMessages);
-					} else {
-						ClassifiedFilteredTweet classifiedTweet = new ClassifiedFilteredTweet();
-						for (String tweet: bufferedMessages) {
-							if (classifiedTweet.deserialize(tweet) != null && tweetFilter.getMatcherResult(classifiedTweet)) {
-								logger.debug(channelCode + ": adding tweet to filteredMessages");
-								filteredMessages.add(tweet);
+						// Now to serially filter each tweet in the bufferedMessages list
+						List<String> filteredMessages = new ArrayList<String>();
+						if (null == queryList || queryList.getConstraints().isEmpty()) {
+							//|| (queryList.getConstraints().get(0).queryType != QueryType.classifier_query
+							//&& queryList.getConstraints().get(0).queryType != QueryType.date_query)) {
+							// default behavior - no filtering if no POST payload
+							logger.info(channelCode + ": no filtering...");
+							filteredMessages.addAll(bufferedMessages);
+						} else {
+							for (String tweet: bufferedMessages) {
+								ClassifiedFilteredTweet classifiedTweet = new ClassifiedFilteredTweet().deserialize(tweet);
+								if (classifiedTweet != null && tweetFilter.getMatcherResult(classifiedTweet)) {
+									//logger.debug(channelCode + ": adding tweet to filteredMessages");
+									filteredMessages.add(tweet);
+								}
 							}
+							logger.debug(channelCode + ": fetched bufferedMessages size = " + bufferedMessages.size());
+							logger.debug(channelCode + ": Final filteredMessages size = " + filteredMessages.size());
 						}
-						logger.debug(channelCode + ": fetched bufferedMessages size = " + bufferedMessages.size());
-						logger.info(channelCode + ": Final filteredMessages size = " + filteredMessages.size());
+						// Finally the usual stuff - format tweets for tagger specific output
+						final JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
+						final StringBuilder jsonDataList = taggerOutput.createList(filteredMessages, messageCount, rejectNullFlag);
+						final int sendCount = taggerOutput.getMessageCount();
+						logger.info(channelCode + ": sending jsonp data, count = " + sendCount);
+
+						filteredMessages.clear();
+						filteredMessages = null;
+
+						logger.debug(channelCode + ": sending jsonp data, count = " + sendCount);
+						return Response.ok(jsonDataList.toString())
+								.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
+								.header("Access-Control-Allow-Origin", "*")
+								.header("Access-Control-Allow-Credentials", "true")
+								.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
+								.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
+								.build();
+					} else {
+						logger.warn("No data found for channel: " + channelName);
+						return returnEmptyJson(callbackName);
 					}
-					// Finally the usual stuff - format tweets for tagger specific output
-					final JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
-					final StringBuilder jsonDataList = taggerOutput.createList(filteredMessages, messageCount, rejectNullFlag);
-					final int sendCount = taggerOutput.getMessageCount();
-					logger.info(channelCode + ": sending jsonp data, count = " + sendCount);
-
-					filteredMessages.clear();
-					filteredMessages = null;
-
-					logger.debug(channelCode + ": sending jsonp data, count = " + sendCount);
-					return Response.ok(jsonDataList.toString())
-							.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
-							.header("Access-Control-Allow-Origin", "*")
-							.header("Access-Control-Allow-Credentials", "true")
-							.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
-							.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
-							.build();
+				} else {
+					logger.warn("Channel name doesn't exist: " + channelName);
+					return returnEmptyJson(callbackName);
 				}
-				else {
-					logger.warn("channel name doesn't exist: " + channelName);
-					if (callbackName != null) {
-						StringBuilder respStr = new StringBuilder();
-						respStr.append(callbackName).append("([{}])");
-						return Response.ok(respStr.toString())
-								.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
-								.header("Access-Control-Allow-Origin", "*")
-								.header("Access-Control-Allow-Credentials", "true")
-								.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
-								.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
-								.build();
-					} else
-						return Response.ok(new String("[{}]"))
-								.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
-								.header("Access-Control-Allow-Origin", "*")
-								.header("Access-Control-Allow-Credentials", "true")
-								.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
-								.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
-								.build();
-				}
+			}
+			else {
+				logger.warn("Error in user supplied channel: " + channelCode);
+				return returnEmptyJson(callbackName);
 			}
 		}
 		logger.error(channelCode + ": error in jedis connection. Bailing out...");
-		return Response.ok(new String("[{}]"))
-				.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
-				.header("Access-Control-Allow-Origin", "*")
-				.header("Access-Control-Allow-Credentials", "true")
-				.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
-				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
-				.build();
+		return returnEmptyJson(callbackName);
 	}
 
-
+	private Response returnEmptyJson(final String callbackName) {
+		if (callbackName != null) {
+			StringBuilder respStr = new StringBuilder();
+			respStr.append(callbackName).append("([{}])");
+			return Response.ok(respStr.toString())
+					.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
+					.header("Access-Control-Allow-Origin", "*")
+					.header("Access-Control-Allow-Credentials", "true")
+					.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
+					.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
+					.build();
+		} else {
+			return Response.ok(new String("[{}]"))
+					.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
+					.header("Access-Control-Allow-Origin", "*")
+					.header("Access-Control-Allow-Credentials", "true")
+					.header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS, HEAD")
+					.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
+					.build();
+		}
+	}
 
 	/**
 	 * 

@@ -36,22 +36,22 @@ public class ChannelBuffer {
 	private long lastAddTime;
 	private Buffer messageBuffer = null;
 	int size = 0;
-	
+
 	private Boolean publiclyListed = true;
-	
+
 	private static Logger logger = LoggerFactory.getLogger(ChannelBuffer.class);
 	private static ErrorLog elog = new ErrorLog();
-	
+
 	public ChannelBuffer(final String name, final int bufferSize) {
 		this.channelName = name;
 		this.messageBuffer = BufferUtils.synchronizedBuffer(new CircularFifoBuffer(bufferSize));
 		this.size = bufferSize;
 	}
-	
+
 	public ChannelBuffer(final String name) {
 		this.channelName = name;
 	}
-	
+
 	public void createChannelBuffer() {
 		this.messageBuffer = BufferUtils.synchronizedBuffer(new CircularFifoBuffer(MAX_BUFFER_SIZE));
 		this.size = MAX_BUFFER_SIZE;
@@ -61,15 +61,15 @@ public class ChannelBuffer {
 		this.messageBuffer = BufferUtils.synchronizedBuffer(new CircularFifoBuffer(bufferSize));
 		this.size = bufferSize;
 	}
-	
+
 	public void setPubliclyListed(Boolean publiclyListed) {
 		this.publiclyListed = publiclyListed;
 	}
-	
+
 	public Boolean getPubliclyListed() {
 		return publiclyListed;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public void addMessage(String msg) {
 		messageBuffer.add(msg);
@@ -100,11 +100,23 @@ public class ChannelBuffer {
 			logger.error("msgArray length = " + msgArray.length + ", start = " + Math.max(0, (msgArray.length-msgCount)) + ", count = " + Math.min(msgCount, msgArray.length));
 			logger.error("temp array length = " + temp.length);
 			logger.error(elog.toStringException(e));
+			return null;
 		}
-		//logger.info("Actual time taken to retrieve from channel " + channelName + " = " + (System.currentTimeMillis() - startTime));
-		return Arrays.asList(temp);
+		// Finally remove "null" elements and return the array
+		try {
+			List<String> fetchedList = new ArrayList<String>(Arrays.asList(temp));
+			fetchedList.removeAll(Collections.singleton(null));		// remove null values from list
+			
+			//logger.info("Actual time taken to retrieve from channel " + channelName + " = " + (System.currentTimeMillis() - startTime));
+			if (fetchedList.isEmpty()) return null;
+			return fetchedList;
+		} catch (Exception e) {
+			logger.error("Error in creating list out of fetched array");
+			logger.error(elog.toStringException(e));
+			return null;
+		}
 	}
-	
+
 
 	public void deleteBuffer() {
 		channelName = null;
@@ -125,15 +137,15 @@ public class ChannelBuffer {
 	public long getLastAddTime() {
 		return lastAddTime;
 	}
-	
+
 	public int getMaxBufferSize() {
 		return MAX_BUFFER_SIZE;
 	}
-	
+
 	public int getMaxFetchSize() {
 		return MAX_FETCH_SIZE;
 	}
-	
+
 	public int getBufferSize() {
 		return size;
 	}
