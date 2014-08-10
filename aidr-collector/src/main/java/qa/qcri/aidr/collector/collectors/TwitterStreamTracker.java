@@ -5,6 +5,7 @@
 package qa.qcri.aidr.collector.collectors;
 
 import java.io.Serializable;
+import java.net.SocketException;
 
 //import java.util.logging.Level;
 //import java.util.logging.Logger;
@@ -127,7 +128,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
                 int length = rawTweetJSON.length();
                 if (rawTweetJSON.charAt(length - 1) == '}') {
                     rawTweetJSON.replace(length - 1, length, aidrJson);
-                    publisherJedis.publish(channelName, status.getText());
+                    publisherJedis.publish(channelName, rawTweetJSON.toString());
                     counter++;
                     if (counter >= Config.FETCHER_REDIS_COUNTER_UPDATE_THRESHOLD) {
                         cache.incrCounter(collectionCode, counter);
@@ -168,13 +169,11 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
     }
 
     public void abortCollection() {
-
         JedisConnectionPool.close(publisherJedis);
         twitterStream.cleanUp();
         twitterStream.shutdown();
         cleanCache();
         logger.info("AIDR-Fetcher: Collection aborted which was tracking [" + getStreamQuery().getToTrackToString() + "] AND following [" + getStreamQuery().getToFollowToString() + "]");
-
     }
 
     public void cleanCache() {

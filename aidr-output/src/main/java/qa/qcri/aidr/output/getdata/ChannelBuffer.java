@@ -11,6 +11,8 @@
 package qa.qcri.aidr.output.getdata;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +22,7 @@ import org.apache.commons.collections.Buffer;
 import org.apache.commons.collections.BufferUtils;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 
+import org.apache.commons.lang.ArrayUtils;
 //import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,29 +30,28 @@ import org.slf4j.LoggerFactory;
 import qa.qcri.aidr.output.utils.ErrorLog;
 
 public class ChannelBuffer {
-	private static int MAX_BUFFER_SIZE = 2000;		// number of elements the buffer will hold at any time
+	public static int MAX_BUFFER_SIZE = 2000;		// number of elements the buffer will hold at any time
+	public static int MAX_FETCH_SIZE = 2000;		// max. number of elements to fetch in one op
 	private String channelName = null;
 	private long lastAddTime;
 	private Buffer messageBuffer = null;
 	int size = 0;
-	
+
+	private Boolean publiclyListed = true;
+
 	private static Logger logger = LoggerFactory.getLogger(ChannelBuffer.class);
 	private static ErrorLog elog = new ErrorLog();
-	
+
 	public ChannelBuffer(final String name, final int bufferSize) {
-		//BasicConfigurator.configure();			// setup log4j logging
-		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
 		this.channelName = name;
 		this.messageBuffer = BufferUtils.synchronizedBuffer(new CircularFifoBuffer(bufferSize));
 		this.size = bufferSize;
 	}
-	
+
 	public ChannelBuffer(final String name) {
-		//BasicConfigurator.configure();			// setup log4j logging
-		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
 		this.channelName = name;
 	}
-	
+
 	public void createChannelBuffer() {
 		this.messageBuffer = BufferUtils.synchronizedBuffer(new CircularFifoBuffer(MAX_BUFFER_SIZE));
 		this.size = MAX_BUFFER_SIZE;
@@ -58,6 +60,14 @@ public class ChannelBuffer {
 	public void createChannelBuffer(final int bufferSize) {
 		this.messageBuffer = BufferUtils.synchronizedBuffer(new CircularFifoBuffer(bufferSize));
 		this.size = bufferSize;
+	}
+
+	public void setPubliclyListed(Boolean publiclyListed) {
+		this.publiclyListed = publiclyListed;
+	}
+
+	public Boolean getPubliclyListed() {
+		return publiclyListed;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -77,45 +87,36 @@ public class ChannelBuffer {
 	 * @param msgCount: number of messages to return
 	 * @return Returns a list of messages sorted in ascending order of timestamp
 	 */
-	public List<String> getMessages(int msgCount) {
-		List<String> msgList = new ArrayList<String>(); 
-		synchronized(messageBuffer) 
-		{
-			Iterator<String>itr = messageBuffer.iterator();
-			int count = 0;
-			while (itr.hasNext() && count < msgCount) {
-				msgList.add(itr.next());
-				++count;
-			}
-			//ogger.info("channel = " + channelName + ", count = " + msgList.size());
+	public List<String> getMessages(int msgCount) { 
+		//long startTime = System.currentTimeMillis();
+		Object[] msgArray = null;
+		synchronized(this) {
+			msgArray = messageBuffer.toArray();
 		}
-		return msgList;
-	}
-	
-	@SuppressWarnings("unchecked")
-	/**
-	 * @param msgCount: number of messages to return
-	 * @return Returns a list of messages sorted in descending order of timestamp
-	 */
-	public List<String> getLIFOMessages(int msgCount) {
-		List<String> msgList = new ArrayList<String>();
-		List<String> tempList = new ArrayList<String>();
-		tempList.addAll(getMessages(MAX_BUFFER_SIZE));
-		int count = 0;
-		synchronized (tempList) 
-		{
-			ListIterator<String>itr = tempList.listIterator(tempList.size());
-			//logger.info("channel = " + channelName + ", size = " + tempList.size());
-			while (itr.hasPrevious() && count < msgCount) {
-				msgList.add(itr.previous());
-				++count;
-				//logger.info("channel = " + channelName + ", count = " + count);
-			}
+		String[] temp = new String[msgCount];
+		try {
+			System.arraycopy(msgArray, Math.max(0, (msgArray.length-msgCount)), temp, 0, Math.min(msgCount, msgArray.length));
+		} catch (Exception e) {
+			logger.error("msgArray length = " + msgArray.length + ", start = " + Math.max(0, (msgArray.length-msgCount)) + ", count = " + Math.min(msgCount, msgArray.length));
+			logger.error("temp array length = " + temp.length);
+			logger.error(elog.toStringException(e));
+			return null;
 		}
-		tempList.clear();
-		tempList = null;
-		return msgList;
+		// Finally remove "null" elements and return the array
+		try {
+			List<String> fetchedList = new ArrayList<String>(Arrays.asList(temp));
+			fetchedList.removeAll(Collections.singleton(null));		// remove null values from list
+			
+			//logger.info("Actual time taken to retrieve from channel " + channelName + " = " + (System.currentTimeMillis() - startTime));
+			if (fetchedList.isEmpty()) return null;
+			return fetchedList;
+		} catch (Exception e) {
+			logger.error("Error in creating list out of fetched array");
+			logger.error(elog.toStringException(e));
+			return null;
+		}
 	}
+
 
 	public void deleteBuffer() {
 		channelName = null;
@@ -136,11 +137,15 @@ public class ChannelBuffer {
 	public long getLastAddTime() {
 		return lastAddTime;
 	}
-	
+
 	public int getMaxBufferSize() {
 		return MAX_BUFFER_SIZE;
 	}
-	
+
+	public int getMaxFetchSize() {
+		return MAX_FETCH_SIZE;
+	}
+
 	public int getBufferSize() {
 		return size;
 	}

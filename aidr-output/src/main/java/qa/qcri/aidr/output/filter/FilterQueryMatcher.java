@@ -70,11 +70,12 @@ public class FilterQueryMatcher {
 	public boolean getMatcherResult(ClassifiedFilteredTweet tweet) {
 		if (matcherArray != null) {
 			int i = 0;
+			boolean matchResult = true;
 			for (QueryJsonObject q: matcherArray) {
-				//logger.debug("Attempting matching with query predicate #" + i);
+				//logger.info("Attempting matching with query predicate: " + q.toString());
 				++i;
-				boolean matchResult = isQueryMatch(q, tweet);
-				//logger.debug("Result of matching query with tweet = " + matchResult + "\n");
+				 matchResult = matchResult && isQueryMatch(q, tweet);
+				//logger.info("** Result of matching query with tweet = " + matchResult + " ** \n");
 				if (!matchResult) {
 					return false;
 				}
@@ -119,12 +120,12 @@ public class FilterQueryMatcher {
 					q.getClassifierCode().equalsIgnoreCase(nLabel.attibute_code)) {
 					// classifier code matches, next match comparator
 					matchResult = true;
-					//logger.debug("comparing classifier code '" + nLabel.attibute_code + ": " + matchResult);
+					//logger.info("comparing classifier code '" + nLabel.attibute_code + "': " + matchResult);
 					
 					// First check confidence parameter
 					if (q.getComparator().equals(ComparatorType.has_confidence)) {
 						matchResult = matchResult && (nLabel.confidence >= q.getConfidence());
-						//logger.debug("comparing confidence: " + matchResult);
+						//logger.info("comparing confidence: " + matchResult);
 						if (matchResult) break;
 						continue;	// else go for next nLabel
 					}
@@ -134,17 +135,17 @@ public class FilterQueryMatcher {
 						matchResult = matchResult && (q.getLabelCode().equalsIgnoreCase(nLabel.label_code));
 						// Now check confidence value
 						matchResult = matchResult && (nLabel.confidence >= q.getConfidence());
-						//logger.debug("comparing tweet label '" + nLabel.label_code + "' with 'is': " + matchResult);
+						//logger.info("comparing tweet label '" + nLabel.label_code + "', confidence: " + nLabel.confidence + " >= " + q.getConfidence() + " with 'is': " + matchResult);
 						if (matchResult) break;
 						continue;		// else go for next nLabel
 					}
 					
 					// Next check label comparator "is_not"
 					if (q.getComparator().equals(ComparatorType.is_not) && q.getLabelCode() != null) {
-						matchResult = matchResult && (q.getLabelCode().equalsIgnoreCase(nLabel.label_code));
+						matchResult = matchResult && !(q.getLabelCode().equalsIgnoreCase(nLabel.label_code));
 						// Now check confidence value
-						matchResult = (!matchResult) && (nLabel.confidence >= q.getConfidence());
-						//logger.debug("comparing tweet label '" + nLabel.label_code + "' with 'is_not': " + matchResult);
+						matchResult = (matchResult) && (nLabel.confidence >= q.getConfidence());
+						//logger.info("comparing tweet label '" + nLabel.label_code  + "', confidence: " + nLabel.confidence + " >= " + q.getConfidence() + " with 'is_not': " + matchResult);
 						if (matchResult) break;
 						continue;		// else go for next nLabel
 					}

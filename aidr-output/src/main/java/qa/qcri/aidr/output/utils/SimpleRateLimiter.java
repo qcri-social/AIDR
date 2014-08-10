@@ -91,7 +91,7 @@ public class SimpleRateLimiter extends RateLimiter {
 		
 		public String findFirstIsNotRateLimitedKeyExclude(String excludeKey) {
 			for (String key : freq.keySet()) {
-				if (!isRateLimited(key) && !key.equalsIgnoreCase(excludeKey)) {
+				if (!isRateLimited(key) && !key.equals(excludeKey)) {
 					return key;
 				}
 			}
@@ -120,7 +120,7 @@ public class SimpleRateLimiter extends RateLimiter {
 		public String findRandomIsNotRateLimitedKeyExclude(String excludeKey) {
 			ArrayList<String>tempList = new ArrayList<String>();
 			for (String key : freq.keySet()) {
-				if (!isRateLimited(key) && !key.equalsIgnoreCase(excludeKey)) {
+				if (!isRateLimited(key) && !key.equals(excludeKey)) {
 					tempList.add(key);
 				}
 			}
@@ -143,7 +143,7 @@ public class SimpleRateLimiter extends RateLimiter {
 		
 		public boolean existsNotRateLimitedKeyExclude(String excludeKey) {
 			for (String key : freq.keySet()) {
-				if (!isRateLimited(key) && !key.equalsIgnoreCase(excludeKey)) {
+				if (!isRateLimited(key) && !key.equals(excludeKey)) {
 					return true;
 				}
 			}

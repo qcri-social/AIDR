@@ -58,7 +58,10 @@ public class ClassifiedFilteredTweet implements Serializable {
 		id = null;
 		screen_name = null;
 		nominal_labels.clear();
-
+		if (null == rawJsonString) {
+			return null;
+		}
+		
 		if (rawJsonString.startsWith("["))		// should never happen 
 			rawJsonString = rawJsonString.substring(1, rawJsonString.length()-1);	
 

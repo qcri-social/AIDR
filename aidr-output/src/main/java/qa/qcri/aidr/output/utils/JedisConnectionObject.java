@@ -29,7 +29,7 @@ public class JedisConnectionObject {
 
 	private static boolean poolSetup = false;
 	private static boolean connectionSetup = false;
-	
+
 	// Logger setup
 	private static Logger logger = Logger.getLogger(JedisConnectionObject.class);
 	private static ErrorLog elog = new ErrorLog();
@@ -53,32 +53,33 @@ public class JedisConnectionObject {
 				poolConfig = new JedisPoolConfig();
 				poolConfig.setMaxActive(200);
 				poolConfig.setMaxIdle(50);
-				poolConfig.setMinIdle(5);
-				poolConfig.setTestWhileIdle(true);
-				poolConfig.setTestOnBorrow(true);
-				poolConfig.setTestOnReturn(true);
-				poolConfig.numTestsPerEvictionRun = 10;
-				poolConfig.timeBetweenEvictionRunsMillis = 60000;
-				poolConfig.maxWait = 60000;
+				poolConfig.setMinIdle(10);
+				//poolConfig.setTestWhileIdle(true);
+				//poolConfig.setTestOnBorrow(true);
+				//poolConfig.setTestOnReturn(true);
+				//poolConfig.numTestsPerEvictionRun = 10;
+				//poolConfig.timeBetweenEvictionRunsMillis = 3000;
+				poolConfig.maxWait = 3000;
 				poolConfig.whenExhaustedAction = org.apache.commons.pool.impl.GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW;
-				logger.debug("New Jedis poolConfig: " + poolConfig);
+				logger.info("New Jedis poolConfig: " + poolConfig);
 			} else {
-				logger.debug("Reusing existing Jedis poolConfig: " + poolConfig);
+				logger.info("Reusing existing Jedis poolConfig: " + poolConfig);
 			}
 			if (null == pool) {
 				try {
 					pool = new JedisPool(poolConfig, redisHost, redisPort, 30000);
 					poolSetup = true;
-					logger.debug("New Jedis pool: " + pool);
+					logger.info("New Jedis pool: " + pool);
 				} catch (Exception e) {
-					logger.debug("Fatal error! Could not initialize Jedis Pool!");
+					logger.error("Fatal error! Could not initialize Jedis Pool!");
+					logger.error(elog.toStringException(e));
 					poolConfig = null;
 					pool = null;
 					poolSetup = false;
 				}
 			} else {
 				poolSetup = true;
-				logger.debug("Reusing existing Jedis pool: " + pool);
+				logger.info("Reusing existing Jedis pool: " + pool);
 			}
 			//allotedJedis.notifyAll();
 		}
@@ -113,10 +114,11 @@ public class JedisConnectionObject {
 				subscriberJedis = null;
 				connectionSetup = false;
 				logger.error("Fatal error! Could not get a resource from the pool.");
+				logger.error(elog.toStringException(e));
 			}
 			if (subscriberJedis != null) {
 				allotedJedis.put(subscriberJedis, false);		// initially nothing assigned
-				logger.info("Returning jedis resource to caller: " + subscriberJedis);
+				logger.info("Allocating jedis resource to caller: " + subscriberJedis);
 				return subscriberJedis;
 			}
 		}
@@ -155,20 +157,21 @@ public class JedisConnectionObject {
 			try {
 				if (null != jedisInstance) {
 					if (allotedJedis != null) allotedJedis.remove(jedisInstance);
-					pool.returnResource(jedisInstance);
 					logger.info("Returned jedis resource: " + jedisInstance);
+					pool.returnResource(jedisInstance);
 				}
 			} catch (JedisConnectionException e) {
 				logger.error("JedisConnectionException occurred...");
+				logger.error(elog.toStringException(e));
 				pool.returnBrokenResource(jedisInstance);
 			} finally {
 				if (null != jedisInstance) { 
-					pool.returnResource(jedisInstance);
 					logger.info("Returned jedis resource in finally block: " + jedisInstance);
+					pool.returnResource(jedisInstance);
 				}
 			}
+
 		}
-		//this.notifyAll();
 	}
 
 	/**
@@ -210,7 +213,7 @@ public class JedisConnectionObject {
 	public boolean isPoolSetup() {
 		return poolSetup;
 	}
-	
+
 	/**
 	 * Returns the state of Jedis connection for this JedisConnectionObject instance
 	 * @return true is Jedis connection has been established, false otherwise
@@ -218,7 +221,7 @@ public class JedisConnectionObject {
 	public boolean isConnectionSetup() {
 		return connectionSetup;
 	}
-	
+
 	/**
 	 * Closes all open jedis connections and destroys the Jedis pool. 
 	 * Warning! Not thread safe! Use with care!

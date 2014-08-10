@@ -13,16 +13,22 @@ import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
 
+import qa.qcri.aidr.getdata.InjectorConfig;
+import qa.qcri.aidr.output.utils.JedisConnectionObject;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.exceptions.JedisConnectionException;
+
 
 public class RedisTweetInjector {
 
 	private URI host = null;
 	private int port = 6379;
-	private Jedis jedis = null;
+	//private Jedis jedis = null;
 
 	private InjectorConfig config;
 	private int sleepDuration = 0;		// default value - no sleep
+
+	private static JedisConnectionObject jedisConn = null;
 
 	public RedisTweetInjector() {
 		config = new InjectorConfig();
@@ -33,6 +39,7 @@ public class RedisTweetInjector {
 			e.printStackTrace();
 		}
 		this.port = config.port;
+		jedisConn = setupJedisConn(this.host.toString(), this.port);
 	}
 
 	public RedisTweetInjector(String host, int port) {
@@ -44,27 +51,21 @@ public class RedisTweetInjector {
 		}
 		this.port = port;
 		config = new InjectorConfig();
+		jedisConn = setupJedisConn(host, port);
 	}
 
+	public static synchronized JedisConnectionObject setupJedisConn(String host, int port) {
+		if (null == jedisConn) jedisConn = new JedisConnectionObject(host, port);
+		return jedisConn;
+	}
 
 	/** 
 	 * 
-	 * @return 1 on successful connection to Redis, -1 on failure
+	 * @return non-null Jedis on successful connection to Redis, null on failure
 	 */
-	public Jedis setupRedisConnection() {
-		try {
-			jedis = new Jedis(host.toString(), port, 30000);
-			jedis.connect();
-		} catch (Exception e) {
-			System.err.println("Failed to connect to Redis");
-			e.printStackTrace();
-			return null;
-		}
+	public synchronized Jedis setupRedisConnection() {
+		Jedis jedis = jedisConn.getJedisResource();
 		return jedis;
-	}
-
-	public Jedis getJedis() {
-		return this.jedis;
 	}
 
 	public List<String> getClassifiedFileVolumes(String collectionCode) {
@@ -98,14 +99,14 @@ public class RedisTweetInjector {
 	}
 
 	public int readDataForCollectionAndPublish(final Jedis jedis, final String collectionCode, 
-											   final int duration) {
+			final long duration) {
 		BufferedReader br = null;
 		int count = 0;
 		List<String> fileNames = getClassifiedFileVolumes(collectionCode);
 
 		long startTime = System.currentTimeMillis();
-		long currentTime = 0;
-		do {
+		long currentTime = startTime;
+		while ((currentTime - startTime) < duration)  {
 			for (String file : fileNames) {
 				String fileLocation = config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
 				//System.out.println(Thread.currentThread().getName() + ":: " + collectionCode + ": Reading file " + fileLocation);
@@ -126,20 +127,37 @@ public class RedisTweetInjector {
 				}
 			}
 			currentTime = System.currentTimeMillis();
-		} while ((currentTime - startTime) < duration);
+		} ;
+		System.out.println(Thread.currentThread().getName() + ": Done publishing Tweets");
 		return count;
 	}
 
 	public void injectTweets(final Jedis jedis, final String collectionCode) {
-		int duration = config.duration * 1000 * 60;		// in milliseconds
+		long duration = config.duration * 60 * 1000;		// in milliseconds
 		if (config.tweets_per_sec > 0) {
 			sleepDuration = 1000 / config.tweets_per_sec;			
 		}
 		System.out.println(Thread.currentThread().getName() + ": sleep interval between successive publish, determined from configuration: " + sleepDuration + "ms");
+		int count = readDataForCollectionAndPublish(jedis, collectionCode, duration);
 		System.out.println(Thread.currentThread().getName() + 
 				": Total tweets published in time " + config.duration 
-				+ "mins = " + readDataForCollectionAndPublish(jedis, collectionCode, duration));
+				+ "mins = " + count);
 	}
+
+	public void injectSingleTweet(final Jedis jedis, final String collectionCode) {
+		long duration = config.duration * 60 * 1000;		// in milliseconds
+		if (config.tweets_per_sec > 0) {
+			sleepDuration = 1000 / config.tweets_per_sec;			
+		}
+		System.out.println(Thread.currentThread().getName() + ": sleep interval between successive publish, determined from configuration: " + sleepDuration + "ms");
+		long startTime = System.currentTimeMillis();
+		long currentTime = startTime;
+		while ((currentTime - startTime) < duration)  {
+			publishTweet(jedis, collectionCode, config.singleTweet);
+			currentTime = System.currentTimeMillis();
+		}
+	}
+
 
 	public static void main(String args[]) throws Exception {
 		InjectorConfig config = new InjectorConfig();
@@ -153,26 +171,46 @@ public class RedisTweetInjector {
 					RedisTweetInjector injector = new RedisTweetInjector();
 					Jedis jedis = injector.setupRedisConnection();
 
-					if (jedis != null) {
-						InjectorConfig config = new InjectorConfig();
-						Random randomGenerator = new Random();
-						String collectionCode = config.collection_list.get(
-								randomGenerator.nextInt(config.collection_list.size()));
+					try {
+						if (jedis != null) {
+							InjectorConfig config = new InjectorConfig();
+							Random randomGenerator = new Random();
+							String collectionCode = config.collection_list.get(
+									randomGenerator.nextInt(config.collection_list.size()));
 
-						System.out.println("Thread " + getName() + ":: will use collection: " + collectionCode);
-						long startTime = System.currentTimeMillis();
-						injector.injectTweets(jedis, collectionCode);
-						long elapsed = System.currentTimeMillis() - startTime;
-						System.out.println("Done thread " + getName() + ", execution time = " + elapsed + "ms");
-					} else {
-						System.err.println("Couldn't connect to Redis, aborting...");
-						System.exit(-1);
+							System.out.println("Thread " + getName() + ":: will use collection: " + collectionCode);
+							long startTime = System.currentTimeMillis();
+							if (config.useSingleTweet) {
+								injector.injectSingleTweet(jedis, collectionCode);
+							} else {
+								injector.injectTweets(jedis, collectionCode);
+							}
+							long elapsed = System.currentTimeMillis() - startTime;
+							System.out.println("Done thread " + getName() + ", execution time = " + elapsed + "ms");
+							//jedis.flushAll();
+							jedisConn.returnJedis(jedis);
+						} else {
+							System.err.println("Couldn't connect to Redis, aborting...");
+							System.exit(-1);
+						} 
+					} catch (Exception e) {
+						e.printStackTrace();
+					} finally {
+						try {
+							if (jedis != null) {
+								//jedis.flushAll();
+								jedisConn.returnJedis(jedis);
+							}
+						} catch (JedisConnectionException e) {
+							System.err.println("REDIS Connection already closed");
+						}
+						System.out.println("Thread " + getName() + " closed open REDIS connections");
 					}
 				}
 			}.start();
-			
+
 			//injector.getJedis().publish(injector.config.channelPrefix+injector.config.collectionCode, "this is a test message");
-			
+
 		}
 
 	}
