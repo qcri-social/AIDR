@@ -86,6 +86,7 @@ public class CollectionServiceImpl implements CollectionService {
     }
 
     @Override
+    @Transactional
     public void create(AidrCollection collection) throws Exception {
         collectionRepository.save(collection);
     }
