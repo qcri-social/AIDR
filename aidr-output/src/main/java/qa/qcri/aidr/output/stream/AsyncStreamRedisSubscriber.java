@@ -192,14 +192,8 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 		setRunFlag(true);
 		StringBuilder initMsg = new StringBuilder();
 		initMsg.append("{channel:").append(this.channel).append(", subscription: SUCCESS, streaming: STARTING}");
-		try {
-			responseWriter.write(initMsg.toString());
-			responseWriter.write("\n\n\n");
-		} catch (IOException e) {
-			setRunFlag(false);
-			logger.error("Error in writing Response to client");
-			logger.error(elog.toStringException(e));
-		}
+		logger.info(initMsg.toString());
+	
 		logger.info(channel + ": Async Thread ready to send messsages to client");
 		long messageCount = 0;
 		while (getRunFlag() && !isThreadTimeout(startTime)) {
@@ -216,7 +210,7 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 						localCopy.addAll(messageList);
 					}
 					taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
-					jsonDataList = taggerOutput.createList(localCopy, localCopy.size(), subData.rejectNullFlag);
+					jsonDataList = taggerOutput.createStreamingList(localCopy, localCopy.size(), subData.rejectNullFlag);
 
 					int count = taggerOutput.getMessageCount();
 					try {

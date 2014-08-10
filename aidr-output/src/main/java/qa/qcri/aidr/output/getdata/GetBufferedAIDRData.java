@@ -80,11 +80,16 @@ import javax.ws.rs.core.Response;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
+
+
 import org.apache.log4j.Logger;
+
+import com.google.gson.JsonObject;
 
 import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
 import qa.qcri.aidr.output.filter.FilterQueryMatcher;
 import qa.qcri.aidr.output.filter.JsonQueryList;
+import qa.qcri.aidr.output.filter.NominalLabel;
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
 import qa.qcri.aidr.output.utils.SimpleRateLimiter;
@@ -415,7 +420,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					// Get the last messageCount messages for channel=channelCode
 					List<String> bufferedMessages = cbManager.getLastMessages(channelName, messageCount);
 					if (bufferedMessages != null) {
-						logger.info("Fetched unfiltered message List: " + bufferedMessages.size());
+						//logger.info("Fetched unfiltered message List: " + bufferedMessages.size());
 						// Now filter the retrieved bufferedMessages list
 						FilterQueryMatcher tweetFilter = new FilterQueryMatcher();
 						if (queryList != null) tweetFilter.queryList.setConstraints(queryList);
@@ -433,7 +438,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 							for (String tweet: bufferedMessages) {
 								ClassifiedFilteredTweet classifiedTweet = new ClassifiedFilteredTweet().deserialize(tweet);
 								if (classifiedTweet != null && tweetFilter.getMatcherResult(classifiedTweet)) {
-									//logger.debug(channelCode + ": adding tweet to filteredMessages");
+									//logger.info(channelCode + ": adding tweet to filteredMessages ["); 
 									filteredMessages.add(tweet);
 								}
 							}
