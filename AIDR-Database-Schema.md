@@ -1,3 +1,3 @@
 ## **AIDR Tagger Schema**
 
-![](http://imgur.com/JfnEidd)
+![](http://i.imgur.com/JfnEidd.png)
