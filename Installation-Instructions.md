@@ -94,7 +94,7 @@ After the above steps have been executed, you can build the project:
    `mysql> GRANT TRIGGER ON aidr_predict.* TO aidr_user@localhost IDENTIFIED BY 'pass123';`
    `mysql> QUIT;`
 
-2) Create the database schema running the src/main/scripts/create_db.sql script (this will DELETE your old data, if any):
+2) Create the database schema ([ER diagram](http://docdroid.net/g2pc)) by running the src/main/scripts/create_db.sql script (this will DELETE your old data, if any):
 
    `% mysql aidr_predict -u aidr_user -p < create_db.sql`
    Enter password: `pass123`
