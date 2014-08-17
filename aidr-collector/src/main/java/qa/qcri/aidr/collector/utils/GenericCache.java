@@ -25,7 +25,7 @@ public class GenericCache {
     private Map<String, String> lastDownloadedDocumentMap = null; // stores last downloaded document
     private Map<String, CollectionTask> failedCollections = null; // keeps failed collections
     private CollectorStatus collectorStatus; // keeps collector status inforamtion
-    public Map<String, String> SMSCollections = null;
+    private Map<String, String> SMSCollections;
 
     private GenericCache() {
         twitterTrackerMap = new HashMap<String, TwitterStreamTracker>();
@@ -134,6 +134,22 @@ public class GenericCache {
 
     public void delTwtConfigMap(String key) {
         this.twtConfigMap.remove(key);
+    }
+
+    public Map<String, String> getSMSCollections() {
+        return SMSCollections;
+    }
+
+    public String getSMSCollection(String code) {
+        return SMSCollections.get(code);
+    }
+
+    public void putSMSCollection(String code, String status) {
+        this.SMSCollections.put(code, status);
+    }
+
+    public void removeSMSCollection(String code) {
+        this.SMSCollections.remove(code);
     }
 
     public List<CollectionTask> getAllRunningCollectionTasks(){
