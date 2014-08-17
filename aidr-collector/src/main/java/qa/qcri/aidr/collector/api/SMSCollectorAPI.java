@@ -34,7 +34,6 @@ public class SMSCollectorAPI extends Loggable {
 
     private static Logger logger = Logger.getLogger(SMSCollectorAPI.class.getName());
     public static final String CHANNEL = Config.FETCHER_CHANNEL + ".%s_sms";
-    private Map<String, String> statuses = new HashMap<String, String>();
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @GET
