@@ -25,6 +25,7 @@ public class GenericCache {
     private Map<String, String> lastDownloadedDocumentMap = null; // stores last downloaded document
     private Map<String, CollectionTask> failedCollections = null; // keeps failed collections
     private CollectorStatus collectorStatus; // keeps collector status inforamtion
+    public Map<String, String> SMSCollections = null;
 
     private GenericCache() {
         twitterTrackerMap = new HashMap<String, TwitterStreamTracker>();
@@ -32,6 +33,7 @@ public class GenericCache {
         twtConfigMap = new HashMap<String, CollectionTask>();
         lastDownloadedDocumentMap = new HashMap<String, String>();
         failedCollections = new HashMap<String, CollectionTask>();
+        SMSCollections = new HashMap<String, String>();
         collectorStatus = new CollectorStatus();
     }
 

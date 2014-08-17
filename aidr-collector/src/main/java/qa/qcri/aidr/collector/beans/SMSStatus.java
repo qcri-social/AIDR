@@ -7,5 +7,6 @@
 package qa.qcri.aidr.collector.beans;
 
 public enum SMSStatus {
-    RUNNING;
+    RUNNING,
+    STOPPED;
 }
