@@ -66,10 +66,10 @@ public class ReceiveSMS {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         WebTarget webResource = client.target(uri);
 
-        List<SMS> responses = new ArrayList<SMS>(sms.size());
+        List<Response> responses = new ArrayList<Response>(sms.size());
         for (SMS message : sms) {
-            SMS post = webResource.request(MediaType.APPLICATION_JSON).post(Entity.entity(message, MediaType.APPLICATION_JSON), SMS.class);
-            responses.add(post);
+            Response response = webResource.request(MediaType.APPLICATION_JSON).post(Entity.entity(message, MediaType.APPLICATION_JSON));
+            responses.add(response);
         }
 
         System.out.println("Application receive " + responses.size() + " responses from server.");
