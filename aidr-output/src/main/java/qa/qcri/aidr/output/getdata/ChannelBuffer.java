@@ -72,14 +72,24 @@ public class ChannelBuffer {
 
 	@SuppressWarnings("unchecked")
 	public void addMessage(String msg) {
-		messageBuffer.add(msg);
-		lastAddTime = new Date().getTime();
+		try {
+			messageBuffer.add(msg);
+			lastAddTime = new Date().getTime(); 
+		} catch (Exception e) {
+			logger.error("Couldn't add message to buffer for channel: " + this.channelName);
+			logger.error(elog.toStringException(e));
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public void addAllMessages(ArrayList<String> msgList) {
-		messageBuffer.addAll(msgList);
-		lastAddTime = new Date().getTime();
+		try {
+			messageBuffer.addAll(msgList);
+			lastAddTime = new Date().getTime();
+		} catch (Exception e) {
+			logger.error("Couldn't add message to buffer for channel: " + this.channelName);
+			logger.error(elog.toStringException(e));
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -90,8 +100,14 @@ public class ChannelBuffer {
 	public List<String> getMessages(int msgCount) { 
 		//long startTime = System.currentTimeMillis();
 		Object[] msgArray = null;
+
 		synchronized(this) {
-			msgArray = messageBuffer.toArray();
+			try {
+				msgArray = messageBuffer.toArray();
+			} catch (Exception e) {
+				logger.error("Couldn't convert buffer to array!");
+				logger.error(elog.toStringException(e));
+			}
 		}
 		String[] temp = new String[msgCount];
 		try {
@@ -106,7 +122,7 @@ public class ChannelBuffer {
 		try {
 			List<String> fetchedList = new ArrayList<String>(Arrays.asList(temp));
 			fetchedList.removeAll(Collections.singleton(null));		// remove null values from list
-			
+
 			//logger.info("Actual time taken to retrieve from channel " + channelName + " = " + (System.currentTimeMillis() - startTime));
 			if (fetchedList.isEmpty()) return null;
 			return fetchedList;

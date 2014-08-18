@@ -206,7 +206,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			//long t = System.currentTimeMillis();
 			List<String> bufferedMessages = cbManager.getLatestFromAllChannels(messageCount);
 			//logger.info("Total time taken to retrieve from buffers = " + (System.currentTimeMillis() - t));
-			
+
 			// Added code for filteredMessages as per new feature: pivotal #67373070
 			List<String> filteredMessages = null;			
 
@@ -226,12 +226,12 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					}
 				}
 				//logger.info("Total time taken to deserialize all tweets = " + (System.currentTimeMillis() - t0));
-				
+
 				// Now sort the dataSet in ascending order of timestamp
 				//long t3 = System.currentTimeMillis();
 				//QuickSort sorter = new QuickSort();
 				//sorter.sort(filteredMessages);
-				
+
 				filteredMessages = new ArrayList<String>(sortedFilteredMessages.values());
 				sortedFilteredMessages.clear();
 				//logger.info("Finished sorting the list in time = " + (System.currentTimeMillis() - t3));
@@ -293,6 +293,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
 
 		System.out.println("[getBufferedAIDRData] request received");
+		logger.info("[getBufferedAIDRData] request received");
 		ChannelBufferManager cbManager = new ChannelBufferManager();
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {
 			boolean error = false;
@@ -339,13 +340,16 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					}
 
 					System.out.println(channelCode + " : sending jsonp data, count = " + sendCount);
+					logger.info(channelCode + " : sending jsonp data, count = " + sendCount);
 					if (jsonDataList != null) {
-					return Response.ok(jsonDataList.toString()).build(); 
+						return Response.ok(jsonDataList.toString()).build(); 
 					} else {
+						logger.warn("Returning empty json data list");
 						return returnEmptyJson(callbackName);
 					}
 				}
 				else {
+					logger.warn(channelName + " is not present");
 					return returnEmptyJson(callbackName);
 				}
 			}
@@ -378,8 +382,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			@QueryParam("callback") String callbackName,
 			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
 
-		logger.info("Request received for :" + channelCode);
-		logger.debug(channelCode + ": received json string: " + queryString);
+		logger.info("Request received for :" + channelCode + " with filtering constraints: " + queryString);
 		DeserializeFilters des = new DeserializeFilters();
 		JsonQueryList queryList = des.deserializeConstraints(queryString);
 
@@ -420,7 +423,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					// Get the last messageCount messages for channel=channelCode
 					List<String> bufferedMessages = cbManager.getLastMessages(channelName, messageCount);
 					if (bufferedMessages != null) {
-						//logger.info("Fetched unfiltered message List: " + bufferedMessages.size());
+						logger.info("Fetched unfiltered message List: " + bufferedMessages.size());
 						// Now filter the retrieved bufferedMessages list
 						FilterQueryMatcher tweetFilter = new FilterQueryMatcher();
 						if (queryList != null) tweetFilter.queryList.setConstraints(queryList);
