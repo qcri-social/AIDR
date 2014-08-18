@@ -4,6 +4,8 @@ import qa.qcri.aidr.predict.common.*;
 
 import java.util.*;
 
+import org.apache.log4j.Logger;
+
 /**
  * OutputWorkerIndex is a collection of OutputWorkers organized by eventID.
  *
@@ -14,6 +16,8 @@ public class HttpOutputWorkerIndex extends Loggable {
     private static HttpOutputWorkerIndex instance;
     HashMap<String, ArrayList<HttpOutputWorker>> workers;
 
+    private static Logger logger = Logger.getLogger(HttpOutputWorkerIndex.class);
+    		
     private HttpOutputWorkerIndex() {
         workers = new HashMap<String, ArrayList<HttpOutputWorker>>();
     }
@@ -56,7 +60,7 @@ public class HttpOutputWorkerIndex extends Loggable {
 
 
     public void removeWorker(HttpOutputWorker worker) {
-        log(LogLevel.INFO, "Removing worker from index");
+        logger.info("Removing worker from index");
 
         synchronized (this) {
             if (!workers.containsKey(worker.filter.crisisCode))

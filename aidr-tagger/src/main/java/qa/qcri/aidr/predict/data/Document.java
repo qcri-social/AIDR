@@ -3,7 +3,11 @@ package qa.qcri.aidr.predict.data;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 import org.json.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import qa.qcri.aidr.predict.classification.DocumentLabel;
 import qa.qcri.aidr.predict.classification.DocumentLabelFilter;
@@ -19,26 +23,31 @@ import qa.qcri.aidr.predict.featureextraction.DocumentFeature;
 public abstract class Document implements java.io.Serializable {
 
     static final long serialVersionUID = 1L;
-    int crisisID;
-    String crisisCode;
-    JSONObject inputJson;
-    InetAddress sourceIP;
-    String language = "en";
-    Integer documentID;
-    ArrayList<DocumentFeature> features = new ArrayList<DocumentFeature>();
-    ArrayList<DocumentLabel> labels = new ArrayList<DocumentLabel>();
-    int humanLabelCount = 0;
-    double valueAsTrainingSample = 0.5;
+    public Long crisisID;
+    public String crisisCode;
+    public JSONObject inputJson;
+    //public InetAddress sourceIP;
+    public String language = "en";
+    public Long documentID;
+    
+    public ArrayList<DocumentFeature> features = new ArrayList<DocumentFeature>();
+    public ArrayList<DocumentLabel> labels = new ArrayList<DocumentLabel>();
+    public int humanLabelCount = 0;
+    public double valueAsTrainingSample = 0.5;
 
     public Document() {
 
     }
 
     public void setDocumentID(Integer documentID) {
+        this.documentID = new Long(documentID);
+    }
+    
+    public void setDocumentID(Long documentID) {
         this.documentID = documentID;
     }
 
-    public Integer getDocumentID() {
+    public Long getDocumentID() {
         return documentID;
     }
 
@@ -67,14 +76,18 @@ public abstract class Document implements java.io.Serializable {
     }
 
     public abstract String getDoctype();
-
+    
     public abstract boolean isNovel();
 
     public void setCrisisID(int crisisID) {
+        this.crisisID = new Long(crisisID);
+    }
+    
+    public void setCrisisID(Long crisisID) {
         this.crisisID = crisisID;
     }
 
-    public int getCrisisID() {
+    public Long getCrisisID() {
         return crisisID;
     }
 
@@ -86,14 +99,18 @@ public abstract class Document implements java.io.Serializable {
         return crisisCode;
     }
 
+    /*
+    @JsonIgnore
     public void setSourceIP(InetAddress source) {
         sourceIP = source;
     }
-
+    
+    @JsonIgnore
     public InetAddress getSourceIP() {
         return sourceIP;
     }
-
+	*/
+    
     public void addLabel(DocumentLabel label) {
         labels.add(label);
 

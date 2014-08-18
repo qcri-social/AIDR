@@ -48,5 +48,14 @@ public class ErrorLog {
         Date date = new Date();
         return dateFormat.format(date);
     }
+    
+	public String toStringException(Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        
+        StringBuilder retVal = new StringBuilder(new String("Exception:")).append(System.getProperty("line.separator")).append(sw);
+        return retVal.toString();
+    }
 
 }

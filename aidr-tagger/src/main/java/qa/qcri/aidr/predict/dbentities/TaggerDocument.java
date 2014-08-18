@@ -2,130 +2,76 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package qa.qcri.aidr.task.entities;
+package qa.qcri.aidr.predict.dbentities;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.Collection;
-//import java.util.Collection;
 import java.util.Date;
 
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-//import javax.persistence.JoinTable;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-//import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 
-import qa.qcri.aidr.task.entities.NominalLabel;
-import qa.qcri.aidr.task.entities.TaskAssignment;
+import qa.qcri.aidr.predict.data.Document;
+import qa.qcri.aidr.predict.dbentities.NominalLabel;
+import qa.qcri.aidr.predict.dbentities.TaskAssignment;
+
+import com.google.common.net.InetAddresses;
 
 /**
  *
  * @author Koushik
  */
 
-
-@Entity
-@Table(catalog = "aidr_predict",name = "document")
-@XmlRootElement
-public class Document implements Serializable {
+public class TaggerDocument extends Document implements Serializable {
 
     private static final long serialVersionUID = -5527566248002296042L;
+    
+    @XmlElement
+    private boolean isEvaluationSet;
+
+    
+    @XmlElement
+    private String doctype;
+	
+    
+    //@XmlElement
+    //private Long sourceIP;
 
     @XmlElement
-    @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name = "documentID")
-    private Long documentID;
-
-    @XmlElement
-    @Column (name = "hasHumanLabels", nullable = false)
     private boolean hasHumanLabels;
 
     @XmlElement
-    @Column (name = "crisisID", nullable = false)
-    private Long crisisID;
-
-    @XmlElement
-    @Column (name = "isEvaluationSet", nullable = false)
-    private boolean isEvaluationSet;
-    
-    /*
-    @XmlElement
-    @Column (name = "sourceIP", nullable = false)
-    private Long sourceIP;
-	*/
-    
-    @XmlElement
-    @Column (name = "valueAsTrainingSample", nullable = false)
-    private Double valueAsTrainingSample;
-
-    @XmlElement
-    @Column (name = "receivedAt", nullable = false)
     private Date receivedAt;
-
+    
     @XmlElement
-    @Column (name = "language", nullable = false)
-    private String language;
-
-    @XmlElement
-    @Column (name = "doctype", nullable = false)
-    private String doctype;
-
-    @XmlElement
-    @Column (name = "data", nullable = false)
     private String data;
 
     @XmlElement
-    @Column (name = "wordFeatures", nullable = false)
     private String wordFeatures;
 
     @XmlElement
-    @Column (name = "geoFeatures", nullable = false)
     private String geoFeatures;
 
     @XmlElement
-    @OneToOne(cascade=CascadeType.DETACH, fetch=FetchType.LAZY)
-    @JoinColumn(name="documentID",insertable=true,
-            updatable=true,nullable=true,unique=true)
     private TaskAssignment taskAssignment;
     
-    
-    //@XmlElement
-    @JoinTable(name = "document_nominal_label", joinColumns = {
-			@JoinColumn(name = "documentID", referencedColumnName = "documentID")}, inverseJoinColumns = {
-			@JoinColumn(name = "nominalLabelID", referencedColumnName = "nominalLabelID")})
-	@ManyToMany(cascade=CascadeType.MERGE, fetch=FetchType.LAZY)
     @JsonIgnore
     @XmlTransient
 	private Collection<NominalLabel> nominalLabelCollection;
     
-    public Document(){}
+    public TaggerDocument(){
+    	super();
+    }
 
-    public Document(Long documentID, boolean hasHumanLabels){
-        this.documentID  = documentID;
+    public TaggerDocument(Long documentID, boolean hasHumanLabels){
+        super();
+    	this.documentID  = documentID;
         this.hasHumanLabels = hasHumanLabels;
     }
 
@@ -170,16 +116,48 @@ public class Document implements Serializable {
     }
     
     /*
-    public Long getSourceIP() {
+    @JsonProperty("sourceIP")
+    public Long getSourceIPAsLong() {
         return sourceIP;
     }
-
-    public void setSourceIP(Long sourceIP) {
-        this.sourceIP = sourceIP;
-    }
-    */
     
-    public Double getValueAsTrainingSample() {
+    @XmlTransient
+    @JsonIgnore
+    public InetAddress getSourceIP() {
+    	return InetAddresses.fromInteger(sourceIP.intValue());
+    }
+    
+    @XmlTransient
+    @JsonIgnore
+    public void setSourceIP(InetAddress source) {
+        if (source != null) {
+        	sourceIP = new Long(InetAddresses.coerceToInteger(source));
+        } else {
+        	sourceIP = 0L;
+        }
+    }
+    
+    @JsonSetter("sourceIP")
+    public void setSourceIP(Long sourceIP) {
+        if (sourceIP != null) { 
+        	this.sourceIP = sourceIP;
+        } else {
+        	this.sourceIP = 0L;
+        }
+    }
+    
+    @XmlTransient
+    @JsonIgnore
+    public void setSourceIP(Integer sourceIP) {
+    	if (sourceIP != null) { 
+        	this.sourceIP = new Long(sourceIP);
+        } else {
+        	this.sourceIP = 0L;
+        }
+    }
+	*/
+    
+    public double getValueAsTrainingSample() {
         return valueAsTrainingSample;
     }
 
@@ -245,6 +223,11 @@ public class Document implements Serializable {
     public void setNominalLabelCollection(Collection<NominalLabel> nominalLabelCollection) {
         this.nominalLabelCollection = nominalLabelCollection;
     }
+
+	@Override
+	public boolean isNovel() {
+		return true;
+	}
     
 }
 

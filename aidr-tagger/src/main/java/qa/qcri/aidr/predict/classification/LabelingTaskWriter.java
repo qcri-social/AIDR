@@ -7,8 +7,11 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.common.Config;
+import qa.qcri.aidr.predict.common.ErrorLog;
 import qa.qcri.aidr.predict.common.PipelineProcess;
 import qa.qcri.aidr.predict.common.RateLimiter;
 import qa.qcri.aidr.predict.data.Document;
@@ -23,7 +26,9 @@ import qa.qcri.aidr.predict.featureextraction.WordSet;
  * @author jrogstadius
  */
 public class LabelingTaskWriter extends PipelineProcess {
-
+	private static Logger logger = Logger.getLogger(LabelingTaskWriter.class);
+	private static ErrorLog elog = new ErrorLog();
+	
 	class DocumentHistory {
 		LinkedList<WordSet> recentWordVectors = new LinkedList<WordSet>();
 		int bufferSize = 50;
@@ -87,7 +92,7 @@ public class LabelingTaskWriter extends PipelineProcess {
 		Long currentCrisisIDItemCount =  
 				activeCrisisIDList.containsKey(item.getCrisisID()) ? 
 						activeCrisisIDList.get(item.getCrisisID()) : 0L;
-						activeCrisisIDList.put(item.getCrisisID(), currentCrisisIDItemCount+1);
+						activeCrisisIDList.put(item.getCrisisID().intValue(), currentCrisisIDItemCount+1);
 						if (!isWriteRateLimited()) {
 							writeToDB();
 						}
@@ -114,6 +119,7 @@ public class LabelingTaskWriter extends PipelineProcess {
 				if (!isTruncateRateLimited() || 
 						activeCrisisIDList.get(crisisID) > Config.MAX_NEW_TASKS_PER_MINUTE) {
 					System.out.println("[writeToDB] Going to truncate for crisisID = " + crisisID + " [" + activeCrisisIDList.get(crisisID) + "] new docs");
+					logger.info("Going to truncate for crisisID = " + crisisID + " [" + activeCrisisIDList.get(crisisID) + "] new docs");
 					DataStore
 					.truncateLabelingTaskBufferForCrisis(crisisID, Config.LABELING_TASK_BUFFER_MAX_LENGTH);
 					lastTruncateTime = System.currentTimeMillis();

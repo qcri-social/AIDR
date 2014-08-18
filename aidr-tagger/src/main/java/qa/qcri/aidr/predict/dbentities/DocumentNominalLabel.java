@@ -1,4 +1,4 @@
-package qa.qcri.aidr.task.entities;
+package qa.qcri.aidr.predict.dbentities;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;

@@ -6,6 +6,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Date;
+
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.predict.common.*;
 
 /**
@@ -22,6 +25,9 @@ public class HttpOutputWorker extends Loggable {
      * the client data is a blocking operation, so the object creation is runs
      * in a separate thread.
      */
+	private static Logger logger = Logger.getLogger(HttpOutputWorker.class);
+	private static ErrorLog elog = new ErrorLog();
+	
     public static class WorkerFactory extends Loggable implements Runnable {
 
         private Socket socket;
@@ -61,7 +67,7 @@ public class HttpOutputWorker extends Loggable {
              * username=jakob&password=pwd&ontology=3
              */
 
-            log(LogLevel.INFO, "Waiting for POST data");
+            logger.info("Waiting for POST data");
 
 //            DefaultHttpServerConnection conn = new DefaultHttpServerConnection();
 //            conn.bind(ser.accept(), new BasicHttpParams());
@@ -79,7 +85,8 @@ public class HttpOutputWorker extends Loggable {
 
 
             } catch (IOException e) {
-                log("IOException while trying to open input stream", e);
+                logger.error("IOException while trying to open input stream");
+                logger.error(elog.toStringException(e));
                 return null;
             }
 
@@ -91,8 +98,7 @@ public class HttpOutputWorker extends Loggable {
                         try {
                             Thread.sleep(10);
                         } catch (InterruptedException e) {
-                            log("Sleep interrupted while waiting for POST data",
-                                    e);
+                            logger.warn("Sleep interrupted while waiting for POST data");
                         }
                     }
 
@@ -114,15 +120,16 @@ public class HttpOutputWorker extends Loggable {
                         }
                     }
 
-                    log(LogLevel.INFO, "Recieved POST data: " + input);
+                    logger.info("Recieved POST data: " + input);
 
                     return OutputFilter.fromJson(input);
                 }
             } catch (IOException e) {
-                log("IOException while waiting for POST data", e);
+                logger.error("IOException while waiting for POST data");
+                logger.error(elog.toStringException(e));
             }
 
-            log(LogLevel.WARNING, "Bad POST data.");
+            logger.warn("Bad POST data.");
             return null;
         }
     }
@@ -143,25 +150,26 @@ public class HttpOutputWorker extends Loggable {
         filter = o;
         client = s;
 
-        log(LogLevel.INFO, "Creating new OutputWorker (" + connectionInstanceID
+        logger.info("Creating new OutputWorker (" + connectionInstanceID
                 + ") for event " + o.crisisID);
 
         try {
             clientStream = new PrintWriter(client.getOutputStream(), true);
         } catch (IOException e) {
-            log("Could not get output stream for worker "
-                    + connectionInstanceID, e);
+            logger.error("Could not get output stream for worker "
+                    + connectionInstanceID);
+            logger.error(elog.toStringException(e));
         }
     }
 
     public void push(String doc) {
         if (!clientStream.checkError()) {
-            log(LogLevel.INFO, "Writing to client: " + doc);
+            logger.info("Writing to client: " + doc);
             clientStream.println(doc);
         }
         if (clientStream.checkError()) {
             // Inform subscribers that the connection has closed
-            log(LogLevel.INFO, "Could not write to client, closing connection");
+            logger.info("Could not write to client, closing connection");
             close();
         }
     }
@@ -173,7 +181,8 @@ public class HttpOutputWorker extends Loggable {
             try {
                 client.close();
             } catch (IOException e) {
-                log("IOException while closing client connection", e);
+                logger.error("IOException while closing client connection");
+                logger.error(elog.toStringException(e));
             }
         if (!isClosed)
             onConnectionClosed.fire(this, null);

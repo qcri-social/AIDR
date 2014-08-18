@@ -1,5 +1,8 @@
 package qa.qcri.aidr.predict.common;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 /**
  * Helper class for error logging.
  * 

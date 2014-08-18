@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+
+import org.apache.log4j.Logger;
+
 import redis.clients.jedis.Jedis;
 import qa.qcri.aidr.predict.common.*;
 import qa.qcri.aidr.predict.data.DocumentJSONConverter;
@@ -23,7 +26,10 @@ public class HttpInputWorker extends Loggable implements Runnable {
     static int connectionID = 0;
     int connectionInstanceID;
     private Socket client;
-
+    
+    private static Logger logger = Logger.getLogger(HttpInputWorker.class);
+    private static ErrorLog elog = new ErrorLog();
+    
     HttpInputWorker(Socket client) {
         this.client = client;
         connectionInstanceID = connectionID++;
@@ -35,10 +41,11 @@ public class HttpInputWorker extends Loggable implements Runnable {
             in = new BufferedReader(new InputStreamReader(
                     client.getInputStream()));
         } catch (IOException e) {
-            log(LogLevel.ERROR, "Could not create input stream reader");
+            logger.error("Could not create input stream reader");
+            logger.error(elog.toStringException(e));
             return;
         }
-        log(LogLevel.INFO, "Created new InputWorker (" + connectionInstanceID
+        logger.info("Created new InputWorker (" + connectionInstanceID
                 + ")");
 
         // Process input data
@@ -49,22 +56,23 @@ public class HttpInputWorker extends Loggable implements Runnable {
                 if (Thread.interrupted())
                     return;
 
-                log(LogLevel.INFO, "Received: " + line);
+                logger.info("Received: " + line);
                 Document doc = ParseJSONDocument(line);
-                doc.setSourceIP(client.getInetAddress());
+                //doc.setSourceIP(client.getInetAddress());
                 if (doc != null)
                     enqueue(doc);
             }
         } catch (IOException e) {
-            log(LogLevel.WARNING, "Read failed in connection "
+            logger.warn("Read failed in connection "
                     + connectionInstanceID);
         }
 
-        log(LogLevel.INFO, "Closing connection " + connectionInstanceID);
+        logger.info("Closing connection " + connectionInstanceID);
         try {
             client.close();
         } catch (IOException e) {
-            log("Error when closing connection " + connectionInstanceID, e);
+            logger.error("Error when closing connection " + connectionInstanceID);
+            logger.error(elog.toStringException(e));
         }
     }
 
@@ -72,9 +80,10 @@ public class HttpInputWorker extends Loggable implements Runnable {
         Document doc = null;
         try {
             doc = DocumentJSONConverter.parseDocument(json);
-            doc.setSourceIP(client.getInetAddress());
+            //doc.setSourceIP(client.getInetAddress());
         } catch (Exception e) {
-            log("Error when parsing input JSON", e);
+            logger.error("Error when parsing input JSON");
+            logger.error(elog.toStringException(e));
         }
         return doc;
     }
@@ -86,7 +95,8 @@ public class HttpInputWorker extends Loggable implements Runnable {
             jedis.rpush(Config.REDIS_FOR_EXTRACTION_QUEUE.getBytes(),
                     Serializer.serialize(doc));
         } catch (IOException e) {
-            log("Error when serializing input document.", e);
+            logger.error("Error when serializing input document.");
+            logger.error(elog.toStringException(e));
         } finally {
             DataStore.close(jedis);
         }

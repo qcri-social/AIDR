@@ -7,9 +7,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import qa.qcri.aidr.predict.common.ErrorLog;
 
 /**
  * A DocumentFeature implementation consisting of a set of words.
@@ -18,6 +21,9 @@ import org.json.JSONObject;
  */
 public class WordSet implements DocumentFeature, Serializable {
 
+	private static Logger logger = Logger.getLogger(WordSet.class);
+	private static ErrorLog elog = new ErrorLog();
+			
     private static final long serialVersionUID = 1L;
 
     private static final String STR_TYPE = "type",
@@ -49,6 +55,8 @@ public class WordSet implements DocumentFeature, Serializable {
             obj.put(STR_TYPE, STR_WORDVECTOR);
             obj.put(STR_WORDS, wordsArr);
         } catch (JSONException e) {
+        	logger.error("Error in json parsing: " + words);
+        	logger.error(elog.toStringException(e));
             throw new RuntimeException(e);
         }
         return obj;
