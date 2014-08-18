@@ -137,7 +137,7 @@ public class RedisTweetInjector {
 		if (config.tweets_per_sec > 0) {
 			sleepDuration = 1000 / config.tweets_per_sec;			
 		}
-		System.out.println(Thread.currentThread().getName() + ": sleep interval between successive publish, determined from configuration: " + sleepDuration + "ms");
+		System.out.println(Thread.currentThread().getName() + "[injectTweets]: sleep interval between successive publish, determined from configuration: " + sleepDuration + "ms");
 		int count = readDataForCollectionAndPublish(jedis, collectionCode, duration);
 		System.out.println(Thread.currentThread().getName() + 
 				": Total tweets published in time " + config.duration 
@@ -149,7 +149,7 @@ public class RedisTweetInjector {
 		if (config.tweets_per_sec > 0) {
 			sleepDuration = 1000 / config.tweets_per_sec;			
 		}
-		System.out.println(Thread.currentThread().getName() + ": sleep interval between successive publish, determined from configuration: " + sleepDuration + "ms");
+		System.out.println(Thread.currentThread().getName() + "[injectSingleTweet]: sleep interval between successive publish, determined from configuration: " + sleepDuration + "ms");
 		long startTime = System.currentTimeMillis();
 		long currentTime = startTime;
 		while ((currentTime - startTime) < duration)  {
@@ -175,15 +175,16 @@ public class RedisTweetInjector {
 						if (jedis != null) {
 							InjectorConfig config = new InjectorConfig();
 							Random randomGenerator = new Random();
-							String collectionCode = config.collection_list.get(
+							String randomCollectionCode = config.collection_list.get(
 									randomGenerator.nextInt(config.collection_list.size()));
 
-							System.out.println("Thread " + getName() + ":: will use collection: " + collectionCode);
 							long startTime = System.currentTimeMillis();
 							if (config.useSingleTweet) {
-								injector.injectSingleTweet(jedis, collectionCode);
+								System.out.println("Thread " + getName() + ":: will use collection: " + config.collectionCode + ", with singleTweet injection = " + config.useSingleTweet);
+								injector.injectSingleTweet(jedis, config.collectionCode);
 							} else {
-								injector.injectTweets(jedis, collectionCode);
+								System.out.println("Thread " + getName() + ":: will use collection: " + randomCollectionCode + ", with singleTweet injection = " + config.useSingleTweet);
+								injector.injectTweets(jedis, randomCollectionCode);
 							}
 							long elapsed = System.currentTimeMillis() - startTime;
 							System.out.println("Done thread " + getName() + ", execution time = " + elapsed + "ms");
