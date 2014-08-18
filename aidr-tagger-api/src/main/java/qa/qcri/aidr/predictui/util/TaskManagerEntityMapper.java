@@ -74,7 +74,7 @@ public class TaskManagerEntityMapper {
 			doc.setHasHumanLabels(document.isHasHumanLabels());
 
 			doc.setReceivedAt(document.getReceivedAt());
-			doc.setSourceIP(document.getSourceIP());
+			//doc.setSourceIP(document.getSourceIP().longValue());
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
 			doc.setTaskAssignment(transformTaskAssignment(document.getTaskAssignment()));
@@ -98,7 +98,7 @@ public class TaskManagerEntityMapper {
 			doc.setHasHumanLabels(document.isHasHumanLabels());
 
 			doc.setReceivedAt(document.getReceivedAt());
-			doc.setSourceIP(document.getSourceIP());
+			//doc.setSourceIP(document.getSourceIP().intValue());
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
 			doc.setTaskAssignment(reverseTransformTaskAssignment(document.getTaskAssignment()));
