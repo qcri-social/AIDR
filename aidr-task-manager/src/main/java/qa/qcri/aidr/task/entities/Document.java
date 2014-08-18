@@ -71,9 +71,9 @@ public class Document implements Serializable {
     @Column (name = "isEvaluationSet", nullable = false)
     private boolean isEvaluationSet;
 
-    @XmlElement
-    @Column (name = "sourceIP", nullable = false)
-    private Integer sourceIP;
+    //@XmlElement
+    //@Column (name = "sourceIP", nullable = false)
+    //private Integer sourceIP;
 
     @XmlElement
     @Column (name = "valueAsTrainingSample", nullable = false)
@@ -166,6 +166,7 @@ public class Document implements Serializable {
         isEvaluationSet = evaluationSet;
     }
 
+    /*
     public Integer getSourceIP() {
         return sourceIP;
     }
@@ -173,7 +174,8 @@ public class Document implements Serializable {
     public void setSourceIP(Integer sourceIP) {
         this.sourceIP = sourceIP;
     }
-
+	*/
+    
     public Double getValueAsTrainingSample() {
         return valueAsTrainingSample;
     }
