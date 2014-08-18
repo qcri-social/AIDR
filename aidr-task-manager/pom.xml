@@ -4,9 +4,10 @@
 	<groupId>qa.qcri.aidr.task</groupId>
 	<artifactId>aidr-task-manager</artifactId>
 	<version>1.0</version>
-	<name>aidr-task-manager Maven Webapp</name>
+	<name>aidr-task-manager</name>
 	<url>http://maven.apache.org</url>
-
+	<packaging>war</packaging>
+	
 	<properties>
 		<slf4j.version>1.6.2</slf4j.version>
 	</properties>
@@ -30,48 +31,29 @@
 			<version>4.3.1.Final</version> <exclusions> <exclusion> <groupId>cglib</groupId> 
 			<artifactId>cglib</artifactId> </exclusion> <exclusion> <groupId>dom4j</groupId> 
 			<artifactId>dom4j</artifactId> </exclusion> </exclusions> </dependency -->
-		
-		<!-- dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-bundle</artifactId>
-            <version>1.17.1</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-core</artifactId>
-            <version>1.17.1</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-server</artifactId>
-            <version>1.17.1</version>
-            <scope>runtime</scope>
-        </dependency>
-		<dependency>
-			<groupId>org.glassfish.corba</groupId>
-			<artifactId>glassfish-corba-orb</artifactId>
-			<version>4.0.0-b008</version>
-		</dependency -->
-		
+
+		<!-- dependency> <groupId>com.sun.jersey</groupId> <artifactId>jersey-bundle</artifactId> 
+			<version>1.17.1</version> <scope>runtime</scope> </dependency> <dependency> 
+			<groupId>com.sun.jersey</groupId> <artifactId>jersey-core</artifactId> <version>1.17.1</version> 
+			<scope>runtime</scope> </dependency> <dependency> <groupId>com.sun.jersey</groupId> 
+			<artifactId>jersey-server</artifactId> <version>1.17.1</version> <scope>runtime</scope> 
+			</dependency> <dependency> <groupId>org.glassfish.corba</groupId> <artifactId>glassfish-corba-orb</artifactId> 
+			<version>4.0.0-b008</version> </dependency -->
+
 		<!-- MySQL database driver -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.28</version>
 		</dependency>
-		
-		<!-- dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>4.3.5.Final</version>
-		</dependency -->
+
+		<!-- dependency> <groupId>org.hibernate</groupId> <artifactId>hibernate-entitymanager</artifactId> 
+			<version>4.3.5.Final</version> </dependency -->
 		<dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>4.3.5.Final</version>
-        </dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>4.3.5.Final</version>
+		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
@@ -87,14 +69,14 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>4.2.0.Final</version>
-        </dependency>
-        
-		
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>4.2.0.Final</version>
+		</dependency>
+
+
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
@@ -123,7 +105,7 @@
 			<version>2.5.1</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- Jersey -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
@@ -143,12 +125,8 @@
 			<version>2.5.1</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- dependency>
-			<groupId>org.glassfish.jersey.ext</groupId>
-			<artifactId>jersey-servlet-portability</artifactId>
-			<version>2.5.1</version>
-			<scope>provided</scope>
-		</dependency -->
+		<!-- dependency> <groupId>org.glassfish.jersey.ext</groupId> <artifactId>jersey-servlet-portability</artifactId> 
+			<version>2.5.1</version> <scope>provided</scope> </dependency -->
 		<!-- if you are using Jersey client specific features -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -192,6 +170,36 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.17</version>
+				<configuration>
+					<excludes>
+						<exclude>**/*Test.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>make-a-jar</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<excludes>
+						<exclude>**/qa/qcri/aidr/task/ejb/bean/*Bean.class</exclude>
+						<exclude>**/qa/qcri/aidr/task/ejb/bean/*Bean.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
@@ -199,8 +207,34 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<packaging>jar</packaging>
+							<artifactId>${project.artifactId}</artifactId>
+							<groupId>${project.groupId}</groupId>
+							<version>${project.version}</version>
+							<file>
+								${project.build.directory}/${project.artifactId}-${project.version}.jar
+							</file>
+							<excludes>
+								<exclude>**/qa/qcri/aidr/task/ejb/bean/*Bean.class</exclude>
+								<exclude>**/qa/qcri/aidr/task/ejb/bean/*Bean.java</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
-		<!-- finalName>aidr-task-manager</finalName-->
+		<!-- finalName>aidr-task-manager</finalName -->
 	</build>
 	<repositories>
 		<repository>
@@ -208,9 +242,12 @@
 			<name>Repository hosting the jee6 artifacts</name>
 			<url>http://download.java.net/maven/glassfish</url>
 		</repository>
-
+		<repository>
+			<id>aidr-task-manager</id>
+			<name>Repository hosting the aidr-task-manager client jar</name>
+			<url>http://localhost/aidr-task-manager</url>
+		</repository>
 	</repositories>
-	<packaging>war</packaging>
 </project>
   
   
