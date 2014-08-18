@@ -23,7 +23,7 @@ public interface TaskManagerRemote<T, Serializable> {
 	
 	public String getAllTasks();
 	
-	public void insertNewTask(T task);
+	public long insertNewTask(T task);
 	public void insertNewTask(List<T> collection);
 	
 	public void assignNewTaskToUser(Long id, Long userId) throws Exception;
@@ -40,6 +40,7 @@ public interface TaskManagerRemote<T, Serializable> {
 	public int deleteStaleTasks(String joinType, String joinTable, String joinColumn,  
 						  	    String sortOrder, String[] orderBy,
 						  	    final String maxTaskAge, final String scanInterval);
+	public int truncateLabelingTaskBufferForCrisis(final long crisisID, final int maxLength, final int ERROR_MARGIN);
 	
 	public void updateTask(T task);
 	public void updateTask(List<T> collection);

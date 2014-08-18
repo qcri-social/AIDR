@@ -1,19 +1,13 @@
 package qa.qcri.aidr.task.ejb.bean;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
-import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.Session;
-import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.task.ejb.DocumentService;
@@ -48,15 +42,14 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 		if (!document.isHasHumanLabels()) {
 			try {
 				//delete(document);
-				String hql = "DELETE from document WHERE documentID = :documentID";
+				String hql = "DELETE from document WHERE documentID = :documentID AND !hasHumanLabels";
 				Session session = getCurrentSession();
 				Query collectionDeleteQuery = session.createSQLQuery(hql);
 				try {
-					//Transaction tx = (session.getTransaction() != null) ? session.getTransaction(): session.beginTransaction();
 					collectionDeleteQuery.setParameter("documentID", document.getDocumentID());
+					Transaction tx = session.beginTransaction();
 					deleteCount = collectionDeleteQuery.executeUpdate();
-					//tx.commit();
-			
+					tx.commit();
 					System.out.println("[deleteNoLabelDocument]) deleted count = " + deleteCount);
 				} catch (Exception e) {
 					System.err.println("[deleteNoLabelDocument] deletion query failed");
@@ -82,11 +75,10 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 	@Override
 	public int deleteNoLabelDocument(List<Document> collection) {
 		int deleteCount = 0;
-		if (!collection.isEmpty()) {
-			List<Long> deleteList = new ArrayList<Long>();
-			for (Document doc : collection) {
-				deleteList.add(doc.getDocumentID());
-				System.out.println("Attempt to delete: " + doc.getDocumentID());
+		if (collection != null && !collection.isEmpty()) {
+			List<Long>documentIDList = new ArrayList<Long>();
+			for (Document d: collection) {
+				documentIDList.add(d.getDocumentID());
 			}
 			String hql = "DELETE from document WHERE (documentID IN (:documentID) "
 					+ " AND !hasHumanLabels)";
@@ -94,7 +86,7 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 			Query collectionDeleteQuery = session.createSQLQuery(hql);
 			try {
 				Transaction tx = session.beginTransaction();
-				collectionDeleteQuery.setParameterList("documentID", deleteList);
+				collectionDeleteQuery.setParameterList("documentID", documentIDList);
 				deleteCount = collectionDeleteQuery.executeUpdate();
 				tx.commit();
 				System.out.println("[deleteNoLabelDocument]) deleted count = " + deleteCount);
@@ -110,7 +102,8 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 	@Override
 	public int deleteUnassignedDocument(Document document) {
 		String hql = "DELETE from Document WHERE (documentID = :documentID AND "
-				+ " documentID NOT IN (SELECT documentID FROM TaskAssignment))";
+				+ " documentID NOT IN (SELECT documentID FROM TaskAssignment)"
+				+ " AND !hasHumanLabels)";
 		if (!document.isHasHumanLabels()) {
 			try {
 				Query query = getCurrentSession().createQuery(hql);
@@ -129,21 +122,20 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 	@Override
 	public int deleteUnassignedDocumentCollection(List<Document> collection) {
 		int deleteCount = 0;
-		if (!collection.isEmpty()) {
-			List<Long> deleteList = new ArrayList<Long>();
-			List<Boolean> labelList = new ArrayList<Boolean>();
-			for (Document doc : collection) {
-				if (!doc.isHasHumanLabels()) deleteList.add(doc.getDocumentID());
-				labelList.add(false);
+		if (collection != null && !collection.isEmpty()) {
+			List<Long>documentIDList = new ArrayList<Long>();
+			for (Document d: collection) {
+				documentIDList.add(d.getDocumentID());
+				System.out.println("To delete document: {" + d.getCrisisID() + ", " + d.getDocumentID() + ", " + d.isHasHumanLabels() + "}");
 			}
+			System.out.println("Size of docList to delete: " + documentIDList.size());
 			String hql = "DELETE from Document WHERE (documentID IN (:documentID) "
-					+ " AND documentID NOT IN (SELECT documentID FROM TaskAssignment) ";
-					//+ " AND hasHumanLabels = :hasHumanLabels)";
+					+ " AND documentID NOT IN (SELECT documentID FROM TaskAssignment)"
+					+ " AND !hasHumanLabels)";
 			Session session = getCurrentSession();
 			Query collectionDeleteQuery = session.createQuery(hql);
 			try {
-				collectionDeleteQuery.setParameterList("documentID", deleteList);
-				//collectionDeleteQuery.setParameterList("hasHumanLabels", labelList);
+				collectionDeleteQuery.setParameterList("documentID", documentIDList);
 				Transaction tx = session.beginTransaction();
 				deleteCount = collectionDeleteQuery.executeUpdate();
 				tx.commit();
@@ -209,7 +201,6 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 		}
 		return deleteCount;
 	}
-
 
 	/**
 	 * 
