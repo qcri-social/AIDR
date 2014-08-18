@@ -79,4 +79,13 @@ public class NominalLabelBC implements Serializable, DocumentLabel {
         this.nominalLabelID = nominalLabelID;
         this.confidence = confidence;
     }
+    
+    // Added by koushik - to handle empty nominal_labels array
+    public NominalLabelBC() {
+    	this.sourceID = 0;
+    	this.attributeID = 0;
+    	this.nominalLabelID = 0;
+    	this.confidence = 0.0;
+    	this.isHumanLabel = false;
+    }
 }
