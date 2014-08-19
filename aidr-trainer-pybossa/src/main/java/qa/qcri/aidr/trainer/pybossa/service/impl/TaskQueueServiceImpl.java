@@ -1,11 +1,14 @@
 package qa.qcri.aidr.trainer.pybossa.service.impl;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import qa.qcri.aidr.trainer.pybossa.dao.TaskQueueDao;
 import qa.qcri.aidr.trainer.pybossa.entity.TaskQueue;
 import qa.qcri.aidr.trainer.pybossa.service.TaskQueueService;
+import qa.qcri.aidr.trainer.pybossa.util.ErrorLog;
 
 import java.util.Date;
 import java.util.List;
@@ -17,7 +20,9 @@ public class TaskQueueServiceImpl implements TaskQueueService {
     @Autowired
     private TaskQueueDao taskQueueDao;
 
-
+    private static Logger logger = Logger.getLogger(TaskQueueServiceImpl.class);
+    private static ErrorLog elog = new ErrorLog();
+    
     @Override
     @Transactional(readOnly = false)
     public void createTaskQueue(TaskQueue taskQueue) {
@@ -41,7 +46,8 @@ public class TaskQueueServiceImpl implements TaskQueueService {
             taskQueueDao.createTaskQueue(queue);
         }
         catch (Exception ex){
-            System.out.println("updateTaskQueue Exception : " + ex.getMessage());
+            logger.error("updateTaskQueue Exception : " + taskQueue.getTaskID());
+            logger.error(elog.toStringException(ex));
             throw new RuntimeException(ex.getMessage());
         }
     }

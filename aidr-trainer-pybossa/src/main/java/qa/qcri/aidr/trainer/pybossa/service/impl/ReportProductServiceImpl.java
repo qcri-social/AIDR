@@ -35,7 +35,7 @@ import java.util.List;
 @Transactional(readOnly = false)
 public class ReportProductServiceImpl implements ReportProductService {
 
-    protected static Logger logger = Logger.getLogger("reportProductService");
+    protected static Logger logger = Logger.getLogger(ReportProductServiceImpl.class);
 
     @Autowired
     private ClientService clientService;

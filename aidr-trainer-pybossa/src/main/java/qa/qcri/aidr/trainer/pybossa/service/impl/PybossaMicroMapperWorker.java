@@ -8,6 +8,7 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import qa.qcri.aidr.trainer.pybossa.entity.*;
 import qa.qcri.aidr.trainer.pybossa.format.impl.CVSRemoteFileFormatter;
 import qa.qcri.aidr.trainer.pybossa.format.impl.GeoJsonOutputModel;
@@ -18,6 +19,7 @@ import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
 import qa.qcri.aidr.trainer.pybossa.store.URLPrefixCode;
 import qa.qcri.aidr.trainer.pybossa.store.UserAccount;
 import qa.qcri.aidr.trainer.pybossa.util.DataFormatValidator;
+import qa.qcri.aidr.trainer.pybossa.util.ErrorLog;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,8 +36,9 @@ import java.util.List;
 @Transactional(readOnly = false)
 public class PybossaMicroMapperWorker implements MicroMapperWorker {
 
-    protected static Logger logger = Logger.getLogger("service");
-
+    protected static Logger logger = Logger.getLogger(PybossaMicroMapperWorker.class);
+    private static ErrorLog elog = new ErrorLog();
+    
     private Client client;
     private CVSRemoteFileFormatter cvsRemoteFileFormatter = new CVSRemoteFileFormatter();
     private int MAX_PENDING_QUEUE_SIZE = 50;
@@ -144,13 +147,14 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
             }
             // data is consumed. need to mark as completed not to process anymore.
         } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            logger.error("Exception for: " + clientAppSourceID);
+            logger.error(elog.toStringException(e));
         }
     }
 
     private void addToTaskQueue(String inputData, Long clientAppID, Integer status, Long clientAppSourceID){
 
-        System.out.println("micromapper worker addToTaskQueue is called");
+        logger.info("micromapper worker addToTaskQueue is called");
 
         try {
             Object obj = parser.parse(inputData);
@@ -169,7 +173,8 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
             taskLogService.createTaskLog(taskLog);
 
         } catch (ParseException e) {
-            e.printStackTrace();
+            logger.error("error for: " + inputData);
+            logger.error(elog.toStringException(e));
         }
     }
 
@@ -207,7 +212,7 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
                             }
 
                         } catch (Exception e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                            logger.error(elog.toStringException(e));
                         }
                     }
                 }

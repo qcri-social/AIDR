@@ -1,12 +1,15 @@
 package qa.qcri.aidr.trainer.pybossa.service.impl;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
 import qa.qcri.aidr.trainer.pybossa.dao.ReportTemplateDao;
 import qa.qcri.aidr.trainer.pybossa.entity.ReportTemplate;
 import qa.qcri.aidr.trainer.pybossa.service.ReportTemplateService;
+import qa.qcri.aidr.trainer.pybossa.util.ErrorLog;
 
 import java.util.List;
 
@@ -21,6 +24,9 @@ import java.util.List;
 @Transactional(readOnly = false)
 public class ReportTemplateServiceImpl implements ReportTemplateService {
 
+	private static Logger logger = Logger.getLogger(ReportTemplateServiceImpl.class);
+	private static ErrorLog elog = new ErrorLog();
+	
     @Autowired
     private ReportTemplateDao reportTemplateDao;
 
@@ -34,7 +40,8 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
             }
         }
         catch(Exception ex){
-            System.out.println("saveReportItem exception : " + ex.getMessage());
+            logger.error("saveReportItem exception");
+            logger.error(elog.toStringException(ex));            
             throw new RuntimeException(ex.getMessage());
         }
 
@@ -65,7 +72,8 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
             returnValue = true;
         }
         catch(Exception e){
-            System.out.println("isNumeric exception on TweetID: " + data);
+            logger.error("isNumeric exception on TweetID: " + data);
+            logger.error(elog.toStringException(e));
         }
 
         return returnValue;

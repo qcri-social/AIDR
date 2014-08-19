@@ -8,6 +8,7 @@ import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import qa.qcri.aidr.trainer.pybossa.entity.*;
 import qa.qcri.aidr.trainer.pybossa.format.impl.PybossaFormatter;
 import qa.qcri.aidr.trainer.pybossa.service.*;
@@ -16,6 +17,7 @@ import qa.qcri.aidr.trainer.pybossa.store.URLPrefixCode;
 import qa.qcri.aidr.trainer.pybossa.store.UserAccount;
 import qa.qcri.aidr.trainer.pybossa.util.DataFormatValidator;
 import qa.qcri.aidr.trainer.pybossa.util.DateTimeConverter;
+import qa.qcri.aidr.trainer.pybossa.util.ErrorLog;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -27,8 +29,9 @@ import java.util.List;
 @Transactional(readOnly = false)
 public class PybossaWorker implements ClientAppRunWorker {
 
-    protected static Logger logger = Logger.getLogger("PybossaWorker");
-
+    protected static Logger logger = Logger.getLogger(PybossaWorker.class);
+    private static ErrorLog elog = new ErrorLog();
+    
     @Autowired
     private ClientAppService clientAppService;
 
@@ -149,7 +152,7 @@ public class PybossaWorker implements ClientAppRunWorker {
                                 }
 
                             } catch (Exception e) {
-                                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                                logger.error(elog.toStringException(e));
                             }
                         }
                     }
@@ -180,7 +183,8 @@ public class PybossaWorker implements ClientAppRunWorker {
                         }
 
                     } catch (Exception e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        logger.error("Error for clientApp: " + clientApp.getShortName());
+                    	logger.error(elog.toStringException(e));
                     }
                 }
 
@@ -203,7 +207,7 @@ public class PybossaWorker implements ClientAppRunWorker {
             }
         }
         catch(Exception e){
-            logger.error("isExpiredTaskQueue : " + e);
+            logger.error(elog.toStringException(e));
         }
         return isExpired;
     }
@@ -259,7 +263,8 @@ public class PybossaWorker implements ClientAppRunWorker {
                 }
 
         } catch (ParseException e) {
-            e.printStackTrace();
+            logger.error("Error parsing: " + inputData);
+            logger.error(elog.toStringException(e));
         }
     }
 

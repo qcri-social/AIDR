@@ -1,11 +1,14 @@
 package qa.qcri.aidr.trainer.pybossa.service.impl;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import qa.qcri.aidr.trainer.pybossa.dao.TaskLogDao;
 import qa.qcri.aidr.trainer.pybossa.entity.TaskLog;
 import qa.qcri.aidr.trainer.pybossa.service.TaskLogService;
+import qa.qcri.aidr.trainer.pybossa.util.ErrorLog;
 
 import java.util.List;
 
@@ -19,7 +22,10 @@ import java.util.List;
 @Service("taskLogService")
 @Transactional(readOnly = true)
 public class TaskLogServiceImpl implements TaskLogService {
-
+	
+	private static Logger logger = Logger.getLogger(TaskLogServiceImpl.class);
+	private static ErrorLog elog = new ErrorLog();
+	
     @Autowired
     private TaskLogDao taskLogDao;
 
@@ -30,7 +36,8 @@ public class TaskLogServiceImpl implements TaskLogService {
             taskLogDao.save(taskLog);
         }
         catch(Exception ex){
-            System.out.println("createTaskLog exception : " + ex.getMessage());
+            logger.error("createTaskLog exception : " + taskLog.getTaskQueueID());
+            logger.error(elog.toStringException(ex));
             throw new RuntimeException(ex.getMessage());
         }
     }
@@ -42,7 +49,8 @@ public class TaskLogServiceImpl implements TaskLogService {
             taskLogDao.saveOrUpdate(taskLog);
         }
         catch(Exception ex){
-            System.out.println("updateTaskLog Exception: " + ex.getMessage());
+            logger.error("updateTaskLog Exception: " + taskLog.getTaskQueueID());
+            logger.error(elog.toStringException(ex));
             throw new RuntimeException(ex.getMessage());
         }
     }
