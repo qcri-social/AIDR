@@ -3,11 +3,14 @@ package qa.qcri.aidr.trainer.api.controller;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import qa.qcri.aidr.trainer.api.service.TaskAnswerService;
 import qa.qcri.aidr.trainer.api.template.TaskAnswerResponse;
+import qa.qcri.aidr.trainer.api.util.ErrorLog;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+
 import java.util.Date;
 
 /**
@@ -21,8 +24,9 @@ import java.util.Date;
 @Component
 public class TaskAnswerController {
 
-    protected static Logger logger = Logger.getLogger("TaskAnswerController");
-
+    protected static Logger logger = Logger.getLogger(TaskAnswerController.class);
+    private static ErrorLog elog = new ErrorLog();
+    
     @Autowired
     private TaskAnswerService taskAnswerService;
 
@@ -37,7 +41,8 @@ public class TaskAnswerController {
             taskAnswerService.processTaskAnswer(data);
         }
         catch(Exception e){
-            logger.error("saveTaskAnswer got exception : " + e.getMessage());
+            logger.error("saveTaskAnswer got exception on: " + data);
+            logger.error(elog.toStringException(e));
         }
 
 

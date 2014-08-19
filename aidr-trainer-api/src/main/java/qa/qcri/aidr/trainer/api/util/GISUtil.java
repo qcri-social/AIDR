@@ -1,5 +1,6 @@
 package qa.qcri.aidr.trainer.api.util;
 
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -23,7 +24,10 @@ public class GISUtil {
     String reverseURLTail = "&addressdetails=1&accept-language=en";
     JSONParser parser;
     Communicator communicator;
-
+    
+    private static Logger logger = Logger.getLogger(GISUtil.class);
+    private static ErrorLog elog = new ErrorLog();
+    
     public GISUtil(){
        this.parser = new JSONParser();
        this.communicator = new Communicator();
@@ -59,15 +63,15 @@ public class GISUtil {
     public String getDisplayNameWithReverseLookUp(String key)  {
         String info= null;
         //lat=16.63897422279177&lon=122.0280850999999
-        System.out.println("key :" + key);
+        logger.info("key :" + key);
         if(!key.isEmpty() ){
             try{
                 String returnJson = communicator.sendGet(this.reverseURLBase + key + this.reverseURLTail);
-                System.out.println("returnJson :" + returnJson);
+                logger.info("returnJson :" + returnJson);
                 if(returnJson.trim().length() > 10){
                     JSONObject featureJsonObj = (JSONObject) parser.parse(returnJson);
                     //info =   (String)featureJsonObj.get("display_name");
-                    System.out.println("featureJsonObj : " + featureJsonObj.toJSONString());
+                    logger.info("featureJsonObj : " + featureJsonObj.toJSONString());
                     JSONObject address =  (JSONObject) featureJsonObj.get("address");
                     info = (String) address.get("country");
 
@@ -75,11 +79,12 @@ public class GISUtil {
                         info =  (String) address.get("state") + ", " +  info ;
                     }
 
-                    System.out.println("info : " + info);
+                    logger.info("info : " + info);
                 }
             }
             catch(Exception e){
-                System.out.println("getDisplayNameWithReverseLookUp : " + e.getMessage());
+                logger.error("getDisplayNameWithReverseLookUp exception for key: " + key);
+                logger.error(elog.toStringException(e));
             }
 
         }

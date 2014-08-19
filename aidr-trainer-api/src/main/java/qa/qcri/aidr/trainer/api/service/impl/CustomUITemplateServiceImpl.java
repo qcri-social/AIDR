@@ -34,7 +34,7 @@ import java.util.*;
 @Service("customUITemplateService")
 @Transactional(readOnly = true)
 public class CustomUITemplateServiceImpl implements CustomUITemplateService {
-    protected static Logger logger = Logger.getLogger("CustomUITemplateServiceImpl");
+    protected static Logger logger = Logger.getLogger(CustomUITemplateServiceImpl.class);
 
     @Autowired
     CustomUITemplateDao customUITemplateDao;

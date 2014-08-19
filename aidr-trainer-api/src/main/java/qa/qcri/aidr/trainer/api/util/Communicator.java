@@ -9,6 +9,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -23,7 +24,8 @@ import java.net.URL;
 public class Communicator {
 
     // will be placed on config.
-    protected static Logger logger = Logger.getLogger("service");
+    protected static Logger logger = Logger.getLogger(Communicator.class);
+    private static ErrorLog elog = new ErrorLog();
 
     public Communicator(){
 
@@ -57,13 +59,13 @@ public class Communicator {
                 }
             }
             else{
-
+            	logger.error("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
                 throw new RuntimeException("Failed : HTTP error code : "
                         + response.getStatusLine().getStatusCode());
             }
 
         }catch (Exception ex) {
-            System.out.println("ex Code sendPut: " + ex);
+            logger.error(elog.toStringException(ex));
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -95,14 +97,15 @@ public class Communicator {
                 }
             }
             else{
-                throw new RuntimeException("Failed : HTTP error code : "
+                logger.error("Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
+            	throw new RuntimeException("Failed : HTTP error code : "
                         + response.getStatusLine().getStatusCode());
             }
 
 
         }catch (Exception ex) {
-            System.out.println("ex Code deleteGet1: " + ex);
-            System.out.println("ex Code deleteGet2: " + url);
+        	logger.error("ex Code deleteGet2: " + url);
+            logger.error(elog.toStringException(ex));
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -137,20 +140,22 @@ public class Communicator {
                     String output;
                     //System.out.println("Output from Server ...." + response.getStatusLine().getStatusCode() + "\n");
                     while ((output = br.readLine()) != null) {
-                        System.out.println(output);
+                        logger.debug(output);
                     }
                 }
             }
             else{
-                throw new RuntimeException("Failed : HTTP error code : "
+                logger.error("Failed : HTTP error code : "
+                        + response.getStatusLine().getStatusCode());
+            	throw new RuntimeException("Failed : HTTP error code : "
                         + response.getStatusLine().getStatusCode());
             }
 
 
-        }catch (Exception ex) {
-            System.out.println("ex Code sendPost1: " + ex);
-            System.out.println("ex Code sendPost2: " + data);
-            System.out.println("ex Code sendPost3: " + url);
+        }catch (Exception ex) {            
+            logger.error("ex Code sendPost2: " + data);
+            logger.error("ex Code sendPost3: " + url);
+            logger.error(elog.toStringException(ex));
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -185,14 +190,15 @@ public class Communicator {
                 }
             }
             else{
-
+            	logger.error("Failed : HTTP error code : "
+                        + response.getStatusLine().getStatusCode());
                 throw new RuntimeException("Failed : HTTP error code : "
                         + response.getStatusLine().getStatusCode());
             }
 
 
         }catch (Exception ex) {
-            // System.out.println("Exception Code : " + ex);
+            logger.error(elog.toStringException(ex));
             responseOutput.append("Exception Code : " + ex);
 
         } finally {
@@ -228,8 +234,8 @@ public class Communicator {
             in.close();
 
         }catch (Exception ex) {
-            System.out.println("ex Code sendGet: " + ex + " : sendGet url = " + url);
-            logger.debug("[errror on sendGet ]" + url);
+            logger.error("sendGet url = " + url);
+            logger.error(elog.toStringException(ex));
         }
 
         return response.toString();

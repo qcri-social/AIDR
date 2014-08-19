@@ -28,7 +28,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ClientAppServiceImpl implements ClientAppService {
 
-    protected static Logger logger = Logger.getLogger("ClientAppService");
+    protected static Logger logger = Logger.getLogger(ClientAppServiceImpl.class);
 
     @Autowired
     private ClientAppDao clientAppDao;

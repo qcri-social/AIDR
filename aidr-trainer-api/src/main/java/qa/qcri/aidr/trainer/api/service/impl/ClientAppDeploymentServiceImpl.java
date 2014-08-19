@@ -24,7 +24,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ClientAppDeploymentServiceImpl implements ClientAppDeploymentService {
 
-    protected static Logger logger = Logger.getLogger("ClientAppDeploymentService");
+    protected static Logger logger = Logger.getLogger(ClientAppDeploymentServiceImpl.class);
 
     @Autowired
     ClientAppDeploymentDao clientAppDeploymentDao;

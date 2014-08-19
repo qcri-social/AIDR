@@ -38,7 +38,7 @@ import java.util.Set;
 @Transactional(readOnly = true)
 public class DocumentServiceImpl implements DocumentService {
 
-    protected static Logger logger = Logger.getLogger("DocumentServiceImpl");
+    protected static Logger logger = Logger.getLogger(DocumentServiceImpl.class);
 
     @Autowired
     private DocumentDao documentDao;
