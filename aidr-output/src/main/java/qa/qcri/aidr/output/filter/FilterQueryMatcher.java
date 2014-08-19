@@ -116,8 +116,8 @@ public class FilterQueryMatcher {
 			for (NominalLabel nLabel: tweet.getNominalLabels()) {
 				//logger.debug("Going for matching nLabel#" + i); 
 				++i;
-				if (q.getClassifierCode() != null && 
-					q.getClassifierCode().equalsIgnoreCase(nLabel.attibute_code)) {
+				if (q.getClassifierCode() != null && nLabel.attibute_code != null
+					&& q.getClassifierCode().equalsIgnoreCase(nLabel.attibute_code)) {
 					// classifier code matches, next match comparator
 					matchResult = true;
 					//logger.info("comparing classifier code '" + nLabel.attibute_code + "': " + matchResult);
@@ -131,7 +131,8 @@ public class FilterQueryMatcher {
 					}
 					
 					// Next check label comparator "is"
-					if (q.getComparator().equals(ComparatorType.is) && q.getLabelCode() != null) {
+					if (q.getComparator().equals(ComparatorType.is) 
+							&& nLabel.label_code != null && q.getLabelCode() != null) {
 						matchResult = matchResult && (q.getLabelCode().equalsIgnoreCase(nLabel.label_code));
 						// Now check confidence value
 						matchResult = matchResult && (nLabel.confidence >= q.getConfidence());
@@ -141,7 +142,8 @@ public class FilterQueryMatcher {
 					}
 					
 					// Next check label comparator "is_not"
-					if (q.getComparator().equals(ComparatorType.is_not) && q.getLabelCode() != null) {
+					if (q.getComparator().equals(ComparatorType.is_not) 
+							&& nLabel.label_code != null && q.getLabelCode() != null) {
 						matchResult = matchResult && !(q.getLabelCode().equalsIgnoreCase(nLabel.label_code));
 						// Now check confidence value
 						matchResult = (matchResult) && (nLabel.confidence >= q.getConfidence());
