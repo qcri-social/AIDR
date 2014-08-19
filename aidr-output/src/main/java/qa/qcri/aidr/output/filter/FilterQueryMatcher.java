@@ -116,8 +116,8 @@ public class FilterQueryMatcher {
 			for (NominalLabel nLabel: tweet.getNominalLabels()) {
 				//logger.debug("Going for matching nLabel#" + i); 
 				++i;
-				if (q.getClassifierCode() != null && nLabel.attibute_code != null
-					&& q.getClassifierCode().equalsIgnoreCase(nLabel.attibute_code)) {
+				if (q.getClassifierCode() != null && nLabel.attribute_code != null
+					&& q.getClassifierCode().equalsIgnoreCase(nLabel.attribute_code)) {
 					// classifier code matches, next match comparator
 					matchResult = true;
 					//logger.info("comparing classifier code '" + nLabel.attibute_code + "': " + matchResult);
@@ -270,7 +270,7 @@ public class FilterQueryMatcher {
 		int i = 0;
 		for (NominalLabel t: testTweet.getNominalLabels()) {
 			System.out.println("i = " + i + ": createAt = " + testTweet.getCreatedAt()  
-					+ ", attribute code = " + t.attibute_code 
+					+ ", attribute code = " + t.attribute_code 
 					+ ", label_code = " + t.label_code + ", confidence = " + t.confidence);
 			++i;
 		}

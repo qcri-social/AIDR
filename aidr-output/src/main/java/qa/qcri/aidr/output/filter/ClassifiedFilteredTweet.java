@@ -132,7 +132,7 @@ public class ClassifiedFilteredTweet implements Serializable {
 					for (int i = 0;i < nominalLabels.size();i++) {
 						NominalLabel nLabel = new NominalLabel();
 						JsonObject temp = (JsonObject) nominalLabels.get(i);
-						nLabel.attibute_code = temp.get("attribute_code").getAsString();
+						nLabel.attribute_code = temp.get("attribute_code").getAsString();
 						nLabel.label_code = temp.get("label_code").getAsString();
 						nLabel.confidence = temp.get("confidence").getAsFloat();
 

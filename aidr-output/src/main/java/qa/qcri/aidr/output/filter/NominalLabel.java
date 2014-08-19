@@ -33,7 +33,7 @@ public class NominalLabel implements Serializable {
 	@JsonProperty("attribute_description") public String attribute_description;
 	
 	@XmlElement 
-	@JsonProperty("attribute_code") public String attibute_code;
+	@JsonProperty("attribute_code") public String attribute_code;
 	
 	@XmlElement 
 	@JsonProperty("attribute_name") public String attribute_name;
