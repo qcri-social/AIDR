@@ -31,10 +31,12 @@ public class Document implements Serializable {
 
     @Column (name = "isEvaluationSet", nullable = false)
     private boolean isEvaluationSet;
-
+    
+    /*
     @Column (name = "sourceIP", nullable = false)
     private Long sourceIP;
-
+	*/
+    
     @Column (name = "valueAsTrainingSample", nullable = false)
     private Double valueAsTrainingSample;
 
@@ -108,7 +110,8 @@ public class Document implements Serializable {
     public void setEvaluationSet(boolean evaluationSet) {
         isEvaluationSet = evaluationSet;
     }
-
+    
+    /*
     public Long getSourceIP() {
         return sourceIP;
     }
@@ -116,7 +119,8 @@ public class Document implements Serializable {
     public void setSourceIP(Long sourceIP) {
         this.sourceIP = sourceIP;
     }
-
+	*/
+    
     public Double getValueAsTrainingSample() {
         return valueAsTrainingSample;
     }
