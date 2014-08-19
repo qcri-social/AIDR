@@ -3,6 +3,7 @@ package qa.qcri.aidr.predictui.api;
 import java.io.IOException;
 import java.util.List;
 
+import qa.qcri.aidr.predictui.util.ErrorLog;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
 import javax.ejb.EJB;
@@ -13,12 +14,11 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
-
 
 import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.facade.DocumentFacade;
@@ -43,7 +43,9 @@ public class DocumentResource {
 	@EJB
 	private TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
 
-
+	private static Logger logger = Logger.getLogger(DocumentResource.class);
+	private static ErrorLog elog = new ErrorLog();
+	
 	public DocumentResource() {
 	}
 
@@ -59,7 +61,7 @@ public class DocumentResource {
 			try {
 				docList = mapper.readValue(jsonString,  
 						new TypeReference<List<Document>>() {});
-				System.out.println("[getAllDocuments] received doc count = " + docList.size());
+				logger.info("retrieved doc count = " + docList.size());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -76,7 +78,7 @@ public class DocumentResource {
 	@Path("{id}")
 	public Response getDocumentByID(@PathParam("id") long id){
 		//Document document = documentLocalEJB.getDocumentByID(id);
-		System.out.println("[getDocumentByID] received request for : " + id);
+		logger.info("received request for : " + id);
 
 		String jsonString = taskManager.getTaskById(id);
 		ObjectMapper mapper = new ObjectMapper();
@@ -85,13 +87,13 @@ public class DocumentResource {
 		try {
 			if (jsonString != null) {
 				doc = mapper.readValue(jsonString, Document.class);
-				System.out.println("Converted doc id: " + doc.getDocumentID());
+				logger.info("Converted doc id: " + doc.getDocumentID());
 			} else {
-				System.out.println("doc id: null");
+				logger.warn("doc id: null");
 			}
 		} catch (IOException e) {
-			System.err.println("JSON deserialization parse error!");
-			e.printStackTrace();
+			logger.error("JSON deserialization parse error!");
+			logger.error(elog.toStringException(e));
 		}
 		return Response.ok(doc).build();
 	}
@@ -110,10 +112,10 @@ public class DocumentResource {
 		if (jsonString != null) {
 			try {
 				docList = mapper.readValue(jsonString, new TypeReference<List<Document>>() {});
-				System.out.println("[getAllLabeledDocumentByCrisisID] received doc count = " + docList.size());
+				logger.info("retrieved doc count = " + docList.size());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Error in JSON deserialization to local List<Document> type");
+				logger.error(elog.toStringException(e));
 			}
 		}
 		ResponseWrapper response = new ResponseWrapper(Config.STATUS_CODE_SUCCESS);
@@ -128,7 +130,7 @@ public class DocumentResource {
 		try {
 			//documentLocalEJB.deleteDocument(id);
 			int result = taskManager.deleteTaskById(id);
-			System.out.println("[deleteDocument] deleted count = " + result);
+			logger.info("deleted count = " + result);
 		} catch (RuntimeException e) {
 			return Response.ok(
 					new ResponseWrapper(Config.STATUS_CODE_FAILED,
@@ -151,16 +153,16 @@ public class DocumentResource {
 				try {
 
 					document = mapper.readValue(jsonString, qa.qcri.aidr.task.entities.Document.class);
-					System.out.println("Converted doc id: " + document.getDocumentID());
+					logger.info("Converted doc id: " + document.getDocumentID());
 				} catch (IOException e) {
-					System.err.println("JSON deserialization parse error!");
-					e.printStackTrace();
+					logger.error("JSON deserialization parse error!");
+					logger.error(elog.toStringException(e));
 				}
 				document.setHasHumanLabels(false);
 				document.setNominalLabelCollection(null);
 				taskManager.updateTask(document);
 			} else {
-				System.out.println("doc id: null");
+				logger.warn("doc id: null");
 			}
 		} catch (RuntimeException e) {
 			return Response.ok(

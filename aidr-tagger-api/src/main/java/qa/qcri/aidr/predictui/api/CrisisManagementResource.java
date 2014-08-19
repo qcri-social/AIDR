@@ -14,6 +14,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.log4j.Logger;
+
+import qa.qcri.aidr.predictui.util.ErrorLog;
 import qa.qcri.aidr.predictui.entities.Crisis;
 import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.entities.ModelFamily;
@@ -44,6 +47,9 @@ public class CrisisManagementResource {
 	@EJB
 	private TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
 
+	private static Logger logger = Logger.getLogger(CrisisManagementResource.class);
+	private static ErrorLog elog = new ErrorLog();
+			
 	public CrisisManagementResource() {
 	}
 
@@ -57,12 +63,14 @@ public class CrisisManagementResource {
 		// 3. remove tasks for this crisisID from document table -->
 		//    this will trigger deletion of documents for this crisisID from 
 		//    the task_assignment table through DELETE CASCADE
-		System.out.println("[trashByCrisisCode] Received request to trash collection: " + crisisCode);
+		System.out.println("[trashByCrisisCode] Received request to trash collection from aidr_predict DB: " + crisisCode);
+		logger.info("Received request to trash collection from aidr_predict DB: " + crisisCode);
 		try {
 			Crisis crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
-			System.out.println("[trashByCrisisCode] crisis returned: " + crisis);
+			logger.info("crisis found for crisis code " + crisisCode + ": " + crisis);
 			if (null == crisis) {
 				StringBuilder sb = new StringBuilder().append("{\"TRASHED\":").append(new Long(-1)).append("}");
+				logger.info("No crisis exists in aidr_predict DB for: " + crisisCode);
 				return Response.ok(sb.toString()).build();
 			}
 			//Otherwise go ahead with trashing
@@ -72,6 +80,7 @@ public class CrisisManagementResource {
 			List<ModelFamily> associatedModels = modelFamilyLocalEJB.getAllModelFamiliesByCrisis(crisis.getCrisisID());
 			if (null == associatedModels) {
 				StringBuilder sb = new StringBuilder().append("{\"TRASHED\":").append(crisis.getCrisisID()).append("}");
+				logger.info("Success in deleting crisis: " + crisisCode);
 				return Response.ok(sb.toString()).build();
 			}
 			for (ModelFamily model: associatedModels) {
@@ -82,9 +91,10 @@ public class CrisisManagementResource {
 			List<Document> associatedDocs = documentLocalEJB.getAllUnlabeledDocumentbyCrisisID(crisis);
 			if (null == associatedDocs) {
 				StringBuilder sb = new StringBuilder().append("{\"TRASHED\":").append(crisis.getCrisisID()).append("}");
+				logger.info("Success in deleting crisis: " + crisisCode);
 				return Response.ok(sb.toString()).build();
-			}
-			System.out.println("[trashByCrisisCode] Found for " + crisisCode + ", unlabeled docs  = " + associatedDocs.size());
+			}			
+			logger.info("Found for " + crisisCode + ", unlabeled docs to delete  = " + associatedDocs.size());
 			TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();		
 			for (Document document: associatedDocs) {
 				//em.remove(document);
@@ -92,21 +102,23 @@ public class CrisisManagementResource {
 					qa.qcri.aidr.task.entities.Document doc = mapper.reverseTransformDocument(document);
 					taskManager.deleteTask(doc);
 				} catch (Exception e) {
-					e.printStackTrace();
-					System.err.println("[trashByCrisisCode] Error in deleting document: " + document);
+					logger.error("Error in deleting document: " + document);
+					logger.error(elog.toStringException(e));
 				}
 			}
 			List<Document> temp = documentLocalEJB.getAllUnlabeledDocumentbyCrisisID(crisis);
-			System.out.println("[trashByCrisisCode] Post Trashing: found for " + crisisCode + ", unlabeled docs  = " + temp.size());		
+			logger.info("Post Trashing: found for " + crisisCode + ", unlabeled docs after delete = " + temp.size());		
 
 			if (temp.isEmpty()) {
 				StringBuilder sb = new StringBuilder().append("{\"TRASHED\":").append(crisis.getCrisisID()).append("}");
+				logger.info("Success in deleting crisis: " + crisisCode);
 				return Response.ok(sb.toString()).build();
 			} else {
 				return Response.ok("{\"status\": \"FAILED\"}").build();
 			}
 		} catch (Exception e) {
-			System.out.println("[trashByCrisisCode] Something went wrong in trashing attempt!");
+			logger.error("Something went wrong in trashing attempt!");
+			logger.error(elog.toStringException(e));
 			return Response.ok("{\"status\": \"FAILED\"}").build();
 		}
 	}
@@ -118,12 +130,19 @@ public class CrisisManagementResource {
 		//TODO: 
 		// 1. set aidr_predict.crisis.isTrashed = false
 		// 2. set model_family.isActive = 1
-		System.out.println("Received request to trash collection: " + crisisCode);
+		System.out.println("Received request to untrash collection from aidr_predict DB: " + crisisCode);
+		logger.info("Received request to untrash collection from aidr_predict DB: " + crisisCode);
 		Crisis crisis = null;
 		try {
 			crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
+			if (null == crisis) {
+				logger.warn("crisis does not exist in aidr_predict DB for: " + crisisCode);
+				return Response.ok("{\"status\": \"UNTRASHED\"}").build();
+			}
 		} catch (Exception e) {
-			return Response.ok("{\"status\": \"UNTRASHED\"}").build();
+			logger.error("Could not retrieve crisis to untrash: " + crisisCode);
+			logger.error(elog.toStringException(e));
+			return Response.ok("{\"status\": \"FAILED\"}").build();
 		}
 		try {
 			if (crisis != null) {
@@ -136,12 +155,14 @@ public class CrisisManagementResource {
 						model.setIsActive(true);
 						em.merge(model);
 					}
-					System.out.println("Found for " + crisisCode + ", model families  = " + associatedModels.size());
+					logger.info("Found for " + crisisCode + ", model families  = " + associatedModels.size());
 				}
 			}
+			logger.info("Untrashed crisis: " + crisisCode);
 			return Response.ok("{\"status\": \"UNTRASHED\"}").build();
 		} catch (Exception e) {
-			System.out.println("[untrashByCrisisCode] Something went wrong in untrashing attempt!");
+			logger.error("Something went wrong in untrashing attempt!");
+			logger.error(elog.toStringException(e));
 			return Response.ok("{\"status\": \"FAILED\"}").build();
 		}
 	}

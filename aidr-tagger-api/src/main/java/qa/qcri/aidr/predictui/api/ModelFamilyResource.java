@@ -10,7 +10,9 @@ import java.util.List;
 import qa.qcri.aidr.predictui.dto.ModelFamilyDTO;
 import qa.qcri.aidr.predictui.dto.TaggersForCodes;
 import qa.qcri.aidr.predictui.dto.TaggersForCodesRequest;
+import qa.qcri.aidr.predictui.util.ErrorLog;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
@@ -24,6 +26,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.predictui.entities.ModelFamily;
 import qa.qcri.aidr.predictui.facade.ModelFamilyFacade;
 import qa.qcri.aidr.predictui.util.Config;
@@ -42,6 +47,9 @@ public class ModelFamilyResource {
     @EJB
     private ModelFamilyFacade modelFamilyLocalEJB;
 
+    private static Logger logger = Logger.getLogger(ModelFamilyResource.class);
+    private static ErrorLog elog = new ErrorLog();
+    
     public ModelFamilyResource() {
     }
     
@@ -84,7 +92,9 @@ public class ModelFamilyResource {
         try {
             modelFamily = modelFamilyLocalEJB.addCrisisAttribute(modelFamily);
         } catch (RuntimeException e) {
-            return Response.ok("Error while adding Crisis attribute. Possible causes could be duplication of primary key, incomplete data, incompatible data format.").build();
+            logger.error("Error while adding Crisis attribute. Possible causes could be duplication of primary key, incomplete data, incompatible data format: " + modelFamilyDTO.getCrisis().getCode() + "," + modelFamilyDTO.getNominalAttribute().getCode());
+            logger.error(elog.toStringException(e));
+        	return Response.ok("Error while adding Crisis attribute. Possible causes could be duplication of primary key, incomplete data, incompatible data format.").build();
         }
 
         return Response.ok(modelFamily).build();
@@ -120,7 +130,10 @@ public class ModelFamilyResource {
         try {
             modelFamilyLocalEJB.deleteModelFamily(modelFamilyID);
         } catch (RuntimeException e) {
-            return Response.ok(
+            logger.error("Error while deleting Classifier for modelFamily: " + modelFamilyID);
+            logger.error(elog.toStringException(e));
+            
+        	return Response.ok(
                     new ResponseWrapper(Config.STATUS_CODE_FAILED,
                     "Error while deleting Classifier.")).build();
         }
