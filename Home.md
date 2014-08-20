@@ -13,8 +13,8 @@ For AIDR system administrators:
 For AIDR developers:
 
 * [[Objectives and user needs]]
-* [[Logging standards]]
 * [[Database schema]]
+* [[Logging standards]]
 
 ***
 
