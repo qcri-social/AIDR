@@ -1,6 +1,8 @@
+This document describes the strategic direction of AIDR in terms of objectives and user needs.
+
 # Objectives
 
-The objective of AIDR (Artificial Intelligence for Disaster Response) is to provide a platform to collect and classify in real-time a large amount of user-generated messages during humanitarian crises. The platform applies human intelligence (crowdsourcing) and machine intelligence (machine learning) to perform these tasks. This platform is provided as a service via a website, and as free and open source software.
+The objective of AIDR is to provide a platform to collect and classify in real-time a large amount of user-generated messages during humanitarian crises. The platform applies human intelligence (crowdsourcing) and machine intelligence (machine learning) to perform these tasks. This platform is provided as a service via a website, and as free and open source software.
 
 The main success metrics of AIDR are:
 
