@@ -1003,7 +1003,7 @@ public class DataStore extends Loggable {
 		}
 	}
 
-	
+	/*
 	public static void main(String[] args) throws Exception {
 		DataStore ds = new DataStore();
 		
@@ -1033,5 +1033,5 @@ public class DataStore extends Loggable {
 		logger.info("Testing truncate Labeling buffer for crisisID = " + 117);
 		DataStore.taskManager.truncateLabelingTaskBufferForCrisis(117L, Config.LABELING_TASK_BUFFER_MAX_LENGTH, 0);
 	}
-	
+	*/
 }
