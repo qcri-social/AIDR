@@ -32,7 +32,7 @@ Operators of AIDR have the following main needs:
 
 Users of AIDR are typically members of emergency-response organizations (including both professional/formal organizations and digital volunteer communities), as well as members of the public.
 
-### Operator Personas
+**Operator personas** (fictional characters describing prototypical users):
 
 * Andres, 40, is a member of a large emergency response organization. He needs to create formal reports detailing the specifics of a crisis situation. In order to create such reports, Andres interviews people on the ground, speaks on the phone with a number of actors, and also uses a number of tools to monitor news and social media.
 * Josefina, 30, is a member of a digital volunteer network that creates crisis maps. The crisis maps show a visual representation of the situation in a crisis-stricken area. She works with dozens of other volunteers to create crisis maps that are exposed to the public and to formal response agencies. 
@@ -40,6 +40,17 @@ Users of AIDR are typically members of emergency-response organizations (includi
 * Carlos, 40, is a developer of web applications. He creates crisis mash-ups collecting data from different sources. Carlos uses Google Maps, a news crawler, and many data sources to create visually appealing experiences that describe a crisis.
 
 ## User Needs: Labelers
+
+Labelers provide volunteer work to classify tweets in AIDR. Their main needs are:
+
+* Finding tasks that they can do, being able to focus on crises that motivate them to be volunteers.
+* Learning to do that task, by reading instructions and seeing examples.
+* Performing the task (i.e. classify tweets).
+* Understanding how well they performed the task.
+* Seeing the output of AIDR.
+* Understanding the effect of their work in the output of AIDR.
+
+Labelers can be anyone, not necessarily members of volunteer organizations.
 
 
 
