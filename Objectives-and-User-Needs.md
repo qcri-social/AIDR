@@ -17,15 +17,15 @@ AIDR has two types of users: **operators**, who start and oversee the process of
 Operators of AIDR have the following main needs:
 
 * Maintain (Create, Read, Update or Delete) a set of crisis-related collections
-** Create a collection specifying a set of parameters
-** Monitor the state of a collection
-** Modify the parameters of a collection
-** Stop, delete and/or archive a collection
+ * Create a collection specifying a set of parameters
+ * Monitor the state of a collection
+ * Modify the parameters of a collection
+ * Stop, delete and/or archive a collection
 * Maintain (CRUD) for each crisis-related collection, a set of classifiers
-** Create a classifier specifying a set of tags for it, or copy an existing (suggested) classifier
-** Monitor the classification accuracy
-** Modify the tags of the classifier
-** Remove the classifier from the collection
+ * Create a classifier specifying a set of tags for it, or copy an existing (suggested) classifier
+ * Monitor the classification accuracy
+ * Modify the tags of the classifier
+ * Remove the classifier from the collection
 
 Users of AIDR are typically members of emergency-response organizations (including both professional/formal organizations and digital volunteer communities), as well as members of the public.
 
