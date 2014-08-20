@@ -1,18 +1,18 @@
-Welcome to the AIDR wiki!
+Welcome to the AIDR wiki! If this is your first visit, read the [[objectives and user needs]] that guide AIDR's development.
 
-For AIDR users:
+For users:
 
 * [[AIDR Operator's Manual]]
 
-For AIDR system administrators:
+For system administrators:
 
 * [[Installation instructions]]
 * [[System administrator manual]]
 * [[Release notes]]
 
-For AIDR developers:
+For developers:
 
-* [[Objectives and user needs]]
+* [[API Documentation]]
 * [[Database schema]]
 * [[Logging standards]]
 
