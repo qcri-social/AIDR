@@ -26,12 +26,18 @@ Operators of AIDR have the following main needs:
  * Monitor the classification accuracy
  * Modify the tags of the classifier
  * Remove the classifier from the collection
+* Download the resulting classified tweets onto a spreadsheet.
+* Visualize at a glance the resulting classified tweets.
+* Consume the resulting classified tweets into an application through an API.
 
 Users of AIDR are typically members of emergency-response organizations (including both professional/formal organizations and digital volunteer communities), as well as members of the public.
 
-### Personas
+### Operator Personas
 
-* Andres is a membbe
+* Andres, 40, is a member of a large emergency response organization. He needs to create formal reports detailing the specifics of a crisis situation. In order to create such reports, Andres interviews people on the ground, speaks on the phone with a number of actors, and also uses a number of tools to monitor news and social media.
+* Josefina, 30, is a member of a digital volunteer network that creates crisis maps. The crisis maps show a visual representation of the situation in a crisis-stricken area. She works with dozens of other volunteers to create crisis maps that are exposed to the public and to formal response agencies. 
+* Maurice, 30, is a journalist and blogger. Maurice uses a series of tools to get the pulse of social media around certain events or developments. This involves finding out about new events, understanding the sides of a crisis, etc.
+* Carlos, 40, is a developer of web applications. He creates crisis mash-ups collecting data from different sources. Carlos uses Google Maps, a news crawler, and many data sources to create visually appealing experiences that describe a crisis.
 
 ## User Needs: Labelers
 
