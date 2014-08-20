@@ -10,3 +10,10 @@ The main success metrics of AIDR are:
 
 # User Needs
 
+AIDR has two types of users: **operators**, who start and oversee the process of collection and classification, and **digital volunteers**, who are contribute human intelligence through labeled examples.
+
+## User Needs: Operators
+
+## User Needs: Digital Volunteers
+
+
