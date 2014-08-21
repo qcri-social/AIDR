@@ -19,6 +19,7 @@ import java.util.List;
 //import java.util.logging.Logger;
 
 
+
 import qa.qcri.aidr.collector.beans.ResponseWrapper;
 
 import javax.ws.rs.core.Context;
@@ -40,6 +41,7 @@ import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
 import qa.qcri.aidr.collector.utils.GenericCache;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.utils.Config;
+import qa.qcri.aidr.collector.logging.ErrorLog;
 import qa.qcri.aidr.collector.logging.Loggable;
 import static qa.qcri.aidr.collector.logging.Loggable.LOG_LEVEL;
 import qa.qcri.aidr.collector.utils.TwitterStreamQueryBuilder;
@@ -54,6 +56,7 @@ import twitter4j.conf.ConfigurationBuilder;
 public class TwitterCollectorAPI extends Loggable {
 	
 	private static Logger logger = Logger.getLogger(TwitterCollectorAPI.class.getName());
+	private static ErrorLog elog = new ErrorLog();
 	
     @Context
     private UriInfo context;
@@ -122,7 +125,7 @@ public class TwitterCollectorAPI extends Loggable {
         } catch (Exception ex) {
             //Logger.getLogger(TwitterCollectorAPI.class.getName()).log(Level.SEVERE, null, ex);
         	logger.error(collectionCode + ": Exception in creating TwitterStreamTracker");
-        	ex.getStackTrace();
+        	logger.error(elog.toStringException(ex));
         }
 
         if (Config.DEFAULT_PERSISTER_ENABLED) {
@@ -251,8 +254,8 @@ public class TwitterCollectorAPI extends Loggable {
 
             logger.info(collectionCode + ": Collector persister response = " + jsonResponse);
         } catch (RuntimeException e) {
-
             logger.error(collectionCode + ": Could not start persister. Is persister running?");
+            logger.error(elog.toStringException(e));
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
@@ -269,6 +272,7 @@ public class TwitterCollectorAPI extends Loggable {
             logger.info(collectionCode + ": Collector persister response =  " + jsonResponse);
         } catch (RuntimeException e) {
             logger.error(collectionCode + ": Could not stop persister. Is persister running?");
+            logger.error(elog.toStringException(e));
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
         	logger.error(collectionCode + ": Unsupported Encoding scheme used");
@@ -286,6 +290,7 @@ public class TwitterCollectorAPI extends Loggable {
             logger.info(collectionCode + ": Tagger persister response = " + jsonResponse);
         } catch (RuntimeException e) {
         	logger.error(collectionCode + ": Could not start persister. Is persister running?");
+        	logger.error(elog.toStringException(e));
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
         	logger.error(collectionCode + ": Unsupported Encoding scheme used");
@@ -302,6 +307,7 @@ public class TwitterCollectorAPI extends Loggable {
             logger.info(collectionCode + ": Tagger persister response: " + jsonResponse);
         } catch (RuntimeException e) {
             logger.error(collectionCode + ": Could not stop persister. Is persister running?");
+            logger.error(elog.toStringException(e));
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
             logger.error(collectionCode + ": Unsupported Encoding scheme used");

@@ -176,7 +176,7 @@ public class ChannelBufferManager {
 
 		// Periodically check if channel's isPubliclyListed flag has changed
 		if (currentTime - lastPublicFlagCheckedTime > CHECK_CHANNEL_PUBLIC_INTERVAL) {
-			logger.info("Periodic check for publiclyListed flag of channels");
+			logger.info("Invoked by message on channel: " + channelName + ". Periodic check for publiclyListed flag of channels");
 			Map<String, Boolean> statusFlags = getAllRunningCollections();	
 			logger.info("Retrieved list from aidr-manager, size = " + statusFlags.size());
 			if (statusFlags != null) {
@@ -185,7 +185,7 @@ public class ChannelBufferManager {
 						if (subscribedChannels.containsKey(CHANNEL_PREFIX_STRING+cName)) {
 							ChannelBuffer cb = subscribedChannels.get(CHANNEL_PREFIX_STRING+cName);
 							cb.setPubliclyListed(statusFlags.get(cName));
-							logger.info("For channel: " + cb.getChannelName() + ", isChannelPublic = " + cb.getPubliclyListed());
+							logger.info("For channel: " + cb.getChannelName() + ", isChannelPublic = " + cb.getPubliclyListed() + ", msg count = " + cb.getCurrentMsgCount() + ", last msg timestamp = " + new Date(cb.getLastAddTime()));
 						}
 					}
 					statusFlags.clear();
@@ -199,11 +199,12 @@ public class ChannelBufferManager {
 
 		// Periodically check if any channel is down - if so, delete
 		if (currentTime - lastCheckedTime > CHECK_INTERVAL) {
-			logger.info("Periodic check for inactive channels - delete if any.");
+			logger.info("Invoked by message on channel: " + channelName + ". Periodic check for inactive channels - delete if any.");
 			for (String channel: subscribedChannels.keySet()) {
 				ChannelBuffer temp = subscribedChannels.get(channel);
 				if ((currentTime - temp.getLastAddTime()) > NO_DATA_TIMEOUT) {
 					logger.info("Deleting inactive channel = " + channelName);
+					logger.info("Stat on deleted channel " + channelName + ": msg count = " + temp.getCurrentMsgCount() + ", last msg timestamp = " + new Date(temp.getLastAddTime()));
 					deleteChannelBuffer(temp.getChannelName());
 				}
 			}

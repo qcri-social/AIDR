@@ -99,9 +99,40 @@ public class ChannelBuffer {
 	 */
 	public List<String> getMessages(int msgCount) { 
 		//long startTime = System.currentTimeMillis();
-		Object[] msgArray = null;
+		
+		List<String> tempList = null;
+		try {
+			synchronized(this.messageBuffer) {
+			    tempList = new ArrayList<String>(messageBuffer.size());
+				// first copy out the entire buffer to a list
+				Iterator<String> itr = messageBuffer.iterator();
+				while (itr.hasNext()) {
+					String element = itr.next();
+					if (element != null) tempList.add(element);		// only non-null elements
+				}
+			}
+			if (msgCount == messageBuffer.size()) {
+				return tempList;		// optimization
+			}
 
-		synchronized(this) {
+			// Otherwise, get the last msgCount elements, in oldest-first order
+			//Collections.reverse(tempList);	// in-situ reversal O(n) time
+			List<String> returnList = new ArrayList<String>(msgCount);
+			for (int i = 0;i < msgCount;i++) {
+				int index = Math.max(0, (tempList.size() - msgCount));	// from where to pick
+				returnList.add(tempList.get(index));
+				++index;
+			}
+			return returnList;
+		} catch (Exception e) {
+			logger.error("Error in creating list out of buffered messages");
+			logger.error(elog.toStringException(e));
+			return null;
+		}
+
+		/*
+		Object[] msgArray = null;
+		synchronized(this.messageBuffer) {
 			try {
 				msgArray = messageBuffer.toArray();
 			} catch (Exception e) {
@@ -131,8 +162,12 @@ public class ChannelBuffer {
 			logger.error(elog.toStringException(e));
 			return null;
 		}
+		 */
 	}
 
+	public int getCurrentMsgCount() {
+		return messageBuffer.size();
+	}
 
 	public void deleteBuffer() {
 		channelName = null;

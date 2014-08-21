@@ -31,7 +31,7 @@ import qa.qcri.aidr.collector.utils.GenericCache;
 @Startup
 public class CollectorStartStopController extends HttpServlet {
 	
-	private static Logger logger = Logger.getLogger(CollectorStartStopController.class.getName());
+	private static Logger logger = Logger.getLogger(CollectorStartStopController.class);
 	
 	public CollectorStartStopController() {
 	}
