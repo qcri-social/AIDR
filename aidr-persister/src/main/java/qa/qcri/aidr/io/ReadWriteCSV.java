@@ -218,7 +218,7 @@ public class ReadWriteCSV<CellProcessors> {
 
 	public ICsvMapWriter writeClassifiedTweetIDsCSV(ICsvMapWriter mapWriter, final List<ClassifiedTweet> tweetsList, String collectionDIR, String fileName) {
 		// the header elements are used to map the bean values to each column (names must match)
-		String[] header = new String[]{"tweetID", "crisisName", "attributeName_1", "attributeCode_1", "labelName_1","labelDescription_1", "labelCode_1", "confidence_1", "humanLabeled_1"};
+		String[] header = new String[]{"tweetID", "crisisName"};
 
 		try {
 			if (null == mapWriter) {
@@ -229,22 +229,12 @@ public class ReadWriteCSV<CellProcessors> {
 				mapWriter = getCSVMapWriter(fileToWrite);
 
 				// Determine the headers
-				if (!tweetsList.isEmpty() && tweetsList.get(0).getNominalLabels() != null) {
-					int numberOfClassifiers = tweetsList.get(0).getNominalLabels().size();
-					System.out.println("number of classifiers = " + numberOfClassifiers);
-					for (int i = 1;i < numberOfClassifiers;i++) {
-						int endPoint = header.length;
-						header[endPoint] = new String("atributeName_" + (i+1));
-						header[endPoint + 1] = new String("atributeCode_" + (i+1));
-						header[endPoint + 2] = new String("labelName_" + (i+1));
-						header[endPoint + 3] = new String("labelDescription_" + (i+1));
-						header[endPoint + 4] = new String("labelCode_" + (i+1));
-						header[endPoint+5] = new String("confidence_" + (i+1));
-						header[endPoint+6] = new String("humanLabeled_" + (i+1));
-					}
+				String[] runningHeader = null;
+				if (!tweetsList.isEmpty()) {
+					runningHeader  = setClassifiedTweetHeader(header, header.length, tweetsList.get(0));
 				}
 				// First write the header
-				mapWriter.writeHeader(header);
+				mapWriter.writeHeader(runningHeader);
 			}
 		} catch (Exception ex) {
 			logger.error(collectionDIR + ": Exception occured when creating a mapWriter instance");
@@ -324,7 +314,7 @@ public class ReadWriteCSV<CellProcessors> {
 
 
 	public ICsvMapWriter writeClassifiedTweetsCSV(List<ClassifiedTweet> tweetsList, String collectionDIR, String fileName, ICsvMapWriter mapWriter) {
-		String[] header = new String[]{"tweetID", "message","userID", "userName", "userURL", "createdAt", "tweetURL", "crisisName", "attributeName_1", "attributeCode_1", "labelName_1", "labelDescription_1", "labelCode_1", "confidence_1", "humanLabeled_1"};
+		String[] header = new String[]{"tweetID", "message","userID", "userName", "userURL", "createdAt", "tweetURL", "crisisName"}; 
 		try {
 			if (null == mapWriter) {
 				String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
@@ -334,22 +324,12 @@ public class ReadWriteCSV<CellProcessors> {
 				mapWriter = getCSVMapWriter(fileToWrite);
 
 				// Determine the headers
-				if (!tweetsList.isEmpty() && tweetsList.get(0).getNominalLabels() != null) {
-					int numberOfClassifiers = tweetsList.get(0).getNominalLabels().size();
-					System.out.println("number of classifiers = " + numberOfClassifiers);
-					for (int i = 1;i < numberOfClassifiers;i++) {
-						int endPoint = header.length;
-						header[endPoint] = new String("atributeName_" + (i+1));
-						header[endPoint + 1] = new String("atributeCode_" + (i+1));
-						header[endPoint + 2] = new String("labelName_" + (i+1));
-						header[endPoint + 3] = new String("labelDescription_" + (i+1));
-						header[endPoint + 4] = new String("labelCode_" + (i+1));
-						header[endPoint+5] = new String("confidence_" + (i+1));
-						header[endPoint+6] = new String("humanLabeled_" + (i+1));
-					}
+				String[] runningHeader = null;
+				if (!tweetsList.isEmpty()) {
+					runningHeader  = setClassifiedTweetHeader(header, header.length, tweetsList.get(0));
 				}
 				// First write the header
-				mapWriter.writeHeader(header);
+				mapWriter.writeHeader(runningHeader);
 			}
 		} catch (Exception ex) {
 			logger.error(collectionDIR + ": Exception occured when creating a mapWriter instance");
@@ -394,16 +374,16 @@ public class ReadWriteCSV<CellProcessors> {
 	}
 
 	public String[] setClassifiedTweetHeader(String[] header, int fixedHeaderSize, ClassifiedTweet tweet) {
-		
+
 		String[] fullHeader = new String[getClassifedTweetHeaderSize(fixedHeaderSize, tweet)];
 		for (int i = 0;i < header.length;i++) {
 			fullHeader[i] = header[i];
 		}
-		
+
 		if (tweet.getNominalLabels() != null) {
 			int numberOfClassifiers = tweet.getNominalLabels().size();
-			for (int i = 1;i < numberOfClassifiers;i++) {
-				int endPoint = header.length;
+			int endPoint = header.length;
+			for (int i = 0;i < numberOfClassifiers;i++) {
 				fullHeader[endPoint] = new String("atributeName_" + (i+1));
 				fullHeader[endPoint+1] = new String("atributeCode_" + (i+1));
 				fullHeader[endPoint+2] = new String("labelName_" + (i+1));
@@ -411,6 +391,7 @@ public class ReadWriteCSV<CellProcessors> {
 				fullHeader[endPoint + 4] = new String("labelCode_" + (i+1));
 				fullHeader[endPoint+5] = new String("confidence_" + (i+1));
 				fullHeader[endPoint+6] = new String("humanLabeled_" + (i+1));
+				endPoint += VARIABLE_HEADER_SIZE;
 			}
 		}
 		return fullHeader;
