@@ -147,7 +147,7 @@ public class TaggerSubscriber extends JedisPubSub {
         if (null == tweet) {
         	//System.err.println("[writeToFile] REDIS output JSON data format error!!! Offending tweet: " + tweet.getTweetID());
         } else {
-        	if (null == tweet.getLabelName() && tweet.getNominalLabels().isEmpty()) {
+        	if (null == tweet.getLabelName_1() && tweet.getNominalLabels().isEmpty()) {
         		//System.err.println("[writeToFile] REDIS output faulty tweet with empty nominal label: " + tweet.getTweetID());
         	}
         }

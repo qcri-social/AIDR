@@ -14,6 +14,7 @@ public class Tweet  implements Document, Serializable{
     
     private String tweetID;
     private String message;
+    private String crisisName;
     //private String reTweeted;
     //private String reTweetCount;
     private String createdAt;
@@ -43,7 +44,7 @@ public class Tweet  implements Document, Serializable{
     public String getTweetID() {
         return tweetID;
     }
-
+    
     /**
      * @param tweetID the tweetID to set
      */
@@ -51,6 +52,15 @@ public class Tweet  implements Document, Serializable{
         this.tweetID = tweetID;
     }
 
+    public String getCrisisName() {
+    	return crisisName;
+    }
+    
+    public void setCrisisName(String crisisName) {
+    	this.crisisName = crisisName;
+    }
+    
+    
     /**
      * @return the message
      */
