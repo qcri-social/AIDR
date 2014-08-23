@@ -10,6 +10,7 @@ import qa.qcri.aidr.predictui.dto.NominalLabelDTO;
 import qa.qcri.aidr.predictui.dto.TrainingDataDTO;
 import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.facade.MiscResourceFacade;
+import qa.qcri.aidr.predictui.util.ErrorLog;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 import javax.ejb.EJB;
@@ -19,6 +20,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
@@ -42,7 +44,10 @@ public class MiscResourceImp implements MiscResourceFacade {
     
     @EJB
 	private TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
-
+    
+    private static Logger logger = Logger.getLogger(MiscResourceImp.class);
+    private static ErrorLog elog = new ErrorLog();
+    
     @Override
     public List<TrainingDataDTO> getTraningDataByCrisisAndAttribute(long crisisID,
                                                                     int modelFamilyID,
@@ -86,7 +91,7 @@ public class MiscResourceImp implements MiscResourceFacade {
                 + " JOIN users u on u.userID = dnl.userID "
                 + " WHERE mf.modelFamilyID = :modelFamilyID AND d.crisisID = :crisisID ";
 
-        System.out.println("getTraningDataByCrisisAndAttribute : " + sql);
+        logger.info("getTraningDataByCrisisAndAttribute : " + sql);
         try {
             Integer totalRows;
 
@@ -176,13 +181,13 @@ public class MiscResourceImp implements MiscResourceFacade {
             try {
     			if (jsonString != null) {
     				documentResult = mapper.readValue(jsonString, Document.class);
-    				System.out.println("Converted doc id: " + documentResult.getDocumentID());
+    				logger.info("For crisisID: " + crisisID + ", converted doc id: " + documentResult.getDocumentID());
     			} else {
-    				System.out.println("doc id: null");
+    				logger.info("For crisisID: " + crisisID + ", doc id: null");
     			}
     		} catch (IOException e) {
-    			System.err.println("JSON deserialization parse error!");
-    			e.printStackTrace();
+    			logger.error("JSON deserialization parse error!");
+    			logger.error(elog.toStringException(e));
     		}
             itemToLabel.setItemID(BigInteger.valueOf(documentResult.getDocumentID()));
             itemToLabel.setItemText(documentResult.getData());

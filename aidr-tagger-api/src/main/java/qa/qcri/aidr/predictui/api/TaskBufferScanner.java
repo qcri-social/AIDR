@@ -32,11 +32,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.predictui.facade.TaskBufferScannerFacade;
 import qa.qcri.aidr.predictui.util.Config;
+import qa.qcri.aidr.predictui.util.ErrorLog;
 
 @Path("/taskscanner")
 @Singleton
@@ -49,8 +49,10 @@ public class TaskBufferScanner {
 
 	public TaskBufferScanner() {
 	}
-	
-	private static Logger logger = LoggerFactory.getLogger(TaskBufferScanner.class);
+
+	private static Logger logger = Logger.getLogger(TaskBufferScanner.class);
+	private static ErrorLog elog = new ErrorLog();
+
 	private static ExecutorService executorService = null;
 	private static boolean threadStatus;
 	private static boolean scan;
@@ -64,11 +66,11 @@ public class TaskBufferScanner {
 	public void contextInitialized() {
 		threadStatus = false;
 		final Config configData = new Config();
-		
+
 		executorService = Executors.newCachedThreadPool();
 		boolean isSuccess = startTaskBufferScannerThread(configData.TASK_EXPIRY_AGE_LIMIT, configData.TASK_BUFFER_SCAN_INTERVAL);
 		if (isSuccess) {
-			System.out.println("[TaskBufferScanner] Context Initialized - started task buffer scanner thread.");
+			logger.info("Context Initialized - started task buffer scanner thread.");
 		}
 		else {
 			logger.error("[TaskBufferScanner] Fatal error - could not start task buffer scanner thread!");
@@ -100,22 +102,24 @@ public class TaskBufferScanner {
 								final long TASK_SCAN_INTERVAL = taskBufferScannerEJB.parseTime(taskScanInterval);
 								threadStatus = true;
 								taskBufferScannerEJB.ScanTaskBuffer(taskMaxAge, taskScanInterval);
-							
+
 								Thread.sleep(TASK_SCAN_INTERVAL);
 							} catch (InterruptedException e) {} 
 						}
 					} finally {
 						threadStatus = false;
-						System.out.println("[run] Done with thread.");
+						logger.info("[run] Done with thread.");
 					}
 				}
 			});
 		} catch (RejectedExecutionException e) {
-			System.err.println("[startTaskBufferScannerThread] Fatal error executing thread! Terminating.");
+			logger.error("Fatal error executing thread! Terminating.");
+			logger.error(elog.toStringException(e));
 			threadStatus = false;
 			return false;
 		} catch (NullPointerException e) {
-			System.err.println("[startTaskBufferScannerThread] Fatal error executing thread! Terminating.");
+			logger.error("Fatal error executing thread! Terminating.");
+			logger.error(elog.toStringException(e));
 			threadStatus = false;
 			return false;
 		} 
@@ -136,7 +140,7 @@ public class TaskBufferScanner {
 			@QueryParam("maxage") String maxTaskAge) {
 		if (null == executorService) {
 			executorService = Executors.newCachedThreadPool();
-			logger.info("[restartScanner] Created new executor Thread Pool");
+			logger.info("Created new executor Thread Pool");
 		}
 		final String newMaxTaskAge;
 		final String newScanInterval;
@@ -151,12 +155,12 @@ public class TaskBufferScanner {
 
 		if (!isThreadRunning()) { 
 			startTaskBufferScannerThread(newMaxTaskAge, newScanInterval);
-			logger.info("[restartScanner] Restarted task buffer scanning service");
+			logger.info("Restarted task buffer scanning service");
 			String responseStr = "{\"application\":\"TaskBufferScanner\", \"status\":\"RESTARTED\"}";
 			return Response.ok(responseStr).build();
 		}
 		else {
-			logger.info("[restartScanner] Task Buffer Scanner Thread already running!");
+			logger.warn("Task Buffer Scanner Thread already running!");
 		}
 		String responseStr = "{\"application\":\"TaskBufferScanner\", \"status\":\"ALREADY RUNNING\"}";
 		return Response.ok(responseStr).build();
@@ -175,9 +179,9 @@ public class TaskBufferScanner {
 			shutdownAndAwaitTermination();
 		}
 		else {
-			logger.info("[stopScanner] No active Task Buffer Scanner Thread found to kill!");
+			logger.info("No active Task Buffer Scanner Thread found to kill!");
 		}
-		logger.info("[stopScanner] Stopped task buffer scanning service");
+		logger.info("Stopped task buffer scanning service");
 		String responseStr = "{\"application\":\"TaskBufferScanner\", \"status\":\"STOPPED\"}";
 		return Response.ok(responseStr).build();
 	}
@@ -186,7 +190,7 @@ public class TaskBufferScanner {
 	 * 
 	 * @return status of scanner thread - running or stopped.
 	 */
-	
+
 	@GET
 	@Path("/ping")
 	@Produces("application/json")
@@ -217,7 +221,9 @@ public class TaskBufferScanner {
 			// (Re-)Cancel if current thread also interrupted
 			executorService.shutdownNow();
 			// Preserve interrupt status
-			Thread.currentThread().interrupt();
+			try {
+				Thread.currentThread().interrupt();
+			} catch (Exception e) {}
 		}
 		executorService = null;
 	}

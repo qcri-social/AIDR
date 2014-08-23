@@ -3,6 +3,8 @@ package qa.qcri.aidr.predict.featureextraction;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.predict.common.*;
 import qa.qcri.aidr.predict.data.*;
 
@@ -16,10 +18,14 @@ import qa.qcri.aidr.predict.data.*;
  */
 public class FeatureExtractor extends PipelineProcess {
 
+	private static Logger logger = Logger.getLogger(FeatureExtractor.class);
+	private static ErrorLog elog = new ErrorLog();
+	
     protected void processItem(Document doc) {
         if (doc instanceof Tweet)
             processTweet((Tweet) doc);
         else
+        	logger.warn("Unknown datatype: " + doc);
             throw new RuntimeException("Unknown doctype");
     }
 
@@ -30,7 +36,7 @@ public class FeatureExtractor extends PipelineProcess {
         tweet.addFeatureSet(wordSet);
     }
 
-    static String[] getWordsInStringWithBigrams(String inputText,
+    static public String[] getWordsInStringWithBigrams(String inputText,
             boolean useStemming) {
         // remove URLs, rt @username, and a bunch of special characters
         String text = inputText;

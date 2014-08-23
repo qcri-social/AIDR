@@ -34,10 +34,13 @@ public class ClassifiedTweet  implements Document, Serializable{
 	private String tweetURL;
 
 	private String crisisName;
-	private String labelName;
-	private String labelDescription;
-	private String confidence;
-	private String humanLabeled;
+	private String attributeName_1;
+	private String attributeCode_1;
+	private String labelName_1;
+	private String labelCode_1;
+	private String labelDescription_1;
+	private String confidence_1;
+	private String humanLabeled_1;
 	
 	// Added by koushik
 	//@JsonIgnore
@@ -156,10 +159,12 @@ public class ClassifiedTweet  implements Document, Serializable{
 				   .append(userURL).append(",")
 				   .append(tweetURL).append(",")
 				   .append(crisisName).append(",")
-				   .append(labelName).append(",")
-				   .append(labelDescription).append(",")
-				   .append(confidence).append(",")
-				   .append(humanLabeled);
+				   .append(attributeName_1).append(",")
+				   .append(attributeCode_1).append(",")
+				   .append(labelName_1).append(",")
+				   .append(labelDescription_1).append(",")
+				   .append(confidence_1).append(",")
+				   .append(humanLabeled_1);
 		if (tweetString != null) {
 			return tweetString.toString();	
 		} 
@@ -181,60 +186,85 @@ public class ClassifiedTweet  implements Document, Serializable{
 		this.crisisName = crisisName;
 	}
 
+	public String getAttributeName_1() {
+		return attributeName_1;
+	}
+	
+	public void setAttributeName_1(String attributeName) {
+		this.attributeName_1 = attributeName;
+	}
+	
+	public String getAttributeCode_1() {
+		return attributeCode_1;
+	}
+	
+	public void setAttributeCode_1(String attributeCode) {
+		this.attributeCode_1 = attributeCode;
+	}
+	
 	/**
 	 * @return the labelName
 	 */
-	public String getLabelName() {
-		return labelName;
+	public String getLabelName_1() {
+		return labelName_1;
 	}
 
 	/**
 	 * @param labelName the labelName to set
 	 */
-	public void setLabelName(String labelName) {
-		this.labelName = labelName;
+	public void setLabelName_1(String labelName) {
+		this.labelName_1 = labelName;
 	}
 
 	/**
 	 * @return the labelDescription
 	 */
-	public String getLabelDescription() {
-		return labelDescription;
+	public String getLabelDescription_1() {
+		return labelDescription_1;
 	}
 
 	/**
 	 * @param labelDescription the labelDescription to set
 	 */
-	public void setLabelDescription(String labelDescription) {
-		this.labelDescription = labelDescription;
+	public void setLabelDescription_1(String labelDescription) {
+		this.labelDescription_1 = labelDescription;
+	}
+	
+	public String getLabelCode_1() {
+		return labelCode_1;
+		
 	}
 
+	public void setLabelCode_1(String labelCode) {
+		this.labelCode_1 = labelCode;
+	}
+	
 	/**
 	 * @return the confidence
 	 */
-	public String getConfidence() {
-		return confidence;
+	public String getConfidence_1() {
+		return confidence_1;
 	}
 
 	/**
 	 * @param confidence the confidence to set
 	 */
-	public void setConfidence(String confidence) {
-		this.confidence = confidence;
+	public void setConfidence_1(String confidence) {
+		this.confidence_1 = confidence;
 	}
 
 	/**
 	 * @return the humanLabeled
 	 */
-	public String getHumanLabeled() {
-		return humanLabeled;
+	public String getHumanLabeled_1() {
+		return humanLabeled_1;
 	}
 
 	/**
 	 * @param humanLabeled the humanLabeled to set
 	 */
-	public void setHumanLabeled(String humanLabeled) {
-		this.humanLabeled = humanLabeled;
+	public void setHumanLabeled_1(String humanLabeled) {
+		this.humanLabeled_1 = humanLabeled;
 	}
 
 

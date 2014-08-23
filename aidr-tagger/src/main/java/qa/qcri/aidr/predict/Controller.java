@@ -2,6 +2,7 @@ package qa.qcri.aidr.predict;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
 import qa.qcri.aidr.predict.classification.LabelingTaskWriter;
 import qa.qcri.aidr.predict.classification.nominal.ModelController;
 import qa.qcri.aidr.predict.common.*;
@@ -27,6 +28,10 @@ public class Controller extends Loggable {
     
     static ArrayList<Thread> workers = new ArrayList<Thread>();
 
+ // Debugging
+ 	private static Logger logger = Logger.getLogger(Controller.class.getName());
+ 	private static ErrorLog elog = new ErrorLog();
+    
     public static void main(String[] args) {
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
@@ -78,23 +83,48 @@ public class Controller extends Loggable {
             System.out.print("extractor: "
                     + (int) featureExtractor.getCurrentItemsPerSecond() + "/"
                     + (int) featureExtractor.getMaxItemsPerSecond());
+            logger.info("extractor: "
+                    + (int) featureExtractor.getCurrentItemsPerSecond() + "/"
+                    + (int) featureExtractor.getMaxItemsPerSecond());
+            
             System.out.print(", classifier: "
                     + (int) modelController.getCurrentItemsPerSecond() + "/"
                     + (int) modelController.getMaxItemsPerSecond());
+            logger.info(", classifier: "
+                    + (int) modelController.getCurrentItemsPerSecond() + "/"
+                    + (int) modelController.getMaxItemsPerSecond());
+            
             System.out.print(", taskwriter: "
                     + (int) labelingTaskWriter.getCurrentItemsPerSecond() + "/"
                     + (int) labelingTaskWriter.getMaxItemsPerSecond());
+            logger.info(", taskwriter: "
+                    + (int) labelingTaskWriter.getCurrentItemsPerSecond() + "/"
+                    + (int) labelingTaskWriter.getMaxItemsPerSecond());
+            
             System.out.print(" | extractor: " + (int) featureExtractor.inputCount
                     + "->" + (int) featureExtractor.outputCount);
+            logger.info(" | extractor: " + (int) featureExtractor.inputCount
+                    + "->" + (int) featureExtractor.outputCount);
+            
             System.out.print(", classifier: " + (int) modelController.inputCount + "->"
                     + (int) modelController.outputCount);
+            logger.info(", classifier: " + (int) modelController.inputCount + "->"
+                    + (int) modelController.outputCount);
+                    
             System.out.print(", taskwriter: " + (int) labelingTaskWriter.inputCount
                     + "->" + (int) labelingTaskWriter.writeCount);
+            logger.info(", taskwriter: " + (int) labelingTaskWriter.inputCount
+                    + "->" + (int) labelingTaskWriter.writeCount);
+            
             System.out.println(", output: " + (int) outputMatcher.outputCount);
+            logger.info(", output: " + (int) outputMatcher.outputCount);
+            
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                logger.error("Exception in starting tagger Controller!");
+                logger.error(elog.toStringException(e));
             }
         }
     }

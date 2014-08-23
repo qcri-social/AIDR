@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
 import qa.qcri.aidr.trainer.api.Jedis.JedisNotifier;
 import qa.qcri.aidr.trainer.api.dao.TaskAnswerDao;
 import qa.qcri.aidr.trainer.api.entity.*;
@@ -15,6 +16,7 @@ import java.util.List;
 
 import qa.qcri.aidr.trainer.api.template.PybossaTemplate;
 import qa.qcri.aidr.trainer.api.template.TaskAnswerResponse;
+import qa.qcri.aidr.trainer.api.util.ErrorLog;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,7 +29,9 @@ import qa.qcri.aidr.trainer.api.template.TaskAnswerResponse;
 @Transactional(readOnly = true)
 public class TaskAnswerServiceImpl implements TaskAnswerService{
 
-    protected static Logger logger = Logger.getLogger("TaskAnswerServiceImpl");
+    protected static Logger logger = Logger.getLogger(TaskAnswerServiceImpl.class);
+    private static ErrorLog elog = new ErrorLog();
+    
     private JedisNotifier jedisNotifier ;
 
     @Autowired
@@ -66,7 +70,8 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
                     // logger.debug("jedisNotifier created : " + jedisNotifier);
                 }
                 catch (Exception e){
-                    logger.error("jedisNotifier creation : " + e);
+                    logger.error("jedisNotifier creation error for :" + taskAnswerResponse.getDocumentID());
+                    logger.error(elog.toStringException(e));
                 }
             }
 
@@ -152,7 +157,8 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
                         // logger.debug("jedisNotifier created : " + jedisNotifier);
                     }
                     catch (Exception e){
-                        logger.error("jedisNotifier creation : " + e);
+                        logger.error("jedisNotifier creation error for: " + data);
+                        logger.error(elog.toStringException(e));
                     }
                 }
 
@@ -167,7 +173,8 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 
         }
         catch(Exception e){
-            logger.error("Exception : " + e + "  data : " + data);
+            logger.error("Exception for data : " + data);
+            logger.error(elog.toStringException(e));
         }
 
     }

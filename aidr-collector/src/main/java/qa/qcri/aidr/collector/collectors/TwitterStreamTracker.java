@@ -7,18 +7,21 @@ package qa.qcri.aidr.collector.collectors;
 import java.io.Serializable;
 import java.net.SocketException;
 
+
+
 //import java.util.logging.Level;
 //import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import qa.qcri.aidr.collector.beans.AIDR;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.FetcherResponseToStringChannel;
 import qa.qcri.aidr.collector.utils.Config;
+import qa.qcri.aidr.collector.logging.ErrorLog;
 import qa.qcri.aidr.collector.logging.Loggable;
-import static qa.qcri.aidr.collector.logging.Loggable.LOG_LEVEL;
 import qa.qcri.aidr.collector.redis.JedisConnectionPool;
 import qa.qcri.aidr.collector.utils.GenericCache;
 import qa.qcri.aidr.collector.utils.TwitterStreamQueryBuilder;
@@ -41,7 +44,8 @@ import twitter4j.conf.ConfigurationBuilder;
 public class TwitterStreamTracker extends Loggable implements Serializable {
 
     private static Logger logger = Logger.getLogger(TwitterStreamTracker.class.getName());
-
+    private static ErrorLog elog = new ErrorLog();
+    
     private TwitterStream twitterStream;
     private ConfigurationBuilder configBuilder;
     private TwitterStreamQueryBuilder streamQuery;
@@ -108,7 +112,8 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
 
             @Override
             public void onException(Exception ex) {
-                logger.error("Twitter Exception for collection " + collection.getCollectionCode() + " - " + ex.toString());
+                logger.error("Twitter Exception for collection " + collection.getCollectionCode());
+                logger.error(elog.toStringException(ex));
                 //log(LogLevel.WARNING, ex.toString());
                 collection.setStatusCode(Config.STATUS_CODE_COLLECTION_ERROR);
             }
@@ -173,7 +178,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
         twitterStream.cleanUp();
         twitterStream.shutdown();
         cleanCache();
-        logger.info("AIDR-Fetcher: Collection aborted which was tracking [" + getStreamQuery().getToTrackToString() + "] AND following [" + getStreamQuery().getToFollowToString() + "]");
+        logger.warn("AIDR-Fetcher: Collection aborted which was tracking [" + getStreamQuery().getToTrackToString() + "] AND following [" + getStreamQuery().getToFollowToString() + "]");
     }
 
     public void cleanCache() {

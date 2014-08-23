@@ -3,11 +3,10 @@ package qa.qcri.aidr.predictui.facade.imp;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.predictui.facade.TaskBufferScannerFacade;
+import qa.qcri.aidr.predictui.util.ErrorLog;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 
@@ -18,7 +17,8 @@ import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 @Stateless
 public class TaskBufferScannerImp implements TaskBufferScannerFacade {
 
-	private static Logger logger = LoggerFactory.getLogger(TaskBufferScannerImp.class);
+	private static Logger logger = Logger.getLogger(TaskBufferScannerImp.class);
+	private static ErrorLog elog = new ErrorLog();
 	
 	//@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
 	//private EntityManager em;
@@ -44,10 +44,10 @@ public class TaskBufferScannerImp implements TaskBufferScannerFacade {
 			int result = taskManager.deleteStaleTasks("LEFT JOIN", 
 											"aidr_predict.task_assignment", "documentID", 
 											"ASC", null, maxTaskAge, scanInterval);
-			System.out.println("[ScanTaskBuffer] number of deleted stale records = " + result);
+			logger.info("number of deleted stale records = " + result);
 		} catch (Exception e) {
-			System.err.println("[ScanTaskBuffer] Exception in executing SQL delete stale docs query");
-			e.printStackTrace();
+			logger.error("Exception in executing SQL delete stale docs query");
+			logger.error(elog.toStringException(e));
 		}
 		try {
 			/*
@@ -67,10 +67,10 @@ public class TaskBufferScannerImp implements TaskBufferScannerFacade {
 			int result = taskManager.deleteStaleTasks("JOIN", 
 										"aidr_predict.task_assignment", "documentID", 
 										"ASC", null, maxTaskAge, scanInterval);
-			System.out.println("[ScanTaskBuffer] number of deleted no answer records = " + result);
+			logger.info("number of deleted no answer records = " + result);
 		} catch (Exception e) {
-			System.err.println("[ScanTaskBuffer] Exception in executing SQL delete no answer docs query");
-			e.printStackTrace();
+			logger.error("Exception in executing SQL delete no answer docs query");
+			logger.error(elog.toStringException(e));
 		}
 	}
 

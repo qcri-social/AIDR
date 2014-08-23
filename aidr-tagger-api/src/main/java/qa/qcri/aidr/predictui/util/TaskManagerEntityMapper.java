@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
@@ -12,13 +13,11 @@ import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.entities.TaskAssignment;
 import qa.qcri.aidr.predictui.entities.NominalLabel;
 
-
-
-
-
-
 public class TaskManagerEntityMapper {
 
+	private static Logger logger = Logger.getLogger(TaskManagerEntityMapper.class);
+	private static ErrorLog elog = new ErrorLog();
+			
 	public TaskManagerEntityMapper() {}
 
 	public <E> E deSerializeList(String jsonString, TypeReference<E> type) {
@@ -29,8 +28,8 @@ public class TaskManagerEntityMapper {
 				return docList;
 			}	
 		} catch (IOException e) {
-			System.err.println("JSON deserialization exception");
-			e.printStackTrace();
+			logger.error("JSON deserialization exception");
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -43,8 +42,8 @@ public class TaskManagerEntityMapper {
 				return entity;
 			}	
 		} catch (IOException e) {
-			System.err.println("JSON deserialization exception");
-			e.printStackTrace();
+			logger.error("JSON deserialization exception");
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -55,8 +54,8 @@ public class TaskManagerEntityMapper {
 		try {
 			if (task != null) jsonString = mapper.writeValueAsString(task);
 		} catch (IOException e) {
-			System.err.println("JSON serialization exception");
-			e.printStackTrace();
+			logger.error("JSON serialization exception");
+			logger.error(elog.toStringException(e));
 		}
 		return jsonString;
 	}
@@ -74,7 +73,7 @@ public class TaskManagerEntityMapper {
 			doc.setHasHumanLabels(document.isHasHumanLabels());
 
 			doc.setReceivedAt(document.getReceivedAt());
-			doc.setSourceIP(document.getSourceIP());
+			//doc.setSourceIP(document.getSourceIP().longValue());
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
 			doc.setTaskAssignment(transformTaskAssignment(document.getTaskAssignment()));
@@ -98,7 +97,7 @@ public class TaskManagerEntityMapper {
 			doc.setHasHumanLabels(document.isHasHumanLabels());
 
 			doc.setReceivedAt(document.getReceivedAt());
-			doc.setSourceIP(document.getSourceIP());
+			//doc.setSourceIP(document.getSourceIP().intValue());
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
 			doc.setTaskAssignment(reverseTransformTaskAssignment(document.getTaskAssignment()));

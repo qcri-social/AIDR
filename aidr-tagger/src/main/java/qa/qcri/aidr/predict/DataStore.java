@@ -1,5 +1,6 @@
 package qa.qcri.aidr.predict;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -19,23 +20,43 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Properties;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 
+
+
+
+
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import qa.qcri.aidr.predict.classification.nominal.Model;
 import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
 import qa.qcri.aidr.predict.classification.nominal.ModelNominalLabelPerformance;
 import qa.qcri.aidr.predict.common.Config;
+import qa.qcri.aidr.predict.common.ErrorLog;
 import qa.qcri.aidr.predict.common.Helpers;
 import qa.qcri.aidr.predict.common.Loggable;
+import qa.qcri.aidr.predict.common.TaskManagerEntityMapper;
 import qa.qcri.aidr.predict.data.DocumentJSONConverter;
 import qa.qcri.aidr.predict.data.Document;
+import qa.qcri.aidr.predict.data.Tweet;
 import qa.qcri.aidr.predict.dbentities.ModelFamilyEC;
 import qa.qcri.aidr.predict.dbentities.NominalAttributeEC;
 import qa.qcri.aidr.predict.dbentities.NominalLabelEC;
+import qa.qcri.aidr.predict.dbentities.TaggerDocument;
 import qa.qcri.aidr.predict.featureextraction.WordSet;
+
+import qa.qcri.aidr.task.ejb.TaskManagerRemote;
+import qa.qcri.aidr.predict.dbentities.NominalLabel;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -46,12 +67,46 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SparseInstance;
 
+
+
 /**
  * Wrapper class for database communication (both MySQL and Redis).
  *
  * @author jrogstadius
+ * @author koushik
  */
 public class DataStore extends Loggable {
+
+	private static TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
+
+	private static Logger logger = Logger.getLogger(DataStore.class);
+	private static ErrorLog elog = new ErrorLog();
+
+	public DataStore() {
+		try {
+			long startTime = System.currentTimeMillis();
+			Properties props = new Properties();
+			props.setProperty("java.naming.factory.initial", "com.sun.enterprise.naming.SerialInitContextFactory");
+			props.setProperty("java.naming.factory, url.pkgs", "com.sun.enterprise.naming");
+			props.setProperty("java.naming.factory.state", "com.sun.corba.ee.impl.presentation.rmi.JNDIStateFactoryImpl");
+			props.setProperty("org.omg.CORBA.ORBInitialHost", "localhost");
+			props.setProperty("org.omg.CORBA.ORBInitialPort", "3700");
+
+			//InitialContext ctx = new InitialContext(props);
+			InitialContext ctx = new InitialContext();
+			
+			this.taskManager = (TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long>) ctx.lookup("java:global/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote");
+			System.out.println("taskManager: " + taskManager);
+			logger.info("taskManager: " + taskManager);
+			if (taskManager != null) {
+				logger.info("Success in connecting to remote EJB to initialize taskManager");
+			}
+		} catch (NamingException e) {
+			logger.error("Error in JNDI lookup for initializing remote EJB");
+			logger.error(elog.toStringException(e));
+			e.printStackTrace();
+		}
+	}
 
 	/*
 	 * TODO: Rename all database columns and tables to use underscore_notation.
@@ -86,6 +141,8 @@ public class DataStore extends Loggable {
 		} catch (Exception e) {
 			System.out
 			.println("Could not establish Redis connection. Is the Redis server running?");
+			logger.error("Could not establish Redis connection. Is the Redis server running?");
+			logger.error(elog.toStringException(e));
 			throw e;
 		}
 	}
@@ -114,13 +171,14 @@ public class DataStore extends Loggable {
 
 			mySqlPool = new ConnectionPool("aidr-backend",
 					10, // min-pool default = 1
-					20, // max-pool default = 5
-					35, // max-size default 30
+					50, // max-pool default = 5
+					50, // max-size default 30
 					180000, // timeout (ms)
 					Config.MYSQL_PATH, Config.MYSQL_USERNAME,
 					Config.MYSQL_PASSWORD);
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-			log("DataStore", "Exception when initializing MySQL connection", e);
+			logger.error("Exception when initializing MySQL connection");
+			logger.error(elog.toStringException(e));
 		}
 	}
 
@@ -132,8 +190,7 @@ public class DataStore extends Loggable {
 		long timeout = 3000;
 		Connection con = mySqlPool.getConnection(timeout);
 		if (con == null) {
-			log(LogLevel.ERROR, "DataStore",
-					"The created MySQL connection is null");
+			logger.error("The created MySQL connection is null");
 		}
 		return con;
 	}
@@ -145,7 +202,8 @@ public class DataStore extends Loggable {
 		try {
 			con.close();
 		} catch (SQLException e) {
-			log("DataStore", "Exception when returning MySQL connection", e);
+			logger.error("Exception when returning MySQL connection");
+			logger.error(elog.toStringException(e));
 		}
 	}
 
@@ -156,7 +214,8 @@ public class DataStore extends Loggable {
 		try {
 			statement.close();
 		} catch (SQLException e) {
-			log("DataStore", "Could not close statement", e);
+			logger.error("Could not close statement");
+			logger.error(elog.toStringException(e));
 		}
 	}
 
@@ -167,7 +226,8 @@ public class DataStore extends Loggable {
 		try {
 			resultset.close();
 		} catch (SQLException e) {
-			log("DataStore", "Could not close statement", e);
+			logger.error("Could not close statement");
+			logger.error(elog.toStringException(e));
 		}
 	}
 
@@ -183,7 +243,8 @@ public class DataStore extends Loggable {
 				return result.getInt(1);
 			}
 		} catch (SQLException ex) {
-			Logger.getLogger(DataStore.class.getName()).log(Level.SEVERE, null, ex);
+			logger.error("Error in executing SQL statement: " + sql);
+			logger.error(elog.toStringException(ex));
 		} finally {
 			close(conn);
 		}
@@ -234,9 +295,11 @@ public class DataStore extends Loggable {
 						.getJSONArray("words")));
 			}
 		} catch (SQLException e) {
-			log("DataStore", "Exception while fetching dataset", e);
+			logger.error("Exception while fetching dataset");
+			logger.error(elog.toStringException(e));
 		} catch (Exception e) {
-			log("DataStore", "Exception while fetching dataset", e);
+			logger.error("Exception while fetching dataset");
+			logger.error(elog.toStringException(e));
 		} finally {
 			close(result);
 			close(statement);
@@ -331,8 +394,7 @@ public class DataStore extends Loggable {
 		for (int i = 0; i < wordVectors.size(); i++) {
 
 			if (!classValues.contains(labels.get(i))) {
-				log(LogLevel.WARNING, "DataStore",
-						"New class label found in evaluation set. Discarding value.");
+				logger.error("New class label found in evaluation set. Discarding value.");
 				continue;
 				/*
 				 * TODO: Handle unseen labels in a better way, as this will
@@ -368,15 +430,22 @@ public class DataStore extends Loggable {
 	}
 
 	public static void saveDocumentsToDatabase(List<Document> items) {
-		Connection conn = null;
-		PreparedStatement statement = null;
-		ResultSet generatedDocID = null;
+		//Connection conn = null;
+		//PreparedStatement statement = null;
+		//ResultSet generatedDocID = null;
 
 		try {
 			// Insert document
-			conn = getMySqlConnection();
+			//conn = getMySqlConnection();
 
 			for (Document item : items) {
+				TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
+				TaggerDocument doc = mapper.fromDocumentToTaggerDocument(item);
+				
+				long docID = taskManager.insertNewTask(mapper.reverseTransformDocument(doc));
+				System.out.println("Inserted new document with documentID = " + docID);
+				logger.info("Inserted new document with documentID = " + docID);
+				/*
 				String wordFeatures = DocumentJSONConverter.getFeaturesJson(
 						WordSet.class, item);
 				String geoFeatures = null; // TODO: Add geotag support
@@ -385,7 +454,7 @@ public class DataStore extends Loggable {
 						.prepareStatement(
 								"INSERT INTO document (crisisID, hasHumanLabels, receivedAt, language, sourceIP, doctype, data, wordFeatures, geoFeatures, valueAsTrainingSample) VALUES (?,?,?,?,INET_ATON(?),?,?,?,?,?)",
 								Statement.RETURN_GENERATED_KEYS);
-				statement.setInt(1, item.getCrisisID());
+				statement.setInt(1, item.getCrisisID().intValue());
 				statement.setInt(2, 0);
 				statement.setTimestamp(3, new java.sql.Timestamp(
 						java.util.Calendar.getInstance().getTimeInMillis()));
@@ -406,16 +475,17 @@ public class DataStore extends Loggable {
 
 				generatedDocID.close();
 				statement.close();
+				*/
 			}
-		} catch (SQLException e) {
-			log("DataStore",
-					"Exception when attempting to write Document to database",
-					e);
-		} finally {
+		} catch (Exception e) {
+			logger.error("Exception when attempting to write Document to database");
+			logger.error(elog.toStringException(e));
+		} 
+		/*finally {
 			close(generatedDocID);
 			close(statement);
 			close(conn);
-		}
+		}*/
 
 		saveHumanLabels(items);
 	}
@@ -428,61 +498,57 @@ public class DataStore extends Loggable {
 	 */
 	static void saveHumanLabels(List<Document> documents) {
 
-		Connection conn = null;
-		PreparedStatement statement = null;
+		//Connection conn = null;
+		//PreparedStatement statement = null;
 		try {
+			/*
 			String insertSql = "INSERT INTO document_nominal_label (documentID, nominalLabelID) VALUES (?,?)";
 			conn = getMySqlConnection();
 			statement = conn.prepareStatement(insertSql);
-
+			*/
 			ArrayList<Integer> docsWithLabels = new ArrayList<>();
 			ArrayList<TrainingSampleNotification> notifications = new ArrayList<>();
-
+			
 			int rows = 0;
 			for (Document doc : documents) {
 				List<NominalLabelBC> labels = doc
 						.getHumanLabels(NominalLabelBC.class);
 
 				if (labels.isEmpty()) // Skip document if it has no
-				// human-provided labels
+					// human-provided labels
 				{
 					continue;
 				}
-
-				docsWithLabels.add(doc.getDocumentID());
+				
+				docsWithLabels.add(doc.getDocumentID().intValue());
 				for (NominalLabelBC label : labels) {
-					statement.setInt(1, doc.getDocumentID());
-					statement.setInt(2, label.getNominalLabelID());
-
-					statement.execute();
+					//statement.setInt(1, doc.getDocumentID().intValue());
+					//statement.setInt(2, label.getNominalLabelID());
+					//statement.execute();
 					rows++;
 				}
-
+			 	
 				notifications.add(new TrainingSampleNotification(doc
-						.getCrisisID(), getAttributeIDs(labels)));
+						.getCrisisID().intValue(), getAttributeIDs(labels)));
 			}
 
 			if (rows == 0) {
 				return;
 			}
 
-			log(LogLevel.INFO, "DataStore", "Saved " + rows
-					+ " human labels for " + docsWithLabels.size()
+			logger.info("Saved " + rows + " human labels for " + docsWithLabels.size()
 					+ " documents");
-			statement
-			.executeUpdate("UPDATE document SET hasHumanLabels=1 WHERE documentID IN ("
-					+ Helpers.join(docsWithLabels, ",") + ")");
-
+			//statement.executeUpdate("UPDATE document SET hasHumanLabels=1 WHERE documentID IN (" + Helpers.join(docsWithLabels, ",") + ")");
 			sendNewLabeledDocumentNotification(notifications);
 
-		} catch (SQLException e) {
-			log("DataStore",
-					"Exception when attempting to insert new document labels",
-					e);
-		} finally {
+		} catch (Exception e) {
+			logger.error("Exception when attempting to insert new document labels");
+			logger.error(elog.toStringException(e));
+		} 
+		/* finally {
 			close(statement);
 			close(conn);
-		}
+		}*/
 	}
 
 	private static Collection<Integer> getAttributeIDs(List<NominalLabelBC> labels) {
@@ -596,7 +662,8 @@ public class DataStore extends Loggable {
 			}
 
 		} catch (SQLException e) {
-			log("DataStore", "Exception when getting model state", e);
+			logger.error("Exception when getting model state");
+			logger.error(elog.toStringException(e));
 		} finally {
 			close(result);
 			close(sql);
@@ -615,7 +682,8 @@ public class DataStore extends Loggable {
 			sql = conn.prepareStatement("DELETE FROM model WHERE modelID=" + modelID);
 			sql.executeUpdate();
 		} catch (SQLException e) {
-			log("DataStore", "Exception while deleting model", e);
+			logger.error("Exception while deleting model");
+			logger.error(elog.toStringException(e));
 		} finally {
 			close(sql);
 			close(conn);
@@ -636,7 +704,8 @@ public class DataStore extends Loggable {
 				crisisIDs.put(result.getString("code"), result.getInt("crisisID"));
 			}
 		} catch (SQLException e) {
-			log("DataStore", "Exception when getting crisis IDs", e);
+			logger.error("Exception when getting crisis IDs", e);
+			logger.error(elog.toStringException(e));
 		} finally {
 			close(result);
 			close(sql);
@@ -689,14 +758,19 @@ public class DataStore extends Loggable {
 			close(conn);
 		}
 	}
-	*/
-	
+	 */
+
 	public static void truncateLabelingTaskBufferForCrisis(int crisisID, int maxLength) {
 		if (maxLength < 0 || crisisID < 0) {
+			logger.error("Cannot truncate the labeling task buffer - negative parameter(s)");
 			throw new RuntimeException(
 					"Cannot truncate the labeling task buffer - negative parameter(s)");
 		}
-
+		final int ERROR_MARGIN = 0;		// if less than this, then skip delete
+		taskManager.truncateLabelingTaskBufferForCrisis(crisisID, maxLength, ERROR_MARGIN);
+		
+		/*
+		
 		Connection conn = null;
 		PreparedStatement sqlSelect = null;
 		ArrayList<Integer>documentIDList = new ArrayList<Integer>();
@@ -738,7 +812,7 @@ public class DataStore extends Loggable {
 				conn = getMySqlConnection();
 				//conn.setAutoCommit(false);
 				sqlDelete = conn.prepareStatement(sqlDeleteStmt);
-				
+
 				// Delete the top confidence documents from document table
 				//StringBuilder sqlDeleteStmt2 = new StringBuilder();
 				//sqlDeleteStmt2.append("DELETE FROM document WHERE (documentID IN (");
@@ -774,6 +848,7 @@ public class DataStore extends Loggable {
 				close(conn);
 			}
 		}
+		*/
 	}
 
 	public static int saveModelToDatabase(int crisisID, int nominalAttributeID,
@@ -817,7 +892,7 @@ public class DataStore extends Loggable {
 			//result.next();
 			//modelID = result.getInt(1);
 			System.out.println("Inserted a new model with model ID " + modelID); //TODO: remove
-
+			logger.info("Inserted a new model with model ID " + modelID);
 			//Insert per-label classification performance of this model 
 			List<ModelNominalLabelPerformance> labelPerformaceList = model.getLabelPerformanceList();
 			for (ModelNominalLabelPerformance perf : labelPerformaceList) {
@@ -842,7 +917,8 @@ public class DataStore extends Loggable {
 							+ selectModelFamilyID + ")");
 			mfUpdate.executeUpdate();
 		} catch (SQLException e) {
-			log("DataStore", "Exception while saving model to database", e);
+			logger.error("Exception while saving model to database");
+			logger.error(elog.toStringException(e));
 		} finally {
 			close(result);
 			close(modelInsert);
@@ -885,8 +961,8 @@ public class DataStore extends Loggable {
 				scores.get(attrID).put(labelID, weight);
 			}
 		} catch (SQLException e) {
-			log("DataStore",
-					"Exception when getting nominal label training values", e);
+			logger.error("Exception when getting nominal label training values", e);
+			logger.error(elog.toStringException(e));
 		} finally {
 			close(result);
 			close(sql);
@@ -919,12 +995,43 @@ public class DataStore extends Loggable {
 				}
 			}
 		} catch (SQLException e) {
-			log("DataStore",
-					"Exception when attempting to write ClassifiedDocumentCount to database",
-					e);
+			logger.error("Exception when attempting to write ClassifiedDocumentCount to database");
+			logger.error(elog.toStringException(e));
 		} finally {
 			close(statement);
 			close(conn);
 		}
 	}
+
+	/*
+	public static void main(String[] args) throws Exception {
+		DataStore ds = new DataStore();
+		
+		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
+		JSONObject tweet = new JSONObject();
+		tweet.put("docType", "twitter");
+		tweet.put("payload", "This is a test document to test task-manager save");
+		tweet.put("nominal_labels", new JSONArray());
+		
+		Document doc = new Tweet();
+		doc.setCrisisID(117L);
+		doc.setValueAsTrainingSample(0.8);
+		doc.setInputJson(tweet);
+		doc.humanLabelCount = 0;
+		TaggerDocument DTOdoc = mapper.fromDocumentToTaggerDocument(doc);
+		
+		List<NominalLabel> nbList = new ArrayList<NominalLabel>();
+		nbList.add(new NominalLabel(320));
+		nbList.add(new NominalLabel(322));
+		DTOdoc.setNominalLabelCollection(nbList);
+	
+		long docID = DataStore.taskManager.insertNewTask(mapper.reverseTransformDocument(DTOdoc));
+		System.out.println("Inserted new document with documentID = " + docID);
+		logger.info("Inserted new document with documentID = " + docID);
+		
+		System.out.println("Testing truncate Labeling buffer for crisisID = " + 117);
+		logger.info("Testing truncate Labeling buffer for crisisID = " + 117);
+		DataStore.taskManager.truncateLabelingTaskBufferForCrisis(117L, Config.LABELING_TASK_BUFFER_MAX_LENGTH, 0);
+	}
+	*/
 }

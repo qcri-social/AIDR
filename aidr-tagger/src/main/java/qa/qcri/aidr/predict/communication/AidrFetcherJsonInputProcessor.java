@@ -66,7 +66,7 @@ public class AidrFetcherJsonInputProcessor extends Loggable implements Runnable 
                 doc = DocumentJSONConverter.parseDocument(jsonDoc);
                 //TODO: This should be the source IP, but this class is meant to 
                 //consume from a fetcher instance running on localhost
-                doc.setSourceIP(InetAddress.getLocalHost()); 
+                //doc.setSourceIP(InetAddress.getLocalHost()); 
                 enqueue(doc);
             } catch (Exception e) {
                 

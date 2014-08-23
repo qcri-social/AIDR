@@ -56,6 +56,7 @@ public class Document implements Serializable {
 
     @XmlElement
     @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name = "documentID")
     private Long documentID;
 
@@ -70,11 +71,13 @@ public class Document implements Serializable {
     @XmlElement
     @Column (name = "isEvaluationSet", nullable = false)
     private boolean isEvaluationSet;
-
+    
+    /*
     @XmlElement
     @Column (name = "sourceIP", nullable = false)
-    private Integer sourceIP;
-
+    private Long sourceIP;
+	*/
+    
     @XmlElement
     @Column (name = "valueAsTrainingSample", nullable = false)
     private Double valueAsTrainingSample;
@@ -165,15 +168,17 @@ public class Document implements Serializable {
     public void setEvaluationSet(boolean evaluationSet) {
         isEvaluationSet = evaluationSet;
     }
-
-    public Integer getSourceIP() {
+    
+    /*
+    public Long getSourceIP() {
         return sourceIP;
     }
 
-    public void setSourceIP(Integer sourceIP) {
+    public void setSourceIP(Long sourceIP) {
         this.sourceIP = sourceIP;
     }
-
+    */
+    
     public Double getValueAsTrainingSample() {
         return valueAsTrainingSample;
     }

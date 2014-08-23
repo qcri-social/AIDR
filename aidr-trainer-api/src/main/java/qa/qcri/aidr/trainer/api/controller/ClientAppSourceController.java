@@ -6,13 +6,16 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import qa.qcri.aidr.trainer.api.service.ClientAppSourceService;
 import qa.qcri.aidr.trainer.api.store.CodeLookUp;
 import qa.qcri.aidr.trainer.api.store.StatusCodeType;
+import qa.qcri.aidr.trainer.api.util.ErrorLog;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.util.Date;
 
 /**
@@ -26,7 +29,8 @@ import java.util.Date;
 @Component
 public class ClientAppSourceController {
 
-    protected static Logger logger = Logger.getLogger("ClientAppSourceController");
+    protected static Logger logger = Logger.getLogger(ClientAppSourceController.class);
+    private static ErrorLog elog = new ErrorLog();
 
     @Autowired
     private ClientAppSourceService clientAppSourceService;
@@ -37,7 +41,7 @@ public class ClientAppSourceController {
     public Response saveAppSource(String data){
         String returnValue = StatusCodeType.RETURN_SUCCESS;
 
-        System.out.println("saveAppSource : " + data );
+        logger.info("saveAppSource : " + data );
 
         try{
             JSONParser parser = new JSONParser();
@@ -47,16 +51,16 @@ public class ClientAppSourceController {
                 String fileURL = (String)obj.get("fileURL");
                 Long appID = (Long)obj.get("appID");
 
-                System.out.println("fileURL : " + fileURL );
-
-                System.out.println("appID : " + appID );
+                logger.info("fileURL : " + fileURL );
+                logger.info("appID : " + appID );
 
                 clientAppSourceService.addExternalDataSouceWithClientAppID(fileURL, appID);
             }
         }
         catch(Exception e){
             returnValue = StatusCodeType.RETURN_FAIL;
-            logger.error("saveAppSource got exception : " + e);
+            logger.error("saveAppSource got exception : ");
+            logger.error(elog.toStringException(e));
             System.out.println("saveAppSource excpetion : " + e );
         }
 

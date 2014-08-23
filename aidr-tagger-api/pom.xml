@@ -16,12 +16,12 @@
 
 	<dependencies>
 
-		<!-- dependency> 
-			<groupId>qa.qcri.aidr.task</groupId> 
-			<artifactId>aidr-task-manager</artifactId> 
-			<version>1.0</version> 
-		</dependency -->
-
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
@@ -138,6 +138,13 @@
 			<version>${slf4j.version}</version>
 		</dependency>
 
+		<dependency> 
+			<groupId>qa.qcri.aidr.task</groupId> 
+			<artifactId>aidr-task-manager</artifactId> 
+			<version>1.0</version> 
+			<scope>compile</scope>
+			<type>jar</type>
+	</dependency>
 
 	</dependencies>
 
@@ -161,7 +168,12 @@
 			<url>http://download.java.net/maven/glassfish</url>
 		</repository>
 
-		<!-- repository> <id>data-local</id> <url>file://${basedir}/src/lib</url> 
-			</repository -->
+        <!--other repositories if any-->
+        <repository>
+            <id>aidr-tagger-api.local</id>
+            <name>tagger-api</name>
+            <url>file:${project.basedir}/repo</url>
+        </repository>
+    
 	</repositories>
 </project>

@@ -133,7 +133,9 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
                 getImageLink: function (rawCode, rawName, hasTaggerOutput) {
                     //<a href="http://aidr-dev.qcri.org/AIDROutput/aidrTaggerLatest.html?crisisCode={[this.getEncodedCode(values.code)]}">{name}</a>
                     if(hasTaggerOutput){
-                        return '<a href="http://aidr-dev.qcri.org/AIDROutput/aidrTaggerLatest.html?crisisCode='+ encodeURI(rawCode) +'"><img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/collection-icon.png" width="70"></a>';
+//                        return '<a href="http://aidr-prod.qcri.org/AIDROutput/aidrTaggerLatest.html?crisisCode='+ encodeURI(rawCode) +'"><img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/collection-icon.png" width="70"></a>';
+                        //return Ext.String.format('<a href="{0}"><img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/collection-icon.png" width="70"></a>', SERVER_URL + '/aidrTaggerLatest.html?crisisCode=' + encodeURI(rawCode) );
+                        return Ext.String.format('<a href="{0}"><img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/collection-icon.png" width="70"></a>', '/AIDRFetchManager/public/' + encodeURI(rawCode) + '/interactive-view-download' );
                     }
                     else{
                         return '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/collection-icon.png" width="70">';
@@ -144,7 +146,9 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
                    //<a href="http://aidr-dev.qcri.org/AIDROutput/aidrTaggerLatest.html?crisisCode={[this.getEncodedCode(values.code)]}">{name}</a>
                     if(hasTaggerOutput){
 
-                       return '<a href="http://aidr-dev.qcri.org/AIDROutput/aidrTaggerLatest.html?crisisCode='+ encodeURI(rawCode) +'">'+ rawName +'</a>';
+//                       return '<a href="http://aidr-prod.qcri.org/AIDROutput/aidrTaggerLatest.html?crisisCode='+ encodeURI(rawCode) +'">'+ rawName +'</a>';
+                       //return Ext.String.format('<a href="{0}" >{1}</a>', SERVER_URL + 'aidrTaggerLatest.html?crisisCode=' + encodeURI(rawCode), rawName)
+                       return Ext.String.format('<a href="{0}" >{1}</a>', '/AIDRFetchManager/public/' + encodeURI(rawCode) + '/interactive-view-download', rawName);
                     }
                     else{
                         return  rawName;

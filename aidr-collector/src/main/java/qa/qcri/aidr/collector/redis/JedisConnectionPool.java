@@ -2,6 +2,7 @@ package qa.qcri.aidr.collector.redis;
 
 import java.net.SocketException;
 import org.apache.log4j.Logger;
+import qa.qcri.aidr.collector.logging.ErrorLog;
 
 import qa.qcri.aidr.collector.utils.Config;
 import qa.qcri.aidr.collector.logging.Loggable;
@@ -15,7 +16,9 @@ import redis.clients.jedis.JedisPoolConfig;
  */
 public class JedisConnectionPool extends Loggable {
 
-    private static Logger logger = Logger.getLogger(JedisConnectionPool.class.getName());
+    private static Logger logger = Logger.getLogger(JedisConnectionPool.class);
+    private static ErrorLog elog = new ErrorLog();
+    
     static JedisPool jedisPool;
 
     public static Jedis getJedisConnection() throws Exception {
@@ -31,14 +34,18 @@ public class JedisConnectionPool extends Loggable {
                 poolConfig.setTimeBetweenEvictionRunsMillis(30000);
                 jedisPool = new JedisPool(poolConfig, Config.REDIS_HOST, 6379, 0);
             }
-            return jedisPool.getResource();
+            Jedis jedis  = jedisPool.getResource();
+            logger.info("Allocated new jedis resource: " + jedis);
+            return jedis;
         } catch (Exception e) {
-            logger.error("Could not establish Redis connection. Is the Redis running?");
+            logger.error("Could not establish Redis connection. Is Redis running?");
+            logger.error(elog.toStringException(e));
             throw e;
         }
     }
 
     public static void close(Jedis resource) {
-        jedisPool.returnResource(resource);
+        logger.info("Returned jedis resource: " + resource);
+    	jedisPool.returnResource(resource);
     }
 }

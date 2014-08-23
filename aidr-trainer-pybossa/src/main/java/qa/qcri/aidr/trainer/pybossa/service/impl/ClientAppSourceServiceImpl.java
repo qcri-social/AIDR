@@ -1,11 +1,14 @@
 package qa.qcri.aidr.trainer.pybossa.service.impl;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import qa.qcri.aidr.trainer.pybossa.dao.ClientAppSourceDao;
 import qa.qcri.aidr.trainer.pybossa.entity.ClientAppSource;
 import qa.qcri.aidr.trainer.pybossa.service.ClientAppSourceService;
+import qa.qcri.aidr.trainer.pybossa.util.ErrorLog;
 
 import java.util.List;
 
@@ -19,7 +22,10 @@ import java.util.List;
 @Service("clientAppSourceService")
 @Transactional(readOnly = true)
 public class ClientAppSourceServiceImpl implements ClientAppSourceService {
-
+	
+	private static Logger logger = Logger.getLogger(ClientAppSourceServiceImpl.class);
+	private static ErrorLog elog = new ErrorLog();
+	
     @Autowired
     private ClientAppSourceDao clientAppSourceDao;
 
@@ -42,7 +48,8 @@ public class ClientAppSourceServiceImpl implements ClientAppSourceService {
             clientAppSourceDao.insertClientAppSource(clientAppSource);
         }
         catch(Exception ex){
-            System.out.println("insertNewClientAppSource exception : " + ex.getMessage());
+            logger.error("insertNewClientAppSource exception for : " + clientAppSource.getClientAppID());
+            logger.error(elog.toStringException(ex));
             throw new RuntimeException(ex.getMessage());
         }
     }

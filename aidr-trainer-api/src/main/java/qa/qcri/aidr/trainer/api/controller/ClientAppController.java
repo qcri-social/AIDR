@@ -1,7 +1,10 @@
 package qa.qcri.aidr.trainer.api.controller;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import qa.qcri.aidr.trainer.api.util.ErrorLog;
 import qa.qcri.aidr.trainer.api.entity.ClientApp;
 import qa.qcri.aidr.trainer.api.service.ClientAppService;
 import qa.qcri.aidr.trainer.api.store.CodeLookUp;
@@ -14,6 +17,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.util.List;
 
 /**
@@ -29,6 +33,9 @@ public class ClientAppController {
     @Autowired
     private ClientAppService clientAppService;
 
+    private static Logger logger = Logger.getLogger(ClientAppController.class);
+    private static ErrorLog elog = new ErrorLog();
+    
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/delete/{crisiscode}/{attributecode}")
@@ -51,7 +58,8 @@ public class ClientAppController {
             clientAppService.deactivateClientAppByCrisis(crisisID);
         }
         catch(Exception e){
-            System.out.println("disableClientApps : " + e);
+            logger.error("disableClientApps exception for crisisID: " + crisisID);
+            logger.error(elog.toStringException(e));
         }
 
 
@@ -67,7 +75,8 @@ public class ClientAppController {
             clientAppService.deactivateClientAppByAttribute(crisisID, attributeID);
         }
         catch(Exception e){
-            System.out.println("disableClientApps : " + e);
+            logger.error("disableClientApps exception in deleting for crisisId:" + crisisID + ", attributeID: " + attributeID);
+            logger.error(elog.toStringException(e));
         }
 
 

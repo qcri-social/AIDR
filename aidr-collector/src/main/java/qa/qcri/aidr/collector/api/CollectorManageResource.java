@@ -30,6 +30,7 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.CollectorStatus;
+import qa.qcri.aidr.collector.logging.ErrorLog;
 import qa.qcri.aidr.collector.utils.Config;
 import qa.qcri.aidr.collector.utils.GenericCache;
 
@@ -42,7 +43,8 @@ import qa.qcri.aidr.collector.utils.GenericCache;
 public class CollectorManageResource {
 
 	private static Logger logger = Logger.getLogger(CollectorManageResource.class.getName());
-			
+	private static ErrorLog elog = new ErrorLog();
+	
     @Context
     private UriInfo context;
     
@@ -76,7 +78,8 @@ public class CollectorManageResource {
             file.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error in persisting running collections");
+            logger.error(elog.toStringException(e));	
         }
 
         return response;
@@ -94,7 +97,7 @@ public class CollectorManageResource {
             String sCurrentLine;
             br = new BufferedReader(new FileReader("fetcher_running_coll.json"));
             Gson gson = new Gson();
-            logger.info("Strated reading from disk...");
+            logger.info("Started reading from disk...");
             while ((sCurrentLine = br.readLine()) != null) {
                 CollectionTask collection = gson.fromJson(sCurrentLine, CollectionTask.class);
                 System.out.println("Retrieved from disk :" + gson.toJson(collection));
@@ -105,14 +108,14 @@ public class CollectorManageResource {
             logger.info("Done reading.");
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(elog.toStringException(e));	
         } finally {
             try {
                 if (br != null) {
                     br.close();
                 }
             } catch (IOException ex) {
-                ex.printStackTrace();
+                logger.error(elog.toStringException(ex));	
             }
         }
 
@@ -135,8 +138,9 @@ public class CollectorManageResource {
             logger.info("Fetcher Response: " + jsonResponse);
             return jsonResponse;
         } catch (Exception e) {
-
-            return "Could not start collection";
+        	logger.error("Could not start collection");
+            logger.error(elog.toStringException(e));	
+        	return "Could not start collection";
         }
     }
     

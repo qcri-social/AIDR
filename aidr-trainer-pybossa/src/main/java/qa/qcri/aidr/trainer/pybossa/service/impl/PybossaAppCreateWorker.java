@@ -7,6 +7,7 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import qa.qcri.aidr.trainer.pybossa.entity.Client;
 import qa.qcri.aidr.trainer.pybossa.entity.ClientApp;
 import qa.qcri.aidr.trainer.pybossa.format.impl.PybossaFormatter;
@@ -17,6 +18,7 @@ import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
 import qa.qcri.aidr.trainer.pybossa.store.URLPrefixCode;
 import qa.qcri.aidr.trainer.pybossa.store.UserAccount;
 import qa.qcri.aidr.trainer.pybossa.util.DataFormatValidator;
+import qa.qcri.aidr.trainer.pybossa.util.ErrorLog;
 
 import java.util.Iterator;
 import java.util.List;
@@ -33,8 +35,9 @@ import java.util.List;
 @Transactional(readOnly = false)
 public class PybossaAppCreateWorker implements ClientAppCreateWorker {
 
-    protected static Logger logger = Logger.getLogger("service");
-
+    protected static Logger logger = Logger.getLogger(PybossaAppCreateWorker.class);
+    private static ErrorLog elog = new ErrorLog();
+    
     @Autowired
     private ClientService clientService;
 

@@ -1,9 +1,13 @@
 package qa.qcri.aidr.output.utils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
+
+import com.google.gson.JsonObject;
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
@@ -24,16 +28,33 @@ public class JsonDataFormatter {
 		return count;
 	}
 
+	private StringBuilder setPrefix(boolean isArray) {
+		StringBuilder jsonDataList = new StringBuilder();
+		if (callbackName != null) 
+			jsonDataList.append(callbackName).append("(");
+		if (isArray) 
+			jsonDataList.append("[");
+		
+		return jsonDataList;
+	}
+
+	private StringBuilder setSuffix(StringBuilder jsonDataList, boolean isArray) {
+		if (isArray) 
+				jsonDataList.append("]");
+		if (callbackName != null) 
+				jsonDataList.append(")");
+		
+		return jsonDataList;
+	}
+
 	public StringBuilder createList(List<String> bufferedMessages, int messageCount, boolean rejectNullFlag) {
 		// Now, build the jsonp object to be sent - data in reverse chronological order.
 		// The entire collection of json objects are wrapped with a single callback function.
 		StringBuilder jsonDataList = new StringBuilder();
 
 		count = 0;		
-		if (callbackName != null) 
-			jsonDataList.append(callbackName).append("([");
-		else 
-			jsonDataList.append("[");
+		jsonDataList.append(setPrefix(true));
+
 		if (bufferedMessages != null) {
 			ListIterator<String> itr = bufferedMessages.listIterator(bufferedMessages.size());  // Must be in synchronized block
 			while (itr.hasPrevious() && count < messageCount) {
@@ -55,10 +76,7 @@ public class JsonDataFormatter {
 		else {
 			// there are json objects to send
 			//jsonDataList.deleteCharAt(jsonDataList.lastIndexOf(","));		// delete the extra "," at the end of the json string
-			if (callbackName != null) 
-				jsonDataList.append("])");
-			else 
-				jsonDataList.append("]");
+			jsonDataList = setSuffix(jsonDataList, true);		
 		}
 
 		return jsonDataList;
@@ -72,11 +90,8 @@ public class JsonDataFormatter {
 		while (attempt) {
 			boolean existsFlag = false;
 			jsonDataList = new StringBuilder();
+			jsonDataList.append(setPrefix(true));
 			count = 0;		
-			if (callbackName != null)  
-				jsonDataList.append(callbackName).append("([");
-			else 
-				jsonDataList.append("[");
 
 			if (bufferedMessages != null) {
 				ListIterator<String> itr = bufferedMessages.listIterator(bufferedMessages.size());  
@@ -117,13 +132,51 @@ public class JsonDataFormatter {
 				//jsonDataList.deleteCharAt(jsonDataList.lastIndexOf(","));		// delete the extra "," at the end of the json string
 				attempt = false;
 				//logger.info("Done attempting: sending data, attempt = " + attempt);
-				if (callbackName != null) 
-					jsonDataList.append("])");
-				else 
-					jsonDataList.append("]");
+				jsonDataList = setSuffix(jsonDataList, true);
 			}
 		}
 		return jsonDataList;
 	}
+
+	public StringBuilder createStreamingList(List<String> bufferedMessages, int messageCount, boolean rejectNullFlag) {
+		// Now, build the jsonp object to be sent - data in reverse chronological order.
+		// The entire collection of json objects are wrapped with a single callback function.
+		StringBuilder jsonDataList = new StringBuilder();
+		jsonDataList.append(setPrefix(false));
+		count = 0;		
+
+		if (bufferedMessages != null) {
+			ListIterator<String> itr = bufferedMessages.listIterator(bufferedMessages.size());  // Must be in synchronized block
+			while (itr.hasPrevious() && count < messageCount) {
+				final String msg = itr.previous();
+				final TaggerJsonOutputAdapter jsonOutput = new TaggerJsonOutputAdapter();
+				final String jsonData = (msg != null) ? jsonOutput.buildJsonString(msg, rejectNullFlag) : null;
+				//logger.info("json string: " + jsonData);
+				if (jsonData != null) {
+					try {
+						JsonObject jsonMessage = new JsonObject();
+						jsonMessage.addProperty("document_type", "Twitter");
+						jsonMessage.addProperty("document", jsonData);
+						jsonDataList.append(jsonMessage);
+						++count;
+					} catch (Exception e) {
+						logger.error("Error in creating json streaming output object");
+					}
+				}
+			}
+		}
+		if (count == 0) {
+			// send empty jsonp object
+			jsonDataList.append(callbackName != null ? new String("{})") : new String("{}"));
+		} 
+		else {
+			// there are json objects to send
+			//jsonDataList.deleteCharAt(jsonDataList.lastIndexOf(","));		// delete the extra "," at the end of the json string
+			jsonDataList = setSuffix(jsonDataList, false);
+		}
+
+		return jsonDataList;
+	}
+
 
 }

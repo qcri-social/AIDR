@@ -1,6 +1,7 @@
 package qa.qcri.aidr.collector.logging;
 
 import qa.qcri.aidr.collector.utils.Config;
+
 import java.io.*;
 import java.util.*;
 import java.text.DateFormat;
@@ -35,6 +36,16 @@ public class ErrorLog {
             }
         }
     }
+    
+    public String toStringException(Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        
+        StringBuilder retVal = new StringBuilder(new String("Exception:")).append(System.getProperty("line.separator")).append(sw);
+        return retVal.toString();
+    }
+    
     static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     static String getTimestamp() {

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import redis.clients.jedis.Jedis;
 import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.data.Document;
@@ -18,8 +20,11 @@ import qa.qcri.aidr.predict.data.Document;
  * @author jrogstadius
  */
 public abstract class PipelineProcess extends Loggable implements Runnable {
-
-    static class ExecutionTime {
+	
+	private static Logger logger = Logger.getLogger(PipelineProcess.class);
+	private static ErrorLog elog = new ErrorLog();
+    
+	static class ExecutionTime {
         public double dT;
         public long T;
 
@@ -36,8 +41,10 @@ public abstract class PipelineProcess extends Loggable implements Runnable {
     public long outputCount = 0;
 
     public void run() {
-        if (inputQueueName == null)
-            throw new RuntimeException("No input queue set");
+        if (inputQueueName == null) {
+        	logger.error("No input queue set");
+        	throw new RuntimeException("No input queue set");
+        }
 
         while (true) {
             if (Thread.interrupted())
@@ -62,7 +69,8 @@ public abstract class PipelineProcess extends Loggable implements Runnable {
                 try {
                     item = Serializer.deserialize(byteDoc.get(1));
                 } catch (ClassNotFoundException | IOException e) {
-                    log("Error when deserializing input document.", e);
+                    logger.error("Error when deserializing input document.");
+                    logger.error(elog.toStringException(e));
                     continue;
                 }
 
@@ -75,7 +83,8 @@ public abstract class PipelineProcess extends Loggable implements Runnable {
                         jedis.rpush(outputQueueName, Serializer.serialize(item));
                         outputCount++;
                     } catch (IOException e) {
-                        log("Error when serializing output document.", e);
+                        logger.error("Error when serializing output document.");
+                        logger.error(elog.toStringException(e));
                     }
                 }
 

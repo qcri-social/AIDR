@@ -15,9 +15,8 @@
     	<property name="hibernate.format_sql" value="true"/>
         <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
     </properties>
-    
-  
   </persistence-unit>
+  
   <persistence-unit name="qa.qcri.aidr.TaskManager-PU" transaction-type="JTA">
     <provider>org.hibernate.ejb.HibernatePersistence</provider>
     <jta-data-source>JNDI/aidr_predict</jta-data-source>
@@ -27,4 +26,26 @@
       <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
     </properties>
   </persistence-unit>
+   
+   <persistence-unit name="ProjectTest-ejbPU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.hibernate.ejb.HibernatePersistence</provider>
+    <class>qa.qcri.aidr.task.entities.Document</class>
+    <class>qa.qcri.aidr.task.entities.Crisis</class>
+    <class>qa.qcri.aidr.task.entities.DocumentNominalLabel</class>
+    <class>qa.qcri.aidr.task.entities.TaskAnswer</class>
+    <class>qa.qcri.aidr.task.entities.TaskAssignment</class>
+    <class>qa.qcri.aidr.task.entities.NominalLabel</class>
+    <class>qa.qcri.aidr.task.entities.Users</class>
+    <properties>
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/aidr_predict" />
+            <property name="javax.persistence.jdbc.user" value="root" />
+            <property name="javax.persistence.jdbc.password" value="admin" />
+ 
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.hbm2ddl.auto" value="update" />
+        </properties>
+  </persistence-unit>
+  
 </persistence>

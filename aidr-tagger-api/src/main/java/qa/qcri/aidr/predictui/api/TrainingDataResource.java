@@ -5,9 +5,11 @@
 package qa.qcri.aidr.predictui.api;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
@@ -16,11 +18,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.predictui.dto.CrisisDTO;
 import qa.qcri.aidr.predictui.dto.CrisisTypeDTO;
 import qa.qcri.aidr.predictui.entities.Crisis;
 import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 import qa.qcri.aidr.predictui.util.Config;
+import qa.qcri.aidr.predictui.util.ErrorLog;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
 /**
@@ -39,7 +44,10 @@ public class TrainingDataResource {
 
     public TrainingDataResource() {
     }
-
+    
+    private static Logger logger = Logger.getLogger(TrainingDataResource.class);
+    private static ErrorLog elog = new ErrorLog();
+    
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{crisisCode}/getItem")
@@ -48,7 +56,9 @@ public class TrainingDataResource {
         try {
             crisis = crisisLocalEJB.getCrisisByID(crisisCode);
         } catch (RuntimeException e) {
-            return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
+            logger.error("Error in getting tweet to tag for crisis: " + crisisCode);
+            logger.error(elog.toStringException(e));
+        	return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
         }
         return Response.ok(crisis).build();
     }
@@ -61,7 +71,9 @@ public class TrainingDataResource {
         try {
             crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
         } catch (RuntimeException e) {
-            return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
+            logger.error("Error in getting crisis by code: " + crisisCode);
+            logger.error(elog.toStringException(e));
+        	return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
         }
         CrisisDTO dto = transformCrisisToDto(crisis);
         return Response.ok(dto).build();
@@ -112,6 +124,8 @@ public class TrainingDataResource {
         try {
             crisisLocalEJB.addCrisis(crisis);
         } catch (RuntimeException e) {
+        	logger.error("Error while adding crisis: " + crisis.getCode() + ". Possible causes could be duplication of primary key, incomplete data, incompatible data format.");
+        	logger.error(elog.toStringException(e));
             return Response.ok("Error while adding Crisis. Possible causes could be duplication of primary key, incomplete data, incompatible data format.").build();
         }
 
@@ -126,7 +140,9 @@ public class TrainingDataResource {
         try {
             crisis = crisisLocalEJB.editCrisis(crisis);
         } catch (RuntimeException e) {
-            return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
+            logger.error("Error in editing crisis: " + crisis.getCode());
+            logger.error(elog.toStringException(e));
+        	return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
         }
         CrisisDTO dto = transformCrisisToDto(crisis);
         return Response.ok(dto).build();
@@ -161,14 +177,19 @@ public class TrainingDataResource {
                         .getProperty("sampleCountThreshold"));
             }
 
-        } catch (IOException ex) {
-            System.out.println("IOException: " + ex);
-            throw new RuntimeException(ex);
-        }
-        catch(Exception ex2){
-            System.out.println("Exception: " +ex2);
+        } catch (FileNotFoundException ex1) {
+            logger.error("Couldn't create input stream for file" + Config.AIDR_TAGGER_CONFIG_URL);
+            logger.error(elog.toStringException(ex1));
+            throw new RuntimeException(ex1);
+        } catch (IOException ex2) {
+        	logger.error("Couldn't load file" + Config.AIDR_TAGGER_CONFIG_URL);
+            logger.error(elog.toStringException(ex2));
             throw new RuntimeException(ex2);
-        }
+		} catch (NumberFormatException ex3) {
+			logger.error("Error in parsing sampleCountThreshold from: " + prop
+                        .getProperty("sampleCountThreshold"));
+			throw new RuntimeException(ex3);
+		}
 
         String response = "{\"sampleCountThreshold\":\"" + sampleCountThreshold + "\"}";
         return Response.ok(response).build();

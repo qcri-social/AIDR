@@ -58,7 +58,7 @@ public class ModelController extends PipelineProcess {
         synchronized (this) {
             loadModelsIfNeeded();
 
-            Model[] ms = models.getModels(item.getCrisisID());
+            Model[] ms = models.getModels(item.getCrisisID().intValue());
 
             for (Model m : ms) {
                 //Classify the document and get the output label

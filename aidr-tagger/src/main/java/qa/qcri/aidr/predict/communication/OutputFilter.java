@@ -6,7 +6,9 @@ import java.util.List;
 import qa.qcri.aidr.predict.classification.DocumentLabel;
 import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
 import qa.qcri.aidr.predict.common.Config;
+import qa.qcri.aidr.predict.common.ErrorLog;
 
+import org.apache.log4j.Logger;
 import org.json.*;
 
 /**
@@ -18,6 +20,9 @@ import org.json.*;
 public class OutputFilter {
 
     public static final String ATTRIBUTE_FILTER = "attribute";
+
+    private static Logger logger = Logger.getLogger(OutputFilter.class);
+    private static ErrorLog elog = new ErrorLog();
 
     private static final String STR_CRISIS_ID = "crisis_id",
             STR_FILTERS = "filters", STR_TYPE = "type",
@@ -42,7 +47,8 @@ public class OutputFilter {
                 if (match((NominalLabelBC) label))
                     return true;
             } else
-                throw new RuntimeException("Unsupported label type");
+                logger.error("Unsupported label type: " + label);
+            	throw new RuntimeException("Unsupported label type");
         }
         return false;
     }
@@ -58,7 +64,8 @@ public class OutputFilter {
 
     public static OutputFilter fromJson(String json) {
         try {
-            System.out.println("Receied JSON : " + json);
+            System.out.println("Received JSON : " + json);
+            logger.info("Received JSON: " + json);
             JSONObject obj = new JSONObject(json);
             OutputFilter filter = new OutputFilter();
             //filter.crisisID = obj.getInt(STR_CRISIS_ID);
@@ -81,6 +88,8 @@ public class OutputFilter {
 
             return filter;
         } catch (JSONException e) {
+        	logger.error("Error in parsing received json: " + json);
+        	logger.error(elog.toStringException(e));
             throw new RuntimeException(e);
         }
     }

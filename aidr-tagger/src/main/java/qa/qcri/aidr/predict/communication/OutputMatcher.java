@@ -9,6 +9,8 @@ import qa.qcri.aidr.predict.data.Document;
 import java.io.IOException;
 import java.util.*;
 
+import org.apache.log4j.Logger;
+
 import redis.clients.jedis.Jedis;
 
 /**
@@ -23,6 +25,9 @@ public class OutputMatcher extends PipelineProcess  {
     public int inputCount = 0;
     public int outputCount = 0;
 
+    private static Logger logger = Logger.getLogger(OutputMatcher.class);
+    private static ErrorLog elog = new ErrorLog();
+    
     public void run() {
         while (true) {
             if (Thread.interrupted())
@@ -54,7 +59,8 @@ public class OutputMatcher extends PipelineProcess  {
         try {
             return Serializer.deserialize(byteDoc.get(1));
         } catch (ClassNotFoundException | IOException e) {
-            log("Exception when parsing document set from stream.", e);
+            logger.error("Exception when parsing document set from stream.");
+            logger.error(elog.toStringException(e));
             return null;
         }
     }
@@ -65,7 +71,8 @@ public class OutputMatcher extends PipelineProcess  {
             jedis.rpush(Config.REDIS_LABEL_TASK_WRITE_QUEUE.getBytes(),
                     Serializer.serialize(doc));
         } catch (IOException e) {
-            log("Exception while serializing DocumentSet", e);
+            logger.error("Exception while serializing DocumentSet");
+            logger.error(elog.toStringException(e));
         }
         DataStore.close(jedis);
     }

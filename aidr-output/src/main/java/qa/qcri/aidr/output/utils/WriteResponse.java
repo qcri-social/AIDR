@@ -68,7 +68,7 @@ public class WriteResponse {
 	
 	public void writeJsonData(StringBuilder jsonDataList, int count) {
 		if (jsonDataList.length() > 0) { 
-			writerHandle.println(jsonDataList);		// change made at home
+			writerHandle.println(jsonDataList);		
 			writerHandle.flush();
 		}
 		if (!keepAlive)

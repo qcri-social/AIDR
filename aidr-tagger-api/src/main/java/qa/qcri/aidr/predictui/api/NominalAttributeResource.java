@@ -5,7 +5,10 @@
 package qa.qcri.aidr.predictui.api;
 
 import java.util.List;
+
+import qa.qcri.aidr.predictui.util.ErrorLog;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
@@ -21,6 +24,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.predictui.dto.CrisisAttributesDTO;
 import qa.qcri.aidr.predictui.entities.NominalAttribute;
 import qa.qcri.aidr.predictui.facade.NominalAttributeFacade;
@@ -42,8 +48,9 @@ public class NominalAttributeResource {
 
     public NominalAttributeResource() {
     }
-
     
+    private static Logger logger = Logger.getLogger(NominalAttributeResource.class);
+    private static ErrorLog elog = new ErrorLog();
     
     @GET
     @Produces("application/json")
@@ -97,7 +104,9 @@ public class NominalAttributeResource {
         try {
             attribute = attributeLocalEJB.editAttribute(attribute);
         } catch (RuntimeException e) {
-            return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
+            logger.error("failed to edit attribute: " + attribute.getCode());
+            logger.error(elog.toStringException(e));
+        	return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
         }
         return Response.ok(attribute).build();
     }
@@ -109,7 +118,9 @@ public class NominalAttributeResource {
         try {
             attributeLocalEJB.deleteAttribute(id);
         } catch (RuntimeException e) {
-            return Response.ok(
+        	logger.error("failed to delete attribute: " + id);
+            logger.error(elog.toStringException(e));
+        	return Response.ok(
                     new ResponseWrapper(Config.STATUS_CODE_FAILED,
                     "Error while deleting Attribute.")).build();
         }

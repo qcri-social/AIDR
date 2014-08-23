@@ -1,8 +1,10 @@
 package qa.qcri.aidr.trainer.api.service.impl;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import qa.qcri.aidr.trainer.api.dao.ClientAppSourceDao;
 import qa.qcri.aidr.trainer.api.entity.ClientApp;
 import qa.qcri.aidr.trainer.api.entity.ClientAppSource;
@@ -27,12 +29,14 @@ public class ClientAppSourceServiceImpl implements ClientAppSourceService {
 
     @Autowired
     ClientAppService clientAppService;
-
+    
+    private static Logger logger = Logger.getLogger(ClientAppSourceServiceImpl.class);
+    
     @Override
     @Transactional(readOnly = false)
     public void addExternalDataSouceWithClientAppID(String fileURL, Long clientAppID) {
-        System.out.println("fileURL : " + fileURL );
-        System.out.println("clientAppID : " + clientAppID );
+        logger.info("fileURL : " + fileURL );
+        logger.info("clientAppID : " + clientAppID );
 
         boolean dublicateFound = clientAppSourceDao.findDuplicateSource(fileURL, clientAppID);
 
@@ -40,13 +44,13 @@ public class ClientAppSourceServiceImpl implements ClientAppSourceService {
             List<ClientAppSource>  sources = clientAppSourceDao.findActiveSourcePerClient( clientAppID );
 
             if(sources.size() > 0){
-                System.out.println("sources : EXTERNAL_DATA_SOURCE_UPLOADED");
+                logger.info("sources : EXTERNAL_DATA_SOURCE_UPLOADED");
                 ClientAppSource ca1 = new ClientAppSource(clientAppID, StatusCodeType.EXTERNAL_DATA_SOURCE_UPLOADED, fileURL);
                 clientAppSourceDao.createNewSource(ca1);
 
             }
             else{
-                System.out.println("sources : EXTERNAL_DATA_SOURCE_ACTIVE");
+                logger.info("sources : EXTERNAL_DATA_SOURCE_ACTIVE");
                 ClientAppSource ca2 = new ClientAppSource(clientAppID, StatusCodeType.EXTERNAL_DATA_SOURCE_ACTIVE, fileURL);
                 clientAppSourceDao.createNewSource(ca2);
             }

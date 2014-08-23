@@ -8,7 +8,9 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.trainer.pybossa.service.AbstractCommunicator;
+import qa.qcri.aidr.trainer.pybossa.util.ErrorLog;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -25,8 +27,9 @@ import java.net.URL;
 
 public class PybossaCommunicator extends AbstractCommunicator {
     // will be placed on config.
-    protected static Logger logger = Logger.getLogger("PybossaCommunicator");
-
+    protected static Logger logger = Logger.getLogger(PybossaCommunicator.class);
+    private static ErrorLog elog = new ErrorLog();
+    
     public PybossaCommunicator(){
         super(PybossaCommunicator.class);
     }
@@ -59,13 +62,16 @@ public class PybossaCommunicator extends AbstractCommunicator {
                 }
             }
             else{
-
+            	logger.error("Failed : HTTP error code : "
+                        + response.getStatusLine().getStatusCode());
                 throw new RuntimeException("Failed : HTTP error code : "
                         + response.getStatusLine().getStatusCode());
             }
 
         }catch (Exception ex) {
-            System.out.println("ex Code sendPut: " + ex);
+            logger.error("exception for data: " + data + ", url = " + url);
+            logger.error(elog.toStringException(ex));
+            
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -97,14 +103,16 @@ public class PybossaCommunicator extends AbstractCommunicator {
                 }
             }
             else{
+            	logger.error("Failed : HTTP error code : "
+                        + response.getStatusLine().getStatusCode());
                 throw new RuntimeException("Failed : HTTP error code : "
                         + response.getStatusLine().getStatusCode());
             }
 
 
         }catch (Exception ex) {
-            System.out.println("ex Code deleteGet1: " + ex);
-            System.out.println("ex Code deleteGet2: " + url);
+        	logger.error("exception for url = " + url);
+            logger.error(elog.toStringException(ex));
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -139,20 +147,21 @@ public class PybossaCommunicator extends AbstractCommunicator {
                     String output;
                     //System.out.println("Output from Server ...." + response.getStatusLine().getStatusCode() + "\n");
                     while ((output = br.readLine()) != null) {
-                        System.out.println(output);
+                        logger.info(output);
                     }
                 }
             }
             else{
+            	logger.error("Failed : HTTP error code : "
+                        + response.getStatusLine().getStatusCode());
                 throw new RuntimeException("Failed : HTTP error code : "
                         + response.getStatusLine().getStatusCode());
             }
 
 
         }catch (Exception ex) {
-            System.out.println("ex Code sendPost1: " + ex);
-            System.out.println("ex Code sendPost2: " + data);
-            System.out.println("ex Code sendPost3: " + url);
+        	logger.error("exception for data: " + data + ", url = " + url);
+            logger.error(elog.toStringException(ex));
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -187,14 +196,16 @@ public class PybossaCommunicator extends AbstractCommunicator {
                 }
             }
             else{
-
+            	logger.error("Failed : HTTP error code : "
+                        + response.getStatusLine().getStatusCode());
                 throw new RuntimeException("Failed : HTTP error code : "
                         + response.getStatusLine().getStatusCode());
             }
 
 
         }catch (Exception ex) {
-           // System.out.println("Exception Code : " + ex);
+        	logger.error("exception for data: " + data + ", url = " + url);
+            logger.error(elog.toStringException(ex));
             responseOutput.append("Exception Code : " + ex);
 
         } finally {
@@ -232,8 +243,8 @@ public class PybossaCommunicator extends AbstractCommunicator {
             in.close();
 
         }catch (Exception ex) {
-            System.out.println("ex Code sendGet: " + ex + " : sendGet url = " + url);
             logger.debug("[errror on sendGet ]" + url);
+            logger.debug(elog.toStringException(ex));
         }
 
         return response.toString();

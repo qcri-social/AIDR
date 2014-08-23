@@ -171,7 +171,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         this.collectionTypeComboStore = Ext.create('Ext.data.Store', {
             fields: ['val', 'label'],
             data: [
-                { "val": 'Twitter', "label": 'twitter' },
+                { "val": 'Twitter', "label": 'Twitter' },
                 { "val": 'SMS', "label": 'SMS' }
             ]
         });
@@ -187,7 +187,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             displayField: 'label',
             width: 370,
             store: this.collectionTypeComboStore,
-            value: 'twitter'
+            value: 'Twitter'
         });
 
         this.collectionTypeNote = Ext.create('Ext.form.Label', {

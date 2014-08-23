@@ -6,12 +6,15 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import qa.qcri.aidr.trainer.api.entity.CustomUITemplate;
 import qa.qcri.aidr.trainer.api.service.CustomUITemplateService;
 import qa.qcri.aidr.trainer.api.store.CodeLookUp;
+import qa.qcri.aidr.trainer.api.util.ErrorLog;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +30,8 @@ import java.util.List;
 @Component
 public class CustomUITemplateController {
 
-    protected static Logger logger = Logger.getLogger("service");
+    protected static Logger logger = Logger.getLogger(CustomUITemplateController.class);
+    private static ErrorLog elog = new ErrorLog();
 
     @Autowired
     private CustomUITemplateService customUITemplateService;
@@ -77,7 +81,8 @@ public class CustomUITemplateController {
 
         }
         catch(Exception e){
-            logger.debug("updateWelcomePage. Exception: " + e);
+            logger.debug("updateWelcomePage. Exception: " + data);
+            logger.error(elog.toStringException(e));
         }
     }
 
@@ -110,7 +115,8 @@ public class CustomUITemplateController {
 
         }
         catch(Exception e){
-            logger.debug("updateTutorial. Exception: " + e);
+            logger.debug("updateTutorial. Exception: " + data);
+            logger.error(elog.toStringException(e));
 
         }
 
@@ -146,7 +152,8 @@ public class CustomUITemplateController {
 
         }
         catch(Exception e){
-            logger.debug("updateTutorial. Exception: " + e);
+            logger.debug("updateTutorial. Exception: " + data);
+            logger.error(elog.toStringException(e));
 
         }
 

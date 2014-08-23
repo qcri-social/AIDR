@@ -41,4 +41,5 @@ public interface AbstractTaskManagerService<E, I extends Serializable> {
 	public void deleteByCriteria(Criterion criterion);
 
 	public EntityManager getEntityManager();
+	public int setEntityManager(EntityManager em);
 }

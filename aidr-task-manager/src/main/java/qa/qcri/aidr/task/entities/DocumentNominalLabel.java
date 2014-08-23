@@ -18,18 +18,21 @@ public class DocumentNominalLabel implements Serializable {
 
     private static final long serialVersionUID = -5527566248002296042L;
 
-    public  DocumentNominalLabel() {}
+    public  DocumentNominalLabel() {
+    	this.timestamp = new java.sql.Timestamp(java.util.Calendar.getInstance().getTimeInMillis());
+    }
+    
     public  DocumentNominalLabel(Long documentID, Long nominalLabelID){
         this.documentID = documentID;
         this.nominalLabelID = nominalLabelID;
-        this.timestamp = new Date();
+        this.timestamp = new java.sql.Timestamp(java.util.Calendar.getInstance().getTimeInMillis());
     }
     
     public  DocumentNominalLabel(Long documentID, Long nominalLabelID, Long userID){
         this.documentID = documentID;
         this.nominalLabelID = nominalLabelID;
         this.userID = userID;
-        this.timestamp = new Date();
+        this.timestamp = new java.sql.Timestamp(java.util.Calendar.getInstance().getTimeInMillis());
     }
     
     public Long getDocumentID() {

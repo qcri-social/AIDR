@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,6 +29,7 @@ import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 import qa.qcri.aidr.task.ejb.UsersService;
 import qa.qcri.aidr.task.entities.Document;
 import qa.qcri.aidr.task.entities.DocumentNominalLabel;
+import qa.qcri.aidr.task.entities.NominalLabel;
 import qa.qcri.aidr.task.entities.TaskAnswer;
 import qa.qcri.aidr.task.entities.TaskAssignment;
 import qa.qcri.aidr.task.entities.Users;
@@ -81,17 +83,36 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 	@Override
-	public void insertNewTask(T task) {
-		if (task != null) {
-			((Document) task).setHasHumanLabels(false);
-			try {
-				documentLocalEJB.save((Document) task);
-			} catch (Exception e) {
-				System.out.println("[insertNewTask] Error in insertion");
-			}
-		} else {
+	public long insertNewTask(T task) {
+		if (task == null) {
 			System.err.println("[insertNewTask] Attempting to insert NULL");
+			return -1;
 		}
+
+		Document doc = (Document) task;
+		doc.setHasHumanLabels(false);
+		try {
+			documentLocalEJB.save(doc);
+			System.out.println("saved document " + doc);
+			if (doc != null) System.out.println("docID = " + doc.getDocumentID());
+
+			// Now check if also need to insert into document_nominal_label
+			if (doc.isHasHumanLabels() && doc.getNominalLabelCollection() != null) {
+				System.out.println("Attempting saving to document_nominal_label table: " + doc);
+				for (NominalLabel label: doc.getNominalLabelCollection()) {
+					DocumentNominalLabel labeledDoc = new DocumentNominalLabel(doc.getDocumentID(), 
+							new Long(label.getNominalLabelID()), 32L);
+					System.out.println("To write nominal label:  {" + labeledDoc.getDocumentID() + ", " + labeledDoc.getNominalLabelID() + ", " + labeledDoc.getTimestamp() + "}");
+					documentNominalLabelEJB.save(labeledDoc);
+					System.out.println("Wrote nominal label:  {" + labeledDoc.getDocumentID() + ", " + labeledDoc.getNominalLabelID() + ", " + labeledDoc.getTimestamp() + "}");
+				}
+			}
+			return doc.getDocumentID();
+		} catch (Exception e) {
+			System.err.println("[insertNewTask] Error in insertion");
+			e.printStackTrace();
+		}
+		return -1;
 	}
 
 
@@ -132,6 +153,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			try {
 				System.out.println("[deleteTask] Going for deletion of fetched doc = " + ((Document) task).getDocumentID());
 				return documentLocalEJB.deleteNoLabelDocument((Document) task);
+				//documentLocalEJB.delete((Document) task);
 			} catch (Exception e) {
 				System.out.println("[deleteTask] Error in deletion");
 				return 0;
@@ -143,6 +165,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public int deleteTask(List<T> collection) {
 		if (collection != null) {
@@ -174,6 +197,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public int deleteUnassignedTaskCollection(List<T> collection) {
 		if (collection != null) {
@@ -208,6 +232,52 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		}
 		return 0;
 	}
+
+	@Override
+	public int truncateLabelingTaskBufferForCrisis(final long crisisID, final int maxLength, final int ERROR_MARGIN) {
+		List<Document> docList = null;
+		try {
+			String aliasTable = "taskAssignment";
+			String order = "ASC";
+			String aliasTableKey = "taskAssignment.documentID";
+			String[] orderBy = {"valueAsTrainingSample", "documentID"};
+			Criterion criterion = Restrictions.conjunction()
+					.add(Restrictions.eq("crisisID",crisisID))
+					.add(Restrictions.eq("hasHumanLabels",false));
+
+			Criterion aliasCriterion =  (Restrictions.isNull(aliasTableKey));
+			docList = documentLocalEJB.getByCriteriaWithAliasByOrder(criterion, order, orderBy, null, aliasTable, aliasCriterion);
+			System.out.println("Fetched docList = " + docList);
+			if (docList != null) {
+				System.out.println("Fetched size = " + docList.size());
+			}
+		} catch (Exception e) {
+			System.err.println("Exception in fetching unassigned documents with hasHumaLabels=false");
+			e.printStackTrace();
+			return 0;
+		}
+
+		// Next trim the document table for the given crisisID to the 
+		// Config.LABELING_TASK_BUFFER_MAX_LENGTH size
+		if (docList != null) {
+			int docsToDelete = docList.size() - maxLength;
+			if (docsToDelete > ERROR_MARGIN) {		// if less than this, then skip delete
+				try {
+					// Delete the lowest confidence documents from document table
+					int deleteCount = documentLocalEJB.deleteUnassignedDocumentCollection(docList);
+					System.out.println("[truncateLabelingTaskBufferForCrisis] Number of documents actually deleted = " + deleteCount);
+					return deleteCount;
+				} catch (Exception e) {
+					System.err.println("Exception when attempting to batch delete for trimming the document table");
+					e.printStackTrace();
+				} 
+			} else {
+				System.out.println("No need for truncation: docListSize = " + docList.size() + ", max buffer size = " + maxLength);
+			}
+		}
+		return 0;
+	}
+
 
 
 	@Override
@@ -707,7 +777,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 
-/*
+	/*
 	public static void main(String args[]) {
 		TaskManagerRemote<Document, Serializable> tm = new TaskManagerBean<Document, Long>();
 		Map<String, String> paramMap = new HashMap<String, String>();
@@ -716,7 +786,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		qa.qcri.aidr.task.entities.Document newDoc = tm.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, 4579275L, paramMap);
 		System.out.println("newDoc = " + newDoc.getDocumentID() + ": " + newDoc.isHasHumanLabels());
 	}
-*/
+	 */
 
 	////////////////////////////////////////////
 	// User service related APIs
@@ -779,7 +849,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		try {
 			qa.qcri.aidr.task.entities.Document document = documentLocalEJB.getById(id);
 			System.out.println("[getDocumentById] Fetched document: " + document);
-			
+
 			return document;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -788,7 +858,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		return null;
 	}
 
-	
+
 	@Override
 	public qa.qcri.aidr.task.entities.Document getNewDocumentByCrisisId(Long crisisID) {
 		//Document document = (Document) getNewTask(crisisID, null);
@@ -799,7 +869,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		}
 		return null;
 	}
-	
+
 	@Override
 	public qa.qcri.aidr.task.entities.Document getNewDocumentByCriterion(Long crisisID, Criterion criterion) {
 		Criterion newCriterion = null;
@@ -834,7 +904,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		StringBuilder sb = new StringBuilder("{status: RUNNING}");
 		return sb.toString();
 	}
-	
+
 	@Override
 	public String getNewDefaultTask() {
 		//Document document = (Document) getNewTask(crisisID, null);

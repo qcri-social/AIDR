@@ -14,7 +14,7 @@ import qa.qcri.aidr.trainer.pybossa.service.Worker;
 @Service
 public class SchedulerService {
 
-	protected static Logger logger = Logger.getLogger("service");
+	protected static Logger logger = Logger.getLogger(SchedulerService.class);
 
 	@Autowired
 	@Qualifier("syncWorker")

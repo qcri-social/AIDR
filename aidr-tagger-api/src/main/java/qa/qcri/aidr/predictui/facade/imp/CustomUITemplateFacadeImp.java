@@ -3,12 +3,15 @@ package qa.qcri.aidr.predictui.facade.imp;
 import qa.qcri.aidr.predictui.entities.Crisis;
 import qa.qcri.aidr.predictui.entities.CustomUITemplate;
 import qa.qcri.aidr.predictui.facade.CustomUITemplateFacade;
+import qa.qcri.aidr.predictui.util.ErrorLog;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.apache.log4j.Logger;
 
 import java.util.List;
 
@@ -28,6 +31,9 @@ public class CustomUITemplateFacadeImp implements CustomUITemplateFacade{
 	@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
 	private EntityManager em;
 
+	private static Logger logger = Logger.getLogger(CustomUITemplateFacadeImp.class);
+	private static ErrorLog elog = new ErrorLog();
+	
 	@Override
 	public List<CustomUITemplate> getAllCustomUITemplateByCrisisID(long crisisID) {
 		Query query = em.createNamedQuery("CustomUITemplate.findByCrisisD", CustomUITemplate.class);
@@ -43,7 +49,7 @@ public class CustomUITemplateFacadeImp implements CustomUITemplateFacade{
 	@Override
 	public List<CustomUITemplate> getCustomUITemplateBasedOnTypeByCrisisID(long crisisID, int templateType) {
 
-		System.out.println("getCustomUITemplateBasedOnTypeByCrisisID: " + crisisID + "-" + templateType );
+		logger.info("getCustomUITemplateBasedOnTypeByCrisisID: " + crisisID + "-" + templateType );
 		Query query = em.createNamedQuery("CustomUITemplate.findBasedOnTypeByCrisisD", CustomUITemplate.class);
 		query.setParameter("crisisID", crisisID);
 		query.setParameter("templateType", templateType);

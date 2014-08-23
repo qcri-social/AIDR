@@ -3,6 +3,7 @@ package qa.qcri.aidr.predictui.api;
 import qa.qcri.aidr.predictui.entities.CustomUITemplate;
 import qa.qcri.aidr.predictui.facade.CustomUITemplateFacade;
 import qa.qcri.aidr.predictui.util.Config;
+import qa.qcri.aidr.predictui.util.ErrorLog;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
 import javax.ejb.EJB;
@@ -12,6 +13,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import org.apache.log4j.Logger;
+
 import java.util.List;
 
 /**
@@ -30,6 +34,9 @@ public class CustomUITemplateResource {
     @EJB
     private CustomUITemplateFacade customUITemplateFacade;
 
+    private static Logger logger = Logger.getLogger(CustomUITemplateResource.class);
+    private static ErrorLog elog = new ErrorLog();
+    
     public CustomUITemplateResource(){
 
     }
@@ -44,7 +51,7 @@ public class CustomUITemplateResource {
         int type = customUITemplate.getTemplateType();
         if(!isAttributeInfoRequired(type)){
             List<CustomUITemplate> templates = customUITemplateFacade.getCustomUITemplateBasedOnTypeByCrisisID(customUITemplate.getCrisisID(), customUITemplate.getTemplateType());
-            System.out.println("templates size : " + templates.size());
+            logger.info("templates size : " + templates.size());
             if(templates.size() > 0){
                 isUpdate = true;
                 dbTemplate = templates.get(0);
@@ -52,7 +59,7 @@ public class CustomUITemplateResource {
         }
         else{
             List<CustomUITemplate> templates = customUITemplateFacade.getCustomUITemplateBasedOnTypeByCrisisIDAndAttributeID(customUITemplate.getCrisisID(),customUITemplate.getNominalAttributeID(), customUITemplate.getTemplateType());
-            System.out.println("templates size : " + templates.size());
+            logger.info("templates size : " + templates.size());
             if(templates.size() > 0){
                 isUpdate = true;
                 dbTemplate = templates.get(0);
@@ -60,12 +67,11 @@ public class CustomUITemplateResource {
         }
 
         CustomUITemplate addedTemplate = null;
-
-        System.out.println("isUpdate : " + isUpdate);
+        logger.info("isUpdate : " + isUpdate);
 
         if(isUpdate) {
             addedTemplate = customUITemplateFacade.updateCustomUITemplate(dbTemplate, customUITemplate) ;
-            System.out.println(addedTemplate.getCrisisID());
+            logger.info(addedTemplate.getCrisisID());
             return Response.ok(addedTemplate).build();
         }
         else{

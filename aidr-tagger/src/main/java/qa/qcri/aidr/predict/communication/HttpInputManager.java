@@ -2,6 +2,9 @@ package qa.qcri.aidr.predict.communication;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.predict.common.*;
 
 /**
@@ -13,12 +16,15 @@ import qa.qcri.aidr.predict.common.*;
 public class HttpInputManager extends Loggable implements Runnable {
 
     static ServerSocket server;
-
+    
+    private static Logger logger = Logger.getLogger(HttpInputManager.class);
+    private static ErrorLog elog = new ErrorLog();
+    
     @Override
     public void run() {
         try {
             server = new ServerSocket(Config.HTTP_INPUT_PORT);
-            log(LogLevel.INFO, "Listening for provider connections on port "
+            logger.info("Listening for provider connections on port "
                     + Config.HTTP_INPUT_PORT);
 
             while (true) {
@@ -31,14 +37,14 @@ public class HttpInputManager extends Loggable implements Runnable {
                     Thread t = new Thread(conn);
                     t.start();
                 } catch (IOException e) {
-                    log(LogLevel.WARNING,
-                            "Failed to establish connection with client on port "
+                    logger.warn("Failed to establish connection with client on port "
                                     + Config.HTTP_INPUT_PORT);
                 }
             }
         } catch (IOException e) {
-            log(LogLevel.ERROR, "Could not listen on port "
+            logger.error("Could not listen on port "
                     + Config.HTTP_INPUT_PORT);
+            logger.error(elog.toStringException(e));
         } finally {
 
             finalize();
@@ -53,7 +59,8 @@ public class HttpInputManager extends Loggable implements Runnable {
         try {
             server.close();
         } catch (IOException e) {
-            log("Could not close socket", e);
+            logger.error("Could not close socket");
+            logger.error(elog.toStringException(e));
         }
     }
 }

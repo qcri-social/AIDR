@@ -3,10 +3,12 @@ package qa.qcri.aidr.trainer.pybossa.controller;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import qa.qcri.aidr.trainer.pybossa.service.ClientAppCreateWorker;
 import qa.qcri.aidr.trainer.pybossa.service.ClientAppRunWorker;
 import qa.qcri.aidr.trainer.pybossa.service.MicroMapperWorker;
 import qa.qcri.aidr.trainer.pybossa.service.Worker;
+import qa.qcri.aidr.trainer.pybossa.util.ErrorLog;
 
 
 /**
@@ -15,8 +17,9 @@ import qa.qcri.aidr.trainer.pybossa.service.Worker;
 @Component("syncWorker")
 public class SyncWorker implements Worker {
 
-	protected static Logger logger = Logger.getLogger("SyncWorker");
-
+	protected static Logger logger = Logger.getLogger(SyncWorker.class);
+	private static ErrorLog elog = new ErrorLog();
+	
     @Autowired
     ClientAppCreateWorker pybossaWorker;
 
@@ -46,7 +49,7 @@ public class SyncWorker implements Worker {
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            logger.error(elog.toStringException(e));
         }
         //logger.debug("   " + threadName + " has completed work.(SyncWorker - run ClientApps)");
         logger.info("Scheduler is going sleep");
