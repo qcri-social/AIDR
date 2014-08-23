@@ -809,10 +809,27 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         },
                         {
                             xtype: 'container',
+                            id:'endpointLabel',
+                            defaultType: 'label',
+                            hidden:true,
+                            layout: 'hbox',
+                            items: [
+                                {
+                                    width: 220,
+                                    text: 'Collector end-point:'
+                                },
+                                {
+                                    text: FETCH_MAIN_URL +'/sms/endpoint/receive/'+COLLECTION_CODE
+                                }
+                            ]
+                        },
+                        {
+                            xtype: 'container',
                             defaultType: 'label',
                             layout: 'hbox',
                             items: [
                                 {
+                                    id:'downloadLabel',
                                     width: 220,
                                     html: 'Downloaded tweets <br/> (since last re-start):'
                                 },
@@ -825,6 +842,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             layout: 'hbox',
                             items: [
                                 {
+                                    id:'totalDownloadLabel',
                                     width: 220,
                                     text: 'Total downloaded tweets:'
                                 },
@@ -838,6 +856,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             cls: 'bordered-bottom',
                             items: [
                                 {
+                                    id:'lastDownloadLabel',
                                     width: 220,
                                     text: 'Last downloaded tweets:'
                                 },

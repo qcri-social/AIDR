@@ -1,6 +1,7 @@
 package qa.qcri.aidr.manager.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +24,8 @@ public class ScreenController extends BaseController{
     private CollectionService collectionService;
     @Autowired
     private TaggerService taggerService;
+    @Value("${fetchMainUrl}")
+    private String fetchMainUrl;
 
 	@RequestMapping("protected/home")
 	public ModelAndView home() throws Exception {
@@ -84,6 +87,7 @@ public class ScreenController extends BaseController{
         model.addObject("id", collection.getId());
         model.addObject("collectionCode", code);
         model.addObject("userName", userName);
+        model.addObject("fetchMainUrl", fetchMainUrl);
         return model;
     }
 

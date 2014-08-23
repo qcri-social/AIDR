@@ -6,7 +6,6 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-
 import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
@@ -16,15 +15,14 @@ import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.service.UserService;
-import qa.qcri.aidr.manager.service.impl.TaggerServiceImpl;
 import qa.qcri.aidr.manager.util.CollectionStatus;
-import qa.qcri.aidr.manager.util.CollectionType;
-
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static qa.qcri.aidr.manager.util.CollectionType.SMS;
 
 @Controller
 @RequestMapping("protected/collection")
@@ -66,7 +64,7 @@ public class CollectionController extends BaseController{
 			managers.add(entity);
 			collection.setManagers(managers);
 
-            if(collection.getCollectionType() == CollectionType.SMS){
+            if(collection.getCollectionType() == SMS){
                 collection.setTrack(null);
                 collection.setLangFilters(null);
                 collection.setGeo(null);
@@ -230,7 +228,7 @@ public class CollectionController extends BaseController{
 			CollectionStatus status = collection.getStatus();
 			AidrCollection dbCollection = collectionService.findById(collectionId);
 
-            if (collection.getCollectionType() == CollectionType.SMS) {
+            if (collection.getCollectionType() == SMS) {
                 collection.setTrack(null);
                 collection.setLangFilters(null);
                 collection.setGeo(null);

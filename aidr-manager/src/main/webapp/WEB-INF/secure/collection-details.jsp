@@ -10,6 +10,7 @@
       COLLECTION_ID = ${id};
       COLLECTION_CODE = "${collectionCode}";
       USER_NAME = "${userName}";
+      FETCH_MAIN_URL = "${fetchMainUrl}";
   </script>
 
 </body>

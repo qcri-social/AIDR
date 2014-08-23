@@ -1,13 +1,5 @@
 package qa.qcri.aidr.manager.service.impl;
 
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -15,15 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import qa.qcri.aidr.manager.dto.CollectionDataResponse;
-import qa.qcri.aidr.manager.dto.FetcherRequestDTO;
 import qa.qcri.aidr.manager.dto.FetcheResponseDTO;
+import qa.qcri.aidr.manager.dto.FetcherRequestDTO;
 import qa.qcri.aidr.manager.dto.PingResponse;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
 import qa.qcri.aidr.manager.hibernateEntities.UserConnection;
+import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 import qa.qcri.aidr.manager.repository.AuthenticateTokenRepository;
 import qa.qcri.aidr.manager.repository.CollectionLogRepository;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
@@ -31,22 +22,21 @@ import qa.qcri.aidr.manager.repository.UserConnectionRepository;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 
-
-
-
-
-
-
-//import com.sun.jersey.api.client.Client;		// gf 3 way
-//import com.sun.jersey.api.client.ClientResponse;
-//import com.sun.jersey.api.client.WebResource;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.net.URLEncoder;
+import java.util.List;
 
-import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
-import qa.qcri.aidr.manager.util.JsonDataValidator;
+import static qa.qcri.aidr.manager.util.CollectionType.SMS;
+import static qa.qcri.aidr.manager.util.CollectionType.Twitter;
+
+//import com.sun.jersey.api.client.Client;		// gf 3 way
+//import com.sun.jersey.api.client.ClientResponse;
+//import com.sun.jersey.api.client.WebResource;
 
 @Service("collectionService")
 public class CollectionServiceImpl implements CollectionService {
@@ -264,27 +254,34 @@ public class CollectionServiceImpl implements CollectionService {
              */
         	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         	// gf 3 way
-            //WebResource webResource = client.resource(fetchMainUrl + "/twitter/start");
-        	WebTarget webResource = client.target(fetchMainUrl + "/twitter/start");
-            
-        	System.out.println("In startFetcher...");
-            ObjectMapper objectMapper = new ObjectMapper();
-            //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-            //        .accept(MediaType.APPLICATION_JSON)
-            //        .post(ClientResponse.class, objectMapper.writeValueAsString(fetcherRequest));
-            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
-            		.post(Entity.json(objectMapper.writeValueAsString(fetcherRequest)), Response.class);
-            //.post(Entity.entity(objectMapper.writeValueAsString(fetcherRequest), MediaType.APPLICATION_JSON));
-					
-            System.out.println("ObjectMapper: " + objectMapper.writeValueAsString(fetcherRequest));
-            System.out.println("Response = " + clientResponse);
-            //String jsonResponse = clientResponse.getEntity(String.class);
-            String jsonResponse = clientResponse.readEntity(String.class);
-            
-            logger.info("NEW STRING: " + jsonResponse);
-            FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);
-            logger.info("start Response from fetchMain " + objectMapper.writeValueAsString(response));
-            aidrCollection.setStatus(CollectionStatus.getByStatus(response.getStatusCode()));
+            if (aidrCollection.getCollectionType() == Twitter) {
+                //WebResource webResource = client.resource(fetchMainUrl + "/twitter/start");
+                WebTarget webResource = client.target(fetchMainUrl + "/twitter/start");
+
+                System.out.println("In startFetcher...");
+                ObjectMapper objectMapper = new ObjectMapper();
+                //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+                //        .accept(MediaType.APPLICATION_JSON)
+                //        .post(ClientResponse.class, objectMapper.writeValueAsString(fetcherRequest));
+                Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
+                        .post(Entity.json(objectMapper.writeValueAsString(fetcherRequest)), Response.class);
+                //.post(Entity.entity(objectMapper.writeValueAsString(fetcherRequest), MediaType.APPLICATION_JSON));
+
+                System.out.println("ObjectMapper: " + objectMapper.writeValueAsString(fetcherRequest));
+                System.out.println("Response = " + clientResponse);
+                //String jsonResponse = clientResponse.getEntity(String.class);
+                String jsonResponse = clientResponse.readEntity(String.class);
+
+                logger.info("NEW STRING: " + jsonResponse);
+                FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);
+                logger.info("start Response from fetchMain " + objectMapper.writeValueAsString(response));
+                aidrCollection.setStatus(CollectionStatus.getByStatus(response.getStatusCode()));
+            } else if (aidrCollection.getCollectionType() == SMS){
+                WebTarget webResource = client.target(fetchMainUrl + "/sms/start?collection_code=" + URLEncoder.encode(aidrCollection.getCode(), "UTF-8"));
+                Response response = webResource.request(MediaType.APPLICATION_JSON).get();
+                if (response.getStatus() == 200)
+                    aidrCollection.setStatus(CollectionStatus.RUNNING);
+            }
             /**
              * Update Status To database
              */
@@ -331,7 +328,14 @@ public class CollectionServiceImpl implements CollectionService {
              */
         	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
             //WebResource webResource = client.resource(fetchMainUrl + "/twitter/stop?id=" + URLEncoder.encode(collection.getCode()));
-        	WebTarget webResource = client.target(fetchMainUrl + "/twitter/stop?id=" + URLEncoder.encode(collection.getCode(), "UTF-8"));
+            String path = "";
+            if (collection.getCollectionType() == Twitter) {
+                path = "/twitter/stop?id=";
+            } else if(collection.getCollectionType() == SMS){
+                path = "/sms/stop?collection_code=";
+            }
+
+            WebTarget webResource = client.target(fetchMainUrl + path + URLEncoder.encode(collection.getCode(), "UTF-8"));
             
             //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
             //        .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
@@ -366,8 +370,16 @@ public class CollectionServiceImpl implements CollectionService {
              * Make a call to fetcher Status Rest API
              */
         	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+
+            String path = "";
+            if (collection.getCollectionType() == Twitter) {
+                path = "/twitter/status?id=";
+            } else if(collection.getCollectionType() == SMS){
+                path = "/sms/status?collection_code=";
+            }
+
             //WebResource webResource = client.resource(fetchMainUrl + "/twitter/status?id=" + URLEncoder.encode(collection.getCode()));
-        	WebTarget webResource = client.target(fetchMainUrl + "/twitter/status?id=" + URLEncoder.encode(collection.getCode(), "UTF-8"));
+        	WebTarget webResource = client.target(fetchMainUrl + path + URLEncoder.encode(collection.getCode(), "UTF-8"));
             
             //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
             //        .accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);

@@ -271,6 +271,10 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                          Ext.getCmp('configurationsL').hide();
                          Ext.getCmp('geoDescription').hide();
                          Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/sms_icon.png"/>');
+                         Ext.getCmp('downloadLabel').setText('Downloaded SMSs <br/> (since last re-start):',false);
+                         Ext.getCmp('totalDownloadLabel').setText('Total downloaded SMSs:');
+                         Ext.getCmp('lastDownloadLabel').setText('Last downloaded SMSs:');
+                         Ext.getCmp('endpointLabel').show();
                      } else if(newValue === 'Twitter'){
                          Ext.getCmp('keywordsPanel').show();
                          Ext.getCmp('langPanel').show();
@@ -280,6 +284,10 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                          Ext.getCmp('configurationsL').show();
                          Ext.getCmp('geoDescription').show();
                          Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/collection-icon.png"/>');
+                         Ext.getCmp('downloadLabel').setText('Downloaded tweets <br/> (since last re-start):',false);
+                         Ext.getCmp('totalDownloadLabel').setText('Total downloaded tweets:');
+                         Ext.getCmp('lastDownloadLabel').setText('Last downloaded tweets:');
+                         Ext.getCmp('endpointLabel').hide();
                      }
                 }
             }
@@ -542,8 +550,13 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         p.langCombo.setValue(r.langFilters ? r.langFilters.split(',') : '');
         p.crisisTypesCombo.setValue(r.crisisType);
         p.collectionTypeCombo.setValue(r.collectionType);
-        if(r.collectionType === 'SMS')
+        if(r.collectionType === 'SMS'){
            Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/sms_icon.png"/>');
+           Ext.getCmp('downloadLabel').setText('Downloaded SMSs <br/> (since last re-start):',false);
+           Ext.getCmp('totalDownloadLabel').setText('Total downloaded SMSs:');
+           Ext.getCmp('lastDownloadLabel').setText('Last downloaded SMSs:');
+           Ext.getCmp('endpointLabel').show();
+        }
     },
 
     setStatus: function (raw) {
