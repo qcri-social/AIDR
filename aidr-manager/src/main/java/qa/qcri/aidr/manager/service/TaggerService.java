@@ -105,4 +105,5 @@ public interface TaggerService {
 	//Added by koushik
 	public String generateJsonTweetIdsLink(String code) throws AidrException;
 
+    Map<String, Integer> countCollectionsClassifiers(List<ValueModel> collectionCodes) throws AidrException;
 }

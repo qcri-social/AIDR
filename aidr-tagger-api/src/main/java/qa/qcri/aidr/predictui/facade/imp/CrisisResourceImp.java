@@ -4,7 +4,9 @@
  */
 package qa.qcri.aidr.predictui.facade.imp;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -140,4 +142,21 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 		return null;
 	}
 
+    @Override
+    public HashMap<String, Integer> countClassifiersByCrisisCodes(List<String> codes) {
+        String sqlQuery = "select cr.code, " +
+                "       (select count(*) from model_family mf where mf.crisisID = cr.crisisID) as mf_amount " +
+                " from crisis cr " +
+                " where cr.code in :codes";
+
+        Query nativeQuery = em.createNativeQuery(sqlQuery);
+        nativeQuery.setParameter("codes", codes);
+        List resultList = nativeQuery.getResultList();
+        HashMap<String, Integer> rv = new HashMap<String, Integer>();
+        for(Object obj : resultList){
+            Object[] objs = ((Object[])obj);
+            rv.put((String)objs[0], ((BigInteger)objs[1]).intValue());
+        }
+        return rv;
+    }
 }

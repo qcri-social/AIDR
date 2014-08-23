@@ -29,7 +29,8 @@ Ext.application({
                             xtype: 'aidr-header'
                         },
                         {
-                            xtype: 'collection-view'
+//                            xtype: 'collection-view'
+                            xtype: 'collection-view-new'
                         },
                         {
                             xtype: 'panel',

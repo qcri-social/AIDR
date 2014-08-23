@@ -4,6 +4,8 @@
  */
 package qa.qcri.aidr.predictui.api;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -13,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import qa.qcri.aidr.predictui.dto.CrisisDTO;
 import qa.qcri.aidr.predictui.dto.CrisisTypeDTO;
 import qa.qcri.aidr.predictui.entities.Crisis;
@@ -76,6 +79,24 @@ public class CrisisResource {
         //TODO: Following way of creating JSON should be chagned through a proper and automatic way
         String response = "{\"crisisCode\":\"" + crisisCode + "\", \"crisisId\":\"" + crisisId + "\"}";
         return Response.ok(response).build();
+    }
+
+    @POST
+    @Consumes( MediaType.APPLICATION_JSON )
+    @Produces( MediaType.APPLICATION_JSON )
+    @Path("/crises")
+    public Response getCrisesByCodes(List<String> codes) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            HashMap<String, Integer> classifiersNumbers = crisisLocalEJB.countClassifiersByCrisisCodes(codes);
+
+            String rv = objectMapper.writeValueAsString(classifiersNumbers);
+
+            return Response.ok(rv).build();
+        } catch (IOException e) {
+            return Response.ok("Error while getting numbers of classifiers by crisis codes.").build();
+        }
     }
 
     @GET

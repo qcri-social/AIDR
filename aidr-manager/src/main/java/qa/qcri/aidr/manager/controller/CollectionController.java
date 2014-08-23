@@ -7,10 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
-import qa.qcri.aidr.manager.dto.AidrCollectionTotalDTO;
-import qa.qcri.aidr.manager.dto.TaggerCrisis;
-import qa.qcri.aidr.manager.dto.TaggerCrisisExist;
-import qa.qcri.aidr.manager.dto.TaggerCrisisType;
+import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
@@ -19,6 +16,7 @@ import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.service.UserService;
+import qa.qcri.aidr.manager.service.impl.TaggerServiceImpl;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.CollectionType;
 
@@ -334,10 +332,16 @@ public class CollectionController extends BaseController{
 				count = collectionService.getCollectionsCount(userEntity, onlyTrashed);
 				if (count > 0) {
                     List<AidrCollection> data = collectionService.findAll(start, limit, userEntity, onlyTrashed);
+                    List<ValueModel> collectionCodes = new ArrayList<ValueModel>(data.size());
 					for (AidrCollection collection : data) {
                         AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
                         dtoList.add(dto);
+                        collectionCodes.add(new ValueModel(collection.getCode()));
 					}
+                    Map<String, Integer> collectionsClassifiers = taggerService.countCollectionsClassifiers(collectionCodes);
+                    for (AidrCollectionTotalDTO dto : dtoList) {
+                        dto.setClassifiersNumber(collectionsClassifiers.get(dto.getCode()));
+                    }
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

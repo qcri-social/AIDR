@@ -60,6 +60,8 @@ public class AidrCollectionTotalDTO {
 
     private CollectionType collectionType;
 
+    private Integer classifiersNumber;
+
     public Integer getId() {
         return id;
     }
@@ -253,5 +255,13 @@ public class AidrCollectionTotalDTO {
 
     public void setCollectionType(CollectionType collectionType) {
         this.collectionType = collectionType;
+    }
+
+    public Integer getClassifiersNumber() {
+        return classifiersNumber;
+    }
+
+    public void setClassifiersNumber(Integer classifiersNumber) {
+        this.classifiersNumber = classifiersNumber;
     }
 }

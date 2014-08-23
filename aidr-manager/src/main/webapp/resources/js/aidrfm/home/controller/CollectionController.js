@@ -2,14 +2,16 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
     extend: 'Ext.app.Controller',
 
     views: [
-        'CollectionPanel'
+//        'CollectionPanel'
+        'NewCollectionPanel'
     ],
 
     init: function () {
 
         this.control({
 
-            'collection-view': {
+//            'collection-view': {
+            'collection-view-new': {
                 beforerender: this.beforeRenderView
             },
 
@@ -218,6 +220,17 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
         this.mainComponent.collectionStore.load();
     },
 
+    refreshBothCollections: function(){
+        var me = this;
+        this.mainComponent.collectionStore.load();
+        this.mainComponent.collectionTrashedStore.load(function(records, operation, success) {
+            if(records.length == 0){
+                var tabs = me.mainComponent.tabs;
+                tabs.setActiveTab('myCollectionTab');
+            }
+        });
+    },
+
     applyUserPermissions: function () {
         var me = this;
 
@@ -240,6 +253,68 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
                     }
                 } else {
                     AIDRFMFunctions.setAlert('Error', 'Collection Code already exist. Please select another code');
+                }
+            }
+        });
+    },
+
+    untrashCollection: function (collectionId, collectionCode) {
+        var me = this;
+        var id = collectionId;
+        var code = collectionCode;
+
+        var mask = AIDRFMFunctions.getMask();
+        mask.show();
+
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/collection/untrash.action',
+            method: 'GET',
+            params: {
+                id: id,
+                code: code
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                mask.hide();
+                var resp = Ext.decode(response.responseText);
+                if (resp.success) {
+                    me.refreshBothCollections();
+                } else {
+                    AIDRFMFunctions.setAlert("Error", resp.message);
+                }
+            },
+            failure: function () {
+                mask.hide();
+            }
+        });
+    },
+    enableTagger: function(crisisTypeID, code, name) {
+
+        debugger
+        if (!crisisTypeID) {
+            AIDRFMFunctions.setAlert("Error", "Collection type is not selected. Please select type of the collection and save it.");
+            return false;
+        }
+
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/tagger/createCrises.action',
+            method: 'POST',
+            params: {
+                code: Ext.String.trim( code ),
+                name: Ext.String.trim( name ),
+                crisisTypeID: crisisTypeID
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                var resp = Ext.decode(response.responseText);
+                if (resp.success) {
+                    document.location.href = BASE_URL + '/protected/tagger-home';
+                } else {
+                    AIDRFMFunctions.setAlert("Error", resp.message);
                 }
             }
         });

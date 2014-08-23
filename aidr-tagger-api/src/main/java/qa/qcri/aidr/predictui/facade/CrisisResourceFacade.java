@@ -4,6 +4,7 @@
  */
 package qa.qcri.aidr.predictui.facade;
 
+import java.util.HashMap;
 import java.util.List;
 import javax.ejb.Local;
 import javax.persistence.PersistenceException;
@@ -29,5 +30,6 @@ public interface CrisisResourceFacade {
    public List<Crisis> getAllCrisis(); 
    
    public List<Crisis> getAllCrisisByUserID(int userID); 
-   
+
+   HashMap<String, Integer> countClassifiersByCrisisCodes(List<String> codes);
 }

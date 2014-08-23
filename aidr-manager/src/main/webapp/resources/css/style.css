@@ -762,3 +762,8 @@ End of the tab panel styles
 .normal-white-space {
     white-space: normal;
 }
+
+.disabled span{
+    color: #333!important;
+    opacity: .5;
+}
