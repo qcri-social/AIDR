@@ -65,7 +65,7 @@ public class TaggerServiceImpl implements TaggerService {
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
 			//String jsonResponse = clientResponse.getEntity(String.class);
-			String jsonResponse = clientResponse.readEntity(String.class); 
+			String jsonResponse = clientResponse.readEntity(String.class);
 
 
 			TaggerAllCrisesTypesResponse crisesTypesResponse = objectMapper.readValue(jsonResponse, TaggerAllCrisesTypesResponse.class);
@@ -165,6 +165,25 @@ public class TaggerServiceImpl implements TaggerService {
 			throw new AidrException("Error while getting all attributes for crisis from Tagger", e);
 		}
 	}
+
+    public Map<String, Integer> countCollectionsClassifiers(List<ValueModel> collectionCodes) throws AidrException{
+
+        try {
+            Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+            WebTarget webResource = client.target(taggerMainUrl + "/crisis/crises");
+
+            String input = "";
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            input = objectMapper.writeValueAsString(collectionCodes);
+            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).post(Entity.json(input));
+            String jsonResponse = clientResponse.readEntity(String.class);
+            HashMap<String, Integer>  rv = objectMapper.readValue(jsonResponse, HashMap.class);
+            return rv;
+        } catch (Exception e) {
+            throw new AidrException("Error while getting amount of classifiers by collection codes in Tagger", e);
+        }
+    }
 
 	@Override
 	public TaggerCrisisExist isCrisesExist(String code) throws AidrException{
