@@ -60,7 +60,7 @@ import qa.qcri.aidr.utils.ClassifiedTweet;
 public class ReadWriteCSV<CellProcessors> {
 
 	//private static final int BUFFER_SIZE = 10 * 1024 * 1024;
-	private static Logger logger = Logger.getLogger(ReadWriteCSV.class.getName());
+	private static Logger logger = Logger.getLogger(ReadWriteCSV.class);
 	private static ErrorLog elog = new ErrorLog();
 
 	public static final int VARIABLE_HEADER_SIZE = 7;	// number of variable header elements per classifier
@@ -96,7 +96,7 @@ public class ReadWriteCSV<CellProcessors> {
 		return processors;
 	}
 
-	private CellProcessor[] getClassifiedTweetVariableProcessors(final int count) {
+	private static CellProcessor[] getClassifiedTweetVariableProcessors(final int count) {
 		CellProcessor[] processors = new CellProcessor[count];
 		for (int i = 0;i < count;i++) {
 			processors[i] = new Optional();
@@ -239,27 +239,28 @@ public class ReadWriteCSV<CellProcessors> {
 		} catch (Exception ex) {
 			logger.error(collectionDIR + ": Exception occured when creating a mapWriter instance");
 			logger.error(elog.toStringException(ex));
+			return null;
 		}
 
 		// Now write to CSV file using CsvMapWriter
 		int count = 0;
 		for (final ClassifiedTweet tweet : tweetsList) {
-			String[] runningHeader  = setClassifiedTweetHeader(header, 2, tweet);
+			String[] runningHeader  = setClassifiedTweetHeader(header, header.length, tweet);
 			try {
 				final Map<String, Object> tweetToWrite = createClassifiedTweetIDCsvMap(runningHeader, tweet);
 				final CellProcessor[] processors = getClassifiedTweetVariableProcessors(runningHeader.length);
 				if (count == 0) {
-					System.out.print("Running Header: ");
+					System.out.print("Running Header: " + mapWriter.getLineNumber());
 					for (int j = 0;j < runningHeader.length;j++) {
 						System.out.print(runningHeader[j] + ", ");
 					}
-					System.out.print("Tweet read: ");
-					System.out.print(tweet.getTweetID() + "," 
+					System.out.print("Tweet received : " + tweet.getTweetID() + "," 
 							+ tweet.getMessage() + "," + tweet.getCrisisName() + ",");
 
 					for (int j = 0;j < tweet.getNominalLabels().size();j++) {
 						NominalLabel nb = tweet.getNominalLabels().get(j);
-						System.out.print(nb.attribute_name + "," + nb.attribute_code + ","
+						System.out.print("Attribute DETAILS: " 
+								+ nb.attribute_name + "," + nb.attribute_code + ","
 								+ nb.label_name + "," + nb.label_description + "," 
 								+ nb.label_code + "," + nb.confidence + "," 
 								+ nb.from_human);
@@ -315,6 +316,7 @@ public class ReadWriteCSV<CellProcessors> {
 
 	public ICsvMapWriter writeClassifiedTweetsCSV(List<ClassifiedTweet> tweetsList, String collectionDIR, String fileName, ICsvMapWriter mapWriter) {
 		String[] header = new String[]{"tweetID", "message","userID", "userName", "userURL", "createdAt", "tweetURL", "crisisName"}; 
+		System.out.println("mapWriter = " + mapWriter);
 		try {
 			if (null == mapWriter) {
 				String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
@@ -330,32 +332,37 @@ public class ReadWriteCSV<CellProcessors> {
 				}
 				// First write the header
 				mapWriter.writeHeader(runningHeader);
+				System.out.print("Initiating Running Header: " + mapWriter.getLineNumber());
+				for (int j = 0;j < runningHeader.length;j++) {
+					System.out.print(runningHeader[j] + ", ");
+				}
 			}
 		} catch (Exception ex) {
 			logger.error(collectionDIR + ": Exception occured when creating a mapWriter instance");
 			logger.error(elog.toStringException(ex));
+			return null;
 		}
 
 		// Now write to CSV file using CsvMapWriter
 		int count = 0;
 		for (final ClassifiedTweet tweet : tweetsList) {
-			String[] runningHeader  = setClassifiedTweetHeader(header, 8, tweet);
+			String[] runningHeader  = setClassifiedTweetHeader(header, header.length, tweet);
 			try {
 				final Map<String, Object> tweetToWrite = createClassifiedTweetCsvMap(runningHeader, tweet);
 				final CellProcessor[] processors = getClassifiedTweetVariableProcessors(runningHeader.length);
 				mapWriter.write(tweetToWrite, runningHeader, processors);
 				if (count == 0) {
-					System.out.print("Running Header: ");
+					System.out.print("Running Header: " + mapWriter.getLineNumber());
 					for (int j = 0;j < runningHeader.length;j++) {
 						System.out.print(runningHeader[j] + ", ");
 					}
-					System.out.print("Tweet read: ");
-					System.out.print(tweet.getTweetID() + "," 
+					System.out.print("Tweet received : " + tweet.getTweetID() + "," 
 							+ tweet.getMessage() + "," + tweet.getCrisisName() + ",");
 
 					for (int j = 0;j < tweet.getNominalLabels().size();j++) {
 						NominalLabel nb = tweet.getNominalLabels().get(j);
-						System.out.print(nb.attribute_name + "," + nb.attribute_code + ","
+						System.out.print("Attribute DETAILS: " 
+								+ nb.attribute_name + "," + nb.attribute_code + ","
 								+ nb.label_name + "," + nb.label_description + "," 
 								+ nb.label_code + "," + nb.confidence + "," 
 								+ nb.from_human);
@@ -370,6 +377,7 @@ public class ReadWriteCSV<CellProcessors> {
 				logger.error(collectionDIR + "IOException in writing tweet: " + tweet.getTweetID());
 			}
 		}
+		System.out.println("Tweets written so far: " + count);
 		return mapWriter;
 	}
 
@@ -408,7 +416,7 @@ public class ReadWriteCSV<CellProcessors> {
 	}
 
 	private Map<String, Object> createClassifiedTweetCsvMap(String[] header, ClassifiedTweet tweet) {
-		final Map<String, Object> tweetToWrite = new HashMap<String, Object>();
+		Map<String, Object> tweetToWrite = new HashMap<String, Object>();
 		int i = 0;	
 		tweetToWrite.put(header[i], tweet.getTweetID());
 		tweetToWrite.put(header[i+1], tweet.getMessage());
@@ -419,6 +427,14 @@ public class ReadWriteCSV<CellProcessors> {
 		tweetToWrite.put(header[i+6], tweet.getTweetURL());
 		tweetToWrite.put(header[i+7], tweet.getCrisisName());
 		i = i + 8;
+		if (tweet.getNominalLabels() != null) {
+			tweetToWrite = writeVariableAttributeData(header, i, tweetToWrite, tweet);
+		}
+		return tweetToWrite;
+	}
+	
+	private Map<String, Object> writeVariableAttributeData(final String[] header, final int startIndex, Map<String, Object> tweetToWrite, final ClassifiedTweet tweet) {
+		int i = startIndex;
 		for (int j = 0;j < tweet.getNominalLabels().size();j++) {
 			NominalLabel nLabel = tweet.getNominalLabels().get(j);
 			tweetToWrite.put(header[i], nLabel.attribute_name);
@@ -433,23 +449,14 @@ public class ReadWriteCSV<CellProcessors> {
 		return tweetToWrite;
 	}
 
-
 	private Map<String, Object> createClassifiedTweetIDCsvMap(String[] header, ClassifiedTweet tweet) {
-		final Map<String, Object> tweetToWrite = new HashMap<String, Object>();
+		Map<String, Object> tweetToWrite = new HashMap<String, Object>();
 		int i = 0;	
 		tweetToWrite.put(header[i], tweet.getTweetID());
 		tweetToWrite.put(header[i+1], tweet.getCrisisName());
 		i = 2;
-		for (int j = 0;j < tweet.getNominalLabels().size();j++) {
-			NominalLabel nLabel = tweet.getNominalLabels().get(j);
-			tweetToWrite.put(header[i], nLabel.attribute_name);
-			tweetToWrite.put(header[i+1], nLabel.attribute_code);
-			tweetToWrite.put(header[i+2], nLabel.label_name);
-			tweetToWrite.put(header[i+3], nLabel.label_description);
-			tweetToWrite.put(header[i+4], nLabel.label_code);
-			tweetToWrite.put(header[i+5], nLabel.confidence);
-			tweetToWrite.put(header[i+6], nLabel.from_human);
-			i += VARIABLE_HEADER_SIZE;
+		if (tweet.getNominalLabels() != null) {
+			tweetToWrite = writeVariableAttributeData(header, i, tweetToWrite, tweet);
 		}
 		return tweetToWrite;
 	}

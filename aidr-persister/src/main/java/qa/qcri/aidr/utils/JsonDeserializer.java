@@ -412,7 +412,8 @@ public class JsonDeserializer {
 						logger.info(collectionCode + ": Reading file : " + f.getAbsolutePath());
 						InputStream is = new FileInputStream(f.getAbsolutePath());
 						br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-						while ((line = br.readLine()) != null) {
+						while (((line = br.readLine()) != null)
+								&& (currentSize < exportLimit)) {
 							ClassifiedTweet tweet = getClassifiedTweet(line);
 							if (tweet != null) {
 								if (tweetsList.size() < LIST_BUFFER_SIZE && currentSize <= exportLimit) {
@@ -430,14 +431,9 @@ public class JsonDeserializer {
 									tweetsList.clear();
 
 								}
-								if (writer != null) {
-									if (currentSize >= exportLimit) {
-										break createTweetList;
-									}
-								}
 							}
 						}
-						writer = csv.writeClassifiedTweetsCSV(tweetsList, collectionCode, fileNameforCSVGen, writer);
+						//writer = csv.writeClassifiedTweetsCSV(tweetsList, collectionCode, fileNameforCSVGen, writer);
 						tweetsList.clear();
 						br.close();
 					}
