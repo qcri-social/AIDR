@@ -22,11 +22,12 @@ public class FeatureExtractor extends PipelineProcess {
 	private static ErrorLog elog = new ErrorLog();
 	
     protected void processItem(Document doc) {
-        if (doc instanceof Tweet)
+        logger.info("Received doc class: " + doc.getClass());
+    	if (doc instanceof Tweet)
             processTweet((Tweet) doc);
         else
-        	logger.warn("Unknown datatype: " + doc);
-            throw new RuntimeException("Unknown doctype");
+        	logger.error("Unknown datatype: " + doc + ", doctype = " + doc.getDoctype());
+            throw new RuntimeException("Unknown doctype: " + doc.getDoctype());
     }
 
     void processTweet(Tweet tweet) {
