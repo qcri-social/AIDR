@@ -338,5 +338,10 @@ public class CollectionTask {
     public void setLanguageFilter(String languageFilter) {
         this.languageFilter = languageFilter;
     }
-    
+
+    @Override
+    public String toString() {
+        return "CollectionTask{" + "collectionCode=" + collectionCode + ", collectionName=" + collectionName + ", toTrack=" + toTrack + ", toFollow=" + toFollow + ", geoLocation=" + geoLocation + ", languageFilter=" + languageFilter + ", lastDocument=" + lastDocument + ", statusCode=" + statusCode + ", statusMessage=" + statusMessage + ", consumerKey=" + consumerKey + ", consumerSecret=" + consumerSecret + ", accessToken=" + accessToken + ", accessTokenSecret=" + accessTokenSecret + ", tweetsCount=" + tweetsCount + '}';
+    }
+
 }

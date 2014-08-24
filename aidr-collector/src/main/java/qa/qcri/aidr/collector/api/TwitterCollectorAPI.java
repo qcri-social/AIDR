@@ -70,6 +70,7 @@ public class TwitterCollectorAPI extends Loggable {
     @Path("/start")
     public Response startTask(CollectionTask collectionTask) {
         logger.info("Starting collector for " + collectionTask.getCollectionCode());
+        logger.info("Received following query:\n" + collectionTask.toString());
         ResponseWrapper response = new ResponseWrapper();
 
         //check if all twitter specific information is available in the request
