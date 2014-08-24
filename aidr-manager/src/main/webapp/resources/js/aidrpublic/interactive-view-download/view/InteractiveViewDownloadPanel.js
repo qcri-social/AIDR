@@ -113,6 +113,12 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
             flex: 1
         });
 
+        this.curatorInfoR = Ext.create('Ext.form.Label', {
+            cls: 'styled-text',
+            margin: '10 0 0 0',
+            html: ''
+        });
+
         this.downloadType = Ext.create('Ext.form.RadioGroup', {
             columns: 1,
             vertical: true,
@@ -256,6 +262,17 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
             ]
         });
 
+        this.curatorInfoPanel = Ext.create('Ext.container.Container', {
+            hidden: true,
+            layout: {
+                type: 'hbox',
+                pack: 'end'
+            },
+            items: [
+                this.curatorInfoR
+            ]
+        });
+
         if(USER_NAME != null && USER_NAME != ''){
             this.items = [
                 this.breadcrumbs,
@@ -284,8 +301,20 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
         }
         else{
             this.items = [
-
+                {
+                    xtype: 'container',
+                    layout: {
+                        type: 'vbox',
+                        align: 'stretch'
+                    },
+                    margin: 0,
+                    padding: 0,
+                    items: [
+                        this.screenTitle
+                    ]
+                },
                 this.tweetsPanel,
+                this.curatorInfoPanel,
                 this.contactOwnerPanel
             ];
         }

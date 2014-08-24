@@ -14,6 +14,7 @@ public class CrisisJsonModel {
     private Long crisisID;
     private String name;
     private String code;
+    private String curatorInfo;
     private Set<NominalAttributeJsonModel> nominalAttributeJsonModelSet;
 
 
@@ -49,5 +50,11 @@ public class CrisisJsonModel {
         this.code = code;
     }
 
+    public String getCuratorInfo() {
+        return curatorInfo;
+    }
 
+    public void setCuratorInfo(String curatorInfo) {
+        this.curatorInfo = curatorInfo;
+    }
 }

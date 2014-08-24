@@ -6,11 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.trainer.api.dao.CrisisDao;
+import qa.qcri.aidr.trainer.api.dao.CustomUITemplateDao;
 import qa.qcri.aidr.trainer.api.dao.ModelFamilyDao;
-import qa.qcri.aidr.trainer.api.entity.Crisis;
-import qa.qcri.aidr.trainer.api.entity.ModelFamily;
-import qa.qcri.aidr.trainer.api.entity.NominalAttribute;
-import qa.qcri.aidr.trainer.api.entity.NominalLabel;
+import qa.qcri.aidr.trainer.api.entity.*;
 import qa.qcri.aidr.trainer.api.service.CrisisService;
 import qa.qcri.aidr.trainer.api.store.CodeLookUp;
 import qa.qcri.aidr.trainer.api.template.CrisisJsonModel;
@@ -39,6 +37,9 @@ public class CrisisServiceImpl implements CrisisService {
     @Autowired
     private ModelFamilyDao modelFamilyDao;
 
+    @Autowired
+    private CustomUITemplateDao customUITemplateDao;
+
     @Override
     public Crisis findByCrisisID(Long id) {
 
@@ -49,6 +50,8 @@ public class CrisisServiceImpl implements CrisisService {
     public CrisisJsonModel findByOptimizedCrisisID(Long id) {
         Crisis crisis = crisisDao.findByCrisisID(id);
         CrisisJsonModel jsonOutput = new CrisisJsonOutput().crisisJsonModelGenerator(crisis);
+        List<CustomUITemplate> uiTemps =  customUITemplateDao.getTemplateByCrisisWithType(id, CodeLookUp.CURATOR_NAME);
+        jsonOutput.setCuratorInfo(uiTemps.get(0).getTemplateValue());
         return jsonOutput;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
