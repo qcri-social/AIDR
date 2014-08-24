@@ -35,8 +35,7 @@ public class DocumentJSONConverter extends Loggable {
 	private static ErrorLog elog = new ErrorLog();
 
 	public static enum Doctype {
-		TWEET("twitter"),
-		SMS("SMS");
+		TWEET("twitter");
 
 		private String name;
 
@@ -81,8 +80,6 @@ public class DocumentJSONConverter extends Loggable {
 		case TWEET:
 			doc = parseTweet(jsonObj);
 			break;
-		case SMS: 
-			doc = parseSMS(jsonObj);
 		default: {
 			logger.error("Exception when parsing input document: Unhandled doctype");
 			throw new RuntimeException(

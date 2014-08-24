@@ -12,21 +12,23 @@ import qa.qcri.aidr.predict.data.*;
  * FeatureExtractor consumes DocumentSet objects from a Redis queue, performs
  * feature extraction and pushes the DocumentSet to another queue for futher
  * processing.
- * 
+ *
  * @author jrogstadius
- * 
+ *
  */
 public class FeatureExtractor extends PipelineProcess {
 
-	private static Logger logger = Logger.getLogger(FeatureExtractor.class);
-	private static ErrorLog elog = new ErrorLog();
-	
+    private static Logger logger = Logger.getLogger(FeatureExtractor.class);
+    private static ErrorLog elog = new ErrorLog();
+
     protected void processItem(Document doc) {
-        if (doc instanceof Tweet)
+        logger.info("Received doc class: " + doc.getClass());
+        if (doc instanceof Tweet) {
             processTweet((Tweet) doc);
-        else
-        	logger.warn("Unknown datatype: " + doc);
-            throw new RuntimeException("Unknown doctype");
+        } else {
+            logger.error("Unknown datatype: " + doc + ", doctype = " + doc.getDoctype());
+            throw new RuntimeException("Unknown doctype: " + doc.getDoctype());
+        }
     }
 
     void processTweet(Tweet tweet) {
@@ -47,39 +49,46 @@ public class FeatureExtractor extends PipelineProcess {
 
         // Stem words
         if (useStemming) {
-            for (int i = 0; i < words.length; i++)
+            for (int i = 0; i < words.length; i++) {
                 words[i] = naiveStemming(words[i]);
+            }
         }
 
         // Make bigrams
         HashSet<String> bigrams = new HashSet<String>();
         for (int i = 0; i < words.length - 1; i++) {
             String w1 = words[i];
-            if (isStopword(w1))
+            if (isStopword(w1)) {
                 continue;
+            }
             String w2 = "";
             int j = i + 1;
-            while (j < words.length && isStopword(w2 = words[j]))
+            while (j < words.length && isStopword(w2 = words[j])) {
                 j++;
+            }
 
             // Perform stopword removal
-            if (!isStopword(w2))
+            if (!isStopword(w2)) {
                 bigrams.add(w1 + "_" + w2);
+            }
         }
         bigrams.addAll(Arrays.asList(words));
 
-        if (bigrams.isEmpty())
+        if (bigrams.isEmpty()) {
             return new String[0];
-        else
+        } else {
             return bigrams.toArray(new String[bigrams.size()]);
+        }
     }
 
     public static String naiveStemming(String str) {
-        if (str.length() < 4 || str.startsWith("#"))
+        if (str.length() < 4 || str.startsWith("#")) {
             return str;
+        }
         String before = str;
-        while ((str = str.replaceAll("(es|ed|s|ing|ly|n)$", "")) != before)
+        while ((str = str.replaceAll("(es|ed|s|ing|ly|n)$", "")) != before) {
             before = str;
+        }
         return str;
     }
 

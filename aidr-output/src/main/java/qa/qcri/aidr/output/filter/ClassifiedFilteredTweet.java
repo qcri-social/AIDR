@@ -154,7 +154,11 @@ public class ClassifiedFilteredTweet implements Serializable {
 			return null;
 		}
 	}
-
+	
+	public void setCreateAt(final Date created_at) {
+		this.created_at = created_at;
+	}
+	
 	public Date getCreatedAt() {
 		return created_at;
 	}

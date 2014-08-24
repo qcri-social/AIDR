@@ -132,7 +132,7 @@ public class ClassifiedTweet  implements Document, Serializable{
 	 * @param createdAt the createdAt to set
 	 */
 	public void setCreatedAt(String createdAtString) {
-		this.createdAt = setDateString(createdAtString);
+		this.createdAt = createdAtString;	//setDateString(createdAtString);
 	}
 
 	/**

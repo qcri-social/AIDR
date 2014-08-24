@@ -29,7 +29,7 @@ public class Controller extends Loggable {
     static ArrayList<Thread> workers = new ArrayList<Thread>();
 
  // Debugging
- 	private static Logger logger = Logger.getLogger(Controller.class.getName());
+ 	private static Logger logger = Logger.getLogger(Controller.class);
  	private static ErrorLog elog = new ErrorLog();
     
     public static void main(String[] args) {
