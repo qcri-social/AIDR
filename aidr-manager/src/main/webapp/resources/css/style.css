@@ -767,3 +767,7 @@ End of the tab panel styles
     color: #333!important;
     opacity: .5;
 }
+
+.link-style {
+    font-size: 14px;
+}

@@ -353,7 +353,10 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
 
             ]
         });
-
+        /*
+        *  "Browse public collections" is currently http://aidr-prod.qcri.org/AIDRFetchManager/public.jsp
+        * */
+        this.browseCollectionLink = "";
 
         this.items = [
             {
@@ -375,7 +378,13 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
                     this.refreshButton
                 ]
             },
-            me.tabs
+            me.tabs,
+            {
+                xtype: 'component',
+                margin: "15 0 0 5",
+                cls: 'link-style',
+                html:"<a href='" + BASE_URL + "/public.jsp'>Browse public collections</a>"
+            }
 
         ]
 
