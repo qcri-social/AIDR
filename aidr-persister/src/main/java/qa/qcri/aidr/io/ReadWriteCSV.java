@@ -219,7 +219,6 @@ public class ReadWriteCSV<CellProcessors> {
 	public ICsvMapWriter writeClassifiedTweetIDsCSV(ICsvMapWriter mapWriter, final List<ClassifiedTweet> tweetsList, String collectionDIR, String fileName) {
 		// the header elements are used to map the bean values to each column (names must match)
 		String[] header = new String[]{"tweetID", "crisisName"};
-
 		try {
 			if (null == mapWriter) {
 				String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
@@ -243,12 +242,13 @@ public class ReadWriteCSV<CellProcessors> {
 		}
 
 		// Now write to CSV file using CsvMapWriter
-		int count = 0;
+		// int count = 0;
 		for (final ClassifiedTweet tweet : tweetsList) {
 			String[] runningHeader  = setClassifiedTweetHeader(header, header.length, tweet);
 			try {
 				final Map<String, Object> tweetToWrite = createClassifiedTweetIDCsvMap(runningHeader, tweet);
 				final CellProcessor[] processors = getClassifiedTweetVariableProcessors(runningHeader.length);
+				/*
 				if (count == 0) {
 					System.out.print("Running Header: " + mapWriter.getLineNumber());
 					for (int j = 0;j < runningHeader.length;j++) {
@@ -267,10 +267,10 @@ public class ReadWriteCSV<CellProcessors> {
 					}
 					System.out.println("Tweet to Write: " + tweetToWrite);
 				}
+				++count;*/
 				mapWriter.write(tweetToWrite, runningHeader, processors);
-				++count;
 			} catch (SuperCsvCellProcessorException e) {
-				logger.error(collectionDIR + ": SuperCSV error. Offending tweet: " + tweet.getTweetID());
+				//logger.error(collectionDIR + ": SuperCSV error. Offending tweet: " + tweet.getTweetID());
 				//logger.error(elog.toStringException(e));
 			} catch (IOException e) {
 				logger.error(collectionDIR + "IOException in writing tweet: " + tweet.getTweetID());
@@ -316,7 +316,7 @@ public class ReadWriteCSV<CellProcessors> {
 
 	public ICsvMapWriter writeClassifiedTweetsCSV(List<ClassifiedTweet> tweetsList, String collectionDIR, String fileName, ICsvMapWriter mapWriter) {
 		String[] header = new String[]{"tweetID", "message","userID", "userName", "userURL", "createdAt", "tweetURL", "crisisName"}; 
-		System.out.println("mapWriter = " + mapWriter);
+		//System.out.println("mapWriter = " + mapWriter);
 		try {
 			if (null == mapWriter) {
 				String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
@@ -332,10 +332,11 @@ public class ReadWriteCSV<CellProcessors> {
 				}
 				// First write the header
 				mapWriter.writeHeader(runningHeader);
+				/*
 				System.out.print("Initiating Running Header: " + mapWriter.getLineNumber());
 				for (int j = 0;j < runningHeader.length;j++) {
 					System.out.print(runningHeader[j] + ", ");
-				}
+				}*/
 			}
 		} catch (Exception ex) {
 			logger.error(collectionDIR + ": Exception occured when creating a mapWriter instance");
@@ -344,13 +345,14 @@ public class ReadWriteCSV<CellProcessors> {
 		}
 
 		// Now write to CSV file using CsvMapWriter
-		int count = 0;
+		//int count = 0;
 		for (final ClassifiedTweet tweet : tweetsList) {
 			String[] runningHeader  = setClassifiedTweetHeader(header, header.length, tweet);
 			try {
 				final Map<String, Object> tweetToWrite = createClassifiedTweetCsvMap(runningHeader, tweet);
 				final CellProcessor[] processors = getClassifiedTweetVariableProcessors(runningHeader.length);
 				mapWriter.write(tweetToWrite, runningHeader, processors);
+				/*
 				if (count == 0) {
 					System.out.print("Running Header: " + mapWriter.getLineNumber());
 					for (int j = 0;j < runningHeader.length;j++) {
@@ -369,15 +371,15 @@ public class ReadWriteCSV<CellProcessors> {
 					}
 					System.out.println("Tweet to Write: " + tweetToWrite);
 				}
-				++count;
+				++count;*/
 			} catch (SuperCsvCellProcessorException e) {
-				logger.error(collectionDIR + ": SuperCSV error. Offending tweet: " + tweet.getTweetID());
+				//logger.error(collectionDIR + ": SuperCSV error. Offending tweet: " + tweet.getTweetID());
 				//logger.error(elog.toStringException(e));
 			} catch (IOException e) {
 				logger.error(collectionDIR + "IOException in writing tweet: " + tweet.getTweetID());
 			}
 		}
-		System.out.println("Tweets written so far: " + count);
+		//System.out.println("Tweets written so far: " + count);
 		return mapWriter;
 	}
 
