@@ -11,21 +11,16 @@
 package qa.qcri.aidr.output.getdata;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.apache.commons.collections.Buffer;
 import org.apache.commons.collections.BufferUtils;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 
-import org.apache.commons.lang.ArrayUtils;
-//import org.apache.log4j.BasicConfigurator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.output.utils.ErrorLog;
 
@@ -39,7 +34,7 @@ public class ChannelBuffer {
 
 	private Boolean publiclyListed = true;
 
-	private static Logger logger = LoggerFactory.getLogger(ChannelBuffer.class);
+	private static Logger logger = Logger.getLogger(ChannelBuffer.class);
 	private static ErrorLog elog = new ErrorLog();
 
 	public ChannelBuffer(final String name, final int bufferSize) {
@@ -102,27 +97,30 @@ public class ChannelBuffer {
 		
 		List<String> tempList = null;
 		try {
-			synchronized(this.messageBuffer) {
-			    tempList = new ArrayList<String>(messageBuffer.size());
-				// first copy out the entire buffer to a list
-				Iterator<String> itr = messageBuffer.iterator();
+			synchronized(this) {
+			    tempList = new ArrayList<String>(this.messageBuffer.size());
+				//logger.info("current message buffer size = " + messageBuffer.size());
+			    // first copy out the entire buffer to a list
+				Iterator<String> itr = this.messageBuffer.iterator();
 				while (itr.hasNext()) {
 					String element = itr.next();
 					if (element != null) tempList.add(element);		// only non-null elements
 				}
 			}
-			if (msgCount == messageBuffer.size()) {
+			//logger.info("Copied data : " + tempList.size() + ", msgCount:messageBuffer.size = " + msgCount + ":" + messageBuffer.size());
+			if (msgCount >= messageBuffer.size()) {
 				return tempList;		// optimization
 			}
 
 			// Otherwise, get the last msgCount elements, in oldest-first order
 			//Collections.reverse(tempList);	// in-situ reversal O(n) time
 			List<String> returnList = new ArrayList<String>(msgCount);
+			int index = Math.max(0, (tempList.size() - msgCount));	// from where to pick
 			for (int i = 0;i < msgCount;i++) {
-				int index = Math.max(0, (tempList.size() - msgCount));	// from where to pick
 				returnList.add(tempList.get(index));
 				++index;
 			}
+			//logger.info("Fetched size = " + index + " from start loc = " + Math.max(0, (tempList.size() - msgCount)));
 			return returnList;
 		} catch (Exception e) {
 			logger.error("Error in creating list out of buffered messages");

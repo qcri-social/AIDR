@@ -132,7 +132,7 @@ public class FilterQueryMatcher {
 					
 					// Next check label comparator "is"
 					if (q.getComparator().equals(ComparatorType.is) 
-							&& nLabel.label_code != null && q.getLabelCode() != null) {
+							 && q.getLabelCode() != null && nLabel.label_code != null) {
 						matchResult = matchResult && (q.getLabelCode().equalsIgnoreCase(nLabel.label_code));
 						// Now check confidence value
 						matchResult = matchResult && (nLabel.confidence >= q.getConfidence());
@@ -143,7 +143,7 @@ public class FilterQueryMatcher {
 					
 					// Next check label comparator "is_not"
 					if (q.getComparator().equals(ComparatorType.is_not) 
-							&& nLabel.label_code != null && q.getLabelCode() != null) {
+							 && q.getLabelCode() != null && nLabel.label_code != null) {
 						matchResult = matchResult && !(q.getLabelCode().equalsIgnoreCase(nLabel.label_code));
 						// Now check confidence value
 						matchResult = (matchResult) && (nLabel.confidence >= q.getConfidence());

@@ -139,6 +139,7 @@ public class ChannelBufferManager {
 			if (isSubscribed) {
 				subscribedChannels = new ConcurrentHashMap<String,ChannelBuffer>(20);
 				logger.debug("Created HashMap");
+				loadBuffersFromDisk();
 			}
 		}
 
@@ -476,6 +477,7 @@ public class ChannelBufferManager {
 
 	public void close() {
 		shutdownFlag = true;
+		dumpBuffersToDisk();
 		stopSubscription();
 		deleteAllChannelBuffers();
 		shutdownAndAwaitTermination();
@@ -483,6 +485,21 @@ public class ChannelBufferManager {
 		System.out.println("[close] All done, fetch service has been shutdown...");
 	}
 
+	/**
+	 * Dumps all buffered data to disk - one file per collection
+	 */
+	private void dumpBuffersToDisk() {
+		// TODO:
+	}
+ 	
+	/**
+	 * On restart loads all dumped channel data from disk
+	 * Requires creation of channelBuffers where not present
+	 */
+	private void loadBuffersFromDisk() {
+		// TODO: 
+	}
+	
 	// cleanup all threads 
 	void shutdownAndAwaitTermination() {
 		int attempts = 0;
