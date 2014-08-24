@@ -14,7 +14,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
         this.breadcrumbs = Ext.create('Ext.container.Container', {
             html: '<div class="bread-crumbs">' +
-                '<a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a><span>&nbsp;>&nbsp;Details</span></div>',
+                '<a href="' + BASE_URL + '/protected/home">My Collections</a><span>&nbsp;>&nbsp;Classifier Details</span></div>',
             margin: 0,
             padding: 0
         });
@@ -394,73 +394,6 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                 + '/interactive-view-download">Go to interactive view/download</a></div>'
         });
 
-        this.downloadsBlock = Ext.create('Ext.container.Container', {
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
-            items: [
-                {
-                    xtype: 'label',
-                    flex: 1,
-                    padding: '15 0 0 0',
-                    text: 'Download as CSV files',
-                    cls: 'header-h2'
-                },
-                {
-                    xtype: 'label',
-                    flex: 1,
-                    padding: '0 0 0 0',
-                    html: "Depending on the size of your collection, this may take a few minutes.<br>" +
-                        "Please be patient and do not click 'Stop' or 'Refresh' in your browser after requesting to export a file."
-                },
-                {
-                    xtype: 'container',
-                    layout: 'vbox',
-                    items: [
-                        {
-                            xtype: 'container',
-                            padding: '5 0 0 0',
-                            defaultType: 'label',
-                            layout: 'hbox',
-                            items: [
-                                this.generateCSVButton,
-                                this.CSVLink
-                            ]
-                        },
-                        {
-                            xtype: 'container',
-                            padding: '5 0 0 0',
-                            defaultType: 'label',
-                            layout: 'hbox',
-                            items: [                                
-                                this.generateJSONButton,
-                                this.JSONLink
-                            ]
-                        },
-                        {
-                            xtype: 'container',
-                            defaultType: 'label',
-                            layout: 'hbox',
-                            items: [
-                                this.generateTweetIdsButton,
-                                this.tweetsIdsLink
-                            ]
-                        },                        
-                        {
-                            xtype: 'container',
-                            defaultType: 'label',
-                            layout: 'hbox',
-                            items: [                                
-                                this.generateJsonTweetIdsButton,
-                                this.JsonTweetsIdsLink
-                            ]
-                        }
-                    ]
-                },
-                this.toInteractiveViewDownloadLink
-            ]
-        });
 
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1070,13 +1003,6 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                     title: 'Customize MicroMappers',
                     padding: '10 0 0 0',
                     items: this.UIBlock
-                },
-                {
-                    title: 'View/Download',
-                    padding: '10 0 0 0',
-                    items: [
-                        this.downloadsBlock
-                    ]
                 }
             ]
         });

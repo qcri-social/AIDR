@@ -18,7 +18,11 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         var me = this;
 
         this.breadcrumbs = Ext.create('Ext.container.Container', {
-            html: '<div class="bread-crumbs"><a href="' + BASE_URL + '/protected/home">My Collections</a></div>',
+            html: '<div class="bread-crumbs">' +
+                '<a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a><span>&nbsp;>&nbsp;Details</span></div>',
+
+
+            html: '<div class="bread-crumbs"><a href="' + BASE_URL + '/protected/home">My Collections</a><span>&nbsp;>&nbsp;Collection Details</span></div>',
             margin: 0,
             padding: 0
         });
@@ -1109,53 +1113,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             ]
         });
 
-        this.downloadExportTaggerDisabledPanel = Ext.create('Ext.container.Container', {
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
-            items: [
-                {
-                    xtype: 'container',
-                    padding: '15 0 0 0',
-                    defaultType: 'label',
-                    layout: 'hbox',
-                    items: [
-                        this.generateCSVButton,
-                        this.CSVLink
-                    ]
-                },
-                {
-                    xtype: 'container',
-                    padding: '15 0 0 0',
-                    defaultType: 'label',
-                    layout: 'hbox',
-                    items: [
-                        this.generateJSONButton,
-                        this.JSONLink
-                    ]
-                },
-                {
-                    xtype: 'container',
-                    defaultType: 'label',
-                    layout: 'hbox',
-                    items: [
-                        this.generateTweetIdsButton,
-                        this.tweetsIdsLink
-                    ]
-                },
-                {
-                    xtype: 'container',
-                    defaultType: 'label',
-                    layout: 'hbox',
-                    items: [
-                        this.generateJsonTweetIdsButton,
-                        this.JsonTweetsIdsLink
-                    ]
-                }
-            ]
-        });
-
         this.classifierIsRunningText = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '7 0 0 0',
@@ -1168,18 +1125,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             cls:'btn btn-blue',
             id: 'toMyClassifiersToDownload',
             margin: '10 0 0 0'
-        });
-
-        this.downloadExportTaggerEnabledPanel = Ext.create('Ext.container.Container', {
-            hidden: true,
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
-            items: [
-                this.classifierIsRunningText,
-                this.toMyClassifiersToDownload
-            ]
         });
 
         this.tabPanel = Ext.create('Ext.tab.Panel', {
@@ -1235,20 +1180,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             },
                             items: [
                                 this.addManagersPanel
-                            ]
-                        }
-                    ]
-                },
-                {
-                    title: 'Download/Export',
-                    padding: '10 0 0 0',
-                    items: [
-                        {
-                            xtype: 'container',
-                            layout: 'vbox',
-                            items: [
-                                this.downloadExportTaggerDisabledPanel,
-                                this.downloadExportTaggerEnabledPanel
                             ]
                         }
                     ]
