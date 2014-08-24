@@ -7,6 +7,7 @@ package qa.qcri.aidr.predictui.api;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
@@ -15,12 +16,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
+
 import qa.qcri.aidr.predictui.dto.CrisisDTO;
 import qa.qcri.aidr.predictui.dto.CrisisTypeDTO;
 import qa.qcri.aidr.predictui.entities.Crisis;
 import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 import qa.qcri.aidr.predictui.util.Config;
+import qa.qcri.aidr.predictui.util.ErrorLog;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
 /**
@@ -31,7 +35,10 @@ import qa.qcri.aidr.predictui.util.ResponseWrapper;
 @Path("/crisis")
 @Stateless
 public class CrisisResource {
-
+	
+	private static Logger logger = Logger.getLogger(CrisisResource.class);
+	private static ErrorLog elog = new ErrorLog();
+	
     @Context
     private UriInfo context;
     @EJB
@@ -95,7 +102,12 @@ public class CrisisResource {
 
             return Response.ok(rv).build();
         } catch (IOException e) {
-            return Response.ok("Error while getting numbers of classifiers by crisis codes.").build();
+            logger.error("Error while getting numbers of classifiers by crisis codes:");
+            for (String c: codes) {
+            	logger.error("for code: " + c);
+            }
+            logger.error(elog.toStringException(e));
+        	return Response.ok("Error while getting numbers of classifiers by crisis codes.").build();
         }
     }
 
@@ -132,6 +144,8 @@ public class CrisisResource {
     		crisis.setIsTrashed(false);
             crisisLocalEJB.addCrisis(crisis);
         } catch (RuntimeException e) {
+            logger.error("Error while adding Crisis. Possible causes could be duplication of primary key, incomplete data, incompatible data format. For crisis: " + crisis.getCode());
+        	logger.error(elog.toStringException(e));
             return Response.ok("Error while adding Crisis. Possible causes could be duplication of primary key, incomplete data, incompatible data format.").build();
         }
 

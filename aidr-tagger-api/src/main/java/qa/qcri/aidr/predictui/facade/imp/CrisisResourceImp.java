@@ -8,16 +8,21 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.predictui.entities.Crisis;
 import qa.qcri.aidr.predictui.entities.ModelFamily;
 import qa.qcri.aidr.predictui.entities.NominalLabel;
 import qa.qcri.aidr.predictui.entities.Users;
 import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
+import qa.qcri.aidr.predictui.util.ErrorLog;
 
 /**
  *
@@ -25,6 +30,8 @@ import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
  */
 @Stateless
 public class CrisisResourceImp implements CrisisResourceFacade {
+	private static Logger logger = Logger.getLogger(CrisisResourceImp.class);
+	private static ErrorLog elog = new ErrorLog();
 
 	@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
 	private EntityManager em;
@@ -142,21 +149,25 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 		return null;
 	}
 
-    @Override
-    public HashMap<String, Integer> countClassifiersByCrisisCodes(List<String> codes) {
-        String sqlQuery = "select cr.code, " +
-                "       (select count(*) from model_family mf where mf.crisisID = cr.crisisID) as mf_amount " +
-                " from crisis cr " +
-                " where cr.code in :codes";
-
-        Query nativeQuery = em.createNativeQuery(sqlQuery);
-        nativeQuery.setParameter("codes", codes);
-        List resultList = nativeQuery.getResultList();
-        HashMap<String, Integer> rv = new HashMap<String, Integer>();
-        for(Object obj : resultList){
-            Object[] objs = ((Object[])obj);
-            rv.put((String)objs[0], ((BigInteger)objs[1]).intValue());
-        }
-        return rv;
-    }
+	@Override
+	public HashMap<String, Integer> countClassifiersByCrisisCodes(List<String> codes) {
+		String sqlQuery = "select cr.code, " +
+				"       (select count(*) from model_family mf where mf.crisisID = cr.crisisID) as mf_amount " +
+				" from crisis cr " +
+				" where cr.code in :codes";
+		try {
+			Query nativeQuery = em.createNativeQuery(sqlQuery);
+			nativeQuery.setParameter("codes", codes);
+			List resultList = nativeQuery.getResultList();
+			HashMap<String, Integer> rv = new HashMap<String, Integer>();
+			for(Object obj : resultList){
+				Object[] objs = ((Object[])obj);
+				rv.put((String)objs[0], ((BigInteger)objs[1]).intValue());
+			}
+			return rv;
+		} catch (Exception e) {
+			logger.error(elog.toStringException(e));
+		}
+		return null;
+	}
 }
