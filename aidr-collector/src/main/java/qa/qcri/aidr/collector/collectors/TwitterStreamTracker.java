@@ -61,6 +61,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
     public TwitterStreamTracker(TwitterStreamQueryBuilder streamFilterQuery, ConfigurationBuilder configurationBuilder, CollectionTask collectionTask) throws Exception {
 
         this.publisherJedis = JedisConnectionPool.getJedisConnection();
+        logger.info("Jedis connection acquired for collection " + collectionTask.getCollectionCode());
         this.streamQuery = new TwitterStreamQueryBuilder();
         this.collectionCode = collectionTask.getCollectionCode();
         this.collectionName = collectionTask.getCollectionName();
@@ -159,7 +160,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
 
         query.track(getStreamQuery().getToTrack());
         twitterStream.filter(query);
-
+        
         // if twitter streaming connection successful then change the status code
         CollectionTask coll = GenericCache.getInstance().getTwtConfigMap(getCacheKey());
         coll.setStatusCode(Config.STATUS_CODE_COLLECTION_RUNNING);

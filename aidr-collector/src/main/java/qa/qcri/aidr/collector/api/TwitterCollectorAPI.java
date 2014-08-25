@@ -18,8 +18,6 @@ import java.util.List;
 //import java.util.logging.Level;
 //import java.util.logging.Logger;
 
-
-
 import qa.qcri.aidr.collector.beans.ResponseWrapper;
 
 import javax.ws.rs.core.Context;
@@ -54,10 +52,10 @@ import twitter4j.conf.ConfigurationBuilder;
  */
 @Path("/twitter")
 public class TwitterCollectorAPI extends Loggable {
-	
-	private static Logger logger = Logger.getLogger(TwitterCollectorAPI.class.getName());
-	private static ErrorLog elog = new ErrorLog();
-	
+
+    private static Logger logger = Logger.getLogger(TwitterCollectorAPI.class.getName());
+    private static ErrorLog elog = new ErrorLog();
+
     @Context
     private UriInfo context;
 
@@ -69,13 +67,13 @@ public class TwitterCollectorAPI extends Loggable {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/start")
     public Response startTask(CollectionTask collectionTask) {
-        logger.info("Starting collector for " + collectionTask.getCollectionCode());
-        logger.info("Received following query:\n" + collectionTask.toString());
+        logger.info("Collection start request received for " + collectionTask.getCollectionCode());
+        logger.info("Details:\n" + collectionTask.toString());
         ResponseWrapper response = new ResponseWrapper();
 
         //check if all twitter specific information is available in the request
         if (!collectionTask.isTwitterInfoPresent()) {
-            response.setMessage("One or more Twitter authentication token(s) are missing for " +collectionTask.getCollectionCode());
+            response.setMessage("One or more Twitter authentication token(s) are missing for " + collectionTask.getCollectionCode());
             response.setStatusCode(Config.STATUS_CODE_COLLECTION_ERROR);
             return Response.ok(response).build();
         }
@@ -96,7 +94,7 @@ public class TwitterCollectorAPI extends Loggable {
                 .setOAuthAccessTokenSecret(collectionTask.getAccessTokenSecret());
 
         //check if a task is already running with same configutations
-        logger.info(collectionTask.getCollectionCode() + ": Checking OAuth parameters");
+        logger.info("Checking OAuth parameters for " + collectionTask.getCollectionCode());
         if (GenericCache.getInstance().isTwtConfigExists(collectionTask)) {
             String msg = "Provided OAuth configurations already in use. Please stop this collection and then start again.";
             logger.info(collectionTask.getCollectionCode() + ": " + msg);
@@ -108,7 +106,7 @@ public class TwitterCollectorAPI extends Loggable {
         String collectionCode = collectionTask.getCollectionCode();
 
         //building filter for filtering twitter stream
-        logger.info(collectionCode + ": Building twitter query string");
+        logger.info("Building query for Twitter streaming API for collection " + collectionCode);
         TwitterStreamQueryBuilder queryBuilder = null;
         try {
             String langFilter = StringUtils.isNotEmpty(collectionTask.getLanguageFilter()) ? collectionTask.getLanguageFilter() : Config.LANGUAGE_ALLOWED_ALL;
@@ -120,13 +118,13 @@ public class TwitterCollectorAPI extends Loggable {
         }
 
         collectionTask.setStatusCode(Config.STATUS_CODE_COLLECTION_INITIALIZING);
-        TwitterStreamTracker tracker = null;
+        logger.info("Initializing connection with Twitter streaming API for collection " + collectionCode);
+        TwitterStreamTracker tracker;
         try {
             tracker = new TwitterStreamTracker(queryBuilder, configurationBuilder, collectionTask);
         } catch (Exception ex) {
-            //Logger.getLogger(TwitterCollectorAPI.class.getName()).log(Level.SEVERE, null, ex);
-        	logger.error(collectionCode + ": Exception in creating TwitterStreamTracker");
-        	logger.error(elog.toStringException(ex));
+            logger.error("Exception in creating TwitterStreamTracker for collection " + collectionCode);
+            logger.error(elog.toStringException(ex));
         }
 
         if (Config.DEFAULT_PERSISTER_ENABLED) {
@@ -134,11 +132,7 @@ public class TwitterCollectorAPI extends Loggable {
             startTaggerPersister(collectionCode);
         }
 
-        //preparing callback response
-        String msg = collectionTask.getCollectionName() + " -> Initializing Twitter stream tracking. \n Tracking: " + collectionTask.getToTrack()
-                + " \n Following: " + queryBuilder.getToFollow() + " \n Geo: " + queryBuilder.getGeoLocation();
-        logger.info(msg);
-        response.setMessage(msg);
+        response.setMessage("Initializing connection...");
         response.setStatusCode(Config.STATUS_CODE_COLLECTION_INITIALIZING);
         return Response.ok(response).build();
     }
@@ -276,7 +270,7 @@ public class TwitterCollectorAPI extends Loggable {
             logger.error(elog.toStringException(e));
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
-        	logger.error(collectionCode + ": Unsupported Encoding scheme used");
+            logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }
 
@@ -290,11 +284,11 @@ public class TwitterCollectorAPI extends Loggable {
             String jsonResponse = clientResponse.readEntity(String.class);
             logger.info(collectionCode + ": Tagger persister response = " + jsonResponse);
         } catch (RuntimeException e) {
-        	logger.error(collectionCode + ": Could not start persister. Is persister running?");
-        	logger.error(elog.toStringException(e));
+            logger.error(collectionCode + ": Could not start persister. Is persister running?");
+            logger.error(elog.toStringException(e));
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
-        	logger.error(collectionCode + ": Unsupported Encoding scheme used");
+            logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }
 

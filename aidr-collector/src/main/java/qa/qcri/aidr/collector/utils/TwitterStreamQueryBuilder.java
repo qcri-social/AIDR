@@ -27,7 +27,6 @@ public class TwitterStreamQueryBuilder {
         setToFollow(follow);
         setToTrack(track);
         setGeoLocation(geoLocation);
-        //languageFilters = new ArrayList<String>();
         langMap = new HashMap<Integer, String>();
         setLanguageFilter(langFilters.toLowerCase());
     }

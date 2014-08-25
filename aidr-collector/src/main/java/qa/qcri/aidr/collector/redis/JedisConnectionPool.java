@@ -25,9 +25,9 @@ public class JedisConnectionPool extends Loggable {
         try {
             if (jedisPool == null) {
                 JedisPoolConfig poolConfig = new JedisPoolConfig();
-                poolConfig.setMaxIdle(10);
-                poolConfig.setMinIdle(1);
-                poolConfig.setNumTestsPerEvictionRun(10);
+                poolConfig.setMaxIdle(40);
+                poolConfig.setMinIdle(20);
+                poolConfig.setMaxTotal(500);
                 poolConfig.setTestOnBorrow(true);
                 poolConfig.setTestOnReturn(true);
                 poolConfig.setTestWhileIdle(true);
