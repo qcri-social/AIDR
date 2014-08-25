@@ -2,15 +2,12 @@ package qa.qcri.aidr.manager.hibernateEntities;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.CollectionType;
 import qa.qcri.aidr.manager.util.JsonDateDeSerializer;
 import qa.qcri.aidr.manager.util.JsonDateSerializer;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -245,6 +242,7 @@ public class AidrCollection implements Serializable {
     	this.publiclyListed = publiclyListed;
     }
 
+    @Column(nullable = false)
     public CollectionType getCollectionType() {
         return collectionType;
     }
