@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.Session;
@@ -12,6 +13,7 @@ import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.task.ejb.DocumentService;
 import qa.qcri.aidr.task.entities.Document;
+import qa.qcri.aidr.task.util.ErrorLog;
 
 /**
  * 
@@ -20,7 +22,10 @@ import qa.qcri.aidr.task.entities.Document;
  */
 @Stateless(name="DocumentServiceBean")
 public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document, Long> implements DocumentService {
-
+	
+	private static Logger logger = Logger.getLogger(DocumentServiceBean.class);
+	private static ErrorLog elog = new ErrorLog();
+	
 	public DocumentServiceBean() {
 		super(Document.class);
 	}
@@ -37,8 +42,13 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 
 	@Override
 	public int deleteNoLabelDocument(Document document) {
-		System.out.println("[deleteNoLabelDocument]) Received request for : " + document.getDocumentID());
+		if (null == document) { 
+			return 0;
+		}
+		
+		logger.info("Received request for : " + document.getDocumentID());
 		int deleteCount = 0;
+		
 		if (!document.isHasHumanLabels()) {
 			try {
 				//delete(document);
@@ -50,23 +60,23 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 					Transaction tx = session.beginTransaction();
 					deleteCount = collectionDeleteQuery.executeUpdate();
 					tx.commit();
-					System.out.println("[deleteNoLabelDocument]) deleted count = " + deleteCount);
+					logger.info("deleted count = " + deleteCount);
 				} catch (Exception e) {
-					System.err.println("[deleteNoLabelDocument] deletion query failed");
-					e.printStackTrace();
+					logger.error("deletion query failed, document: " + document.getDocumentID());
+					logger.error(elog.toStringException(e));
 					return 0;
 				}
-				System.out.println("[deleteNoLabelDocument]) deletion success, deleted count = " + deleteCount);
+				logger.info("deletion success, deleted count = " + deleteCount);
 				session.flush();
 				return 1;
 				
 			} catch (Exception e) {
-				e.printStackTrace();
-				System.err.println("[deleteNoLabelDocument] Deletion query failed");
+				logger.error("Deletion query failed");
+				logger.error(elog.toStringException(e));
 				return 0;
 			}
 		}
-		System.out.println("[deleteNoLabelDocument]) Document has label. Not deleting.");
+		logger.info("Document has label. Not deleting.");
 		return 0;
 	}
 
@@ -89,10 +99,10 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 				collectionDeleteQuery.setParameterList("documentID", documentIDList);
 				deleteCount = collectionDeleteQuery.executeUpdate();
 				tx.commit();
-				System.out.println("[deleteNoLabelDocument]) deleted count = " + deleteCount);
+				logger.info("deleted count = " + deleteCount);
 			} catch (Exception e) {
-				System.err.println("[deleteNoLabelDocument] Collection deletion query failed");
-				e.printStackTrace();
+				logger.error("Collection deletion query failed");
+				logger.error(elog.toStringException(e));
 			}
 		}
 		return deleteCount;
@@ -111,8 +121,8 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 				int result = query.executeUpdate();
 				return result;
 			} catch (Exception e) {
-				System.err.println("[deleteUnAssignedTask] Deletion query failed");
-				e.printStackTrace();
+				logger.error("Deletion query failed");
+				logger.error(elog.toStringException(e));
 				return 0;
 			}
 		}
@@ -126,9 +136,9 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 			List<Long>documentIDList = new ArrayList<Long>();
 			for (Document d: collection) {
 				documentIDList.add(d.getDocumentID());
-				System.out.println("To delete document: {" + d.getCrisisID() + ", " + d.getDocumentID() + ", " + d.isHasHumanLabels() + "}");
+				logger.debug("To delete document: {" + d.getCrisisID() + ", " + d.getDocumentID() + ", " + d.isHasHumanLabels() + "}");
 			}
-			System.out.println("Size of docList to delete: " + documentIDList.size());
+			logger.info("Size of docList to delete: " + documentIDList.size());
 			String hql = "DELETE from Document WHERE (documentID IN (:documentID) "
 					+ " AND documentID NOT IN (SELECT documentID FROM TaskAssignment)"
 					+ " AND !hasHumanLabels)";
@@ -140,8 +150,8 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 				deleteCount = collectionDeleteQuery.executeUpdate();
 				tx.commit();
 			} catch (Exception e) {
-				System.err.println("[deleteTask] Collection deletion query failed");
-				e.printStackTrace();
+				logger.error("Collection deletion query failed");
+				logger.error(elog.toStringException(e));
 			}
 		}
 		return deleteCount;
@@ -155,6 +165,8 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 			String sortOrder, String[] orderBy, 
 			final String maxTaskAge, final String scanInterval) {
 
+		logger.info("received request: " + joinType + ", " + joinTable + ", " 
+				+ joinColumn + ", " + maxTaskAge + ", " + scanInterval);
 		System.out.println("[deleteStaleDocuments] received request: " + joinType + ", " + joinTable + ", " 
 				+ joinColumn + ", " + maxTaskAge + ", " + scanInterval);
 		
@@ -192,12 +204,14 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 		Query deleteQuery = session.createSQLQuery(hql.toString());
 		deleteQuery.setParameter("task_expiry_age", Integer.parseInt(getTimeValue(maxTaskAge)));
 		System.out.println("Constructed query: " + deleteQuery.getQueryString());
+		logger.info("Constructed query: " + deleteQuery.getQueryString());
 		try {
 			deleteCount = deleteQuery.executeUpdate();
 			System.out.println("[deleteStaleDocuments] number of deleted records = " + deleteCount);
+			logger.info("[deleteStaleDocuments] number of deleted records = " + deleteCount);
 		} catch (Exception e) {
-			System.err.println("[deleteStaleDocuments] Exception in executing SQL delete stale docs query");
-			e.printStackTrace();
+			logger.error("Exception in executing SQL delete stale docs query");
+			logger.error(elog.toStringException(e));
 		}
 		return deleteCount;
 	}

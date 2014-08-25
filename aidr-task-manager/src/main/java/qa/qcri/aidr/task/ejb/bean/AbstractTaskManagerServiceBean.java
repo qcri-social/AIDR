@@ -1,10 +1,12 @@
 package qa.qcri.aidr.task.ejb.bean;
 
+import org.apache.log4j.Logger;
 import org.hibernate.*;
 import org.hibernate.criterion.*;
 import org.hibernate.internal.CriteriaImpl;
 
 import qa.qcri.aidr.task.ejb.AbstractTaskManagerService;
+import qa.qcri.aidr.task.util.ErrorLog;
 
 import java.io.Serializable;
 import java.util.List;
@@ -30,7 +32,8 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 	//@PersistenceContext(unitName = "qa.qcri.aidr.taskmanager-EJBS") org.hibernate.Session session;
 
 	//@PersistenceContext(unitName = "qa.qcri.aidr.taskmanager-EJBS") SessionFactory sessionFactory;
-
+	private static Logger logger = Logger.getLogger(AbstractTaskManagerServiceBean.class);
+	private static ErrorLog elog = new ErrorLog();
 
 	private Class<E> entityClass;
 	private SessionFactory sessionFactory;
@@ -52,14 +55,14 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		try {
 			if (null == this.em) { 
 				this.em = em;
-				System.out.println("EntityManager set to new value: " + this.em);
+				logger.info("EntityManager set to new value: " + this.em);
 				return 1;
 			} else 
-				System.out.println("Skipping setter, since EntityManager already initialized to :" + this.em);
+				logger.info("Skipping setter, since EntityManager already initialized to :" + this.em);
 			return 0;
 		} catch (Exception e) {
-			System.err.println("EntityManager setting exception : " + em);
-			e.printStackTrace();
+			logger.error("EntityManager setting exception : " + em);
+			logger.error(elog.toStringException(e));
 			return -1;
 		}
 	}
@@ -68,6 +71,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		try { 
 			return em.unwrap(Session.class);
 		} catch (Exception e) {
+			logger.error(elog.toStringException(e));
 			e.printStackTrace();
 		}
 		return null;
@@ -78,6 +82,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			this.sessionFactory = em.unwrap(SessionFactory.class);
 			return this.sessionFactory;
 		} catch (Exception e) {
+			logger.error(elog.toStringException(e));
 			e.printStackTrace();
 		}
 		return null;
@@ -88,6 +93,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		try {
 			return (E) getCurrentSession().get(entityClass, id);
 		} catch (Exception e) {
+			logger.error(elog.toStringException(e));
 			e.printStackTrace();
 		}
 		return null;
@@ -101,6 +107,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			criteria.add(criterion);
 			return (E) criteria.uniqueResult();
 		} catch (Exception e) {
+			logger.error(elog.toStringException(e));
 			e.printStackTrace();
 		}
 		return null;
@@ -114,6 +121,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			List<E> fetchedList = criteria.list();
 			return (fetchedList != null && !fetchedList.isEmpty()) ? (E) fetchedList.get(0) : null;
 		} catch (Exception e) {
+			logger.error(elog.toStringException(e));
 			e.printStackTrace();
 		}
 		return null;
@@ -127,6 +135,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			List<E> fetchedList = criteria.list();
 			return (fetchedList != null && !fetchedList.isEmpty()) ? (List<E>) fetchedList : null;
 		} catch (Exception e) {
+			logger.error(elog.toStringException(e));
 			e.printStackTrace();
 		}
 		return null;
@@ -141,6 +150,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			List<E> fetchedList = criteria.list();
 			return (fetchedList != null && !fetchedList.isEmpty()) ? (List<E>) fetchedList : null;
 		} catch (Exception e) {
+			logger.error(elog.toStringException(e));
 			e.printStackTrace();
 		}
 		return null;
@@ -157,6 +167,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			List<E> fetchedList = criteria.list();
 			return (fetchedList != null && !fetchedList.isEmpty()) ? (List<E>) fetchedList : null;
 		} catch (Exception e) {
+			logger.error(elog.toStringException(e));
 			e.printStackTrace();
 		}
 		return null;
@@ -180,6 +191,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			List<E> fetchedList = criteria.list();
 			return (fetchedList != null && !fetchedList.isEmpty()) ? (List<E>) fetchedList : null;
 		} catch (Exception e) {
+			logger.error(elog.toStringException(e));
 			e.printStackTrace();
 		}
 		return null;
@@ -188,7 +200,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 	@SuppressWarnings("unchecked")
 	public List<E> getByCriteriaWithAliasByOrder(Criterion criterion, String order, String[] orderBy, Integer count, String aliasTable, Criterion aliasCriterion) {
 		Session session = getCurrentSession();
-		System.out.println("[getByCriteriaWithAliasByOrder] entity: " + entityClass + ", current Session = " + session);
+		logger.info("Entity: " + entityClass + ", current Session = " + session);
 		Criteria criteria = session.createCriteria(entityClass);
 		criteria.add(criterion);
 		criteria.createAlias(aliasTable, aliasTable, CriteriaSpecification.LEFT_JOIN).add(aliasCriterion);
@@ -209,6 +221,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			List<E> fetchedList = criteria.list();
 			return (fetchedList != null && !fetchedList.isEmpty()) ? (List<E>) fetchedList : null;
 		} catch (Exception e) {
+			logger.error(elog.toStringException(e));
 			e.printStackTrace();
 		}
 		return null;
@@ -224,6 +237,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			session.evict(e);
 			if (!tx.wasCommitted()) tx.commit();
 		} catch (Exception ex) {
+			logger.error(elog.toStringException(ex));
 			tx.rollback();
 		}
 	}
@@ -240,6 +254,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			}
 			if (!tx.wasCommitted()) tx.commit();
 		} catch (Exception ex) {
+			logger.error(elog.toStringException(ex));
 			tx.rollback();
 		}
 	}
@@ -252,6 +267,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			session.evict(e);
 
 		} catch (Exception ex) {
+			logger.error(elog.toStringException(ex));
 			ex.printStackTrace();
 		}
 
@@ -264,6 +280,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			session.flush();
 			session.evict(e);
 		} catch (Exception ex) {
+			logger.error(elog.toStringException(ex));
 			ex.printStackTrace();
 		}
 
@@ -281,6 +298,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			}
 			if (!tx.wasCommitted()) tx.commit();
 		} catch (Exception ex) {
+			logger.error(elog.toStringException(ex));
 			tx.rollback();
 		}
 
@@ -298,6 +316,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			}
 			if (!tx.wasCommitted()) tx.commit();
 		} catch (Exception ex) {
+			logger.error(elog.toStringException(ex));
 			tx.rollback();
 		}
 	}
@@ -310,6 +329,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			session.flush();
 			session.evict(e);
 		} catch (Exception ex) {
+			logger.error(elog.toStringException(ex));
 			ex.printStackTrace();
 		}
 	}
@@ -327,6 +347,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			}
 			if (!tx.wasCommitted()) tx.commit();
 		} catch (Exception ex) {
+			logger.error(elog.toStringException(ex));
 			tx.rollback();
 		}
 	}
@@ -336,6 +357,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			List<E> entityCollection = getAllByCriteria(criterion);
 			delete(entityCollection);
 		} catch (Exception ex) {
+			logger.error(elog.toStringException(ex));
 			ex.printStackTrace();
 		}
 	}
@@ -347,8 +369,12 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
-		getCurrentSession().close();
-		em.close();
+		try {
+			getCurrentSession().close();
+			em.close();
+		} catch (Exception e) {
+			logger.error(elog.toStringException(e));
+		}
 	}
 
 }

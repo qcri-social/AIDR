@@ -5,8 +5,6 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Date;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -15,6 +13,7 @@ import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.hibernate.criterion.Criterion;
@@ -33,6 +32,7 @@ import qa.qcri.aidr.task.entities.NominalLabel;
 import qa.qcri.aidr.task.entities.TaskAnswer;
 import qa.qcri.aidr.task.entities.TaskAssignment;
 import qa.qcri.aidr.task.entities.Users;
+import qa.qcri.aidr.task.util.ErrorLog;
 
 /**
  * 
@@ -63,11 +63,14 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 	private Class<T> entityType;
 
+	private static Logger logger = Logger.getLogger(TaskManagerBean.class);
+	private static ErrorLog elog = new ErrorLog();
+
 	public TaskManagerBean()  {
 		this.entityType = getClassType();
 	}  
 
-	private static final Object monitor = new Object();
+	//private static final Object monitor = new Object();
 
 	@SuppressWarnings("unchecked")
 	public Class<T> getClassType() {
@@ -85,7 +88,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	@Override
 	public long insertNewTask(T task) {
 		if (task == null) {
-			System.err.println("[insertNewTask] Attempting to insert NULL");
+			logger.error("Attempting to insert NULL");
 			return -1;
 		}
 
@@ -93,24 +96,24 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		doc.setHasHumanLabels(false);
 		try {
 			documentLocalEJB.save(doc);
-			System.out.println("saved document " + doc);
-			if (doc != null) System.out.println("docID = " + doc.getDocumentID());
+			//System.out.println("saved document " + doc);
+			//if (doc != null) System.out.println("docID = " + doc.getDocumentID());
 
 			// Now check if also need to insert into document_nominal_label
 			if (doc.isHasHumanLabels() && doc.getNominalLabelCollection() != null) {
-				System.out.println("Attempting saving to document_nominal_label table: " + doc);
+				//System.out.println("Attempting saving to document_nominal_label table: " + doc);
 				for (NominalLabel label: doc.getNominalLabelCollection()) {
 					DocumentNominalLabel labeledDoc = new DocumentNominalLabel(doc.getDocumentID(), 
 							new Long(label.getNominalLabelID()), 32L);
-					System.out.println("To write nominal label:  {" + labeledDoc.getDocumentID() + ", " + labeledDoc.getNominalLabelID() + ", " + labeledDoc.getTimestamp() + "}");
+					//System.out.println("To write nominal label:  {" + labeledDoc.getDocumentID() + ", " + labeledDoc.getNominalLabelID() + ", " + labeledDoc.getTimestamp() + "}");
 					documentNominalLabelEJB.save(labeledDoc);
-					System.out.println("Wrote nominal label:  {" + labeledDoc.getDocumentID() + ", " + labeledDoc.getNominalLabelID() + ", " + labeledDoc.getTimestamp() + "}");
+					//System.out.println("Wrote nominal label:  {" + labeledDoc.getDocumentID() + ", " + labeledDoc.getNominalLabelID() + ", " + labeledDoc.getTimestamp() + "}");
 				}
 			}
 			return doc.getDocumentID();
 		} catch (Exception e) {
-			System.err.println("[insertNewTask] Error in insertion");
-			e.printStackTrace();
+			logger.error("Error in insertion");
+			logger.error(elog.toStringException(e));
 		}
 		return -1;
 	}
@@ -125,10 +128,11 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			try {
 				documentLocalEJB.save((List<Document>) collection);
 			} catch (Exception e) {
-				System.out.println("[insertNewTask] Error in collection insertion");
+				logger.error("Error in collection insertion");
+				logger.error(elog.toStringException(e));
 			}
 		} else {
-			System.err.println("[insertNewTask] Attempting to insert NULL");
+			logger.warn("Attempting to insert NULL");
 		}
 	}
 
@@ -136,13 +140,13 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	@Override
 	public int deleteTaskById(Long id) {
 		Document document = (Document) documentLocalEJB.getById(id);
-		System.out.println("[deleteTaskById] gotById document: " + document);
+		//System.out.println("[deleteTaskById] gotById document: " + document);
 		try {
 			if (document != null) 
 				return documentLocalEJB.deleteNoLabelDocument(document);
-		} catch(Exception e) {
-			e.printStackTrace();
-			System.out.println("[deleteTaskById] Error in deletion");
+		} catch(Exception e) {			
+			logger.error("Error in deletion");
+			logger.error(elog.toStringException(e));
 		}
 		return 0;
 	}
@@ -151,15 +155,16 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public int deleteTask(T task) {
 		if (task != null) {
 			try {
-				System.out.println("[deleteTask] Going for deletion of fetched doc = " + ((Document) task).getDocumentID());
+				//System.out.println("[deleteTask] Going for deletion of fetched doc = " + ((Document) task).getDocumentID());
 				return documentLocalEJB.deleteNoLabelDocument((Document) task);
 				//documentLocalEJB.delete((Document) task);
 			} catch (Exception e) {
-				System.out.println("[deleteTask] Error in deletion");
+				logger.error("Error in deletion of task");
+				logger.error(elog.toStringException(e));
 				return 0;
 			}
 		} else {
-			System.err.println("[deleteTask] Attempting to delete NULL");
+			logger.warn("Attempting to delete NULL");
 		}
 		return 0;
 	}
@@ -172,11 +177,12 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			try {
 				return documentLocalEJB.deleteNoLabelDocument((List<Document>) collection);
 			} catch (Exception e) {
-				System.out.println("[deleteTask] Error in collection deletion");
+				logger.error("Error in collection deletion of size: " + collection.size());
+				logger.error(elog.toStringException(e));
 				return 0;
 			}
 		} else {
-			System.err.println("[deleteTask] Attempting to delete NULL");
+			logger.warn("Attempting to delete a NULL collection");
 		}
 		return 0;
 	}
@@ -187,11 +193,12 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			try {
 				return documentLocalEJB.deleteUnassignedDocument((Document) task);
 			} catch (Exception e) {
-				System.out.println("[deleteTask] Error in deletion");
+				logger.error("Error in deletion");
+				logger.error(elog.toStringException(e));
 				return 0;
 			}
 		} else {
-			System.err.println("[deleteUnassignedTask] Attempting to delete NULL");
+			logger.warn("Attempting to delete NULL");
 		}
 		return 0;
 	}
@@ -205,11 +212,12 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				return documentLocalEJB
 						.deleteUnassignedDocumentCollection((List<Document>) collection);
 			} catch (Exception e) {
-				System.out.println("[deleteTask] Error in collection deletion");
+				logger.error("Error in collection deletion");
+				logger.error(elog.toStringException(e));
 				return 0;
 			}
 		} else {
-			System.err.println("[deleteUnassignedTask] Attempting to delete NULL");
+			logger.warn("Attempting to delete NULL collection");
 		}
 		return 0;
 	}
@@ -219,18 +227,19 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public int deleteStaleTasks(String joinType, String joinTable, String joinColumn,
 			String sortOrder, String[] orderBy,
 			final String maxTaskAge, final String scanInterval) {
-		System.out.println("[deleteStaleTasks] received request: " + joinType + ", " + joinTable + ", " 
+		logger.info("Received request: " + joinType + ", " + joinTable + ", " 
 				+ joinColumn + ", " + maxTaskAge + ", " + scanInterval);
 		try {
 			int docDeleteCount = documentLocalEJB
 					.deleteStaleDocuments(joinType, joinTable, joinColumn, 
 							sortOrder, orderBy,
 							maxTaskAge, scanInterval);
+			return docDeleteCount;
 		} catch (Exception e) {
-			System.out.println("[deleteStaleTasks] Error in deletion");
+			logger.error("Error in deletion");
+			logger.error(elog.toStringException(e));
 			return 0;
 		}
-		return 0;
 	}
 
 	@Override
@@ -247,13 +256,14 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 			Criterion aliasCriterion =  (Restrictions.isNull(aliasTableKey));
 			docList = documentLocalEJB.getByCriteriaWithAliasByOrder(criterion, order, orderBy, null, aliasTable, aliasCriterion);
+			/*
 			System.out.println("Fetched docList = " + docList);
 			if (docList != null) {
 				System.out.println("Fetched size = " + docList.size());
-			}
+			}*/
 		} catch (Exception e) {
-			System.err.println("Exception in fetching unassigned documents with hasHumaLabels=false");
-			e.printStackTrace();
+			logger.error("Exception in fetching unassigned documents with hasHumaLabels=false");
+			logger.error(elog.toStringException(e));
 			return 0;
 		}
 
@@ -265,14 +275,14 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				try {
 					// Delete the lowest confidence documents from document table
 					int deleteCount = documentLocalEJB.deleteUnassignedDocumentCollection(docList);
-					System.out.println("[truncateLabelingTaskBufferForCrisis] Number of documents actually deleted = " + deleteCount);
+					logger.info("Number of documents actually deleted = " + deleteCount);
 					return deleteCount;
 				} catch (Exception e) {
-					System.err.println("Exception when attempting to batch delete for trimming the document table");
-					e.printStackTrace();
+					logger.error("Exception when attempting to batch delete for trimming the document table");
+					logger.error(elog.toStringException(e));
 				} 
 			} else {
-				System.out.println("No need for truncation: docListSize = " + docList.size() + ", max buffer size = " + maxLength);
+				logger.info("No need for truncation: docListSize = " + docList.size() + ", max buffer size = " + maxLength);
 			}
 		}
 		return 0;
@@ -288,8 +298,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			//documentLocalEJB.update((Document) task);
 			documentLocalEJB.merge((Document) task); 
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("[updateTask] failed update");
+			logger.error("failed update");
+			logger.error(elog.toStringException(e));
 		}
 	}
 
@@ -302,8 +312,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			//documentLocalEJB.update((List<Document>) collection);
 			documentLocalEJB.merge((List<Document>) collection);
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("[updateTask] failed collection update");
+			logger.error("failed collection update");
+			logger.error(elog.toStringException(e));
 		}
 	}
 
@@ -342,16 +352,17 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			}
 
 			Document document = documentLocalEJB.getByCriteria(newCriterion);
-			System.out.println("[getNewTask] New task: " + document);
+			logger.debug("New task: " + document);
 			if (document != null && !isTaskAssigned(document)) {
-				System.out.println("[getNewTask] New task: " + document.getDocumentID());
+				logger.info("New task: " + document.getDocumentID());
 			} else {
-				System.out.println("[getNewTask] New task: " + document);
+				logger.info("[getNewTask] New task: " + document);
 			}
 			String jsonString = serializeTask(document);
 			return jsonString;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error in getting new Task for crisisID: " + crisisID);
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -359,7 +370,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 	@Override
 	public String getNewTaskCollection(Long crisisID, Integer count, String order, Criterion criterion) {
-		System.out.println("[getNewTaskCollection] recied request for crisisID = " + crisisID + ", count = " + count);
+		logger.info("Received request for crisisID = " + crisisID + ", count = " + count);
 		String aliasTable = "taskAssignment";
 		String aliasTableKey = "taskAssignment.documentID";
 		String[] orderBy = {"valueAsTrainingSample","documentID"};
@@ -375,12 +386,18 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 					.add(Restrictions.eq("hasHumanLabels",false));
 		}
 		Criterion aliasCriterion =  (Restrictions.isNull(aliasTableKey));
-		List<Document> docList = documentLocalEJB.getByCriteriaWithAliasByOrder(newCriterion, order, orderBy, count, aliasTable, aliasCriterion);
-		System.out.println("[getNewTaskCollection] docList = " + docList);
-		if (docList != null) {
-			System.out.println("[getNewTaskCollection] Fetched size = " + docList.size());
-			String jsonString = serializeTask(docList);
-			return jsonString;
+		try {
+			List<Document> docList = documentLocalEJB.getByCriteriaWithAliasByOrder(newCriterion, order, orderBy, count, aliasTable, aliasCriterion);
+			logger.debug("[getNewTaskCollection] docList = " + docList);
+			if (docList != null) {
+				logger.info("Fetched size = " + docList.size());
+				String jsonString = serializeTask(docList);
+				return jsonString;
+			}
+			return null;
+		} catch (Exception e) {
+			logger.error("Error in getting new Task collection for crisisID: " + crisisID);
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -394,8 +411,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				Document document = (Document) task;
 				fetchedList= taskAssignmentEJB.findTaskAssignmentByID(document.getDocumentID());
 			} catch (Exception e) {
-				e.printStackTrace();
-				System.err.println("[isTaskAssigned] Error in finding Task");
+				logger.error("Error in finding Task");
+				logger.error(elog.toStringException(e));
 				return false;
 			}
 		}
@@ -425,8 +442,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 					return true;
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				System.err.println("[isTaskDone] Error in finding document");
+				logger.error("Error in finding document");
+				logger.error(elog.toStringException(e));
 				return false;
 			}
 		}
@@ -443,8 +460,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 					return true;
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				System.err.println("[isExists] Error in finding document");
+				logger.error("Error in finding document");
+				logger.error(elog.toStringException(e));
 			}
 		}
 		return false;
@@ -462,8 +479,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				return jsonString;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("[getTaskByCriterion] Error in finding task");
+			logger.error("Error in finding task");
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -480,8 +497,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				return jsonString;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("[getTaskCollectionByCriterion] Error in finding task");
+			logger.error("Error in finding task");
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -493,17 +510,16 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public String getTaskById(Long id) {
 		try {
 			Document document = documentLocalEJB.getById(id);
-			System.out.println("[getTaskById] Fetched document: " + document);
+			logger.info("Fetched document: " + document);
 			String jsonString = serializeTask(document);
 			return jsonString;
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("[getTaskById] Error in finding task");
+			logger.error("Error in finding task");
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -512,13 +528,13 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public String getAllTasks() {
 		try {
 			List<Document> docList =  documentLocalEJB.getAll();
-			System.out.println("[getAllTasks] Fetched documents count: " + docList.size());
+			logger.info("Fetched documents count: " + docList.size());
 
 			String jsonString = serializeTask(docList);
 			return jsonString;
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("[getAllTasks] Error in finding task");
+			logger.error("Error in finding task");
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -530,8 +546,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		try {
 			if (task != null) jsonString = mapper.writeValueAsString(task);
 		} catch (IOException e) {
-			System.err.println("JSON serialization exception");
-			e.printStackTrace();
+			logger.error("JSON serialization exception");
+			logger.error(elog.toStringException(e));
 		}
 		return jsonString;
 	}
@@ -548,8 +564,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				return docList;
 			}	
 		} catch (IOException e) {
-			System.err.println("JSON deserialization exception");
-			e.printStackTrace();
+			logger.error("JSON deserialization exception");
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -566,8 +582,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				return entity;
 			}	
 		} catch (IOException e) {
-			System.err.println("JSON deserialization exception");
-			e.printStackTrace();
+			logger.error("JSON deserialization exception");
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -579,11 +595,13 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public void assignNewTaskToUser(Long id, Long userId) throws Exception {
 		int retVal = taskAssignmentEJB.insertOneTaskAssignment(id, userId);
 		if (retVal <= 0) {
+			logger.error("unable to undo task assignment");
 			throw new Exception("[assignNewTaskToUser] Couldn't undo task assignment");
 		}
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void assignNewTaskToUser(List<T> collection, Long userId) throws Exception {
 		int retVal = taskAssignmentEJB.insertTaskAssignment((List<Document>) collection, userId);
 		if (retVal <= 0) {
@@ -595,6 +613,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public void undoTaskAssignment(Map<Long, Long> taskMap) throws Exception {
 		int retVal = taskAssignmentEJB.undoTaskAssignment(taskMap);
 		if (retVal <= 0) {
+			logger.error("Unable to undo task assignment");
 			throw new Exception("[undoTaskAssignment] Couldn't undo task assignment");
 		}
 	}
@@ -603,6 +622,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public void undoTaskAssignment(Long id, Long userId) throws Exception {
 		int retVal = taskAssignmentEJB.undoTaskAssignment(id, userId);
 		if (retVal <= 0) {
+			logger.error("Unable to undo task assignment");
 			throw new Exception("[undoTaskAssignment] Couldn't undo task assignment");
 		}
 	}
@@ -620,8 +640,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				String jsonString = serializeTask(docList);
 				return jsonString;
 			} catch (Exception e) {
-				e.printStackTrace();
-				System.err.println("[getAssignedTasksById] Error in serializing collection");
+				logger.error("Error in serializing collection");
+				logger.error(elog.toStringException(e));
 			}
 		}
 		return null;
@@ -635,8 +655,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				String jsonString = serializeTask(assignedUserTask);
 				return jsonString;
 			} catch (Exception e) {
-				e.printStackTrace();
-				System.err.println("[getAssignedTaskByUserId] Error in serializing collection");
+				logger.error("Error in serializing collection");
+				logger.error(elog.toStringException(e));
 			}
 		}
 		return null;
@@ -651,34 +671,34 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		Object doc = null;
 		try {
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.Document")) {
-				System.out.println("Detected of type Document.class, id = " + id);
+				logger.info("Detected of type Document.class, id = " + id);
 				doc = (qa.qcri.aidr.task.entities.Document) documentLocalEJB.getById(id);
 			} 
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.TaskAssignment")) {
-				System.out.println("Detected of type TaskAssignment.class");
+				logger.info("Detected of type TaskAssignment.class");
 				doc = (qa.qcri.aidr.task.entities.TaskAssignment) taskAssignmentEJB.getById(id);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.TaskAnswer")) {
-				System.out.println("Detected of type TaskAnswer.class");
+				logger.info("Detected of type TaskAnswer.class");
 				List<qa.qcri.aidr.task.entities.TaskAnswer> docList = taskAnswerEJB.getTaskAnswer(id);
 				if (docList != null) 
 					doc = docList.get(0);			
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.Users")) {
-				System.out.println("Detected of type Users.class");
+				logger.info("Detected of type Users.class");
 				doc = (qa.qcri.aidr.task.entities.Users) usersLocalEJB.getById(id);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.DocumentNominalLabel")) {
-				System.out.println("Detected of type DocumentNominalLabel.class");
+				logger.info("Detected of type DocumentNominalLabel.class");
 				doc = (qa.qcri.aidr.task.entities.DocumentNominalLabel) documentNominalLabelEJB.getById(id);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.Crisis")) {
-				System.out.println("Detected of type Crisis.class");
+				logger.info("Detected of type Crisis.class");
 				doc = (qa.qcri.aidr.task.entities.Crisis) crisisEJB.getById(id);
 			}
 		} catch (Exception e) {
-			System.err.println("Error in detecting Class Type");
-			e.printStackTrace();
+			logger.error("Error in detecting Class Type");
+			logger.error(elog.toStringException(e));
 			return null;
 		}
 
@@ -693,11 +713,11 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				//obj = docClass.newInstance();
 				methods = docClass.getDeclaredMethods();
 				for (int i = 0; i < methods.length;i++) {
-					System.out.println("discovered method: " + methods[i].getName());
+					logger.info("discovered method: " + methods[i].getName());
 				}
 			} catch (Exception e) {
-				System.err.println("[setTaskParameter] Error in instantiating method class");
-				e.printStackTrace();
+				logger.error("Error in instantiating method class");
+				logger.error(elog.toStringException(e));
 				return null;
 			}
 
@@ -714,30 +734,30 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 					}
 					paramTypes = methods[pointer].getParameterTypes(); 
 					for (int j = 0; j < paramTypes.length;j++) {
-						System.out.println(methods[pointer].getName() + ": discovered parameter types: " + paramTypes[j].getName());
+						logger.info(methods[pointer].getName() + ": discovered parameter types: " + paramTypes[j].getName());
 					}
 					// Convert parameter to paramType
 					if (paramTypes[0].getName().toLowerCase().contains("long")) {
 						methods[pointer].invoke(doc, Long.parseLong(paramMap.get(name)));
-						System.out.println("Invoking with Long parameter type");
+						logger.info("Invoking with Long parameter type");
 					}
 					if (paramTypes[0].getName().toLowerCase().contains("int")) {
 						methods[pointer].invoke(doc, Integer.parseInt(paramMap.get(name)));
-						System.out.println("Invoking with Integer parameter type");
+						logger.info("Invoking with Integer parameter type");
 					}
 					if (paramTypes[0].getName().toLowerCase().contains("boolean")) {
 						methods[pointer].invoke(doc, Boolean.parseBoolean(paramMap.get(name)));
-						System.out.println("Invoking with Boolean parameter type");
+						logger.info("Invoking with Boolean parameter type");
 					}
 					if (paramTypes[0].getName().contains("String")) {
 						methods[pointer].invoke(doc, paramMap.get(name));
-						System.out.println("Invoking with String parameter type");
+						logger.info("Invoking with String parameter type");
 					}
-					System.out.println("[setTaskParameter] Invoked method: " + methods[pointer].getName() + " with parameter: " + paramMap.get(name));
+					logger.info("[setTaskParameter] Invoked method: " + methods[pointer].getName() + " with parameter: " + paramMap.get(name));
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					System.err.println("[setTaskParameter] Error in invoking method via reflection: ");
-					e.printStackTrace();
+					logger.error("Error in invoking method via reflection: ");
+					logger.error(elog.toStringException(e));
 					return null;
 				} 
 			}	
@@ -745,32 +765,32 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 		try {
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.Document")) {
-				System.out.println("Detected of type Document.class, id = " + id);
+				logger.info("Detected of type Document.class, id = " + id);
 				documentLocalEJB.update((qa.qcri.aidr.task.entities.Document) doc); 
 			} 
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.TaskAssignment")) {
-				System.out.println("Detected of type TaskAssignment.class");
+				logger.info("Detected of type TaskAssignment.class");
 				taskAssignmentEJB.update((qa.qcri.aidr.task.entities.TaskAssignment) doc);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.TaskAnswer")) {
-				System.out.println("Detected of type TaskAnswer.class");
+				logger.info("Detected of type TaskAnswer.class");
 				taskAnswerEJB.update((qa.qcri.aidr.task.entities.TaskAnswer) doc);		
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.Users")) {
-				System.out.println("Detected of type Users.class");
+				logger.info("Detected of type Users.class");
 				usersLocalEJB.update((qa.qcri.aidr.task.entities.Users) doc);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.DocumentNominalLabel")) {
-				System.out.println("Detected of type DocumentNominalLabel.class");
+				logger.info("Detected of type DocumentNominalLabel.class");
 				documentNominalLabelEJB.update((qa.qcri.aidr.task.entities.DocumentNominalLabel) doc);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.Crisis")) {
-				System.out.println("Detected of type Crisis.class");
+				logger.info("Detected of type Crisis.class");
 				crisisEJB.update((qa.qcri.aidr.task.entities.Crisis) doc);
 			}
 		} catch (Exception e) {
-			System.err.println("Error in updating entity on DB");
-			e.printStackTrace();
+			logger.error("Error in updating entity on DB");
+			logger.error(elog.toStringException(e));
 			return null;
 		}
 		return (T) doc;
@@ -814,8 +834,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		try {
 			taskAnswerEJB.save(taskAnswer);
 		} catch (Exception e) {
-			System.err.println("[insertTaskAnswer] Error in saving task answer : " + taskAnswer);
-			e.printStackTrace();
+			logger.error("Error in saving task answer : " + taskAnswer);
+			logger.error(elog.toStringException(e));
 		}
 	}
 
@@ -825,8 +845,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		try {
 			documentNominalLabelEJB.save(documentNominalLabel);
 		} catch (Exception e) {
-			System.err.println("[saveDocumentNominalLabel] Error in saving document nominal label : " + documentNominalLabel);
-			e.printStackTrace();
+			logger.error("Error in saving document nominal label : " + documentNominalLabel);
+			logger.error(elog.toStringException(e));
 		}
 	}
 
@@ -848,12 +868,12 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public qa.qcri.aidr.task.entities.Document getDocumentById(Long id) {
 		try {
 			qa.qcri.aidr.task.entities.Document document = documentLocalEJB.getById(id);
-			System.out.println("[getDocumentById] Fetched document: " + document);
+			logger.info("Fetched document: " + document);
 
 			return document;
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("[getDocumentById] Error in finding task");
+			logger.error("Error in finding task");
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -886,15 +906,15 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			}
 
 			qa.qcri.aidr.task.entities.Document document = documentLocalEJB.getByCriteria(newCriterion);
-			System.out.println("[getNewDocumentByCriterion] New task: " + document);
+			logger.debug("New task: " + document);
 			if (document != null && !isTaskAssigned(document)) {
-				System.out.println("[getNewDocumentByCriterion] New document: " + document.getDocumentID());
+				logger.info("[getNewDocumentByCriterion] New document: " + document.getDocumentID());
 			} else {
-				System.out.println("[getNewDocumentByCriterion] New document: " + document);
+				logger.info("[getNewDocumentByCriterion] New document: " + document);
 			}
 			return document;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}

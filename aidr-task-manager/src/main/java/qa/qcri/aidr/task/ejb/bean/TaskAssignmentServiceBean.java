@@ -11,12 +11,13 @@ import java.util.Map;
 
 import javax.ejb.Stateless;
 
-
+import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.task.ejb.TaskAssignmentService;
 import qa.qcri.aidr.task.entities.Document;
 import qa.qcri.aidr.task.entities.TaskAssignment;
+import qa.qcri.aidr.task.util.ErrorLog;
 
 /**
  * 
@@ -26,10 +27,14 @@ import qa.qcri.aidr.task.entities.TaskAssignment;
 @Stateless(name="TaskAssignmentServiceBean")
 public class TaskAssignmentServiceBean extends AbstractTaskManagerServiceBean<TaskAssignment, Long> implements TaskAssignmentService {
 
+	private static Logger logger = Logger.getLogger(TaskAssignmentServiceBean.class);
+	private static ErrorLog elog = new ErrorLog();
+	
 	public TaskAssignmentServiceBean() {
 		super(TaskAssignment.class);
 	}
-
+	
+	
 	@Override
 	public int insertTaskAssignment(List<Document> taskList, Long userID) {
 		// hard code, will create user service
@@ -45,8 +50,8 @@ public class TaskAssignmentServiceBean extends AbstractTaskManagerServiceBean<Ta
 				}
 			}
 		} catch (Exception e) {
-			System.err.println("[insertTaskAssignment] Error in insert operation!");
-			e.printStackTrace();
+			logger.error("Error in insert operation!");
+			logger.error(elog.toStringException(e));
 		}
 		return 0;
 
@@ -63,8 +68,8 @@ public class TaskAssignmentServiceBean extends AbstractTaskManagerServiceBean<Ta
 				return 1;
 			}
 		} catch (Exception e) {
-			System.err.println("[insertOneTaskAssignment] Error in insert operation!");
-			e.printStackTrace();
+			logger.error("Error in insert operation!");
+			logger.error(elog.toStringException(e));
 		}
 		return 0;
 	}
@@ -79,8 +84,8 @@ public class TaskAssignmentServiceBean extends AbstractTaskManagerServiceBean<Ta
 				return 1;
 			}
 		} catch (Exception e) {
-			System.err.println("[undoTaskAssignment] Error in undo operation!");
-			e.printStackTrace();
+			logger.error("Error in undo operation!");
+			logger.error(elog.toStringException(e));
 		}
 		return 0;
 	}
@@ -98,8 +103,8 @@ public class TaskAssignmentServiceBean extends AbstractTaskManagerServiceBean<Ta
 				return 1;
 			}
 		} catch (Exception e) {
-			System.err.println("[undoTaskAssignment] Error in undo operation!");
-			e.printStackTrace();
+			logger.error("Error in undo operation!");
+			logger.error(elog.toStringException(e));
 		}
 		return 0;
 	}
@@ -113,8 +118,8 @@ public class TaskAssignmentServiceBean extends AbstractTaskManagerServiceBean<Ta
 				return 1;
 			}
 		} catch (Exception e) {
-			System.err.println("[undoTaskAssignment] Error in undo operation!");
-			e.printStackTrace();
+			logger.error("Error in undo operation!");
+			logger.error(elog.toStringException(e));
 		}
 		return 0;
 	}
@@ -133,9 +138,8 @@ public class TaskAssignmentServiceBean extends AbstractTaskManagerServiceBean<Ta
 				TaskAssignment taskAssignment = (TaskAssignment) it.next();
 				undoTaskAssignment(taskAssignment.getDocumentID(), taskAssignment.getUserID());
 			}
-
 		} catch (Exception e) {
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			logger.error(elog.toStringException(e));
 		}
 
 	}
@@ -148,8 +152,8 @@ public class TaskAssignmentServiceBean extends AbstractTaskManagerServiceBean<Ta
 		try {
 			return getByCriteria(Restrictions.allEq(attMap));
 		} catch (Exception e) {
-			System.err.println("[findTaskAssignment] Error in find operation: documentID = " + documentID + ", userID = " + userID);
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			logger.error("Error in find operation: documentID = " + documentID + ", userID = " + userID);
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -159,8 +163,8 @@ public class TaskAssignmentServiceBean extends AbstractTaskManagerServiceBean<Ta
 		try {
 			return getAllByCriteria(Restrictions.eq("documentID", documentID));  
 		} catch (Exception e) {
-			System.err.println("[findTaskAssignmentByID] Error in find operation: documentID = " + documentID);
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			logger.error("Error in find operation: documentID = " + documentID);
+			logger.error(elog.toStringException(e));
 		}
 		return null;
 
@@ -170,11 +174,11 @@ public class TaskAssignmentServiceBean extends AbstractTaskManagerServiceBean<Ta
 	public Integer getPendingTaskCount(Long userID) {
 		try {
 			List<TaskAssignment> taskAssignments = getAllByCriteria(Restrictions.eq("userID",userID));
-			System.out.println("[getPendingTaskCount] pending for userID " + userID + "tasks = " + taskAssignments.size());
+			logger.info("pending for userID " + userID + "tasks = " + taskAssignments.size());
 			return taskAssignments.size();
 		} catch (Exception e) {
-			System.err.println("[getPendingTaskCount] Error in find operation: userID = " + userID);
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			logger.error("Error in find operation: userID = " + userID);
+			logger.error(elog.toStringException(e));
 		}
 		return -1;
 	}
