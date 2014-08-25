@@ -237,7 +237,7 @@ public class DocumentJSONConverter extends Loggable {
 			obj.put("label_code", JSONObject.NULL);
 			obj.put("label_name", JSONObject.NULL);
 			obj.put("label_description", JSONObject.NULL);
-			obj.put("confidence", 0.0);
+			obj.put("confidence", JSONObject.NULL);
 			obj.put("from_human", false); 
 		} catch (JSONException e) {
 			logger.error("Error in creating empty json object");
