@@ -75,6 +75,10 @@ public abstract class PipelineProcess extends Loggable implements Runnable {
                 }
 
                 // Process the item
+                logger.info("Going to process item from crisis: " + item.getCrisisCode() 
+                		+ ", having docType: " + item.getDoctype() 
+                		+ ", with id: " + item.getDocumentID());
+                logger.info("Raw json from REDIS: " + byteDoc.get(1));
                 processItem(item);
 
                 // Push to output queue

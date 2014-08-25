@@ -29,6 +29,8 @@ import java.util.Properties;
 
 
 
+
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -54,7 +56,6 @@ import qa.qcri.aidr.predict.dbentities.NominalAttributeEC;
 import qa.qcri.aidr.predict.dbentities.NominalLabelEC;
 import qa.qcri.aidr.predict.dbentities.TaggerDocument;
 import qa.qcri.aidr.predict.featureextraction.WordSet;
-
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 import qa.qcri.aidr.predict.dbentities.NominalLabel;
 import redis.clients.jedis.Jedis;
@@ -77,27 +78,39 @@ import weka.core.SparseInstance;
  */
 public class DataStore extends Loggable {
 
-	private static TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
+	public static TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager = null;
 
 	private static Logger logger = Logger.getLogger(DataStore.class);
 	private static ErrorLog elog = new ErrorLog();
-
-	public DataStore() {
+	
+	private static final String remoteEJBJNDIName = "java:global/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote";
+	//private static final String remoteEJBJNDIName = "qa.qcri.aidr.task.ejb.TaskManagerRemote";
+	
+	@SuppressWarnings("unchecked")
+	public static void initTaskManager() {
+		if (taskManager != null) {
+			logger.warn("taskManager has already been initialized: " + taskManager
+						+ ". Hence, skipping taskManager initialization attempt...");
+			return;
+		}
+		
+		// Else initialize taskManager
 		try {
 			long startTime = System.currentTimeMillis();
-			Properties props = new Properties();
-			props.setProperty("java.naming.factory.initial", "com.sun.enterprise.naming.SerialInitContextFactory");
-			props.setProperty("java.naming.factory, url.pkgs", "com.sun.enterprise.naming");
-			props.setProperty("java.naming.factory.state", "com.sun.corba.ee.impl.presentation.rmi.JNDIStateFactoryImpl");
-			props.setProperty("org.omg.CORBA.ORBInitialHost", "localhost");
-			props.setProperty("org.omg.CORBA.ORBInitialPort", "3700");
-
+			//Properties props = new Properties();
+			//props.setProperty("java.naming.factory.initial", "com.sun.enterprise.naming.SerialInitContextFactory");
+			//props.setProperty("java.naming.factory, url.pkgs", "com.sun.enterprise.naming");
+			//props.setProperty("java.naming.factory.state", "com.sun.corba.ee.impl.presentation.rmi.JNDIStateFactoryImpl");
+			  
+			//props.setProperty("org.omg.CORBA.ORBInitialHost", "localhost");
+			//props.setProperty("org.omg.CORBA.ORBInitialPort", "3700");
+			
 			//InitialContext ctx = new InitialContext(props);
 			InitialContext ctx = new InitialContext();
 			
-			this.taskManager = (TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long>) ctx.lookup("java:global/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote");
-			System.out.println("taskManager: " + taskManager);
-			logger.info("taskManager: " + taskManager);
+			taskManager = (TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long>) ctx.lookup(DataStore.remoteEJBJNDIName);
+			System.out.println("taskManager: " + taskManager + ", time taken to initialize = " + (System.currentTimeMillis() - startTime));
+			logger.info("taskManager: " + taskManager + ", time taken to initialize = " + (System.currentTimeMillis() - startTime));
 			if (taskManager != null) {
 				logger.info("Success in connecting to remote EJB to initialize taskManager");
 			}
@@ -443,8 +456,8 @@ public class DataStore extends Loggable {
 				TaggerDocument doc = mapper.fromDocumentToTaggerDocument(item);
 				
 				long docID = taskManager.insertNewTask(mapper.reverseTransformDocument(doc));
-				System.out.println("Inserted new document with documentID = " + docID);
-				logger.info("Inserted new document with documentID = " + docID);
+				//System.out.println("Inserted new document with documentID = " + docID);
+				//logger.info("Inserted new document with documentID = " + docID);
 				/*
 				String wordFeatures = DocumentJSONConverter.getFeaturesJson(
 						WordSet.class, item);
@@ -767,7 +780,8 @@ public class DataStore extends Loggable {
 					"Cannot truncate the labeling task buffer - negative parameter(s)");
 		}
 		final int ERROR_MARGIN = 0;		// if less than this, then skip delete
-		taskManager.truncateLabelingTaskBufferForCrisis(crisisID, maxLength, ERROR_MARGIN);
+		int deleteCount = taskManager.truncateLabelingTaskBufferForCrisis(crisisID, maxLength, ERROR_MARGIN);
+		logger.info("Truncation results for crisis " + crisisID + ", deleted doc count = " + deleteCount);
 		
 		/*
 		
@@ -1005,7 +1019,7 @@ public class DataStore extends Loggable {
 
 	/*
 	public static void main(String[] args) throws Exception {
-		DataStore ds = new DataStore();
+		DataStore.initTaskManager();
 		
 		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
 		JSONObject tweet = new JSONObject();
@@ -1032,6 +1046,6 @@ public class DataStore extends Loggable {
 		System.out.println("Testing truncate Labeling buffer for crisisID = " + 117);
 		logger.info("Testing truncate Labeling buffer for crisisID = " + 117);
 		DataStore.taskManager.truncateLabelingTaskBufferForCrisis(117L, Config.LABELING_TASK_BUFFER_MAX_LENGTH, 0);
-	}
-	*/
+	}*/
+	
 }

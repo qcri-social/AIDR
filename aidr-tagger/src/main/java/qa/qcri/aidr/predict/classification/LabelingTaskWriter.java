@@ -107,6 +107,15 @@ public class LabelingTaskWriter extends PipelineProcess {
 	void writeToDB() {
 		// log(LogLevel.INFO, "Writing " + writeBuffer.size() +
 		// " tasks/labeled items from pipeline to DB");
+		/*
+		try {
+			if (null == DataStore.taskManager) DataStore.initTaskManager();
+		} catch (Exception e) {
+			logger.error("Unable to initialize taskManager: " + DataStore.taskManager);
+			logger.error(elog.toStringException(e));
+		}*/
+		
+		
 		DataStore.saveDocumentsToDatabase(writeBuffer);
 		writeCount += writeBuffer.size(); 
 		writeBuffer.clear();

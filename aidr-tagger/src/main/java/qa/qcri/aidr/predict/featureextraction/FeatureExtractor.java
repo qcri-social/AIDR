@@ -22,9 +22,16 @@ public class FeatureExtractor extends PipelineProcess {
     private static ErrorLog elog = new ErrorLog();
 
     protected void processItem(Document doc) {
-        logger.info("Received doc class: " + doc.getClass());
+        if (doc.getClass().equals(qa.qcri.aidr.predict.data.SMS.class)) {
+        	logger.info("Received doc class: " + doc.getClass());
+        	logger.info("Doc coming from crisis: " + doc.getCrisisCode() 
+        			+ ", having docType: " + doc.getDoctype() 
+        			+ ", having id: " + doc.getDocumentID());
+        }
         if (doc instanceof Tweet) {
             processTweet((Tweet) doc);
+        } else if (doc instanceof SMS){
+        	processSMS((SMS) doc);
         } else {
             logger.error("Unknown datatype: " + doc + ", doctype = " + doc.getDoctype());
             throw new RuntimeException("Unknown doctype: " + doc.getDoctype());
@@ -36,6 +43,14 @@ public class FeatureExtractor extends PipelineProcess {
         String text = tweet.getText();
         wordSet.addAll(getWordsInStringWithBigrams(text, false));
         tweet.addFeatureSet(wordSet);
+    }
+    
+    void processSMS(SMS sms) {
+    	// TODO: the following code is only a placeholder for now!
+    	WordSet wordSet = new WordSet();
+    	String text = sms.getText();
+    	wordSet.addAll(getWordsInStringWithBigrams(text, false));
+    	sms.addFeatureSet(wordSet);
     }
 
     static public String[] getWordsInStringWithBigrams(String inputText,

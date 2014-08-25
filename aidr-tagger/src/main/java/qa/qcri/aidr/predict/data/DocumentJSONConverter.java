@@ -35,7 +35,8 @@ public class DocumentJSONConverter extends Loggable {
 	private static ErrorLog elog = new ErrorLog();
 
 	public static enum Doctype {
-		TWEET("twitter");
+		TWEET("twitter"),
+		SMS("SMS");
 
 		private String name;
 
@@ -46,6 +47,8 @@ public class DocumentJSONConverter extends Loggable {
 		public static Doctype parse(String name) {
 			if (name.equals(TWEET.name))
 				return TWEET;
+			if (name.equals(SMS.name))
+				return SMS;
 			logger.error("Unknow doctype - can't parse");
 			throw new RuntimeException("Unknown doctype");
 		}
@@ -79,6 +82,8 @@ public class DocumentJSONConverter extends Loggable {
 		switch (doctype) {
 		case TWEET:
 			doc = parseTweet(jsonObj);
+		case SMS:
+			doc = parseSMS(jsonObj);
 			break;
 		default: {
 			logger.error("Exception when parsing input document: Unhandled doctype");
@@ -106,7 +111,21 @@ public class DocumentJSONConverter extends Loggable {
 	}
 
 	public static Document parseSMS(JSONObject input) {
-		return null;
+		// TODO: the following code is only a placeholder!
+		try {
+			SMS sms = new SMS();
+
+			JSONObject user;
+			user = input.getJSONObject("user");
+			sms.userID = user.getLong("id");
+			sms.text = input.getString("text");
+			sms.isReSent = false;		// TODO: implement a method to chekc for duplicate SMS
+			return sms;
+		} catch (JSONException e) {
+			logger.error("Json exception in parsing tweet: " + input);
+			logger.error(elog.toStringException(e));
+			throw new RuntimeException(e);
+		}
 	}
 
 	public static Document parseTweet(JSONObject input) {

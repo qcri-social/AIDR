@@ -42,6 +42,7 @@ public class Controller extends Loggable {
         }));
         
         DataStore.clearRedisPipeline();
+        DataStore.initTaskManager();
         
         httpInputManager = new HttpInputManager();
         outputManager = new HttpOutputManager();
