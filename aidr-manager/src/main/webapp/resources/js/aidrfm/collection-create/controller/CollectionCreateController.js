@@ -211,7 +211,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                     'Accept': 'application/json'
                 },
                 success: function (response) {
-                    AIDRFMFunctions.setAlert("Info", ["Collection created successfully.", "You will be redirected to Home screen."]);
+                    AIDRFMFunctions.setAlert("Info", ["Collection created successfully.", "You will be redirected to the collection details page."]);
                     mask.hide();
 
                     var maskRedirect = AIDRFMFunctions.getMask(true, 'Redirecting ...');
@@ -222,7 +222,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                     Ext.TaskManager.start({
                         run: function () {
                             if (!isFirstRun) {
-                                document.location.href = BASE_URL + '/protected/home';
+                                document.location.href = BASE_URL + '/protected/'+ form.findField('code').getValue() +'/collection-details';
                             }
                             isFirstRun = false;
                         },
