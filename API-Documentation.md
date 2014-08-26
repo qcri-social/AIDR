@@ -98,7 +98,7 @@ GET: `/manage/runPersisted`
 This service intended to be used after deploying a new version of the application so to re-start the persisted collections. This service reads the persisted file from the disk, and starts collections.
 
 ## SMS Collector
-URL: `Base URI + '/sms/'
+URL: `Base URI + '/sms/'`
 
 ### 1. Start a collection
 GET Method: `/start?collection_code=xyz`
@@ -125,7 +125,7 @@ GET: `/stop?collection_code=xxx`
 
 Example call: `.../sms/stop?collection_code=4534`
 
-## 3. Get status of a running collection by collection code 
+### 3. Get status of a running collection by collection code 
 GET: `/status?collection_code=xxx`
 
 Example call: `.../sms/status?collection_code=324`
