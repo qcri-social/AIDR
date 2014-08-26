@@ -56,14 +56,14 @@ Response example:
 `message`: this shows textual description of a given statusCode. 
 
 
-## 2. Stop a collection
+### 2. Stop a collection
 GET: `/stop?id=xxx`
 
 id: represents the collectionCode.
 
 Example call: `.../twitter/stop?id=4534`
 
-## 3. Get status of a running collection by collection code 
+### 3. Get status of a running collection by collection code 
 GET: `/status?id=xxx`
 
 id: represents the `collectionCode`.
@@ -82,17 +82,17 @@ Response:
     "statusMessage": "",
      }
 			
-## 4. Get the status of all running tasks 
+### 4. Get the status of all running tasks 
 GET: `/status/all`
 
 Example call: `.../twitter/status/all`
 
-## 5. Persist all running collections to disk 
+### 5. Persist all running collections to disk 
 GET: `/manage/persist`
 
 This service intended to be used before deploying new versions of the application. The service persists all running collections in a JSON file on server's default configuration location. After the deployment, you can use the following service to run collections that were persisted.
 
-## 6. Run persisted collections
+### 6. Run persisted collections
 GET: `/manage/runPersisted`
 
 This service intended to be used after deploying a new version of the application so to re-start the persisted collections. This service reads the persisted file from the disk, and starts collections.
@@ -109,6 +109,7 @@ POST Method: `/endpoint/receive/{collection_code}'
 	Accept:  `application/json` 
 
 Request Body Example: 
+
     {
     "text":"Magnitude1 1.7 #earthquake, 3.6 km SE of Dyer, CA http://t.co/22qJDL6snM", 
     "aidr":
