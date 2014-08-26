@@ -4,12 +4,14 @@
  */
 package qa.qcri.aidr.utils;
 
+import qa.qcri.aidr.persister.collction.RedisCollectionPersister;
+import qa.qcri.aidr.persister.collector.RedisCollectorPersister;
+import qa.qcri.aidr.persister.tagger.RedisTaggerPersister;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import qa.qcri.aidr.persister.collector.RedisCollectorPersister;
-import qa.qcri.aidr.persister.tagger.RedisTaggerPersister;
 
 /**
  *
@@ -20,11 +22,13 @@ public class GenericCache {
     private Map<String, Long> countersMap = null; //keeps downloaded docs counter
     private Map<String, RedisCollectorPersister> persisterMap = null; // keeps collector persisters 
     private Map<String, RedisTaggerPersister> taggerPersisterMap = null; // keeps tagger persisters 
+    private Map<String, RedisCollectionPersister> collectionPersisterMap = null; // keeps collection persisters
 
     private GenericCache() {
         countersMap = new HashMap<String, Long>();
         persisterMap = new HashMap<String, RedisCollectorPersister>();
         taggerPersisterMap = new HashMap<String, RedisTaggerPersister>();
+        collectionPersisterMap = new HashMap<>();
     }
 
     public static GenericCache getInstance() {
@@ -74,7 +78,24 @@ public class GenericCache {
         p.suspendMe();
         persisterMap.remove(key);
     }
-    
+
+    public RedisCollectionPersister getCollectionPersisterObject(String key) {
+        return collectionPersisterMap.get(key);
+    }
+
+    public void setCollectionPersisterMap(String key, RedisCollectionPersister collectionPersister) {
+        collectionPersisterMap.put(key, collectionPersister);
+    }
+
+    /**
+     * Delete persister entry for given collectionCode
+     * @param key is collectionCode
+     * @throws InterruptedException
+     */
+    public RedisCollectionPersister delCollectionPersisterMap(String key) throws InterruptedException {
+    	return collectionPersisterMap.remove(key);
+    }
+
     /**
      * 
      * @return List of active collector persisters
