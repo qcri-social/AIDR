@@ -15,7 +15,7 @@ public class LoadShedder {
 
 	/**
 	 * 
-	 * @param interval granularity of checking, expressed as minutes
+	 * @param intervalMinutes granularity of checking, expressed as minutes
 	 * @param maxLimit maximum number of messages in an interval
 	 * @param warn if true, then log a warning message on rate exceed
 	 */
