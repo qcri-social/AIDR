@@ -37,6 +37,7 @@ import javax.ws.rs.core.MediaType;
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.ErrorLog;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
+import qa.qcri.aidr.output.utils.LoadShedder;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
@@ -50,7 +51,10 @@ public class ChannelBufferManager {
 	private static final int NO_DATA_TIMEOUT = 48 * 60 * 60 * 1000;		// when to delete a channel buffer
 	private static final int CHECK_INTERVAL = NO_DATA_TIMEOUT;
 	private static final int CHECK_CHANNEL_PUBLIC_INTERVAL = 5 * 60 * 1000;
-
+	
+	private static int PERSISTER_LOAD_LIMIT;
+	private static int PERSISTER_LOAD_CHECK_INTERVAL;
+	
 	private static Logger logger = Logger.getLogger(ChannelBufferManager.class);
 	private static ErrorLog elog = new ErrorLog();
 
@@ -82,6 +86,8 @@ public class ChannelBufferManager {
 	//private static DatabaseInterface dbController = null;
 	private static String managerMainUrl = "http://localhost:8080/AIDRFetchManager";
 
+	private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
+
 	//////////////////////////////////////////
 	// ********* Method definitions *********
 	//////////////////////////////////////////
@@ -95,6 +101,11 @@ public class ChannelBufferManager {
 
 		redisHost = configParams.get("host");
 		redisPort = Integer.parseInt(configParams.get("port"));
+		
+		redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
+		PERSISTER_LOAD_CHECK_INTERVAL = Integer.parseInt(configParams.get("PERSISTER_LOAD_CHECK_INTERVAL"));
+		PERSISTER_LOAD_LIMIT = Integer.parseInt(configParams.get("PERSISTER_LOAD_LIMIT"));
+		
 		managerMainUrl = configParams.get("managerUrl");
 		if (configParams.get("logger").equalsIgnoreCase("log4j")) {
 			// For now: set up a simple configuration that logs on the console
@@ -259,6 +270,8 @@ public class ChannelBufferManager {
 			subscribedChannels.put(channelName, cb);
 			cb.setPubliclyListed(getChannelPublicStatus(channelName));
 			logger.info("Created channel buffer for channel: " + channelName + ", public = " + cb.getPubliclyListed());
+			redisLoadShedder.put(channelName, 
+					new LoadShedder(PERSISTER_LOAD_LIMIT, PERSISTER_LOAD_CHECK_INTERVAL, true));
 		} catch (Exception e) {
 			logger.error("Unable to create buffer for channel: " + channelName);
 		}
@@ -491,7 +504,7 @@ public class ChannelBufferManager {
 	private void dumpBuffersToDisk() {
 		// TODO:
 	}
- 	
+
 	/**
 	 * On restart loads all dumped channel data from disk
 	 * Requires creation of channelBuffers where not present
@@ -499,7 +512,7 @@ public class ChannelBufferManager {
 	private void loadBuffersFromDisk() {
 		// TODO: 
 	}
-	
+
 	// cleanup all threads 
 	void shutdownAndAwaitTermination() {
 		int attempts = 0;
@@ -538,7 +551,9 @@ public class ChannelBufferManager {
 
 		@Override
 		public void onPMessage(String pattern, String channel, String message) {
-			manageChannelBuffers(pattern, channel, message);
+			if (redisLoadShedder.get(channel).canProcess()) {
+				manageChannelBuffers(pattern, channel, message);
+			}
 		}
 
 		@Override

@@ -38,6 +38,9 @@ public class Config {
         public static final int FETCHER_REDIS_COUNTER_UPDATE_THRESHOLD = 5; // Specifies when items counter should be updated. Here 10 means after every 10 items
         
         // AIDR-FETCHER logging
-	public static final String LOG_FILE_NAME = "AIDR_Fetcher_LOG.txt";//"errorlog.txt";
+        public static final String LOG_FILE_NAME = "AIDR_Fetcher_LOG.txt";//"errorlog.txt";
 	
+        // Related to Load shedding
+        public static final int PERSISTER_LOAD_LIMIT = 6000;			// messages/interval
+        public static final int PERSISTER_LOAD_CHECK_INTERVAL = 1;		// in minutes
 }

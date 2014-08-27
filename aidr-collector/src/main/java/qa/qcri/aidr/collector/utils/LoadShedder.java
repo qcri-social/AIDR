@@ -1,0 +1,76 @@
+package qa.qcri.aidr.collector.utils;
+
+import org.apache.log4j.Logger;
+
+public class LoadShedder {
+
+	private static Logger logger = Logger.getLogger(LoadShedder.class);
+	
+	long lastSetTime = 0;
+	long interval = 0;
+	int counter;
+	int maxLimit;
+	boolean loadWarning = false;
+	boolean warn = true;
+
+	/**
+	 * 
+	 * @param interval granularity of checking, expressed as minutes
+	 * @param maxLimit maximum number of messages in an interval
+	 * @param warn if true, then log a warning message on rate exceed
+	 */
+	public LoadShedder(final int maxLimit, final int interval, final boolean warn) {
+		this.maxLimit = maxLimit;
+		this.counter = 0;
+		this.warn = warn;
+		this.lastSetTime = System.currentTimeMillis();
+		this.interval = interval * 1000 * 60;	
+		this.loadWarning = false;
+	}
+
+	public int getCounter() {
+		return counter;
+	}
+
+	public void setCounter(final int counter) {
+		this.counter = counter;
+	}
+
+	public boolean getWarn() {
+		return warn;
+	}
+	
+	public void setWarn(final boolean warn) {
+		this.warn = warn;
+	}
+
+	public int getMaxLimit() {
+		return maxLimit;
+	}
+	
+	public void setMaxLimit(final int maxLimit) {
+		this.maxLimit = maxLimit;
+	}
+
+	public boolean canProcess() {	
+		if ((System.currentTimeMillis() - lastSetTime) <= interval) {
+			if (counter < maxLimit) {
+				++counter;
+				return true;		// within bounds
+			}
+			
+			// Otherwise, reset and return false
+			if (warn && !loadWarning) {
+				loadWarning = true;		// warn only once per interval
+				logger.warn("Limit of " + maxLimit + " messages per " + interval
+						+ " mins reached with current count = " + counter);
+			}
+			return false;		// wait until end of interval before resetting
+		}
+		// Interval over - now reset for next interval
+		counter = 0;
+		lastSetTime = System.currentTimeMillis();
+		loadWarning = false;
+		return true;	//  
+	}
+}

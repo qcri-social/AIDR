@@ -35,5 +35,8 @@ public class Config {
 	public static final String SCD1_URL = "http://localhost/aidr/data/persister/";	// koushik
 	//public static final String SCD1_URL = "http://aidr-dev.qcri.org/aidr/data/persister/";	// for local VM
 	//public static final String SCD1_URL = "http://aidr-prod.qcri.org/data/persister/";	// for azure VM
-
+	
+	// Related to Load shedding
+	public static final int PERSISTER_LOAD_LIMIT = 6000;			// messages/interval
+	public static final int PERSISTER_LOAD_CHECK_INTERVAL = 1;		// in minutes
 }

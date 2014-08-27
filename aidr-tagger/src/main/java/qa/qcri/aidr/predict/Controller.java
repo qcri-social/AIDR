@@ -1,8 +1,10 @@
 package qa.qcri.aidr.predict;
 
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.predict.classification.LabelingTaskWriter;
 import qa.qcri.aidr.predict.classification.nominal.ModelController;
 import qa.qcri.aidr.predict.common.*;
@@ -51,6 +53,7 @@ public class Controller extends Loggable {
         aidrInputProcessor = new AidrFetcherJsonInputProcessor();
         aidrInputProcessor.inputQueueName = Config.REDIS_FROM_FETCHER_CHANNEL;
         aidrInputProcessor.outputQueueName = Config.REDIS_FOR_EXTRACTION_QUEUE;
+        aidrInputProcessor.redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
 
         featureExtractor = new FeatureExtractor();
         featureExtractor.inputQueueName = Config.REDIS_FOR_EXTRACTION_QUEUE

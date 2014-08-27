@@ -11,6 +11,8 @@ package qa.qcri.aidr.persister.collector;
 import java.io.File;
 
 
+
+
 //import java.util.logging.Level;
 //import java.util.logging.Logger;
 import redis.clients.jedis.JedisPubSub;
@@ -26,11 +28,13 @@ import qa.qcri.aidr.utils.Config;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.io.FileSystemOperations;
 import qa.qcri.aidr.logging.ErrorLog;
+import qa.qcri.aidr.utils.LoadShedder;
 
 public class CollectorSubscriber extends JedisPubSub {
 	
@@ -44,7 +48,9 @@ public class CollectorSubscriber extends JedisPubSub {
     private File file;
     private long itemsWrittenToFile = 0;
     private int fileVolumnNumber = 1;
-
+    
+    private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
+    
     public CollectorSubscriber() {
     }
 
@@ -56,6 +62,10 @@ public class CollectorSubscriber extends JedisPubSub {
         collectionDir = createNewDirectory();
         createNewFile();
         createBufferWriter();
+        if (null == redisLoadShedder) {
+        	redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
+        }
+        redisLoadShedder.put(Config.FETCHER_CHANNEL+collectionCode, new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL, true));
     }
 
     @Override
@@ -64,7 +74,9 @@ public class CollectorSubscriber extends JedisPubSub {
 
     @Override
     public void onPMessage(String pattern, String channel, String message) {
-        writeToFile(message);
+        if (redisLoadShedder.get(channel).canProcess()) {
+        	writeToFile(message);
+        }
     }
 
     @Override

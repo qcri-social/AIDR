@@ -16,6 +16,8 @@ import java.io.File;
 
 
 
+
+
 import redis.clients.jedis.JedisPubSub;
 
 import java.io.OutputStreamWriter;
@@ -26,10 +28,12 @@ import java.nio.charset.Charset;
 
 import qa.qcri.aidr.utils.ClassifiedTweet;
 import qa.qcri.aidr.utils.Config;
+import qa.qcri.aidr.utils.LoadShedder;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -49,6 +53,8 @@ public class TaggerSubscriber extends JedisPubSub {
     private File file;
     private long itemsWrittenToFile = 0;
     private int fileVolumnNumber = 1;
+    	
+    private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
     
     public TaggerSubscriber() {
     }
@@ -61,6 +67,10 @@ public class TaggerSubscriber extends JedisPubSub {
         collectionDir = createNewDirectory();
         createNewFile();
         createBufferWriter();
+        if (null == redisLoadShedder) {
+        	redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
+        }
+        redisLoadShedder.put(Config.TAGGER_CHANNEL+collectionCode, new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL, true));
     }
 
     @Override
@@ -69,7 +79,9 @@ public class TaggerSubscriber extends JedisPubSub {
 
     @Override
     public void onPMessage(String pattern, String channel, String message) {
-        writeToFile(message);
+    	if (redisLoadShedder.get(channel).canProcess()) {
+        	writeToFile(message);
+        }
     }
 
     @Override

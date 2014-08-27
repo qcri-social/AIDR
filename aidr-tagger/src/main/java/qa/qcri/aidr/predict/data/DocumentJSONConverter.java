@@ -49,8 +49,8 @@ public class DocumentJSONConverter extends Loggable {
 				return TWEET;
 			if (name.equals(SMS.name))
 				return SMS;
-			logger.error("Unknow doctype - can't parse");
-			throw new RuntimeException("Unknown doctype");
+			logger.error("Unknow doctype - can't parse: " + name);
+			throw new RuntimeException("Unknown doctype: " + name);
 		}
 	}
 
