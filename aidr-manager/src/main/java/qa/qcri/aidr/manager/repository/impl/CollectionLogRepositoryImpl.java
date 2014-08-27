@@ -77,7 +77,7 @@ public class CollectionLogRepositoryImpl extends GenericRepositoryImpl<AidrColle
             }
         });
     }
-
+        
     @SuppressWarnings("unchecked")
     @Override
     public Map<Integer, Integer> countTotalDownloadedItemsForCollectionIds(final List<Integer> ids) {

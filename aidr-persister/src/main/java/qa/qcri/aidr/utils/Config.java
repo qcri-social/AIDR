@@ -42,4 +42,8 @@ public class Config {
 	// Related to Load shedding
 	public static final int PERSISTER_LOAD_LIMIT = 6000;			// messages/interval
 	public static final int PERSISTER_LOAD_CHECK_INTERVAL_MINUTES = 1;		// in minutes
+
+	// Related to Tweet Download limit
+	public static final String managerUrl = "http://localhost:8080/AIDRFetchManager";
+	public static final String TWEET_DOWNLOAD_LIMIT_MSG = "The size of the collection is larger than " + TWEETS_EXPORT_LIMIT_100K + ". To download the full tweet IDs collection, please contact the AIDR admin at aidr@noreply.github.com";
 }

@@ -13,6 +13,12 @@ import java.net.UnknownHostException;
 
 
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
@@ -26,9 +32,11 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.logging.ErrorLog;
 import qa.qcri.aidr.persister.collector.RedisCollectorPersister;
+import qa.qcri.aidr.utils.CollectionStatus;
 import qa.qcri.aidr.utils.Config;
 import qa.qcri.aidr.utils.GenericCache;
 import qa.qcri.aidr.utils.JsonDeserializer;
@@ -117,7 +125,7 @@ public class Persister4CollectorAPI {
     }
     
     @GET
-    @Produces(MediaType.TEXT_HTML)
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/genTweetIds")
     public Response generateTweetsIDSCSVFromAllJSON(@QueryParam("collectionCode") String collectionCode,
     		@DefaultValue("true") @QueryParam("downloadLimited") Boolean downloadLimited) throws UnknownHostException {
@@ -126,7 +134,13 @@ public class Persister4CollectorAPI {
         String fileName = jsonD.generateJson2TweetIdsCSV(collectionCode, downloadLimited);
         fileName = Config.SCD1_URL + collectionCode+"/"+fileName;
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
-        return Response.ok(fileName).build();
+        
+        CollectionStatus s = new CollectionStatus();
+        if (s.getTotalDownloadedCount(collectionCode) > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+        	return Response.ok(s.getUIWrapper(collectionCode, null, fileName, true)).build();
+        } else {
+        	return Response.ok(s.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true)).build();
+        }
     }
     
     @GET
@@ -151,15 +165,23 @@ public class Persister4CollectorAPI {
     }
     
     @GET
-    @Produces(MediaType.TEXT_HTML)
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/genJsonTweetIds")
     public Response generateTweetsIDSJSONFromAllJSON(@QueryParam("collectionCode") String collectionCode,
     			@DefaultValue("true") @QueryParam("downloadLimited") Boolean downloadLimited) throws UnknownHostException {
         logger.info("Received request for collection: " + collectionCode);
     	JsonDeserializer jsonD = new JsonDeserializer();
-        String fileName = jsonD.generateJson2TweetIdsJson(collectionCode);
+        String fileName = jsonD.generateJson2TweetIdsJson(collectionCode, downloadLimited);
         fileName = Config.SCD1_URL + collectionCode+"/"+fileName;
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
-        return Response.ok(fileName).build();
+        //return Response.ok(fileName).build();
+        
+        CollectionStatus s = new CollectionStatus();
+        if (s.getTotalDownloadedCount(collectionCode) > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+        	return Response.ok(s.getUIWrapper(collectionCode, null, fileName, true)).build();
+        } else {
+        	return Response.ok(s.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true)).build();
+        }
     }
+
 }
