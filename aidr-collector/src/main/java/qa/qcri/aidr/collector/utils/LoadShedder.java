@@ -8,6 +8,7 @@ public class LoadShedder {
 	
 	long lastSetTime = 0;
 	long intervalMillis = 0;
+	long intervalMinutes = 0;
 	int counter;
 	int maxLimit;
 	boolean loadWarning = false;
@@ -24,6 +25,7 @@ public class LoadShedder {
 		this.counter = 0;
 		this.warn = warn;
 		this.lastSetTime = System.currentTimeMillis();
+		this.intervalMinutes = intervalMinutes;
 		this.intervalMillis = intervalMinutes * 1000 * 60;	
 		this.loadWarning = false;
 	}
@@ -62,7 +64,7 @@ public class LoadShedder {
 			// Otherwise, reset and return false
 			if (warn && !loadWarning) {
 				loadWarning = true;		// warn only once per interval
-				logger.warn("Limit of " + maxLimit + " messages per " + intervalMillis
+				logger.warn("Limit of " + maxLimit + " messages per " + intervalMinutes
 						+ " mins reached with current count = " + counter);
 			}
 			return false;		// wait until end of interval before resetting
