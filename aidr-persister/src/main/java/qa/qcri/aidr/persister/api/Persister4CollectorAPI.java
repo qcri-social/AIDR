@@ -12,9 +12,11 @@ import java.net.UnknownHostException;
 
 
 
+
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
@@ -117,10 +119,11 @@ public class Persister4CollectorAPI {
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/genTweetIds")
-    public Response generateTweetsIDSCSVFromAllJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
+    public Response generateTweetsIDSCSVFromAllJSON(@QueryParam("collectionCode") String collectionCode,
+    		@DefaultValue("true") @QueryParam("downloadLimited") Boolean downloadLimited) throws UnknownHostException {
         logger.info("Received request for collection: " + collectionCode);
     	JsonDeserializer jsonD = new JsonDeserializer();
-        String fileName = jsonD.generateJson2TweetIdsCSV(collectionCode);
+        String fileName = jsonD.generateJson2TweetIdsCSV(collectionCode, downloadLimited);
         fileName = Config.SCD1_URL + collectionCode+"/"+fileName;
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
         return Response.ok(fileName).build();
@@ -150,7 +153,8 @@ public class Persister4CollectorAPI {
     @GET
     @Produces(MediaType.TEXT_HTML)
     @Path("/genJsonTweetIds")
-    public Response generateTweetsIDSJSONFromAllJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
+    public Response generateTweetsIDSJSONFromAllJSON(@QueryParam("collectionCode") String collectionCode,
+    			@DefaultValue("true") @QueryParam("downloadLimited") Boolean downloadLimited) throws UnknownHostException {
         logger.info("Received request for collection: " + collectionCode);
     	JsonDeserializer jsonD = new JsonDeserializer();
         String fileName = jsonD.generateJson2TweetIdsJson(collectionCode);

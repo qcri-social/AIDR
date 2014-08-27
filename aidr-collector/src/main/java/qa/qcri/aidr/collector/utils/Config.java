@@ -42,5 +42,5 @@ public class Config {
 	
         // Related to Load shedding
         public static final int PERSISTER_LOAD_LIMIT = 6000;			// messages/interval
-        public static final int PERSISTER_LOAD_CHECK_INTERVAL = 1;		// in minutes
+        public static final int PERSISTER_LOAD_CHECK_INTERVAL_MINUTES = 1;		// in minutes
 }

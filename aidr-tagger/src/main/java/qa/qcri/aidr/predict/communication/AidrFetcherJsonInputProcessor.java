@@ -150,7 +150,7 @@ public class AidrFetcherJsonInputProcessor extends Loggable implements Runnable 
 
 				Subscriber subscriber = new Subscriber(outputQueueName);
 				redis.psubscribe(subscriber, inputQueueName);
-				redisLoadShedder.put(inputQueueName, new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL, true));
+				redisLoadShedder.put(inputQueueName, new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
 				Thread.sleep(60000);
 			} catch (Exception e) {
 				log("RedisInputProcessor", e);

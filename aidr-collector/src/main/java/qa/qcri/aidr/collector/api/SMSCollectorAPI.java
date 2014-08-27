@@ -46,7 +46,7 @@ public class SMSCollectorAPI extends Loggable {
 		}
 		String channelName = String.format(CHANNEL, code);
 		redisLoadShedder.put(channelName, 
-				new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL, true));
+				new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
 		GenericCache.getInstance().putSMSCollection(code, Config.STATUS_CODE_COLLECTION_RUNNING);
 		return Response.ok().build();
 	}

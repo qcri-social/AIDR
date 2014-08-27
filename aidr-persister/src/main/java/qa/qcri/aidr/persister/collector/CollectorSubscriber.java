@@ -65,7 +65,7 @@ public class CollectorSubscriber extends JedisPubSub {
         if (null == redisLoadShedder) {
         	redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
         }
-        redisLoadShedder.put(Config.FETCHER_CHANNEL+collectionCode, new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL, true));
+        redisLoadShedder.put(Config.FETCHER_CHANNEL+collectionCode, new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
     }
 
     @Override

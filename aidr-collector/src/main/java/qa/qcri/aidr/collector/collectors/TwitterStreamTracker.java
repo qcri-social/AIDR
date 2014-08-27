@@ -84,7 +84,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
 			redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
 		}
 		redisLoadShedder.put(Config.FETCHER_CHANNEL + "." + getCollectionCode(), 
-				new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL, true));
+				new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
 	}
 
 	private void collectThroughStreaming() {

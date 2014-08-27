@@ -53,7 +53,7 @@ public class ChannelBufferManager {
 	private static final int CHECK_CHANNEL_PUBLIC_INTERVAL = 5 * 60 * 1000;
 	
 	private static int PERSISTER_LOAD_LIMIT;
-	private static int PERSISTER_LOAD_CHECK_INTERVAL;
+	private static int PERSISTER_LOAD_CHECK_INTERVAL_MINUTES;
 	
 	private static Logger logger = Logger.getLogger(ChannelBufferManager.class);
 	private static ErrorLog elog = new ErrorLog();
@@ -103,7 +103,7 @@ public class ChannelBufferManager {
 		redisPort = Integer.parseInt(configParams.get("port"));
 		
 		redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
-		PERSISTER_LOAD_CHECK_INTERVAL = Integer.parseInt(configParams.get("PERSISTER_LOAD_CHECK_INTERVAL"));
+		PERSISTER_LOAD_CHECK_INTERVAL_MINUTES = Integer.parseInt(configParams.get("PERSISTER_LOAD_CHECK_INTERVAL"));
 		PERSISTER_LOAD_LIMIT = Integer.parseInt(configParams.get("PERSISTER_LOAD_LIMIT"));
 		
 		managerMainUrl = configParams.get("managerUrl");
@@ -271,7 +271,7 @@ public class ChannelBufferManager {
 			cb.setPubliclyListed(getChannelPublicStatus(channelName));
 			logger.info("Created channel buffer for channel: " + channelName + ", public = " + cb.getPubliclyListed());
 			redisLoadShedder.put(channelName, 
-					new LoadShedder(PERSISTER_LOAD_LIMIT, PERSISTER_LOAD_CHECK_INTERVAL, true));
+					new LoadShedder(PERSISTER_LOAD_LIMIT, PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
 		} catch (Exception e) {
 			logger.error("Unable to create buffer for channel: " + channelName);
 		}

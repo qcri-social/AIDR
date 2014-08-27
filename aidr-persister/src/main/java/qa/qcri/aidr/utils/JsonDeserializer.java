@@ -52,7 +52,7 @@ public class JsonDeserializer {
 	
 	
 	//This method generates tweetIds csv from all the jsons of a collection
-	public String generateJson2TweetIdsCSV(String collectionCode) {
+	public String generateJson2TweetIdsCSV(String collectionCode, boolean downloadLimited) {
 		List<String> fileNames = FileSystemOperations.getAllJSONFileVolumes(collectionCode);
 		List<Tweet> tweetsList = new ArrayList<Tweet>(LIST_BUFFER_SIZE);
 

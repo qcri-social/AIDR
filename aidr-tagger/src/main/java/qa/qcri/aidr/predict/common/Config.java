@@ -40,7 +40,7 @@ public class Config extends Loggable {
 
 	// Related to Load shedding
 	public static final int PERSISTER_LOAD_LIMIT = 1000;			// messages/interval
-	public static final int PERSISTER_LOAD_CHECK_INTERVAL = 1;		// in minutes
+	public static final int PERSISTER_LOAD_CHECK_INTERVAL_MINUTES = 1;		// in minutes
 
 	static {
 		Properties prop = new Properties();

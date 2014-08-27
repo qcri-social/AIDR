@@ -14,6 +14,10 @@ import java.util.List;
 
 
 
+
+
+
+
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
@@ -184,7 +188,8 @@ public class Persister4TaggerAPI {
 	@GET
 	@Produces(MediaType.TEXT_HTML)
 	@Path("/genTweetIds")
-	public Response generateTweetsIDSCSVFromAllJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
+	public Response generateTweetsIDSCSVFromAllJSON(@QueryParam("collectionCode") String collectionCode,
+    		@DefaultValue("true") @QueryParam("downloadLimited") Boolean downloadLimited) throws UnknownHostException {
 		logger.debug("In tagger-persister genTweetIds");
 		logger.info("received request for collection: " + collectionCode);
 		
@@ -207,7 +212,8 @@ public class Persister4TaggerAPI {
 	@Produces(MediaType.TEXT_HTML)
 	@Path("/filter/genTweetIds")
 	public Response generateTweetsIDSCSVFromAllJSONFiltered(String queryString, 
-			@QueryParam("collectionCode") String collectionCode) 
+			@QueryParam("collectionCode") String collectionCode,
+    		@DefaultValue("true") @QueryParam("downloadLimited") Boolean downloadLimited) 
 					throws UnknownHostException {
 		DeserializeFilters des = new DeserializeFilters();
 		JsonQueryList queryList = des.deserializeConstraints(queryString);
@@ -300,7 +306,8 @@ public class Persister4TaggerAPI {
 	@GET
 	@Produces(MediaType.TEXT_HTML)
 	@Path("/genJsonTweetIds")
-	public Response generateTweetsIDSJSONFromAllJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
+	public Response generateTweetsIDSJSONFromAllJSON(@QueryParam("collectionCode") String collectionCode,
+    		@DefaultValue("true") @QueryParam("downloadLimited") Boolean downloadLimited) throws UnknownHostException {
 		logger.debug("In tagger-persister genTweetIds");
 		logger.info("Received request for collection: " + collectionCode);
 		
@@ -333,7 +340,8 @@ public class Persister4TaggerAPI {
 	@OPTIONS
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/filter/genTweetIds")
-	public Response generateTweetsIDSCSVFromAllJSONFiltered(@QueryParam("collectionCode") String collectionCode) 
+	public Response generateTweetsIDSCSVFromAllJSONFiltered(@QueryParam("collectionCode") String collectionCode,
+    		@DefaultValue("true") @QueryParam("downloadLimited") Boolean downloadLimited) 
 			throws UnknownHostException {
 		return Response.ok()
 				.allow("POST", "OPTIONS", "HEAD")
