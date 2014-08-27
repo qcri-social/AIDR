@@ -171,7 +171,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                         me.loadData();
                     } else {
                         me.loadData();
-                        AIDRFMFunctions.setAlert("Info", "Task has been saved.");
+                        //AIDRFMFunctions.setAlert("Info", "Task has been saved.");
                     }
                     AIDRFMFunctions.hideMask(mask);
                 },

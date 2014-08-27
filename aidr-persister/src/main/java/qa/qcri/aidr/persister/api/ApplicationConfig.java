@@ -4,13 +4,9 @@
  */
 package qa.qcri.aidr.persister.api;
 
-import java.util.Set;
-
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
-
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.moxy.json.MoxyJsonFeature;
+import java.util.Set;
 
 /**
  *
@@ -44,6 +40,6 @@ public class ApplicationConfig extends Application {
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(qa.qcri.aidr.persister.api.Persister4CollectorAPI.class);
         resources.add(qa.qcri.aidr.persister.api.Persister4TaggerAPI.class);
+        resources.add(Persister4CollectionAPI.class);
     }
-    
 }

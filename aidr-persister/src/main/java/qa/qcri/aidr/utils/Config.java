@@ -10,6 +10,7 @@ public class Config {
 	//TODO: Replace with config file in text format
 
 	public static final String FETCHER_CHANNEL = "FetcherChannel.";
+	public static final String COLLECTION_CHANNEL = "CollectionChannel.";
 	public static final String TAGGER_CHANNEL = "aidr_predict.";
 
 	public static final String DEFAULT_PERSISTER = "default_persister";
