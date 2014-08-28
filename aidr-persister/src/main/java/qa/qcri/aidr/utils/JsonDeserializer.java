@@ -74,8 +74,11 @@ public class JsonDeserializer {
 				try {
 					br = new BufferedReader(new FileReader(fileLocation));
 					String line;
+					if (downloadLimited && totalCount > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+						break;
+					}
 					while ((line = br.readLine()) != null) {
-						if (downloadLimited && totalCount < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+						if (downloadLimited && totalCount > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
 							break;
 						}
 						Tweet tweet = getTweet(line);
@@ -141,11 +144,14 @@ public class JsonDeserializer {
 			for (String file : fileNames) {
 				String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
 				logger.info(collectionCode + ": Reading file " + fileLocation);
+				if (downloadLimited && totalCount > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+					break;
+				}
 				try {
 					br = new BufferedReader(new FileReader(fileLocation));
 					String line;
 					while ((line = br.readLine()) != null) {
-						if (downloadLimited && totalCount < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+						if (downloadLimited && totalCount > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
 							break;
 						}
 						ClassifiedTweet tweet = getClassifiedTweet(line);
@@ -221,7 +227,7 @@ public class JsonDeserializer {
 
 			int totalCount = 0;
 			for (String file : fileNames) {
-				if (downloadLimited && totalCount < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+				if (downloadLimited && totalCount > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
 					break;
 				}
 				String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
@@ -230,7 +236,7 @@ public class JsonDeserializer {
 					br = new BufferedReader(new FileReader(fileLocation));
 					String line;
 					while ((line = br.readLine()) != null) {
-						if (downloadLimited && totalCount < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+						if (downloadLimited && totalCount > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
 							break;
 						}
 						ClassifiedTweet tweet = getClassifiedTweet(line);
@@ -1154,8 +1160,11 @@ public class JsonDeserializer {
 					logger.info("Reading file : " + f.getAbsolutePath());
 					InputStream is = new FileInputStream(f.getAbsolutePath());
 					br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+					if (downloadLimited && totalCount > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+						break;
+					}
 					while ((line = br.readLine()) != null) {
-						if (downloadLimited && totalCount < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+						if (downloadLimited && totalCount > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
 							break;
 						}
 						try {
@@ -1315,7 +1324,7 @@ public class JsonDeserializer {
 			beanWriter = new BufferedWriter(new FileWriter(outputFile.toString()), BUFFER_SIZE);
 			int totalCount = 0;
 			for (String file : fileNames) {
-				if (downloadLimited && totalCount < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+				if (downloadLimited && totalCount > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
 					break;
 				}
 				String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
@@ -1324,7 +1333,7 @@ public class JsonDeserializer {
 					br = new BufferedReader(new FileReader(fileLocation)); 
 					String line;
 					while ((line = br.readLine()) != null) {
-						if (downloadLimited && totalCount < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+						if (downloadLimited && totalCount > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
 							break;
 						}
 						ClassifiedTweet tweet = getClassifiedTweet(line);

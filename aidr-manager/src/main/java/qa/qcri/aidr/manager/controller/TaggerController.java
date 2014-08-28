@@ -552,14 +552,18 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/taggerGenerateCSVLink.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> generateCSVLink(@RequestParam String code) throws Exception {
-		String result = "";
+		Map<String, Object> result = null;
 		try {
 			result = taggerService.generateCSVLink(code);
+			if (result != null && result.get("url") != null) {
+				return getUIWrapper(result.get("url"),true);
+			} else {
+				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
-		return getUIWrapper(result,true);
 	}
 
 	// Added by koushik
@@ -567,15 +571,21 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> generateTweetIdsLink(@RequestParam String code) throws Exception {
 		System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
-		String result = "";
+		Map<String, Object> result = null;
 		try {
 			result = taggerService.generateTweetIdsLink(code);
+			if (result != null && result.get("url") != null) {
+				System.out.println("Returning success fo collection: " +  code + ", response: " + result);
+				return getUIWrapper(result.get("url"),true, null, (String)result.get("message"));
+			} else {
+				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
-		System.out.println("[Controller generateTweetIdsLink] Returning success: " + result);
-		return getUIWrapper(result,true);
+		//System.out.println("[Controller generateTweetIdsLink] Returning success: " + result);
+		//return getUIWrapper(result,true);
 	}
 
 	private TaggerCrisisRequest transformCrisesRequestToTaggerCrises (CrisisRequest request, Integer taggerUserId) throws Exception{
@@ -629,14 +639,19 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/taggerGenerateJSONLink.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> generateJSONLink(@RequestParam String code) throws Exception {
-		String result = "";
+		Map<String, Object> result = null;
 		try {
 			result = taggerService.generateJSONLink(code);
+			if (result != null && result.get("url") != null) {
+				return getUIWrapper(result.get("url"),true);
+			} else {
+				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
-		return getUIWrapper(result,true);
+		//return getUIWrapper(result,true);
 	}
 
 	// Added by koushik
@@ -644,15 +659,21 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> generateJsonTweetIdsLink(@RequestParam String code) throws Exception {
 		System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
-		String result = "";
+		Map<String, Object> result = null;
 		try {
 			result = taggerService.generateJsonTweetIdsLink(code);
+			if (result != null && result.get("url") != null) {
+				System.out.println("Returning success fo collection: " +  code + ", response: " + result);
+				return getUIWrapper(result.get("url"),true, null, (String)result.get("message"));
+			} else {
+				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
-		System.out.println("[Controller generateTweetIdsLink] Returning success: " + result);
-		return getUIWrapper(result,true);
+		//System.out.println("[Controller generateTweetIdsLink] Returning success: " + result);
+		//return getUIWrapper(result,true);
 	}
 
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+
 import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
@@ -16,9 +17,11 @@ import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
+import qa.qcri.aidr.manager.util.ErrorLog;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -29,6 +32,7 @@ import static qa.qcri.aidr.manager.util.CollectionType.SMS;
 public class CollectionController extends BaseController{
 
 	private Logger logger = Logger.getLogger(CollectionController.class);
+	private ErrorLog elog = new ErrorLog();
 
 	@Autowired
 	private CollectionService collectionService;
@@ -64,12 +68,12 @@ public class CollectionController extends BaseController{
 			managers.add(entity);
 			collection.setManagers(managers);
 
-            if(collection.getCollectionType() == SMS){
-                collection.setTrack(null);
-                collection.setLangFilters(null);
-                collection.setGeo(null);
-                collection.setFollow(null);
-            }
+			if(collection.getCollectionType() == SMS){
+				collection.setTrack(null);
+				collection.setLangFilters(null);
+				collection.setGeo(null);
+				collection.setFollow(null);
+			}
 
 			collectionService.create(collection);
 			return getUIWrapper(true);  
@@ -198,22 +202,22 @@ public class CollectionController extends BaseController{
 			logger.info("Untrashing collection having code " + trashedCollection.getCode());
 			try{
 				if (taggerService.untrashCollection(trashedCollection.getCode()) > 0) {
-                    trashedCollection.setStatus(CollectionStatus.STOPPED);
+					trashedCollection.setStatus(CollectionStatus.STOPPED);
 					collectionService.update(trashedCollection);
 					//AidrCollection c = collectionService.start(trashedCollection.getId());
 					return getUIWrapper(true);  
 				} else {
-                    String msg = "Attempting to untrash collection " + trashedCollection.getCode() + " failed! ";
+					String msg = "Attempting to untrash collection " + trashedCollection.getCode() + " failed! ";
 					logger.error(msg);
 					return getUIWrapper(false, msg);
 				}
 			}catch(Exception e){
-                String msg = "Error while untrashing AIDR Collection " + trashedCollection.getCode();
+				String msg = "Error while untrashing AIDR Collection " + trashedCollection.getCode();
 				logger.error(msg);
 				return getUIWrapper(false, msg);
 			}
 		} else {
-            String msg = "Attempting to untrash collection " + collection.getCode() + " that does not exist.";
+			String msg = "Attempting to untrash collection " + collection.getCode() + " that does not exist.";
 			logger.error(msg);
 			return getUIWrapper(false, msg);
 		}
@@ -228,12 +232,12 @@ public class CollectionController extends BaseController{
 			CollectionStatus status = collection.getStatus();
 			AidrCollection dbCollection = collectionService.findById(collectionId);
 
-            if (collection.getCollectionType() == SMS) {
-                collection.setTrack(null);
-                collection.setLangFilters(null);
-                collection.setGeo(null);
-                collection.setFollow(null);
-            }
+			if (collection.getCollectionType() == SMS) {
+				collection.setTrack(null);
+				collection.setLangFilters(null);
+				collection.setGeo(null);
+				collection.setFollow(null);
+			}
 
 			if (CollectionStatus.RUNNING_WARNING.equals(status) || CollectionStatus.RUNNING.equals(status)) {
 				//              stop collection
@@ -258,7 +262,7 @@ public class CollectionController extends BaseController{
 				collection.setManagers(dbCollection.getManagers());
 				collection.setCreatedDate(dbCollection.getCreatedDate());
 				collection.setPubliclyListed(dbCollection.getPubliclyListed());
-                collectionService.update(collection);
+				collectionService.update(collection);
 
 				//              start collection
 				collectionService.startFetcher(collectionService.prepareFetcherRequest(collection), collection);
@@ -319,27 +323,27 @@ public class CollectionController extends BaseController{
 		if (userEntity != null) {
 			List<AidrCollectionTotalDTO> dtoList = new ArrayList<AidrCollectionTotalDTO>();
 			Integer count = 0;
-            boolean onlyTrashed = false;
-            if (trashed != null && trashed.equalsIgnoreCase("yes")) {
-                onlyTrashed = true;
-            }
+			boolean onlyTrashed = false;
+			if (trashed != null && trashed.equalsIgnoreCase("yes")) {
+				onlyTrashed = true;
+			}
 			try {
 				Integer userId = userEntity.getId();
 				// Call update from Fetcher and then get list with updated items
 				collectionService.updateAndGetRunningCollectionStatusByUser(userId);
 				count = collectionService.getCollectionsCount(userEntity, onlyTrashed);
 				if (count > 0) {
-                    List<AidrCollection> data = collectionService.findAll(start, limit, userEntity, onlyTrashed);
-                    List<ValueModel> collectionCodes = new ArrayList<ValueModel>(data.size());
+					List<AidrCollection> data = collectionService.findAll(start, limit, userEntity, onlyTrashed);
+					List<ValueModel> collectionCodes = new ArrayList<ValueModel>(data.size());
 					for (AidrCollection collection : data) {
-                        AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
-                        dtoList.add(dto);
-                        collectionCodes.add(new ValueModel(collection.getCode()));
+						AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
+						dtoList.add(dto);
+						collectionCodes.add(new ValueModel(collection.getCode()));
 					}
-                    Map<String, Integer> collectionsClassifiers = taggerService.countCollectionsClassifiers(collectionCodes);
-                    for (AidrCollectionTotalDTO dto : dtoList) {
-                        dto.setClassifiersNumber(collectionsClassifiers.get(dto.getCode()));
-                    }
+					Map<String, Integer> collectionsClassifiers = taggerService.countCollectionsClassifiers(collectionCodes);
+					for (AidrCollectionTotalDTO dto : dtoList) {
+						dto.setClassifiersNumber(collectionsClassifiers.get(dto.getCode()));
+					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -466,27 +470,36 @@ public class CollectionController extends BaseController{
 	@RequestMapping(value = "/generateCSVLink.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> generateCSVLink(@RequestParam String code) throws Exception {
-		String result = "";
+		Map<String, Object> result = null;
 		try {
 			result = collectionLogService.generateCSVLink(code);
+			if (result != null && result.get("url") != null) {
+				return getUIWrapper(result.get("url"),true);
+			} else {
+				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception in generating CSV download link for collection: " + code);
+			logger.error(elog.toStringException(e));
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
-		return getUIWrapper(result,true);
 	}
 
 	@RequestMapping(value = "/generateTweetIdsLink.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> generateTweetIdsLink(@RequestParam String code) throws Exception {
-		String result = "";
+		Map<String, Object> result = null;
 		try {
 			result = collectionLogService.generateTweetIdsLink(code);
+			if (result != null && result.get("url") != null) {
+				return getUIWrapper(result.get("url"),true, null, (String)result.get("message"));
+			} else {
+				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception in generating CSV TweetIDs download link for collection: " + code);
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
-		return getUIWrapper(result,true);
 	}
 
 	@RequestMapping(value = "/getAllRunning.action", method = RequestMethod.GET)
@@ -664,31 +677,39 @@ public class CollectionController extends BaseController{
 
 		return dto;
 	}
-	
-	
+
+
 	@RequestMapping(value = "/generateJSONLink.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> generateJSONLink(@RequestParam String code) throws Exception {
-		String result = "";
+		Map<String, Object> result = null;
 		try {
 			result = collectionLogService.generateJSONLink(code);
+			if (result != null && result.get("url") != null) {
+				return getUIWrapper(result.get("url"),true);
+			} else {
+				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
-		return getUIWrapper(result,true);
 	}
 
 	@RequestMapping(value = "/generateJsonTweetIdsLink.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> generateJsonTweetIdsLink(@RequestParam String code) throws Exception {
-		String result = "";
+		Map<String, Object> result = null;
 		try {
 			result = collectionLogService.generateJsonTweetIdsLink(code);
+			if (result != null && result.get("url") != null) {
+				return getUIWrapper(result.get("url"),true, null, (String)result.get("message"));
+			} else {
+				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
-		return getUIWrapper(result,true);
 	}
 }

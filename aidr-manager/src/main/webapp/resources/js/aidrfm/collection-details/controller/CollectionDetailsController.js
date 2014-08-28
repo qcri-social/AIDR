@@ -1025,6 +1025,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 if (resp.success) {
                     if (resp.data && resp.data != '') {
                         me.DetailsComponent.tweetsIdsLink.setText('<div class="styled-text download-link"><a href="' + resp.data + '">' + resp.data + '</a></div>', false);
+                        if (resp.message) {
+                     	   AIDRFMFunctions.setAlert("Error", resp.message); 
+                        } 
                     } else {
                         me.DetailsComponent.tweetsIdsLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
@@ -1120,6 +1123,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 if (resp.success) {
                     if (resp.data && resp.data != '') {
                         me.DetailsComponent.JsonTweetsIdsLink.setText('<div class="styled-text download-link"><a href="' + resp.data + '">' + resp.data + '</a></div>', false);
+                        if (resp.message) {
+                     	   AIDRFMFunctions.setAlert("Error", resp.message); 
+                        } 
                     } else {
                         me.DetailsComponent.JsonTweetsIdsLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate JSON Tweet Ids service returned empty url. For further inquiries please contact admin.");

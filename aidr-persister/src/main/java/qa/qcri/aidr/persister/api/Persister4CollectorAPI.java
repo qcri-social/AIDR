@@ -112,7 +112,7 @@ public class Persister4CollectorAPI {
     }
     
     @GET
-    @Produces(MediaType.TEXT_HTML)
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/genCSV")
     public Response generateCSVFromLastestJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
     	logger.info("Received request for collection: " + collectionCode);
@@ -121,7 +121,10 @@ public class Persister4CollectorAPI {
         fileName = Config.SCD1_URL + collectionCode+"/"+fileName;
         
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
-        return Response.ok(fileName).build();
+        //return Response.ok(fileName).build();
+        
+        CollectionStatus s = new CollectionStatus();
+        return Response.ok(s.getUIWrapper(collectionCode, null, fileName, true)).build();
     }
     
     @GET
@@ -152,7 +155,7 @@ public class Persister4CollectorAPI {
     }
     
     @GET
-    @Produces(MediaType.TEXT_HTML)
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/genJson")
     public Response generateJSONFromLastestJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
     	logger.info("Received request for collection: " + collectionCode);
@@ -161,7 +164,10 @@ public class Persister4CollectorAPI {
         fileName = Config.SCD1_URL + collectionCode+"/"+fileName;
         
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
-        return Response.ok(fileName).build();
+        //return Response.ok(fileName).build();
+        
+        CollectionStatus s = new CollectionStatus();
+        return Response.ok(s.getUIWrapper(collectionCode, null, fileName, true)).build();
     }
     
     @GET

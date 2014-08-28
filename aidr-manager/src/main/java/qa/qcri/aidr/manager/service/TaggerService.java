@@ -86,10 +86,10 @@ public interface TaggerService {
     public String getAttributesAndLabelsByCrisisId(Integer id) throws Exception;
 
     // Added by koushik
-	public String generateCSVLink(String code) throws AidrException;
+	public Map<String, Object> generateCSVLink(String code) throws AidrException;
 
 	// Added by koushik
-	public String generateTweetIdsLink(String code) throws AidrException;
+	public Map<String, Object> generateTweetIdsLink(String code) throws AidrException;
 
 	//Added by koushik
 	public int trashCollection(AidrCollection collection) throws Exception;
@@ -100,10 +100,10 @@ public interface TaggerService {
     public String loadLatestTweetsWithCount(String code, int count) throws AidrException;
 
     //Added by koushik
-	public String generateJSONLink(String code) throws AidrException;
+	public Map<String, Object> generateJSONLink(String code) throws AidrException;
 
 	//Added by koushik
-	public String generateJsonTweetIdsLink(String code) throws AidrException;
+	public Map<String, Object> generateJsonTweetIdsLink(String code) throws AidrException;
 
     Map<String, Integer> countCollectionsClassifiers(List<ValueModel> collectionCodes) throws AidrException;
 }

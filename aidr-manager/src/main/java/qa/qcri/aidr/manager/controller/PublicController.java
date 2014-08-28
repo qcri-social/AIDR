@@ -198,14 +198,18 @@ public class PublicController extends BaseController{
 	@RequestMapping(value = "/generateTweetIdsLink.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> generateTweetIdsLink(@RequestParam String code) throws Exception {
-		String result = "";
+		Map<String, Object> result = null;
 		try {
 			result = collectionLogService.generateTweetIdsLink(code);
+			if (result != null && result.get("url") != null) {
+				return getUIWrapper(result.get("url"),true, null, (String)result.get("message"));
+			} else {
+				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+			}
 		} catch (Exception e) {
 			logger.error(elog.toStringException(e));
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
-		return getUIWrapper(result,true);
 	}
 
 	@RequestMapping(value = "/getAttributesAndLabelsByCrisisId.action", method = RequestMethod.GET)

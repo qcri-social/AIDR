@@ -138,7 +138,7 @@ public class Persister4TaggerAPI {
 
 	@GET
 	//@Produces(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.TEXT_HTML)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/genCSV")
 	public Response generateCSVFromLastestJSON(@QueryParam("collectionCode") String collectionCode, @QueryParam("exportLimit") int exportLimit) throws UnknownHostException {
 		logger.debug("In tagger-persister genCSV");
@@ -149,7 +149,10 @@ public class Persister4TaggerAPI {
 		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
 
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
-		return Response.ok(fileName).build();
+		//return Response.ok(fileName).build();
+		
+		CollectionStatus s = new CollectionStatus();
+        return Response.ok(s.getUIWrapper(collectionCode, null, fileName, true)).build();
 	}
 
 	/**
@@ -161,7 +164,7 @@ public class Persister4TaggerAPI {
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.TEXT_HTML)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/filter/genCSV")
 	public Response generateCSVFromLastestJSONFiltered(String queryString, 
 			@QueryParam("collectionCode") String collectionCode, 
@@ -177,9 +180,19 @@ public class Persister4TaggerAPI {
 		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
 
 		logger.info("done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
-
+		/*
 		return Response.ok(fileName)
 				.allow("POST", "OPTIONS", "HEAD")
+				.header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Credentials", "true")
+				.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
+				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
+				.build();
+		*/
+		
+		CollectionStatus s = new CollectionStatus();
+        return Response.ok(s.getUIWrapper(collectionCode, null, fileName, true))
+        		.allow("POST", "OPTIONS", "HEAD")
 				.header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Credentials", "true")
 				.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
@@ -188,7 +201,7 @@ public class Persister4TaggerAPI {
 	}  
 
 	@GET
-	@Produces(MediaType.TEXT_HTML)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/genTweetIds")
 	public Response generateTweetsIDSCSVFromAllJSON(@QueryParam("collectionCode") String collectionCode,
 			@DefaultValue("true") @QueryParam("downloadLimited") Boolean downloadLimited) throws UnknownHostException {
@@ -217,7 +230,7 @@ public class Persister4TaggerAPI {
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.TEXT_HTML)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/filter/genTweetIds")
 	public Response generateTweetsIDSCSVFromAllJSONFiltered(String queryString, 
 			@QueryParam("collectionCode") String collectionCode,
@@ -316,7 +329,7 @@ public class Persister4TaggerAPI {
 
 	@GET
 	//@Produces(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.TEXT_HTML)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/genJson")
 	public Response generateJSONFromLastestJSON(@QueryParam("collectionCode") String collectionCode, @QueryParam("exportLimit") int exportLimit) throws UnknownHostException {
 		logger.debug("In tagger-persister genCSV");
@@ -327,11 +340,14 @@ public class Persister4TaggerAPI {
 		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
 
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
-		return Response.ok(fileName).build();
+		//return Response.ok(fileName).build();
+		
+		CollectionStatus s = new CollectionStatus();
+        return Response.ok(s.getUIWrapper(collectionCode, null, fileName, true)).build();
 	}
 
 	@GET
-	@Produces(MediaType.TEXT_HTML)
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/genJsonTweetIds")
 	public Response generateTweetsIDSJSONFromAllJSON(@QueryParam("collectionCode") String collectionCode,
 			@DefaultValue("true") @QueryParam("downloadLimited") Boolean downloadLimited) throws UnknownHostException {

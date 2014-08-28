@@ -1018,6 +1018,9 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 if (resp.success) {
                     if (resp.data && resp.data != '') {
                         me.mainComponent.tweetsIdsLink.setText('<div class="styled-text download-link">&#8226;&nbsp;<a href="' + resp.data + '">Download all tweets (tweet-ids only)</a></div>', false);
+                        if (resp.message) {
+                     	   AIDRFMFunctions.setAlert("Error", resp.message); 
+                        } 
                     } else {
                         me.mainComponent.tweetsIdsLink.setText('<div class="styled-text download-link">&#8226;&nbsp;Download all tweets (tweet-ids only) - Not yet available for this crisis.</div>', false);
                     }
@@ -1113,6 +1116,9 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 if (resp.success) {
                     if (resp.data && resp.data != '') {
                         me.mainComponent.tweetsIdsLink.setText('<div class="styled-text download-link"><a href="' + resp.data + '">' + resp.data + '</a></div>', false);
+                        if (resp.message) {
+                     	   AIDRFMFunctions.setAlert("Error", resp.message); 
+                        } 
                     } else {
                         me.mainComponent.tweetsIdsLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
@@ -1204,6 +1210,9 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 if (resp.success) {
                     if (resp.data && resp.data != '') {
                         me.mainComponent.JsonTweetsIdsLink.setText('<div class="styled-text download-link">&#8226;&nbsp;<a href="' + resp.data + '">Download all tweets (tweet-ids only)</a></div>', false);
+                        if (resp.message) {
+                     	   AIDRFMFunctions.setAlert("Error", resp.message); 
+                        } 
                     } else {
                         me.mainComponent.JsonTweetsIdsLink.setText('<div class="styled-text download-link">&#8226;&nbsp;Download all tweets (tweet-ids only) - Not yet available for this crisis.</div>', false);
                     }
@@ -1299,6 +1308,9 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 if (resp.success) {
                     if (resp.data && resp.data != '') {
                         me.mainComponent.JsonTweetsIdsLink.setText('<div class="styled-text download-link"><a href="' + resp.data + '">' + resp.data + '</a></div>', false);
+                        if (resp.message) {
+                     	   AIDRFMFunctions.setAlert("Error", resp.message); 
+                        } 
                     } else {
                         me.mainComponent.JsonTweetsIdsLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");

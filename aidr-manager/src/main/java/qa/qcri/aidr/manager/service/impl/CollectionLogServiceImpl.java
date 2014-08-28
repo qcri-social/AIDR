@@ -10,6 +10,7 @@ import qa.qcri.aidr.manager.service.CollectionLogService;
 
 
 
+
 //import com.sun.jersey.api.client.Client;		// gf 3 way
 //import com.sun.jersey.api.client.ClientResponse;
 //import com.sun.jersey.api.client.WebResource;
@@ -26,8 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.core.MediaType;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 @Service("collectionLogService")
@@ -94,96 +97,84 @@ public class CollectionLogServiceImpl implements CollectionLogService {
     }
 
     @Override
-    public String generateCSVLink(String code) throws AidrException {
+    public Map<String, Object> generateCSVLink(String code) throws AidrException {
         try {
-            Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
-            //WebResource webResource = client.resource(persisterMainUrl + "/persister/genCSV?collectionCode=" + code);
+            Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();            
             WebTarget webResource = client.target(persisterMainUrl + "/persister/genCSV?collectionCode=" + code);
-            //ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
-            //        .get(ClientResponse.class);
-            Response clientResponse = webResource.request(MediaType.TEXT_HTML).get();
+            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+            //String jsonResponse = clientResponse.readEntity(String.class);
             
-            //String jsonResponse = clientResponse.getEntity(String.class);
-            String jsonResponse = clientResponse.readEntity(String.class);
-            
+            Map<String, Object> jsonResponse = clientResponse.readEntity(Map.class);
+            return jsonResponse;
+            /*
             if (jsonResponse != null && "http".equals(jsonResponse.substring(0, 4))) {
                 return jsonResponse;
             } else {
                 return "";
-            }
+            }*/
         } catch (Exception e) {
             throw new AidrException("Error while generating CSV link in Persister", e);
         }
     }
 
     @Override
-    public String generateTweetIdsLink(String code) throws AidrException {
+    public Map<String, Object> generateTweetIdsLink(String code) throws AidrException {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
-            //Client client = ClientBuilder.newClient();
-            //WebResource webResource = client.resource(persisterMainUrl + "/persister/genTweetIds?collectionCode=" + code);
         	WebTarget webResource = client.target(persisterMainUrl + "/persister/genTweetIds?collectionCode=" + code);
+        	Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+        	//String jsonResponse = clientResponse.readEntity(String.class);
         	
-        	//ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
-            //        .get(ClientResponse.class);
-        	Response clientResponse = webResource.request(MediaType.TEXT_HTML).get();
-        	
-        	//String jsonResponse = clientResponse.getEntity(String.class);
-        	String jsonResponse = clientResponse.readEntity(String.class);
-        	
+        	Map<String, Object> jsonResponse = clientResponse.readEntity(Map.class);
+            return jsonResponse;
+            /*
             if (jsonResponse != null && "http".equals(jsonResponse.substring(0, 4))) {
                 return jsonResponse;
             } else {
                 return "";
-            }
+            }*/
         } catch (Exception e) {
             throw new AidrException("Error while generating Tweet Ids link in Persister", e);
         }
     }
     
     @Override
-    public String generateJSONLink(String code) throws AidrException {
+    public Map<String, Object> generateJSONLink(String code) throws AidrException {
         try {
             Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
-            //WebResource webResource = client.resource(persisterMainUrl + "/persister/genCSV?collectionCode=" + code);
             WebTarget webResource = client.target(persisterMainUrl + "/persister/genJson?collectionCode=" + code);
-            //ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
-            //        .get(ClientResponse.class);
-            Response clientResponse = webResource.request(MediaType.TEXT_HTML).get();
+            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+            //String jsonResponse = clientResponse.readEntity(String.class);
             
-            //String jsonResponse = clientResponse.getEntity(String.class);
-            String jsonResponse = clientResponse.readEntity(String.class);
-            
+            Map<String, Object> jsonResponse = clientResponse.readEntity(Map.class);
+            return jsonResponse;
+            /*
             if (jsonResponse != null && "http".equals(jsonResponse.substring(0, 4))) {
                 return jsonResponse;
             } else {
                 return "";
-            }
+            }*/
         } catch (Exception e) {
             throw new AidrException("Error while generating JSON download link in Persister", e);
         }
     }
 
     @Override
-    public String generateJsonTweetIdsLink(String code) throws AidrException {
+    public Map<String, Object> generateJsonTweetIdsLink(String code) throws AidrException {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
-            //Client client = ClientBuilder.newClient();
-            //WebResource webResource = client.resource(persisterMainUrl + "/persister/genTweetIds?collectionCode=" + code);
-        	WebTarget webResource = client.target(persisterMainUrl + "/persister/genJsonTweetIds?collectionCode=" + code);
+            WebTarget webResource = client.target(persisterMainUrl + "/persister/genJsonTweetIds?collectionCode=" + code);
+        	Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+        	//String jsonResponse = clientResponse.readEntity(String.class);
         	
-        	//ClientResponse clientResponse = webResource.type(MediaType.TEXT_PLAIN)
-            //        .get(ClientResponse.class);
-        	Response clientResponse = webResource.request(MediaType.TEXT_HTML).get();
-        	
-        	//String jsonResponse = clientResponse.getEntity(String.class);
-        	String jsonResponse = clientResponse.readEntity(String.class);
-        	
+        	Map<String, Object> jsonResponse = clientResponse.readEntity(Map.class);
+            return jsonResponse;
+            /*
             if (jsonResponse != null && "http".equals(jsonResponse.substring(0, 4))) {
                 return jsonResponse;
             } else {
                 return "";
-            }
+            }*/
         } catch (Exception e) {
             throw new AidrException("Error while generating JSON Tweet Ids download link in Persister", e);
         }

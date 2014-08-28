@@ -25,12 +25,12 @@ public interface CollectionLogService {
 
     public Map<Integer, Integer> countTotalDownloadedItemsForCollectionIds(List<Integer> ids) throws Exception;
 
-    public String generateCSVLink(String code) throws Exception;
+    public Map<String, Object> generateCSVLink(String code) throws Exception;
 
-    public String generateTweetIdsLink(String code) throws Exception;
+    public Map<String, Object> generateTweetIdsLink(String code) throws Exception;
 
-	public String generateJSONLink(String code) throws AidrException;
+	public Map<String, Object> generateJSONLink(String code) throws AidrException;
 
-	public String generateJsonTweetIdsLink(String code) throws AidrException;
+	public Map<String, Object> generateJsonTweetIdsLink(String code) throws AidrException;
 
 }
