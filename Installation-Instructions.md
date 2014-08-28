@@ -168,10 +168,13 @@ The `aidr-task-manager` module is meant to provide a unified view of the `aidr_p
 
 
 * Create a new JDBC resource in the server called `JNDI/aidr_task_manager` to match the entry in the `persistence.xml` file with `connection pool` set to that of the `aidr-predict database`.
-* Build using maven the `aidr-task-manager.war` file and deploy to glassfish in the usual way.
-* Next build `aidr-task-manager.jar` file excluding the `ejb/bean` directory from the jar. 
-* Create a new directory `WEB-INF/lib` in the module that will use aidr-task-manager.
-* Copy the `aidr-task-manager.jar` file to the `WEB-INF/lib` directory. 
+
+As aidr-task-manager is an EJB module, the build process for aidr-task-manager differs from the other modules:
+
+* First build using maven. This will generate 2 jar files: `aidr-task-manager-1.0.jar` and `aidr-task-manager-client-1.0.jar`. Maven will also install these in the local .m2 repository for access by other dependent modules. 
+* Next build `aidr-task-manager.ear` file through `mvn -f pom-ear.xml`.  
+* Deploy the aidr-task-manager.ear file to Glassfish.
+
 
 
 
