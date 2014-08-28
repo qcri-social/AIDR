@@ -47,6 +47,7 @@ public class Persister4CollectionAPI {
         } catch (Exception ex) {
             logger.error(code + ": Failed to start persister");
             logger.error(elog.toStringException(ex));
+            response = "Failed to start persister " + ex.getMessage();
         }
         return Response.ok(response).build();
     }
