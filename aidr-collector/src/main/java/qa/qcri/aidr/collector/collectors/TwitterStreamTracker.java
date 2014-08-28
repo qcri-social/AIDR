@@ -5,20 +5,10 @@
 package qa.qcri.aidr.collector.collectors;
 
 import java.io.Serializable;
-import java.net.SocketException;
-
-
-
 import java.util.concurrent.ConcurrentHashMap;
-
-
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.json.JSONException;
 import org.json.JSONObject;
-
 import qa.qcri.aidr.collector.beans.AIDR;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.FetcherResponseToStringChannel;
@@ -30,7 +20,6 @@ import qa.qcri.aidr.collector.utils.GenericCache;
 import qa.qcri.aidr.collector.utils.TwitterStreamQueryBuilder;
 import qa.qcri.aidr.collector.utils.LoadShedder;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.exceptions.JedisConnectionException;
 import twitter4j.FilterQuery;
 import twitter4j.StallWarning;
 import twitter4j.Status;
@@ -47,228 +36,227 @@ import twitter4j.conf.ConfigurationBuilder;
  */
 public class TwitterStreamTracker extends Loggable implements Serializable {
 
-	private static Logger logger = Logger.getLogger(TwitterStreamTracker.class.getName());
-	private static ErrorLog elog = new ErrorLog();
+    private static Logger logger = Logger.getLogger(TwitterStreamTracker.class.getName());
+    private static ErrorLog elog = new ErrorLog();
+    private TwitterStream twitterStream;
+    private ConfigurationBuilder configBuilder;
+    private TwitterStreamQueryBuilder streamQuery;
+    private Jedis publisherJedis;
+    private String collectionCode; 
+    private String cacheKey;
+    private long counter = 1;
+    private String collectionName;
 
-	private TwitterStream twitterStream;
-	private ConfigurationBuilder configBuilder;
-	private TwitterStreamQueryBuilder streamQuery;
-	private Jedis publisherJedis;
-	private String collectionCode; // CrisisID
-	private String cacheKey;
-	private long counter = 1;
-	private String collectionName;
+    private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
 
-	private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
+    public TwitterStreamTracker() {
+    }
 
+    public TwitterStreamTracker(TwitterStreamQueryBuilder streamFilterQuery, ConfigurationBuilder configurationBuilder, CollectionTask collectionTask) throws Exception {
 
-	public TwitterStreamTracker() {
-	}
+        logger.info("Waiting to aquire Jedis connection for collection " + collectionTask.getCollectionCode());
+        this.publisherJedis = JedisConnectionPool.getJedisConnection();
+        logger.info("Jedis connection acquired for collection " + collectionTask.getCollectionCode());
+        this.streamQuery = new TwitterStreamQueryBuilder();
+        this.collectionCode = collectionTask.getCollectionCode();
+        this.collectionName = collectionTask.getCollectionName();
+        this.cacheKey = collectionTask.getCollectionCode();
+        this.streamQuery = streamFilterQuery;
+        this.configBuilder = configurationBuilder;
 
-	public TwitterStreamTracker(TwitterStreamQueryBuilder streamFilterQuery, ConfigurationBuilder configurationBuilder, CollectionTask collectionTask) throws Exception {
+        GenericCache.getInstance().setTwtConfigMap(cacheKey, collectionTask);
+        GenericCache.getInstance().setTwitterTracker(cacheKey, this);
+        GenericCache.getInstance().incrCounter(cacheKey, new Long(0));
+        collectThroughStreaming();
+        if (null == redisLoadShedder) {
+            redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
+        }
+        redisLoadShedder.put(Config.FETCHER_CHANNEL + "." + getCollectionCode(),
+                new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
+    }
 
-		this.publisherJedis = JedisConnectionPool.getJedisConnection();
-		logger.info("Jedis connection acquired for collection " + collectionTask.getCollectionCode());
-		this.streamQuery = new TwitterStreamQueryBuilder();
-		this.collectionCode = collectionTask.getCollectionCode();
-		this.collectionName = collectionTask.getCollectionName();
-		this.cacheKey = collectionTask.getCollectionCode();
-		this.streamQuery = streamFilterQuery;
-		this.configBuilder = configurationBuilder;
+    private void collectThroughStreaming() {
 
-		GenericCache.getInstance().setTwtConfigMap(cacheKey, collectionTask);
-		GenericCache.getInstance().setTwitterTracker(cacheKey, this);
-		GenericCache.getInstance().incrCounter(cacheKey, new Long(0));
-		collectThroughStreaming();
-		if (null == redisLoadShedder) {
-			redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
-		}
-		redisLoadShedder.put(Config.FETCHER_CHANNEL + "." + getCollectionCode(), 
-				new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
-	}
+        StatusListener listener = new StatusListener() {
+            JSONObject tweetJSONObject = null;
+            CollectionTask collection = GenericCache.getInstance().getTwtConfigMap(getCacheKey());
+            JSONObject aidrObject = new JSONObject(new FetcherResponseToStringChannel(new AIDR(getCollectionCode(), getCollectionName(), "twitter")));
+            String aidrJson = StringUtils.replace(aidrObject.toString(), "{", ",", 1); // replacing the first occurance of { with ,
+            boolean allowAllLanguages = getStreamQuery().isLanguageAllowed(Config.LANGUAGE_ALLOWED_ALL);
+            String channelName = Config.FETCHER_CHANNEL + "." + getCollectionCode();
+            GenericCache cache = GenericCache.getInstance();
 
-	private void collectThroughStreaming() {
+            @Override
+            public void onStatus(Status status) {
+                String lang = status.getLang();
+                if (allowAllLanguages) {
+                    publishMessage(status);
+                } else {
+                    if (getStreamQuery().isLanguageAllowed(lang)) {
+                        publishMessage(status);
+                    }
+                }
+            }
 
-		StatusListener listener = new StatusListener() {
-			JSONObject tweetJSONObject = null;
-			CollectionTask collection = GenericCache.getInstance().getTwtConfigMap(getCacheKey());
-			JSONObject aidrObject = new JSONObject(new FetcherResponseToStringChannel(new AIDR(getCollectionCode(), getCollectionName(), "twitter")));
-			String aidrJson = StringUtils.replace(aidrObject.toString(), "{", ",", 1); // replacing the first occurance of { with ,
-			boolean allowAllLanguages = getStreamQuery().isLanguageAllowed(Config.LANGUAGE_ALLOWED_ALL);
-			String channelName = Config.FETCHER_CHANNEL + "." + getCollectionCode();
-			GenericCache cache = GenericCache.getInstance();
+            @Override
+            public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
+            }
 
-			@Override
-			public void onStatus(Status status) {
-				String lang = status.getLang();
-				if (allowAllLanguages) {
-					publishMessage(status);
-				} else {
-					if (getStreamQuery().isLanguageAllowed(lang)) {
-						publishMessage(status);
-					}
-				}
-			}
+            @Override
+            public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
+                collection.setStatusCode(Config.STATUS_CODE_COLLECTION_RUNNING_WARNING);
+                collection.setStatusMessage("Track limitation notice: " + numberOfLimitedStatuses);
+                GenericCache.getInstance().setTwtConfigMap(getCacheKey(), collection);
+                logger.info(collectionName + ": Track limitation notice: " + numberOfLimitedStatuses);
 
-			@Override
-			public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-			}
+            }
 
-			@Override
-			public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-				collection.setStatusCode(Config.STATUS_CODE_COLLECTION_RUNNING_WARNING);
-				collection.setStatusMessage("Track limitation notice: " + numberOfLimitedStatuses);
-				GenericCache.getInstance().setTwtConfigMap(getCacheKey(), collection);
-				logger.info(collectionName + ": Track limitation notice: " + numberOfLimitedStatuses);
+            @Override
+            public void onException(Exception ex) {
+                logger.error("Twitter Exception for collection " + collection.getCollectionCode());
+                logger.error(elog.toStringException(ex));
+                //log(LogLevel.WARNING, ex.toString());
+                collection.setStatusCode(Config.STATUS_CODE_COLLECTION_ERROR);
+            }
 
-			}
+            @Override
+            public void onScrubGeo(long arg0, long arg1) {
+            }
 
-			@Override
-			public void onException(Exception ex) {
-				logger.error("Twitter Exception for collection " + collection.getCollectionCode());
-				logger.error(elog.toStringException(ex));
-				//log(LogLevel.WARNING, ex.toString());
-				collection.setStatusCode(Config.STATUS_CODE_COLLECTION_ERROR);
-			}
+            @Override
+            public void onStallWarning(StallWarning arg0) {
+                logger.error(collection.getCollectionCode() + " Stall Warning: " + arg0.getMessage());
+                //log(LogLevel.WARNING, arg0.toString());
+            }
 
-			@Override
-			public void onScrubGeo(long arg0, long arg1) {
-			}
+            public void publishMessage(Status status) {
+                StringBuilder rawTweetJSON = new StringBuilder(TwitterObjectFactory.getRawJSON(status));
+                int length = rawTweetJSON.length();
+                if (rawTweetJSON.charAt(length - 1) == '}') {
+                    rawTweetJSON.replace(length - 1, length, aidrJson);
+                    if (redisLoadShedder.get(channelName).canProcess()) {
+                        publisherJedis.publish(channelName, rawTweetJSON.toString());
+                        counter++;
+                        if (counter >= Config.FETCHER_REDIS_COUNTER_UPDATE_THRESHOLD) {
+                            cache.incrCounter(collectionCode, counter);
+                            cache.setLastDownloadedDoc(collectionCode, status.getText());
+                            counter = 0;
+                        }
+                    }
+                }
+            }
+        };
 
-			@Override
-			public void onStallWarning(StallWarning arg0) {
-				logger.error(collection.getCollectionCode() + " Stall Warning: " + arg0.getMessage());
-				//log(LogLevel.WARNING, arg0.toString());
-			}
+        twitterStream = new TwitterStreamFactory(getConfigBuilder().build()).getInstance();
+        twitterStream.addListener(listener);
 
-			public void publishMessage(Status status) {
-				StringBuilder rawTweetJSON = new StringBuilder(TwitterObjectFactory.getRawJSON(status));
-				int length = rawTweetJSON.length();
-				if (rawTweetJSON.charAt(length - 1) == '}') {
-					rawTweetJSON.replace(length - 1, length, aidrJson);
-					if (redisLoadShedder.get(channelName).canProcess()) {
-						publisherJedis.publish(channelName, rawTweetJSON.toString());
-						counter++;
-						if (counter >= Config.FETCHER_REDIS_COUNTER_UPDATE_THRESHOLD) {
-							cache.incrCounter(collectionCode, counter);
-							cache.setLastDownloadedDoc(collectionCode, status.getText());
-							counter = 0;
-						}
-					}
-				}
-			}
-		};
+        // Setup the filter
+        FilterQuery query = new FilterQuery();
+        if (getStreamQuery().getToFollow() != null) {
+            query.follow(getStreamQuery().getToFollow());
+        }
+        if (getStreamQuery().getGeoLocation() != null) {
+            query.locations(getStreamQuery().getGeoLocation());
 
-		twitterStream = new TwitterStreamFactory(getConfigBuilder().build()).getInstance();
-		twitterStream.addListener(listener);
+        }
 
-		// Setup the filter
-		FilterQuery query = new FilterQuery();
-		if (getStreamQuery().getToFollow() != null) {
-			query.follow(getStreamQuery().getToFollow());
-		}
-		if (getStreamQuery().getGeoLocation() != null) {
-			query.locations(getStreamQuery().getGeoLocation());
+        query.track(getStreamQuery().getToTrack());
+        twitterStream.filter(query);
 
-		}
+        // if twitter streaming connection successful then change the status code
+        CollectionTask coll = GenericCache.getInstance().getTwtConfigMap(getCacheKey());
+        coll.setStatusCode(Config.STATUS_CODE_COLLECTION_RUNNING);
+        coll.setStatusMessage(null);
+        GenericCache.getInstance().setTwtConfigMap(getCacheKey(), coll);
 
-		query.track(getStreamQuery().getToTrack());
-		twitterStream.filter(query);
+    }
+    volatile boolean finished = false;
 
-		// if twitter streaming connection successful then change the status code
-		CollectionTask coll = GenericCache.getInstance().getTwtConfigMap(getCacheKey());
-		coll.setStatusCode(Config.STATUS_CODE_COLLECTION_RUNNING);
-		coll.setStatusMessage(null);
-		GenericCache.getInstance().setTwtConfigMap(getCacheKey(), coll);
+    public void stopMe() {
+        finished = true;
+    }
 
-	}
-	volatile boolean finished = false;
+    public void abortCollection() {
+        JedisConnectionPool.close(publisherJedis);
+        twitterStream.cleanUp();
+        twitterStream.shutdown();
+        cleanCache();
+        logger.warn("AIDR-Fetcher: Collection aborted which was tracking [" + getStreamQuery().getToTrackToString() + "] AND following [" + getStreamQuery().getToFollowToString() + "]");
+    }
 
-	public void stopMe() {
-		finished = true;
-	}
+    public void cleanCache() {
+        GenericCache.getInstance().deleteCounter(getCacheKey());
+        GenericCache.getInstance().delTwtConfigMap(getCacheKey());
+        GenericCache.getInstance().delLastDownloadedDoc(getCacheKey());
+    }
 
-	public void abortCollection() {
-		JedisConnectionPool.close(publisherJedis);
-		twitterStream.cleanUp();
-		twitterStream.shutdown();
-		cleanCache();
-		logger.warn("AIDR-Fetcher: Collection aborted which was tracking [" + getStreamQuery().getToTrackToString() + "] AND following [" + getStreamQuery().getToFollowToString() + "]");
-	}
+    /**
+     * @return the configBuilder
+     */
+    public ConfigurationBuilder getConfigBuilder() {
+        return configBuilder;
+    }
 
-	public void cleanCache() {
-		GenericCache.getInstance().deleteCounter(getCacheKey());
-		GenericCache.getInstance().delTwtConfigMap(getCacheKey());
-		GenericCache.getInstance().delLastDownloadedDoc(getCacheKey());
-	}
+    /**
+     * @param configBuilder the configBuilder to set
+     */
+    public void setConfigBuilder(ConfigurationBuilder cb) {
+        this.configBuilder = cb;
+    }
 
-	/**
-	 * @return the configBuilder
-	 */
-	public ConfigurationBuilder getConfigBuilder() {
-		return configBuilder;
-	}
+    /**
+     * @return the streamQuery
+     */
+    public TwitterStreamQueryBuilder getStreamQuery() {
+        return streamQuery;
+    }
 
-	/**
-	 * @param configBuilder the configBuilder to set
-	 */
-	public void setConfigBuilder(ConfigurationBuilder cb) {
-		this.configBuilder = cb;
-	}
+    /**
+     * @param streamQuery the streamQuery to set
+     */
+    public void setStreamQuery(TwitterStreamQueryBuilder streamQuery) {
+        this.streamQuery = streamQuery;
+    }
 
-	/**
-	 * @return the streamQuery
-	 */
-	public TwitterStreamQueryBuilder getStreamQuery() {
-		return streamQuery;
-	}
+    /**
+     * @return the collectionCode
+     */
+    public String getCollectionCode() {
+        return collectionCode;
+    }
 
-	/**
-	 * @param streamQuery the streamQuery to set
-	 */
-	public void setStreamQuery(TwitterStreamQueryBuilder streamQuery) {
-		this.streamQuery = streamQuery;
-	}
+    /**
+     * @param collectionCode the collectionCode to set
+     */
+    public void setCollectionCode(String collectionCode) {
+        this.collectionCode = collectionCode;
+    }
 
-	/**
-	 * @return the collectionCode
-	 */
-	public String getCollectionCode() {
-		return collectionCode;
-	}
+    /**
+     * @return the cacheKey
+     */
+    public String getCacheKey() {
+        return cacheKey;
+    }
 
-	/**
-	 * @param collectionCode the collectionCode to set
-	 */
-	public void setCollectionCode(String collectionCode) {
-		this.collectionCode = collectionCode;
-	}
+    /**
+     * @param cacheKey the cacheKey to set
+     */
+    public void setCacheKey(String cacheKey) {
+        this.cacheKey = cacheKey;
+    }
 
-	/**
-	 * @return the cacheKey
-	 */
-	public String getCacheKey() {
-		return cacheKey;
-	}
+    /**
+     * @return the collectionName
+     */
+    public String getCollectionName() {
+        return collectionName;
+    }
 
-	/**
-	 * @param cacheKey the cacheKey to set
-	 */
-	public void setCacheKey(String cacheKey) {
-		this.cacheKey = cacheKey;
-	}
-
-	/**
-	 * @return the collectionName
-	 */
-	public String getCollectionName() {
-		return collectionName;
-	}
-
-	/**
-	 * @param collectionName the collectionName to set
-	 */
-	public void setCollectionName(String collectionName) {
-		this.collectionName = collectionName;
-	}
+    /**
+     * @param collectionName the collectionName to set
+     */
+    public void setCollectionName(String collectionName) {
+        this.collectionName = collectionName;
+    }
 }
