@@ -1,17 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>qa.qcri.aidr.task</groupId>
 	<artifactId>aidr-task-manager</artifactId>
 	<version>1.0</version>
-	<name>aidr-task-manager</name>
-	<url>http://maven.apache.org</url>
-	<packaging>war</packaging>
+	<packaging>ejb</packaging>
 	
 	<properties>
-		<slf4j.version>1.6.2</slf4j.version>
+    	<jartype>client</jartype>
 	</properties>
-
+	
 	<dependencies>
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
@@ -24,21 +22,6 @@
 			<version>3.1.0</version>
 		</dependency>
 		<!-- if you are using Jersey client specific features -->
-
-		<!-- dependency> <groupId>org.hibernate</groupId> <artifactId>hibernate-core</artifactId> 
-			<version>4.3.1.Final</version> </dependency -->
-		<!-- dependency> <groupId>org.hibernate</groupId> <artifactId>hibernate-entitymanager</artifactId> 
-			<version>4.3.1.Final</version> <exclusions> <exclusion> <groupId>cglib</groupId> 
-			<artifactId>cglib</artifactId> </exclusion> <exclusion> <groupId>dom4j</groupId> 
-			<artifactId>dom4j</artifactId> </exclusion> </exclusions> </dependency -->
-
-		<!-- dependency> <groupId>com.sun.jersey</groupId> <artifactId>jersey-bundle</artifactId> 
-			<version>1.17.1</version> <scope>runtime</scope> </dependency> <dependency> 
-			<groupId>com.sun.jersey</groupId> <artifactId>jersey-core</artifactId> <version>1.17.1</version> 
-			<scope>runtime</scope> </dependency> <dependency> <groupId>com.sun.jersey</groupId> 
-			<artifactId>jersey-server</artifactId> <version>1.17.1</version> <scope>runtime</scope> 
-			</dependency> <dependency> <groupId>org.glassfish.corba</groupId> <artifactId>glassfish-corba-orb</artifactId> 
-			<version>4.0.0-b008</version> </dependency -->
 
 		<!-- MySQL database driver -->
 		<dependency>
@@ -125,9 +108,7 @@
 			<version>2.5.1</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- dependency> <groupId>org.glassfish.jersey.ext</groupId> <artifactId>jersey-servlet-portability</artifactId> 
-			<version>2.5.1</version> <scope>provided</scope> </dependency -->
-		<!-- if you are using Jersey client specific features -->
+	
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -148,29 +129,15 @@
 		</dependency>
 
 
-		<!-- dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency -->
-		
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
 		</dependency>
-		
+
 	</dependencies>
+
+
 
 	<build>
 		<plugins>
@@ -185,27 +152,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>make-a-jar</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<excludes>
-						<exclude>**/qa/qcri/aidr/task/ejb/bean/*Bean.class</exclude>
-						<exclude>**/qa/qcri/aidr/task/ejb/bean/*Bean.java</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
@@ -213,48 +159,41 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-			
 			<plugin>
+				<artifactId>maven-ejb-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<ejbVersion>3.2</ejbVersion>
+					<generateClient>true</generateClient>
+				</configuration>
+			</plugin>
+			
+			<!-- plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-install-plugin</artifactId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.5</version>
 				<executions>
 					<execution>
-						<phase>install</phase>
+						<id>client</id>
+						<phase>package</phase>
 						<goals>
-							<goal>install-file</goal>
+							<goal>jar</goal>
 						</goals>
-						<configuration>
-							<packaging>jar</packaging>
-							<artifactId>${project.artifactId}</artifactId>
-							<groupId>${project.groupId}</groupId>
-							<version>${project.version}</version>
-							<file>
-								${project.build.directory}/${project.artifactId}-${project.version}.jar
-							</file>
-							<excludes>
-								<exclude>**/qa/qcri/aidr/task/ejb/bean/*Bean.class</exclude>
-								<exclude>**/qa/qcri/aidr/task/ejb/bean/*Bean.java</exclude>
-							</excludes>
-						</configuration>
 					</execution>
 				</executions>
-			</plugin>
+				<configuration>
+					<classifier>client</classifier>
+					<excludes>
+						<exclude>**/log4j.properties</exclude>
+						<exclude>**/qa/qcri/aidr/task/ejb/bean/*Bean.class</exclude>
+						<exclude>**/qa/qcri/aidr/task/ejb/bean/*Bean.java</exclude>
+					</excludes>
+					<file>
+						${project.build.directory}/${project.artifactId}-${project.version}.jar
+					</file>
+				</configuration>
+			</plugin -->
+			
 		</plugins>
-		<!-- finalName>aidr-task-manager</finalName -->
 	</build>
-	<repositories>
-		<repository>
-			<id>java.net.glassfish</id>
-			<name>Repository hosting the jee6 artifacts</name>
-			<url>http://download.java.net/maven/glassfish</url>
-		</repository>
-		<repository>
-			<id>aidr-task-manager</id>
-			<name>Repository hosting the aidr-task-manager client jar</name>
-			<url>http://localhost/aidr-task-manager</url>
-		</repository>
-	</repositories>
 </project>
-  
-  
- 
