@@ -38,8 +38,8 @@ public class ApplicationConfig extends Application {
      * Do not modify addRestResourceClasses() method.
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
+        resources.add(qa.qcri.aidr.persister.api.Persister4CollectionAPI.class);
         resources.add(qa.qcri.aidr.persister.api.Persister4CollectorAPI.class);
         resources.add(qa.qcri.aidr.persister.api.Persister4TaggerAPI.class);
-        resources.add(Persister4CollectionAPI.class);
     }
 }
