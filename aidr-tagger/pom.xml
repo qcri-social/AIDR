@@ -197,7 +197,7 @@
 			<groupId>qa.qcri.aidr.task</groupId>
 			<artifactId>aidr-task-manager</artifactId>
 			<version>1.0</version>
-			<type>jar</type>
+			<type>ejb-client</type>
 		</dependency>
 
 	</dependencies>
