@@ -25,29 +25,32 @@ import qa.qcri.aidr.task.entities.Document;
 @Path("/test")
 public class TestTaskManager {
 
-	@EJB
+	//@EJB
 	private TaskManagerRemote<Document, Serializable> taskManager;
-
+	public final String jndiLookup = "java:global/AIDRTaskManager/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote";
+	
 	public TestTaskManager() {
-		/*
+		
 		try {
+			/*
 			Properties props = new Properties();
 			props.setProperty("java.naming.factory.initial", "com.sun.enterprise.naming.SerialInitContextFactory");
 			props.setProperty("java.naming.factory, url.pkgs", "com.sun.enterprise.naming");
 			props.setProperty("java.naming.factory.state", "com.sun.corba.ee.impl.presentation.rmi.JNDIStateFactoryImpl");
 			props.setProperty("org.omg.CORBA.ORBInitialHost", "localhost");
 			props.setProperty("org.omg.CORBA.ORBInitialPort", "3700");
-
 			InitialContext ctx = new InitialContext(props);
-			//this.taskManager = (TaskManagerRemote<Document, Serializable>) ctx.lookup("java:global/aidr-task-manager/TaskManagerBean!qa.qcri.aidr.task.api.TaskManagerRemote");
+			*/
+			
+			InitialContext ctx = new InitialContext();	// use no-args for glassfish
+			this.taskManager = (TaskManagerRemote<Document, Serializable>) ctx.lookup(jndiLookup);
 			//String jsonString = taskManager.getNewTask(117L);
 
-			this.taskManager = (TaskManagerRemote<Document, Serializable>) ctx.lookup("java:global/aidr-task-manager/TaskManagerBean");
+			//this.taskManager = (TaskManagerRemote<Document, Serializable>) ctx.lookup("java:global/aidr-task-manager/TaskManagerBean");
 		} catch (NamingException e) {
 			System.err.println("Error in JNDI lookup");
 			e.printStackTrace();
 		}
-		*/
 	}
 
 	@GET
