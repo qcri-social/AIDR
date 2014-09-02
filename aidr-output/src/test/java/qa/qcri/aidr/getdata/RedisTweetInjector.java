@@ -174,16 +174,17 @@ public class RedisTweetInjector {
 					try {
 						if (jedis != null) {
 							InjectorConfig config = new InjectorConfig();
-							Random randomGenerator = new Random();
-							String randomCollectionCode = config.collection_list.get(
-									randomGenerator.nextInt(config.collection_list.size()));
 
 							long startTime = System.currentTimeMillis();
 							if (config.useSingleTweet) {
 								System.out.println("Thread " + getName() + ":: will use collection: " + config.collectionCode + ", with singleTweet injection = " + config.useSingleTweet);
 								injector.injectSingleTweet(jedis, config.collectionCode);
 							} else {
-								System.out.println("Thread " + getName() + ":: will use collection: " + randomCollectionCode + ", with singleTweet injection = " + config.useSingleTweet);
+                                Random randomGenerator = new Random();
+                                String randomCollectionCode = config.collection_list.get(
+                                        randomGenerator.nextInt(config.collection_list.size()));
+
+                                System.out.println("Thread " + getName() + ":: will use collection: " + randomCollectionCode + ", with singleTweet injection = " + config.useSingleTweet);
 								injector.injectTweets(jedis, randomCollectionCode);
 							}
 							long elapsed = System.currentTimeMillis() - startTime;
