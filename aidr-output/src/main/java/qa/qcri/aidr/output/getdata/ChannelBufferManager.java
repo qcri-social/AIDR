@@ -51,10 +51,10 @@ public class ChannelBufferManager {
 	private static final int NO_DATA_TIMEOUT = 48 * 60 * 60 * 1000;		// when to delete a channel buffer
 	private static final int CHECK_INTERVAL = NO_DATA_TIMEOUT;
 	private static final int CHECK_CHANNEL_PUBLIC_INTERVAL = 5 * 60 * 1000;
-	
+
 	private static int PERSISTER_LOAD_LIMIT;
 	private static int PERSISTER_LOAD_CHECK_INTERVAL_MINUTES;
-	
+
 	private static Logger logger = Logger.getLogger(ChannelBufferManager.class);
 	private static ErrorLog elog = new ErrorLog();
 
@@ -101,11 +101,11 @@ public class ChannelBufferManager {
 
 		redisHost = configParams.get("host");
 		redisPort = Integer.parseInt(configParams.get("port"));
-		
+
 		redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
 		PERSISTER_LOAD_CHECK_INTERVAL_MINUTES = Integer.parseInt(configParams.get("PERSISTER_LOAD_CHECK_INTERVAL"));
 		PERSISTER_LOAD_LIMIT = Integer.parseInt(configParams.get("PERSISTER_LOAD_LIMIT"));
-		
+
 		managerMainUrl = configParams.get("managerUrl");
 		if (configParams.get("logger").equalsIgnoreCase("log4j")) {
 			// For now: set up a simple configuration that logs on the console
@@ -356,7 +356,9 @@ public class ChannelBufferManager {
 				//convert JSON string to Map
 				collectionMap = clientResponse.readEntity(Map.class);
 				logger.info("Channel info received from manager: " + collectionMap);
-				return collectionMap.get(channelCode);
+				if (collectionMap != null) {
+					return collectionMap.get(channelCode);
+				}
 			} else {
 				logger.warn("Couldn't contact AIDRFetchManager for publiclyListed status, channel: " + channelName);
 			}
@@ -364,7 +366,7 @@ public class ChannelBufferManager {
 			logger.error("Error in querying manager for running collections: " + clientResponse);
 			logger.error(elog.toStringException(e));
 		}
-		return false;
+		return true;		// Question: should default be true or false?
 	}
 
 
@@ -387,7 +389,7 @@ public class ChannelBufferManager {
 			//convert JSON string to Map
 			if (clientResponse.getStatus() == 200) {
 				collectionMap = clientResponse.readEntity(Map.class);
-				logger.info("Received from nanager: " + collectionMap);
+				logger.info("Received from manager: " + collectionMap);
 				return collectionMap;
 			} else {
 				logger.warn("Couldn't contact AIDRFetchManager for publiclyListed status of running collections");

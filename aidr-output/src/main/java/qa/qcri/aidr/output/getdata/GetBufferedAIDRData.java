@@ -82,6 +82,8 @@ import javax.ws.rs.core.Response;
 
 
 
+
+
 import org.apache.log4j.Logger;
 
 import com.google.gson.JsonObject;
@@ -101,7 +103,7 @@ import qa.qcri.aidr.output.utils.ErrorLog;
 public class GetBufferedAIDRData implements ServletContextListener {
 
 	// Debugging
-	private static Logger logger = Logger.getLogger(GetBufferedAIDRData.class.getName());
+	private static Logger logger = Logger.getLogger(GetBufferedAIDRData.class);
 	private static ErrorLog elog = new ErrorLog();
 
 	// Related to channel buffer management
@@ -168,12 +170,11 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	@Path("/channels/latest")
 	@Produces("application/json")
 	public Response getLatestBufferedAIDRData(@QueryParam("callback") String callbackName,
-			@DefaultValue("1") @QueryParam("count") String count,
+			@DefaultValue("1") @QueryParam("count") int count,
 			@DefaultValue("0.7") @QueryParam("confidence") float confidence,
 			@DefaultValue("true") @QueryParam("balanced_sampling") boolean balanced_sampling) {
 
-		//System.out.println("[getLatestBufferedAIDRData] request received");
-		//return Response.ok(new String("[{}]")).build();		// NO-OP test
+		System.out.println("[getLatestBufferedAIDRData] request received");
 
 		// Cache data - performance reasons
 		if ((inRequests.incrementAndGet() > MAX_IN_REQUESTS) 
@@ -202,7 +203,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {		// Jedis pool is ready
 			// Get the last count number of messages for channel=channelCode
-			final int messageCount = Integer.parseInt(count);		// number of latest messages across all channels to return
+			final int messageCount = count;	//Integer.parseInt(count);		// number of latest messages across all channels to return
 			//long t = System.currentTimeMillis();
 			List<String> bufferedMessages = cbManager.getLatestFromAllChannels(messageCount);
 			//logger.info("Total time taken to retrieve from buffers = " + (System.currentTimeMillis() - t));
@@ -226,12 +227,6 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					}
 				}
 				//logger.info("Total time taken to deserialize all tweets = " + (System.currentTimeMillis() - t0));
-
-				// Now sort the dataSet in ascending order of timestamp
-				//long t3 = System.currentTimeMillis();
-				//QuickSort sorter = new QuickSort();
-				//sorter.sort(filteredMessages);
-
 				filteredMessages = new ArrayList<String>(sortedFilteredMessages.values());
 				sortedFilteredMessages.clear();
 				//logger.info("Finished sorting the list in time = " + (System.currentTimeMillis() - t3));
@@ -290,7 +285,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	@Produces({"application/json"})
 	public Response getBufferedAIDRData(@PathParam("crisisCode") String channelCode,
 			@QueryParam("callback") String callbackName,
-			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
+			@DefaultValue("1000") @QueryParam("count") int count) {
 
 		System.out.println("[getBufferedAIDRData] request received");
 		logger.info("[getBufferedAIDRData] request received");
@@ -324,7 +319,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 					channelName = CHANNEL_PREFIX_STRING.concat(channelCode);	// fully qualified channel name - same as REDIS channel
 				}
 				if (isChannelPresent(channelName)) {
-					int msgCount = Integer.parseInt(count);
+					int msgCount = count;	//Integer.parseInt(count);
 					int messageCount = DEFAULT_COUNT;
 					if (msgCount > 0) {
 						messageCount = Math.min(msgCount, MAX_MESSAGES_COUNT);
@@ -363,7 +358,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	@Path("/channel/filter/{crisisCode}")
 	public Response getBufferedAIDRDataPostFilter(@PathParam("crisisCode") String channelCode,
 			@QueryParam("callback") String callbackName,
-			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
+			@DefaultValue("1000") @QueryParam("count") int count) {
 		return Response.ok()
 				.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
 				.header("Access-Control-Allow-Origin", "*")
@@ -380,9 +375,11 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	@Path("/channel/filter/{crisisCode}")
 	public Response getBufferedAIDRDataPostFilter(String queryString, @PathParam("crisisCode") String channelCode,
 			@QueryParam("callback") String callbackName,
-			@DefaultValue(DEFAULT_COUNT_STR) @QueryParam("count") String count) {
+			@DefaultValue("1000") @QueryParam("count") int count) {
 
 		logger.info("Request received for :" + channelCode + " with filtering constraints: " + queryString);
+		long startTime = System.currentTimeMillis();
+		
 		DeserializeFilters des = new DeserializeFilters();
 		JsonQueryList queryList = des.deserializeConstraints(queryString);
 
@@ -415,7 +412,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 				}
 				if (isChannelPresent(channelName)) {
 					//logger.info("Going for channel data fetch: " + channelName);
-					int msgCount = Integer.parseInt(count);
+					int msgCount = count; 	//Integer.parseInt(count);
 					int messageCount = DEFAULT_COUNT;
 					if (msgCount > 0) {
 						messageCount = Math.min(msgCount, MAX_MESSAGES_COUNT);
@@ -458,6 +455,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 						filteredMessages = null;
 
 						logger.debug(channelCode + ": sending jsonp data, count = " + sendCount);
+						logger.info("Time taken to fetch filtered list of size " + sendCount + " is = " + (System.currentTimeMillis() - startTime) + "ms");
 						return Response.ok(jsonDataList.toString())
 								.allow("POST", "GET", "PUT", "UPDATE", "OPTIONS", "HEAD")
 								.header("Access-Control-Allow-Origin", "*")

@@ -84,7 +84,7 @@ public class AIDROutputConfig {
 			// get the property values
 			Iterator<Object> itr = prop.keySet().iterator();
 			while (itr.hasNext()) {
-				String key = itr.next().toString();
+				String key = (String) itr.next();
 				properties.put(key, prop.getProperty(key));
 			}
 			return properties;
