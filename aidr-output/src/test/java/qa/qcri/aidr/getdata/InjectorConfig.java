@@ -11,7 +11,7 @@ public class InjectorConfig {
 	public final String channelPrefix = "aidr_predict.";
 	public final String collectionCode = "mock_collection";	//2014-07-palestine_conflict";
 	public final int tweets_per_sec = 100;		// -1 = no throttle control
-	public final int duration = 10;				// in mins
+	public final int duration = 20;				// in mins
 	public final int threads = 5;
 	
 	public final List<String>collection_list = Arrays.asList("2014-03-mh370", "2014-04-mers", "2014-05-emsc_landslides_2014", "2014-04-terremoto_chile_2014", "2014-05-serbia_bosnia_floods_may_2014");
