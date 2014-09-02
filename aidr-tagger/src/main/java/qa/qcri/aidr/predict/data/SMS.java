@@ -1,6 +1,7 @@
 package qa.qcri.aidr.predict.data;
 
 import java.io.Serializable;
+
 import qa.qcri.aidr.predict.classification.geo.GeoLabel;
 
 /**
@@ -44,9 +45,14 @@ public class SMS extends Document implements Serializable {
 
     @Override
     public String getDoctype() {
-        return DocumentJSONConverter.Doctype.SMS.name();
+        return DocumentJSONConverter.Doctype.sms.toString();
     }
 
+    @Override
+	public void setDoctype(String type) {
+		this.doctype = type;
+	}
+    
     @Override
     public boolean isNovel() {
         return !isReSent;

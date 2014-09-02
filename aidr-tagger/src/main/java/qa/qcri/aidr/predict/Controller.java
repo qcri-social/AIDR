@@ -51,9 +51,12 @@ public class Controller extends Loggable {
         outputMatcher = new OutputMatcher();
 
         aidrInputProcessor = new AidrFetcherJsonInputProcessor();
+        if (null == AidrFetcherJsonInputProcessor.redisLoadShedder) {
+        	AidrFetcherJsonInputProcessor.redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
+        }
         aidrInputProcessor.inputQueueName = Config.REDIS_FROM_FETCHER_CHANNEL;
         aidrInputProcessor.outputQueueName = Config.REDIS_FOR_EXTRACTION_QUEUE;
-        aidrInputProcessor.redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
+        
 
         featureExtractor = new FeatureExtractor();
         featureExtractor.inputQueueName = Config.REDIS_FOR_EXTRACTION_QUEUE

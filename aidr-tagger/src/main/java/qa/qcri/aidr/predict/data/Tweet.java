@@ -43,11 +43,16 @@ public class Tweet extends Document implements Serializable {
 
     @Override
     public String getDoctype() {
-        return DocumentJSONConverter.Doctype.TWEET.name();
+        return DocumentJSONConverter.Doctype.TWEET.toString();
     }
 
     @Override
     public boolean isNovel() {
         return !isRetweet;
     }
+
+	@Override
+	public void setDoctype(String type) {
+		this.doctype = type;
+	}
 }

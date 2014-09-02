@@ -35,22 +35,21 @@ public class DocumentJSONConverter extends Loggable {
 	private static ErrorLog elog = new ErrorLog();
 
 	public static enum Doctype {
-		TWEET("twitter"),
-		SMS("SMS");
+		sms("sms"), TWEET("twitter");
 
-		private String name;
+		private String value;
 
-		private Doctype(String name) {
-			this.name = name;
+		private Doctype(String value) {
+			this.value = value;
 		}
 
-		public static Doctype parse(String name) {
-			if (name.equals(TWEET.name))
+		public static Doctype parse(String value) {
+			if (value.equals(TWEET.value))
 				return TWEET;
-			if (name.equals(SMS.name))
-				return SMS;
-			logger.error("Unknow doctype - can't parse: " + name);
-			throw new RuntimeException("Unknown doctype: " + name);
+			if (value.equals(sms.value))
+				return sms;
+			logger.error("Unknow doctype - can't parse: " + value);
+			throw new RuntimeException("Unknown doctype: " + value);
 		}
 	}
 
@@ -77,12 +76,12 @@ public class DocumentJSONConverter extends Loggable {
 			throw new JSONException("Missing doctype in input object");
 		}
 		Doctype doctype = Doctype.parse(aidr.getString("doctype"));
-
+		
 		Document doc = null;
 		switch (doctype) {
 		case TWEET:
 			doc = parseTweet(jsonObj);
-		case SMS:
+		case sms:
 			doc = parseSMS(jsonObj);
 			break;
 		default: {
@@ -110,7 +109,7 @@ public class DocumentJSONConverter extends Loggable {
 		return doc;
 	}
 
-	public static Document parseSMS(JSONObject input) {
+	public static SMS parseSMS(JSONObject input) {
 		// TODO: the following code is only a placeholder!
 		try {
 			SMS sms = new SMS();
@@ -119,7 +118,8 @@ public class DocumentJSONConverter extends Loggable {
 			user = input.getJSONObject("user");
 			sms.userID = user.getLong("id");
 			sms.text = input.getString("text");
-			sms.isReSent = false;		// TODO: implement a method to chekc for duplicate SMS
+			sms.isReSent = false;		// TODO: implement a method to check for duplicate SMS
+			sms.setDoctype(Doctype.sms.toString());
 			return sms;
 		} catch (JSONException e) {
 			logger.error("Json exception in parsing tweet: " + input);
@@ -128,7 +128,7 @@ public class DocumentJSONConverter extends Loggable {
 		}
 	}
 
-	public static Document parseTweet(JSONObject input) {
+	public static Tweet parseTweet(JSONObject input) {
 		// Example of a tweet in JSON format:
 		// https://dev.twitter.com/docs/api/1/get/search
 
@@ -140,6 +140,7 @@ public class DocumentJSONConverter extends Loggable {
 			t.userID = user.getLong("id");
 			t.text = input.getString("text");
 			t.isRetweet = !input.isNull("retweeted_status");
+			t.setDoctype(Doctype.TWEET.toString());
 			if (input.has("coordinates") && !input.isNull("coordinates")) {
 				JSONObject geo = (JSONObject) input
 						.getJSONObject("coordinates");
