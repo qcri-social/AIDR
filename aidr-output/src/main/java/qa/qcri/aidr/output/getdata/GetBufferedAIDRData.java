@@ -481,7 +481,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		return returnEmptyJson(callbackName);
 	}
 
-	private Response returnEmptyJson(final String callbackName) {
+	public Response returnEmptyJson(final String callbackName) {
 		if (callbackName != null) {
 			StringBuilder respStr = new StringBuilder();
 			respStr.append(callbackName).append("([{}])");
