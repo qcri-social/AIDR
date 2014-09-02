@@ -51,7 +51,11 @@ public class CrisisServiceImpl implements CrisisService {
         Crisis crisis = crisisDao.findByCrisisID(id);
         CrisisJsonModel jsonOutput = new CrisisJsonOutput().crisisJsonModelGenerator(crisis);
         List<CustomUITemplate> uiTemps =  customUITemplateDao.getTemplateByCrisisWithType(id, CodeLookUp.CURATOR_NAME);
-        jsonOutput.setCuratorInfo(uiTemps.get(0).getTemplateValue());
+
+        if (!uiTemps.isEmpty()) {
+            jsonOutput.setCuratorInfo(uiTemps.get(0).getTemplateValue());
+        }
+
         return jsonOutput;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
