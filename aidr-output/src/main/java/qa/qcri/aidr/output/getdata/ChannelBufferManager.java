@@ -105,7 +105,7 @@ public class ChannelBufferManager {
 		redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
 		PERSISTER_LOAD_CHECK_INTERVAL_MINUTES = Integer.parseInt(configParams.get("PERSISTER_LOAD_CHECK_INTERVAL"));
 		PERSISTER_LOAD_LIMIT = Integer.parseInt(configParams.get("PERSISTER_LOAD_LIMIT"));
-		
+
 		managerMainUrl = configParams.get("managerUrl");
 		if (configParams.get("logger").equalsIgnoreCase("log4j")) {
 			// For now: set up a simple configuration that logs on the console
@@ -551,7 +551,7 @@ public class ChannelBufferManager {
 
 		@Override
 		public void onPMessage(String pattern, String channel, String message) {
-			if (redisLoadShedder.get(channel).canProcess()) {
+			if (!redisLoadShedder.isEmpty() && redisLoadShedder.get(channel).canProcess()) {
 				manageChannelBuffers(pattern, channel, message);
 			}
 		}
