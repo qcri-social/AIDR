@@ -264,13 +264,22 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
         });
 
         this.curatorInfoPanel = Ext.create('Ext.container.Container', {
-            hidden: true,
+//            hidden: true,
             layout: {
                 type: 'hbox',
                 pack: 'end'
             },
             items: [
-                this.curatorInfoR
+                {
+                    xtype:'container',
+                    layout: {
+                        type:'vbox'
+                    },
+                    items: [
+                        this.curatorInfoR,
+                        this.contactOwnerL
+                    ]
+                },
             ]
         });
 
@@ -315,8 +324,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
                     ]
                 },
                 this.tweetsPanel,
-                this.curatorInfoPanel,
-                this.contactOwnerPanel
+                this.curatorInfoPanel
             ];
         }
 

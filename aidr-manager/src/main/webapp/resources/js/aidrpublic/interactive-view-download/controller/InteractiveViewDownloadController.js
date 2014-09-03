@@ -481,8 +481,16 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                 });
                 me.mainComponent.suspendLayout = false;
                 me.mainComponent.forceComponentLayout();
-                me.mainComponent.curatorInfoR.setText(data.curatorInfo, false);
-                me.mainComponent.curatorInfoPanel.show();
+
+                if(!Ext.isEmpty(data.curatorInfo)) {
+                    me.mainComponent.curatorInfoR.setText(data.curatorInfo, false);
+                    me.mainComponent.curatorInfoR.show();
+                    me.mainComponent.contactOwnerL.hide();
+                } else {
+                    me.mainComponent.curatorInfoR.hide();
+                    me.mainComponent.contactOwnerL.show();
+
+                }
             }
         });
     },
