@@ -9,12 +9,21 @@
 	<description>Analysis module for AIDR classifier data</description>
 
 	<dependencies>
+		<!-- AIDR dependencies -->
+		<dependency>
+		<groupId>qa.qcri.aidr.common</groupId>
+			<artifactId>aidr-common</artifactId>
+			<version>1.0</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>qa.qcri.aidr.output</groupId>
 			<artifactId>aidr-output</artifactId>
 			<version>1.0</version>
 			<type>jar</type>
 		</dependency>
+
+		<!-- Web dependencies -->
 
 		<dependency>
 			<groupId>redis.clients</groupId>

@@ -84,17 +84,18 @@ import javax.ws.rs.core.Response;
 
 
 
+
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
 import qa.qcri.aidr.output.filter.FilterQueryMatcher;
 import qa.qcri.aidr.output.filter.JsonQueryList;
-
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
 import qa.qcri.aidr.output.utils.SimpleRateLimiter;
 import qa.qcri.aidr.output.filter.DeserializeFilters;
-import qa.qcri.aidr.output.utils.ErrorLog;
+
 
 
 @Path("/crisis/fetch/")

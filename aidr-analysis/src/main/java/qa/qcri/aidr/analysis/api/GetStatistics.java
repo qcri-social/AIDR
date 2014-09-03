@@ -16,10 +16,10 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
-
 import qa.qcri.aidr.analysis.utils.MiscUtilities;
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.output.getdata.ChannelBufferManager;
-import qa.qcri.aidr.output.utils.ErrorLog;
+
 
 
 @Path("/analytics/stats")

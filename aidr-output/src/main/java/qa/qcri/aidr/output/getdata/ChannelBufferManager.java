@@ -34,11 +34,10 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.MediaType;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.common.redis.LoadShedder;
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
-import qa.qcri.aidr.output.utils.ErrorLog;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
-import qa.qcri.aidr.output.utils.LoadShedder;
-
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
@@ -619,7 +618,7 @@ public class ChannelBufferManager {
 					redisLoadShedder.put(channel, new LoadShedder(PERSISTER_LOAD_LIMIT, PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
 					logger.info("Created new redis load shedder for channel: " + channel);
 				}
-				if (redisLoadShedder.get(channel).canProcess()) {
+				if (redisLoadShedder.get(channel).canProcess(channel)) {
 					manageChannelBuffers(pattern, channel, message);
 				} 
 			} catch (Exception e) {
