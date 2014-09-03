@@ -163,6 +163,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 
         this.tweetsGrid = Ext.create('Ext.grid.Panel', {
             store: this.tweetsStore,
+            id: 'viewDownloadTweetsGrid',
             itemId: 'tweetsGrid',
             margin: '10 0 0 0',
             cls: 'aidr-grid',
@@ -273,7 +274,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
             ]
         });
 
-        if(USER_NAME != null && USER_NAME != ''){
+        if(USER_NAME != null && USER_NAME != '') {
             this.items = [
                 this.breadcrumbs,
                 {
@@ -299,7 +300,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
                 this.contactOwnerPanel
             ];
         }
-        else{
+        else {
             this.items = [
                 {
                     xtype: 'container',
