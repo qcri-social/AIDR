@@ -14,6 +14,7 @@ import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.classification.DocumentLabel;
 import qa.qcri.aidr.predict.classification.geo.GeoLabel;
 import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
+import qa.qcri.aidr.predict.common.DocumentType;
 import qa.qcri.aidr.predict.common.ErrorLog;
 import qa.qcri.aidr.predict.common.Helpers;
 import qa.qcri.aidr.predict.common.Loggable;
@@ -22,7 +23,7 @@ import qa.qcri.aidr.predict.dbentities.NominalAttributeEC;
 import qa.qcri.aidr.predict.dbentities.NominalLabelEC;
 import qa.qcri.aidr.predict.featureextraction.DocumentFeature;
 import qa.qcri.aidr.predict.featureextraction.WordSet;
-
+ 
 /**
  * Helper class for converting between native Document objects and their JSON
  * representation.
@@ -33,25 +34,6 @@ public class DocumentJSONConverter extends Loggable {
 
 	private static Logger logger = Logger.getLogger(DocumentJSONConverter.class);
 	private static ErrorLog elog = new ErrorLog();
-
-	public static enum Doctype {
-		sms("sms"), TWEET("twitter");
-
-		private String value;
-
-		private Doctype(String value) {
-			this.value = value;
-		}
-
-		public static Doctype parse(String value) {
-			if (value.equals(TWEET.value))
-				return TWEET;
-			if (value.equals(sms.value))
-				return sms;
-			logger.error("Unknow doctype - can't parse: " + value);
-			throw new RuntimeException("Unknown doctype: " + value);
-		}
-	}
 
 	private static final String name = "DocumentJsonConverter";
 	private static long lastModelInfoUpdate = 0;
@@ -75,13 +57,14 @@ public class DocumentJSONConverter extends Loggable {
 			logger.error("Missing doctype in input object");
 			throw new JSONException("Missing doctype in input object");
 		}
-		Doctype doctype = Doctype.parse(aidr.getString("doctype"));
+		String doctype = aidr.getString("doctype");
 		
 		Document doc = null;
 		switch (doctype) {
-		case TWEET:
+		case DocumentType.TWIITER_DOC:
 			doc = parseTweet(jsonObj);
-		case sms:
+			break;
+		case DocumentType.SMS_DOC:
 			doc = parseSMS(jsonObj);
 			break;
 		default: {
@@ -111,6 +94,7 @@ public class DocumentJSONConverter extends Loggable {
 
 	public static SMS parseSMS(JSONObject input) {
 		// TODO: the following code is only a placeholder!
+		logger.info("parsing as SMS doc");
 		try {
 			SMS sms = new SMS();
 
@@ -119,7 +103,7 @@ public class DocumentJSONConverter extends Loggable {
 			sms.userID = user.getLong("id");
 			sms.text = input.getString("text");
 			sms.isReSent = false;		// TODO: implement a method to check for duplicate SMS
-			sms.setDoctype(Doctype.sms.toString());
+			sms.setDoctype(DocumentType.SMS_DOC);
 			return sms;
 		} catch (JSONException e) {
 			logger.error("Json exception in parsing tweet: " + input);
@@ -131,7 +115,7 @@ public class DocumentJSONConverter extends Loggable {
 	public static Tweet parseTweet(JSONObject input) {
 		// Example of a tweet in JSON format:
 		// https://dev.twitter.com/docs/api/1/get/search
-
+		logger.info("parsing as twitter doc");
 		try {
 			Tweet t = new Tweet();
 
@@ -140,7 +124,7 @@ public class DocumentJSONConverter extends Loggable {
 			t.userID = user.getLong("id");
 			t.text = input.getString("text");
 			t.isRetweet = !input.isNull("retweeted_status");
-			t.setDoctype(Doctype.TWEET.toString());
+			t.setDoctype(DocumentType.TWIITER_DOC);
 			if (input.has("coordinates") && !input.isNull("coordinates")) {
 				JSONObject geo = (JSONObject) input
 						.getJSONObject("coordinates");

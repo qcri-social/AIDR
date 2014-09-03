@@ -28,9 +28,9 @@ public class FeatureExtractor extends PipelineProcess {
 				+ ", having docType: " + doc.getDoctype() 
 				+ ", having id: " + doc.getDocumentID());
 
-		if (doc.getDoctype().equals(DocumentJSONConverter.Doctype.TWEET.toString())) {
+		if (doc.getDoctype().equals(DocumentType.TWIITER_DOC)) {
 			processTweet((Tweet) doc);
-		} else if (doc.getDoctype().equals(DocumentJSONConverter.Doctype.sms.toString())){
+		} else if (doc.getDoctype().equals(DocumentType.SMS_DOC)){
 			processSMS((SMS) doc);
 		} else {
 			logger.error("Unknown datatype: " + doc + ", doctype = " + doc.getDoctype());
@@ -39,6 +39,7 @@ public class FeatureExtractor extends PipelineProcess {
 	}
 
 	void processTweet(Tweet tweet) {
+		logger.debug("processing twitter doc");
 		WordSet wordSet = new WordSet();
 		String text = tweet.getText();
 		wordSet.addAll(getWordsInStringWithBigrams(text, false));
@@ -47,6 +48,7 @@ public class FeatureExtractor extends PipelineProcess {
 
 	void processSMS(SMS sms) {
 		// TODO: the following code is only a placeholder for now!
+		logger.debug("processing SMS doc");
 		WordSet wordSet = new WordSet();
 		String text = sms.getText();
 		wordSet.addAll(getWordsInStringWithBigrams(text, false));

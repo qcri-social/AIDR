@@ -45,7 +45,7 @@ public class CollectionSubscriber extends JedisPubSub {
     public CollectionSubscriber() {
     }
 
-    public CollectionSubscriber(String fileLoc, String collectionCode) {
+    public CollectionSubscriber(String fileLoc, String channel, String collectionCode) {
         //remove leading and trailing double quotes from collectionCode
         fileVolumnNumber = FileSystemOperations.getLatestFileVolumeNumber(collectionCode);
         this.collectionCode = collectionCode.replaceAll("^\"|\"$", "");
@@ -56,7 +56,8 @@ public class CollectionSubscriber extends JedisPubSub {
         if (null == redisLoadShedder) {
         	redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
         }
-        redisLoadShedder.put(Config.COLLECTION_CHANNEL+collectionCode, new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
+        redisLoadShedder.put(channel, new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
+        logger.info("Created loadshedder for channel: " + channel);
     }
 
     @Override
@@ -65,8 +66,13 @@ public class CollectionSubscriber extends JedisPubSub {
 
     @Override
     public void onPMessage(String pattern, String channel, String message) {
-    	 if (redisLoadShedder.get(channel).canProcess()) {
-         	writeToFile(message);
+    	logger.info("Received message for channel: " + channel);
+    	logger.info("isLoadShedder for channel " + channel + " = " + redisLoadShedder.containsKey(channel));
+    	if (redisLoadShedder.get(channel).canProcess(channel)) {
+         	logger.info("can process write for: " + channel);
+    		writeToFile(message);
+         } else {
+        	 logger.info("loadshdder denied write for: " + channel); 
          }
     }
 

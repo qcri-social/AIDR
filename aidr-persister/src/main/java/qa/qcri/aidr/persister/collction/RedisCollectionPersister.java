@@ -39,7 +39,7 @@ public class RedisCollectionPersister implements Runnable {
         suspendFlag = true;
         try {
             subscriberJedis = connObject.getJedisConnection();
-            subscriber = new CollectionSubscriber(fileName, collectionCode);
+            subscriber = new CollectionSubscriber(fileName, channel, collectionCode);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             logger.error(collectionCode + ": Error in subscribing to Redis");
