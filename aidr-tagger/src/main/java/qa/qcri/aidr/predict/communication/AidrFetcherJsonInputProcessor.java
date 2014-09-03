@@ -6,6 +6,8 @@ import java.net.InetAddress;
 import java.util.concurrent.ConcurrentHashMap;
 
 
+
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,7 +32,12 @@ import qa.qcri.aidr.predict.data.DocumentJSONConverter;
 public class AidrFetcherJsonInputProcessor extends Loggable implements Runnable {
 
 	public static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
-
+	
+	public AidrFetcherJsonInputProcessor() {
+		if (null == redisLoadShedder) {
+			redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
+		}
+	}
 	public class FetcherResponseWrapper implements Serializable {
 
 		private static final long serialVersionUID = 1L;
@@ -68,6 +75,9 @@ public class AidrFetcherJsonInputProcessor extends Loggable implements Runnable 
 
 		@Override
 		public void onMessage(String channel, String jsonDoc) {
+			if (!redisLoadShedder.containsKey(channel)) {
+				redisLoadShedder.put(channel, new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
+			}
 			if (redisLoadShedder.get(channel).canProcess()) {
 				Document doc;
 				try {

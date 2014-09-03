@@ -34,10 +34,10 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.MediaType;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.common.redis.LoadShedder;
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
-import qa.qcri.aidr.output.utils.ErrorLog;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
-import qa.qcri.aidr.output.utils.LoadShedder;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
@@ -51,10 +51,10 @@ public class ChannelBufferManager {
 	private static final int NO_DATA_TIMEOUT = 48 * 60 * 60 * 1000;		// when to delete a channel buffer
 	private static final int CHECK_INTERVAL = NO_DATA_TIMEOUT;
 	private static final int CHECK_CHANNEL_PUBLIC_INTERVAL = 5 * 60 * 1000;
-	
+
 	private static int PERSISTER_LOAD_LIMIT;
 	private static int PERSISTER_LOAD_CHECK_INTERVAL_MINUTES;
-	
+
 	private static Logger logger = Logger.getLogger(ChannelBufferManager.class);
 	private static ErrorLog elog = new ErrorLog();
 
@@ -99,22 +99,14 @@ public class ChannelBufferManager {
 		AIDROutputConfig configuration = new AIDROutputConfig();
 		HashMap<String, String> configParams = configuration.getConfigProperties();
 
+		redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
+
 		redisHost = configParams.get("host");
 		redisPort = Integer.parseInt(configParams.get("port"));
-		
-		redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
 		PERSISTER_LOAD_CHECK_INTERVAL_MINUTES = Integer.parseInt(configParams.get("PERSISTER_LOAD_CHECK_INTERVAL"));
 		PERSISTER_LOAD_LIMIT = Integer.parseInt(configParams.get("PERSISTER_LOAD_LIMIT"));
 
 		managerMainUrl = configParams.get("managerUrl");
-		if (configParams.get("logger").equalsIgnoreCase("log4j")) {
-			// For now: set up a simple configuration that logs on the console
-			// PropertyConfigurator.configure("log4j.properties");      
-			//BasicConfigurator.configure();    // initialize log4j logging
-		}
-		if (configParams.get("logger").equalsIgnoreCase("slf4j")) {
-			System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");	// set logging level for slf4j
-		}
 		logger.info("Initializing channel buffer manager.");
 		System.out.println("[ChannelBufferManager] Initializing channel buffer manager.");
 
@@ -130,8 +122,8 @@ public class ChannelBufferManager {
 			subscriberJedis = null;
 			isConnected = false;
 			logger.error("Fatal error! Couldn't establish connection to REDIS!");
+			logger.error(elog.toStringException(e));
 			e.printStackTrace();
-			//System.exit(1);
 		}
 		if (isConnected) {
 			aidrSubscriber = new RedisSubscriber();
@@ -140,12 +132,12 @@ public class ChannelBufferManager {
 			try {
 				subscribeToChannel(channelRegEx);
 				isSubscribed = true;
+				aidrSubscriber.setChannelName(channelRegEx);
 				logger.info("Created pattern subscription");
 			} catch (Exception e) {
 				isSubscribed = false;
 				logger.error("Fatal exception occurred attempting subscription: " + e.toString());
 				logger.error(elog.toStringException(e));
-				//System.exit(1);
 			}
 			if (isSubscribed) {
 				subscribedChannels = new ConcurrentHashMap<String,ChannelBuffer>(20);
@@ -270,8 +262,6 @@ public class ChannelBufferManager {
 			subscribedChannels.put(channelName, cb);
 			cb.setPubliclyListed(getChannelPublicStatus(channelName));
 			logger.info("Created channel buffer for channel: " + channelName + ", public = " + cb.getPubliclyListed());
-			redisLoadShedder.put(channelName, 
-					new LoadShedder(PERSISTER_LOAD_LIMIT, PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
 		} catch (Exception e) {
 			logger.error("Unable to create buffer for channel: " + channelName);
 		}
@@ -356,7 +346,9 @@ public class ChannelBufferManager {
 				//convert JSON string to Map
 				collectionMap = clientResponse.readEntity(Map.class);
 				logger.info("Channel info received from manager: " + collectionMap);
-				return collectionMap.get(channelCode);
+				if (collectionMap != null) {
+					return collectionMap.get(channelCode);
+				}
 			} else {
 				logger.warn("Couldn't contact AIDRFetchManager for publiclyListed status, channel: " + channelName);
 			}
@@ -364,7 +356,7 @@ public class ChannelBufferManager {
 			logger.error("Error in querying manager for running collections: " + clientResponse);
 			logger.error(elog.toStringException(e));
 		}
-		return false;
+		return true;		// Question: should default be true or false?
 	}
 
 
@@ -387,7 +379,7 @@ public class ChannelBufferManager {
 			//convert JSON string to Map
 			if (clientResponse.getStatus() == 200) {
 				collectionMap = clientResponse.readEntity(Map.class);
-				logger.info("Received from nanager: " + collectionMap);
+				logger.info("Received from manager: " + collectionMap);
 				return collectionMap;
 			} else {
 				logger.warn("Couldn't contact AIDRFetchManager for publiclyListed status of running collections");
@@ -451,7 +443,7 @@ public class ChannelBufferManager {
 					System.out.println("[subscribeToChannel] AIDR Predict Channel pSubscribing failed for channel = " + channelRegEx);
 					e.printStackTrace();
 					stopSubscription();
-					//Thread.currentThread().interrupt();
+					Thread.currentThread().interrupt();
 				} finally {
 					try {
 						stopSubscription();
@@ -460,13 +452,14 @@ public class ChannelBufferManager {
 						logger.error(elog.toStringException(e));
 					}
 				}
-				//Thread.currentThread().interrupt();
+				Thread.currentThread().interrupt();
 				logger.info("Exiting thread: " + Thread.currentThread().getName());
 			}
 		});
 	}
 
 	private synchronized void stopSubscription() {
+		logger.info("Stopsubscription attempt for channel: " + aidrSubscriber.getChannelName());
 		try {
 			if (aidrSubscriber != null && aidrSubscriber.getSubscribedChannels() > 0) {
 				aidrSubscriber.punsubscribe();				
@@ -478,6 +471,7 @@ public class ChannelBufferManager {
 		try {
 			if (jedisConn != null && aidrSubscriber != null) { 
 				jedisConn.returnJedis(subscriberJedis);
+				subscriberJedis = null;
 				logger.info("Stopsubscription completed...");
 				System.out.println("[stopSubscription] Stopsubscription completed...");
 			}
@@ -485,8 +479,67 @@ public class ChannelBufferManager {
 			logger.error("Failed to return Jedis resource");
 			logger.error(elog.toStringException(e));
 		}
-		//this.notifyAll();
+		logger.info("isShutDown initiated = " + shutdownFlag);
+		if (!shutdownFlag) {
+			attemptResubscription();
+		}
+
 	}
+
+	private void attemptResubscription() {
+		int attempts = 0;
+		boolean isSetup = false;
+		final int MAX_RECONNECT_ATTEMPTS = 10;
+		while (!isSetup && attempts < MAX_RECONNECT_ATTEMPTS && !shutdownFlag) {
+			try {
+				Thread.sleep(60000);
+				logger.info("Attempting to resubscribe to REDIS, with jedisConn = " + jedisConn);
+				if (jedisConn != null) {
+					isSetup = setupRedisConnection(CHANNEL_PREFIX_STRING+"*");
+				} else {
+					jedisConn = new JedisConnectionObject(redisHost, redisPort);
+					isSetup = setupRedisConnection(CHANNEL_PREFIX_STRING+"*");	
+				}
+			} catch (Exception e) {
+				isSubscribed = false;
+				isSetup = false;
+				logger.error("Fatal exception occurred attempting subscription: " + e.toString());
+				logger.error(elog.toStringException(e));
+				++attempts;
+			}
+		}
+	}
+
+	private boolean setupRedisConnection(final String channelRegEx) {
+		try {
+			isConnected = false;
+			if (null == subscriberJedis) subscriberJedis = jedisConn.getJedisResource();
+			if (subscriberJedis != null) isConnected = true;
+		} catch (JedisConnectionException e) {
+			subscriberJedis = null;
+			isConnected = false;
+			logger.error("Fatal error! Couldn't establish connection to REDIS!");
+			logger.error(elog.toStringException(e));
+		}
+		if (isConnected) {
+			aidrSubscriber = new RedisSubscriber();
+			jedisConn.setJedisSubscription(subscriberJedis, true);		// we will be using pattern-based subscription
+			logger.info("Created new Jedis connection: " + subscriberJedis);
+			try {
+				subscribeToChannel(channelRegEx);
+				isSubscribed = true;
+				aidrSubscriber.setChannelName(channelRegEx);
+				logger.info("Resubscribed with pattern subscription: " + channelRegEx);
+				return true;
+			} catch (Exception e) {
+				isSubscribed = false;
+				logger.error("Fatal exception occurred attempting subscription: " + e.toString());
+				logger.error(elog.toStringException(e));
+			}
+		}
+		return false;
+	}
+
 
 	public void close() {
 		shutdownFlag = true;
@@ -546,14 +599,32 @@ public class ChannelBufferManager {
 	////////////////////////////////////////////////////
 	private class RedisSubscriber extends JedisPubSub {
 
+		private String channelName = null;
+
+		public void setChannelName(String channelName) {
+			this.channelName = channelName;
+		}
+
+		public String getChannelName() {
+			return this.channelName;
+		}
+
 		@Override
 		public void onMessage(String channel, String message) {}
 
 		@Override
 		public void onPMessage(String pattern, String channel, String message) {
-            LoadShedder loadShedder = redisLoadShedder.get(channel);
-            if (loadShedder == null || loadShedder.canProcess()) {
-				manageChannelBuffers(pattern, channel, message);
+			try {
+				if (!redisLoadShedder.containsKey(channel)) {
+					redisLoadShedder.put(channel, new LoadShedder(PERSISTER_LOAD_LIMIT, PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
+					logger.info("Created new redis load shedder for channel: " + channel);
+				}
+				if (redisLoadShedder.get(channel).canProcess(channel)) {
+					manageChannelBuffers(pattern, channel, message);
+				} 
+			} catch (Exception e) {
+				logger.error("Exception occurred, redisLoadShedder = " + redisLoadShedder + ", channel status: " + redisLoadShedder.containsKey(channel));
+				logger.error(elog.toStringException(e));
 			}
 		}
 
@@ -570,60 +641,7 @@ public class ChannelBufferManager {
 		@Override
 		public void onPUnsubscribe(String pattern, int subscribedChannels) {
 			logger.info("Unsubscribed from channel pattern:" + pattern + ", shutdownFlag = " + shutdownFlag);
-			if (!shutdownFlag) {
-				int attempts = 0;
-				boolean isSetup = false;
-				final int MAX_RECONNECT_ATTEMPTS = 10;
-				while (!isSetup && attempts < MAX_RECONNECT_ATTEMPTS) {
-					try {
-						Thread.sleep(60000);
-						logger.info("Attempting to resubscribe to REDIS, with jedisConn = " + jedisConn);
-						if (jedisConn != null) {
-							isSetup = setupRedisConnection(CHANNEL_PREFIX_STRING+"*");
-						} else {
-							jedisConn = new JedisConnectionObject(redisHost, redisPort);
-							isSetup = setupRedisConnection(CHANNEL_PREFIX_STRING+"*");	
-						}
-					} catch (Exception e) {
-						isSubscribed = false;
-						isSetup = false;
-						logger.error("Fatal exception occurred attempting subscription: " + e.toString());
-						logger.error(elog.toStringException(e));
-						++attempts;
-					}
-				}
-			}
 		}
-
-		private boolean setupRedisConnection(final String channelRegEx) {
-			try {
-				isConnected = false;
-				subscriberJedis = jedisConn.getJedisResource();
-				if (subscriberJedis != null) isConnected = true;
-			} catch (JedisConnectionException e) {
-				subscriberJedis = null;
-				isConnected = false;
-				logger.error("Fatal error! Couldn't establish connection to REDIS!");
-				logger.error(elog.toStringException(e));
-			}
-			if (isConnected) {
-				aidrSubscriber = new RedisSubscriber();
-				jedisConn.setJedisSubscription(subscriberJedis, true);		// we will be using pattern-based subscription
-				logger.info("Created new Jedis connection: " + subscriberJedis);
-				try {
-					subscribeToChannel(channelRegEx);
-					isSubscribed = true;
-					logger.info("Created pattern subscription");
-					return true;
-				} catch (Exception e) {
-					isSubscribed = false;
-					logger.error("Fatal exception occurred attempting subscription: " + e.toString());
-					logger.error(elog.toStringException(e));
-				}
-			}
-			return false;
-		}
-
 
 		@Override
 		public void onPSubscribe(String pattern, int subscribedChannels) {

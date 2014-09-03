@@ -24,7 +24,7 @@ public class Config {
         //public static final String FETCHER_REST_URI="http://localhost:8080/AIDRCollector/webresources/";		// koushik
         
         // Default persister related parameters
-        public static final boolean DEFAULT_PERSISTER_ENABLED = true;
+        public static final boolean DEFAULT_PERSISTANCE_MODE = true;
         //public static final String DEFAULT_PERSISTER_FILE_LOCATION = "/var/www/aidr/data/persister/";		// for scd1
         public static final String DEFAULT_PERSISTER_FILE_LOCATION = "/sc/projects/aidr/data/persister/";		// for azure VM
         public static final String PERSISTER_REST_URI="http://localhost:8084/AIDRPersister/webresources/";	// scd1
@@ -35,6 +35,7 @@ public class Config {
         public static final int OUTPUT_PORT = 4321;
         public static final String REDIS_HOST = "localhost";
         public static final String FETCHER_CHANNEL = "FetcherChannel";
+        public static final String TAGGER_CHANNEL = "aidr_predict";
         public static final int FETCHER_REDIS_COUNTER_UPDATE_THRESHOLD = 5; // Specifies when items counter should be updated. Here 10 means after every 10 items
         
         // AIDR-FETCHER logging

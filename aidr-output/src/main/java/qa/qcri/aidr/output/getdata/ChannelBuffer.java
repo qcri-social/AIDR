@@ -22,7 +22,8 @@ import org.apache.commons.collections.buffer.CircularFifoBuffer;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.output.utils.ErrorLog;
+import qa.qcri.aidr.common.logging.ErrorLog;
+
 
 public class ChannelBuffer {
 	public static int MAX_BUFFER_SIZE = 2000;		// number of elements the buffer will hold at any time

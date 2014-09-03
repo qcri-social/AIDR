@@ -127,9 +127,8 @@ public class TwitterCollectorAPI extends Loggable {
             logger.error(elog.toStringException(ex));
         }
 
-        if (Config.DEFAULT_PERSISTER_ENABLED) {
-            startCollectorPersister(collectionCode);
-            startTaggerPersister(collectionCode);
+        if (Config.DEFAULT_PERSISTANCE_MODE) {
+            startPersister(collectionCode);
         }
 
         response.setMessage("Initializing connection...");
@@ -153,9 +152,8 @@ public class TwitterCollectorAPI extends Loggable {
             GenericCache.getInstance().delLastDownloadedDoc(collectionCode);
             GenericCache.getInstance().delTwitterTracker(collectionCode);
 
-            if (Config.DEFAULT_PERSISTER_ENABLED) {
-                stopCollectorPersister(collectionCode);
-                stopTaggerPersister(collectionCode);
+            if (Config.DEFAULT_PERSISTANCE_MODE) {
+                stopPersister(collectionCode);
             }
 
             responseMsg = "Collector has been successfully stopped.";
@@ -238,7 +236,8 @@ public class TwitterCollectorAPI extends Loggable {
         return Response.ok(allTasks).build();
     }
 
-    public void startCollectorPersister(String collectionCode) {
+    @Deprecated
+     public void startCollectorPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
             WebTarget webResource = client.target(Config.PERSISTER_REST_URI + "persister/start?file="
@@ -256,7 +255,27 @@ public class TwitterCollectorAPI extends Loggable {
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }
+    
+    public void startPersister(String collectionCode) {
+        Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+        try {
+            WebTarget webResource = client.target(Config.PERSISTER_REST_URI + "collectionPersister/start?channel_provider="
+                    + URLEncoder.encode(Config.TAGGER_CHANNEL, "UTF-8")
+                    + "&collection_code=" + URLEncoder.encode(collectionCode, "UTF-8"));
+            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+            String jsonResponse = clientResponse.readEntity(String.class);
 
+            logger.info(collectionCode + ": Collector persister response = " + jsonResponse);
+        } catch (RuntimeException e) {
+            logger.error(collectionCode + ": Could not start persister. Is persister running?");
+            logger.error(elog.toStringException(e));
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            logger.error(collectionCode + ": Unsupported Encoding scheme used");
+        }
+    }
+
+    @Deprecated
     public void stopCollectorPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
@@ -273,7 +292,25 @@ public class TwitterCollectorAPI extends Loggable {
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }
+    
+    public void stopPersister(String collectionCode) {
+        Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+        try {
+            WebTarget webResource = client.target(Config.PERSISTER_REST_URI
+                    + "collectionPersister/stop?collection_code=" + URLEncoder.encode(collectionCode, "UTF-8"));
+            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+            String jsonResponse = clientResponse.readEntity(String.class);
+            logger.info(collectionCode + ": Collector persister response =  " + jsonResponse);
+        } catch (RuntimeException e) {
+            logger.error(collectionCode + ": Could not stop persister. Is persister running?");
+            logger.error(elog.toStringException(e));
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            logger.error(collectionCode + ": Unsupported Encoding scheme used");
+        }
+    }
 
+    @Deprecated
     public void startTaggerPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
@@ -292,6 +329,7 @@ public class TwitterCollectorAPI extends Loggable {
         }
     }
 
+    @Deprecated
     public void stopTaggerPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {

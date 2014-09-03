@@ -1,7 +1,9 @@
 package qa.qcri.aidr.predict.data;
 
 import java.io.Serializable;
+
 import qa.qcri.aidr.predict.classification.geo.GeoLabel;
+import qa.qcri.aidr.predict.common.DocumentType;
 
 /**
  * Structured representation of a single Tweet.
@@ -44,9 +46,14 @@ public class SMS extends Document implements Serializable {
 
     @Override
     public String getDoctype() {
-        return DocumentJSONConverter.Doctype.SMS.name();
+        return DocumentType.SMS_DOC;
     }
 
+    @Override
+	public void setDoctype(String type) {
+		this.doctype = type;
+	}
+    
     @Override
     public boolean isNovel() {
         return !isReSent;

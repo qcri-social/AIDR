@@ -30,6 +30,8 @@ public abstract class Document implements java.io.Serializable {
     public String language = "en";
     public Long documentID;
     
+    public String doctype;
+    
     public ArrayList<DocumentFeature> features = new ArrayList<DocumentFeature>();
     public ArrayList<DocumentLabel> labels = new ArrayList<DocumentLabel>();
     public int humanLabelCount = 0;
@@ -76,6 +78,8 @@ public abstract class Document implements java.io.Serializable {
     }
 
     public abstract String getDoctype();
+    
+    public abstract void setDoctype(String type);
     
     public abstract boolean isNovel();
 

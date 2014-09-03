@@ -21,7 +21,7 @@ public class Config {
 
 	public static final int DEFAULT_FILE_VOLUMN_LIMIT = 100000; // 100K limit imposed by Twitter
 	public static final int TWEETS_EXPORT_LIMIT_100K = 100000;
-	public static final int DEFAULT_FILE_WRITER_BUFFER_SIZE = 10485760;		// 10MB buffer size
+	public static final int DEFAULT_FILE_WRITER_BUFFER_SIZE = 1024;//10485760;		// 10MB buffer size
 	
 	public static final int DEFAULT_TWEETID_VOLUME_LIMIT = 1000000;		// max. number of tweets downloadable from AIDR website
 	public static final int INPUT_PORT = 4320;

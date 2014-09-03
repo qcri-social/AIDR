@@ -66,6 +66,7 @@ public class CollectorSubscriber extends JedisPubSub {
         	redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
         }
         redisLoadShedder.put(Config.FETCHER_CHANNEL+collectionCode, new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
+        logger.info("Created loadshedder for channel: " + (Config.FETCHER_CHANNEL+collectionCode));
     }
 
     @Override
@@ -74,8 +75,11 @@ public class CollectorSubscriber extends JedisPubSub {
 
     @Override
     public void onPMessage(String pattern, String channel, String message) {
-        if (redisLoadShedder.get(channel).canProcess()) {
-        	writeToFile(message);
+    	logger.info("Received message for channel: " + channel);
+    	logger.info("isLoadShedder for channel " + channel + " = " + redisLoadShedder.containsKey(channel));
+    	if (redisLoadShedder.get(channel).canProcess(channel)) {
+    		logger.info("can process write for: " + channel);
+    		writeToFile(message);
         }
     }
 

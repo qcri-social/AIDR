@@ -28,6 +28,7 @@ public class LoadShedder {
 		this.intervalMinutes = intervalMinutes;
 		this.intervalMillis = intervalMinutes * 1000 * 60;	
 		this.loadWarning = false;
+		logger.info("Initialized Loadshedder with " + this.maxLimit + " per " + this.intervalMinutes + "min messages");
 	}
 
 	public int getCounter() {
@@ -53,11 +54,13 @@ public class LoadShedder {
 	public void setMaxLimit(final int maxLimit) {
 		this.maxLimit = maxLimit;
 	}
-
-	public boolean canProcess() {	
+	
+	public boolean canProcess(final String channel) {	
+		logger.debug("For channel: " + channel + ", counter:maxLimit" + counter + ":" + maxLimit);
 		if ((System.currentTimeMillis() - lastSetTime) <= intervalMillis) {
 			if (counter < maxLimit) {
 				++counter;
+				logger.debug("For channel: " + channel + ", returning true");
 				return true;		// within bounds
 			}
 			
@@ -67,9 +70,11 @@ public class LoadShedder {
 				logger.warn("Limit of " + maxLimit + " messages per " + intervalMinutes
 						+ " mins reached with current count = " + counter);
 			}
+			logger.debug("For channel: " + channel + ", returning false");
 			return false;		// wait until end of interval before resetting
 		}
 		// Interval over - now reset for next interval
+		logger.debug("For channel: " + channel + ", returning true as interval is over");
 		counter = 0;
 		lastSetTime = System.currentTimeMillis();
 		loadWarning = false;

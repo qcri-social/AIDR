@@ -83,7 +83,7 @@ public class DataStore extends Loggable {
 	private static Logger logger = Logger.getLogger(DataStore.class);
 	private static ErrorLog elog = new ErrorLog();
 	
-	private static final String remoteEJBJNDIName = "java:global/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote";
+	private static final String remoteEJBJNDIName = "java:global/AIDRTaskManager/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote";
 	//private static final String remoteEJBJNDIName = "qa.qcri.aidr.task.ejb.TaskManagerRemote";
 	
 	@SuppressWarnings("unchecked")
