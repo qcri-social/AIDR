@@ -551,7 +551,8 @@ public class ChannelBufferManager {
 
 		@Override
 		public void onPMessage(String pattern, String channel, String message) {
-			if (!redisLoadShedder.isEmpty() && redisLoadShedder.get(channel).canProcess()) {
+            LoadShedder loadShedder = redisLoadShedder.get(channel);
+            if (loadShedder == null || loadShedder.canProcess()) {
 				manageChannelBuffers(pattern, channel, message);
 			}
 		}
