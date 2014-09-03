@@ -20,6 +20,14 @@
 	</properties>
 
 	<dependencies>
+	
+		<!-- AIDR dependencies -->
+		<dependency>
+		<groupId>qa.qcri.aidr.common</groupId>
+			<artifactId>aidr-common</artifactId>
+			<version>1.0</version>
+		</dependency>
+		
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
