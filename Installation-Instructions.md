@@ -5,9 +5,9 @@ To start/stop/re-start AIDR and other system administration tasks, see [System a
 Before installing AIDR, you must have the following:
 
 * Apache Maven installed -- http://maven.apache.org/
-* Redis server running -- http://redis.io/ (important configurations to consider are listed below)
- * maxclients: Once the limit is reached Redis will close all the new connections sending an error 'max number of clients reached'.
- * timeout: for very slow running collections, setting timeout=0 will not timeout from server side.
+* Redis server running -- http://redis.io/ (important configurations are listed below)
+ * maxclients: once the limit is reached Redis will close all the new connections sending an error 'max number of clients reached'.
+ * timeout: for very slow running collections, setting timeout=0 will prevent server to timeout.
 * Glassfish server running -- https://glassfish.java.net/
 * MySQL server running -- https://dev.mysql.com/downloads/mysql/
 * Pybossa server running -- http://docs.pybossa.com/en/latest/index.html
