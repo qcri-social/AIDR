@@ -8,13 +8,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
+import qa.qcri.aidr.common.redis.LoadShedder;
 import qa.qcri.aidr.predict.DataStore;
-import qa.qcri.aidr.predict.common.LoadShedder;
 import qa.qcri.aidr.predict.common.Loggable;
 import qa.qcri.aidr.predict.common.Serializer;
 import qa.qcri.aidr.predict.common.Config;
@@ -78,7 +79,7 @@ public class AidrFetcherJsonInputProcessor extends Loggable implements Runnable 
 			if (!redisLoadShedder.containsKey(channel)) {
 				redisLoadShedder.put(channel, new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
 			}
-			if (redisLoadShedder.get(channel).canProcess()) {
+			if (redisLoadShedder.get(channel).canProcess(channel)) {
 				Document doc;
 				try {
 					doc = DocumentJSONConverter.parseDocument(jsonDoc);
