@@ -30,9 +30,9 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.CollectorStatus;
-import qa.qcri.aidr.collector.logging.ErrorLog;
 import qa.qcri.aidr.collector.utils.Config;
 import qa.qcri.aidr.collector.utils.GenericCache;
+import qa.qcri.aidr.common.logging.ErrorLog;
 
 /**
  * REST Web Service

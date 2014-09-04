@@ -73,7 +73,7 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
                         crisisId: CRISIS_ID
                     }
                 }
-            }
+            },
         });
 
         this.trainingDataGrid = Ext.create('Ext.grid.Panel', {

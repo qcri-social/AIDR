@@ -774,12 +774,6 @@ public class TaggerServiceImpl implements TaggerService {
 			String sortDirection) throws AidrException{
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
-			//WebResource webResource = client.resource(taggerMainUrl + "/misc/getTrainingData?crisisID=" + crisisId
-			//        + "&modelFamilyID=" + modelFamilyId
-			//        + "&fromRecord=" + start
-			//        + "&limit=" + limit
-			//        + "&sortColumn=" + sortColumn
-			//        + "&sortDirection=" + sortDirection);
 			WebTarget webResource = client.target(taggerMainUrl + "/misc/getTrainingData?crisisID=" + crisisId
 					+ "&modelFamilyID=" + modelFamilyId
 					+ "&fromRecord=" + start
@@ -798,7 +792,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			TrainingDataRequest trainingDataRequest = objectMapper.readValue(jsonResponse, TrainingDataRequest.class);
 			if (trainingDataRequest != null && trainingDataRequest.getTrainingData() != null) {
-				logger.info("Tagger returned " + trainingDataRequest.getTrainingData().size() + " training data records for crises with ID: "
+				logger.info("Tagger returned " + trainingDataRequest.getTrainingData().size() + " training data records for crisis with ID: "
 						+ crisisId + " and family model with ID: " + modelFamilyId);
 				return trainingDataRequest.getTrainingData();
 			} else {

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
@@ -28,6 +29,7 @@ import javax.ws.rs.core.Response;
 public class TaggerController extends BaseController {
 
 	private Logger logger = Logger.getLogger(TaggerController.class);
+	private ErrorLog elog = new ErrorLog();
 
 	@Autowired
 	private TaggerService taggerService;
@@ -142,12 +144,12 @@ public class TaggerController extends BaseController {
 		try{
 			TaggerCrisis updatedCrisis = taggerService.updateCode(crisis);
 
-            // update collection crisisType to keep data consistent
-            AidrCollection collection = collectionService.findByCode(dto.getCode());
-            collection.setCrisisType(dto.getCrisisTypeID());
-            collectionService.update(collection);
+			// update collection crisisType to keep data consistent
+			AidrCollection collection = collectionService.findByCode(dto.getCode());
+			collection.setCrisisType(dto.getCrisisTypeID());
+			collectionService.update(collection);
 
-            return getUIWrapper(updatedCrisis != null);
+			return getUIWrapper(updatedCrisis != null);
 		}catch(Exception e){
 			logger.error("Error while Updating Crisis in Tagger", e);
 			return getUIWrapper(false);
@@ -157,11 +159,31 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/getModelsForCrisis.action", method = {RequestMethod.GET})
 	@ResponseBody
 	public Map<String, Object> getModelsForCrisis(Integer id) {
-		logger.info("Getting Attributes For Crises");
+		logger.info("Getting Attributes For Crisis ID " + id);
 		try {
-			return getUIWrapper(taggerService.getModelsForCrisis(id), true);
+			List<TaggerModel> result = taggerService.getModelsForCrisis(id);
+			logger.info("Fetched result data size = " + (result != null ? result.size() : null));
+			if (result != null) {
+				for (int i = 0;i < result.size();i++) {
+					logger.info("looking at fetched model family: " + i);
+					Map<String, Object> countResult = getTrainingDataCountByModelIdAndCrisisId(result.get(i).getModelFamilyID(), id);
+					logger.info("fetched count: " + (countResult != null ? countResult.get("data") : null));
+					if (countResult != null) {
+						try {
+							Integer value = (Integer) countResult.get("data");
+							logger.info("cast long value: " + value);
+							result.get(i).setTrainingExamples(value.longValue());
+						} catch (Exception e) {
+							logger.error(elog.toStringException(e));
+						}
+					}
+					logger.info("For model family id: " + result.get(i).getModelFamilyID() + ", set human labeled count = " + result.get(i).getTrainingExamples());
+				}
+			}
+			//return getUIWrapper(taggerService.getModelsForCrisis(id), true);
+			return getUIWrapper(result, true);
 		} catch (AidrException e) {
-			logger.error(e.getMessage(), e);
+			logger.error(elog.toStringException(e));
 			return getUIWrapper(false, e.getMessage());
 		}
 	}
@@ -369,6 +391,34 @@ public class TaggerController extends BaseController {
 		return getUIWrapper(response, true, Long.valueOf(total), null);
 	}
 
+	@RequestMapping(value = "/getTrainingDataCountByModelIdAndCrisisId.action", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getTrainingDataCountByModelIdAndCrisisId(
+			@RequestParam Integer modelFamilyId,
+			@RequestParam Integer crisisId) {
+		Integer start = 0;
+		Integer limit = 20;
+		List<TrainingDataDTO> response;
+		logger.info("request received for crisis ID " + crisisId + ", model family ID " + modelFamilyId);
+		try {
+			response = taggerService.getTrainingDataByModelIdAndCrisisId(modelFamilyId, crisisId, start, limit, "", "");
+			logger.info("received response back: " + response);
+		} catch (AidrException e) {
+			logger.error(elog.toStringException(e));
+			return getUIWrapper(new Integer(0), false);
+		}
+		Integer total = 0;
+		if (response != null && !response.isEmpty()) {
+			try {
+				total = response.get(0).getTotalRows();
+			} catch (Exception e) {
+				logger.error(elog.toStringException(e));
+			}
+		}
+		logger.info("Returning for crisis ID " + crisisId + ", model family ID " + modelFamilyId + ", human labeled count = " + total);
+		return getUIWrapper(total, true);
+	}
+
 	@RequestMapping(value = "/crisis-exists.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> crisisExists(@RequestParam String code) throws Exception {
@@ -380,10 +430,10 @@ public class TaggerController extends BaseController {
 			return getUIWrapper(false);
 		}
 		if (taggerCrisisExist != null && taggerCrisisExist.getCrisisId() != null && taggerCrisisExist.getCrisisId() != 0){
-            logger.debug("Classifier already exists for the code: \"" + code + "\"");
+			logger.debug("Classifier already exists for the code: \"" + code + "\"");
 			return getUIWrapper(true, true);
 		} else {
-            logger.debug("Classifier doesn't exists yet for the code: \"" + code + "\"");
+			logger.debug("Classifier doesn't exists yet for the code: \"" + code + "\"");
 			return getUIWrapper(false, true);
 		}
 	}
@@ -635,7 +685,7 @@ public class TaggerController extends BaseController {
 		result.add(taskAnswer);
 		return result;
 	}
-	
+
 	@RequestMapping(value = "/taggerGenerateJSONLink.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> generateJSONLink(@RequestParam String code) throws Exception {

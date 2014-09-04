@@ -11,10 +11,10 @@ package qa.qcri.aidr.persister.collction;
 
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.common.redis.LoadShedder;
 import qa.qcri.aidr.io.FileSystemOperations;
-import qa.qcri.aidr.logging.ErrorLog;
 import qa.qcri.aidr.utils.Config;
-import qa.qcri.aidr.utils.LoadShedder;
 import redis.clients.jedis.JedisPubSub;
 
 import java.io.*;
