@@ -46,8 +46,21 @@ public class PublicController extends BaseController{
 		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
 	}
 
+    @RequestMapping(value = "/findByRequestCode.action", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object>  findByRequestCode(@QueryParam("code") String code) throws Exception {
+        try {
+            AidrCollection data = collectionService.findByCode(code);
+            return getUIWrapper(data, true);
 
-	@RequestMapping(value = "/findAll.action", method = RequestMethod.GET)
+        } catch (Exception e) {
+            logger.error(elog.toStringException(e));
+            return getUIWrapper(false);
+        }
+
+    }
+
+    @RequestMapping(value = "/findAll.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object>  findAll(@RequestParam Integer start, @RequestParam Integer limit,  @RequestParam Enum statusValue,
 			@DefaultValue("no") @QueryParam("trashed") String trashed) throws Exception {
@@ -286,6 +299,7 @@ public class PublicController extends BaseController{
 		}
 		return null;
 	}
+
 
 	@RequestMapping(value = "/findTotalCount", method = RequestMethod.GET)
 	@ResponseBody
