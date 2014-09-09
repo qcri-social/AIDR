@@ -1,6 +1,8 @@
 package qa.qcri.aidr.manager.controller;
 
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -8,9 +10,12 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import qa.qcri.aidr.manager.dto.AidrCollectionTotalDTO;
+import qa.qcri.aidr.manager.dto.TaggerCrisis;
+import qa.qcri.aidr.manager.dto.TaggerCrisisExist;
 import qa.qcri.aidr.manager.dto.TaggerCrisisType;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
+import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
@@ -24,6 +29,8 @@ import javax.ws.rs.QueryParam;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static qa.qcri.aidr.manager.util.CollectionType.SMS;
 
 @Controller
 @RequestMapping("public/collection")
@@ -45,6 +52,60 @@ public class PublicController extends BaseController{
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
 	}
+
+    @RequestMapping(value = "/updateGeo.action", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> update(String jsonCollection ) throws Exception {
+
+        JSONParser parser = new JSONParser();
+        Object obj = parser.parse(jsonCollection);
+
+        JSONObject jsonObject = (JSONObject) obj;
+        String token = (String)jsonObject.get("token");
+        String geoString = (String)jsonObject.get("geo");
+        Integer collectionId = (Integer)jsonObject.get("id");
+        Integer durationInHours = (Integer)jsonObject.get("durationInHours");
+
+        try{
+
+            AidrCollection dbCollection = collectionService.findById(collectionId);
+            CollectionStatus status = dbCollection.getStatus();
+
+
+            if (CollectionStatus.RUNNING_WARNING.equals(status) || CollectionStatus.RUNNING.equals(status)) {
+
+                //              stop collection
+                AidrCollection collectionAfterStop = collectionService.stopAidrFetcher(dbCollection);
+
+                //              save current state of the collection to collectionLog
+                AidrCollectionLog collectionLog = new AidrCollectionLog();
+                collectionLog.setCount(dbCollection.getCount());
+                collectionLog.setEndDate(collectionAfterStop.getEndDate());
+                collectionLog.setFollow(dbCollection.getFollow());
+                collectionLog.setGeo(dbCollection.getGeo());
+                collectionLog.setLangFilters(dbCollection.getLangFilters());
+                collectionLog.setStartDate(dbCollection.getStartDate());
+                collectionLog.setTrack(dbCollection.getTrack());
+                collectionLog.setCollectionID(collectionId);
+                collectionLogService.create(collectionLog);
+
+                Calendar c = Calendar.getInstance();
+                c.setTime(collectionAfterStop.getEndDate());
+                c.add(Calendar.HOUR, durationInHours);
+
+                dbCollection.setGeo(geoString);
+                dbCollection.setEndDate(c.getTime());
+                collectionService.update(dbCollection);
+
+                //              start collection
+                collectionService.startFetcher(collectionService.prepareFetcherRequest(dbCollection), dbCollection);
+            }
+            return getUIWrapper(true);
+        }catch(Exception e){
+            logger.error("Error while Updating AidrCollection  Info into database", e);
+            return getUIWrapper(false);
+        }
+    }
 
     @RequestMapping(value = "/findByRequestCode.action", method = RequestMethod.GET)
     @ResponseBody
