@@ -19,10 +19,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-//import org.apache.log4j.BasicConfigurator;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-
+import qa.qcri.aidr.common.logging.ErrorLog;
 
 public class TaggerJsonOutputAdapter {
 	// Logger setup

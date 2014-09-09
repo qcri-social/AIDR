@@ -14,8 +14,9 @@ import org.glassfish.jersey.server.ChunkedOutput;
 //import org.slf4j.LoggerFactory;
 
 
+
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.output.stream.SubscriptionDataObject;
-import qa.qcri.aidr.output.utils.ErrorLog;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
 import redis.clients.jedis.Jedis;

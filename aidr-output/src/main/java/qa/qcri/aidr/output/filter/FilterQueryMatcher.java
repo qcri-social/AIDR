@@ -14,12 +14,13 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.google.gson.Gson;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.output.filter.QueryType;
 import qa.qcri.aidr.output.filter.ClassifierQueryJsonObject;
 import qa.qcri.aidr.output.filter.DateQueryJsonObject;
 import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
 import qa.qcri.aidr.output.filter.NominalLabel;
-import qa.qcri.aidr.output.utils.ErrorLog;
+
 
 public class FilterQueryMatcher {
 

@@ -8,8 +8,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-//import org.codehaus.jackson.annotate.JsonProperty;
-
 @SuppressWarnings("serial")
 @XmlRootElement(name="JsonQueryList")
 public class JsonQueryList implements Serializable {

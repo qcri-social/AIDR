@@ -87,8 +87,8 @@ import org.apache.log4j.Logger;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.output.utils.AIDROutputConfig;
-import qa.qcri.aidr.output.utils.ErrorLog;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
 import qa.qcri.aidr.output.stream.AsyncStreamRedisSubscriber;
 import redis.clients.jedis.Jedis;
