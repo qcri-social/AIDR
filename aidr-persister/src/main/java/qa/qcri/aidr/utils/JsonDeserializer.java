@@ -974,6 +974,10 @@ public class JsonDeserializer {
 							if (currentSize <= Config.TWEETS_EXPORT_LIMIT_100K) {
 								//write to file
 								beanWriter.write(line);
+								if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
+										&& currentSize < Config.TWEETS_EXPORT_LIMIT_100K) {
+									beanWriter.write(", ");	// do not append for last item
+								}
 								beanWriter.newLine();
 								++currentSize;
 								// System.out.println("currentSize  : " + currentSize);
@@ -1077,6 +1081,10 @@ public class JsonDeserializer {
 								obj.put("id", tweet.getTweetID());
 								//write to file
 								beanWriter.write(obj.toJSONString());
+								if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
+										&& totalCount < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+									beanWriter.write(", ");	// do not append for last item
+								}
 								beanWriter.newLine();
 								++totalCount;
 							}
@@ -1181,6 +1189,10 @@ public class JsonDeserializer {
 							if (currentSize <= Config.TWEETS_EXPORT_LIMIT_100K) {
 								//write to file
 								beanWriter.write(line);
+								if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
+										&& currentSize < Config.TWEETS_EXPORT_LIMIT_100K) {
+									beanWriter.write(", ");
+								}
 								beanWriter.newLine();
 								++currentSize;
 								// System.out.println("currentSize  : " + currentSize);
@@ -1278,6 +1290,10 @@ public class JsonDeserializer {
 							if (!tweet.getNominalLabels().isEmpty()) {
 								//write to file
 								beanWriter.write(createJsonClassifiedTweetIDString(tweet));
+								if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
+										&& totalCount < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+									beanWriter.write(", ");
+								}
 								beanWriter.newLine();
 							}
 							++totalCount;
@@ -1397,6 +1413,10 @@ public class JsonDeserializer {
 								if (satisfiesFilter(queryList, tweetFilter, tweet)) {
 									//write to file
 									beanWriter.write(line);
+									if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
+											&& currentSize < Config.TWEETS_EXPORT_LIMIT_100K) {
+										beanWriter.write(", ");
+									}
 									beanWriter.newLine();
 									++currentSize;
 								}
@@ -1504,6 +1524,10 @@ public class JsonDeserializer {
 							if (satisfiesFilter(queryList, tweetFilter, tweet)) {								
 								//write to file
 								beanWriter.write(createJsonClassifiedTweetIDString(tweet));
+								if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
+										&& totalCount < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+									beanWriter.write(", ");
+								}
 								beanWriter.newLine();
 								++totalCount;
 							}
