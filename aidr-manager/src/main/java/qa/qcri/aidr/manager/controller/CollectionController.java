@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
@@ -17,7 +19,8 @@ import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
-import qa.qcri.aidr.manager.util.ErrorLog;
+
+
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
@@ -476,7 +479,7 @@ public class CollectionController extends BaseController{
 			if (result != null && result.get("url") != null) {
 				return getUIWrapper(result.get("url"),true);
 			} else {
-				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
 			logger.error("Exception in generating CSV download link for collection: " + code);
@@ -494,7 +497,7 @@ public class CollectionController extends BaseController{
 			if (result != null && result.get("url") != null) {
 				return getUIWrapper(result.get("url"),true, null, (String)result.get("message"));
 			} else {
-				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
 			logger.error("Exception in generating CSV TweetIDs download link for collection: " + code);
@@ -681,14 +684,15 @@ public class CollectionController extends BaseController{
 
 	@RequestMapping(value = "/generateJSONLink.action", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String,Object> generateJSONLink(@RequestParam String code) throws Exception {
+	public Map<String,Object> generateJSONLink(@RequestParam String code, 
+			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws Exception {
 		Map<String, Object> result = null;
 		try {
-			result = collectionLogService.generateJSONLink(code);
+			result = collectionLogService.generateJSONLink(code, jsonType);
 			if (result != null && result.get("url") != null) {
 				return getUIWrapper(result.get("url"),true);
 			} else {
-				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -698,14 +702,15 @@ public class CollectionController extends BaseController{
 
 	@RequestMapping(value = "/generateJsonTweetIdsLink.action", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String,Object> generateJsonTweetIdsLink(@RequestParam String code) throws Exception {
+	public Map<String,Object> generateJsonTweetIdsLink(@RequestParam String code,
+			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws Exception {
 		Map<String, Object> result = null;
 		try {
-			result = collectionLogService.generateJsonTweetIdsLink(code);
+			result = collectionLogService.generateJsonTweetIdsLink(code, jsonType);
 			if (result != null && result.get("url") != null) {
 				return getUIWrapper(result.get("url"),true, null, (String)result.get("message"));
 			} else {
-				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

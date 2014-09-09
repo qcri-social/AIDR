@@ -18,6 +18,7 @@ import java.util.List;
 //import java.util.logging.Level;
 //import java.util.logging.Logger;
 
+
 import qa.qcri.aidr.collector.beans.ResponseWrapper;
 
 import javax.ws.rs.core.Context;
@@ -39,10 +40,9 @@ import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
 import qa.qcri.aidr.collector.utils.GenericCache;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.utils.Config;
-import qa.qcri.aidr.collector.logging.ErrorLog;
 import qa.qcri.aidr.collector.logging.Loggable;
-import static qa.qcri.aidr.collector.logging.Loggable.LOG_LEVEL;
 import qa.qcri.aidr.collector.utils.TwitterStreamQueryBuilder;
+import qa.qcri.aidr.common.logging.ErrorLog;
 import twitter4j.conf.ConfigurationBuilder;
 
 /**

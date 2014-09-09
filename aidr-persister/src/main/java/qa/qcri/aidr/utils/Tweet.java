@@ -10,6 +10,7 @@ import java.io.Serializable;
  *
  * @author Imran
  */
+@SuppressWarnings("serial")
 public class Tweet  implements Document, Serializable{
     
     private String tweetID;

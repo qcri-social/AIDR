@@ -113,7 +113,7 @@ public class CollectionLogServiceImpl implements CollectionLogService {
                 return "";
             }*/
         } catch (Exception e) {
-            throw new AidrException("Error while generating CSV link in Persister", e);
+            throw new AidrException("[generateCSVLink] Error while generating CSV link in Persister", e);
         }
     }
 
@@ -134,15 +134,15 @@ public class CollectionLogServiceImpl implements CollectionLogService {
                 return "";
             }*/
         } catch (Exception e) {
-            throw new AidrException("Error while generating Tweet Ids link in Persister", e);
+            throw new AidrException("[generateTweetIdsLink] Error while generating Tweet Ids link in Persister", e);
         }
     }
     
     @Override
-    public Map<String, Object> generateJSONLink(String code) throws AidrException {
+    public Map<String, Object> generateJSONLink(String code, String jsonType) throws AidrException {
         try {
             Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
-            WebTarget webResource = client.target(persisterMainUrl + "/persister/genJson?collectionCode=" + code);
+            WebTarget webResource = client.target(persisterMainUrl + "/persister/genJson?collectionCode=" + code + "&jsonType=" + jsonType);
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             //String jsonResponse = clientResponse.readEntity(String.class);
             
@@ -155,15 +155,16 @@ public class CollectionLogServiceImpl implements CollectionLogService {
                 return "";
             }*/
         } catch (Exception e) {
-            throw new AidrException("Error while generating JSON download link in Persister", e);
+            throw new AidrException("[generateJSONLink] Error while generating JSON download link in Persister", e);
         }
     }
 
     @Override
-    public Map<String, Object> generateJsonTweetIdsLink(String code) throws AidrException {
+    public Map<String, Object> generateJsonTweetIdsLink(String code, String jsonType) throws AidrException {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
-            WebTarget webResource = client.target(persisterMainUrl + "/persister/genJsonTweetIds?collectionCode=" + code);
+            WebTarget webResource = client.target(persisterMainUrl + "/persister/genJsonTweetIds?collectionCode=" + code 
+            		+ "&downloadLimited=true&"+ "&jsonType=" + jsonType);
         	Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
         	//String jsonResponse = clientResponse.readEntity(String.class);
         	
@@ -176,7 +177,7 @@ public class CollectionLogServiceImpl implements CollectionLogService {
                 return "";
             }*/
         } catch (Exception e) {
-            throw new AidrException("Error while generating JSON Tweet Ids download link in Persister", e);
+            throw new AidrException("[generateJsonTweetIdsLink] Error while generating JSON Tweet Ids download link in Persister", e);
         }
     }
 }

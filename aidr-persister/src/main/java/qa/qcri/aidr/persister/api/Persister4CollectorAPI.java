@@ -7,18 +7,8 @@ package qa.qcri.aidr.persister.api;
 
 
 import java.net.UnknownHostException;
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
-
-
-
-
-import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
@@ -30,16 +20,19 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import net.minidev.json.JSONObject;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.glassfish.jersey.jackson.JacksonFeature;
 
+import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.logging.ErrorLog;
 import qa.qcri.aidr.persister.collector.RedisCollectorPersister;
-import qa.qcri.aidr.utils.CollectionStatus;
 import qa.qcri.aidr.utils.Config;
+import qa.qcri.aidr.utils.DownloadJsonType;
 import qa.qcri.aidr.utils.GenericCache;
 import qa.qcri.aidr.utils.JsonDeserializer;
+import qa.qcri.aidr.utils.ResultStatus;
 
 /**
  * REST Web Service
@@ -123,8 +116,10 @@ public class Persister4CollectorAPI {
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
         //return Response.ok(fileName).build();
         
-        CollectionStatus s = new CollectionStatus();
-        return Response.ok(s.getUIWrapper(collectionCode, null, fileName, true)).build();
+        JSONObject obj = new JSONObject();
+        obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+        logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+        return Response.ok(obj.toJSONString()).build();
     }
     
     @GET
@@ -134,16 +129,20 @@ public class Persister4CollectorAPI {
     		@DefaultValue("true") @QueryParam("downloadLimited") Boolean downloadLimited) throws UnknownHostException {
         logger.info("Received request for collection: " + collectionCode);
     	JsonDeserializer jsonD = new JsonDeserializer();
-        String fileName = jsonD.generateJson2TweetIdsCSV(collectionCode, downloadLimited);
-        fileName = Config.SCD1_URL + collectionCode+"/"+fileName;
+    	Map<String, Object> result = jsonD.generateJson2TweetIdsCSV(collectionCode, downloadLimited);
+        String fileName = Config.SCD1_URL + collectionCode+"/" + (String) result.get("fileName");
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
         
-        CollectionStatus s = new CollectionStatus();
-        if (s.getTotalDownloadedCount(collectionCode) > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
-        	return Response.ok(s.getUIWrapper(collectionCode, null, fileName, true)).build();
-        } else {
-        	return Response.ok(s.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true)).build();
-        }
+        JSONObject obj = new JSONObject();
+		if ((Integer) result.get("count") < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+			return Response.ok(obj.toJSONString()).build();
+		} else {
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
+			return Response.ok(obj.toJSONString()).build();
+		}
     }
     
     @GET
@@ -157,37 +156,44 @@ public class Persister4CollectorAPI {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/genJson")
-    public Response generateJSONFromLastestJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
-    	logger.info("Received request for collection: " + collectionCode);
+    public Response generateJSONFromLastestJSON(@QueryParam("collectionCode") String collectionCode,
+    		@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws UnknownHostException {
+    	logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType);
     	JsonDeserializer jsonD = new JsonDeserializer();
-        String fileName = jsonD.generateJSON2JSON_100K_BasedOnTweetCount(collectionCode);
+        String fileName = jsonD.generateJSON2JSON_100K_BasedOnTweetCount(collectionCode, DownloadJsonType.getDownloadJsonTypeFromString(jsonType));
         fileName = Config.SCD1_URL + collectionCode+"/"+fileName;
         
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
         //return Response.ok(fileName).build();
+        JSONObject obj = new JSONObject();
+        obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
         
-        CollectionStatus s = new CollectionStatus();
-        return Response.ok(s.getUIWrapper(collectionCode, null, fileName, true)).build();
+        logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+        return Response.ok(obj.toJSONString()).build();
     }
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/genJsonTweetIds")
     public Response generateTweetsIDSJSONFromAllJSON(@QueryParam("collectionCode") String collectionCode,
-    			@DefaultValue("true") @QueryParam("downloadLimited") Boolean downloadLimited) throws UnknownHostException {
-        logger.info("Received request for collection: " + collectionCode);
+    			@DefaultValue("true") @QueryParam("downloadLimited") Boolean downloadLimited,
+    			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws UnknownHostException {
+        logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType);
     	JsonDeserializer jsonD = new JsonDeserializer();
-        String fileName = jsonD.generateJson2TweetIdsJson(collectionCode, downloadLimited);
-        fileName = Config.SCD1_URL + collectionCode+"/"+fileName;
+    	Map<String, Object> result = jsonD.generateJson2TweetIdsJson(collectionCode, downloadLimited, DownloadJsonType.getDownloadJsonTypeFromString(jsonType));
+        String fileName = Config.SCD1_URL + collectionCode+"/" + (String)result.get("fileName");
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
         //return Response.ok(fileName).build();
-        
-        CollectionStatus s = new CollectionStatus();
-        if (s.getTotalDownloadedCount(collectionCode) > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
-        	return Response.ok(s.getUIWrapper(collectionCode, null, fileName, true)).build();
-        } else {
-        	return Response.ok(s.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true)).build();
-        }
+        JSONObject obj = new JSONObject();
+		if ((Integer) result.get("count") < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+			return Response.ok(obj.toJSONString()).build();
+		} else {
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
+			return Response.ok(obj.toJSONString()).build();
+		}
     }
 
 }

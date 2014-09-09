@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-
+@Deprecated
 public class WriteResponse {
 	public final static String DEFAULT_MIME_TYPE = "application/json";
 	public HttpServletResponse response;

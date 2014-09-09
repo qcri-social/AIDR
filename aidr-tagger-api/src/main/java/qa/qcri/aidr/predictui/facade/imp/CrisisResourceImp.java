@@ -17,12 +17,13 @@ import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.entities.Crisis;
 import qa.qcri.aidr.predictui.entities.ModelFamily;
 import qa.qcri.aidr.predictui.entities.NominalLabel;
 import qa.qcri.aidr.predictui.entities.Users;
 import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
-import qa.qcri.aidr.predictui.util.ErrorLog;
+
 
 /**
  *

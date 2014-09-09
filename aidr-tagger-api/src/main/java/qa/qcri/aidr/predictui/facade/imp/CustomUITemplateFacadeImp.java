@@ -1,9 +1,9 @@
 package qa.qcri.aidr.predictui.facade.imp;
 
-import qa.qcri.aidr.predictui.entities.Crisis;
+
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.entities.CustomUITemplate;
 import qa.qcri.aidr.predictui.facade.CustomUITemplateFacade;
-import qa.qcri.aidr.predictui.util.ErrorLog;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;

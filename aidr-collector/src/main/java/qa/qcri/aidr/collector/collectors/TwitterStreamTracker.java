@@ -6,19 +6,21 @@ package qa.qcri.aidr.collector.collectors;
 
 import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
+
 import qa.qcri.aidr.collector.beans.AIDR;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.FetcherResponseToStringChannel;
 import qa.qcri.aidr.collector.utils.Config;
-import qa.qcri.aidr.collector.logging.ErrorLog;
 import qa.qcri.aidr.collector.logging.Loggable;
 import qa.qcri.aidr.collector.redis.JedisConnectionPool;
 import qa.qcri.aidr.collector.utils.GenericCache;
 import qa.qcri.aidr.collector.utils.TwitterStreamQueryBuilder;
-import qa.qcri.aidr.collector.utils.LoadShedder;
+import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.common.redis.LoadShedder;
 import redis.clients.jedis.Jedis;
 import twitter4j.FilterQuery;
 import twitter4j.StallWarning;
@@ -134,7 +136,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
                 int length = rawTweetJSON.length();
                 if (rawTweetJSON.charAt(length - 1) == '}') {
                     rawTweetJSON.replace(length - 1, length, aidrJson);
-                    if (redisLoadShedder.get(channelName).canProcess()) {
+                    if (redisLoadShedder.get(channelName).canProcess(channelName)) {
                         publisherJedis.publish(channelName, rawTweetJSON.toString());
                         counter++;
                         if (counter >= Config.FETCHER_REDIS_COUNTER_UPDATE_THRESHOLD) {
