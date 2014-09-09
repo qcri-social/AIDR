@@ -29,8 +29,8 @@ public interface CollectionLogService {
 
     public Map<String, Object> generateTweetIdsLink(String code) throws Exception;
 
-	public Map<String, Object> generateJSONLink(String code) throws AidrException;
+	public Map<String, Object> generateJSONLink(String code, String jsonType) throws AidrException;
 
-	public Map<String, Object> generateJsonTweetIdsLink(String code) throws AidrException;
+	public Map<String, Object> generateJsonTweetIdsLink(String code, String jsonType) throws AidrException;
 
 }

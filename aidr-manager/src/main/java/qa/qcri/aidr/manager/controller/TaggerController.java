@@ -9,6 +9,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
@@ -18,6 +19,8 @@ import qa.qcri.aidr.manager.service.TaggerService;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -608,7 +611,7 @@ public class TaggerController extends BaseController {
 			if (result != null && result.get("url") != null) {
 				return getUIWrapper(result.get("url"),true);
 			} else {
-				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -628,7 +631,7 @@ public class TaggerController extends BaseController {
 				System.out.println("Returning success fo collection: " +  code + ", response: " + result);
 				return getUIWrapper(result.get("url"),true, null, (String)result.get("message"));
 			} else {
-				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -688,14 +691,15 @@ public class TaggerController extends BaseController {
 
 	@RequestMapping(value = "/taggerGenerateJSONLink.action", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String,Object> generateJSONLink(@RequestParam String code) throws Exception {
+	public Map<String,Object> generateJSONLink(@RequestParam String code,
+			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws Exception {
 		Map<String, Object> result = null;
 		try {
-			result = taggerService.generateJSONLink(code);
+			result = taggerService.generateJSONLink(code, jsonType);
 			if (result != null && result.get("url") != null) {
 				return getUIWrapper(result.get("url"),true);
 			} else {
-				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -707,16 +711,17 @@ public class TaggerController extends BaseController {
 	// Added by koushik
 	@RequestMapping(value = "/taggerGenerateJsonTweetIdsLink.action", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String,Object> generateJsonTweetIdsLink(@RequestParam String code) throws Exception {
+	public Map<String,Object> generateJsonTweetIdsLink(@RequestParam String code,
+			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws Exception {
 		System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
 		Map<String, Object> result = null;
 		try {
-			result = taggerService.generateJsonTweetIdsLink(code);
+			result = taggerService.generateJsonTweetIdsLink(code, jsonType);
 			if (result != null && result.get("url") != null) {
 				System.out.println("Returning success fo collection: " +  code + ", response: " + result);
 				return getUIWrapper(result.get("url"),true, null, (String)result.get("message"));
 			} else {
-				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -726,4 +731,93 @@ public class TaggerController extends BaseController {
 		//return getUIWrapper(result,true);
 	}
 
+	
+	// Added by koushik
+	@RequestMapping(value = "/taggerGenerateCSVFilteredLink.action", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> generateCSVFilteredLink(@RequestParam String code,
+								String queryString) throws Exception {
+		Map<String, Object> result = null;
+		try {
+			result = taggerService.generateCSVFilteredLink(code, queryString);
+			if (result != null && result.get("url") != null) {
+				return getUIWrapper(result.get("url"),true);
+			} else {
+				return getUIWrapper(false, "Something wrong - no file generated!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+		}
+	}
+
+	// Added by koushik
+	@RequestMapping(value = "/taggerGenerateTweetIdsFilteredLink.action", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> generateTweetIdsFilteredLink(@RequestParam String code,
+								String queryString) throws Exception {
+		System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
+		Map<String, Object> result = null;
+		try {
+			result = taggerService.generateTweetIdsFilteredLink(code, queryString);
+			if (result != null && result.get("url") != null) {
+				System.out.println("Returning success fo collection: " +  code + ", response: " + result);
+				return getUIWrapper(result.get("url"),true, null, (String)result.get("message"));
+			} else {
+				return getUIWrapper(false, "Something wrong - no file generated!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+		}
+		//System.out.println("[Controller generateTweetIdsLink] Returning success: " + result);
+		//return getUIWrapper(result,true);
+	}
+
+	
+	@RequestMapping(value = "/taggerGenerateJSONFilteredLink.action", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> generateJSONFilteredLink(@RequestParam String code,
+			String queryString,
+			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws Exception {
+		Map<String, Object> result = null;
+		try {
+			result = taggerService.generateJSONFilteredLink(code, queryString, jsonType);
+			if (result != null && result.get("url") != null) {
+				return getUIWrapper(result.get("url"),true);
+			} else {
+				return getUIWrapper(false, "Something wrong - no file generated!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+		}
+		//return getUIWrapper(result,true);
+	}
+
+	// Added by koushik
+	@RequestMapping(value = "/taggerGenerateJsonTweetIdsFilteredLink.action", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> generateJsonTweetIdsFilteredLink(@RequestParam String code,
+			String queryString,
+			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws Exception {
+		System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
+		Map<String, Object> result = null;
+		try {
+			result = taggerService.generateJsonTweetIdsFilteredLink(code, queryString, jsonType);
+			if (result != null && result.get("url") != null) {
+				System.out.println("Returning success fo collection: " +  code + ", response: " + result);
+				return getUIWrapper(result.get("url"),true, null, (String)result.get("message"));
+			} else {
+				return getUIWrapper(false, "Something wrong - no file generated!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+		}
+		//System.out.println("[Controller generateTweetIdsLink] Returning success: " + result);
+		//return getUIWrapper(result,true);
+	}
+
+	
 }
