@@ -3,7 +3,7 @@ package qa.qcri.aidr.predictui.api;
 import java.io.IOException;
 import java.util.List;
 
-import qa.qcri.aidr.predictui.util.ErrorLog;
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
 import javax.ejb.EJB;

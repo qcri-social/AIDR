@@ -4,13 +4,12 @@
  */
 package qa.qcri.aidr.predictui.api;
 
-import java.net.UnknownHostException;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.dto.ItemToLabelDTO;
 import qa.qcri.aidr.predictui.dto.TrainingDataDTO;
 import qa.qcri.aidr.predictui.facade.MiscResourceFacade;
 import qa.qcri.aidr.predictui.util.Config;
-import qa.qcri.aidr.predictui.util.ErrorLog;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
 import javax.ejb.EJB;

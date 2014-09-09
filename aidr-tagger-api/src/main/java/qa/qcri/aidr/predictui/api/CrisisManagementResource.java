@@ -16,7 +16,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.predictui.util.ErrorLog;
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.entities.Crisis;
 import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.entities.ModelFamily;

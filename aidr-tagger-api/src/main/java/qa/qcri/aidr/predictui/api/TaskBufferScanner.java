@@ -34,9 +34,10 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.facade.TaskBufferScannerFacade;
 import qa.qcri.aidr.predictui.util.Config;
-import qa.qcri.aidr.predictui.util.ErrorLog;
+
 
 @Path("/taskscanner")
 @Singleton

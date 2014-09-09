@@ -12,6 +12,7 @@ import org.codehaus.jackson.type.TypeReference;
 import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.entities.TaskAssignment;
 import qa.qcri.aidr.predictui.entities.NominalLabel;
+import qa.qcri.aidr.common.logging.ErrorLog;
 
 public class TaskManagerEntityMapper {
 
