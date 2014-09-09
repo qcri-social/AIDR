@@ -8,7 +8,6 @@ package qa.qcri.aidr.persister.collction;
  *
  * @author Imran
  */
-
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
@@ -16,7 +15,6 @@ import qa.qcri.aidr.common.redis.LoadShedder;
 import qa.qcri.aidr.io.FileSystemOperations;
 import qa.qcri.aidr.utils.Config;
 import redis.clients.jedis.JedisPubSub;
-
 import java.io.*;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
@@ -24,14 +22,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
-
 public class CollectionSubscriber extends JedisPubSub {
-	
-	private static Logger logger = Logger.getLogger(CollectionSubscriber.class.getName());
-	private static ErrorLog elog = new ErrorLog();
-	
+
+    private static Logger logger = Logger.getLogger(CollectionSubscriber.class.getName());
+    private static ErrorLog elog = new ErrorLog();
+
     private String persisterDir;
     private String collectionDir;
     private BufferedWriter out = null;
@@ -39,9 +34,9 @@ public class CollectionSubscriber extends JedisPubSub {
     private File file;
     private long itemsWrittenToFile = 0;
     private int fileVolumnNumber = 1;
-    
+
     private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
-    
+
     public CollectionSubscriber() {
     }
 
@@ -54,7 +49,7 @@ public class CollectionSubscriber extends JedisPubSub {
         createNewFile();
         createBufferWriter();
         if (null == redisLoadShedder) {
-        	redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
+            redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
         }
         redisLoadShedder.put(channel, new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
         logger.info("Created loadshedder for channel: " + channel);
@@ -66,14 +61,11 @@ public class CollectionSubscriber extends JedisPubSub {
 
     @Override
     public void onPMessage(String pattern, String channel, String message) {
-    	logger.info("Received message for channel: " + channel);
-    	logger.info("isLoadShedder for channel " + channel + " = " + redisLoadShedder.containsKey(channel));
-    	if (redisLoadShedder.get(channel).canProcess(channel)) {
-         	logger.info("can process write for: " + channel);
-    		writeToFile(message);
-         } else {
-        	 logger.info("loadshdder denied write for: " + channel); 
-         }
+        if (redisLoadShedder.get(channel).canProcess(channel)) {
+            writeToFile(message);
+        } else {
+            logger.info("loadshdder denied write for: " + channel);
+        }
     }
 
     @Override
@@ -103,7 +95,7 @@ public class CollectionSubscriber extends JedisPubSub {
             }
         } catch (IOException ex) {
             logger.error(collectionCode + " error in creating new file at location " + collectionDir);
-        	logger.error(elog.toStringException(ex));
+            logger.error(elog.toStringException(ex));
         }
     }
 
@@ -112,36 +104,34 @@ public class CollectionSubscriber extends JedisPubSub {
         if (!theDir.exists()) {
             logger.info("creating directory: " + persisterDir + collectionCode);
             boolean result = theDir.mkdir();
-            
+
             if (result) {
                 logger.info("DIR created for collection: " + collectionCode);
                 return persisterDir + collectionCode + "/";
-            } 
-            
+            }
+
         }
         return persisterDir + collectionCode + "/";
     }
 
     private void createBufferWriter() {
         try {
-        	out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file, true), Charset.forName("UTF-8")), Config.DEFAULT_FILE_WRITER_BUFFER_SIZE);
+            out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file, true), Charset.forName("UTF-8")), Config.DEFAULT_FILE_WRITER_BUFFER_SIZE);
         } catch (IOException ex) {
-            //Logger.getLogger(CollectorSubscriber.class.getName()).log(Level.SEVERE, null, ex);
-        	logger.error(collectionCode + "Error in creating Buffered writer");
-        	logger.error(elog.toStringException(ex));
+            logger.error(collectionCode + "Error in creating Buffered writer");
+            logger.error(elog.toStringException(ex));
         }
 
     }
 
     private void writeToFile(String message) {
         try {
-            out.write(message+"\n");
+            out.write(message + "\n");
             itemsWrittenToFile++;
             isTimeToCreateNewFile();
         } catch (IOException ex) {
-            //Logger.getLogger(CollectorSubscriber.class.getName()).log(Level.SEVERE, null, ex);
-        	logger.error(collectionCode + "Error in writing to file");
-        	logger.error(elog.toStringException(ex));
+            logger.error(collectionCode + "Error in writing to file");
+            logger.error(elog.toStringException(ex));
         }
     }
 
@@ -160,15 +150,13 @@ public class CollectionSubscriber extends JedisPubSub {
             out.flush();
             out.close();
         } catch (IOException ex) {
-            //Logger.getLogger(CollectorSubscriber.class.getName()).log(Level.SEVERE, null, ex);
-        	logger.error(collectionCode + "Error in closing file writer");
-        	logger.error(elog.toStringException(ex));
+            logger.error(collectionCode + "Error in closing file writer");
+            logger.error(elog.toStringException(ex));
         }
     }
 
     private final static String getDateTime() {
         DateFormat df = new SimpleDateFormat("yyyyMMdd");  //yyyy-MM-dd_hh:mm:ss
-        //df.setTimeZone(TimeZone.getTimeZone("PST"));  
         return df.format(new Date());
     }
 }

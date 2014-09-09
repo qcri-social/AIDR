@@ -27,7 +27,7 @@ public class DeserializeFilters {
 		JsonObject obj = (JsonObject) parser.parse(queryString);
 		JsonArray constraintsArray = null;
 		if (obj.has("constraints")) {					// should always be true
-			constraintsArray = obj.get("constraints") != null ? obj.get("constraints").getAsJsonArray() : new JsonArray();
+			constraintsArray = obj.has("constraints") ? obj.get("constraints").getAsJsonArray() : new JsonArray();
 			//System.out.println("constraints: " + constraintsArray);
 		}
 		JsonQueryList queryList = new JsonQueryList();

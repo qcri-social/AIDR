@@ -7,8 +7,7 @@ import java.util.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-
-public class ErrorLog {
+public class ErrorLog extends qa.qcri.aidr.common.logging.ErrorLog {
 
     static Object writeLock = new Object();
 
@@ -35,15 +34,6 @@ public class ErrorLog {
                 }
             }
         }
-    }
-    
-    public String toStringException(Exception e) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        
-        StringBuilder retVal = new StringBuilder(new String("Exception:")).append(System.getProperty("line.separator")).append(sw);
-        return retVal.toString();
     }
     
     static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

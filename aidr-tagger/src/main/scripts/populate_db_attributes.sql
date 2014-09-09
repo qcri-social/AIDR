@@ -98,18 +98,18 @@ INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `
 INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
  VALUES (600, "010_food", "Food", "If the message talks about food requests");
 INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
-    VALUES (600,`020_water`,`Water`,`If the message contains water request`);
+    VALUES (600,"020_water","Water","If the message contains water request");
 INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
-    VALUES (600,`030_clothes_shoes`,`Clothes or shoes`,`If the message contains clothes or shoes request`);
+    VALUES (600,"030_clothes_shoes","Clothes or shoes","If the message contains clothes or shoes request");
 INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
-    VALUES (600,`040_volunteer_work`,`Colunterr work`,`If the message contains any type of voluteers requests`);
+    VALUES (600,"040_volunteer_work","Colunterr work","If the message contains any type of voluteers requests");
 INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
-    VALUES (600,`050_medical`,`Medical supplies`,`If the message contains request for medical supplies`);
+    VALUES (600,"050_medical","Medical supplies","If the message contains request for medical supplies");
 INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
-    VALUES (600,`060_blood`,`Blood`,`If blood request is reported in the message`);
+    VALUES (600,"060_blood","Blood","If blood request is reported in the message");
 INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
-    VALUES (600,`070_equipment`,`Equipment or machinery`,`If any kind of equipment or machinery is requested`);
+    VALUES (600,"070_equipment","Equipment or machinery","If any kind of equipment or machinery is requested");
 INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
-    VALUES (600,`080_transport`,`Means of transport`,`If any means of transport are requested`);
+    VALUES (600,"080_transport","Means of transport","If any means of transport are requested");
 INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
-    VALUES (600,`090_money`,`Other need`,`Any other kind of need/request`);
+    VALUES (600,"090_money","Other need","Any other kind of need/request");

@@ -186,9 +186,8 @@ public class ReadWriteCSV<CellProcessors> {
 			String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
 			fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
 			String fileToWrite = persisterDIR + collectionDIR + "/" + fileName + ".csv";
-			logger.error(collectionDIR + ": Writing CSV file : " + fileToWrite);
-			//beanWriter = new CsvBeanWriter(new FileWriter(fileToWrite, true),
-			//        CsvPreference.EXCEL_PREFERENCE);
+			logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
+			
 			if (null == beanWriter) { 
 				beanWriter = getCSVBeanWriter(fileToWrite);
 				// write the header
@@ -224,7 +223,7 @@ public class ReadWriteCSV<CellProcessors> {
 				String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
 				fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
 				String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName + ".csv";
-				logger.error(collectionDIR + ": Writing CSV file : " + fileToWrite);
+				logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
 				mapWriter = getCSVMapWriter(fileToWrite);
 
 				// Determine the headers
@@ -462,13 +461,4 @@ public class ReadWriteCSV<CellProcessors> {
 		}
 		return tweetToWrite;
 	}
-
-
-	/*
-	private final static String getDateTime() {
-		DateFormat df = new SimpleDateFormat("yyyyMMdd");  //yyyy-MM-dd_hh:mm:ss
-		//df.setTimeZone(TimeZone.getTimeZone("PST"));  
-		return df.format(new Date());
-	}
-	 */
 }

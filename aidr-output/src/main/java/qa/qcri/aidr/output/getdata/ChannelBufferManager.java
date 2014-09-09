@@ -105,6 +105,7 @@ public class ChannelBufferManager {
 		redisPort = Integer.parseInt(configParams.get("port"));
 		PERSISTER_LOAD_CHECK_INTERVAL_MINUTES = Integer.parseInt(configParams.get("PERSISTER_LOAD_CHECK_INTERVAL"));
 		PERSISTER_LOAD_LIMIT = Integer.parseInt(configParams.get("PERSISTER_LOAD_LIMIT"));
+
 		managerMainUrl = configParams.get("managerUrl");
 		logger.info("Initializing channel buffer manager.");
 		System.out.println("[ChannelBufferManager] Initializing channel buffer manager.");
