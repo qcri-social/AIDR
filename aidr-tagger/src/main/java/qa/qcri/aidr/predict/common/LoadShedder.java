@@ -2,6 +2,7 @@ package qa.qcri.aidr.predict.common;
 
 import org.apache.log4j.Logger;
 
+@Deprecated
 public class LoadShedder {
 
 	private static Logger logger = Logger.getLogger(LoadShedder.class);
