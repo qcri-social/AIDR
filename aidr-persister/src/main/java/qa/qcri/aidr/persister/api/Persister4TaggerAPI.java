@@ -40,7 +40,7 @@ import qa.qcri.aidr.utils.DownloadJsonType;
 import qa.qcri.aidr.utils.GenericCache;
 import qa.qcri.aidr.utils.JsonDeserializer;
 import qa.qcri.aidr.utils.ResultStatus;
-import qa.qcri.aidr.common.*;
+
 import qa.qcri.aidr.common.values.DownloadType;
 /**
  * REST Web Service

@@ -13,6 +13,7 @@ import java.io.File;
 
 
 
+
 //import java.util.logging.Level;
 //import java.util.logging.Logger;
 import redis.clients.jedis.JedisPubSub;
@@ -32,9 +33,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.common.redis.LoadShedder;
 import qa.qcri.aidr.io.FileSystemOperations;
 import qa.qcri.aidr.logging.ErrorLog;
-import qa.qcri.aidr.utils.LoadShedder;
+
 
 public class CollectorSubscriber extends JedisPubSub {
 	
