@@ -118,8 +118,8 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
             '<div class="info">',
             '<div class="collection-title"><a href="{[this.getEncodedCode(values.code)]}/collection-details">{name}</a>{[this.getSharedBy(values.user)]}</div>',
             '<div class="styled-text-14" id="statusField_{id}">{[this.getStatus(values.status)]}</div>',
-            '<div class="styled-text-14" id="docCountField_{id}">Downloaded items (since last re-start):&nbsp;&nbsp;&nbsp;{[this.getDocNumber(values.count)]}</div>',
-            '<div class="styled-text-14" id="lastDocField_{id}">Last downloaded item:&nbsp;&nbsp;&nbsp;{[this.getLastDoc(values.lastDocument)]}</div>',
+            '<div class="styled-text-14" id="docCountField_{id}">Downloaded {[this.getItem(values.collectionType, true)]} (since last re-start):&nbsp;&nbsp;&nbsp;{[this.getDocNumber(values.count)]}</div>',
+            '<div class="styled-text-14" id="lastDocField_{id}">Last downloaded {[this.getItem(values.collectionType)]}:&nbsp;&nbsp;&nbsp;{[this.getLastDoc(values.lastDocument)]}</div>',
             '</div>',
 
             '</div>',
@@ -143,6 +143,12 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                     } else {
                         return '';
                     }
+                },
+                getItem: function (r, plural) {
+                    if (plural)
+                        return r == 'Twitter' ? "tweets" : "sms";
+                    else
+                        return r == 'Twitter' ? "tweet" : "sms";
                 },
                 isButtonStopHidden: function (r) {
                     if (r == 'RUNNING-WARNNING' || r == 'RUNNING' || r == 'INITIALIZING'){
@@ -226,14 +232,20 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
             '<div class="content">',
 
             '<div class="img">',
-            '<a href="{[this.getEncodedCode(values.code)]}/collection-details"><img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/collection-icon.png" width="70"></a>',
+            '<a href="{[this.getEncodedCode(values.code)]}/collection-details">' +
+                    '<tpl if="this.isTwitter(values.collectionType)">'+
+                        '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/collection-icon.png" width="70">' +
+                    '<tpl else>'+
+                        '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/sms_icon.png" width="70">' +
+                    '</tpl>'+
+            '</a>',
             '</div>',
 
             '<div class="info">',
             '<div class="collection-title"><a href="{[this.getEncodedCode(values.code)]}/collection-details">{name}</a>{[this.getSharedBy(values.user)]}</div>',
             '<div class="styled-text-14" id="statusField_{id}">{[this.getStatus(values.status)]}</div>',
-            '<div class="styled-text-14" id="docCountField_{id}">Downloaded items (since last re-start):&nbsp;&nbsp;&nbsp;{[this.getDocNumber(values.count)]}</div>',
-            '<div class="styled-text-14" id="lastDocField_{id}">Last downloaded item:&nbsp;&nbsp;&nbsp;{[this.getLastDoc(values.lastDocument)]}</div>',
+            '<div class="styled-text-14" id="docCountField_{id}">Downloaded {[this.getItem(values.collectionType, true)]} (since last re-start):&nbsp;&nbsp;&nbsp;{[this.getDocNumber(values.count)]}</div>',
+            '<div class="styled-text-14" id="lastDocField_{id}">Last downloaded {[this.getItem(values.collectionType)]}:&nbsp;&nbsp;&nbsp;{[this.getLastDoc(values.lastDocument)]}</div>',
             '</div>',
 
             '</div>',
@@ -253,6 +265,15 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                 },
                 getEncodedCode: function(code) {
                     return encodeURI(code);
+                },
+                getItem: function (r, plural) {
+                    if (plural)
+                        return r == 'Twitter' ? "tweets" : "sms";
+                    else
+                        return r == 'Twitter' ? "tweet" : "sms";
+                },
+                isTwitter: function (r) {
+                    return r == 'Twitter';
                 },
                 getSharedBy: function(owner) {
                     if (owner.userName == USER_NAME){

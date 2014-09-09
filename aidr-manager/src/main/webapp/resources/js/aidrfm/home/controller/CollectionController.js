@@ -192,11 +192,18 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
                 lastDoc = data.lastDocument ? data.lastDocument : "<span class='na-text'>N/A</span>";
                 
             statusField.innerHTML = AIDRFMFunctions.getStatusWithStyle(data.status);
-            docCountField.innerHTML = 'Downloaded items:&nbsp;&nbsp;&nbsp' + docCount;
-            lastDocField.innerHTML = 'Last downloaded item:&nbsp;&nbsp;&nbsp;<span class="tweet">' + lastDoc + '</span>';
+            docCountField.innerHTML = 'Downloaded ' + this.getItemName(data.collectionType, true) + ':&nbsp;&nbsp;&nbsp' + docCount;
+            lastDocField.innerHTML = 'Last downloaded ' + this.getItemName(data.collectionType) + ':&nbsp;&nbsp;&nbsp;<span class="tweet">' + lastDoc + '</span>';
 
             this.updateStartStopButtonsState(data.status, id);
         }
+    },
+
+    getItemName: function (r, plural) {
+        if (plural)
+            return r == 'Twitter' ? "tweets" : "sms";
+        else
+            return r == 'Twitter' ? "tweet" : "sms";
     },
 
     updateLastRefreshDate: function() {

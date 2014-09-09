@@ -4,13 +4,13 @@
  */
 package qa.qcri.aidr.predictui.facade.imp;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.dto.ItemToLabelDTO;
 import qa.qcri.aidr.predictui.dto.NominalAttributeDTO;
 import qa.qcri.aidr.predictui.dto.NominalLabelDTO;
 import qa.qcri.aidr.predictui.dto.TrainingDataDTO;
 import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.facade.MiscResourceFacade;
-import qa.qcri.aidr.predictui.util.ErrorLog;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 import javax.ejb.EJB;

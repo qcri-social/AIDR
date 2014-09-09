@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
  *
  * @author jrogstadius
  */
-public class ErrorLog {
+public class ErrorLog extends qa.qcri.aidr.common.logging.ErrorLog {
 
     static Object writeLock = new Object();
 
@@ -22,15 +22,7 @@ public class ErrorLog {
 
         Print(sourceName, text + " | Exception:" + System.getProperty("line.separator") + sw.toString());
     }
-
-    public String toStringException(Exception e) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        
-        StringBuilder retVal = new StringBuilder(new String("Exception:")).append(System.getProperty("line.separator")).append(sw);
-        return retVal.toString();
-    }
+    
     
     public static void Print(String sourceName, String text) {
         synchronized (writeLock) {

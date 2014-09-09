@@ -12,16 +12,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-
 import qa.qcri.aidr.persister.filter.NominalLabel;
 
 /**
  *
  * @author Imran, modified by Koushik
  */
+@SuppressWarnings("serial")
 public class ClassifiedTweet  implements Document, Serializable{
 
+	/**
+	 * 
+	 */
 	private String tweetID;
 	private String message;
 	//private String reTweeted;

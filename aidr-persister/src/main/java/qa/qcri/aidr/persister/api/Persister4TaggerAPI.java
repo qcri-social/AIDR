@@ -9,15 +9,7 @@ package qa.qcri.aidr.persister.api;
 
 import java.net.UnknownHostException;   
 import java.util.List;
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
-
-
-
-
-
-
-
+import java.util.Map;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -27,24 +19,15 @@ import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import net.minidev.json.JSONObject;
+
 import org.apache.commons.lang.StringUtils;
-//import org.codehaus.jackson.map.annotate.JsonView;
-//import org.glassfish.jersey.server.JSONP;			// gf 3 way modified
-
-
-
-
-
-
-
-
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.logging.ErrorLog;
@@ -52,11 +35,13 @@ import qa.qcri.aidr.persister.filter.DeserializeFilters;
 import qa.qcri.aidr.persister.filter.JsonQueryList;
 import qa.qcri.aidr.persister.tagger.RedisTaggerPersister;
 import qa.qcri.aidr.utils.ClassifiedTweet;
-import qa.qcri.aidr.utils.CollectionStatus;
 import qa.qcri.aidr.utils.Config;
+import qa.qcri.aidr.utils.DownloadJsonType;
 import qa.qcri.aidr.utils.GenericCache;
 import qa.qcri.aidr.utils.JsonDeserializer;
+import qa.qcri.aidr.utils.ResultStatus;
 
+import qa.qcri.aidr.common.values.DownloadType;
 /**
  * REST Web Service
  *
@@ -137,7 +122,6 @@ public class Persister4TaggerAPI {
 	}
 
 	@GET
-	//@Produces(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/genCSV")
 	public Response generateCSVFromLastestJSON(@QueryParam("collectionCode") String collectionCode, @QueryParam("exportLimit") int exportLimit) throws UnknownHostException {
@@ -150,9 +134,18 @@ public class Persister4TaggerAPI {
 
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
 		//return Response.ok(fileName).build();
-		
-		CollectionStatus s = new CollectionStatus();
-        return Response.ok(s.getUIWrapper(collectionCode, null, fileName, true)).build();
+		JSONObject obj = new JSONObject();
+		try {
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+			return Response.ok(obj.toJSONString()).build();
+		} catch (Exception e) {
+			logger.error("Unable to return result ");
+			logger.error(elog.toStringException(e));
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, false));
+			return Response.ok(obj.toJSONString()).build();
+
+		}
 	}
 
 	/**
@@ -174,25 +167,22 @@ public class Persister4TaggerAPI {
 		JsonDeserializer jsonD = new JsonDeserializer();
 
 		logger.info("received request for collection: " + collectionCode);
-		logger.info(collectionCode + ": Received POST list: " + queryList.toString());
+		if (queryList != null) {
+			logger.info(collectionCode + ": received constraints = " + queryList.toString());
+		} else {
+			logger.info(collectionCode + ": received constraints = " + queryList);
+		}
 
 		String fileName = jsonD.taggerGenerateJSON2CSV_100K_BasedOnTweetCountFiltered(collectionCode, exportLimit, queryList);
 		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
 
 		logger.info("done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
-		/*
-		return Response.ok(fileName)
-				.allow("POST", "OPTIONS", "HEAD")
-				.header("Access-Control-Allow-Origin", "*")
-				.header("Access-Control-Allow-Credentials", "true")
-				.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
-				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
-				.build();
-		*/
 		
-		CollectionStatus s = new CollectionStatus();
-        return Response.ok(s.getUIWrapper(collectionCode, null, fileName, true))
-        		.allow("POST", "OPTIONS", "HEAD")
+		JSONObject obj = new JSONObject();
+		obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+		logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+		return Response.ok(obj.toJSONString())
+				.allow("POST", "OPTIONS", "HEAD")
 				.header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Credentials", "true")
 				.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
@@ -209,16 +199,20 @@ public class Persister4TaggerAPI {
 		logger.info("received request for collection: " + collectionCode);
 
 		JsonDeserializer jsonD = new JsonDeserializer();
-		String fileName = jsonD.generateClassifiedJson2TweetIdsCSV(collectionCode, downloadLimited);
-		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
+		Map<String, Object> result = jsonD.generateClassifiedJson2TweetIdsCSV(collectionCode, downloadLimited);
+		String fileName = Config.SCD1_URL + collectionCode + "/output/" + (String) result.get("fileName");
 
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
 		//return Response.ok(fileName).build();
-		CollectionStatus s = new CollectionStatus();
-		if (s.getTotalDownloadedCount(collectionCode) > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
-			return Response.ok(s.getUIWrapper(collectionCode, null, fileName, true)).build();
+		JSONObject obj = new JSONObject();
+		if ((Integer) result.get("count") < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+			return Response.ok(obj.toJSONString()).build();
 		} else {
-			return Response.ok(s.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true)).build();
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
+			return Response.ok(obj.toJSONString()).build();
 		}
 	}
 
@@ -241,24 +235,21 @@ public class Persister4TaggerAPI {
 
 		JsonDeserializer jsonD = new JsonDeserializer();
 		logger.info("received request for collection: " + collectionCode);
-		logger.info(collectionCode + ", Received POST list: " + queryList.toString());
-
-		String fileName = jsonD.generateClassifiedJson2TweetIdsCSVFiltered(collectionCode, queryList, downloadLimited);
-		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
+		if (queryList != null) {
+			logger.info(collectionCode + ": received constraints = " + queryList.toString());
+		} else {
+			logger.info(collectionCode + ": received constraints = " + queryList);
+		}
+		Map<String, Object> result = jsonD.generateClassifiedJson2TweetIdsCSVFiltered(collectionCode, queryList, downloadLimited);
+		String fileName = Config.SCD1_URL + collectionCode + "/output/" + (String) result.get("fileName");
 
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
-		/*
-		return Response.ok(fileName)
-				.allow("POST", "OPTIONS", "HEAD")
-				.header("Access-Control-Allow-Origin", "*")
-				.header("Access-Control-Allow-Credentials", "true")
-				.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
-				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
-				.build();
-		 */
-		CollectionStatus s = new CollectionStatus();
-		if (s.getTotalDownloadedCount(collectionCode) > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
-			return Response.ok(s.getUIWrapper(collectionCode, null, fileName, true))
+		
+		JSONObject obj = new JSONObject();
+		if ((Integer) result.get("count") < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+			return Response.ok(obj.toJSONString())
 					.allow("POST", "OPTIONS", "HEAD")
 					.header("Access-Control-Allow-Origin", "*")
 					.header("Access-Control-Allow-Credentials", "true")
@@ -266,7 +257,9 @@ public class Persister4TaggerAPI {
 					.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 					.build();
 		} else {
-			return Response.ok(s.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true))
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
+			return Response.ok(obj.toJSONString())
 					.allow("POST", "OPTIONS", "HEAD")
 					.header("Access-Control-Allow-Origin", "*")
 					.header("Access-Control-Allow-Credentials", "true")
@@ -276,8 +269,8 @@ public class Persister4TaggerAPI {
 		}
 	}
 
+	@Deprecated
 	@GET
-	//@JSONP		// gf 3 way modified
 	@Produces({"application/javascript"})
 	@Path("/getClassifiedTweets")
 	//public JSONWithPadding get_N_LatestClassifiedTweets(@QueryParam("collectionCode") String collectionCode, @QueryParam("exportLimit") int exportLimit, @QueryParam("callback") String callback) throws UnknownHostException {
@@ -301,6 +294,7 @@ public class Persister4TaggerAPI {
 	 * @return CSV format output from JSON filtered by user provided list of label names 
 	 * @throws UnknownHostException
 	 */
+	@Deprecated
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)		// {application/json} ?
@@ -328,41 +322,48 @@ public class Persister4TaggerAPI {
 
 
 	@GET
-	//@Produces(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/genJson")
-	public Response generateJSONFromLastestJSON(@QueryParam("collectionCode") String collectionCode, @QueryParam("exportLimit") int exportLimit) throws UnknownHostException {
+	public Response generateJSONFromLastestJSON(@QueryParam("collectionCode") String collectionCode, 
+			@QueryParam("exportLimit") int exportLimit,
+			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws UnknownHostException {
 		logger.debug("In tagger-persister genCSV");
-		logger.info("Received request for collection: " + collectionCode);
+		logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType);
 		JsonDeserializer jsonD = new JsonDeserializer();
 		exportLimit = Config.TWEETS_EXPORT_LIMIT_100K;		// Koushik: added to override user specs
-		String fileName = jsonD.taggerGenerateJSON2JSON_100K_BasedOnTweetCount(collectionCode, exportLimit);
+	
+		String fileName = jsonD.taggerGenerateJSON2JSON_100K_BasedOnTweetCount(collectionCode, exportLimit, DownloadJsonType.getDownloadJsonTypeFromString(jsonType));
 		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
 
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
 		//return Response.ok(fileName).build();
 		
-		CollectionStatus s = new CollectionStatus();
-        return Response.ok(s.getUIWrapper(collectionCode, null, fileName, true)).build();
+		JSONObject obj = new JSONObject();
+		obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+		logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+		return Response.ok(obj.toJSONString()).build();
 	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/genJsonTweetIds")
 	public Response generateTweetsIDSJSONFromAllJSON(@QueryParam("collectionCode") String collectionCode,
-			@DefaultValue("true") @QueryParam("downloadLimited") Boolean downloadLimited) throws UnknownHostException {
+			@DefaultValue("true") @QueryParam("downloadLimited") Boolean downloadLimited,
+			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws UnknownHostException {
 		logger.debug("In tagger-persister genTweetIds");
-		logger.info("Received request for collection: " + collectionCode);
+		logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType);
 
 		JsonDeserializer jsonD = new JsonDeserializer();
-		String fileName = jsonD.generateClassifiedJson2TweetIdsJSON(collectionCode, downloadLimited);
-		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
+		Map<String, Object> result = jsonD.generateClassifiedJson2TweetIdsJSON(collectionCode, downloadLimited, DownloadJsonType.getDownloadJsonTypeFromString(jsonType));
+		String fileName = Config.SCD1_URL + collectionCode + "/output/" + result.get("fileName");
 
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
 		//return Response.ok(fileName).build();
-		CollectionStatus s = new CollectionStatus();
-		if (s.getTotalDownloadedCount(collectionCode) > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
-			return Response.ok(s.getUIWrapper(collectionCode, null, fileName, true))
+		JSONObject obj = new JSONObject();
+		if ((Integer) result.get("count") < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+			return Response.ok(obj.toJSONString())
 					.allow("POST", "OPTIONS", "HEAD")
 					.header("Access-Control-Allow-Origin", "*")
 					.header("Access-Control-Allow-Credentials", "true")
@@ -370,7 +371,89 @@ public class Persister4TaggerAPI {
 					.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 					.build();
 		} else {
-			return Response.ok(s.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true))
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
+			return Response.ok(obj.toJSONString())
+					.allow("POST", "OPTIONS", "HEAD")
+					.header("Access-Control-Allow-Origin", "*")
+					.header("Access-Control-Allow-Credentials", "true")
+					.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
+					.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
+					.build();
+		}
+	}
+	
+	
+	
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/filter/genJson")
+	public Response generateJSONFromLastestJSONFiltered(String queryString, 
+			@QueryParam("collectionCode") String collectionCode, 
+			@QueryParam("exportLimit") int exportLimit,
+			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws UnknownHostException {
+		logger.debug("In tagger-persister genCSV");
+		logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType);
+		
+		DeserializeFilters des = new DeserializeFilters();
+		JsonQueryList queryList = des.deserializeConstraints(queryString);
+		if (queryList != null) {
+			logger.info(collectionCode + ": received constraints = " + queryList.toString());
+		} else {
+			logger.info(collectionCode + ": received constraints = " + queryList);
+		}
+		
+		JsonDeserializer jsonD = new JsonDeserializer();
+		exportLimit = Config.TWEETS_EXPORT_LIMIT_100K;		// Koushik: added to override user specs
+		String fileName = jsonD.taggerGenerateJSON2JSON_100K_BasedOnTweetCountFiltered(collectionCode, exportLimit, queryList, DownloadJsonType.getDownloadJsonTypeFromString(jsonType));
+		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
+
+		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
+		//return Response.ok(fileName).build();
+		
+		JSONObject obj = new JSONObject();
+		obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+		logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+		return Response.ok(obj.toJSONString()).build();
+	}
+
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/filter/genJsonTweetIds")
+	public Response generateTweetsIDSJSONFromAllJSONFiltered(String queryString, 
+			@QueryParam("collectionCode") String collectionCode, 
+			@DefaultValue("true") @QueryParam("downloadLimited") Boolean downloadLimited,
+			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws UnknownHostException {
+		logger.debug("In tagger-persister genTweetIds");
+		logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType);
+		DeserializeFilters des = new DeserializeFilters();
+		JsonQueryList queryList = des.deserializeConstraints(queryString);
+		if (queryList != null) {
+			logger.info(collectionCode + ": received constraints = " + queryList.toString());
+		} else {
+			logger.info(collectionCode + ": received constraints = " + queryList);
+		}
+		JsonDeserializer jsonD = new JsonDeserializer();
+		Map<String, Object> result = jsonD.generateClassifiedJson2TweetIdsJSONFiltered(collectionCode, downloadLimited, queryList, DownloadJsonType.getDownloadJsonTypeFromString(jsonType));
+		String fileName = Config.SCD1_URL + collectionCode + "/output/" + result.get("fileName");
+
+		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
+		//return Response.ok(fileName).build();
+		JSONObject obj = new JSONObject();
+		if ((Integer) result.get("count") < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+			return Response.ok(obj.toJSONString())
+					.allow("POST", "OPTIONS", "HEAD")
+					.header("Access-Control-Allow-Origin", "*")
+					.header("Access-Control-Allow-Credentials", "true")
+					.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
+					.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
+					.build();
+		} else {
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
+			return Response.ok(obj.toJSONString())
 					.allow("POST", "OPTIONS", "HEAD")
 					.header("Access-Control-Allow-Origin", "*")
 					.header("Access-Control-Allow-Credentials", "true")
@@ -413,6 +496,7 @@ public class Persister4TaggerAPI {
 				.build();
 	}
 
+	@Deprecated
 	@OPTIONS
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/filter/getClassifiedTweets")

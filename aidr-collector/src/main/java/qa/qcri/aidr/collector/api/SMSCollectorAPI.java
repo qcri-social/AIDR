@@ -6,6 +6,7 @@ package qa.qcri.aidr.collector.api;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -16,7 +17,7 @@ import qa.qcri.aidr.collector.logging.Loggable;
 import qa.qcri.aidr.collector.redis.JedisConnectionPool;
 import qa.qcri.aidr.collector.utils.Config;
 import qa.qcri.aidr.collector.utils.GenericCache;
-import qa.qcri.aidr.collector.utils.LoadShedder;
+import qa.qcri.aidr.common.redis.LoadShedder;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -24,9 +25,11 @@ import javax.ws.rs.core.Response;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 /**
@@ -77,7 +80,7 @@ public class SMSCollectorAPI extends Loggable {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 String channelName = String.format(CHANNEL, code);
-                if (redisLoadShedder.get(channelName).canProcess()) {
+                if (redisLoadShedder.get(channelName).canProcess(channelName)) {
                     JedisConnectionPool.getJedisConnection().publish(channelName, objectMapper.writeValueAsString(sms));
                 }
             } catch (Exception e) {

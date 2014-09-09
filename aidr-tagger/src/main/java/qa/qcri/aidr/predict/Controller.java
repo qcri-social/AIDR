@@ -11,6 +11,8 @@ import qa.qcri.aidr.predict.common.*;
 import qa.qcri.aidr.predict.communication.*;
 import qa.qcri.aidr.predict.featureextraction.FeatureExtractor;
 
+import qa.qcri.aidr.common.redis.LoadShedder;
+
 /**
  * Controller is the main entrypoint of AIDR. It starts all subprocesses. In the
  * future it should makes sure the different processes are running and restart

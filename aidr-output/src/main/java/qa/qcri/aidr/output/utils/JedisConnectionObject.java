@@ -3,13 +3,9 @@ package qa.qcri.aidr.output.utils;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-
-
 
 import org.apache.log4j.Logger;
-
+import qa.qcri.aidr.common.logging.ErrorLog;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
