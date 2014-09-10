@@ -3,6 +3,7 @@ package qa.qcri.aidr.task.util;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+@Deprecated
 public class ErrorLog {
 	public ErrorLog() {}
 	
