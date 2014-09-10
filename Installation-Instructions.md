@@ -88,6 +88,7 @@ The schema name can also be changed that requires to change application configur
 * persisterMainUrl=Put here aidr-persister webresources path (e.g., http://localhost:8084/aidr-persister/webresources)
 * crowdsourcingAPIMainUrl=Put here aidr-trainer-api webresources path (e.g., http://localhost:8084/aidr-trainer-api/rest)
 * outputAPIMainUrl=Put here aidr-output webresources path (e.g., http://localhost:8084/aidr-output/rest)
+* serverUrl=Put here the server name on which AIDR is hosted
 
 After the above steps have been executed, you can build the project:
 
