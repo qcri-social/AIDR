@@ -22,7 +22,16 @@ This process initiates downloading process of required packages/libraries from t
 
 If the maven process creates a .war file, that file must be deployed to Glassfish. Go to the admin page of your Glassfish server, usually it can be accessed through http://hostname:4848/. Login and go to the applications tab, choose the _deploy_ option and upload the .war file.
 
-# 2. Collector (aidr-collector)
+# 2. Common (aidr-common)
+
+`aidr-common` contains code that is reused across multiple modules: e.g., logging and REDIS load shedding. This module **must** be built before any other module. 
+
+* Build using maven following the instructions above; this should generate a file `aidr-common-X.jar`.
+* For most users, the maven build will also install the generated jar in maven's local repository so that
+other modules can thereafter automatically find the dependency.
+
+
+# 3. Collector (aidr-collector)
 
 * Build using maven following the instructions above; this should generate a file `aidr-collector-X.war`
 * In `utils/Config.java`, appropriately set the configuration parameters. Note that the FETCHER_REST_URI and the PERSISTER_REST_URI should match the actual URI's used. 
@@ -33,7 +42,7 @@ If the maven process creates a .war file, that file must be deployed to Glassfis
 
 The AIDR Collector has a RESTFul API, that means all the operations have their corresponding REST services. For more details regarding the API, please refer to [API page](https://github.com/qcri-social/AIDR/wiki/API-documentation). The output of the aidr-collector pubished to Redis through channels. Every collection starts its dedicated sub-channel under the aidr-collector channel, which is `FetcherChannel`.
 
-# 3. Persister (aidr-persister)
+# 4. Persister (aidr-persister)
 
 * Build using maven following the instructions above; this should generate a file `aidr-persister-X.war`
 * Modify the `utils/Config.java` file appropriately. Ensure that you have read-write permissions for the DEFAULT_PERSISTER_FILE_PATH and SCD1_URL. 
@@ -47,7 +56,7 @@ The AIDR Collector has a RESTFul API, that means all the operations have their c
              Options -Indexes
              AddType application/octet-stream .zip .json .csv
 
-# 4. Manager (aidr-manager)
+# 5. Manager (aidr-manager)
 
 Prior to start the project building process make sure you have completed the following steps (a-d):
 
@@ -85,7 +94,7 @@ After the above steps have been executed, you can build the project:
 * Build using maven following the instructions above; this should generate a file `aidr-manager-X.war`
 * Deploy `aidr-manager-X.war` to Glassfish using the instructions above.
 
-# 5. Tagger (aidr-tagger)
+# 6. Tagger (aidr-tagger)
 
 1) Create a database. This assumes database=aidr_predict, username=aidr_user, password=pass123 :
 
@@ -123,7 +132,7 @@ After the above steps have been executed, you can build the project:
    b) The main method in the jar is in qa.qcri.aidr.predict.Controller
       You will see some incomprehensible debug output. If the numbers are not 0, input data is being processed.
       
-# 6. Tagger-API (aidr-tagger-api)
+# 7. Tagger-API (aidr-tagger-api)
 
 * Create JDBC resources in server (e.g., Glassfish) to match the JNDI names (JNDI/aidr_predict and JNDI/aidr_fetch_manager) used in src/main/resource/META-INF/persistence.xml.
 * Appropriately set the `taggerMainUrl` in the `system.properties` file under `aidr-manager`. 
@@ -132,21 +141,21 @@ After the above steps have been executed, you can build the project:
 * Build using maven following the instructions above; this should generate a file `aidr-tagger-api-X.war`
 * Deploy `aidr-tagger-api-X.war` to Glassfish using the instructions above.
 
-# 7. Output (aidr-output)
+# 8. Output (aidr-output)
 
 * Set the Redis host and port number appropriately in the `resources/config.properties` file. 
 * Build using maven following the instructions above; this should generate a file `aidr-output-X.war`
 * Appropriately set the `outputAPIMainUrl` in the `system.properties` file under `aidr-manager`.
 * Deploy `aidr-output-X.war` to Glassfish using the instructions above.
 
-# 8. Trainer API (aidr-trainer-api)
+# 9. Trainer API (aidr-trainer-api)
 
 * Pre-requisite: aidr-tagger database and aidr-scheduler database should be created. Aidr-tagger database script is located in aidr-tagger installtion details. Aidr-trainer database script (aidr_scheduler.sql) can be found in the root of the aidr-trainer-api project.
 * Appropriately set the properties in the database.properties and databaseTemp.properties files under src/main/resources.
 * Build using maven following the instructions above; this should generate a file `aidr-trainer-api-X.war`
 * Deploy `aidr-trainer-api-X.war` to Glassfish using the instructions above. 
 
-# 9. Trainer Pybossa (aidr-trainer-pybossa)
+# 10. Trainer Pybossa (aidr-trainer-pybossa)
 
 * Pre-requisite: aidr-tagger database and aidr-scheduler database should be created. Aidr-tagger database script is located in aidr-tagger installtion details. Aidr-trainer database script (aidr_scheduler.sql) can be found in the root of the aidr-trainer-api project.
 * Pybossa Server or user should have pybossa account(s) with clickers.micromappers.org 
@@ -164,7 +173,9 @@ After the above steps have been executed, you can build the project:
 * Deploy `aidr-trainer-pybossa-X.war` to Glassfish using the instructions above. 
 
 
-# Task Manager
+# 11. Task Manager
+
+**Modules dependent**: `aidr-tagger`, `aidr-tagger-api`
 
 The `aidr-task-manager` module is meant to provide a unified view of the `aidr_predict` database tables that are related to 'aidr tasks' - namely, `document`, `task_assignment`, `document_nominal_labels` and `crisis` tables. The various modules of AIDR such as `aidr-tagger-api`, `aidr-tagger` and `aidr-trainer-api` that access these tables will use the aidr-task-manager as the single access point (in phases). To enable this, `aidr-task-manager` uses remote EJBs. The instructions for enabling access through `aidr-task-manager` are outlined below:
 
