@@ -8,6 +8,7 @@
       CRISIS_CODE = "${code}";
       CRISIS_ID = ${crisisId};
       CRISIS_NAME = "${crisisName}";
+      ITEM_SINGULAR = "${item_singular}";
   </script>
 
 </body>

@@ -16,33 +16,33 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
             html: '<div class="bread-crumbs">' +
                 '<a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a><span>&nbsp;>&nbsp;</span>' +
                 '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + CRISIS_NAME + '</a><span>&nbsp;>&nbsp;</span>' +
-                '<a href="' + BASE_URL +  '/protected/' + CRISIS_CODE + '/' + MODEL_ID + '/model-details">' + MODEL_NAME + '</a><span>&nbsp;>&nbsp;Human-tagged items</span></div>',
+                '<a href="' + BASE_URL +  '/protected/' + CRISIS_CODE + '/' + MODEL_ID + '/model-details">' + MODEL_NAME + '</a><span>&nbsp;>&nbsp;Human-tagged '+ ITEM_PLURAL + '</span></div>',
             margin: 0,
             padding: 0
         });
 
         this.taggerTitle = Ext.create('Ext.form.Label', {
             cls: 'header-h1 bold-text',
-            text: 'Human-tagged items for "' + MODEL_NAME + '" in collection "' + CRISIS_NAME + '"',
+            text: 'Human-tagged '+ ITEM_PLURAL + ' for "' + MODEL_NAME + '" in collection "' + CRISIS_NAME + '"',
             flex: 1
         });
 
         this.taggerDescription = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '0 0 15 0',
-            html: 'Status: <b>Waiting human-tagged items</b>. Machine-tagged items: <b>0</b>&nbsp;',
+            html: 'Status: <b>Waiting human-tagged '+ ITEM_PLURAL + '</b>. Machine-tagged '+ ITEM_PLURAL + ': <b>0</b>&nbsp;',
             flex: 1
         });
 
         this.taggerDescription2line = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '0 0 15 0',
-            html: '<b>0</b> human-tagged items.',
+            html: '<b>0</b> human-tagged '+ ITEM_PLURAL + '.',
             flex: 1
         });
 
         this.addTrainingData = Ext.create('Ext.Button', {
-            text: 'Tag more items',
+            text: 'Tag more '+ ITEM_PLURAL,
             cls:'btn btn-blue',
             id: 'addNewTrainingData',
             width: 150,
@@ -127,8 +127,8 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
             margin: '12 2 0 2',
             store:'trainingDataStore',
             displayInfo:true,
-            displayMsg:'Human-tagged items  {0} - {1} of {2}',
-            emptyMsg:'No human-tagged items to display'
+            displayMsg:'Human-tagged '+ ITEM_PLURAL + ' {0} - {1} of {2}',
+            emptyMsg:'No human-tagged '+ ITEM_PLURAL + ' to display'
         });
 
         this.items = [

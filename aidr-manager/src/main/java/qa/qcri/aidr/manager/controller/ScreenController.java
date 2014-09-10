@@ -12,6 +12,7 @@ import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
+import qa.qcri.aidr.manager.util.CollectionType;
 
 import java.util.List;
 import java.util.Map;
@@ -108,6 +109,7 @@ public class ScreenController extends BaseController{
         }
 
         TaggerCrisis crisis = taggerService.getCrisesByCode(code);
+        AidrCollection collection = collectionService.findByCode(code);
 
         Integer crisisId = 0;
         String crisisName = "";
@@ -120,11 +122,14 @@ public class ScreenController extends BaseController{
             }
         }
 
+        boolean type = collection == null || collection.getCollectionType() == CollectionType.Twitter;
+
         ModelAndView model = new ModelAndView("tagger/tagger-collection-details");
         model.addObject("crisisId", crisisId);
         model.addObject("name", crisisName);
         model.addObject("crisisTypeId", crisisTypeId);
         model.addObject("code", code);
+        model.addObject("item_plural", type ? "tweets" : "sms");
         return model;
     }
 
@@ -211,6 +216,9 @@ public class ScreenController extends BaseController{
             e.printStackTrace();
         }
 
+        AidrCollection collection = collectionService.findByCode(code);
+        boolean type = collection == null || collection.getCollectionType() == CollectionType.Twitter;
+
         ModelAndView model = new ModelAndView("tagger/model-details");
         model.addObject("crisisId", crisisId);
         model.addObject("crisisName", crisisName);
@@ -221,6 +229,8 @@ public class ScreenController extends BaseController{
         model.addObject("code", code);
         model.addObject("userId", taggerUserId);
         model.addObject("attributeId", attributeId);
+        model.addObject("item_singular", type ? "tweet" : "sms");
+        model.addObject("item_plural", type ? "tweets" : "sms");
 
         return model;
     }
@@ -240,10 +250,13 @@ public class ScreenController extends BaseController{
             crisisName = crisis.getName();
         }
 
+        AidrCollection collection = collectionService.findByCode(code);
+        boolean type = collection == null || collection.getCollectionType() == CollectionType.Twitter;
         ModelAndView model = new ModelAndView("tagger/new-custom-attribute");
         model.addObject("code", code);
         model.addObject("crisisId", crisisId);
         model.addObject("crisisName", crisisName);
+        model.addObject("item_singular", type ? "tweet" : "sms");
 
         return model;
     }
@@ -281,6 +294,9 @@ public class ScreenController extends BaseController{
             }
         }
 
+        AidrCollection collection = collectionService.findByCode(code);
+        boolean type = collection == null || collection.getCollectionType() == CollectionType.Twitter;
+
         ModelAndView model = new ModelAndView("tagger/training-data");
         model.addObject("crisisId", crisisId);
         model.addObject("crisisName", crisisName);
@@ -292,6 +308,9 @@ public class ScreenController extends BaseController{
         model.addObject("trainingExamples", trainingExamples);
         model.addObject("modelAuc", modelAuc);
         model.addObject("retrainingThreshold", retrainingThreshold);
+        model.addObject("item_singular", type ? "tweet" : "sms");
+        model.addObject("item_plural", type ? "tweets" : "sms");
+
         return model;
     }
 
@@ -321,6 +340,10 @@ public class ScreenController extends BaseController{
             }
         }
 
+
+        AidrCollection collection = collectionService.findByCode(code);
+        boolean type = collection == null || collection.getCollectionType() == CollectionType.Twitter;
+
         ModelAndView model = new ModelAndView("tagger/training-examples");
         model.addObject("code", code);
         model.addObject("crisisId", crisisId);
@@ -329,6 +352,8 @@ public class ScreenController extends BaseController{
         model.addObject("modelId", modelId);
         model.addObject("modelFamilyId", modelFamilyId);
         model.addObject("nominalAttributeId", nominalAttributeId);
+        model.addObject("item_singular", type ? "tweet" : "sms");
+        model.addObject("item_plural", type ? "tweets" : "sms");
 
         return model;
     }
@@ -401,13 +426,15 @@ public class ScreenController extends BaseController{
             collectionId = collection.getId();
         }
 
+        boolean type = collection == null || collection.getCollectionType() == CollectionType.Twitter;
+
         ModelAndView model = new ModelAndView("../public/interactive-view-download");
         model.addObject("collectionId", collectionId);
         model.addObject("crisisId", crisisId);
         model.addObject("crisisName", crisisName);
         model.addObject("code", code);
         model.addObject("userName", userName);
-
+        model.addObject("item_plural", type ? "tweets" : "sms");
         return model;
     }
 

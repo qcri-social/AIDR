@@ -12,6 +12,8 @@
       MODEL_FAMILY_ID = ${modelFamilyId};
       NOMINAL_ATTRIBUTE_ID = ${nominalAttributeId};
       MODEL_NAME = "${modelName}";
+      ITEM_SINGULAR = "${item_singular}";
+      ITEM_PLURAL = "${item_plural}";
   </script>
 
 </body>
