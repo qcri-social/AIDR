@@ -448,6 +448,11 @@ GET `.../persister/genJsonTweetIds?collectionCode=XXX&jsonType=TEXT_JSON`
 `jsonType` instructs `aidr-persister to create a text file with one JSON object per line.  
 
 
+## NOTE 
+
+**For each of the above persister download REST APIs, replacing `/persister/...` by `/taggerPersister/...` will generate a downloadable file in the corresponding format but only for classified tweets, i.e., with AIDR classification data appended to each classified tweet**.  
+
+
 ## Generate CSV out of last X collected tweets, filtered by selection criteria
 
 POST `.../taggerPersister/filter/genCSV?collectionCode=XXX&exportLimit=34234`
