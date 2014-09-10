@@ -5,8 +5,8 @@ import org.hibernate.*;
 import org.hibernate.criterion.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.trainer.api.dao.AbstractDao;
-import qa.qcri.aidr.trainer.api.util.ErrorLog;
 
 import java.io.Serializable;
 import java.util.List;

@@ -4,9 +4,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.trainer.api.service.TaskAnswerService;
 import qa.qcri.aidr.trainer.api.template.TaskAnswerResponse;
-import qa.qcri.aidr.trainer.api.util.ErrorLog;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;

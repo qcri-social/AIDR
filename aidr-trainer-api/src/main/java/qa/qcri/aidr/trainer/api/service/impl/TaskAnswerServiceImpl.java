@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.trainer.api.Jedis.JedisNotifier;
 import qa.qcri.aidr.trainer.api.dao.TaskAnswerDao;
 import qa.qcri.aidr.trainer.api.entity.*;
@@ -16,7 +17,7 @@ import java.util.List;
 
 import qa.qcri.aidr.trainer.api.template.PybossaTemplate;
 import qa.qcri.aidr.trainer.api.template.TaskAnswerResponse;
-import qa.qcri.aidr.trainer.api.util.ErrorLog;
+
 
 /**
  * Created with IntelliJ IDEA.

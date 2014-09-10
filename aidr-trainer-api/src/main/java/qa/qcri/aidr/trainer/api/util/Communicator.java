@@ -14,6 +14,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import qa.qcri.aidr.common.logging.ErrorLog;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jlucas

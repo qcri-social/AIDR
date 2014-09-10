@@ -4,10 +4,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.trainer.api.service.TaskAssignmentService;
 import qa.qcri.aidr.trainer.api.store.CodeLookUp;
 import qa.qcri.aidr.trainer.api.store.StatusCodeType;
-import qa.qcri.aidr.trainer.api.util.ErrorLog;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
