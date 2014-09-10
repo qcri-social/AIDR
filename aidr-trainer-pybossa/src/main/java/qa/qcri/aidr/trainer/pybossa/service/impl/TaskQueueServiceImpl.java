@@ -5,10 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.trainer.pybossa.dao.TaskQueueDao;
 import qa.qcri.aidr.trainer.pybossa.entity.TaskQueue;
 import qa.qcri.aidr.trainer.pybossa.service.TaskQueueService;
-import qa.qcri.aidr.trainer.pybossa.util.ErrorLog;
 
 import java.util.Date;
 import java.util.List;

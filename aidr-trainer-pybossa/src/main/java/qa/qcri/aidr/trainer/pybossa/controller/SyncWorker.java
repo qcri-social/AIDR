@@ -4,11 +4,12 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.trainer.pybossa.service.ClientAppCreateWorker;
 import qa.qcri.aidr.trainer.pybossa.service.ClientAppRunWorker;
 import qa.qcri.aidr.trainer.pybossa.service.MicroMapperWorker;
 import qa.qcri.aidr.trainer.pybossa.service.Worker;
-import qa.qcri.aidr.trainer.pybossa.util.ErrorLog;
+
 
 
 /**

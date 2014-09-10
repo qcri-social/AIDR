@@ -9,8 +9,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.trainer.pybossa.service.AbstractCommunicator;
-import qa.qcri.aidr.trainer.pybossa.util.ErrorLog;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
