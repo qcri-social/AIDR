@@ -401,7 +401,7 @@ GET `.../persister/genCSV?collectionCode=XXX&exportLimit=34234`
 
 Note: this export service uses full tweet content. Use the next service if only tweet-ids needed to be exported.
 
-# Persister APIs for downloading data:
+# Persister APIs for downloading data
 
 ## Generate JSON data file out of last X collected tweets
 
