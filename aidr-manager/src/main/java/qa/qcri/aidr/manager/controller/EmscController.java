@@ -21,7 +21,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
+/**
+ * @deprecated  replaced by {@link @PublicController}
+ */
+@Deprecated
 @Controller
 @RequestMapping("emsc/collection")
 public class EmscController extends BaseController{
