@@ -116,11 +116,11 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
                         models.push(totalModel);
 
                         me.mainComponent.modelDetails.setText('Status: <b>' + status + '</b>.&nbsp;' +
-                            'Machine has tagged <b>' + totalMessages.format() + '</b> items.&nbsp;' +
-                            'Trained on <b>' + totalExamples.format() + '</b> human-tagged items.&nbsp;' +
+                            'Machine has tagged <b>' + totalMessages.format() + '</b> '+ ITEM_PLURAL + '.&nbsp;' +
+                            'Trained on <b>' + totalExamples.format() + '</b> human-tagged '+ ITEM_PLURAL + '.&nbsp;' +
                             '<a href="' + BASE_URL +  '/protected/'
                             + CRISIS_CODE + '/' + MODEL_ID + '/' + MODEL_FAMILY_ID + '/' + ATTRIBUTE_ID
-                            + '/training-data">Go to human-tagged items &raquo;</a>', false);
+                            + '/training-data">Go to human-tagged '+ ITEM_PLURAL + ' &raquo;</a>', false);
                         me.mainComponent.modelLabelsStore.loadData(models);
                     }
                 } else {

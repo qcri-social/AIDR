@@ -11,8 +11,8 @@ import org.hibernate.criterion.Projections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.trainer.pybossa.dao.AbstractDao;
-import qa.qcri.aidr.trainer.pybossa.util.ErrorLog;
 
 import java.io.Serializable;
 import java.util.List;

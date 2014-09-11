@@ -95,7 +95,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         });
 
         this.aucHint = Ext.create('Ext.container.Container', {
-            html: '<span class="redInfo">*</span>If AUC is lower than 80%, or AUC is 100%, you urgently need more human-tagged items.',
+            html: '<span class="redInfo">*</span>If AUC is lower than 80%, or AUC is 100%, you urgently need more human-tagged '+ ITEM_PLURAL + '.',
             margin: 0
         });
 
@@ -180,12 +180,12 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             '<tr><td>Status:</td>',
             '<td>{[this.getStatus(values.modelID, values.trainingExamples, values.retrainingThreshold, values.auc, values.attribute)]}</td></tr>',
 
-            '<tr><td>Human-tagged items:</td>',
+            '<tr><td>Human-tagged '+ ITEM_PLURAL + ':</td>',
             '<td>{[this.getNumber(values.trainingExamples)]} &mdash; <a href="' + BASE_URL +  '/protected/'
-                + CRISIS_CODE + '/{modelID}/{modelFamilyID}/{attributeID}/training-data">Go to human-tagged items &raquo;</a></td></tr>',
+                + CRISIS_CODE + '/{modelID}/{modelFamilyID}/{attributeID}/training-data">Go to human-tagged s &raquo;</a></td></tr>',
 
 
-            '<tr><td>Machine-tagged items:</td>',
+            '<tr><td>Machine-tagged '+ ITEM_PLURAL + ':</td>',
             '<td>{[this.getNumber(values.classifiedDocuments)]} (since last change of the classifier)</td></tr>',
 
             '<tr><td>Quality (AUC)<span class="redInfo">*</span>:</td>',

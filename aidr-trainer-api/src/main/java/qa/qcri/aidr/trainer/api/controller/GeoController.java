@@ -9,8 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.trainer.api.service.GeoService;
-import qa.qcri.aidr.trainer.api.util.ErrorLog;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

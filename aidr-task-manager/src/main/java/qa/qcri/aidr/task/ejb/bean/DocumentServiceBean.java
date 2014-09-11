@@ -11,9 +11,10 @@ import org.hibernate.Transaction;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.task.ejb.DocumentService;
 import qa.qcri.aidr.task.entities.Document;
-import qa.qcri.aidr.task.util.ErrorLog;
+
 
 /**
  * 

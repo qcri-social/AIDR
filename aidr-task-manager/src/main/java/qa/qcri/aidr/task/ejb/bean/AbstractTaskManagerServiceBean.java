@@ -5,8 +5,8 @@ import org.hibernate.*;
 import org.hibernate.criterion.*;
 import org.hibernate.internal.CriteriaImpl;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.task.ejb.AbstractTaskManagerService;
-import qa.qcri.aidr.task.util.ErrorLog;
 
 import java.io.Serializable;
 import java.util.List;

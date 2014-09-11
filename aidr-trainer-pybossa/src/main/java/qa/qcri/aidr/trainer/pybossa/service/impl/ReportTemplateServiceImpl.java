@@ -6,10 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.trainer.pybossa.dao.ReportTemplateDao;
 import qa.qcri.aidr.trainer.pybossa.entity.ReportTemplate;
 import qa.qcri.aidr.trainer.pybossa.service.ReportTemplateService;
-import qa.qcri.aidr.trainer.pybossa.util.ErrorLog;
 
 import java.util.List;
 

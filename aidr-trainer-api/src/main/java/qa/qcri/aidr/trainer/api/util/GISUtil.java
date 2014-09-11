@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
+import qa.qcri.aidr.common.logging.ErrorLog;
 import java.util.Iterator;
 
 /**

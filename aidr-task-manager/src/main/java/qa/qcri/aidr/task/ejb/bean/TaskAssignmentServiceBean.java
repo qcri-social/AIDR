@@ -14,10 +14,11 @@ import javax.ejb.Stateless;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.task.ejb.TaskAssignmentService;
 import qa.qcri.aidr.task.entities.Document;
 import qa.qcri.aidr.task.entities.TaskAssignment;
-import qa.qcri.aidr.task.util.ErrorLog;
+
 
 /**
  * 
