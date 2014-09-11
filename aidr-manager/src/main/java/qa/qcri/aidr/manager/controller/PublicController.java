@@ -24,8 +24,10 @@ import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.JsonDataValidator;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -54,23 +56,45 @@ public class PublicController extends BaseController{
 	}
 
     @RequestMapping(value = "/updateGeo.action", method = RequestMethod.POST)
+    @Consumes(MediaType.APPLICATION_JSON)
     @ResponseBody
-    public Map<String,Object> update(String jsonCollection ) throws Exception {
+    public Map<String,Object> update(@RequestBody final String jsonCollection ) throws Exception {
+        logger.info("jsonCollection:" + jsonCollection);
+
+        if(jsonCollection == null){
+
+            return getUIWrapper(false);
+        }
+        if(!JsonDataValidator.isValidEMSCGisJson(jsonCollection)){
+
+            return getUIWrapper(false);
+        }
+
 
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(jsonCollection);
 
+
+
         JSONObject jsonObject = (JSONObject) obj;
         String token = (String)jsonObject.get("token");
         String geoString = (String)jsonObject.get("geo");
-        Integer collectionId = (Integer)jsonObject.get("id");
-        Integer durationInHours = (Integer)jsonObject.get("durationInHours");
+        long collectionId = (Long)jsonObject.get("id");
+        long durationInHours = (Long)jsonObject.get("durationInHours");
+        Boolean updateDuration = (Boolean)jsonObject.get("updateDuration");
+
+
+        if(!collectionService.isValidToken(token)){
+            logger.info("authentication is failed : token - " + token);
+            return getUIWrapper(false);
+        }
 
         try{
 
-            AidrCollection dbCollection = collectionService.findById(collectionId);
-            CollectionStatus status = dbCollection.getStatus();
+            AidrCollection dbCollection = collectionService.findById((int)collectionId);
 
+
+            CollectionStatus status = dbCollection.getStatus();
 
             if (CollectionStatus.RUNNING_WARNING.equals(status) || CollectionStatus.RUNNING.equals(status)) {
 
@@ -86,15 +110,19 @@ public class PublicController extends BaseController{
                 collectionLog.setLangFilters(dbCollection.getLangFilters());
                 collectionLog.setStartDate(dbCollection.getStartDate());
                 collectionLog.setTrack(dbCollection.getTrack());
-                collectionLog.setCollectionID(collectionId);
+                collectionLog.setCollectionID((int)collectionId);
                 collectionLogService.create(collectionLog);
 
-                Calendar c = Calendar.getInstance();
-                c.setTime(collectionAfterStop.getEndDate());
-                c.add(Calendar.HOUR, durationInHours);
-
                 dbCollection.setGeo(geoString);
-                dbCollection.setEndDate(c.getTime());
+                // no update on scheduled check on expiration
+                if(updateDuration){
+                    Calendar c = Calendar.getInstance();
+                    c.setTime(collectionAfterStop.getEndDate());
+                    c.add(Calendar.HOUR, (int)durationInHours);
+
+                    dbCollection.setEndDate(c.getTime());
+                }
+
                 collectionService.update(dbCollection);
 
                 //              start collection
