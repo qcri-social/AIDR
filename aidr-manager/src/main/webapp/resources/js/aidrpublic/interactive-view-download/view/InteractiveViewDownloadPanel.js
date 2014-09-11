@@ -198,8 +198,8 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
             margin: '12 2 0 2',
             store:'tweetsStore',
             displayInfo:true,
-            displayMsg:'Items {0} - {1} of {2}',
-            emptyMsg:'No items to display',
+            displayMsg:COLLECTION_TYPES[TYPE]["plural"] + ' {0} - {1} of {2}',
+            emptyMsg:'No '+ COLLECTION_TYPES[TYPE]["plural"] + ' to display',
             items: [
                 {
                     xtype: 'tbseparator'

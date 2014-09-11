@@ -436,7 +436,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<div class="content">',
 
             '<div class="rightColumn">',
-            '<div>Downloaded tweets:</div>',
+            '<div>Downloaded ' + COLLECTION_TYPES[TYPE]['plural'] + ':</div>',
             '<div>Start date:</div>',
             '<div>End date:</div>',
             '{[this.showGeoLabel(values.geo)]}',
@@ -835,7 +835,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 {
                                     id:'downloadLabel',
                                     width: 220,
-                                    html: 'Downloaded tweets <br/> (since last re-start):'
+                                    html: 'Downloaded ' + COLLECTION_TYPES[TYPE]['plural'] + ' <br/> (since last re-start):'
                                 },
                                 this.docCountL
                             ]
@@ -848,7 +848,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 {
                                     id:'totalDownloadLabel',
                                     width: 220,
-                                    text: 'Total downloaded tweets:'
+                                    text: 'Total downloaded ' + COLLECTION_TYPES[TYPE]['plural'] + ':'
                                 },
                                 this.totalDocCountL
                             ]
@@ -862,7 +862,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 {
                                     id:'lastDownloadLabel',
                                     width: 220,
-                                    text: 'Last downloaded tweets:'
+                                    text: 'Last downloaded ' + COLLECTION_TYPES[TYPE]['plural'] + ':'
                                 },
                                 this.lastDocL
                             ]
@@ -982,14 +982,14 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
 
         this.generateCSVButton = Ext.create('Ext.Button', {
-            text: 'Export tweets (.csv) (Last 100k tweets)',
+            text: 'Export ' + COLLECTION_TYPES[TYPE]['plural'] + ' (.csv) (Last 100k ' + COLLECTION_TYPES[TYPE]['plural'] + ')',
             margin: 5,
             cls:'btn btn-blue download-button',
             id: 'generateCSVLink'
         });
 
         this.generateTweetIdsButton = Ext.create('Ext.Button', {
-            text: 'Export tweet-ids only (.csv) (All tweets)',
+            text: 'Export ' + COLLECTION_TYPES[TYPE]['singular'] + '-ids only (.csv) (All ' + COLLECTION_TYPES[TYPE]['plural'] + ')',
             margin: 5,
             cls:'btn btn-blue download-button',
             id: 'generateTweetIdsLink'
@@ -1008,14 +1008,14 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
 
         this.generateJSONButton = Ext.create('Ext.Button', {
-            text: 'Export tweets (.json) (Last 100k tweets)',
+            text: 'Export ' + COLLECTION_TYPES[TYPE]['plural'] + ' (.json) (Last 100k ' + COLLECTION_TYPES[TYPE]['plural'] + ')',
             margin: 5,
             cls:'btn btn-blue download-button',
             id: 'generateJSONLink'
         });
 
         this.generateJsonTweetIdsButton = Ext.create('Ext.Button', {
-            text: 'Export tweet-ids only (.json) (All tweets)',
+            text: 'Export ' + COLLECTION_TYPES[TYPE]['singular'] + '-ids only (.json) (All ' + COLLECTION_TYPES[TYPE]['plural'] + ')',
             margin: 5,
             cls:'btn btn-blue download-button',
             id: 'generateJsonTweetIdsLink'

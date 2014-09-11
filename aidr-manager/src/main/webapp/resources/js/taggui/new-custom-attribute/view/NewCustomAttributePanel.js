@@ -50,7 +50,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
             name: 'description',
             allowBlank: false,
             flex: 1,
-            emptyText: 'e.g. Indicate the '+ ITEM_SINGULAR + ' being donated'
+            emptyText: 'e.g. Indicate the '+ COLLECTION_TYPES[TYPE]["singular"] + ' being donated'
         });
 
         this.codeLabelE = Ext.create('Ext.form.field.Text', {

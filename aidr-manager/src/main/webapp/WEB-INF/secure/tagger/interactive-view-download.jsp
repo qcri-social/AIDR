@@ -10,7 +10,8 @@
       CRISIS_CODE = "${code}";
       CRISIS_NAME = "${crisisName}";
       USER_NAME = "${userName}";
-      ITEM_PLURAL = "${item_plural}";
+      TYPE = "${collectionType}";
+      COLLECTION_TYPES = ${collectionTypes};
   </script>
 
 </body>

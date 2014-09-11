@@ -137,8 +137,8 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
             '{[this.getSharedBy(values.user)]}</div>',
 
             '<div class="styled-text-14" id="statusField_{id}">{[this.getStatus(values.status)]}</div>',
-            '<div class="styled-text-14" id="docCountField_{id}">Downloaded {[this.getItem(values.collectionType,true)]} (since last re-start):&nbsp;&nbsp;&nbsp;{[this.getDocNumber(values.count)]}</div>',
-            '<div class="styled-text-14" id="lastDocField_{id}">Last downloaded {[this.getItem(values.collectionType)]}:&nbsp;&nbsp;&nbsp;{[this.getLastDoc(values.lastDocument)]}</div>',
+            '<div class="styled-text-14" id="docCountField_{id}">Downloaded {[COLLECTION_TYPES[values.collectionType]["plural"]]} (since last re-start):&nbsp;&nbsp;&nbsp;{[this.getDocNumber(values.count)]}</div>',
+            '<div class="styled-text-14" id="lastDocField_{id}">Last downloaded {[COLLECTION_TYPES[values.collectionType]["singular"]]}:&nbsp;&nbsp;&nbsp;{[this.getLastDoc(values.lastDocument)]}</div>',
             '</div>',
 
             '</div>',
@@ -179,12 +179,6 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
                 },
                 isTwitter: function (r) {
                     return r == 'Twitter';
-                },
-                getItem: function (r, plural) {
-                    if (plural)
-                        return r == 'Twitter' ? "tweets" : "sms";
-                    else
-                        return r == 'Twitter' ? "tweet" : "sms";
                 },
                 getEncodedCode: function(code) {
                     return encodeURI(code);
@@ -272,8 +266,8 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
             '<div class="info" style="width: 600px !important;">',
             '<div class="collection-title"><a href="{[this.getEncodedCode(values.code)]}/collection-details">{name}</a>{[this.getSharedBy(values.user)]}</div>',
             '<div class="styled-text-14" id="statusField_{id}">{[this.getStatus(values.status)]}</div>',
-            '<div class="styled-text-14" id="docCountField_{id}">Downloaded {[this.getItem(values.collectionType, true)]} (since last re-start):&nbsp;&nbsp;&nbsp;{[this.getDocNumber(values.count)]}</div>',
-            '<div class="styled-text-14" id="lastDocField_{id}">Last downloaded {[this.getItem(values.collectionType)]}:&nbsp;&nbsp;&nbsp;{[this.getLastDoc(values.lastDocument)]}</div>',
+            '<div class="styled-text-14" id="docCountField_{id}">Downloaded {[COLLECTION_TYPES[values.collectionType]["plural"]]} (since last re-start):&nbsp;&nbsp;&nbsp;{[this.getDocNumber(values.count)]}</div>',
+            '<div class="styled-text-14" id="lastDocField_{id}">Last downloaded {[COLLECTION_TYPES[values.collectionType]["singular"]]}:&nbsp;&nbsp;&nbsp;{[this.getLastDoc(values.lastDocument)]}</div>',
             '</div>',
 
             '</div>',
@@ -296,12 +290,6 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
                 },
                 isTwitter: function (r) {
                     return r == 'Twitter';
-                },
-                getItem: function (r, plural) {
-                    if (plural)
-                        return r == 'Twitter' ? "tweets" : "sms";
-                    else
-                        return r == 'Twitter' ? "tweet" : "sms";
                 },
                 getSharedBy: function(owner) {
                     if (owner.userName == USER_NAME){

@@ -191,8 +191,8 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
             margin: '12 2 0 2',
             store:'tweetsStore',
             displayInfo:true,
-            displayMsg: ITEM_PLURAL + ' {0} - {1} of {2}',
-            emptyMsg:'No '+ ITEM_PLURAL + ' to display',
+            displayMsg: COLLECTION_TYPES[TYPE]["plural"] + ' {0} - {1} of {2}',
+            emptyMsg:'No '+ COLLECTION_TYPES[TYPE]["plural"] + ' to display',
             items: [
                 {
                     xtype: 'tbseparator'

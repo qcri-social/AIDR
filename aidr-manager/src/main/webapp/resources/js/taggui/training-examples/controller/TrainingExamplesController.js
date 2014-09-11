@@ -49,7 +49,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
             me.mainComponent.breadcrumbs.setText('<div class="bread-crumbs">' +
                 '<a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a><span>&nbsp;>&nbsp;</span>' +
                 '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + CRISIS_NAME + '</a><span>&nbsp;>&nbsp;' +
-                MODEL_NAME + '&nbsp;>&nbsp;Tag more '+ ITEM_PLURAL + '</span></div>', false);
+                MODEL_NAME + '&nbsp;>&nbsp;Tag more '+ COLLECTION_TYPES[TYPE]["plural"] + '</span></div>', false);
         }
     },
 
@@ -103,8 +103,8 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                                 me.skipTask();
                             }
                         } else{
-                            AIDRFMFunctions.setAlert("Error", "No "+ ITEM_PLURAL + " to tag available for this crisis. Please come back to this page later.");
-                            me.mainComponent.documentTextLabel.setText("No "+ ITEM_PLURAL + " to tag available for this crisis. Please come back to this page later.", false);
+                            AIDRFMFunctions.setAlert("Error", "No "+ COLLECTION_TYPES[TYPE]["plural"] + " to tag available for this crisis. Please come back to this page later.");
+                            me.mainComponent.documentTextLabel.setText("No "+ COLLECTION_TYPES[TYPE]["plural"] + " to tag available for this crisis. Please come back to this page later.", false);
                             me.mainComponent.buttonsBlock.removeAll();
                         }
                     }

@@ -6,6 +6,7 @@
 
   <script type="text/javascript">
       USER_NAME = "${userName}";
+      COLLECTION_TYPES = ${collectionTypes};
   </script>
 
 </body>
