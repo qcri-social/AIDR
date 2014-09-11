@@ -476,6 +476,14 @@ POST request payload example:
 Request Headers: `Content-Type: application/json`
 	         `Accept`:  `application/json` 
 
+If no filtering required, then the payload will be as follows:
+
+`{
+  "constraints": []
+ }`
+
+
+Otherwise, if filtering required, then:
 
 `{
   "constraints": [
@@ -768,4 +776,3 @@ Response Example:
 * `code`: code associated with a nominal attribute
 
 * `norminalLabelCode`: code of a label associated with a particular nominal attribute
-
