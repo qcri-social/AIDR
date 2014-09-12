@@ -8,6 +8,7 @@
       CRISIS_ID = ${crisisId};
       COLLECTION_ID = ${collectionId};
       CRISIS_CODE = "${code}";
+      COLLECTION_COUNT = "${count}";
       CRISIS_NAME = "${crisisName}";
       USER_NAME = "${userName}";
       TYPE = "${collectionType}";

@@ -428,10 +428,18 @@ public class ScreenController extends BaseController{
         }
 
         Integer collectionId = 0;
+        Integer collectionCount = 0;
         CollectionType type = CollectionType.Twitter;
-        if (collection != null && collection.getId() != null){
-            collectionId = collection.getId();
-            type = collection.getCollectionType();
+        if (collection != null){
+            if (collection.getId() != null) {
+                collectionId = collection.getId();
+            }
+            if (collection.getCount() != null) {
+                collectionCount = collection.getCount();
+            }
+            if (collection.getCollectionType() != null) {
+                type = collection.getCollectionType();
+            }
         }
 
         ModelAndView model = new ModelAndView("../public/interactive-view-download");
@@ -439,6 +447,7 @@ public class ScreenController extends BaseController{
         model.addObject("crisisId", crisisId);
         model.addObject("crisisName", crisisName);
         model.addObject("code", code);
+        model.addObject("count", collectionCount);
         model.addObject("userName", userName);
         model.addObject("collectionType", type);
         model.addObject("collectionTypes", CollectionType.JSON());
