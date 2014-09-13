@@ -18,10 +18,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         var me = this;
 
         this.breadcrumbs = Ext.create('Ext.container.Container', {
-            html: '<div class="bread-crumbs">' +
-                '<a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a><span>&nbsp;>&nbsp;Details</span></div>',
-
-
             html: '<div class="bread-crumbs"><a href="' + BASE_URL + '/protected/home">My Collections</a><span>&nbsp;>&nbsp;Collection Details</span></div>',
             margin: 0,
             padding: 0

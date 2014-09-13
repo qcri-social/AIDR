@@ -16,8 +16,8 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
 
         this.breadcrumbs = Ext.create('Ext.form.Label', {
             html: '<div class="bread-crumbs">' +
-                '<a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a><span>&nbsp;>&nbsp;</span>' +
-                '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + CRISIS_NAME + '</a>' +
+                '<a href="' + BASE_URL + '/protected/home">My Collections</a><span>&nbsp;>&nbsp;</span>' +
+                '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">Classifier for ' + CRISIS_NAME + '</a>' +
                 '<span>&nbsp;>&nbsp;Interactive View/Download</span></div>',
             margin: 0,
             padding: 0

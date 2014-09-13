@@ -576,6 +576,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             this.DetailsComponent.trashButton.hide();
             this.DetailsComponent.untrashButton.show();
         } else {
+            if (raw == 'NOT_RUNNING') {
+                statusText += ' (Click on "Start" to start this collection.)';
+            }
             this.DetailsComponent.startButton.show();
             this.DetailsComponent.enableTaggerButton.show();
             this.DetailsComponent.enableTaggerButton.disable();
