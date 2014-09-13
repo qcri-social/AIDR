@@ -103,11 +103,11 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
             '<div class="collection-item">',
 
             '<tpl if="classifiersNumber != null">',
-                '<button id="buttonGoToClassifiers_{id}" class="btn btn-blue" style="width: 130px" onclick="document.location.href=\'{[this.getEncodedCode(values.code)]}/tagger-collection-details\'">',
+                '<button id="buttonGoToClassifiers_{id}" class="btn btn-blue" onclick="document.location.href=\'{[this.getEncodedCode(values.code)]}/tagger-collection-details\'">',
                     '<span>Classifier ({classifiersNumber})</span>',
                 '</button>',
             '<tpl else>',
-                '<button id="buttonEnableClassifiers_{id}" class="btn btn-blue {[this.isEnableClassifierButtonDisabled(values.status)]}" style="width: 130px" onclick="collectionController.enableTagger({crisisType}, \'{code}\',\'{name}\');" {[this.isEnableClassifierButtonDisabled(values.status)]}>',
+                '<button id="buttonEnableClassifiers_{id}" class="btn btn-blue {[this.isEnableClassifierButtonDisabled(values.status)]}" onclick="collectionController.enableTagger({crisisType}, \'{code}\',\'{name}\');" {[this.isEnableClassifierButtonDisabled(values.status)]}>',
                     '<span>Enable Classifier</span>',
                 '</button>',
             '</tpl>',
