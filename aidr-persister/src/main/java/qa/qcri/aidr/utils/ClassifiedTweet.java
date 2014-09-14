@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.apache.log4j.Logger;
+
+import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.common.values.DateFormatConfig;
 import qa.qcri.aidr.persister.filter.NominalLabel;
 
 /**
@@ -20,6 +24,10 @@ import qa.qcri.aidr.persister.filter.NominalLabel;
  */
 @SuppressWarnings("serial")
 public class ClassifiedTweet  implements Document, Serializable{
+	
+	private static Logger logger = Logger.getLogger(ClassifiedTweet.class);
+	private static ErrorLog elog = new ErrorLog();
+	
 
 	/**
 	 * 
@@ -29,7 +37,8 @@ public class ClassifiedTweet  implements Document, Serializable{
 	//private String reTweeted;
 	//private String reTweetCount;
 	private String createdAt;
-
+	private long timestamp;
+	
 	private String userID;
 	private String userName;
 	private String userURL;
@@ -134,7 +143,7 @@ public class ClassifiedTweet  implements Document, Serializable{
 	 * @param createdAt the createdAt to set
 	 */
 	public void setCreatedAt(String createdAtString) {
-		this.createdAt = createdAtString;	//setDateString(createdAtString);
+		this.createdAt = setDateString(createdAtString);
 	}
 
 	/**
@@ -272,8 +281,8 @@ public class ClassifiedTweet  implements Document, Serializable{
 
 	// Added by koushik
 	public Date getDate(String timeString) {
-		//SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZ yyyy");
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+		//SimpleDateFormat formatter = new SimpleDateFormat(StandardDateFormat);
+		DateFormat formatter = new SimpleDateFormat(DateFormatConfig.ISODateFormat);
 		formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
 		if (timeString != null) {
 			try {
@@ -281,7 +290,8 @@ public class ClassifiedTweet  implements Document, Serializable{
 				//System.out.println("[getDate] Converted date: " + newDate.toString());
 				return newDate;
 			} catch (ParseException e) {
-				System.err.println("[getDate] Error in parsing Date string = " + timeString);
+				logger.error("Error in parsing Date string = " + timeString);
+				logger.error(elog.toStringException(e));
 			}
 		}
 		System.out.println("[getDate] Warning! returning Date = null for time String = " + timeString);
@@ -291,16 +301,19 @@ public class ClassifiedTweet  implements Document, Serializable{
 	public String setDateString(String timeString) {
 		//System.out.println("[setDateString] Received time string: " + timeString);
 
-		DateFormat dateFormatISO = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+		DateFormat dateFormatISO = new SimpleDateFormat(DateFormatConfig.ISODateFormat);
 		dateFormatISO.setTimeZone(TimeZone.getTimeZone("GMT"));
 		if (timeString != null) {
 			try {
-				SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZ yyyy");
+				SimpleDateFormat formatter = new SimpleDateFormat(DateFormatConfig.StandardDateFormat);
 				Date newDate = formatter.parse(timeString);
+				setTimestamp(newDate);
 				//System.out.println("[setDateString] Converted date: " + newDate.toString());
 				return dateFormatISO.format(newDate);
 			} catch (ParseException e) {
-				System.err.println("[setDateString] Error in parsing Date string = " + timeString);
+				setTimestamp(null);
+				logger.error("Error in parsing Date string = " + timeString);
+				logger.error(elog.toStringException(e));
 			}
 		}
 		System.out.println("[setDateString] Null createdAt Warning! time String = " + timeString);
@@ -315,5 +328,17 @@ public class ClassifiedTweet  implements Document, Serializable{
 		if (this.nominal_labels != null) {
 			this.nominal_labels = nLabels;
 		}
+	}
+	
+	public long getTimestamp() {
+		return this.timestamp;
+	}
+	
+	public void setTimestamp(Date date) {
+		this.timestamp = (date != null) ? date.getTime() : 0;
+	}
+	
+	public static void main(String args[]) {
+		
 	}
  }

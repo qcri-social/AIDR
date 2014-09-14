@@ -350,7 +350,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
                     Ext.TaskManager.start({
                         run: function () {
                             if (!isFirstRun) {
-                                document.location.href = BASE_URL + '/protected/tagger-home';
+                                document.location.href = BASE_URL + '/protected/home';
                             }
                             isFirstRun = false;
                         },

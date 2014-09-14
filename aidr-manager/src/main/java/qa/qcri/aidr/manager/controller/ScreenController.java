@@ -105,11 +105,6 @@ public class ScreenController extends BaseController{
 
     }
 
-    @RequestMapping("protected/tagger-home")
-    public String taggerHome(Map<String, String> model) throws Exception {
-        return "tagger/home";
-    }
-
     @RequestMapping("protected/{code}/tagger-collection-details")
     public ModelAndView taggerCollectionDetails(@PathVariable(value="code") String code) throws Exception {
         if (!isHasPermissionForCollection(code)){
