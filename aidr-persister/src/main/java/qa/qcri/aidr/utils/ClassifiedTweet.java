@@ -29,7 +29,8 @@ public class ClassifiedTweet  implements Document, Serializable{
 	//private String reTweeted;
 	//private String reTweetCount;
 	private String createdAt;
-
+	private long timestamp;
+	
 	private String userID;
 	private String userName;
 	private String userURL;
@@ -134,7 +135,7 @@ public class ClassifiedTweet  implements Document, Serializable{
 	 * @param createdAt the createdAt to set
 	 */
 	public void setCreatedAt(String createdAtString) {
-		this.createdAt = createdAtString;	//setDateString(createdAtString);
+		this.createdAt = setDateString(createdAtString);
 	}
 
 	/**
@@ -297,6 +298,7 @@ public class ClassifiedTweet  implements Document, Serializable{
 			try {
 				SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZ yyyy");
 				Date newDate = formatter.parse(timeString);
+				setTimestamp(newDate);
 				//System.out.println("[setDateString] Converted date: " + newDate.toString());
 				return dateFormatISO.format(newDate);
 			} catch (ParseException e) {
@@ -315,5 +317,17 @@ public class ClassifiedTweet  implements Document, Serializable{
 		if (this.nominal_labels != null) {
 			this.nominal_labels = nLabels;
 		}
+	}
+	
+	public long getTimestamp() {
+		return this.timestamp;
+	}
+	
+	public void setTimestamp(Date date) {
+		this.timestamp = (date != null) ? date.getTime() : 0;
+	}
+	
+	public static void main(String args[]) {
+		
 	}
  }

@@ -71,16 +71,18 @@ public class PublicController extends BaseController{
 
 
         JSONObject jsonObject = (JSONObject) obj;
-        String token = (String)jsonObject.get("token");
+
         String geoString = (String)jsonObject.get("geo");
         long collectionId = (Long)jsonObject.get("id");
         long durationInHours = (Long)jsonObject.get("durationInHours");
         Boolean updateDuration = (Boolean)jsonObject.get("updateDuration");
 
-
-        if(!collectionService.isValidToken(token)){
-            logger.info("authentication is failed : token - " + token);
-            return getUIWrapper(false);
+        if(!updateDuration){
+            String token = (String)jsonObject.get("token");
+            if(!collectionService.isValidToken(token)){
+                logger.info("authentication is failed : token - " + token);
+                return getUIWrapper(false);
+            }
         }
 
         try{
