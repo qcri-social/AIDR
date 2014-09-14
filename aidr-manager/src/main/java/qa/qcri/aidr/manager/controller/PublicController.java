@@ -59,7 +59,7 @@ public class PublicController extends BaseController{
 
             return getUIWrapper(false);
         }
-        if(!JsonDataValidator.isValidEMSCGisJson(jsonCollection)){
+        if(!JsonDataValidator.isValidEMSCJson(jsonCollection)){
 
             return getUIWrapper(false);
         }

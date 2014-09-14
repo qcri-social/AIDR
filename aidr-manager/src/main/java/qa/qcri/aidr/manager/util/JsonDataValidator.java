@@ -46,7 +46,6 @@ public class JsonDataValidator {
             while (parser.nextToken() != null) {
                 String fieldname = parser.getCurrentName();
                 if(fieldname != null){
-                    //System.out.println("fieldname: " + fieldname);
                     isEmpty = false;
                     break;
                 }
@@ -62,6 +61,43 @@ public class JsonDataValidator {
         }
 
         return isEmpty;
+    }
+
+
+    public static boolean isValidEMSCJson(String json) {
+        boolean valid = false;
+        try {
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(json);
+            JSONObject jsonObject = (JSONObject) obj;
+
+            if(jsonObject.get("id") == null){
+                return false;
+            }
+
+            if(jsonObject.get("geo")== null){
+                return false;
+            }
+
+            if(jsonObject.get("token")== null){
+                return false;
+            }
+
+            if(jsonObject.get("durationInHours") == null ){
+                return false;
+            }
+
+            if(jsonObject.get("updateDuration") == null ){
+                return false;
+            }
+
+            valid = true;
+
+        } catch (Exception ioe) {
+            ioe.printStackTrace();
+        }
+
+        return valid;
     }
 
     public static boolean isValidCeaJSON(String json) {
