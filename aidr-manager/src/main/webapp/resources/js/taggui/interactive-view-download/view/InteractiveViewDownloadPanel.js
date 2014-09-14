@@ -16,8 +16,8 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
 
         this.breadcrumbs = Ext.create('Ext.form.Label', {
             html: '<div class="bread-crumbs">' +
-                '<a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a><span>&nbsp;>&nbsp;</span>' +
-                '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + CRISIS_NAME + '</a>' +
+                '<a href="' + BASE_URL + '/protected/home">My Collections</a><span>&nbsp;>&nbsp;</span>' +
+                '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">Classifier for ' + CRISIS_NAME + '</a>' +
                 '<span>&nbsp;>&nbsp;Interactive View/Download</span></div>',
             margin: 0,
             padding: 0
@@ -191,8 +191,8 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
             margin: '12 2 0 2',
             store:'tweetsStore',
             displayInfo:true,
-            displayMsg: ITEM_PLURAL + ' {0} - {1} of {2}',
-            emptyMsg:'No '+ ITEM_PLURAL + ' to display',
+            displayMsg: COLLECTION_TYPES[TYPE]["plural"] + ' {0} - {1} of {2}',
+            emptyMsg:'No '+ COLLECTION_TYPES[TYPE]["plural"] + ' to display',
             items: [
                 {
                     xtype: 'tbseparator'

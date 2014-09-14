@@ -15,7 +15,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
 
         this.breadcrumbs = Ext.create('Ext.container.Container', {
             html: '<div class="bread-crumbs">' +
-                '<a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a><span>&nbsp;>&nbsp;</span>' +
+                '<a href="' + BASE_URL + '/protected/home">My Collections</a><span>&nbsp;>&nbsp;</span>' +
                 '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + CRISIS_NAME + '</a><span>&nbsp;>&nbsp;Classifier details</span></div>',
             margin: 0,
             padding: 0
@@ -30,14 +30,14 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
         this.modelDetails = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '0 0 15 0',
-            html: 'Machine has tagged <b>0</b> '+ ITEM_SINGULAR + '.&nbsp;<a href="' + BASE_URL +  '/protected/'
+            html: 'Machine has tagged <b>0</b> '+ COLLECTION_TYPES[TYPE]["singular"] + '.&nbsp;<a href="' + BASE_URL +  '/protected/'
                 + CRISIS_CODE + '/' + MODEL_ID + '/' + MODEL_FAMILY_ID + '/' + ATTRIBUTE_ID +
-                + '/training-data">Go to human-tagged '+ ITEM_PLURAL + ' &raquo;</a>',
+                + '/training-data">Go to human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ' &raquo;</a>',
             flex: 1
         });
 
         this.aucHint = Ext.create('Ext.form.Label', {
-            html: '<span class="redInfo">*</span><span style="color: #00acee;"> If AUC is lower than 80%, or AUC is 100%, you urgently need more human tagged '+ ITEM_PLURAL + '.</span>'
+            html: '<span class="redInfo">*</span><span style="color: #00acee;"> If AUC is lower than 80%, or AUC is 100%, you urgently need more human tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '.</span>'
         });
 
         this.modelLabelsStore = Ext.create('Ext.data.JsonStore', {
@@ -80,8 +80,8 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
                 '<div class="styled-text-17">Summary:</div>',
             '</tpl>',
 
-            '<div>Human-tagged '+ ITEM_PLURAL + ':</div>',
-            '<div>Machine-tagged '+ ITEM_PLURAL + ':</div>',
+            '<div>Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ':</div>',
+            '<div>Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ':</div>',
             '<div>Precision:</div>',
             '<div>Recall:</div>',
             '<tpl if="xindex != xcount">' +
@@ -193,7 +193,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             '<div>Precision:</div>',
             '<div>Recall:</div>',
             '<div>AUC:</div>',
-            '<div>Human-tagged '+ ITEM_PLURAL + ':</div>',
+            '<div>Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ':</div>',
             '<div>Date/Time:</div>',
             '</div>',
 

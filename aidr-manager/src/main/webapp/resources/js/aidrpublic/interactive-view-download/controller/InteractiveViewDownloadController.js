@@ -59,6 +59,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
 
         this.loadCollection();
         this.mainComponent.constraintsString = '{"constraints":[]}';
+        this.mainComponent.downloadTweetsDescription.setText('The entire collection has approximately ' + COLLECTION_COUNT + ' items in total.');
         this.loadLatestTweets();
         this.getAttributesAndLabelsByCrisisId();
     },
@@ -113,6 +114,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
             success: function (response) {
                 var jsonData = Ext.decode(response.responseText);
                 if (jsonData.data == ""){
+                    mask.hide();
                     return true;
                 }
                 var tweetData = Ext.JSON.decode(jsonData.data);
@@ -141,6 +143,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
 
                 me.mainComponent.tweetsStore.load();
                 mask.hide();
+                return true;
             },
             failure: function () {
                 mask.hide();
@@ -342,28 +345,69 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
 
     downloadButtonHandler: function(btn){
         var me = this;
-        var value = me.mainComponent.downloadType.getValue();
+        var format = me.mainComponent.downloadFormat.getValue().format;
+        var contents = me.mainComponent.downloadContents.getValue().contents;
 
-        if (!value && !value.type) {
-            AIDRFMFunctions.setAlert("Error", "Type of the download not selected.");
-        }
+        var url = '';
+        var params = {
+            code: CRISIS_CODE,
+            queryString: me.mainComponent.constraintsString
+        };
 
-//        TODO finish this section - use correct ajax with constraints
-//        var constraints = me.mainComponent.constraintsString;
-//        console.log("Constraints: " + constraints);
-
-        if (value.type == '1000_TWEETS'){
-            console.log('1000_TWEETS');
-        } else if (value.type == '100000_TWEETS') {
-            console.log('100000_TWEETS');
+        if(format == 'csv'){
+            if (contents == 'full') {
+                url = '/protected/tagger/taggerGenerateCSVFilteredLink.action';
+            } else {
+                url = '/protected/tagger/taggerGenerateTweetIdsFilteredLink.action';
+            }
         } else {
-            console.log('ALL');
-            me.generateTweetIdsLink(btn);
+            params.jsonType = format;
+            if (contents == 'full') {
+                url = '/protected/tagger/taggerGenerateJSONFilteredLink.action';
+            } else {
+                url = '/protected/tagger/taggerGenerateJsonTweetIdsFilteredLink.action';
+            }
         }
+
+        btn.setDisabled(true);
+        me.mainComponent.downloadLink.setText('<div class="loading-block"></div>', false);
+
+        Ext.Ajax.timeout = 900000;
+        Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+        Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+        Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
+        Ext.Ajax.request({
+            url: BASE_URL + url,
+            timeout: 900000,
+            method: 'POST',
+            params: params,
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                btn.setDisabled(false);
+                var resp = Ext.decode(response.responseText);
+                if (resp.success) {
+                    if (resp.data && resp.data != '') {
+                        me.mainComponent.downloadLink.setText('<div class="styled-text download-link"><a target="_blank" href="' + resp.data + '">' + resp.data + '</a></div>', false);
+                    } else {
+                        me.mainComponent.downloadLink.setText('', false);
+                        AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
+                    }
+                } else {
+                    me.mainComponent.downloadLink.setText('', false);
+                    AIDRFMFunctions.setAlert("Error", resp.message);
+                }
+            },
+            failure: function () {
+                btn.setDisabled(false);
+            }
+        });
     },
 
     applyFilterButtonHandler: function(){
         this.mainComponent.constraintsString = this.getAllFilters();
+        this.mainComponent.downloadTweetsDescription.setText('The entire collection has approximately ' + COLLECTION_COUNT + ' items in total, which will be filtered using your criteria above.');
         this.loadLatestTweets();
         this.mainComponent.resetFiltersButton.enable();
     },
@@ -393,6 +437,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
 //        Disable Apply Filter Button as we added new filter which is not valid yet
         me.mainComponent.applyFilterButton.disable();
         this.mainComponent.constraintsString = '{"constraints":[]}';
+        this.mainComponent.downloadTweetsDescription.setText('The entire collection has approximately ' + COLLECTION_COUNT + ' items in total.');
         this.loadLatestTweets();
 
         me.mainComponent.suspendLayout = false;
@@ -413,48 +458,6 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
 
         me.mainComponent.suspendLayout = false;
         me.mainComponent.forceComponentLayout();
-    },
-
-    generateTweetIdsLink: function(btn) {
-        var me = this;
-
-        btn.setDisabled(true);
-        me.mainComponent.downloadLink.setText('<div class="loading-block"></div>', false);
-        
-        Ext.Ajax.timeout = 900000;
-        Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
-        Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
-        Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
-        Ext.Ajax.request({
-            url: BASE_URL + '/public/collection/generateTweetIdsLink.action',
-            timeout: 900000,
-            method: 'GET',
-            params: {
-                code: CRISIS_CODE,
-                constraints: me.mainComponent.constraintsString
-            },
-            headers: {
-                'Accept': 'application/json'
-            },
-            success: function (response) {
-                btn.setDisabled(false);
-                var resp = Ext.decode(response.responseText);
-                if (resp.success) {
-                    if (resp.data && resp.data != '') {
-                        me.mainComponent.downloadLink.setText('<div class="styled-text download-link"><a href="' + resp.data + '">' + resp.data + '</a></div>', false);
-                    } else {
-                        me.mainComponent.downloadLink.setText('', false);
-                        AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
-                    }
-                } else {
-                    me.mainComponent.downloadLink.setText('', false);
-                    AIDRFMFunctions.setAlert("Error", resp.message);
-                }
-            },
-            failure: function () {
-                btn.setDisabled(false);
-            }
-        });
     },
 
     getAttributesAndLabelsByCrisisId: function () {

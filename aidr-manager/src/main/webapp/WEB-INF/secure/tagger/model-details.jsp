@@ -14,9 +14,8 @@
       CRISIS_NAME = "${crisisName}";
       USER_ID = ${userId};
       ATTRIBUTE_ID = ${attributeId};
-      ITEM_SINGULAR = "${item_singular}";
-      ITEM_PLURAL = "${item_plural}";
-
+      TYPE = "${collectionType}";
+      COLLECTION_TYPES = ${collectionTypes};
   </script>
 
 </body>

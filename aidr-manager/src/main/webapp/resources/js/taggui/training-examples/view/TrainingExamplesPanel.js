@@ -17,7 +17,7 @@ Ext.define('TAGGUI.training-examples.view.TrainingExamplesPanel', {
             html: '<div class="bread-crumbs">' +
                 '<a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a><span>&nbsp;>&nbsp;</span>' +
                 '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + CRISIS_NAME + '</a><span>&nbsp;>&nbsp;</span>' +
-                '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/' + MODEL_ID + '/model-details">' + MODEL_NAME + '</a><span>&nbsp;>&nbsp;Tag more '+ ITEM_PLURAL + '</span></div>',
+                '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/' + MODEL_ID + '/model-details">' + MODEL_NAME + '</a><span>&nbsp;>&nbsp;Tag more '+ COLLECTION_TYPES[TYPE]["plural"] + '</span></div>',
             margin: 0,
             padding: 0
         });
@@ -63,7 +63,7 @@ Ext.define('TAGGUI.training-examples.view.TrainingExamplesPanel', {
         });
 
         this.cancelButton = Ext.create('Ext.Button', {
-            text: 'Back to list of human-tagged '+ ITEM_PLURAL,
+            text: 'Back to list of human-tagged '+ COLLECTION_TYPES[TYPE]["plural"],
             cls:'btn btn-blue',
             id: 'cancel',
             margin: '7 0 0 15'

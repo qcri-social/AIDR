@@ -11,6 +11,8 @@
       COLLECTION_CODE = "${collectionCode}";
       USER_NAME = "${userName}";
       FETCH_MAIN_URL = "${fetchMainUrl}";
+      TYPE = "${collectionType}";
+      COLLECTION_TYPES = ${collectionTypes};
   </script>
 
 </body>

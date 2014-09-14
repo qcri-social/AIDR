@@ -16,8 +16,8 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 
         this.breadcrumbs = Ext.create('Ext.form.Label', {
             html: '<div class="bread-crumbs">' +
-                '<a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a><span>&nbsp;>&nbsp;</span>' +
-                '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + CRISIS_NAME + '</a>' +
+                '<a href="' + BASE_URL + '/protected/home">My Collections</a><span>&nbsp;>&nbsp;</span>' +
+                '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">Classifier for ' + CRISIS_NAME + '</a>' +
                 '<span>&nbsp;>&nbsp;Interactive View/Download</span></div>',
             margin: 0,
             padding: 0
@@ -100,10 +100,15 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
         });
 
         this.downloadTweetsL = Ext.create('Ext.form.Label', {
-            flex: 1,
-            text: 'Download selected tweets',
+            text: 'Download',
             padding: '0 0 0 0',
             cls: 'header-h2'
+        });
+
+        this.downloadTweetsDescription = Ext.create('Ext.form.Label', {
+            id: 'downloadTweetsDescriptionId',
+            text: '',
+            padding: '0 0 10 0'
         });
 
         this.contactOwnerL = Ext.create('Ext.form.Label', {
@@ -119,31 +124,51 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
             html: ''
         });
 
-        this.downloadType = Ext.create('Ext.form.RadioGroup', {
-            columns: 1,
-            vertical: true,
+        this.downloadFormat = Ext.create('Ext.form.RadioGroup', {
+            fieldLabel: 'Format',
+            labelWidth: 55,
+            columns: [150, 210, 220],
             items: [
                 {
-                    boxLabel: 'Up to 1,000 tweets - as shown above',
-                    name: 'type',
-                    inputValue: '1000_TWEETS',
+                    boxLabel: 'Spreadsheet (.csv)',
+                    name: 'format',
+                    inputValue: 'csv',
                     checked: true
                 },
                 {
-                    boxLabel: 'Latest 100,000 tweets',
-                    name: 'type',
-                    inputValue: '100000_TWEETS'
+                    boxLabel: 'Single JSON object (.json)',
+                    name: 'format',
+                    inputValue: 'JSON'
                 },
                 {
-                    boxLabel: 'All tweets (tweet-ids only)',
-                    name: 'type',
-                    inputValue: 'ALL'
+                    boxLabel: 'One JSON per line (.txt-json)',
+                    name: 'format',
+                    inputValue: 'TEXT_JSON'
+                }
+            ]
+        });
+
+        this.downloadContents = Ext.create('Ext.form.RadioGroup', {
+            fieldLabel: 'Contents',
+            labelWidth: 55,
+            columns: [205, 90],
+            items: [
+                {
+                    boxLabel: 'Full tweets (max. 100K items)',
+                    name: 'contents',
+                    inputValue: 'full',
+                    checked: true
+                },
+                {
+                    boxLabel: 'Ids only',
+                    name: 'contents',
+                    inputValue: 'ids'
                 }
             ]
         });
 
         this.downloadButton = Ext.create('Ext.Button', {
-            text: 'Download as .csv',
+            text: 'Generate Downloadable File',
             cls:'btn btn-blue',
             id: 'downloadButton',
             margin: '10 0 0 0'
@@ -198,8 +223,8 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
             margin: '12 2 0 2',
             store:'tweetsStore',
             displayInfo:true,
-            displayMsg:'Items {0} - {1} of {2}',
-            emptyMsg:'No items to display',
+            displayMsg:COLLECTION_TYPES[TYPE]["plural"] + ' {0} - {1} of {2}',
+            emptyMsg:'No '+ COLLECTION_TYPES[TYPE]["plural"] + ' to display',
             items: [
                 {
                     xtype: 'tbseparator'
@@ -235,12 +260,13 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 
         this.downloadPanel = Ext.create('Ext.container.Container', {
             layout: {
-                type: 'vbox',
-                align: 'stretch'
+                type: 'vbox'
             },
             items: [
                 this.downloadTweetsL,
-                this.downloadType,
+                this.downloadTweetsDescription,
+                this.downloadFormat,
+                this.downloadContents,
                 {
                     xtype: 'container',
                     layout: 'hbox',
@@ -279,7 +305,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
                         this.curatorInfoR,
                         this.contactOwnerL
                     ]
-                },
+                }
             ]
         });
 
@@ -306,7 +332,13 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
                 },
                 this.filterFieldSet,
                 this.tweetsPanel,
-                this.contactOwnerPanel
+                this.contactOwnerPanel,
+                {
+                    xtype: 'container',
+                    margin: '15 0 0 0',
+                    html: '<div class="horizontalLine"></div>'
+                },
+                this.downloadPanel
             ];
         }
         else {
@@ -324,7 +356,13 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
                     ]
                 },
                 this.tweetsPanel,
-                this.curatorInfoPanel
+                this.curatorInfoPanel,
+                {
+                    xtype: 'container',
+                    margin: '15 0 0 0',
+                    html: '<div class="horizontalLine"></div>'
+                },
+                this.downloadPanel
             ];
         }
 

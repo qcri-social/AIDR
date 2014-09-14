@@ -37,9 +37,9 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
         });
 
         this.newCollectionButton = Ext.create('Ext.Button', {
-            text: 'Create New Collection',
+            text: 'Create Collection',
             margin: '6 0 0 15',
-            cls:'btn btn-blue',
+            cls:'btn btn-green',
             id: 'newCollection'
         });
 
@@ -104,7 +104,7 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
 
             '<tpl if="classifiersNumber != null">',
                 '<button id="buttonGoToClassifiers_{id}" class="btn btn-blue" onclick="document.location.href=\'{[this.getEncodedCode(values.code)]}/tagger-collection-details\'">',
-                    '<span>Classifier({classifiersNumber})</span>',
+                    '<span>Classifier ({classifiersNumber})</span>',
                 '</button>',
             '<tpl else>',
                 '<button id="buttonEnableClassifiers_{id}" class="btn btn-blue {[this.isEnableClassifierButtonDisabled(values.status)]}" onclick="collectionController.enableTagger({crisisType}, \'{code}\',\'{name}\');" {[this.isEnableClassifierButtonDisabled(values.status)]}>',
@@ -112,7 +112,7 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
                 '</button>',
             '</tpl>',
 
-            '<button id="buttonCollector_{id}" class="btn btn-blue" onclick="document.location.href=\'{[this.getEncodedCode(values.code)]}/collection-details\'">',
+            '<button id="buttonCollector_{id}" class="btn btn-blue" style="margin-right: 10px" onclick="document.location.href=\'{[this.getEncodedCode(values.code)]}/collection-details\'">',
             '<span>Collector</span>',
             '</button>',
             '<div class="content">',
@@ -136,9 +136,14 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
                 '</tpl>',
             '{[this.getSharedBy(values.user)]}</div>',
 
-            '<div class="styled-text-14" id="statusField_{id}">{[this.getStatus(values.status)]}</div>',
-            '<div class="styled-text-14" id="docCountField_{id}">Downloaded {[this.getItem(values.collectionType,true)]} (since last re-start):&nbsp;&nbsp;&nbsp;{[this.getDocNumber(values.count)]}</div>',
-            '<div class="styled-text-14" id="lastDocField_{id}">Last downloaded {[this.getItem(values.collectionType)]}:&nbsp;&nbsp;&nbsp;{[this.getLastDoc(values.lastDocument)]}</div>',
+            '<div class="styled-text-14" id="statusField_{id}">{[this.getStatus(values.status)]}' +
+                '<tpl if="values.status == \'RUNNING\'">'+
+                '&nbsp;&#45;&nbsp; {[this.getDocNumber(values.count)]} {[COLLECTION_TYPES[values.collectionType]["plural"]]} downloaded (since last restart)' +
+                '</tpl>',
+            '</div>',
+            '<tpl if="values.status == \'RUNNING\'">',
+                '<div class="styled-text-14" id="lastDocField_{id}">Last downloaded:&nbsp;&nbsp;&nbsp;{[this.getLastDoc(values.lastDocument)]}</div>',
+            '</tpl>',
             '</div>',
 
             '</div>',
@@ -180,12 +185,6 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
                 isTwitter: function (r) {
                     return r == 'Twitter';
                 },
-                getItem: function (r, plural) {
-                    if (plural)
-                        return r == 'Twitter' ? "tweets" : "sms";
-                    else
-                        return r == 'Twitter' ? "tweet" : "sms";
-                },
                 getEncodedCode: function(code) {
                     return encodeURI(code);
                 },
@@ -193,7 +192,7 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
                     if (owner.userName == USER_NAME){
                         return '';
                     }
-                    return '<span class="styled-text-14"> (Shared by &#45; &#64;' + owner.userName + ')</span>';
+                    return '<span class="styled-text-14">  by &#64;' + owner.userName + '</span>';
                 }
             }
         );
@@ -212,7 +211,7 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
             margin: '12 2 0 2',
             store:'collectionStore',
             displayInfo: true,
-            displayMsg:'Collection records {0} - {1} of {2}',
+            displayMsg:'Collections {0} - {1} of {2}',
             emptyMsg:'No collection records to display'
         });
 
@@ -272,8 +271,8 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
             '<div class="info" style="width: 600px !important;">',
             '<div class="collection-title"><a href="{[this.getEncodedCode(values.code)]}/collection-details">{name}</a>{[this.getSharedBy(values.user)]}</div>',
             '<div class="styled-text-14" id="statusField_{id}">{[this.getStatus(values.status)]}</div>',
-            '<div class="styled-text-14" id="docCountField_{id}">Downloaded {[this.getItem(values.collectionType, true)]} (since last re-start):&nbsp;&nbsp;&nbsp;{[this.getDocNumber(values.count)]}</div>',
-            '<div class="styled-text-14" id="lastDocField_{id}">Last downloaded {[this.getItem(values.collectionType)]}:&nbsp;&nbsp;&nbsp;{[this.getLastDoc(values.lastDocument)]}</div>',
+//            '<div class="styled-text-14" id="docCountField_{id}">Downloaded {[COLLECTION_TYPES[values.collectionType]["plural"]]} (since last re-start):&nbsp;&nbsp;&nbsp;{[this.getDocNumber(values.count)]}</div>',
+//            '<div class="styled-text-14" id="lastDocField_{id}">Last downloaded {[COLLECTION_TYPES[values.collectionType]["singular"]]}:&nbsp;&nbsp;&nbsp;{[this.getLastDoc(values.lastDocument)]}</div>',
             '</div>',
 
             '</div>',
@@ -297,17 +296,11 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
                 isTwitter: function (r) {
                     return r == 'Twitter';
                 },
-                getItem: function (r, plural) {
-                    if (plural)
-                        return r == 'Twitter' ? "tweets" : "sms";
-                    else
-                        return r == 'Twitter' ? "tweet" : "sms";
-                },
                 getSharedBy: function(owner) {
                     if (owner.userName == USER_NAME){
                         return '';
                     }
-                    return '<span class="styled-text-14"> (Shared by &#45; &#64;' + owner.userName + ')</span>';
+                    return '<span class="styled-text-14"> by &#64;' + owner.userName + '</span>';
                 }
             }
         );
@@ -324,7 +317,7 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
             margin: '12 2 0 2',
             store:'collectionTrashedStore',
             displayInfo: true,
-            displayMsg:'Collection records {0} - {1} of {2}',
+            displayMsg:'Collections {0} - {1} of {2}',
             emptyMsg:'No collection records to display'
         });
 
@@ -400,10 +393,20 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
             },
             me.tabs,
             {
-                xtype: 'component',
-                margin: "15 0 0 5",
-                cls: 'link-style',
-                html:"<a href='" + BASE_URL + "/public.jsp'>Browse public collections</a>"
+                xtype: 'container',
+                layout: 'hbox',
+                items: [
+                    {
+                        xtype:'container',
+                        flex:1
+                    },
+                    {
+                        xtype: 'component',
+                        margin: "15 0 0 5",
+                        cls: 'link-style',
+                        html:"<a href='" + BASE_URL + "/public.jsp'>Browse public collections</a>"
+                    }
+                ]
             }
 
         ]

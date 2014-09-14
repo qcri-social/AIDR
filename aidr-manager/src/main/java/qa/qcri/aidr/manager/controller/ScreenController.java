@@ -34,6 +34,7 @@ public class ScreenController extends BaseController{
 
         ModelAndView model = new ModelAndView("home");
         model.addObject("userName", userName);
+        model.addObject("collectionTypes", CollectionType.JSON());
         return model;
 	}
 
@@ -89,12 +90,19 @@ public class ScreenController extends BaseController{
         model.addObject("collectionCode", code);
         model.addObject("userName", userName);
         model.addObject("fetchMainUrl", fetchMainUrl);
+        model.addObject("collectionType", collection.getCollectionType());
+        model.addObject("collectionTypes", CollectionType.JSON());
+
         return model;
     }
 
     @RequestMapping("protected/collection-create")
-    public String collectionCreate(Map<String, String> model) throws Exception {
-        return "collection-create";
+    public ModelAndView collectionCreate() throws Exception {
+        ModelAndView model = new ModelAndView("collection-create");
+        model.addObject("collectionTypes", CollectionType.JSON());
+
+        return model;
+
     }
 
     @RequestMapping("protected/tagger-home")
@@ -122,14 +130,14 @@ public class ScreenController extends BaseController{
             }
         }
 
-        boolean type = collection == null || collection.getCollectionType() == CollectionType.Twitter;
-
         ModelAndView model = new ModelAndView("tagger/tagger-collection-details");
         model.addObject("crisisId", crisisId);
         model.addObject("name", crisisName);
         model.addObject("crisisTypeId", crisisTypeId);
         model.addObject("code", code);
-        model.addObject("item_plural", type ? "tweets" : "sms");
+        model.addObject("collectionType", collection.getCollectionType());
+        model.addObject("collectionTypes", CollectionType.JSON());
+
         return model;
     }
 
@@ -217,7 +225,6 @@ public class ScreenController extends BaseController{
         }
 
         AidrCollection collection = collectionService.findByCode(code);
-        boolean type = collection == null || collection.getCollectionType() == CollectionType.Twitter;
 
         ModelAndView model = new ModelAndView("tagger/model-details");
         model.addObject("crisisId", crisisId);
@@ -229,8 +236,8 @@ public class ScreenController extends BaseController{
         model.addObject("code", code);
         model.addObject("userId", taggerUserId);
         model.addObject("attributeId", attributeId);
-        model.addObject("item_singular", type ? "tweet" : "sms");
-        model.addObject("item_plural", type ? "tweets" : "sms");
+        model.addObject("collectionType", collection.getCollectionType());
+        model.addObject("collectionTypes", CollectionType.JSON());
 
         return model;
     }
@@ -251,12 +258,13 @@ public class ScreenController extends BaseController{
         }
 
         AidrCollection collection = collectionService.findByCode(code);
-        boolean type = collection == null || collection.getCollectionType() == CollectionType.Twitter;
+
         ModelAndView model = new ModelAndView("tagger/new-custom-attribute");
         model.addObject("code", code);
         model.addObject("crisisId", crisisId);
         model.addObject("crisisName", crisisName);
-        model.addObject("item_singular", type ? "tweet" : "sms");
+        model.addObject("collectionType", collection.getCollectionType());
+        model.addObject("collectionTypes", CollectionType.JSON());
 
         return model;
     }
@@ -295,7 +303,6 @@ public class ScreenController extends BaseController{
         }
 
         AidrCollection collection = collectionService.findByCode(code);
-        boolean type = collection == null || collection.getCollectionType() == CollectionType.Twitter;
 
         ModelAndView model = new ModelAndView("tagger/training-data");
         model.addObject("crisisId", crisisId);
@@ -308,8 +315,8 @@ public class ScreenController extends BaseController{
         model.addObject("trainingExamples", trainingExamples);
         model.addObject("modelAuc", modelAuc);
         model.addObject("retrainingThreshold", retrainingThreshold);
-        model.addObject("item_singular", type ? "tweet" : "sms");
-        model.addObject("item_plural", type ? "tweets" : "sms");
+        model.addObject("collectionType", collection.getCollectionType());
+        model.addObject("collectionTypes", CollectionType.JSON());
 
         return model;
     }
@@ -342,7 +349,6 @@ public class ScreenController extends BaseController{
 
 
         AidrCollection collection = collectionService.findByCode(code);
-        boolean type = collection == null || collection.getCollectionType() == CollectionType.Twitter;
 
         ModelAndView model = new ModelAndView("tagger/training-examples");
         model.addObject("code", code);
@@ -352,8 +358,8 @@ public class ScreenController extends BaseController{
         model.addObject("modelId", modelId);
         model.addObject("modelFamilyId", modelFamilyId);
         model.addObject("nominalAttributeId", nominalAttributeId);
-        model.addObject("item_singular", type ? "tweet" : "sms");
-        model.addObject("item_plural", type ? "tweets" : "sms");
+        model.addObject("collectionType", collection.getCollectionType());
+        model.addObject("collectionTypes", CollectionType.JSON());
 
         return model;
     }
@@ -422,19 +428,30 @@ public class ScreenController extends BaseController{
         }
 
         Integer collectionId = 0;
-        if (collection != null && collection.getId() != null){
-            collectionId = collection.getId();
+        Integer collectionCount = 0;
+        CollectionType type = CollectionType.Twitter;
+        if (collection != null){
+            if (collection.getId() != null) {
+                collectionId = collection.getId();
+            }
+            if (collection.getCount() != null) {
+                collectionCount = collection.getCount();
+            }
+            if (collection.getCollectionType() != null) {
+                type = collection.getCollectionType();
+            }
         }
-
-        boolean type = collection == null || collection.getCollectionType() == CollectionType.Twitter;
 
         ModelAndView model = new ModelAndView("../public/interactive-view-download");
         model.addObject("collectionId", collectionId);
         model.addObject("crisisId", crisisId);
         model.addObject("crisisName", crisisName);
         model.addObject("code", code);
+        model.addObject("count", collectionCount);
         model.addObject("userName", userName);
-        model.addObject("item_plural", type ? "tweets" : "sms");
+        model.addObject("collectionType", type);
+        model.addObject("collectionTypes", CollectionType.JSON());
+
         return model;
     }
 

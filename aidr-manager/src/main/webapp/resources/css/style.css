@@ -45,10 +45,7 @@
 .header-h1{
 	font-size: 30px ;
     display: block;
-    -webkit-margin-before: 0.67em;
-    -webkit-margin-after: 0.67em;
-    -webkit-margin-start: 0px;
-    -webkit-margin-end: 0px;
+    margin: 0.67em 0 0.67em 0;
 }
 
 .header-h2{
@@ -771,7 +768,13 @@ End of the tab panel styles
 .link-style {
     font-size: 14px;
 }
-
 #viewDownloadTweetsGrid-body .x-grid-row .x-grid-cell-inner {
     font-size: 1.05em;
+}
+
+.collection-item .btn, .c-list .crisis-item .btn {
+    position: relative;
+    float: right;
+    top: 23px;
+    width: 130px;
 }

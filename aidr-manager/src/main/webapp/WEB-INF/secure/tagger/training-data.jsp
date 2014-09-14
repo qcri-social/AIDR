@@ -15,8 +15,8 @@
       TRAINING_EXAMPLE = "${trainingExamples}";
       MODEL_AUC = "${modelAuc}";
       RETRAINING_THRESHOLD = "${retrainingThreshold}";
-      ITEM_SINGULAR = "${item_singular}";
-      ITEM_PLURAL = "${item_plural}";
+      TYPE = "${collectionType}";
+      COLLECTION_TYPES = ${collectionTypes};
   </script>
 
 </body>

@@ -8,7 +8,8 @@
       CRISIS_CODE = "${code}";
       CRISIS_ID = ${crisisId};
       CRISIS_NAME = "${crisisName}";
-      ITEM_SINGULAR = "${item_singular}";
+      TYPE = "${collectionType}";
+      COLLECTION_TYPES = ${collectionTypes};
   </script>
 
 </body>
