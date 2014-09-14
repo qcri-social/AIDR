@@ -45,10 +45,7 @@
 .header-h1{
 	font-size: 30px ;
     display: block;
-    -webkit-margin-before: 0.67em;
-    -webkit-margin-after: 0.67em;
-    -webkit-margin-start: 0px;
-    -webkit-margin-end: 0px;
+    margin: 0.67em 0 0.67em 0;
 }
 
 .header-h2{
