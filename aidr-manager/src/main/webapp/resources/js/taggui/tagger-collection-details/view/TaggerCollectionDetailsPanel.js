@@ -843,7 +843,6 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                     xtype: 'container',
                     layout: 'vbox',
                     margin: '20 0 0 0',
-                    flex: 1,
                     items: [
                         {
                             xtype: 'container',
@@ -891,7 +890,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                 {
                     xtype: 'label',
                     html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/landingPage.png"></span>',
-                    margin: '50 0 0 10'
+                    margin: '50 0 0 70'
                 }
             ]
         });

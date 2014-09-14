@@ -59,7 +59,7 @@ public class PublicController extends BaseController{
 
             return getUIWrapper(false);
         }
-        if(!JsonDataValidator.isValidEMSCGisJson(jsonCollection)){
+        if(!JsonDataValidator.isValidEMSCJson(jsonCollection)){
 
             return getUIWrapper(false);
         }
@@ -77,7 +77,7 @@ public class PublicController extends BaseController{
         long durationInHours = (Long)jsonObject.get("durationInHours");
         Boolean updateDuration = (Boolean)jsonObject.get("updateDuration");
 
-        if(!updateDuration){
+        if(updateDuration){
             String token = (String)jsonObject.get("token");
             if(!collectionService.isValidToken(token)){
                 logger.info("authentication is failed : token - " + token);
@@ -86,7 +86,7 @@ public class PublicController extends BaseController{
         }
 
         try{
-
+            logger.info("try:" + geoString) ;
             AidrCollection dbCollection = collectionService.findById((int)collectionId);
 
 
