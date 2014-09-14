@@ -10,8 +10,10 @@ import qa.qcri.aidr.manager.dto.TaggerCrisis;
 import qa.qcri.aidr.manager.dto.TaggerModel;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
+import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.CollectionType;
 
 import java.util.List;
@@ -27,6 +29,8 @@ public class ScreenController extends BaseController{
     private TaggerService taggerService;
     @Value("${fetchMainUrl}")
     private String fetchMainUrl;
+    @Autowired
+    private CollectionLogService collectionLogService;
 
 	@RequestMapping("protected/home")
 	public ModelAndView home() throws Exception {
@@ -422,15 +426,23 @@ public class ScreenController extends BaseController{
             crisisName = crisis.getName();
         }
 
-        Integer collectionId = 0;
         Integer collectionCount = 0;
+        Integer collectionId = 0;
         CollectionType type = CollectionType.Twitter;
         if (collection != null){
             if (collection.getId() != null) {
                 collectionId = collection.getId();
+                try {
+                    collectionCount = collectionLogService.countTotalDownloadedItemsForCollection(collectionId);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-            if (collection.getCount() != null) {
-                collectionCount = collection.getCount();
+            if (collection.getCount() != null
+                    || collection.getStatus() != null
+                    || CollectionStatus.RUNNING.equals(collection.getStatus())
+                    || CollectionStatus.RUNNING_WARNING.equals(collection.getStatus())) {
+                collectionCount += collection.getCount();
             }
             if (collection.getCollectionType() != null) {
                 type = collection.getCollectionType();
