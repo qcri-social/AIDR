@@ -933,7 +933,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             success: function (response) {
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
-                    document.location.href = BASE_URL + '/protected/tagger-home';
+                    document.location.href = BASE_URL + '/protected/home';
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }

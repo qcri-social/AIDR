@@ -14,7 +14,7 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
 
         this.breadcrumbs = Ext.create('Ext.form.Label', {
             html: '<div class="bread-crumbs">' +
-                '<a href="' + BASE_URL + '/protected/tagger-home">My Classifiers</a><span>&nbsp;>&nbsp;</span>' +
+                '<a href="' + BASE_URL + '/protected/home">My Collections</a><span>&nbsp;>&nbsp;</span>' +
                 '<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + CRISIS_NAME + '</a><span>&nbsp;>&nbsp;</span>' +
                 '<a href="' + BASE_URL +  '/protected/' + CRISIS_CODE + '/' + MODEL_ID + '/model-details">' + MODEL_NAME + '</a><span>&nbsp;>&nbsp;Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '</span></div>',
             margin: 0,
@@ -73,7 +73,7 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
                         crisisId: CRISIS_ID
                     }
                 }
-            },
+            }
         });
 
         this.trainingDataGrid = Ext.create('Ext.grid.Panel', {

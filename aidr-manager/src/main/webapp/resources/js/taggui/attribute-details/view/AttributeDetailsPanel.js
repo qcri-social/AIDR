@@ -15,7 +15,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsPanel', {
     initComponent: function () {
         this.breadcrumbs = Ext.create('Ext.container.Container', {
             html: '<div class="bread-crumbs">' +
-                '<a href="' + BASE_URL + '/protected/tagger-home">Tagger</a><span>&nbsp;>&nbsp;Category details</span></div>',
+                '<a href="' + BASE_URL + '/protected/home">My Collections</a><span>&nbsp;>&nbsp;Category details</span></div>',
             margin: 0,
             padding: 0
         });
