@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
@@ -290,33 +291,33 @@ public class ClassifiedTweet  implements Document, Serializable{
 				//System.out.println("[getDate] Converted date: " + newDate.toString());
 				return newDate;
 			} catch (ParseException e) {
-				logger.error("Error in parsing Date string = " + timeString);
-				logger.error(elog.toStringException(e));
+				//logger.error("Parse Error in getting Date string = " + timeString);
+				//logger.error(elog.toStringException(e));
 			}
 		}
-		System.out.println("[getDate] Warning! returning Date = null for time String = " + timeString);
+		logger.warn("[getDate] Warning! returning Date = null for time String = " + timeString);
 		return null;
 	} 
 
 	public String setDateString(String timeString) {
 		//System.out.println("[setDateString] Received time string: " + timeString);
-
+		
 		DateFormat dateFormatISO = new SimpleDateFormat(DateFormatConfig.ISODateFormat);
 		dateFormatISO.setTimeZone(TimeZone.getTimeZone("GMT"));
 		if (timeString != null) {
 			try {
 				SimpleDateFormat formatter = new SimpleDateFormat(DateFormatConfig.StandardDateFormat);
 				Date newDate = formatter.parse(timeString);
-				setTimestamp(newDate);
+				if (newDate != null) setTimestamp(newDate.getTime());
 				//System.out.println("[setDateString] Converted date: " + newDate.toString());
 				return dateFormatISO.format(newDate);
 			} catch (ParseException e) {
-				setTimestamp(null);
-				logger.error("Error in parsing Date string = " + timeString);
-				logger.error(elog.toStringException(e));
+				//logger.error("Error in setting Date string = " + timeString);
+				//logger.error(elog.toStringException(e));
+				setTimestamp(0);
 			}
 		}
-		System.out.println("[setDateString] Null createdAt Warning! time String = " + timeString);
+		//logger.warn("[setDateString] Null createdAt Warning! time String = " + timeString);
 		return null;
 	}
 
@@ -334,8 +335,8 @@ public class ClassifiedTweet  implements Document, Serializable{
 		return this.timestamp;
 	}
 	
-	public void setTimestamp(Date date) {
-		this.timestamp = (date != null) ? date.getTime() : 0;
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
 	}
 	
 	public static void main(String args[]) {

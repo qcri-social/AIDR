@@ -107,10 +107,11 @@ public class Persister4CollectorAPI {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/genCSV")
-    public Response generateCSVFromLastestJSON(@QueryParam("collectionCode") String collectionCode) throws UnknownHostException {
+    public Response generateCSVFromLastestJSON(@QueryParam("collectionCode") String collectionCode,
+    				@QueryParam("exportLimit") int exportLimit) throws UnknownHostException {
     	logger.info("Received request for collection: " + collectionCode);
     	JsonDeserializer jsonD = new JsonDeserializer();
-        String fileName = jsonD.generateJSON2CSV_100K_BasedOnTweetCount(collectionCode);
+        String fileName = jsonD.generateJSON2CSV_100K_BasedOnTweetCount(collectionCode, exportLimit);
         fileName = Config.SCD1_URL + collectionCode+"/"+fileName;
         
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);

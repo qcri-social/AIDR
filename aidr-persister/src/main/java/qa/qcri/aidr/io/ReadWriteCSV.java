@@ -173,8 +173,8 @@ public class ReadWriteCSV<CellProcessors> {
 			final CellProcessor[] processors = getProcessors4TweetIDSCCSV();
 
 			String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
-			fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
-			String fileToWrite = persisterDIR + collectionDIR + "/" + fileName + ".csv";
+			//fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
+			String fileToWrite = persisterDIR + collectionDIR + "/" + fileName;
 			logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
 			
 			if (null == beanWriter) { 
@@ -210,8 +210,8 @@ public class ReadWriteCSV<CellProcessors> {
 		try {
 			if (null == mapWriter) {
 				String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
-				fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
-				String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName + ".csv";
+				//fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
+				String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName;
 				logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
 				mapWriter = getCSVMapWriter(fileToWrite);
 
@@ -276,8 +276,8 @@ public class ReadWriteCSV<CellProcessors> {
 
 			if(null == beanWriter){
 				String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
-				fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
-				String fileToWrite = persisterDIR + collectionDIR + "/" + fileName + ".csv";
+				//fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
+				String fileToWrite = persisterDIR + collectionDIR + "/" + fileName;
 				logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
 				//beanWriter = new CsvBeanWriter(new FileWriter(fileToWrite, true),
 				//        CsvPreference.EXCEL_PREFERENCE);
@@ -308,8 +308,7 @@ public class ReadWriteCSV<CellProcessors> {
 		try {
 			if (null == mapWriter) {
 				String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
-				fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
-				String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName + ".csv";
+				String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName;
 				logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
 				mapWriter = getCSVMapWriter(fileToWrite);
 
@@ -361,8 +360,8 @@ public class ReadWriteCSV<CellProcessors> {
 				}
 				++count;*/
 			} catch (SuperCsvCellProcessorException e) {
-				//logger.error(collectionDIR + ": SuperCSV error. Offending tweet: " + tweet.getTweetID());
-				//logger.error(elog.toStringException(e));
+				logger.error(collectionDIR + ": SuperCSV error. Offending tweet: " + tweet.getTweetID());
+				logger.error(elog.toStringException(e));
 			} catch (IOException e) {
 				logger.error(collectionDIR + "IOException in writing tweet: " + tweet.getTweetID());
 			}

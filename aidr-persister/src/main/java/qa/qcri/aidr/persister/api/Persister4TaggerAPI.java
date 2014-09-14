@@ -124,7 +124,8 @@ public class Persister4TaggerAPI {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/genCSV")
-	public Response generateCSVFromLastestJSON(@QueryParam("collectionCode") String collectionCode, @QueryParam("exportLimit") int exportLimit) throws UnknownHostException {
+	public Response generateCSVFromLastestJSON(@QueryParam("collectionCode") String collectionCode, 
+			@QueryParam("exportLimit") int exportLimit) throws UnknownHostException {
 		logger.debug("In tagger-persister genCSV");
 		logger.info("Received request for collection: " + collectionCode);
 		JsonDeserializer jsonD = new JsonDeserializer();
@@ -165,14 +166,14 @@ public class Persister4TaggerAPI {
 		DeserializeFilters des = new DeserializeFilters();
 		JsonQueryList queryList = des.deserializeConstraints(queryString);
 		JsonDeserializer jsonD = new JsonDeserializer();
-
+		
 		logger.info("received request for collection: " + collectionCode);
 		if (queryList != null) {
 			logger.info(collectionCode + ": received constraints = " + queryList.toString());
 		} else {
 			logger.info(collectionCode + ": received constraints = " + queryList);
 		}
-
+		
 		String fileName = jsonD.taggerGenerateJSON2CSV_100K_BasedOnTweetCountFiltered(collectionCode, exportLimit, queryList);
 		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
 

@@ -89,12 +89,16 @@ public class FilterQueryMatcher {
 			if (q.getComparator().equals(ComparatorType.is_after)) {
 				boolean matchResult = false;
 				if (null == tweet.getCreatedAt()) {
-					logger.error("No createdAt field in Tweet!!!");
-					logger.error("OFFENDING TWEET: " + tweet);
+					//logger.error("No createdAt field in Tweet!!!");
+					//logger.error("OFFENDING TWEET: " + tweet);
 					return false;		// default behavior
 				}
+				/*
 				if (tweet.getDate(tweet.getCreatedAt()) != null) {
 					matchResult = tweet.getDate(tweet.getCreatedAt()).after(q.getDate());
+				}*/
+				if (tweet.getTimestamp() != 0) {
+					matchResult = tweet.getTimestamp() > q.getTime();
 				}
 				//System.out.println("For " + tweet.getCreatedAt() + " comparing after date " + q.getDate().toString() + " : " + matchResult);
 				return matchResult;
@@ -102,16 +106,20 @@ public class FilterQueryMatcher {
 			if (q.getComparator().equals(ComparatorType.is_before)) {
 				boolean matchResult = false;
 				if (null == tweet.getCreatedAt()) {
-					logger.error("No createdAt field in Tweet!!!");
-					logger.error("OFFENDING TWEET: " + tweet);
+					//logger.error("No createdAt field in Tweet!!!");
+					//logger.error("OFFENDING TWEET: " + tweet);
 					return false;		// default behavior
 				}
+				/*
 				if (tweet.getDate(tweet.getCreatedAt()) != null) {
 					matchResult = tweet.getDate(tweet.getCreatedAt()).before(q.getDate());
+				}*/
+				if (tweet.getTimestamp() != 0) {
+					matchResult = tweet.getTimestamp() < q.getTime();
 				}
 				//System.out.println("For " + tweet.getCreatedAt().toString() + " comparing before date" + q.getDate().toString() + " : " + matchResult);
 				return matchResult;
-			}
+			}	
 		}
 
 		if (q instanceof ClassifierQueryJsonObject) {
