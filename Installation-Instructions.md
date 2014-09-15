@@ -97,6 +97,8 @@ After the above steps have been executed, you can build the project:
 
 # 6. Tagger (aidr-tagger)
 
+**NOTE**: A re-deployment of the `aidr-task-manager` module may require a re-deployment of the `aidr-tagger` module.
+
 1) Create a database. This assumes database=aidr_predict, username=aidr_user, password=pass123 :
 
    `% mysql -u root -p`
@@ -134,6 +136,8 @@ After the above steps have been executed, you can build the project:
       You will see some incomprehensible debug output. If the numbers are not 0, input data is being processed.
       
 # 7. Tagger-API (aidr-tagger-api)
+
+**NOTE**: A re-deployment of the `aidr-task-manager` module may require a re-deployment of the `aidr-tagger-api` module.
 
 * Create JDBC resources in server (e.g., Glassfish) to match the JNDI names (JNDI/aidr_predict and JNDI/aidr_fetch_manager) used in src/main/resource/META-INF/persistence.xml.
 * Appropriately set the `taggerMainUrl` in the `system.properties` file under `aidr-manager`. 
