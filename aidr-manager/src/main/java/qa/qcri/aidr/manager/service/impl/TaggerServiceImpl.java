@@ -1241,9 +1241,9 @@ public class TaggerServiceImpl implements TaggerService {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		System.out.println("[generateJsonTweetIdsLink] Received request for code: " + code);
 		try {
-			System.out.println("[generateJsonTweetIdsLink] Invoked URL: " + persisterMainUrl + "/taggerPersister/filter/genTweetIds?collectionCode=" + code 
+			System.out.println("[generateTweetIdsLink] Invoked URL: " + persisterMainUrl + "/taggerPersister/filter/genTweetIds?collectionCode=" + code 
 					+ "&downloadLimited=true");
-			WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/filter/genJsonTweetIds?collectionCode=" + code + "&downloadLimited=true");
+			WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/filter/genTweetIds?collectionCode=" + code + "&downloadLimited=true");
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
                     .post(Entity.json(queryString), Response.class);
 			//String jsonResponse = clientResponse.readEntity(String.class);
