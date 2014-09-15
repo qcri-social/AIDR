@@ -97,9 +97,11 @@ public class FileSystemOperations {
         return volNum;
     }
     
+    @Deprecated
     public static int getLatestFileVolumeNumber4Tagger(String collectionCode) {
 
         String filesPath = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/";
+    	//String filesPath = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/";
         File folder = new File(filesPath);
         File[] listOfFiles = folder.listFiles();
         Integer volNum = 1;
@@ -133,7 +135,7 @@ public class FileSystemOperations {
             if (listOfFiles[i].isFile()) {
                 String currentFileName = listOfFiles[i].getName();
                 if (StringUtils.contains(currentFileName, collectionCode)) {
-                    if (!(StringUtils.contains(currentFileName, ".csv"))
+                    if (!StringUtils.contains(currentFileName, ".csv") && !StringUtils.contains(currentFileName, ".txt")
                     		&& StringUtils.containsIgnoreCase(listOfFiles[i].getName(), "vol")) { //do not consider CSV files here, only consider JSON files
                         fileNames.add(currentFileName);
                     }
@@ -143,9 +145,11 @@ public class FileSystemOperations {
         return fileNames;
     }
     
+    @Deprecated
     public static List<String> getClassifiedFileVolumes(String collectionCode) {
 
         String filesPath = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/";
+    	//String filesPath = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/";
         List<String> fileNames = new ArrayList();
         File folder = new File(filesPath);
         File[] listOfFiles = folder.listFiles();

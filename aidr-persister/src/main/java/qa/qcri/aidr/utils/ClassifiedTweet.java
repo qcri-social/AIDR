@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -24,7 +25,7 @@ import qa.qcri.aidr.persister.filter.NominalLabel;
  * @author Imran, modified by Koushik
  */
 @SuppressWarnings("serial")
-public class ClassifiedTweet  implements Document, Serializable{
+public class ClassifiedTweet  implements Document, Serializable {
 	
 	private static Logger logger = Logger.getLogger(ClassifiedTweet.class);
 	private static ErrorLog elog = new ErrorLog();
@@ -46,6 +47,7 @@ public class ClassifiedTweet  implements Document, Serializable{
 	private String tweetURL;
 
 	private String crisisName;
+	private String crisisCode;
 	private String attributeName_1;
 	private String attributeCode_1;
 	private String labelName_1;
@@ -291,8 +293,8 @@ public class ClassifiedTweet  implements Document, Serializable{
 				//System.out.println("[getDate] Converted date: " + newDate.toString());
 				return newDate;
 			} catch (ParseException e) {
-				//logger.error("Parse Error in getting Date string = " + timeString);
-				//logger.error(elog.toStringException(e));
+				logger.error("Parse Error in getting Date string = " + timeString);
+				logger.error(elog.toStringException(e));
 			}
 		}
 		logger.warn("[getDate] Warning! returning Date = null for time String = " + timeString);
@@ -312,13 +314,12 @@ public class ClassifiedTweet  implements Document, Serializable{
 				//System.out.println("[setDateString] Converted date: " + newDate.toString());
 				return dateFormatISO.format(newDate);
 			} catch (ParseException e) {
-				//logger.error("Error in setting Date string = " + timeString);
-				//logger.error(elog.toStringException(e));
-				setTimestamp(0);
+				logger.error("Error in setting createdAt field = " + timeString);
+				logger.error(elog.toStringException(e));
 			}
 		}
-		//logger.warn("[setDateString] Null createdAt Warning! time String = " + timeString);
-		return null;
+		setTimestamp(0);
+		return timeString;
 	}
 
 	public ArrayList<NominalLabel> getNominalLabels() {
@@ -326,8 +327,10 @@ public class ClassifiedTweet  implements Document, Serializable{
 	}
 
 	public void setNominalLabels(ArrayList<NominalLabel> nLabels) {
-		if (this.nominal_labels != null) {
+		if (null == this.nominal_labels) {
 			this.nominal_labels = nLabels;
+		} else {
+			this.nominal_labels.addAll(nLabels);
 		}
 	}
 	
@@ -339,7 +342,54 @@ public class ClassifiedTweet  implements Document, Serializable{
 		this.timestamp = timestamp;
 	}
 	
+	public String getCrisisCode() {
+		return this.crisisCode;
+	}
+	
+	public void setCrisisCode(String crisisCode) {
+		this.crisisCode = crisisCode;
+	}
+	
 	public static void main(String args[]) {
 		
+	}
+
+	public Map<String, Object> prettyPrint() {
+		Map<String, Object> obj = new HashMap<String, Object>();
+		obj.put("id", this.getTweetID());
+		obj.put("crisisName", this.getCrisisName());
+		obj.put("crisisCode", this.getCrisisCode());
+		obj.put("tweet", this.getMessage());
+		for (int i = 0; i < this.getNominalLabels().size();i++) {
+			NominalLabel nb = this.getNominalLabels().get(i);
+			obj.put("attribute_name_"+i, nb.attribute_name);
+			obj.put("attribute_code_"+i, nb.attribute_code);
+			obj.put("label_name_"+i, nb.label_name);
+			obj.put("label_description_"+i, nb.label_description);
+			obj.put("label_code_"+i, nb.label_code);
+			obj.put("confidence_"+i, nb.confidence);
+			obj.put("humanLabeled_"+i, nb.from_human);
+		}
+		return obj;
+	}
+
+	public void createDummyNominalLabels(final String crisisCode) {
+		//System.out.println("Creating dummy nominal labels array");
+		
+		this.crisisCode = crisisCode;
+		this.crisisName = crisisCode;
+		this.nominal_labels = new ArrayList<NominalLabel>();
+		NominalLabel nLabel = new NominalLabel();
+		nLabel.attribute_code = "null";
+		nLabel.label_code = "null";
+		nLabel.confidence = 0;
+
+		nLabel.attribute_name = "null";
+		nLabel.label_name = "null";
+		nLabel.attribute_description = "null";
+		nLabel.label_description = "null";
+		nLabel.from_human = false;
+
+		this.nominal_labels.add(nLabel);
 	}
  }

@@ -174,14 +174,16 @@ public class Persister4TaggerAPI {
 			logger.info(collectionCode + ": received constraints = " + queryList);
 		}
 		
+		if (0 == exportLimit) exportLimit = Config.TWEETS_EXPORT_LIMIT_100K;
 		String fileName = jsonD.taggerGenerateJSON2CSV_100K_BasedOnTweetCountFiltered(collectionCode, exportLimit, queryList);
-		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
+		//fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
+		fileName = Config.SCD1_URL + collectionCode + "/" + fileName;
 
 		logger.info("done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
 		
 		JSONObject obj = new JSONObject();
-		obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
-		logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+		obj.putAll(ResultStatus.getUIWrapper(collectionCode, Config.PERSISTER_CHANGE_NOTIFY_MSG, fileName, true));
+		logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, Config.PERSISTER_CHANGE_NOTIFY_MSG, fileName, true));
 		return Response.ok(obj.toJSONString())
 				.allow("POST", "OPTIONS", "HEAD")
 				.header("Access-Control-Allow-Origin", "*")
@@ -207,12 +209,12 @@ public class Persister4TaggerAPI {
 		//return Response.ok(fileName).build();
 		JSONObject obj = new JSONObject();
 		if ((Integer) result.get("count") < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
-			obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
-			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, Config.PERSISTER_CHANGE_NOTIFY_MSG, fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, Config.PERSISTER_CHANGE_NOTIFY_MSG, fileName, true));
 			return Response.ok(obj.toJSONString()).build();
 		} else {
-			obj.putAll(ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
-			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG + Config.PERSISTER_CHANGE_NOTIFY_MSG, fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG + Config.PERSISTER_CHANGE_NOTIFY_MSG, fileName, true));
 			return Response.ok(obj.toJSONString()).build();
 		}
 	}
@@ -242,14 +244,15 @@ public class Persister4TaggerAPI {
 			logger.info(collectionCode + ": received constraints = " + queryList);
 		}
 		Map<String, Object> result = jsonD.generateClassifiedJson2TweetIdsCSVFiltered(collectionCode, queryList, downloadLimited);
-		String fileName = Config.SCD1_URL + collectionCode + "/output/" + (String) result.get("fileName");
+		//String fileName = Config.SCD1_URL + collectionCode + "/output/" + (String) result.get("fileName");
+		String fileName = Config.SCD1_URL + collectionCode + "/" + (String) result.get("fileName");
 
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
 		
 		JSONObject obj = new JSONObject();
 		if ((Integer) result.get("count") < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
-			obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
-			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, Config.PERSISTER_CHANGE_NOTIFY_MSG, fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, Config.PERSISTER_CHANGE_NOTIFY_MSG, fileName, true));
 			return Response.ok(obj.toJSONString())
 					.allow("POST", "OPTIONS", "HEAD")
 					.header("Access-Control-Allow-Origin", "*")
@@ -258,8 +261,8 @@ public class Persister4TaggerAPI {
 					.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 					.build();
 		} else {
-			obj.putAll(ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
-			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG + Config.PERSISTER_CHANGE_NOTIFY_MSG, fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG + Config.PERSISTER_CHANGE_NOTIFY_MSG, fileName, true));
 			return Response.ok(obj.toJSONString())
 					.allow("POST", "OPTIONS", "HEAD")
 					.header("Access-Control-Allow-Origin", "*")
@@ -331,8 +334,9 @@ public class Persister4TaggerAPI {
 		logger.debug("In tagger-persister genCSV");
 		logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType);
 		JsonDeserializer jsonD = new JsonDeserializer();
-		exportLimit = Config.TWEETS_EXPORT_LIMIT_100K;		// Koushik: added to override user specs
-	
+		
+		if (0 == exportLimit) exportLimit = Config.TWEETS_EXPORT_LIMIT_100K;
+		
 		String fileName = jsonD.taggerGenerateJSON2JSON_100K_BasedOnTweetCount(collectionCode, exportLimit, DownloadJsonType.getDownloadJsonTypeFromString(jsonType));
 		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
 
@@ -407,14 +411,15 @@ public class Persister4TaggerAPI {
 		JsonDeserializer jsonD = new JsonDeserializer();
 		exportLimit = Config.TWEETS_EXPORT_LIMIT_100K;		// Koushik: added to override user specs
 		String fileName = jsonD.taggerGenerateJSON2JSON_100K_BasedOnTweetCountFiltered(collectionCode, exportLimit, queryList, DownloadJsonType.getDownloadJsonTypeFromString(jsonType));
-		fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
+		//fileName = Config.SCD1_URL + collectionCode + "/output/" + fileName;
+		fileName = Config.SCD1_URL + collectionCode + "/" + fileName;
 
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
 		//return Response.ok(fileName).build();
 		
 		JSONObject obj = new JSONObject();
-		obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
-		logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+		obj.putAll(ResultStatus.getUIWrapper(collectionCode, Config.PERSISTER_CHANGE_NOTIFY_MSG, fileName, true));
+		logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, Config.PERSISTER_CHANGE_NOTIFY_MSG, fileName, true));
 		return Response.ok(obj.toJSONString()).build();
 	}
 
@@ -436,14 +441,15 @@ public class Persister4TaggerAPI {
 		}
 		JsonDeserializer jsonD = new JsonDeserializer();
 		Map<String, Object> result = jsonD.generateClassifiedJson2TweetIdsJSONFiltered(collectionCode, downloadLimited, queryList, DownloadJsonType.getDownloadJsonTypeFromString(jsonType));
-		String fileName = Config.SCD1_URL + collectionCode + "/output/" + result.get("fileName");
+		//String fileName = Config.SCD1_URL + collectionCode + "/output/" + result.get("fileName");
+		String fileName = Config.SCD1_URL + collectionCode + "/" + result.get("fileName");
 
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
 		//return Response.ok(fileName).build();
 		JSONObject obj = new JSONObject();
 		if ((Integer) result.get("count") < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
-			obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
-			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, Config.PERSISTER_CHANGE_NOTIFY_MSG, fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, Config.PERSISTER_CHANGE_NOTIFY_MSG, fileName, true));
 			return Response.ok(obj.toJSONString())
 					.allow("POST", "OPTIONS", "HEAD")
 					.header("Access-Control-Allow-Origin", "*")
@@ -452,8 +458,8 @@ public class Persister4TaggerAPI {
 					.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 					.build();
 		} else {
-			obj.putAll(ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
-			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG + Config.PERSISTER_CHANGE_NOTIFY_MSG, fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG + Config.PERSISTER_CHANGE_NOTIFY_MSG, fileName, true));
 			return Response.ok(obj.toJSONString())
 					.allow("POST", "OPTIONS", "HEAD")
 					.header("Access-Control-Allow-Origin", "*")

@@ -46,4 +46,5 @@ public class Config {
 	// Related to Tweet Download limit
 	public static final String managerUrl = "http://localhost:8080/AIDRFetchManager";
 	public static final String TWEET_DOWNLOAD_LIMIT_MSG = "The size of the collection is larger than " + DEFAULT_TWEETID_VOLUME_LIMIT + ". To download the full tweet IDs collection, please contact the AIDR admin at aidr@noreply.github.com";
+	public static final String PERSISTER_CHANGE_NOTIFY_MSG = "The directory structure of the AIDR Persistence module has changed. To download your old files, please contact the AIDR admin at aidr@noreply.github.com";
 }

@@ -62,7 +62,8 @@ public class TaggerSubscriber extends JedisPubSub {
 
     public TaggerSubscriber(String fileLoc, String collectionCode) {
         //remove leading and trailing double quotes from collectionCode
-        fileVolumnNumber = FileSystemOperations.getLatestFileVolumeNumber4Tagger(collectionCode);
+        //fileVolumnNumber = FileSystemOperations.getLatestFileVolumeNumber4Tagger(collectionCode);
+    	fileVolumnNumber = FileSystemOperations.getLatestFileVolumeNumber(collectionCode);
         this.collectionCode = collectionCode.replaceAll("^\"|\"$", ""); // removing spaces
         this.persisterDir = fileLoc.replaceAll("^\"|\"$", "");
         collectionDir = createNewDirectory();

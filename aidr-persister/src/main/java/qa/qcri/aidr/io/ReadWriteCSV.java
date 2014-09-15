@@ -210,8 +210,8 @@ public class ReadWriteCSV<CellProcessors> {
 		try {
 			if (null == mapWriter) {
 				String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
-				//fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
-				String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName;
+				//String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName;
+				String fileToWrite = persisterDIR + collectionDIR + "/" + fileName;
 				logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
 				mapWriter = getCSVMapWriter(fileToWrite);
 
@@ -308,7 +308,8 @@ public class ReadWriteCSV<CellProcessors> {
 		try {
 			if (null == mapWriter) {
 				String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
-				String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName;
+				//String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName;
+				String fileToWrite = persisterDIR + collectionDIR + "/" + fileName;
 				logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
 				mapWriter = getCSVMapWriter(fileToWrite);
 
