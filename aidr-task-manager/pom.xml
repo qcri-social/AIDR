@@ -7,18 +7,17 @@
 	<packaging>ejb</packaging>
 
 	<properties>
-    	<jartype>client</jartype>
+		<jartype>client</jartype>
 	</properties>
-	
+
 	<dependencies>
 		<!-- AIDR dependencies -->
 		<dependency>
-		<groupId>qa.qcri.aidr.common</groupId>
+			<groupId>qa.qcri.aidr.common</groupId>
 			<artifactId>aidr-common</artifactId>
 			<version>1.0</version>
 		</dependency>
-		
-		
+
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
@@ -116,7 +115,7 @@
 			<version>2.5.1</version>
 			<scope>provided</scope>
 		</dependency>
-	
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -174,32 +173,22 @@
 				</configuration>
 			</plugin>
 			
-			<!-- plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.5</version>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>client</id>
-						<phase>package</phase>
+						<phase>generate-resources</phase>
 						<goals>
-							<goal>jar</goal>
+							<goal>run</goal>
 						</goals>
+						<configuration>
+							<tasks>
+								<echo>NOTE: To build the EAR file, please execute mvn install -f pom-ear.xml</echo>
+							</tasks>
+						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<classifier>client</classifier>
-					<excludes>
-						<exclude>**/log4j.properties</exclude>
-						<exclude>**/qa/qcri/aidr/task/ejb/bean/*Bean.class</exclude>
-						<exclude>**/qa/qcri/aidr/task/ejb/bean/*Bean.java</exclude>
-					</excludes>
-					<file>
-						${project.build.directory}/${project.artifactId}-${project.version}.jar
-					</file>
-				</configuration>
-			</plugin -->
-			
+			</plugin>
 		</plugins>
 	</build>
 </project>

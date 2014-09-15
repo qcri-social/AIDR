@@ -13,7 +13,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -176,6 +178,19 @@ public class NominalLabel implements Serializable {
     @Override
     public String toString() {
         return "qa.qcri.aidr.predictui.entities.NominalLabel[ nominalLabelID=" + nominalLabelID + " ]";
+    }
+    
+    
+    @XmlElement
+    @Column (name = "nominalAttributeID", nullable = false)
+    private Long nominalAttributeID;
+    
+    public Long getNominalAttributeID() {
+        return nominalAttributeID;
+    }
+
+    public void setNominalAttributeID(Long nominalAttributeID) {
+        this.nominalAttributeID = nominalAttributeID;
     }
     
 }
