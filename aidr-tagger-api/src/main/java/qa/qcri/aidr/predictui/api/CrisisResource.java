@@ -214,25 +214,25 @@ public class CrisisResource {
 	@GET
 	@Produces("application/json")
 	@Path("/attributes/count/{crisisCode}")
-	public Map<String, Integer> getNominalAttributesCountForCrisis(@PathParam("crisisCode") String crisisCode) {
-		Map<String, Integer> result = null;
+	public Response getNominalAttributesCountForCrisis(@PathParam("crisisCode") String crisisCode) {
+		Map<String, Integer> result = new HashMap<String, Integer>(1);;
+		ObjectMapper mapper = new ObjectMapper();
 		try {
 			if (crisisLocalEJB.isCrisisExists(crisisCode) != null) {
 				List<String> crisisList = new ArrayList<String>();
 				crisisList.add(crisisCode);
 				result = crisisLocalEJB.countClassifiersByCrisisCodes(crisisList);
 				System.out.println("retrieved result: " + result);
-				if (result == null){
-					result = new HashMap<String, Integer>(1);
-					result.put("count", 0);
+				if (result != null) {
+					return Response.ok(mapper.writeValueAsString(result)).build();
 				}
-			} else {
-				result = new HashMap<String, Integer>(1);
-				result.put("count", 0);
-			} 
+			}
+			result.put("count", 0);
+			return Response.ok(mapper.writeValueAsString(result)).build();
 		} catch (Exception e) {
 			e.printStackTrace();
+			result.put("count", -1);
+			return Response.ok(result.toString()).build();
 		}
-		return result;
 	}
 }
