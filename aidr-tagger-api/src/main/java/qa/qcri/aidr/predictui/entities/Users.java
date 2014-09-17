@@ -6,6 +6,7 @@ package qa.qcri.aidr.predictui.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,10 +20,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+
 //import org.codehaus.jackson.annotate.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
  *
@@ -42,20 +47,30 @@ public class Users implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "userID")
-    private Integer userID;
+    @XmlElement private Integer userID;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
     @Column(name = "name")
-    private String name;
+    @XmlElement private String name;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 45)
     @Column(name = "role")
-    private String role;
+    @XmlElement private String role;
+    
+    @XmlTransient
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
+    @JsonManagedReference
     private Collection<Crisis> crisisCollection;
+    
+    @XmlTransient
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
+    @JsonManagedReference
     private Collection<NominalAttribute> nominalAttributeCollection;
 
     public Users() {

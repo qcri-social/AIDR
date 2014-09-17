@@ -5,6 +5,7 @@
 package qa.qcri.aidr.predictui.entities;
 
 import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -13,8 +14,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
@@ -38,18 +43,25 @@ public class ModelNominalLabel implements Serializable {
     protected ModelNominalLabelPK modelNominalLabelPK;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "labelPrecision")
-    private Double labelPrecision;
+    @XmlElement private Double labelPrecision;
+    
     @Column(name = "labelRecall")
-    private Double labelRecall;
+    @XmlElement private Double labelRecall;
+    
     @Column(name = "labelAuc")
-    private Double labelAuc;
+    @XmlElement private Double labelAuc;
+    
     @Column(name = "classifiedDocumentCount")
-    private Integer classifiedDocumentCount;
+    @XmlElement private Integer classifiedDocumentCount;
+    
     @JoinColumn(name = "modelID", referencedColumnName = "modelID", insertable = false, updatable = false)
     @ManyToOne(optional = false)
+    @JsonBackReference
     private Model model;
+    
     @JoinColumn(name = "nominalLabelID", referencedColumnName = "nominalLabelID", insertable = false, updatable = false)
     @ManyToOne(optional = false)
+    @JsonBackReference
     private NominalLabel nominalLabel;
 
     public ModelNominalLabel() {
@@ -62,7 +74,7 @@ public class ModelNominalLabel implements Serializable {
     public ModelNominalLabel(int modelID, int nominalLabelID) {
         this.modelNominalLabelPK = new ModelNominalLabelPK(modelID, nominalLabelID);
     }
-
+    
     public ModelNominalLabelPK getModelNominalLabelPK() {
         return modelNominalLabelPK;
     }
@@ -104,6 +116,7 @@ public class ModelNominalLabel implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public Model getModel() {
         return model;
     }
@@ -111,7 +124,9 @@ public class ModelNominalLabel implements Serializable {
     public void setModel(Model model) {
         this.model = model;
     }
-
+    
+    @XmlTransient
+    @JsonIgnore
     public NominalLabel getNominalLabel() {
         return nominalLabel;
     }

@@ -6,6 +6,7 @@ package qa.qcri.aidr.predictui.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -22,10 +23,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 //import org.codehaus.jackson.annotate.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
  *
@@ -46,30 +51,39 @@ public class NominalAttribute implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "nominalAttributeID")
-    private Integer nominalAttributeID;
+    @XmlElement private Integer nominalAttributeID;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 140)
     @Column(name = "name")
-    private String name;
+    @XmlElement private String name;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 600)
     @Column(name = "description")
-    private String description;
+    @XmlElement private String description;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "code")
-    private String code;
+    @XmlElement private String code;
 //    @ManyToMany(mappedBy = "nominalAttributeCollection")
 //    private Collection<Crisis> crisisCollection;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "nominalAttribute")
+    @JsonManagedReference
     private Collection<ModelFamily> modelFamilyCollection;
+    
     @JoinColumn(name = "userID", referencedColumnName = "userID")
     @ManyToOne(optional = false)
+    @JsonBackReference
     private Users users;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "nominalAttribute")
+    @JsonManagedReference
     private Collection<NominalLabel> nominalLabelCollection;
 
     public NominalAttribute() {
@@ -138,7 +152,8 @@ public class NominalAttribute implements Serializable {
         this.modelFamilyCollection = modelFamilyCollection;
     }
     
-    //@XmlTransient
+    @XmlTransient
+    @JsonIgnore
     public Users getUsers() {
         return users;
     }
@@ -147,7 +162,7 @@ public class NominalAttribute implements Serializable {
         this.users = users;
     }
 
-    //@XmlTransient
+    @XmlTransient
     @JsonIgnore
     public Collection<NominalLabel> getNominalLabelCollection() {
         return nominalLabelCollection;

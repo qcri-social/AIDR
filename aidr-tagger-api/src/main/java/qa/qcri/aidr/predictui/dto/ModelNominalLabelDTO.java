@@ -5,7 +5,10 @@
 package qa.qcri.aidr.predictui.dto;
 
 import qa.qcri.aidr.predictui.entities.*;
+
 import java.io.Serializable;
+
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -16,16 +19,16 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 public class ModelNominalLabelDTO implements Serializable {
 
-    protected ModelNominalLabelPK modelNominalLabelPK;
-    private Double labelPrecision;
-    private Double labelRecall;
-    private Double labelAuc;
-    private Integer classifiedDocumentCount;
-    private Model model;
-    private NominalLabel nominalLabel;
-    private int trainingDocuments;
-    private String modelStatus;
-    private Integer nominalAttributeId;
+	@XmlElement protected ModelNominalLabelPK modelNominalLabelPK;
+	@XmlElement private Double labelPrecision;
+	@XmlElement private Double labelRecall;
+	@XmlElement private Double labelAuc;
+	@XmlElement private Integer classifiedDocumentCount;
+	@XmlElement private Model model;
+	@XmlElement private NominalLabel nominalLabel;
+	@XmlElement private int trainingDocuments;
+	@XmlElement private String modelStatus;
+	@XmlElement private Integer nominalAttributeId;
 
     public ModelNominalLabelDTO() {
     }

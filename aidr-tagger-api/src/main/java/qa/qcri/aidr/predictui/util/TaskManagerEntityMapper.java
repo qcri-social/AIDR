@@ -6,8 +6,13 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
+//import org.codehaus.jackson.map.ObjectMapper;
+//import org.codehaus.jackson.type.TypeReference;
+
+
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.entities.TaskAssignment;
@@ -18,7 +23,7 @@ public class TaskManagerEntityMapper {
 
 	private static Logger logger = Logger.getLogger(TaskManagerEntityMapper.class);
 	private static ErrorLog elog = new ErrorLog();
-			
+
 	public TaskManagerEntityMapper() {}
 
 	public <E> E deSerializeList(String jsonString, TypeReference<E> type) {
@@ -77,12 +82,42 @@ public class TaskManagerEntityMapper {
 			//doc.setSourceIP(document.getSourceIP().longValue());
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
-			doc.setTaskAssignment(transformTaskAssignment(document.getTaskAssignment()));
+			//doc.setTaskAssignment(transformTaskAssignment(document.getTaskAssignment()));
 
 			doc.setNominalLabelCollection(transformNominalLabelCollection(document.getNominalLabelCollection()));
 			return doc;
 		} 
 		return null;
+	}
+
+	public List<Document> transformDocumentList(List<qa.qcri.aidr.task.entities.Document> documentList) {
+		List<Document> docList = null;
+		if (documentList != null) {
+			docList = new ArrayList<Document>(documentList.size());
+			for (qa.qcri.aidr.task.entities.Document document: documentList) {
+				Document doc = new Document();
+				if (document != null) {
+					doc.setDocumentID(document.getDocumentID());
+					doc.setCrisisID(document.getCrisisID());
+					doc.setDoctype(document.getDoctype());
+					doc.setData(document.getData());
+					doc.setEvaluationSet(document.isEvaluationSet());
+					doc.setGeoFeatures(document.getGeoFeatures());
+					doc.setLanguage(document.getLanguage());
+					doc.setHasHumanLabels(document.isHasHumanLabels());
+
+					doc.setReceivedAt(document.getReceivedAt());
+					//doc.setSourceIP(document.getSourceIP().longValue());
+					doc.setWordFeatures(document.getWordFeatures());
+					doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
+					//doc.setTaskAssignment(transformTaskAssignment(document.getTaskAssignment()));
+
+					doc.setNominalLabelCollection(transformNominalLabelCollection(document.getNominalLabelCollection()));
+					docList.add(doc);
+				}
+			}
+		} 
+		return docList;
 	}
 
 	public qa.qcri.aidr.task.entities.Document reverseTransformDocument(Document document) {
@@ -101,7 +136,7 @@ public class TaskManagerEntityMapper {
 			//doc.setSourceIP(document.getSourceIP().intValue());
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
-			doc.setTaskAssignment(reverseTransformTaskAssignment(document.getTaskAssignment()));
+			//doc.setTaskAssignment(reverseTransformTaskAssignment(document.getTaskAssignment()));
 
 			doc.setNominalLabelCollection(reverseTransformNominalLabelCollection(document.getNominalLabelCollection()));
 			return doc;
@@ -109,6 +144,35 @@ public class TaskManagerEntityMapper {
 		return null;
 	}
 
+	public List<qa.qcri.aidr.task.entities.Document> reverseTransformDocumentList(List<Document> documentList) {
+		List<qa.qcri.aidr.task.entities.Document> docList = null;
+		if (documentList != null) {
+			docList = new ArrayList<qa.qcri.aidr.task.entities.Document>(documentList.size());
+			for (Document document: documentList) {
+				qa.qcri.aidr.task.entities.Document doc = new qa.qcri.aidr.task.entities.Document();
+				if (document != null) {
+					doc.setDocumentID(document.getDocumentID());
+					doc.setCrisisID(document.getCrisisID());
+					doc.setDoctype(document.getDoctype());
+					doc.setData(document.getData());
+					doc.setEvaluationSet(document.isEvaluationSet());
+					doc.setGeoFeatures(document.getGeoFeatures());
+					doc.setLanguage(document.getLanguage());
+					doc.setHasHumanLabels(document.isHasHumanLabels());
+
+					doc.setReceivedAt(document.getReceivedAt());
+					//doc.setSourceIP(document.getSourceIP().intValue());
+					doc.setWordFeatures(document.getWordFeatures());
+					doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
+					//doc.setTaskAssignment(reverseTransformTaskAssignment(document.getTaskAssignment()));
+
+					doc.setNominalLabelCollection(reverseTransformNominalLabelCollection(document.getNominalLabelCollection()));
+					docList.add(doc);
+				} 
+			}
+		}
+		return docList;
+	}
 
 	public TaskAssignment transformTaskAssignment(qa.qcri.aidr.task.entities.TaskAssignment t) {
 		if (t != null) {

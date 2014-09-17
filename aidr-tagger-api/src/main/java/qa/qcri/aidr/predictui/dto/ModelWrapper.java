@@ -4,20 +4,26 @@
  */
 package qa.qcri.aidr.predictui.dto;
 
+import java.io.Serializable;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  *
  * @author Imran
  */
-public class ModelWrapper {
+@XmlRootElement
+public class ModelWrapper implements Serializable{
     
-    private Integer modelID;
-    private Integer modelFamilyID;
-    private Integer attributeID;
-    private String attribute;
-    private String status;
-    private long trainingExamples;
-    private long classifiedDocuments;
-    private double auc;
+	@XmlElement private Integer modelID;
+	@XmlElement private Integer modelFamilyID;
+	@XmlElement private Integer attributeID;
+	@XmlElement private String attribute;
+	@XmlElement private String status;
+	@XmlElement private long trainingExamples;
+	@XmlElement private long classifiedDocuments;
+	@XmlElement private double auc;
 
     /**
      * @return the attribute

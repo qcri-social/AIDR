@@ -2,7 +2,9 @@ package qa.qcri.aidr.predictui.entities;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.io.Serializable;
 
 /**
@@ -27,22 +29,22 @@ public class CustomUITemplate implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "customUITemplateID")
-    private Long customUITemplateID;
+    @XmlElement private Long customUITemplateID;
 
     @Column(name = "crisisID")
-    private Long crisisID;
+    @XmlElement private Long crisisID;
 
     @Column(name = "nominalAttributeID")
-    private Long nominalAttributeID;
+    @XmlElement private Long nominalAttributeID;
 
     @Column(name = "templateType")
-    private Integer templateType;
+    @XmlElement private Integer templateType;
 
     @Column(name = "templateValue")
     private String templateValue;
 
     @Column(name = "isActive")
-    private boolean isActive;
+    @XmlElement private boolean isActive;
 
     public Long getCustomUITemplateID() {
         return customUITemplateID;

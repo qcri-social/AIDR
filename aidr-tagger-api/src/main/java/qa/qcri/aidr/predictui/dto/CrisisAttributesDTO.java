@@ -4,20 +4,26 @@
  */
 package qa.qcri.aidr.predictui.dto;
 
+import java.io.Serializable;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  *
  * @author Imran
  */
-public class CrisisAttributesDTO {
+@XmlRootElement
+public class CrisisAttributesDTO implements Serializable {
     
-    private Integer nominalAttributeID;
-    private String name;
-    private String description;
-    private String code;
-    private Integer crisisID;
-    private Integer userID;
-    private Integer labelID;
-    private String labelName;
+	@XmlElement private Integer nominalAttributeID;
+	@XmlElement private String name;
+	@XmlElement private String description;
+	@XmlElement private String code;
+	@XmlElement private Integer crisisID;
+	@XmlElement private Integer userID;
+	@XmlElement private Integer labelID;
+	@XmlElement private String labelName;
 
     /**
      * @return the nominalAttributeID

@@ -21,9 +21,11 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
+//import org.codehaus.jackson.map.ObjectMapper;
+//import org.hibernate.criterion.Criterion;
+//import org.hibernate.criterion.Restrictions;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.math.BigInteger;

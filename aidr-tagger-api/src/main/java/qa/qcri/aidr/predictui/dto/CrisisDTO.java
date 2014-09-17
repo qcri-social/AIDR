@@ -1,17 +1,23 @@
 package qa.qcri.aidr.predictui.dto;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.util.List;
 
 @XmlRootElement
 public class CrisisDTO {
-
+	
+	@XmlElement
     private String code;
-
+	
+	@XmlElement
     private String name;
 
+	@XmlElement
     private CrisisTypeDTO crisisType;
 
+	@XmlElement
     private Integer crisisID;
 
     public CrisisDTO() {

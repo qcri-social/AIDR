@@ -1,12 +1,17 @@
 package qa.qcri.aidr.predictui.dto;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
-public class TaggersForCodes {
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-    private String code;
+@XmlRootElement
+public class TaggersForCodes implements Serializable {
 
-    private BigInteger count;
+	@XmlElement private String code;
+
+	@XmlElement private BigInteger count;
 
     public String getCode() {
         return code;

@@ -6,6 +6,7 @@ package qa.qcri.aidr.predictui.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,8 +22,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
 //import org.codehaus.jackson.annotate.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
  *
@@ -42,12 +45,15 @@ public class CrisisType implements Serializable {
     @Basic(optional = false)
     @Column(name = "crisisTypeID")
     private Integer crisisTypeID;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 140)
     @Column(name = "name")
     private String name;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "crisisType")
+    @JsonManagedReference
     private Collection<Crisis> crisisCollection;
 
     public CrisisType() {
@@ -77,7 +83,7 @@ public class CrisisType implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-
+    
     @XmlTransient
     @JsonIgnore
     public Collection<Crisis> getCrisisCollection() {

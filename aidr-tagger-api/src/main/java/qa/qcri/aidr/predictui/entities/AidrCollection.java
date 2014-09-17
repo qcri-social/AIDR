@@ -2,14 +2,18 @@ package qa.qcri.aidr.predictui.entities;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class AidrCollection implements Serializable {
 
     private static final long serialVersionUID = 4720813686204397970L;
-    private Integer id;
-    private String code;
-    private String name;
-    private int userID;
-    private String status;
+    @XmlElement private Integer id;
+    @XmlElement private String code;
+    @XmlElement private String name;
+    @XmlElement private int userID;
+    @XmlElement private String status;
 
     public Integer getId() {
         return id;

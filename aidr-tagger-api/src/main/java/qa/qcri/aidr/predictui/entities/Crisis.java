@@ -22,11 +22,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 //import org.codehaus.jackson.annotate.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
  *
@@ -62,7 +65,9 @@ public class Crisis implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-
+    
+    @XmlTransient
+    @JsonIgnore
     public CrisisType getCrisisType() {
         return crisisType;
     }
@@ -79,7 +84,8 @@ public class Crisis implements Serializable {
         this.code = code;
     }
     
-  //@XmlTransient
+    @XmlTransient
+    @JsonIgnore
     public Users getUsers() {
         return users;
     }
@@ -92,12 +98,14 @@ public class Crisis implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "crisisID")
+    @XmlElement 
     private Long crisisID;
 
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 140)
     @Column(name = "name")
+    @XmlElement 
     private String name;
 
     //@Column (name = "crisisTypeID", nullable = false)
@@ -105,27 +113,35 @@ public class Crisis implements Serializable {
     
     @JoinColumn(name = "crisisTypeID", referencedColumnName = "crisisTypeID")
     @ManyToOne(optional = false)
+    @JsonBackReference
     private CrisisType crisisType;
     
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
+    @XmlElement 
     private String code;
 
     //@Column (name = "userID", nullable = false)
     //private Long userID;
     @JoinColumn(name = "userID", referencedColumnName = "userID")
     @ManyToOne(optional = false)
+    @JsonBackReference
     private Users users;
 
     
     @OneToMany( cascade = CascadeType.ALL, mappedBy = "crisis")
+    @JsonManagedReference
+    @XmlElement 
     private Collection<ModelFamily> modelFamilyCollection;
     
-  
+    @Basic(optional = false)
+    @NotNull
+    @Column(name="isTrashed")
+    @XmlElement 
     private Boolean isTrashed;
     
-    //@XmlTransient
+    @XmlTransient
     @JsonIgnore
     public Collection<ModelFamily> getModelFamilyCollection() {
         return modelFamilyCollection;

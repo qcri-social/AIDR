@@ -29,9 +29,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 //import org.codehaus.jackson.annotate.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -48,17 +50,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 	@Id
 	@Column(name = "documentID")
+	@XmlElement 
 	private Long documentID;
 
 
 	@Column (name = "hasHumanLabels", nullable = false)
-	private boolean hasHumanLabels;
+	@XmlElement private boolean hasHumanLabels;
 
 	@Column (name = "crisisID", nullable = false)
-	private Long crisisID;
+	@XmlElement private Long crisisID;
 
 	@Column (name = "isEvaluationSet", nullable = false)
-	private boolean isEvaluationSet;
+	@XmlElement private boolean isEvaluationSet;
 
 	/*
 	@Column (name = "sourceIP", nullable = false)
@@ -67,35 +70,37 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 	//private Integer sourceIP;
 
 	@Column (name = "valueAsTrainingSample", nullable = false)
-	private Double valueAsTrainingSample;
+	@XmlElement private Double valueAsTrainingSample;
 
 	@Column (name = "receivedAt", nullable = false)
-	private Date receivedAt;
+	@XmlElement private Date receivedAt;
 
 	@Column (name = "language", nullable = false)
-	private String language;
+	@XmlElement private String language;
 
 	@Column (name = "doctype", nullable = false)
-	private String doctype;
+	@XmlElement private String doctype;
 
 	@Column (name = "data", nullable = false)
-	private String data;
+	@XmlElement private String data;
 
 	@Column (name = "wordFeatures", nullable = false)
-	private String wordFeatures;
+	@XmlElement private String wordFeatures;
 
 	@Column (name = "geoFeatures", nullable = false)
-	private String geoFeatures;
+	@XmlElement private String geoFeatures;
 
-	@OneToOne(cascade=CascadeType.DETACH, fetch=FetchType.LAZY)
-	@JoinColumn(name="documentID",insertable=true,
-	updatable=true,nullable=true,unique=true)
-	private TaskAssignment taskAssignment;
+	//@OneToOne(cascade=CascadeType.DETACH, fetch=FetchType.LAZY)
+	//@JoinColumn(name="documentID",insertable=true,
+	//updatable=true,nullable=true,unique=true)
+	//@JsonBackReference
+	//private TaskAssignment taskAssignment;
 
 	@JoinTable(name = "document_nominal_label", joinColumns = {
 			@JoinColumn(name = "documentID", referencedColumnName = "documentID")}, inverseJoinColumns = {
 			@JoinColumn(name = "nominalLabelID", referencedColumnName = "nominalLabelID")})
 	@ManyToMany
+	@JsonBackReference
 	private Collection<NominalLabel> nominalLabelCollection;
 
 	public Document(){}
@@ -213,14 +218,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 	public void setWordFeatures(String wordFeatures) {
 		this.wordFeatures = wordFeatures;
 	}
-
+	
+	/*
 	public TaskAssignment getTaskAssignment() {
 		return taskAssignment;
 	}
 
 	public void setTaskAssignment(TaskAssignment taskAssignment) {
 		this.taskAssignment = taskAssignment;
-	}
+	}*/
 	
 	@XmlTransient
     @JsonIgnore

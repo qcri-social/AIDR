@@ -1,14 +1,20 @@
 package qa.qcri.aidr.predictui.dto;
 
+import java.io.Serializable;
+
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class CrisisTypeDTO {
-
+public class CrisisTypeDTO implements Serializable {
+	
+	@XmlElement 
     private Integer crisisTypeID;
 
+	@XmlElement 
     private String name;
     
+	@XmlElement 
     private int numberOfCrisisAssociated;
 
     public CrisisTypeDTO() {

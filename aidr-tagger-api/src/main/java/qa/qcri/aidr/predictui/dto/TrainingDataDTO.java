@@ -4,24 +4,29 @@
  */
 package qa.qcri.aidr.predictui.dto;
 
+import java.io.Serializable;
 import java.util.Date;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Imran
  */
-public class TrainingDataDTO {
+@XmlRootElement
+public class TrainingDataDTO implements Serializable {
     
-    private Integer labelID;
-    private String labelName;
-    private String tweetJSON;
+	@XmlElement private Integer labelID;
+	@XmlElement private String labelName;
+	@XmlElement private String tweetJSON;
     
-    private Integer labelerID; 
-    private String labelerName;
-    private Date labeledTime;
-    private Integer totalRows;
+	@XmlElement private Integer labelerID; 
+	@XmlElement private String labelerName;
+	@XmlElement private Date labeledTime;
+	@XmlElement private Integer totalRows;
 
-    private Long documentID;
+	@XmlElement private Long documentID;
 
     /**
      * @return the labelID

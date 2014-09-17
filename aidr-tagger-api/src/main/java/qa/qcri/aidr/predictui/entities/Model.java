@@ -7,6 +7,7 @@ package qa.qcri.aidr.predictui.entities;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -23,10 +24,14 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 //import org.codehaus.jackson.annotate.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
  *
@@ -51,37 +56,48 @@ public class Model implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "modelID")
-    private Integer modelID;
+    @XmlElement private Integer modelID;
+    
     @Basic(optional = false)
     @NotNull
     @Column(name = "avgPrecision")
-    private double avgPrecision;
+    @XmlElement private double avgPrecision;
+    
     @Basic(optional = false)
     @NotNull
     @Column(name = "avgRecall")
-    private double avgRecall;
+    @XmlElement private double avgRecall;
+    
     @Basic(optional = false)
     @NotNull
     @Column(name = "avgAuc")
-    private double avgAuc;
+    @XmlElement private double avgAuc;
+    
     @Basic(optional = false)
     @NotNull
     @Column(name = "trainingCount")
-    private int trainingCount;
+    @XmlElement private int trainingCount;
+    
     @Basic(optional = false)
     @NotNull
     @Column(name = "trainingTime")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date trainingTime;
+    @XmlElement private Date trainingTime;
+    
     @JoinColumn(name = "modelFamilyID", referencedColumnName = "modelFamilyID")
     @ManyToOne(optional = false)
+    @JsonBackReference
     private ModelFamily modelFamily;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "model")
+    @JsonManagedReference
     private Collection<ModelNominalLabel> modelNominalLabelCollection;
+    
 //    @OneToMany(mappedBy = "model")
 //    private Collection<ModelFamily> modelFamilyCollection;
+    
     @Column(name = "isCurrentModel")
-    private Boolean isCurrentModel;
+    @XmlElement private Boolean isCurrentModel;
 
     public Model() {
     }
@@ -146,7 +162,9 @@ public class Model implements Serializable {
     public void setTrainingTime(Date trainingTime) {
         this.trainingTime = trainingTime;
     }
-
+    
+    @XmlTransient
+    @JsonIgnore
     public ModelFamily getModelFamily() {
         return modelFamily;
     }

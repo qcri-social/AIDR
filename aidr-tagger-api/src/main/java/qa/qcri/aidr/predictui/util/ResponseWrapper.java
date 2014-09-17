@@ -8,15 +8,20 @@ import qa.qcri.aidr.predictui.dto.*;
 
 import java.io.Serializable;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
+
 //import org.codehaus.jackson.map.annotate.JsonSerialize;
 //import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+
 import qa.qcri.aidr.predictui.entities.AidrCollection;
 import qa.qcri.aidr.predictui.entities.Crisis;
 import qa.qcri.aidr.predictui.entities.Document;
@@ -30,6 +35,7 @@ import qa.qcri.aidr.predictui.entities.NominalLabel;
  *
  * @author Muhammad Imran
  */
+/*
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "responseWrapper", propOrder = {
     "statusCode",
@@ -51,30 +57,35 @@ import qa.qcri.aidr.predictui.entities.NominalLabel;
     "crisisAttributes",
     "trainingData",
     "total"
-})
+})*/
 @XmlRootElement(name = "responseWrapper")
-@JsonSerialize(include = Inclusion.NON_DEFAULT)
+//@JsonSerialize(include = Inclusion.NON_DEFAULT)
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class ResponseWrapper implements Serializable {
-
-    protected String statusCode;
-    protected String message;
-    protected Object dataObject;
-    private List<CrisisTypeDTO> crisisTypes;
-    private List<Crisis> crisises;
-    private List<NominalLabel> nominalLabels;
-    private List<NominalAttribute> nominalAttributes;
-    private List<Model> models;
-    private List<Document> documents;
-    private List<ModelFamily> modelFamilies;
-    private List<ModelNominalLabel> modelNominalLabels;
-    private List<ModelNominalLabelDTO> modelNominalLabelsDTO;
-    private List<AidrCollection> collections;
-    private List<ModelWrapper> modelWrapper;
-    private List<ModelHistoryWrapper> modelHistoryWrapper;
-    private List<TaggersForCodes> taggersForCodes;
-    private List<CrisisAttributesDTO> crisisAttributes;
-    private List<TrainingDataDTO> trainingData;
-    private Integer total;
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	@XmlElement protected String statusCode;
+	@XmlElement protected String message;
+	@XmlElement protected Object dataObject;
+	@XmlElement private List<CrisisTypeDTO> crisisTypes;
+	@XmlElement private List<Crisis> crisises;
+	@XmlElement private List<NominalLabel> nominalLabels;
+	@XmlElement private List<NominalAttribute> nominalAttributes;
+	@XmlElement private List<Model> models;
+	@XmlElement private List<Document> documents;
+	@XmlElement private List<ModelFamily> modelFamilies;
+	@XmlElement private List<ModelNominalLabel> modelNominalLabels;
+	@XmlElement private List<ModelNominalLabelDTO> modelNominalLabelsDTO;
+	@XmlElement private List<AidrCollection> collections;
+	@XmlElement private List<ModelWrapper> modelWrapper;
+	@XmlElement private List<ModelHistoryWrapper> modelHistoryWrapper;
+	@XmlElement private List<TaggersForCodes> taggersForCodes;
+	@XmlElement private List<CrisisAttributesDTO> crisisAttributes;
+	@XmlElement private List<TrainingDataDTO> trainingData;
+	@XmlElement private Integer total;
 
     public ResponseWrapper(String statusCode, String message) {
         this.statusCode = statusCode;

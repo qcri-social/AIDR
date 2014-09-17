@@ -1,24 +1,29 @@
 package qa.qcri.aidr.predictui.dto;
 
+import java.io.Serializable;
 import java.util.Date;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Alex Mikhashchuk
  */
-public class ModelHistoryWrapper {
+@XmlRootElement
+public class ModelHistoryWrapper implements Serializable {
 
-    private Integer modelID;
+	@XmlElement private Integer modelID;
 
-    private double avgPrecision;
+	@XmlElement private double avgPrecision;
 
-    private double avgRecall;
+	@XmlElement private double avgRecall;
 
-    private double avgAuc;
+	@XmlElement private double avgAuc;
 
-    private int trainingCount;
+	@XmlElement private int trainingCount;
 
-    private Date trainingTime;
+	@XmlElement private Date trainingTime;
 
     public Integer getModelID() {
         return modelID;

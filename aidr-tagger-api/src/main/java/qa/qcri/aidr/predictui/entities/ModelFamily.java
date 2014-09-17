@@ -6,6 +6,7 @@ package qa.qcri.aidr.predictui.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,10 +21,14 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 //import org.codehaus.jackson.annotate.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
  *
@@ -43,21 +48,29 @@ public class ModelFamily implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "modelFamilyID")
-    private Integer modelFamilyID;
+    @XmlElement private Integer modelFamilyID;
+    
     @Basic(optional = false)
     @NotNull
     @Column(name = "isActive")
-    private boolean isActive;
+    @XmlElement private boolean isActive;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "modelFamily")
+    @JsonManagedReference
     private Collection<Model> modelCollection;
+    
     @JoinColumn(name = "nominalAttributeID", referencedColumnName = "nominalAttributeID")
     @ManyToOne(optional = false)
+    @JsonBackReference
     private NominalAttribute nominalAttribute;
-//    @JoinColumn(name = "currentModelID", referencedColumnName = "modelID")
-//    @ManyToOne
-//    private Model model;
+
+    //    @JoinColumn(name = "currentModelID", referencedColumnName = "modelID")
+    //    @ManyToOne
+    //    private Model model;
+    
     @JoinColumn(name = "crisisID", referencedColumnName = "crisisID")
     @ManyToOne(optional = false)
+    @JsonBackReference
     private Crisis crisis;
 
     public ModelFamily() {
@@ -97,7 +110,9 @@ public class ModelFamily implements Serializable {
     public void setModelCollection(Collection<Model> modelCollection) {
         this.modelCollection = modelCollection;
     }
-
+    
+    @XmlTransient
+    @JsonIgnore
     public NominalAttribute getNominalAttribute() {
         return nominalAttribute;
     }
@@ -115,6 +130,7 @@ public class ModelFamily implements Serializable {
 //    }
 
     @XmlTransient
+    @JsonIgnore    
     public Crisis getCrisis() {
         return crisis;
     }

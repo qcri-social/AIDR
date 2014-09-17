@@ -15,7 +15,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.codehaus.jackson.map.ObjectMapper;
+//import org.codehaus.jackson.map.ObjectMapper;
+
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;

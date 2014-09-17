@@ -6,6 +6,7 @@ package qa.qcri.aidr.predictui.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -22,10 +23,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 //import org.codehaus.jackson.annotate.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
  *
@@ -49,34 +54,37 @@ public class NominalLabel implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "nominalLabelID")
-    private Integer nominalLabelID;
+    @XmlElement private Integer nominalLabelID;
 
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "nominalLabelCode")
-    private String nominalLabelCode;
+    @XmlElement private String nominalLabelCode;
 
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 140)
     @Column(name = "name")
-    private String name;
+    @XmlElement private String name;
 
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 600)
     @Column(name = "description")
-    private String description;
+    @XmlElement private String description;
 
     @ManyToMany(mappedBy = "nominalLabelCollection")
+    @JsonManagedReference
     private Collection<Document> documentCollection;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "nominalLabel")
+    @JsonManagedReference
     private Collection<ModelNominalLabel> modelNominalLabelCollection;
     
     @JoinColumn(name = "nominalAttributeID", referencedColumnName = "nominalAttributeID")
     @ManyToOne(optional = false)
+    @JsonBackReference
     private NominalAttribute nominalAttribute;
 
     public NominalLabel() {

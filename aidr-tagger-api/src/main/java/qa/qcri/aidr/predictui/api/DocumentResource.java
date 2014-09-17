@@ -5,6 +5,7 @@ import java.util.List;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
+import qa.qcri.aidr.predictui.util.TaskManagerEntityMapper;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -15,10 +16,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
+//import org.codehaus.jackson.map.ObjectMapper;
+//import org.codehaus.jackson.type.TypeReference;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.facade.DocumentFacade;
@@ -55,15 +59,16 @@ public class DocumentResource {
 	public Response getAllDocuments() {
 		//List<Document> documentList = documentLocalEJB.getAllDocuments();
 		String jsonString = taskManager.getAllTasks();
-		ObjectMapper mapper = new ObjectMapper();
+		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
 		List<Document> docList = null;
 		if (jsonString != null) {
 			try {
-				docList = mapper.readValue(jsonString,  
-						new TypeReference<List<Document>>() {});
+				docList = mapper.transformDocumentList(mapper.deSerializeList(jsonString, new TypeReference<List<qa.qcri.aidr.task.entities.Document>>() {}));
 				logger.info("retrieved doc count = " + docList.size());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				System.out.println("retrieved doc count = " + docList.size());
+			} catch (Exception e) {
+				logger.error("Error in JSON deserialization to local List<Document> type");
+				logger.error(elog.toStringException(e));
 				e.printStackTrace();
 			}
 		}
@@ -81,19 +86,20 @@ public class DocumentResource {
 		logger.info("received request for : " + id);
 
 		String jsonString = taskManager.getTaskById(id);
-		ObjectMapper mapper = new ObjectMapper();
-
+		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
 		Document doc = null;
 		try {
 			if (jsonString != null) {
-				doc = mapper.readValue(jsonString, Document.class);
+				doc = mapper.transformDocument(mapper.deSerialize(jsonString, qa.qcri.aidr.task.entities.Document.class));
 				logger.info("Converted doc id: " + doc.getDocumentID());
+				System.out.println("Converted doc id: " + doc.getDocumentID());
 			} else {
 				logger.warn("doc id: null");
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			logger.error("JSON deserialization parse error!");
 			logger.error(elog.toStringException(e));
+			e.printStackTrace();
 		}
 		return Response.ok(doc).build();
 	}
@@ -107,15 +113,17 @@ public class DocumentResource {
 		
 		Criterion criterion = Restrictions.eq("hasHumanLabels", true);
 		String jsonString = taskManager.getTaskCollectionByCriterion(new Long(crisisID), null, criterion);
-		ObjectMapper mapper = new ObjectMapper();
+		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
 		List<Document> docList = null;
 		if (jsonString != null) {
 			try {
-				docList = mapper.readValue(jsonString, new TypeReference<List<Document>>() {});
+				docList = mapper.transformDocumentList(mapper.deSerializeList(jsonString, new TypeReference<List<qa.qcri.aidr.task.entities.Document>>() {}));
 				logger.info("retrieved doc count = " + docList.size());
-			} catch (IOException e) {
+				System.out.println("retrieved doc count = " + docList.size());
+			} catch (Exception e) {
 				logger.error("Error in JSON deserialization to local List<Document> type");
 				logger.error(elog.toStringException(e));
+				e.printStackTrace();
 			}
 		}
 		ResponseWrapper response = new ResponseWrapper(Config.STATUS_CODE_SUCCESS);
@@ -133,8 +141,7 @@ public class DocumentResource {
 			logger.info("deleted count = " + result);
 		} catch (RuntimeException e) {
 			return Response.ok(
-					new ResponseWrapper(Config.STATUS_CODE_FAILED,
-							"Error while deleting Document.")).build();
+					new ResponseWrapper(Config.STATUS_CODE_FAILED, "Error while deleting Document.")).build();
 		}
 		return Response.ok(new ResponseWrapper(Config.STATUS_CODE_SUCCESS)).build();
 	}
@@ -146,15 +153,13 @@ public class DocumentResource {
 		try {
 			//documentLocalEJB.removeTrainingExample(id);
 			String jsonString = taskManager.getTaskById(id);
-
-			ObjectMapper mapper = new ObjectMapper();
+			TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
 			qa.qcri.aidr.task.entities.Document document = null;
 			if (jsonString != null) {
 				try {
-
-					document = mapper.readValue(jsonString, qa.qcri.aidr.task.entities.Document.class);
+					document = mapper.deSerialize(jsonString, qa.qcri.aidr.task.entities.Document.class);
 					logger.info("Converted doc id: " + document.getDocumentID());
-				} catch (IOException e) {
+				} catch (Exception e) {
 					logger.error("JSON deserialization parse error!");
 					logger.error(elog.toStringException(e));
 				}
@@ -166,8 +171,7 @@ public class DocumentResource {
 			}
 		} catch (RuntimeException e) {
 			return Response.ok(
-					new ResponseWrapper(Config.STATUS_CODE_FAILED,
-							"Error while removing Training Example.")).build();
+					new ResponseWrapper(Config.STATUS_CODE_FAILED, "Error while removing Training Example.")).build();
 		}
 		return Response.ok(new ResponseWrapper(Config.STATUS_CODE_SUCCESS)).build();
 	}
