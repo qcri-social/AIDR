@@ -39,6 +39,11 @@
 					<configuration>
 						<source>1.7</source>
 						<target>1.7</target>
+
+						<excludes>
+							<exclude>**/log4j.properties</exclude>
+						</excludes>
+
 					</configuration>
 				</plugin>
 			</plugins>
