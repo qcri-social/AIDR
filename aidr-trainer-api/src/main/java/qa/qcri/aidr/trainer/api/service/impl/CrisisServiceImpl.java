@@ -48,7 +48,7 @@ public class CrisisServiceImpl implements CrisisService {
 
     @Override
     public CrisisJsonModel findByOptimizedCrisisID(Long id) {
-        Crisis crisis = crisisDao.findByCrisisID(id);
+    	Crisis crisis = crisisDao.findByCrisisID(id);
         CrisisJsonModel jsonOutput = new CrisisJsonOutput().crisisJsonModelGenerator(crisis);
         List<CustomUITemplate> uiTemps =  customUITemplateDao.getTemplateByCrisisWithType(id, CodeLookUp.CURATOR_NAME);
 

@@ -1,11 +1,14 @@
 package qa.qcri.aidr.trainer.api.service.impl;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 import qa.qcri.aidr.trainer.api.dao.CrisisDao;
 import qa.qcri.aidr.trainer.api.dao.DocumentDao;
 import qa.qcri.aidr.trainer.api.dao.TaskAssignmentDao;
@@ -22,9 +25,12 @@ import qa.qcri.aidr.trainer.api.template.CrisisJsonModel;
 import qa.qcri.aidr.trainer.api.template.CrisisJsonOutput;
 import qa.qcri.aidr.trainer.api.template.NominalAttributeJsonModel;
 import qa.qcri.aidr.trainer.api.template.TaskBufferJsonModel;
+import qa.qcri.aidr.trainer.api.util.TaskManagerEntityMapper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -38,127 +44,144 @@ import java.util.Set;
 @Transactional(readOnly = true)
 public class DocumentServiceImpl implements DocumentService {
 
-    protected static Logger logger = Logger.getLogger(DocumentServiceImpl.class);
+	protected static Logger logger = Logger.getLogger(DocumentServiceImpl.class);
 
-    @Autowired
-    private DocumentDao documentDao;
+	//@Autowired
+	//private DocumentDao documentDao;
 
-    @Autowired
-    private TaskAssignmentService taskAssignmentService;
+	@Autowired
+	private TaskAssignmentService taskAssignmentService;
 
-    @Autowired
-    private UsersService usersService;
+	@Autowired
+	private UsersService usersService;
 
-    @Autowired
-    private CrisisService crisisService;
+	@Autowired
+	private CrisisService crisisService;
 
-    @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public void updateHasHumanLabel(Long documentID, boolean value) {
-       // logger.debug("documentID : " + documentID) ;
+	@Autowired TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
 
-        Document document = new Document(documentID, true);
-       // logger.debug("document : " + document) ;
-        if(document != null ) {
-            documentDao.updateHasHumanLabel(document);
-        }
-    }
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	public void updateHasHumanLabel(Long documentID, boolean value) {
+		/*
+		logger.debug("documentID : " + documentID) ;
+		Document document = new Document(documentID, true);
+		logger.debug("document : " + document) ;
+		if(document != null ) {
+			documentDao.updateHasHumanLabel(document);
+		}
+		*/
+		Map<String, String> paramMap = new HashMap<String, String>();
+		paramMap.put("setHasHumanLabels", new Boolean(value).toString());
+		taskManager.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, documentID, paramMap);
+	}
 
-    @Override
-    public Document findDocument(Long documentID) {
-        return documentDao.findDocument(documentID);  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	@Override
+	public Document findDocument(Long documentID) {
+		//return documentDao.findDocument(documentID);  //To change body of implemented methods use File | Settings | File Templates.
+		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
+		String jsonString = taskManager.getTaskById(documentID);
+		Document doc = mapper.deSerialize(jsonString, Document.class);
+		return (doc != null) ? doc : null;
+	}
 
-    @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
-    public List<Document> getDocumentForTask(Long crisisID, int count, String userName) {
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
+	public List<Document> getDocumentForTask(Long crisisID, int count, String userName) {
 
-        List<Document> documents = null;
-        Users users = usersService.findUserByName(userName);
+		List<Document> documents = null;
+		Users users = usersService.findUserByName(userName);
 
-        if(users != null){
-            int availableRequestSize = this.getAvailableDocumentCount(crisisID) - CodeLookUp.DOCUMENT_REMAINING_COUNT;
+		if(users != null){
+			int availableRequestSize = this.getAvailableDocumentCount(crisisID) - CodeLookUp.DOCUMENT_REMAINING_COUNT;
 
-            if(availableRequestSize > 0){
-                if(availableRequestSize < count){
-                    count = availableRequestSize;
-                }
-                documents =  this.getAvailableDocument(crisisID, count) ;
-                if(documents != null && documents.size() > 0){
-                    taskAssignmentService.addToTaskAssignment(documents, users.getUserID());
-                }
-            }
-        }
+			if(availableRequestSize > 0){
+				if(availableRequestSize < count){
+					count = availableRequestSize;
+				}
+				documents =  this.getAvailableDocument(crisisID, count) ;
+				if(documents != null && documents.size() > 0){
+					taskAssignmentService.addToTaskAssignment(documents, users.getUserID());
+				}
+			}
+		}
 
-        return documents;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+		return documents;  //To change body of implemented methods use File | Settings | File Templates.
+	}
 
-    @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
-    public List<Document> getDocumentForOneTask(Long crisisID, int count, String userName) {
-        //logger.info("getDocumentForOneTask is called");
-        List<Document> documents = null;
-        Users users = usersService.findUserByName(userName);
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
+	public List<Document> getDocumentForOneTask(Long crisisID, int count, String userName) {
+		//logger.info("getDocumentForOneTask is called");
+		List<Document> documents = null;
+		Users users = usersService.findUserByName(userName);
 
-        if(users != null){
-            documents =  this.getAvailableDocument(crisisID, count) ;
-            //logger.info("documents : " + documents.size());
-            if(documents != null && documents.size() > 0){
-                taskAssignmentService.addToTaskAssignment(documents, users.getUserID());
-            }
+		if(users != null){
+			documents =  this.getAvailableDocument(crisisID, count) ;
+			//logger.info("documents : " + documents.size());
+			if(documents != null && documents.size() > 0){
+				taskAssignmentService.addToTaskAssignment(documents, users.getUserID());
+			}
 
-        }
+		}
 
-        return documents;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-
-    @Override
-    public List<TaskBufferJsonModel> findOneDocumentForTaskByCririsID(Document document, Long crisisID) {
-        List<TaskBufferJsonModel> jsonModelList = new ArrayList<TaskBufferJsonModel>();
-        if(document != null){
-            jsonModelList = getJsonModeForTask(crisisID, document);
-        }
-        return  jsonModelList;
-    }
-
-
-    @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
-    public void addToOneTaskAssignment(long documentID, long userID){
-       // addToOneTaskAssignment(documentID, userID);
-        taskAssignmentService.addToOneTaskAssignment(documentID, userID);
-    }
-
-    @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
-    public void addToOneTaskAssignmentWithUserName(long documentID, String userName){
-        Users users = usersService.findUserByName(userName);
-        taskAssignmentService.addToOneTaskAssignment(documentID, users.getUserID());
-    }
+		return documents;  //To change body of implemented methods use File | Settings | File Templates.
+	}
 
 
-    private List<TaskBufferJsonModel> getJsonModeForTask(long crisisID, Document document){
-        List<TaskBufferJsonModel> jsonModelList = new ArrayList<TaskBufferJsonModel>();
-        Crisis crisis =  crisisService.findByCrisisID(crisisID) ;
-        CrisisJsonModel jsonOutput = new CrisisJsonOutput().crisisJsonModelGenerator(crisis);
-        Set<NominalAttributeJsonModel> attributeJsonModelSet = jsonOutput.getNominalAttributeJsonModelSet() ;
+	@Override
+	public List<TaskBufferJsonModel> findOneDocumentForTaskByCririsID(Document document, Long crisisID) {
+		List<TaskBufferJsonModel> jsonModelList = new ArrayList<TaskBufferJsonModel>();
+		if(document != null){
+			jsonModelList = getJsonModeForTask(crisisID, document);
+		}
+		return  jsonModelList;
+	}
 
-        TaskBufferJsonModel jsonModel = new TaskBufferJsonModel(document.getDocumentID(),document.getCrisisID(),attributeJsonModelSet,document.getLanguage(), document.getDoctype(), document.getData(), document.getValueAsTrainingSample(),0);
-        jsonModelList.add(jsonModel);
 
-        return jsonModelList;
-    }
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
+	public void addToOneTaskAssignment(long documentID, long userID){
+		// addToOneTaskAssignment(documentID, userID);
+		taskAssignmentService.addToOneTaskAssignment(documentID, userID);
+	}
 
-    @Override
-    @Transactional(readOnly = true)
-    public  List<Document> getAvailableDocument(long crisisID, int maxresult){
-        return documentDao.findDocumentForTask(crisisID, maxresult)  ;
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
+	public void addToOneTaskAssignmentWithUserName(long documentID, String userName){
+		Users users = usersService.findUserByName(userName);
+		taskAssignmentService.addToOneTaskAssignment(documentID, users.getUserID());
+	}
 
-    }
 
-    private int getAvailableDocumentCount(long crisisID){
-       return documentDao.getAvailableTaskDocumentCount(crisisID);
-    }
+	private List<TaskBufferJsonModel> getJsonModeForTask(long crisisID, Document document){
+		List<TaskBufferJsonModel> jsonModelList = new ArrayList<TaskBufferJsonModel>();
+		Crisis crisis =  crisisService.findByCrisisID(crisisID) ;
+		CrisisJsonModel jsonOutput = new CrisisJsonOutput().crisisJsonModelGenerator(crisis);
+		Set<NominalAttributeJsonModel> attributeJsonModelSet = jsonOutput.getNominalAttributeJsonModelSet() ;
+
+		TaskBufferJsonModel jsonModel = new TaskBufferJsonModel(document.getDocumentID(),document.getCrisisID(),attributeJsonModelSet,document.getLanguage(), document.getDoctype(), document.getData(), document.getValueAsTrainingSample(),0);
+		jsonModelList.add(jsonModel);
+
+		return jsonModelList;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	//public  List<Document> getAvailableDocument(long crisisID, int maxresult){
+	public  List<Document> getAvailableDocument(long crisisID, Integer maxresult){
+		//return documentDao.findDocumentForTask(crisisID, maxresult)  ;
+		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
+        String jsonString = taskManager.getNewTaskCollection(crisisID, maxresult, "DESC", null);
+        List<Document> docList = mapper.deSerializeList(jsonString, new TypeReference<List<Document>>() {});
+        return docList;
+	}
+
+	private int getAvailableDocumentCount(long crisisID){
+		//return documentDao.getAvailableTaskDocumentCount(crisisID);
+		List<Document> docList = getAvailableDocument(crisisID, null);
+		return (docList != null) ? docList.size() : 0;
+
+	}
 
 }

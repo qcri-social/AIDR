@@ -25,55 +25,61 @@ import java.util.Set;
 @Path("/crisis")
 @Component
 public class CrisisController {
-    @Autowired
-    private CrisisService crisisService;
+	@Autowired
+	private CrisisService crisisService;
 
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/id/{crisisid}")
-    public CrisisJsonModel getCrisisByID(@PathParam("crisisid") String crisisid){
-        return  crisisService.findByOptimizedCrisisID(new Long(crisisid));
-    }
+	@GET
+	@Produces( MediaType.APPLICATION_JSON )
+	@Path("/id/{crisisid}")
+	public CrisisJsonModel getCrisisByID(@PathParam("crisisid") String crisisid){
+		try {
+			return  crisisService.findByOptimizedCrisisID(Long.parseLong(crisisid));
+		} catch (Exception e) {
+			System.out.println("Error in getting crisisID for crisis ID = " + crisisid);
+			e.printStackTrace();
+		}
+		return null;
+	}
 
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/getallactive")
-    public List<Crisis> getAllActiveCrisis(){
-        return  crisisService.findAllActiveCrisis();
-    }
+	@GET
+	@Produces( MediaType.APPLICATION_JSON )
+	@Path("/getallactive")
+	public List<Crisis> getAllActiveCrisis(){
+		return  crisisService.findAllActiveCrisis();
+	}
 
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/get/active")
-    public List<Crisis> getActiveCrisis(){
-        return  crisisService.findActiveCrisisInfo();
-    }
+	@GET
+	@Produces( MediaType.APPLICATION_JSON )
+	@Path("/get/active")
+	public List<Crisis> getActiveCrisis(){
+		return  crisisService.findActiveCrisisInfo();
+	}
 
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/getnominalAttribute")
-    public List<CrisisNominalAttributeModel> getAllActiveCrisisNominalAttribute(){
-        return  crisisService.getAllActiveCrisisNominalAttribute();
-    }
+	@GET
+	@Produces( MediaType.APPLICATION_JSON )
+	@Path("/getnominalAttribute")
+	public List<CrisisNominalAttributeModel> getAllActiveCrisisNominalAttribute(){
+		return  crisisService.getAllActiveCrisisNominalAttribute();
+	}
 
-    @GET
-    @Produces( MediaType.APPLICATION_JSON )
-    @Path("/getnominalLabels/{crisisid}/{nominalAttributeID}")
-    public String getAllActiveCrisisNominalAttribute(@PathParam("crisisid") Long crisisID, @PathParam("nominalAttributeID") Long nominalAttributeID){
-        JSONArray labelJsonArrary = new JSONArray();
+	@GET
+	@Produces( MediaType.APPLICATION_JSON )
+	@Path("/getnominalLabels/{crisisid}/{nominalAttributeID}")
+	public String getAllActiveCrisisNominalAttribute(@PathParam("crisisid") Long crisisID, @PathParam("nominalAttributeID") Long nominalAttributeID){
+		JSONArray labelJsonArrary = new JSONArray();
 
-        Set<NominalLabel> nominalLabels =  crisisService.getNominalLabelByCrisisID(crisisID, nominalAttributeID) ;
-        if(nominalLabels != null){
-            for (NominalLabel o : nominalLabels) {
-                JSONObject qa = new JSONObject();
-                qa.put("qa", o.getNorminalLabelCode());
+		Set<NominalLabel> nominalLabels =  crisisService.getNominalLabelByCrisisID(crisisID, nominalAttributeID) ;
+		if(nominalLabels != null){
+			for (NominalLabel o : nominalLabels) {
+				JSONObject qa = new JSONObject();
+				qa.put("qa", o.getNominalLabelCode());
 
-                labelJsonArrary.add(qa);
-            }
-        }
+				labelJsonArrary.add(qa);
+			}
+		}
 
 
-        return labelJsonArrary.toJSONString();
-    }
+		return labelJsonArrary.toJSONString();
+	}
 
 }

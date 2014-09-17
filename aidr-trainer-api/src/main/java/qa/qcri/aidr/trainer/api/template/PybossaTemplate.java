@@ -60,8 +60,8 @@ public class PybossaTemplate {
                         for (NominalLabel nominalLabel : nominalLabelSet){
                             JSONObject taskAnswerElement = new JSONObject();
                             if(nominalLabel.getNominalAttributeID().equals(attributeID)) {
-                                if(findMatchingLabel(categorySet, nominalLabel.getNorminalLabelCode())) {
-                                    Long labelID = nominalLabel.getNorminalLabelID();
+                                if(findMatchingLabel(categorySet, nominalLabel.getNominalLabelCode())) {
+                                    Long labelID = nominalLabel.getNominalLabelID().longValue();
                                     if(!attributeIDJson.contains(attributeID) ){
                                         attributeIDJson.add(attributeID ) ;
                                     }

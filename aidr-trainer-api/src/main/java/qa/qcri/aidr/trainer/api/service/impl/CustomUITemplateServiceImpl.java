@@ -300,9 +300,9 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
             NominalLabel featureJsonObj =(NominalLabel) mapData.get(number);
 
             String labelName = featureJsonObj.getName()  ;
-            String lableCode = featureJsonObj.getNorminalLabelCode() ;
+            String lableCode = featureJsonObj.getNominalLabelCode() ;
             String description = featureJsonObj.getDescription();
-            Long norminalLabelID = featureJsonObj.getNorminalLabelID();
+            Long norminalLabelID = featureJsonObj.getNominalLabelID().longValue();
 
             if(skinType == CodeLookUp.IPHONE_SKIN) {
                     displayLabel.append("<li id='")  ;

@@ -2,6 +2,7 @@ package qa.qcri.aidr.trainer.api.entity;
 
 import java.io.Serializable;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,9 +11,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
 @Table(catalog = "aidr_predict", name = "crisis")
+@XmlRootElement
 public class Crisis implements Serializable {
 
     private static final long serialVersionUID = -5527566248002296042L;
@@ -81,27 +85,33 @@ public class Crisis implements Serializable {
     public void setModelFamilySet(Set<ModelFamily> modelFamilySet) {
         this.modelFamilySet = modelFamilySet;
     }
-
+    
+    @XmlElement
     @Id
     @Column(name = "crisisID")
     private Long crisisID;
-
+    
+    @XmlElement
     @Column (name = "name", nullable = false)
     private String name;
-
+    
+    @XmlElement
     @Column (name = "crisisTypeID", nullable = false)
     private Long crisisTypeID;
-
+    
+    @XmlElement
     @Column (name = "code", nullable = false)
     private String code;
-
+    
+    @XmlElement
     @Column (name = "userID", nullable = false)
     private Long userID;
-
+    
+    @XmlElement
     @Column (name = "isTrashed", nullable = false)
     private Boolean isTrashed;
     //isTrashed
-
+    
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinColumn(name="crisisID")
     private Set<ModelFamily> modelFamilySet;

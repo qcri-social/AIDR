@@ -19,6 +19,11 @@ public class CrisisJsonOutput {
 
     public CrisisJsonModel crisisJsonModelGenerator(Crisis crisis){
         CrisisJsonModel crisisJsonModel = new CrisisJsonModel();
+        if (crisis != null) { 
+        	System.out.println("received crisis = " + crisis.getCode() + ", id = " + crisis.getCrisisID());
+        } else {
+        	System.out.println("received crisis = " + crisis);
+        }
         crisisJsonModel.setCrisisID(crisis.getCrisisID());
         crisisJsonModel.setCode(crisis.getCode());
         crisisJsonModel.setName(crisis.getName());
@@ -42,8 +47,8 @@ public class CrisisJsonOutput {
 
                     NominalLabelJsonModel nominalLabelJsonModel = new NominalLabelJsonModel();
                     nominalLabelJsonModel.setName(nominalLabel.getName());
-                    nominalLabelJsonModel.setNorminalLabelCode(nominalLabel.getNorminalLabelCode());
-                    nominalLabelJsonModel.setNorminalLabelID(nominalLabel.getNorminalLabelID());
+                    nominalLabelJsonModel.setNorminalLabelCode(nominalLabel.getNominalLabelCode());
+                    nominalLabelJsonModel.setNorminalLabelID(nominalLabel.getNominalLabelID().longValue());
                     nominalLabelJsonModel.setDescription(nominalLabel.getDescription());
                     nominalLabelJsonModelSetTemp.add(nominalLabelJsonModel) ;
 

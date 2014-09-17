@@ -1,6 +1,9 @@
 package qa.qcri.aidr.trainer.api.entity;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -13,6 +16,7 @@ import java.util.Date;
  */
 @Entity
 @Table(catalog = "aidr_predict",name = "task_answer")
+@XmlRootElement
 public class TaskAnswer implements Serializable {
 
     private static final long serialVersionUID = -5527566248002296042L;
@@ -77,24 +81,29 @@ public class TaskAnswer implements Serializable {
         this.taskID = taskID;
     }
 
-
+    @XmlElement
     @Id
     @GeneratedValue
     @Column (name = "taskID")
     private Long taskID;
 
+    @XmlElement
     @Column(name = "documentID", nullable = false)
     private Long documentID;
-
+    
+    @XmlElement
     @Column (name = "userID", nullable = false)
     private Long userID;
-
+    
+    @XmlElement
     @Column (name = "answer", nullable = true)
     private String answer;
 
+    @XmlElement
     @Column (name = "timestamp", nullable = false)
     private Date timestamp;
 
+    @XmlElement
     @Column (name = "fromTrustedUser", nullable = false)
     private boolean fromTrustedUser;
 

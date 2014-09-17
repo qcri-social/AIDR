@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 import qa.qcri.aidr.trainer.api.Jedis.JedisNotifier;
 import qa.qcri.aidr.trainer.api.dao.TaskAnswerDao;
 import qa.qcri.aidr.trainer.api.entity.*;
@@ -17,6 +18,7 @@ import java.util.List;
 
 import qa.qcri.aidr.trainer.api.template.PybossaTemplate;
 import qa.qcri.aidr.trainer.api.template.TaskAnswerResponse;
+import qa.qcri.aidr.trainer.api.util.TaskManagerEntityMapper;
 
 
 /**
@@ -30,153 +32,174 @@ import qa.qcri.aidr.trainer.api.template.TaskAnswerResponse;
 @Transactional(readOnly = true)
 public class TaskAnswerServiceImpl implements TaskAnswerService{
 
-    protected static Logger logger = Logger.getLogger(TaskAnswerServiceImpl.class);
-    private static ErrorLog elog = new ErrorLog();
-    
-    private JedisNotifier jedisNotifier ;
+	protected static Logger logger = Logger.getLogger(TaskAnswerServiceImpl.class);
+	private static ErrorLog elog = new ErrorLog();
 
-    @Autowired
-    private CrisisService crisisService;
+	private JedisNotifier jedisNotifier ;
 
-    @Autowired
-    private TaskAnswerDao taskAnswerDao;
+	@Autowired
+	private CrisisService crisisService;
 
-    @Autowired
-    private TaskAssignmentService taskAssignmentService;
+	//@Autowired
+	//private TaskAnswerDao taskAnswerDao;
 
-    @Autowired
-    private DocumentNominalLabelService documentNominalLabelService;
+	@Autowired
+	private TaskAssignmentService taskAssignmentService;
 
-    @Autowired
-    private DocumentService documentService;
+	@Autowired
+	private DocumentNominalLabelService documentNominalLabelService;
 
-    @Override
-    public TaskAnswerResponse getTaskAnswerResponseData(String data){
-        //System.out.print("getTaskAnswerResponseData: " + data);
-        PybossaTemplate pybossaTemplate = new PybossaTemplate();
-        TaskAnswerResponse taskAnswerResponse = pybossaTemplate.getPybossaTaskAnswer(data, crisisService);
+	@Autowired
+	private DocumentService documentService;
 
-        return taskAnswerResponse;
-    }
+	@Autowired TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
 
-    @Override
-    public void pushTaskAnswerToJedis(TaskAnswerResponse taskAnswerResponse) {
+	@Override
+	public TaskAnswerResponse getTaskAnswerResponseData(String data){
+		//System.out.print("getTaskAnswerResponseData: " + data);
+		PybossaTemplate pybossaTemplate = new PybossaTemplate();
+		TaskAnswerResponse taskAnswerResponse = pybossaTemplate.getPybossaTaskAnswer(data, crisisService);
 
+		return taskAnswerResponse;
+	}
 
-        if(documentService.findDocument(taskAnswerResponse.getDocumentID()) != null){
-
-            if(jedisNotifier == null) {
-                try {
-                    jedisNotifier= new JedisNotifier();
-                    // logger.debug("jedisNotifier created : " + jedisNotifier);
-                }
-                catch (Exception e){
-                    logger.error("jedisNotifier creation error for :" + taskAnswerResponse.getDocumentID());
-                    logger.error(elog.toStringException(e));
-                }
-            }
-
-            jedisNotifier.notifyToJedis(taskAnswerResponse.getJedisJson());
+	@Override
+	public void pushTaskAnswerToJedis(TaskAnswerResponse taskAnswerResponse) {
 
 
-        }
-        else{
-            logger.debug("************************** Document doesn't exist ************************** ****************************************************");
-        }
-    }
+		if(documentService.findDocument(taskAnswerResponse.getDocumentID()) != null){
 
-    @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
-    public void markOnHasHumanTag(long documentID){
-        documentService.updateHasHumanLabel(documentID, true);
-    }
+			if(jedisNotifier == null) {
+				try {
+					jedisNotifier= new JedisNotifier();
+					// logger.debug("jedisNotifier created : " + jedisNotifier);
+				}
+				catch (Exception e){
+					logger.error("jedisNotifier creation error for :" + taskAnswerResponse.getDocumentID());
+					logger.error(elog.toStringException(e));
+				}
+			}
 
-    @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
-    public void addToTaskAnswer(TaskAnswerResponse taskAnswerResponse){
-        List<TaskAnswer> taskAnswerList = taskAnswerResponse.getTaskAnswerList();
+			jedisNotifier.notifyToJedis(taskAnswerResponse.getJedisJson());
 
+
+		}
+		else{
+			logger.debug("************************** Document doesn't exist ************************** ****************************************************");
+		}
+	}
+
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
+	public void markOnHasHumanTag(long documentID){
+		documentService.updateHasHumanLabel(documentID, true);
+	}
+
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
+	public void addToTaskAnswer(TaskAnswerResponse taskAnswerResponse){
+		List<TaskAnswer> taskAnswerList = taskAnswerResponse.getTaskAnswerList();
+		/*
         if(taskAnswerList.size() > 0){
             TaskAnswer taskAnswer = taskAnswerList.get(0);
             taskAnswerDao.insertTaskAnswer(taskAnswer);
         }
+		*/
+		if(taskAnswerList.size() > 0){
+			TaskAnswer taskAnswer = taskAnswerList.get(0);
+			TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
+			qa.qcri.aidr.task.entities.TaskAnswer t = mapper.reverseTransformTaskAnswer(taskAnswer);
+			try {
+				taskManager.insertTaskAnswer(t);
+			} catch (Exception e) {
+				System.err.println("[addToTaskAnswer] Error in saving task answer : " + taskAnswer);
+				e.printStackTrace();
+			}
+		}
 
-    }
+	}
 
-    @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
-    public void addToDocumentNominalLabel(TaskAnswerResponse taskAnswerResponse){
-        List<DocumentNominalLabel> documentNominalLabelSet =   taskAnswerResponse.getDocumentNominalLabelList();
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
+	public void addToDocumentNominalLabel(TaskAnswerResponse taskAnswerResponse){
+		List<DocumentNominalLabel> documentNominalLabelSet =   taskAnswerResponse.getDocumentNominalLabelList();
 
-        //for(int i = 0; i < documentNominalLabelSet.size(); i++){
-        if(documentNominalLabelSet.size() > 0){
-            DocumentNominalLabel documentNominalLabel = documentNominalLabelSet.get(0);
-            if(!documentNominalLabelService.foundDuplicateEntry(documentNominalLabel)){
-                documentNominalLabelService.saveDocumentNominalLabel(documentNominalLabel);
-            }
-        }
+		//for(int i = 0; i < documentNominalLabelSet.size(); i++){
+		if(documentNominalLabelSet.size() > 0){
+			DocumentNominalLabel documentNominalLabel = documentNominalLabelSet.get(0);
+			if(!documentNominalLabelService.foundDuplicateEntry(documentNominalLabel)){
+				documentNominalLabelService.saveDocumentNominalLabel(documentNominalLabel);
+			}
+		}
 
-       // }
-    }
+		// }
+	}
 
-    @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
-    public void removeTaskAssignment(TaskAnswerResponse taskAnswerResponse){
-        taskAssignmentService.revertTaskAssignment(taskAnswerResponse.getDocumentID(), taskAnswerResponse.getUserID());
-    }
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
+	public void removeTaskAssignment(TaskAnswerResponse taskAnswerResponse){
+		taskAssignmentService.revertTaskAssignment(taskAnswerResponse.getDocumentID(), taskAnswerResponse.getUserID());
+	}
 
-    @Override
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
-    public void processTaskAnswer(String data) {
-       // logger.debug("processTaskAnswer..: " + data);
-        try{
-            PybossaTemplate pybossaTemplate = new PybossaTemplate();
-            TaskAnswerResponse taskAnswerResponse = pybossaTemplate.getPybossaTaskAnswer(data, crisisService);
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
+	public void processTaskAnswer(String data) {
+		// logger.debug("processTaskAnswer..: " + data);
+		try{
+			PybossaTemplate pybossaTemplate = new PybossaTemplate();
+			TaskAnswerResponse taskAnswerResponse = pybossaTemplate.getPybossaTaskAnswer(data, crisisService);
 
-            List<TaskAnswer> taskAnswerList = taskAnswerResponse.getTaskAnswerList();
+			List<TaskAnswer> taskAnswerList = taskAnswerResponse.getTaskAnswerList();
 
-            if(documentService.findDocument(taskAnswerResponse.getDocumentID()) != null){
-                documentService.updateHasHumanLabel(taskAnswerResponse.getDocumentID(), true);
-
-                for(int i = 0; i < taskAnswerList.size(); i++){
-                    TaskAnswer taskAnswer = taskAnswerList.get(i);
-                    taskAnswerDao.insertTaskAnswer(taskAnswer);
-                }
-
-
-                List<DocumentNominalLabel> documentNominalLabelSet =   taskAnswerResponse.getDocumentNominalLabelList();
-
-                for(int i = 0; i < documentNominalLabelSet.size(); i++){
-                    DocumentNominalLabel documentNominalLabel = documentNominalLabelSet.get(i);
-                    if(!documentNominalLabelService.foundDuplicateEntry(documentNominalLabel)){
-                        documentNominalLabelService.saveDocumentNominalLabel(documentNominalLabel);}
-                }
-
-                if(jedisNotifier == null) {
+			if(documentService.findDocument(taskAnswerResponse.getDocumentID()) != null){
+				documentService.updateHasHumanLabel(taskAnswerResponse.getDocumentID(), true);
+				TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
+				for(int i = 0; i < taskAnswerList.size(); i++){
+					TaskAnswer taskAnswer = taskAnswerList.get(i);
+					//taskAnswerDao.insertTaskAnswer(taskAnswer);
+					qa.qcri.aidr.task.entities.TaskAnswer t = mapper.reverseTransformTaskAnswer(taskAnswer);
                     try {
-                        jedisNotifier= new JedisNotifier();
-                        // logger.debug("jedisNotifier created : " + jedisNotifier);
+                    	taskManager.insertTaskAnswer(t);
+                    } catch (Exception e) {
+                    	System.err.println("[processTaskAnswer] Error in saving task answer : " + taskAnswer);
+            			e.printStackTrace();
                     }
-                    catch (Exception e){
-                        logger.error("jedisNotifier creation error for: " + data);
-                        logger.error(elog.toStringException(e));
-                    }
-                }
+				}
 
-                jedisNotifier.notifyToJedis(taskAnswerResponse.getJedisJson());
 
-                taskAssignmentService.revertTaskAssignment(taskAnswerResponse.getDocumentID(), taskAnswerResponse.getUserID());
+				List<DocumentNominalLabel> documentNominalLabelSet =   taskAnswerResponse.getDocumentNominalLabelList();
 
-            }
-            else{
-              //  logger.debug("************************** Document doesn't exist ************************** ****************************************************");
-            }
+				for(int i = 0; i < documentNominalLabelSet.size(); i++){
+					DocumentNominalLabel documentNominalLabel = documentNominalLabelSet.get(i);
+					if(!documentNominalLabelService.foundDuplicateEntry(documentNominalLabel)){
+						documentNominalLabelService.saveDocumentNominalLabel(documentNominalLabel);}
+				}
 
-        }
-        catch(Exception e){
-            logger.error("Exception for data : " + data);
-            logger.error(elog.toStringException(e));
-        }
+				if(jedisNotifier == null) {
+					try {
+						jedisNotifier= new JedisNotifier();
+						// logger.debug("jedisNotifier created : " + jedisNotifier);
+					}
+					catch (Exception e){
+						logger.error("jedisNotifier creation error for: " + data);
+						logger.error(elog.toStringException(e));
+					}
+				}
 
-    }
+				jedisNotifier.notifyToJedis(taskAnswerResponse.getJedisJson());
+
+				taskAssignmentService.revertTaskAssignment(taskAnswerResponse.getDocumentID(), taskAnswerResponse.getUserID());
+
+			}
+			else{
+				//  logger.debug("************************** Document doesn't exist ************************** ****************************************************");
+			}
+
+		}
+		catch(Exception e){
+			logger.error("Exception for data : " + data);
+			logger.error(elog.toStringException(e));
+		}
+
+	}
 }
