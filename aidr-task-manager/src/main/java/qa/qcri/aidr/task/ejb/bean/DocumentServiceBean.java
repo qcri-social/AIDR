@@ -24,8 +24,8 @@ import qa.qcri.aidr.task.entities.Document;
 @Stateless(name="DocumentServiceBean")
 public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document, Long> implements DocumentService {
 	
-	private static Logger logger = Logger.getLogger(DocumentServiceBean.class);
-	private static ErrorLog elog = new ErrorLog();
+	private Logger logger = Logger.getLogger(DocumentServiceBean.class);
+	private ErrorLog elog = new ErrorLog();
 	
 	public DocumentServiceBean() {
 		super(Document.class);

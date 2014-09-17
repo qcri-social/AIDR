@@ -20,15 +20,17 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
 				<executions>
 					<execution>
-						<phase>generate-resources</phase>
 						<goals>
 							<goal>run</goal>
 						</goals>
 						<configuration>
 							<tasks>
+							    <echo>***********************************************************************************************</echo>
 								<echo>NOTE: If you redeploy the task manager, you must redeploy all modules that are dependent on it!</echo>
+								<echo>***********************************************************************************************</echo>
 							</tasks>
 						</configuration>
 					</execution>

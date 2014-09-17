@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
   <persistence-unit name="qa.qcri.aidr.taskmanager-EJBS" transaction-type="JTA">
-    <provider>org.hibernate.ejb.HibernatePersistence</provider>
+    <!-- provider>org.hibernate.ejb.HibernatePersistence</provider -->
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <jta-data-source>JNDI/aidr_task_manager</jta-data-source>
     <class>qa.qcri.aidr.task.entities.Document</class>
     <class>qa.qcri.aidr.task.entities.Crisis</class>
@@ -17,7 +18,8 @@
     </properties>
   </persistence-unit>
   <persistence-unit name="qa.qcri.aidr.TaskManager-PU" transaction-type="JTA">
-    <provider>org.hibernate.ejb.HibernatePersistence</provider>
+    <!-- provider>org.hibernate.ejb.HibernatePersistence</provider -->
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <jta-data-source>JNDI/aidr_predict</jta-data-source>
     <properties>
       <property name="hibernate.show_sql" value="false"/>
@@ -26,7 +28,8 @@
     </properties>
   </persistence-unit>
   <persistence-unit name="ProjectTest-ejbPU" transaction-type="RESOURCE_LOCAL">
-    <provider>org.hibernate.ejb.HibernatePersistence</provider>
+    <!-- provider>org.hibernate.ejb.HibernatePersistence</provider -->
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <class>qa.qcri.aidr.task.entities.Document</class>
     <class>qa.qcri.aidr.task.entities.Crisis</class>
     <class>qa.qcri.aidr.task.entities.DocumentNominalLabel</class>

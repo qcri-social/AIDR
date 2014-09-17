@@ -4,13 +4,12 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.EJB;
 import javax.ejb.Remote;
 
-import org.codehaus.jackson.type.TypeReference;
 import org.hibernate.criterion.Criterion;
 
-import qa.qcri.aidr.task.entities.Document;
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import qa.qcri.aidr.task.entities.DocumentNominalLabel;
 import qa.qcri.aidr.task.entities.TaskAnswer;
 
@@ -88,4 +87,6 @@ public interface TaskManagerRemote<T, Serializable> {
 	// for testing purpose
 	public String pingRemoteEJB();
 	public String getNewDefaultTask();
+
+	
 }

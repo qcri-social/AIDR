@@ -16,6 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import javax.persistence.Query;
+import javax.persistence.criteria.JoinType;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -32,8 +33,8 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 	//@PersistenceContext(unitName = "qa.qcri.aidr.taskmanager-EJBS") org.hibernate.Session session;
 
 	//@PersistenceContext(unitName = "qa.qcri.aidr.taskmanager-EJBS") SessionFactory sessionFactory;
-	private static Logger logger = Logger.getLogger(AbstractTaskManagerServiceBean.class);
-	private static ErrorLog elog = new ErrorLog();
+	private Logger logger = Logger.getLogger(AbstractTaskManagerServiceBean.class);
+	private ErrorLog elog = new ErrorLog();
 
 	private Class<E> entityClass;
 	private SessionFactory sessionFactory;
@@ -202,8 +203,8 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		Session session = getCurrentSession();
 		logger.info("Entity: " + entityClass + ", current Session = " + session);
 		Criteria criteria = session.createCriteria(entityClass);
-		criteria.add(criterion);
-		criteria.createAlias(aliasTable, aliasTable, CriteriaSpecification.LEFT_JOIN).add(aliasCriterion);
+		criteria.add(criterion); 
+		criteria.createAlias(aliasTable, aliasTable, org.hibernate.sql.JoinType.LEFT_OUTER_JOIN).add(aliasCriterion);
 		if (orderBy != null) {
 			for(int i = 0; i< orderBy.length; i++){
 				if (order.equals("desc")) {

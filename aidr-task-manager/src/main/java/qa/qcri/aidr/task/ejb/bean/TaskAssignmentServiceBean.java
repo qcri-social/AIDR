@@ -28,8 +28,8 @@ import qa.qcri.aidr.task.entities.TaskAssignment;
 @Stateless(name="TaskAssignmentServiceBean")
 public class TaskAssignmentServiceBean extends AbstractTaskManagerServiceBean<TaskAssignment, Long> implements TaskAssignmentService {
 
-	private static Logger logger = Logger.getLogger(TaskAssignmentServiceBean.class);
-	private static ErrorLog elog = new ErrorLog();
+	private Logger logger = Logger.getLogger(TaskAssignmentServiceBean.class);
+	private ErrorLog elog = new ErrorLog();
 	
 	public TaskAssignmentServiceBean() {
 		super(TaskAssignment.class);

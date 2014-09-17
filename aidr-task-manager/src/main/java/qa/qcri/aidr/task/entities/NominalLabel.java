@@ -24,8 +24,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 
+
 //import org.codehaus.jackson.annotate.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
  *
@@ -67,6 +69,7 @@ public class NominalLabel implements Serializable {
     private String description;
 
     @ManyToMany(mappedBy = "nominalLabelCollection")
+    @JsonManagedReference
     @JsonIgnore
     private transient Collection<Document> documentCollection;
     
@@ -180,7 +183,7 @@ public class NominalLabel implements Serializable {
         return "qa.qcri.aidr.predictui.entities.NominalLabel[ nominalLabelID=" + nominalLabelID + " ]";
     }
     
-    
+    /*
     @XmlElement
     @Column (name = "nominalAttributeID", nullable = false)
     private Long nominalAttributeID;
@@ -191,6 +194,6 @@ public class NominalLabel implements Serializable {
 
     public void setNominalAttributeID(Long nominalAttributeID) {
         this.nominalAttributeID = nominalAttributeID;
-    }
+    }*/
     
 }

@@ -14,10 +14,13 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
+//import org.codehaus.jackson.map.ObjectMapper;
+//import org.codehaus.jackson.type.TypeReference;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.task.ejb.CrisisService;
@@ -64,8 +67,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 	private Class<T> entityType;
 
-	private static Logger logger = Logger.getLogger(TaskManagerBean.class);
-	private static ErrorLog elog = new ErrorLog();
+	private Logger logger = Logger.getLogger(TaskManagerBean.class);
+	private ErrorLog elog = new ErrorLog();
 
 	public TaskManagerBean()  {
 		this.entityType = getClassType();

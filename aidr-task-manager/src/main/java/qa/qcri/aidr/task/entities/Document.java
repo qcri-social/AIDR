@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import qa.qcri.aidr.task.entities.NominalLabel;
@@ -106,11 +107,12 @@ public class Document implements Serializable {
     @Column (name = "geoFeatures", nullable = false)
     private String geoFeatures;
 
-    @XmlElement
-    @OneToOne(cascade=CascadeType.DETACH, fetch=FetchType.LAZY)
-    @JoinColumn(name="documentID",insertable=true,
-            updatable=true,nullable=true,unique=true)
-    private TaskAssignment taskAssignment;
+    //@XmlElement
+    //@OneToOne(cascade=CascadeType.DETACH, fetch=FetchType.LAZY)
+    //@JoinColumn(name="documentID",insertable=true,
+   //         updatable=true,nullable=true,unique=true)
+    //@JsonBackReference
+    //private TaskAssignment taskAssignment;
     
     
     //@XmlElement
@@ -118,6 +120,7 @@ public class Document implements Serializable {
 			@JoinColumn(name = "documentID", referencedColumnName = "documentID")}, inverseJoinColumns = {
 			@JoinColumn(name = "nominalLabelID", referencedColumnName = "nominalLabelID")})
 	@ManyToMany(cascade=CascadeType.MERGE, fetch=FetchType.LAZY)
+    @JsonBackReference
     @JsonIgnore
     @XmlTransient
 	private Collection<NominalLabel> nominalLabelCollection;
@@ -226,14 +229,15 @@ public class Document implements Serializable {
     public void setWordFeatures(String wordFeatures) {
         this.wordFeatures = wordFeatures;
     }
-
+    
+    /*
     public TaskAssignment getTaskAssignment() {
         return taskAssignment;
     }
 
     public void setTaskAssignment(TaskAssignment taskAssignment) {
         this.taskAssignment = taskAssignment;
-    }
+    }*/
     
     
     @XmlTransient
