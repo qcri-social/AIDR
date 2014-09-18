@@ -52,7 +52,6 @@ public class JsonDeserializer {
 	private static final int BUFFER_SIZE = 10 * 1024 * 1024;	// buffer size to use for buffered r/w
 	private static final int LIST_BUFFER_SIZE = 50000; 
 
-
 	//This method generates tweetIds csv from all the jsons of a collection
 	public Map<String, Object> generateJson2TweetIdsCSV(String collectionCode, boolean downloadLimited) {
 		List<String> fileNames = FileSystemOperations.getAllJSONFileVolumes(collectionCode);
@@ -253,7 +252,7 @@ public class JsonDeserializer {
 			Collections.sort(fileNames);
 			Collections.reverse(fileNames);
 			
-			ReadWriteCSV csv = new ReadWriteCSV();
+			ReadWriteCSV csv = new ReadWriteCSV(collectionCode);
 			BufferedReader br = null;
 			//String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds_filtered.csv";
 			String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/" + fileName;
@@ -592,7 +591,7 @@ public class JsonDeserializer {
 			});
 
 			List<ClassifiedTweet> tweetsList = new ArrayList<ClassifiedTweet>(LIST_BUFFER_SIZE);
-			ReadWriteCSV csv = new ReadWriteCSV();
+			ReadWriteCSV csv = new ReadWriteCSV(collectionCode);
 			int currentSize = 0;
 			createTweetList:
 			{
