@@ -182,7 +182,7 @@ public class TwitterCollectorAPI extends Loggable {
         ResponseWrapper response = new ResponseWrapper();
         String responseMsg = null;
         if (StringUtils.isEmpty(id)) {
-            response.setMessage("Invalid key. No running collector found with the given id.");
+            response.setMessage("Invalid key. No running collector found for the given id.");
             response.setStatusCode(Config.STATUS_CODE_COLLECTION_NOTFOUND);
             return Response.ok(response).build();
         }
@@ -196,7 +196,7 @@ public class TwitterCollectorAPI extends Loggable {
             return Response.ok(failedTask).build();
         }
 
-        response.setMessage("Invalid key. No running collector found with the given id.");
+        response.setMessage("Invalid key. No running collector found for the given id.");
         response.setStatusCode(Config.STATUS_CODE_COLLECTION_NOTFOUND);
         return Response.ok(response).build();
 
