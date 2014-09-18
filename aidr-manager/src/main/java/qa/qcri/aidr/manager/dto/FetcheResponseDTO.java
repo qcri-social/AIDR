@@ -21,6 +21,7 @@ public class FetcheResponseDTO implements Serializable{
 	private String lastDocument;
         private String languageFilter;
         private String statusMessage;
+        private Object dataObject;
 	
 	public String getId() {
 		return id;
@@ -109,6 +110,20 @@ public class FetcheResponseDTO implements Serializable{
      */
     public void setStatusMessage(String statusMessage) {
         this.statusMessage = statusMessage;
+    }
+
+    /**
+     * @return the dataObject
+     */
+    public Object getDataObject() {
+        return dataObject;
+    }
+
+    /**
+     * @param dataObject the dataObject to set
+     */
+    public void setDataObject(Object dataObject) {
+        this.dataObject = dataObject;
     }
 
 	
