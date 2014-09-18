@@ -22,6 +22,14 @@ public class FetcheResponseDTO implements Serializable{
         private String languageFilter;
         private String statusMessage;
         private Object dataObject;
+        private String consumerKey;
+        private String consumerSecret;
+        private String accessToken;
+        private String accessTokenSecret;
+        private String twitterInfoPresent;
+        private String toTrackAvailable;
+        private String toFollowAvailable;
+        private String geoLocationAvailable;
 	
 	public String getId() {
 		return id;
@@ -124,6 +132,118 @@ public class FetcheResponseDTO implements Serializable{
      */
     public void setDataObject(Object dataObject) {
         this.dataObject = dataObject;
+    }
+
+    /**
+     * @return the consumerKey
+     */
+    public String getConsumerKey() {
+        return consumerKey;
+    }
+
+    /**
+     * @param consumerKey the consumerKey to set
+     */
+    public void setConsumerKey(String consumerKey) {
+        this.consumerKey = consumerKey;
+    }
+
+    /**
+     * @return the consumerSecret
+     */
+    public String getConsumerSecret() {
+        return consumerSecret;
+    }
+
+    /**
+     * @param consumerSecret the consumerSecret to set
+     */
+    public void setConsumerSecret(String consumerSecret) {
+        this.consumerSecret = consumerSecret;
+    }
+
+    /**
+     * @return the accessToken
+     */
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    /**
+     * @param accessToken the accessToken to set
+     */
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    /**
+     * @return the accessTokenSecret
+     */
+    public String getAccessTokenSecret() {
+        return accessTokenSecret;
+    }
+
+    /**
+     * @param accessTokenSecret the accessTokenSecret to set
+     */
+    public void setAccessTokenSecret(String accessTokenSecret) {
+        this.accessTokenSecret = accessTokenSecret;
+    }
+
+    /**
+     * @return the twitterInfoPresent
+     */
+    public String getTwitterInfoPresent() {
+        return twitterInfoPresent;
+    }
+
+    /**
+     * @param twitterInfoPresent the twitterInfoPresent to set
+     */
+    public void setTwitterInfoPresent(String twitterInfoPresent) {
+        this.twitterInfoPresent = twitterInfoPresent;
+    }
+
+    /**
+     * @return the toTrackAvailable
+     */
+    public String getToTrackAvailable() {
+        return toTrackAvailable;
+    }
+
+    /**
+     * @param toTrackAvailable the toTrackAvailable to set
+     */
+    public void setToTrackAvailable(String toTrackAvailable) {
+        this.toTrackAvailable = toTrackAvailable;
+    }
+
+    /**
+     * @return the toFollowAvailable
+     */
+    public String getToFollowAvailable() {
+        return toFollowAvailable;
+    }
+
+    /**
+     * @param toFollowAvailable the toFollowAvailable to set
+     */
+    public void setToFollowAvailable(String toFollowAvailable) {
+        this.toFollowAvailable = toFollowAvailable;
+    }
+
+    /**
+     * @return the geoLocationAvailable
+     */
+    public String getGeoLocationAvailable() {
+        return geoLocationAvailable;
+    }
+
+    /**
+     * @param geoLocationAvailable the geoLocationAvailable to set
+     */
+    public void setGeoLocationAvailable(String geoLocationAvailable) {
+        this.geoLocationAvailable = geoLocationAvailable;
     }
 
 	
