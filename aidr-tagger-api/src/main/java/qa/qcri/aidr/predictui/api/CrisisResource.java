@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
@@ -19,8 +20,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
-//import org.codehaus.jackson.map.ObjectMapper;
 
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 
 
@@ -44,7 +46,8 @@ import qa.qcri.aidr.predictui.util.ResponseWrapper;
 @Stateless
 public class CrisisResource {
 
-	private Logger logger = Logger.getLogger(CrisisResource.class);
+	private Logger logger = Logger.getLogger(CrisisResource.class.getName());
+	//private Logger logger = LoggerFactory.getLogger(CrisisResource.class);
 	private ErrorLog elog = new ErrorLog();
 
 	@Context
@@ -214,8 +217,8 @@ public class CrisisResource {
 	@GET
 	@Produces("application/json")
 	@Path("/attributes/count/{crisisCode}")
-	public Response getNominalAttributesCountForCrisis(@PathParam("crisisCode") String crisisCode) {
-		Map<String, Integer> result = new HashMap<String, Integer>(1);;
+	public Map<String, Integer> getNominalAttributesCountForCrisis(@PathParam("crisisCode") String crisisCode) {
+		Map<String, Integer> result = new HashMap<String, Integer>(1);
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			if (crisisLocalEJB.isCrisisExists(crisisCode) != null) {
@@ -224,15 +227,17 @@ public class CrisisResource {
 				result = crisisLocalEJB.countClassifiersByCrisisCodes(crisisList);
 				System.out.println("retrieved result: " + result);
 				if (result != null) {
-					return Response.ok(mapper.writeValueAsString(result)).build();
+					//return Response.ok(mapper.writeValueAsString(result)).build();
+					return result;
 				}
 			}
 			result.put("count", 0);
-			return Response.ok(mapper.writeValueAsString(result)).build();
+			//return Response.ok(mapper.writeValueAsString(result)).build();
 		} catch (Exception e) {
 			e.printStackTrace();
 			result.put("count", -1);
-			return Response.ok(result.toString()).build();
+			//return Response.ok(result.toString()).build();
 		}
+		return result;
 	}
 }

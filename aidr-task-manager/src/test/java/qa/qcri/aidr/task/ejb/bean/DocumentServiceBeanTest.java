@@ -33,7 +33,7 @@ public class DocumentServiceBeanTest {
 		document.setDocumentID(new Long(10));
 		document.setCrisisID(new Long(117));
 		document.setHasHumanLabels(false);
-		document.setEvaluationSet(true);
+		document.setIsEvaluationSet(true);
 		document.setValueAsTrainingSample(new Double(0.5));
 		document.setReceivedAt(new Date());
 		//document.setSourceIP(2130706689L);
@@ -47,7 +47,7 @@ public class DocumentServiceBeanTest {
 		Document doc = documentServiceBean.getById(new Long(10));
 		//
 		assertNotNull(doc);
-		assertEquals(true, doc.isHasHumanLabels());
+		assertEquals(true, doc.getHasHumanLabels());
 		documentServiceBean.delete(doc);
 	}
 	//
@@ -57,7 +57,7 @@ public class DocumentServiceBeanTest {
 		document.setDocumentID(new Long(11));
 		document.setCrisisID(new Long(117));
 		document.setHasHumanLabels(false);
-		document.setEvaluationSet(true);
+		document.setIsEvaluationSet(true);
 		document.setValueAsTrainingSample(new Double(0.5));
 		document.setReceivedAt(new Date());
 		//document.setSourceIP(2130706689L);
@@ -77,7 +77,7 @@ public class DocumentServiceBeanTest {
 		document1.setDocumentID(new Long(12));
 		document1.setCrisisID(new Long(117));
 		document1.setHasHumanLabels(false);
-		document1.setEvaluationSet(true);
+		document1.setIsEvaluationSet(true);
 		document1.setValueAsTrainingSample(new Double(0.5));
 		document1.setReceivedAt(new Date());
 		//document1.setSourceIP(2130706689L);
@@ -90,7 +90,7 @@ public class DocumentServiceBeanTest {
 		document2.setDocumentID(new Long(13));
 		document2.setCrisisID(new Long(117));
 		document2.setHasHumanLabels(false);
-		document2.setEvaluationSet(true);
+		document2.setIsEvaluationSet(true);
 		document2.setValueAsTrainingSample(new Double(0.5));
 		document2.setReceivedAt(new Date());
 		//document2.setSourceIP(2130706689L);
@@ -103,7 +103,7 @@ public class DocumentServiceBeanTest {
 		document3.setDocumentID(new Long(14));
 		document3.setCrisisID(new Long(123));
 		document3.setHasHumanLabels(false);
-		document3.setEvaluationSet(true);
+		document3.setIsEvaluationSet(true);
 		document3.setValueAsTrainingSample(new Double(0.5));
 		document3.setReceivedAt(new Date());
 		//document3.setSourceIP(2130706689L);
@@ -131,7 +131,7 @@ public class DocumentServiceBeanTest {
 		document.setDocumentID(new Long(90));
 		document.setCrisisID(new Long(123));
 		document.setHasHumanLabels(false);
-		document.setEvaluationSet(true);
+		document.setIsEvaluationSet(true);
 		document.setValueAsTrainingSample(new Double(0.5));
 		document.setReceivedAt(new Date());
 		//document.setSourceIP(2130706689L);
@@ -151,7 +151,7 @@ public class DocumentServiceBeanTest {
 		document.setDocumentID(new Long(91));
 		document.setCrisisID(new Long(123));
 		document.setHasHumanLabels(false);
-		document.setEvaluationSet(true);
+		document.setIsEvaluationSet(true);
 		document.setValueAsTrainingSample(new Double(0.5));
 		document.setReceivedAt(new Date());
 		//document.setSourceIP(2130706689L);
@@ -164,7 +164,7 @@ public class DocumentServiceBeanTest {
 		document2.setDocumentID(new Long(92));
 		document2.setCrisisID(new Long(123));
 		document2.setHasHumanLabels(false);
-		document2.setEvaluationSet(true);
+		document2.setIsEvaluationSet(true);
 		document2.setValueAsTrainingSample(new Double(0.5));
 		document2.setReceivedAt(new Date());
 		//document2.setSourceIP(2130706689L);
@@ -177,7 +177,7 @@ public class DocumentServiceBeanTest {
 		document3.setDocumentID(new Long(93));
 		document3.setCrisisID(new Long(123));
 		document3.setHasHumanLabels(false);
-		document3.setEvaluationSet(true);
+		document3.setIsEvaluationSet(true);
 		document3.setValueAsTrainingSample(new Double(0.5));
 		document3.setReceivedAt(new Date());
 		//document3.setSourceIP(2130706689L);

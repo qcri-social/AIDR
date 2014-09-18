@@ -13,11 +13,15 @@ import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.apache.log4j.Logger;
+
+
+//import org.apache.log4j.Logger;
 //import org.codehaus.jackson.map.ObjectMapper;
 //import org.codehaus.jackson.type.TypeReference;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -67,7 +71,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 	private Class<T> entityType;
 
-	private Logger logger = Logger.getLogger(TaskManagerBean.class);
+	private Logger logger = LoggerFactory.getLogger(TaskManagerBean.class);
 	private ErrorLog elog = new ErrorLog();
 
 	public TaskManagerBean()  {
@@ -104,7 +108,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			//if (doc != null) System.out.println("docID = " + doc.getDocumentID());
 
 			// Now check if also need to insert into document_nominal_label
-			if (doc.isHasHumanLabels() && doc.getNominalLabelCollection() != null) {
+			if (doc.getHasHumanLabels() && doc.getNominalLabelCollection() != null) {
 				//System.out.println("Attempting saving to document_nominal_label table: " + doc);
 				for (NominalLabel label: doc.getNominalLabelCollection()) {
 					DocumentNominalLabel labeledDoc = new DocumentNominalLabel(doc.getDocumentID(), 
@@ -442,7 +446,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		if (task != null) {
 			try {
 				Document document = documentLocalEJB.getById(((Document) task).getDocumentID());
-				if ((document != null) && ((Document) document).isHasHumanLabels()) {
+				if ((document != null) && ((Document) document).getHasHumanLabels()) {
 					return true;
 				}
 			} catch (Exception e) {
@@ -671,7 +675,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	 * of the entity to be modified. Returns the modified entity.
 	 */
 	@Override
-	public <T> T setTaskParameter(Class<T> entityType, Long id, Map<String, String> paramMap) {
+	public String setTaskParameter(Class<T> entityType, Long id, Map<String, String> paramMap) {
+		logger.info("Received request for task ID = " + id + ", param Map = " + paramMap);
 		Object doc = null;
 		try {
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.Document")) {
@@ -700,6 +705,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				logger.info("Detected of type Crisis.class");
 				doc = (qa.qcri.aidr.task.entities.Crisis) crisisEJB.getById(id);
 			}
+			logger.info("Fetched task of type: " + doc.getClass());
+			logger.info("received map: " + paramMap);
 		} catch (Exception e) {
 			logger.error("Error in detecting Class Type");
 			logger.error(elog.toStringException(e));
@@ -768,36 +775,48 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		}
 
 		try {
+			logger.info("Will attempt to merge update with document ID = " + id);
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.Document")) {
 				logger.info("Detected of type Document.class, id = " + id);
-				documentLocalEJB.update((qa.qcri.aidr.task.entities.Document) doc); 
+				documentLocalEJB.merge((qa.qcri.aidr.task.entities.Document) doc); 
+				logger.info("Merge update successful for task id = " + id);
+				return serializeTask((qa.qcri.aidr.task.entities.Document) doc);
 			} 
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.TaskAssignment")) {
 				logger.info("Detected of type TaskAssignment.class");
-				taskAssignmentEJB.update((qa.qcri.aidr.task.entities.TaskAssignment) doc);
+				taskAssignmentEJB.merge((qa.qcri.aidr.task.entities.TaskAssignment) doc);
+				logger.info("Merge update successful for task id = " + id);
+				return serializeTask((qa.qcri.aidr.task.entities.TaskAssignment) doc);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.TaskAnswer")) {
 				logger.info("Detected of type TaskAnswer.class");
-				taskAnswerEJB.update((qa.qcri.aidr.task.entities.TaskAnswer) doc);		
+				taskAnswerEJB.merge((qa.qcri.aidr.task.entities.TaskAnswer) doc);
+				logger.info("Merge update successful for task id = " + id);
+				return serializeTask((qa.qcri.aidr.task.entities.TaskAnswer) doc);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.Users")) {
 				logger.info("Detected of type Users.class");
-				usersLocalEJB.update((qa.qcri.aidr.task.entities.Users) doc);
+				usersLocalEJB.merge((qa.qcri.aidr.task.entities.Users) doc);
+				logger.info("Merge update successful for task id = " + id);
+				return serializeTask((qa.qcri.aidr.task.entities.Users) doc);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.DocumentNominalLabel")) {
 				logger.info("Detected of type DocumentNominalLabel.class");
-				documentNominalLabelEJB.update((qa.qcri.aidr.task.entities.DocumentNominalLabel) doc);
+				documentNominalLabelEJB.merge((qa.qcri.aidr.task.entities.DocumentNominalLabel) doc);
+				logger.info("Merge update successful for task id = " + id);
+				return serializeTask((qa.qcri.aidr.task.entities.DocumentNominalLabel) doc);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.Crisis")) {
 				logger.info("Detected of type Crisis.class");
-				crisisEJB.update((qa.qcri.aidr.task.entities.Crisis) doc);
+				crisisEJB.merge((qa.qcri.aidr.task.entities.Crisis) doc);
+				logger.info("Merge update successful for task id = " + id);
+				return serializeTask((qa.qcri.aidr.task.entities.Crisis) doc);
 			}
 		} catch (Exception e) {
 			logger.error("Error in updating entity on DB");
 			logger.error(elog.toStringException(e));
-			return null;
 		}
-		return (T) doc;
+		return null;
 	}
 
 
@@ -882,7 +901,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		return null;
 	}
 
-
+	/*
 	@Override
 	public qa.qcri.aidr.task.entities.Document getNewDocumentByCrisisId(Long crisisID) {
 		//Document document = (Document) getNewTask(crisisID, null);
@@ -922,7 +941,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		}
 		return null;
 	}
-
+	*/
+	
 	@Override
 	public String pingRemoteEJB() {
 		StringBuilder sb = new StringBuilder("{status: RUNNING}");

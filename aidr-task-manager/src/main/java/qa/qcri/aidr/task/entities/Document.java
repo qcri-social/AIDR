@@ -107,12 +107,12 @@ public class Document implements Serializable {
     @Column (name = "geoFeatures", nullable = false)
     private String geoFeatures;
 
-    //@XmlElement
-    //@OneToOne(cascade=CascadeType.DETACH, fetch=FetchType.LAZY)
-    //@JoinColumn(name="documentID",insertable=true,
-   //         updatable=true,nullable=true,unique=true)
-    //@JsonBackReference
-    //private TaskAssignment taskAssignment;
+    @XmlElement
+    @OneToOne(cascade=CascadeType.DETACH, fetch=FetchType.LAZY)
+    @JoinColumn(name="documentID",insertable=true,
+            updatable=true,nullable=true,unique=true)
+    @JsonBackReference
+    private TaskAssignment taskAssignment;
     
     
     //@XmlElement
@@ -140,7 +140,7 @@ public class Document implements Serializable {
         this.documentID = documentID;
     }
 
-    public boolean isHasHumanLabels() {
+    public boolean getHasHumanLabels() {
         return hasHumanLabels;
     }
 
@@ -164,11 +164,11 @@ public class Document implements Serializable {
         this.crisisID = crisisID;
     }
 
-    public boolean isEvaluationSet() {
+    public boolean getIsEvaluationSet() {
         return isEvaluationSet;
     }
 
-    public void setEvaluationSet(boolean evaluationSet) {
+    public void setIsEvaluationSet(boolean evaluationSet) {
         isEvaluationSet = evaluationSet;
     }
     
@@ -230,14 +230,13 @@ public class Document implements Serializable {
         this.wordFeatures = wordFeatures;
     }
     
-    /*
     public TaskAssignment getTaskAssignment() {
         return taskAssignment;
     }
 
     public void setTaskAssignment(TaskAssignment taskAssignment) {
         this.taskAssignment = taskAssignment;
-    }*/
+    }
     
     
     @XmlTransient

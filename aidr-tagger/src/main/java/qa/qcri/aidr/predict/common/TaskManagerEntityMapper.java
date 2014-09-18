@@ -86,16 +86,16 @@ public class TaskManagerEntityMapper {
 				doc.setCrisisID(document.getCrisisID());
 				doc.setDoctype(document.getDoctype());
 				doc.setData(document.getData());
-				doc.setEvaluationSet(document.isEvaluationSet());
+				doc.setIsEvaluationSet(document.getIsEvaluationSet());
 				doc.setGeoFeatures(document.getGeoFeatures());
 				doc.setLanguage(document.getLanguage());
-				doc.setHasHumanLabels(document.isHasHumanLabels());
+				doc.setHasHumanLabels(document.getHasHumanLabels());
 
 				doc.setReceivedAt(document.getReceivedAt());
 				//doc.setSourceIP(document.getSourceIP());
 				doc.setWordFeatures(document.getWordFeatures());
 				doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
-				doc.setTaskAssignment(transformTaskAssignment(document.getTaskAssignment()));
+				//doc.setTaskAssignment(transformTaskAssignment(document.getTaskAssignment()));
 
 				doc.setNominalLabelCollection(transformNominalLabelCollection(document.getNominalLabelCollection()));
 				return doc;
@@ -117,7 +117,7 @@ public class TaskManagerEntityMapper {
 				doc.setCrisisID(document.getCrisisID());
 				doc.setDoctype(document.getDoctype());
 				doc.setData(document.getData());
-				doc.setEvaluationSet(document.isEvaluationSet());
+				doc.setIsEvaluationSet(document.getIsEvaluationSet());
 				doc.setGeoFeatures(document.getGeoFeatures());
 				doc.setLanguage(document.getLanguage());
 				doc.setHasHumanLabels(document.isHasHumanLabels());
@@ -126,7 +126,7 @@ public class TaskManagerEntityMapper {
 				//doc.setSourceIP(document.getSourceIPAsLong());
 				doc.setWordFeatures(document.getWordFeatures());
 				doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
-				doc.setTaskAssignment(reverseTransformTaskAssignment(document.getTaskAssignment()));
+				//doc.setTaskAssignment(reverseTransformTaskAssignment(document.getTaskAssignment()));
 
 				doc.setNominalLabelCollection(reverseTransformNominalLabelCollection(document.getNominalLabelCollection()));
 				return doc;

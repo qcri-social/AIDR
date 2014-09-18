@@ -70,7 +70,7 @@ public class CrisisServiceImpl implements CrisisService {
     }
 
     @Override
-    public List<Crisis> findAllActiveCrisis() {
+    public List findAllActiveCrisis() {
         return crisisDao.findAll();
     }
 

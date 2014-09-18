@@ -58,8 +58,8 @@ public class TaggerDocument extends Document implements Serializable {
     @XmlElement
     private String geoFeatures;
 
-    @XmlElement
-    private TaskAssignment taskAssignment;
+    //@XmlElement
+    //private TaskAssignment taskAssignment;
     
     @JsonIgnore
     @XmlTransient
@@ -107,11 +107,11 @@ public class TaggerDocument extends Document implements Serializable {
         this.crisisID = crisisID;
     }
 
-    public boolean isEvaluationSet() {
+    public boolean getIsEvaluationSet() {
         return isEvaluationSet;
     }
 
-    public void setEvaluationSet(boolean evaluationSet) {
+    public void setIsEvaluationSet(boolean evaluationSet) {
         isEvaluationSet = evaluationSet;
     }
     
@@ -205,6 +205,7 @@ public class TaggerDocument extends Document implements Serializable {
         this.wordFeatures = wordFeatures;
     }
 
+    /*
     public TaskAssignment getTaskAssignment() {
         return taskAssignment;
     }
@@ -212,7 +213,7 @@ public class TaggerDocument extends Document implements Serializable {
     public void setTaskAssignment(TaskAssignment taskAssignment) {
         this.taskAssignment = taskAssignment;
     }
-    
+    */
     
     @XmlTransient
     @JsonIgnore

@@ -133,9 +133,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     public void setHasHumanLabels(boolean hasHumanLabels) {
         this.hasHumanLabels = hasHumanLabels;
     }
-	public boolean isHasHumanLabels() {
+	
+    /*
+    public boolean isHasHumanLabels() {
 		return hasHumanLabels;
-	}
+	}*/
 
 	public String getGeoFeatures() {
 		return geoFeatures;
@@ -151,14 +153,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 	public void setCrisisID(Long crisisID) {
 		this.crisisID = crisisID;
-	}
-
-	public boolean isEvaluationSet() {
-		return isEvaluationSet;
-	}
-
-	public void setEvaluationSet(boolean evaluationSet) {
-		isEvaluationSet = evaluationSet;
 	}
 
 	/*

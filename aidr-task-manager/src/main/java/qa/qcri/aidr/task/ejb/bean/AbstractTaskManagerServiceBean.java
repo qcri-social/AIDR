@@ -238,7 +238,9 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			session.evict(e);
 			if (!tx.wasCommitted()) tx.commit();
 		} catch (Exception ex) {
+			System.out.println("Unable to update entity: " + e);
 			logger.error(elog.toStringException(ex));
+			ex.printStackTrace();
 			tx.rollback();
 		}
 	}
@@ -268,6 +270,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			session.evict(e);
 
 		} catch (Exception ex) {
+			System.out.println("Unable to save entity: " + e);
 			logger.error(elog.toStringException(ex));
 			ex.printStackTrace();
 		}

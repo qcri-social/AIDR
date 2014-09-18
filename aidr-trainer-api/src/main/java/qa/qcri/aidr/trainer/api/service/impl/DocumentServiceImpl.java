@@ -1,13 +1,16 @@
 package qa.qcri.aidr.trainer.api.service.impl;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 import org.codehaus.jackson.type.TypeReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 import qa.qcri.aidr.trainer.api.dao.CrisisDao;
 import qa.qcri.aidr.trainer.api.dao.DocumentDao;
@@ -44,7 +47,8 @@ import java.util.Set;
 @Transactional(readOnly = true)
 public class DocumentServiceImpl implements DocumentService {
 
-	protected static Logger logger = Logger.getLogger(DocumentServiceImpl.class);
+	protected static Logger logger = LoggerFactory.getLogger(DocumentServiceImpl.class);
+	private ErrorLog elog = new ErrorLog();
 
 	//@Autowired
 	//private DocumentDao documentDao;
@@ -70,10 +74,37 @@ public class DocumentServiceImpl implements DocumentService {
 		if(document != null ) {
 			documentDao.updateHasHumanLabel(document);
 		}
-		*/
+		 */
 		Map<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("setHasHumanLabels", new Boolean(value).toString());
-		taskManager.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, documentID, paramMap);
+		logger.info("Will use the merge attempt");
+		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
+		try {
+			String jsonString = taskManager.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, documentID, paramMap);
+			Document doc = mapper.transformDocument(mapper.deSerialize(jsonString, qa.qcri.aidr.task.entities.Document.class));
+			logger.info("Update of hasHumanLabels successful for document " + doc.getDocumentID() + ", crisisId = " + doc.getCrisisID());
+		} catch (Exception e) {
+			logger.error("Update unsuccessful for documentID = " + documentID);
+			logger.error(elog.toStringException(e));
+		}
+		/*
+		Document doc = findDocument(documentID);
+		logger.info("Found document : " + doc);
+		if (doc != null) {
+			try {
+				doc.setHasHumanLabels(true);
+				TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
+				qa.qcri.aidr.task.entities.Document document = mapper.reverseTransformDocument(doc);
+				document.setHasHumanLabels(true);
+				taskManager.updateTask(document); 
+				logger.info("Update of hasHumanLabels for documentID = " + documentID + " for crisisID " + document.getCrisisID() + " successful.");
+			} catch (Exception e) {
+				logger.info("Failed to update hasHumanLabels field for documentID = " + documentID + ", crisisID = " + doc.getCrisisID());
+				logger.error(elog.toStringException(e));
+			}
+		} else {
+			logger.info("Document with ID = " + documentID + " does not exist in DB. Can't update hasHumanLabels field!");
+		}*/
 	}
 
 	@Override
@@ -81,8 +112,12 @@ public class DocumentServiceImpl implements DocumentService {
 		//return documentDao.findDocument(documentID);  //To change body of implemented methods use File | Settings | File Templates.
 		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
 		String jsonString = taskManager.getTaskById(documentID);
-		Document doc = mapper.deSerialize(jsonString, Document.class);
-		return (doc != null) ? doc : null;
+		if (jsonString != null) { 
+			Document doc = mapper.deSerialize(jsonString, Document.class);
+			return (doc != null) ? doc : null;
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -172,9 +207,13 @@ public class DocumentServiceImpl implements DocumentService {
 	public  List<Document> getAvailableDocument(long crisisID, Integer maxresult){
 		//return documentDao.findDocumentForTask(crisisID, maxresult)  ;
 		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-        String jsonString = taskManager.getNewTaskCollection(crisisID, maxresult, "DESC", null);
-        List<Document> docList = mapper.deSerializeList(jsonString, new TypeReference<List<Document>>() {});
-        return docList;
+		String jsonString = taskManager.getNewTaskCollection(crisisID, maxresult, "DESC", null);
+		if (jsonString != null) {
+			List<Document> docList = mapper.deSerializeList(jsonString, new TypeReference<List<Document>>() {});
+			return docList;
+		} else {
+			return null;
+		}
 	}
 
 	private int getAvailableDocumentCount(long crisisID){

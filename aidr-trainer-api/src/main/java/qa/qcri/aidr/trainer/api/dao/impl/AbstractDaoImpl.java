@@ -54,11 +54,13 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<E> findAll() {
+	public List findAll() {
 		Criteria criteria = getCurrentSession().createCriteria(entityClass);
 		criteria.setProjection(Projections.distinct(Projections.property("id")));
 		try {
-			return criteria.list();
+			List result = criteria.list();
+			//System.out.println("result = " + result);
+			return result;
 		} catch (HibernateException e) {
 			logger.error(elog.toStringException(e));
 			return null;

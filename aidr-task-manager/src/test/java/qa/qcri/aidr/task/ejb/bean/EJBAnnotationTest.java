@@ -70,7 +70,7 @@ public class EJBAnnotationTest {
 		Document updatedDoc = taskManager.getDocumentById(new Long(4579250));
 		//
 		assertNotNull(updatedDoc);
-		assertEquals(false, updatedDoc.isHasHumanLabels());
+		assertEquals(false, updatedDoc.getHasHumanLabels());
 	}
 	//
 	@Test
@@ -84,7 +84,7 @@ public class EJBAnnotationTest {
 		Document updatedTask = taskManager.getDocumentById(new Long(4579255));
 		//
 		assertNotNull(updatedTask);
-		assertEquals(false, updatedTask.isHasHumanLabels());
+		assertEquals(false, updatedTask.getHasHumanLabels());
 	}
 	//
 	@Test

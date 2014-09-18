@@ -1,6 +1,8 @@
 package qa.qcri.aidr.trainer.api.controller;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +26,7 @@ import java.util.Date;
 @Component
 public class TaskAnswerController {
 
-    protected static Logger logger = Logger.getLogger(TaskAnswerController.class);
+    protected static Logger logger = LoggerFactory.getLogger(TaskAnswerController.class);
     private static ErrorLog elog = new ErrorLog();
     
     @Autowired
@@ -34,8 +36,8 @@ public class TaskAnswerController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/save")
     public void saveTaskAnswer(String data){
-        logger.debug("saveTaskAnswer start: " + new Date());
-        logger.debug("saveTaskAnswer..: " + data);
+        logger.info("saveTaskAnswer start: " + new Date());
+        logger.info("saveTaskAnswer..: " + data);
         // place into transaction block
         try{
             taskAnswerService.processTaskAnswer(data);

@@ -1,6 +1,7 @@
 package qa.qcri.aidr.predictui.facade.imp;
 
 //import qa.qcri.aidr.predictui.facade.*;
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.util.TaskManagerEntityMapper;
 
 import java.util.HashMap;
@@ -15,15 +16,20 @@ import javax.ejb.Stateless;
 
 
 
+
 //import org.codehaus.jackson.type.TypeReference;
 import com.fasterxml.jackson.core.type.TypeReference;
+
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.predictui.entities.Crisis;
 import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.facade.DocumentFacade;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
+
 
 /**
  *
@@ -37,7 +43,9 @@ public class DocumentFacadeImp implements DocumentFacade{
     
     @EJB
 	private TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
-
+    
+    protected static Logger logger = LoggerFactory.getLogger(DocumentFacadeImp.class);
+	private ErrorLog elog = new ErrorLog();
 
     public List<Document> getAllDocuments() {
         //Query query = em.createNamedQuery("Document.findAll", Document.class);
@@ -99,7 +107,9 @@ public class DocumentFacadeImp implements DocumentFacade{
     	Map<String, String> paramMap = new HashMap<String, String>();
     	paramMap.put("setHasHumanLabels", new Boolean(false).toString());
     	paramMap.put("setNominalLabelCollection", null);
-    	qa.qcri.aidr.task.entities.Document newDoc = taskManager.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, documentID, paramMap);
+    	TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
+    	qa.qcri.aidr.task.entities.Document newDoc = mapper.deSerialize(taskManager.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, documentID, paramMap), qa.qcri.aidr.task.entities.Document.class);
+    	logger.info("Removed training example: " + newDoc.getDocumentID() + ", for crisisID = " + newDoc.getCrisisID());
     }
 
 	@Override

@@ -1,6 +1,9 @@
 package qa.qcri.aidr.trainer.api.Jedis;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import redis.clients.jedis.Jedis;
@@ -13,7 +16,7 @@ import redis.clients.jedis.Jedis;
  * To change this template use File | Settings | File Templates.
  */
 public class JedisNotifier {
-    protected static Logger logger = Logger.getLogger(JedisNotifier.class);
+    protected static Logger logger = LoggerFactory.getLogger(JedisNotifier.class);
     private static ErrorLog elog = new ErrorLog();
     
     Jedis jedis;
@@ -22,6 +25,7 @@ public class JedisNotifier {
         try {
             jedis = JedisDataStore.getJedisConnection();
         } catch (Exception e) {
+        	logger.error("failed to create jedis connection");
             logger.error(elog.toStringException(e));
         }
     }
@@ -36,8 +40,8 @@ public class JedisNotifier {
             JedisDataStore.close(jedis);
             //outputCount++;
         } catch (Exception e) {
-            logger.debug("Error when serializing output document.");
-            logger.debug(elog.toStringException(e));
+            logger.error("Error when serializing output document.");
+            logger.error(elog.toStringException(e));
         }
     }
 

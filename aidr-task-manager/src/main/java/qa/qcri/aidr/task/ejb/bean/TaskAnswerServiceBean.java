@@ -7,7 +7,10 @@ import javax.ejb.Stateless;
 
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.task.ejb.TaskAnswerService;
 import qa.qcri.aidr.task.entities.TaskAnswer;
 
@@ -18,14 +21,22 @@ import qa.qcri.aidr.task.entities.TaskAnswer;
  */
 @Stateless(name="TaskAnswerServiceBean")
 public class TaskAnswerServiceBean extends AbstractTaskManagerServiceBean<TaskAnswer, String> implements TaskAnswerService {
-
+	
+	private Logger logger = LoggerFactory.getLogger(TaskAnswerServiceBean.class);
+	private ErrorLog elog = new ErrorLog();
+	
     protected TaskAnswerServiceBean(){
         super(TaskAnswer.class);
     }
 
     @Override
     public void insertTaskAnswer(TaskAnswer taskAnswer) {
-        save(taskAnswer);
+        if (taskAnswer != null) {
+    	logger.info("Going to insert answer = " + taskAnswer.getAnswer() + " for  taskId = " + taskAnswer.getDocumentID());
+    	save(taskAnswer);
+        } else {
+        	logger.warn("Warning! Attempted to insert null task answer!");
+        }
     }
 
 	@Override

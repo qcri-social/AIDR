@@ -69,10 +69,10 @@ public interface TaskManagerRemote<T, Serializable> {
 	public String getTaskByCriterion(Long crisisID, Criterion criterion);
 	public String getTaskCollectionByCriterion(Long crisisID, Integer count, Criterion criterion);
 	
-	public qa.qcri.aidr.task.entities.Document getNewDocumentByCriterion(Long id, Criterion criterion);
-	public qa.qcri.aidr.task.entities.Document getNewDocumentByCrisisId(Long crisisID);
+	//public qa.qcri.aidr.task.entities.Document getNewDocumentByCriterion(Long id, Criterion criterion);
+	//public qa.qcri.aidr.task.entities.Document getNewDocumentByCrisisId(Long crisisID);
 	
-	public <T> T setTaskParameter(Class<T> entityType, Long id, Map<String, String> paramMap);
+	public String setTaskParameter(Class<T> entityType, Long id, Map<String, String> paramMap);
 	
 	public <E> Boolean isTaskAssigned(E task);
 	public <E> Boolean isTaskNew(E task);

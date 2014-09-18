@@ -73,10 +73,10 @@ public class TaskManagerEntityMapper {
 			doc.setCrisisID(document.getCrisisID());
 			doc.setDoctype(document.getDoctype());
 			doc.setData(document.getData());
-			doc.setEvaluationSet(document.isEvaluationSet());
+			doc.setIsEvaluationSet(document.getIsEvaluationSet());
 			doc.setGeoFeatures(document.getGeoFeatures());
 			doc.setLanguage(document.getLanguage());
-			doc.setHasHumanLabels(document.isHasHumanLabels());
+			doc.setHasHumanLabels(document.getHasHumanLabels());
 
 			doc.setReceivedAt(document.getReceivedAt());
 			//doc.setSourceIP(document.getSourceIP().longValue());
@@ -101,10 +101,10 @@ public class TaskManagerEntityMapper {
 					doc.setCrisisID(document.getCrisisID());
 					doc.setDoctype(document.getDoctype());
 					doc.setData(document.getData());
-					doc.setEvaluationSet(document.isEvaluationSet());
+					doc.setIsEvaluationSet(document.getIsEvaluationSet());
 					doc.setGeoFeatures(document.getGeoFeatures());
 					doc.setLanguage(document.getLanguage());
-					doc.setHasHumanLabels(document.isHasHumanLabels());
+					doc.setHasHumanLabels(document.getHasHumanLabels());
 
 					doc.setReceivedAt(document.getReceivedAt());
 					//doc.setSourceIP(document.getSourceIP().longValue());
@@ -127,10 +127,10 @@ public class TaskManagerEntityMapper {
 			doc.setCrisisID(document.getCrisisID());
 			doc.setDoctype(document.getDoctype());
 			doc.setData(document.getData());
-			doc.setEvaluationSet(document.isEvaluationSet());
+			doc.setIsEvaluationSet(document.getIsEvaluationSet());
 			doc.setGeoFeatures(document.getGeoFeatures());
 			doc.setLanguage(document.getLanguage());
-			doc.setHasHumanLabels(document.isHasHumanLabels());
+			doc.setHasHumanLabels(document.getHasHumanLabels());
 
 			doc.setReceivedAt(document.getReceivedAt());
 			//doc.setSourceIP(document.getSourceIP().intValue());
@@ -155,10 +155,10 @@ public class TaskManagerEntityMapper {
 					doc.setCrisisID(document.getCrisisID());
 					doc.setDoctype(document.getDoctype());
 					doc.setData(document.getData());
-					doc.setEvaluationSet(document.isEvaluationSet());
+					doc.setIsEvaluationSet(document.getIsEvaluationSet());
 					doc.setGeoFeatures(document.getGeoFeatures());
 					doc.setLanguage(document.getLanguage());
-					doc.setHasHumanLabels(document.isHasHumanLabels());
+					doc.setHasHumanLabels(document.getHasHumanLabels());
 
 					doc.setReceivedAt(document.getReceivedAt());
 					//doc.setSourceIP(document.getSourceIP().intValue());

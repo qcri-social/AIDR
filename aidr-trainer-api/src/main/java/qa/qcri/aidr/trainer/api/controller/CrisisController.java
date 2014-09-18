@@ -44,7 +44,7 @@ public class CrisisController {
 	@GET
 	@Produces( MediaType.APPLICATION_JSON )
 	@Path("/getallactive")
-	public List<Crisis> getAllActiveCrisis(){
+	public List getAllActiveCrisis(){
 		return  crisisService.findAllActiveCrisis();
 	}
 

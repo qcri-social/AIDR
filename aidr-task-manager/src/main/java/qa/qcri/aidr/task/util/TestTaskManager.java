@@ -92,9 +92,9 @@ public class TestTaskManager {
 		Map<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("setHasHumanLabels", new Boolean(true).toString());
 		paramMap.put("setCrisisID", new Long(117L).toString());
-		qa.qcri.aidr.task.entities.Document newDoc = taskManager.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, (id != null) ? id : new Long(4579250), paramMap);
+		qa.qcri.aidr.task.entities.Document newDoc = taskManager.deSerialize(taskManager.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, (id != null) ? id : new Long(4579250), paramMap), Document.class);
 		if (newDoc != null) {
-			System.out.println("newDoc = " + newDoc.getDocumentID() + ": " + newDoc.isHasHumanLabels());
+			System.out.println("newDoc = " + newDoc.getDocumentID() + ": " + newDoc.getHasHumanLabels());
 			String jsonString = taskManager.serializeTask(newDoc);
 			return Response.ok(jsonString).build();
 		} else {

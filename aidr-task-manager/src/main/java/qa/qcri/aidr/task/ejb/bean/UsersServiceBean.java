@@ -7,9 +7,12 @@ import javax.ejb.Stateless;
 
 import org.hibernate.criterion.Restrictions;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.task.ejb.UsersService;
 import qa.qcri.aidr.task.entities.Users;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Koushik
@@ -17,6 +20,9 @@ import qa.qcri.aidr.task.entities.Users;
 
 @Stateless(name="UsersServiceBean")
 public class UsersServiceBean extends AbstractTaskManagerServiceBean<Users, Long> implements UsersService{
+
+	private Logger logger = LoggerFactory.getLogger(UsersServiceBean.class);
+	private ErrorLog elog = new ErrorLog();
 
 	protected UsersServiceBean(){
         super(Users.class);

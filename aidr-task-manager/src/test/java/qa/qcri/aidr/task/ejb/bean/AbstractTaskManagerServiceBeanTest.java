@@ -136,7 +136,7 @@ public class AbstractTaskManagerServiceBeanTest {
 			document.setDocumentID(new Long(21));
 			document.setCrisisID(new Long(121));
 			document.setHasHumanLabels(false);
-			document.setEvaluationSet(true);
+			document.setIsEvaluationSet(true);
 			document.setValueAsTrainingSample(new Double(0.5));
 			document.setReceivedAt(new Date());
 			//document.setSourceIP(2130706689L);
@@ -154,7 +154,7 @@ public class AbstractTaskManagerServiceBeanTest {
 		Document updatedDoc = atmsb.getById(new Long(21));
 		//
 		assertNotNull(updatedDoc);
-		assertEquals(true, updatedDoc.isHasHumanLabels());
+		assertEquals(true, updatedDoc.getHasHumanLabels());
 		//
 		atmsb.delete(document);
 	}
@@ -173,7 +173,7 @@ public class AbstractTaskManagerServiceBeanTest {
 		//
 		Document updateDoc = atmsb.getById(new Long(4579316));
 		assertNotNull(updateDoc);
-		assertEquals(false, updateDoc.isHasHumanLabels());
+		assertEquals(false, updateDoc.getHasHumanLabels());
 	}
 	//
 	@Test
@@ -182,7 +182,7 @@ public class AbstractTaskManagerServiceBeanTest {
 		document.setDocumentID(new Long(20));
 		document.setCrisisID(new Long(121));
 		document.setHasHumanLabels(true);
-		document.setEvaluationSet(true);
+		document.setIsEvaluationSet(true);
 		document.setValueAsTrainingSample(new Double(0.5));
 		document.setReceivedAt(new Date());
 		//document.setSourceIP(2130706689L);
@@ -203,7 +203,7 @@ public class AbstractTaskManagerServiceBeanTest {
 		Document document = new Document();
 		document.setDocumentID(new Long(50));
 		document.setCrisisID(new Long(121));
-		document.setEvaluationSet(true);
+		document.setIsEvaluationSet(true);
 		document.setValueAsTrainingSample(new Double(0.5));
 		document.setReceivedAt(new Date());
 		//document.setSourceIP(2130706689L);
@@ -219,7 +219,7 @@ public class AbstractTaskManagerServiceBeanTest {
 		//
 		Document actual = atmsb.getById(new Long(50));
 		assertNotNull(actual);
-		assertEquals(true, actual.isHasHumanLabels());
+		assertEquals(true, actual.getHasHumanLabels());
 		atmsb.delete(doc);
 	}
 	//
@@ -228,7 +228,7 @@ public class AbstractTaskManagerServiceBeanTest {
 		Document document = new Document();
 		document.setDocumentID(new Long(51));
 		document.setCrisisID(new Long(121));
-		document.setEvaluationSet(true);
+		document.setIsEvaluationSet(true);
 		document.setValueAsTrainingSample(new Double(0.5));
 		document.setReceivedAt(new Date());
 		//document.setSourceIP(2130706689L);
@@ -240,7 +240,7 @@ public class AbstractTaskManagerServiceBeanTest {
 		Document document2 = new Document();
 		document2.setDocumentID(new Long(52));
 		document2.setCrisisID(new Long(121));
-		document2.setEvaluationSet(true);
+		document2.setIsEvaluationSet(true);
 		document2.setValueAsTrainingSample(new Double(0.5));
 		document2.setReceivedAt(new Date());
 		//document2.setSourceIP(2130706689L);
@@ -265,7 +265,7 @@ public class AbstractTaskManagerServiceBeanTest {
 		//
 		Document actual = atmsb.getById(new Long(52));
 		assertNotNull(actual);
-		assertEquals(true, actual.isHasHumanLabels());
+		assertEquals(true, actual.getHasHumanLabels());
 		//
 		atmsb.delete(doc);
 		atmsb.delete(doc2);
@@ -277,7 +277,7 @@ public class AbstractTaskManagerServiceBeanTest {
 		document.setDocumentID(new Long(28));
 		document.setCrisisID(new Long(121));
 		document.setHasHumanLabels(true);
-		document.setEvaluationSet(true);
+		document.setIsEvaluationSet(true);
 		document.setValueAsTrainingSample(new Double(0.5));
 		document.setReceivedAt(new Date());
 		//document.setSourceIP(2130706689L);
@@ -290,7 +290,7 @@ public class AbstractTaskManagerServiceBeanTest {
 		document1.setDocumentID(new Long(23));
 		document1.setCrisisID(new Long(122));
 		document1.setHasHumanLabels(true);
-		document1.setEvaluationSet(true);
+		document1.setIsEvaluationSet(true);
 		document1.setValueAsTrainingSample(new Double(0.5));
 		document1.setReceivedAt(new Date());
 		//document1.setSourceIP(2130706689L);
@@ -319,7 +319,7 @@ public class AbstractTaskManagerServiceBeanTest {
 		document.setDocumentID(new Long(24));
 		document.setCrisisID(new Long(121));
 		document.setHasHumanLabels(true);
-		document.setEvaluationSet(true);
+		document.setIsEvaluationSet(true);
 		document.setValueAsTrainingSample(new Double(0.5));
 		document.setReceivedAt(new Date());
 		//document.setSourceIP(2130706689L);
@@ -384,7 +384,7 @@ public class AbstractTaskManagerServiceBeanTest {
 		document1.setDocumentID(new Long(68));
 		document1.setCrisisID(new Long(121));
 		document1.setHasHumanLabels(true);
-		document1.setEvaluationSet(true);
+		document1.setIsEvaluationSet(true);
 		document1.setValueAsTrainingSample(new Double(0.5));
 		document1.setReceivedAt(new Date());
 		//document1.setSourceIP(2130706689L);

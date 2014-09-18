@@ -5,11 +5,15 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 
-import org.apache.log4j.Logger;
+
+
+//import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.task.ejb.DocumentService;
@@ -24,7 +28,7 @@ import qa.qcri.aidr.task.entities.Document;
 @Stateless(name="DocumentServiceBean")
 public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document, Long> implements DocumentService {
 	
-	private Logger logger = Logger.getLogger(DocumentServiceBean.class);
+	private Logger logger = LoggerFactory.getLogger(DocumentServiceBean.class);
 	private ErrorLog elog = new ErrorLog();
 	
 	public DocumentServiceBean() {
@@ -36,7 +40,7 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 		Document doc = (Document) getByCriteria(Restrictions.eq("documentID", document.getDocumentID()));
 		if (doc != null) {
 			doc.setHasHumanLabels(true);
-			save(doc);
+			update(doc);
 		}
 	}
 
@@ -50,7 +54,7 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 		logger.info("Received request for : " + document.getDocumentID());
 		int deleteCount = 0;
 		
-		if (!document.isHasHumanLabels()) {
+		if (!document.getHasHumanLabels()) {
 			try {
 				//delete(document);
 				String hql = "DELETE from document WHERE documentID = :documentID AND !hasHumanLabels";
@@ -115,7 +119,7 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 		String hql = "DELETE from Document WHERE (documentID = :documentID AND "
 				+ " documentID NOT IN (SELECT documentID FROM TaskAssignment)"
 				+ " AND !hasHumanLabels)";
-		if (!document.isHasHumanLabels()) {
+		if (!document.getHasHumanLabels()) {
 			try {
 				Query query = getCurrentSession().createQuery(hql);
 				query.setParameter("documentID", document.getDocumentID());
@@ -137,7 +141,7 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 			List<Long>documentIDList = new ArrayList<Long>();
 			for (Document d: collection) {
 				documentIDList.add(d.getDocumentID());
-				logger.debug("To delete document: {" + d.getCrisisID() + ", " + d.getDocumentID() + ", " + d.isHasHumanLabels() + "}");
+				logger.debug("To delete document: {" + d.getCrisisID() + ", " + d.getDocumentID() + ", " + d.getHasHumanLabels() + "}");
 			}
 			logger.info("Size of docList to delete: " + documentIDList.size());
 			String hql = "DELETE from Document WHERE (documentID IN (:documentID) "
