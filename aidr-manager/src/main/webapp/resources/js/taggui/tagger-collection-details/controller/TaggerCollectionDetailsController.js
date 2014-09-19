@@ -414,6 +414,52 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         document.location.href = BASE_URL + "/protected/" + CRISIS_CODE + '/predict-new-attribute';
     },
 
+    removeClassifierHandler: function (modelFamilyID, attributeName) {
+        var me = this;
+
+        Ext.MessageBox.confirm('Confirm Remove Tag', 'Do you want to remove tag <b>"' + attributeName + '"</b>?',
+            function (buttonId) {
+                if (buttonId === 'yes') {
+                    me.removeClassifier(modelFamilyID);
+                }
+            }
+        );
+    },
+
+    removeClassifier: function (modelFamilyID) {
+        var me = this;
+        var removeClassifierButton = document.getElementById("removeClassifierBtn_" + modelFamilyID);
+        removeClassifierButton.disabled = true;
+        removeClassifierButton.classList.add("disabled");
+
+        Ext.Ajax.request({
+            url: BASE_URL + '/protected/tagger/removeAttributeFromCrises.action',
+            method: 'GET',
+            params: {
+                id: modelFamilyID
+            },
+            headers: {
+                'Accept': 'application/json'
+            },
+            success: function (response) {
+                var resp = Ext.decode(response.responseText);
+                if (resp.success) {
+                    AIDRFMFunctions.setAlert("Ok", "Tag was removed successfully.");
+                    me.mainComponent.crisisModelsStore.load();
+                } else {
+                    AIDRFMFunctions.setAlert("Error", resp.message);
+                    removeClassifierButton.disabled = false;
+                    removeClassifierButton.classList.remove("disabled");
+                }
+            },
+            failure: function () {
+                removeClassifierButton.disabled = false;
+                removeClassifierButton.classList.remove("disabled");
+
+            }
+        });
+    },
+
     getTemplateStatus: function() {
         var me = this;
 

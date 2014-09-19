@@ -170,11 +170,17 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             '<img alt="Collection History image" src="/AIDRFetchManager/resources/img/AIDR/AIDR_EMBLEM_CMYK_COLOUR_HR.jpg" width="70" height="70">',
             '</td>',
 
-            '<td class="content"><table><tr>',
+            '<td class="content pdng-r-0"><table  width="100%"><tr>',
 
+            '<td class="styled-text-17" width="135px">Classifier:</td>',
+            '<td class="styled-text-17" >{[this.getModelName(values.modelID, values.attribute)]}</td>' +
+            '<td class="styled-text-17 pdng-r-0" align="right">' +
+            '<button id="removeClassifierBtn_{modelFamilyID}" class="btn btn-red {[this.isRemoveClassifierButtonHidden(values.modelID)]}" onclick="taggerCollectionDetailsController.removeClassifierHandler(\'{modelFamilyID}\', \'{attribute}\')">',
+            '<span>Remove Classifier</span>',
+            '</button>',
+            '</td>' +
 
-            '<td class="styled-text-17">Classifier:</td>',
-            '<td class="styled-text-17">{[this.getModelName(values.modelID, values.attribute)]}</td></tr>',
+            '</tr>',
 
 
             '<tr><td>Status:</td>',
@@ -228,6 +234,13 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                         Ext.util.Cookies.set(modelName, reqTrainExamNumber);
                         return 'Waiting. '+reqTrainExamNumber+' more needed to re-train.';
 
+                    }
+                },
+                isRemoveClassifierButtonHidden: function (modelId) {
+                    if (modelId && modelId != 0) {
+                        return 'hidden';
+                    } else {
+                        return '';
                     }
                 }
             }

@@ -778,3 +778,7 @@ End of the tab panel styles
     top: 23px;
     width: 130px;
 }
+
+.pdng-r-0{
+    padding-right: 0px !important;
+}
