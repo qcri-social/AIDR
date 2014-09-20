@@ -4,13 +4,13 @@
  */
 package qa.qcri.aidr.collector.beans;
 
+import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  *
@@ -24,7 +24,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
     "toFollow",
     "geoLocation",
     "languageFilter",
-    "tweetsCount",
+    "collectionCount",
     "statusCode",
     "statusMessage"
 })
@@ -51,7 +51,7 @@ public class CollectionTask {
     protected String accessToken;
     //@XmlTransient
     protected String accessTokenSecret;
-    protected Long tweetsCount;
+    protected Long collectionCount;
     
     public CollectionTask() {}		
     
@@ -235,17 +235,17 @@ public class CollectionTask {
     }
 
     /**
-     * @return the tweetsCount
+     * @return the collectionCount
      */
-    public Long getTweetsCount() {
-        return tweetsCount;
+    public Long getCollectionCount() {
+        return collectionCount;
     }
 
     /**
-     * @param tweetsCount the tweetsCount to set
+     * @param collectionCount the collectionCount to set
      */
-    public void setTweetsCount(Long tweetsCount) {
-        this.tweetsCount = tweetsCount;
+    public void setCollectionCount(Long collectionCount) {
+        this.collectionCount = collectionCount;
     }
 
     /**
@@ -319,7 +319,7 @@ public class CollectionTask {
         newTask.setStatusMessage(statusMessage);
         newTask.setToFollow(toFollow);
         newTask.setToTrack(toTrack);
-        newTask.setTweetsCount(tweetsCount);
+        newTask.setCollectionCount(collectionCount);
         newTask.setLanguageFilter(languageFilter);
 
         return newTask;
@@ -341,7 +341,7 @@ public class CollectionTask {
 
     @Override
     public String toString() {
-        return "CollectionTask{" + "collectionCode=" + collectionCode + ", collectionName=" + collectionName + ", toTrack=" + toTrack + ", toFollow=" + toFollow + ", geoLocation=" + geoLocation + ", languageFilter=" + languageFilter + ", lastDocument=" + lastDocument + ", statusCode=" + statusCode + ", statusMessage=" + statusMessage + ", consumerKey=" + consumerKey + ", consumerSecret=" + consumerSecret + ", accessToken=" + accessToken + ", accessTokenSecret=" + accessTokenSecret + ", tweetsCount=" + tweetsCount + '}';
+        return "CollectionTask{" + "collectionCode=" + collectionCode + ", collectionName=" + collectionName + ", toTrack=" + toTrack + ", toFollow=" + toFollow + ", geoLocation=" + geoLocation + ", languageFilter=" + languageFilter + ", lastDocument=" + lastDocument + ", statusCode=" + statusCode + ", statusMessage=" + statusMessage + ", consumerKey=" + consumerKey + ", consumerSecret=" + consumerSecret + ", accessToken=" + accessToken + ", accessTokenSecret=" + accessTokenSecret + ", collectionCount=" + collectionCount + '}';
     }
 
 }

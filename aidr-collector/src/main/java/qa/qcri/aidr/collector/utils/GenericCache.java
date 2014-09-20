@@ -4,13 +4,14 @@
  */
 package qa.qcri.aidr.collector.utils;
 
+import qa.qcri.aidr.collector.beans.CollectionTask;
+import qa.qcri.aidr.collector.beans.CollectorStatus;
+import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import qa.qcri.aidr.collector.beans.CollectionTask;
-import qa.qcri.aidr.collector.beans.CollectorStatus;
-import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
 
 /**
  *
@@ -121,7 +122,7 @@ public class GenericCache {
     }
 
     public String getLastDownloadedDoc(String key) {
-        return this.lastDownloadedDocumentMap.get(key).toString();
+        return this.lastDownloadedDocumentMap.get(key);
     }
 
     public CollectionTask getTwtConfigMap(String key) {
@@ -152,6 +153,36 @@ public class GenericCache {
         this.SMSCollections.remove(code);
     }
 
+    public synchronized void increaseSMSCount(String code) {
+        Long count = countersMap.get(code);
+        if(count == null)
+            count = 0L;
+        countersMap.put(code, ++count);
+    }
+
+    public synchronized Long getSMSCount(String code){
+        return countersMap.get(code);
+    }
+
+    public CollectionTask getSMSConfig(String code) {
+        CollectionTask task = new CollectionTask();
+        String status = SMSCollections.get(code);
+
+        task.setCollectionCode(code);
+        if (status != null) {
+            Long smsCounter = this.countersMap.get(code);
+            String lastDownloadedDoc = this.lastDownloadedDocumentMap.get(code);
+
+            task.setStatusCode(status);
+            task.setCollectionCount(smsCounter);
+            task.setLastDocument(lastDownloadedDoc);
+        } else {
+            task.setStatusCode(Config.STATUS_CODE_COLLECTION_NOTFOUND);
+        }
+
+        return task;
+    }
+
     public List<CollectionTask> getAllRunningCollectionTasks(){
          List<CollectionTask> collections = new ArrayList<CollectionTask>();
         if (twtConfigMap != null) {
@@ -160,7 +191,7 @@ public class GenericCache {
                 CollectionTask task = oldTask.clone();
                 Long tweetsCounter = this.countersMap.get(task.getCollectionCode());
                 String lastDownloadedDoc = this.lastDownloadedDocumentMap.get(task.getCollectionCode());
-                task.setTweetsCount(tweetsCounter);
+                task.setCollectionCount(tweetsCounter);
                 task.setLastDocument(lastDownloadedDoc);
                 collections.add(task);
             }
@@ -175,7 +206,7 @@ public class GenericCache {
                 CollectionTask task = oldTask.clone();
                 Long tweetsCounter = this.countersMap.get(task.getCollectionCode());
                 String lastDownloadedDoc = this.lastDownloadedDocumentMap.get(task.getCollectionCode());
-                task.setTweetsCount(tweetsCounter);
+                task.setCollectionCount(tweetsCounter);
                 task.setLastDocument(lastDownloadedDoc);
                 mappersList.add(ommitKeys(task));
             }
@@ -202,7 +233,7 @@ public class GenericCache {
         if (task != null) {
             Long tweetsCounter = this.countersMap.get(task.getCollectionCode());
             String lastDownloadedDoc = this.lastDownloadedDocumentMap.get(task.getCollectionCode());
-            task.setTweetsCount(tweetsCounter);
+            task.setCollectionCount(tweetsCounter);
             task.setLastDocument(lastDownloadedDoc);
             return ommitKeys(task);
         } else {

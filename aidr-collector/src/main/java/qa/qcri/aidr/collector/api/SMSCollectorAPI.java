@@ -4,13 +4,10 @@
  */
 package qa.qcri.aidr.collector.api;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
-
-import qa.qcri.aidr.collector.beans.ResponseWrapper;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.SMS;
 import qa.qcri.aidr.collector.logging.ErrorLog;
 import qa.qcri.aidr.collector.logging.Loggable;
@@ -20,17 +17,15 @@ import qa.qcri.aidr.collector.utils.GenericCache;
 import qa.qcri.aidr.common.redis.LoadShedder;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
-
-import org.glassfish.jersey.jackson.JacksonFeature;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * REST Web Service
@@ -75,7 +70,10 @@ public class SMSCollectorAPI extends Loggable {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response receive(@PathParam("collection_code") String code, SMS sms) {
-        String smsCollections = GenericCache.getInstance().getSMSCollection(code.trim());
+        GenericCache cache = GenericCache.getInstance();
+        String smsCollections = cache.getSMSCollection(code.trim());
+        cache.increaseSMSCount(code);
+        cache.setLastDownloadedDoc(code, sms.getText());
         if (Config.STATUS_CODE_COLLECTION_RUNNING.equals(smsCollections)) {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -95,14 +93,8 @@ public class SMSCollectorAPI extends Loggable {
     @Path("/status")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getStatus(@QueryParam("collection_code") String code) {
-        ResponseWrapper response = new ResponseWrapper();
-        String status = GenericCache.getInstance().getSMSCollection(code);
-        if (status != null) {
-            response.setStatusCode(status);
-        } else {
-            response.setStatusCode(Config.STATUS_CODE_COLLECTION_NOTFOUND);
-        }
-        return Response.ok(response).build();
+        CollectionTask config = GenericCache.getInstance().getSMSConfig(code);
+        return Response.ok(config).build();
     }
     
     @GET

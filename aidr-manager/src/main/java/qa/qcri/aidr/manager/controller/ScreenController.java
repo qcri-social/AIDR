@@ -13,11 +13,13 @@ import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
-import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.CollectionType;
 
 import java.util.List;
 import java.util.Map;
+
+import static qa.qcri.aidr.manager.util.CollectionStatus.RUNNING;
+import static qa.qcri.aidr.manager.util.CollectionStatus.RUNNING_WARNING;
 
 
 @Controller
@@ -438,10 +440,7 @@ public class ScreenController extends BaseController{
                     e.printStackTrace();
                 }
             }
-            if (collection.getCount() != null
-                    || collection.getStatus() != null
-                    || CollectionStatus.RUNNING.equals(collection.getStatus())
-                    || CollectionStatus.RUNNING_WARNING.equals(collection.getStatus())) {
+            if (collection.getCount() != null && (collection.getStatus() != null || RUNNING == collection.getStatus() || RUNNING_WARNING == collection.getStatus())) {
                 collectionCount += collection.getCount();
             }
             if (collection.getCollectionType() != null) {

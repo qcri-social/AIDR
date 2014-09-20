@@ -403,8 +403,8 @@ public class CollectionServiceImpl implements CollectionService {
                         collection = collectionRepository.start(collection.getId());
                     }
                 }
-                if ((response.getTweetsCount() != null && !response.getTweetsCount().equals(collection.getCount())) || response.getLastDocument() != null) {
-                    collection.setCount(response.getTweetsCount());
+                if ((response.getCollectionCount() != null && !response.getCollectionCount().equals(collection.getCount())) || response.getLastDocument() != null) {
+                    collection.setCount(response.getCollectionCount());
                     collection.setLastDocument(response.getLastDocument());
                     collectionRepository.update(collection);
                 }

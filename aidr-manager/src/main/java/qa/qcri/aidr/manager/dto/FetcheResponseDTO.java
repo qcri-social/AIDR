@@ -17,7 +17,7 @@ public class FetcheResponseDTO implements Serializable{
 	private String toTrack;
 	private String toFollow;
 	private String geoLocation;
-	private Integer tweetsCount;
+	private Integer collectionCount;
 	private String lastDocument;
         private String languageFilter;
         private String statusMessage;
@@ -79,11 +79,11 @@ public class FetcheResponseDTO implements Serializable{
 	public void setGeoLocation(String geoLocation) {
 		this.geoLocation = geoLocation;
 	}
-	public Integer getTweetsCount() {
-		return tweetsCount;
+	public Integer getCollectionCount() {
+		return collectionCount;
 	}
-	public void setTweetsCount(Integer tweetsCount) {
-		this.tweetsCount = tweetsCount;
+	public void setCollectionCount(Integer collectionCount) {
+		this.collectionCount = collectionCount;
 	}
 	public String getLastDocument() {
 		return lastDocument;
