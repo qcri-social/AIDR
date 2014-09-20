@@ -91,7 +91,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
             cls: 'aidr-grid',
             columns: [
                 {
-                    xtype: 'gridcolumn', dataIndex: 'name', text: 'Collection', flex: 1,
+                    xtype: 'gridcolumn', dataIndex: 'name', text: 'Name', flex: 1,
                     renderer: function (value, meta, record) {
                         return me.getCollectionNameAsLink(value, record.data.code);
                     }
@@ -142,15 +142,17 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'taggersCount', text: 'Taggers', width: 70, sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'taggersCount', text: 'Links', width: 80, sortable: false,
                     renderer: function (value, meta, record) {
-                        meta.style = "float:right; padding-top: 9px;";
+                        meta.style = "float:left; padding-left:7px;";
+                        var rv = me.getCollectorLink(record.data.code);
                         if (value){
                             var result = Ext.util.Format.number(value, '0,000');
-                            return me.getTaggerLink(value, record.data.code);
+                            rv +=  "</br>" + me.getTaggerLink(value, record.data.code);
                         } else {
-                            return 0;
+                            meta.style += "padding-top: 9px;"
                         }
+                        return rv;
                     }
                 },
                 {
@@ -306,7 +308,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
             cls: 'aidr-grid',
             columns: [
                 {
-                    xtype: 'gridcolumn', dataIndex: 'name', text: 'Collection', flex: 1,
+                    xtype: 'gridcolumn', dataIndex: 'name', text: 'Name', flex: 1,
                     renderer: function (value, meta, record) {
                         return me.getCollectionNameAsLink(value, record.data.code);
                     }
@@ -338,15 +340,17 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'taggersCount', text: 'Taggers', width: 70, sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'taggersCount', text: 'Links', width: 80, sortable: false,
                     renderer: function (value, meta, record) {
-                        meta.style = "float:right; padding-top: 9px;";
+                        meta.style = "float:left; padding-left:7px;";
+                        var rv = me.getCollectorLink(record.data.code);
                         if (value){
                             var result = Ext.util.Format.number(value, '0,000');
-                            return me.getTaggerLink(value, record.data.code);
+                            rv +=  "</br>" + me.getTaggerLink(value, record.data.code);
                         } else {
-                            return 0;
+                            meta.style += "padding-top: 9px;"
                         }
+                        return rv;
                     }
                 },
                 {
@@ -495,7 +499,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
 
     getCollectionNameAsLink: function (value, code) {
         if (value && code) {
-            return '<a href="' + BASE_URL + '/protected/' + code + '/collection-details">' + value + '</a>';
+            return '<a href="' + BASE_URL + '/protected/' + code + '/interactive-view-download">' + value + '</a>';
         } else {
             return '<span class="na-text">Not specified</span>';
         }
@@ -503,7 +507,15 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
 
     getTaggerLink: function (value, code) {
         if (value && code) {
-            return '<a href="' + BASE_URL + '/protected/' + code + '/tagger-collection-details">' + value + '</a>';
+            return '<a href="' + BASE_URL + '/protected/' + code + '/tagger-collection-details">classifier (' + value + ')</a>';
+        } else {
+            return '<span class="na-text">Not specified</span>';
+        }
+    },
+
+    getCollectorLink: function (code) {
+        if (code) {
+            return '<a href="' + BASE_URL + '/protected/' + code + '/collection-details">collector</a>';
         } else {
             return '<span class="na-text">Not specified</span>';
         }
