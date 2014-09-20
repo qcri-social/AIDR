@@ -11,18 +11,8 @@
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/style.css"/>
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/extjs/ext-all.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/vendor/moment-with-langs.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/vendor/moment-lang-en.js"></script>
     <script type="text/javascript">
-        moment.lang('en', {
-            calendar : {
-                lastDay : '[Yesterday at] LT',
-                sameDay : '[Today at] LT',
-                nextDay : '[Tomorrow at] LT',
-                lastWeek : '[last] dddd [at] LT',
-                nextWeek : 'dddd [at] LT',
-                sameElse : 'LL'
-            }
-        });
-
         Ext.Loader.setConfig({
                 enabled: true,
                 disableCaching: false,
