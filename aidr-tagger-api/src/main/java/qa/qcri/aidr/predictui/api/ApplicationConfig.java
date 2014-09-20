@@ -4,13 +4,11 @@
  */
 package qa.qcri.aidr.predictui.api;
 
-import java.util.Set;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.moxy.json.MoxyJsonFeature;
 
 import javax.ws.rs.core.Application;
-
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.jsonp.JsonProcessingFeature;
-import org.glassfish.jersey.moxy.json.MoxyJsonFeature;
+import java.util.Set;
 
 /**
  *
@@ -34,7 +32,6 @@ public class ApplicationConfig extends Application {
     private void addRestResourceClasses(Set<Class<?>> resources) {
     	resources.add(MoxyJsonFeature.class);
     	resources.add(JacksonFeature.class);
-        resources.add(JsonProcessingFeature.class);
     	resources.add(qa.qcri.aidr.predictui.api.CollectionResource.class);
         resources.add(qa.qcri.aidr.predictui.api.CrisisManagementResource.class);
         resources.add(qa.qcri.aidr.predictui.api.CrisisResource.class);

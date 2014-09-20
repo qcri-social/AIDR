@@ -4,12 +4,17 @@
  */
 package qa.qcri.aidr.predictui.api;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import org.apache.log4j.Logger;
+import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.predictui.dto.CrisisDTO;
+import qa.qcri.aidr.predictui.dto.CrisisTypeDTO;
+import qa.qcri.aidr.predictui.entities.Crisis;
+import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
+import qa.qcri.aidr.predictui.util.Config;
+import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -18,24 +23,14 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-
-import org.apache.log4j.Logger;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
-
-
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.predictui.dto.CrisisDTO;
-import qa.qcri.aidr.predictui.dto.CrisisTypeDTO;
-import qa.qcri.aidr.predictui.entities.Crisis;
-import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
-import qa.qcri.aidr.predictui.util.Config;
-import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
 /**
  * REST Web Service
@@ -103,11 +98,12 @@ public class CrisisResource {
 			crisisId = 0;
 		}
 		//TODO: Following way of creating JSON should be changed through a proper and automatic way
+        Gson gson = new Gson();
 		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("crisisCode", crisisCode);
 		result.put("crisisId", crisisId);
 		//String response = "{\"crisisCode\":\"" + crisisCode + "\", \"crisisId\":\"" + crisisId + "\"}";
-		return Response.ok(result.toString()).build();
+		return Response.ok(gson.toJson(result)).build();
 	}
 
 	@POST
