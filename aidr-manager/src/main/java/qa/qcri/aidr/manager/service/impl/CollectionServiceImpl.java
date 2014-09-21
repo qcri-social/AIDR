@@ -231,20 +231,7 @@ public class CollectionServiceImpl implements CollectionService {
     @Transactional(readOnly = false)
     public AidrCollection stop(Integer collectionId) throws Exception {
         AidrCollection collection = collectionRepository.findById(collectionId);
-        AidrCollection updateCollection = stopAidrFetcher(collection);
-
-        AidrCollectionLog collectionLog = new AidrCollectionLog();
-        collectionLog.setCount(collection.getCount());
-        collectionLog.setEndDate(collection.getEndDate());
-        collectionLog.setFollow(collection.getFollow());
-        collectionLog.setGeo(collection.getGeo());
-        collectionLog.setLangFilters(collection.getLangFilters());
-        collectionLog.setStartDate(collection.getStartDate());
-        collectionLog.setTrack(collection.getTrack());
-        collectionLog.setCollectionID(collectionId);
-        collectionLogRepository.save(collectionLog);
-
-        return updateCollection;
+        return stopAidrFetcher(collection);
     }
 
     public AidrCollection startFetcher(FetcherRequestDTO fetcherRequest, AidrCollection aidrCollection) {
@@ -403,10 +390,21 @@ public class CollectionServiceImpl implements CollectionService {
                         collection = collectionRepository.start(collection.getId());
                     }
                 }
-                if ((response.getCollectionCount() != null && !response.getCollectionCount().equals(collection.getCount())) || response.getLastDocument() != null) {
+                if (response.getCollectionCount() != null) {
                     collection.setCount(response.getCollectionCount());
                     collection.setLastDocument(response.getLastDocument());
                     collectionRepository.update(collection);
+
+                    AidrCollectionLog collectionLog = new AidrCollectionLog();
+                    collectionLog.setCount(response.getCollectionCount());
+                    collectionLog.setEndDate(collection.getEndDate());
+                    collectionLog.setFollow(collection.getFollow());
+                    collectionLog.setGeo(collection.getGeo());
+                    collectionLog.setLangFilters(collection.getLangFilters());
+                    collectionLog.setStartDate(collection.getStartDate());
+                    collectionLog.setTrack(collection.getTrack());
+                    collectionLog.setCollectionID(collection.getId());
+                    collectionLogRepository.save(collectionLog);
                 }
             }
             return collection;
