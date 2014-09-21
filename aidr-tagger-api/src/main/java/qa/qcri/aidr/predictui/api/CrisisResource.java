@@ -220,11 +220,11 @@ public class CrisisResource {
 			if (crisisLocalEJB.isCrisisExists(crisisCode) != null) {
 				List<String> crisisList = new ArrayList<String>();
 				crisisList.add(crisisCode);
-				result = crisisLocalEJB.countClassifiersByCrisisCodes(crisisList);
-				System.out.println("retrieved result: " + result);
-				if (result != null) {
+				Map<String, Integer> retVal = crisisLocalEJB.countClassifiersByCrisisCodes(crisisList);
+				System.out.println("retrieved result: " + retVal);
+				if (retVal != null) {
+					result.put("count", retVal.get(crisisCode));
 					return Response.ok(mapper.writeValueAsString(result)).build();
-					//return result;
 				}
 			}
 			result.put("count", 0);
