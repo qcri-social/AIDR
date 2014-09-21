@@ -4,12 +4,16 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+import org.codehaus.jackson.annotate.JsonMethod;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import qa.qcri.aidr.common.code.JacksonWrapper;
 import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
@@ -58,7 +62,8 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/crisisType/all");
 			WebTarget webResource = client.target(taggerMainUrl + "/crisisType/all");
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
 			//        .get(ClientResponse.class);
@@ -69,6 +74,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 
 			TaggerAllCrisesTypesResponse crisesTypesResponse = objectMapper.readValue(jsonResponse, TaggerAllCrisesTypesResponse.class);
+			
 			if (crisesTypesResponse.getCrisisTypes() != null) {
 				logger.info("Tagger returned " + crisesTypesResponse.getCrisisTypes().size() + " crises types");
 			}
@@ -89,7 +95,8 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/crisis?userID=" + userId);
 			WebTarget webResource = client.target(taggerMainUrl + "/crisis?userID=" + userId);
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
 			//        .get(ClientResponse.class);
@@ -99,6 +106,7 @@ public class TaggerServiceImpl implements TaggerService {
 			String jsonResponse = clientResponse.readEntity(String.class); 
 
 			TaggerAllCrisesResponse taggerAllCrisesResponse = objectMapper.readValue(jsonResponse, TaggerAllCrisesResponse.class);
+			
 			if (taggerAllCrisesResponse.getCrisises() != null) {
 				logger.info("Tagger returned " + taggerAllCrisesResponse.getCrisises().size() + " crisis for user");
 			}
@@ -119,7 +127,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/crisis");
 			WebTarget webResource = client.target(taggerMainUrl + "/crisis");
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
@@ -144,7 +152,8 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/attribute/crisis/all?exceptCrisis=" + crisisID);
 			WebTarget webResource = client.target(taggerMainUrl + "/attribute/crisis/all?exceptCrisis=" + crisisID);
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
 			//        .get(ClientResponse.class);
@@ -154,6 +163,7 @@ public class TaggerServiceImpl implements TaggerService {
 			String jsonResponse = clientResponse.readEntity(String.class); 
 
 			TaggerCrisisAttributesResponse crisisAttributesResponse = objectMapper.readValue(jsonResponse, TaggerCrisisAttributesResponse.class);
+			
 			if (crisisAttributesResponse.getCrisisAttributes() != null) {
 				logger.info("Tagger returned " + crisisAttributesResponse.getCrisisAttributes().size() + " attributes available for crises with ID " + crisisID);
 			} else {
@@ -174,11 +184,13 @@ public class TaggerServiceImpl implements TaggerService {
 
             String input = "";
 
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+            objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             input = objectMapper.writeValueAsString(collectionCodes);
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).post(Entity.json(input));
             String jsonResponse = clientResponse.readEntity(String.class);
             HashMap<String, Integer>  rv = objectMapper.readValue(jsonResponse, HashMap.class);
+            
             return rv;
         } catch (Exception e) {
             throw new AidrException("Error while getting amount of classifiers by collection codes in Tagger", e);
@@ -192,7 +204,8 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/crisis/code/" + code);
 			WebTarget webResource = client.target(taggerMainUrl + "/crisis/code/" + code);
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
 			//        .get(ClientResponse.class);
@@ -203,6 +216,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 
 			TaggerCrisisExist crisisExist = objectMapper.readValue(jsonResponse, TaggerCrisisExist.class);
+			
 			if (crisisExist.getCrisisId() != null) {
 				logger.info("Crises with the code " + code + " already exist in Tagger.");
 				return crisisExist;
@@ -224,8 +238,8 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/user/" + userName);
 			WebTarget webResource = client.target(taggerMainUrl + "/user/" + userName);
 
-			ObjectMapper objectMapper = new ObjectMapper();
-
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//         .accept(MediaType.APPLICATION_JSON)
 			//        .get(ClientResponse.class);
@@ -235,6 +249,7 @@ public class TaggerServiceImpl implements TaggerService {
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			TaggerUser taggerUser = objectMapper.readValue(jsonResponse, TaggerUser.class);
+			
 			if (taggerUser != null && taggerUser.getUserID() != null) {
 				logger.info("User with the user name " + userName + " already exist in Tagger and has ID: " + taggerUser.getUserID());
 				return taggerUser.getUserID();
@@ -256,9 +271,9 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/user");
 			WebTarget webResource = client.target(taggerMainUrl + "/user");
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
-
+			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
 			//        .post(ClientResponse.class, objectMapper.writeValueAsString(taggerUser));
@@ -269,6 +284,7 @@ public class TaggerServiceImpl implements TaggerService {
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			TaggerUser createdUser = objectMapper.readValue(jsonResponse, TaggerUser.class);
+			
 			if (createdUser != null && createdUser.getUserID() != null) {
 				logger.info("User with ID " + createdUser.getUserID() + " was created in Tagger");
 				return createdUser.getUserID();
@@ -290,9 +306,9 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/modelfamily");
 			WebTarget webResource = client.target(taggerMainUrl + "/modelfamily");
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
-
+			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
 			//        .post(ClientResponse.class, objectMapper.writeValueAsString(modelFamily));
@@ -324,7 +340,8 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/crisis/by-code/" + code);
 			WebTarget webResource = client.target(taggerMainUrl + "/crisis/by-code/" + code);
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
 			//        .get(ClientResponse.class);
@@ -354,7 +371,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/crisis");
 			WebTarget webResource = client.target(taggerMainUrl + "/crisis");
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
 			//        .put(ClientResponse.class, objectMapper.writeValueAsString(crisis));
@@ -387,7 +404,7 @@ public class TaggerServiceImpl implements TaggerService {
 			int retrainingThreshold = getCurrentRetrainingThreshold();
 			WebTarget webResource = client.target(taggerMainUrl + "/model/crisis/" + crisisID);
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
 			//        .get(ClientResponse.class);
@@ -436,7 +453,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/attribute");
 			WebTarget webResource = client.target(taggerMainUrl + "/attribute");
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
@@ -469,7 +486,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/attribute/" + id);
 			WebTarget webResource = client.target(taggerMainUrl + "/attribute/" + id);
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
@@ -500,7 +517,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/label/" + id);
 			WebTarget webResource = client.target(taggerMainUrl + "/label/" + id);
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
@@ -530,7 +547,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/attribute/" + id);
 			WebTarget webResource = client.target(taggerMainUrl + "/attribute/" + id);
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
@@ -566,7 +583,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/document/removeTrainingExample/" + id);
 			WebTarget webResource = client.target(taggerMainUrl + "/document/removeTrainingExample/" + id);
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
@@ -603,7 +620,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/modelfamily/" + modelFamilyID);
 			WebTarget webResource = client.target(taggerMainUrl + "/modelfamily/" + modelFamilyID);
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
@@ -643,7 +660,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/attribute");
 			WebTarget webResource = client.target(taggerMainUrl + "/attribute");
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
@@ -678,7 +695,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/label");
 			WebTarget webResource = client.target(taggerMainUrl + "/label");
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
@@ -713,7 +730,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/label");
 			WebTarget webResource = client.target(taggerMainUrl + "/label");
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
@@ -744,7 +761,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/attribute/code/" + code);
 			WebTarget webResource = client.target(taggerMainUrl + "/attribute/code/" + code);
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
 			//        .get(ClientResponse.class);
@@ -781,7 +798,7 @@ public class TaggerServiceImpl implements TaggerService {
 					+ "&sortColumn=" + sortColumn
 					+ "&sortDirection=" + sortDirection);
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
 			//        .get(ClientResponse.class);
@@ -881,7 +898,7 @@ public class TaggerServiceImpl implements TaggerService {
 		try {
 			//WebResource webResource = client.resource(crowdsourcingAPIMainUrl + "/taskanswer/save");
 			WebTarget webResource = client.target(crowdsourcingAPIMainUrl + "/taskanswer/save");
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 
 			logger.info("saveTaskAnswer - postData : " + objectMapper.writeValueAsString(taskAnswer));
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
@@ -932,7 +949,7 @@ public class TaggerServiceImpl implements TaggerService {
 					+ "?start=" + start
 					+ "&limit=" + limit);
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
 			//        .get(ClientResponse.class);
@@ -958,7 +975,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/modelNominalLabel/" + modelID);
 			WebTarget webResource = client.target(taggerMainUrl + "/modelNominalLabel/" + modelID);
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
 			//        .get(ClientResponse.class);
@@ -968,6 +985,7 @@ public class TaggerServiceImpl implements TaggerService {
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			TaggerModelLabelsResponse modelLabelsResponse = objectMapper.readValue(jsonResponse, TaggerModelLabelsResponse.class);
+			
 			if (modelLabelsResponse.getModelNominalLabelsDTO() != null) {
 				logger.info("Tagger returned " + modelLabelsResponse.getModelNominalLabelsDTO().size() + " labels for model with ID " + modelID);
 			}
@@ -986,7 +1004,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			WebTarget webResource = client.target(taggerMainUrl + "/train/samplecountthreshold");
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
 			//String jsonResponse = clientResponse.getEntity(String.class);
@@ -1010,7 +1028,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/modelfamily/taggers-by-codes");
 			WebTarget webResource = client.target(taggerMainUrl + "/modelfamily/taggers-by-codes");
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
@@ -1043,7 +1061,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/misc/ping");
 			WebTarget webResource = client.target(taggerMainUrl + "/misc/ping");
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
 			//        .get(ClientResponse.class);
@@ -1070,7 +1088,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(crowdsourcingAPIMainUrl + "/util/ping/heartbeat");
 			WebTarget webResource = client.target(crowdsourcingAPIMainUrl + "/util/ping/heartbeat");
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
 			//        .get(ClientResponse.class);
@@ -1097,7 +1115,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(outputAPIMainUrl + "/manage/ping");
 			WebTarget webResource = client.target(outputAPIMainUrl + "/manage/ping");
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
 			//        .accept(MediaType.APPLICATION_JSON)
 			//        .get(ClientResponse.class);
@@ -1340,7 +1358,7 @@ public class TaggerServiceImpl implements TaggerService {
 		try{
 			String retrainingThreshold = this.getRetainingThreshold();
 
-			ObjectMapper mapper = new ObjectMapper();
+			ObjectMapper mapper = JacksonWrapper.getObjectMapper();
 			JsonFactory factory = mapper.getJsonFactory(); // since 2.1 use mapper.getFactory() instead
 			JsonParser jp = factory.createJsonParser(retrainingThreshold);
 			JsonNode actualObj = mapper.readTree(jp);
@@ -1365,7 +1383,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//WebResource webResource = client.resource(taggerMainUrl + "/modelfamily/" + modelFamilyID);
 			WebTarget webResource = client.target(taggerMainUrl + "/modelfamily/" + modelFamilyID);
 
-			ObjectMapper objectMapper = new ObjectMapper();
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
