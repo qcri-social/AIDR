@@ -24,8 +24,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-
-//import org.codehaus.jackson.annotate.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -61,14 +59,10 @@ public class Users implements Serializable {
     @Column(name = "role")
     @XmlElement private String role;
     
-    @XmlTransient
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
     @JsonManagedReference
     private Collection<Crisis> crisisCollection;
     
-    @XmlTransient
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
     @JsonManagedReference
     private Collection<NominalAttribute> nominalAttributeCollection;

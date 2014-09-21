@@ -29,7 +29,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-//import org.codehaus.jackson.annotate.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -92,7 +91,6 @@ public class Model implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "model")
     @JsonManagedReference
     private Collection<ModelNominalLabel> modelNominalLabelCollection;
-    
 //    @OneToMany(mappedBy = "model")
 //    private Collection<ModelFamily> modelFamilyCollection;
     
@@ -162,9 +160,7 @@ public class Model implements Serializable {
     public void setTrainingTime(Date trainingTime) {
         this.trainingTime = trainingTime;
     }
-    
-    @XmlTransient
-    @JsonIgnore
+
     public ModelFamily getModelFamily() {
         return modelFamily;
     }

@@ -15,11 +15,15 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.log4j.Logger;
+
+
+//import org.apache.log4j.Logger;
 //import org.codehaus.jackson.map.ObjectMapper;
 //import org.codehaus.jackson.type.TypeReference;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,7 +51,8 @@ public class DocumentResource {
 	@EJB
 	private TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
 
-	private static Logger logger = Logger.getLogger(DocumentResource.class);
+	//private static Logger logger = Logger.getLogger(DocumentResource.class);
+	private static Logger logger = LoggerFactory.getLogger(DocumentResource.class);
 	private static ErrorLog elog = new ErrorLog();
 	
 	public DocumentResource() {

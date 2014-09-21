@@ -7,7 +7,7 @@ package qa.qcri.aidr.predictui.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.dto.CrisisDTO;
 import qa.qcri.aidr.predictui.dto.CrisisTypeDTO;
@@ -29,8 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * REST Web Service
@@ -41,8 +41,8 @@ import java.util.Map;
 @Stateless
 public class CrisisResource {
 
-	private Logger logger = Logger.getLogger(CrisisResource.class.getName());
-	//private Logger logger = LoggerFactory.getLogger(CrisisResource.class);
+	//private Logger logger = Logger.getLogger(CrisisResource.class.getName());
+	private Logger logger = LoggerFactory.getLogger(CrisisResource.class);
 	private ErrorLog elog = new ErrorLog();
 
 	@Context

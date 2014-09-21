@@ -18,7 +18,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
+
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.dto.CrisisDTO;
@@ -45,7 +50,8 @@ public class TrainingDataResource {
     public TrainingDataResource() {
     }
     
-    private static Logger logger = Logger.getLogger(TrainingDataResource.class);
+    //private static Logger logger = Logger.getLogger(TrainingDataResource.class);
+    private static Logger logger = LoggerFactory.getLogger(TrainingDataResource.class);
     private static ErrorLog elog = new ErrorLog();
     
     @GET

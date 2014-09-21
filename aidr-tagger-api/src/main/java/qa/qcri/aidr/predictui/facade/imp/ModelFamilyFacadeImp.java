@@ -4,6 +4,7 @@
  */
 package qa.qcri.aidr.predictui.facade.imp;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.dto.TaggersForCodes;
 import qa.qcri.aidr.predictui.facade.*;
 
@@ -15,6 +16,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.predictui.entities.Crisis;
 import qa.qcri.aidr.predictui.entities.ModelFamily;
@@ -30,7 +34,10 @@ public class ModelFamilyFacadeImp implements ModelFamilyFacade{
 
 	@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
 	private EntityManager em;
-
+	
+	private static Logger logger = LoggerFactory.getLogger(ModelFamilyFacadeImp.class);
+	private static ErrorLog elog = new ErrorLog();
+	
 	public List<ModelFamily> getAllModelFamilies() {
 		Query query = em.createNamedQuery("ModelFamily.findAll", ModelFamily.class);
 		try {

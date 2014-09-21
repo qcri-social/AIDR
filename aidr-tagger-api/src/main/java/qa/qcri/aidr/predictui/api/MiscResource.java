@@ -20,7 +20,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
+
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -41,7 +46,8 @@ public class MiscResource {
 	public MiscResource() {
 	}
 
-	private static Logger logger = Logger.getLogger(MiscResource.class);
+	//private static Logger logger = Logger.getLogger(MiscResource.class);
+	private static Logger logger = LoggerFactory.getLogger(MiscResource.class);
 	private static ErrorLog elog = new ErrorLog();
 
 	@GET

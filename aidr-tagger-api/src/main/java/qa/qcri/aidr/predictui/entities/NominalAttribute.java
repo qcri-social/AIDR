@@ -28,7 +28,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-//import org.codehaus.jackson.annotate.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -70,6 +69,7 @@ public class NominalAttribute implements Serializable {
     @Size(min = 1, max = 64)
     @Column(name = "code")
     @XmlElement private String code;
+    
 //    @ManyToMany(mappedBy = "nominalAttributeCollection")
 //    private Collection<Crisis> crisisCollection;
     
@@ -152,8 +152,7 @@ public class NominalAttribute implements Serializable {
         this.modelFamilyCollection = modelFamilyCollection;
     }
     
-    @XmlTransient
-    @JsonIgnore
+    //@XmlTransient
     public Users getUsers() {
         return users;
     }

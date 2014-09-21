@@ -27,7 +27,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
+
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.predictui.entities.ModelFamily;
 import qa.qcri.aidr.predictui.facade.ModelFamilyFacade;
@@ -47,7 +52,8 @@ public class ModelFamilyResource {
     @EJB
     private ModelFamilyFacade modelFamilyLocalEJB;
 
-    private static Logger logger = Logger.getLogger(ModelFamilyResource.class);
+    //private static Logger logger = Logger.getLogger(ModelFamilyResource.class);
+    private static Logger logger = LoggerFactory.getLogger(ModelFamilyResource.class);
     private static ErrorLog elog = new ErrorLog();
     
     public ModelFamilyResource() {
