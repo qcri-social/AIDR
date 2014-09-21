@@ -5,10 +5,12 @@
 package qa.qcri.aidr.predictui.entities;
 
 import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  *
@@ -19,11 +21,12 @@ public class ModelNominalLabelPK implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "modelID")
-    private int modelID;
+    @XmlElement private int modelID;
+    
     @Basic(optional = false)
     @NotNull
     @Column(name = "nominalLabelID")
-    private int nominalLabelID;
+    @XmlElement private int nominalLabelID;
 
     public ModelNominalLabelPK() {
     }

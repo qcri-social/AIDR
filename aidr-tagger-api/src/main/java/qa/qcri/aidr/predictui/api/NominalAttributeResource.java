@@ -28,12 +28,17 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
+
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.predictui.dto.CrisisAttributesDTO;
-import qa.qcri.aidr.predictui.entities.Crisis;
+//import qa.qcri.aidr.predictui.entities.Crisis;
 import qa.qcri.aidr.predictui.entities.NominalAttribute;
-import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
+//import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 import qa.qcri.aidr.predictui.facade.NominalAttributeFacade;
 import qa.qcri.aidr.predictui.util.Config;
 
@@ -54,7 +59,8 @@ public class NominalAttributeResource {
 	public NominalAttributeResource() {
 	}
 
-	private static Logger logger = Logger.getLogger(NominalAttributeResource.class);
+	//private static Logger logger = Logger.getLogger(NominalAttributeResource.class);
+	private static Logger logger = LoggerFactory.getLogger(NominalAttributeResource.class);
 	private static ErrorLog elog = new ErrorLog();
 
 	@GET

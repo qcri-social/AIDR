@@ -20,10 +20,15 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 //import org.codehaus.jackson.map.ObjectMapper;
 //import org.hibernate.criterion.Criterion;
 //import org.hibernate.criterion.Restrictions;
+
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -47,7 +52,8 @@ public class MiscResourceImp implements MiscResourceFacade {
     @EJB
 	private TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
     
-    private static Logger logger = Logger.getLogger(MiscResourceImp.class);
+    //private static Logger logger = Logger.getLogger(MiscResourceImp.class);
+    private static Logger logger = LoggerFactory.getLogger(MiscResourceImp.class);
     private static ErrorLog elog = new ErrorLog();
     
     @Override

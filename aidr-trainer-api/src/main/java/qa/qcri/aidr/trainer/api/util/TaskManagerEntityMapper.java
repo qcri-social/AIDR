@@ -135,7 +135,7 @@ public class TaskManagerEntityMapper {
 			Collection<NominalLabel> nominalLabelList = new ArrayList<NominalLabel>();
 			for (qa.qcri.aidr.task.entities.NominalLabel t: list) {
 				if (t != null) {
-					NominalLabel nominalLabel  = new NominalLabel(t.getNominalLabelID(), t.getNominalLabelCode(), t.getName(), t.getDescription());
+					NominalLabel nominalLabel  = new NominalLabel(t.getNominalLabelID().longValue(), t.getNominalLabelCode(), t.getName(), t.getDescription());
 					nominalLabelList.add(nominalLabel);
 				}
 			}

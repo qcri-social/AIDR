@@ -26,7 +26,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-//import org.codehaus.jackson.annotate.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -65,9 +64,9 @@ public class ModelFamily implements Serializable {
     private NominalAttribute nominalAttribute;
 
     //    @JoinColumn(name = "currentModelID", referencedColumnName = "modelID")
-    //    @ManyToOne
-    //    private Model model;
-    
+//    @ManyToOne
+//    private Model model;
+   
     @JoinColumn(name = "crisisID", referencedColumnName = "crisisID")
     @ManyToOne(optional = false)
     @JsonBackReference
@@ -110,9 +109,7 @@ public class ModelFamily implements Serializable {
     public void setModelCollection(Collection<Model> modelCollection) {
         this.modelCollection = modelCollection;
     }
-    
-    @XmlTransient
-    @JsonIgnore
+
     public NominalAttribute getNominalAttribute() {
         return nominalAttribute;
     }
@@ -130,7 +127,7 @@ public class ModelFamily implements Serializable {
 //    }
 
     @XmlTransient
-    @JsonIgnore    
+    @JsonIgnore
     public Crisis getCrisis() {
         return crisis;
     }

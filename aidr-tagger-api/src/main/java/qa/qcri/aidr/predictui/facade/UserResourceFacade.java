@@ -4,7 +4,10 @@
  */
 package qa.qcri.aidr.predictui.facade;
 
+import java.util.List;
+
 import javax.ejb.Local;
+
 import qa.qcri.aidr.predictui.entities.Users;
 
 /**
@@ -13,9 +16,13 @@ import qa.qcri.aidr.predictui.entities.Users;
  */
 @Local
 public interface UserResourceFacade {
-    
-   public Users addUser(Users user);
-   
-    public Users getUserByName(String userName);
-   
+
+	public Users addUser(Users user);
+
+	public Users getUserByName(String userName);
+
+	public Users getUserByID(Integer userID);
+
+	public List<Users> getAllUsers();
+
 }

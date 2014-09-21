@@ -15,7 +15,12 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
+
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.entities.Crisis;
@@ -31,7 +36,8 @@ import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
  */
 @Stateless
 public class CrisisResourceImp implements CrisisResourceFacade {
-	private static Logger logger = Logger.getLogger(CrisisResourceImp.class);
+	//private static Logger logger = Logger.getLogger(CrisisResourceImp.class);
+	private static Logger logger = LoggerFactory.getLogger(CrisisResourceImp.class);
 	private static ErrorLog elog = new ErrorLog();
 
 	@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
@@ -155,7 +161,7 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 		String sqlQuery = "select cr.code, " +
 				"       (select count(*) from model_family mf where mf.crisisID = cr.crisisID) as mf_amount " +
 				" from crisis cr " +
-				" where cr.code in :codes";
+				" where cr.code in (:codes)";
 		try {
 			Query nativeQuery = em.createNativeQuery(sqlQuery);
 			nativeQuery.setParameter("codes", codes);

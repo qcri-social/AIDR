@@ -15,7 +15,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import qa.qcri.aidr.predictui.entities.Document;
-import qa.qcri.aidr.predictui.entities.TaskAssignment;
+//import qa.qcri.aidr.predictui.entities.TaskAssignment;
 import qa.qcri.aidr.predictui.entities.NominalLabel;
 import qa.qcri.aidr.common.logging.ErrorLog;
 
@@ -70,7 +70,10 @@ public class TaskManagerEntityMapper {
 		Document doc = new Document();
 		if (document != null) {
 			doc.setDocumentID(document.getDocumentID());
+			
 			doc.setCrisisID(document.getCrisisID());
+			//doc.setCrisis(null);
+			
 			doc.setDoctype(document.getDoctype());
 			doc.setData(document.getData());
 			doc.setIsEvaluationSet(document.getIsEvaluationSet());
@@ -173,7 +176,8 @@ public class TaskManagerEntityMapper {
 		}
 		return docList;
 	}
-
+	
+	/*
 	public TaskAssignment transformTaskAssignment(qa.qcri.aidr.task.entities.TaskAssignment t) {
 		if (t != null) {
 			TaskAssignment taskAssignment  = new TaskAssignment(t.getDocumentID(), t.getUserID(), t.getAssignedAt());
@@ -189,7 +193,8 @@ public class TaskManagerEntityMapper {
 		}
 		return null;
 	}
-
+	*/
+	
 	public Collection<NominalLabel> transformNominalLabelCollection(Collection<qa.qcri.aidr.task.entities.NominalLabel> list) {
 		if (list != null) {
 			Collection<NominalLabel> nominalLabelList = new ArrayList<NominalLabel>();

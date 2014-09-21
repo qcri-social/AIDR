@@ -4,6 +4,8 @@
  */
 package qa.qcri.aidr.predictui.api;
 
+import java.util.List;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
@@ -17,10 +19,20 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+//import org.apache.log4j.Logger;
+
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.entities.Users;
 import qa.qcri.aidr.predictui.facade.UserResourceFacade;
+import qa.qcri.aidr.predictui.util.Config;
+import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
 /**
  * REST Web Service
@@ -36,6 +48,10 @@ public class UserResource {
     @EJB
     private UserResourceFacade userLocalEJB;
 
+    //private Logger logger = Logger.getLogger(UserResource.class.getName());
+	private Logger logger = LoggerFactory.getLogger(UserResource.class);
+	private ErrorLog elog = new ErrorLog();
+    
     public UserResource() {
     }
 
@@ -86,15 +102,31 @@ public class UserResource {
     @GET 
     @Path("/id/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Users findUserByID(@PathParam("id") String userName) {
+    public Users findUserByID(@PathParam("id") Integer id) {
 
-        Users user = userLocalEJB.getUserByName(userName);
+        Users user = userLocalEJB.getUserByID(id);
         System.out.println("fetched user data: " + (user != null ? user.getUserID() : "null"));
         if (user == null){
 //            return the same object but with empty id and role. By empty id we can see that user does not exist.
-            user = new Users(null, userName, null);
+            user = new Users(id, "doesn't exist", null);
         }
         return user;
 
+    }
+    
+    @GET 
+    @Path("/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findAllUsers() {
+        List<Users> users = userLocalEJB.getAllUsers();
+        logger.info("fetched user data size: " + (users != null ? users.size(): "null"));
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+        	return Response.ok(mapper.writeValueAsString(users)).build();
+        } catch (Exception e) {
+        	logger.error("Error in getting all users");
+        	logger.error(elog.toStringException(e));
+        	return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
+        }
     }
 }

@@ -14,7 +14,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
+
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.entities.Crisis;
@@ -47,7 +52,8 @@ public class CrisisManagementResource {
 	@EJB
 	private TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
 
-	private static Logger logger = Logger.getLogger(CrisisManagementResource.class);
+	//private static Logger logger = Logger.getLogger(CrisisManagementResource.class);
+	private static Logger logger = LoggerFactory.getLogger(CrisisManagementResource.class);
 	private static ErrorLog elog = new ErrorLog();
 			
 	public CrisisManagementResource() {

@@ -74,7 +74,7 @@ public class ModelNominalLabel implements Serializable {
     public ModelNominalLabel(int modelID, int nominalLabelID) {
         this.modelNominalLabelPK = new ModelNominalLabelPK(modelID, nominalLabelID);
     }
-    
+
     public ModelNominalLabelPK getModelNominalLabelPK() {
         return modelNominalLabelPK;
     }
@@ -124,9 +124,7 @@ public class ModelNominalLabel implements Serializable {
     public void setModel(Model model) {
         this.model = model;
     }
-    
-    @XmlTransient
-    @JsonIgnore
+
     public NominalLabel getNominalLabel() {
         return nominalLabel;
     }
