@@ -72,14 +72,15 @@ public class SMSCollectorAPI extends Loggable {
     public Response receive(@PathParam("collection_code") String code, SMS sms) {
         GenericCache cache = GenericCache.getInstance();
         String smsCollections = cache.getSMSCollection(code.trim());
-        cache.increaseSMSCount(code);
-        cache.setLastDownloadedDoc(code, sms.getText());
+        
         if (Config.STATUS_CODE_COLLECTION_RUNNING.equals(smsCollections)) {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 String channelName = String.format(CHANNEL, code);
                 if (redisLoadShedder.get(channelName).canProcess(channelName)) {
                     JedisConnectionPool.getJedisConnection().publish(channelName, objectMapper.writeValueAsString(sms));
+                    cache.increaseSMSCount(code);
+                    cache.setLastDownloadedDoc(code, sms.getText());
                 }
             } catch (Exception e) {
                 logger.error("Exception in receiving from SMS collection: " + code + ", data: " + sms);
