@@ -170,7 +170,7 @@ public class GenericCache {
 
         task.setCollectionCode(code);
         if (status != null) {
-            Long smsCounter = this.countersMap.get(code);
+            Long smsCounter = this.countersMap.remove(code);
             String lastDownloadedDoc = this.lastDownloadedDocumentMap.get(code);
 
             task.setStatusCode(status);
@@ -231,7 +231,7 @@ public class GenericCache {
         }
         CollectionTask task = this.twtConfigMap.get(id).clone();
         if (task != null) {
-            Long tweetsCounter = this.countersMap.get(task.getCollectionCode());
+            Long tweetsCounter = this.countersMap.remove(task.getCollectionCode());
             String lastDownloadedDoc = this.lastDownloadedDocumentMap.get(task.getCollectionCode());
             task.setCollectionCount(tweetsCounter);
             task.setLastDocument(lastDownloadedDoc);

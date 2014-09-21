@@ -6,7 +6,6 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.manager.dto.*;
@@ -20,11 +19,8 @@ import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 
-
-
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
-
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -308,9 +304,6 @@ public class CollectionController extends BaseController{
 		AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
 		if (dto != null) {
 			Integer totalCount = collectionLogService.countTotalDownloadedItemsForCollection(id);
-			if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())){
-				totalCount += dto.getCount();
-			}
 			dto.setTotalCount(totalCount);
 		}
 		return dto;
@@ -398,9 +391,6 @@ public class CollectionController extends BaseController{
 				AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
 				if (dto != null) {
 					Integer totalCount = collectionLogService.countTotalDownloadedItemsForCollection(id);
-					if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())){
-						totalCount += dto.getCount();
-					}
 					dto.setTotalCount(totalCount);
 				} else {
 					return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
@@ -420,9 +410,6 @@ public class CollectionController extends BaseController{
 		AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
 		if (dto != null) {
 			Integer totalCount = collectionLogService.countTotalDownloadedItemsForCollection(id);
-			if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())){
-				totalCount += dto.getCount();
-			}
 			dto.setTotalCount(totalCount);
 		} else {
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
@@ -441,9 +428,6 @@ public class CollectionController extends BaseController{
 			dto = convertAidrCollectionToDTO(collection);
 			if (dto != null) {
 				Integer totalCount = collectionLogService.countTotalDownloadedItemsForCollection(id);
-				if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())){
-					totalCount += dto.getCount();
-				}
 				dto.setTotalCount(totalCount);
 			} else {
 				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
@@ -554,9 +538,6 @@ public class CollectionController extends BaseController{
 							totalCount = 0;
 						}
 
-						if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())) {
-							totalCount += dto.getCount();
-						}
 						dto.setTotalCount(totalCount);
 						dtoList.add(dto);
 
@@ -620,9 +601,6 @@ public class CollectionController extends BaseController{
 							totalCount = 0;
 						}
 
-						if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())) {
-							totalCount += dto.getCount();
-						}
 						dto.setTotalCount(totalCount);
 						dtoList.add(dto);
 
