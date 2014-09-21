@@ -4,25 +4,23 @@
  */
 package qa.qcri.aidr.predictui.facade.imp;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.apache.log4j.Logger;
-
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.entities.Crisis;
 import qa.qcri.aidr.predictui.entities.ModelFamily;
 import qa.qcri.aidr.predictui.entities.NominalLabel;
 import qa.qcri.aidr.predictui.entities.Users;
 import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
+
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -39,7 +37,8 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 
 	public Crisis addCrisis(Crisis crisis) {
 		em.persist(crisis);
-		return crisis;
+        System.out.println("++++++");
+        return crisis;
 	}
 
 	public Crisis getCrisisByID(long id) {
