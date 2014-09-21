@@ -37,7 +37,6 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 
 	public Crisis addCrisis(Crisis crisis) {
 		em.persist(crisis);
-        System.out.println("++++++");
         return crisis;
 	}
 
