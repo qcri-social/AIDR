@@ -7,6 +7,8 @@ package qa.qcri.aidr.predictui.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+
+import qa.qcri.aidr.common.code.JacksonWrapper;
 //import org.apache.log4j.Logger;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.dto.CrisisDTO;
@@ -23,6 +25,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;

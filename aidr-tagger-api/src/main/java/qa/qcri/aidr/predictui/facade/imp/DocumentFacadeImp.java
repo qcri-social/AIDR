@@ -17,8 +17,8 @@ import javax.ejb.Stateless;
 
 
 
-//import org.codehaus.jackson.type.TypeReference;
-import com.fasterxml.jackson.core.type.TypeReference;
+import org.codehaus.jackson.type.TypeReference;
+//import com.fasterxml.jackson.core.type.TypeReference;
 
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;

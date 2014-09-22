@@ -17,6 +17,9 @@ import javax.ws.rs.core.Response;
 
 
 
+
+
+import org.codehaus.jackson.type.TypeReference;
 //import org.apache.log4j.Logger;
 //import org.codehaus.jackson.map.ObjectMapper;
 //import org.codehaus.jackson.type.TypeReference;
@@ -25,8 +28,10 @@ import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+//import com.fasterxml.jackson.core.type.TypeReference;
+//import com.fasterxml.jackson.databind.ObjectMapper;
+
+
 
 import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.facade.DocumentFacade;

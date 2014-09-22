@@ -1,6 +1,9 @@
 package qa.qcri.aidr.trainer.api.entity;
 
 import javax.persistence.*;
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import java.io.Serializable;
 import java.util.Set;
 
@@ -15,6 +18,7 @@ import java.util.Set;
 
 @Entity
 @Table(catalog = "aidr_predict",name = "nominal_attribute")
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class NominalAttribute implements Serializable {
 
     public Long getNominalAttributeID() {

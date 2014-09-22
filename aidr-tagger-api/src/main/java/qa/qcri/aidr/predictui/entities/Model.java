@@ -28,8 +28,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+//import org.codehaus.jackson.annotate.JsonBackReference;
+//import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+//import org.codehaus.jackson.annotate.JsonManagedReference;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+//import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
@@ -48,6 +54,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
     @NamedQuery(name = "Model.findByTrainingCount", query = "SELECT m FROM Model m WHERE m.trainingCount = :trainingCount"),
     @NamedQuery(name = "Model.findByTrainingTime", query = "SELECT m FROM Model m WHERE m.trainingTime = :trainingTime"),
     @NamedQuery(name = "Model.findByModelFamilyID", query = "SELECT m FROM Model m WHERE m.modelFamily = :modelFamily order by trainingTime desc")})
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Model implements Serializable {
     
     private static final long serialVersionUID = 1L;

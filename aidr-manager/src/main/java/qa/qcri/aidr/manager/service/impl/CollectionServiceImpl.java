@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import qa.qcri.aidr.common.code.JacksonWrapper;
 import qa.qcri.aidr.manager.dto.FetcheResponseDTO;
 import qa.qcri.aidr.manager.dto.FetcherRequestDTO;
 import qa.qcri.aidr.manager.dto.PingResponse;
@@ -28,6 +30,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.net.URLEncoder;
 import java.util.List;
 
@@ -246,7 +249,7 @@ public class CollectionServiceImpl implements CollectionService {
                 WebTarget webResource = client.target(fetchMainUrl + "/twitter/start");
 
                 System.out.println("In startFetcher...");
-                ObjectMapper objectMapper = new ObjectMapper();
+                ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
                 //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
                 //        .accept(MediaType.APPLICATION_JSON)
                 //        .post(ClientResponse.class, objectMapper.writeValueAsString(fetcherRequest));
@@ -287,7 +290,7 @@ public class CollectionServiceImpl implements CollectionService {
         	//WebResource webResource = client.resource(fetchMainUrl + "/manage/ping");
         	WebTarget webResource = client.target(fetchMainUrl + "/manage/ping");
         	
-        	ObjectMapper objectMapper = new ObjectMapper();
+        	ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
             //ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
             //        .accept(MediaType.APPLICATION_JSON)
             //        .get(ClientResponse.class);
@@ -376,7 +379,7 @@ public class CollectionServiceImpl implements CollectionService {
         	String jsonResponse = clientResponse.readEntity(String.class);
         	
             //logger.info("jsonResponse" + jsonResponse);
-            ObjectMapper objectMapper = new ObjectMapper();
+        	ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
             FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);
             if (response != null) {
                 if (!CollectionStatus.getByStatus(response.getStatusCode()).equals(collection.getStatus())) {

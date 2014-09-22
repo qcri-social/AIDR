@@ -2,12 +2,17 @@ package qa.qcri.aidr.trainer.api.entity;
 
 
 import qa.qcri.aidr.trainer.api.entity.keychain.TaskLogKey;
+
 import javax.persistence.*;
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import java.io.Serializable;
 import java.util.Date;
 
 @Entity @IdClass(TaskLogKey.class)
 @Table(catalog = "aidr_scheduler",name = "taskLog")
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class TaskLog implements Serializable {
 
     private static final long serialVersionUID = -5527566248002296042L;

@@ -8,13 +8,12 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-
 import javax.persistence.Id;
-
 import javax.persistence.Table;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 /**
@@ -24,6 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(catalog = "aidr_predict",name = "crisis")
 @XmlRootElement
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Crisis implements Serializable {
 
     private static final long serialVersionUID = -5527566248002296042L;

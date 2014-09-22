@@ -14,8 +14,11 @@ import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "AIDR_USER")
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class UserEntity implements Serializable{
 
 	/**

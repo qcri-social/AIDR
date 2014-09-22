@@ -2,6 +2,9 @@ package qa.qcri.aidr.manager.dto;
 
 import java.io.Serializable;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class FetcheResponseDTO implements Serializable{
 
 	/**

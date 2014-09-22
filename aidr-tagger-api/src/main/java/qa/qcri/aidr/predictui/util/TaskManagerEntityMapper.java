@@ -6,17 +6,21 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-//import org.codehaus.jackson.map.ObjectMapper;
-//import org.codehaus.jackson.type.TypeReference;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 
 
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
+//import com.fasterxml.jackson.core.type.TypeReference;
+//import com.fasterxml.jackson.databind.DeserializationFeature;
+//import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 import qa.qcri.aidr.predictui.entities.Document;
 //import qa.qcri.aidr.predictui.entities.TaskAssignment;
 import qa.qcri.aidr.predictui.entities.NominalLabel;
+import qa.qcri.aidr.common.code.JacksonWrapper;
 import qa.qcri.aidr.common.logging.ErrorLog;
 
 public class TaskManagerEntityMapper {
@@ -27,7 +31,8 @@ public class TaskManagerEntityMapper {
 	public TaskManagerEntityMapper() {}
 
 	public <E> E deSerializeList(String jsonString, TypeReference<E> type) {
-		ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper mapper = JacksonWrapper.getObjectMapper();
+		//mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		try {
 			if (jsonString != null) {
 				E docList = mapper.readValue(jsonString, type);
@@ -41,7 +46,8 @@ public class TaskManagerEntityMapper {
 	}
 
 	public <E> E deSerialize(String jsonString, Class<E> entityType) {
-		ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper mapper = JacksonWrapper.getObjectMapper();
+		//mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		try {
 			if (jsonString != null) {
 				E entity = mapper.readValue(jsonString, entityType);
@@ -55,7 +61,8 @@ public class TaskManagerEntityMapper {
 	}
 
 	public <E> String serializeTask(E task) {
-		ObjectMapper mapper = new ObjectMapper();
+		ObjectMapper mapper = JacksonWrapper.getObjectMapper();
+		//mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		String jsonString = null;
 		try {
 			if (task != null) jsonString = mapper.writeValueAsString(task);

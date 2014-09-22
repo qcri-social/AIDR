@@ -4,6 +4,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+
+
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import java.io.Serializable;
 
 /**
@@ -15,6 +21,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(catalog = "aidr_predict",name = "crisis_type")
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class CrisisType implements Serializable {
 
     private static final long serialVersionUID = -5527566248002296042L;

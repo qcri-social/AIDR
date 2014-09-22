@@ -24,7 +24,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+//import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+//import org.codehaus.jackson.annotate.JsonManagedReference;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+//import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
@@ -38,6 +43,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
     @NamedQuery(name = "CrisisType.findAll", query = "SELECT c FROM CrisisType c"),
     @NamedQuery(name = "CrisisType.findByCrisisTypeID", query = "SELECT c FROM CrisisType c WHERE c.crisisTypeID = :crisisTypeID"),
     @NamedQuery(name = "CrisisType.findByName", query = "SELECT c FROM CrisisType c WHERE c.name = :name")})
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class CrisisType implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -55,7 +61,10 @@ public class CrisisType implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "crisisType")
     @JsonManagedReference
     private Collection<Crisis> crisisCollection;
-
+    
+    //@XmlTransient
+    //Integer numberOfCrisisAssociated;
+    
     public CrisisType() {
     }
 

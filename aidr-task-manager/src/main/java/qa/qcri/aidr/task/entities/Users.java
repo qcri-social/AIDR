@@ -4,6 +4,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
 
 /**
@@ -11,6 +14,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(catalog = "aidr_predict",name = "users")
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Users implements Serializable {
 
     private static final long serialVersionUID = -5527566248002296042L;

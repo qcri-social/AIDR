@@ -15,6 +15,7 @@ import javax.ejb.Stateless;
 
 
 
+
 //import org.apache.log4j.Logger;
 //import org.codehaus.jackson.map.ObjectMapper;
 //import org.codehaus.jackson.type.TypeReference;
@@ -24,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
@@ -550,6 +552,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	@Override
 	public <E> String serializeTask(E task) {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		String jsonString = null;
 		try {
 			if (task != null) jsonString = mapper.writeValueAsString(task);
@@ -566,6 +569,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	@Override
 	public <E> E deSerializeList(String jsonString, TypeReference<E> type) {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		try {
 			if (jsonString != null) {
 				E docList = mapper.readValue(jsonString, type);
@@ -584,6 +588,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	@Override
 	public <E> E deSerialize(String jsonString, Class<E> entityType) {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		try {
 			if (jsonString != null) {
 				E entity = mapper.readValue(jsonString, entityType);

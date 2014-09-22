@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+import org.codehaus.jackson.map.DeserializationConfig;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.trainer.api.entity.Document;
@@ -25,6 +26,7 @@ public class TaskManagerEntityMapper {
 
 	public <E> E deSerializeList(String jsonString, TypeReference<E> type) {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		try {
 			if (jsonString != null) {
 				E docList = mapper.readValue(jsonString, type);
@@ -39,6 +41,7 @@ public class TaskManagerEntityMapper {
 
 	public <E> E deSerialize(String jsonString, Class<E> entityType) {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		try {
 			if (jsonString != null) {
 				System.out.println("received json string for deserialization: " + jsonString);
@@ -55,6 +58,7 @@ public class TaskManagerEntityMapper {
 
 	public <E> String serializeTask(E task) {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		String jsonString = null;
 		try {
 			if (task != null) jsonString = mapper.writeValueAsString(task);

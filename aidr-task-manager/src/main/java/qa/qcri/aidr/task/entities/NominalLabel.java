@@ -25,8 +25,10 @@ import javax.xml.bind.annotation.XmlTransient;
 
 
 
+
 //import org.codehaus.jackson.annotate.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
@@ -36,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Entity
 @Table(name = "nominal_label")
 @XmlRootElement
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class NominalLabel implements Serializable {
 
     private static final long serialVersionUID = 1L;

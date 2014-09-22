@@ -18,8 +18,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+//import org.codehaus.jackson.annotate.JsonBackReference;
+//import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+//import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  *
@@ -37,6 +42,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "ModelNominalLabel.findByLabelAuc", query = "SELECT m FROM ModelNominalLabel m WHERE m.labelAuc = :labelAuc"),
     @NamedQuery(name = "ModelNominalLabel.findByClassifiedDocumentCount", query = "SELECT m FROM ModelNominalLabel m WHERE m.classifiedDocumentCount = :classifiedDocumentCount"),
     @NamedQuery(name = "ModelNominalLabel.findByModel", query = "SELECT m FROM ModelNominalLabel m WHERE m.model = :model")})
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class ModelNominalLabel implements Serializable {
     private static final long serialVersionUID = 1L;
     @EmbeddedId

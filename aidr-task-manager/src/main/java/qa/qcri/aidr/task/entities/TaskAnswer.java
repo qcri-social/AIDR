@@ -1,6 +1,9 @@
 package qa.qcri.aidr.task.entities;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -9,6 +12,7 @@ import java.util.Date;
  */
 @Entity
 @Table(catalog = "aidr_predict",name = "task_answer")
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class TaskAnswer implements Serializable {
 
     private static final long serialVersionUID = -5527566248002296042L;

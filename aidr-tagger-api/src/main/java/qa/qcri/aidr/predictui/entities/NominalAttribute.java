@@ -27,8 +27,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+//import org.codehaus.jackson.annotate.JsonBackReference;
+//import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+//import org.codehaus.jackson.annotate.JsonManagedReference;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+//import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
@@ -44,6 +50,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
     @NamedQuery(name = "NominalAttribute.findByName", query = "SELECT n FROM NominalAttribute n WHERE n.name = :name"),
     @NamedQuery(name = "NominalAttribute.findByDescription", query = "SELECT n FROM NominalAttribute n WHERE n.description = :description"),
     @NamedQuery(name = "NominalAttribute.findByCode", query = "SELECT n FROM NominalAttribute n WHERE n.code = :code")})
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class NominalAttribute implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

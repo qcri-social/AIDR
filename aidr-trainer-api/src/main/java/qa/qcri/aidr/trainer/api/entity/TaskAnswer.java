@@ -4,6 +4,8 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -17,6 +19,7 @@ import java.util.Date;
 @Entity
 @Table(catalog = "aidr_predict",name = "task_answer")
 @XmlRootElement
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class TaskAnswer implements Serializable {
 
     private static final long serialVersionUID = -5527566248002296042L;

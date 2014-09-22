@@ -14,9 +14,13 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+
 @Entity
 @Table(catalog = "aidr_predict", name = "crisis")
 @XmlRootElement
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Crisis implements Serializable {
 
     private static final long serialVersionUID = -5527566248002296042L;

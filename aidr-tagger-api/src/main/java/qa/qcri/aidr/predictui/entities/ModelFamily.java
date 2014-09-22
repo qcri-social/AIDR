@@ -25,8 +25,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+//import org.codehaus.jackson.annotate.JsonBackReference;
+//import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+//import org.codehaus.jackson.annotate.JsonManagedReference;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+//import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
@@ -41,6 +47,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
     @NamedQuery(name = "ModelFamily.findByModelFamilyID", query = "SELECT m FROM ModelFamily m WHERE m.modelFamilyID = :modelFamilyID"),
     @NamedQuery(name = "ModelFamily.findByIsActive", query = "SELECT m FROM ModelFamily m WHERE m.isActive = :isActive"),
     @NamedQuery(name = "ModelFamily.findByCrisis", query = "SELECT m FROM ModelFamily m WHERE m.crisis = :crisis")})
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class ModelFamily implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id

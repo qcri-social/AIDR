@@ -1,6 +1,9 @@
 package qa.qcri.aidr.trainer.api.entity;
 
 import javax.persistence.*;
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import java.io.Serializable;
 
 /**
@@ -12,6 +15,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(catalog = "aidr_scheduler",name = "reportTemplate")
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class ReportTemplate implements Serializable {
 
     private static final long serialVersionUID = -5527566248002296042L;

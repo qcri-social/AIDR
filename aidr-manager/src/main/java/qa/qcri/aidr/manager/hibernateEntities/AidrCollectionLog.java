@@ -12,16 +12,20 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.JsonDateDeSerializer;
 import qa.qcri.aidr.manager.util.JsonDateSerializer;
+
 import javax.persistence.ManyToOne;
 
 @Entity
 @Table(name = "AIDR_COLLECTION_LOG")
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class AidrCollectionLog implements Serializable {
 
     /**

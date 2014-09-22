@@ -4,6 +4,8 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -14,6 +16,7 @@ import java.util.Date;
 @XmlRootElement
 @Entity 	//@IdClass(DocumentNominalLabelKey.class)
 @Table(catalog = "aidr_predict",name = "document_nominal_label")
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class DocumentNominalLabel implements Serializable {
 
     private static final long serialVersionUID = -5527566248002296042L;

@@ -22,11 +22,13 @@
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>${jackson-asl.version}</version>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-core-asl</artifactId>
 			<version>${jackson-asl.version}</version>
+			<optional>true</optional>
 		</dependency>
 	</dependencies>
 	<build>

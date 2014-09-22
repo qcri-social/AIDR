@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import qa.qcri.aidr.task.entities.NominalLabel;
 import qa.qcri.aidr.task.entities.TaskAssignment;
@@ -50,6 +51,7 @@ import qa.qcri.aidr.task.entities.TaskAssignment;
 
 @Entity
 @Table(catalog = "aidr_predict",name = "document")
+@JsonIgnoreProperties(ignoreUnknown=true)
 @XmlRootElement
 public class Document implements Serializable {
 

@@ -32,8 +32,9 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-//import org.codehaus.jackson.annotate.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 
 /**
  *
@@ -42,6 +43,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(catalog = "aidr_predict", name = "document")
 @XmlRootElement
+@JsonIgnoreProperties(ignoreUnknown=true)
  public class Document implements Serializable {
 
 	private static final long serialVersionUID = -5527566248002296042L;

@@ -8,8 +8,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "UserConnection")
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class UserConnection implements Serializable {
 
 	private static final long serialVersionUID = 3485170416057248803L;

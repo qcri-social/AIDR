@@ -6,6 +6,8 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import qa.qcri.aidr.common.code.JacksonWrapper;
 import qa.qcri.aidr.manager.dto.UITemplateRequest;
 import qa.qcri.aidr.manager.dto.UITemplateResponse;
 import qa.qcri.aidr.manager.exception.AidrException;
@@ -18,6 +20,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.util.List;
 
 /**
@@ -52,7 +55,7 @@ public class UITemplateServiceImpl implements UITemplateService {
         try {
 
             WebTarget webResource = client.target(taggerMainUrl + "/customuitemplate");
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 
             logger.info("updateTemplate - updateTemplate : " + objectMapper.writeValueAsString(uiTemplateRequest));
 
@@ -103,7 +106,7 @@ public class UITemplateServiceImpl implements UITemplateService {
             System.out.println("url: " + taggerMainUrl + "/customuitemplate/crisisID/" + crisisID);
 
             WebTarget webResource = client.target(taggerMainUrl + "/customuitemplate/crisisID/" + crisisID);
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             String jsonResponse = clientResponse.readEntity(String.class);
