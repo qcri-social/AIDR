@@ -18,11 +18,14 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>javax.ws.rs.core.Application</servlet-name>
-		<url-pattern>/rest/*</url-pattern>
+		<url-pattern>/rest/analytics/*</url-pattern>
 	</servlet-mapping>
     
     <listener>
-		<listener-class>qa.qcri.aidr.analysis.api.GetStatistics</listener-class>
+		<listener-class>qa.qcri.aidr.analysis.api.GetTagDataStatistics</listener-class>
+	</listener>
+	<listener>
+		<listener-class>qa.qcri.aidr.analysis.api.GetFrequencyStatistics</listener-class>
 	</listener>
 	
 </web-app>
