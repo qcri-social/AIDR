@@ -91,7 +91,8 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
         this.pyBossaLink = Ext.create('Ext.form.Label', {
             html: '<div class="gray-backgrpund"><i>Initializing crowdsourcing task. Please come back in a few minutes.</i></div>',
-            margin: '5 0 5 0'
+            margin: '5 0 5 0',
+            hidden: true
         });
 
         this.aucHint = Ext.create('Ext.container.Container', {
@@ -140,6 +141,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
         this.crisisModelsStore = Ext.create('Ext.data.Store', {
             pageSize: 30,
+            mask: AIDRFMFunctions.getMask(true),
             storeId: 'crisisModelsStore',
             fields: ['attribute', 'attributeID', 'auc', 'classifiedDocuments', 'modelID', 'status', 'trainingExamples', 'modelFamilyID','retrainingThreshold'],
             proxy: {
@@ -156,6 +158,11 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                     s.getProxy().extraParams = {
                         id: CRISIS_ID
                     }
+                    this.mask.show();
+                },
+                load: function(){
+                    this.mask.hide();
+                    me.pyBossaLink.show();
                 }
             }
         });
