@@ -27,5 +27,8 @@
 	<listener>
 		<listener-class>qa.qcri.aidr.analysis.api.GetFrequencyStatistics</listener-class>
 	</listener>
+	<listener>
+		<listener-class>qa.qcri.aidr.analysis.api.WriteStatisticsData</listener-class>
+	</listener>
 	
 </web-app>

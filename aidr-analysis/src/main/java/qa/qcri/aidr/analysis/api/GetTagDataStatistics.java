@@ -38,31 +38,11 @@ public class GetTagDataStatistics extends GetStatistics implements ServletContex
 	
 	@EJB
     private TagDataStatisticsResourceFacade tagDataEJB;
-	
-	@Override
-	public void contextInitialized(ServletContextEvent sce) {
-		if (null == masterCBManager) {
-			logger.info("Initializing channel buffer manager");
-			System.out.println("[contextInitialized] Initializing channel buffer manager");
-			//cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
-			masterCBManager = new ChannelBufferManager();
-			masterCBManager.initiateChannelBufferManager(CHANNEL_REG_EX);
-			logger.info("Done initializing channel buffer manager");
-			System.out.println("[contextInitialized] Done initializing channel buffer manager");
-		}
-		logger.info("Context Initialized");
-	}
-
-	@Override
-	public void contextDestroyed(ServletContextEvent sce) {
-		masterCBManager.close();
-		logger.info("Context destroyed");
-	}
 		
 	@GET
 	@Path("/getTagCount/{crisisCode}/{classifierCode}/{labelCode}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getSingleLabelCount(@PathParam("crisisCode") String crisisCode,
+	public Response getSingleItem(@PathParam("crisisCode") String crisisCode,
 			@PathParam("attributeCode") String attributeCode,
 			@PathParam("labelCode") String labelCode, 
 			@DefaultValue("5m") @QueryParam("granularity") String granularity,
@@ -71,10 +51,12 @@ public class GetTagDataStatistics extends GetStatistics implements ServletContex
 		long timeGranularity = DateFormatConfig.parseTime(granularity);
 		TagDataPK tagDataPK = new TagDataPK();
 		tagDataPK.setCrisisCode(crisisCode);
-		tagDataPK.setAttributeCode(attributeCode);
 		tagDataPK.setTimestamp(startTime);
 		tagDataPK.setGranularity(timeGranularity);
+		tagDataPK.setAttributeCode(attributeCode);
 		tagDataPK.setLabelCode(labelCode);
+		
+		TagData obj = tagDataEJB.getSingleDataByPK(tagDataPK);
 		
 		List<TagData> fetchedList = tagDataEJB.getDataByCrisisAttributeLabel(crisisCode, attributeCode, labelCode);
 		ObjectMapper mapper = new ObjectMapper();
@@ -115,6 +97,18 @@ public class GetTagDataStatistics extends GetStatistics implements ServletContex
 			return Response.ok(statusStr).build();
 		}
 		return Response.ok(new String("{\"password\":\"invalid\"}")).build();
+	}
+
+	@Override
+	public void contextDestroyed(ServletContextEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void contextInitialized(ServletContextEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

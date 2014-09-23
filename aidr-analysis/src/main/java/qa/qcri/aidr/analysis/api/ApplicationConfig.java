@@ -34,6 +34,7 @@ public class ApplicationConfig extends Application {
     	resources.add(JacksonFeature.class);
     	resources.add(qa.qcri.aidr.analysis.api.GetTagDataStatistics.class);
     	resources.add(qa.qcri.aidr.analysis.api.GetFrequencyStatistics.class);
+    	resources.add(qa.qcri.aidr.analysis.api.WriteStatisticsData.class);
     }
     
 }
