@@ -1,5 +1,6 @@
 package qa.qcri.aidr.analysis.api;
 
+import javax.ejb.EJB;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
@@ -16,6 +17,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.analysis.facade.FrequencyStatisticsResourceFacade;
 import qa.qcri.aidr.common.code.DateFormatConfig;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.output.getdata.ChannelBufferManager;
@@ -27,26 +29,9 @@ public class GetFrequencyStatistics extends GetStatistics implements ServletCont
 	private static Logger logger = Logger.getLogger(GetFrequencyStatistics.class);
 	private static ErrorLog elog = new ErrorLog();
 	
-	@Override
-	public void contextInitialized(ServletContextEvent sce) {
-		if (null == masterCBManager) {
-			logger.info("Initializing channel buffer manager");
-			System.out.println("[contextInitialized] Initializing channel buffer manager");
-			//cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
-			masterCBManager = new ChannelBufferManager();
-			masterCBManager.initiateChannelBufferManager(CHANNEL_REG_EX);
-			logger.info("Done initializing channel buffer manager");
-			System.out.println("[contextInitialized] Done initializing channel buffer manager");
-		}
-		logger.info("Context Initialized");
-	}
-
-	@Override
-	public void contextDestroyed(ServletContextEvent sce) {
-		masterCBManager.close();
-		logger.info("Context destroyed");
-	}
-		
+	@EJB
+    private FrequencyStatisticsResourceFacade freqDataEJB;
+	
 	@GET
 	@Path("/getBinCount/{classifierCode}/{labelCode}/{bin}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -89,6 +74,18 @@ public class GetFrequencyStatistics extends GetStatistics implements ServletCont
 			return Response.ok(statusStr).build();
 		}
 		return Response.ok(new String("{\"password\":\"invalid\"}")).build();
+	}
+
+	@Override
+	public void contextDestroyed(ServletContextEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void contextInitialized(ServletContextEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

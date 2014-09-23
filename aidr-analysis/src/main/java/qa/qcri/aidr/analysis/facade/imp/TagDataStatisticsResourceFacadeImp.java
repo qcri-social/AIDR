@@ -41,7 +41,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 	}
 
 	@Override
-	public TagData getDataByPK(TagDataPK tagDataPK) {
+	public TagData getSingleDataByPK(TagDataPK tagDataPK) {
 		Criteria criteria = getCurrentSession(em).createCriteria(this.getClass());
 		Criterion criterion = Restrictions.conjunction()
 				.add(Restrictions.eq("crisis_code", tagDataPK.getCrisisCode()))
@@ -58,7 +58,20 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 		}
 		return null;
 	}
-
+	
+	@Override
+	public List<TagData> getDataByCrisis(String crisisCode) {
+		Criteria criteria = getCurrentSession(em).createCriteria(this.getClass());
+		criteria.add(Restrictions.eq("crisis_code", crisisCode)); 		
+		try {
+			List<TagData> objList = (List<TagData>) criteria.list();
+			return objList;
+		} catch (HibernateException e) {
+			logger.error(elog.toStringException(e));
+		}
+		return null;
+	}
+	
 	@Override
 	public List<TagData> getDataByCrisisAttributeLabel(String crisisCode, String attributeCode, String labelCode) {
 		Criteria criteria = getCurrentSession(em).createCriteria(this.getClass());
@@ -75,5 +88,145 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 		}
 		return null;
 	}
+	
+	@Override
+	public List<TagData> getDataByCrisisAttributeLabelGranularity(String crisisCode, String attributeCode, String labelCode, Long granularity) {
+		Criteria criteria = getCurrentSession(em).createCriteria(this.getClass());
+		Criterion criterion = Restrictions.conjunction()
+				.add(Restrictions.eq("crisis_code", crisisCode))
+				.add(Restrictions.eq("attribute_code", attributeCode))
+				.add(Restrictions.eq("label_code", labelCode))
+				.add(Restrictions.eq("granularity", granularity));
+		criteria.add(criterion); 		
+		try {
+			List<TagData> objList = (List<TagData>) criteria.list();
+			return objList;
+		} catch (HibernateException e) {
+			logger.error(elog.toStringException(e));
+		}
+		return null;
+	}
+	
+	@Override
+	public List<TagData> getDataAfterTimestamp(String crisisCode, String attributeCode, String labelCode, Long timestamp) {
+		Criteria criteria = getCurrentSession(em).createCriteria(this.getClass());
+		Criterion criterion = Restrictions.conjunction()
+				.add(Restrictions.eq("crisis_code", crisisCode))
+				.add(Restrictions.eq("attribute_code", attributeCode))
+				.add(Restrictions.eq("label_code", labelCode))
+				.add(Restrictions.ge("timestamp", timestamp));
+				
+		criteria.add(criterion); 		
+		try {
+			List<TagData> objList = (List<TagData>) criteria.list();
+			return objList;
+		} catch (HibernateException e) {
+			logger.error(elog.toStringException(e));
+		}
+		return null;
+	}
+	
+	@Override
+	public List<TagData> getDataAfterTimestampGranularity(String crisisCode, String attributeCode, String labelCode, 
+															Long timestamp, Long granularity) {
+		Criteria criteria = getCurrentSession(em).createCriteria(this.getClass());
+		Criterion criterion = Restrictions.conjunction()
+				.add(Restrictions.eq("crisis_code", crisisCode))
+				.add(Restrictions.eq("attribute_code", attributeCode))
+				.add(Restrictions.eq("label_code", labelCode))
+				.add(Restrictions.ge("timestamp", timestamp))
+				.add(Restrictions.eq("granularity", granularity));
+				
+		criteria.add(criterion); 		
+		try {
+			List<TagData> objList = (List<TagData>) criteria.list();
+			return objList;
+		} catch (HibernateException e) {
+			logger.error(elog.toStringException(e));
+		}
+		return null;
+	}
 
+	@Override
+	public List<TagData> getDataBeforeTimestamp(String crisisCode, String attributeCode, String labelCode, Long timestamp) {
+		Criteria criteria = getCurrentSession(em).createCriteria(this.getClass());
+		Criterion criterion = Restrictions.conjunction()
+				.add(Restrictions.eq("crisis_code", crisisCode))
+				.add(Restrictions.eq("attribute_code", attributeCode))
+				.add(Restrictions.eq("label_code", labelCode))
+				.add(Restrictions.le("timestamp", timestamp));
+				
+		criteria.add(criterion); 		
+		try {
+			List<TagData> objList = (List<TagData>) criteria.list();
+			return objList;
+		} catch (HibernateException e) {
+			logger.error(elog.toStringException(e));
+		}
+		return null;
+	}
+	
+	@Override
+	public List<TagData> getDataBeforeTimestampGranularity(String crisisCode, String attributeCode, String labelCode, 
+															Long timestamp, Long granularity) {
+		Criteria criteria = getCurrentSession(em).createCriteria(this.getClass());
+		Criterion criterion = Restrictions.conjunction()
+				.add(Restrictions.eq("crisis_code", crisisCode))
+				.add(Restrictions.eq("attribute_code", attributeCode))
+				.add(Restrictions.eq("label_code", labelCode))
+				.add(Restrictions.le("timestamp", timestamp))
+				.add(Restrictions.eq("granularity", granularity));
+				
+		criteria.add(criterion); 		
+		try {
+			List<TagData> objList = (List<TagData>) criteria.list();
+			return objList;
+		} catch (HibernateException e) {
+			logger.error(elog.toStringException(e));
+		}
+		return null;
+	}
+
+	
+	@Override
+	public List<TagData> getDataInInterval(String crisisCode, String attributeCode, String labelCode, Long timestamp1, Long timestamp2) {
+		Criteria criteria = getCurrentSession(em).createCriteria(this.getClass());
+		Criterion criterion = Restrictions.conjunction()
+				.add(Restrictions.eq("crisis_code", crisisCode))
+				.add(Restrictions.eq("attribute_code", attributeCode))
+				.add(Restrictions.eq("label_code", labelCode))
+				.add(Restrictions.ge("timestamp", timestamp1))
+				.add(Restrictions.le("timestamp", timestamp2));
+				
+		criteria.add(criterion); 		
+		try {
+			List<TagData> objList = (List<TagData>) criteria.list();
+			return objList;
+		} catch (HibernateException e) {
+			logger.error(elog.toStringException(e));
+		}
+		return null;
+	}
+	
+	@Override
+	public List<TagData> getDataInIntervalWithGranularity(String crisisCode, String attributeCode, String labelCode, 
+														  Long timestamp1, Long timestamp2, Long granularity) {
+		Criteria criteria = getCurrentSession(em).createCriteria(this.getClass());
+		Criterion criterion = Restrictions.conjunction()
+				.add(Restrictions.eq("crisis_code", crisisCode))
+				.add(Restrictions.eq("attribute_code", attributeCode))
+				.add(Restrictions.eq("label_code", labelCode))
+				.add(Restrictions.eq("granularity", granularity))
+				.add(Restrictions.ge("timestamp", timestamp1))
+				.add(Restrictions.le("timestamp", timestamp2));
+				
+		criteria.add(criterion); 		
+		try {
+			List<TagData> objList = (List<TagData>) criteria.list();
+			return objList;
+		} catch (HibernateException e) {
+			logger.error(elog.toStringException(e));
+		}
+		return null;
+	}
 }
