@@ -768,9 +768,9 @@ End of the tab panel styles
 .link-style {
     font-size: 14px;
 }
-#viewDownloadTweetsGrid-body .x-grid-row .x-grid-cell-inner {
-    font-size: 1.05em;
-}
+ #viewDownloadTweetsGrid-body .x-grid-row .x-grid-cell-inner {
+     font-size: 1em;
+ }
 
 .collection-item .btn, .c-list .crisis-item .btn {
     position: relative;
