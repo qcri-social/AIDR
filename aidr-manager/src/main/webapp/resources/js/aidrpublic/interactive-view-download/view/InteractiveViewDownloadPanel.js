@@ -188,7 +188,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 
         this.tweetsGrid = Ext.create('Ext.grid.Panel', {
             store: this.tweetsStore,
-            id: 'viewDownloadTweetsGrid',
+            id: 'viewDownloadTweetsGrid' ,
             itemId: 'tweetsGrid',
             margin: '10 0 0 0',
             cls: 'aidr-grid',
@@ -201,19 +201,6 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
                 },
                 {
                     xtype: 'gridcolumn', dataIndex: 'text', text: 'Tweet', flex: 1
-                },
-                {
-                    xtype: 'gridcolumn', dataIndex: 'attribute_name', text: 'Classifier', width: 130
-                },
-                {
-                    xtype: 'gridcolumn', dataIndex: 'label_name', text: 'Tag', width: 130
-                },
-                {
-                    xtype: 'gridcolumn', dataIndex: 'confidence', text: 'Confidence', width: 95, align: "right",
-                    renderer: function (value, meta, record) {
-                        meta.style = "float:right; padding-top: 9px;";
-                        return value;
-                    }
                 }
             ]
         });
@@ -290,22 +277,22 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
         });
 
         this.curatorInfoPanel = Ext.create('Ext.container.Container', {
-//            hidden: true,
+//             hidden: true,
             layout: {
                 type: 'hbox',
                 pack: 'end'
             },
             items: [
-                {
-                    xtype:'container',
-                    layout: {
-                        type:'vbox'
-                    },
-                    items: [
-                        this.curatorInfoR,
-                        this.contactOwnerL
-                    ]
-                }
+                    {
+                        xtype:'container',
+                        layout: {
+                            type:'vbox'
+                        },
+                        items: [
+                            this.curatorInfoR,
+                            this.contactOwnerL
+                        ]
+                    }
             ]
         });
 

@@ -71,8 +71,8 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
         var grid = me.mainComponent.tweetsGrid;
         var records = [];
         Ext.each(tweetsData.data, function (record) {
-            if (thisRegEx.test(record[grid.columns[0].dataIndex])) {
-                if (!grid.filterHidden && grid.columns[0].isHidden()) {
+            if (thisRegEx.test(record[grid.columns[1].dataIndex])) {
+                if (!grid.filterHidden && grid.columns[1].isHidden()) {
                 } else {
                     records.push(record);
                 }
@@ -119,12 +119,9 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                 }
                 var tweetData = Ext.JSON.decode(jsonData.data);
 
-                var columnsFromTweetData = me.getColumnsModelAndStoreKeysFromTweetData(tweetData);
-
-
-                var data = me.transformTweetData(tweetData);
-                data.metaData.fields = columnsFromTweetData.fields;
-
+                  var columnsFromTweetData = me.getColumnsModelAndStoreKeysFromTweetData(tweetData);
+                  var data = me.transformTweetData(tweetData);
+                 data.metaData.fields = columnsFromTweetData.fields;
                 tweetsData = data;
                 tweetsTmpData = Ext.clone(data);
 
@@ -138,9 +135,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                         successProperty: 'success'
                     }
                 });
-
-                me.mainComponent.tweetsGrid.reconfigure(me.mainComponent.tweetsStore, columnsFromTweetData.columns);
-
+                 me.mainComponent.tweetsGrid.reconfigure(me.mainComponent.tweetsStore, columnsFromTweetData.columns);
                 me.mainComponent.tweetsStore.load();
                 mask.hide();
                 return true;
@@ -151,106 +146,102 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
         });
     },
 
-    transformTweetData : function(tweetData) {
-        var rv = {
-            data: [],
-            metaData: {}
-        };
-
-        Ext.Array.each(tweetData, function(tw, idx) {
-            var row = {};
-
-            row.text  = tw.text ? tw.text : '';
-
-            if (tw.nominal_labels && tw.nominal_labels.length) {
-
-                for (var i = 0; i < tw.nominal_labels.length; i++) {
-                    var classifier = tw.nominal_labels[i];
-
-                    row[classifier.attribute_code] = classifier.label_name;
-                    row[classifier.attribute_code + '_confidence'] = (classifier.confidence * 100).toFixed(2) + '%';
-
-                }
-            }
-
-            if (tw.created_at) {
-                row.createdAt = moment(tw.created_at).format("YYYY-MM-DD HH:mm Z");
-            } else {
-                row.createdAt = "<span class='na-text'>Not specified</span>";
-            }
-
-
-
-            rv.data.push(row);
-        });
-
-        rv.totalCount = rv.data.length;
-        rv.success = true;
-
-
-        return rv;
-    },
-
-
-    getColumnsModelAndStoreKeysFromTweetData: function (obj) {
-
-        var columns = [
-            {
-                xtype: 'gridcolumn', dataIndex: 'createdAt', text: 'Date/Time', width: 175
-            },
-            {
-                xtype: 'gridcolumn', dataIndex: 'text', text: 'Tweet', flex: 1,
-                renderer: function (value, meta, record) {
-                    meta.tdAttr = 'data-qtip="' + value + '"';
-                    return value;
-                }
-            }
-        ];
-
-        var storeFields = [{name: 'createdAt'}, {name: 'text'}];
-
-        if (obj && obj.length) {
-
-            var tweet = obj[0];//Get only first tweet as amount of classifiers are the same for every tweet.
-
-            if (tweet.nominal_labels && tweet.nominal_labels.length) {
-
-                for (var i = 0; i < tweet.nominal_labels.length; i++) {
-                    var classifier = tweet.nominal_labels[i];
-
-
-                    var classifierCol = {
-                        xtype: 'gridcolumn',
-                        text: classifier.attribute_name,
-                        dataIndex: classifier.attribute_code
-                    }
-
-                    var confidenceColumn = {
-                        xtype: 'gridcolumn',
-                        text: 'Conf.',
-                        dataIndex: classifier.attribute_code + '_confidence',
-                        renderer: function (value, meta, record) {
-                            meta.style = "float:right; padding-top: 9px;";
-                            return value;
-                        }
-
-                    }
-
-                    storeFields.push({name:classifier.attribute_code});
-                    storeFields.push({name:classifier.attribute_code + '_confidence'});
-
-                    columns.push(classifierCol);
-                    columns.push(confidenceColumn);
-                }
-            }
-
-        }
-
-        return {columns:  columns, fields : storeFields};
-    },
-
-/*
-    transformTweetData: function(tweetData) {
+     transformTweetData : function(tweetData) {
+         var rv = {
+             data: [],
+             metaData: {}
+         };
+         Ext.Array.each(tweetData, function(tw, idx) {
+             var row = {};
+             row.text  = tw.text ? tw.text : '';
+             if (tw.nominal_labels && tw.nominal_labels.length) {
+                 for (var i = 0; i < tw.nominal_labels.length; i++) {
+                     var classifier = tw.nominal_labels[i];
+                     row[classifier.attribute_code] = classifier.label_name;
+                     if((classifier.confidence * 100).toFixed(0) != 0){
+                         row[classifier.attribute_code + '_confidence'] = (classifier.confidence * 100).toFixed(0) + '%';
+                     }
+                 }
+             }
+             if (tw.created_at) {
+                 row.createdAt = moment(tw.created_at).format("YYYY-MM-DD HH:mm Z");
+             } else {
+                 row.createdAt = "<span class='na-text'>Not specified</span>";
+             }
+             rv.data.push(row);
+         });
+         rv.totalCount = rv.data.length;
+         rv.success = true;
+         return rv;
+     },
+     getColumnsModelAndStoreKeysFromTweetData: function (obj) {
+         var columns = [
+             {
+                 xtype: 'gridcolumn', dataIndex: 'createdAt', text: 'Date/Time', width: 175
+             },
+             {
+                 xtype: 'gridcolumn', dataIndex: 'text', text: 'Tweet', flex: 1,
+                 renderer: function (value, meta, record) {
+                    var tooltipText = value + "<br/>";
+                     Ext.Object.each(record.data, function(key, val){
+                         var attributeName = getAttributeNameByAttributeCode(key);
+                         if(key != 'createdAt' && key != 'text' && key.indexOf('_confidence') == -1 && !Ext.isEmpty(checkAndGetVal(attributeName))){
+                             tooltipText += "<br/>" + attributeName + ": " + val + " (" + record.data[key + '_confidence'] + ")";
+                         }
+                     });
+                     meta.tdAttr = 'data-qtip="' + tooltipText + '"';
+                     return value;
+                 }
+             }
+         ];
+         var storeFields = [{name: 'createdAt'}, {name: 'text'}];
+         if (obj && obj.length) {
+             var tweet = obj[0];//Get only first tweet as amount of classifiers are the same for every tweet.
+             if (tweet.nominal_labels && tweet.nominal_labels.length) {
+                 for (var i = 0; i < tweet.nominal_labels.length; i++) {
+                       var classifier = tweet.nominal_labels[i];
+                       var classifierCol = {
+                         xtype: 'gridcolumn',
+                         text: checkAndGetVal(classifier.attribute_name),
+                         dataIndex: classifier.attribute_code
+                     }
+                     var confidenceColumn = {
+                         xtype: 'gridcolumn',
+                         text: 'Conf.',
+                         dataIndex: classifier.attribute_code + '_confidence',
+                         renderer: function (value, meta, record) {
+                             meta.style = "float:right; padding-top: 9px;";
+                             return value;
+                         }
+                     }
+                     storeFields.push({name:classifier.attribute_code});
+                     storeFields.push({name:classifier.attribute_code + '_confidence'});
+                     columns.push(classifierCol);
+                     columns.push(confidenceColumn);
+                 }
+             }
+         }
+         function checkAndGetVal(val){
+            return Ext.isEmpty(val) || val === "null" || val === "undefined" ? "" : val
+         }
+         function getAttributeNameByAttributeCode(attrCode){
+             var rv = "";
+             if (obj && obj.length) {
+                 var tweet = obj[0];//Get only first tweet as amount of classifiers are the same for every tweet.
+                 if (tweet.nominal_labels && tweet.nominal_labels.length) {
+                     for (var i = 0; i < tweet.nominal_labels.length; i++) {
+                        if(attrCode == tweet.nominal_labels[i].attribute_code){
+                            rv = tweet.nominal_labels[i].attribute_name;
+                         }
+                     }
+                 }
+             }
+             return rv;
+         }
+         return {columns:  columns, fields : storeFields};
+     },
+ /*
+     transformTweetData: function(tweetData) {
         var result = {};
         var data = [];
         Ext.Array.each(tweetData, function(r, index) {
@@ -279,7 +270,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
         return result;
     },
 
-*/
+ */
     loadCollection: function () {
         var me = this;
        
@@ -484,16 +475,14 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                 });
                 me.mainComponent.suspendLayout = false;
                 me.mainComponent.forceComponentLayout();
-
-                if(!Ext.isEmpty(data.curatorInfo)) {
-                    me.mainComponent.curatorInfoR.setText(data.curatorInfo, false);
-                    me.mainComponent.curatorInfoR.show();
-                    me.mainComponent.contactOwnerL.hide();
-                } else {
-                    me.mainComponent.curatorInfoR.hide();
-                    me.mainComponent.contactOwnerL.show();
-
-                }
+                 if(!Ext.isEmpty(data.curatorInfo)) {
+                     me.mainComponent.curatorInfoR.setText(data.curatorInfo, false);
+                     me.mainComponent.curatorInfoR.show();
+                     me.mainComponent.contactOwnerL.hide();
+                 } else {
+                     me.mainComponent.curatorInfoR.hide();
+                     me.mainComponent.contactOwnerL.show();
+                 }
             }
         });
     },
