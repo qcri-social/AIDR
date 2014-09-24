@@ -20,7 +20,7 @@ public class GranularityData {
 	private static Logger logger = Logger.getLogger(GranularityData.class);
 	private static ErrorLog elog = new ErrorLog();
 
-	private static String configloadFileName = "granularities.properties";
+	private static String configloadFileName = "granularity.properties";
 	
 	public static List<Long> getGranularities() {
 		List<Long> granularityList = new ArrayList<Long>();
@@ -43,7 +43,7 @@ public class GranularityData {
 		HashMap<String, String>properties = new HashMap<String, String>();
 		try {
 			//input = new FileInputStream(fileName); 
-			input = GranularityData.class.getClass().getClassLoader().getResourceAsStream(fileName);	
+			input = GranularityData.class.getClassLoader().getResourceAsStream(fileName);	
 
 			// load a properties file
 			prop.load(input);

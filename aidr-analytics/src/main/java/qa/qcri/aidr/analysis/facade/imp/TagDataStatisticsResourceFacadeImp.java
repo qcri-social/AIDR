@@ -23,8 +23,8 @@ import qa.qcri.aidr.common.values.ReturnCode;
 @Stateless
 public class TagDataStatisticsResourceFacadeImp extends CommonOperations implements TagDataStatisticsResourceFacade {
 
-	private static Logger logger = LoggerFactory.getLogger(TagDataStatisticsResourceFacadeImp.class);
-	private static ErrorLog elog = new ErrorLog();
+	//private static Logger logger = LoggerFactory.getLogger(TagDataStatisticsResourceFacadeImp.class);
+	//private static ErrorLog elog = new ErrorLog();
 	@PersistenceContext(unitName = "qa.qcri.aidr.analysis-EJBS")
 	private EntityManager em;
 
@@ -32,10 +32,14 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 	public ReturnCode writeData(TagData tagData) {
 		try {
 			em.persist(tagData);
+			//System.out.println("Success in persisting data for: " + tagData.getCrisisCode() + ", " + tagData.getAttributeCode() 
+			//		+ ", " + tagData.getLabelCode() + ", " + tagData.getTimestamp() + ", " + tagData.getGranularity() + ": " + tagData.getCount());
 			return ReturnCode.SUCCESS;
 		} catch (Exception e) {
-			logger.info("Error in persisting data for: " + tagData.getCrisisCode() + ", " + tagData.getAttributeCode() + ", " + tagData.getLabelCode());
-			logger.error(elog.toStringException(e));
+			System.err.println("Failure in persisting data for: " + tagData.getCrisisCode() + ", " + tagData.getAttributeCode() 
+					+ ", " + tagData.getLabelCode() + ", " + tagData.getTimestamp() + ", " + tagData.getGranularity() + ": " + tagData.getCount());
+			e.printStackTrace();
+			//logger.error(elog.toStringException(e));
 			return ReturnCode.FAIL;
 		}
 	}
@@ -54,7 +58,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 			TagData obj = (TagData) criteria.uniqueResult();
 			return obj;
 		} catch (HibernateException e) {
-			logger.error(elog.toStringException(e));
+			//logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -67,7 +71,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 			List<TagData> objList = (List<TagData>) criteria.list();
 			return objList;
 		} catch (HibernateException e) {
-			logger.error(elog.toStringException(e));
+			//logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -84,7 +88,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 			List<TagData> objList = (List<TagData>) criteria.list();
 			return objList;
 		} catch (HibernateException e) {
-			logger.error(elog.toStringException(e));
+			//logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -102,7 +106,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 			List<TagData> objList = (List<TagData>) criteria.list();
 			return objList;
 		} catch (HibernateException e) {
-			logger.error(elog.toStringException(e));
+			//logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -121,7 +125,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 			List<TagData> objList = (List<TagData>) criteria.list();
 			return objList;
 		} catch (HibernateException e) {
-			logger.error(elog.toStringException(e));
+			//logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -142,7 +146,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 			List<TagData> objList = (List<TagData>) criteria.list();
 			return objList;
 		} catch (HibernateException e) {
-			logger.error(elog.toStringException(e));
+			//logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -161,7 +165,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 			List<TagData> objList = (List<TagData>) criteria.list();
 			return objList;
 		} catch (HibernateException e) {
-			logger.error(elog.toStringException(e));
+			//logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -182,7 +186,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 			List<TagData> objList = (List<TagData>) criteria.list();
 			return objList;
 		} catch (HibernateException e) {
-			logger.error(elog.toStringException(e));
+			//logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -203,7 +207,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 			List<TagData> objList = (List<TagData>) criteria.list();
 			return objList;
 		} catch (HibernateException e) {
-			logger.error(elog.toStringException(e));
+			//logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -225,7 +229,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 			List<TagData> objList = (List<TagData>) criteria.list();
 			return objList;
 		} catch (HibernateException e) {
-			logger.error(elog.toStringException(e));
+			//logger.error(elog.toStringException(e));
 		}
 		return null;
 	}

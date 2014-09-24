@@ -56,12 +56,12 @@ public class TagData implements Serializable {
 	private Integer count;
 	
 	@XmlElement
-	@Column(name="min_create_at", nullable=true)
-	private Long minCreateAt;
+	@Column(name="min_created_at", nullable=true)
+	private Long minCreatedAt;
 	
 	@XmlElement
-	@Column(name="max_create_at", nullable=true)
-	private Long maxCreateAt;
+	@Column(name="max_created_at", nullable=true)
+	private Long maxCreatedAt;
 	
 	public TagData() {}
 	
@@ -131,19 +131,19 @@ public class TagData implements Serializable {
 		this.count = count;
 	}
 	
-	public Long getMinCreateAt() {
-		return this.minCreateAt;
+	public Long getMinCreatedAt() {
+		return this.minCreatedAt;
 	}
 	
 	public void setMinCreatedAt(Long minCreatedAt) {
-		this.minCreateAt = minCreatedAt;
+		this.minCreatedAt = minCreatedAt;
 	}
 	
 	public Long getMaxCreatedAt() {
-		return this.maxCreateAt;
+		return this.maxCreatedAt;
 	}
 	
 	public void setMaxCreatedAt(Long maxCreatedAt) {
-		this.maxCreateAt = maxCreatedAt;
+		this.maxCreatedAt = maxCreatedAt;
 	}
 }

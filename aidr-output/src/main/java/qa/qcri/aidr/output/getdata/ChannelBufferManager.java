@@ -48,9 +48,9 @@ import org.apache.log4j.Logger;
 
 public class ChannelBufferManager {
 
-	private static final int NO_DATA_TIMEOUT = 48 * 60 * 60 * 1000;		// when to delete a channel buffer
-	private static final int CHECK_INTERVAL = NO_DATA_TIMEOUT;
-	private static final int CHECK_CHANNEL_PUBLIC_INTERVAL = 5 * 60 * 1000;
+	public static final int NO_DATA_TIMEOUT = 48 * 60 * 60 * 1000;		// when to delete a channel buffer
+	public static final int CHECK_INTERVAL = NO_DATA_TIMEOUT;
+	public static final int CHECK_CHANNEL_PUBLIC_INTERVAL = 5 * 60 * 1000;
 
 	private static int PERSISTER_LOAD_LIMIT;
 	private static int PERSISTER_LOAD_CHECK_INTERVAL_MINUTES;
@@ -79,7 +79,7 @@ public class ChannelBufferManager {
 	private static int bufferSize = -1;
 
 	// Channel Buffering Algorithm related
-	private static final String CHANNEL_PREFIX_STRING = "aidr_predict.";
+	public static final String CHANNEL_PREFIX_STRING = "aidr_predict.";
 	public static ConcurrentHashMap<String, ChannelBuffer> subscribedChannels;
 
 	// DB access related
@@ -147,19 +147,27 @@ public class ChannelBufferManager {
 		}
 
 	}
-
+	
+	public ExecutorService getExecutorServicePool() {
+		return executorServicePool;
+	}
+	
 	public void initiateChannelBufferManager(final int bufferSize, final String channelRegEx) {
 		initiateChannelBufferManager(channelRegEx);					// call default constructor
 		this.bufferSize = bufferSize;		// set buffer size
 	}
 
+	public void manageChannelBuffersWrapper(final String subscriptionPattern, final String channelName, 
+													final String receivedMessage) {
+		manageChannelBuffers(subscriptionPattern, channelName, receivedMessage);
+	}
 
 	// Does all the essential work:
 	// 1. Searches received message to see if channel name present.
 	// 2. If channel present then simply adds receivedMessage to that channel.
 	// 3. Else, first calls createChannelBuffer() and then executes step (2).
 	// 4. Deletes channelName and channel buffer if channelName not seen for TIMEOUT duration.
-	private void manageChannelBuffers(final String subscriptionPattern, final String channelName, 
+	public void manageChannelBuffers(final String subscriptionPattern, final String channelName, 
 			final String receivedMessage) {
 		if (null == channelName) {
 			logger.error("Something terribly wrong! Fatal error in: " + channelName);
@@ -620,7 +628,7 @@ public class ChannelBufferManager {
 					logger.info("Created new redis load shedder for channel: " + channel);
 				}
 				if (redisLoadShedder.get(channel).canProcess(channel)) {
-					manageChannelBuffers(pattern, channel, message);
+					manageChannelBuffersWrapper(pattern, channel, message);
 				} 
 			} catch (Exception e) {
 				logger.error("Exception occurred, redisLoadShedder = " + redisLoadShedder + ", channel status: " + redisLoadShedder.containsKey(channel));

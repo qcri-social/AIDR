@@ -33,9 +33,15 @@ public class FrequencyStatisticsResourceFacadeImp extends CommonOperations imple
 	public ReturnCode writeData(FrequencyData freqData) {
 		try {
 			em.persist(freqData);
+			//System.out.println("Success in persisting data for: " + freqData.getCrisisCode() + ", " + freqData.getAttributeCode() 
+			//				+ ", " + freqData.getLabelCode() + ", " + freqData.getTimestamp() + ", " + freqData.getGranularity() 
+			//				+ ", " + freqData.getBin() + ": " + freqData.getCount());
 			return ReturnCode.SUCCESS;
 		} catch (Exception e) {
-			logger.info("Error in persisting data for: " + freqData.getCrisisCode() + ", " + freqData.getAttributeCode() + ", " + freqData.getLabelCode());
+			System.out.println("Failure in persisting data for: " + freqData.getCrisisCode() + ", " + freqData.getAttributeCode() 
+					+ ", " + freqData.getLabelCode() + ", " + freqData.getTimestamp() + ", " + freqData.getGranularity() 
+					+ ", " + freqData.getBin() + ": " + freqData.getCount());
+			e.printStackTrace();
 			logger.error(elog.toStringException(e));
 			return ReturnCode.FAIL;
 		}
