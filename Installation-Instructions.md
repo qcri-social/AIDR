@@ -185,7 +185,7 @@ After the above steps have been executed, you can build the project:
 The `aidr-task-manager` module is meant to provide a unified view of the `aidr_predict` database tables that are related to 'aidr tasks' - namely, `document`, `task_assignment`, `document_nominal_labels` and `crisis` tables. The various modules of AIDR such as `aidr-tagger-api`, `aidr-tagger` and `aidr-trainer-api` that access these tables will use the aidr-task-manager as the single access point (in phases). To enable this, `aidr-task-manager` uses remote EJBs. The instructions for enabling access through `aidr-task-manager` are outlined below:
 
 
-* Create a new JDBC resource in the server called `JNDI/aidr_task_manager` to match the entry in the `persistence.xml` file with `connection pool` set to that of the `aidr-predict database`.
+* Create a new JDBC resource in the server called `JNDI/aidr_task_manager` to match the entry in the `persistence.xml` file with `connection pool` set to that of the `aidr_predict database`.
 
 As aidr-task-manager is an EJB module, the build process for aidr-task-manager differs from the other modules:
 
@@ -193,7 +193,21 @@ As aidr-task-manager is an EJB module, the build process for aidr-task-manager d
 * Next build `aidr-task-managerEAR.ear` file through `mvn install -f pom-ear.xml`.  
 * Deploy the aidr-task-managerEAR.ear file to Glassfish.
 
+# 12. AIDR Analytics
 
+The `aidr-analytics` module is meant to provide data for various analytics and visualization of categorized tweet data. 
+
+Steps to deploy `aidr-analytics`:
+
+* Create a new database called `aidr_analysis`. Grant appropriate table and trigger permissions (similar to the instructions for setting up the `aidr_predict` database. Run the `db_update.sql` script in the `db_scripts` folder.  
+
+* For first time build, set the property `hibernate.hbm2ddl.auto` to `create`. For subsequent deployments, change the value to `update`.
+
+**WARNING**: Setting "hibernate.hbm2ddl.auto" to `create` drops and creates the aidr_analysis database!
+
+* Create a new JDBC resource in server (e.g., Glassfish) to match the JNDI name `JNDI/aidr_analysis` used in `src/main/resource/META-INF/persistence.xml`. Attach it with `connection pool` set to that of the `aidr_analysis` database.
+
+* Build using maven and deploy the WAR file. 
 
 
 # Known Issues
@@ -203,3 +217,4 @@ As aidr-task-manager is an EJB module, the build process for aidr-task-manager d
 * CDI deployment failure when attempting deployment of a module. The workaround is to toggle the `scope` of the glassfish 4.0 specific dependencies in the `pom.xml` file between `provided` and `compile`. 
 
 * Tagger-API throws remote EJB exception `java.lang.NoClassDefFoundError` (org.omg.CORBA.MARSHAL: WARNING: IOP00810010: Error from readValue on ValueHandler in CDRInputStream vmcid: OMG minor code: 10 completed) for `AIDRTaskManger` remote EJB method calls. `Solution`: downgrade to java version `1.7.0_51` or upgrade to `1.8.0_*` link: [https://java.net/jira/browse/GLASSFISH-21047](https://java.net/jira/browse/GLASSFISH-21047).
+
