@@ -16,8 +16,8 @@ import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.common.code.DateFormatConfig;
 import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.common.values.DateFormatConfig;
 import qa.qcri.aidr.persister.filter.NominalLabel;
 
 /**
