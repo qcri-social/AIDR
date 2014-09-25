@@ -148,10 +148,16 @@ After the above steps have been executed, you can build the project:
 
 # 8. Output (aidr-output)
 
+**Modules dependent**: `aidr-analysis`
+
 * Set the Redis host and port number appropriately in the `resources/config.properties` file. 
-* Build using maven following the instructions above; this should generate a file `aidr-output-X.war`
+
+* Build using maven following the instructions above; this should generate a file `aidr-output-X.war`.
+
 * Appropriately set the `outputAPIMainUrl` in the `system.properties` file under `aidr-manager`.
+
 * Deploy `aidr-output-X.war` to Glassfish using the instructions above.
+
 
 # 9. Trainer API (aidr-trainer-api)
 
@@ -207,6 +213,8 @@ Steps to deploy `aidr-analytics`:
 
 * Create a new JDBC resource in server (e.g., Glassfish) to match the JNDI name `JNDI/aidr_analysis` used in `src/main/resource/META-INF/persistence.xml`. Attach it with `connection pool` set to that of the `aidr_analysis` database.
 
+* Appropriately set the parameters in the `src/main/resources/granularity.properties` file. 
+
 * Build using maven and deploy the WAR file. 
 
 
@@ -217,4 +225,3 @@ Steps to deploy `aidr-analytics`:
 * CDI deployment failure when attempting deployment of a module. The workaround is to toggle the `scope` of the glassfish 4.0 specific dependencies in the `pom.xml` file between `provided` and `compile`. 
 
 * Tagger-API throws remote EJB exception `java.lang.NoClassDefFoundError` (org.omg.CORBA.MARSHAL: WARNING: IOP00810010: Error from readValue on ValueHandler in CDRInputStream vmcid: OMG minor code: 10 completed) for `AIDRTaskManger` remote EJB method calls. `Solution`: downgrade to java version `1.7.0_51` or upgrade to `1.8.0_*` link: [https://java.net/jira/browse/GLASSFISH-21047](https://java.net/jira/browse/GLASSFISH-21047).
-
