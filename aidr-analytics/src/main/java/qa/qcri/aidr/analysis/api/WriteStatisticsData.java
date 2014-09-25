@@ -37,7 +37,7 @@ import qa.qcri.aidr.output.getdata.ChannelBufferManager;
 public class WriteStatisticsData extends ChannelBufferManager implements ServletContextListener {
 
 	// Debugging
-	private static Logger logger = Logger.getLogger(WriteStatisticsData.class);
+	private static Logger logger = Logger.getLogger(WriteStatisticsData.class.getSuperclass());
 	private static ErrorLog elog = new ErrorLog();
 
 	private volatile boolean runFlag = false;

@@ -81,8 +81,12 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 		Criteria criteria = getCurrentSession(em).createCriteria(this.getClass());
 		Criterion criterion = Restrictions.conjunction()
 				.add(Restrictions.eq("crisis_code", crisisCode))
-				.add(Restrictions.eq("attribute_code", attributeCode))
-				.add(Restrictions.eq("label_code", labelCode));
+				.add(Restrictions.eq("attribute_code", attributeCode));
+		if (labelCode != null) {
+			criterion = Restrictions.conjunction()
+						.add(criterion)
+						.add(Restrictions.eq("label_code", labelCode));
+		}
 		criteria.add(criterion); 		
 		try {
 			List<TagData> objList = (List<TagData>) criteria.list();
@@ -117,8 +121,12 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 		Criterion criterion = Restrictions.conjunction()
 				.add(Restrictions.eq("crisis_code", crisisCode))
 				.add(Restrictions.eq("attribute_code", attributeCode))
-				.add(Restrictions.eq("label_code", labelCode))
 				.add(Restrictions.ge("timestamp", timestamp));
+		if (labelCode != null) {
+			criterion = Restrictions.conjunction()
+						.add(criterion)
+						.add(Restrictions.eq("label_code", labelCode));
+		}
 				
 		criteria.add(criterion); 		
 		try {
@@ -137,10 +145,13 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 		Criterion criterion = Restrictions.conjunction()
 				.add(Restrictions.eq("crisis_code", crisisCode))
 				.add(Restrictions.eq("attribute_code", attributeCode))
-				.add(Restrictions.eq("label_code", labelCode))
 				.add(Restrictions.ge("timestamp", timestamp))
 				.add(Restrictions.eq("granularity", granularity));
-				
+		if (labelCode != null) {
+			criterion = Restrictions.conjunction()
+						.add(criterion)
+						.add(Restrictions.eq("label_code", labelCode));
+		}
 		criteria.add(criterion); 		
 		try {
 			List<TagData> objList = (List<TagData>) criteria.list();
@@ -157,8 +168,12 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 		Criterion criterion = Restrictions.conjunction()
 				.add(Restrictions.eq("crisis_code", crisisCode))
 				.add(Restrictions.eq("attribute_code", attributeCode))
-				.add(Restrictions.eq("label_code", labelCode))
 				.add(Restrictions.le("timestamp", timestamp));
+		if (labelCode != null) {
+			criterion = Restrictions.conjunction()
+						.add(criterion)
+						.add(Restrictions.eq("label_code", labelCode));
+		}
 				
 		criteria.add(criterion); 		
 		try {
@@ -177,9 +192,13 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 		Criterion criterion = Restrictions.conjunction()
 				.add(Restrictions.eq("crisis_code", crisisCode))
 				.add(Restrictions.eq("attribute_code", attributeCode))
-				.add(Restrictions.eq("label_code", labelCode))
 				.add(Restrictions.le("timestamp", timestamp))
 				.add(Restrictions.eq("granularity", granularity));
+		if (labelCode != null) {
+			criterion = Restrictions.conjunction()
+						.add(criterion)
+						.add(Restrictions.eq("label_code", labelCode));
+		}
 				
 		criteria.add(criterion); 		
 		try {
@@ -198,10 +217,13 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 		Criterion criterion = Restrictions.conjunction()
 				.add(Restrictions.eq("crisis_code", crisisCode))
 				.add(Restrictions.eq("attribute_code", attributeCode))
-				.add(Restrictions.eq("label_code", labelCode))
 				.add(Restrictions.ge("timestamp", timestamp1))
 				.add(Restrictions.le("timestamp", timestamp2));
-				
+		if (labelCode != null) {
+			criterion = Restrictions.conjunction()
+						.add(criterion)
+						.add(Restrictions.eq("label_code", labelCode));
+		}
 		criteria.add(criterion); 		
 		try {
 			List<TagData> objList = (List<TagData>) criteria.list();
@@ -216,14 +238,34 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 	public List<TagData> getDataInIntervalWithGranularity(String crisisCode, String attributeCode, String labelCode, 
 														  Long timestamp1, Long timestamp2, Long granularity) {
 		Criteria criteria = getCurrentSession(em).createCriteria(this.getClass());
-		Criterion criterion = Restrictions.conjunction()
-				.add(Restrictions.eq("crisis_code", crisisCode))
-				.add(Restrictions.eq("attribute_code", attributeCode))
-				.add(Restrictions.eq("label_code", labelCode))
-				.add(Restrictions.eq("granularity", granularity))
-				.add(Restrictions.ge("timestamp", timestamp1))
-				.add(Restrictions.le("timestamp", timestamp2));
+		Criterion criterion = Restrictions.eq("crisis_code", crisisCode);
 				
+		// Now add the optional non-null criteria
+		if (attributeCode != null) {
+			criterion = Restrictions.conjunction()
+						.add(criterion)
+						.add(Restrictions.eq("attribute_code", attributeCode));
+		}
+		if (labelCode != null) {
+			criterion = Restrictions.conjunction()
+						.add(criterion)
+						.add(Restrictions.eq("label_code", labelCode));
+		}
+		if (granularity != null) {
+			criterion = Restrictions.conjunction()
+						.add(criterion)
+						.add(Restrictions.eq("granularity", granularity));
+		}
+		if (timestamp1 != null) {
+			criterion = Restrictions.conjunction()
+						.add(criterion)
+						.add(Restrictions.ge("timestamp", timestamp1));
+		}
+		if (timestamp2 != null) {
+			criterion = Restrictions.conjunction()
+						.add(criterion)
+						.add(Restrictions.le("timestamp", timestamp2));
+		}	
 		criteria.add(criterion); 		
 		try {
 			List<TagData> objList = (List<TagData>) criteria.list();
