@@ -213,7 +213,7 @@ Steps to deploy `aidr-analytics`:
 
 * Create a new JDBC resource in server (e.g., Glassfish) to match the JNDI name `JNDI/aidr_analysis` used in `src/main/resource/META-INF/persistence.xml`. Attach it with `connection pool` set to that of the `aidr_analysis` database.
 
-* Appropriately set the parameters in the `src/main/resources/granularity.properties` file. 
+* Appropriately set the parameters in the `src/main/resources/granularity.properties` file. Use the suffix `s`, `m`, `h` and `d` to indicate seconds, minutes, hours and days respectively. 
 
 * Build using maven and deploy the WAR file. 
 
