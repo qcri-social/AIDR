@@ -4,7 +4,8 @@
 	<groupId>qa.qcri.aidr.common</groupId>
 	<artifactId>aidr-common</artifactId>
 	<version>1.0</version>
-
+	<packaging>jar</packaging>
+	
 	<properties>
 		<java-version>1.7</java-version>
 		<jackson-asl.version>1.9.13</jackson-asl.version>
