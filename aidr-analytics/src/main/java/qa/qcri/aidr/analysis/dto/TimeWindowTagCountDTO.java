@@ -26,7 +26,7 @@ public class TimeWindowTagCountDTO implements Serializable {
 		return this.timestamp;
 	}
 	
-	public void setTimestap(Long timestamp) {
+	public void setTimestamp(Long timestamp) {
 		this.timestamp = timestamp;
 	}
 	

@@ -2,7 +2,7 @@ package qa.qcri.aidr.analysis.entity;
 
 import java.io.Serializable;
 
-public class FrequencyDataPK implements Serializable {
+public class ConfidenceDataPK implements Serializable {
 	
 	/**
 	 * 
@@ -15,7 +15,7 @@ public class FrequencyDataPK implements Serializable {
 	private String labelCode;
 	private Integer bin;
 	
-	public FrequencyDataPK() {}
+	public ConfidenceDataPK() {}
 	
 	public String getCrisisCode() {
 		return this.crisisCode;
@@ -67,8 +67,8 @@ public class FrequencyDataPK implements Serializable {
 	
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof FrequencyDataPK) {
-			FrequencyDataPK frequencyDataPK = (FrequencyDataPK) obj;
+		if (obj instanceof ConfidenceDataPK) {
+			ConfidenceDataPK frequencyDataPK = (ConfidenceDataPK) obj;
 			if (!frequencyDataPK.getCrisisCode().equals(crisisCode)) return false;
 			if (frequencyDataPK.getTimestamp() != timestamp) return false;
 			if (frequencyDataPK.getGranularity() != granularity) return false;

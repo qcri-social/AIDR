@@ -17,20 +17,20 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.analysis.facade.FrequencyStatisticsResourceFacade;
+import qa.qcri.aidr.analysis.facade.ConfidenceStatisticsResourceFacade;
 import qa.qcri.aidr.common.code.DateFormatConfig;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.output.getdata.ChannelBufferManager;
 
-@Path("/freqData/")
-public class GetFrequencyStatistics extends GetStatistics implements ServletContextListener {
+@Path("/confData/")
+public class GetConfidenceStatistics extends GetStatistics implements ServletContextListener {
 	
 	// Debugging
-	private static Logger logger = Logger.getLogger(GetFrequencyStatistics.class);
+	private static Logger logger = Logger.getLogger(GetConfidenceStatistics.class);
 	private static ErrorLog elog = new ErrorLog();
 	
 	@EJB
-    private FrequencyStatisticsResourceFacade freqDataEJB;
+    private ConfidenceStatisticsResourceFacade confDataEJB;
 	
 	@GET
 	@Path("/getBinCount/{classifierCode}/{labelCode}/{bin}")
@@ -70,7 +70,7 @@ public class GetFrequencyStatistics extends GetStatistics implements ServletCont
 			masterCBManager = new ChannelBufferManager();
 			masterCBManager.initiateChannelBufferManager(CHANNEL_REG_EX);
 			logger.info("aidr-output analytics service restarted...");
-			final String statusStr = "{\"aidr-output analytics FrequencyStats service\":\"RESTARTED\"}";
+			final String statusStr = "{\"aidr-output analytics ConfidenceStats service\":\"RESTARTED\"}";
 			return Response.ok(statusStr).build();
 		}
 		return Response.ok(new String("{\"password\":\"invalid\"}")).build();

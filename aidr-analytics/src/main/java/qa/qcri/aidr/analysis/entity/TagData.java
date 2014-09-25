@@ -47,9 +47,11 @@ public class TagData implements Serializable {
 	@Column(name="label_code", nullable=false)
 	private String labelCode;
 	
+	/*
 	@XmlElement
 	@Column(name="tag_text", nullable=true)
 	private String tagText;
+	*/
 	
 	@XmlElement
 	@Column(name="count", nullable=false)
@@ -115,6 +117,7 @@ public class TagData implements Serializable {
 		this.labelCode = labelCode;
 	}
 	
+	/*
 	public String getTagText() {
 		return this.tagText;
 	}
@@ -122,6 +125,7 @@ public class TagData implements Serializable {
 	public void setTagText(String tagText) {
 		this.tagText = tagText;
 	}
+	*/
 	
 	public Integer getCount() {
 		return this.count;

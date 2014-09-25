@@ -8,6 +8,7 @@ import org.hibernate.SessionFactory;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 
+
 public class CommonOperations {
 	private Logger logger = Logger.getLogger(CommonOperations.class);
 	private ErrorLog elog = new ErrorLog();

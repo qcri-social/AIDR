@@ -25,7 +25,7 @@
 		<listener-class>qa.qcri.aidr.analysis.api.GetTagDataStatistics</listener-class>
 	</listener>
 	<listener>
-		<listener-class>qa.qcri.aidr.analysis.api.GetFrequencyStatistics</listener-class>
+		<listener-class>qa.qcri.aidr.analysis.api.GetConfidenceStatistics</listener-class>
 	</listener>
 	<listener>
 		<listener-class>qa.qcri.aidr.analysis.api.WriteStatisticsData</listener-class>

@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import qa.qcri.aidr.common.code.DateFormatConfig;
 import qa.qcri.aidr.common.logging.ErrorLog;
 
+
 public class GranularityData {
 	// Debugging
 	private static Logger logger = Logger.getLogger(GranularityData.class);

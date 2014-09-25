@@ -4,6 +4,7 @@ package qa.qcri.aidr.analysis.api;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -19,13 +20,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import net.minidev.json.JSONObject;
+
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.analysis.entity.FrequencyData;
+import qa.qcri.aidr.analysis.entity.ConfidenceData;
 import qa.qcri.aidr.analysis.entity.TagData;
 import qa.qcri.aidr.analysis.stat.*;
 import qa.qcri.aidr.analysis.utils.GranularityData;
-import qa.qcri.aidr.analysis.facade.FrequencyStatisticsResourceFacade;
+import qa.qcri.aidr.analysis.facade.ConfidenceStatisticsResourceFacade;
 import qa.qcri.aidr.analysis.facade.TagDataStatisticsResourceFacade;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.ReturnCode;
@@ -46,25 +49,25 @@ public class WriteStatisticsData extends ChannelBufferManager implements Servlet
 	private TagDataStatisticsResourceFacade tagDataEJB;
 
 	@EJB
-	private FrequencyStatisticsResourceFacade freqDataEJB;
+	private ConfidenceStatisticsResourceFacade confDataEJB;
 
 	private ExecutorService executorServicePool = null;
 	private Thread t = null;
 	
 	private static final String SENTINEL = "#";
 	private static ConcurrentHashMap<String, Object> tagDataMap = null;
-	private static ConcurrentHashMap<String, Object> freqDataMap = null;
+	private static ConcurrentHashMap<String, Object> confDataMap = null;
 	private static ConcurrentHashMap<String, Long> channelMap = null;
 	private List<Long> granularityList = null;
 	private long lastTagDataCheckedTime = 0;
-	private long lastFreqDataCheckedTime = 0;
+	private long lastConfDataCheckedTime = 0;
 	
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		logger.info("Initializing channel buffer manager");
 		System.out.println("[contextInitialized] Initializing channel buffer manager");
 		tagDataMap = new ConcurrentHashMap<String, Object>();
-		freqDataMap = new ConcurrentHashMap<String, Object>();
+		confDataMap = new ConcurrentHashMap<String, Object>();
 		channelMap = new ConcurrentHashMap<String, Long>();
 
 		granularityList = GranularityData.getGranularities();
@@ -86,12 +89,22 @@ public class WriteStatisticsData extends ChannelBufferManager implements Servlet
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
 		tagDataMap.clear();
-		freqDataMap.clear();
+		confDataMap.clear();
 		runFlag = false;
 		close();
 		logger.info("Context destroyed");
 	}
-
+	
+	@GET
+	@Path("/tracked/channels")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getTrackedChannelsList() {
+		Set<String> channelList = getActiveChannelsList();
+		JSONObject json = new JSONObject();
+		json.put("channels", channelList);
+		return Response.ok(json.toJSONString()).build();
+	}
+	
 	@GET
 	@Path("/ping")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -104,7 +117,7 @@ public class WriteStatisticsData extends ChannelBufferManager implements Servlet
 	}
 	
 	private ReturnCode writeOutputDataToTagDataDB(Long granularity, Long timestamp) {
-		System.out.println("tagDataMap size: " + (tagDataMap != null ? tagDataMap.size() : "null"));
+		//System.out.println("tagDataMap size: " + (tagDataMap != null ? tagDataMap.size() : "null"));
 		try {
 			for (String key: tagDataMap.keySet()) {
 				String[] data = key.split(SENTINEL);
@@ -118,7 +131,7 @@ public class WriteStatisticsData extends ChannelBufferManager implements Servlet
 				tagDataEJB.writeData(t);
 				tCount.resetCount(granularity);
 				TagDataMapRecord temp = (TagDataMapRecord) tagDataMap.get(key);
-				System.out.println("[writeOutputDataToTagDataDB] After reset, count for key = " + key + " is = " + temp.getCount(granularity));
+				//System.out.println("[writeOutputDataToTagDataDB] After reset, count for key = " + key + " is = " + temp.getCount(granularity));
 				
 			}
 		} catch (Exception e) {
@@ -129,23 +142,23 @@ public class WriteStatisticsData extends ChannelBufferManager implements Servlet
 		return ReturnCode.SUCCESS;
 	}
 
-	private ReturnCode writeOutputDataToFreqDataDB(Long granularity, Long timestamp) {
+	private ReturnCode writeOutputDataToConfDataDB(Long granularity, Long timestamp) {
 		try {
-			for (String key: freqDataMap.keySet()) {
+			for (String key: confDataMap.keySet()) {
 				String[] data = key.split(SENTINEL);
 				// data[0] = channelName
 				// data[1] = attributeCode
 				// data[2] = labelCode
 				// data[3] = bin
-				FreqDataMapRecord fCount = (FreqDataMapRecord) freqDataMap.get(key);
-				FrequencyData f = new FrequencyData(data[0], timestamp, granularity, data[1], data[2], Integer.parseInt(data[3]), fCount.getCount(granularity));
-				freqDataEJB.writeData(f);
+				ConfDataMapRecord fCount = (ConfDataMapRecord) confDataMap.get(key);
+				ConfidenceData f = new ConfidenceData(data[0], timestamp, granularity, data[1], data[2], Integer.parseInt(data[3]), fCount.getCount(granularity));
+				confDataEJB.writeData(f);
 				fCount.resetCount(granularity);
-				FreqDataMapRecord temp = (FreqDataMapRecord) freqDataMap.get(key);
-				System.out.println("[writeOutputDataToFreqDataDB] After reset, count for key = " + key + " is = " + temp.getCount(granularity));
+				ConfDataMapRecord temp = (ConfDataMapRecord) confDataMap.get(key);
+				//System.out.println("[writeOutputDataToConfDataDB] After reset, count for key = " + key + " is = " + temp.getCount(granularity));
 			}
 		} catch (Exception e) {
-			System.err.println("[writeOutputDataToFreqDataDB] Error in writing to FrequencyDataDB table!");
+			System.err.println("[writeOutputDataToConfDataDB] Error in writing to ConfidenceDataDB table!");
 			e.printStackTrace();
 			return ReturnCode.FAIL;
 		}
@@ -188,7 +201,7 @@ public class WriteStatisticsData extends ChannelBufferManager implements Servlet
 												.append(nb.attribute_code).append(SENTINEL)
 												.append(nb.label_code);
 						String tagDataKey = new String(keyPrefix);
-						String freqDataKey = new String(keyPrefix.append(SENTINEL).append(getBinNumber(nb.confidence)));
+						String confDataKey = new String(keyPrefix.append(SENTINEL).append(getBinNumber(nb.confidence)));
 						if (tagDataMap.containsKey(tagDataKey)) {
 							TagDataMapRecord t = (TagDataMapRecord) tagDataMap.get(tagDataKey);
 							t.incrementAllCounts();
@@ -198,14 +211,14 @@ public class WriteStatisticsData extends ChannelBufferManager implements Servlet
 							tagDataMap.put(tagDataKey, t);
 							System.out.println("[manageChannelBuffersWrapper] New Tag map entry with key: " + tagDataKey + " value = " + tagDataMap.get(tagDataKey));
 						}
-						if (freqDataMap.containsKey(freqDataKey)) {
-							FreqDataMapRecord f = (FreqDataMapRecord) freqDataMap.get(freqDataKey);
+						if (confDataMap.containsKey(confDataKey)) {
+							ConfDataMapRecord f = (ConfDataMapRecord) confDataMap.get(confDataKey);
 							f.incrementAllCounts();
-							freqDataMap.put(freqDataKey, f);
+							confDataMap.put(confDataKey, f);
 						} else {
-							FreqDataMapRecord t = new FreqDataMapRecord(granularityList);
-							freqDataMap.put(freqDataKey, t);
-							System.out.println("[manageChannelBuffersWrapper] New Freq map entry with key: " + freqDataKey  + " value = " + freqDataMap.get(freqDataKey));
+							ConfDataMapRecord t = new ConfDataMapRecord(granularityList);
+							confDataMap.put(confDataKey, t);
+							System.out.println("[manageChannelBuffersWrapper] New Conf map entry with key: " + confDataKey  + " value = " + confDataMap.get(confDataKey));
 						}
 					}
 				}
@@ -215,7 +228,7 @@ public class WriteStatisticsData extends ChannelBufferManager implements Servlet
 		}
 		// Periodically check if any channel is down - if so, delete all in-memory data for that channel
 		lastTagDataCheckedTime = periodicInactiveChannelCheck(lastTagDataCheckedTime, tagDataMap);
-		lastFreqDataCheckedTime = periodicInactiveChannelCheck(lastFreqDataCheckedTime, freqDataMap);
+		lastConfDataCheckedTime = periodicInactiveChannelCheck(lastConfDataCheckedTime, confDataMap);
 	}
 
 	private long periodicInactiveChannelCheck(long lastCheckedTime, ConcurrentHashMap<String, Object> dataMap) {
@@ -256,10 +269,10 @@ public class WriteStatisticsData extends ChannelBufferManager implements Servlet
 		public void run() {
 			System.out.println("Started writer thread: " + t.getName());
 			Map<Long, Long> lastTagDataWriteTime = new TreeMap<Long, Long>();
-			Map<Long, Long> lastFreqDataWriteTime = new TreeMap<Long, Long>();
+			Map<Long, Long> lastConfDataWriteTime = new TreeMap<Long, Long>();
 			for (Long g: granularityList) {
 				lastTagDataWriteTime.put(g, 0L);
-				lastFreqDataWriteTime.put(g, 0L);
+				lastConfDataWriteTime.put(g, 0L);
 			}
 			while (runFlag) {
 				long currentTime = System.currentTimeMillis();
@@ -274,13 +287,13 @@ public class WriteStatisticsData extends ChannelBufferManager implements Servlet
 								System.out.println("[ToTagDataDB] Successfully wrote for granularity: " + granularity + " at time = " + new Date(currentTime));
 							}
 						}
-						if (0 == lastFreqDataWriteTime.get(granularity) || (currentTime - lastFreqDataWriteTime.get(granularity)) >= granularity) {
+						if (0 == lastConfDataWriteTime.get(granularity) || (currentTime - lastConfDataWriteTime.get(granularity)) >= granularity) {
 							// Write to DB table
-							ReturnCode retVal = writeOutputDataToFreqDataDB(granularity, currentTime);
-							System.out.println("[ToFreqDataDB] retVal = " + retVal);
-							lastFreqDataWriteTime.put(granularity, currentTime);
+							ReturnCode retVal = writeOutputDataToConfDataDB(granularity, currentTime);
+							System.out.println("[ToConfDataDB] retVal = " + retVal);
+							lastConfDataWriteTime.put(granularity, currentTime);
 							if (ReturnCode.SUCCESS.equals(retVal)) {
-								System.out.println("[ToFreqDataDB] Successfully wrote for granularity: " + granularity + " at time = " + new Date(currentTime));
+								System.out.println("[ToConfDataDB] Successfully wrote for granularity: " + granularity + " at time = " + new Date(currentTime));
 							}
 						}
 					}

@@ -2,11 +2,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>qa.qcri.aidr.analysis</groupId>
-	<artifactId>aidr-analysis</artifactId>
+	<artifactId>aidr-analytics</artifactId>
 	<version>1.0</version>
 	<packaging>war</packaging>
-	<name>aidr-analysis</name>
-	<description>Analysis module for AIDR classifier data</description>
+	<name>aidr-analytics</name>
+	<description>Analytics module for AIDR classifier data</description>
 
 	<dependencies>
 		<!-- AIDR dependencies -->

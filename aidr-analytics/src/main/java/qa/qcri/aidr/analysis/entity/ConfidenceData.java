@@ -12,10 +12,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 
 @Entity 
-@Table(catalog = "aidr_analysis",name = "freq_data")
-@IdClass(value=FrequencyDataPK.class)
+@Table(catalog = "aidr_analysis",name = "conf_data")
+@IdClass(value=ConfidenceDataPK.class)
 @XmlRootElement
-public class FrequencyData implements Serializable {
+public class ConfidenceData implements Serializable {
 
 	@XmlElement
 	@Id
@@ -52,9 +52,9 @@ public class FrequencyData implements Serializable {
 	@Column(name="count", nullable=false)
 	private Integer count;
 	
-	public FrequencyData() {}
+	public ConfidenceData() {}
 	
-	public FrequencyData(String crisisCode, Long timestamp, Long granularity, String attributeCode, String labelCode, Integer bin, Integer count) {
+	public ConfidenceData(String crisisCode, Long timestamp, Long granularity, String attributeCode, String labelCode, Integer bin, Integer count) {
 		this.crisisCode = crisisCode;
 		this.timestamp = timestamp;
 		this.granularity = granularity;

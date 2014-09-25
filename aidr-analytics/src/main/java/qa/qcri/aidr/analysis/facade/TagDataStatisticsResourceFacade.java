@@ -8,6 +8,7 @@ import qa.qcri.aidr.analysis.entity.TagData;
 import qa.qcri.aidr.analysis.entity.TagDataPK;
 import qa.qcri.aidr.common.values.ReturnCode;
 
+
 @Local
 public interface TagDataStatisticsResourceFacade {
 	public ReturnCode writeData(TagData tagData);
@@ -19,6 +20,8 @@ public interface TagDataStatisticsResourceFacade {
 	public List<TagData> getDataByCrisisAttributeLabel(String crisisCode, String attributeCode, String labelCode);
 	
 	public List<TagData> getDataByCrisisAttributeLabelGranularity(String crisisCode, String attributeCode, String labelCode, Long granularity);
+	
+	public List<TagData> getDataByGranularityInTimeWindow(String crisisCode, String attributeCode, String labelCode, Long timestamp, Long granularity);
 	
 	public List<TagData> getDataAfterTimestamp(String crisisCode, String attributeCode, String labelCode, Long timestamp);
 	

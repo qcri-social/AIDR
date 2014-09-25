@@ -17,7 +17,13 @@ public class TagCountSeriesDTO implements Serializable {
 	private String crisisCode;
 	
 	@XmlElement
+	private String attributeCode;
+	
+	@XmlElement
 	private Long granularity;
+	
+	@XmlElement 
+	private Integer total;
 	
 	@XmlElement
 	private List<TimeWindowTagCountDTO> timeSeriesData;
@@ -32,12 +38,28 @@ public class TagCountSeriesDTO implements Serializable {
 		this.crisisCode = crisisCode; 
 	}
 	
+	public String getAttributeCode() {
+		return this.attributeCode;
+	}
+	
+	public void setAttributeCode(String attributeCode) {
+		this.attributeCode = attributeCode;
+	}
+	
 	public Long getGranularity() {
 		return this.granularity;
 	}
 	
 	public void setGranularity(Long granularity) {
 		this.granularity = granularity;
+	}
+	
+	public Integer getTotal() {
+		return this.total;
+	}
+	
+	public void setTotal(Integer total) {
+		this.total = total;
 	}
 	
 	public List<TimeWindowTagCountDTO> getTimeSeriesData() {

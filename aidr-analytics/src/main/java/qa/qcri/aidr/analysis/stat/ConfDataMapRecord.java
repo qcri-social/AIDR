@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class FreqDataMapRecord extends MapRecord {
+public class ConfDataMapRecord extends MapRecord {
 	
-	public FreqDataMapRecord(List<Long> granularityList) {
+	public ConfDataMapRecord(List<Long> granularityList) {
 		this.count = new ConcurrentHashMap<Long, Integer>();
 		for (Long g: granularityList) {
 			this.count.put(g, 0);
