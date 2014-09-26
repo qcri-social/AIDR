@@ -2,16 +2,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>qa.qcri.aidr.task</groupId>
-    <artifactId>aidr-task-manager-pom</artifactId>
+    <artifactId>aidr-task-manager</artifactId>
     <version>1.0</version>
-    <packaging>pom</packaging>
-
-    <modules>
-        <module>./pom-ejb.xml</module>
-        <module>./pom-ear.xml</module>
-    </modules>
+    <packaging>ejb</packaging>
 
     <properties>
+        <jartype>client</jartype>
         <gf.version>2.5.1</gf.version>
     </properties>
 
@@ -188,8 +184,43 @@
 
     </dependencies>
 
+
+
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.17</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-ejb-plugin</artifactId>
+                <version>2.4</version>
+
+                <configuration>
+                    <ejbVersion>3.2</ejbVersion>
+                    <generateClient>true</generateClient>
+                    <clientExcludes>
+                        <clientExclude>**/log4j.properties</clientExclude>
+                        <clientExclude>**/*Bean.class</clientExclude>
+                        <clientExclude>**/*Imp.class</clientExclude>
+                        <clientExclude>**/*Session.class</clientExclude>
+                    </clientExcludes>
+                </configuration>
+
+            </plugin>
+
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.7</version>
@@ -201,7 +232,8 @@
                         <configuration>
                             <target>
                                 <echo>**********************************************************************</echo>
-                                <echo>NOTE: To build the JAR and EAR files, please execute 'mvn install'. "pom-ejb.xml" and "pom-ear.xml" will be involved in the build by parent "pom.xml".</echo>
+                                <echo>NOTE: To build the EAR file, please execute 'mvn install
+                                    -f pom-ear.xml'</echo>
                                 <echo>**********************************************************************</echo>
                             </target>
                         </configuration>
