@@ -29,15 +29,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-<<<<<<< HEAD
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 
-=======
->>>>>>> b1d8828556feabbda4d494c11989afc377b5bfb2
 /**
  * REST Web Service
  *
