@@ -6,6 +6,8 @@ import java.util.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
+
 /**
  * Light-weight helper class for error logging.
  *
@@ -26,11 +28,11 @@ public class ErrorLog extends qa.qcri.aidr.common.logging.ErrorLog {
     
     public static void Print(String sourceName, String text) {
         synchronized (writeLock) {
-            if (Config.LOG_FILE_NAME.equals("console")) {
+            if (getProperty("LOG_FILE_NAME").equals("console")) {
                 System.out.println(sourceName + ": " + text);
             } else {
                 try {
-                    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(Config.LOG_FILE_NAME, true)));
+                    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(getProperty("LOG_FILE_NAME"), true)));
                     out.println(getTimestamp() + sourceName + ": " + text);
                     out.close();
                 } catch (IOException e) {

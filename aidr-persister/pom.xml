@@ -10,7 +10,11 @@
 	<name>aidr-persister</name>
 	<url>http://maven.apache.org</url>
 
-	<dependencies>
+    <properties>
+        <resource.dir>${basedir}/src/main/resources</resource.dir>
+    </properties>
+
+    <dependencies>
 		<!-- AIDR dependencies -->
 		<dependency>
 			<groupId>qa.qcri.aidr.common</groupId>
@@ -177,5 +181,17 @@
 				</configuration>
 			</plugin>
 		</plugins>
+        <resources>
+            <resource>
+                <directory>${resource.dir}</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <filters>
+            <filter>${basedir}/../common_config.properties</filter>
+        </filters>
 	</build>
 </project>

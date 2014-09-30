@@ -7,6 +7,8 @@ import qa.qcri.aidr.predict.common.Config;
 import qa.qcri.aidr.predict.data.DocumentJSONConverter;
 import au.com.bytecode.opencsv.CSVReader;
 
+import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
+
 /**
  * Test class that reads labeled training data from a file and sends each item
  * to the AIDR pipeline.
@@ -20,7 +22,7 @@ import au.com.bytecode.opencsv.CSVReader;
 public class HttpBatchImportSandy {
 
     static String host = "localhost";
-    static int port = Config.HTTP_INPUT_PORT;
+    static int port = Integer.parseInt(getProperty("http_input_port"));
 
     static Socket socket;
     static BufferedReader serverIn;

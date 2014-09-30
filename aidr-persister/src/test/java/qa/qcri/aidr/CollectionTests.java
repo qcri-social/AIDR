@@ -15,6 +15,8 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
+
 public class CollectionTests {
     public static final String PERSISTER_URL = "http://localhost:8084/AIDRPersister/webresources";
     public static final String COLLECTION_CODE = "test";
@@ -29,7 +31,7 @@ public class CollectionTests {
         Response response = webResource.request(MediaType.APPLICATION_JSON).get();
         String message = response.readEntity(String.class);
 
-        Assert.assertEquals("Start collection successfully", "Started persisting to " + Config.DEFAULT_PERSISTER_FILE_PATH, message);
+        Assert.assertEquals("Start collection successfully", "Started persisting to " + getProperty("DEFAULT_PERSISTER_FILE_PATH"), message);
     }
 
     @Test

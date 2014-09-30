@@ -22,6 +22,8 @@ import qa.qcri.aidr.predict.common.Config;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.data.DocumentJSONConverter;
 
+import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
+
 
 /**
  * AidrFetcherJsonInputProcessor receives tweets in JSON format from the AIDR
@@ -77,7 +79,7 @@ public class AidrFetcherJsonInputProcessor extends Loggable implements Runnable 
 		@Override
 		public void onMessage(String channel, String jsonDoc) {
 			if (!redisLoadShedder.containsKey(channel)) {
-				redisLoadShedder.put(channel, new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
+				redisLoadShedder.put(channel, new LoadShedder(Integer.parseInt(getProperty("persister_load_limit")), Integer.parseInt(getProperty("persister_load_check_interval_minutes")), true));
 			}
 			if (redisLoadShedder.get(channel).canProcess(channel)) {
 				Document doc;
@@ -161,7 +163,7 @@ public class AidrFetcherJsonInputProcessor extends Loggable implements Runnable 
 
 				Subscriber subscriber = new Subscriber(outputQueueName);
 				redis.psubscribe(subscriber, inputQueueName);
-				redisLoadShedder.put(inputQueueName, new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
+				redisLoadShedder.put(inputQueueName, new LoadShedder(Integer.parseInt(getProperty("persister_load_limit")), Integer.parseInt(getProperty("persister_load_check_interval_minutes")), true));
 				Thread.sleep(60000);
 			} catch (Exception e) {
 				log("RedisInputProcessor", e);

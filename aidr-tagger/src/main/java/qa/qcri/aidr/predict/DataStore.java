@@ -68,6 +68,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SparseInstance;
 
+import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 
 /**
@@ -148,7 +149,7 @@ public class DataStore extends Loggable {
 		try {
 			if (jedisPool == null) {
 				jedisPool = new JedisPool(new JedisPoolConfig(),
-						Config.REDIS_HOST);
+                        getProperty("redis_host"));
 			}
 			return jedisPool.getResource();
 		} catch (Exception e) {
@@ -166,11 +167,11 @@ public class DataStore extends Loggable {
 
 	public static void clearRedisPipeline() {
 		Jedis redis = getJedisConnection();
-		redis.del(Config.REDIS_FOR_CLASSIFICATION_QUEUE);
-		redis.del(Config.REDIS_FOR_EXTRACTION_QUEUE);
-		redis.del(Config.REDIS_FOR_OUTPUT_QUEUE);
-		redis.del(Config.REDIS_LABEL_TASK_WRITE_QUEUE);
-		redis.del(Config.REDIS_TRAINING_SAMPLE_INFO_QUEUE);
+		redis.del(getProperty("redis_for_classification_queue"));
+		redis.del(getProperty("redis_for_extraction_queue"));
+		redis.del(getProperty("redis_for_output_queue"));
+		redis.del(getProperty("redis_label_task_write_queue"));
+		redis.del(getProperty("redis_training_sample_info_queue"));
 		close(redis);
 	}
 	public static final int MODEL_ID_ERROR = -1;
@@ -187,8 +188,8 @@ public class DataStore extends Loggable {
 					50, // max-pool default = 5
 					50, // max-size default 30
 					180000, // timeout (ms)
-					Config.MYSQL_PATH, Config.MYSQL_USERNAME,
-					Config.MYSQL_PASSWORD);
+                    getProperty("mysql_path"), getProperty("mysql_username"),
+                    getProperty("mysql_password"));
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			logger.error("Exception when initializing MySQL connection");
 			logger.error(elog.toStringException(e));
@@ -580,7 +581,7 @@ public class DataStore extends Loggable {
 			String message = "{ \"crisis_id\": " + n.crisisID
 					+ ", \"attributes\": [" + Helpers.join(n.attributeIDs, ",")
 					+ "] }";
-			redis.rpush(Config.REDIS_TRAINING_SAMPLE_INFO_QUEUE, message);
+			redis.rpush(getProperty("redis_training_sample_info_queue"), message);
 		}
 
 		DataStore.close(redis);

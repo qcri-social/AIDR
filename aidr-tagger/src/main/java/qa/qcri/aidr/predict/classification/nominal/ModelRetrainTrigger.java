@@ -16,6 +16,8 @@ import qa.qcri.aidr.predict.common.Event;
 import qa.qcri.aidr.predict.common.Loggable;
 import qa.qcri.aidr.predict.dbentities.ModelFamilyEC;
 
+import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
+
 /**
  * ModelRetrainTrigger gets notified of new training samples through a Redis
  * queue. When a sufficient number of samples have arrived, it throws an event
@@ -49,7 +51,7 @@ class ModelRetrainTrigger extends Loggable implements Runnable {
     public void initialize(ArrayList<ModelFamilyEC> modelStates) {
         for (ModelFamilyEC m : modelStates) {
             increment(m.getCrisisID(), new int[] { m.getNominalAttribute().getNominalAttributeID()},
-                    m.getTrainingExampleCount() % Config.SAMPLE_COUNT_THRESHOLD);
+                    m.getTrainingExampleCount() % Integer.parseInt(getProperty("sampleCountThreshold")));
         }
     }
 
@@ -96,7 +98,7 @@ class ModelRetrainTrigger extends Loggable implements Runnable {
 
     private String getInfoMessage(Jedis redis) {
         List<String> result = redis.blpop(5,
-                Config.REDIS_TRAINING_SAMPLE_INFO_QUEUE);
+                getProperty("redis_training_sample_info_queue"));
         if (result == null || result.size() != 2) {
             return null; // Result is null on timeout, size should always be 2
         }
@@ -128,7 +130,7 @@ class ModelRetrainTrigger extends Loggable implements Runnable {
             HashMap<Integer, Integer> eventMap = newSampleCounts.get(crisisID);
             for (int attributeID : eventMap.keySet()) {
                 long now = new Date().getTime();
-                if (eventMap.get(attributeID) >= Config.SAMPLE_COUNT_THRESHOLD
+                if (eventMap.get(attributeID) >= Integer.parseInt(getProperty("sampleCountThreshold"))
                         && (now - rebuildTimestamps.get(crisisID).get(
                                 attributeID)) >= timeThreshold) {
 

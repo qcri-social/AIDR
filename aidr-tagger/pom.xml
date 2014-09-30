@@ -48,7 +48,19 @@
 				</executions>
 			</plugin>
 		</plugins>
-	</build>
+        <resources>
+            <resource>
+                <directory>${resource.dir}</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <filters>
+            <filter>${basedir}/../common_config.properties</filter>
+        </filters>
+    </build>
 	<dependencies>
 
 		<!-- AIDR dependencies -->
@@ -214,5 +226,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <resource.dir>${basedir}/src/main/resources</resource.dir>
 	</properties>
 </project>

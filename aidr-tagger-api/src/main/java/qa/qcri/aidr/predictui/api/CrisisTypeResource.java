@@ -26,6 +26,8 @@ import qa.qcri.aidr.predictui.entities.CrisisType;
 import qa.qcri.aidr.predictui.facade.CrisisTypeResourceFacade;
 import qa.qcri.aidr.predictui.util.Config;
 
+import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
+
 /**
  * REST Web Service
  *
@@ -51,7 +53,7 @@ public class CrisisTypeResource {
         try {
             crisistype = crisisTypeLocal.getCrisisTypeByID(id);
         } catch (RuntimeException e) {
-            return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
+            return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
         }
         return Response.ok(crisistype).build();
     }
@@ -73,7 +75,7 @@ public class CrisisTypeResource {
         try {
             crisis = crisisTypeLocal.addCrisisType(crisis);
         } catch (RuntimeException e) {
-            return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
+            return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
         }
         return Response.ok(crisis).build();
     }
@@ -85,7 +87,7 @@ public class CrisisTypeResource {
         try {
             crisis = crisisTypeLocal.editCrisisType(crisis);
         } catch (RuntimeException e) {
-            return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
+            return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
         }
         return Response.ok(crisis).build();
     }
@@ -98,9 +100,9 @@ public class CrisisTypeResource {
             crisisTypeLocal.deleteCrisisType(id);
         } catch (RuntimeException e) {
             return Response.ok(
-                    new ResponseWrapper(Config.STATUS_CODE_FAILED,
+                    new ResponseWrapper(getProperty("STATUS_CODE_FAILED"),
                     "Error while deleting CrisisType. Possible cause(s): (1) Given crisis-type ID does not exist.")).build();
         }
-        return Response.ok(new ResponseWrapper(Config.STATUS_CODE_SUCCESS)).build();
+        return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"))).build();
     }
 }

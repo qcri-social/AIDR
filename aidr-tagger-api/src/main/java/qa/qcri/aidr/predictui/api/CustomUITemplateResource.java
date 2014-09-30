@@ -18,6 +18,8 @@ import org.apache.log4j.Logger;
 
 import java.util.List;
 
+import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jlucas
@@ -93,7 +95,7 @@ public class CustomUITemplateResource {
         try {
             customUITemplate = customUITemplateFacade.getAllCustomUITemplateByCrisisID((long) crisisID);
         } catch (RuntimeException e) {
-            return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
+            return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
         }
 
         return Response.ok(customUITemplate).build();
@@ -113,15 +115,15 @@ public class CustomUITemplateResource {
     private boolean isAttributeInfoRequired(int type){
         boolean returnValue = false;
 
-        if(type == Config.CLASSIFIER_DESCRIPTION_PAGE){
+        if(type == Integer.parseInt(getProperty("LASSIFIER_DESCRIPTION_PAGE"))){
             returnValue = true;
         }
 
-        if(type == Config.CLASSIFIER_TUTORIAL_ONE){
+        if(type == Integer.parseInt(getProperty("CLASSIFIER_TUTORIAL_ONE"))){
             returnValue = true;
         }
 
-        if(type == Config.CLASSIFIER_TUTORIAL_TWO){
+        if(type == Integer.parseInt(getProperty("CLASSIFIER_TUTORIAL_TWO"))){
             returnValue = true;
         }
 

@@ -15,6 +15,8 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import qa.qcri.aidr.common.code.ResponseWrapper;
 import qa.qcri.aidr.logging.ErrorLog;
 
+import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
+
 public class ResultStatus extends ResponseWrapper {
 
 	private static Logger logger = Logger.getLogger(ResultStatus.class);
@@ -26,7 +28,7 @@ public class ResultStatus extends ResponseWrapper {
 		Response clientResponse = null;
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
-			WebTarget webResource = client.target(Config.managerUrl 
+			WebTarget webResource = client.target(getProperty("managerUrl")
 					+ "/public/collection/findTotalCount?channelCode=" + collectionCode);
 
 			clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();

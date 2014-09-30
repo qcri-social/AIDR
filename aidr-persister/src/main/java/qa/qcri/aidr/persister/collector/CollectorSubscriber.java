@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
 import qa.qcri.aidr.common.redis.LoadShedder;
 import qa.qcri.aidr.io.FileSystemOperations;
 import qa.qcri.aidr.logging.ErrorLog;
-
+import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
 
 public class CollectorSubscriber extends JedisPubSub {
 	
@@ -67,8 +67,8 @@ public class CollectorSubscriber extends JedisPubSub {
         if (null == redisLoadShedder) {
         	redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
         }
-        redisLoadShedder.put(Config.FETCHER_CHANNEL+collectionCode, new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
-        logger.info("Created loadshedder for channel: " + (Config.FETCHER_CHANNEL+collectionCode));
+        redisLoadShedder.put(getProperty("FETCHER_CHANNEL")+collectionCode, new LoadShedder(Integer.parseInt(getProperty("PERSISTER_LOAD_LIMIT")), Integer.parseInt(getProperty("PERSISTER_LOAD_CHECK_INTERVAL_MINUTES")), true));
+        logger.info("Created loadshedder for channel: " + (getProperty("FETCHER_CHANNEL")+collectionCode));
     }
 
     @Override
@@ -133,7 +133,7 @@ public class CollectorSubscriber extends JedisPubSub {
 
     private void createBufferWriter() {
         try {
-        	out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file, true), Charset.forName("UTF-8")), Config.DEFAULT_FILE_WRITER_BUFFER_SIZE);
+        	out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file, true), Charset.forName("UTF-8")), Integer.parseInt(getProperty("DEFAULT_FILE_WRITER_BUFFER_SIZE")));
         } catch (IOException ex) {
             //Logger.getLogger(CollectorSubscriber.class.getName()).log(Level.SEVERE, null, ex);
         	logger.error(collectionCode + "Error in creating Buffered writer");
@@ -155,7 +155,7 @@ public class CollectorSubscriber extends JedisPubSub {
     }
 
     private void isTimeToCreateNewFile() {
-        if (itemsWrittenToFile >= Config.DEFAULT_FILE_VOLUMN_LIMIT) {
+        if (itemsWrittenToFile >= Integer.parseInt(getProperty("DEFAULT_FILE_VOLUMN_LIMIT"))) {
             closeFileWriting();
             itemsWrittenToFile = 0;
             fileVolumnNumber++;

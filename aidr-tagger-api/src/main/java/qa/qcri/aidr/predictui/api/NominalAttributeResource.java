@@ -42,6 +42,8 @@ import qa.qcri.aidr.predictui.entities.NominalAttribute;
 import qa.qcri.aidr.predictui.facade.NominalAttributeFacade;
 import qa.qcri.aidr.predictui.util.Config;
 
+import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
+
 /**
  * REST Web Service
  *
@@ -119,7 +121,7 @@ public class NominalAttributeResource {
 		} catch (RuntimeException e) {
 			logger.error("failed to edit attribute: " + attribute.getCode());
 			logger.error(elog.toStringException(e));
-			return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
+			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
 		}
 		return Response.ok(attribute).build();
 	}
@@ -134,10 +136,10 @@ public class NominalAttributeResource {
 			logger.error("failed to delete attribute: " + id);
 			logger.error(elog.toStringException(e));
 			return Response.ok(
-					new ResponseWrapper(Config.STATUS_CODE_FAILED,
+					new ResponseWrapper(getProperty("STATUS_CODE_FAILED"),
 							"Error while deleting Attribute.")).build();
 		}
-		return Response.ok(new ResponseWrapper(Config.STATUS_CODE_SUCCESS)).build();
+		return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"))).build();
 	}
 
 	@GET

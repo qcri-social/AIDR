@@ -412,7 +412,7 @@ public class CollectionServiceImpl implements CollectionService {
             }
             return collection;
         } catch (Exception e) {
-            String msg = "Error while getting status for collection from Remote FetchMain Collection";
+             String msg = "Error while getting status for collection from Remote FetchMain Collection";
             logger.error(msg, e);
             throw new Exception(msg);
         }

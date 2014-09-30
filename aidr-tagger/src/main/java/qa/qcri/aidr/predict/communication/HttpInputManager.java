@@ -7,6 +7,8 @@ import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.predict.common.*;
 
+import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
+
 /**
  * InputManager listens for new connections on a specified port. New
  * InputWorkers are created for each client that connects.
@@ -23,9 +25,9 @@ public class HttpInputManager extends Loggable implements Runnable {
     @Override
     public void run() {
         try {
-            server = new ServerSocket(Config.HTTP_INPUT_PORT);
+            server = new ServerSocket(Integer.parseInt(getProperty("http_input_port")));
             logger.info("Listening for provider connections on port "
-                    + Config.HTTP_INPUT_PORT);
+                    + Integer.parseInt(getProperty("http_input_port")));
 
             while (true) {
                 if (Thread.interrupted()) {
@@ -38,12 +40,12 @@ public class HttpInputManager extends Loggable implements Runnable {
                     t.start();
                 } catch (IOException e) {
                     logger.warn("Failed to establish connection with client on port "
-                                    + Config.HTTP_INPUT_PORT);
+                                    + Integer.parseInt(getProperty("http_input_port")));
                 }
             }
         } catch (IOException e) {
             logger.error("Could not listen on port "
-                    + Config.HTTP_INPUT_PORT);
+                    + Integer.parseInt(getProperty("http_input_port")));
             logger.error(elog.toStringException(e));
         } finally {
 

@@ -13,6 +13,8 @@ import qa.qcri.aidr.predict.data.DocumentJSONConverter;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.DataStore;
 
+import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
+
 /**
  * InputWorker maintains a persistent HTTP connection to clients who provide
  * unclassified documents in JSON format. The documents are parsed into
@@ -92,7 +94,7 @@ public class HttpInputWorker extends Loggable implements Runnable {
         Jedis jedis = DataStore.getJedisConnection();
 
         try {
-            jedis.rpush(Config.REDIS_FOR_EXTRACTION_QUEUE.getBytes(),
+            jedis.rpush(getProperty("redis_for_extraction_queue").getBytes(),
                     Serializer.serialize(doc));
         } catch (IOException e) {
             logger.error("Error when serializing input document.");

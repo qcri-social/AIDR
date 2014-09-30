@@ -17,6 +17,8 @@ import qa.qcri.aidr.predict.common.RateLimiter;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.featureextraction.WordSet;
 
+import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
+
 /**
  * LabelingTaskWriter consumes fully classified items and writes them to the
  * task buffer in the database for human annotation. If more documents are
@@ -67,7 +69,7 @@ public class LabelingTaskWriter extends PipelineProcess {
 	Map<Integer, Double>activeCrisisMaxConf = new HashMap<Integer, Double>();
 
 	RateLimiter taskRateLimiter = new RateLimiter(
-			Config.MAX_NEW_TASKS_PER_MINUTE);
+            Integer.parseInt(getProperty("max_new_tasks_per_minute")));
 	DocumentHistory history = new DocumentHistory();
 
 	protected void processItem(Document item) {
@@ -126,11 +128,11 @@ public class LabelingTaskWriter extends PipelineProcess {
 				Map.Entry<Integer, Long> entry = it.next();
 				int crisisID = entry.getKey();
 				if (!isTruncateRateLimited() || 
-						activeCrisisIDList.get(crisisID) > Config.MAX_NEW_TASKS_PER_MINUTE) {
+						activeCrisisIDList.get(crisisID) > Integer.parseInt(getProperty("max_new_tasks_per_minute"))) {
 					System.out.println("[writeToDB] Going to truncate for crisisID = " + crisisID + " [" + activeCrisisIDList.get(crisisID) + "] new docs");
 					logger.info("Going to truncate for crisisID = " + crisisID + " [" + activeCrisisIDList.get(crisisID) + "] new docs");
 					DataStore
-					.truncateLabelingTaskBufferForCrisis(crisisID, Config.LABELING_TASK_BUFFER_MAX_LENGTH);
+					.truncateLabelingTaskBufferForCrisis(crisisID, Integer.parseInt(getProperty("labeling_task_buffer_max_length")));
 					lastTruncateTime = System.currentTimeMillis();
 					it.remove();
 					try {
@@ -144,14 +146,14 @@ public class LabelingTaskWriter extends PipelineProcess {
 
 
 	boolean isWriteRateLimited() {
-		return (System.currentTimeMillis() - lastDBWrite) < Config.MAX_TASK_WRITE_FQ_MS;
+		return (System.currentTimeMillis() - lastDBWrite) < Integer.parseInt(getProperty("max_task_write_fq_ms"));
 	}
 
 	boolean isTruncateRateLimited() {
-		return (System.currentTimeMillis() - lastTruncateTime) < Config.MIN_TRUNCATE_INTERVAL;
+		return (System.currentTimeMillis() - lastTruncateTime) < Integer.parseInt(getProperty("min_truncate_interval_ms"));
 	}
 	
 	boolean isTruncateRunLimited() {
-		return (System.currentTimeMillis() - lastTruncateTime) < Config.TRUNCATE_RUN_INTERVAL;
+		return (System.currentTimeMillis() - lastTruncateTime) < Long.parseLong(getProperty("truncate_run_interval_ms"));
 	}
 }

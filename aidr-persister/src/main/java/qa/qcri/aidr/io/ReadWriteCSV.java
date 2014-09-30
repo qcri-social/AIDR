@@ -54,6 +54,8 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.utils.ClassifiedTweet;
 
+import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
+
 /**
  *
  * @author Imran
@@ -197,7 +199,7 @@ public class ReadWriteCSV<CellProcessors> {
 
 			final CellProcessor[] processors = getProcessors4TweetIDSCCSV();
 
-			String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
+			String persisterDIR = getProperty("DEFAULT_PERSISTER_FILE_PATH");
 			//fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
 			String fileToWrite = persisterDIR + collectionDIR + "/" + fileName;
 			logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
@@ -235,7 +237,7 @@ public class ReadWriteCSV<CellProcessors> {
 		//String[] runningHeader = null;
 		try {
 			if (null == mapWriter) {
-				String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
+				String persisterDIR = getProperty("DEFAULT_PERSISTER_FILE_PATH");
 				//String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName;
 				String fileToWrite = persisterDIR + collectionDIR + "/" + fileName;
 				logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
@@ -296,7 +298,7 @@ public class ReadWriteCSV<CellProcessors> {
 			final CellProcessor[] processors = getCollectorTweetsProcessors();
 
 			if(null == beanWriter){
-				String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
+				String persisterDIR = getProperty("DEFAULT_PERSISTER_FILE_PATH");
 				//fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
 				String fileToWrite = persisterDIR + collectionDIR + "/" + fileName;
 				logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
@@ -330,7 +332,7 @@ public class ReadWriteCSV<CellProcessors> {
 		String[] header = ClassifiedTweetCSVHeader;
 		try {
 			if (null == mapWriter) {
-				String persisterDIR = Config.DEFAULT_PERSISTER_FILE_PATH;
+				String persisterDIR = getProperty("DEFAULT_PERSISTER_FILE_PATH");
 				//String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName;
 				String fileToWrite = persisterDIR + collectionDIR + "/" + fileName;
 				logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);

@@ -10,6 +10,8 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
+import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
+
 /**
  *
  * @author Imran
@@ -37,7 +39,7 @@ public class JedisConnectionPool  {
 				config.setMinIdle(1);
 				config.setMaxWaitMillis(30000);
 				
-                jedisPool = new JedisPool(config, Config.REDIS_HOST, Config.REDIS_PORT);
+                jedisPool = new JedisPool(config, getProperty("REDIS_HOST"), Integer.parseInt(getProperty("REDIS_PORT")));
                 
             }
             return jedisPool.getResource();

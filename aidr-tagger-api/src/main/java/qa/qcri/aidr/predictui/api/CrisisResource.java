@@ -35,6 +35,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
+
 /**
  * REST Web Service
  *
@@ -65,7 +67,7 @@ public class CrisisResource {
 			crisis = crisisLocalEJB.getCrisisByID((long) id);
 			System.out.println("fetched crisis for id " + id + ": " + (crisis != null ? crisis.getCode() : "null"));
 		} catch (RuntimeException e) {
-			return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
+			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
 		}
 		ObjectMapper mapper = new ObjectMapper();
 		try {
@@ -73,7 +75,7 @@ public class CrisisResource {
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
+			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
 		}
 	}
 
@@ -85,7 +87,7 @@ public class CrisisResource {
 		try {
 			crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
 		} catch (RuntimeException e) {
-			return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
+			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
 		}
 		CrisisDTO dto = transformCrisisToDto(crisis);
 		return Response.ok(dto).build();
@@ -140,7 +142,7 @@ public class CrisisResource {
 
 		List<Crisis> crisisList = crisisLocalEJB.getAllCrisis();
 		ResponseWrapper response = new ResponseWrapper();
-		response.setMessage(Config.STATUS_CODE_SUCCESS);
+		response.setMessage(getProperty("STATUS_CODE_SUCCESS"));
 		response.setCrisises(crisisList);
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -151,7 +153,7 @@ public class CrisisResource {
 			return Response.ok(mapper.writeValueAsString(response)).build();
 		} catch (Exception e) {
 			e.printStackTrace();
-			return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
+			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
 		}
 	}
 
@@ -183,7 +185,7 @@ public class CrisisResource {
 			return Response.ok("Error while adding Crisis. Possible causes could be duplication of primary key, incomplete data, incompatible data format.").build();
 		}
 
-		return Response.ok(Config.STATUS_CODE_SUCCESS).build();
+		return Response.ok(getProperty("STATUS_CODE_SUCCESS")).build();
 
 	}
 
@@ -194,7 +196,7 @@ public class CrisisResource {
 		try {
 			crisis = crisisLocalEJB.editCrisis(crisis);
 		} catch (RuntimeException e) {
-			return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
+			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
 		}
 		CrisisDTO dto = transformCrisisToDto(crisis);
 		return Response.ok(dto).build();

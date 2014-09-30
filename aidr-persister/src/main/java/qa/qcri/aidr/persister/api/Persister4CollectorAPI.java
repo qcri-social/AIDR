@@ -34,6 +34,8 @@ import qa.qcri.aidr.utils.GenericCache;
 import qa.qcri.aidr.utils.JsonDeserializer;
 import qa.qcri.aidr.utils.ResultStatus;
 
+import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
+
 /**
  * REST Web Service
  *
@@ -58,7 +60,7 @@ public class Persister4CollectorAPI {
   public Response startPersister(@QueryParam("file") String fileLocation, @QueryParam("collectionCode") String collectionCode) {
         String response="";
         try{
-            fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH; //OVERRIDING PATH RECEIVED FROM EXTERNAL REQUEST
+            fileLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH"); //OVERRIDING PATH RECEIVED FROM EXTERNAL REQUEST
         if (StringUtils.isNotEmpty(fileLocation) && StringUtils.isNotEmpty(collectionCode)) {
             if (GenericCache.getInstance().getPersisterObject(collectionCode) != null) {
                 response="A persister is already running for this collection code [" + collectionCode + "]";
@@ -112,7 +114,7 @@ public class Persister4CollectorAPI {
     	logger.info("Received request for collection: " + collectionCode);
     	JsonDeserializer jsonD = new JsonDeserializer();
         String fileName = jsonD.generateJSON2CSV_100K_BasedOnTweetCount(collectionCode, exportLimit);
-        fileName = Config.SCD1_URL + collectionCode+"/"+fileName;
+        fileName = getProperty("SCD1_URL") + collectionCode+"/"+fileName;
         
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
         //return Response.ok(fileName).build();
@@ -131,17 +133,17 @@ public class Persister4CollectorAPI {
         logger.info("Received request for collection: " + collectionCode);
     	JsonDeserializer jsonD = new JsonDeserializer();
     	Map<String, Object> result = jsonD.generateJson2TweetIdsCSV(collectionCode, downloadLimited);
-        String fileName = Config.SCD1_URL + collectionCode+"/" + (String) result.get("fileName");
+        String fileName = getProperty("SCD1_URL") + collectionCode+"/" + (String) result.get("fileName");
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
         
         JSONObject obj = new JSONObject();
-		if ((Integer) result.get("count") < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+		if ((Integer) result.get("count") < Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT")) ) {
 			obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
 			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
 			return Response.ok(obj.toJSONString()).build();
 		} else {
-			obj.putAll(ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
-			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, getProperty("TWEET_DOWNLOAD_LIMIT_MSG_PREFIX") + getProperty("DEFAULT_TWEETID_VOLUME_LIMIT") + getProperty("TWEET_DOWNLOAD_LIMIT_MSG_SUFFIX"), fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode,  getProperty("TWEET_DOWNLOAD_LIMIT_MSG_PREFIX") + getProperty("DEFAULT_TWEETID_VOLUME_LIMIT") + getProperty("TWEET_DOWNLOAD_LIMIT_MSG_SUFFIX"), fileName, true));
 			return Response.ok(obj.toJSONString()).build();
 		}
     }
@@ -162,7 +164,7 @@ public class Persister4CollectorAPI {
     	logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType);
     	JsonDeserializer jsonD = new JsonDeserializer();
         String fileName = jsonD.generateJSON2JSON_100K_BasedOnTweetCount(collectionCode, DownloadJsonType.getDownloadJsonTypeFromString(jsonType));
-        fileName = Config.SCD1_URL + collectionCode+"/"+fileName;
+        fileName = getProperty("SCD1_URL") + collectionCode+"/"+fileName;
         
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
         //return Response.ok(fileName).build();
@@ -182,17 +184,17 @@ public class Persister4CollectorAPI {
         logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType);
     	JsonDeserializer jsonD = new JsonDeserializer();
     	Map<String, Object> result = jsonD.generateJson2TweetIdsJson(collectionCode, downloadLimited, DownloadJsonType.getDownloadJsonTypeFromString(jsonType));
-        String fileName = Config.SCD1_URL + collectionCode+"/" + (String)result.get("fileName");
+        String fileName = getProperty("SCD1_URL") + collectionCode+"/" + (String)result.get("fileName");
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
         //return Response.ok(fileName).build();
         JSONObject obj = new JSONObject();
-		if ((Integer) result.get("count") < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+		if ((Integer) result.get("count") < Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT"))) {
 			obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
 			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, null, fileName, true));
 			return Response.ok(obj.toJSONString()).build();
 		} else {
-			obj.putAll(ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
-			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, Config.TWEET_DOWNLOAD_LIMIT_MSG, fileName, true));
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode,  getProperty("TWEET_DOWNLOAD_LIMIT_MSG_PREFIX") + getProperty("DEFAULT_TWEETID_VOLUME_LIMIT") + getProperty("TWEET_DOWNLOAD_LIMIT_MSG_SUFFIX"), fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode,  getProperty("TWEET_DOWNLOAD_LIMIT_MSG_PREFIX") + getProperty("DEFAULT_TWEETID_VOLUME_LIMIT") + getProperty("TWEET_DOWNLOAD_LIMIT_MSG_SUFFIX"), fileName, true));
 			return Response.ok(obj.toJSONString()).build();
 		}
     }

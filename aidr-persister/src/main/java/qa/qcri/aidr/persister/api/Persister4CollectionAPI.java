@@ -15,6 +15,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
+
 /**
  * REST Web Service
  *
@@ -39,10 +41,10 @@ public class Persister4CollectionAPI {
                     return Response.ok(response).build();
                 }
 
-                RedisCollectionPersister p = new RedisCollectionPersister(Config.DEFAULT_PERSISTER_FILE_PATH, channel, code);
+                RedisCollectionPersister p = new RedisCollectionPersister(getProperty("DEFAULT_PERSISTER_FILE_PATH"), channel, code);
                 p.startMe();
                 GenericCache.getInstance().setCollectionPersisterMap(code, p);
-                response = "Started persisting to " + Config.DEFAULT_PERSISTER_FILE_PATH;
+                response = "Started persisting to " + getProperty("DEFAULT_PERSISTER_FILE_PATH");
                 return Response.ok(response).build();
             }
         } catch (Exception ex) {

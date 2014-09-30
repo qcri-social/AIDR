@@ -13,6 +13,8 @@ import org.apache.log4j.Logger;
 
 import redis.clients.jedis.Jedis;
 
+import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
+
 /**
  * OutputMatcher listens to a Redis queue for Documents that are ready for
  * output to consumers. Documents are matched against connected clients based on
@@ -50,7 +52,7 @@ public class OutputMatcher extends PipelineProcess  {
     private Document getItem() {
         Jedis jedis = DataStore.getJedisConnection();
         List<byte[]> byteDoc = jedis.blpop(60,
-                Config.REDIS_FOR_OUTPUT_QUEUE.getBytes());
+                getProperty("redis_for_output_queue").getBytes());
         DataStore.close(jedis);
 
         if (byteDoc == null) // This is null if the blpop timed out
@@ -68,7 +70,7 @@ public class OutputMatcher extends PipelineProcess  {
     private void pushToTaskWriteQueue(Document doc) {
         Jedis jedis = DataStore.getJedisConnection();
         try {
-            jedis.rpush(Config.REDIS_LABEL_TASK_WRITE_QUEUE.getBytes(),
+            jedis.rpush(getProperty("redis_label_task_write_queue").getBytes(),
                     Serializer.serialize(doc));
         } catch (IOException e) {
             logger.error("Exception while serializing DocumentSet");
@@ -99,7 +101,7 @@ public class OutputMatcher extends PipelineProcess  {
     public static void PushToRedisStream(String crisisCode, String docJson) {
         Jedis redis = DataStore.getJedisConnection();
         redis.publish(
-                Config.REDIS_OUTPUT_CHANNEL_PREFIX + "." + crisisCode,
+                getProperty("redis_output_channel_prefix") + "." + crisisCode,
                 docJson);
         DataStore.close(redis);
     }

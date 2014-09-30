@@ -10,6 +10,8 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
+import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
+
 /**
  *
  * @author Imran
@@ -32,7 +34,7 @@ public class JedisConnectionPool extends Loggable {
                 poolConfig.setTestOnReturn(true);
                 poolConfig.setTestWhileIdle(true);
                 poolConfig.setTimeBetweenEvictionRunsMillis(30000);
-                jedisPool = new JedisPool(poolConfig, Config.REDIS_HOST, 6379, 0);
+                jedisPool = new JedisPool(poolConfig, getProperty("REDIS_HOST"), 6379, 0);
             }
             Jedis jedis  = jedisPool.getResource();
             logger.info("Allocated new jedis resource: " + jedis);

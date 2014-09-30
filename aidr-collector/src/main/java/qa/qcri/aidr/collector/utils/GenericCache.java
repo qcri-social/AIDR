@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
+
 /**
  *
  * @author Imran
@@ -177,7 +179,7 @@ public class GenericCache {
             task.setCollectionCount(smsCounter);
             task.setLastDocument(lastDownloadedDoc);
         } else {
-            task.setStatusCode(Config.STATUS_CODE_COLLECTION_NOTFOUND);
+            task.setStatusCode(getProperty("STATUS_CODE_COLLECTION_NOTFOUND"));
         }
 
         return task;
@@ -253,7 +255,7 @@ public class GenericCache {
             if (storedQM != null) {
                 if (storedQM.equals(qm)) {
                     if (qm.getStatusCode() != null) {
-                        if (!(qm.getStatusCode().equals(Config.STATUS_CODE_COLLECTION_ERROR))) {
+                        if (!(qm.getStatusCode().equals(getProperty("STATUS_CODE_COLLECTION_ERROR")))) {
                             return true;
                         }
                     }

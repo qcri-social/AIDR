@@ -43,6 +43,7 @@ import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.facade.TaskBufferScannerFacade;
 import qa.qcri.aidr.predictui.util.Config;
 
+import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 
 @Path("/taskscanner")
 @Singleton
@@ -75,7 +76,7 @@ public class TaskBufferScanner {
 		final Config configData = new Config();
 
 		executorService = Executors.newCachedThreadPool();
-		boolean isSuccess = startTaskBufferScannerThread(configData.TASK_EXPIRY_AGE_LIMIT, configData.TASK_BUFFER_SCAN_INTERVAL);
+		boolean isSuccess = startTaskBufferScannerThread(getProperty("TASK_EXPIRY_AGE_LIMIT"), getProperty("TASK_BUFFER_SCAN_INTERVAL"));
 		if (isSuccess) {
 			logger.info("Context Initialized - started task buffer scanner thread.");
 		}
@@ -153,8 +154,8 @@ public class TaskBufferScanner {
 		final String newScanInterval;
 		if (null == scanInterval || null == maxTaskAge) {
 			final Config configData = new Config();
-			newMaxTaskAge = configData.TASK_EXPIRY_AGE_LIMIT;
-			newScanInterval = configData.TASK_BUFFER_SCAN_INTERVAL;
+			newMaxTaskAge = getProperty("TASK_EXPIRY_AGE_LIMIT");
+			newScanInterval = getProperty("TASK_BUFFER_SCAN_INTERVAL");
 		} else {
 			newMaxTaskAge = maxTaskAge;
 			newScanInterval = scanInterval;

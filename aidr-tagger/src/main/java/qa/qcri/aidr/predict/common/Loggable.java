@@ -3,6 +3,8 @@ package qa.qcri.aidr.predict.common;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
+
 /**
  * Helper class for error logging.
  * 
@@ -31,7 +33,7 @@ public abstract class Loggable {
         if (globalRateLimiter.isLimited())
             return;
 
-        if (messageLevel.getValue() >= Config.LOG_LEVEL.getValue())
+        if (messageLevel.getValue() >= LogLevel.valueOf(getProperty("log_level")).getValue())
             ErrorLog.Print(sourceName, message);
 
         globalRateLimiter.logEvent();
@@ -60,7 +62,7 @@ public abstract class Loggable {
         }
 
         writeFloodStatus();
-        if (messageLevel.getValue() >= Config.LOG_LEVEL.getValue())
+        if (messageLevel.getValue() >= LogLevel.valueOf(getProperty("log_level")).getValue())
             ErrorLog.Print(name + "#" + objID, message);
 
         instanceRateLimiter.logEvent();

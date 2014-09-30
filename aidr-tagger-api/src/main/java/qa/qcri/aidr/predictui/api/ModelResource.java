@@ -21,6 +21,8 @@ import qa.qcri.aidr.predictui.facade.ModelFacade;
 import qa.qcri.aidr.predictui.util.Config;
 import qa.qcri.aidr.predictui.dto.ModelWrapper;
 
+import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
+
 /**
  * REST Web Service
  *
@@ -44,7 +46,7 @@ public class ModelResource {
     public Response getAllModels() {
         List<Model> modelList = modelLocalEJB.getAllModels();
         ResponseWrapper response = new ResponseWrapper();
-        response.setMessage(Config.STATUS_CODE_SUCCESS);
+        response.setMessage(getProperty("STATUS_CODE_SUCCESS"));
         response.setModels(modelList);
         return Response.ok(response).build();
     }

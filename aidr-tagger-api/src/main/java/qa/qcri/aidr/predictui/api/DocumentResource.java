@@ -38,6 +38,8 @@ import qa.qcri.aidr.predictui.facade.DocumentFacade;
 import qa.qcri.aidr.predictui.util.Config;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
+import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
+
 /**
  * REST Web Service
  *
@@ -136,7 +138,7 @@ public class DocumentResource {
 				e.printStackTrace();
 			}
 		}
-		ResponseWrapper response = new ResponseWrapper(Config.STATUS_CODE_SUCCESS);
+		ResponseWrapper response = new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"));
 		response.setDocuments(docList);
 		return Response.ok(response).build();
 	}
@@ -151,9 +153,9 @@ public class DocumentResource {
 			logger.info("deleted count = " + result);
 		} catch (RuntimeException e) {
 			return Response.ok(
-					new ResponseWrapper(Config.STATUS_CODE_FAILED, "Error while deleting Document.")).build();
+					new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "Error while deleting Document.")).build();
 		}
-		return Response.ok(new ResponseWrapper(Config.STATUS_CODE_SUCCESS)).build();
+		return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"))).build();
 	}
 
 	@DELETE
@@ -181,9 +183,9 @@ public class DocumentResource {
 			}
 		} catch (RuntimeException e) {
 			return Response.ok(
-					new ResponseWrapper(Config.STATUS_CODE_FAILED, "Error while removing Training Example.")).build();
+					new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "Error while removing Training Example.")).build();
 		}
-		return Response.ok(new ResponseWrapper(Config.STATUS_CODE_SUCCESS)).build();
+		return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"))).build();
 	}
 
 	

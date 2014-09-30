@@ -39,6 +39,8 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonNull;
 import com.google.gson.stream.JsonReader;
 
+import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
+
 
 /**
  *
@@ -67,19 +69,19 @@ public class JsonDeserializer {
 		try {
 			ReadWriteCSV csv = new ReadWriteCSV();
 			BufferedReader br = null;
-			String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/" + collectionCode + "_tweetIds.csv";
+			String fileToDelete = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/" + collectionCode + "_tweetIds.csv";
 			FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
 
 			for (String file : fileNames) {
-				String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/" + file;
+				String fileLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/" + file;
 				try {
 					br = new BufferedReader(new FileReader(fileLocation));
 					String line;
-					if (downloadLimited && totalCount > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+					if (downloadLimited && totalCount > Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT"))) {
 						break;
 					}
 					while ((line = br.readLine()) != null) {
-						if (downloadLimited && totalCount > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {	
+						if (downloadLimited && totalCount > Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT"))) {
 							tweetsList.clear();
 							break;
 						}
@@ -90,7 +92,7 @@ public class JsonDeserializer {
 							} else {
 								int countToWrite;
 								if (downloadLimited) {
-									countToWrite = Math.min(tweetsList.size(), Config.DEFAULT_TWEETID_VOLUME_LIMIT - totalCount);
+									countToWrite = Math.min(tweetsList.size(), Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT")) - totalCount);
 								} else {
 									countToWrite = tweetsList.size();
 								}
@@ -117,7 +119,7 @@ public class JsonDeserializer {
 			}	// end for
 			int countToWrite = tweetsList.size();
 			if (downloadLimited) {
-				countToWrite = Math.min(tweetsList.size(), Config.DEFAULT_TWEETID_VOLUME_LIMIT - totalCount);
+				countToWrite = Math.min(tweetsList.size(), Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT")) - totalCount);
 			} 
 			if (countToWrite > 0) {
 				beanWriter = csv.writeCollectorTweetIDSCSV(beanWriter, tweetsList.subList(0, countToWrite), collectionCode, fileName);
@@ -152,7 +154,7 @@ public class JsonDeserializer {
 			ReadWriteCSV csv = new ReadWriteCSV();
 			String[] runningHeader = null;
 			BufferedReader br = null;
-			String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds.csv";
+			String fileToDelete = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds.csv";
 			logger.info(collectionCode + ": Deleteing file : " + fileToDelete);
 			FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
 			//logger.info(fileNames);
@@ -160,16 +162,16 @@ public class JsonDeserializer {
 			long lastCount = 0;
 			long currentCount = 0;
 			for (String file : fileNames) {
-				String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
+				String fileLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/output/" + file;
 				logger.info(collectionCode + ": Reading file " + fileLocation);
-				if (downloadLimited && totalCount > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+				if (downloadLimited && totalCount > Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT"))) {
 					break;
 				}
 				try {
 					br = new BufferedReader(new FileReader(fileLocation));
 					String line;
 					while ((line = br.readLine()) != null) {
-						if (downloadLimited && totalCount >= Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+						if (downloadLimited && totalCount >= Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT"))) {
 							tweetsList.clear();
 							break;
 						}
@@ -181,7 +183,7 @@ public class JsonDeserializer {
 							} else {
 								int countToWrite;
 								if (downloadLimited) {
-									countToWrite = Math.min(tweetsList.size(), Config.DEFAULT_TWEETID_VOLUME_LIMIT - totalCount);
+									countToWrite = Math.min(tweetsList.size(), Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT")) - totalCount);
 								} else {
 									countToWrite = tweetsList.size();
 								}
@@ -212,7 +214,7 @@ public class JsonDeserializer {
 			}	// end for
 			int countToWrite = tweetsList.size();
 			if (downloadLimited) {
-				countToWrite = Math.min(tweetsList.size(), Config.DEFAULT_TWEETID_VOLUME_LIMIT - totalCount);
+				countToWrite = Math.min(tweetsList.size(), Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT")) - totalCount);
 			} 
 			if (countToWrite > 0) {
 				if (0 == totalCount) {
@@ -262,8 +264,8 @@ public class JsonDeserializer {
 			ReadWriteCSV csv = new ReadWriteCSV(collectionCode);
 			String[] runningHeader = null;
 			BufferedReader br = null;
-			//String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds_filtered.csv";
-			String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/" + fileName;
+			//String fileToDelete = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds_filtered.csv";
+			String fileToDelete = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/" + fileName;
 			logger.info(collectionCode + ": Deleteing file : " + fileToDelete);
 			FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
 
@@ -274,18 +276,18 @@ public class JsonDeserializer {
 			
 			String lastLine = null;
 			for (String file : fileNames) {
-				if (downloadLimited && totalCount >= Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+				if (downloadLimited && totalCount >= Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT"))) {
 					break;
 				}
-				//String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
-				String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/" + file;
+				//String fileLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/output/" + file;
+				String fileLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/" + file;
 				logger.info(collectionCode + ": Reading file " + fileLocation);
 				try {
 					br = new BufferedReader(new FileReader(fileLocation));
 					String line;
 					while ((line = br.readLine()) != null) {
 						lastLine = line;
-						if (downloadLimited && totalCount >= Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+						if (downloadLimited && totalCount >= Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT"))) {
 							tweetsList.clear();
 							break;
 						}
@@ -297,7 +299,7 @@ public class JsonDeserializer {
 							} else {
 								int countToWrite;
 								if (downloadLimited) {
-									countToWrite = Math.min(tweetsList.size(), Config.DEFAULT_TWEETID_VOLUME_LIMIT - totalCount);
+									countToWrite = Math.min(tweetsList.size(), Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT")) - totalCount);
 								} else {
 									countToWrite = tweetsList.size();
 								}
@@ -326,7 +328,7 @@ public class JsonDeserializer {
 			}	// end for
 			int countToWrite = tweetsList.size();
 			if (downloadLimited) {
-				countToWrite = Math.min(tweetsList.size(), Config.DEFAULT_TWEETID_VOLUME_LIMIT - totalCount);
+				countToWrite = Math.min(tweetsList.size(), Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT")) - totalCount);
 			} 
 			if (countToWrite > 0 && !tweetsList.isEmpty()) {
 				if (0 == totalCount) {
@@ -367,10 +369,10 @@ public class JsonDeserializer {
 
 		try {
 
-			String folderLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode;
+			String folderLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode;
 			String fileNameforCSVGen = collectionCode + "_last_100k_tweets";
 			fileName = fileNameforCSVGen + ".csv";
-			FileSystemOperations.deleteFile(Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/" + fileName);
+			FileSystemOperations.deleteFile(getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/" + fileName);
 
 			File folder = new File(folderLocation);
 			File[] listOfFiles = folder.listFiles();
@@ -468,7 +470,7 @@ public class JsonDeserializer {
 
 		try {
 
-			String folderLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output";
+			String folderLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/output";
 			String fileNameforCSVGen = "Classified_" + collectionCode + "_last_100k_tweets";
 			fileName = fileNameforCSVGen + ".csv";
 			FileSystemOperations.deleteFile(folderLocation + "/" + fileName);
@@ -583,9 +585,9 @@ public class JsonDeserializer {
 		ICsvMapWriter writer = null;
 
 		try {
-			//String folderLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output";
+			//String folderLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/output";
 			//String fileNameforCSVGen = "Classified_" + collectionCode + "_last_100k_tweets_filtered";
-			String folderLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode;
+			String folderLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode;
 			String fileNameforCSVGen = collectionCode + "_last_100k_tweets_filtered";
 			
 			fileName = fileNameforCSVGen + ".csv";
@@ -704,7 +706,7 @@ public class JsonDeserializer {
 		BufferedReader br = null;
 		try {
 
-			String folderLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode;
+			String folderLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode;
 			File folder = new File(folderLocation);
 			File[] listOfFiles = folder.listFiles();
 			// to get only Tagger's files
@@ -767,7 +769,7 @@ public class JsonDeserializer {
 		BufferedReader br = null;
 		try {
 
-			String folderLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode;
+			String folderLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode;
 			File folder = new File(folderLocation);
 			File[] listOfFiles = folder.listFiles();
 			// to get only Tagger's files
@@ -1018,10 +1020,10 @@ public class JsonDeserializer {
 		boolean jsonObjectClosed = false;
 		try {
 
-			String folderLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode;
+			String folderLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode;
 			String fileNameforJsonGen = collectionCode + "_last_100k_tweets";
 			fileName = fileNameforJsonGen + extension;
-			FileSystemOperations.deleteFile(Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/" + fileNameforJsonGen + extension);
+			FileSystemOperations.deleteFile(getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/" + fileNameforJsonGen + extension);
 
 			File folder = new File(folderLocation);
 			File[] listOfFiles = folder.listFiles();
@@ -1052,11 +1054,11 @@ public class JsonDeserializer {
 					br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 					while ((line = br.readLine()) != null) {
 						try {
-							if (currentSize <= Config.TWEETS_EXPORT_LIMIT_100K) {
+							if (currentSize <= Integer.parseInt(getProperty("TWEETS_EXPORT_LIMIT_100K"))) {
 								//write to file
 								beanWriter.write(line);
 								if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
-										&& currentSize < Config.TWEETS_EXPORT_LIMIT_100K) {
+										&& currentSize < Integer.parseInt(getProperty("TWEETS_EXPORT_LIMIT_100K"))) {
 									beanWriter.write(", ");	// do not append for last item
 								}
 								beanWriter.newLine();
@@ -1118,10 +1120,10 @@ public class JsonDeserializer {
 		boolean jsonObjectClosed = false;
 		try {
 
-			String folderLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode;
+			String folderLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode;
 			String fileNameforJsonGen = collectionCode + "_tweetIds";
 			fileName = fileNameforJsonGen + extension;
-			FileSystemOperations.deleteFile(Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/" + fileNameforJsonGen + extension);
+			FileSystemOperations.deleteFile(getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/" + fileNameforJsonGen + extension);
 
 			File folder = new File(folderLocation);
 			File[] listOfFiles = folder.listFiles();
@@ -1148,11 +1150,11 @@ public class JsonDeserializer {
 					logger.info("Reading file : " + f.getAbsolutePath());
 					InputStream is = new FileInputStream(f.getAbsolutePath());
 					br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-					if (downloadLimited && totalCount > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+					if (downloadLimited && totalCount > Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT"))) {
 						break;
 					}
 					while ((line = br.readLine()) != null) {
-						if (downloadLimited && totalCount > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+						if (downloadLimited && totalCount > Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT"))) {
 							break;
 						}
 						try {
@@ -1163,7 +1165,7 @@ public class JsonDeserializer {
 								//write to file
 								beanWriter.write(obj.toJSONString());
 								if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
-										&& totalCount < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+										&& totalCount < Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT"))) {
 									beanWriter.write(", ");	// do not append for last item
 								}
 								beanWriter.newLine();
@@ -1219,7 +1221,7 @@ public class JsonDeserializer {
 		boolean jsonObjectClosed = false;
 		try {
 
-			String folderLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output";
+			String folderLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/output";
 			logger.info("For collection: " + collectionCode + ", will create file from folder: " + folderLocation);
 			String fileNameforJsonGen = "Classified_" + collectionCode + "_last_100k_tweets";
 			fileName = fileNameforJsonGen + extension;
@@ -1267,11 +1269,11 @@ public class JsonDeserializer {
 
 					while ((line = br.readLine()) != null) {
 						try {
-							if (currentSize < Config.TWEETS_EXPORT_LIMIT_100K) {
+							if (currentSize < Integer.parseInt(getProperty("TWEETS_EXPORT_LIMIT_100K"))) {
 								//write to file
 								beanWriter.write(line);
 								if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
-										&& currentSize < Config.TWEETS_EXPORT_LIMIT_100K) {
+										&& currentSize < Integer.parseInt(getProperty("TWEETS_EXPORT_LIMIT_100K"))) {
 									beanWriter.write(", ");
 								}
 								beanWriter.newLine();
@@ -1332,7 +1334,7 @@ public class JsonDeserializer {
 		boolean jsonObjectClosed = false;
 
 		BufferedWriter beanWriter = null;
-		String folderLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output";
+		String folderLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/output";
 		String fileNameforJsonGen = "Classified_" + collectionCode + "_tweetIds";
 		String fileName = fileNameforJsonGen + extension;
 		int totalCount = 0;
@@ -1341,7 +1343,7 @@ public class JsonDeserializer {
 			List<String> fileNames = FileSystemOperations.getClassifiedFileVolumes(collectionCode);
 
 			BufferedReader br = null;
-			String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds" + extension;
+			String fileToDelete = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds" + extension;
 			System.out.println("Deleteing file : " + fileToDelete);
 			FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
 			//System.out.println(fileNames);
@@ -1354,16 +1356,16 @@ public class JsonDeserializer {
 				beanWriter.write("[");
 			}
 			for (String file : fileNames) {
-				if (downloadLimited && totalCount > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+				if (downloadLimited && totalCount > Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT"))) {
 					break;
 				}
-				String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
+				String fileLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/output/" + file;
 				logger.info("Reading file " + fileLocation);
 				try {
 					br = new BufferedReader(new FileReader(fileLocation)); 
 					String line;
 					while ((line = br.readLine()) != null) {
-						if (downloadLimited && totalCount >= Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+						if (downloadLimited && totalCount >= Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT"))) {
 							break;
 						}
 						ClassifiedTweet tweet = getClassifiedTweet(line);
@@ -1372,7 +1374,7 @@ public class JsonDeserializer {
 								//write to file
 								beanWriter.write(createJsonClassifiedTweetIDString(tweet));
 								if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
-										&& totalCount < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+										&& totalCount < Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT"))) {
 									beanWriter.write(", ");
 								}
 								beanWriter.newLine();
@@ -1436,9 +1438,9 @@ public class JsonDeserializer {
 		boolean jsonObjectClosed = false;
 		try {
 
-			//String folderLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output";
+			//String folderLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/output";
 			//String fileNameforJsonGen = "Classified_" + collectionCode + "_last_100k_tweets_filtered";
-			String folderLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/";
+			String folderLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/";
 			String fileNameforJsonGen = collectionCode + "_last_100k_tweets_filtered";
 			
 			fileName = fileNameforJsonGen + extension;
@@ -1491,13 +1493,13 @@ public class JsonDeserializer {
 					while ((line = br.readLine()) != null) {
 						try {
 							ClassifiedTweet tweet = getClassifiedTweet(line);
-							if (currentSize < Config.TWEETS_EXPORT_LIMIT_100K) {
+							if (currentSize < Integer.parseInt(getProperty("TWEETS_EXPORT_LIMIT_100K"))) {
 								// Apply filter on tweet
 								if (satisfiesFilter(queryList, tweetFilter, tweet)) {
 									//write to file
 									beanWriter.write(line);
 									if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
-											&& currentSize < Config.TWEETS_EXPORT_LIMIT_100K) {
+											&& currentSize < Integer.parseInt(getProperty("TWEETS_EXPORT_LIMIT_100K"))) {
 										beanWriter.write(", ");
 									}
 									beanWriter.newLine();
@@ -1562,9 +1564,9 @@ public class JsonDeserializer {
 		boolean jsonObjectClosed = false;
 
 		BufferedWriter beanWriter = null;
-		//String folderLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output";
+		//String folderLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/output";
 		//String fileNameforJsonGen = "Classified_" + collectionCode + "_tweetIds_filtered";
-		String folderLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/";
+		String folderLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/";
 		String fileNameforJsonGen = collectionCode + "_tweetIds_filtered";
 		String fileName = fileNameforJsonGen + extension;
 		int totalCount = 0;
@@ -1576,8 +1578,8 @@ public class JsonDeserializer {
 			Collections.reverse(fileNames);
 			
 			BufferedReader br = null;
-			//String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds_filtered" + extension;
-			String fileToDelete = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/" + fileName;
+			//String fileToDelete = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds_filtered" + extension;
+			String fileToDelete = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/" + fileName;
 			System.out.println("Deleteing file : " + fileToDelete);
 			FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
 			//System.out.println(fileNames);
@@ -1593,17 +1595,17 @@ public class JsonDeserializer {
 			tweetFilter.buildMatcherArray();
 
 			for (String file : fileNames) {
-				if (downloadLimited && totalCount > Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+				if (downloadLimited && totalCount > Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT"))) {
 					break;
 				}
-				//String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/output/" + file;
-				String fileLocation = Config.DEFAULT_PERSISTER_FILE_PATH + collectionCode + "/" + file;
+				//String fileLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/output/" + file;
+				String fileLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/" + file;
 				logger.info("Reading file " + fileLocation);
 				try {
 					br = new BufferedReader(new FileReader(fileLocation)); 
 					String line;
 					while ((line = br.readLine()) != null) {
-						if (downloadLimited && totalCount >= Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+						if (downloadLimited && totalCount >= Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT"))) {
 							break;
 						}
 						ClassifiedTweet tweet = getClassifiedTweet(line);
@@ -1613,7 +1615,7 @@ public class JsonDeserializer {
 								//write to file
 								beanWriter.write(createJsonClassifiedTweetIDString(tweet));
 								if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
-										&& totalCount < Config.DEFAULT_TWEETID_VOLUME_LIMIT) {
+										&& totalCount < Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT"))) {
 									beanWriter.write(", ");
 								}
 								beanWriter.newLine();

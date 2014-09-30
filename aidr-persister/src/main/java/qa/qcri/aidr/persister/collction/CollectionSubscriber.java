@@ -22,6 +22,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
+
 public class CollectionSubscriber extends JedisPubSub {
 
     private static Logger logger = Logger.getLogger(CollectionSubscriber.class.getName());
@@ -51,7 +53,7 @@ public class CollectionSubscriber extends JedisPubSub {
         if (null == redisLoadShedder) {
             redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
         }
-        redisLoadShedder.put(channel, new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
+        redisLoadShedder.put(channel, new LoadShedder(Integer.parseInt(getProperty("PERSISTER_LOAD_LIMIT")), Integer.parseInt(getProperty("PERSISTER_LOAD_CHECK_INTERVAL_MINUTES")), true));
         logger.info("Created loadshedder for channel: " + channel);
     }
 
@@ -116,7 +118,7 @@ public class CollectionSubscriber extends JedisPubSub {
 
     private void createBufferWriter() {
         try {
-            out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file, true), Charset.forName("UTF-8")), Config.DEFAULT_FILE_WRITER_BUFFER_SIZE);
+            out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file, true), Charset.forName("UTF-8")), Integer.parseInt(getProperty("DEFAULT_FILE_WRITER_BUFFER_SIZE")));
         } catch (IOException ex) {
             logger.error(collectionCode + "Error in creating Buffered writer");
             logger.error(elog.toStringException(ex));
@@ -136,7 +138,7 @@ public class CollectionSubscriber extends JedisPubSub {
     }
 
     private void isTimeToCreateNewFile() {
-        if (itemsWrittenToFile >= Config.DEFAULT_FILE_VOLUMN_LIMIT) {
+        if (itemsWrittenToFile >= Integer.parseInt(getProperty("DEFAULT_FILE_VOLUMN_LIMIT"))) {
             closeFileWriting();
             itemsWrittenToFile = 0;
             fileVolumnNumber++;

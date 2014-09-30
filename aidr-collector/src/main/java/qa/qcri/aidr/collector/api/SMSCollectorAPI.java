@@ -27,6 +27,8 @@ import java.net.URLEncoder;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
+
 /**
  * REST Web Service
  *
@@ -38,7 +40,7 @@ public class SMSCollectorAPI extends Loggable {
     private static Logger logger = Logger.getLogger(SMSCollectorAPI.class.getName());
     private static ErrorLog elog = new ErrorLog();
     
-    public static final String CHANNEL = Config.FETCHER_CHANNEL + ".%s_sms";
+    public static final String CHANNEL = getProperty("FETCHER_CHANNEL") + ".%s_sms";
     private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
     
     @GET
@@ -50,8 +52,8 @@ public class SMSCollectorAPI extends Loggable {
         }
         String channelName = String.format(CHANNEL, collectionCode);
         redisLoadShedder.put(channelName,
-                new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
-        GenericCache.getInstance().putSMSCollection(collectionCode, Config.STATUS_CODE_COLLECTION_RUNNING);
+                new LoadShedder(Integer.parseInt(getProperty("PERSISTER_LOAD_LIMIT")), Integer.parseInt(getProperty("PERSISTER_LOAD_CHECK_INTERVAL_MINUTES")), true));
+        GenericCache.getInstance().putSMSCollection(collectionCode, getProperty("STATUS_CODE_COLLECTION_RUNNING"));
         startPersister(collectionCode);
         return Response.ok().build();
     }
@@ -73,7 +75,7 @@ public class SMSCollectorAPI extends Loggable {
         GenericCache cache = GenericCache.getInstance();
         String smsCollections = cache.getSMSCollection(code.trim());
         
-        if (Config.STATUS_CODE_COLLECTION_RUNNING.equals(smsCollections)) {
+        if (getProperty("STATUS_CODE_COLLECTION_RUNNING").equals(smsCollections)) {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 String channelName = String.format(CHANNEL, code);
@@ -109,8 +111,8 @@ public class SMSCollectorAPI extends Loggable {
     public void startPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
-            WebTarget webResource = client.target(Config.PERSISTER_REST_URI + "collectionPersister/start?channel_provider="
-                    + URLEncoder.encode(Config.TAGGER_CHANNEL, "UTF-8")
+            WebTarget webResource = client.target(getProperty("PERSISTER_REST_URI") + "collectionPersister/start?channel_provider="
+                    + URLEncoder.encode(getProperty("TAGGER_CHANNEL"), "UTF-8")
                     + "&collection_code=" + URLEncoder.encode(collectionCode, "UTF-8"));
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             String jsonResponse = clientResponse.readEntity(String.class);
@@ -128,7 +130,7 @@ public class SMSCollectorAPI extends Loggable {
     public void stopPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
-            WebTarget webResource = client.target(Config.PERSISTER_REST_URI
+            WebTarget webResource = client.target(getProperty("PERSISTER_REST_URI")
                     + "collectionPersister/stop?collection_code=" + URLEncoder.encode(collectionCode, "UTF-8"));
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             String jsonResponse = clientResponse.readEntity(String.class);

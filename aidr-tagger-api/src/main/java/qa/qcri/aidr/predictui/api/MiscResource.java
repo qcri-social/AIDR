@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
+
 /**
  * REST Web Service
  *
@@ -68,7 +70,7 @@ public class MiscResource {
 		} catch (RuntimeException e) {
 			logger.error("Error in getting training data for crisis: " + crisisID);
 			logger.error(elog.toStringException(e));
-			return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
+			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
 		}
 		return Response.ok(response).build();
 	}

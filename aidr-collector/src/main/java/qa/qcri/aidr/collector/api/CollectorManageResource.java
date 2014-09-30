@@ -34,6 +34,8 @@ import qa.qcri.aidr.collector.utils.Config;
 import qa.qcri.aidr.collector.utils.GenericCache;
 import qa.qcri.aidr.common.logging.ErrorLog;
 
+import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
+
 /**
  * REST Web Service
  *
@@ -128,7 +130,7 @@ public class CollectorManageResource {
     	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
             
-        	WebTarget webResource = client.target(Config.FETCHER_REST_URI + "/twitter/start");
+        	WebTarget webResource = client.target(getProperty("FETCHER_REST_URI") + "/twitter/start");
             Gson gson = new Gson();
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
             							.post(Entity.json(gson.toJson(collection)), Response.class);

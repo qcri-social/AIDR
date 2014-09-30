@@ -13,6 +13,8 @@ import qa.qcri.aidr.predict.featureextraction.FeatureExtractor;
 
 import qa.qcri.aidr.common.redis.LoadShedder;
 
+import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
+
 /**
  * Controller is the main entrypoint of AIDR. It starts all subprocesses. In the
  * future it should makes sure the different processes are running and restart
@@ -56,25 +58,25 @@ public class Controller extends Loggable {
         if (null == AidrFetcherJsonInputProcessor.redisLoadShedder) {
         	AidrFetcherJsonInputProcessor.redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
         }
-        aidrInputProcessor.inputQueueName = Config.REDIS_FROM_FETCHER_CHANNEL;
-        aidrInputProcessor.outputQueueName = Config.REDIS_FOR_EXTRACTION_QUEUE;
+        aidrInputProcessor.inputQueueName = getProperty("redis_input_channel");
+        aidrInputProcessor.outputQueueName = getProperty("redis_for_extraction_queue");
         
 
         featureExtractor = new FeatureExtractor();
-        featureExtractor.inputQueueName = Config.REDIS_FOR_EXTRACTION_QUEUE
+        featureExtractor.inputQueueName = getProperty("redis_for_extraction_queue")
                 .getBytes();
-        featureExtractor.outputQueueName = Config.REDIS_FOR_CLASSIFICATION_QUEUE
+        featureExtractor.outputQueueName = getProperty("redis_for_classification_queue")
                 .getBytes();
 
         modelController = new ModelController();
-        modelController.inputQueueName = Config.REDIS_FOR_CLASSIFICATION_QUEUE
+        modelController.inputQueueName = getProperty("redis_for_classification_queue")
                 .getBytes();
-        modelController.outputQueueName = Config.REDIS_FOR_OUTPUT_QUEUE
+        modelController.outputQueueName = getProperty("redis_for_output_queue")
                 .getBytes();
         modelController.initialize();
 
         labelingTaskWriter = new LabelingTaskWriter();
-        labelingTaskWriter.inputQueueName = Config.REDIS_LABEL_TASK_WRITE_QUEUE
+        labelingTaskWriter.inputQueueName = getProperty("redis_label_task_write_queue")
                 .getBytes();
 
         startProcess(aidrInputProcessor);

@@ -32,6 +32,8 @@ import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
+import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
+
 /**
  *
  * @author Imran
@@ -73,8 +75,8 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
         if (null == redisLoadShedder) {
             redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
         }
-        redisLoadShedder.put(Config.FETCHER_CHANNEL + "." + getCollectionCode(),
-                new LoadShedder(Config.PERSISTER_LOAD_LIMIT, Config.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
+        redisLoadShedder.put(getProperty("FETCHER_CHANNEL") + "." + getCollectionCode(),
+                new LoadShedder(Integer.parseInt(getProperty("PERSISTER_LOAD_LIMIT")), Integer.parseInt(getProperty("PERSISTER_LOAD_CHECK_INTERVAL_MINUTES")), true));
     }
 
     private void collectThroughStreaming() {
@@ -84,8 +86,8 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
             CollectionTask collection = GenericCache.getInstance().getTwtConfigMap(getCacheKey());
             JSONObject aidrObject = new JSONObject(new FetcherResponseToStringChannel(new AIDR(getCollectionCode(), getCollectionName(), "twitter")));
             String aidrJson = StringUtils.replace(aidrObject.toString(), "{", ",", 1); // replacing the first occurance of { with ,
-            boolean allowAllLanguages = getStreamQuery().isLanguageAllowed(Config.LANGUAGE_ALLOWED_ALL);
-            String channelName = Config.FETCHER_CHANNEL + "." + getCollectionCode();
+            boolean allowAllLanguages = getStreamQuery().isLanguageAllowed(getProperty("LANGUAGE_ALLOWED_ALL"));
+            String channelName = getProperty("FETCHER_CHANNEL") + "." + getCollectionCode();
             GenericCache cache = GenericCache.getInstance();
 
             @Override
@@ -106,7 +108,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
 
             @Override
             public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-                collection.setStatusCode(Config.STATUS_CODE_COLLECTION_RUNNING_WARNING);
+                collection.setStatusCode(getProperty("STATUS_CODE_COLLECTION_RUNNING_WARNING"));
                 collection.setStatusMessage("Track limitation notice: " + numberOfLimitedStatuses);
                 GenericCache.getInstance().setTwtConfigMap(getCacheKey(), collection);
                 logger.info(collectionName + ": Track limitation notice: " + numberOfLimitedStatuses);
@@ -118,7 +120,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
                 logger.error("Twitter Exception for collection " + collection.getCollectionCode());
                 logger.error(elog.toStringException(ex));
                 //log(LogLevel.WARNING, ex.toString());
-                collection.setStatusCode(Config.STATUS_CODE_COLLECTION_ERROR);
+                collection.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
             }
 
             @Override
@@ -139,7 +141,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
                     if (redisLoadShedder.get(channelName).canProcess(channelName)) {
                         publisherJedis.publish(channelName, rawTweetJSON.toString());
                         counter++;
-                        if (counter >= Config.FETCHER_REDIS_COUNTER_UPDATE_THRESHOLD) {
+                        if (counter >= Integer.parseInt(getProperty("FETCHER_REDIS_COUNTER_UPDATE_THRESHOLD"))) {
                             cache.incrCounter(collectionCode, counter);
                             cache.setLastDownloadedDoc(collectionCode, status.getText());
                             counter = 0;
@@ -167,7 +169,7 @@ public class TwitterStreamTracker extends Loggable implements Serializable {
 
         // if twitter streaming connection successful then change the status code
         CollectionTask coll = GenericCache.getInstance().getTwtConfigMap(getCacheKey());
-        coll.setStatusCode(Config.STATUS_CODE_COLLECTION_RUNNING);
+        coll.setStatusCode(getProperty("STATUS_CODE_COLLECTION_RUNNING"));
         coll.setStatusMessage(null);
         GenericCache.getInstance().setTwtConfigMap(getCacheKey(), coll);
 

@@ -34,6 +34,8 @@ import qa.qcri.aidr.predictui.facade.UserResourceFacade;
 import qa.qcri.aidr.predictui.util.Config;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
+import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
+
 /**
  * REST Web Service
  *
@@ -126,7 +128,7 @@ public class UserResource {
         } catch (Exception e) {
         	logger.error("Error in getting all users");
         	logger.error(elog.toStringException(e));
-        	return Response.ok(new ResponseWrapper(Config.STATUS_CODE_FAILED, e.getCause().getCause().getMessage())).build();
+        	return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
         }
     }
 }

@@ -1,5 +1,6 @@
 package qa.qcri.aidr.predict.classification.nominal;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -13,6 +14,8 @@ import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.common.*;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.dbentities.ModelFamilyEC;
+
+import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 /**
  * ModelController handles classification of DocumentSet objects, with the
@@ -242,7 +245,11 @@ public class ModelController extends PipelineProcess {
     }
 
     private static String getModelPath(int eventID, int attributeID, int modelID) {
-        return Config.MODEL_STORE_PATH + eventID + "_" + attributeID + "_"
+        String modelsPath = getProperty("model_store_path");
+        if (!modelsPath.endsWith(File.separator)) {
+            modelsPath += File.separator;
+        }
+        return modelsPath + eventID + "_" + attributeID + "_"
                 + modelID + ".model";
     }
 

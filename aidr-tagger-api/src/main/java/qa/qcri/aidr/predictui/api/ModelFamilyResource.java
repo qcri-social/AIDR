@@ -38,6 +38,8 @@ import qa.qcri.aidr.predictui.entities.ModelFamily;
 import qa.qcri.aidr.predictui.facade.ModelFamilyFacade;
 import qa.qcri.aidr.predictui.util.Config;
 
+import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
+
 /**
  * REST Web Service
  *
@@ -140,10 +142,10 @@ public class ModelFamilyResource {
             logger.error(elog.toStringException(e));
             
         	return Response.ok(
-                    new ResponseWrapper(Config.STATUS_CODE_FAILED,
+                    new ResponseWrapper(getProperty("STATUS_CODE_FAILED"),
                     "Error while deleting Classifier.")).build();
         }
-        return Response.ok(new ResponseWrapper(Config.STATUS_CODE_SUCCESS)).build();
+        return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"))).build();
     }
     
 }

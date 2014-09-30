@@ -13,6 +13,8 @@ import qa.qcri.aidr.redis.JedisConnectionPool;
 import qa.qcri.aidr.utils.GenericCache;
 import redis.clients.jedis.Jedis;
 
+import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
+
 /**
  *
  * @author Imran
@@ -64,13 +66,13 @@ public class RedisTaggerPersister implements Runnable {
 				// koushik: Added a finally block to gracefully unsubscribe
 				try {
 					logger.info(collectionCode + ": Started collecting Tagger data to -> " + fileName + "/output");
-					logger.info("Channel to Listen  to: " + Config.TAGGER_CHANNEL + collectionCode);
-					subscriberJedis.psubscribe(subscriber, Config.TAGGER_CHANNEL + collectionCode);
+					logger.info("Channel to Listen  to: " + getProperty("TAGGER_CHANNEL") + collectionCode);
+					subscriberJedis.psubscribe(subscriber, getProperty("TAGGER_CHANNEL") + collectionCode);
 					logger.info(collectionCode + ": Stopped collecting data -> " + fileName + "/output");
 					Thread.sleep(200);
 				} finally {
 					if (subscriber != null && subscriber.isSubscribed()) {
-						subscriber.punsubscribe(Config.TAGGER_CHANNEL + collectionCode);
+						subscriber.punsubscribe(getProperty("TAGGER_CHANNEL") + collectionCode);
 						try {
 							connObject.close(subscriberJedis);		// return jedis resource to JedisPool
 							Thread.sleep(200);
@@ -91,9 +93,9 @@ public class RedisTaggerPersister implements Runnable {
 		suspendFlag = false;
 
 		if (subscriber != null && subscriber.isSubscribed()) {
-			// Bug fix: should unsubscribe from Config.TAGGER_CHANNEL + collectionCode!
+			// Bug fix: should unsubscribe from getProperty("TAGGER_CHANNEL") + collectionCode!
 			//subscriber.punsubscribe(Config.FETCHER_CHANNEL+ "."+collectionCode);
-			subscriber.punsubscribe(Config.TAGGER_CHANNEL + collectionCode);
+			subscriber.punsubscribe(getProperty("TAGGER_CHANNEL") + collectionCode);
 		}
 		/*try {
 			connObject.close(subscriberJedis);		// return jedis resource to JedisPool
