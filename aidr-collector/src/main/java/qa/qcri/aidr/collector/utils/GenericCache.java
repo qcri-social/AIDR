@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -30,7 +31,7 @@ public class GenericCache {
 
     private GenericCache() {
         twitterTrackerMap = new HashMap<String, TwitterStreamTracker>();
-        countersMap = new HashMap<String, Long>();
+        countersMap = new ConcurrentHashMap<String, Long>();
         twtConfigMap = new HashMap<String, CollectionTask>();
         lastDownloadedDocumentMap = new HashMap<String, String>();
         failedCollections = new HashMap<String, CollectionTask>();
@@ -204,7 +205,7 @@ public class GenericCache {
             for (Map.Entry pairs : twtConfigMap.entrySet()) {
                 CollectionTask oldTask = (CollectionTask) pairs.getValue();
                 CollectionTask task = oldTask.clone();
-                Long tweetsCounter = this.countersMap.get(task.getCollectionCode());
+                Long tweetsCounter = this.countersMap.remove(task.getCollectionCode());
                 String lastDownloadedDoc = this.lastDownloadedDocumentMap.get(task.getCollectionCode());
                 task.setCollectionCount(tweetsCounter);
                 task.setLastDocument(lastDownloadedDoc);
