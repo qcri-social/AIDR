@@ -74,6 +74,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import static qa.qcri.aidr.output.utils.ConfigProperties.getProperty;
 
 
 //import org.apache.log4j.BasicConfigurator;
@@ -91,7 +92,6 @@ import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
 import qa.qcri.aidr.output.filter.FilterQueryMatcher;
 import qa.qcri.aidr.output.filter.JsonQueryList;
-import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
 import qa.qcri.aidr.output.utils.SimpleRateLimiter;
 import qa.qcri.aidr.output.filter.DeserializeFilters;
@@ -605,9 +605,9 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		inRequests = new AtomicInteger(0);
-		AIDROutputConfig configuration = new AIDROutputConfig();
-		HashMap<String, String> configParams = configuration.getConfigProperties();
-		logger.info("Logger = " + configParams.get("logger"));
+//		AIDROutputConfig configuration = new AIDROutputConfig();
+//		HashMap<String, String> configParams = configuration.getConfigProperties();
+		logger.info("Logger = " + getProperty("logger"));
 
 		// Most important action - setup channel buffering thread
 		if (null == masterCBManager) {

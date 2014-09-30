@@ -24,7 +24,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-
+import static qa.qcri.aidr.output.utils.ConfigProperties.getProperty;
 //import org.apache.log4j.BasicConfigurator;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
@@ -56,10 +56,10 @@ public class AIDROutputPing {
 
 	public AIDROutputPing(final String host, final int port) {
 		
-		AIDROutputConfig configuration = new AIDROutputConfig();
-		HashMap<String, String> configParams = configuration.getConfigProperties();
-		AIDROutputPing.host = configParams.get("host");
-		AIDROutputPing.port = Integer.parseInt(configParams.get("port"));
+//		AIDROutputConfig configuration = new AIDROutputConfig();
+//		HashMap<String, String> configParams = configuration.getConfigProperties();
+		AIDROutputPing.host = getProperty("host");
+		AIDROutputPing.port = Integer.parseInt(getProperty("port"));
 		/*
 		if (configParams.get("logger").equalsIgnoreCase("log4j")) {
 			// For now: set up a simple configuration that logs on the console

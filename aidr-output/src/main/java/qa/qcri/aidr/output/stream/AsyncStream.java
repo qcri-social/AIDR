@@ -88,7 +88,6 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
 import qa.qcri.aidr.output.stream.AsyncStreamRedisSubscriber;
 import redis.clients.jedis.Jedis;
@@ -119,8 +118,8 @@ public class AsyncStream implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		AIDROutputConfig configuration = new AIDROutputConfig();
-		HashMap<String, String> configParams = configuration.getConfigProperties();
+//		AIDROutputConfig configuration = new AIDROutputConfig();
+//		HashMap<String, String> configParams = configuration.getConfigProperties();
 		
 		// Now initialize shared jedis connection object and thread pool object
 		jedisConn = new JedisConnectionObject(redisHost, redisPort);

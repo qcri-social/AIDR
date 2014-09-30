@@ -36,7 +36,7 @@ import javax.ws.rs.core.MediaType;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.redis.LoadShedder;
-import qa.qcri.aidr.output.utils.AIDROutputConfig;
+//import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
@@ -44,6 +44,8 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.apache.log4j.Logger;
+
+import static qa.qcri.aidr.output.utils.ConfigProperties.getProperty;
 
 
 public class ChannelBufferManager {
@@ -96,17 +98,17 @@ public class ChannelBufferManager {
 	public ChannelBufferManager() {}
 
 	public void initiateChannelBufferManager(final String channelRegEx) {
-		AIDROutputConfig configuration = new AIDROutputConfig();
-		HashMap<String, String> configParams = configuration.getConfigProperties();
+//        AIDROutputConfig configuration = new AIDROutputConfig();
+//		HashMap<String, String> configParams = configuration.getConfigProperties();
 
 		redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
 
-		redisHost = configParams.get("host");
-		redisPort = Integer.parseInt(configParams.get("port"));
-		PERSISTER_LOAD_CHECK_INTERVAL_MINUTES = Integer.parseInt(configParams.get("PERSISTER_LOAD_CHECK_INTERVAL"));
-		PERSISTER_LOAD_LIMIT = Integer.parseInt(configParams.get("PERSISTER_LOAD_LIMIT"));
+		redisHost = getProperty("host");
+		redisPort = Integer.parseInt(getProperty("port"));
+		PERSISTER_LOAD_CHECK_INTERVAL_MINUTES = Integer.parseInt(getProperty("PERSISTER_LOAD_CHECK_INTERVAL_MINUTES"));
+		PERSISTER_LOAD_LIMIT = Integer.parseInt(getProperty("PERSISTER_LOAD_LIMIT"));
 
-		managerMainUrl = configParams.get("managerUrl");
+		managerMainUrl = getProperty("managerUrl");
 		logger.info("Initializing channel buffer manager.");
 		System.out.println("[ChannelBufferManager] Initializing channel buffer manager.");
 
