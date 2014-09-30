@@ -7,45 +7,35 @@ package qa.qcri.aidr.collector.api;
 //import com.sun.jersey.api.client.Client;
 //import com.sun.jersey.api.client.ClientResponse;
 //import com.sun.jersey.api.client.WebResource;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.List;
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
-
-
-import qa.qcri.aidr.collector.beans.ResponseWrapper;
-
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Path;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.jackson.JacksonFeature;
-
-import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
-import qa.qcri.aidr.collector.utils.GenericCache;
 import qa.qcri.aidr.collector.beans.CollectionTask;
-import qa.qcri.aidr.collector.utils.Config;
+import qa.qcri.aidr.collector.beans.ResponseWrapper;
+import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
 import qa.qcri.aidr.collector.logging.Loggable;
+import qa.qcri.aidr.collector.utils.GenericCache;
 import qa.qcri.aidr.collector.utils.TwitterStreamQueryBuilder;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import twitter4j.conf.ConfigurationBuilder;
 
+import javax.ws.rs.*;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.List;
+
 import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
+
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 
 /**
  * REST Web Service
@@ -142,39 +132,35 @@ public class TwitterCollectorAPI extends Loggable {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/stop")
     public Response stopTask(@QueryParam("id") String collectionCode) throws InterruptedException {
-        ResponseWrapper response = new ResponseWrapper();
-        TwitterStreamTracker tracker = (TwitterStreamTracker) GenericCache.getInstance().getTwitterTracker(collectionCode);
-        String responseMsg = null;
+        GenericCache cache = GenericCache.getInstance();
+        TwitterStreamTracker tracker = cache.getTwitterTracker(collectionCode);
+        CollectionTask task = cache.getConfig(collectionCode);
+
+        cache.delFailedCollection(collectionCode);
+        cache.deleteCounter(collectionCode);
+        cache.delTwtConfigMap(collectionCode);
+        cache.delLastDownloadedDoc(collectionCode);
+        cache.delTwitterTracker(collectionCode);
+
         if (tracker != null) {
             tracker.abortCollection();
 
-            GenericCache.getInstance().delFailedCollection(collectionCode);
-            GenericCache.getInstance().deleteCounter(collectionCode);
-            GenericCache.getInstance().delTwtConfigMap(collectionCode);
-            GenericCache.getInstance().delLastDownloadedDoc(collectionCode);
-            GenericCache.getInstance().delTwitterTracker(collectionCode);
-
-            if (Boolean.valueOf(getProperty("DEFAULT_PERSISTANCE_MODE"))) {
+            if (Boolean.valueOf(getProperty("DEFAULT_PERSISTANCE_MODE")))
                 stopPersister(collectionCode);
-            }
 
-            responseMsg = "Collector has been successfully stopped.";
-            logger.info(collectionCode + ": " + responseMsg);
-            response.setMessage(responseMsg);
-            response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_STOPPED"));
-            return Response.ok(response).build();
+            logger.info(collectionCode + ": " + "Collector has been successfully stopped.");
         } else {
-
-            GenericCache.getInstance().delTwitterTracker(collectionCode);
-            GenericCache.getInstance().deleteCounter(collectionCode);
-            GenericCache.getInstance().delTwtConfigMap(collectionCode);
-            GenericCache.getInstance().delLastDownloadedDoc(collectionCode);
-            responseMsg = "No collector instances found to be stopped with the given id:" + collectionCode;
-            response.setMessage(responseMsg);
-            response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_NOTFOUND"));
-            logger.info(responseMsg);
-            return Response.ok(response).build();
+            logger.info("No collector instances found to be stopped with the given id:" + collectionCode);
         }
+
+        if (task != null) {
+            return Response.ok(task).build();
+        }
+
+        ResponseWrapper response = new ResponseWrapper();
+        response.setMessage("Invalid key. No running collector found for the given id.");
+        response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_NOTFOUND"));
+        return Response.ok(response).build();
     }
 
     @GET

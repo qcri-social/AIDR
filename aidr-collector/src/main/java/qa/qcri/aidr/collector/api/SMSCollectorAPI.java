@@ -8,11 +8,11 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import qa.qcri.aidr.collector.beans.CollectionTask;
+import qa.qcri.aidr.collector.beans.ResponseWrapper;
 import qa.qcri.aidr.collector.beans.SMS;
 import qa.qcri.aidr.collector.logging.ErrorLog;
 import qa.qcri.aidr.collector.logging.Loggable;
 import qa.qcri.aidr.collector.redis.JedisConnectionPool;
-import qa.qcri.aidr.collector.utils.Config;
 import qa.qcri.aidr.collector.utils.GenericCache;
 import qa.qcri.aidr.common.redis.LoadShedder;
 
@@ -62,9 +62,21 @@ public class SMSCollectorAPI extends Loggable {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/stop")
     public Response stopTask(@QueryParam("collection_code") String collectionCode) {
-        GenericCache.getInstance().removeSMSCollection(collectionCode);
+        GenericCache cache = GenericCache.getInstance();
+        CollectionTask task = cache.getSMSConfig(collectionCode);
+        cache.removeSMSCollection(collectionCode);
         stopPersister(collectionCode);
-        return Response.ok().build();
+
+        cache.deleteCounter(collectionCode);
+        cache.delLastDownloadedDoc(collectionCode);
+
+        if (task != null)
+            return Response.ok(task).build();
+
+        ResponseWrapper response = new ResponseWrapper();
+        response.setMessage("Invalid key. No running collector found for the given id.");
+        response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_NOTFOUND"));
+        return Response.ok(response).build();
     }
     
     @POST

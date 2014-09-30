@@ -304,6 +304,9 @@ public class CollectionController extends BaseController{
 		AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
 		if (dto != null) {
 			Integer totalCount = collectionLogService.countTotalDownloadedItemsForCollection(id);
+			if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())){
+				totalCount += dto.getCount();
+			}
 			dto.setTotalCount(totalCount);
 		}
 		return dto;
@@ -410,6 +413,9 @@ public class CollectionController extends BaseController{
 		AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
 		if (dto != null) {
 			Integer totalCount = collectionLogService.countTotalDownloadedItemsForCollection(id);
+			if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())){
+				totalCount += dto.getCount();
+			}
 			dto.setTotalCount(totalCount);
 		} else {
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
@@ -428,6 +434,9 @@ public class CollectionController extends BaseController{
 			dto = convertAidrCollectionToDTO(collection);
 			if (dto != null) {
 				Integer totalCount = collectionLogService.countTotalDownloadedItemsForCollection(id);
+				if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())){
+					totalCount += dto.getCount();
+				}
 				dto.setTotalCount(totalCount);
 			} else {
 				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
@@ -538,6 +547,9 @@ public class CollectionController extends BaseController{
 							totalCount = 0;
 						}
 
+						if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())) {
+							totalCount += dto.getCount();
+						}
 						dto.setTotalCount(totalCount);
 						dtoList.add(dto);
 
@@ -601,6 +613,9 @@ public class CollectionController extends BaseController{
 							totalCount = 0;
 						}
 
+						if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())) {
+							totalCount += dto.getCount();
+						}
 						dto.setTotalCount(totalCount);
 						dtoList.add(dto);
 

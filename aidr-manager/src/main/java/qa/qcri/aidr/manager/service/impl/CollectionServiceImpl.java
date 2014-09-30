@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import qa.qcri.aidr.common.code.JacksonWrapper;
 import qa.qcri.aidr.manager.dto.FetcheResponseDTO;
 import qa.qcri.aidr.manager.dto.FetcherRequestDTO;
@@ -30,7 +29,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.List;
 
@@ -234,7 +233,20 @@ public class CollectionServiceImpl implements CollectionService {
     @Transactional(readOnly = false)
     public AidrCollection stop(Integer collectionId) throws Exception {
         AidrCollection collection = collectionRepository.findById(collectionId);
-        return stopAidrFetcher(collection);
+        AidrCollection updateCollection = stopAidrFetcher(collection);
+
+        AidrCollectionLog collectionLog = new AidrCollectionLog();
+        collectionLog.setCount(collection.getCount());
+        collectionLog.setEndDate(collection.getEndDate());
+        collectionLog.setFollow(collection.getFollow());
+        collectionLog.setGeo(collection.getGeo());
+        collectionLog.setLangFilters(collection.getLangFilters());
+        collectionLog.setStartDate(collection.getStartDate());
+        collectionLog.setTrack(collection.getTrack());
+        collectionLog.setCollectionID(collectionId);
+        collectionLogRepository.save(collectionLog);
+
+        return updateCollection;
     }
 
     public AidrCollection startFetcher(FetcherRequestDTO fetcherRequest, AidrCollection aidrCollection) {
@@ -333,8 +345,9 @@ public class CollectionServiceImpl implements CollectionService {
         	
         	//String response = clientResponse.getEntity(String.class);
         	String jsonResponse = clientResponse.readEntity(String.class);
-        	
-            logger.info(jsonResponse);
+
+            collection = updateStatusCollection(jsonResponse, collection);
+
             /**
              * Change Database Status
              */
@@ -343,6 +356,33 @@ public class CollectionServiceImpl implements CollectionService {
             logger.error("Error while stopping Remote FetchMain Collection", e);
         }
         return null;
+    }
+
+    private AidrCollection updateStatusCollection(String jsonResponse, AidrCollection collection) throws IOException {
+        ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+        FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);
+        if (response != null) {
+            if (!CollectionStatus.getByStatus(response.getStatusCode()).equals(collection.getStatus())) {
+                //if local=running and fetcher=NOT-FOUND then put local as NOT-RUNNING
+                if (CollectionStatus.NOT_FOUND.equals(CollectionStatus.getByStatus(response.getStatusCode()))) {
+                    collection.setStatus(CollectionStatus.NOT_RUNNING);
+                    collectionRepository.update(collection);
+                }
+
+                if (CollectionStatus.RUNNING.equals(CollectionStatus.getByStatus(response.getStatusCode()))) {
+                    collection = collectionRepository.start(collection.getId());
+                }
+            }
+
+            if (response.getCollectionCount() != null && !response.getCollectionCount().equals(collection.getCount())) {
+                collection.setCount(response.getCollectionCount());
+                String lastDocument = response.getLastDocument();
+                if (lastDocument != null)
+                    collection.setLastDocument(lastDocument);
+                collectionRepository.update(collection);
+            }
+        }
+        return collection;
     }
 
     @SuppressWarnings("deprecation")
@@ -379,37 +419,7 @@ public class CollectionServiceImpl implements CollectionService {
         	String jsonResponse = clientResponse.readEntity(String.class);
         	
             //logger.info("jsonResponse" + jsonResponse);
-        	ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
-            FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);
-            if (response != null) {
-                if (!CollectionStatus.getByStatus(response.getStatusCode()).equals(collection.getStatus())) {
-                    //if local=running and fetcher=NOT-FOUND then put local as NOT-RUNNING
-                    if (CollectionStatus.NOT_FOUND.equals(CollectionStatus.getByStatus(response.getStatusCode()))) {
-                        collection.setStatus(CollectionStatus.NOT_RUNNING);
-                        collectionRepository.update(collection);
-                    }
-
-                    if (CollectionStatus.RUNNING.equals(CollectionStatus.getByStatus(response.getStatusCode()))) {
-                        collection = collectionRepository.start(collection.getId());
-                    }
-                }
-                if (response.getCollectionCount() != null) {
-                    collection.setCount(response.getCollectionCount());
-                    collection.setLastDocument(response.getLastDocument());
-                    collectionRepository.update(collection);
-
-                    AidrCollectionLog collectionLog = new AidrCollectionLog();
-                    collectionLog.setCount(response.getCollectionCount());
-                    collectionLog.setEndDate(collection.getEndDate());
-                    collectionLog.setFollow(collection.getFollow());
-                    collectionLog.setGeo(collection.getGeo());
-                    collectionLog.setLangFilters(collection.getLangFilters());
-                    collectionLog.setStartDate(collection.getStartDate());
-                    collectionLog.setTrack(collection.getTrack());
-                    collectionLog.setCollectionID(collection.getId());
-                    collectionLogRepository.save(collectionLog);
-                }
-            }
+            collection = updateStatusCollection(jsonResponse, collection);
             return collection;
         } catch (Exception e) {
              String msg = "Error while getting status for collection from Remote FetchMain Collection";
