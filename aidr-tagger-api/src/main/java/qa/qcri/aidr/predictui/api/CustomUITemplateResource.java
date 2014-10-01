@@ -115,7 +115,7 @@ public class CustomUITemplateResource {
     private boolean isAttributeInfoRequired(int type){
         boolean returnValue = false;
 
-        if(type == Integer.parseInt(getProperty("LASSIFIER_DESCRIPTION_PAGE"))){
+        if(type == Integer.parseInt(getProperty("CLASSIFIER_DESCRIPTION_PAGE"))){
             returnValue = true;
         }
 

@@ -58,7 +58,7 @@
             </resource>
         </resources>
         <filters>
-            <filter>${basedir}/../common_config.properties</filter>
+            <filter>${basedir}/../aidr-common/src/main/resources/common_config.properties</filter>
         </filters>
     </build>
 	<dependencies>
