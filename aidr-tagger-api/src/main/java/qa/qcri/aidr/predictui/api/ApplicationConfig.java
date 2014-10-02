@@ -30,9 +30,7 @@ public class ApplicationConfig extends Application {
      * given list with all resources defined in the project.
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
-    	resources.add(MoxyJsonFeature.class);
-    	resources.add(JacksonFeature.class);
-    	resources.add(qa.qcri.aidr.predictui.api.CollectionResource.class);
+        resources.add(qa.qcri.aidr.predictui.api.CollectionResource.class);
         resources.add(qa.qcri.aidr.predictui.api.CrisisManagementResource.class);
         resources.add(qa.qcri.aidr.predictui.api.CrisisResource.class);
         resources.add(qa.qcri.aidr.predictui.api.CrisisTypeResource.class);
@@ -47,8 +45,7 @@ public class ApplicationConfig extends Application {
         resources.add(qa.qcri.aidr.predictui.api.TaskBufferScanner.class);
         resources.add(qa.qcri.aidr.predictui.api.TrainingDataResource.class);
         resources.add(qa.qcri.aidr.predictui.api.UserResource.class);
-        //resources.add(qa.qcri.aidr.predictui.util.JAXBContextResolver.class);
-        resources.add(qa.qcri.aidr.predictui.util.TestTaskManager.class);
+        resources.add(qa.qcri.aidr.task.util.TestTaskManager.class);
     }
     
 }
