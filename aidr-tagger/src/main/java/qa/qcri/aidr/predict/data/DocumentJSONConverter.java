@@ -97,13 +97,14 @@ public class DocumentJSONConverter extends Loggable {
 		logger.info("parsing as SMS doc");
 		try {
 			SMS sms = new SMS();
-
-			JSONObject user;
-			user = input.getJSONObject("user");
-			sms.userID = user.getLong("id");
-			sms.text = input.getString("text");
-			sms.isReSent = false;		// TODO: implement a method to check for duplicate SMS
+			sms.setText(input.getString("text"));
 			sms.setDoctype(DocumentType.SMS_DOC);
+                        JSONObject aidrJSON = input.getJSONObject("aidr");
+                        AIDR aidrObj = new AIDR();
+                        aidrObj.setCrisis_code(aidrJSON.getString("crisis_code"));
+                        aidrObj.setCrisis_name(aidrJSON.getString("crisis_name"));
+                        aidrObj.setDoctype(aidrJSON.getString("doctype"));
+                        sms.setAidr(aidrObj);
 			return sms;
 		} catch (JSONException e) {
 			logger.error("Json exception in parsing tweet: " + input);
