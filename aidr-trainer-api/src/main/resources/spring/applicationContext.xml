@@ -20,7 +20,7 @@
     <mvc:view-controller path="/protected" view-name="protected"/>
 	
 	<jee:remote-slsb id="TaskManagerRemote" 
-		jndi-name="java:global/AIDRTaskManager/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote" 
+		jndi-name="java:global/aidr-task-managerEAR-1.0/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote" 
 		business-interface="qa.qcri.aidr.task.ejb.TaskManagerRemote" />
     
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
