@@ -13,29 +13,22 @@ import qa.qcri.aidr.predict.common.DocumentType;
 public class SMS extends Document implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    long userID;
-    boolean isReSent;
+    
     //GeoLabel.LonLatPair geotag;
-    String text;
-
-    public long getUserID() {
-        return userID;
-    }
-
-    public void setUserID(long userID) {
-        this.userID = userID;
-    }
+    //String text;
     
-    /*
-    public GeoLabel.LonLatPair getGeotag() {
-        return geotag;
+    
+    private AIDR aidr;
+    private String text;
+
+    public AIDR getAidr() {
+        return aidr;
     }
 
-    public void setGeotag(GeoLabel.LonLatPair geotag) {
-        this.geotag = geotag;
+    public void setAidr(AIDR aidr) {
+        this.aidr = aidr;
     }
-	*/
-    
+
     public String getText() {
         return text;
     }
@@ -53,9 +46,10 @@ public class SMS extends Document implements Serializable {
 	public void setDoctype(String type) {
 		this.doctype = type;
 	}
-    
+
     @Override
     public boolean isNovel() {
-        return !isReSent;
+        return true;
     }
+    
 }
