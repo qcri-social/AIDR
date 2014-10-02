@@ -40,7 +40,7 @@ public class SMSCollectorAPI extends Loggable {
     private static Logger logger = Logger.getLogger(SMSCollectorAPI.class.getName());
     private static ErrorLog elog = new ErrorLog();
     
-    public static final String CHANNEL = getProperty("FETCHER_CHANNEL") + ".%s_sms";
+    public static final String CHANNEL = getProperty("FETCHER_CHANNEL") + ".%s";
     private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
     
     @GET
