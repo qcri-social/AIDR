@@ -40,7 +40,6 @@ import qa.qcri.aidr.predictui.dto.CrisisAttributesDTO;
 import qa.qcri.aidr.predictui.entities.NominalAttribute;
 //import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 import qa.qcri.aidr.predictui.facade.NominalAttributeFacade;
-import qa.qcri.aidr.predictui.util.Config;
 
 import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 

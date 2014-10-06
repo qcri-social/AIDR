@@ -11,7 +11,6 @@ import org.json.JSONObject;
 import redis.clients.jedis.Jedis;
 import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.classification.nominal.CrisisAttributePair;
-import qa.qcri.aidr.predict.common.Config;
 import qa.qcri.aidr.predict.common.Event;
 import qa.qcri.aidr.predict.common.Loggable;
 import qa.qcri.aidr.predict.dbentities.ModelFamilyEC;

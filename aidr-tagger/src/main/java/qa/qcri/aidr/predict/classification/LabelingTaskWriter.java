@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.predict.DataStore;
-import qa.qcri.aidr.predict.common.Config;
 import qa.qcri.aidr.predict.common.ErrorLog;
 import qa.qcri.aidr.predict.common.PipelineProcess;
 import qa.qcri.aidr.predict.common.RateLimiter;

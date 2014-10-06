@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.predictui.entities.ModelFamily;
 import qa.qcri.aidr.predictui.facade.ModelFamilyFacade;
-import qa.qcri.aidr.predictui.util.Config;
 
 import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 

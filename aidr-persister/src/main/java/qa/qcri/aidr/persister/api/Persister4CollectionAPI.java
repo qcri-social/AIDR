@@ -5,7 +5,6 @@ import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.persister.collction.RedisCollectionPersister;
-import qa.qcri.aidr.utils.Config;
 import qa.qcri.aidr.utils.GenericCache;
 
 import javax.ws.rs.GET;

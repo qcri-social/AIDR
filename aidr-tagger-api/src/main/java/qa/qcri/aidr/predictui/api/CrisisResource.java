@@ -14,7 +14,6 @@ import qa.qcri.aidr.predictui.dto.CrisisDTO;
 import qa.qcri.aidr.predictui.dto.CrisisTypeDTO;
 import qa.qcri.aidr.predictui.entities.Crisis;
 import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
-import qa.qcri.aidr.predictui.util.Config;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
 import javax.ejb.EJB;

@@ -5,7 +5,6 @@ import java.util.List;
 
 import qa.qcri.aidr.predict.classification.DocumentLabel;
 import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
-import qa.qcri.aidr.predict.common.Config;
 import qa.qcri.aidr.predict.common.ErrorLog;
 
 import org.apache.log4j.Logger;

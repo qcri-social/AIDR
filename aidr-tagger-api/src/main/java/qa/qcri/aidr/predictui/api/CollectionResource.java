@@ -17,7 +17,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import qa.qcri.aidr.predictui.entities.AidrCollection;
 import qa.qcri.aidr.predictui.facade.CollectionResourceFacade;
-import qa.qcri.aidr.predictui.util.Config;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
 /**

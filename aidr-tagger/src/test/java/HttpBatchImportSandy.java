@@ -3,7 +3,6 @@ import java.io.*;
 import java.util.*;
 
 import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
-import qa.qcri.aidr.predict.common.Config;
 import qa.qcri.aidr.predict.data.DocumentJSONConverter;
 import au.com.bytecode.opencsv.CSVReader;
 

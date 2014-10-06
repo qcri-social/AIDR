@@ -1,6 +1,5 @@
 package qa.qcri.aidr.logging;
 
-import qa.qcri.aidr.utils.Config;
 import java.io.*;
 import java.util.*;
 import java.text.DateFormat;

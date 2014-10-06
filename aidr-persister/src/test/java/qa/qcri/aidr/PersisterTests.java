@@ -6,8 +6,6 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import org.junit.Assert;
 import org.junit.Test;
 
-import qa.qcri.aidr.utils.Config;
-
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;

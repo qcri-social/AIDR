@@ -24,7 +24,6 @@ import javax.ws.rs.core.Response;
 import qa.qcri.aidr.predictui.dto.CrisisTypeDTO;
 import qa.qcri.aidr.predictui.entities.CrisisType;
 import qa.qcri.aidr.predictui.facade.CrisisTypeResourceFacade;
-import qa.qcri.aidr.predictui.util.Config;
 
 import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 

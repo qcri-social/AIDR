@@ -4,7 +4,6 @@ import java.net.SocketException;
 import org.apache.log4j.Logger;
 import qa.qcri.aidr.collector.logging.ErrorLog;
 
-import qa.qcri.aidr.collector.utils.Config;
 import qa.qcri.aidr.collector.logging.Loggable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;

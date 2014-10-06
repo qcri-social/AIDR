@@ -28,7 +28,6 @@ import org.apache.log4j.Logger;
 import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.logging.ErrorLog;
 import qa.qcri.aidr.persister.collector.RedisCollectorPersister;
-import qa.qcri.aidr.utils.Config;
 import qa.qcri.aidr.utils.DownloadJsonType;
 import qa.qcri.aidr.utils.GenericCache;
 import qa.qcri.aidr.utils.JsonDeserializer;

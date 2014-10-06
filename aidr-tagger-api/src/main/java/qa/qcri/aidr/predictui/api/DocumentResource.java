@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.facade.DocumentFacade;
-import qa.qcri.aidr.predictui.util.Config;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;

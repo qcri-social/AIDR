@@ -31,7 +31,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.entities.Users;
 import qa.qcri.aidr.predictui.facade.UserResourceFacade;
-import qa.qcri.aidr.predictui.util.Config;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
 import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;

@@ -43,7 +43,6 @@ import org.json.JSONObject;
 import qa.qcri.aidr.predict.classification.nominal.Model;
 import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
 import qa.qcri.aidr.predict.classification.nominal.ModelNominalLabelPerformance;
-import qa.qcri.aidr.predict.common.Config;
 import qa.qcri.aidr.predict.common.ErrorLog;
 import qa.qcri.aidr.predict.common.Helpers;
 import qa.qcri.aidr.predict.common.Loggable;

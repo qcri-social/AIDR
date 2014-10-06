@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.facade.TaskBufferScannerFacade;
-import qa.qcri.aidr.predictui.util.Config;
 
 import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 
@@ -73,8 +72,6 @@ public class TaskBufferScanner {
 	@PostConstruct
 	public void contextInitialized() {
 		threadStatus = false;
-		final Config configData = new Config();
-
 		executorService = Executors.newCachedThreadPool();
 		boolean isSuccess = startTaskBufferScannerThread(getProperty("TASK_EXPIRY_AGE_LIMIT"), getProperty("TASK_BUFFER_SCAN_INTERVAL"));
 		if (isSuccess) {
@@ -153,7 +150,6 @@ public class TaskBufferScanner {
 		final String newMaxTaskAge;
 		final String newScanInterval;
 		if (null == scanInterval || null == maxTaskAge) {
-			final Config configData = new Config();
 			newMaxTaskAge = getProperty("TASK_EXPIRY_AGE_LIMIT");
 			newScanInterval = getProperty("TASK_BUFFER_SCAN_INTERVAL");
 		} else {

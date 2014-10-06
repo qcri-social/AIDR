@@ -6,7 +6,6 @@ package qa.qcri.aidr.io;
 
 import java.io.File;
 import org.apache.commons.lang.StringUtils;
-import qa.qcri.aidr.utils.Config;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.InputStream;

@@ -24,8 +24,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import qa.qcri.aidr.utils.Config;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;

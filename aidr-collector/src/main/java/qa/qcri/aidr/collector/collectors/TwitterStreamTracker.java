@@ -14,7 +14,6 @@ import org.json.JSONObject;
 import qa.qcri.aidr.collector.beans.AIDR;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.FetcherResponseToStringChannel;
-import qa.qcri.aidr.collector.utils.Config;
 import qa.qcri.aidr.collector.logging.Loggable;
 import qa.qcri.aidr.collector.redis.JedisConnectionPool;
 import qa.qcri.aidr.collector.utils.GenericCache;

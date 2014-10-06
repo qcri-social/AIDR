@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.logging.ErrorLog;
 import qa.qcri.aidr.persister.collector.*;
-import qa.qcri.aidr.utils.Config;
 import qa.qcri.aidr.redis.JedisConnectionPool;
 import qa.qcri.aidr.utils.GenericCache;
 import redis.clients.jedis.Jedis;

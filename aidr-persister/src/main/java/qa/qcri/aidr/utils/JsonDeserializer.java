@@ -13,7 +13,6 @@ import org.supercsv.io.ICsvMapWriter;
 import qa.qcri.aidr.persister.filter.JsonQueryList;
 import qa.qcri.aidr.persister.filter.FilterQueryMatcher;
 import qa.qcri.aidr.persister.filter.NominalLabel;
-import qa.qcri.aidr.utils.Config;
 
 import java.io.*;
 

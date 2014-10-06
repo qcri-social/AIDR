@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.redis.LoadShedder;
 import qa.qcri.aidr.io.FileSystemOperations;
-import qa.qcri.aidr.utils.Config;
 import redis.clients.jedis.JedisPubSub;
 import java.io.*;
 import java.nio.charset.Charset;

@@ -11,7 +11,6 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SparseInstance;
 
-import qa.qcri.aidr.predict.common.Config;
 import qa.qcri.aidr.predict.common.Loggable;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.featureextraction.WordSet;

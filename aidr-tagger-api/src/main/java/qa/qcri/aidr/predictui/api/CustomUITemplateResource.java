@@ -3,7 +3,6 @@ package qa.qcri.aidr.predictui.api;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.entities.CustomUITemplate;
 import qa.qcri.aidr.predictui.facade.CustomUITemplateFacade;
-import qa.qcri.aidr.predictui.util.Config;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
 import javax.ejb.EJB;

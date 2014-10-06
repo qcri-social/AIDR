@@ -2,8 +2,6 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
-import qa.qcri.aidr.predict.common.Config;
-
 /**
  * Test class for data consumption over HTTP. Accepts a filter specification as
  * the first command line argument; either an interger (crisis ID) or a

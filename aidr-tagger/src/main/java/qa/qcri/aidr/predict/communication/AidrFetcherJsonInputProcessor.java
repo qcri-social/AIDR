@@ -18,7 +18,6 @@ import qa.qcri.aidr.common.redis.LoadShedder;
 import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.common.Loggable;
 import qa.qcri.aidr.predict.common.Serializer;
-import qa.qcri.aidr.predict.common.Config;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.data.DocumentJSONConverter;
 

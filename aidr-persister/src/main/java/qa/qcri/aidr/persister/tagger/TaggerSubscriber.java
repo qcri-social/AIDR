@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import qa.qcri.aidr.utils.ClassifiedTweet;
-import qa.qcri.aidr.utils.Config;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -74,8 +73,8 @@ public class TaggerSubscriber extends JedisPubSub {
         if (null == redisLoadShedder) {
         	redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
         }
-        redisLoadShedder.put(Config.TAGGER_CHANNEL+collectionCode, new LoadShedder(Integer.parseInt(getProperty("PERSISTER_LOAD_LIMIT")), Integer.parseInt(getProperty("PERSISTER_LOAD_CHECK_INTERVAL_MINUTES")), true));
-        logger.info("Created loadshedder for channel: " + (Config.TAGGER_CHANNEL+collectionCode));
+        redisLoadShedder.put(getProperty("TAGGER_CHANNEL")+collectionCode, new LoadShedder(Integer.parseInt(getProperty("PERSISTER_LOAD_LIMIT")), Integer.parseInt(getProperty("PERSISTER_LOAD_CHECK_INTERVAL_MINUTES")), true));
+        logger.info("Created loadshedder for channel: " + (getProperty("TAGGER_CHANNEL")+collectionCode));
     }
 
     @Override
