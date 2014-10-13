@@ -465,6 +465,8 @@ public class ReadWriteCSV<CellProcessors> {
 		tweetToWrite.put(header[i+7], tweet.getCrisisName());
 		i = i + ClassifiedTweetCSVHeader.length;
 		if (tweet.getNominalLabels() != null) {
+            logger.info("[createClassifiedTweetCsvMap] tweet toString :" + tweet.toString());
+            logger.info("[createClassifiedTweetCsvMap] tweet getNominalLabels size :" + tweet.getNominalLabels().size());
 			tweetToWrite = writeVariableAttributeData(header, i, tweetToWrite, tweet);
 		}
 		return tweetToWrite;
@@ -472,16 +474,30 @@ public class ReadWriteCSV<CellProcessors> {
 
 	private Map<String, Object> writeVariableAttributeData(final String[] header, final int startIndex, Map<String, Object> tweetToWrite, final ClassifiedTweet tweet) {
 		int i = startIndex;
+        logger.info("[writeVariableAttributeData] header size :" + header.length);
+        logger.info("[writeVariableAttributeData] tweet getNominalLabels size :" + tweet.getNominalLabels().size());
+        logger.info("[writeVariableAttributeData] startIndex :" + i);
 		for (int j = 0;j < tweet.getNominalLabels().size();j++) {
-			NominalLabel nLabel = tweet.getNominalLabels().get(j);
-			tweetToWrite.put(header[i], nLabel.attribute_name);
-			tweetToWrite.put(header[i+1], nLabel.attribute_code);
-			tweetToWrite.put(header[i+2], nLabel.label_name);
-			tweetToWrite.put(header[i+3], nLabel.label_description);
-			tweetToWrite.put(header[i+4], nLabel.label_code);
-			tweetToWrite.put(header[i+5], nLabel.confidence);
-			tweetToWrite.put(header[i+6], nLabel.from_human);
-			i += VARIABLE_HEADER_SIZE;
+            try{
+                if(tweet.getNominalLabels().get(j) != null){
+                    NominalLabel nLabel = tweet.getNominalLabels().get(j);
+                    logger.info("[writeVariableAttributeData] nLabel attribute_name :" + nLabel.attribute_name);
+                    tweetToWrite.put(header[i], nLabel.attribute_name);
+                    tweetToWrite.put(header[i+1], nLabel.attribute_code);
+                    tweetToWrite.put(header[i+2], nLabel.label_name);
+                    tweetToWrite.put(header[i+3], nLabel.label_description);
+                    tweetToWrite.put(header[i+4], nLabel.label_code);
+                    tweetToWrite.put(header[i+5], nLabel.confidence);
+                    tweetToWrite.put(header[i+6], nLabel.from_human);
+                    i += VARIABLE_HEADER_SIZE;
+                }
+            }
+            catch(Exception e){
+                logger.error("[writeVariableAttributeData] excpetion : " + e.getMessage() + " - " + e.getStackTrace());
+
+            }
+
+
 		}
 		return tweetToWrite;
 	}
