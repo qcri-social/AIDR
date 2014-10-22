@@ -790,7 +790,7 @@ Response Example:
 
 Base URI: `http://localhost:port/AIDRAnalytics/rest/analytics`
 
-## For a given `crisisCode` and `attributeCode`, provide the total number of tweets per each `tag` in the time window from `startTime` to current time, for the specified `granularity`
+## Provide the total number of tweets per each `tag` in the time window from `startTime` to current time
 
 GET `/getLabelSum/{crisisCode}/{classifierCode}/{granularity}?startTime=XXXX`
 
@@ -801,7 +801,7 @@ startTime: unix time (long value)
 
 
 
-## For a given `crisisCode and `attributeCode`, provide the tweet count per `tag` per (granularity) instance in the time window from `startTime` to current time at the specified `granularity`
+## Provide the tweet count per `tag` per (granularity) instance in the time window from `startTime` to current time
 
 GET `/getLabelCount/{crisisCode}/{attributeCode}/{granularity}?startTime=XXXX`
 
@@ -810,7 +810,7 @@ Produces: MediaType.APPLICATION_JSON
 granularity: long value
 startTime: unix time (long value)
 
-## Return Time Series data for each `tag` in the interval [startTime, endTime] at the given granularity, for `crisisCode` and `attributeCode`
+## Return Time Series data for each `tag` in the interval [startTime, endTime] 
 
 GET `/getLabelTimeSeries/{crisisCode}/{attributeCode}/{granularity}?startTime=XXXX&endTime=YYYY`
 
@@ -821,7 +821,7 @@ startTime: unix time (long value)
 endTime: unix time (long value)
 
 
-## Count total number of tweets for each `tag` in the interval [startTime, endTime] at the given granularity, for `crisisCode` and `attributeCode`
+## Count total number of tweets for each `tag` in the interval [startTime, endTime]
 
 GET `/getIntervalLabelSum/{crisisCode}/{attributeCode}/{granularity}?startTime=XXXX&endTime=YYYY`
 
