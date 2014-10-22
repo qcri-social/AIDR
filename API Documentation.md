@@ -784,3 +784,60 @@ Response Example:
 * `code`: code associated with a nominal attribute
 
 * `norminalLabelCode`: code of a label associated with a particular nominal attribute
+
+
+# AIDR Analysis API (aidr-analytics)
+
+Base URI: `http://localhost:port/AIDRAnalytics/rest`
+
+## For a given `crisisCode` and `attributeCode`, provide the total number of tweets per each `tag` in the time window from `startTime` to current time, for the specified `granularity`
+
+GET `/getLabelSum/{crisisCode}/{classifierCode}/{granularity}?startTime=XXXX`
+
+Produces: MediaType.APPLICATION_JSON 
+
+granularity: long value
+startTime: unix time (long value) 
+
+
+
+## For a given `crisisCode and `attributeCode`, provide the tweet count per `tag` per (granularity) instance in the time window from `startTime` to current time at the specified `granularity`
+
+GET `/getLabelCount/{crisisCode}/{attributeCode}/{granularity}?startTime=XXXX`
+
+Produces: MediaType.APPLICATION_JSON 
+
+granularity: long value
+startTime: unix time (long value)
+
+## Return Time Series data for each `tag` in the interval [startTime, endTime] at the given granularity, for `crisisCode` and `attributeCode`
+
+GET `/getLabelTimeSeries/{crisisCode}/{attributeCode}/{granularity}?startTime=XXXX&endTime=YYYY`
+
+Produces: MediaType.APPLICATION_JSON 
+
+granularity: long value
+startTime: unix time (long value)
+endTime: unix time (long value)
+
+
+## Count total number of tweets for each `tag` in the interval [startTime, endTime] at the given granularity, for `crisisCode` and `attributeCode`
+
+GET `/getIntervalLabelSum/{crisisCode}/{attributeCode}/{granularity}?startTime=XXXX&endTime=YYYY`
+
+Produces: MediaType.APPLICATION_JSON 
+
+granularity: long value
+startTime: unix time (long value)
+endTime: unix time (long value)
+
+
+## Ping aidr-analytics tag data generator module
+
+GET `/ping`
+
+Produces: MediaType.APPLICATION_JSON 
+
+`{
+     "aidr-analysis/tagData": "RUNNING"
+}`
