@@ -796,8 +796,9 @@ GET `/getLabelSum/{crisisCode}/{classifierCode}/{granularity}?startTime=XXXX`
 
 Produces: MediaType.APPLICATION_JSON 
 
-granularity: long value
-startTime: unix time (long value) 
+* granularity: long value
+
+* startTime: unix time (long value) 
 
 
 
@@ -807,8 +808,8 @@ GET `/getLabelCount/{crisisCode}/{attributeCode}/{granularity}?startTime=XXXX`
 
 Produces: MediaType.APPLICATION_JSON 
 
-granularity: long value
-startTime: unix time (long value)
+* granularity: long value
+* startTime: unix time (long value)
 
 ## Return Time Series data for each `tag` in the interval [startTime, endTime] 
 
@@ -816,9 +817,9 @@ GET `/getLabelTimeSeries/{crisisCode}/{attributeCode}/{granularity}?startTime=XX
 
 Produces: MediaType.APPLICATION_JSON 
 
-granularity: long value
-startTime: unix time (long value)
-endTime: unix time (long value)
+* granularity: long value
+* startTime: unix time (long value)
+* endTime: unix time (long value)
 
 
 ## Count total number of tweets for each `tag` in the interval [startTime, endTime]
@@ -827,9 +828,9 @@ GET `/getIntervalLabelSum/{crisisCode}/{attributeCode}/{granularity}?startTime=X
 
 Produces: MediaType.APPLICATION_JSON 
 
-granularity: long value
-startTime: unix time (long value)
-endTime: unix time (long value)
+* granularity: long value
+* startTime: unix time (long value)
+* endTime: unix time (long value)
 
 
 ## Ping aidr-analytics tag data generator module
