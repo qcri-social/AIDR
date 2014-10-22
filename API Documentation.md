@@ -786,7 +786,7 @@ Response Example:
 * `norminalLabelCode`: code of a label associated with a particular nominal attribute
 
 
-# AIDR Analytics API (aidr-analytics)
+# AIDR Analytics API
 
 Base URI: `http://localhost:port/AIDRAnalytics/rest/analytics`
 
@@ -797,7 +797,6 @@ GET `/getLabelSum/{crisisCode}/{classifierCode}/{granularity}?startTime=XXXX`
 `Content-Type: application/json` 
 
 * granularity: long value
-
 * startTime: unix time (long value) 
 
 
