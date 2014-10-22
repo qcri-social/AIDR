@@ -15,6 +15,6 @@ Used by: AIDR-Manager
 
 Used by: AIDR-Analytics
 
-# tag_data Table
+* tag_data table
 
-![tag_data table description](https://drive.google.com/open?id=0Bxl4ZF-ufVrpVWdBekVBcmZINTg)
+![](https://drive.google.com/file/d/0Bxl4ZF-ufVrpVWdBekVBcmZINTg/view?usp=sharing)
