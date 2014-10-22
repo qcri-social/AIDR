@@ -786,7 +786,7 @@ Response Example:
 * `norminalLabelCode`: code of a label associated with a particular nominal attribute
 
 
-# AIDR Analytics API
+# AIDR Analytics API (aidr-analytics)
 
 Base URI: `http://localhost:port/AIDRAnalytics/rest/analytics`
 
