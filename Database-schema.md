@@ -17,6 +17,7 @@ Used by: AIDR-Analytics
 
 # tag_data Table
 
+`
 +----------------+--------------+------+-----+---------+-------+
 | Field          | Type         | Null | Key | Default | Extra |
 +----------------+--------------+------+-----+---------+-------+
@@ -29,3 +30,4 @@ Used by: AIDR-Analytics
 | max_created_at | bigint(20)   | YES  |     | NULL    |       |
 | min_created_at | bigint(20)   | YES  |     | NULL    |       |
 +----------------+--------------+------+-----+---------+-------+
+`
