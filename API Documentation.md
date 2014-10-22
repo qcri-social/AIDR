@@ -788,7 +788,7 @@ Response Example:
 
 # AIDR Analytics API (aidr-analytics)
 
-Base URI: `http://localhost:port/AIDRAnalytics/rest`
+Base URI: `http://localhost:port/AIDRAnalytics/rest/analytics`
 
 ## For a given `crisisCode` and `attributeCode`, provide the total number of tweets per each `tag` in the time window from `startTime` to current time, for the specified `granularity`
 
