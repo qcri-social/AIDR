@@ -794,7 +794,7 @@ Base URI: `http://localhost:port/AIDRAnalytics/rest/analytics`
 
 GET `/getLabelSum/{crisisCode}/{classifierCode}/{granularity}?startTime=XXXX`
 
-Produces: MediaType.APPLICATION_JSON 
+`Content-Type: application/json` 
 
 * granularity: long value
 
@@ -806,7 +806,7 @@ Produces: MediaType.APPLICATION_JSON
 
 GET `/getLabelCount/{crisisCode}/{attributeCode}/{granularity}?startTime=XXXX`
 
-Produces: MediaType.APPLICATION_JSON 
+`Content-Type: application/json`  
 
 * granularity: long value
 * startTime: unix time (long value)
@@ -815,7 +815,7 @@ Produces: MediaType.APPLICATION_JSON
 
 GET `/getLabelTimeSeries/{crisisCode}/{attributeCode}/{granularity}?startTime=XXXX&endTime=YYYY`
 
-Produces: MediaType.APPLICATION_JSON 
+`Content-Type: application/json`  
 
 * granularity: long value
 * startTime: unix time (long value)
@@ -826,18 +826,18 @@ Produces: MediaType.APPLICATION_JSON
 
 GET `/getIntervalLabelSum/{crisisCode}/{attributeCode}/{granularity}?startTime=XXXX&endTime=YYYY`
 
-Produces: MediaType.APPLICATION_JSON 
+`Content-Type: application/json` 
 
 * granularity: long value
 * startTime: unix time (long value)
 * endTime: unix time (long value)
 
 
-## Ping aidr-analytics tag data generator module
+## Ping aidr-analytics tag statistics data generator module
 
 GET `/ping`
 
-Produces: MediaType.APPLICATION_JSON 
+`Content-Type: application/json` 
 
 `{
      "aidr-analysis/tagData": "RUNNING"
