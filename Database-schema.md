@@ -17,4 +17,4 @@ Used by: AIDR-Analytics
 
 * tag_data table
 
-![](https://drive.google.com/open?id=0Bxl4ZF-ufVrpVWdBekVBcmZINTg&authuser=0)
+![table description](https://drive.google.com/open?id=0Bxl4ZF-ufVrpVWdBekVBcmZINTg)
