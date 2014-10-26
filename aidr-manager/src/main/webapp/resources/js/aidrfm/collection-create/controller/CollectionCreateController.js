@@ -23,6 +23,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 }
             },
 
+/*
             "#collectionCodeInfo": {
                 render: function (infoPanel, eOpts) {
                     var tip = Ext.create('Ext.tip.ToolTip', {
@@ -34,6 +35,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                     });
                 }
             },
+*/
 
             "#collectionkeywordsInfo": {
                 render: function (infoPanel, eOpts) {
@@ -126,12 +128,15 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                      var selectedValue = newValue;
                      if(field.value.length == 0){
                          this.CollectionCreateComponent.langNote.setText('<span class="redInfo">*</span> Note: if you want to use the automatic tagger, it is best that you collect for a specific language.', false);
+                         this.CollectionCreateComponent.langNote.show();
                      }
                      else if(field.value.length > 1){
                          this.CollectionCreateComponent.langNote.setText('<span class="redInfo">*</span> Note: if you want to use the automatic tagger, it is best that you collect for one specific language.', false);
+                         this.CollectionCreateComponent.langNote.show();
                      }
                     else{
                          this.CollectionCreateComponent.langNote.setText('');
+                         this.CollectionCreateComponent.langNote.hide();
                      }
 
                 }
@@ -163,7 +168,6 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                          Ext.getCmp('geoPanel').hide();
                          Ext.getCmp('followPanel').hide();
                          Ext.getCmp('durationDescription').hide();
-                         Ext.getCmp('configurationsL').hide();
                          Ext.getCmp('geoDescription').hide();
                      } else if(newValue === 'Twitter'){
                          Ext.getCmp('keywordsPanel').show();
@@ -171,7 +175,6 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                          Ext.getCmp('geoPanel').show();
                          Ext.getCmp('followPanel').show();
                          Ext.getCmp('durationDescription').show();
-                         Ext.getCmp('configurationsL').show();
                          Ext.getCmp('geoDescription').show();
                      }
                 }
@@ -320,7 +323,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
         v = v.replace(/ /g, '_');
         v = Ext.util.Format.lowercase(v);
 
-        var date = Ext.Date.format(new Date(), "Y-m-");
+        var date = Ext.Date.format(new Date(), "Ymd-hi-");
         date = Ext.util.Format.lowercase(date);
 
         var length = value.length;
@@ -328,7 +331,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
             length = 56;
         }
 
-        var result = date + Ext.util.Format.substr(v, 0, length);
+        var result = date + USER_NAME + '-' + Ext.util.Format.substr(v, 0, length);
         me.isExistForGenerated(result);
     },
 

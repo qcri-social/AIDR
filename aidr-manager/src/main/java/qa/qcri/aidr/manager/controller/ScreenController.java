@@ -105,7 +105,10 @@ public class ScreenController extends BaseController{
     @RequestMapping("protected/collection-create")
     public ModelAndView collectionCreate() throws Exception {
         ModelAndView model = new ModelAndView("collection-create");
+
+        String userName = getAuthenticatedUserName();
         model.addObject("collectionTypes", CollectionType.JSON());
+        model.addObject("userName", userName);
 
         return model;
 

@@ -6,6 +6,7 @@
   <script type="text/javascript" src="<%=request.getContextPath()%>/resources/js/aidrfm/common/lang.js"></script>
   <script type="text/javascript">
       COLLECTION_TYPES = ${collectionTypes};
+      USER_NAME = "${userName}";
   </script>
 </body>
 </html>

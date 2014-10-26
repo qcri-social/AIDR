@@ -782,3 +782,14 @@ End of the tab panel styles
 .pdng-r-0{
     padding-right: 0px !important;
 }
+
+.collapse-style .x-panel-header-text-default {
+    font-size: 14px;
+    color:#444;
+}
+.collapse-style .x-panel-header .x-tool-collapse-top {
+    background-position: 0 -255px;
+}
+.collapse-style .x-tool-expand-bottom {
+    background-position: 0 -240px;
+}
