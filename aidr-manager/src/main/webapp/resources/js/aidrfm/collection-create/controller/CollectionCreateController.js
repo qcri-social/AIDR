@@ -189,52 +189,106 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
     },
 
     saveCollection: function () {
-        var me = this;
-
-        var mask = AIDRFMFunctions.getMask(true, 'Saving collection ...');
-        mask.show();
 
         if (AIDRFMFunctions.mandatoryFieldsEntered()) {
+
             var form = Ext.getCmp('collectionForm').getForm();
+
+            var mask = AIDRFMFunctions.getMask();
+            mask.show();
+
+            //Check if some collection already is running for current user
             Ext.Ajax.request({
-                url: 'collection/save.action',
-                method: 'POST',
+                url: BASE_URL + '/protected/collection/getRunningCollectionStatusByUser.action',
+                method: 'GET',
                 params: {
-                    name: Ext.String.trim( form.findField('name').getValue() ),
-                    code: Ext.String.trim( form.findField('code').getValue() ),
-                    track: Ext.String.trim( form.findField('track').getValue() ),
-                    follow: Ext.String.trim( form.findField('follow').getValue() ),
-                    geo: Ext.String.trim( form.findField('geo').getValue() ),
-                    langFilters: form.findField('langFilters').getValue(),
-                    durationHours: form.findField('durationHours').getValue(),
-                    crisisType: form.findField('crisisType').getValue(),
-                    collectionType: form.findField('collectionType').getValue()
+                    id: USER_ID
                 },
                 headers: {
                     'Accept': 'application/json'
                 },
-                success: function (response) {
-                    AIDRFMFunctions.setAlert("Info", ["Collection created successfully.", "You will be redirected to the collection details page."]);
+                success: function (resp) {
+                    var response = Ext.decode(resp.responseText);
+                    var name = form.findField('name').getValue();
                     mask.hide();
-
-                    var maskRedirect = AIDRFMFunctions.getMask(true, 'Redirecting ...');
-                    maskRedirect.show();
-
-//                    wait for 3 sec to let user read information box
-                    var isFirstRun = true;
-                    Ext.TaskManager.start({
-                        run: function () {
-                            if (!isFirstRun) {
-                                document.location.href = BASE_URL + '/protected/'+ form.findField('code').getValue() +'/collection-details';
-                            }
-                            isFirstRun = false;
-                        },
-                        interval: 3 * 1000
-                    });
+                    if (response.success) {
+                        if (response.data) {
+                            var collectionData = response.data;
+                            var collectionName = collectionData.name;
+                            Ext.MessageBox.confirm('Confirm', 'The collection <b>' + collectionName + '</b> is already running for user <b>' + USER_NAME + '</b>. ' +
+                                'Do you want to stop <b>' + collectionName + '</b>  and start <b>' + name + ' </b>?', function (buttonId) {
+                                if (buttonId === 'yes') {
+                                    //Create collection and run after creating
+                                    createCollection(true)
+                                } else {
+                                    //Create collection without running
+                                    createCollection(false)
+                                }
+                            });
+                        } else {
+                            createCollection(true)
+                        }
+                    } else {
+                        AIDRFMFunctions.setAlert(
+                            "Error",
+                            ['Error while starting Collection .',
+                                'Please try again later or contact Support']
+                        );
+                    }
+                },
+                failure: function () {
+                    mask.hide();
                 }
             });
-        } else {
-            mask.hide();
+
+            /**
+             * Creates collection
+             * @param shouldRun - decides whether run collection after creating. If true then created collection will be
+             * started after creating.
+             */
+            function createCollection(shouldRun) {
+
+                var mask = AIDRFMFunctions.getMask(true, 'Saving collection ...');
+                mask.show();
+
+                Ext.Ajax.request({
+                    url: 'collection/save.action' + (shouldRun ? '?runAfterCreate=true' : ''),
+                    method: 'POST',
+                    params: {
+                        name: Ext.String.trim( form.findField('name').getValue() ),
+                        code: Ext.String.trim( form.findField('code').getValue() ),
+                        track: Ext.String.trim( form.findField('track').getValue() ),
+                        follow: Ext.String.trim( form.findField('follow').getValue() ),
+                        geo: Ext.String.trim( form.findField('geo').getValue() ),
+                        langFilters: form.findField('langFilters').getValue(),
+                        durationHours: form.findField('durationHours').getValue(),
+                        crisisType: form.findField('crisisType').getValue(),
+                        collectionType: form.findField('collectionType').getValue()
+                    },
+                    headers: {
+                        'Accept': 'application/json'
+                    },
+                    success: function (response) {
+                        AIDRFMFunctions.setAlert("Info", ["Collection created successfully.", "You will be redirected to the collection details page."]);
+                        mask.hide();
+
+                        var maskRedirect = AIDRFMFunctions.getMask(true, 'Redirecting ...');
+                        maskRedirect.show();
+
+//                    wait for 3 sec to let user read information box
+                        var isFirstRun = true;
+                        Ext.TaskManager.start({
+                            run: function () {
+                                if (!isFirstRun) {
+                                    document.location.href = BASE_URL + '/protected/'+ form.findField('code').getValue() +'/collection-details';
+                                }
+                                isFirstRun = false;
+                            },
+                            interval: 3 * 1000
+                        });
+                    }
+                });
+            }
         }
     },
 

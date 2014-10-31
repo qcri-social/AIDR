@@ -134,7 +134,6 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             text: 'Edit',
             valueField: 'val',
             displayField: 'label',
-            flex:1,
             store: this.durationStore,
 //            default duration is 2 days (48 hours)
             value: 48

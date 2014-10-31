@@ -109,6 +109,7 @@ public class ScreenController extends BaseController{
         String userName = getAuthenticatedUserName();
         model.addObject("collectionTypes", CollectionType.JSON());
         model.addObject("userName", userName);
+        model.addObject("userId", getAuthenticatedUser().getId());
 
         return model;
 

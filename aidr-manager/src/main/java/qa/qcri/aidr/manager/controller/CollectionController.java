@@ -54,7 +54,11 @@ public class CollectionController extends BaseController{
 
 	@RequestMapping(value = "/save.action", method={RequestMethod.POST})
 	@ResponseBody
-	public Map<String,Object> save(AidrCollection collection) throws Exception {
+	public Map<String,Object> save(
+            AidrCollection collection,
+            @RequestParam(value = "runAfterCreate", defaultValue = "false", required = false)
+            Boolean runAfterCreate) throws Exception {
+
 		logger.info("Save AidrCollection to Database having code : "+collection.getCode());
 		try{
 			UserEntity entity = getAuthenticatedUser();
@@ -75,6 +79,12 @@ public class CollectionController extends BaseController{
 			}
 
 			collectionService.create(collection);
+
+            //Running collection right after creation
+            if (runAfterCreate) {
+                return start(collection.getId());
+            }
+
 			return getUIWrapper(true);  
 		}catch(Exception e){
 			logger.error("Error while saving AidrCollection Info to database", e);
