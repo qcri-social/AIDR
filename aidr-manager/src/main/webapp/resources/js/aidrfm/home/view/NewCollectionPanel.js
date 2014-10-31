@@ -136,7 +136,7 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
                 '</tpl>',
             '{[this.getSharedBy(values.user)]}</div>',
 
-            '<div class="styled-text-14" id="statusField_{id}">{[this.getStatus(values.status)]}' +
+            '<div class="styled-text-14" id="statusField_{id}">{[this.getStatus(values.status, values.collectionType)]}' +
                 '<tpl if="values.status == \'RUNNING\'">'+
                 '&nbsp;&#45;&nbsp; {[this.getDocNumber(values.count)]} {[COLLECTION_TYPES[values.collectionType]["plural"]]} downloaded (since last restart)' +
                 '</tpl>',
@@ -159,8 +159,8 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
                         return "disabled";
                     }
                 },
-                getStatus: function (raw) {
-                    return AIDRFMFunctions.getStatusWithStyle(raw);
+                getStatus: function (raw, collectionType) {
+                    return AIDRFMFunctions.getStatusWithStyle(raw, collectionType);
                 },
                 getLastDoc: function (r) {
                     return r ? '<span class="tweet">' + r + '</span>' : "<span class='na-text'>N/A</span>";

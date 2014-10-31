@@ -32,12 +32,13 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
 
         this.refreshButton = Ext.create('Ext.Button', {
-            text: null,
             height: 32,
-            width: 32,
+            width: 86,
+            text:'Refresh',
             margin: '13 0 0 0',
             tooltip: 'Refresh',
             iconCls: 'refrashIcon',
+            cls:'collection-details-refresh-btn',
             id: 'refreshBtn'
         });
 
@@ -432,7 +433,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<div class="content">',
 
             '<div class="rightColumn">',
-            '<div>Downloaded ' + COLLECTION_TYPES[TYPE]['plural'] + ':</div>',
+            '<div>Collected ' + COLLECTION_TYPES[TYPE]['plural'] + ':</div>',
             '<div>Start date:</div>',
             '<div>End date:</div>',
             '{[this.showGeoLabel(values.geo)]}',
@@ -831,7 +832,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 {
                                     id:'downloadLabel',
                                     width: 220,
-                                    html: 'Downloaded ' + COLLECTION_TYPES[TYPE]['plural'] + ' <br/> (since last re-start):'
+                                    html: 'Collected ' + COLLECTION_TYPES[TYPE]['plural'] + ' <br/> (since last re-start):'
                                 },
                                 this.docCountL
                             ]
@@ -844,7 +845,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 {
                                     id:'totalDownloadLabel',
                                     width: 220,
-                                    text: 'Total downloaded ' + COLLECTION_TYPES[TYPE]['plural'] + ':'
+                                    text: 'Total collected ' + COLLECTION_TYPES[TYPE]['plural'] + ':'
                                 },
                                 this.totalDocCountL
                             ]
@@ -858,7 +859,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 {
                                     id:'lastDownloadLabel',
                                     width: 220,
-                                    text: 'Last downloaded ' + COLLECTION_TYPES[TYPE]['plural'] + ':'
+                                    text: 'Last collected ' + COLLECTION_TYPES[TYPE]['plural'] + ':'
                                 },
                                 this.lastDocL
                             ]

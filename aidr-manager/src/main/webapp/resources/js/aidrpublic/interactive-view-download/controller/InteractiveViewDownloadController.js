@@ -299,16 +299,18 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                     me.mainComponent.suspendLayout = false;
                     me.mainComponent.forceComponentLayout();
                 }
-                me.updateStatusInfo(jsonData.status, jsonData.endDate);                
+
+                me.updateStatusInfo(jsonData.status, jsonData.endDate, jsonData.collectionType);
             }
         });
     },
 
-    updateStatusInfo: function(status, endDate){
+    updateStatusInfo: function(status, endDate, collectionType){
         var statusText = '';
 
         if (status == 'RUNNING-WARNNING' || status == 'RUNNING' || status == 'INITIALIZING'){
-            statusText = '<div class="styled-text">Status: running</div>';
+            var status = AIDRFMFunctions.getStatusWithStyle(status, collectionType);
+            statusText = '<div class="styled-text">Status: <small>' + status +'</small></div>';
         } else {
             if (endDate) {
                 statusText = '<div class="styled-text">This collection is not running since ' + moment(endDate).calendar() +'.</div>';

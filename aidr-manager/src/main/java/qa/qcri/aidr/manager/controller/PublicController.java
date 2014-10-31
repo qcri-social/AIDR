@@ -443,6 +443,7 @@ public class PublicController extends BaseController{
 		dto.setPubliclyListed(collection.getPubliclyListed());
 		dto.setCrisisType(collection.getCrisisType());
 		dto.setHasTaggerOutput(hasTaggerOutput);
+        dto.setCollectionType(collection.getCollectionType());
 
 
 		if(collection.getCrisisType() != null){
