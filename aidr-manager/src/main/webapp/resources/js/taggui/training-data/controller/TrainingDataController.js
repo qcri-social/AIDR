@@ -44,8 +44,8 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        	status = '',
 	        	detailsForModel = '';
 
-	        	if (MODEL_ID && MODEL_ID != 0) {
-	        		status = 'Running';
+	        	if (MODEL_ID) {
+	        		status = AIDRFMFunctions.getStatusWithStyle("RUNNING", TYPE);
 	        		detailsForModel = '<a href="' + BASE_URL +  '/protected/' + CRISIS_CODE + '/' + MODEL_ID + '/model-details">Details of running classifier &raquo;</a>';
 
 	        		Ext.Ajax.request({
@@ -82,7 +82,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        						// var self = this;
 	        						//me.getRetrainingThreshold()
 	        						me.getRetrainingThreshold(totalMessages, count);
-	        						me.mainComponent.taggerDescription.setText('Status: <b>' + status + '</b>. ' +
+	        						me.mainComponent.taggerDescription.setText('Status: <b><small>' + status + '</small></b>. ' +
 	        								'Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ': <b>' + totalMessages + '</b>.&nbsp;' + detailsForModel, false);
 
 
@@ -143,7 +143,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        	        	}
 
 	        			} else {
-	        				AIDRFMFunctions.setAlert("No human tagged "+ COLLECTION_TYPES[TYPE]["plural"] + " present for this classifier.");
+	        				AIDRFMFunctions.setAlert("Info", "No human tagged "+ COLLECTION_TYPES[TYPE]["plural"] + " present for this classifier.");
 	        			}
 	        		}
 	        	});

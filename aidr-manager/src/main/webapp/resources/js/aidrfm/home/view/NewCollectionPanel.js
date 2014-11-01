@@ -138,7 +138,7 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
 
             '<div class="styled-text-14" id="statusField_{id}">{[this.getStatus(values.status, values.collectionType)]}' +
                 '<tpl if="values.status == \'RUNNING\'">'+
-                '&nbsp;&#45;&nbsp; {[this.getDocNumber(values.count)]} {[COLLECTION_TYPES[values.collectionType]["plural"]]} downloaded (since last restart)' +
+                '&nbsp;&#45;&nbsp; {[this.getDocNumber(values.count)]} {[COLLECTION_TYPES[values.collectionType]["plural"]]} collected (since last restart)' +
                 '</tpl>',
             '</div>',
             '<tpl if="values.status == \'RUNNING\'">',
