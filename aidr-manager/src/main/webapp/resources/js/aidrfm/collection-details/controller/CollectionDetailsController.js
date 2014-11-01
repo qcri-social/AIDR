@@ -366,7 +366,10 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 isFirstRun = false;
             },
 //            5 minutes
-            interval: 5 * 60 * 1000
+//            interval: 5 * 60 * 1000,
+
+//            15 seconds
+            interval: 15 * 1000
         });
 
     },
@@ -426,7 +429,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         p.collectionTitle.setText('<b>' + r.name + '</b>', false);
 
-        this.setStatus(r.status);
+        this.setStatus(r.status, r.collectionType);
 
         this.setStartDate(r.startDate);
         this.setEndDate(r.endDate, r.status);
@@ -557,8 +560,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         }
     },
 
-    setStatus: function (raw) {
-        var statusText = AIDRFMFunctions.getStatusWithStyle(raw);
+    setStatus: function (raw, collectionType) {
+        var statusText = AIDRFMFunctions.getStatusWithStyle(raw, collectionType);
 
         if (raw == 'RUNNING-WARNNING' || raw == 'RUNNING' || raw == 'INITIALIZING'){
             console.log('Set status ', raw);
@@ -892,7 +895,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                         var data = resp.data;
 
                         me.DetailsComponent.currentCollection.status = data.status;
-                        me.setStatus(data.status);
+                        me.setStatus(data.status, data.collectionType);
                         me.setStartDate(data.startDate);
                         me.setEndDate(data.endDate, data.status);
                         me.setWillStoppedDate(data.status, data.startDate, data.durationHours);

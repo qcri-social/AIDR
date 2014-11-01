@@ -299,7 +299,6 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
     },
     enableTagger: function(crisisTypeID, code, name) {
 
-        debugger
         if (!crisisTypeID) {
             AIDRFMFunctions.setAlert("Error", "Collection type is not selected. Please select type of the collection and save it.");
             return false;
