@@ -31,8 +31,10 @@ import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
+import qa.qcri.aidr.collector.beans.ResponseWrapperNEW;
 
 import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
+import qa.qcri.aidr.common.values.ReturnCode;
 
 //import java.util.logging.Level;
 //import java.util.logging.Logger;
@@ -61,19 +63,19 @@ public class TwitterCollectorAPI extends Loggable {
     public Response startTask(CollectionTask collectionTask) {
         logger.info("Collection start request received for " + collectionTask.getCollectionCode());
         logger.info("Details:\n" + collectionTask.toString());
-        ResponseWrapper response = new ResponseWrapper();
+        ResponseWrapperNEW response = new ResponseWrapperNEW();
 
         //check if all twitter specific information is available in the request
         if (!collectionTask.isTwitterInfoPresent()) {
-            response.setMessage("One or more Twitter authentication token(s) are missing for " + collectionTask.getCollectionCode());
-            response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
+            response.setDeveloperMessage("One or more Twitter authentication token(s) are missing");
+            response.setReturnCode(getProperty("STATUS_CODE_ERROR"));
             return Response.ok(response).build();
         }
 
         //check if all query parameters are missing in the query
         if (!collectionTask.isToTrackAvailable() && !collectionTask.isToFollowAvailable() && !collectionTask.isGeoLocationAvailable()) {
-            response.setMessage("Missing all [toTrack, toFollow, and geoLocation] fields. At least one field is required.");
-            response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
+            response.setDeveloperMessage("Missing one or more fields (toTrack, toFollow, and geoLocation). At least one field is required");
+            response.setReturnCode(getProperty("STATUS_CODE_ERROR"));
             return Response.ok(response).build();
         }
 
@@ -90,8 +92,8 @@ public class TwitterCollectorAPI extends Loggable {
         if (GenericCache.getInstance().isTwtConfigExists(collectionTask)) {
             String msg = "Provided OAuth configurations already in use. Please stop this collection and then start again.";
             logger.info(collectionTask.getCollectionCode() + ": " + msg);
-            response.setMessage(msg);
-            response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
+            response.setDeveloperMessage(msg);
+            response.setReturnCode(getProperty("STATUS_CODE_ERROR"));
             return Response.ok(response).build();
         }
 
@@ -103,9 +105,9 @@ public class TwitterCollectorAPI extends Loggable {
         try {
             String langFilter = StringUtils.isNotEmpty(collectionTask.getLanguageFilter()) ? collectionTask.getLanguageFilter() : getProperty("LANGUAGE_ALLOWED_ALL");
             queryBuilder = new TwitterStreamQueryBuilder(collectionTask.getToTrack(), collectionTask.getToFollow(), collectionTask.getGeoLocation(), langFilter);
-        } catch (IllegalArgumentException e) {
-            response.setMessage(e.getMessage());
-            response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
+        } catch (Exception e) {
+            response.setDeveloperMessage(e.getMessage());
+            response.setReturnCode(getProperty("STATUS_CODE_ERROR"));
             return Response.ok(response).build();
         }
 
@@ -123,8 +125,9 @@ public class TwitterCollectorAPI extends Loggable {
             startPersister(collectionCode);
         }
 
-        response.setMessage("Initializing connection...");
-        response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
+        response.setUserMessages(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
+        response.setDeveloperMessage(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
+        response.setReturnCode(getProperty("STATUS_CODE_SUCCESS"));
         return Response.ok(response).build();
     }
 
@@ -157,9 +160,9 @@ public class TwitterCollectorAPI extends Loggable {
             return Response.ok(task).build();
         }
 
-        ResponseWrapper response = new ResponseWrapper();
-        response.setMessage("Invalid key. No running collector found for the given id.");
-        response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_NOTFOUND"));
+        ResponseWrapperNEW response = new ResponseWrapperNEW();
+        response.setDeveloperMessage("Invalid key. No running collector found for the given id.");
+        response.setReturnCode(getProperty("STATUS_CODE_ERROR"));
         return Response.ok(response).build();
     }
 
@@ -167,11 +170,11 @@ public class TwitterCollectorAPI extends Loggable {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/status")
     public Response getStatus(@QueryParam("id") String id) {
-        ResponseWrapper response = new ResponseWrapper();
+        ResponseWrapperNEW response = new ResponseWrapperNEW();
         String responseMsg = null;
         if (StringUtils.isEmpty(id)) {
-            response.setMessage("Invalid key. No running collector found for the given id.");
-            response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_NOTFOUND"));
+            response.setDeveloperMessage("Invalid key. No running collector found for the given id.");
+            response.setReturnCode(getProperty("STATUS_CODE_ERROR"));
             return Response.ok(response).build();
         }
         CollectionTask task = GenericCache.getInstance().getConfig(id);
@@ -184,8 +187,8 @@ public class TwitterCollectorAPI extends Loggable {
             return Response.ok(failedTask).build();
         }
 
-        response.setMessage("Invalid key. No running collector found for the given id.");
-        response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_NOTFOUND"));
+        response.setDeveloperMessage("Invalid key. No running collector found for the given id.");
+        response.setReturnCode(getProperty("STATUS_CODE_ERROR"));
         return Response.ok(response).build();
 
     }
