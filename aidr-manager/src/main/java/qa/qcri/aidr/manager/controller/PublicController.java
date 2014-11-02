@@ -53,7 +53,7 @@ public class PublicController extends BaseController{
     @Consumes(MediaType.APPLICATION_JSON)
     @ResponseBody
     public Map<String,Object> update(@RequestBody final String jsonCollection ) throws Exception {
-        logger.info("jsonCollection:" + jsonCollection);
+        logger.info("updateGeo.action JSON:" + jsonCollection);
 
         if(jsonCollection == null){
 
@@ -91,42 +91,64 @@ public class PublicController extends BaseController{
 
 
             CollectionStatus status = dbCollection.getStatus();
+            Date collectionLogEndData ;
+            Date newCollectionEndDate = null;
 
-            if (CollectionStatus.RUNNING_WARNING.equals(status) || CollectionStatus.RUNNING.equals(status)) {
+            if (CollectionStatus.RUNNING_WARNING.equals(status) || CollectionStatus.RUNNING.equals(status) || CollectionStatus.INITIALIZING.equals(status)) {
 
                 //              stop collection
                 AidrCollection collectionAfterStop = collectionService.stopAidrFetcher(dbCollection);
+                collectionLogEndData = collectionAfterStop.getEndDate();
 
-                //              save current state of the collection to collectionLog
-                AidrCollectionLog collectionLog = new AidrCollectionLog();
-                collectionLog.setCount(dbCollection.getCount());
-                collectionLog.setEndDate(collectionAfterStop.getEndDate());
-                collectionLog.setFollow(dbCollection.getFollow());
-                collectionLog.setGeo(dbCollection.getGeo());
-                collectionLog.setLangFilters(dbCollection.getLangFilters());
-                collectionLog.setStartDate(dbCollection.getStartDate());
-                collectionLog.setTrack(dbCollection.getTrack());
-                collectionLog.setCollectionID((int)collectionId);
-                collectionLogService.create(collectionLog);
-
-                dbCollection.setGeo(geoString);
-                // no update on scheduled check on expiration
                 if(updateDuration){
                     Calendar c = Calendar.getInstance();
                     c.setTime(collectionAfterStop.getEndDate());
                     c.add(Calendar.HOUR, (int)durationInHours);
-
-                    dbCollection.setEndDate(c.getTime());
+                    newCollectionEndDate =  c.getTime();
                 }
+            }
+            else{
+                logger.info(String.format("EMSC PublicController update status :  %s.",status.getStatus()));
+                Calendar now = Calendar.getInstance();
+                collectionLogEndData = dbCollection.getEndDate();
 
-                collectionService.update(dbCollection);
+                if(updateDuration){
+                    Calendar c = Calendar.getInstance();
+                    c.setTime(now.getTime());
+                    c.add(Calendar.HOUR, (int)durationInHours);
+                    newCollectionEndDate =  c.getTime();
+                }
+            }
 
-                //              start collection
+            //              save current state of the collection to collectionLog
+            AidrCollectionLog collectionLog = new AidrCollectionLog();
+            collectionLog.setCount(dbCollection.getCount());
+            collectionLog.setEndDate(collectionLogEndData);
+            collectionLog.setFollow(dbCollection.getFollow());
+            collectionLog.setGeo(dbCollection.getGeo());
+            collectionLog.setLangFilters(dbCollection.getLangFilters());
+            collectionLog.setStartDate(dbCollection.getStartDate());
+            collectionLog.setTrack(dbCollection.getTrack());
+            collectionLog.setCollectionID((int)collectionId);
+            collectionLogService.create(collectionLog);
+
+            dbCollection.setGeo(geoString);
+
+            if(updateDuration && newCollectionEndDate != null){
+                dbCollection.setEndDate(newCollectionEndDate);
+            }
+
+            collectionService.update(dbCollection);
+
+            if(!geoString.isEmpty() && geoString != null) {
+                // status
                 collectionService.startFetcher(collectionService.prepareFetcherRequest(dbCollection), dbCollection);
             }
+
             return getUIWrapper(true);
+
         }catch(Exception e){
-            logger.error("Error while Updating AidrCollection  Info into database", e);
+            logger.error(String.format("Exception while Updating AidrCollection :  %s", e));
             return getUIWrapper(false);
         }
     }
