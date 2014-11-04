@@ -299,7 +299,6 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
     },
     enableTagger: function(crisisTypeID, code, name) {
 
-        debugger
         if (!crisisTypeID) {
             AIDRFMFunctions.setAlert("Error", "Collection type is not selected. Please select type of the collection and save it.");
             return false;
@@ -319,7 +318,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
             success: function (response) {
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
-                    document.location.href = BASE_URL + '/protected/home';
+                    document.location.href = BASE_URL + '/protected/' + code + '/tagger-collection-details';
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
                 }
