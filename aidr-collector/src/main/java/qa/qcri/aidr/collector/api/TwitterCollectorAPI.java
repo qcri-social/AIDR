@@ -31,7 +31,7 @@ import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
-import qa.qcri.aidr.collector.beans.ResponseWrapperNEW;
+import qa.qcri.aidr.common.code.ResponseWrapperNEW;
 
 import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
 import qa.qcri.aidr.common.values.ReturnCode;

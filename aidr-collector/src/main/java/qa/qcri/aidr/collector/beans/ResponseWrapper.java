@@ -25,6 +25,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
  })
 @XmlRootElement(name = "responseWrapper")
 @JsonSerialize(include = Inclusion.NON_DEFAULT)
+@Deprecated
 public class ResponseWrapper implements Serializable{
     
     protected String statusCode;
