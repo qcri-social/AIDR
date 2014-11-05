@@ -58,7 +58,7 @@ public class LogThrowable implements ItemInterface, Serializable
 
         if (!stack.isEmpty()) {
             int first;
-            for (first = 0; implementsLoggedInterface(stack.get(first).getClassName()); first++);
+            for (first = 0; implementsItemInterface(stack.get(first).getClassName()); first++);
             trace = stack.subList(first, stack.size()).toArray(new StackTraceElement[stack.size() - first]);
         } else {
             trace = EMPTY_TRACE;
@@ -164,7 +164,7 @@ public class LogThrowable implements ItemInterface, Serializable
         return ((getThrowable() == null) ? delegator : getThrowable());
     }
 
-    public static boolean implementsLoggedInterface(String className) {
+    public static boolean implementsItemInterface(String className) {
         boolean result = false;
 
         try {
@@ -196,7 +196,7 @@ public class LogThrowable implements ItemInterface, Serializable
 
     @Override
     public void log() {
-        if (sourceThrowable == null || !implementsLoggedInterface(sourceThrowable.getClass().getName())) {
+        if (sourceThrowable == null || !implementsItemInterface(sourceThrowable.getClass().getName())) {
             final Logger LOG = Logger.getLogger(delegator.getClass().getName());
             LOG.log(
                     severity.getLog4jLevel(),
