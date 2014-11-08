@@ -19,7 +19,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "responseWrapper", propOrder = {
     "returnCode",
-    "userMessage",
+    "userMessages",
     "developerMessage",
     
  })
