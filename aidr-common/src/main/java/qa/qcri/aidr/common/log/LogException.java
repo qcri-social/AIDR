@@ -15,35 +15,31 @@ public class LogException extends Exception implements ItemInterface {
     public LogException() {
         super();
 
-        loggedThrowable = new LogThrowable(this, null, 0, ItemType.ERROR, false);
+        loggedThrowable = new LogThrowable(this, null, 0);
         loggedThrowable.log();
     }
 
     public LogException(String message) {
-        this(message, 0, ItemType.ERROR, false);
+        this(message, 0);
     }
 
-    public LogException(String message, boolean isRetryable) {
-        this(message, 0, ItemType.ERROR, isRetryable);
-    }
-
-    public LogException(String message, int errorCode, ItemType severity, boolean isRetryable) {
+    public LogException(String message, int errorCode) {
         super(message);
-        loggedThrowable = new LogThrowable(this, null, errorCode, severity, isRetryable);
+        loggedThrowable = new LogThrowable(this, null, errorCode);
         loggedThrowable.log();
     }
 
     public LogException(Throwable throwable) {
-        this(throwable, 0, ItemType.ERROR, false);
+        this(throwable, 0);
     }
 
-    public LogException(Throwable throwable, int errorCode, ItemType severity, boolean retryable) {
+    public LogException(Throwable throwable, int errorCode) {
         super(
                 throwable.getClass().getName() + (throwable.getMessage().isEmpty() ? "" : (": " + throwable.getMessage())),
                 throwable
         );
 
-        loggedThrowable = new LogThrowable(this, throwable, errorCode, severity, retryable);
+        loggedThrowable = new LogThrowable(this, throwable, errorCode);
         loggedThrowable.log();
     }
 
@@ -119,18 +115,8 @@ public class LogException extends Exception implements ItemInterface {
     }
 
     @Override
-    public ItemType getSeverity() {
-        return loggedThrowable.getSeverity();
-    }
-
-    @Override
     public String stackTraceToString() {
         return loggedThrowable.stackTraceToString();
-    }
-
-    @Override
-    public boolean isRetryable() {
-        return loggedThrowable.isRetryable();
     }
 
     @Override

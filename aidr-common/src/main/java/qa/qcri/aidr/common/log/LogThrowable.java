@@ -5,7 +5,11 @@ import org.apache.log4j.Logger;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,10 +36,6 @@ public class LogThrowable implements ItemInterface, Serializable
 
     private final transient	List<LogItem> logDetailsItems	= new Vector<LogItem>();
 
-    private final boolean retryable;
-
-    private final ItemType severity;
-
     private final Throwable sourceThrowable;
 
     private final transient StackTraceElement[] trace;
@@ -44,14 +44,12 @@ public class LogThrowable implements ItemInterface, Serializable
 
     private final int 	exceptionID;
 
-    public LogThrowable(Throwable delegator, Throwable sourceThrowable, int errorCode, ItemType severity, boolean isRetryable) {
+    public LogThrowable(Throwable delegator, Throwable sourceThrowable, int errorCode) {
         super();
 
         this.delegator		 = delegator;
         this.sourceThrowable = sourceThrowable;
         this.errorCode		 = errorCode;
-        this.severity		 = severity;
-        retryable			 = isRetryable;
         exceptionID			 = generateID();
 
         final List<StackTraceElement> stack = new ArrayList<StackTraceElement>(Arrays.asList(getTraceSource().getStackTrace()));
@@ -145,11 +143,6 @@ public class LogThrowable implements ItemInterface, Serializable
     }
 
     @Override
-    public ItemType getSeverity() {
-        return severity;
-    }
-
-    @Override
     public String stackTraceToString() {
         final ByteArrayOutputStream stackTrace = new ByteArrayOutputStream();
         printStackTrace(new PrintWriter(stackTrace, true));
@@ -185,11 +178,6 @@ public class LogThrowable implements ItemInterface, Serializable
         return result;
     }
 
-    @Override
-    public boolean isRetryable() {
-        return retryable;
-    }
-
     private static synchronized int generateID() {
         return nextID++;
     }
@@ -199,7 +187,7 @@ public class LogThrowable implements ItemInterface, Serializable
         if (sourceThrowable == null || !implementsItemInterface(sourceThrowable.getClass().getName())) {
             final Logger LOG = Logger.getLogger(delegator.getClass().getName());
             LOG.log(
-                    severity.getLog4jLevel(),
+                    ItemType.ERROR.getLog4jLevel(),
                     new LogMessage(
                             Integer.toString(exceptionID),
                             errorCode,

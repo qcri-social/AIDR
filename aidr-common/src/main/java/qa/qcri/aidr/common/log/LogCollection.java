@@ -70,7 +70,6 @@ public final class LogCollection {
             Object value = map.get(key);
             logEntry(key, value, indent);
 
-            // Recurse if this entry is a Map or List.
             if (value instanceof Map)
                 logMap((Map)value, indent + 1);
             if (value instanceof List)

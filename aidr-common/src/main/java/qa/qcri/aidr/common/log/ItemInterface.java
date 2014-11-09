@@ -33,11 +33,7 @@ public interface ItemInterface {
 
     int getErrorCode();
 
-    ItemType getSeverity();
-
     String stackTraceToString();
-
-    boolean isRetryable();
 
     void log();
 
