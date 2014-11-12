@@ -25,6 +25,7 @@ public class NominalLabelDTO implements Serializable {
     private Collection<Document> documentCollection;
     private Collection<ModelNominalLabel> modelNominalLabelCollection;
     private Integer nominalAttributeID;
+    private Integer sequence;
 
     public NominalLabelDTO() {
     }
@@ -39,6 +40,15 @@ public class NominalLabelDTO implements Serializable {
         this.name = name;
         this.description = description;
     }
+
+    public NominalLabelDTO(Integer nominalLabelID, String nominalLabelCode, String name, String description, Integer sequence) {
+        this.nominalLabelID = nominalLabelID;
+        this.nominalLabelCode = nominalLabelCode;
+        this.name = name;
+        this.description = description;
+        this.sequence = sequence;
+    }
+
 
     public Integer getNominalLabelID() {
         return nominalLabelID;
@@ -70,6 +80,14 @@ public class NominalLabelDTO implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
     }
 
     @XmlTransient

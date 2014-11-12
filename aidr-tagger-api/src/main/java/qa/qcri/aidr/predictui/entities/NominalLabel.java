@@ -45,12 +45,12 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Table(name = "nominal_label")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "NominalLabel.findAll", query = "SELECT n FROM NominalLabel n"),
+    @NamedQuery(name = "NominalLabel.findAll", query = "SELECT n FROM NominalLabel n ORDER BY n.sequence"),
     @NamedQuery(name = "NominalLabel.findByNominalLabelID", query = "SELECT n FROM NominalLabel n WHERE n.nominalLabelID = :nominalLabelID"),
     @NamedQuery(name = "NominalLabel.findByNominalLabelCode", query = "SELECT n FROM NominalLabel n WHERE n.nominalLabelCode = :nominalLabelCode"),
     @NamedQuery(name = "NominalLabel.findByName", query = "SELECT n FROM NominalLabel n WHERE n.name = :name"),
     @NamedQuery(name = "NominalLabel.findByDescription", query = "SELECT n FROM NominalLabel n WHERE n.description = :description"),
-    @NamedQuery(name = "NominalLabel.findByNominalAttribute", query = "SELECT n FROM NominalLabel n WHERE n.nominalAttribute = :nominalAttribute")})
+    @NamedQuery(name = "NominalLabel.findByNominalAttribute", query = "SELECT n FROM NominalLabel n WHERE n.nominalAttribute = :nominalAttribute ORDER BY n.sequence")})
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class NominalLabel implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -77,7 +77,13 @@ public class NominalLabel implements Serializable {
     @Size(min = 1, max = 600)
     @Column(name = "description")
     @XmlElement private String description;
-    
+
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "sequence")
+    @XmlElement private Integer sequence;
+
+
     @ManyToMany(mappedBy = "nominalLabelCollection")
     @JsonManagedReference
     private Collection<Document> documentCollection;
@@ -103,6 +109,16 @@ public class NominalLabel implements Serializable {
         this.nominalLabelCode = nominalLabelCode;
         this.name = name;
         this.description = description;
+        this.sequence = sequence;
+    }
+
+
+    public NominalLabel(Integer nominalLabelID, String nominalLabelCode, String name, String description, Integer sequence) {
+        this.nominalLabelID = nominalLabelID;
+        this.nominalLabelCode = nominalLabelCode;
+        this.name = name;
+        this.description = description;
+        this.sequence = sequence;
     }
 
     public Integer getNominalLabelID() {
@@ -135,6 +151,14 @@ public class NominalLabel implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
     }
 
     @XmlTransient
