@@ -17,13 +17,15 @@ public class ClientAppDeploymentModel {
     public String clientAppName;
     public int  appType;
     public String appTypeName;
+    public Long platformAppID;
 
-    public ClientAppDeploymentModel(Long deploymentID, Long clientAppID, String choices, String clientAppName, int appType) {
+    public ClientAppDeploymentModel(Long deploymentID, Long clientAppID, String choices, String clientAppName, int appType, Long platformAppID) {
         this.deploymentID = deploymentID;
         this.clientAppID = clientAppID;
         this.choices = choices;
         this.clientAppName = clientAppName;
         this.appType = appType;
+        this.platformAppID = platformAppID;
         this.appTypeName = setAppTypeName(appType);
     }
 
@@ -69,6 +71,14 @@ public class ClientAppDeploymentModel {
 
     public String getAppTypeName() {
         return appTypeName;
+    }
+
+    public Long getPlatformAppID() {
+        return platformAppID;
+    }
+
+    public void setPlatformAppID(Long platformAppID) {
+        this.platformAppID = platformAppID;
     }
 
     public String setAppTypeName(int appType) {

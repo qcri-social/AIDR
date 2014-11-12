@@ -50,6 +50,7 @@ public class CrisisJsonOutput {
                     nominalLabelJsonModel.setNorminalLabelCode(nominalLabel.getNominalLabelCode());
                     nominalLabelJsonModel.setNorminalLabelID(nominalLabel.getNominalLabelID().longValue());
                     nominalLabelJsonModel.setDescription(nominalLabel.getDescription());
+                    nominalLabelJsonModel.setSequence(nominalLabel.getSequence());
                     nominalLabelJsonModelSetTemp.add(nominalLabelJsonModel) ;
 
                 }

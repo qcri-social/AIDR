@@ -48,7 +48,7 @@ public class ClientAppDeploymentController {
             ClientAppAnswer cAns = appAnswerService.getClientAppAnswer(deploy.getClientAppID()) ;
             ClientApp cApp = appService.findClientAppByID("clientAppID", deploy.getClientAppID());
             if(cAns != null && cApp != null){
-                ClientAppDeploymentModel aModel = new ClientAppDeploymentModel(deploy.getDeploymentID(), deploy.getClientAppID(), cAns.getAnswer(), cApp.getName(), cApp.getAppType() );
+                ClientAppDeploymentModel aModel = new ClientAppDeploymentModel(deploy.getDeploymentID(), deploy.getClientAppID(), cAns.getAnswer(), cApp.getName(), cApp.getAppType(), cApp.getPlatformAppID() );
                 return aModel;
             }
         }
@@ -67,7 +67,7 @@ public class ClientAppDeploymentController {
                 ClientAppAnswer cAns = appAnswerService.getClientAppAnswer(c.getClientAppID()) ;
                 ClientApp cApp = appService.findClientAppByID("clientAppID", c.getClientAppID());
                 if(cAns != null && cApp != null){
-                    ClientAppDeploymentModel aModel = new ClientAppDeploymentModel(c.getDeploymentID(), c.getClientAppID(), cAns.getAnswer(), cApp.getName(), cApp.getAppType());
+                    ClientAppDeploymentModel aModel = new ClientAppDeploymentModel(c.getDeploymentID(), c.getClientAppID(), cAns.getAnswer(), cApp.getName(), cApp.getAppType(), cApp.getPlatformAppID());
                     models.add(aModel)  ;
                 }
             }
@@ -89,7 +89,7 @@ public class ClientAppDeploymentController {
                 ClientAppAnswer cAns = appAnswerService.getClientAppAnswer(c.getClientAppID()) ;
                 ClientApp cApp = appService.findClientAppByID("clientAppID", c.getClientAppID());
                 if(cAns != null && cApp != null){
-                    ClientAppDeploymentModel aModel = new ClientAppDeploymentModel(c.getDeploymentID(), c.getClientAppID(), cAns.getAnswer(), cApp.getName(), cApp.getAppType());
+                    ClientAppDeploymentModel aModel = new ClientAppDeploymentModel(c.getDeploymentID(), c.getClientAppID(), cAns.getAnswer(), cApp.getName(), cApp.getAppType(), cApp.getPlatformAppID());
                     models.add(aModel)  ;
                 }
             }

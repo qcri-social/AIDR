@@ -1,14 +1,10 @@
 package qa.qcri.aidr.trainer.api.entity;
 
 import javax.persistence.*;
-
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 import java.io.Serializable;
 
 @Entity
 @Table(catalog = "aidr_predict",name = "nominal_label")
-@JsonIgnoreProperties(ignoreUnknown=true)
 public class NominalLabel implements Serializable {
 
     private static final long serialVersionUID = -5527566248002296042L;
@@ -76,6 +72,14 @@ public class NominalLabel implements Serializable {
         this.nominalAttribute = nominalAttribute;
     }
 
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
+    }
+
     @Id
     @Column(name = "nominalLabelID")
     private Long nominalLabelID;
@@ -91,6 +95,9 @@ public class NominalLabel implements Serializable {
 
     @Column (name = "description", nullable = false)
     private String description;
+
+    @Column (name = "sequence", nullable = false)
+    private Integer sequence;
 
     @ManyToOne
     @JoinColumn(name="nominalAttributeID" ,nullable = false, insertable = false, updatable = false)
