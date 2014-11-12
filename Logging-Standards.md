@@ -40,9 +40,15 @@ where `Foo` is your class name.
 
 ## Log message standards
 
+### When to log
+
+**1. Before throwing an exception, always create a log entry.**
+
+
+
+### What information to include
+
 Log messages automatically have the thread-id, class, and method name. Additionally, your log message should include:
 
 * Collection code (if available), or collection-id (if available)
 * Classifier code/id, Document id, or whatever information in case the collection code is not available.
-
-`Before throwing an exception, always create a log entry.`
