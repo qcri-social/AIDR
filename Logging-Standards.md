@@ -51,7 +51,7 @@ Log messages automatically have the thread-id, class, and method name. Additiona
 
 1. **Before throwing an exception, always create a log entry.**
 
-2. Use warning() for any anomalous condition that _does not interrupt the current operation_, i.e. that still allow users to do what they wanted to do. For instance, if you are writing lines to a file, but had to skip one line because of some formatting error, log a warning. If you received an exception but were able to handle and recover from it, and will continue with the current operation, throw a warning().
+2. Use warning() for any anomalous condition that _does not interrupt the current operation_, i.e. that still allow users to do what they wanted to do. For instance, if you are writing lines to a file, but had to skip one line because of some formatting error, log a warning. If you received an exception but were able to handle and recover from it, and will continue with the current operation, throw a warning.
 
 3. Use error() for any anomalous condition in the system that _interrupts the current operation_, i.e. that prevents users from doing what they wanted to do. For instance, if you are writing to a file, but couldn't open the file, log an error. Please note that errors arising from incorrect user input (e.g. the user tried to create a collection with a name that already exists) do not constitute a system error and don't need to be logged as such.
 
