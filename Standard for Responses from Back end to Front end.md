@@ -6,6 +6,7 @@ All responses from the back-end to the manager front-end should be of this form:
      return_code: STRING mandatory,
      message_for_user: STRING optional,
      details_for_developer: STRING optional,
+     ...
     }
 
 Where return_code can take one of the following 3 values, which are strings:
