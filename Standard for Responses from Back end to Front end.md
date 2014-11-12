@@ -30,8 +30,10 @@ On both WARNING and ERROR, the message must be _specific_. Do not use generic me
 
 # Details for developer
 
-Details for the developer are included in the `details_for_developer` field. These messages are not displayed to the user, but instead must be shown in the Javascript console.
+Details for the developer are included in the `details_for_developer` field. These messages are not displayed to the user, but instead must be shown in the Javascript console.  It should include all the information necessary to understand and locate a problem, and can be arbitrarily long.
 
 On SUCCESS, there must not be a `details_for_developer`.
 
-On WARNING and ERROR, there may be `details_for_developer`, if the message_for_user is not enough for a developer to understand and locate the cause of a problem. These should include all the information necessary and can be arbitrarily long.
+On WARNING, there may be `details_for_developer`, if the message_for_user is not enough for a developer to diagnose a problem.
+
+On ERROR, the `details_for_developer` are mandatory and must always be included.
