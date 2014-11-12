@@ -40,6 +40,13 @@ where `Foo` is your class name.
 
 ## Log message standards
 
+### What information to include
+
+Log messages automatically have the thread-id, class, and method name. Additionally, your log message must include:
+
+* **Collection code** (if available), or collection-id (if available)
+* Classifier code/id, Document id, or whatever information in case the collection code is not available.
+
 ### When to log
 
 1. **Before throwing an exception, always create a log entry.**
@@ -50,11 +57,5 @@ where `Foo` is your class name.
 
 4. Use fatal() for any anomalous condition in the system that _interrupt this and future operations_, i.e. that will prevent this user and future users from doing what they wanted to do. If disk is full, and you need to write to disk, log a fatal exception because it means future users won't be able to do their operations if this continue like this. 
 
-4. Use info() for everything else that is part of the normal operation, e.g. startup messages.
+4. Use info() for everything else that is part of the normal operation, e.g. startup messages, but remember to log _only once per operation_. Don't say info("Opening file ..."), info("Writing to file ..."), info("Closed file ..."). Instead, do info("Wrote to file ...")
 
-### What information to include
-
-Log messages automatically have the thread-id, class, and method name. Additionally, your log message should include:
-
-* Collection code (if available), or collection-id (if available)
-* Classifier code/id, Document id, or whatever information in case the collection code is not available.
