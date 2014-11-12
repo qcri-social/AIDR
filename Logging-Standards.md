@@ -44,11 +44,11 @@ where `Foo` is your class name.
 
 **1. Before throwing an exception, always create a log entry.**
 
-2. Use warning() for any anomalous condition that _does not interrupt an operation_. For instance, if you are writing lines to a file, but had to skip one line because of some formatting error, log a warning.
+2. Use warning() for any anomalous condition that _does not interrupt an operation_, i.e. that still allow users to do what they wanted to do. For instance, if you are writing lines to a file, but had to skip one line because of some formatting error, log a warning.
 
-3. Use error() for any anomalous condition in the system that _interrupts an operation_. For instance, if you are writing to a file, but couldn't open the file, log an error. Please note that errors arising from incorrect user input (e.g. the user tried to create a collection with a name that already exists) could be logged as info() but does not constitute an error().
+3. Use error() for any anomalous condition in the system that _interrupts an operation_, i.e. that prevents users from doing what they wanted to do. For instance, if you are writing to a file, but couldn't open the file, log an error. Please note that errors arising from incorrect user input (e.g. the user tried to create a collection with a name that already exists) do not constitute a system error and don't need to be logged as such.
 
-4. Use info() for everything else that you think would be handy to debug the application in case of failure.
+4. Use info() for everything else that is part of the normal operation, e.g. startup messages.
 
 ### What information to include
 
