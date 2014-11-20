@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import redis.clients.jedis.Jedis;
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.data.Document;
 
@@ -19,7 +20,7 @@ import qa.qcri.aidr.predict.data.Document;
  * 
  * @author jrogstadius
  */
-public abstract class PipelineProcess extends Loggable implements Runnable {
+public abstract class PipelineProcess implements Runnable {
 	
 	private static Logger logger = Logger.getLogger(PipelineProcess.class);
 	private static ErrorLog elog = new ErrorLog();

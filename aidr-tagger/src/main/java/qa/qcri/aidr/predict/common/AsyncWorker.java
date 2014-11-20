@@ -1,5 +1,7 @@
 package qa.qcri.aidr.predict.common;
 
+import org.apache.log4j.Logger;
+
 /**
  * Helper class for running asynchronous operations.
  * 
@@ -7,12 +9,14 @@ package qa.qcri.aidr.predict.common;
  * @param <T>
  *            Input type for the worker function.
  */
-public class AsyncWorker<T> extends Loggable implements Runnable {
+public class AsyncWorker<T> implements Runnable {
     public Function<T> function;
     public T functionArg;
 
     public Event<Object> onCompleted = new Event<Object>();
-
+    
+    private static Logger logger = Logger.getLogger(AsyncWorker.class);
+    
     public AsyncWorker(Function<T> function, T data) {
         this.function = function;
         this.functionArg = data;
@@ -23,7 +27,7 @@ public class AsyncWorker<T> extends Loggable implements Runnable {
             function.execute(functionArg);
             onCompleted.fire(this, null);
         } catch (Exception e) {
-            log("Exception in AsyncTask", e);
+            logger.error("Exception in AsyncTask", e);
         }
     }
 

@@ -2,6 +2,8 @@ package qa.qcri.aidr.predict.common;
 
 import java.util.*;
 
+import org.apache.log4j.Logger;
+
 /**
  * Abstract helper class for event handling based on the subscriber pattern.
  * 
@@ -10,8 +12,10 @@ import java.util.*;
  *            listener.
  * @author jrogstadius
  */
-public class Event<T> extends Loggable {
+public class Event<T>  {
 
+	private static Logger logger = Logger.getLogger(Event.class);
+	
     private boolean disposed = false;
 
     private Vector<Function<EventArgs<T>>> listeners;
@@ -41,7 +45,7 @@ public class Event<T> extends Loggable {
                 try {
                     callback.execute(new EventArgs<T>(source, result));
                 } catch (Exception e) {
-                    log("Exception when firing event", e);
+                    logger.error("Exception when firing event", e);
                 }
             }
         }

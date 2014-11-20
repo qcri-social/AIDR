@@ -1,5 +1,6 @@
 package qa.qcri.aidr.predict.communication;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.classification.DocumentLabel;
 import qa.qcri.aidr.predict.common.*;
@@ -12,7 +13,6 @@ import java.util.*;
 import org.apache.log4j.Logger;
 
 import redis.clients.jedis.Jedis;
-
 import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 /**

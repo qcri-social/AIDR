@@ -12,7 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import qa.qcri.aidr.predict.common.ErrorLog;
+import qa.qcri.aidr.common.logging.ErrorLog;
+
 
 /**
  * A DocumentFeature implementation consisting of a set of words.

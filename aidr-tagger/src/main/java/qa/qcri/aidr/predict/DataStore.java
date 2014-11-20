@@ -26,6 +26,7 @@ import java.util.Properties;
 
 
 
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -35,12 +36,11 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predict.classification.nominal.Model;
 import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
 import qa.qcri.aidr.predict.classification.nominal.ModelNominalLabelPerformance;
-import qa.qcri.aidr.predict.common.ErrorLog;
 import qa.qcri.aidr.predict.common.Helpers;
-import qa.qcri.aidr.predict.common.Loggable;
 import qa.qcri.aidr.predict.common.TaskManagerEntityMapper;
 import qa.qcri.aidr.predict.data.DocumentJSONConverter;
 import qa.qcri.aidr.predict.data.Document;
@@ -61,7 +61,6 @@ import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SparseInstance;
-
 import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 
@@ -71,7 +70,7 @@ import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
  * @author jrogstadius
  * @author koushik
  */
-public class DataStore extends Loggable {
+public class DataStore {
 
 	public static TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager = null;
 

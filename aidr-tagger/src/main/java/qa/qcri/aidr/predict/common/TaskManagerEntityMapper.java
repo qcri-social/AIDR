@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
 import qa.qcri.aidr.predict.dbentities.TaggerDocument;
 import qa.qcri.aidr.predict.dbentities.NominalLabel;

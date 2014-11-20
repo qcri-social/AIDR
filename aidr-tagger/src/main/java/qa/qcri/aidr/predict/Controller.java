@@ -10,9 +10,8 @@ import qa.qcri.aidr.predict.classification.nominal.ModelController;
 import qa.qcri.aidr.predict.common.*;
 import qa.qcri.aidr.predict.communication.*;
 import qa.qcri.aidr.predict.featureextraction.FeatureExtractor;
-
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.redis.LoadShedder;
-
 import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 /**
@@ -22,7 +21,7 @@ import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
  * 
  * @author jrogstadius
  */
-public class Controller extends Loggable {
+public class Controller  {
 
     static HttpInputManager httpInputManager;
     static AidrFetcherJsonInputProcessor aidrInputProcessor;

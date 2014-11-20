@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 
+
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,11 +18,10 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import qa.qcri.aidr.common.redis.LoadShedder;
 import qa.qcri.aidr.predict.DataStore;
-import qa.qcri.aidr.predict.common.Loggable;
+
 import qa.qcri.aidr.predict.common.Serializer;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.data.DocumentJSONConverter;
-
 import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 
@@ -31,8 +32,10 @@ import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
  * 
  * @author jrogstadius
  */
-public class AidrFetcherJsonInputProcessor extends Loggable implements Runnable {
+public class AidrFetcherJsonInputProcessor implements Runnable {
 
+	private static Logger logger = Logger.getLogger(AidrFetcherJsonInputProcessor.class);
+	
 	public static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
 	
 	public AidrFetcherJsonInputProcessor() {
@@ -104,8 +107,8 @@ public class AidrFetcherJsonInputProcessor extends Loggable implements Runnable 
 							}
 						}
 					} catch (Exception e2) {
-						log("Exception when parsing document:", e);
-						log(LogLevel.ERROR, jsonDoc);
+						logger.error("Exception when parsing document:", e);
+						logger.error(jsonDoc);
 					}
 				}
 			}
@@ -122,7 +125,7 @@ public class AidrFetcherJsonInputProcessor extends Loggable implements Runnable 
 			try {
 				jedis.rpush(outputQueueName, Serializer.serialize(doc));
 			} catch (IOException e) {
-				log("Error when serializing input document.", e);
+				logger.error("Error when serializing input document.", e);
 			} finally {
 				DataStore.close(jedis);
 			}
@@ -149,7 +152,7 @@ public class AidrFetcherJsonInputProcessor extends Loggable implements Runnable 
 	public String outputQueueName;
 
 	public void run() {
-		this.setMaxLogWritesPerMinute(2);
+		//this.setMaxLogWritesPerMinute(2);
 
 		while (true) {
 			if (Thread.interrupted())
@@ -165,7 +168,7 @@ public class AidrFetcherJsonInputProcessor extends Loggable implements Runnable 
 				redisLoadShedder.put(inputQueueName, new LoadShedder(Integer.parseInt(getProperty("persister_load_limit")), Integer.parseInt(getProperty("persister_load_check_interval_minutes")), true));
 				Thread.sleep(60000);
 			} catch (Exception e) {
-				log("RedisInputProcessor", e);
+				logger.error("RedisInputProcessor", e);
 			} finally {
 				DataStore.close(redis);
 			}
