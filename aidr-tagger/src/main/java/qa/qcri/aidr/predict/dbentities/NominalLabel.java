@@ -120,10 +120,10 @@ public class NominalLabel implements Serializable {
         return "qa.qcri.aidr.predict.dbentities.NominalLabel[ nominalLabelID=" + nominalLabelID + " ]";
     }
     
-	public static Collection<NominalLabel> toNominalLabelCollection(Collection<qa.qcri.aidr.task.entities.NominalLabel> list) {
+	public static Collection<NominalLabel> toNominalLabelCollection(Collection<qa.qcri.aidr.task.dto.NominalLabelDTO> list) {
 		if (list != null) {
 				Collection<NominalLabel> nominalLabelList = new ArrayList<NominalLabel>();
-				for (qa.qcri.aidr.task.entities.NominalLabel t: list) {
+				for (qa.qcri.aidr.task.dto.NominalLabelDTO t: list) {
 					if (t != null) {
 						NominalLabel nominalLabel  = new NominalLabel(t.getNominalLabelID(), t.getNominalLabelCode(), t.getName(), t.getDescription());
 						nominalLabelList.add(nominalLabel);

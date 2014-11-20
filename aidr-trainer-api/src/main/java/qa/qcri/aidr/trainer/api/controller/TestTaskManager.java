@@ -64,12 +64,11 @@ public class TestTaskManager {
 				System.out.println("Success in connecting to remote EJB to initialize taskManager");
 			}
 			long elapsed = 0L;
-			String jsonString = taskManager.getTaskById(4579257L);
-			if (jsonString != null) {
-				TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
+			qa.qcri.aidr.task.dto.DocumentDTO dto = taskManager.getTaskById(4579257L);
+			if (dto != null) {
 				Document document = null;
 				try {
-					document = mapper.transformDocument(mapper.deSerialize(jsonString, qa.qcri.aidr.task.entities.Document.class));
+					document = Document.toLocalDocument(dto);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

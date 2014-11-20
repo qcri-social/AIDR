@@ -230,7 +230,7 @@ public class TaggerDocument extends Document implements Serializable {
 		return true;
 	}
     
-	public static TaggerDocument toTaggerDocument(qa.qcri.aidr.task.entities.Document document) {
+	public static TaggerDocument toTaggerDocument(qa.qcri.aidr.task.dto.DocumentDTO document) {
 		TaggerDocument doc = new TaggerDocument();
 		if (document != null) {
 				doc.setDocumentID(document.getDocumentID());

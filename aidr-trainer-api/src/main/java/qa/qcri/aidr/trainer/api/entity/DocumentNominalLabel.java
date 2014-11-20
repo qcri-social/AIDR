@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 
 
+
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import java.io.Serializable;
@@ -69,6 +70,22 @@ public class DocumentNominalLabel implements Serializable {
         this.timestamp = timestamp;
     }
 
+	public static DocumentNominalLabel toLocalDocumentNominalLabel(qa.qcri.aidr.task.dto.DocumentNominalLabelDTO doc) {
+		if (doc != null) {
+			DocumentNominalLabel nominalDoc = new DocumentNominalLabel(doc.getDocumentID(), doc.getNominalLabelID(), doc.getUserID());
+			return nominalDoc;
+		}
+		return null;
+	}
+	
+	public static qa.qcri.aidr.task.entities.DocumentNominalLabel toTaskManagerDocumentNominalLabel(DocumentNominalLabel doc) {
+		if (doc != null) {
+			qa.qcri.aidr.task.entities.DocumentNominalLabel nominalDoc = new qa.qcri.aidr.task.entities.DocumentNominalLabel(doc.getDocumentID(), doc.getNominalLabelID(), doc.getUserID());
+			return nominalDoc;
+		}
+		return null;
+	}
+    
     @XmlElement
     @Id
     @Column(name = "documentID")

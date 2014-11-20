@@ -109,8 +109,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 		 */
 		if(taskAnswerList.size() > 0){
 			TaskAnswer taskAnswer = taskAnswerList.get(0);
-			TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-			qa.qcri.aidr.task.entities.TaskAnswer t = mapper.reverseTransformTaskAnswer(taskAnswer);
+			qa.qcri.aidr.task.entities.TaskAnswer t = TaskAnswer.toTaskManagerTaskAnswer(taskAnswer);
 			try {
 				taskManager.insertTaskAnswer(t);
 			} catch (Exception e) {
@@ -159,7 +158,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 				for(int i = 0; i < taskAnswerList.size(); i++){
 					TaskAnswer taskAnswer = taskAnswerList.get(i);
 					//taskAnswerDao.insertTaskAnswer(taskAnswer);
-					qa.qcri.aidr.task.entities.TaskAnswer t = mapper.reverseTransformTaskAnswer(taskAnswer);
+					qa.qcri.aidr.task.entities.TaskAnswer t = TaskAnswer.toTaskManagerTaskAnswer(taskAnswer);
 					try {
 						taskManager.insertTaskAnswer(t);
 					} catch (Exception e) {

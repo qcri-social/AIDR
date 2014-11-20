@@ -28,6 +28,7 @@ public class TaskManagerEntityMapper {
 	
 	public TaskManagerEntityMapper() {}
 
+	@Deprecated
 	public <E> E deSerializeList(String jsonString, TypeReference<E> type) {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(Include.NON_NULL);
@@ -46,6 +47,7 @@ public class TaskManagerEntityMapper {
 		return null;
 	}
 
+	@Deprecated
 	public <E> E deSerialize(String jsonString, Class<E> entityType) {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(Include.NON_NULL);
@@ -63,6 +65,7 @@ public class TaskManagerEntityMapper {
 		return null;
 	}
 
+	@Deprecated
 	public <E> String serializeTask(E task) {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(Include.NON_NULL);

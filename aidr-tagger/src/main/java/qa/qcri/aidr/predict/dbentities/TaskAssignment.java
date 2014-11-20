@@ -68,7 +68,7 @@ public class TaskAssignment implements Serializable {
         return documentID.equals(taskAssignment.documentID);
     }
 
-	public static TaskAssignment toLocalTaskAssignment(qa.qcri.aidr.task.entities.TaskAssignment t) {
+	public static TaskAssignment toLocalTaskAssignment(qa.qcri.aidr.task.dto.TaskAssignmentDTO t) {
 		if (t != null) {
 				TaskAssignment taskAssignment  = new TaskAssignment(t.getDocumentID(), t.getUserID(), t.getAssignedAt());
 				return taskAssignment;
