@@ -14,7 +14,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.google.gson.Gson;
 
-import qa.qcri.aidr.logging.ErrorLog;
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.persister.filter.QueryType;
 import qa.qcri.aidr.persister.filter.ClassifierQueryJsonObject;
 import qa.qcri.aidr.persister.filter.DateQueryJsonObject;

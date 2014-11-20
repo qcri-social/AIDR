@@ -3,7 +3,7 @@ package qa.qcri.aidr.persister.filter;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.logging.ErrorLog;
+import qa.qcri.aidr.common.logging.ErrorLog;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

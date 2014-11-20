@@ -13,8 +13,7 @@ import org.apache.log4j.Logger;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.common.code.ResponseWrapper;
-import qa.qcri.aidr.logging.ErrorLog;
-
+import qa.qcri.aidr.common.logging.ErrorLog;
 import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
 
 public class ResultStatus extends ResponseWrapper {

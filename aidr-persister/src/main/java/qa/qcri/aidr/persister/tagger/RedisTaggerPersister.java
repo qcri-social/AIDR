@@ -6,12 +6,11 @@ package qa.qcri.aidr.persister.tagger;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.logging.ErrorLog;
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.persister.collector.*;
 import qa.qcri.aidr.redis.JedisConnectionPool;
 import qa.qcri.aidr.utils.GenericCache;
 import redis.clients.jedis.Jedis;
-
 import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
 
 /**

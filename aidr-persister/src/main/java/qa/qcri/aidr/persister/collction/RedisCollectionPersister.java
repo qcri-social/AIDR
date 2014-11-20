@@ -5,7 +5,8 @@
 package qa.qcri.aidr.persister.collction;
 
 import org.apache.log4j.Logger;
-import qa.qcri.aidr.logging.ErrorLog;
+
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.redis.JedisConnectionPool;
 import redis.clients.jedis.Jedis;
 
