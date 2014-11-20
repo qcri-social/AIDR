@@ -1,21 +1,18 @@
 package qa.qcri.aidr.collector.redis;
 
-import java.net.SocketException;
 import org.apache.log4j.Logger;
-import qa.qcri.aidr.collector.logging.ErrorLog;
 
-import qa.qcri.aidr.collector.logging.Loggable;
+import qa.qcri.aidr.common.logging.ErrorLog;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-
 import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
 
 /**
  *
  * @author Imran
  */
-public class JedisConnectionPool extends Loggable {
+public class JedisConnectionPool {
 
     private static Logger logger = Logger.getLogger(JedisConnectionPool.class);
     private static ErrorLog elog = new ErrorLog();

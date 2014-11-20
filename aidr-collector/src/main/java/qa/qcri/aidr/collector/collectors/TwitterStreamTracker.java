@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import qa.qcri.aidr.collector.beans.AIDR;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.FetcherResponseToStringChannel;
-import qa.qcri.aidr.collector.logging.Loggable;
+
 import qa.qcri.aidr.collector.redis.JedisConnectionPool;
 import qa.qcri.aidr.collector.utils.GenericCache;
 import qa.qcri.aidr.collector.utils.TwitterStreamQueryBuilder;
@@ -37,7 +37,7 @@ import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
  *
  * @author Imran
  */
-public class TwitterStreamTracker extends Loggable implements Serializable {
+public class TwitterStreamTracker implements Serializable {
 
     private static Logger logger = Logger.getLogger(TwitterStreamTracker.class.getName());
     private static ErrorLog elog = new ErrorLog();

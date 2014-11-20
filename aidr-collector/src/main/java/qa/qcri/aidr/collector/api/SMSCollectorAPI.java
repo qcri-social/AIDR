@@ -7,13 +7,13 @@ package qa.qcri.aidr.collector.api;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.jersey.jackson.JacksonFeature;
+
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.ResponseWrapper;
 import qa.qcri.aidr.collector.beans.SMS;
-import qa.qcri.aidr.collector.logging.ErrorLog;
-import qa.qcri.aidr.collector.logging.Loggable;
 import qa.qcri.aidr.collector.redis.JedisConnectionPool;
 import qa.qcri.aidr.collector.utils.GenericCache;
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.redis.LoadShedder;
 
 import javax.ws.rs.*;
@@ -22,6 +22,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
@@ -35,7 +36,7 @@ import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
  * @author Imran
  */
 @Path("/sms")
-public class SMSCollectorAPI extends Loggable {
+public class SMSCollectorAPI  {
     
     private static Logger logger = Logger.getLogger(SMSCollectorAPI.class.getName());
     private static ErrorLog elog = new ErrorLog();
