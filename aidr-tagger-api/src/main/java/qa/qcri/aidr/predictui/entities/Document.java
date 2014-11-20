@@ -5,8 +5,10 @@
 package qa.qcri.aidr.predictui.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -30,9 +32,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+
+
+
+
 //import org.codehaus.jackson.annotate.JsonBackReference;
 //import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.hibernate.Hibernate;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -150,7 +157,7 @@ public class Document implements Serializable {
         this.doctype = doctype;
         this.data = data;
     }
-
+   
     public Long getDocumentID() {
         return documentID;
     }
@@ -241,16 +248,7 @@ public class Document implements Serializable {
         this.nominalLabelCollection = nominalLabelCollection;
     }
      
-    /* Commented by Koushik
-    public Crisis getCrisis() {
-        return crisis;
-    }
-
-    public void setCrisis(Crisis crisis) {
-        this.crisis = crisis;
-    }
-	*/
-    
+  
     @Override
     public int hashCode() {
         int hash = 0;
@@ -284,5 +282,112 @@ public class Document implements Serializable {
 		this.crisisID = crisisID;
 	}
 
+	
+	public static Document toLocalDocument(qa.qcri.aidr.task.dto.DocumentDTO document) {
+		Document doc = new Document();
+		if (document != null) {
+			Hibernate.initialize(document.getNominalLabelCollection());
+			
+			doc.setDocumentID(document.getDocumentID());
+			
+			doc.setCrisisID(document.getCrisisID());
+			//doc.setCrisis(null);
+			
+			doc.setDoctype(document.getDoctype());
+			doc.setData(document.getData());
+			doc.setIsEvaluationSet(document.getIsEvaluationSet());
+			doc.setGeoFeatures(document.getGeoFeatures());
+			doc.setLanguage(document.getLanguage());
+			doc.setHasHumanLabels(document.getHasHumanLabels());
+
+			doc.setReceivedAt(document.getReceivedAt());
+			//doc.setSourceIP(document.getSourceIP().longValue());
+			doc.setWordFeatures(document.getWordFeatures());
+			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
+	
+			doc.setNominalLabelCollection(NominalLabel.toLocalNominalLabelCollection(document.getNominalLabelCollection()));
+			return doc;
+		} 
+		return null;
+	}
+
+	public static List<Document> toLocalDocumentList(List<qa.qcri.aidr.task.dto.DocumentDTO> documentList) {
+		List<Document> docList = null;
+		if (documentList != null) {
+			docList = new ArrayList<Document>(documentList.size());
+			for (qa.qcri.aidr.task.dto.DocumentDTO document: documentList) {
+					docList.add(toLocalDocument(document));
+			}
+		} 
+		return docList;
+	}
+
+	public static qa.qcri.aidr.task.dto.DocumentDTO toTaskManagerDocumentDTO(Document document) {
+		qa.qcri.aidr.task.dto.DocumentDTO doc = new qa.qcri.aidr.task.dto.DocumentDTO();
+		if (document != null) {
+			doc.setDocumentID(document.getDocumentID());
+			doc.setCrisisID(document.getCrisisID());
+			doc.setDoctype(document.getDoctype());
+			doc.setData(document.getData());
+			doc.setIsEvaluationSet(document.getIsEvaluationSet());
+			doc.setGeoFeatures(document.getGeoFeatures());
+			doc.setLanguage(document.getLanguage());
+			doc.setHasHumanLabels(document.getHasHumanLabels());
+
+			doc.setReceivedAt(document.getReceivedAt());
+			//doc.setSourceIP(document.getSourceIP().intValue());
+			doc.setWordFeatures(document.getWordFeatures());
+			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
+	
+			doc.setNominalLabelCollection(NominalLabel.toTaskManagerNominalLabelDTOCollection(document.getNominalLabelCollection()));
+			return doc;
+		} 
+		return null;
+	}
+
+	public static List<qa.qcri.aidr.task.dto.DocumentDTO> toTaskManagerDocumentDTOList(List<Document> documentList) {
+		List<qa.qcri.aidr.task.dto.DocumentDTO> docList = null;
+		if (documentList != null) {
+			docList = new ArrayList<qa.qcri.aidr.task.dto.DocumentDTO>(documentList.size());
+			for (Document document: documentList) {
+					docList.add(toTaskManagerDocumentDTO(document));
+			}
+		}
+		return docList;
+	}
+	
+	public static qa.qcri.aidr.task.entities.Document toTaskManagerDocument(Document document) {
+		qa.qcri.aidr.task.entities.Document doc = new qa.qcri.aidr.task.entities.Document();
+		if (document != null) {
+			doc.setDocumentID(document.getDocumentID());
+			doc.setCrisisID(document.getCrisisID());
+			doc.setDoctype(document.getDoctype());
+			doc.setData(document.getData());
+			doc.setIsEvaluationSet(document.getIsEvaluationSet());
+			doc.setGeoFeatures(document.getGeoFeatures());
+			doc.setLanguage(document.getLanguage());
+			doc.setHasHumanLabels(document.getHasHumanLabels());
+
+			doc.setReceivedAt(document.getReceivedAt());
+			//doc.setSourceIP(document.getSourceIP().intValue());
+			doc.setWordFeatures(document.getWordFeatures());
+			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
+	
+			doc.setNominalLabelCollection(NominalLabel.toTaskManagerNominalLabelCollection(document.getNominalLabelCollection()));
+			return doc;
+		} 
+		return null;
+	}
+
+	public static List<qa.qcri.aidr.task.entities.Document> toTaskManagerDocumentList(List<Document> documentList) {
+		List<qa.qcri.aidr.task.entities.Document> docList = null;
+		if (documentList != null) {
+			docList = new ArrayList<qa.qcri.aidr.task.entities.Document>(documentList.size());
+			for (Document document: documentList) {
+					docList.add(toTaskManagerDocument(document));
+			}
+		}
+		return docList;
+	}
     
 }

@@ -230,6 +230,50 @@ public class TaggerDocument extends Document implements Serializable {
 		return true;
 	}
     
+	public static TaggerDocument toTaggerDocument(qa.qcri.aidr.task.entities.Document document) {
+		TaggerDocument doc = new TaggerDocument();
+		if (document != null) {
+				doc.setDocumentID(document.getDocumentID());
+				doc.setCrisisID(document.getCrisisID());
+				doc.setDoctype(document.getDoctype());
+				doc.setData(document.getData());
+				doc.setIsEvaluationSet(document.getIsEvaluationSet());
+				doc.setGeoFeatures(document.getGeoFeatures());
+				doc.setLanguage(document.getLanguage());
+				doc.setHasHumanLabels(document.getHasHumanLabels());
+
+				doc.setReceivedAt(document.getReceivedAt());
+				doc.setWordFeatures(document.getWordFeatures());
+				doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
+				
+				doc.setNominalLabelCollection(NominalLabel.toNominalLabelCollection(document.getNominalLabelCollection()));
+				return doc;
+		} 
+		return null;
+	}
+	
+	public static qa.qcri.aidr.task.entities.Document toTaskManagerDocument(TaggerDocument document) {
+		qa.qcri.aidr.task.entities.Document doc = new qa.qcri.aidr.task.entities.Document();
+		if (document != null) {
+				doc.setDocumentID(document.getDocumentID());
+				doc.setCrisisID(document.getCrisisID());
+				doc.setDoctype(document.getDoctype());
+				doc.setData(document.getData());
+				doc.setIsEvaluationSet(document.getIsEvaluationSet());
+				doc.setGeoFeatures(document.getGeoFeatures());
+				doc.setLanguage(document.getLanguage());
+				doc.setHasHumanLabels(document.isHasHumanLabels());
+
+				doc.setReceivedAt(document.getReceivedAt());
+				doc.setWordFeatures(document.getWordFeatures());
+				doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
+
+				doc.setNominalLabelCollection(NominalLabel.toTaskManagerNominalLabelCollection(document.getNominalLabelCollection()));
+				return doc;
+		} 
+		return null;
+	}
+	
 }
 
 

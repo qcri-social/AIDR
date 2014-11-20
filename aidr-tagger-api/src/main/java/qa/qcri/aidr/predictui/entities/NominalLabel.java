@@ -5,6 +5,7 @@
 package qa.qcri.aidr.predictui.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.persistence.Basic;
@@ -27,10 +28,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+
+
 //import org.codehaus.jackson.annotate.JsonBackReference;
 //import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 //import org.codehaus.jackson.annotate.JsonManagedReference;
+
+
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -216,4 +221,45 @@ public class NominalLabel implements Serializable {
         return "qa.qcri.aidr.predictui.entities.NominalLabel[ nominalLabelID=" + nominalLabelID + " ]";
     }
     
+	public static Collection<NominalLabel> toLocalNominalLabelCollection(Collection<qa.qcri.aidr.task.dto.NominalLabelDTO> list) {
+		if (list != null) {
+			Collection<NominalLabel> nominalLabelList = new ArrayList<NominalLabel>();
+			for (qa.qcri.aidr.task.dto.NominalLabelDTO t: list) {
+				if (t != null) {
+					NominalLabel nominalLabel  = new NominalLabel(t.getNominalLabelID(), t.getNominalLabelCode(), t.getName(), t.getDescription());
+					nominalLabelList.add(nominalLabel);
+				}
+			}
+			return nominalLabelList;
+		}
+		return null;
+	}
+
+	public static Collection<qa.qcri.aidr.task.dto.NominalLabelDTO> toTaskManagerNominalLabelDTOCollection(Collection<NominalLabel> list) {
+		if (list != null) {
+			Collection<qa.qcri.aidr.task.dto.NominalLabelDTO> nominalLabelDTOList = new ArrayList<qa.qcri.aidr.task.dto.NominalLabelDTO>();
+			for (NominalLabel t: list) {
+				if (t != null) {
+					qa.qcri.aidr.task.dto.NominalLabelDTO nominalLabelDTO = new qa.qcri.aidr.task.dto.NominalLabelDTO(t.getNominalLabelID(), t.getNominalLabelCode(), t.getName(), t.getDescription());
+					nominalLabelDTOList.add(nominalLabelDTO);
+				}
+			}
+			return nominalLabelDTOList;
+		}
+		return null;
+	}
+	
+	public static Collection<qa.qcri.aidr.task.entities.NominalLabel> toTaskManagerNominalLabelCollection(Collection<NominalLabel> list) {
+		if (list != null) {
+			Collection<qa.qcri.aidr.task.entities.NominalLabel> nominalLabelList = new ArrayList<qa.qcri.aidr.task.entities.NominalLabel>();
+			for (NominalLabel t: list) {
+				if (t != null) {
+					qa.qcri.aidr.task.entities.NominalLabel nominalLabel = new qa.qcri.aidr.task.entities.NominalLabel(t.getNominalLabelID(), t.getNominalLabelCode(), t.getName(), t.getDescription());
+					nominalLabelList.add(nominalLabel);
+				}
+			}
+			return nominalLabelList;
+		}
+		return null;
+	}
 }
