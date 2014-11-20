@@ -43,6 +43,19 @@ public class Users implements Serializable {
         this.name = name;
     }
 
+	public Users() {
+	}
+
+	public Users(Long userID) {
+		this.userID = userID;
+	}
+
+	public Users(Long userID, String name, String role) {
+		this.userID = userID;
+		this.name = name;
+		this.role = role;
+	}
+	
     @Id
     @Column(name = "userID")
     private Long userID;

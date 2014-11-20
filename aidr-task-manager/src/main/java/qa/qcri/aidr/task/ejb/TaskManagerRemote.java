@@ -10,17 +10,13 @@ import org.hibernate.criterion.Criterion;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import qa.qcri.aidr.task.entities.DocumentNominalLabel;
-import qa.qcri.aidr.task.entities.TaskAnswer;
-
-
-
 @Remote
 public interface TaskManagerRemote<T, Serializable> {
 	
 	public Class<T> getClassType();
 	
-	public String getAllTasks();
+	//public String getAllTasks();
+	public List<qa.qcri.aidr.task.dto.DocumentDTO> getAllTasks();
 	
 	public long insertNewTask(T task);
 	public void insertNewTask(List<T> collection);
@@ -42,37 +38,40 @@ public interface TaskManagerRemote<T, Serializable> {
 	public int truncateLabelingTaskBufferForCrisis(final long crisisID, final int maxLength, final int ERROR_MARGIN);
 	
 	public void updateTask(T task);
-	public void updateTask(List<T> collection);
+	public void updateTaskList(List<T> collection);
+	public void updateTask(qa.qcri.aidr.task.dto.DocumentDTO dto);
+	
 	public void taskUpdate(Criterion criterion, String joinType, String joinTable, 
 			  			   String joinColumn, String sortOrder, String[] orderBy);
 	
-	public String getNewTask(Long crisisID);
-	public String getNewTask(Long crisisID, Criterion criterion);
-	public String getNewTaskCollection(Long crisisID, Integer count, String order, Criterion criterion);
+	public qa.qcri.aidr.task.dto.DocumentDTO getNewTask(Long crisisID);
+	public qa.qcri.aidr.task.dto.DocumentDTO getNewTask(Long crisisID, Criterion criterion);
+	public List<qa.qcri.aidr.task.dto.DocumentDTO> getNewTaskCollection(Long crisisID, Integer count, String order, Criterion criterion);
 	public Integer getPendingTaskCountByUser(Long userId);
 	
-	public String getTaskById(Long id);
-	public String getAssignedTasksById(Long id);
-	public String getAssignedTaskByUserId(Long id, Long userId);
+	public qa.qcri.aidr.task.dto.DocumentDTO getTaskById(Long id);
 	
-	public qa.qcri.aidr.task.entities.Document getDocumentById(Long id);
+	public List<qa.qcri.aidr.task.dto.TaskAssignmentDTO> getAssignedTasksById(Long id);
+	public qa.qcri.aidr.task.dto.TaskAssignmentDTO getAssignedTaskByUserId(Long id, Long userId);
 	
-	public String getUserByName(String name);
-	public String getUserById(Long id);
-	public String getAllUserByName(String name);
+	public qa.qcri.aidr.task.dto.DocumentDTO getDocumentById(Long id);
 	
-	public void insertTaskAnswer(TaskAnswer taskAnswer);
+	public qa.qcri.aidr.task.dto.UsersDTO getUserByName(String name);
+	public qa.qcri.aidr.task.dto.UsersDTO getUserById(Long id);
+	public List<qa.qcri.aidr.task.dto.UsersDTO> getAllUserByName(String name);
 	
-	public void saveDocumentNominalLabel(DocumentNominalLabel documentNominalLabel);
-	public boolean foundDuplicateDocumentNominalLabel(DocumentNominalLabel documentNominalLabel);
+	public void insertTaskAnswer(qa.qcri.aidr.task.entities.TaskAnswer taskAnswer);
 	
-	public String getTaskByCriterion(Long crisisID, Criterion criterion);
-	public String getTaskCollectionByCriterion(Long crisisID, Integer count, Criterion criterion);
+	public void saveDocumentNominalLabel(qa.qcri.aidr.task.entities.DocumentNominalLabel documentNominalLabel);
+	public boolean foundDuplicateDocumentNominalLabel(qa.qcri.aidr.task.entities.DocumentNominalLabel documentNominalLabel);
+	
+	public qa.qcri.aidr.task.dto.DocumentDTO getTaskByCriterion(Long crisisID, Criterion criterion);
+	public List<qa.qcri.aidr.task.dto.DocumentDTO> getTaskCollectionByCriterion(Long crisisID, Integer count, Criterion criterion);
 	
 	//public qa.qcri.aidr.task.entities.Document getNewDocumentByCriterion(Long id, Criterion criterion);
 	//public qa.qcri.aidr.task.entities.Document getNewDocumentByCrisisId(Long crisisID);
 	
-	public String setTaskParameter(Class<T> entityType, Long id, Map<String, String> paramMap);
+	public Object setTaskParameter(Class<T> entityType, Long id, Map<String, String> paramMap);
 	
 	public <E> Boolean isTaskAssigned(E task);
 	public <E> Boolean isTaskNew(E task);
@@ -86,7 +85,5 @@ public interface TaskManagerRemote<T, Serializable> {
 	
 	// for testing purpose
 	public String pingRemoteEJB();
-	public String getNewDefaultTask();
 
-	
 }

@@ -17,6 +17,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import qa.qcri.aidr.task.dto.DocumentDTO;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 //import qa.qcri.aidr.task.ejb.bean.TaskManagerBean;
 import qa.qcri.aidr.task.entities.Crisis;
@@ -26,7 +27,7 @@ import qa.qcri.aidr.task.entities.Document;
 public class TestTaskManager {
 
 	//@EJB
-	private TaskManagerRemote<Document, Serializable> taskManager;
+	private TaskManagerRemote<Document, Long> taskManager;
 	public final String jndiLookup = "java:global/AIDRTaskManager/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote";
 	
 	public TestTaskManager() {
@@ -43,9 +44,8 @@ public class TestTaskManager {
 			*/
 			
 			InitialContext ctx = new InitialContext();	// use no-args for glassfish
-			this.taskManager = (TaskManagerRemote<Document, Serializable>) ctx.lookup(jndiLookup);
+			this.taskManager = (TaskManagerRemote<Document, Long>) ctx.lookup(jndiLookup);
 			//String jsonString = taskManager.getNewTask(117L);
-
 			//this.taskManager = (TaskManagerRemote<Document, Serializable>) ctx.lookup("java:global/aidr-task-manager/TaskManagerBean");
 		} catch (NamingException e) {
 			System.err.println("Error in JNDI lookup");
@@ -59,9 +59,10 @@ public class TestTaskManager {
 	public <T> Response test(@QueryParam("id") Long id) {
 		StringBuilder respString = new StringBuilder().append("Fetched new doc = ");
 
-		String jsonString = taskManager.getTaskById((id != null) ? id : new Long(4579254));
-		if (jsonString != null) {
-			respString.append(jsonString);
+		//String jsonString = taskManager.getTaskById((id != null) ? id : new Long(4579254));
+		DocumentDTO doc = taskManager.getTaskById((id != null) ? id : new Long(4579254));
+		if (doc != null) {
+			respString.append(taskManager.serializeTask(doc));
 		} else {
 			respString.append("Error in JNDI lookup");
 		}
@@ -75,9 +76,10 @@ public class TestTaskManager {
 	public <T> Response getNewTask(@QueryParam("id") Long id) {
 		StringBuilder respString = new StringBuilder().append("Fetched new doc = ");
 
-		String jsonString = taskManager.getNewTask(id != null ? id : new Long(117));
-		if (jsonString != null) {
-			respString.append(jsonString);
+		//String jsonString = taskManager.getNewTask(id != null ? id : new Long(117));
+		DocumentDTO doc = taskManager.getNewTask(id != null ? id : new Long(117));
+		if (doc != null) {
+			respString.append(taskManager.serializeTask(doc));
 		} else {
 			respString.append("Error in JNDI lookup");
 		}
@@ -92,7 +94,8 @@ public class TestTaskManager {
 		Map<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("setHasHumanLabels", new Boolean(true).toString());
 		paramMap.put("setCrisisID", new Long(117L).toString());
-		qa.qcri.aidr.task.entities.Document newDoc = taskManager.deSerialize(taskManager.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, (id != null) ? id : new Long(4579250), paramMap), Document.class);
+		//qa.qcri.aidr.task.entities.Document newDoc = taskManager.deSerialize(taskManager.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, (id != null) ? id : new Long(4579250), paramMap), Document.class);
+		qa.qcri.aidr.task.entities.Document newDoc = (qa.qcri.aidr.task.entities.Document) taskManager.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, (id != null) ? id : new Long(4579250), paramMap);
 		if (newDoc != null) {
 			System.out.println("newDoc = " + newDoc.getDocumentID() + ": " + newDoc.getHasHumanLabels());
 			String jsonString = taskManager.serializeTask(newDoc);

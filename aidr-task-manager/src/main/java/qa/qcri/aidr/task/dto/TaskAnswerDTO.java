@@ -1,30 +1,23 @@
-package qa.qcri.aidr.task.entities;
+package qa.qcri.aidr.task.dto;
 
-import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Date;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.io.Serializable;
-import java.util.Date;
-
-/**
- * @author Koushik
- */
-@Entity
-@Table(catalog = "aidr_predict",name = "task_answer")
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class TaskAnswer implements Serializable {
+public class TaskAnswerDTO implements Serializable {
 
-    private static final long serialVersionUID = -5527566248002296042L;
 
-    public TaskAnswer(){
+    public TaskAnswerDTO(){
       // default
     }
 
-    public  TaskAnswer(Long documentID, Long userID, String answer){
+    public  TaskAnswerDTO(Long documentID, Long userID, String answer){
         this.documentID = documentID;
         this.userID = userID;
         this.answer = answer;
@@ -80,31 +73,22 @@ public class TaskAnswer implements Serializable {
         this.taskID = taskID;
     }
 
-
-    @Id
-    @GeneratedValue
-    @Column (name = "taskID")
     @XmlElement
     private Long taskID;
 
     @XmlElement
-    @Column(name = "documentID", nullable = false)
     private Long documentID;
 
     @XmlElement
-    @Column (name = "userID", nullable = false)
     private Long userID;
 
     @XmlElement
-    @Column (name = "answer", nullable = true)
     private String answer;
 
     @XmlElement
-    @Column (name = "timestamp", nullable = false)
     private Date timestamp;
 
     @XmlElement
-    @Column (name = "fromTrustedUser", nullable = false)
     private boolean fromTrustedUser;
 
 
