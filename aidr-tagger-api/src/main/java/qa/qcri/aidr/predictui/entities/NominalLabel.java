@@ -76,8 +76,6 @@ public class NominalLabel implements Serializable {
     @Column(name = "sequence")
     @XmlElement private Integer sequence;
 
-
-    //@ManyToMany(mappedBy = "nominalLabelCollection")
     @Transient
     @JsonManagedReference
     private Collection<Document> documentCollection;
