@@ -86,12 +86,6 @@ public class Document implements Serializable {
   
     @XmlElement private String geoFeatures;
     
-    /*
-    @JoinTable(name = "document_nominal_label", joinColumns = {
-        @JoinColumn(name = "documentID", referencedColumnName = "documentID")}, inverseJoinColumns = {
-        @JoinColumn(name = "nominalLabelID", referencedColumnName = "nominalLabelID")})
-    @ManyToMany
-    */
     @Transient
     @JsonBackReference
     private Collection<NominalLabel> nominalLabelCollection;
