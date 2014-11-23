@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.hibernate.Hibernate;
 
 
 /**
@@ -108,6 +109,29 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 		this.documentID  = documentID;
 		this.hasHumanLabels = hasHumanLabels;
 	}
+	
+	public Document(qa.qcri.aidr.task.dto.DocumentDTO document) {
+		this();
+		if (document != null) {
+			//Hibernate.initialize(document.getNominalLabelCollection());
+			//Hibernate.initialize(document.getTaskAssignment());
+			
+			this.setDocumentID(document.getDocumentID());
+			this.setCrisisID(document.getCrisisID());
+			this.setDoctype(document.getDoctype());
+			this.setData(document.getData());
+			this.setIsEvaluationSet(document.getIsEvaluationSet());
+			this.setGeoFeatures(document.getGeoFeatures());
+			this.setLanguage(document.getLanguage());
+			this.setHasHumanLabels(document.getHasHumanLabels());
+
+			this.setReceivedAt(document.getReceivedAt());
+			
+			this.setWordFeatures(document.getWordFeatures());
+			this.setValueAsTrainingSample(document.getValueAsTrainingSample());
+			this.setTaskAssignment(TaskAssignment.toLocalTaskAssignment(document.getTaskAssignment()));
+		} 
+	}
 
 	public Long getDocumentID() {
 		return documentID;
@@ -150,16 +174,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 		this.crisisID = crisisID;
 	}
 
-	/*
-	public Long getSourceIP() {
-		return sourceIP;
-	}
 
-	public void setSourceIP(Long sourceIP) {
-		this.sourceIP = sourceIP;
-	}
-	*/
-	
 	public Double getValueAsTrainingSample() {
 		return valueAsTrainingSample;
 	}
@@ -230,6 +245,9 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 	public static Document toLocalDocument(qa.qcri.aidr.task.dto.DocumentDTO document) {
 		Document doc = new Document();
 		if (document != null) {
+			//Hibernate.initialize(document.getNominalLabelCollection());
+			//Hibernate.initialize(document.getTaskAssignment());
+			
 			doc.setDocumentID(document.getDocumentID());
 			doc.setCrisisID(document.getCrisisID());
 			doc.setDoctype(document.getDoctype());
@@ -240,12 +258,11 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 			doc.setHasHumanLabels(document.getHasHumanLabels());
 
 			doc.setReceivedAt(document.getReceivedAt());
-			//doc.setSourceIP(document.getSourceIP().longValue());
+	
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
 			doc.setTaskAssignment(TaskAssignment.toLocalTaskAssignment(document.getTaskAssignment()));
 
-			//doc.setNominalLabelCollection(transformNominalLabelCollection(document.getNominalLabelCollection()));
 			return doc;
 		} 
 		return null;
@@ -264,12 +281,11 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 			doc.setHasHumanLabels(document.getHasHumanLabels());
 
 			doc.setReceivedAt(document.getReceivedAt());
-			//doc.setSourceIP(document.getSourceIP().intValue());
+
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
 			doc.setTaskAssignment(TaskAssignment.toTaskManagerTaskAssignment(document.getTaskAssignment()));
 
-			//doc.setNominalLabelCollection(reverseTransformNominalLabelCollection(document.getNominalLabelCollection()));
 			return doc;
 		} 
 		return null;

@@ -76,6 +76,8 @@ public class TestTaskManager {
 				elapsed = System.currentTimeMillis() - startTime;
 				if (document != null) {
 					respString.append("documentID: ").append(document.getDocumentID()).append(", crisisID: ").append(document.getCrisisID());
+					respString.append(", taskAssignment: ").append(document.getTaskAssignment() != null ? document.getTaskAssignment().getDocumentID() : null);
+					respString.append(", nominalLabel size: ").append(document.getNominalLabelCollection() != null ? document.getNominalLabelCollection().size() : 0);
 				} else {
 					respString.append("null");
 				}

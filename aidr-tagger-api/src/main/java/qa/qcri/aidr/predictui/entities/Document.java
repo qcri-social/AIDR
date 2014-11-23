@@ -10,24 +10,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -49,93 +31,44 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  * @author Imran
  */
-@Entity
-@Table(name = "document")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Document.findAll", query = "SELECT d FROM Document d"),
-    @NamedQuery(name = "Document.findByDocumentID", query = "SELECT d FROM Document d WHERE d.documentID = :documentID"),
-    @NamedQuery(name = "Document.findByIsEvaluationSet", query = "SELECT d FROM Document d WHERE d.isEvaluationSet = :isEvaluationSet"),
-    @NamedQuery(name = "Document.findByHasHumanLabels", query = "SELECT d FROM Document d WHERE d.hasHumanLabels = :hasHumanLabels"),
-    @NamedQuery(name = "Document.findByValueAsTrainingSample", query = "SELECT d FROM Document d WHERE d.valueAsTrainingSample = :valueAsTrainingSample"),
-    @NamedQuery(name = "Document.findByReceivedAt", query = "SELECT d FROM Document d WHERE d.receivedAt = :receivedAt"),
-    @NamedQuery(name = "Document.findByLanguage", query = "SELECT d FROM Document d WHERE d.language = :language"),
-    @NamedQuery(name = "Document.findByDoctype", query = "SELECT d FROM Document d WHERE d.doctype = :doctype")})
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Document implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "documentID")
+ 
     @XmlElement private Long documentID;
     
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "isEvaluationSet")
+ 
     @XmlElement private boolean isEvaluationSet;
     
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "hasHumanLabels")
+ 
     @XmlElement private boolean hasHumanLabels;
     
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "valueAsTrainingSample")
+ 
     @XmlElement private double valueAsTrainingSample;
     
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "receivedAt")
-    @Temporal(TemporalType.TIMESTAMP)
+ 
     @XmlElement private Date receivedAt;
     
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 5)
-    @Column(name = "language")
+ 
     @XmlElement private String language;
     
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 20)
-    @Column(name = "doctype")
+  
     @XmlElement private String doctype;
     
-    @Basic(optional = false)
-    @NotNull
-    @Lob
-    @Size(min = 1, max = 65535)
-    @Column(name = "data")
+ 
     @XmlElement private String data;
     
-    @Lob
-    @Size(max = 65535)
-    @Column(name = "wordFeatures")
+ 
     @XmlElement private String wordFeatures;
     
-    @Lob
-    @Size(max = 65535)
-    @Column(name = "geoFeatures")
+  
     @XmlElement private String geoFeatures;
     
-    @JoinTable(name = "document_nominal_label", joinColumns = {
-        @JoinColumn(name = "documentID", referencedColumnName = "documentID")}, inverseJoinColumns = {
-        @JoinColumn(name = "nominalLabelID", referencedColumnName = "nominalLabelID")})
-    @ManyToMany
     @JsonBackReference
     private Collection<NominalLabel> nominalLabelCollection;
     
-    /* Commented by Koushik
-    @JoinColumn(name = "crisisID", referencedColumnName = "crisisID")
-    @ManyToOne(optional = false)
-    @JsonBackReference
-    private Crisis crisis;
-    */
-    
-    // Added by Koushik instead of Crisis
-    @Column (name = "crisisID", nullable = false)
+  
 	@XmlElement private Long crisisID;
     
     public Document() {
@@ -158,6 +91,30 @@ public class Document implements Serializable {
         this.data = data;
     }
    
+    public Document(qa.qcri.aidr.task.dto.DocumentDTO document) {
+    	this();
+    	if (document != null) {
+			Hibernate.initialize(document.getNominalLabelCollection());
+			
+			this.setDocumentID(document.getDocumentID());
+			this.setCrisisID(document.getCrisisID());
+
+			this.setDoctype(document.getDoctype());
+			this.setData(document.getData());
+			this.setIsEvaluationSet(document.getIsEvaluationSet());
+			this.setGeoFeatures(document.getGeoFeatures());
+			this.setLanguage(document.getLanguage());
+			this.setHasHumanLabels(document.getHasHumanLabels());
+
+			this.setReceivedAt(document.getReceivedAt());
+
+			this.setWordFeatures(document.getWordFeatures());
+			this.setValueAsTrainingSample(document.getValueAsTrainingSample());
+	
+			this.setNominalLabelCollection(NominalLabel.toLocalNominalLabelCollection(document.getNominalLabelCollection()));
+		} 
+    }
+    
     public Long getDocumentID() {
         return documentID;
     }
@@ -289,10 +246,8 @@ public class Document implements Serializable {
 			Hibernate.initialize(document.getNominalLabelCollection());
 			
 			doc.setDocumentID(document.getDocumentID());
-			
 			doc.setCrisisID(document.getCrisisID());
-			//doc.setCrisis(null);
-			
+
 			doc.setDoctype(document.getDoctype());
 			doc.setData(document.getData());
 			doc.setIsEvaluationSet(document.getIsEvaluationSet());
@@ -301,7 +256,7 @@ public class Document implements Serializable {
 			doc.setHasHumanLabels(document.getHasHumanLabels());
 
 			doc.setReceivedAt(document.getReceivedAt());
-			//doc.setSourceIP(document.getSourceIP().longValue());
+
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
 	
@@ -335,7 +290,7 @@ public class Document implements Serializable {
 			doc.setHasHumanLabels(document.getHasHumanLabels());
 
 			doc.setReceivedAt(document.getReceivedAt());
-			//doc.setSourceIP(document.getSourceIP().intValue());
+
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
 	
@@ -369,7 +324,7 @@ public class Document implements Serializable {
 			doc.setHasHumanLabels(document.getHasHumanLabels());
 
 			doc.setReceivedAt(document.getReceivedAt());
-			//doc.setSourceIP(document.getSourceIP().intValue());
+
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
 	

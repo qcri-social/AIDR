@@ -49,13 +49,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Entity
 @Table(name = "nominal_label")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "NominalLabel.findAll", query = "SELECT n FROM NominalLabel n ORDER BY n.sequence"),
-    @NamedQuery(name = "NominalLabel.findByNominalLabelID", query = "SELECT n FROM NominalLabel n WHERE n.nominalLabelID = :nominalLabelID"),
-    @NamedQuery(name = "NominalLabel.findByNominalLabelCode", query = "SELECT n FROM NominalLabel n WHERE n.nominalLabelCode = :nominalLabelCode"),
-    @NamedQuery(name = "NominalLabel.findByName", query = "SELECT n FROM NominalLabel n WHERE n.name = :name"),
-    @NamedQuery(name = "NominalLabel.findByDescription", query = "SELECT n FROM NominalLabel n WHERE n.description = :description"),
-    @NamedQuery(name = "NominalLabel.findByNominalAttribute", query = "SELECT n FROM NominalLabel n WHERE n.nominalAttribute = :nominalAttribute ORDER BY n.sequence")})
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class NominalLabel implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -89,7 +82,7 @@ public class NominalLabel implements Serializable {
     @XmlElement private Integer sequence;
 
 
-    @ManyToMany(mappedBy = "nominalLabelCollection")
+    //@ManyToMany(mappedBy = "nominalLabelCollection")
     @JsonManagedReference
     private Collection<Document> documentCollection;
     
