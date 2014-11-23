@@ -110,17 +110,6 @@ public abstract class Document implements java.io.Serializable {
 		return crisisCode;
 	}
 
-	/*
-    @JsonIgnore
-    public void setSourceIP(InetAddress source) {
-        sourceIP = source;
-    }
-
-    @JsonIgnore
-    public InetAddress getSourceIP() {
-        return sourceIP;
-    }
-	 */
 
 	public void addLabel(DocumentLabel label) {
 		labels.add(label);
@@ -192,7 +181,6 @@ public abstract class Document implements java.io.Serializable {
 			document.setReceivedAt(new java.sql.Timestamp(
 					java.util.Calendar.getInstance().getTimeInMillis()));
 			document.setLanguage(doc.getLanguage());
-			//document.setSourceIP(doc.getSourceIP());
 
 			document.setDoctype(doc.getClass().getSimpleName().toString());
 			if (doc.getInputJson() != null) {
@@ -232,8 +220,7 @@ public abstract class Document implements java.io.Serializable {
 			document.humanLabelCount = (doc.hasHumanLabels() == false) ? 0 : 1;
 			document.setCrisisCode(doc.getCrisisCode());
 			document.setLanguage(doc.getLanguage());
-			//document.setSourceIP(doc.getSourceIP());
-
+	
 			WordSet wordSet = new WordSet();
 			String text = doc.getWordFeatures();
 			wordSet.addAll(FeatureExtractor.getWordsInStringWithBigrams(text, false));

@@ -10,27 +10,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -43,65 +24,38 @@ import org.hibernate.Hibernate;
  *
  * @author Imran
  */
-@Entity
-@Table(catalog = "aidr_predict", name = "document")
+//@Entity
+//@Table(catalog = "aidr_predict", name = "document")
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
  public class Document implements Serializable {
 
 	private static final long serialVersionUID = -5527566248002296042L;
 
-	@Id
-	@Column(name = "documentID")
-	private Long documentID;
+	@XmlElement private Long documentID;
 
+	@XmlElement private boolean hasHumanLabels;
 
-	@Column (name = "hasHumanLabels", nullable = false)
-	private boolean hasHumanLabels;
+	@XmlElement private Long crisisID;
 
-	@Column (name = "crisisID", nullable = false)
-	private Long crisisID;
+	@XmlElement private boolean isEvaluationSet;
 
-	@Column (name = "isEvaluationSet", nullable = false)
-	private boolean isEvaluationSet;
+	@XmlElement private Double valueAsTrainingSample;
 
-	/*
-	@Column (name = "sourceIP", nullable = false)
-    private Long sourceIP;
-    */
-	//private Integer sourceIP;
+	@XmlElement private Date receivedAt;
 
-	@Column (name = "valueAsTrainingSample", nullable = false)
-	private Double valueAsTrainingSample;
+	@XmlElement private String language;
 
-	@Column (name = "receivedAt", nullable = false)
-	private Date receivedAt;
+	@XmlElement private String doctype;
 
-	@Column (name = "language", nullable = false)
-	private String language;
+	@XmlElement private String data;
 
-	@Column (name = "doctype", nullable = false)
-	private String doctype;
+	@XmlElement private String wordFeatures;
 
-	@Column (name = "data", nullable = false)
-	private String data;
+	@XmlElement private String geoFeatures;
 
-	@Column (name = "wordFeatures", nullable = false)
-	private String wordFeatures;
-
-	@Column (name = "geoFeatures", nullable = false)
-	private String geoFeatures;
-
-	@OneToOne(cascade=CascadeType.DETACH, fetch=FetchType.LAZY)
-	@JoinColumn(name="documentID",insertable=true,
-	updatable=true,nullable=true,unique=true)
+	@XmlElement 
 	private TaskAssignment taskAssignment;
-
-	@JoinTable(name = "document_nominal_label", joinColumns = {
-			@JoinColumn(name = "documentID", referencedColumnName = "documentID")}, inverseJoinColumns = {
-			@JoinColumn(name = "nominalLabelID", referencedColumnName = "nominalLabelID")})
-	@ManyToMany
-	private Collection<NominalLabel> nominalLabelCollection;
 
 	public Document(){}
 
@@ -231,17 +185,6 @@ import org.hibernate.Hibernate;
 		this.taskAssignment = taskAssignment;
 	}
 	
-	@XmlTransient
-    @JsonIgnore
-    public Collection<NominalLabel> getNominalLabelCollection() {
-        return nominalLabelCollection;
-    }
-
-    public void setNominalLabelCollection(Collection<NominalLabel> nominalLabelCollection) {
-        this.nominalLabelCollection = nominalLabelCollection;
-    }
-
-    
 	public static Document toLocalDocument(qa.qcri.aidr.task.dto.DocumentDTO document) {
 		Document doc = new Document();
 		if (document != null) {

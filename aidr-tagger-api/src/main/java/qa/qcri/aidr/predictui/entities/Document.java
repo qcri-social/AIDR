@@ -10,9 +10,29 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
 
 
 
@@ -31,6 +51,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  * @author Imran
  */
+
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Document implements Serializable {
@@ -47,16 +68,16 @@ public class Document implements Serializable {
  
     @XmlElement private double valueAsTrainingSample;
     
- 
+  
     @XmlElement private Date receivedAt;
     
  
     @XmlElement private String language;
     
-  
+ 
     @XmlElement private String doctype;
     
- 
+  
     @XmlElement private String data;
     
  
@@ -65,11 +86,18 @@ public class Document implements Serializable {
   
     @XmlElement private String geoFeatures;
     
+    /*
+    @JoinTable(name = "document_nominal_label", joinColumns = {
+        @JoinColumn(name = "documentID", referencedColumnName = "documentID")}, inverseJoinColumns = {
+        @JoinColumn(name = "nominalLabelID", referencedColumnName = "nominalLabelID")})
+    @ManyToMany
+    */
+    @Transient
     @JsonBackReference
     private Collection<NominalLabel> nominalLabelCollection;
     
-  
-	@XmlElement private Long crisisID;
+    // Added by Koushik instead of Crisis
+ 	@XmlElement private Long crisisID;
     
     public Document() {
     }
@@ -92,13 +120,13 @@ public class Document implements Serializable {
     }
    
     public Document(qa.qcri.aidr.task.dto.DocumentDTO document) {
-    	this();
+		this();
     	if (document != null) {
 			Hibernate.initialize(document.getNominalLabelCollection());
 			
 			this.setDocumentID(document.getDocumentID());
+			
 			this.setCrisisID(document.getCrisisID());
-
 			this.setDoctype(document.getDoctype());
 			this.setData(document.getData());
 			this.setIsEvaluationSet(document.getIsEvaluationSet());
@@ -107,11 +135,10 @@ public class Document implements Serializable {
 			this.setHasHumanLabels(document.getHasHumanLabels());
 
 			this.setReceivedAt(document.getReceivedAt());
-
 			this.setWordFeatures(document.getWordFeatures());
 			this.setValueAsTrainingSample(document.getValueAsTrainingSample());
 	
-			this.setNominalLabelCollection(NominalLabel.toLocalNominalLabelCollection(document.getNominalLabelCollection()));
+			this.setNominalLabelCollection(toLocalNominalLabelCollection(document.getNominalLabelCollection()));
 		} 
     }
     
@@ -204,7 +231,7 @@ public class Document implements Serializable {
     public void setNominalLabelCollection(Collection<NominalLabel> nominalLabelCollection) {
         this.nominalLabelCollection = nominalLabelCollection;
     }
-     
+    
   
     @Override
     public int hashCode() {
@@ -246,8 +273,8 @@ public class Document implements Serializable {
 			Hibernate.initialize(document.getNominalLabelCollection());
 			
 			doc.setDocumentID(document.getDocumentID());
+			
 			doc.setCrisisID(document.getCrisisID());
-
 			doc.setDoctype(document.getDoctype());
 			doc.setData(document.getData());
 			doc.setIsEvaluationSet(document.getIsEvaluationSet());
@@ -256,11 +283,10 @@ public class Document implements Serializable {
 			doc.setHasHumanLabels(document.getHasHumanLabels());
 
 			doc.setReceivedAt(document.getReceivedAt());
-
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
 	
-			doc.setNominalLabelCollection(NominalLabel.toLocalNominalLabelCollection(document.getNominalLabelCollection()));
+			doc.setNominalLabelCollection(toLocalNominalLabelCollection(document.getNominalLabelCollection()));
 			return doc;
 		} 
 		return null;
@@ -290,11 +316,10 @@ public class Document implements Serializable {
 			doc.setHasHumanLabels(document.getHasHumanLabels());
 
 			doc.setReceivedAt(document.getReceivedAt());
-
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
 	
-			doc.setNominalLabelCollection(NominalLabel.toTaskManagerNominalLabelDTOCollection(document.getNominalLabelCollection()));
+			doc.setNominalLabelCollection(toTaskManagerNominalLabelDTOCollection(document.getNominalLabelCollection()));
 			return doc;
 		} 
 		return null;
@@ -324,11 +349,10 @@ public class Document implements Serializable {
 			doc.setHasHumanLabels(document.getHasHumanLabels());
 
 			doc.setReceivedAt(document.getReceivedAt());
-
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
 	
-			doc.setNominalLabelCollection(NominalLabel.toTaskManagerNominalLabelCollection(document.getNominalLabelCollection()));
+			//doc.setNominalLabelCollection(toTaskManagerNominalLabelCollection(document.getNominalLabelCollection()));
 			return doc;
 		} 
 		return null;
@@ -345,4 +369,46 @@ public class Document implements Serializable {
 		return docList;
 	}
     
+    
+	public static Collection<NominalLabel> toLocalNominalLabelCollection(Collection<qa.qcri.aidr.task.dto.NominalLabelDTO> list) {
+		if (list != null) {
+			Collection<NominalLabel> nominalLabelList = new ArrayList<NominalLabel>();
+			for (qa.qcri.aidr.task.dto.NominalLabelDTO t: list) {
+				if (t != null) {
+					NominalLabel nominalLabel  = new NominalLabel(t.getNominalLabelID(), t.getNominalLabelCode(), t.getName(), t.getDescription());
+					nominalLabelList.add(nominalLabel);
+				}
+			}
+			return nominalLabelList;
+		}
+		return null;
+	}
+
+	public static Collection<qa.qcri.aidr.task.dto.NominalLabelDTO> toTaskManagerNominalLabelDTOCollection(Collection<NominalLabel> list) {
+		if (list != null) {
+			Collection<qa.qcri.aidr.task.dto.NominalLabelDTO> nominalLabelDTOList = new ArrayList<qa.qcri.aidr.task.dto.NominalLabelDTO>();
+			for (NominalLabel t: list) {
+				if (t != null) {
+					qa.qcri.aidr.task.dto.NominalLabelDTO nominalLabelDTO = new qa.qcri.aidr.task.dto.NominalLabelDTO(t.getNominalLabelID(), t.getNominalLabelCode(), t.getName(), t.getDescription());
+					nominalLabelDTOList.add(nominalLabelDTO);
+				}
+			}
+			return nominalLabelDTOList;
+		}
+		return null;
+	}
+	
+	public static Collection<qa.qcri.aidr.task.entities.NominalLabel> toTaskManagerNominalLabelCollection(Collection<NominalLabel> list) {
+		if (list != null) {
+			Collection<qa.qcri.aidr.task.entities.NominalLabel> nominalLabelList = new ArrayList<qa.qcri.aidr.task.entities.NominalLabel>();
+			for (NominalLabel t: list) {
+				if (t != null) {
+					qa.qcri.aidr.task.entities.NominalLabel nominalLabel = new qa.qcri.aidr.task.entities.NominalLabel(t.getNominalLabelID(), t.getNominalLabelCode(), t.getName(), t.getDescription());
+					nominalLabelList.add(nominalLabel);
+				}
+			}
+			return nominalLabelList;
+		}
+		return null;
+	}
 }

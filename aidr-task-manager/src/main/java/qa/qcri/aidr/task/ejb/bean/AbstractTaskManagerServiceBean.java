@@ -7,6 +7,7 @@ import org.hibernate.internal.CriteriaImpl;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.task.ejb.AbstractTaskManagerService;
+import qa.qcri.aidr.task.entities.Document;
 
 import java.io.Serializable;
 import java.util.List;
@@ -68,6 +69,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		}
 	}
 
+	@Override
 	public Session getCurrentSession() {
 		try { 
 			return em.unwrap(Session.class);
@@ -115,6 +117,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public E getByCriteria(Criterion criterion) {
 		try {
 			Criteria criteria = getCurrentSession().createCriteria(entityClass);
@@ -129,6 +132,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public List<E> getAll() {
 		Criteria criteria = getCurrentSession().createCriteria(entityClass);
 		//criteria.setProjection(Projections.distinct(Projections.property("id")));
@@ -143,6 +147,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public List<E> getAllByCriteria(Criterion criterion) {
 		Session session = getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
@@ -158,6 +163,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public List<E> getByCriteriaWithLimit(Criterion criterion, Integer count) {
 		Criteria criteria = getCurrentSession().createCriteria(entityClass);
 		criteria.add(criterion);
@@ -175,11 +181,12 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public List<E> getByCriteriaByOrder(Criterion criterion, String order, String[] orderBy, Integer count) {
 		Criteria criteria = getCurrentSession().createCriteria(entityClass);
 		criteria.add(criterion);
 		for(int i = 0; i< orderBy.length; i++){
-			if (order.equals("desc")) {
+			if (order.equalsIgnoreCase("desc")) {
 				criteria.addOrder(Order.desc(orderBy[i]));
 			} else {
 				criteria.addOrder(Order.asc(orderBy[i]));
@@ -199,6 +206,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public List<E> getByCriteriaWithAliasByOrder(Criterion criterion, String order, String[] orderBy, Integer count, String aliasTable, Criterion aliasCriterion) {
 		Session session = getCurrentSession();
 		logger.info("Entity: " + entityClass + ", current Session = " + session);
@@ -207,7 +215,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		criteria.createAlias(aliasTable, aliasTable, org.hibernate.sql.JoinType.LEFT_OUTER_JOIN).add(aliasCriterion);
 		if (orderBy != null) {
 			for(int i = 0; i< orderBy.length; i++){
-				if (order.equals("desc")) {
+				if (order.equalsIgnoreCase("desc")) {
 					criteria.addOrder(Order.desc(orderBy[i]));
 				} else {
 					criteria.addOrder(Order.asc(orderBy[i]));
@@ -228,6 +236,38 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<E> getByCriteriaWithInnerJoinByOrder(Criterion criterion, String order, String[] orderBy, Integer count, String aliasTable) {
+		Session session = getCurrentSession();
+		logger.info("Entity: " + entityClass + ", current Session = " + session);
+		Criteria criteria = session.createCriteria(entityClass);
+		criteria.add(criterion); 
+		criteria.createAlias(aliasTable, aliasTable, org.hibernate.sql.JoinType.INNER_JOIN);
+		if (orderBy != null) {
+			for(int i = 0; i< orderBy.length; i++){
+				if (order.equalsIgnoreCase("desc")) {
+					criteria.addOrder(Order.desc(orderBy[i]));
+				} else {
+					criteria.addOrder(Order.asc(orderBy[i]));
+				}
+			}
+		}
+		if(count != null){
+			criteria.setMaxResults(count);
+		}
+		//System.out.println("fetched List count = " + (fetchedList != null ? fetchedList.size() : null));
+		try {	
+			List<E> fetchedList = criteria.list();
+			return (fetchedList != null && !fetchedList.isEmpty()) ? (List<E>) fetchedList : null;
+		} catch (Exception e) {
+			logger.error(elog.toStringException(e));
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
 	public void update(E e) {
 		Transaction tx = null;
 		try {
@@ -245,6 +285,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		}
 	}
 
+	@Override
 	public void update(List<E> entityCollection) {
 		Session session = getCurrentSession();
 		Transaction tx = null;
@@ -262,6 +303,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		}
 	}
 
+	@Override
 	public void save(E e) {
 		try {
 			Session session = getCurrentSession();
@@ -277,6 +319,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 
 	}
 
+	@Override
 	public void merge(E e) {
 		try {
 			Session session = getCurrentSession();
@@ -290,6 +333,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 
 	}
 
+	@Override
 	public void merge(List<E> entityCollection) {
 		Session session = getCurrentSession();
 		Transaction tx = null;
@@ -308,6 +352,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 
 	}
 
+	@Override
 	public void save(List<E> entityCollection) {
 		Session session = getCurrentSession();
 		Transaction tx = null;
@@ -325,6 +370,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		}
 	}
 
+	@Override
 	public void delete(E e) {
 		try {
 			Session session = getCurrentSession();
@@ -338,6 +384,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		}
 	}
 
+	@Override
 	public void delete(List<E> entityCollection) {
 		Session session = getCurrentSession();
 		Transaction tx = null;
@@ -356,6 +403,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		}
 	}
 
+	@Override
 	public void deleteByCriteria(Criterion criterion) {
 		try {
 			List<E> entityCollection = getAllByCriteria(criterion);
@@ -380,5 +428,4 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			logger.error(elog.toStringException(e));
 		}
 	}
-
 }

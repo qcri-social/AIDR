@@ -9,7 +9,7 @@
     <class>qa.qcri.aidr.predictui.entities.Users</class>
     <class>qa.qcri.aidr.predictui.entities.Model</class>
     <class>qa.qcri.aidr.predictui.entities.NominalAttribute</class>
-    <!--class>qa.qcri.aidr.predictui.entities.Document</class -->
+    <!-- class>qa.qcri.aidr.predictui.entities.Document</class -->
     <class>qa.qcri.aidr.predictui.entities.ModelNominalLabel</class>
     <class>qa.qcri.aidr.predictui.entities.ModelFamily</class>
     <class>qa.qcri.aidr.predictui.entities.Crisis</class>

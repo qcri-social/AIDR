@@ -64,6 +64,7 @@ public interface TaskManagerRemote<T, Serializable> {
 	
 	public void saveDocumentNominalLabel(qa.qcri.aidr.task.entities.DocumentNominalLabel documentNominalLabel);
 	public boolean foundDuplicateDocumentNominalLabel(qa.qcri.aidr.task.entities.DocumentNominalLabel documentNominalLabel);
+	public List<qa.qcri.aidr.task.dto.DocumentDTO> getNominalLabelDocumentCollection(Integer nominalLabelID);
 	
 	public qa.qcri.aidr.task.dto.DocumentDTO getTaskByCriterion(Long crisisID, Criterion criterion);
 	public List<qa.qcri.aidr.task.dto.DocumentDTO> getTaskCollectionByCriterion(Long crisisID, Integer count, Criterion criterion);

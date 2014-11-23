@@ -5,7 +5,6 @@
 package qa.qcri.aidr.predict.dbentities;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Date;
 
@@ -19,9 +18,6 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.dbentities.NominalLabel;
-import qa.qcri.aidr.predict.dbentities.TaskAssignment;
-
-import com.google.common.net.InetAddresses;
 
 /**
  *
@@ -38,10 +34,6 @@ public class TaggerDocument extends Document implements Serializable {
 
 	@XmlElement
 	private String doctype;
-
-
-	//@XmlElement
-	//private Long sourceIP;
 
 	@XmlElement
 	private boolean hasHumanLabels;

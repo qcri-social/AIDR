@@ -7,6 +7,8 @@ import java.util.List;
 import javax.ejb.Local;
 import javax.persistence.EntityManager;
 
+import org.hibernate.criterion.Criterion;
+
 import qa.qcri.aidr.task.entities.Document;
 
 
@@ -22,4 +24,7 @@ public interface DocumentService extends AbstractTaskManagerService<Document, Lo
     public int deleteStaleDocuments(String joinType, String joinTable, String joinColumn,
 			 					    String sortOrder, String[] orderBy,
 			 					    final String maxTaskAge, final String scanInterval);
+    
+    public List<qa.qcri.aidr.task.entities.Document> getDocumentCollectionForNominalLabel(Criterion criterion);
+
 }

@@ -7,10 +7,15 @@ import javax.ejb.Stateless;
 
 
 
+
+
+
+import org.hibernate.Criteria;
 //import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.Session;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,10 +32,10 @@ import qa.qcri.aidr.task.entities.Document;
  */
 @Stateless(name="DocumentServiceBean")
 public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document, Long> implements DocumentService {
-	
+
 	private Logger logger = LoggerFactory.getLogger(DocumentServiceBean.class);
 	private ErrorLog elog = new ErrorLog();
-	
+
 	public DocumentServiceBean() {
 		super(Document.class);
 	}
@@ -44,16 +49,25 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 		}
 	}
 
+	@Override
+	public List<qa.qcri.aidr.task.entities.Document> getDocumentCollectionForNominalLabel(Criterion criterion) {
+		String aliasTable = "document_nominal_label";
+		String[] orderBy = {"documentID"};
+
+		List<qa.qcri.aidr.task.entities.Document> fetchedList = getByCriteriaWithInnerJoinByOrder(criterion, "ASC", orderBy, null, aliasTable);
+
+		return fetchedList;
+	}
 
 	@Override
 	public int deleteNoLabelDocument(Document document) {
 		if (null == document) { 
 			return 0;
 		}
-		
+
 		logger.info("Received request for : " + document.getDocumentID());
 		int deleteCount = 0;
-		
+
 		if (!document.getHasHumanLabels()) {
 			try {
 				//delete(document);
@@ -74,7 +88,7 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 				logger.info("deletion success, deleted count = " + deleteCount);
 				session.flush();
 				return 1;
-				
+
 			} catch (Exception e) {
 				logger.error("Deletion query failed");
 				logger.error(elog.toStringException(e));
@@ -174,7 +188,7 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 				+ joinColumn + ", " + maxTaskAge + ", " + scanInterval);
 		System.out.println("[deleteStaleDocuments] received request: " + joinType + ", " + joinTable + ", " 
 				+ joinColumn + ", " + maxTaskAge + ", " + scanInterval);
-		
+
 		int deleteCount = 0;
 		Session session = getCurrentSession();
 		StringBuffer hql = new StringBuffer("DELETE d FROM aidr_predict.document d ");
@@ -194,7 +208,7 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 			.append(", t.assignedAt, now()) > ");
 		}
 		hql.append(" :task_expiry_age) ");
-		
+
 		if (orderBy != null) {
 			hql.append(" ORDER BY ");
 			for (int i = 0; i< orderBy.length - 1; i++) {
@@ -205,7 +219,7 @@ public class DocumentServiceBean extends AbstractTaskManagerServiceBean<Document
 				hql.append(sortOrder.toUpperCase()).append(" ; ");
 			}
 		}
-			
+
 		Query deleteQuery = session.createSQLQuery(hql.toString());
 		deleteQuery.setParameter("task_expiry_age", Integer.parseInt(getTimeValue(maxTaskAge)));
 		System.out.println("Constructed query: " + deleteQuery.getQueryString());

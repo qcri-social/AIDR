@@ -541,6 +541,19 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 	@Override
+	public List<qa.qcri.aidr.task.dto.DocumentDTO> getNominalLabelDocumentCollection(Integer nominalLabelID) {
+		Criterion criterion = Restrictions.eq("nominalLabelID", nominalLabelID);
+		try {
+				List<Document> docList =  documentLocalEJB.getDocumentCollectionForNominalLabel(criterion);
+				return DocumentDTOHelper.toDocumentDTOList(docList);
+		} catch (Exception e) {
+			logger.error("Error in finding documents for given criterion: " + criterion.toString());
+			logger.error(elog.toStringException(e));
+		}
+		return null;
+	}
+	
+	@Override
 	public void taskUpdate(Criterion criterion, String joinType, String joinTable,
 			String joinColumn, String sortOrder, String[] orderBy) {
 		// TODO Auto-generated method stub

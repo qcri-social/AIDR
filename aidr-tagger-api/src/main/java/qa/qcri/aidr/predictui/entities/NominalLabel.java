@@ -22,6 +22,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlElement;
@@ -30,10 +31,14 @@ import javax.xml.bind.annotation.XmlTransient;
 
 
 
+
+
 //import org.codehaus.jackson.annotate.JsonBackReference;
 //import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 //import org.codehaus.jackson.annotate.JsonManagedReference;
+
+
 
 
 
@@ -83,6 +88,7 @@ public class NominalLabel implements Serializable {
 
 
     //@ManyToMany(mappedBy = "nominalLabelCollection")
+    @Transient
     @JsonManagedReference
     private Collection<Document> documentCollection;
     
@@ -158,7 +164,7 @@ public class NominalLabel implements Serializable {
     public void setSequence(Integer sequence) {
         this.sequence = sequence;
     }
-
+    
     @XmlTransient
     @JsonIgnore
     public Collection<Document> getDocumentCollection() {
@@ -168,7 +174,7 @@ public class NominalLabel implements Serializable {
     public void setDocumentCollection(Collection<Document> documentCollection) {
         this.documentCollection = documentCollection;
     }
-
+    
     @XmlTransient
     @JsonIgnore
     public Collection<ModelNominalLabel> getModelNominalLabelCollection() {
