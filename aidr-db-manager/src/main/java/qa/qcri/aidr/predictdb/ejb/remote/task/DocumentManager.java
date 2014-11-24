@@ -10,5 +10,5 @@ import qa.qcri.aidr.predictdb.dto.DocumentDTO;
  * To change this template use File | Settings | File Templates.
  */
 public interface DocumentManager {
-    public DocumentDTO getDocumentById(Long id);
+    public DocumentDTO getDocumentById(Long id) throws Exception;
 }

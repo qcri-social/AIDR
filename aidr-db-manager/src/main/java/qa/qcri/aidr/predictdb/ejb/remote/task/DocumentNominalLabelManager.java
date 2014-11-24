@@ -13,8 +13,8 @@ import java.util.List;
  */
 public interface DocumentNominalLabelManager {
 
-    public void saveDocumentNominalLabel(DocumentNominalLabel documentNominalLabel);
-    public boolean foundDuplicateDocumentNominalLabel(DocumentNominalLabel documentNominalLabel);
-    public List<DocumentDTO> getNominalLabelDocumentCollection(Integer nominalLabelID);
+    public void saveDocumentNominalLabel(DocumentNominalLabel documentNominalLabel) throws Exception;
+    public boolean foundDuplicateDocumentNominalLabel(DocumentNominalLabel documentNominalLabel) throws Exception;
+    public List<DocumentDTO> getNominalLabelDocumentCollection(Integer nominalLabelID) throws Exception;
 
 }
