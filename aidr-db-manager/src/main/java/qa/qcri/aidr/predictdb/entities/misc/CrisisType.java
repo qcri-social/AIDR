@@ -20,7 +20,7 @@ import javax.persistence.Table;
 @Table(name = "crisis_type", catalog = "aidr_predict")
 public class CrisisType implements java.io.Serializable {
 
-	private Integer crisisTypeId;
+	private Long crisisTypeId;
 	private String name;
 	private Set crisises = new HashSet(0);
 

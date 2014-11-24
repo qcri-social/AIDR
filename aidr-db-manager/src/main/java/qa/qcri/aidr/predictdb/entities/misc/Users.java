@@ -22,7 +22,7 @@ import javax.persistence.UniqueConstraint;
 @Table(name = "users", catalog = "aidr_predict", uniqueConstraints = @UniqueConstraint(columnNames = "name"))
 public class Users implements java.io.Serializable {
 
-	private Integer userId;
+	private Long userId;
 	private String name;
 	private String role;
 	private Set nominalAttributes = new HashSet(0);
@@ -46,11 +46,11 @@ public class Users implements java.io.Serializable {
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "userID", unique = true, nullable = false)
-	public Integer getUserId() {
+	public Long getUserId() {
 		return this.userId;
 	}
 
-	public void setUserId(Integer userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 

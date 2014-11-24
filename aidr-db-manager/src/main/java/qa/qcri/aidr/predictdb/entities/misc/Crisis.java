@@ -24,7 +24,7 @@ import javax.persistence.UniqueConstraint;
 @Table(name = "crisis", catalog = "aidr_predict", uniqueConstraints = @UniqueConstraint(columnNames = "code"))
 public class Crisis implements java.io.Serializable {
 
-	private Integer crisisId;
+	private Long crisisId;
 	private Users users;
 	private CrisisType crisisType;
 	private String name;
