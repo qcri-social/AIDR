@@ -1,9 +1,15 @@
 package qa.qcri.aidr.predictdb.dto;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import qa.qcri.aidr.predictdb.entities.misc.CrisisType;
+import qa.qcri.aidr.predictdb.entities.model.ModelFamily;
+import qa.qcri.aidr.predictdb.entities.model.NominalAttribute;
+import qa.qcri.aidr.predictdb.entities.task.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -12,6 +18,34 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class CrisisDTO implements Serializable {
 
+	@XmlElement
+	private Long crisisID;
+
+	@XmlElement
+	private String name;
+
+	@XmlElement
+	private CrisisTypeDTO crisisTypeDTO;
+
+	@XmlElement
+	private String code;
+
+	@XmlElement
+	private Long userID;
+	
+	@XmlElement
+	private boolean isTrashed;
+	
+	@XmlElement
+	private List<NominalAttributeDTO> nominalAttributesDTO;
+	
+	@XmlElement
+	private List<DocumentDTO> documentsDTO;
+	
+	@XmlElement
+	private List<ModelFamilyDTO> modelFamiliesDTO;
+
+	
 	public CrisisDTO(){}
 
 	public Long getCrisisID() {
@@ -30,12 +64,12 @@ public class CrisisDTO implements Serializable {
 		this.name = name;
 	}
 
-	public Long getCrisisTypeID() {
-		return crisisTypeID;
+	public CrisisTypeDTO getCrisisTypeDTO() {
+		return crisisTypeDTO;
 	}
 
-	public void setCrisisTypeID(Long crisisTypeID) {
-		this.crisisTypeID = crisisTypeID;
+	public void setCrisisTypeDTO(CrisisTypeDTO crisisTypeDTO) {
+		this.crisisTypeDTO = crisisTypeDTO;
 	}
 
 	public String getCode() {
@@ -54,20 +88,21 @@ public class CrisisDTO implements Serializable {
 		this.userID = userID;
 	}
 
-	@XmlElement
-	private Long crisisID;
+	public boolean isIsTrashed() {
+		return this.isTrashed;
+	}
 
-	@XmlElement
-	private String name;
+	public void setIsTrashed(boolean isTrashed) {
+		this.isTrashed = isTrashed;
+	}
+	
+	public List<NominalAttributeDTO> getNominalAttributesDTO() {
+		return this.nominalAttributesDTO;
+	}
 
-	@XmlElement
-	private Long crisisTypeID;
-
-	@XmlElement
-	private String code;
-
-	@XmlElement
-	private Long userID;
+	public void setNominalAttributesDTO(List<NominalAttributeDTO> nominalAttributesDTO) {
+		this.nominalAttributesDTO = nominalAttributesDTO;
+	}
 
 }
 
