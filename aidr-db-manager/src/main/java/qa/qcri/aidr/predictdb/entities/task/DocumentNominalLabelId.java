@@ -11,47 +11,52 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class DocumentNominalLabelId implements java.io.Serializable {
 
-	private long documentId;
-	private int nominalLabelId;
-	private int userId;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 236089192979257510L;
+	private Long documentId;
+	private Long nominalLabelId;
+	private Long userId;
 
 	public DocumentNominalLabelId() {
 	}
 
-	public DocumentNominalLabelId(long documentId, int nominalLabelId,
-			int userId) {
+	public DocumentNominalLabelId(Long documentId, Long nominalLabelId,
+			Long userId) {
 		this.documentId = documentId;
 		this.nominalLabelId = nominalLabelId;
 		this.userId = userId;
 	}
 
 	@Column(name = "documentID", nullable = false)
-	public long getDocumentId() {
+	public Long getDocumentId() {
 		return this.documentId;
 	}
 
-	public void setDocumentId(long documentId) {
+	public void setDocumentId(Long documentId) {
 		this.documentId = documentId;
 	}
 
 	@Column(name = "nominalLabelID", nullable = false)
-	public int getNominalLabelId() {
+	public Long getNominalLabelId() {
 		return this.nominalLabelId;
 	}
 
-	public void setNominalLabelId(int nominalLabelId) {
+	public void setNominalLabelId(Long nominalLabelId) {
 		this.nominalLabelId = nominalLabelId;
 	}
 
 	@Column(name = "userID", nullable = false)
-	public int getUserId() {
+	public Long getUserId() {
 		return this.userId;
 	}
 
-	public void setUserId(int userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 
+	@Override
 	public boolean equals(Object other) {
 		if ((this == other))
 			return true;
@@ -66,12 +71,13 @@ public class DocumentNominalLabelId implements java.io.Serializable {
 				&& (this.getUserId() == castOther.getUserId());
 	}
 
+	@Override
 	public int hashCode() {
 		int result = 17;
 
-		result = 37 * result + (int) this.getDocumentId();
-		result = 37 * result + this.getNominalLabelId();
-		result = 37 * result + this.getUserId();
+		result = 37 * result + this.getDocumentId().intValue();
+		result = 37 * result + this.getNominalLabelId().intValue();
+		result = 37 * result + this.getUserId().intValue();
 		return result;
 	}
 

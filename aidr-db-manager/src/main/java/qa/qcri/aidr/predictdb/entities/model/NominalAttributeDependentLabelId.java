@@ -11,36 +11,37 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class NominalAttributeDependentLabelId implements java.io.Serializable {
 
-	private int nominalAttributeId;
-	private int nominalLabelId;
+	private Long nominalAttributeId;
+	private Long nominalLabelId;
 
 	public NominalAttributeDependentLabelId() {
 	}
 
-	public NominalAttributeDependentLabelId(int nominalAttributeId,
-			int nominalLabelId) {
+	public NominalAttributeDependentLabelId(Long nominalAttributeId,
+			Long nominalLabelId) {
 		this.nominalAttributeId = nominalAttributeId;
 		this.nominalLabelId = nominalLabelId;
 	}
 
 	@Column(name = "nominalAttributeID", nullable = false)
-	public int getNominalAttributeId() {
+	public Long getNominalAttributeId() {
 		return this.nominalAttributeId;
 	}
 
-	public void setNominalAttributeId(int nominalAttributeId) {
+	public void setNominalAttributeId(Long nominalAttributeId) {
 		this.nominalAttributeId = nominalAttributeId;
 	}
 
 	@Column(name = "nominalLabelID", nullable = false)
-	public int getNominalLabelId() {
+	public Long getNominalLabelId() {
 		return this.nominalLabelId;
 	}
 
-	public void setNominalLabelId(int nominalLabelId) {
+	public void setNominalLabelId(Long nominalLabelId) {
 		this.nominalLabelId = nominalLabelId;
 	}
 
+	@Override
 	public boolean equals(Object other) {
 		if ((this == other))
 			return true;
@@ -55,11 +56,12 @@ public class NominalAttributeDependentLabelId implements java.io.Serializable {
 				&& (this.getNominalLabelId() == castOther.getNominalLabelId());
 	}
 
+	@Override
 	public int hashCode() {
 		int result = 17;
 
-		result = 37 * result + this.getNominalAttributeId();
-		result = 37 * result + this.getNominalLabelId();
+		result = 37 * result + this.getNominalAttributeId().intValue();
+		result = 37 * result + this.getNominalLabelId().intValue();
 		return result;
 	}
 

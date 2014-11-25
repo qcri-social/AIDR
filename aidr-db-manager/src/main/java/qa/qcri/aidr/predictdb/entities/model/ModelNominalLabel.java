@@ -19,6 +19,10 @@ import javax.persistence.Table;
 @Table(name = "model_nominal_label", catalog = "aidr_predict")
 public class ModelNominalLabel implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1454244707175228621L;
 	private ModelNominalLabelId id;
 	private NominalLabel nominalLabel;
 	private Model model;

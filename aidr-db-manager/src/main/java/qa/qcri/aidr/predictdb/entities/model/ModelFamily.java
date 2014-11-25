@@ -25,7 +25,11 @@ import qa.qcri.aidr.predictdb.entities.misc.Crisis;
 		"crisisID", "nominalAttributeID" }))
 public class ModelFamily implements java.io.Serializable {
 
-	private Integer modelFamilyId;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1064917491408243168L;
+	private Long modelFamilyId;
 	private NominalAttribute nominalAttribute;
 	private Crisis crisis;
 	private boolean isActive;
@@ -43,11 +47,11 @@ public class ModelFamily implements java.io.Serializable {
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "modelFamilyID", unique = true, nullable = false)
-	public Integer getModelFamilyId() {
+	public Long getModelFamilyId() {
 		return this.modelFamilyId;
 	}
 
-	public void setModelFamilyId(Integer modelFamilyId) {
+	public void setModelFamilyId(Long modelFamilyId) {
 		this.modelFamilyId = modelFamilyId;
 	}
 

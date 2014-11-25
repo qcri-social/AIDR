@@ -11,25 +11,29 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class NominalLabelEvaluationDataId implements java.io.Serializable {
 
-	private long documentId;
-	private int crisisId;
-	private int nominalLabelId;
-	private int nominalAttributeId;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6826560258449521693L;
+	private Long documentId;
+	private Long crisisId;
+	private Long nominalLabelId;
+	private Long nominalAttributeId;
 	private String wordFeatures;
 
 	public NominalLabelEvaluationDataId() {
 	}
 
-	public NominalLabelEvaluationDataId(long documentId, int crisisId,
-			int nominalLabelId, int nominalAttributeId) {
+	public NominalLabelEvaluationDataId(Long documentId, Long crisisId,
+			Long nominalLabelId, Long nominalAttributeId) {
 		this.documentId = documentId;
 		this.crisisId = crisisId;
 		this.nominalLabelId = nominalLabelId;
 		this.nominalAttributeId = nominalAttributeId;
 	}
 
-	public NominalLabelEvaluationDataId(long documentId, int crisisId,
-			int nominalLabelId, int nominalAttributeId, String wordFeatures) {
+	public NominalLabelEvaluationDataId(Long documentId, Long crisisId,
+			Long nominalLabelId, Long nominalAttributeId, String wordFeatures) {
 		this.documentId = documentId;
 		this.crisisId = crisisId;
 		this.nominalLabelId = nominalLabelId;
@@ -38,7 +42,7 @@ public class NominalLabelEvaluationDataId implements java.io.Serializable {
 	}
 
 	@Column(name = "documentID", nullable = false)
-	public long getDocumentId() {
+	public Long getDocumentId() {
 		return this.documentId;
 	}
 
@@ -47,29 +51,29 @@ public class NominalLabelEvaluationDataId implements java.io.Serializable {
 	}
 
 	@Column(name = "crisisID", nullable = false)
-	public int getCrisisId() {
+	public Long getCrisisId() {
 		return this.crisisId;
 	}
 
-	public void setCrisisId(int crisisId) {
+	public void setCrisisId(Long crisisId) {
 		this.crisisId = crisisId;
 	}
 
 	@Column(name = "nominalLabelID", nullable = false)
-	public int getNominalLabelId() {
+	public Long getNominalLabelId() {
 		return this.nominalLabelId;
 	}
 
-	public void setNominalLabelId(int nominalLabelId) {
+	public void setNominalLabelId(Long nominalLabelId) {
 		this.nominalLabelId = nominalLabelId;
 	}
 
 	@Column(name = "nominalAttributeID", nullable = false)
-	public int getNominalAttributeId() {
+	public Long getNominalAttributeId() {
 		return this.nominalAttributeId;
 	}
 
-	public void setNominalAttributeId(int nominalAttributeId) {
+	public void setNominalAttributeId(Long nominalAttributeId) {
 		this.nominalAttributeId = nominalAttributeId;
 	}
 
@@ -82,6 +86,7 @@ public class NominalLabelEvaluationDataId implements java.io.Serializable {
 		this.wordFeatures = wordFeatures;
 	}
 
+	@Override
 	public boolean equals(Object other) {
 		if ((this == other))
 			return true;
@@ -102,13 +107,14 @@ public class NominalLabelEvaluationDataId implements java.io.Serializable {
 						.getWordFeatures().equals(castOther.getWordFeatures())));
 	}
 
+	@Override
 	public int hashCode() {
 		int result = 17;
 
-		result = 37 * result + (int) this.getDocumentId();
-		result = 37 * result + this.getCrisisId();
-		result = 37 * result + this.getNominalLabelId();
-		result = 37 * result + this.getNominalAttributeId();
+		result = 37 * result + this.getDocumentId().intValue();
+		result = 37 * result + this.getCrisisId().intValue();
+		result = 37 * result + this.getNominalLabelId().intValue();
+		result = 37 * result + this.getNominalAttributeId().intValue();
 		result = 37
 				* result
 				+ (getWordFeatures() == null ? 0 : this.getWordFeatures()

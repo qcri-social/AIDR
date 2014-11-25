@@ -11,46 +11,51 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class TaskAnswerId implements java.io.Serializable {
 
-	private long taskId;
-	private long documentId;
-	private int userId;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -902769492516251640L;
+	private Long taskId;
+	private Long documentId;
+	private Long userId;
 
 	public TaskAnswerId() {
 	}
 
-	public TaskAnswerId(long taskId, long documentId, int userId) {
+	public TaskAnswerId(Long taskId, Long documentId, Long userId) {
 		this.taskId = taskId;
 		this.documentId = documentId;
 		this.userId = userId;
 	}
 
 	@Column(name = "taskID", unique = true, nullable = false)
-	public long getTaskId() {
+	public Long getTaskId() {
 		return this.taskId;
 	}
 
-	public void setTaskId(long taskId) {
+	public void setTaskId(Long taskId) {
 		this.taskId = taskId;
 	}
 
 	@Column(name = "documentID", nullable = false)
-	public long getDocumentId() {
+	public Long getDocumentId() {
 		return this.documentId;
 	}
 
-	public void setDocumentId(long documentId) {
+	public void setDocumentId(Long documentId) {
 		this.documentId = documentId;
 	}
 
 	@Column(name = "userID", nullable = false)
-	public int getUserId() {
+	public Long getUserId() {
 		return this.userId;
 	}
 
-	public void setUserId(int userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 
+	@Override
 	public boolean equals(Object other) {
 		if ((this == other))
 			return true;
@@ -65,12 +70,13 @@ public class TaskAnswerId implements java.io.Serializable {
 				&& (this.getUserId() == castOther.getUserId());
 	}
 
+	@Override
 	public int hashCode() {
 		int result = 17;
 
-		result = 37 * result + (int) this.getTaskId();
-		result = 37 * result + (int) this.getDocumentId();
-		result = 37 * result + this.getUserId();
+		result = 37 * result + this.getTaskId().intValue();
+		result = 37 * result + this.getDocumentId().intValue();
+		result = 37 * result + this.getUserId().intValue();
 		return result;
 	}
 

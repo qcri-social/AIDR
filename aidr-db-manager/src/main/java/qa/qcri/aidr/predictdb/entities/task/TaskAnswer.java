@@ -21,6 +21,10 @@ import javax.persistence.Version;
 @Table(name = "task_answer", catalog = "aidr_predict", uniqueConstraints = @UniqueConstraint(columnNames = "taskID"))
 public class TaskAnswer implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5454646279615445606L;
 	private TaskAnswerId id;
 	private Date timestamp;
 	private String answer;

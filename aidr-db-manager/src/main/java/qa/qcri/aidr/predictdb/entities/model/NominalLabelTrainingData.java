@@ -16,6 +16,10 @@ import javax.persistence.Table;
 @Table(name = "nominal_label_training_data", catalog = "aidr_predict")
 public class NominalLabelTrainingData implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -932313093101960551L;
 	private NominalLabelTrainingDataId id;
 
 	public NominalLabelTrainingData() {

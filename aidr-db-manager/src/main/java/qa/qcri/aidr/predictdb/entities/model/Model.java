@@ -4,12 +4,16 @@ package qa.qcri.aidr.predictdb.entities.model;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+
 import static javax.persistence.GenerationType.IDENTITY;
+
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -23,20 +27,24 @@ import javax.persistence.TemporalType;
 @Table(name = "model", catalog = "aidr_predict")
 public class Model implements java.io.Serializable {
 
-	private Integer modelId;
-	private int modelFamilyId;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -258497973511763596L;
+	private Long modelId;
+	private Long modelFamilyId;
 	private double avgPrecision;
 	private double avgRecall;
 	private double avgAuc;
 	private int trainingCount;
 	private Date trainingTime;
 	private boolean isCurrentModel;
-	private Set modelNominalLabels = new HashSet(0);
+	private List<ModelNominalLabel> modelNominalLabels = null;
 
 	public Model() {
 	}
 
-	public Model(int modelFamilyId, double avgPrecision, double avgRecall,
+	public Model(Long modelFamilyId, double avgPrecision, double avgRecall,
 			double avgAuc, int trainingCount, Date trainingTime,
 			boolean isCurrentModel) {
 		this.modelFamilyId = modelFamilyId;
@@ -48,9 +56,9 @@ public class Model implements java.io.Serializable {
 		this.isCurrentModel = isCurrentModel;
 	}
 
-	public Model(int modelFamilyId, double avgPrecision, double avgRecall,
+	public Model(Long modelFamilyId, double avgPrecision, double avgRecall,
 			double avgAuc, int trainingCount, Date trainingTime,
-			boolean isCurrentModel, Set modelNominalLabels) {
+			boolean isCurrentModel, List<ModelNominalLabel> modelNominalLabels) {
 		this.modelFamilyId = modelFamilyId;
 		this.avgPrecision = avgPrecision;
 		this.avgRecall = avgRecall;
@@ -64,20 +72,20 @@ public class Model implements java.io.Serializable {
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "modelID", unique = true, nullable = false)
-	public Integer getModelId() {
+	public Long getModelId() {
 		return this.modelId;
 	}
 
-	public void setModelId(Integer modelId) {
+	public void setModelId(Long modelId) {
 		this.modelId = modelId;
 	}
 
 	@Column(name = "modelFamilyID", nullable = false)
-	public int getModelFamilyId() {
+	public Long getModelFamilyId() {
 		return this.modelFamilyId;
 	}
 
-	public void setModelFamilyId(int modelFamilyId) {
+	public void setModelFamilyId(Long modelFamilyId) {
 		this.modelFamilyId = modelFamilyId;
 	}
 
@@ -137,11 +145,11 @@ public class Model implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "model")
-	public Set getModelNominalLabels() {
+	public List<ModelNominalLabel> getModelNominalLabels() {
 		return this.modelNominalLabels;
 	}
 
-	public void setModelNominalLabels(Set modelNominalLabels) {
+	public void setModelNominalLabels(List<ModelNominalLabel> modelNominalLabels) {
 		this.modelNominalLabels = modelNominalLabels;
 	}
 

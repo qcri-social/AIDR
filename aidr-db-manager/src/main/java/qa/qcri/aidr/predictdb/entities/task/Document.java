@@ -3,8 +3,7 @@
 package qa.qcri.aidr.predictdb.entities.task;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,8 +29,12 @@ import qa.qcri.aidr.predictdb.entities.misc.Crisis;
 @Table(name = "document", catalog = "aidr_predict")
 public class Document implements java.io.Serializable {
 
-	private Long documentID;
-	private Long crisisID;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5732646538544293262L;
+	private Long documentId;
+	private Crisis crisis;
 	private boolean isEvaluationSet;
 	private boolean hasHumanLabels;
 	private double valueAsTrainingSample;
@@ -41,16 +44,16 @@ public class Document implements java.io.Serializable {
 	private String data;
 	private String wordFeatures;
 	private String geoFeatures;
-	private Set taskAssignments = new HashSet(0);
-	private Set documentNominalLabels = new HashSet(0);
+	private List<TaskAssignment> taskAssignments = null;
+	private List<DocumentNominalLabel> documentNominalLabels = null;
 
 	public Document() {
 	}
 
-	public Document(Long crisisID, boolean isEvaluationSet,
+	public Document(Crisis crisis, boolean isEvaluationSet,
 			boolean hasHumanLabels, double valueAsTrainingSample,
 			Date receivedAt, String language, String doctype, String data) {
-		this.crisisID = crisisID;
+		this.crisis = crisis;
 		this.isEvaluationSet = isEvaluationSet;
 		this.hasHumanLabels = hasHumanLabels;
 		this.valueAsTrainingSample = valueAsTrainingSample;
@@ -60,12 +63,12 @@ public class Document implements java.io.Serializable {
 		this.data = data;
 	}
 
-	public Document(Long crisisID, boolean isEvaluationSet,
+	public Document(Crisis crisis, boolean isEvaluationSet,
 			boolean hasHumanLabels, double valueAsTrainingSample,
 			Date receivedAt, String language, String doctype, String data,
-			String wordFeatures, String geoFeatures, Set taskAssignments,
-			Set documentNominalLabels) {
-		this.crisisID = crisisID;
+			String wordFeatures, String geoFeatures, List<TaskAssignment> taskAssignments,
+			List<DocumentNominalLabel> documentNominalLabels) {
+		this.crisis = crisis;
 		this.isEvaluationSet = isEvaluationSet;
 		this.hasHumanLabels = hasHumanLabels;
 		this.valueAsTrainingSample = valueAsTrainingSample;
@@ -82,26 +85,26 @@ public class Document implements java.io.Serializable {
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "documentID", unique = true, nullable = false)
-	public Long getDocumentID() {
-		return this.documentID;
+	public Long getDocumentId() {
+		return this.documentId;
 	}
 
-	public void setDocumentID(Long documentID) {
-		this.documentID = documentID;
+	public void setDocumentId(Long documentId) {
+		this.documentId = documentId;
 	}
 
-	//@ManyToOne(fetch = FetchType.LAZY)
-	//@JoinColumn(name = "crisisID", nullable = false)
-	public Long getCrisisID() {
-		return this.crisisID;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "crisisID", nullable = false)
+	public Crisis getCrisis() {
+		return this.crisis;
 	}
 
-	public void setCrisisID(Long crisisID) {
-		this.crisisID = crisisID;
+	public void setCrisis(Crisis crisis) {
+		this.crisis = crisis;
 	}
 
 	@Column(name = "isEvaluationSet", nullable = false)
-	public boolean getIsEvaluationSet() {
+	public boolean isIsEvaluationSet() {
 		return this.isEvaluationSet;
 	}
 
@@ -110,7 +113,7 @@ public class Document implements java.io.Serializable {
 	}
 
 	@Column(name = "hasHumanLabels", nullable = false)
-	public boolean getHasHumanLabels() {
+	public boolean isHasHumanLabels() {
 		return this.hasHumanLabels;
 	}
 
@@ -183,20 +186,20 @@ public class Document implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "document")
-	public Set getTaskAssignments() {
+	public List<TaskAssignment> getTaskAssignments() {
 		return this.taskAssignments;
 	}
 
-	public void setTaskAssignments(Set taskAssignments) {
+	public void setTaskAssignments(List<TaskAssignment> taskAssignments) {
 		this.taskAssignments = taskAssignments;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "document")
-	public Set getDocumentNominalLabels() {
+	public List<DocumentNominalLabel> getDocumentNominalLabels() {
 		return this.documentNominalLabels;
 	}
 
-	public void setDocumentNominalLabels(Set documentNominalLabels) {
+	public void setDocumentNominalLabels(List<DocumentNominalLabel> documentNominalLabels) {
 		this.documentNominalLabels = documentNominalLabels;
 	}
 

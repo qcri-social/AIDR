@@ -3,12 +3,16 @@
 package qa.qcri.aidr.predictdb.entities.misc;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+
 import static javax.persistence.GenerationType.IDENTITY;
+
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -20,9 +24,13 @@ import javax.persistence.Table;
 @Table(name = "crisis_type", catalog = "aidr_predict")
 public class CrisisType implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8074463052776843105L;
 	private Long crisisTypeId;
 	private String name;
-	private Set crisises = new HashSet(0);
+	private List<Crisis> crisises = null;
 
 	public CrisisType() {
 	}
@@ -31,7 +39,7 @@ public class CrisisType implements java.io.Serializable {
 		this.name = name;
 	}
 
-	public CrisisType(String name, Set crisises) {
+	public CrisisType(String name, List<Crisis> crisises) {
 		this.name = name;
 		this.crisises = crisises;
 	}
@@ -39,11 +47,11 @@ public class CrisisType implements java.io.Serializable {
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "crisisTypeID", unique = true, nullable = false)
-	public Integer getCrisisTypeId() {
+	public Long getCrisisTypeId() {
 		return this.crisisTypeId;
 	}
 
-	public void setCrisisTypeId(Integer crisisTypeId) {
+	public void setCrisisTypeId(Long crisisTypeId) {
 		this.crisisTypeId = crisisTypeId;
 	}
 
@@ -57,11 +65,11 @@ public class CrisisType implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "crisisType")
-	public Set getCrisises() {
+	public List<Crisis> getCrisises() {
 		return this.crisises;
 	}
 
-	public void setCrisises(Set crisises) {
+	public void setCrisises(List<Crisis> crisises) {
 		this.crisises = crisises;
 	}
 

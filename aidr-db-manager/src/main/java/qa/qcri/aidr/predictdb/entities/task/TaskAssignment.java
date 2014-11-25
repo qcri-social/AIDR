@@ -22,6 +22,10 @@ import javax.persistence.TemporalType;
 @Table(name = "task_assignment", catalog = "aidr_predict")
 public class TaskAssignment implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3761125422251764759L;
 	private TaskAssignmentId id;
 	private Document document;
 	private Date assignedAt;

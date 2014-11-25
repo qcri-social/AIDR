@@ -11,35 +11,40 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class ModelNominalLabelId implements java.io.Serializable {
 
-	private int modelId;
-	private int nominalLabelId;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4746086718641115270L;
+	private Long modelId;
+	private Long nominalLabelId;
 
 	public ModelNominalLabelId() {
 	}
 
-	public ModelNominalLabelId(int modelId, int nominalLabelId) {
+	public ModelNominalLabelId(Long modelId, Long nominalLabelId) {
 		this.modelId = modelId;
 		this.nominalLabelId = nominalLabelId;
 	}
 
 	@Column(name = "modelID", nullable = false)
-	public int getModelId() {
+	public Long getModelId() {
 		return this.modelId;
 	}
 
-	public void setModelId(int modelId) {
+	public void setModelId(Long modelId) {
 		this.modelId = modelId;
 	}
 
 	@Column(name = "nominalLabelID", nullable = false)
-	public int getNominalLabelId() {
+	public Long getNominalLabelId() {
 		return this.nominalLabelId;
 	}
 
-	public void setNominalLabelId(int nominalLabelId) {
+	public void setNominalLabelId(Long nominalLabelId) {
 		this.nominalLabelId = nominalLabelId;
 	}
 
+	@Override
 	public boolean equals(Object other) {
 		if ((this == other))
 			return true;
@@ -53,11 +58,12 @@ public class ModelNominalLabelId implements java.io.Serializable {
 				&& (this.getNominalLabelId() == castOther.getNominalLabelId());
 	}
 
+	@Override
 	public int hashCode() {
 		int result = 17;
 
-		result = 37 * result + this.getModelId();
-		result = 37 * result + this.getNominalLabelId();
+		result = 37 * result + this.getModelId().intValue();
+		result = 37 * result + this.getNominalLabelId().intValue();
 		return result;
 	}
 

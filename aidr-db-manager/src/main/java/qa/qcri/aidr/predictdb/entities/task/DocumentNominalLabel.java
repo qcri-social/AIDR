@@ -26,6 +26,10 @@ import qa.qcri.aidr.predictdb.entities.model.NominalLabel;
 @Table(name = "document_nominal_label", catalog = "aidr_predict")
 public class DocumentNominalLabel implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 780942456619903470L;
 	private DocumentNominalLabelId id;
 	private Date timestamp;
 	private NominalLabel nominalLabel;

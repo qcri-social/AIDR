@@ -3,7 +3,7 @@
 package qa.qcri.aidr.predictdb.entities.model;
 
 import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,6 +20,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import qa.qcri.aidr.predictdb.entities.misc.Crisis;
 import qa.qcri.aidr.predictdb.entities.misc.Users;
 
 /**
@@ -29,15 +30,19 @@ import qa.qcri.aidr.predictdb.entities.misc.Users;
 @Table(name = "nominal_attribute", catalog = "aidr_predict", uniqueConstraints = @UniqueConstraint(columnNames = "code"))
 public class NominalAttribute implements java.io.Serializable {
 
-	private Integer nominalAttributeId;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8597872499380166539L;
+	private Long nominalAttributeId;
 	private Users users;
 	private String name;
 	private String description;
 	private String code;
-	private Set modelFamilies = new HashSet(0);
-	private Set nominalAttributeDependentLabels = new HashSet(0);
-	private Set crisises = new HashSet(0);
-	private Set nominalLabels = new HashSet(0);
+	private List<ModelFamily> modelFamilies = null;
+	private List<NominalAttributeDependentLabel> nominalAttributeDependentLabels = null;
+	private List<Crisis> crisises = null;
+	private List<NominalLabel> nominalLabels = null;
 
 	public NominalAttribute() {
 	}
@@ -51,8 +56,9 @@ public class NominalAttribute implements java.io.Serializable {
 	}
 
 	public NominalAttribute(Users users, String name, String description,
-			String code, Set modelFamilies,
-			Set nominalAttributeDependentLabels, Set crisises, Set nominalLabels) {
+			String code, List<ModelFamily> modelFamilies,
+			List<NominalAttributeDependentLabel> nominalAttributeDependentLabels, 
+			List<Crisis> crisises, List<NominalLabel> nominalLabels) {
 		this.users = users;
 		this.name = name;
 		this.description = description;
@@ -66,11 +72,11 @@ public class NominalAttribute implements java.io.Serializable {
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "nominalAttributeID", unique = true, nullable = false)
-	public Integer getNominalAttributeId() {
+	public Long getNominalAttributeId() {
 		return this.nominalAttributeId;
 	}
 
-	public void setNominalAttributeId(Integer nominalAttributeId) {
+	public void setNominalAttributeId(Long nominalAttributeId) {
 		this.nominalAttributeId = nominalAttributeId;
 	}
 
@@ -112,39 +118,39 @@ public class NominalAttribute implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalAttribute")
-	public Set getModelFamilies() {
+	public List<ModelFamily> getModelFamilies() {
 		return this.modelFamilies;
 	}
 
-	public void setModelFamilies(Set modelFamilies) {
+	public void setModelFamilies(List<ModelFamily> modelFamilies) {
 		this.modelFamilies = modelFamilies;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalAttribute")
-	public Set getNominalAttributeDependentLabels() {
+	public List<NominalAttributeDependentLabel> getNominalAttributeDependentLabels() {
 		return this.nominalAttributeDependentLabels;
 	}
 
 	public void setNominalAttributeDependentLabels(
-			Set nominalAttributeDependentLabels) {
+			List<NominalAttributeDependentLabel> nominalAttributeDependentLabels) {
 		this.nominalAttributeDependentLabels = nominalAttributeDependentLabels;
 	}
 
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "nominalAttributes")
-	public Set getCrisises() {
+	public List<Crisis> getCrisises() {
 		return this.crisises;
 	}
 
-	public void setCrisises(Set crisises) {
+	public void setCrisises(List<Crisis> crisises) {
 		this.crisises = crisises;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalAttribute")
-	public Set getNominalLabels() {
+	public List<NominalLabel> getNominalLabels() {
 		return this.nominalLabels;
 	}
 
-	public void setNominalLabels(Set nominalLabels) {
+	public void setNominalLabels(List<NominalLabel> nominalLabels) {
 		this.nominalLabels = nominalLabels;
 	}
 

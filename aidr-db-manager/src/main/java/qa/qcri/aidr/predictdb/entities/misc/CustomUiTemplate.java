@@ -19,20 +19,24 @@ import javax.persistence.TemporalType;
 @Table(name = "custom_ui_template", catalog = "aidr_predict")
 public class CustomUiTemplate implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4549440030648604692L;
 	private Long customUitemplateId;
-	private long crisisId;
+	private Long crisisId;
 	private Long nominalAttributeId;
-	private int templateType;
+	private Integer templateType;
 	private String templateValue;
 	private Integer status;
-	private boolean isActive;
+	private Boolean isActive;
 	private Date updated;
 
 	public CustomUiTemplate() {
 	}
 
-	public CustomUiTemplate(long crisisId, int templateType,
-			String templateValue, boolean isActive, Date updated) {
+	public CustomUiTemplate(Long crisisId, Integer templateType,
+			String templateValue, Boolean isActive, Date updated) {
 		this.crisisId = crisisId;
 		this.templateType = templateType;
 		this.templateValue = templateValue;
@@ -40,9 +44,9 @@ public class CustomUiTemplate implements java.io.Serializable {
 		this.updated = updated;
 	}
 
-	public CustomUiTemplate(long crisisId, Long nominalAttributeId,
-			int templateType, String templateValue, Integer status,
-			boolean isActive, Date updated) {
+	public CustomUiTemplate(Long crisisId, Long nominalAttributeId,
+			Integer templateType, String templateValue, Integer status,
+			Boolean isActive, Date updated) {
 		this.crisisId = crisisId;
 		this.nominalAttributeId = nominalAttributeId;
 		this.templateType = templateType;
@@ -64,7 +68,7 @@ public class CustomUiTemplate implements java.io.Serializable {
 	}
 
 	@Column(name = "crisisID", nullable = false)
-	public long getCrisisId() {
+	public Long getCrisisId() {
 		return this.crisisId;
 	}
 
@@ -82,7 +86,7 @@ public class CustomUiTemplate implements java.io.Serializable {
 	}
 
 	@Column(name = "templateType", nullable = false)
-	public int getTemplateType() {
+	public Integer getTemplateType() {
 		return this.templateType;
 	}
 
@@ -109,11 +113,11 @@ public class CustomUiTemplate implements java.io.Serializable {
 	}
 
 	@Column(name = "isActive", nullable = false)
-	public boolean isIsActive() {
+	public Boolean isIsActive() {
 		return this.isActive;
 	}
 
-	public void setIsActive(boolean isActive) {
+	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
 
