@@ -7,15 +7,15 @@ DTOs are used in AIDR to transfer data. In AIDR most DTOs contain all the proper
 
 DTOs in AIDR have mandatory and optional properties.
 
-All mandatory properties must be marked final, so they are initialized by the constructor.
+All _mandatory_ properties must be marked final, so they are initialized by the constructor.
 
-All optional properties must throw an exception of type `PropertyNotSetException`, or a subclass of it, if unset. 
+All _optional_ properties must throw an exception of type `PropertyNotSetException`, or a subclass of it, if unset. 
 
 ## Mapping
 
 Mapping from entities is done through the constructor and the constructor only.
 
-Mapping to entities is done by a method `toEntity()`. This method is always called the same no matter what the class is.
+Mapping to entities is done by a method `toEntity()`. This method is always called `toEntity()', no matter what the class name is.
 
 ## Example
 
