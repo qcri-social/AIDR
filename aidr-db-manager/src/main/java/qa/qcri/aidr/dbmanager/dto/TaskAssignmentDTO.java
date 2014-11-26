@@ -28,6 +28,13 @@ public class TaskAssignmentDTO implements Serializable {
 
 	}
 
+    public TaskAssignmentDTO(TaskAssignment taskAssignment){
+        this.documentID = taskAssignment.getId().getDocumentId();
+        this.userID = taskAssignment.getId().getUserId();
+        this.assignedAt = taskAssignment.getAssignedAt();
+
+    }
+
 	public TaskAssignmentDTO(Long documentID, Long userID, Date assignedAt){
 		this.documentID = documentID;
 		this.userID = userID;
