@@ -6,9 +6,8 @@
 
 package qa.qcri.aidr.dbmanager.ejb.remote.facade;
 
-import java.util.List;
 import javax.ejb.Remote;
-import qa.qcri.aidr.dbmanager.entities.model.Model;
+import qa.qcri.aidr.dbmanager.dto.ModelDTO;
 
 /**
  *
@@ -17,6 +16,6 @@ import qa.qcri.aidr.dbmanager.entities.model.Model;
 @Remote
 public interface ModelFacadeRemote {
     
-    public List<Model> getModelByID();
+    public ModelDTO getModelByID();
     
 }
