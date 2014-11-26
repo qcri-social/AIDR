@@ -8,6 +8,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import qa.qcri.aidr.dbmanager.entities.misc.Users;
+import qa.qcri.aidr.dbmanager.entities.task.Document;
+import qa.qcri.aidr.dbmanager.entities.task.TaskAssignment;
 
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
@@ -31,12 +34,23 @@ public class TaskAssignmentDTO implements Serializable {
 		this.assignedAt = assignedAt;
 	}
 
+    public  TaskAssignment toEntity(Long documentID, Long userId) {
+        TaskAssignment taskAssignment = new TaskAssignment(documentID, userId);
+        return taskAssignment;
+    }
+
 	public Long getDocumentID() {
 		return documentID;
 	}
 
 	public void setDocumentID(Long documentID) {
-		this.documentID = documentID;
+        if (documentID == null) {
+            throw new IllegalArgumentException("documentID cannot be null");
+        }
+        else{
+            this.documentID = documentID;
+        }
+
 	}
 
 	public Long getUserID() {
@@ -44,7 +58,13 @@ public class TaskAssignmentDTO implements Serializable {
 	}
 
 	public void setUserID(Long userID) {
-		this.userID = userID;
+        if (userID == null) {
+            throw new IllegalArgumentException("userID cannot be null");
+        }
+        else{
+            this.userID = userID;
+        }
+
 	}
 
 	public Date getAssignedAt() {
@@ -52,7 +72,12 @@ public class TaskAssignmentDTO implements Serializable {
 	}
 
 	public void setAssignedAt(Date assignedAt) {
-		this.assignedAt = assignedAt;
+        if (assignedAt == null) {
+            throw new IllegalArgumentException("assignedAt cannot be null");
+        }
+        else{
+		    this.assignedAt = assignedAt;
+        }
 	}
 
 	@Override

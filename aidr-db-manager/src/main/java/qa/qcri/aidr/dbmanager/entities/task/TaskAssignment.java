@@ -29,18 +29,50 @@ public class TaskAssignment implements java.io.Serializable {
 	private TaskAssignmentId id;
 	private Document document;
 	private Date assignedAt;
+    private Long userId;
+    private Long documentId;
 
 	public TaskAssignment() {
 	}
 
-	public TaskAssignment(TaskAssignmentId id, Document document,
+    public TaskAssignment( Document document, Long userId, Date assignedAt) {
+        this.document = document;
+        this.userId = userId;
+        this.assignedAt = assignedAt;
+    }
+
+    public TaskAssignment( Long documentId, Long userId) {
+        this.documentId = documentId;
+        this.userId = userId;
+        this.assignedAt = new Date();
+    }
+
+    public TaskAssignment(TaskAssignmentId id, Document document,
 			Date assignedAt) {
 		this.id = id;
 		this.document = document;
 		this.assignedAt = assignedAt;
 	}
 
-	@EmbeddedId
+    @Column(name = "userID", nullable = false)
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    @Column(name = "documentID", nullable = false)
+    public Long getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(Long documentId) {
+        this.documentId = documentId;
+    }
+
+    @EmbeddedId
 	@AttributeOverrides({
 			@AttributeOverride(name = "documentId", column = @Column(name = "documentID", nullable = false)),
 			@AttributeOverride(name = "userId", column = @Column(name = "userID", nullable = false)) })
