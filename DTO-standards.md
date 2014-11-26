@@ -7,9 +7,9 @@ DTOs are used in AIDR to transfer data. In AIDR most DTOs contain all the proper
 
 DTOs in AIDR have mandatory and optional properties.
 
-All _mandatory_ properties must be marked final, so they are initialized by the constructor.
+All _mandatory_ properties must be marked final, so they are initialized by the constructor. Their getter does not need to test that the property exists. Their setter needs to verify the values given before setting.
 
-All _optional_ properties must throw an exception of type `PropertyNotSetException`, or a subclass of it, if unset. 
+In _optional_ properties: the getter needs to test if the property exist, and if not, must throw an exception of type `PropertyNotSetException`. Their setter needs to verify the values given before setting.
 
 ## Mapping
 
