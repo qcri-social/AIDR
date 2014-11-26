@@ -13,6 +13,8 @@ In _optional_ properties: the getter needs to test if the property exist, and if
 
 ## Mapping
 
+Mapping from/to entities in done by the DTO class, not by a helper class.
+
 Mapping from entities is done through the constructor and the constructor only.
 
 Mapping to entities is done by a method `toEntity()`. This method is always called `toEntity()', no matter what the class name is.
