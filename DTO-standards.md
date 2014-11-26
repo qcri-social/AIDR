@@ -17,7 +17,7 @@ Mapping from/to entities in done by the DTO class, not by a helper class.
 
 Mapping from entities is done through the constructor and the constructor only.
 
-Mapping to entities is done by a method `toEntity()`. This method is always called `toEntity()', no matter what the class name is.
+Mapping to entities is done by a method `toEntity()`. This method is always called `toEntity()`, no matter what the class name is.
 
 ## Example
 
@@ -72,6 +72,7 @@ DTO:
             Crisis crisis = new Crisis();
             crisis.setCrisisID(getCrisisID());
             crisis.setName(getName());
+            return crisis;
         }
 
         /* Getters for mandatory properties */
@@ -84,7 +85,8 @@ DTO:
             return name;
         }
 
-        /* Getters for optional properties */
+        /* Getters for optional properties, must thrown exception if property unset */
+
         public getModelFamiliesDTO() {
             if( modelFamiliesDTO == null ) {
                 logger.error( "Attempt to access unset property" );
