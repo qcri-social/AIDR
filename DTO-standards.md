@@ -52,6 +52,7 @@ DTO (this example assumes crisisID and name are mandatory, for example purposes 
 
         /* Optional properties */
 
+        @XmlElement
         private List<ModelFamilyDTO> modelFamiliesDTO = null;
 
         /* Constructors from entity and from mandatory properties */
