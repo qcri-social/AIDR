@@ -36,13 +36,13 @@ Entity:
         // + getters and setters
     }
 
-DTO:
+DTO (this example assumes crisisID and name are mandatory, for example purposes only):
 
     @XmlRootElement
     @JsonIgnoreProperties(ignoreUnknown=true)
     public class CrisisDTO implements Serializable {
 
-    /* Mandatory properties */
+        /* Mandatory properties */
 
         @XmlElement
         private final Long crisisID;
