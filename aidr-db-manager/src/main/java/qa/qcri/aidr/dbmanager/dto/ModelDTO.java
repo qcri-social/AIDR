@@ -30,7 +30,7 @@ public class ModelDTO implements Serializable {
     public ModelDTO() {
     }
 
-    public ModelDTO(double avgPrecision, double avgRecall,
+    public ModelDTO(Long modelFamilyId, double avgPrecision, double avgRecall,
             double avgAuc, int trainingCount, Date trainingTime,
             boolean isCurrentModel) {
         setModelFamilyId(modelFamilyId);
