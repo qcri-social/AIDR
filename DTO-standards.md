@@ -52,7 +52,7 @@ DTO:
 
         private List<ModelFamilyDTO> modelFamiliesDTO = null;
 
-        /* Constructors from entity and from properties */
+        /* Constructors from entity and from mandatory properties */
 
         public CrisisDTO( Crisis crisis ) {
             this.setCrisisID(crisis.getCrisisID());
