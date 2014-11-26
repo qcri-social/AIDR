@@ -167,6 +167,7 @@ public class ModelDTO implements Serializable {
     }
 
     public List<ModelNominalLabel> getModelNominalLabels() {
+        //add custom propertyNotSet exaception here.
         return this.modelNominalLabels;
     }
 
