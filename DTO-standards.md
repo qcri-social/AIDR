@@ -101,14 +101,16 @@ DTO (this example assumes crisisID and name are mandatory, for example purposes 
 
         public setCrisisID(Long crisisID) {
             if( crisisID == null ) {
+                logger.error( "Attempt to set a crisisID to null" );
                 throw new IllegalArgumentException("crisisID cannot be null");
             } else if( crisisID.longValue() <= 0 ) {
+                logger.error( "Attempt to set a crisisID to zero or a negative number" );
                 throw new IllegalArgumentException("crisisID cannot be zero or a negative number");
             } else {
                 this.crisisID = crisisID;
             }
         }
 
-        // + other setters
+        // + other setters, which must also verify
 
     }
