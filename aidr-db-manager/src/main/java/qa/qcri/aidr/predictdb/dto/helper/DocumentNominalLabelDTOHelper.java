@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import qa.qcri.aidr.predictdb.dto.DocumentNominalLabelDTO;
-import qa.qcri.aidr.predictdb.entities.task.DocumentNominalLabel;
+import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 
 public class DocumentNominalLabelDTOHelper {
 	public static DocumentNominalLabel toDocumentNominalLabel(DocumentNominalLabelDTO dto) {

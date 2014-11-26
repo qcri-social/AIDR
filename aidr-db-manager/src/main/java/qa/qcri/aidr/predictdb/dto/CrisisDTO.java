@@ -6,10 +6,10 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import qa.qcri.aidr.predictdb.entities.misc.CrisisType;
-import qa.qcri.aidr.predictdb.entities.model.ModelFamily;
-import qa.qcri.aidr.predictdb.entities.model.NominalAttribute;
-import qa.qcri.aidr.predictdb.entities.task.Document;
+import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
+import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
+import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
+import qa.qcri.aidr.dbmanager.entities.task.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

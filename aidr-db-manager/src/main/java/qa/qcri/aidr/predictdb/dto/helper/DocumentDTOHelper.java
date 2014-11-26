@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import qa.qcri.aidr.predictdb.dto.DocumentDTO;
-import qa.qcri.aidr.predictdb.entities.task.Document;
+import qa.qcri.aidr.dbmanager.entities.task.Document;
 
 
 public class DocumentDTOHelper {

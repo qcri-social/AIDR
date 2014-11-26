@@ -1,4 +1,4 @@
-package qa.qcri.aidr.predictdb.ejb.remote.task.bean;
+package qa.qcri.aidr.dbmanager.ejb.remote.facade.impl;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -46,13 +46,13 @@ import qa.qcri.aidr.predictdb.ejb.local.task.TaskAnswerService;
 import qa.qcri.aidr.predictdb.ejb.local.task.TaskAssignmentService;
 import qa.qcri.aidr.predictdb.ejb.local.task.UsersService;
 import qa.qcri.aidr.predictdb.ejb.remote.task.TaskManagerRemote;
-import qa.qcri.aidr.predictdb.entities.misc.Crisis;
-import qa.qcri.aidr.predictdb.entities.misc.Users;
-import qa.qcri.aidr.predictdb.entities.model.NominalLabel;
-import qa.qcri.aidr.predictdb.entities.task.Document;
-import qa.qcri.aidr.predictdb.entities.task.DocumentNominalLabel;
-import qa.qcri.aidr.predictdb.entities.task.TaskAnswer;
-import qa.qcri.aidr.predictdb.entities.task.TaskAssignment;
+import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
+import qa.qcri.aidr.dbmanager.entities.misc.Users;
+import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
+import qa.qcri.aidr.dbmanager.entities.task.Document;
+import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
+import qa.qcri.aidr.dbmanager.entities.task.TaskAnswer;
+import qa.qcri.aidr.dbmanager.entities.task.TaskAssignment;
 
 
 
