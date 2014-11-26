@@ -85,7 +85,7 @@ DTO:
             return name;
         }
 
-        /* Getters for optional properties, must thrown exception if property unset */
+        /* Getters for optional properties, must thrown exception if property not set */
 
         public getModelFamiliesDTO() {
             if( modelFamiliesDTO == null ) {
