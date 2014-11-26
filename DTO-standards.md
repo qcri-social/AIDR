@@ -27,9 +27,9 @@ Entity:
 
         private Long crisisId;
 
-    private String name;
+        private String name;
 
-    private List<ModelFamily> modelFamilies = null;
+        private List<ModelFamily> modelFamilies = null;
 
         // + getters and setters
     }
@@ -103,4 +103,7 @@ DTO:
                 this.crisisID = crisisID;
             }
         }
+
+        // + other setters
+
     }
