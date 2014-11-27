@@ -21,6 +21,7 @@ import java.lang.reflect.Type;
 public class TaskAnswerFacadeImpl<T, I> implements TaskAnswerFacadeRemote<T, Serializable> {
 
     private Class<T> entityType;
+
     @EJB
     private TaskAnswerService taskAnswerEJB;
 
