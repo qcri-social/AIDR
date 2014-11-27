@@ -29,6 +29,8 @@ public class TaskAnswer implements java.io.Serializable {
 	private Date timestamp;
 	private String answer;
 	private boolean fromTrustedUser;
+    private Long documentId;
+    private Long userId;
 
 	public TaskAnswer() {
 	}
@@ -38,6 +40,14 @@ public class TaskAnswer implements java.io.Serializable {
 		this.answer = answer;
 		this.fromTrustedUser = fromTrustedUser;
 	}
+
+    public TaskAnswer(Long documentId, Long userId, String answer, boolean fromTrustedUser) {
+        this.documentId = documentId;
+        this.userId = userId;
+        this.answer = answer;
+        this.fromTrustedUser = fromTrustedUser;
+    }
+
 
 	@EmbeddedId
 	@AttributeOverrides({
@@ -52,7 +62,15 @@ public class TaskAnswer implements java.io.Serializable {
 		this.id = id;
 	}
 
-	@Version
+    public void setDocumentId(Long documentId) {
+        this.documentId = documentId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    @Version
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "timestamp", nullable = false, length = 19)
 	public Date getTimestamp() {

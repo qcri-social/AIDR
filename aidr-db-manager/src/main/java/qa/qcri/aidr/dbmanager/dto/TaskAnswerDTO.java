@@ -1,12 +1,15 @@
 package qa.qcri.aidr.dbmanager.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import qa.qcri.aidr.dbmanager.entities.task.TaskAnswer;
 
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
@@ -21,15 +24,41 @@ public class TaskAnswerDTO implements Serializable {
         this.documentID = documentID;
         this.userID = userID;
         this.answer = answer;
-        this.timestamp = new Date();
+    }
+
+    public  TaskAnswerDTO(TaskAnswer taskAnswer){
+        this.documentID = taskAnswer.getId().getDocumentId();
+        this.userID = taskAnswer.getId().getUserId();
+        this.answer = taskAnswer.getAnswer();
+        this.timestamp = taskAnswer.getTimestamp();
+    }
+
+
+    public TaskAnswer toEntity(TaskAnswerDTO taskAnswerDTO){
+        return new TaskAnswer(taskAnswerDTO.getDocumentID(), taskAnswerDTO.getUserID(), taskAnswerDTO.getAnswer(), taskAnswerDTO.isFromTrustedUser());
 
     }
+
+    public List<TaskAnswer> toEntity(List<TaskAnswerDTO> answers){
+        List<TaskAnswer> taskAnswers = new ArrayList<TaskAnswer>();
+
+        for (TaskAnswerDTO dto: answers) {
+            TaskAnswer t = new TaskAnswer(dto.getDocumentID(), dto.getUserID(), dto.getAnswer(), dto.isFromTrustedUser());
+            taskAnswers.add(t);
+        }
+
+        return taskAnswers;
+    }
+
 
     public Long getDocumentID() {
         return documentID;
     }
 
     public void setDocumentID(Long documentID) {
+        if(documentID == null)
+            throw new IllegalArgumentException("documentID cannot be null");
+
         this.documentID = documentID;
     }
 
@@ -38,6 +67,9 @@ public class TaskAnswerDTO implements Serializable {
     }
 
     public void setUserID(Long userID) {
+        if(userID == null)
+            throw new IllegalArgumentException("userID cannot be null");
+
         this.userID = userID;
     }
 
