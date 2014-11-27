@@ -17,5 +17,6 @@ import javax.ejb.Stateless;
 public interface TaskAnswerFacadeRemote<T, Serializable>  {
 
     public Class<T> getClassType();
+
     void insertTaskAnswer(TaskAnswerDTO taskAnswerDTO) throws TaskManagerException;
 }
