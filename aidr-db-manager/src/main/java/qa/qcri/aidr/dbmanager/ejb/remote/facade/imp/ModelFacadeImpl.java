@@ -6,6 +6,7 @@
 
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
+import java.util.List;
 import javax.ejb.Stateless;
 import qa.qcri.aidr.dbmanager.dto.ModelDTO;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelFacadeRemote;
@@ -18,6 +19,14 @@ import qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelFacadeRemote;
 public class ModelFacadeImpl implements ModelFacadeRemote{
 
     public ModelDTO getModelByID() {
+        throw new UnsupportedOperationException("Not supported yet."); 
+    }
+
+    public List<ModelDTO> getModelByModelFamilyID(Integer modelFamilyID, Integer start, Integer limit) {
+        throw new UnsupportedOperationException("Not supported yet."); 
+    }
+
+    public List<ModelDTO> getModelByCrisisID(long crisisID) {
         throw new UnsupportedOperationException("Not supported yet."); 
     }
     
