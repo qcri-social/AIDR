@@ -16,7 +16,6 @@ import java.lang.reflect.Type;
  * User: jlucas
  * Date: 11/27/14
  * Time: 9:53 AM
- * To change this template use File | Settings | File Templates.
  */
 @Stateless
 public class TaskAnswerFacadeImpl<T, I> implements TaskAnswerFacadeRemote<T, Serializable> {
