@@ -2,7 +2,6 @@
 // Generated Nov 24, 2014 4:55:08 PM by Hibernate Tools 4.0.0
 package qa.qcri.aidr.dbmanager.entities.model;
 
-import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -17,8 +16,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+
+import org.hibernate.collection.internal.PersistentList;
 
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
@@ -154,4 +156,19 @@ public class NominalAttribute implements java.io.Serializable {
 		this.nominalLabels = nominalLabels;
 	}
 
+	public boolean hasCrisises() {
+		return ((PersistentList) this.crisises).wasInitialized();
+	}
+	
+	public boolean hasNominalLabels() {
+		return ((PersistentList) this.nominalLabels).wasInitialized();
+	}
+	
+	public boolean hasNominalAttributeDependentLabel() {
+		return ((PersistentList) this.nominalAttributeDependentLabels).wasInitialized();
+	}
+	
+	public boolean hasModelFamily() {
+		return ((PersistentList) this.modelFamilies).wasInitialized();
+	}
 }

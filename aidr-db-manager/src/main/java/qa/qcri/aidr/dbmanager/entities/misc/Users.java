@@ -18,6 +18,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.collection.internal.PersistentList;
+
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 
 /**
@@ -99,4 +101,11 @@ public class Users implements java.io.Serializable {
 		this.crisises = crisises;
 	}
 
+	public boolean hasCrisises() {
+		return ((PersistentList) this.crisises).wasInitialized();
+	}
+	
+	public boolean hasNominalAttributes() {
+		return ((PersistentList) this.nominalAttributes).wasInitialized();
+	}
 }

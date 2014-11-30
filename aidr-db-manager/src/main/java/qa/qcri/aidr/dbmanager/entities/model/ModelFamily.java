@@ -2,9 +2,8 @@
 // Generated Nov 24, 2014 4:55:08 PM by Hibernate Tools 4.0.0
 package qa.qcri.aidr.dbmanager.entities.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import java.util.Collection;
+import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,6 +19,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlTransient;
+
+import org.hibernate.collection.internal.PersistentList;
 
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 
@@ -40,8 +41,8 @@ public class ModelFamily implements java.io.Serializable {
     private Crisis crisis;
     private boolean isActive;
 
-    @JsonManagedReference
-    private Collection<Model> modelCollection;
+  
+    private List<Model> modelCollection;
 
     public ModelFamily() {
     }
@@ -94,14 +95,15 @@ public class ModelFamily implements java.io.Serializable {
     }
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "modelFamily")
-    @XmlTransient
-    @JsonIgnore
-    public Collection<Model> getModelCollection() {
+    public List<Model> getModelCollection() {
         return modelCollection;
     }
 
-    public void setModelCollection(Collection<Model> modelCollection) {
+    public void setModelCollection(List<Model> modelCollection) {
         this.modelCollection = modelCollection;
     }
 
+	public boolean hasModelCollection() {
+		return ((PersistentList) this.modelCollection).wasInitialized();
+	}
 }

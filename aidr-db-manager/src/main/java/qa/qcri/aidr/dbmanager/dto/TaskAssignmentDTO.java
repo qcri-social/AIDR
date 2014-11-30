@@ -8,13 +8,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import qa.qcri.aidr.dbmanager.entities.misc.Users;
-import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.TaskAssignment;
 
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class TaskAssignmentDTO implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6766433678441426060L;
+
 	@XmlElement
 	private Long documentID;
 
@@ -40,6 +43,11 @@ public class TaskAssignmentDTO implements Serializable {
 		this.userID = userID;
 		this.assignedAt = assignedAt;
 	}
+
+	public  TaskAssignment toEntity() {
+        TaskAssignment taskAssignment = new TaskAssignment(this.documentID, this.userID);
+        return taskAssignment;
+    }
 
     public  TaskAssignment toEntity(Long documentID, Long userId) {
         TaskAssignment taskAssignment = new TaskAssignment(documentID, userId);

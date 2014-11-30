@@ -11,6 +11,10 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class NominalAttributeDependentLabelId implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5783640463766329661L;
 	private Long nominalAttributeId;
 	private Long nominalLabelId;
 

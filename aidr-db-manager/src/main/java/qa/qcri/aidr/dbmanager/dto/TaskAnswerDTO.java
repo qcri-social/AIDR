@@ -16,7 +16,12 @@ import qa.qcri.aidr.dbmanager.entities.task.TaskAnswer;
 public class TaskAnswerDTO implements Serializable {
 
 
-    public TaskAnswerDTO(){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5525860415454423643L;
+
+	public TaskAnswerDTO(){
       // default
     }
 

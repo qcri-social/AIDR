@@ -20,6 +20,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.collection.internal.PersistentList;
+
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
@@ -156,4 +158,15 @@ public class Crisis implements java.io.Serializable {
 		this.modelFamilies = modelFamilies;
 	}
 
+	public boolean hasDocuments() {
+		return ((PersistentList) this.documents).wasInitialized();
+	}
+	
+	public boolean hasNominalAttributes() {
+		return ((PersistentList) this.nominalAttributes).wasInitialized();
+	}
+	
+	public boolean hasModelFamilies() {
+		return ((PersistentList) this.modelFamilies).wasInitialized();
+	}
 }

@@ -19,6 +19,10 @@ import javax.persistence.Table;
 @Table(name = "nominal_attribute_dependent_label", catalog = "aidr_predict")
 public class NominalAttributeDependentLabel implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4200478432355906054L;
 	private NominalAttributeDependentLabelId id;
 	private NominalLabel nominalLabel;
 	private NominalAttribute nominalAttribute;

@@ -20,6 +20,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.collection.internal.PersistentList;
+
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 
 /**
@@ -37,7 +39,7 @@ public class Document implements java.io.Serializable {
 	private Crisis crisis;
 	private boolean isEvaluationSet;
 	private boolean hasHumanLabels;
-	private double valueAsTrainingSample;
+	private Double valueAsTrainingSample;
 	private Date receivedAt;
 	private String language;
 	private String doctype;
@@ -51,7 +53,7 @@ public class Document implements java.io.Serializable {
 	}
 
 	public Document(Crisis crisis, boolean isEvaluationSet,
-			boolean hasHumanLabels, double valueAsTrainingSample,
+			boolean hasHumanLabels, Double valueAsTrainingSample,
 			Date receivedAt, String language, String doctype, String data) {
 		this.crisis = crisis;
 		this.isEvaluationSet = isEvaluationSet;
@@ -64,7 +66,7 @@ public class Document implements java.io.Serializable {
 	}
 
 	public Document(Crisis crisis, boolean isEvaluationSet,
-			boolean hasHumanLabels, double valueAsTrainingSample,
+			boolean hasHumanLabels, Double valueAsTrainingSample,
 			Date receivedAt, String language, String doctype, String data,
 			String wordFeatures, String geoFeatures, List<TaskAssignment> taskAssignments,
 			List<DocumentNominalLabel> documentNominalLabels) {
@@ -202,5 +204,12 @@ public class Document implements java.io.Serializable {
 	public void setDocumentNominalLabels(List<DocumentNominalLabel> documentNominalLabels) {
 		this.documentNominalLabels = documentNominalLabels;
 	}
+	
+	public boolean hasTaskAssignments() {
+		return ((PersistentList) this.taskAssignments).wasInitialized();
+	}
 
+	public boolean hasDocumentNominalLabels() {
+		return ((PersistentList) this.documentNominalLabels).wasInitialized();
+	}
 }
