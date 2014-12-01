@@ -73,6 +73,7 @@ public class DocumentDTO implements Serializable {
 	public DocumentDTO(Document doc) throws PropertyNotSetException {
 		this.documentID = doc.getDocumentId();
 		this.hasHumanLabels = doc.isHasHumanLabels();
+                //TO FIX I think the following validatiob should be in the setCrisisDTO() method. No need to check it here.
 		if (doc.getCrisis() != null) {
 			this.setCrisisDTO(new CrisisDTO(doc.getCrisis()));
 		} else {

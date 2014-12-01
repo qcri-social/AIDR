@@ -19,10 +19,12 @@ import qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelFacadeRemote;
 public class ModelFacadeImpl implements ModelFacadeRemote{
 
     public ModelDTO getModelByID() {
+        //To implement: Hibernate code to get ModelDTO from database 
         throw new UnsupportedOperationException("Not supported yet."); 
     }
 
     public List<ModelDTO> getModelByModelFamilyID(Integer modelFamilyID, Integer start, Integer limit) {
+        //To implement: Hibernate code to list of ModelDTO from database
         throw new UnsupportedOperationException("Not supported yet."); 
     }
 

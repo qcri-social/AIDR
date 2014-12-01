@@ -61,6 +61,7 @@ public class CrisisDTO implements Serializable  {
 
 	public CrisisDTO(String name, String code, boolean isTrashed, 
 			CrisisTypeDTO crisisTypeDTO, UsersDTO usersDTO) {
+            //TO FIX: use setters and proper validation
 		this.name = name;
 		this.code = code;
 		this.isTrashed = isTrashed;
@@ -70,6 +71,7 @@ public class CrisisDTO implements Serializable  {
 
 	public CrisisDTO(Long crisisID, String name, String code, boolean isTrashed, 
 			CrisisTypeDTO crisisTypeDTO, UsersDTO usersDTO) {
+            //TO FIX: use setters and proper validation
 		this.crisisID = crisisID;
 		this.name = name;
 		this.code = code;

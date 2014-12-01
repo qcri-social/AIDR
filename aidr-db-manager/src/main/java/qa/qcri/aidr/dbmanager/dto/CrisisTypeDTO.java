@@ -38,17 +38,20 @@ public class CrisisTypeDTO implements java.io.Serializable {
 	}
 
 	public CrisisTypeDTO(Long crisisTypeId, String name) {
+            //TO FIX: use setters and proper validation
 		this.crisisTypeId = crisisTypeId;
 		this.name = name;
 	}
 
 	public CrisisTypeDTO(Long crisisTypeId, String name, List<CrisisDTO> crisisesDTO) {
+            //TO FIX: use setters and proper validation
 		this.crisisTypeId = crisisTypeId;
 		this.name = name;
 		this.setCrisisesDTO(crisisesDTO);
 	}
 
 	public CrisisTypeDTO(CrisisType crisisType) throws PropertyNotSetException {
+            //TO FIX: use setters and proper validation
 		if (crisisType != null) {
 			this.crisisTypeId = crisisType.getCrisisTypeId();
 			this.name = crisisType.getName();
