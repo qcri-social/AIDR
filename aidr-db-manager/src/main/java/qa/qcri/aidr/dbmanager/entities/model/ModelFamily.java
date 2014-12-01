@@ -65,7 +65,7 @@ public class ModelFamily implements java.io.Serializable {
         this.modelFamilyId = modelFamilyId;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "nominalAttributeID", nullable = false)
     public NominalAttribute getNominalAttribute() {
         return this.nominalAttribute;

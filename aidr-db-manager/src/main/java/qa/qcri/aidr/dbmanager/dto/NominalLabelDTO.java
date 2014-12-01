@@ -57,10 +57,10 @@ public class NominalLabelDTO  implements Serializable {
 	public NominalLabelDTO(NominalLabel nominalLabel) throws PropertyNotSetException {
 		this.setNominalAttributeDTO(new NominalAttributeDTO(nominalLabel.getNominalAttribute()));
 		this.setNominalLabelId(nominalLabel.getNominalLabelId());
-		this.nominalLabelCode = nominalLabel.getNominalLabelCode();
-		this.name = nominalLabel.getName();
-		this.description = nominalLabel.getDescription();
-		this.sequence = nominalLabel.getSequence();
+		this.setNominalLabelCode(nominalLabel.getNominalLabelCode());
+		this.setName(nominalLabel.getName());
+		this.setDescription(nominalLabel.getDescription());
+		this.setSequence(nominalLabel.getSequence());
 		
 		if (nominalLabel.hasDocumentNominalLabels()) {
 			this.setDocumentNominalLabelsDTO(
@@ -80,10 +80,10 @@ public class NominalLabelDTO  implements Serializable {
 			String nominalLabelCode, String name, String description,
 			Integer sequence) throws PropertyNotSetException {
 		this.setNominalAttributeDTO(nominalAttributeDTO);
-		this.nominalLabelCode = nominalLabelCode;
-		this.name = name;
-		this.description = description;
-		this.sequence = sequence;
+		this.setNominalLabelCode(nominalLabelCode);
+		this.setName(name);
+		this.setDescription(description);
+		this.setSequence(sequence);
 	}
 
 	public NominalLabelDTO(NominalAttributeDTO nominalAttributeDTO,
@@ -92,10 +92,10 @@ public class NominalLabelDTO  implements Serializable {
 			List<NominalAttributeDependentLabelDTO> nominalAttributeDependentLabelsDTO, 
 			List<DocumentNominalLabelDTO> documentNominalLabelsDTO) throws PropertyNotSetException {
 		this.setNominalAttributeDTO(nominalAttributeDTO);
-		this.nominalLabelCode = nominalLabelCode;
-		this.name = name;
-		this.description = description;
-		this.sequence = sequence;
+		this.setNominalLabelCode(nominalLabelCode);
+		this.setName(name);
+		this.setDescription(description);
+		this.setSequence(sequence);
 		this.setModelNominalLabelsDTO(modelNominalLabelsDTO);
 		this.setNominalAttributeDependentLabelsDTO(nominalAttributeDependentLabelsDTO);
 		this.setDocumentNominalLabelsDTO(documentNominalLabelsDTO);

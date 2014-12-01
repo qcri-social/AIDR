@@ -3,52 +3,48 @@ package qa.qcri.aidr.dbmanager.ejb.local.facade.impl;
 import org.apache.log4j.Logger;
 import org.hibernate.*;
 import org.hibernate.criterion.*;
-import org.hibernate.internal.CriteriaImpl;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.dbmanager.ejb.local.facade.AbstractTaskManagerService;
+import qa.qcri.aidr.dbmanager.ejb.local.facade.CoreDBServiceFacade;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
-import javax.persistence.Query;
-import javax.persistence.criteria.JoinType;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+
 
 /**
  * 
  * @author Koushik
  *
  */
-@Stateless(name = "AbstractTaskManagerServiceBean")
-public class AbstractTaskManagerServiceBean<E, I extends Serializable> implements ServletContextListener, AbstractTaskManagerService<E,I> {
+@Stateless(name = "CoreDBServiceFacadeImp")
+public class CoreDBServiceFacadeImp<E, I extends Serializable> implements CoreDBServiceFacade<E,I> {
 
-	@PersistenceContext(unitName = "qa.qcri.aidr.taskmanager-EJBS") 
+	@PersistenceContext(unitName = "qa.qcri.aidr.dbmanager-EJBS") 
 	protected EntityManager em;
-	//@PersistenceContext(unitName = "qa.qcri.aidr.taskmanager-EJBS") org.hibernate.Session session;
 
-	//@PersistenceContext(unitName = "qa.qcri.aidr.taskmanager-EJBS") SessionFactory sessionFactory;
-	private Logger logger = Logger.getLogger(AbstractTaskManagerServiceBean.class);
+	private Logger logger = Logger.getLogger("db-manager-log");
 	private ErrorLog elog = new ErrorLog();
 
 	private Class<E> entityClass;
-	private SessionFactory sessionFactory;
 
-	public AbstractTaskManagerServiceBean(Class<E> entityClass) {
+	public CoreDBServiceFacadeImp(Class<E> entityClass) {
 		this.entityClass = entityClass;
-		//getSessionFactory();
 	}
 
-	public AbstractTaskManagerServiceBean() {}
+	public CoreDBServiceFacadeImp() {}
 
 	@Override
 	public EntityManager getEntityManager() {
-		return em;
+		try {
+			return em; 
+		} catch (Exception e) {
+			throw new HibernateException("getEntityManager failed");
+		}
 	}
 
 	@Override
@@ -64,7 +60,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		} catch (Exception e) {
 			logger.error("EntityManager setting exception : " + em);
 			logger.error(elog.toStringException(e));
-			return -1;
+			throw new HibernateException("setEntityManager failed");
 		}
 	}
 
@@ -75,30 +71,20 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		} catch (Exception e) {
 			logger.error(elog.toStringException(e));
 			e.printStackTrace();
+			throw new HibernateException("getCurrentSession failed");
 		}
-		return null;
-	}
-
-	private SessionFactory getSessionFactory() {
-		try {
-			this.sessionFactory = em.unwrap(SessionFactory.class);
-			return this.sessionFactory;
-		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public E getById(I id) {
 		try {
 			return (E) getCurrentSession().get(entityClass, id);
 		} catch (Exception e) {
 			logger.error(elog.toStringException(e));
 			e.printStackTrace();
+			throw new HibernateException("getById failed, id = " + id);
 		}
-		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -111,8 +97,8 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		} catch (Exception e) {
 			logger.error(elog.toStringException(e));
 			e.printStackTrace();
+			throw new HibernateException("getByCriterionID failed, criteria = " + criterion.toString());
 		}
-		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -126,62 +112,65 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		} catch (Exception e) {
 			logger.error(elog.toStringException(e));
 			e.printStackTrace();
+			throw new HibernateException("getByCriteria failed, criteria = " + criterion.toString());
 		}
-		return null;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<E> getAll() {
 		Criteria criteria = getCurrentSession().createCriteria(entityClass);
-		//criteria.setProjection(Projections.distinct(Projections.property("id")));
+		List<E> fetchedList = new ArrayList<E>();
 		try {	
-			List<E> fetchedList = criteria.list();
-			return (fetchedList != null && !fetchedList.isEmpty()) ? (List<E>) fetchedList : null;
+			fetchedList = criteria.list();
+			return fetchedList;
 		} catch (Exception e) {
 			logger.error(elog.toStringException(e));
 			e.printStackTrace();
+			throw new HibernateException("getAll failed");
 		}
-		return null;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<E> getAllByCriteria(Criterion criterion) {
+		List<E> fetchedList = new ArrayList<E>();
 		Session session = getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
 		criteria.add(criterion);
 		try {	
-			List<E> fetchedList = criteria.list();
-			return (fetchedList != null && !fetchedList.isEmpty()) ? (List<E>) fetchedList : null;
+			fetchedList = criteria.list();
+			return fetchedList;
 		} catch (Exception e) {
 			logger.error(elog.toStringException(e));
 			e.printStackTrace();
+			throw new HibernateException("getAllByCriteria failed, criteria = " + criterion.toString());
 		}
-		return null;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<E> getByCriteriaWithLimit(Criterion criterion, Integer count) {
+		List<E> fetchedList = new ArrayList<E>();
 		Criteria criteria = getCurrentSession().createCriteria(entityClass);
 		criteria.add(criterion);
 		if(count != null){
 			criteria.setMaxResults(count);
 		}
 		try {	
-			List<E> fetchedList = criteria.list();
-			return (fetchedList != null && !fetchedList.isEmpty()) ? (List<E>) fetchedList : null;
+			fetchedList = criteria.list();
+			return fetchedList;
 		} catch (Exception e) {
 			logger.error(elog.toStringException(e));
 			e.printStackTrace();
+			throw new HibernateException("getByCriteriaWithLimit failed, criteria = " + criterion.toString());
 		}
-		return null;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<E> getByCriteriaByOrder(Criterion criterion, String order, String[] orderBy, Integer count) {
+		List<E> fetchedList = new ArrayList<E>();
 		Criteria criteria = getCurrentSession().createCriteria(entityClass);
 		criteria.add(criterion);
 		for(int i = 0; i< orderBy.length; i++){
@@ -195,19 +184,20 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			criteria.setMaxResults(count);
 		}
 		try {	
-			List<E> fetchedList = criteria.list();
-			return (fetchedList != null && !fetchedList.isEmpty()) ? (List<E>) fetchedList : null;
+			fetchedList = criteria.list();
+			return fetchedList;
 		} catch (Exception e) {
 			logger.error(elog.toStringException(e));
 			e.printStackTrace();
+			throw new HibernateException("getByCriteriaByOrder failed, criteria = " + criterion.toString());
 		}
-		return null;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<E> getByCriteriaWithAliasByOrder(Criterion criterion, String order, String[] orderBy, Integer count, String aliasTable, Criterion aliasCriterion) {
 		Session session = getCurrentSession();
+		List<E> fetchedList = new ArrayList<E>();
 		logger.info("Entity: " + entityClass + ", current Session = " + session);
 		Criteria criteria = session.createCriteria(entityClass);
 		criteria.add(criterion); 
@@ -226,19 +216,20 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		}
 		//System.out.println("fetched List count = " + (fetchedList != null ? fetchedList.size() : null));
 		try {	
-			List<E> fetchedList = criteria.list();
-			return (fetchedList != null && !fetchedList.isEmpty()) ? (List<E>) fetchedList : null;
+			fetchedList = criteria.list();
+			return fetchedList;
 		} catch (Exception e) {
 			logger.error(elog.toStringException(e));
 			e.printStackTrace();
+			throw new HibernateException("getByCriteriaWithAliasByOrder failed, criteria = " + criterion.toString());
 		}
-		return null;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<E> getByCriteriaWithInnerJoinByOrder(Criterion criterion, String order, String[] orderBy, Integer count, String aliasTable) {
 		Session session = getCurrentSession();
+		List<E> fetchedList = new ArrayList<E>();
 		logger.info("Entity: " + entityClass + ", current Session = " + session);
 		Criteria criteria = session.createCriteria(entityClass);
 		criteria.add(criterion); 
@@ -257,13 +248,13 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		}
 		//System.out.println("fetched List count = " + (fetchedList != null ? fetchedList.size() : null));
 		try {	
-			List<E> fetchedList = criteria.list();
-			return (fetchedList != null && !fetchedList.isEmpty()) ? (List<E>) fetchedList : null;
+			fetchedList = criteria.list();
+			return fetchedList;
 		} catch (Exception e) {
 			logger.error(elog.toStringException(e));
 			e.printStackTrace();
+			throw new HibernateException("getByCriteriaWithInnerJoinByOrder failed, criteria = " + criterion.toString());
 		}
-		return null;
 	}
 
 	@Override
@@ -281,6 +272,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			logger.error(elog.toStringException(ex));
 			ex.printStackTrace();
 			tx.rollback();
+			throw new HibernateException("Update failed");
 		}
 	}
 
@@ -299,6 +291,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		} catch (Exception ex) {
 			logger.error(elog.toStringException(ex));
 			tx.rollback();
+			throw new HibernateException("Update list failed");
 		}
 	}
 
@@ -314,6 +307,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 			System.out.println("Unable to save entity: " + e);
 			logger.error(elog.toStringException(ex));
 			ex.printStackTrace();
+			throw new HibernateException("Save failed");
 		}
 
 	}
@@ -328,6 +322,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		} catch (Exception ex) {
 			logger.error(elog.toStringException(ex));
 			ex.printStackTrace();
+			throw new HibernateException("Merge failed");
 		}
 
 	}
@@ -347,6 +342,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		} catch (Exception ex) {
 			logger.error(elog.toStringException(ex));
 			tx.rollback();
+			throw new HibernateException("Merge list failed");
 		}
 
 	}
@@ -366,6 +362,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		} catch (Exception ex) {
 			logger.error(elog.toStringException(ex));
 			tx.rollback();
+			throw new HibernateException("Save list failed");
 		}
 	}
 
@@ -380,6 +377,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		} catch (Exception ex) {
 			logger.error(elog.toStringException(ex));
 			ex.printStackTrace();
+			throw new HibernateException("Delete failed");
 		}
 	}
 
@@ -399,6 +397,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		} catch (Exception ex) {
 			logger.error(elog.toStringException(ex));
 			tx.rollback();
+			throw new HibernateException("Delete list failed");
 		}
 	}
 
@@ -410,21 +409,7 @@ public class AbstractTaskManagerServiceBean<E, I extends Serializable> implement
 		} catch (Exception ex) {
 			logger.error(elog.toStringException(ex));
 			ex.printStackTrace();
-		}
-	}
-
-	@Override
-	public void contextInitialized(ServletContextEvent sce) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void contextDestroyed(ServletContextEvent sce) {
-		try {
-			getCurrentSession().close();
-			em.close();
-		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
+			throw new HibernateException("Delete by criteria failed");
 		}
 	}
 }

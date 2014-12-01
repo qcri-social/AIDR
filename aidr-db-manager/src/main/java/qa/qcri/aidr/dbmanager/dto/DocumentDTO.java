@@ -66,14 +66,13 @@ public class DocumentDTO implements Serializable {
 	public DocumentDTO(){}
 
 	public DocumentDTO(Long documentID, boolean hasHumanLabels){
-		this.documentID  = documentID;
-		this.hasHumanLabels = hasHumanLabels;
+		this.setDocumentID(documentID);
+		this.setHasHumanLabels(hasHumanLabels);
 	}
 
 	public DocumentDTO(Document doc) throws PropertyNotSetException {
-		this.documentID = doc.getDocumentId();
-		this.hasHumanLabels = doc.isHasHumanLabels();
-                //TO FIX I think the following validatiob should be in the setCrisisDTO() method. No need to check it here.
+		this.setDocumentID(doc.getDocumentId());
+		this.setHasHumanLabels(doc.isHasHumanLabels());
 		if (doc.getCrisis() != null) {
 			this.setCrisisDTO(new CrisisDTO(doc.getCrisis()));
 		} else {
@@ -87,7 +86,7 @@ public class DocumentDTO implements Serializable {
 		this.setData(doc.getData());
 		this.setValueAsTrainingSample(doc.getValueAsTrainingSample());
 		this.setWordFeatures(doc.getWordFeatures());
-		
+
 		// now the optional fields
 		if (doc.hasDocumentNominalLabels()) {
 			this.setDocumentNominalLabelsDTO(this.toDocumentNominalLabelDTOList(doc.getDocumentNominalLabels()));
@@ -104,7 +103,11 @@ public class DocumentDTO implements Serializable {
 	}
 
 	public void setDocumentID(Long documentID) {
-		this.documentID = documentID;
+		if (documentID != null) {
+			this.documentID = documentID;
+		} else {
+			throw new IllegalArgumentException("Argument cannot be null!");
+		}
 	}
 
 	public boolean getHasHumanLabels() {
@@ -237,7 +240,7 @@ public class DocumentDTO implements Serializable {
 		}
 		return null;
 	} 
-	
+
 	private List<TaskAssignmentDTO> toTaskAssignmentDTOList(List<TaskAssignment> list) {
 		if (list != null) {
 			List<TaskAssignmentDTO> dtoList = new ArrayList<TaskAssignmentDTO>();
@@ -260,10 +263,10 @@ public class DocumentDTO implements Serializable {
 		}
 		return null;
 	}
-	
+
 	public Document toEntity() throws PropertyNotSetException {
 		Document doc = new Document(this.getCrisisDTO().toEntity(), isEvaluationSet, hasHumanLabels, 
-							valueAsTrainingSample, receivedAt, language, doctype, data, wordFeatures, geoFeatures, null, null);
+				valueAsTrainingSample, receivedAt, language, doctype, data, wordFeatures, geoFeatures, null, null);
 		if (this.documentID != null) {
 			doc.setDocumentId(getDocumentID());
 		}

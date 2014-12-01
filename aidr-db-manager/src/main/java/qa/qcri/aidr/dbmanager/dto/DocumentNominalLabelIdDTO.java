@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabelId;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -19,10 +20,10 @@ public class DocumentNominalLabelIdDTO implements Serializable {
 
 	@XmlElement
 	private Long documentId;
-	
+
 	@XmlElement
 	private Long nominalLabelId;
-	
+
 	@XmlElement
 	private Long userId;
 
@@ -34,38 +35,62 @@ public class DocumentNominalLabelIdDTO implements Serializable {
 		this.setNominalLabelId(id.getNominalLabelId());
 		this.setUserId(id.getUserId());
 	}
-	
+
 	public DocumentNominalLabelIdDTO(Long documentId, Long nominalLabelId,
 			Long userId) {
-		this.documentId = documentId;
-		this.nominalLabelId = nominalLabelId;
-		this.userId = userId;
+		this.setDocumentId(documentId);
+		this.setNominalLabelId(nominalLabelId);
+		this.setUserId(userId);
 	}
 
-	public Long getDocumentId() {
-		return this.documentId;
+	public Long getDocumentId() throws PropertyNotSetException {
+		if (documentId != null) {
+			return this.documentId;
+		} else {
+			throw new PropertyNotSetException();
+		}
 	}
 
 	public void setDocumentId(Long documentId) {
-		this.documentId = documentId;
+		if (documentId != null) {
+			this.documentId = documentId;
+		} else {
+			throw new IllegalArgumentException("Argument cannot be null!");
+		}
 	}
 
-	public Long getNominalLabelId() {
-		return this.nominalLabelId;
+	public Long getNominalLabelId() throws PropertyNotSetException {
+		if (nominalLabelId != null) {
+			return this.nominalLabelId;
+		} else {
+			throw new PropertyNotSetException();
+		}
 	}
 
 	public void setNominalLabelId(Long nominalLabelId) {
-		this.nominalLabelId = nominalLabelId;
+		if (nominalLabelId != null) {
+			this.nominalLabelId = nominalLabelId;
+		} else {
+			throw new IllegalArgumentException("Argument cannot be null!");
+		}
 	}
 
-	public Long getUserId() {
-		return this.userId;
+	public Long getUserId() throws PropertyNotSetException {
+		if (userId != null) {
+			return this.userId;
+		} else {
+			throw new PropertyNotSetException();
+		}
 	}
 
 	public void setUserId(Long userId) {
-		this.userId = userId;
+		if (userId != null) {
+			this.userId = userId;
+		} else {
+			throw new IllegalArgumentException("Argument cannot be null!");
+		}
 	}
-	
+
 	public DocumentNominalLabelId toEntity() {
 		DocumentNominalLabelId id = new DocumentNominalLabelId(this.documentId, this.nominalLabelId, this.userId);
 		return id;

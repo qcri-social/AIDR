@@ -3,7 +3,6 @@ package qa.qcri.aidr.dbmanager.ejb.local.facade;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -11,7 +10,7 @@ import javax.ejb.Local;
 import javax.persistence.EntityManager;
 
 @Local
-public interface AbstractTaskManagerService<E, I extends Serializable> {
+public interface CoreDBServiceFacade<E, I extends Serializable> {
 	
 	public Session getCurrentSession();
 	
@@ -42,4 +41,5 @@ public interface AbstractTaskManagerService<E, I extends Serializable> {
 
 	public EntityManager getEntityManager();
 	public int setEntityManager(EntityManager em);
+
 }

@@ -83,7 +83,7 @@ public class Crisis implements java.io.Serializable {
 		this.crisisId = crisisId;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "userID", nullable = false)
 	public Users getUsers() {
 		return this.users;
@@ -93,7 +93,7 @@ public class Crisis implements java.io.Serializable {
 		this.users = users;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "crisisTypeID", nullable = false)
 	public CrisisType getCrisisType() {
 		return this.crisisType;

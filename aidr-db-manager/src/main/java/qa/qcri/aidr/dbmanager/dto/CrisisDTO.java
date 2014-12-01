@@ -61,21 +61,21 @@ public class CrisisDTO implements Serializable  {
 
 	public CrisisDTO(String name, String code, boolean isTrashed, 
 			CrisisTypeDTO crisisTypeDTO, UsersDTO usersDTO) {
-            //TO FIX: use setters and proper validation
-		this.name = name;
-		this.code = code;
-		this.isTrashed = isTrashed;
+            
+		this.setName(name);
+		this.setCode(code);
+		this.setIsTrashed(isTrashed);
 		this.setCrisisTypeDTO(crisisTypeDTO);
 		this.setUsersDTO(usersDTO);
 	}
 
 	public CrisisDTO(Long crisisID, String name, String code, boolean isTrashed, 
 			CrisisTypeDTO crisisTypeDTO, UsersDTO usersDTO) {
-            //TO FIX: use setters and proper validation
-		this.crisisID = crisisID;
-		this.name = name;
-		this.code = code;
-		this.isTrashed = isTrashed;
+           
+		this.setCrisisID(crisisID);
+		this.setName(name);
+		this.setCode(code);
+		this.setIsTrashed(isTrashed);
 		this.setCrisisTypeDTO(crisisTypeDTO);
 		this.setUsersDTO(usersDTO);
 	}

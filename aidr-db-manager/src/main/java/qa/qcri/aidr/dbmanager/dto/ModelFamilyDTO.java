@@ -35,20 +35,20 @@ public class ModelFamilyDTO implements Serializable {
 
     public ModelFamilyDTO(ModelFamily model) throws PropertyNotSetException {
         this.setModelFamilyId(model.getModelFamilyId());
-    	this.nominalAttributeDTO = new NominalAttributeDTO(model.getNominalAttribute());
-        this.crisisDTO = new CrisisDTO(model.getCrisis());
-        this.isActive = model.isIsActive();
-        this.modelFamilyId = model.getModelFamilyId();
+    	this.setNominalAttributeDTO(new NominalAttributeDTO(model.getNominalAttribute()));
+        this.setCrisisDTO(new CrisisDTO(model.getCrisis()));
+        this.setIsActive(model.isIsActive());
+        this.setModelFamilyId(model.getModelFamilyId());
         if (model.hasModelCollection()) {
         	this.setModelCollectionDTO(this.toModelDTOList(model.getModelCollection()));
         }
     }
     
     public ModelFamilyDTO(NominalAttributeDTO nominalAttributeDTO, CrisisDTO crisisDTO,
-            boolean isActive) throws PropertyNotSetException {
+            boolean isActive) {
         this.setNominalAttributeDTO(nominalAttributeDTO);
         this.setCrisisDTO(crisisDTO);
-        this.isActive = isActive;
+        this.setIsActive(isIsActive());
     }
 
     public Long getModelFamilyId() {
@@ -63,24 +63,24 @@ public class ModelFamilyDTO implements Serializable {
         return this.nominalAttributeDTO;
     }
 
-    public void setNominalAttributeDTO(NominalAttributeDTO nominalAttributeDTO) throws PropertyNotSetException {
+    public void setNominalAttributeDTO(NominalAttributeDTO nominalAttributeDTO) {
         if (nominalAttributeDTO != null) {
     	this.nominalAttributeDTO = nominalAttributeDTO;
         } else {
-        	throw new PropertyNotSetException();
-        }
+			throw new IllegalArgumentException("Argument cannot be null!");
+		}
     }
 
     public CrisisDTO getCrisisDTO() {
         return this.crisisDTO;
     }
 
-    public void setCrisisDTO(CrisisDTO crisisDTO) throws PropertyNotSetException {
+    public void setCrisisDTO(CrisisDTO crisisDTO) {
         if (crisisDTO != null) {
     	this.crisisDTO = crisisDTO;
         } else {
-        	throw new PropertyNotSetException();
-        }
+			throw new IllegalArgumentException("Argument cannot be null!");
+		}
     }
 
     public boolean isIsActive() {
@@ -96,7 +96,11 @@ public class ModelFamilyDTO implements Serializable {
     }
 
     public void setModelCollectionDTO(List<ModelDTO> modelCollectionDTO) {
-        this.modelCollectionDTO = modelCollectionDTO;
+        if (modelCollectionDTO != null) {
+    	this.modelCollectionDTO = modelCollectionDTO;
+        } else {
+			throw new IllegalArgumentException("Argument cannot be null!");
+		}
     }
     
 	private List<ModelDTO> toModelDTOList(List<Model> list) throws PropertyNotSetException {

@@ -46,7 +46,6 @@ public class Model implements java.io.Serializable {
     private Date trainingTime;
     private boolean isCurrentModel;
     private List<ModelNominalLabel> modelNominalLabels = null;
-    @JsonBackReference
     private ModelFamily modelFamily;
 
     public Model() {
@@ -152,7 +151,7 @@ public class Model implements java.io.Serializable {
         this.isCurrentModel = isCurrentModel;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "model")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "model")
     public List<ModelNominalLabel> getModelNominalLabels() {
         return this.modelNominalLabels;
     }
