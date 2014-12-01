@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
-import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
@@ -64,7 +63,6 @@ public class UsersResourceFacadeImp extends CoreDBServiceFacadeImp<Users, Long> 
 	}
 
 	@Override
-	@Transactional
 	public List<CrisisDTO> findAllCrisisByUserID(Long id) throws PropertyNotSetException {
 		Users u = getById(id);
 		List<CrisisDTO> dtoList = new ArrayList<CrisisDTO>();

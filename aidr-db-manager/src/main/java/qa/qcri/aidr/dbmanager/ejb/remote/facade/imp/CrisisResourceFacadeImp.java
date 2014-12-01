@@ -12,7 +12,6 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.Query;
-import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
@@ -112,7 +111,6 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 	}
 	
 	@Override
-	@Transactional
 	public List<CrisisDTO> getAllCrisisWithModelFamilies() throws PropertyNotSetException {
 		List<CrisisDTO> dtoList = new ArrayList<CrisisDTO>();
 		List<Crisis> crisisList = getAll();
