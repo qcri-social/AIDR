@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
@@ -64,6 +64,7 @@ public class UsersResourceFacadeImp extends CoreDBServiceFacadeImp<Users, Long> 
 	}
 
 	@Override
+	@Transactional
 	public List<CrisisDTO> findAllCrisisByUserID(Long id) throws PropertyNotSetException {
 		Users u = getById(id);
 		List<CrisisDTO> dtoList = new ArrayList<CrisisDTO>();
