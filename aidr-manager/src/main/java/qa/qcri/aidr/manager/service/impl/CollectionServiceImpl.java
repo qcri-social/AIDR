@@ -168,10 +168,10 @@ public class CollectionServiceImpl implements CollectionService {
     public AidrCollection updateAndGetRunningCollectionStatusByUser(Integer userId) throws Exception {
         AidrCollection collection = collectionRepository.getRunningCollectionStatusByUser(userId);
         if (collection != null){
-            logger.info("User with ID: '" + userId + "' has Running collection with code: '" + collection.getCode() + "'. Trying to update collection from fetcher." );
+            logger.info("User with ID: '" + userId + "' has a running collection with code: '" + collection.getCode() + "'. Trying to update collection from fetcher." );
             return statusByCollection(collection);
         } else {
-            logger.info("User with ID: '" + userId + "' don't has running collections. Nothing to update." );
+            logger.info("User with ID: '" + userId + "' don't have any running collections. Nothing to update." );
 //            If there is no running collection there is still can be collection with status 'Initializing'.
 //            This happens because we update collection information from fetcher before collection was started.
 //            So we need to update from Fetcher this kind of collections as well.
