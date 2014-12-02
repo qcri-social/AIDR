@@ -232,11 +232,11 @@ public class ModelDTO implements Serializable {
 	}
 
 	public ModelFamilyDTO getModelFamilyDTO() throws PropertyNotSetException {
-		if (this.modelFamilyDTO != null) { 
+		//if (this.modelFamilyDTO != null) { 
 			return modelFamilyDTO;
-		} else {
-			throw new PropertyNotSetException("ModelFamily not set");
-		}
+//		} else {
+//			throw new PropertyNotSetException("ModelFamily not set");
+//		}
 	}
 
 	public void setModelFamilyDTO(ModelFamilyDTO modelFamilyDTO) {
