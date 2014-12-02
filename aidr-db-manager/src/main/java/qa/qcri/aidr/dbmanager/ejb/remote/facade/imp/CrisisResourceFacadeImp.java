@@ -15,6 +15,7 @@ import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
@@ -26,7 +27,6 @@ import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.UsersResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 
-
 /**
  *
  * @author Koushik
@@ -36,10 +36,10 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 
 	private static Logger logger = Logger.getLogger("db-manager-log");
 	private static ErrorLog elog = new ErrorLog();
-	
+
 	@EJB
 	private UsersResourceFacade userLocalEJB;
-	
+
 	protected CrisisResourceFacadeImp(){
 		super(Crisis.class);
 	}
@@ -82,16 +82,18 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 
 	@Override
 	public CrisisDTO editCrisis(CrisisDTO crisis) throws PropertyNotSetException {
-		Crisis cr = getById(crisis.getCrisisID()); 
+		Crisis c = crisis.toEntity();
+		Crisis cr = getById(c.getCrisisId()); 
 		if (cr != null) {
-			cr = em.merge(cr);
+			cr = em.merge(c);
+			/*
 			if (crisis.getCrisisTypeDTO() != null) {
 				cr.setCrisisType(crisis.getCrisisTypeDTO().toEntity());
 			}
 			cr.setCode(crisis.getCode());
 			cr.setName(crisis.getName());
-			
-			return new CrisisDTO(cr);
+			*/
+			return cr != null ? new CrisisDTO(cr) : null;
 		} else {
 			throw new RuntimeException("Not found");
 		}
@@ -109,16 +111,20 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 		} 
 		return dtoList;
 	}
-	
+
 	@Override
 	public List<CrisisDTO> getAllCrisisWithModelFamilies() throws PropertyNotSetException {
 		List<CrisisDTO> dtoList = new ArrayList<CrisisDTO>();
 		List<Crisis> crisisList = getAll();
 		if (crisisList != null) {
 			for (Crisis crisis : crisisList) {
-				Hibernate.initialize(crisis.getModelFamilies());		// fetching lazily loaded data
-				CrisisDTO dto = new CrisisDTO(crisis);
-				dtoList.add(dto);
+				try {
+					Hibernate.initialize(crisis.getModelFamilies());		// fetching lazily loaded data
+					CrisisDTO dto = new CrisisDTO(crisis);
+					dtoList.add(dto);
+				} catch (HibernateException e) {
+					logger.error("Hibernate initialization error for lazy objects in : " + crisis.getCrisisId());
+				}
 			}
 		} 
 		return dtoList;
@@ -136,6 +142,7 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 		return dto != null ? true : false;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public HashMap<String, Integer> countClassifiersByCrisisCodes(List<String> codes) {
 		String sqlQuery = "select cr.code, " +
@@ -156,5 +163,55 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 			logger.error(elog.toStringException(e));
 		}
 		return null;
+	}
+
+	@Override
+	public List<CrisisDTO> getAllCrisisWithModelFamilyNominalAttribute() throws PropertyNotSetException {
+		List<CrisisDTO> dtoList = new ArrayList<CrisisDTO>();
+		List<Crisis> list = getAll();
+		if (list != null) {
+			for (Crisis c: list) {
+				try {
+					Hibernate.initialize(c.getModelFamilies());
+					Hibernate.initialize(c.getNominalAttributes());
+					dtoList.add(new CrisisDTO(c));
+				} catch (HibernateException e) {
+					logger.error("Hibernate initialization error for lazy objects in : " + c.getCrisisId());
+				}
+			}
+		}
+		return dtoList;
+	}
+
+	@Override
+	public CrisisDTO getWithModelFamilyNominalAttributeByCrisisID(Long crisisID) throws PropertyNotSetException {
+		Crisis crisis = getById(crisisID);
+		if (crisis != null) {
+			try {
+				Hibernate.initialize(crisis.getModelFamilies());
+				Hibernate.initialize(crisis.getNominalAttributes());
+				return new CrisisDTO(crisis);
+			} catch (HibernateException e) {
+				logger.error("Hibernate initialization error for lazy objects in : " + crisis.getCrisisId());
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public List<CrisisDTO> findActiveCrisis() throws PropertyNotSetException {
+		List<CrisisDTO> dtoList = new ArrayList<CrisisDTO>();
+		List<Crisis> list = getAllByCriteria(Restrictions.eq("isTrashed", false));
+		if (list != null) {
+			for (Crisis c: list) {
+				try {
+					Hibernate.initialize(c.getModelFamilies());
+					dtoList.add(new CrisisDTO(c));
+				} catch (HibernateException e) {
+					logger.error("Hibernate initialization error for lazy objects in : " + c.getCrisisId());
+				}
+			}
+		}
+		return dtoList;
 	}
 }

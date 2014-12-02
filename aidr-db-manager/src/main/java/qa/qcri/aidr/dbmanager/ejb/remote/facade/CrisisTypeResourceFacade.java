@@ -2,7 +2,6 @@
 package qa.qcri.aidr.dbmanager.ejb.remote.facade;
 
 import java.util.List;
-
 import javax.ejb.Remote;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
@@ -18,6 +17,4 @@ public interface CrisisTypeResourceFacade extends CoreDBServiceFacade<CrisisType
    public CrisisTypeDTO getCrisisTypeByID(Long id) throws PropertyNotSetException;
    public List<CrisisTypeDTO> getCrisisTypes() throws PropertyNotSetException;
    public void deleteCrisisType(Long id);
-   
-    
 }

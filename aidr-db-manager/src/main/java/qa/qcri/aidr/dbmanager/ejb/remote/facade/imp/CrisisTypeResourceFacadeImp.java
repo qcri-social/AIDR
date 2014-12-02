@@ -12,7 +12,6 @@ import javax.ejb.Stateless;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisTypeResourceFacade;
@@ -64,4 +63,5 @@ public class CrisisTypeResourceFacadeImp extends CoreDBServiceFacadeImp<CrisisTy
 			throw new RuntimeException("Crisis requested to be deleted does not exist! id = " + id);
 		}
 	}
+	   
 }

@@ -13,7 +13,7 @@
 	<properties>
 		<slf4j.version>1.6.2</slf4j.version>
 		<gf.version>2.5.1</gf.version>
-        <resource.dir>${basedir}/src/main/resources</resource.dir>
+		<resource.dir>${basedir}/src/main/resources</resource.dir>
 	</properties>
 
 	<dependencies>
@@ -41,7 +41,13 @@
 			<scope>compile</scope>
 			<type>ejb-client</type>
 		</dependency>
-
+		<dependency>
+			<groupId>qa.qcri.aidr.predictdb</groupId>
+			<artifactId>aidr-db-manager</artifactId>
+			<version>1.0</version>
+			<scope>compile</scope>
+			<type>ejb-client</type>
+		</dependency>
 
 		<dependency>
 			<groupId>log4j</groupId>
@@ -195,20 +201,20 @@
 				</configuration>
 			</plugin>
 		</plugins>
-        <resources>
-            <resource>
-                <directory>${resource.dir}</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                    <include>**/*.xml</include>
-                </includes>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-        <filters>
-            <filter>${basedir}/../aidr-common/src/main/resources/common_config.properties</filter>
-        </filters>
-    </build>
+		<resources>
+			<resource>
+				<directory>${resource.dir}</directory>
+				<includes>
+					<include>**/*.properties</include>
+					<include>**/*.xml</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<filters>
+			<filter>${basedir}/../aidr-common/src/main/resources/common_config.properties</filter>
+		</filters>
+	</build>
 	<repositories>
 		<repository>
 			<id>java.net.glassfish</id>

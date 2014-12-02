@@ -19,8 +19,8 @@ import javax.xml.bind.annotation.XmlType;
 //import org.codehaus.jackson.map.annotate.JsonSerialize;
 //import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import qa.qcri.aidr.predictui.entities.AidrCollection;
 import qa.qcri.aidr.predictui.entities.Crisis;

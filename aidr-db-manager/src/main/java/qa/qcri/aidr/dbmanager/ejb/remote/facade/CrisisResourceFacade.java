@@ -11,9 +11,8 @@ import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.CoreDBServiceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 
-
 @Remote
-public interface CrisisResourceFacade extends CoreDBServiceFacade<Crisis, Long>{
+public interface CrisisResourceFacade extends CoreDBServiceFacade<Crisis, Long> {
     
    public CrisisDTO addCrisis(CrisisDTO crisis) throws PropertyNotSetException; 
    
@@ -34,4 +33,9 @@ public interface CrisisResourceFacade extends CoreDBServiceFacade<Crisis, Long>{
    public List<CrisisDTO> getAllCrisisByUserID(Long userID) throws PropertyNotSetException; 
 
    HashMap<String, Integer> countClassifiersByCrisisCodes(List<String> codes);
+   
+   // aidr-trainer-api specific
+   public List<CrisisDTO> getAllCrisisWithModelFamilyNominalAttribute() throws PropertyNotSetException;
+   public CrisisDTO getWithModelFamilyNominalAttributeByCrisisID(Long crisisID) throws PropertyNotSetException;
+   public List<CrisisDTO> findActiveCrisis() throws PropertyNotSetException;
 }

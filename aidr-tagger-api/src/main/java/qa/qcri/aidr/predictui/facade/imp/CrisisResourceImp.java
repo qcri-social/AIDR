@@ -29,17 +29,6 @@ import qa.qcri.aidr.predictui.entities.NominalLabel;
 import qa.qcri.aidr.predictui.entities.Users;
 import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-
 /**
  *
  * @author Imran, Koushik

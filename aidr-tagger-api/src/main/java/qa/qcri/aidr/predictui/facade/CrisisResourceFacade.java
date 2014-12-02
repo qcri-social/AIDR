@@ -6,8 +6,10 @@ package qa.qcri.aidr.predictui.facade;
 
 import java.util.HashMap;
 import java.util.List;
+
 import javax.ejb.Local;
 import javax.persistence.PersistenceException;
+
 import qa.qcri.aidr.predictui.entities.Crisis;
 
 /**
