@@ -1,3 +1,4 @@
+package qa.qcri.aidr.predictui.api;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -48,6 +49,7 @@ public class TestDBManagerResource {
 	public Response getAllCrisis() {
 		try {
 			List<CrisisDTO> dtoList = remoteCrisisEJB.getAllCrisis();
+			System.out.println("Returned successfully from remote EJB call!");
 			if (dtoList != null) 
 			{
 				return Response.ok(dtoList).build();
@@ -65,7 +67,7 @@ public class TestDBManagerResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/crisis/update/{id}")
-	public Response updateCrisisByID(Long id) {
+	public Response updateCrisisByID(long id) {
 		try {
 			CrisisDTO dto = remoteCrisisEJB.getCrisisByID(id);
 			if (dto != null) 

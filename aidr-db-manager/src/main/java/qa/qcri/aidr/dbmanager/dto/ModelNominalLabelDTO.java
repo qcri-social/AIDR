@@ -67,10 +67,10 @@ public class ModelNominalLabelDTO {
 		} else {
 			throw new PropertyNotSetException("Primary key not set!");
 		}
-		if (modelNominalLabel.getModel() != null) {
+		if (modelNominalLabel.hasModel()) {
 			this.setModelDTO(new ModelDTO(modelNominalLabel.getModel()));
 		} 
-		if (modelNominalLabel.getNominalLabel() != null) {
+		if (modelNominalLabel.hasNominalLabel()) {
 			this.setNominalLabelDTO(new NominalLabelDTO(modelNominalLabel.getNominalLabel()));
 		} 
 	}
@@ -89,11 +89,11 @@ public class ModelNominalLabelDTO {
 		return this.nominalLabelDTO;
 	}
 
-	public void setNominalLabelDTO(NominalLabelDTO nominalLabelDTO) throws PropertyNotSetException {
+	public void setNominalLabelDTO(NominalLabelDTO nominalLabelDTO) {
 		if (nominalLabelDTO != null) {
 		this.nominalLabelDTO = nominalLabelDTO;
 		} else {
-			throw new PropertyNotSetException();
+			throw new IllegalArgumentException();
 		}
 	}
 
@@ -105,7 +105,7 @@ public class ModelNominalLabelDTO {
 		if (modelDTO != null) {
 		this.modelDTO = modelDTO;
 		} else {
-			throw new PropertyNotSetException();
+			throw new IllegalArgumentException();
 		}
 	}
 

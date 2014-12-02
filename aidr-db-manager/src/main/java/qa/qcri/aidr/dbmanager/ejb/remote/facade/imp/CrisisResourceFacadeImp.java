@@ -101,14 +101,19 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 
 	@Override
 	public List<CrisisDTO> getAllCrisis() throws PropertyNotSetException {
+		System.out.println("Received request for fetching all crisis!!!");
 		List<CrisisDTO> dtoList = new ArrayList<CrisisDTO>();
 		List<Crisis> crisisList = getAll();
 		if (crisisList != null) {
 			for (Crisis crisis : crisisList) {
+				System.out.println("Converting to DTO crisis: " + crisis.getCode() + ", " + crisis.getName() + ", " + crisis.getCrisisId()
+						+ ", " + crisis.getUsers().getUserId() + ":" + crisis.getUsers().getName());
+				
 				CrisisDTO dto = new CrisisDTO(crisis);
 				dtoList.add(dto);
 			}
-		} 
+		}
+		System.out.println("Done creating DTO list, size = " + dtoList.size());
 		return dtoList;
 	}
 

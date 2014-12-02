@@ -85,8 +85,12 @@ public class CrisisDTO implements Serializable  {
 		this.setName(crisis.getName());
 		this.setCode(crisis.getCode());
 		this.setIsTrashed(crisis.isIsTrashed());
-		this.setCrisisTypeDTO(new CrisisTypeDTO(crisis.getCrisisType()));
-		
+		if (crisis.hasCrisisType()) {
+			this.setCrisisTypeDTO(new CrisisTypeDTO(crisis.getCrisisType()));
+		}
+		if (crisis.hasUsers()) {
+			this.setUsersDTO(new UsersDTO(crisis.getUsers()));
+		}
 		// Setting optional fields that were lazily initialized
 		if (crisis.hasDocuments()) {
 			this.setDocumentsDTO(toDocumentDTOList(crisis.getDocuments()));
@@ -97,7 +101,6 @@ public class CrisisDTO implements Serializable  {
 		if (crisis.hasModelFamilies()) {
 			this.setModelFamiliesDTO(toModelFamilyDTOList(crisis.getModelFamilies()));
 		}
-		
 	}
 
 	public Long getCrisisID() {
@@ -128,13 +131,15 @@ public class CrisisDTO implements Serializable  {
 		this.name = name;
 	}
 
-	public CrisisTypeDTO getCrisisTypeDTO() throws PropertyNotSetException {
+	public CrisisTypeDTO getCrisisTypeDTO() {
+		/*
 		if (null == this.crisisTypeDTO) {
 			logger.error("Attempt to access unset property");
 			throw new PropertyNotSetException();
 		} else {
 			return this.crisisTypeDTO;
-		}
+		}*/
+		return this.crisisTypeDTO;
 	}
 
 	public void setCrisisTypeDTO(CrisisTypeDTO crisisTypeDTO) {
@@ -166,13 +171,15 @@ public class CrisisDTO implements Serializable  {
 		this.isTrashed = isTrashed;
 	}
 
-	public UsersDTO getUsersDTO() throws PropertyNotSetException {
+	public UsersDTO getUsersDTO() {
+		/*
 		if (this.usersDTO == null ) {
 			logger.error( "Attempt to access unset property" );
 			throw new PropertyNotSetException();
 		} else {
 			return this.usersDTO;
-		}
+		}*/
+		return this.usersDTO;
 	}
 
 	public void setUsersDTO(UsersDTO usersDTO) {
@@ -200,13 +207,15 @@ public class CrisisDTO implements Serializable  {
 		this.documentsDTO = documentsDTO;
 	}
 	
-	public List<ModelFamilyDTO> getModelFamiliesDTO() throws PropertyNotSetException {
+	public List<ModelFamilyDTO> getModelFamiliesDTO() {
+		/*
 		if(this.modelFamiliesDTO == null ) {
 			logger.error( "Attempt to access unset property" );
 			throw new PropertyNotSetException();
 		} else {
 			return this.modelFamiliesDTO;
-		}
+		}*/
+		return this.modelFamiliesDTO;
 	}
 
 	public void setModelFamiliesDTO(List<ModelFamilyDTO> modelFamiliesDTO) {

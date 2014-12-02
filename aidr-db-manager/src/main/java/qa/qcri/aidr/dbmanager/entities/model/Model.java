@@ -2,13 +2,9 @@
 // Generated Nov 24, 2014 4:55:08 PM by Hibernate Tools 4.0.0
 package qa.qcri.aidr.dbmanager.entities.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -24,6 +20,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.Hibernate;
 import org.hibernate.collection.internal.PersistentList;
 
 /**
@@ -38,7 +35,6 @@ public class Model implements java.io.Serializable {
      */
     private static final long serialVersionUID = -258497973511763596L;
     private Long modelId;
-    private Long modelFamilyId;
     private double avgPrecision;
     private double avgRecall;
     private double avgAuc;
@@ -51,10 +47,10 @@ public class Model implements java.io.Serializable {
     public Model() {
     }
 
-    public Model(Long modelFamilyId, double avgPrecision, double avgRecall,
+    public Model(ModelFamily modelFamily, double avgPrecision, double avgRecall,
             double avgAuc, int trainingCount, Date trainingTime,
             boolean isCurrentModel) {
-        this.modelFamilyId = modelFamilyId;
+        this.setModelFamily(modelFamily);
         this.avgPrecision = avgPrecision;
         this.avgRecall = avgRecall;
         this.avgAuc = avgAuc;
@@ -66,14 +62,14 @@ public class Model implements java.io.Serializable {
     public Model(Long modelFamilyId, double avgPrecision, double avgRecall,
             double avgAuc, int trainingCount, Date trainingTime,
             boolean isCurrentModel, List<ModelNominalLabel> modelNominalLabels) {
-        this.modelFamilyId = modelFamilyId;
+    	this.setModelFamily(modelFamily);
         this.avgPrecision = avgPrecision;
         this.avgRecall = avgRecall;
         this.avgAuc = avgAuc;
         this.trainingCount = trainingCount;
         this.trainingTime = trainingTime;
         this.isCurrentModel = isCurrentModel;
-        this.modelNominalLabels = modelNominalLabels;
+        this.setModelNominalLabels(modelNominalLabels);
     }
 
     @Id
@@ -85,15 +81,6 @@ public class Model implements java.io.Serializable {
 
     public void setModelId(Long modelId) {
         this.modelId = modelId;
-    }
-
-    @Column(name = "modelFamilyID", nullable = false)
-    public Long getModelFamilyId() {
-        return this.modelFamilyId;
-    }
-
-    public void setModelFamilyId(Long modelFamilyId) {
-        this.modelFamilyId = modelFamilyId;
     }
 
     @Column(name = "avgPrecision", nullable = false, precision = 22, scale = 0)
@@ -160,17 +147,21 @@ public class Model implements java.io.Serializable {
         this.modelNominalLabels = modelNominalLabels;
     }
 
-    @JoinColumn(name = "modelFamilyID", referencedColumnName = "modelFamilyID")
-    @ManyToOne(optional = false)
-    public ModelFamily getModelFamily() {
-        return modelFamily;
-    }
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "modelFamilyID", referencedColumnName = "modelFamilyID", nullable = false)
+	public ModelFamily getModelFamily() {
+		return this.modelFamily;
+	}
 
-    public void setModelFamily(ModelFamily modelFamily) {
-        this.modelFamily = modelFamily;
-    }
+	public void setModelFamily(ModelFamily modelFamily) {
+		this.modelFamily = modelFamily;
+	}
     
 	public boolean hasModelNominalLabel() {
 		return ((PersistentList) this.modelNominalLabels).wasInitialized();
+	}
+	
+	public boolean hasModelFamily() {
+		return Hibernate.isInitialized(modelFamily);
 	}
 }

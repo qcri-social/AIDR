@@ -28,7 +28,7 @@ public class ModelFamilyDTO implements Serializable {
     private boolean isActive;
 
   
-    private List<ModelDTO> modelCollectionDTO;
+    private List<ModelDTO> modelsDTO;
 
     public ModelFamilyDTO() {
     }
@@ -39,8 +39,8 @@ public class ModelFamilyDTO implements Serializable {
         this.setCrisisDTO(new CrisisDTO(model.getCrisis()));
         this.setIsActive(model.isIsActive());
         this.setModelFamilyId(model.getModelFamilyId());
-        if (model.hasModelCollection()) {
-        	this.setModelCollectionDTO(this.toModelDTOList(model.getModelCollection()));
+        if (model.hasModels()) {
+        	this.setModelsDTO(this.toModelDTOList(model.getModels()));
         }
     }
     
@@ -91,13 +91,13 @@ public class ModelFamilyDTO implements Serializable {
         this.isActive = isActive;
     }
 
-    public List<ModelDTO> getModelCollectionDTO() {
-        return modelCollectionDTO;
+    public List<ModelDTO> getModelsDTO() {
+        return modelsDTO;
     }
 
-    public void setModelCollectionDTO(List<ModelDTO> modelCollectionDTO) {
-        if (modelCollectionDTO != null) {
-    	this.modelCollectionDTO = modelCollectionDTO;
+    public void setModelsDTO(List<ModelDTO> modelsDTO) {
+        if (modelsDTO != null) {
+    	this.modelsDTO = modelsDTO;
         } else {
 			throw new IllegalArgumentException("Argument cannot be null!");
 		}
@@ -132,8 +132,8 @@ public class ModelFamilyDTO implements Serializable {
 		if (this.getModelFamilyId() != null) {
 			entity.setModelFamilyId(modelFamilyId);
 		}
-		if (this.modelCollectionDTO != null) {
-			entity.setModelCollection(this.toModelList(this.getModelCollectionDTO()));
+		if (this.modelsDTO != null) {
+			entity.setModels(this.toModelList(this.getModelsDTO()));
 		}
 		return entity;
 	}
