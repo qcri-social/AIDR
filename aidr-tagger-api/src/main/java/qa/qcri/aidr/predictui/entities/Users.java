@@ -5,7 +5,9 @@
 package qa.qcri.aidr.predictui.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -23,6 +25,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
 
 //import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
@@ -155,4 +158,53 @@ public class Users implements Serializable {
         return "qa.qcri.aidr.predictui.entities.Users[ userID=" + userID + " ]";
     }
     
+	public static Users toLocalUsers(qa.qcri.aidr.task.dto.UsersDTO userDTO) {
+		Users user = new Users(userDTO.getUserID().intValue(), userDTO.getName(), userDTO.getRole());
+		return user;
+	}
+	
+	public static qa.qcri.aidr.task.dto.UsersDTO toTaskManagerUsersDTO(Users user) {
+		Long userID = user.getUserID().longValue();
+		qa.qcri.aidr.task.dto.UsersDTO userDTO = new qa.qcri.aidr.task.dto.UsersDTO(userID, user.getName(), user.getRole());
+		return userDTO;
+	}
+	
+	public static qa.qcri.aidr.task.entities.Users toTaskManagerUsers(Users user) {
+		Long userID = user.getUserID().longValue();
+		qa.qcri.aidr.task.entities.Users u = new qa.qcri.aidr.task.entities.Users(userID, user.getName(), user.getRole());
+		return u;
+	}
+	
+	public static List<Users> toLocalUsersList(List<qa.qcri.aidr.task.dto.UsersDTO> list) {
+		if (list != null) {
+			List<Users> usersList = new ArrayList<Users>();
+			for (qa.qcri.aidr.task.dto.UsersDTO u: list) {
+				usersList.add(toLocalUsers(u));
+			}
+			return usersList;
+		}
+		return null;
+	}
+	
+	public static List<qa.qcri.aidr.task.dto.UsersDTO> toTaskManagerUsersDTOList(List<Users> list) {
+		if (list != null) {
+			List<qa.qcri.aidr.task.dto.UsersDTO> usersDTOList = new ArrayList<qa.qcri.aidr.task.dto.UsersDTO>();
+			for (Users u: list) {
+				usersDTOList.add(toTaskManagerUsersDTO(u));
+			}
+			return usersDTOList;
+		}
+		return null;
+	}
+	
+	public static List<qa.qcri.aidr.task.entities.Users> toTaskManagerUsersList(List<Users> list) {
+		if (list != null) {
+			List<qa.qcri.aidr.task.entities.Users> usersList = new ArrayList<qa.qcri.aidr.task.entities.Users>();
+			for (Users u: list) {
+				usersList.add(toTaskManagerUsers(u));
+			}
+			return usersList;
+		}
+		return null;
+	}
 }

@@ -7,14 +7,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.apache.log4j.Logger;
+
 import weka.classifiers.Classifier;
 import weka.core.Instances;
-
 import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.common.*;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.dbentities.ModelFamilyEC;
-
 import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 /**
@@ -25,6 +25,8 @@ import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
  */
 public class ModelController extends PipelineProcess {
 
+	private static Logger logger = Logger.getLogger(ModelController.class);
+	
     ModelSet models = new ModelSet();
     ModelRetrainTrigger trainingFeedMonitor;
     long lastCheckForDefinitionUpdates = 0;
@@ -139,7 +141,7 @@ public class ModelController extends PipelineProcess {
     // based, see constructor)
     private void onRetrainModel(CrisisAttributePair info) {
 
-        log(Loggable.LogLevel.INFO, "Training a new model for event "
+        logger.info("Training a new model for event "
                 + info.eventID + " and attribute " + info.attributeID);
 
         Model oldModel = models.getModel(info.eventID, info.attributeID);
@@ -148,22 +150,22 @@ public class ModelController extends PipelineProcess {
             newModel = ModelFactory.buildModel(info.eventID, info.attributeID,
                     oldModel);
         } catch (Exception e) {
-            log("Exception while attempting to build model", e);
+            logger.error("Exception while attempting to build model", e);
             return;
         }
 
         if (newModel != null && newModel != oldModel) {
             replaceModel(info.eventID, info.attributeID, newModel);
         } else if (newModel == null) {
-            log(LogLevel.INFO,
+            logger.info(
                     "Performance was too low, new model was discarded");
         } else {
-            log(LogLevel.INFO, "New model did not outperform old model");
+            logger.info("New model did not outperform old model");
         }
     }
 
     private void replaceModel(int eventID, int attributeID, Model newModel) {
-        log(Loggable.LogLevel.ERROR, "Replacing model for event " + eventID
+        logger.error("Replacing model for event " + eventID
                 + " and attribute " + attributeID);
 
         // Insert the new model into the database and update the currentModelID
@@ -184,7 +186,7 @@ public class ModelController extends PipelineProcess {
                 newModel.getAttributeSpecification()} // classifier
                     );
         } catch (Exception e) {
-            log("Exception when writing new model to file", e);
+            logger.error("Exception when writing new model to file", e);
             return; // There is no point proceeding if the model could not be
             // written
         }
@@ -217,7 +219,7 @@ public class ModelController extends PipelineProcess {
             String path = getModelPath(eventID, attributeID, modelID);
             o = weka.core.SerializationHelper.readAll(path);
         } catch (Exception e) {
-            log(LogLevel.ERROR, "Could not load model from disk (crisis " + eventID
+            logger.error("Could not load model from disk (crisis " + eventID
                     + ", attribute " + attributeID + ", model " + modelID
                     + "). Delete model reference in DB and retrain? [y/n]");
             try {
@@ -238,7 +240,7 @@ public class ModelController extends PipelineProcess {
 
         models.setModel(eventID, attributeID, model);
 
-        log(LogLevel.INFO, "Loaded model for crisis " + eventID
+        logger.info("Loaded model for crisis " + eventID
                 + ", attribute " + attributeID);
 
         return true;

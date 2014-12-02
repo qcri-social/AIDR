@@ -5,6 +5,7 @@
 package qa.qcri.aidr.predictui.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.persistence.Basic;
@@ -21,16 +22,15 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-//import org.codehaus.jackson.annotate.JsonBackReference;
-//import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-//import org.codehaus.jackson.annotate.JsonManagedReference;
+
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -44,13 +44,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Entity
 @Table(name = "nominal_label")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "NominalLabel.findAll", query = "SELECT n FROM NominalLabel n"),
-    @NamedQuery(name = "NominalLabel.findByNominalLabelID", query = "SELECT n FROM NominalLabel n WHERE n.nominalLabelID = :nominalLabelID"),
-    @NamedQuery(name = "NominalLabel.findByNominalLabelCode", query = "SELECT n FROM NominalLabel n WHERE n.nominalLabelCode = :nominalLabelCode"),
-    @NamedQuery(name = "NominalLabel.findByName", query = "SELECT n FROM NominalLabel n WHERE n.name = :name"),
-    @NamedQuery(name = "NominalLabel.findByDescription", query = "SELECT n FROM NominalLabel n WHERE n.description = :description"),
-    @NamedQuery(name = "NominalLabel.findByNominalAttribute", query = "SELECT n FROM NominalLabel n WHERE n.nominalAttribute = :nominalAttribute")})
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class NominalLabel implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -77,8 +70,13 @@ public class NominalLabel implements Serializable {
     @Size(min = 1, max = 600)
     @Column(name = "description")
     @XmlElement private String description;
-    
-    @ManyToMany(mappedBy = "nominalLabelCollection")
+
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "sequence")
+    @XmlElement private Integer sequence;
+
+    @Transient
     @JsonManagedReference
     private Collection<Document> documentCollection;
     
@@ -103,6 +101,16 @@ public class NominalLabel implements Serializable {
         this.nominalLabelCode = nominalLabelCode;
         this.name = name;
         this.description = description;
+        this.sequence = sequence;
+    }
+
+
+    public NominalLabel(Integer nominalLabelID, String nominalLabelCode, String name, String description, Integer sequence) {
+        this.nominalLabelID = nominalLabelID;
+        this.nominalLabelCode = nominalLabelCode;
+        this.name = name;
+        this.description = description;
+        this.sequence = sequence;
     }
 
     public Integer getNominalLabelID() {
@@ -137,6 +145,14 @@ public class NominalLabel implements Serializable {
         this.description = description;
     }
 
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
+    }
+    
     @XmlTransient
     @JsonIgnore
     public Collection<Document> getDocumentCollection() {
@@ -146,7 +162,7 @@ public class NominalLabel implements Serializable {
     public void setDocumentCollection(Collection<Document> documentCollection) {
         this.documentCollection = documentCollection;
     }
-
+    
     @XmlTransient
     @JsonIgnore
     public Collection<ModelNominalLabel> getModelNominalLabelCollection() {
@@ -192,4 +208,45 @@ public class NominalLabel implements Serializable {
         return "qa.qcri.aidr.predictui.entities.NominalLabel[ nominalLabelID=" + nominalLabelID + " ]";
     }
     
+	public static Collection<NominalLabel> toLocalNominalLabelCollection(Collection<qa.qcri.aidr.task.dto.NominalLabelDTO> list) {
+		if (list != null) {
+			Collection<NominalLabel> nominalLabelList = new ArrayList<NominalLabel>();
+			for (qa.qcri.aidr.task.dto.NominalLabelDTO t: list) {
+				if (t != null) {
+					NominalLabel nominalLabel  = new NominalLabel(t.getNominalLabelID(), t.getNominalLabelCode(), t.getName(), t.getDescription());
+					nominalLabelList.add(nominalLabel);
+				}
+			}
+			return nominalLabelList;
+		}
+		return null;
+	}
+
+	public static Collection<qa.qcri.aidr.task.dto.NominalLabelDTO> toTaskManagerNominalLabelDTOCollection(Collection<NominalLabel> list) {
+		if (list != null) {
+			Collection<qa.qcri.aidr.task.dto.NominalLabelDTO> nominalLabelDTOList = new ArrayList<qa.qcri.aidr.task.dto.NominalLabelDTO>();
+			for (NominalLabel t: list) {
+				if (t != null) {
+					qa.qcri.aidr.task.dto.NominalLabelDTO nominalLabelDTO = new qa.qcri.aidr.task.dto.NominalLabelDTO(t.getNominalLabelID(), t.getNominalLabelCode(), t.getName(), t.getDescription());
+					nominalLabelDTOList.add(nominalLabelDTO);
+				}
+			}
+			return nominalLabelDTOList;
+		}
+		return null;
+	}
+	
+	public static Collection<qa.qcri.aidr.task.entities.NominalLabel> toTaskManagerNominalLabelCollection(Collection<NominalLabel> list) {
+		if (list != null) {
+			Collection<qa.qcri.aidr.task.entities.NominalLabel> nominalLabelList = new ArrayList<qa.qcri.aidr.task.entities.NominalLabel>();
+			for (NominalLabel t: list) {
+				if (t != null) {
+					qa.qcri.aidr.task.entities.NominalLabel nominalLabel = new qa.qcri.aidr.task.entities.NominalLabel(t.getNominalLabelID(), t.getNominalLabelCode(), t.getName(), t.getDescription());
+					nominalLabelList.add(nominalLabel);
+				}
+			}
+			return nominalLabelList;
+		}
+		return null;
+	}
 }

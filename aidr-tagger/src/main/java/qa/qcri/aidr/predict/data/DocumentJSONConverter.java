@@ -10,14 +10,13 @@ import org.json.JSONObject;
 import org.apache.commons.lang3.text.translate.UnicodeEscaper;
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.classification.DocumentLabel;
 import qa.qcri.aidr.predict.classification.geo.GeoLabel;
 import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
 import qa.qcri.aidr.predict.common.DocumentType;
-import qa.qcri.aidr.predict.common.ErrorLog;
 import qa.qcri.aidr.predict.common.Helpers;
-import qa.qcri.aidr.predict.common.Loggable;
 import qa.qcri.aidr.predict.dbentities.ModelFamilyEC;
 import qa.qcri.aidr.predict.dbentities.NominalAttributeEC;
 import qa.qcri.aidr.predict.dbentities.NominalLabelEC;
@@ -30,7 +29,7 @@ import qa.qcri.aidr.predict.featureextraction.WordSet;
  * 
  * @author jrogstadius
  */
-public class DocumentJSONConverter extends Loggable {
+public class DocumentJSONConverter {
 
 	private static Logger logger = Logger.getLogger(DocumentJSONConverter.class);
 	private static ErrorLog elog = new ErrorLog();

@@ -3,12 +3,11 @@ package qa.qcri.aidr.redis;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.logging.ErrorLog;
+import qa.qcri.aidr.common.logging.ErrorLog;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
-
 import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
 
 /**

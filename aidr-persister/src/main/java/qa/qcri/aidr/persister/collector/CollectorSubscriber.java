@@ -14,6 +14,7 @@ import java.io.File;
 
 
 
+
 //import java.util.logging.Level;
 //import java.util.logging.Logger;
 import redis.clients.jedis.JedisPubSub;
@@ -23,7 +24,6 @@ import java.io.FileOutputStream;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,9 +31,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.redis.LoadShedder;
 import qa.qcri.aidr.io.FileSystemOperations;
-import qa.qcri.aidr.logging.ErrorLog;
 import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
 
 public class CollectorSubscriber extends JedisPubSub {

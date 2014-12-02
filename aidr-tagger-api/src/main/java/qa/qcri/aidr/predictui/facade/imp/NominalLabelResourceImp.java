@@ -38,6 +38,7 @@ public class NominalLabelResourceImp implements NominalLabelResourceFacade {
         labelDB.setName(label.getName());
         labelDB.setNominalAttribute(dbAtt);
         labelDB.setNominalLabelCode(label.getNominalLabelCode());
+        labelDB.setSequence(label.getSequence());
 
         em.persist(labelDB);
         return labelDB;
@@ -67,15 +68,16 @@ public class NominalLabelResourceImp implements NominalLabelResourceFacade {
         try {
             
             Query attributeQuery = em.createNamedQuery("NominalAttribute.findByNominalAttributeID", NominalAttribute.class);
-        attributeQuery.setParameter("nominalAttributeID", label.getNominalAttributeID());
-        NominalAttribute dbAtt = (NominalAttribute) attributeQuery.getSingleResult();
+            attributeQuery.setParameter("nominalAttributeID", label.getNominalAttributeID());
+            NominalAttribute dbAtt = (NominalAttribute) attributeQuery.getSingleResult();
 
         
-        labelToDB.setDescription(label.getDescription());
-        labelToDB.setName(label.getName());
-        labelToDB.setNominalAttribute(dbAtt);
-        labelToDB.setNominalLabelCode(label.getNominalLabelCode());
-        labelToDB.setNominalLabelID(label.getNominalLabelID());
+            labelToDB.setDescription(label.getDescription());
+            labelToDB.setName(label.getName());
+            labelToDB.setNominalAttribute(dbAtt);
+            labelToDB.setNominalLabelCode(label.getNominalLabelCode());
+            labelToDB.setNominalLabelID(label.getNominalLabelID());
+            labelToDB.setSequence(label.getSequence());
             
             NominalLabel dbLabel = em.find(NominalLabel.class, labelToDB.getNominalLabelID());
             if (dbLabel != null) {

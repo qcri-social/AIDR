@@ -22,6 +22,7 @@ import java.util.Set;
 
 
 
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -41,8 +42,8 @@ import org.supercsv.prefs.CsvPreference;
 import org.supercsv.encoder.DefaultCsvEncoder;
 import org.supercsv.exception.SuperCsvCellProcessorException;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.SystemProperties;
-import qa.qcri.aidr.logging.ErrorLog;
 import qa.qcri.aidr.persister.filter.NominalLabel;
 import qa.qcri.aidr.utils.Tweet;
 
@@ -52,7 +53,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.utils.ClassifiedTweet;
-
 import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
 
 /**

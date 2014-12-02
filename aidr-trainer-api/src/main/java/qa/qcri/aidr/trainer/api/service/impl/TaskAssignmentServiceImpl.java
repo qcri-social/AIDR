@@ -81,11 +81,11 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
     public void addToTaskAssignment(List<Document> documents, long userID){
         //taskAssignmentDao.insertTaskAssignment(documents, userID);
-    	TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-    	String jsonString = mapper.serializeTask(documents);
-    	List<qa.qcri.aidr.task.entities.Document> docList = mapper.deSerializeList(jsonString, new TypeReference<List<qa.qcri.aidr.task.entities.Document>>() {});
+ 
+    	//List<qa.qcri.aidr.task.entities.Document> docList = mapper.deSerializeList(jsonString, new TypeReference<List<qa.qcri.aidr.task.entities.Document>>() {});
     	try {
-			taskManager.assignNewTaskToUser(docList, userID);
+    		List<qa.qcri.aidr.task.entities.Document> docList = Document.toTaskManagerDocumentList(documents);
+    		taskManager.assignNewTaskToUser(docList, userID);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

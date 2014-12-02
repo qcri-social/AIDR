@@ -84,6 +84,22 @@ public class TaskAnswer implements Serializable {
         this.taskID = taskID;
     }
 
+	public static TaskAnswer toLocalTaskAnswer(qa.qcri.aidr.task.dto.TaskAnswerDTO t) {
+		if (t != null) {
+			TaskAnswer taskAnswer = new TaskAnswer(t.getDocumentID(), t.getUserID(), t.getAnswer());
+			return taskAnswer;
+		}
+		return null;
+	}
+	
+	public static qa.qcri.aidr.task.entities.TaskAnswer toTaskManagerTaskAnswer(TaskAnswer t) {
+		if (t != null) {
+			qa.qcri.aidr.task.entities.TaskAnswer taskAnswer = new qa.qcri.aidr.task.entities.TaskAnswer(t.getDocumentID(), t.getUserID(), t.getAnswer());
+			return taskAnswer;
+		}
+		return null;
+	}
+    
     @XmlElement
     @Id
     @GeneratedValue

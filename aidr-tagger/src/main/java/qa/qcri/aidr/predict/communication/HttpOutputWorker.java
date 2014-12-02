@@ -9,6 +9,7 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predict.common.*;
 
 /**
@@ -17,7 +18,7 @@ import qa.qcri.aidr.predict.common.*;
  *
  * @author jrogstadius
  */
-public class HttpOutputWorker extends Loggable {
+public class HttpOutputWorker {
 
     /*
      * This is a bit overly complicated, but Output workers need input data from
@@ -28,7 +29,7 @@ public class HttpOutputWorker extends Loggable {
 	private static Logger logger = Logger.getLogger(HttpOutputWorker.class);
 	private static ErrorLog elog = new ErrorLog();
 	
-    public static class WorkerFactory extends Loggable implements Runnable {
+    public static class WorkerFactory  implements Runnable {
 
         private Socket socket;
 

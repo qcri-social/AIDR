@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ejb.EJB;
@@ -13,6 +14,8 @@ import org.hibernate.criterion.Restrictions;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import qa.qcri.aidr.task.dto.DocumentDTO;
+import qa.qcri.aidr.task.dto.util.DocumentDTOHelper;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 import qa.qcri.aidr.task.entities.Document;
 
@@ -29,7 +32,7 @@ public class EJBAnnotationTest {
 	@Test
 	public void getTaskByIdTest() {
 		//TODO id for what? + String format
-		String c = taskManager.getTaskById(new Long(4579254));
+		DocumentDTO c = taskManager.getTaskById(new Long(4579254));
 		assertNotNull(c);
 		assertEquals("test", c);
 	}
@@ -37,7 +40,7 @@ public class EJBAnnotationTest {
 	@Test
 	public void getAllTasksTest() {
 		// TODO String format
-		String c = taskManager.getAllTasks();
+		List<DocumentDTO> c = taskManager.getAllTasks();
 		assertNotNull(c);
 		assertEquals("test", c);
 	}
@@ -46,7 +49,7 @@ public class EJBAnnotationTest {
 	public void getTaskCollectionByCriterionTest() {
 		// TODO
 		Criterion criterion = Restrictions.eq("hasHumanLabels", true);
-		String c = taskManager.getTaskCollectionByCriterion(new Long(51), 0, criterion);
+		List<DocumentDTO> c = taskManager.getTaskCollectionByCriterion(new Long(51), 0, criterion);
 		assertNotNull(c);
 		assertEquals("test", c);
 	}
@@ -61,13 +64,13 @@ public class EJBAnnotationTest {
 	@Test
 	public void updateTaskTest() {
 		// TODO 
-		Document document = taskManager.getDocumentById(new Long(4579250));
+		DocumentDTO document = taskManager.getDocumentById(new Long(4579250));
 		document.setHasHumanLabels(false);
 		//
 		assertNotNull(document);
 		//
-		taskManager.updateTask(document);
-		Document updatedDoc = taskManager.getDocumentById(new Long(4579250));
+		taskManager.updateTask(DocumentDTOHelper.toDocument(document));
+		DocumentDTO updatedDoc = taskManager.getDocumentById(new Long(4579250));
 		//
 		assertNotNull(updatedDoc);
 		assertEquals(false, updatedDoc.getHasHumanLabels());
@@ -81,7 +84,7 @@ public class EJBAnnotationTest {
     	paramMap.put("setNominalLabelCollection", null);
 		taskManager.setTaskParameter(Document.class, new Long(4579255), paramMap);
 		//
-		Document updatedTask = taskManager.getDocumentById(new Long(4579255));
+		DocumentDTO updatedTask = taskManager.getDocumentById(new Long(4579255));
 		//
 		assertNotNull(updatedTask);
 		assertEquals(false, updatedTask.getHasHumanLabels());
@@ -90,8 +93,8 @@ public class EJBAnnotationTest {
 	@Test
 	public void deleteTaskTest() {
 		// TODO
-		Document doc = taskManager.getDocumentById(new Long(4580324));
-		int result = taskManager.deleteTask(doc);
+		DocumentDTO doc = taskManager.getDocumentById(new Long(4580324));
+		int result = taskManager.deleteTask(DocumentDTOHelper.toDocument(doc));
 		assertEquals(0, result);
 	}
 	//

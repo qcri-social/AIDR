@@ -16,6 +16,13 @@ import javax.ejb.Stateless;
 
 
 
+
+
+
+
+
+
+
 //import org.apache.log4j.Logger;
 //import org.codehaus.jackson.map.ObjectMapper;
 //import org.codehaus.jackson.type.TypeReference;
@@ -29,6 +36,13 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.task.dto.DocumentDTO;
+import qa.qcri.aidr.task.dto.util.CrisisDTOHelper;
+import qa.qcri.aidr.task.dto.util.DocumentDTOHelper;
+import qa.qcri.aidr.task.dto.util.DocumentNominalLabelDTOHelper;
+import qa.qcri.aidr.task.dto.util.TaskAnswerDTOHelper;
+import qa.qcri.aidr.task.dto.util.TaskAssignmentDTOHelper;
+import qa.qcri.aidr.task.dto.util.UsersDTOHelper;
 import qa.qcri.aidr.task.ejb.CrisisService;
 import qa.qcri.aidr.task.ejb.DocumentNominalLabelService;
 import qa.qcri.aidr.task.ejb.DocumentService;
@@ -306,7 +320,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			// NOTE: can't use update() since serialization+deserialization
 			// of persisted entity will throw an exception. Use merge() instead.
 			//documentLocalEJB.update((Document) task);
-			documentLocalEJB.merge((Document) task); 
+			documentLocalEJB.merge(((Document) task)); 
 		} catch (Exception e) {
 			logger.error("failed update");
 			logger.error(elog.toStringException(e));
@@ -314,8 +328,9 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 
+
 	@Override
-	public void updateTask(List<T> collection) {
+	public void updateTaskList(List<T> collection) {
 		try { 
 			// NOTE: can't use update() since serialization+deserialization
 			// of persisted entity will throw an exception. Use merge() instead.
@@ -327,13 +342,26 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		}
 	}
 
+	@Override
+	public void updateTask(qa.qcri.aidr.task.dto.DocumentDTO dto) {
+		try {
+			// NOTE: can't use update() since serialization+deserialization
+			// of persisted entity will throw an exception. Use merge() instead.
+			//documentLocalEJB.update((Document) task);
+			documentLocalEJB.merge(DocumentDTOHelper.toDocument(dto)); 
+		} catch (Exception e) {
+			logger.error("failed update");
+			logger.error(elog.toStringException(e));
+		}
+	}
+
+	
 	/**
 	 * Gets a new task from the task repository
 	 * @param <entityClass>
 	 */
 	@Override
-	public String getNewTask(Long crisisID) {
-		//Document document = (Document) getNewTask(crisisID, null);
+	public qa.qcri.aidr.task.dto.DocumentDTO getNewTask(Long crisisID) {
 		try {
 			return getNewTask(crisisID, null);
 		} catch (Exception e) {
@@ -347,7 +375,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	 * based on specified criterion
 	 */
 	@Override
-	public String getNewTask(Long crisisID, Criterion criterion) {
+	public qa.qcri.aidr.task.dto.DocumentDTO getNewTask(Long crisisID, Criterion criterion) {
 		Criterion newCriterion = null;
 		try {
 			if (criterion != null) {
@@ -368,8 +396,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			} else {
 				logger.info("[getNewTask] New task: " + document);
 			}
-			String jsonString = serializeTask(document);
-			return jsonString;
+
+			return DocumentDTOHelper.toDocumentDTO(document);
 		} catch (Exception e) {
 			logger.error("Error in getting new Task for crisisID: " + crisisID);
 			logger.error(elog.toStringException(e));
@@ -379,7 +407,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 
 	@Override
-	public String getNewTaskCollection(Long crisisID, Integer count, String order, Criterion criterion) {
+	public List<qa.qcri.aidr.task.dto.DocumentDTO> getNewTaskCollection(Long crisisID, Integer count, String order, Criterion criterion) {
 		logger.info("Received request for crisisID = " + crisisID + ", count = " + count);
 		String aliasTable = "taskAssignment";
 		String aliasTableKey = "taskAssignment.documentID";
@@ -401,8 +429,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			logger.debug("[getNewTaskCollection] docList = " + docList);
 			if (docList != null) {
 				logger.info("Fetched size = " + docList.size());
-				String jsonString = serializeTask(docList);
-				return jsonString;
+	
+				return DocumentDTOHelper.toDocumentDTOList(docList);
 			}
 			return null;
 		} catch (Exception e) {
@@ -478,15 +506,15 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 	@Override
-	public String getTaskByCriterion(Long crisisID, Criterion criterion) {
+	public qa.qcri.aidr.task.dto.DocumentDTO getTaskByCriterion(Long crisisID, Criterion criterion) {
 		try {
 			if (criterion != null) {
 				Criterion newCriterion = Restrictions.conjunction()
 						.add(criterion)
 						.add(Restrictions.eq("crisisID", crisisID));
 				Document document = documentLocalEJB.getByCriteria(newCriterion);
-				String jsonString = serializeTask(document);
-				return jsonString;
+
+				return DocumentDTOHelper.toDocumentDTO(document);
 			}
 		} catch (Exception e) {
 			logger.error("Error in finding task");
@@ -496,15 +524,14 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 	@Override
-	public String getTaskCollectionByCriterion(Long crisisID, Integer count, Criterion criterion) {
+	public List<qa.qcri.aidr.task.dto.DocumentDTO> getTaskCollectionByCriterion(Long crisisID, Integer count, Criterion criterion) {
 		try {
 			if (criterion != null) {
 				Criterion newCriterion = Restrictions.conjunction()
 						.add(criterion)
 						.add(Restrictions.eq("crisisID", crisisID));
 				List<Document> docList =  documentLocalEJB.getByCriteriaWithLimit(newCriterion, count);
-				String jsonString = serializeTask(docList);
-				return jsonString;
+				return DocumentDTOHelper.toDocumentDTOList(docList);
 			}
 		} catch (Exception e) {
 			logger.error("Error in finding task");
@@ -513,6 +540,19 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		return null;
 	}
 
+	@Override
+	public List<qa.qcri.aidr.task.dto.DocumentDTO> getNominalLabelDocumentCollection(Integer nominalLabelID) {
+		Criterion criterion = Restrictions.eq("nominalLabelID", nominalLabelID);
+		try {
+				List<Document> docList =  documentLocalEJB.getDocumentCollectionForNominalLabel(criterion);
+				return DocumentDTOHelper.toDocumentDTOList(docList);
+		} catch (Exception e) {
+			logger.error("Error in finding documents for given criterion: " + criterion.toString());
+			logger.error(elog.toStringException(e));
+		}
+		return null;
+	}
+	
 	@Override
 	public void taskUpdate(Criterion criterion, String joinType, String joinTable,
 			String joinColumn, String sortOrder, String[] orderBy) {
@@ -521,12 +561,12 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 	@Override
-	public String getTaskById(Long id) {
+	public qa.qcri.aidr.task.dto.DocumentDTO getTaskById(Long id) {
 		try {
 			Document document = documentLocalEJB.getById(id);
 			logger.info("Fetched document: " + document);
-			String jsonString = serializeTask(document);
-			return jsonString;
+
+			return DocumentDTOHelper.toDocumentDTO(document);
 		} catch (Exception e) {
 			logger.error("Error in finding task");
 			logger.error(elog.toStringException(e));
@@ -535,13 +575,12 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 	@Override
-	public String getAllTasks() {
+	public List<qa.qcri.aidr.task.dto.DocumentDTO> getAllTasks() {
 		try {
 			List<Document> docList =  documentLocalEJB.getAll();
 			logger.info("Fetched documents count: " + docList.size());
 
-			String jsonString = serializeTask(docList);
-			return jsonString;
+			return DocumentDTOHelper.toDocumentDTOList(docList);
 		} catch (Exception e) {
 			logger.error("Error in finding task");
 			logger.error(elog.toStringException(e));
@@ -646,12 +685,11 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 	@Override
-	public String getAssignedTasksById(Long id) {
+	public List<qa.qcri.aidr.task.dto.TaskAssignmentDTO> getAssignedTasksById(Long id) {
 		List<TaskAssignment> docList = taskAssignmentEJB.findTaskAssignmentByID(id);
 		if (docList != null || !docList.isEmpty()) {
 			try {
-				String jsonString = serializeTask(docList);
-				return jsonString;
+				return TaskAssignmentDTOHelper.toTaskAssignmentDTOList(docList);
 			} catch (Exception e) {
 				logger.error("Error in serializing collection");
 				logger.error(elog.toStringException(e));
@@ -661,12 +699,11 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 	@Override
-	public String getAssignedTaskByUserId(Long id, Long userId) {
+	public qa.qcri.aidr.task.dto.TaskAssignmentDTO getAssignedTaskByUserId(Long id, Long userId) {
 		TaskAssignment assignedUserTask = taskAssignmentEJB.findTaskAssignment(id, userId);
 		if (assignedUserTask != null) {
 			try {
-				String jsonString = serializeTask(assignedUserTask);
-				return jsonString;
+				return TaskAssignmentDTOHelper.toTaskAssignmentDTO(assignedUserTask);
 			} catch (Exception e) {
 				logger.error("Error in serializing collection");
 				logger.error(elog.toStringException(e));
@@ -680,7 +717,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	 * of the entity to be modified. Returns the modified entity.
 	 */
 	@Override
-	public String setTaskParameter(Class<T> entityType, Long id, Map<String, String> paramMap) {
+	public Object setTaskParameter(Class<T> entityType, Long id, Map<String, String> paramMap) {
 		logger.info("Received request for task ID = " + id + ", param Map = " + paramMap);
 		Object doc = null;
 		try {
@@ -785,37 +822,43 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				logger.info("Detected of type Document.class, id = " + id);
 				documentLocalEJB.merge((qa.qcri.aidr.task.entities.Document) doc); 
 				logger.info("Merge update successful for task id = " + id);
-				return serializeTask((qa.qcri.aidr.task.entities.Document) doc);
+				//return serializeTask((qa.qcri.aidr.task.entities.Document) doc);
+				return DocumentDTOHelper.toDocumentDTO((qa.qcri.aidr.task.entities.Document) doc);
 			} 
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.TaskAssignment")) {
 				logger.info("Detected of type TaskAssignment.class");
 				taskAssignmentEJB.merge((qa.qcri.aidr.task.entities.TaskAssignment) doc);
 				logger.info("Merge update successful for task id = " + id);
-				return serializeTask((qa.qcri.aidr.task.entities.TaskAssignment) doc);
+				//return serializeTask((qa.qcri.aidr.task.entities.TaskAssignment) doc);
+				return TaskAssignmentDTOHelper.toTaskAssignmentDTO((qa.qcri.aidr.task.entities.TaskAssignment) doc);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.TaskAnswer")) {
 				logger.info("Detected of type TaskAnswer.class");
 				taskAnswerEJB.merge((qa.qcri.aidr.task.entities.TaskAnswer) doc);
 				logger.info("Merge update successful for task id = " + id);
-				return serializeTask((qa.qcri.aidr.task.entities.TaskAnswer) doc);
+				//return serializeTask((qa.qcri.aidr.task.entities.TaskAnswer) doc);
+				return TaskAnswerDTOHelper.toTaskAnswerDTO((qa.qcri.aidr.task.entities.TaskAnswer) doc);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.Users")) {
 				logger.info("Detected of type Users.class");
 				usersLocalEJB.merge((qa.qcri.aidr.task.entities.Users) doc);
 				logger.info("Merge update successful for task id = " + id);
-				return serializeTask((qa.qcri.aidr.task.entities.Users) doc);
+				//return serializeTask((qa.qcri.aidr.task.entities.Users) doc);
+				return UsersDTOHelper.toUsersDTO((qa.qcri.aidr.task.entities.Users) doc);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.DocumentNominalLabel")) {
 				logger.info("Detected of type DocumentNominalLabel.class");
 				documentNominalLabelEJB.merge((qa.qcri.aidr.task.entities.DocumentNominalLabel) doc);
 				logger.info("Merge update successful for task id = " + id);
-				return serializeTask((qa.qcri.aidr.task.entities.DocumentNominalLabel) doc);
+				//return serializeTask((qa.qcri.aidr.task.entities.DocumentNominalLabel) doc);
+				return DocumentNominalLabelDTOHelper.toDocumentNominalLabelDTO((qa.qcri.aidr.task.entities.DocumentNominalLabel) doc);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.task.entities.Crisis")) {
 				logger.info("Detected of type Crisis.class");
 				crisisEJB.merge((qa.qcri.aidr.task.entities.Crisis) doc);
 				logger.info("Merge update successful for task id = " + id);
-				return serializeTask((qa.qcri.aidr.task.entities.Crisis) doc);
+				//return serializeTask((qa.qcri.aidr.task.entities.Crisis) doc);
+				return CrisisDTOHelper.toCrisisDTO((qa.qcri.aidr.task.entities.Crisis) doc);
 			}
 		} catch (Exception e) {
 			logger.error("Error in updating entity on DB");
@@ -825,40 +868,33 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 
-	/*
-	public static void main(String args[]) {
-		TaskManagerRemote<Document, Serializable> tm = new TaskManagerBean<Document, Long>();
-		Map<String, String> paramMap = new HashMap<String, String>();
-		paramMap.put("setHasHumanLabels", new Boolean(false).toString());
-		paramMap.put("setCrisisID", new Long(117L).toString());
-		qa.qcri.aidr.task.entities.Document newDoc = tm.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, 4579275L, paramMap);
-		System.out.println("newDoc = " + newDoc.getDocumentID() + ": " + newDoc.isHasHumanLabels());
-	}
-	 */
 
 	////////////////////////////////////////////
 	// User service related APIs
 	////////////////////////////////////////////
 	@Override
-	public String getUserByName(String name) {
+	public qa.qcri.aidr.task.dto.UsersDTO getUserByName(String name) {
 		Users user = usersLocalEJB.findUserByName(name);
-		return serializeTask(user);
+		//return serializeTask(user);
+		return UsersDTOHelper.toUsersDTO(user);
 	}
 
 	@Override
-	public String getUserById(Long id) {
+	public qa.qcri.aidr.task.dto.UsersDTO getUserById(Long id) {
 		Users user = usersLocalEJB.findUserByID(id);
-		return serializeTask(user);
+		//return serializeTask(user);
+		return UsersDTOHelper.toUsersDTO(user);
 	}
 
 	@Override
-	public String getAllUserByName(String name) {
+	public List<qa.qcri.aidr.task.dto.UsersDTO> getAllUserByName(String name) {
 		List<Users> userList = usersLocalEJB.findAllUsersByName(name);
-		return serializeTask(userList);
+		//return serializeTask(userList);
+		return UsersDTOHelper.toUsersDTOList(userList);
 	}
 
 	@Override
-	public void insertTaskAnswer(TaskAnswer taskAnswer) {
+	public void insertTaskAnswer(qa.qcri.aidr.task.entities.TaskAnswer taskAnswer) {
 		try {
 			taskAnswerEJB.save(taskAnswer);
 		} catch (Exception e) {
@@ -869,7 +905,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 
 	@Override
-	public void saveDocumentNominalLabel(DocumentNominalLabel documentNominalLabel) {
+	public void saveDocumentNominalLabel(qa.qcri.aidr.task.entities.DocumentNominalLabel documentNominalLabel) {
 		try {
 			documentNominalLabelEJB.save(documentNominalLabel);
 		} catch (Exception e) {
@@ -879,7 +915,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 	@Override
-	public boolean foundDuplicateDocumentNominalLabel(DocumentNominalLabel documentNominalLabel) {
+	public boolean foundDuplicateDocumentNominalLabel(qa.qcri.aidr.task.entities.DocumentNominalLabel documentNominalLabel) {
 		Map<String, Long> attMap = new HashMap<String, Long>();
 		attMap.put("documentID", documentNominalLabel.getDocumentID());
 		attMap.put("nominalLabelID", documentNominalLabel.getNominalLabelID());
@@ -893,12 +929,12 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 	@Override
-	public qa.qcri.aidr.task.entities.Document getDocumentById(Long id) {
+	public qa.qcri.aidr.task.dto.DocumentDTO getDocumentById(Long id) {
 		try {
 			qa.qcri.aidr.task.entities.Document document = documentLocalEJB.getById(id);
 			logger.info("Fetched document: " + document);
 
-			return document;
+			return DocumentDTOHelper.toDocumentDTO(document);
 		} catch (Exception e) {
 			logger.error("Error in finding task");
 			logger.error(elog.toStringException(e));
@@ -906,64 +942,22 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		return null;
 	}
 
-	/*
-	@Override
-	public qa.qcri.aidr.task.entities.Document getNewDocumentByCrisisId(Long crisisID) {
-		//Document document = (Document) getNewTask(crisisID, null);
-		try {
-			return getNewDocumentByCriterion(crisisID, null);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	@Override
-	public qa.qcri.aidr.task.entities.Document getNewDocumentByCriterion(Long crisisID, Criterion criterion) {
-		Criterion newCriterion = null;
-		try {
-			if (criterion != null) {
-				newCriterion = Restrictions.conjunction()
-						.add(criterion)
-						.add(Restrictions.eq("crisisID",crisisID))
-						.add(Restrictions.eq("hasHumanLabels",false));
-			} else {
-				newCriterion = Restrictions.conjunction()
-						.add(Restrictions.eq("crisisID",crisisID))
-						.add(Restrictions.eq("hasHumanLabels",false));
-			}
-
-			qa.qcri.aidr.task.entities.Document document = documentLocalEJB.getByCriteria(newCriterion);
-			logger.debug("New task: " + document);
-			if (document != null && !isTaskAssigned(document)) {
-				logger.info("[getNewDocumentByCriterion] New document: " + document.getDocumentID());
-			} else {
-				logger.info("[getNewDocumentByCriterion] New document: " + document);
-			}
-			return document;
-		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
-		}
-		return null;
-	}
-	*/
-	
 	@Override
 	public String pingRemoteEJB() {
-		StringBuilder sb = new StringBuilder("{status: RUNNING}");
+		StringBuilder sb = new StringBuilder("{\"status\": \"RUNNING\"}");
 		return sb.toString();
 	}
 
-	@Override
-	public String getNewDefaultTask() {
-		//Document document = (Document) getNewTask(crisisID, null);
-		Long crisisID = new Long(117);
-		try {
-			return getNewTask(crisisID, null);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+	
+	/*
+	public static void main(String args[]) {
+		TaskManagerRemote<Document, Serializable> tm = new TaskManagerBean<Document, Long>();
+		Map<String, String> paramMap = new HashMap<String, String>();
+		paramMap.put("setHasHumanLabels", new Boolean(false).toString());
+		paramMap.put("setCrisisID", new Long(117L).toString());
+		qa.qcri.aidr.task.entities.Document newDoc = tm.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, 4579275L, paramMap);
+		System.out.println("newDoc = " + newDoc.getDocumentID() + ": " + newDoc.isHasHumanLabels());
 	}
+	 */
 
 }

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+  <persistence-unit name="qa.qcri.aidr.dbmanager-EJBS" transaction-type="JTA">
+    <!-- provider>org.hibernate.ejb.HibernatePersistence</provider -->
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <jta-data-source>JNDI/aidr_db_manager</jta-data-source>
+    <class>qa.qcri.aidr.predictdb.entities.task.Document</class>
+    <class>qa.qcri.aidr.predictdb.entities.task.DocumentNominalLabel</class>
+    <class>qa.qcri.aidr.predictdb.entities.task.TaskAnswer</class>
+    <class>qa.qcri.aidr.predictdb.entities.task.TaskAssignment</class>
+    <class>qa.qcri.aidr.dbmanager.entities.model.Model</class>
+    <class>qa.qcri.aidr.dbmanager.entities.model.ModelFamily</class>
+    <class>qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabel</class>
+    <class>qa.qcri.aidr.dbmanager.entities.model.NominalAttribute</class>
+    <class>qa.qcri.aidr.dbmanager.entities.model.NominalAttributeDependentLabel</class>
+    <class>qa.qcri.aidr.dbmanager.entities.model.NominalLabel</class>
+    <class>qa.qcri.aidr.dbmanager.entities.model.NominalLabelEvaluationData</class>
+    <class>qa.qcri.aidr.dbmanager.entities.model.NominalLabelTrainingData</class>
+    <class>qa.qcri.aidr.dbmanager.entities.misc.Crisis</class>
+    <class>qa.qcri.aidr.dbmanager.entities.misc.CrisisType</class>
+    <class>qa.qcri.aidr.dbmanager.entities.misc.CustomuiTemplate</class>
+    <class>qa.qcri.aidr.dbmanager.entities.misc.Users</class>
+    
+    <properties>
+      <property name="hibernate.show_sql" value="false"/>
+      <property name="hibernate.format_sql" value="false"/>
+      <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
+    </properties>
+  </persistence-unit>
+  <persistence-unit name="ProjectDBManagerTest-ejbPU" transaction-type="RESOURCE_LOCAL">
+    <!-- provider>org.hibernate.ejb.HibernatePersistence</provider -->
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <class>qa.qcri.aidr.predictdb.entities.task.Document</class>
+    <class>qa.qcri.aidr.predictdb.entities.task.DocumentNominalLabel</class>
+    <class>qa.qcri.aidr.predictdb.entities.task.TaskAnswer</class>
+    <class>qa.qcri.aidr.predictdb.entities.task.TaskAssignment</class>
+    <class>qa.qcri.aidr.dbmanager.entities.model.NominalLabel</class>
+    <class>qa.qcri.aidr.dbmanager.entities.misc.Crisis</class>
+    <class>qa.qcri.aidr.dbmanager.entities.misc.Users</class>
+    <properties>
+      <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/aidr_predict_prod"/>
+      <property name="javax.persistence.jdbc.user" value="root"/>
+      <property name="javax.persistence.jdbc.password" value="admin"/>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+      <property name="hibernate.show_sql" value="false"/>
+      <property name="hibernate.hbm2ddl.auto" value="update"/>
+    </properties>
+  </persistence-unit>
+</persistence>

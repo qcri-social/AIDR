@@ -810,7 +810,6 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         var editPanelEl = cmp.up('panel').getEl();
         editPanelEl.mask("Updating...");
-
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/update.action',
             method: 'POST',

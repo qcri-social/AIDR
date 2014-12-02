@@ -24,9 +24,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import qa.qcri.aidr.utils.Tweet;
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.io.FileSystemOperations;
 import qa.qcri.aidr.io.ReadWriteCSV;
-import qa.qcri.aidr.logging.ErrorLog;
 
 import java.nio.charset.Charset;
 

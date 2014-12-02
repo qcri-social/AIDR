@@ -8,6 +8,7 @@ import qa.qcri.aidr.predictui.facade.*;
 
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -19,6 +20,7 @@ import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.entities.Model;
 import qa.qcri.aidr.predictui.entities.ModelNominalLabel;
 import qa.qcri.aidr.predictui.entities.NominalLabel;
+import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 import java.util.Collection;
 import java.util.ArrayList;
@@ -31,6 +33,9 @@ import java.util.ArrayList;
  */
 @Stateless
 public class ModelNominalLabelImp implements ModelNominalLabelFacade {
+
+	@EJB
+	private TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
 
 	@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
 	private EntityManager em;
@@ -68,10 +73,16 @@ public class ModelNominalLabelImp implements ModelNominalLabelFacade {
 				//Getting training examples for each label
 				int trainingSet = 0;
 				NominalLabel nominalLabel = labelEntity.getNominalLabel();
-				Collection<Document> docList = nominalLabel.getDocumentCollection();
-				for (Document document : docList) {
-					if (!(document.getIsEvaluationSet())) {
-						trainingSet++;
+				//Collection<Document> docList = nominalLabel.getDocumentCollection();
+				
+				Collection<Document> docList = null;
+				if (nominalLabel != null && !nominalLabel.getNominalLabelCode().equalsIgnoreCase("null")) {
+					List<qa.qcri.aidr.task.dto.DocumentDTO> dtoList = taskManager.getNominalLabelDocumentCollection(nominalLabel.getNominalLabelID());
+					docList = Document.toLocalDocumentList(dtoList);
+					for (Document document : docList) {
+						if (!(document.getIsEvaluationSet())) {
+							trainingSet++;
+						}
 					}
 				}
 				// Deep copying modelNominalLabel to ModelNominalLabelDTO

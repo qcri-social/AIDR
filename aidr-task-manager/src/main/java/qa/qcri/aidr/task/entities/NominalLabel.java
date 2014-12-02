@@ -71,6 +71,12 @@ public class NominalLabel implements Serializable {
     @Column(name = "description")
     private String description;
 
+    @XmlElement
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "sequence")
+    private Integer sequence;
+
     @ManyToMany(mappedBy = "nominalLabelCollection")
     @JsonManagedReference
     @JsonIgnore
@@ -88,6 +94,14 @@ public class NominalLabel implements Serializable {
 
     public NominalLabel(Integer nominalLabelID) {
         this.nominalLabelID = nominalLabelID;
+    }
+
+    public NominalLabel(Integer nominalLabelID, String nominalLabelCode, String name, String description, Integer sequence) {
+        this.nominalLabelID = nominalLabelID;
+        this.nominalLabelCode = nominalLabelCode;
+        this.name = name;
+        this.description = description;
+        this.sequence = sequence;
     }
 
     public NominalLabel(Integer nominalLabelID, String nominalLabelCode, String name, String description) {
@@ -129,6 +143,14 @@ public class NominalLabel implements Serializable {
         this.description = description;
     }
 
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
+    }
+
     @XmlTransient
     @JsonIgnore
     public Collection<Document> getDocumentCollection() {
@@ -138,29 +160,7 @@ public class NominalLabel implements Serializable {
     public void setDocumentCollection(Collection<Document> documentCollection) {
         this.documentCollection = documentCollection;
     }
-    
-    /*
-    @XmlTransient
-    @JsonIgnore
-    public Collection<ModelNominalLabel> getModelNominalLabelCollection() {
-        return modelNominalLabelCollection;
-    }
 
-    public void setModelNominalLabelCollection(Collection<ModelNominalLabel> modelNominalLabelCollection) {
-        this.modelNominalLabelCollection = modelNominalLabelCollection;
-    }
-
-    @XmlTransient
-    @JsonIgnore
-    public NominalAttribute getNominalAttribute() {
-        return nominalAttribute;
-    }
-    
-    public void setNominalAttribute(NominalAttribute nominalAttribute) {
-        this.nominalAttribute = nominalAttribute;
-    }
-	*/
-    
     @Override
     public int hashCode() {
         int hash = 0;
@@ -185,18 +185,6 @@ public class NominalLabel implements Serializable {
     public String toString() {
         return "qa.qcri.aidr.predictui.entities.NominalLabel[ nominalLabelID=" + nominalLabelID + " ]";
     }
-    
-    /*
-    @XmlElement
-    @Column (name = "nominalAttributeID", nullable = false)
-    private Long nominalAttributeID;
-    
-    public Long getNominalAttributeID() {
-        return nominalAttributeID;
-    }
 
-    public void setNominalAttributeID(Long nominalAttributeID) {
-        this.nominalAttributeID = nominalAttributeID;
-    }*/
     
 }

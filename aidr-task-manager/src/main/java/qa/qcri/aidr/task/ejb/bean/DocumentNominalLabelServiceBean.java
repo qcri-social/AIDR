@@ -1,6 +1,8 @@
 package qa.qcri.aidr.task.ejb.bean;
 
 import org.hibernate.criterion.Restrictions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.task.ejb.DocumentNominalLabelService;
 import qa.qcri.aidr.task.entities.DocumentNominalLabel;
@@ -18,6 +20,7 @@ import javax.ejb.Stateless;
 @Stateless(name="DocumentNominalLabelServiceBean")
 public class DocumentNominalLabelServiceBean extends AbstractTaskManagerServiceBean<DocumentNominalLabel, Long> implements DocumentNominalLabelService {
 
+	private Logger logger = LoggerFactory.getLogger(DocumentNominalLabelServiceBean.class);
     protected DocumentNominalLabelServiceBean(){
         super(DocumentNominalLabel.class);
     }
@@ -40,4 +43,5 @@ public class DocumentNominalLabelServiceBean extends AbstractTaskManagerServiceB
 
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
 }

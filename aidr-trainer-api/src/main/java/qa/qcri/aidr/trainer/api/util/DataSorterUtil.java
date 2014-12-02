@@ -40,7 +40,7 @@ public class DataSorterUtil {
         SortedMap map = new TreeMap();
 
         for (NominalLabel o : objSet) {
-            map.put(o.getNominalLabelCode(),o);
+            map.put(o.getSequence(),o);
         }
 
         return map;

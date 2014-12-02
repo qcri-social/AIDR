@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
  *
  * @author jrogstadius
  */
-public class HttpOutputWorkerIndex extends Loggable {
+public class HttpOutputWorkerIndex {
 
     private static HttpOutputWorkerIndex instance;
     HashMap<String, ArrayList<HttpOutputWorker>> workers;

@@ -5,6 +5,7 @@ import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predict.common.*;
 import qa.qcri.aidr.predict.data.*;
 

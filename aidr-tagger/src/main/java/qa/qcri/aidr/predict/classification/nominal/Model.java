@@ -2,8 +2,10 @@ package qa.qcri.aidr.predict.classification.nominal;
 
 import java.util.ArrayList;
 import java.util.List;
-import qa.qcri.aidr.predict.DataStore;
 
+import org.apache.log4j.Logger;
+
+import qa.qcri.aidr.predict.DataStore;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.core.Attribute;
@@ -11,7 +13,6 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SparseInstance;
 
-import qa.qcri.aidr.predict.common.Loggable;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.featureextraction.WordSet;
 
@@ -23,8 +24,9 @@ import qa.qcri.aidr.predict.featureextraction.WordSet;
  *
  * @author jrogstadius
  */
-public class Model extends Loggable {
+public class Model {
 
+	private static Logger logger = Logger.getLogger(Model.class);
     private final int attributeID;
     private Classifier classifier;
     private Instances attributeSpecification;
@@ -59,7 +61,7 @@ public class Model extends Loggable {
             double recTemp = evaluation.recall(i);
             double aucTemp = evaluation.areaUnderROC(i); //.areaUnderPRC(i);
             if (!(aucTemp >= 0 && aucTemp <= 1)) {
-                log(LogLevel.ERROR, "AUC is not available for the trained model");
+                logger.error("AUC is not available for the trained model");
                 aucTemp = 0;
             }
             
@@ -132,7 +134,7 @@ public class Model extends Loggable {
             item.addLabel(label);
             return label;
         } catch (Exception e) {
-            log("Exception when classifying document set", e);
+            logger.error("Exception when classifying document set", e);
         }
         return null;
     }

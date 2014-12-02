@@ -27,10 +27,6 @@ import java.util.Properties;
 
 
 
-
-
-
-
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -40,12 +36,11 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predict.classification.nominal.Model;
 import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
 import qa.qcri.aidr.predict.classification.nominal.ModelNominalLabelPerformance;
-import qa.qcri.aidr.predict.common.ErrorLog;
 import qa.qcri.aidr.predict.common.Helpers;
-import qa.qcri.aidr.predict.common.Loggable;
 import qa.qcri.aidr.predict.common.TaskManagerEntityMapper;
 import qa.qcri.aidr.predict.data.DocumentJSONConverter;
 import qa.qcri.aidr.predict.data.Document;
@@ -66,7 +61,6 @@ import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SparseInstance;
-
 import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 
@@ -76,15 +70,16 @@ import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
  * @author jrogstadius
  * @author koushik
  */
-public class DataStore extends Loggable {
+public class DataStore {
 
 	public static TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager = null;
 
 	private static Logger logger = Logger.getLogger(DataStore.class);
 	private static ErrorLog elog = new ErrorLog();
 	
-	private static final String remoteEJBJNDIName = "java:global/aidr-task-managerEAR-1.0/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote";
-	//private static final String remoteEJBJNDIName = "qa.qcri.aidr.task.ejb.TaskManagerRemote";
+	//private static final String remoteEJBJNDIName = "java:global/aidr-task-managerEAR-1.0/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote";
+	private static final String remoteEJBJNDIName = "java:global/AIDRTaskManager/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote";
+	
 	
 	@SuppressWarnings("unchecked")
 	public static void initTaskManager() {
@@ -443,63 +438,17 @@ public class DataStore extends Loggable {
 	}
 
 	public static void saveDocumentsToDatabase(List<Document> items) {
-		//Connection conn = null;
-		//PreparedStatement statement = null;
-		//ResultSet generatedDocID = null;
-
 		try {
-			// Insert document
-			//conn = getMySqlConnection();
-
 			for (Document item : items) {
-				TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-				TaggerDocument doc = mapper.fromDocumentToTaggerDocument(item);
+				//TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
+				TaggerDocument doc = Document.fromDocumentToTaggerDocument(item);
 				
-				long docID = taskManager.insertNewTask(mapper.reverseTransformDocument(doc));
-				//System.out.println("Inserted new document with documentID = " + docID);
-				//logger.info("Inserted new document with documentID = " + docID);
-				/*
-				String wordFeatures = DocumentJSONConverter.getFeaturesJson(
-						WordSet.class, item);
-				String geoFeatures = null; // TODO: Add geotag support
-
-				statement = conn
-						.prepareStatement(
-								"INSERT INTO document (crisisID, hasHumanLabels, receivedAt, language, sourceIP, doctype, data, wordFeatures, geoFeatures, valueAsTrainingSample) VALUES (?,?,?,?,INET_ATON(?),?,?,?,?,?)",
-								Statement.RETURN_GENERATED_KEYS);
-				statement.setInt(1, item.getCrisisID().intValue());
-				statement.setInt(2, 0);
-				statement.setTimestamp(3, new java.sql.Timestamp(
-						java.util.Calendar.getInstance().getTimeInMillis()));
-				statement.setString(4, item.getLanguage());
-				statement.setString(5, item.getSourceIP().getHostAddress());
-				statement.setString(6, item.getClass().getSimpleName()
-						.toString());
-				statement.setString(7,
-						Helpers.escapeJson(item.getInputJson().toString()));
-				statement.setString(8, Helpers.escapeJson(wordFeatures));
-				statement.setString(9, geoFeatures);
-				statement.setDouble(10, item.getValueAsTrainingSample());
-
-				statement.execute();
-				generatedDocID = statement.getGeneratedKeys();
-				generatedDocID.next();
-				item.setDocumentID(generatedDocID.getInt(1));
-
-				generatedDocID.close();
-				statement.close();
-				*/
+				long docID = taskManager.insertNewTask(TaggerDocument.toTaskManagerDocument(doc));
 			}
 		} catch (Exception e) {
 			logger.error("Exception when attempting to write Document to database");
 			logger.error(elog.toStringException(e));
 		} 
-		/*finally {
-			close(generatedDocID);
-			close(statement);
-			close(conn);
-		}*/
-
 		saveHumanLabels(items);
 	}
 
@@ -511,13 +460,9 @@ public class DataStore extends Loggable {
 	 */
 	static void saveHumanLabels(List<Document> documents) {
 
-		//Connection conn = null;
-		//PreparedStatement statement = null;
 		try {
 			/*
-			String insertSql = "INSERT INTO document_nominal_label (documentID, nominalLabelID) VALUES (?,?)";
-			conn = getMySqlConnection();
-			statement = conn.prepareStatement(insertSql);
+				String insertSql = "INSERT INTO document_nominal_label (documentID, nominalLabelID) VALUES (?,?)";
 			*/
 			ArrayList<Integer> docsWithLabels = new ArrayList<>();
 			ArrayList<TrainingSampleNotification> notifications = new ArrayList<>();
@@ -535,9 +480,6 @@ public class DataStore extends Loggable {
 				
 				docsWithLabels.add(doc.getDocumentID().intValue());
 				for (NominalLabelBC label : labels) {
-					//statement.setInt(1, doc.getDocumentID().intValue());
-					//statement.setInt(2, label.getNominalLabelID());
-					//statement.execute();
 					rows++;
 				}
 			 	
@@ -558,10 +500,6 @@ public class DataStore extends Loggable {
 			logger.error("Exception when attempting to insert new document labels");
 			logger.error(elog.toStringException(e));
 		} 
-		/* finally {
-			close(statement);
-			close(conn);
-		}*/
 	}
 
 	private static Collection<Integer> getAttributeIDs(List<NominalLabelBC> labels) {
@@ -728,50 +666,6 @@ public class DataStore extends Loggable {
 		return crisisIDs;
 	}
 
-	/*
-	public static void truncateLabelingTaskBuffer(int maxLength) {
-		if (maxLength < 0) {
-			throw new RuntimeException(
-					"Cannot truncate the labeling task buffer to a negative length");
-		}
-
-		Connection conn = null;
-		PreparedStatement sql = null;
-
-		try {
-			conn = getMySqlConnection();
-			sql = conn
-					.prepareStatement("DELETE document.* FROM "
-							+ "document LEFT JOIN "
-							+ "("
-							+ "	SELECT * FROM ("
-							+ "	SELECT"
-							+ "		taskbuffer.*,"
-							+ "		@r:=if(@g=crisisID, @r+1, 0) r,"
-							+ "		@g:=crisisID g"
-							+ "	FROM"
-							+ "		(SELECT @g:=-1, @r:=-1) initvars,"
-							+ "		(SELECT D.documentID, D.crisisID FROM document D "		// replacement for task_buffer view: @koushik
-							+ "		left join task_assignment ASG on (ASG.documentID = D.documentID) "
-							+ "		where (!D.hasHumanLabels) group by D.documentID "
-							+ "		order by D.crisisID, D.valueAsTrainingSample desc, D.documentID desc"
-							+ "		) taskbuffer"
-							+ "	) T"
-							+ "	HAVING r < "
-							+ Config.LABELING_TASK_BUFFER_MAX_LENGTH
-							+ ") keptIDs ON keptIDs.documentID=document.documentID "
-							+ "WHERE NOT hasHumanLabels AND keptIDs.documentID IS NULL");
-			sql.execute();
-		} catch (SQLException e) {
-			log("DataStore",
-					"Exception when attempting to truncate the labeling task buffer",
-					e);
-		} finally {
-			close(sql);
-			close(conn);
-		}
-	}
-	 */
 
 	public static void truncateLabelingTaskBufferForCrisis(int crisisID, int maxLength) {
 		if (maxLength < 0 || crisisID < 0) {
@@ -783,86 +677,6 @@ public class DataStore extends Loggable {
 		int deleteCount = taskManager.truncateLabelingTaskBufferForCrisis(crisisID, maxLength, ERROR_MARGIN);
 		logger.info("Truncation results for crisis " + crisisID + ", deleted doc count = " + deleteCount);
 		
-		/*
-		
-		Connection conn = null;
-		PreparedStatement sqlSelect = null;
-		ArrayList<Integer>documentIDList = new ArrayList<Integer>();
-		try {
-			conn = getMySqlConnection();
-			sqlSelect = conn
-					.prepareStatement("SELECT D.documentID AS documentID, "
-							+ " D.valueAsTrainingSample AS valueAsTrainingSample "
-							+ " FROM document D LEFT JOIN task_assignment T "
-							+ " ON (D.documentID = T.documentID) WHERE (D.crisisID = ?"
-							+ "  && T.documentID IS NULL && " 
-							+ " !D.hasHumanLabels) ORDER BY "
-							+ " D.valueAsTrainingSample, D.documentID");
-			sqlSelect.setInt(1, crisisID);
-			ResultSet rs = sqlSelect.executeQuery();
-			while (rs.next()) {
-				documentIDList.add(rs.getInt("documentID"));
-			}
-			System.out.println("[truncateLabelingTaskBufferForCrisis] CrisisID = " + crisisID + ", from SELECT statement retrieved docs count = " + documentIDList.size());
-		} catch (SQLException e) {
-			log("DataStore",
-					"Exception when attempting to get crisis docs count from document table",
-					e);
-		} finally {
-			if (sqlSelect != null) close(sqlSelect);
-			close(conn);
-		}
-
-		// Next trim the document table for the given crisisID to the 
-		// Config.LABELING_TASK_BUFFER_MAX_LENGTH size
-		PreparedStatement sqlDelete = null;
-		int ERROR_MARGIN = 0;		// if less than this, then skip delete
-		int docsToDelete = documentIDList.size() - Config.LABELING_TASK_BUFFER_MAX_LENGTH;
-		if (docsToDelete > ERROR_MARGIN) {
-			String sqlDeleteStmt = "DELETE FROM document WHERE (documentID = ? && "
-					+ " documentID NOT IN (SELECT documentID FROM task_assignment) "
-					+ " && !hasHumanLabels)";
-			try {
-				conn = getMySqlConnection();
-				//conn.setAutoCommit(false);
-				sqlDelete = conn.prepareStatement(sqlDeleteStmt);
-
-				// Delete the top confidence documents from document table
-				//StringBuilder sqlDeleteStmt2 = new StringBuilder();
-				//sqlDeleteStmt2.append("DELETE FROM document WHERE (documentID IN (");
-				for (int i = 0;i < docsToDelete;i++) {
-					sqlDelete.setLong(1, documentIDList.get(i));
-					sqlDelete.addBatch();
-					System.out.println("[truncateLabelingTaskBufferForCrisis] To delete: CrisisID = " + crisisID + ", documentID = " + documentIDList.get(i));
-					//sqlDeleteStmt2.append(documentIDList.get(i)).append(",");
-				}
-				//sqlDeleteStmt2.deleteCharAt(sqlDeleteStmt2.lastIndexOf(",")).append(")");
-				//sqlDeleteStmt2.append(" && documentID NOT IN (SELECT documentID FROM task_assignment) && !hasHumanLabels)");
-				long startTime = System.currentTimeMillis();
-				int[] affectedRecords = sqlDelete.executeBatch();
-				long endTime = System.currentTimeMillis();
-				long elapsed = endTime - startTime;
-				//conn.commit();
-				System.out.println("[truncateLabelingTaskBufferForCrisis] Number of Documents to delete = " + docsToDelete);
-				System.out.println("[truncateLabelingTaskBufferForCrisis] Executed batch delete for crisisID = " + crisisID);
-				System.out.println("[truncateLabelingTaskBufferForCrisis] Time taken = " + elapsed);
-				int deleteCount = 0;
-				for (int i = 0;i < affectedRecords.length;i++) {
-					if (affectedRecords[i] > 0) {
-						++deleteCount;
-					}
-				}
-				System.out.println("[truncateLabelingTaskBufferForCrisis] Number of documents actually deleted = " + deleteCount);
-			} catch (Exception e) {
-				log("DataStore",
-						"Exception when attempting to batch delete for trimming the document table",
-						e);
-			} finally {
-				if (sqlDelete != null) close(sqlDelete);
-				close(conn);
-			}
-		}
-		*/
 	}
 
 	public static int saveModelToDatabase(int crisisID, int nominalAttributeID,
@@ -1017,7 +831,6 @@ public class DataStore extends Loggable {
 		}
 	}
 
-	/*
 	public static void main(String[] args) throws Exception {
 		DataStore.initTaskManager();
 		
@@ -1032,20 +845,21 @@ public class DataStore extends Loggable {
 		doc.setValueAsTrainingSample(0.8);
 		doc.setInputJson(tweet);
 		doc.humanLabelCount = 0;
-		TaggerDocument DTOdoc = mapper.fromDocumentToTaggerDocument(doc);
+		TaggerDocument DTOdoc = Document.fromDocumentToTaggerDocument(doc);
 		
 		List<NominalLabel> nbList = new ArrayList<NominalLabel>();
 		nbList.add(new NominalLabel(320));
 		nbList.add(new NominalLabel(322));
 		DTOdoc.setNominalLabelCollection(nbList);
 	
-		long docID = DataStore.taskManager.insertNewTask(mapper.reverseTransformDocument(DTOdoc));
+		long docID = DataStore.taskManager.insertNewTask(TaggerDocument.toTaskManagerDocument(DTOdoc));
 		System.out.println("Inserted new document with documentID = " + docID);
 		logger.info("Inserted new document with documentID = " + docID);
 		
 		System.out.println("Testing truncate Labeling buffer for crisisID = " + 117);
 		logger.info("Testing truncate Labeling buffer for crisisID = " + 117);
-		DataStore.taskManager.truncateLabelingTaskBufferForCrisis(117L, Config.LABELING_TASK_BUFFER_MAX_LENGTH, 0);
-	}*/
+		//DataStore.taskManager.truncateLabelingTaskBufferForCrisis(117L, Config.LABELING_TASK_BUFFER_MAX_LENGTH, 0);
+		DataStore.taskManager.truncateLabelingTaskBufferForCrisis(117L, Integer.parseInt(getProperty("labeling_task_buffer_max_length")), 0);
+	}
 	
 }

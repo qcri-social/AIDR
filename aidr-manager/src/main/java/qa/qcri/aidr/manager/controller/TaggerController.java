@@ -815,9 +815,24 @@ public class TaggerController extends BaseController {
 			e.printStackTrace();
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
-		//System.out.println("[Controller generateTweetIdsLink] Returning success: " + result);
-		//return getUIWrapper(result,true);
 	}
 
+    @RequestMapping(value = "/updateMobilePush.action", method = { RequestMethod.POST ,RequestMethod.GET })
+    @ResponseBody
+    public Map<String,Object> updateMobilePushStatus(AidrCollection collection) throws Exception {
+        System.out.println("[updateMobilePushStatus: " + collection.getCode());
+        String result = "";
+        try {
+            TaggerCrisis tagCrisis = taggerService.getCrisesByCode(collection.getCode());
+            List<TaggerModelFamilyCollection> taggerModelFamilies =  tagCrisis.getModelFamilyCollection();
+            /// all clientapp based on crisisID should be enable to push to mobile app.
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+        }
+
+        return getUIWrapper(result,true);
+    }
 	
 }

@@ -94,9 +94,11 @@ public class MicroMapperPybossaFormatter {
         templateString = templateString.replace("TEMPLATE:FORATTRIBUTEAIDR", attributeDisplay);
 
 
-        JSONArray sortedLabelModel = JsonSorter.sortJsonByKey(labelModel, "norminalLabelCode");
+        JSONArray sortedLabelModel = JsonSorter.sortJsonByKey(labelModel, "sequence");
         StringBuffer displayLabel = new StringBuffer();
         Iterator itr= sortedLabelModel.iterator();
+
+        logger.info("sortedLabelModel : " + sortedLabelModel.toJSONString());
        // logger.debug("sortedLabelModel : " + sortedLabelModel);
         while(itr.hasNext()){
 

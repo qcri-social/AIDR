@@ -1,6 +1,8 @@
 package qa.qcri.aidr.task.entities;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -12,6 +14,7 @@ import java.util.Date;
  */
 @Entity
 @Table(catalog = "aidr_predict",name = "task_answer")
+@XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class TaskAnswer implements Serializable {
 
@@ -81,20 +84,26 @@ public class TaskAnswer implements Serializable {
     @Id
     @GeneratedValue
     @Column (name = "taskID")
+    @XmlElement
     private Long taskID;
 
+    @XmlElement
     @Column(name = "documentID", nullable = false)
     private Long documentID;
 
+    @XmlElement
     @Column (name = "userID", nullable = false)
     private Long userID;
 
+    @XmlElement
     @Column (name = "answer", nullable = true)
     private String answer;
 
+    @XmlElement
     @Column (name = "timestamp", nullable = false)
     private Date timestamp;
 
+    @XmlElement
     @Column (name = "fromTrustedUser", nullable = false)
     private boolean fromTrustedUser;
 

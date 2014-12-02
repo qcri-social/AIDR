@@ -5,8 +5,8 @@ import java.net.ServerSocket;
 
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predict.common.*;
-
 import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 /**
@@ -15,7 +15,7 @@ import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
  * 
  * @author jrogstadius
  */
-public class HttpOutputManager extends Loggable implements Runnable {
+public class HttpOutputManager  implements Runnable {
 
     static ServerSocket server;
     private static Logger logger = Logger.getLogger(HttpOutputManager.class);

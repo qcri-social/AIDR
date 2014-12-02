@@ -10,6 +10,8 @@ public class TaggerLabel {
 
     private String description;
 
+    private int sequence = 100;
+
     private TaggerAttribute nominalAttribute;
 
     public TaggerLabel() {
@@ -20,11 +22,12 @@ public class TaggerLabel {
         this.nominalLabelID = nominalLabelID;
     }
 
-    public TaggerLabel(String name, String nominalLabelCode, String description, TaggerAttribute nominalAttribute) {
+    public TaggerLabel(String name, String nominalLabelCode, String description, TaggerAttribute nominalAttribute, int sequence) {
         this.name = name;
         this.nominalLabelCode = nominalLabelCode;
         this.description = description;
         this.nominalAttribute = nominalAttribute;
+        this.sequence = sequence;
     }
 
     public Integer getNominalLabelID() {
@@ -65,5 +68,13 @@ public class TaggerLabel {
 
     public void setNominalAttribute(TaggerAttribute nominalAttribute) {
         this.nominalAttribute = nominalAttribute;
+    }
+
+    public int getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(int sequence) {
+        this.sequence = sequence;
     }
 }

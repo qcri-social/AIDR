@@ -25,14 +25,13 @@ import net.minidev.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.DownloadType;
-import qa.qcri.aidr.logging.ErrorLog;
 import qa.qcri.aidr.persister.collector.RedisCollectorPersister;
 import qa.qcri.aidr.utils.DownloadJsonType;
 import qa.qcri.aidr.utils.GenericCache;
 import qa.qcri.aidr.utils.JsonDeserializer;
 import qa.qcri.aidr.utils.ResultStatus;
-
 import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
 
 /**

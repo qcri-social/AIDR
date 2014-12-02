@@ -2,7 +2,6 @@ package qa.qcri.aidr.predictui.facade.imp;
 
 //import qa.qcri.aidr.predictui.facade.*;
 import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.predictui.util.TaskManagerEntityMapper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +12,7 @@ import javax.ejb.Stateless;
 //import javax.persistence.EntityManager;
 //import javax.persistence.PersistenceContext;
 //import javax.persistence.Query;
+
 
 
 
@@ -37,94 +37,94 @@ import qa.qcri.aidr.task.ejb.TaskManagerRemote;
  */
 @Stateless
 public class DocumentFacadeImp implements DocumentFacade{
-    
-    //@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
-    //private EntityManager em;
-    
-    @EJB
+
+	//@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
+	//private EntityManager em;
+
+	@EJB
 	private TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
-    
-    protected static Logger logger = LoggerFactory.getLogger(DocumentFacadeImp.class);
+
+	protected static Logger logger = LoggerFactory.getLogger(DocumentFacadeImp.class);
 	private ErrorLog elog = new ErrorLog();
 
-    public List<Document> getAllDocuments() {
-        //Query query = em.createNamedQuery("Document.findAll", Document.class);
-    	//List<Document> documentList = query.getResultList();
-    	
-    	TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-    	String jsonString  = taskManager.getAllTasks();
-        
-    	List<Document> documentList = mapper.deSerializeList(jsonString, new TypeReference<List<Document>>() {});
-        return documentList;
-        
-    }
+	public List<Document> getAllDocuments() {
+		List<Document> docList = null;
+		List<qa.qcri.aidr.task.dto.DocumentDTO> fetchedList = taskManager.getAllTasks();
 
-    public Document getDocumentByID(long id) {
-        //Query query = em.createNamedQuery("Document.findByDocumentID", Document.class);
-        //query.setParameter("documentID", id);
-        //Document document = (Document)query.getSingleResult();
-        
-    	TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-    	String jsonString  = taskManager.getTaskById(id);
-    	Document document = mapper.deSerialize(jsonString, Document.class);
-    	return document;
-    }
+		if (fetchedList != null) {
+			try {
+				docList = Document.toLocalDocumentList(fetchedList); 
 
-    public List<Document> getAllLabeledDocumentbyCrisisID(long crisisID, long attributeID) {
-        //Query query = em.createNamedQuery("Document.findByCrisisID", Document.class);
-        //query.setParameter("crisisID", crisisID);
-        //query.setParameter("attributeID", attributeID);
-        //List<Document> documentList = query.getResultList();
-    	
-    	TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-    	Criterion criterion = Restrictions.eq("hasHumanLabels", true);
-    	String jsonString  = taskManager.getTaskCollectionByCriterion(crisisID, null, criterion);
-    	List<Document> documentList = mapper.deSerializeList(jsonString, new TypeReference<List<Document>>() {});
-        
-        return documentList;
-    }
+				logger.info("retrieved doc count = " + docList.size());
+				System.out.println("retrieved doc count = " + docList.size());
+			} catch (Exception e) {
+				logger.error("Error in converting to local document enetity type");
+				logger.error(elog.toStringException(e));
+				e.printStackTrace();
+			}
+		}
+		return docList;   
+	}
 
-    @Override
-    public void deleteDocument(Long documentID) {
-        /*
-    	Document document = em.find(Document.class, documentID);
-        if (document != null) {
-            em.remove(document);
-        }*/
-    	taskManager.deleteTaskById(documentID);
-    }
+	public Document getDocumentByID(long id) {
+		qa.qcri.aidr.task.dto.DocumentDTO fetchedDoc  = taskManager.getTaskById(id);
+		Document document = Document.toLocalDocument(fetchedDoc);
+		return document;
+	}
 
-    @Override
-    public void removeTrainingExample(Long documentID) {
-        /*
-    	Document document = em.find(Document.class, documentID);
-        if (document != null) {
-            document = em.merge(document);
-            document.setHasHumanLabels(false);
-            document.setNominalLabelCollection(null);
-        }
-        */
-    	Map<String, String> paramMap = new HashMap<String, String>();
-    	paramMap.put("setHasHumanLabels", new Boolean(false).toString());
-    	paramMap.put("setNominalLabelCollection", null);
-    	TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-    	qa.qcri.aidr.task.entities.Document newDoc = mapper.deSerialize(taskManager.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, documentID, paramMap), qa.qcri.aidr.task.entities.Document.class);
-    	logger.info("Removed training example: " + newDoc.getDocumentID() + ", for crisisID = " + newDoc.getCrisisID());
-    }
+	public List<Document> getAllLabeledDocumentbyCrisisID(long crisisID, long attributeID) {
+
+		Criterion criterion = Restrictions.eq("hasHumanLabels", true);
+		List<qa.qcri.aidr.task.dto.DocumentDTO> fetchedList = taskManager.getTaskCollectionByCriterion(crisisID, null, criterion);
+		if (fetchedList != null) {
+			try {
+				List<Document> documentList = Document.toLocalDocumentList(fetchedList);
+				return documentList;
+			} catch (Exception e) {
+				logger.error("Error in converting to local document enetity type");
+				logger.error(elog.toStringException(e));
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public int deleteDocument(Long documentID) {
+		return taskManager.deleteTaskById(documentID);
+	}
+
+	@Override
+	public void removeTrainingExample(Long documentID) {
+		// Alternative way of doing the same update
+		//qa.qcri.aidr.task.dto.DocumentDTO fetchedDoc  = taskManager.getTaskById(id);
+		//fetchedDoc.setHasHumanLabels(false);
+		//fetchedDoc.setNominalLabelCollection(null);
+		//taskManager.updateTask(fetchedDoc);
+		
+		Map<String, String> paramMap = new HashMap<String, String>();
+		paramMap.put("setHasHumanLabels", new Boolean(false).toString());
+		paramMap.put("setNominalLabelCollection", null);
+		qa.qcri.aidr.task.dto.DocumentDTO newDoc = (qa.qcri.aidr.task.dto.DocumentDTO) taskManager.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, documentID, paramMap);
+		
+		logger.info("Removed training example: " + newDoc.getDocumentID() + ", for crisisID = " + newDoc.getCrisisID());
+	}
 
 	@Override
 	public List<Document> getAllUnlabeledDocumentbyCrisisID(Crisis crisis) {
-		//Query query = em.createNamedQuery("Document.findByCrisisID", Document.class);
-        //query.setParameter("crisisID", crisis.getCrisisID());
-        //query.setParameter("hasHumanLabels", false);
-        //List<Document> documentList = query.getResultList();
-        
-		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-    	Criterion criterion = Restrictions.eq("hasHumanLabels", false);
-    	String jsonString  = taskManager.getTaskCollectionByCriterion(crisis.getCrisisID(), null, criterion);
-    	List<Document> documentList = mapper.deSerializeList(jsonString, new TypeReference<List<Document>>() {});
-        
-        return documentList;
+		Criterion criterion = Restrictions.eq("hasHumanLabels", false);
+		List<qa.qcri.aidr.task.dto.DocumentDTO> fetchedList = taskManager.getTaskCollectionByCriterion(crisis.getCrisisID(), null, criterion);
+		if (fetchedList != null) {
+			try {
+				List<Document> documentList = Document.toLocalDocumentList(fetchedList);
+				return documentList;
+			} catch (Exception e) {
+				logger.error("Error in converting to local document enetity type");
+				logger.error(elog.toStringException(e));
+				e.printStackTrace();
+			}
+		}
+		return null;
 	}
-    
+
 }

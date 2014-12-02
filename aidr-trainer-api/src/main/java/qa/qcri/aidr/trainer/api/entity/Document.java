@@ -5,106 +5,86 @@
 package qa.qcri.aidr.trainer.api.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.hibernate.Hibernate;
 
 
 /**
  *
  * @author Imran
  */
-@Entity
-@Table(catalog = "aidr_predict", name = "document")
+//@Entity
+//@Table(catalog = "aidr_predict", name = "document")
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
  public class Document implements Serializable {
 
 	private static final long serialVersionUID = -5527566248002296042L;
 
-	@Id
-	@Column(name = "documentID")
-	private Long documentID;
+	@XmlElement private Long documentID;
 
+	@XmlElement private boolean hasHumanLabels;
 
-	@Column (name = "hasHumanLabels", nullable = false)
-	private boolean hasHumanLabels;
+	@XmlElement private Long crisisID;
 
-	@Column (name = "crisisID", nullable = false)
-	private Long crisisID;
+	@XmlElement private boolean isEvaluationSet;
 
-	@Column (name = "isEvaluationSet", nullable = false)
-	private boolean isEvaluationSet;
+	@XmlElement private Double valueAsTrainingSample;
 
-	/*
-	@Column (name = "sourceIP", nullable = false)
-    private Long sourceIP;
-    */
-	//private Integer sourceIP;
+	@XmlElement private Date receivedAt;
 
-	@Column (name = "valueAsTrainingSample", nullable = false)
-	private Double valueAsTrainingSample;
+	@XmlElement private String language;
 
-	@Column (name = "receivedAt", nullable = false)
-	private Date receivedAt;
+	@XmlElement private String doctype;
 
-	@Column (name = "language", nullable = false)
-	private String language;
+	@XmlElement private String data;
 
-	@Column (name = "doctype", nullable = false)
-	private String doctype;
+	@XmlElement private String wordFeatures;
 
-	@Column (name = "data", nullable = false)
-	private String data;
+	@XmlElement private String geoFeatures;
 
-	@Column (name = "wordFeatures", nullable = false)
-	private String wordFeatures;
-
-	@Column (name = "geoFeatures", nullable = false)
-	private String geoFeatures;
-
-	@OneToOne(cascade=CascadeType.DETACH, fetch=FetchType.LAZY)
-	@JoinColumn(name="documentID",insertable=true,
-	updatable=true,nullable=true,unique=true)
+	@XmlElement 
 	private TaskAssignment taskAssignment;
-
-	@JoinTable(name = "document_nominal_label", joinColumns = {
-			@JoinColumn(name = "documentID", referencedColumnName = "documentID")}, inverseJoinColumns = {
-			@JoinColumn(name = "nominalLabelID", referencedColumnName = "nominalLabelID")})
-	@ManyToMany
-	private Collection<NominalLabel> nominalLabelCollection;
 
 	public Document(){}
 
 	public Document(Long documentID, boolean hasHumanLabels){
 		this.documentID  = documentID;
 		this.hasHumanLabels = hasHumanLabels;
+	}
+	
+	public Document(qa.qcri.aidr.task.dto.DocumentDTO document) {
+		this();
+		if (document != null) {
+			//Hibernate.initialize(document.getNominalLabelCollection());
+			//Hibernate.initialize(document.getTaskAssignment());
+			
+			this.setDocumentID(document.getDocumentID());
+			this.setCrisisID(document.getCrisisID());
+			this.setDoctype(document.getDoctype());
+			this.setData(document.getData());
+			this.setIsEvaluationSet(document.getIsEvaluationSet());
+			this.setGeoFeatures(document.getGeoFeatures());
+			this.setLanguage(document.getLanguage());
+			this.setHasHumanLabels(document.getHasHumanLabels());
+
+			this.setReceivedAt(document.getReceivedAt());
+			
+			this.setWordFeatures(document.getWordFeatures());
+			this.setValueAsTrainingSample(document.getValueAsTrainingSample());
+			this.setTaskAssignment(TaskAssignment.toLocalTaskAssignment(document.getTaskAssignment()));
+		} 
 	}
 
 	public Long getDocumentID() {
@@ -148,16 +128,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 		this.crisisID = crisisID;
 	}
 
-	/*
-	public Long getSourceIP() {
-		return sourceIP;
-	}
 
-	public void setSourceIP(Long sourceIP) {
-		this.sourceIP = sourceIP;
-	}
-	*/
-	
 	public Double getValueAsTrainingSample() {
 		return valueAsTrainingSample;
 	}
@@ -214,245 +185,78 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 		this.taskAssignment = taskAssignment;
 	}
 	
-	@XmlTransient
-    @JsonIgnore
-    public Collection<NominalLabel> getNominalLabelCollection() {
-        return nominalLabelCollection;
-    }
+	public static Document toLocalDocument(qa.qcri.aidr.task.dto.DocumentDTO document) {
+		Document doc = new Document();
+		if (document != null) {
+			//Hibernate.initialize(document.getNominalLabelCollection());
+			//Hibernate.initialize(document.getTaskAssignment());
+			
+			doc.setDocumentID(document.getDocumentID());
+			doc.setCrisisID(document.getCrisisID());
+			doc.setDoctype(document.getDoctype());
+			doc.setData(document.getData());
+			doc.setIsEvaluationSet(document.getIsEvaluationSet());
+			doc.setGeoFeatures(document.getGeoFeatures());
+			doc.setLanguage(document.getLanguage());
+			doc.setHasHumanLabels(document.getHasHumanLabels());
 
-    public void setNominalLabelCollection(Collection<NominalLabel> nominalLabelCollection) {
-        this.nominalLabelCollection = nominalLabelCollection;
-    }
+			doc.setReceivedAt(document.getReceivedAt());
+	
+			doc.setWordFeatures(document.getWordFeatures());
+			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
+			doc.setTaskAssignment(TaskAssignment.toLocalTaskAssignment(document.getTaskAssignment()));
 
+			return doc;
+		} 
+		return null;
+	}
+
+	public static qa.qcri.aidr.task.entities.Document toTaskManagerDocument(Document document) {
+		qa.qcri.aidr.task.entities.Document doc = new qa.qcri.aidr.task.entities.Document();
+		if (document != null) {
+			doc.setDocumentID(document.getDocumentID());
+			doc.setCrisisID(document.getCrisisID());
+			doc.setDoctype(document.getDoctype());
+			doc.setData(document.getData());
+			doc.setIsEvaluationSet(document.getIsEvaluationSet());
+			doc.setGeoFeatures(document.getGeoFeatures());
+			doc.setLanguage(document.getLanguage());
+			doc.setHasHumanLabels(document.getHasHumanLabels());
+
+			doc.setReceivedAt(document.getReceivedAt());
+
+			doc.setWordFeatures(document.getWordFeatures());
+			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
+			doc.setTaskAssignment(TaskAssignment.toTaskManagerTaskAssignment(document.getTaskAssignment()));
+
+			return doc;
+		} 
+		return null;
+	}
+	
+	public static List<Document> toLocalDocumentList(List<qa.qcri.aidr.task.dto.DocumentDTO> list) {
+		if (list != null) {
+			List<Document> docList = new ArrayList<Document>();
+			for (qa.qcri.aidr.task.dto.DocumentDTO dto: list) {
+				docList.add(toLocalDocument(dto));
+			}
+			return docList;
+		}
+		return null;
+	}
+	
+	public static List<qa.qcri.aidr.task.entities.Document> toTaskManagerDocumentList(List<Document> list) {
+		if (list != null) {
+			List<qa.qcri.aidr.task.entities.Document> docList = new ArrayList<qa.qcri.aidr.task.entities.Document>();
+			for (Document doc: list) {
+				docList.add(toTaskManagerDocument(doc));
+			}
+			return docList;
+		}
+		return null;
+	}
 }
 
-
-
-/*
- * @NamedQueries({
-    @NamedQuery(name = "Document.findAll", query = "SELECT d FROM Document d"),
-    @NamedQuery(name = "Document.findByDocumentID", query = "SELECT d FROM Document d WHERE d.documentID = :documentID"),
-    @NamedQuery(name = "Document.findByIsEvaluationSet", query = "SELECT d FROM Document d WHERE d.isEvaluationSet = :isEvaluationSet"),
-    @NamedQuery(name = "Document.findByHasHumanLabels", query = "SELECT d FROM Document d WHERE d.hasHumanLabels = :hasHumanLabels"),
-    @NamedQuery(name = "Document.findBySourceIP", query = "SELECT d FROM Document d WHERE d.sourceIP = :sourceIP"),
-    @NamedQuery(name = "Document.findByValueAsTrainingSample", query = "SELECT d FROM Document d WHERE d.valueAsTrainingSample = :valueAsTrainingSample"),
-    @NamedQuery(name = "Document.findByReceivedAt", query = "SELECT d FROM Document d WHERE d.receivedAt = :receivedAt"),
-    @NamedQuery(name = "Document.findByLanguage", query = "SELECT d FROM Document d WHERE d.language = :language"),
-    @NamedQuery(name = "Document.findByDoctype", query = "SELECT d FROM Document d WHERE d.doctype = :doctype")})
-public class Document implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "documentID")
-    private Long documentID;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "isEvaluationSet")
-    private boolean isEvaluationSet;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "hasHumanLabels")
-    private boolean hasHumanLabels;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "sourceIP")
-    private int sourceIP;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "valueAsTrainingSample")
-    private double valueAsTrainingSample;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "receivedAt")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date receivedAt;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 5)
-    @Column(name = "language")
-    private String language;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 20)
-    @Column(name = "doctype")
-    private String doctype;
-    @Basic(optional = false)
-    @NotNull
-    @Lob
-    @Size(min = 1, max = 65535)
-    @Column(name = "data")
-    private String data;
-    @Lob
-    @Size(max = 65535)
-    @Column(name = "wordFeatures")
-    private String wordFeatures;
-    @Lob
-    @Size(max = 65535)
-    @Column(name = "geoFeatures")
-    private String geoFeatures;
-    @JoinTable(name = "document_nominal_label", joinColumns = {
-        @JoinColumn(name = "documentID", referencedColumnName = "documentID")}, inverseJoinColumns = {
-        @JoinColumn(name = "nominalLabelID", referencedColumnName = "nominalLabelID")})
-    @ManyToMany
-    private Collection<NominalLabel> nominalLabelCollection;
-    @JoinColumn(name = "crisisID", referencedColumnName = "crisisID")
-    @ManyToOne(optional = false)
-    private Crisis crisis;
-
-    public Document() {
-    }
-
-    public Document(Long documentID) {
-        this.documentID = documentID;
-    }
-
-    public Document(Long documentID, boolean isEvaluationSet, boolean hasHumanLabels, int sourceIP, double valueAsTrainingSample, Date receivedAt, String language, String doctype, String data) {
-        this.documentID = documentID;
-        this.isEvaluationSet = isEvaluationSet;
-        this.hasHumanLabels = hasHumanLabels;
-        this.sourceIP = sourceIP;
-        this.valueAsTrainingSample = valueAsTrainingSample;
-        this.receivedAt = receivedAt;
-        this.language = language;
-        this.doctype = doctype;
-        this.data = data;
-    }
-
-    public Long getDocumentID() {
-        return documentID;
-    }
-
-    public void setDocumentID(Long documentID) {
-        this.documentID = documentID;
-    }
-
-    public boolean getIsEvaluationSet() {
-        return isEvaluationSet;
-    }
-
-    public void setIsEvaluationSet(boolean isEvaluationSet) {
-        this.isEvaluationSet = isEvaluationSet;
-    }
-
-    public boolean getHasHumanLabels() {
-        return hasHumanLabels;
-    }
-
-    public void setHasHumanLabels(boolean hasHumanLabels) {
-        this.hasHumanLabels = hasHumanLabels;
-    }
-
-    public int getSourceIP() {
-        return sourceIP;
-    }
-
-    public void setSourceIP(int sourceIP) {
-        this.sourceIP = sourceIP;
-    }
-
-    public double getValueAsTrainingSample() {
-        return valueAsTrainingSample;
-    }
-
-    public void setValueAsTrainingSample(double valueAsTrainingSample) {
-        this.valueAsTrainingSample = valueAsTrainingSample;
-    }
-
-    public Date getReceivedAt() {
-        return receivedAt;
-    }
-
-    public void setReceivedAt(Date receivedAt) {
-        this.receivedAt = receivedAt;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
-    public String getDoctype() {
-        return doctype;
-    }
-
-    public void setDoctype(String doctype) {
-        this.doctype = doctype;
-    }
-
-    public String getData() {
-        return data;
-    }
-
-    public void setData(String data) {
-        this.data = data;
-    }
-
-    public String getWordFeatures() {
-        return wordFeatures;
-    }
-
-    public void setWordFeatures(String wordFeatures) {
-        this.wordFeatures = wordFeatures;
-    }
-
-    public String getGeoFeatures() {
-        return geoFeatures;
-    }
-
-    public void setGeoFeatures(String geoFeatures) {
-        this.geoFeatures = geoFeatures;
-    }
-
-    @XmlTransient
-    @JsonIgnore
-    public Collection<NominalLabel> getNominalLabelCollection() {
-        return nominalLabelCollection;
-    }
-
-    public void setNominalLabelCollection(Collection<NominalLabel> nominalLabelCollection) {
-        this.nominalLabelCollection = nominalLabelCollection;
-    }
-
-    public Crisis getCrisis() {
-        return crisis;
-    }
-
-    public void setCrisis(Crisis crisis) {
-        this.crisis = crisis;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (documentID != null ? documentID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Document)) {
-            return false;
-        }
-        Document other = (Document) object;
-        if ((this.documentID == null && other.documentID != null) || (this.documentID != null && !this.documentID.equals(other.documentID))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "qa.qcri.aidr.predictui.entities.Document[ documentID=" + documentID + " ]";
-    }
-
-}
-
- */
 
 
 

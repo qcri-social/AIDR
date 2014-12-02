@@ -30,16 +30,16 @@ public class DocumentNominalLabelServiceImpl implements DocumentNominalLabelServ
     @Override
     public void saveDocumentNominalLabel(DocumentNominalLabel documentNominalLabel) {
         //documentNominalLabelDao.saveDocumentNominalLabel(documentNominalLabel);
-    	TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-    	qa.qcri.aidr.task.entities.DocumentNominalLabel doc = mapper.reverseTransformDocumentNominalLabel(documentNominalLabel);
+ 
+    	qa.qcri.aidr.task.entities.DocumentNominalLabel doc = DocumentNominalLabel.toTaskManagerDocumentNominalLabel(documentNominalLabel);
     	taskManager.saveDocumentNominalLabel(doc);
     }
 
     @Override
     public boolean foundDuplicateEntry(DocumentNominalLabel documentNominalLabel) {
         //return documentNominalLabelDao.foundDuplicate(documentNominalLabel);  //To change body of implemented methods use File | Settings | File Templates.
-    	TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-    	qa.qcri.aidr.task.entities.DocumentNominalLabel doc = mapper.reverseTransformDocumentNominalLabel(documentNominalLabel);
+    	
+    	qa.qcri.aidr.task.entities.DocumentNominalLabel doc = DocumentNominalLabel.toTaskManagerDocumentNominalLabel(documentNominalLabel);
     	return taskManager.foundDuplicateDocumentNominalLabel(doc);
     }
 }

@@ -5,7 +5,6 @@ import java.util.List;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
-import qa.qcri.aidr.predictui.util.TaskManagerEntityMapper;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -54,9 +53,6 @@ public class DocumentResource {
 	@EJB
 	private DocumentFacade documentLocalEJB;
 
-	@EJB
-	private TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
-
 	//private static Logger logger = Logger.getLogger(DocumentResource.class);
 	private static Logger logger = LoggerFactory.getLogger(DocumentResource.class);
 	private static ErrorLog elog = new ErrorLog();
@@ -69,20 +65,10 @@ public class DocumentResource {
 	@Path("/all")
 	public Response getAllDocuments() {
 		//List<Document> documentList = documentLocalEJB.getAllDocuments();
-		String jsonString = taskManager.getAllTasks();
-		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-		List<Document> docList = null;
-		if (jsonString != null) {
-			try {
-				docList = mapper.transformDocumentList(mapper.deSerializeList(jsonString, new TypeReference<List<qa.qcri.aidr.task.entities.Document>>() {}));
-				logger.info("retrieved doc count = " + docList.size());
-				System.out.println("retrieved doc count = " + docList.size());
-			} catch (Exception e) {
-				logger.error("Error in JSON deserialization to local List<Document> type");
-				logger.error(elog.toStringException(e));
-				e.printStackTrace();
-			}
-		}
+		
+		//TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
+		List<Document> docList = documentLocalEJB.getAllDocuments();
+
 		ResponseWrapper response = new ResponseWrapper();
 		response.setMessage("SUCCESS");
 		response.setDocuments(docList);
@@ -93,25 +79,9 @@ public class DocumentResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("{id}")
 	public Response getDocumentByID(@PathParam("id") long id){
-		//Document document = documentLocalEJB.getDocumentByID(id);
 		logger.info("received request for : " + id);
 
-		String jsonString = taskManager.getTaskById(id);
-		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-		Document doc = null;
-		try {
-			if (jsonString != null) {
-				doc = mapper.transformDocument(mapper.deSerialize(jsonString, qa.qcri.aidr.task.entities.Document.class));
-				logger.info("Converted doc id: " + doc.getDocumentID());
-				System.out.println("Converted doc id: " + doc.getDocumentID());
-			} else {
-				logger.warn("doc id: null");
-			}
-		} catch (Exception e) {
-			logger.error("JSON deserialization parse error!");
-			logger.error(elog.toStringException(e));
-			e.printStackTrace();
-		}
+		Document doc = documentLocalEJB.getDocumentByID(id);
 		return Response.ok(doc).build();
 	}
 
@@ -120,25 +90,10 @@ public class DocumentResource {
 	@Path("/{crisisID}/{attributeID}/labeled/all")
 	public Response getAllLabeledDocumentByCrisisID(@PathParam("crisisID") int crisisID, @PathParam("attributeID") long attributeID){
 
-		//List<Document> documentList = documentLocalEJB.getAllLabeledDocumentbyCrisisID(crisisID, attributeID);
+		List<Document> documentList = documentLocalEJB.getAllLabeledDocumentbyCrisisID(crisisID, attributeID);
 		
-		Criterion criterion = Restrictions.eq("hasHumanLabels", true);
-		String jsonString = taskManager.getTaskCollectionByCriterion(new Long(crisisID), null, criterion);
-		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-		List<Document> docList = null;
-		if (jsonString != null) {
-			try {
-				docList = mapper.transformDocumentList(mapper.deSerializeList(jsonString, new TypeReference<List<qa.qcri.aidr.task.entities.Document>>() {}));
-				logger.info("retrieved doc count = " + docList.size());
-				System.out.println("retrieved doc count = " + docList.size());
-			} catch (Exception e) {
-				logger.error("Error in JSON deserialization to local List<Document> type");
-				logger.error(elog.toStringException(e));
-				e.printStackTrace();
-			}
-		}
 		ResponseWrapper response = new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"));
-		response.setDocuments(docList);
+		response.setDocuments(documentList);
 		return Response.ok(response).build();
 	}
 
@@ -147,8 +102,7 @@ public class DocumentResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteDocument(@PathParam("id") Long id) {
 		try {
-			//documentLocalEJB.deleteDocument(id);
-			int result = taskManager.deleteTaskById(id);
+			int result = documentLocalEJB.deleteDocument(id);
 			logger.info("deleted count = " + result);
 		} catch (RuntimeException e) {
 			return Response.ok(
@@ -162,24 +116,7 @@ public class DocumentResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response removeTrainingExample(@PathParam("id") Long id) {
 		try {
-			//documentLocalEJB.removeTrainingExample(id);
-			String jsonString = taskManager.getTaskById(id);
-			TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-			qa.qcri.aidr.task.entities.Document document = null;
-			if (jsonString != null) {
-				try {
-					document = mapper.deSerialize(jsonString, qa.qcri.aidr.task.entities.Document.class);
-					logger.info("Converted doc id: " + document.getDocumentID());
-				} catch (Exception e) {
-					logger.error("JSON deserialization parse error!");
-					logger.error(elog.toStringException(e));
-				}
-				document.setHasHumanLabels(false);
-				document.setNominalLabelCollection(null);
-				taskManager.updateTask(document);
-			} else {
-				logger.warn("doc id: null");
-			}
+			documentLocalEJB.removeTrainingExample(id);
 		} catch (RuntimeException e) {
 			return Response.ok(
 					new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "Error while removing Training Example.")).build();

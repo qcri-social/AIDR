@@ -2,8 +2,9 @@ package qa.qcri.aidr.predict.classification.nominal;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.predict.DataStore;
-import qa.qcri.aidr.predict.common.Loggable;
 
 import weka.attributeSelection.AttributeSelection;
 import weka.attributeSelection.InfoGainAttributeEval;
@@ -20,7 +21,7 @@ import weka.core.Instances;
  *
  * @author jrogstadius
  */
-public class ModelFactory extends Loggable {
+public class ModelFactory {
 
     /**
      * Train a new model for the specified event and ontology.
@@ -33,6 +34,8 @@ public class ModelFactory extends Loggable {
      * model.
      * @throws Exception
      */
+	private static Logger logger = Logger.getLogger(ModelFactory.class);
+	
 	private static final double EPSILON = 0.05;		// Tolerance for comparing two models: added by koushik
 	
     public static Model buildModel(int crisisID, int attributeID, Model oldModel)
@@ -47,12 +50,12 @@ public class ModelFactory extends Loggable {
                 attributeID, trainingSet);
 
         if (trainingSet.attribute(trainingSet.numAttributes() - 1).numValues() < 2) {
-            log(LogLevel.INFO, "ModelFactory",
+            logger.info("ModelFactory" + 
                     "All training examples have the same label. Postponing training.");
             return oldModel;
         }
         if (evaluationSet.numInstances() < 2) {
-            log(LogLevel.INFO, "ModelFactory",
+            logger.info("ModelFactory" +
                     "The evaluation set is too small. Postponing training.");
             return oldModel;
         }

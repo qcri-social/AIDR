@@ -9,13 +9,12 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predict.DataStore;
-import qa.qcri.aidr.predict.common.ErrorLog;
 import qa.qcri.aidr.predict.common.PipelineProcess;
 import qa.qcri.aidr.predict.common.RateLimiter;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.featureextraction.WordSet;
-
 import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 /**

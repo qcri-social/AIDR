@@ -8,11 +8,11 @@ import java.net.Socket;
 import org.apache.log4j.Logger;
 
 import redis.clients.jedis.Jedis;
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predict.common.*;
 import qa.qcri.aidr.predict.data.DocumentJSONConverter;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.DataStore;
-
 import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 /**
@@ -23,7 +23,7 @@ import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
  * 
  * @author jrogstadius
  */
-public class HttpInputWorker extends Loggable implements Runnable {
+public class HttpInputWorker implements Runnable {
 
     static int connectionID = 0;
     int connectionInstanceID;

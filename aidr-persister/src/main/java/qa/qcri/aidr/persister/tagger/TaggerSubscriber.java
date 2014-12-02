@@ -19,6 +19,7 @@ import java.io.File;
 
 
 
+
 import redis.clients.jedis.JedisPubSub;
 
 import java.io.OutputStreamWriter;
@@ -37,10 +38,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.utils.JsonDeserializer;
+import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.redis.LoadShedder;
 import qa.qcri.aidr.io.FileSystemOperations;
-import qa.qcri.aidr.logging.ErrorLog;
-
 import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
 
 public class TaggerSubscriber extends JedisPubSub {

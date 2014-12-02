@@ -41,8 +41,17 @@ public class NominalLabelJsonModel {
         this.description = description;
     }
 
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
+    }
+
     private String norminalLabelCode;
     private String name;
     private Long norminalLabelID;
     private String description;
+    private Integer sequence;
 }

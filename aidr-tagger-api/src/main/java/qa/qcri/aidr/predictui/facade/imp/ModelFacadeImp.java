@@ -9,12 +9,16 @@ import java.util.Collection;
 
 import qa.qcri.aidr.predictui.dto.ModelHistoryWrapper;
 import qa.qcri.aidr.predictui.facade.*;
+
 import java.util.List;
+
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+
 import qa.qcri.aidr.predictui.entities.Crisis;
 import qa.qcri.aidr.predictui.entities.Model;
 import qa.qcri.aidr.predictui.entities.ModelFamily;
@@ -23,6 +27,7 @@ import qa.qcri.aidr.predictui.entities.NominalAttribute;
 import qa.qcri.aidr.predictui.dto.ModelWrapper;
 import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.entities.NominalLabel;
+import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 /**
  *
@@ -33,6 +38,9 @@ import qa.qcri.aidr.predictui.entities.NominalLabel;
 @Stateless
 public class ModelFacadeImp implements ModelFacade {
 
+	@EJB
+	private TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
+	
 	@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
 	private EntityManager em;
 
@@ -147,7 +155,10 @@ public class ModelFacadeImp implements ModelFacade {
 			Collection<NominalLabel> nlc = na.getNominalLabelCollection();
 			for (NominalLabel label : nlc) {
 				if (!(label.getNominalLabelCode().equalsIgnoreCase("null"))) {
-					Collection<Document> dc = label.getDocumentCollection();
+					//Collection<Document> dc = label.getDocumentCollection();
+					
+					List<qa.qcri.aidr.task.dto.DocumentDTO> dtoList = taskManager.getNominalLabelDocumentCollection(label.getNominalLabelID());
+					Collection<Document> dc = Document.toLocalDocumentList(dtoList);
 					for (Document doc : dc) {
 						if (!doc.getIsEvaluationSet() && doc.getHasHumanLabels()) {
 							trainingExamples++;
@@ -174,67 +185,4 @@ public class ModelFacadeImp implements ModelFacade {
 		}
 		return modelWrapperList;
 	}
-
-	//    public List<ModelWrapper> getModelByCrisisID(int crisisID) {
-	//        List<ModelWrapper> modelWrapperList = new ArrayList<ModelWrapper>();
-	//        Crisis crisis = em.find(Crisis.class, crisisID);
-	//        Collection<ModelFamily> modelFamilyList = crisis.getModelFamilyCollection();
-	//        // for each modelFamily get all the models and take avg
-	//        for (ModelFamily modelFamily : modelFamilyList) {
-	//            Collection<Model> modelList = modelFamily.getModelCollection();
-	//            ModelWrapper modelWrapper = new ModelWrapper();
-	//            modelWrapper.setModelFamilyID(modelFamily.getModelFamilyID());
-	//            long classigiedElements = 0;
-	//            double auc = 0.0;
-	//            double aucAverage = 0.0;
-	//            int modelID = 0;
-	//             long trainingExamples = 0;
-	//
-	//            // if size 0 we will get NaN for aucAverage
-	//            if (modelList.size() > 0) {
-	//                for (Model model : modelList) {
-	//                    //trainingExamples += model.getTrainingCount();
-	//                    auc += model.getAvgAuc();
-	//                    modelID = model.getModelID();
-	//
-	//                    //for each model get all the labels and sum over classifiedDocumentCount
-	//                    Collection<ModelNominalLabel> modelLabels = model.getModelNominalLabelCollection();
-	//                    int totalClassifiedDocuments = 0;
-	//                    for (ModelNominalLabel label : modelLabels) {
-	//                        totalClassifiedDocuments += label.getClassifiedDocumentCount();
-	//                    }
-	//                    classigiedElements = totalClassifiedDocuments;
-	//                }
-	//                aucAverage = auc / modelList.size();
-	//            }
-	//
-	//            //getting trainingCount
-	//            trainingExamples = 0;
-	//            NominalAttribute na = modelFamily.getNominalAttribute();
-	//            Collection<NominalLabel> nlc = na.getNominalLabelCollection();
-	//            for (NominalLabel label : nlc) {
-	//                Collection<Document> dc = label.getDocumentCollection();
-	//                for (Document doc : dc){
-	//                    if (!doc.getIsEvaluationSet() && doc.getHasHumanLabels())
-	//                    trainingExamples ++;
-	//                }
-	//            }
-	//            
-	//            modelWrapper.setTrainingExamples(trainingExamples);
-	//            modelWrapper.setAttribute(modelFamily.getNominalAttribute().getName());
-	//            modelWrapper.setAuc(aucAverage);
-	//            modelWrapper.setClassifiedDocuments(classigiedElements);
-	//            String status = "";
-	//            if (modelFamily.getIsActive()) {
-	//                status = "Active";
-	//            } else {
-	//                status = "Inactive";
-	//            }
-	//            modelWrapper.setStatus(status);
-	//            modelWrapper.setModelID(modelID);
-	//
-	//            modelWrapperList.add(modelWrapper);
-	//        }
-	//        return modelWrapperList;
-	//    }
 }

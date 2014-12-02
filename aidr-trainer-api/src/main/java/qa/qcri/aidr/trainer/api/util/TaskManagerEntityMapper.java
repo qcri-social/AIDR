@@ -24,6 +24,7 @@ public class TaskManagerEntityMapper {
 			
 	public TaskManagerEntityMapper() {}
 
+	@Deprecated
 	public <E> E deSerializeList(String jsonString, TypeReference<E> type) {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -39,6 +40,7 @@ public class TaskManagerEntityMapper {
 		return null;
 	}
 
+	@Deprecated
 	public <E> E deSerialize(String jsonString, Class<E> entityType) {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -56,6 +58,7 @@ public class TaskManagerEntityMapper {
 		return null;
 	}
 
+	@Deprecated
 	public <E> String serializeTask(E task) {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -69,132 +72,7 @@ public class TaskManagerEntityMapper {
 		return jsonString;
 	}
 
-	public Document transformDocument(qa.qcri.aidr.task.entities.Document document) {
-		Document doc = new Document();
-		if (document != null) {
-			doc.setDocumentID(document.getDocumentID());
-			doc.setCrisisID(document.getCrisisID());
-			doc.setDoctype(document.getDoctype());
-			doc.setData(document.getData());
-			doc.setIsEvaluationSet(document.getIsEvaluationSet());
-			doc.setGeoFeatures(document.getGeoFeatures());
-			doc.setLanguage(document.getLanguage());
-			doc.setHasHumanLabels(document.getHasHumanLabels());
-
-			doc.setReceivedAt(document.getReceivedAt());
-			//doc.setSourceIP(document.getSourceIP().longValue());
-			doc.setWordFeatures(document.getWordFeatures());
-			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
-			doc.setTaskAssignment(transformTaskAssignment(document.getTaskAssignment()));
-
-			//doc.setNominalLabelCollection(transformNominalLabelCollection(document.getNominalLabelCollection()));
-			return doc;
-		} 
-		return null;
-	}
-
-	public qa.qcri.aidr.task.entities.Document reverseTransformDocument(Document document) {
-		qa.qcri.aidr.task.entities.Document doc = new qa.qcri.aidr.task.entities.Document();
-		if (document != null) {
-			doc.setDocumentID(document.getDocumentID());
-			doc.setCrisisID(document.getCrisisID());
-			doc.setDoctype(document.getDoctype());
-			doc.setData(document.getData());
-			doc.setIsEvaluationSet(document.getIsEvaluationSet());
-			doc.setGeoFeatures(document.getGeoFeatures());
-			doc.setLanguage(document.getLanguage());
-			doc.setHasHumanLabels(document.getHasHumanLabels());
-
-			doc.setReceivedAt(document.getReceivedAt());
-			//doc.setSourceIP(document.getSourceIP().intValue());
-			doc.setWordFeatures(document.getWordFeatures());
-			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
-			doc.setTaskAssignment(reverseTransformTaskAssignment(document.getTaskAssignment()));
-
-			//doc.setNominalLabelCollection(reverseTransformNominalLabelCollection(document.getNominalLabelCollection()));
-			return doc;
-		} 
-		return null;
-	}
-
-
-	public TaskAssignment transformTaskAssignment(qa.qcri.aidr.task.entities.TaskAssignment t) {
-		if (t != null) {
-			TaskAssignment taskAssignment  = new TaskAssignment(t.getDocumentID(), t.getUserID(), t.getAssignedAt());
-			return taskAssignment;
-		}
-		return null;
-	}
-
-	public qa.qcri.aidr.task.entities.TaskAssignment reverseTransformTaskAssignment(TaskAssignment t) {
-		if (t != null) {
-			qa.qcri.aidr.task.entities.TaskAssignment taskAssignment  = new qa.qcri.aidr.task.entities.TaskAssignment(t.getDocumentID(), t.getUserID(), t.getAssignedAt());
-			return taskAssignment;
-		}
-		return null;
-	}
-
-	public Collection<NominalLabel> transformNominalLabelCollection(Collection<qa.qcri.aidr.task.entities.NominalLabel> list) {
-		if (list != null) {
-			Collection<NominalLabel> nominalLabelList = new ArrayList<NominalLabel>();
-			for (qa.qcri.aidr.task.entities.NominalLabel t: list) {
-				if (t != null) {
-					NominalLabel nominalLabel  = new NominalLabel(t.getNominalLabelID().longValue(), t.getNominalLabelCode(), t.getName(), t.getDescription());
-					nominalLabelList.add(nominalLabel);
-				}
-			}
-			return nominalLabelList;
-		}
-		return null;
-	}
-
-	public Collection<qa.qcri.aidr.task.entities.NominalLabel> reverseTransformNominalLabelCollection(Collection<NominalLabel> list) {
-		if (list != null) {
-			Collection<qa.qcri.aidr.task.entities.NominalLabel> nominalLabelList = new ArrayList<qa.qcri.aidr.task.entities.NominalLabel>();
-			for (NominalLabel t: list) {
-				if (t != null) {
-					qa.qcri.aidr.task.entities.NominalLabel nominalLabel = new qa.qcri.aidr.task.entities.NominalLabel(t.getNominalLabelID().intValue(), t.getNominalLabelCode(), t.getName(), t.getDescription());
-					nominalLabelList.add(nominalLabel);
-				}
-			}
-			return nominalLabelList;
-		}
-		return null;
-	}
-	
-	public TaskAnswer transformTaskAnswer(qa.qcri.aidr.task.entities.TaskAnswer t) {
-		if (t != null) {
-			TaskAnswer taskAnswer = new TaskAnswer(t.getDocumentID(), t.getUserID(), t.getAnswer());
-			return taskAnswer;
-		}
-		return null;
-	}
-	
-	public qa.qcri.aidr.task.entities.TaskAnswer reverseTransformTaskAnswer(TaskAnswer t) {
-		if (t != null) {
-			qa.qcri.aidr.task.entities.TaskAnswer taskAnswer = new qa.qcri.aidr.task.entities.TaskAnswer(t.getDocumentID(), t.getUserID(), t.getAnswer());
-			return taskAnswer;
-		}
-		return null;
-	}
-	
-	public DocumentNominalLabel transformDocumentNominalLabel(qa.qcri.aidr.task.entities.DocumentNominalLabel doc) {
-		if (doc != null) {
-			DocumentNominalLabel nominalDoc = new DocumentNominalLabel(doc.getDocumentID(), doc.getNominalLabelID(), doc.getUserID());
-			return nominalDoc;
-		}
-		return null;
-	}
-	
-	public qa.qcri.aidr.task.entities.DocumentNominalLabel reverseTransformDocumentNominalLabel(DocumentNominalLabel doc) {
-		if (doc != null) {
-			qa.qcri.aidr.task.entities.DocumentNominalLabel nominalDoc = new qa.qcri.aidr.task.entities.DocumentNominalLabel(doc.getDocumentID(), doc.getNominalLabelID(), doc.getUserID());
-			return nominalDoc;
-		}
-		return null;
-	}
-	
-
+	/*
 	public static void main(String args[]) {
 		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
 		qa.qcri.aidr.task.entities.Document doc = new qa.qcri.aidr.task.entities.Document(12345678L, false);
@@ -230,4 +108,5 @@ public class TaskManagerEntityMapper {
 		NominalLabel nb1 = mapper.deSerialize(jsonString, NominalLabel.class);
 		System.out.println("Deserialized NominalLabel: " + nb1.getNominalLabelID() + ", " + nb1.getNominalLabelCode());
 	}
+	*/
 }

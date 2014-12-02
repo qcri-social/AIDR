@@ -78,15 +78,16 @@ public class DocumentServiceImpl implements DocumentService {
 		Map<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("setHasHumanLabels", new Boolean(value).toString());
 		logger.info("Will use the merge attempt");
-		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
 		try {
-			String jsonString = taskManager.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, documentID, paramMap);
-			Document doc = mapper.transformDocument(mapper.deSerialize(jsonString, qa.qcri.aidr.task.entities.Document.class));
+			qa.qcri.aidr.task.dto.DocumentDTO dto = (qa.qcri.aidr.task.dto.DocumentDTO) taskManager.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, documentID, paramMap);
+			Document doc = Document.toLocalDocument(dto);
 			logger.info("Update of hasHumanLabels successful for document " + doc.getDocumentID() + ", crisisId = " + doc.getCrisisID());
 		} catch (Exception e) {
 			logger.error("Update unsuccessful for documentID = " + documentID);
 			logger.error(elog.toStringException(e));
 		}
+
+		// Alternative method of doing the same
 		/*
 		Document doc = findDocument(documentID);
 		logger.info("Found document : " + doc);
@@ -110,14 +111,9 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public Document findDocument(Long documentID) {
 		//return documentDao.findDocument(documentID);  //To change body of implemented methods use File | Settings | File Templates.
-		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-		String jsonString = taskManager.getTaskById(documentID);
-		if (jsonString != null) { 
-			Document doc = mapper.deSerialize(jsonString, Document.class);
-			return (doc != null) ? doc : null;
-		} else {
-			return null;
-		}
+
+		Document doc = Document.toLocalDocument(taskManager.getTaskById(documentID));
+		return (doc != null) ? doc : null;
 	}
 
 	@Override
@@ -205,15 +201,11 @@ public class DocumentServiceImpl implements DocumentService {
 	@Transactional(readOnly = true)
 	//public  List<Document> getAvailableDocument(long crisisID, int maxresult){
 	public  List<Document> getAvailableDocument(long crisisID, Integer maxresult){
-		//return documentDao.findDocumentForTask(crisisID, maxresult)  ;
-		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-		String jsonString = taskManager.getNewTaskCollection(crisisID, maxresult, "DESC", null);
-		if (jsonString != null) {
-			List<Document> docList = mapper.deSerializeList(jsonString, new TypeReference<List<Document>>() {});
-			return docList;
-		} else {
-			return null;
-		}
+		//return documentDao.findDocumentForTask(crisisID, maxresult);
+
+		List<qa.qcri.aidr.task.dto.DocumentDTO> dtoList = taskManager.getNewTaskCollection(crisisID, maxresult, "DESC", null);
+		List<Document> docList = Document.toLocalDocumentList(dtoList);
+		return docList;
 	}
 
 	private int getAvailableDocumentCount(long crisisID){

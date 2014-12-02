@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -12,9 +13,8 @@ import redis.clients.jedis.Jedis;
 import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.classification.nominal.CrisisAttributePair;
 import qa.qcri.aidr.predict.common.Event;
-import qa.qcri.aidr.predict.common.Loggable;
-import qa.qcri.aidr.predict.dbentities.ModelFamilyEC;
 
+import qa.qcri.aidr.predict.dbentities.ModelFamilyEC;
 import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 /**
@@ -24,8 +24,10 @@ import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
  * 
  * @author jrogstadius
  */
-class ModelRetrainTrigger extends Loggable implements Runnable {
+class ModelRetrainTrigger implements Runnable {
 
+	private static Logger logger = Logger.getLogger(ModelRetrainTrigger.class);
+	
     public Event<CrisisAttributePair> onRetrain = new Event<CrisisAttributePair>();
     int timeThreshold = 60000; // 1000*60*10; //TODO: Model re-training
                                // threshold should be dynamic
@@ -43,6 +45,7 @@ class ModelRetrainTrigger extends Loggable implements Runnable {
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				logger.error("Exception: ", e);
 			}		
         }
     }
@@ -64,7 +67,7 @@ class ModelRetrainTrigger extends Loggable implements Runnable {
             while ((line = getInfoMessage(redis)) != null
                     && new Date().getTime() - consumptionStart < timeThreshold) {
 
-                log(Loggable.LogLevel.INFO, "A training sample has arrived");
+                logger.error("A training sample has arrived");
 
                 // Parse notification containing event id and attribute ids
                 JSONObject obj = new JSONObject(line);
@@ -87,7 +90,7 @@ class ModelRetrainTrigger extends Loggable implements Runnable {
                 newSampleCount++;
             }
         } catch (Exception e) {
-            log("Exception while processing training sample message queue", e);
+            logger.error("Exception while processing training sample message queue", e);
         } finally {
             DataStore.close(redis);
         }
@@ -146,7 +149,7 @@ class ModelRetrainTrigger extends Loggable implements Runnable {
     }
 
     private void retrain(int crisisID, int attributeID) {
-        log(Loggable.LogLevel.INFO, "Time to retrain model for " + crisisID
+        logger.info("Time to retrain model for " + crisisID
                 + " attribute " + attributeID);
         onRetrain.fire(this, new CrisisAttributePair(crisisID, attributeID));
 

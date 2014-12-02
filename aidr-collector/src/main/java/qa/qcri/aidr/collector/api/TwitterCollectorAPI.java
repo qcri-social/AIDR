@@ -14,7 +14,7 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.ResponseWrapper;
 import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
-import qa.qcri.aidr.collector.logging.Loggable;
+
 import qa.qcri.aidr.collector.utils.GenericCache;
 import qa.qcri.aidr.collector.utils.TwitterStreamQueryBuilder;
 import qa.qcri.aidr.common.logging.ErrorLog;
@@ -45,7 +45,7 @@ import qa.qcri.aidr.common.values.ReturnCode;
  * @author Imran
  */
 @Path("/twitter")
-public class TwitterCollectorAPI extends Loggable {
+public class TwitterCollectorAPI {
 
     private static Logger logger = Logger.getLogger(TwitterCollectorAPI.class.getName());
     private static ErrorLog elog = new ErrorLog();
