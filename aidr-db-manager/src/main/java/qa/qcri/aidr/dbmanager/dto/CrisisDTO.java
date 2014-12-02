@@ -219,10 +219,11 @@ public class CrisisDTO implements Serializable  {
 	}
 
 	public void setModelFamiliesDTO(List<ModelFamilyDTO> modelFamiliesDTO) {
+		/*
 		if (null == modelFamiliesDTO) {
 			logger.error( "Attempt to set a model family to null" );
 			throw new IllegalArgumentException("Model family cannot be null");
-		}
+		}*/
 		this.modelFamiliesDTO = modelFamiliesDTO;
 	}
 

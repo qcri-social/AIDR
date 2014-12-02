@@ -56,3 +56,7 @@ ALTER TABLE aidr_fetch_manager.AIDR_COLLECTION ADD COLUMN `publiclyListed` bit(1
 18 August, 2014: Run the following script to drop column sourceIP from aidr_predict.document table.
  ALTER TABLE document DROP COLUMN sourceIP;
 
+
+2nd December, 2014: Added foreign key from Model to ModelFamily table in aidr_predict database.
+==================================================================================================
+ALTER TABLE aidr_predict.model ADD CONSTRAINT `fk_Model_ModelFamily_ModelFamilyID` FOREIGN KEY (modelFamilyID) REFERENCES aidr_predict.model_family(modelFamilyID) ON DELETE CASCADE ON UPDATE CASCADE;

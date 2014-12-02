@@ -119,7 +119,9 @@ public class CrisisTypeDTO implements java.io.Serializable {
 			throw new PropertyNotSetException();
 		}
 		cType.setName(this.getName());
-		cType.setCrisises(toCrisisList(this.getCrisisesDTO()));
+		if (this.getCrisisesDTO() != null) {
+			cType.setCrisises(toCrisisList(this.getCrisisesDTO()));
+		}
 
 		return cType;
 	}

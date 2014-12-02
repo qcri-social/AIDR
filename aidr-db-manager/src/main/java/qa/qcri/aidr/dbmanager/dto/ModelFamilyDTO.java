@@ -36,7 +36,9 @@ public class ModelFamilyDTO implements Serializable {
     public ModelFamilyDTO(ModelFamily model) throws PropertyNotSetException {
         this.setModelFamilyId(model.getModelFamilyId());
     	this.setNominalAttributeDTO(new NominalAttributeDTO(model.getNominalAttribute()));
-        this.setCrisisDTO(new CrisisDTO(model.getCrisis()));
+        if (model.hasCrisis()) {
+    	this.setCrisisDTO(new CrisisDTO(model.getCrisis()));
+        }
         this.setIsActive(model.isIsActive());
         this.setModelFamilyId(model.getModelFamilyId());
         if (model.hasModels()) {
@@ -96,11 +98,13 @@ public class ModelFamilyDTO implements Serializable {
     }
 
     public void setModelsDTO(List<ModelDTO> modelsDTO) {
-        if (modelsDTO != null) {
+        this.modelsDTO = modelsDTO;
+    	/*
+    	if (modelsDTO != null) {
     	this.modelsDTO = modelsDTO;
         } else {
 			throw new IllegalArgumentException("Argument cannot be null!");
-		}
+		}*/
     }
     
 	private List<ModelDTO> toModelDTOList(List<Model> list) throws PropertyNotSetException {

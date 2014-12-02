@@ -21,6 +21,8 @@ public interface CrisisResourceFacade extends CoreDBServiceFacade<Crisis, Long> 
    public List<CrisisDTO> findByCriteria(String columnName, Long value) throws PropertyNotSetException;
 	
    public CrisisDTO getCrisisByID(Long id) throws PropertyNotSetException;
+   
+   public CrisisDTO getCrisisWithAllFieldsByID(Long id) throws PropertyNotSetException;
 
    public CrisisDTO getCrisisByCode(String code) throws PropertyNotSetException;
 
