@@ -8,7 +8,7 @@ Used by: AIDR-Tagger, AIDR-Task-Manager, and AIDR-Tagger-API.
 ## Schema B
 Used by: AIDR-Manager
 
-(to be available)
+(to be defined)
 
 
 ## Schema C
