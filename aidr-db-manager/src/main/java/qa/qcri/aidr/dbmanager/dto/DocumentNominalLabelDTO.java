@@ -72,12 +72,8 @@ public class DocumentNominalLabelDTO implements Serializable {
 		this.timestamp = timestamp;
 	}
 
-	public NominalLabelDTO getNominalLabelDTO() throws PropertyNotSetException {
-		if (this.nominalLabelDTO != null) {
+	public NominalLabelDTO getNominalLabelDTO() {
 			return this.nominalLabelDTO;
-		} else {
-			throw new PropertyNotSetException();
-		}
 	}
 
 	public void setNominalLabelDTO(NominalLabelDTO nominalLabelDTO) {
@@ -88,12 +84,8 @@ public class DocumentNominalLabelDTO implements Serializable {
 		}
 	}
 
-	public DocumentDTO getDocumentDTO() throws PropertyNotSetException {
-		if (this.documentDTO != null) {
+	public DocumentDTO getDocumentDTO() {
 			return this.documentDTO;
-		} else {
-			throw new PropertyNotSetException();
-		}
 	}
 
 	public void setDocumentDTO(DocumentDTO documentDTO) {

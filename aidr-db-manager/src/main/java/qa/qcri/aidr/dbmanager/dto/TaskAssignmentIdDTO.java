@@ -19,10 +19,10 @@ public class TaskAssignmentIdDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -7766458582186301990L;
-	
+
 	@XmlElement
 	private Long documentId;
-	
+
 	@XmlElement
 	private Long userId;
 
@@ -42,7 +42,7 @@ public class TaskAssignmentIdDTO implements Serializable {
 	@Column(name = "documentID", nullable = false)
 	public Long getDocumentId() throws PropertyNotSetException {
 		if (this.documentId != null) {
-		return this.documentId;
+			return this.documentId;
 		} else {
 			throw new PropertyNotSetException();
 		}
@@ -55,7 +55,7 @@ public class TaskAssignmentIdDTO implements Serializable {
 	@Column(name = "userID", nullable = false)
 	public Long getUserId() throws PropertyNotSetException {
 		if (this.userId != null) {
-		return this.userId;
+			return this.userId;
 		} else {
 			throw new PropertyNotSetException();
 		}
@@ -64,7 +64,7 @@ public class TaskAssignmentIdDTO implements Serializable {
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
-	
+
 	public TaskAssignmentId toEntity() throws PropertyNotSetException {
 		TaskAssignmentId entity = new TaskAssignmentId(this.getDocumentId(), this.getUserId());
 		return entity;

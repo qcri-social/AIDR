@@ -53,6 +53,7 @@ public class NominalAttributeDependentLabelDTO implements Serializable {
 
 	public NominalAttributeDependentLabelDTO(NominalAttributeDependentLabel t) throws PropertyNotSetException {
 		this.setIdDTO(new NominalAttributeDependentLabelIdDTO(t.getId()));
+
 		if (t.hasNominalLabel()) {
 			this.setNominalLabelDTO(new NominalLabelDTO(t.getNominalLabel()));
 		}

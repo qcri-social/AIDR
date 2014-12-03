@@ -130,11 +130,6 @@ public class TaskAssignmentDTO implements Serializable {
 	}
 
 	public void setAssignedAt(Date assignedAt) {
-		if (assignedAt == null) {
-			throw new IllegalArgumentException("assignedAt cannot be null");
-		}
-		else{
-			this.assignedAt = assignedAt;
-		}
+		this.assignedAt = assignedAt;
 	}
 }

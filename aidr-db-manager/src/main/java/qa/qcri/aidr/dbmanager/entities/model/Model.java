@@ -158,7 +158,7 @@ public class Model implements java.io.Serializable {
 	}
     
 	public boolean hasModelNominalLabel() {
-		return ((PersistentList) this.modelNominalLabels).wasInitialized();
+		return Hibernate.isInitialized(this.modelNominalLabels);
 	}
 	
 	public boolean hasModelFamily() {

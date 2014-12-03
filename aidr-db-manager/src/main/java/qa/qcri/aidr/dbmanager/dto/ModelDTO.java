@@ -60,7 +60,9 @@ public class ModelDTO implements Serializable {
 
 	public ModelDTO(Model model) throws PropertyNotSetException {
 		setModelId(model.getModelId());
-		setModelFamilyDTO(new ModelFamilyDTO(model.getModelFamily()));
+		if (model.hasModelFamily()) {
+			setModelFamilyDTO(new ModelFamilyDTO(model.getModelFamily()));
+		}
 		setAvgPrecision(model.getAvgPrecision());
 		setAvgRecall(model.getAvgRecall());
 		setAvgAuc(model.getAvgAuc());
@@ -107,7 +109,7 @@ public class ModelDTO implements Serializable {
 
 	public Long getModelId() throws PropertyNotSetException {
 		if (this.modelId != null) {
-		return this.modelId;
+			return this.modelId;
 		} else {
 			throw new PropertyNotSetException();
 		}
@@ -130,7 +132,7 @@ public class ModelDTO implements Serializable {
 	public void setModelFamilyId(Long modelFamilyId) {
 		if (modelFamilyId == null) {
 			throw new IllegalArgumentException("modelFamilyID cannot be null");
-		} else if (modelFamilyId.longValue() <= 0) {
+		} else if (modelFamilyId <= 0) {
 			throw new IllegalArgumentException("modelFamilyID cannot be zero or a negative number");
 		} else {
 			this.modelFamilyId = modelFamilyId;
@@ -189,7 +191,7 @@ public class ModelDTO implements Serializable {
 	public void setTrainingCount(Integer trainingCount) {
 		if (trainingCount == null) {
 			throw new IllegalArgumentException("Average training cannot be null");
-		} else if (trainingCount.doubleValue() < 0) {
+		} else if (trainingCount < 0) {
 			throw new IllegalArgumentException("Average training cannot be a negative number");
 		} else {
 			this.trainingCount = trainingCount;
@@ -222,7 +224,7 @@ public class ModelDTO implements Serializable {
 	}
 
 	public List<ModelNominalLabelDTO> getModelNominalLabelsDTO() {
-			return this.modelNominalLabelsDTO;
+		return this.modelNominalLabelsDTO;
 	}
 
 	public void setModelNominalLabelsDTO(List<ModelNominalLabelDTO> modelNominalLabelsDTO) {
@@ -230,7 +232,7 @@ public class ModelDTO implements Serializable {
 	}
 
 	public ModelFamilyDTO getModelFamilyDTO() throws PropertyNotSetException {
-			return modelFamilyDTO;
+		return modelFamilyDTO;
 	}
 
 	public void setModelFamilyDTO(ModelFamilyDTO modelFamilyDTO) {

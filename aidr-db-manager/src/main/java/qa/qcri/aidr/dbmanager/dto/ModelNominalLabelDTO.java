@@ -91,12 +91,6 @@ public class ModelNominalLabelDTO {
 
 	public void setNominalLabelDTO(NominalLabelDTO nominalLabelDTO) {
 		this.nominalLabelDTO = nominalLabelDTO;
-		/*
-		if (nominalLabelDTO != null) {
-		this.nominalLabelDTO = nominalLabelDTO;
-		} else {
-			throw new IllegalArgumentException();
-		}*/
 	}
 
 	public ModelDTO getModelDTO() {
@@ -105,12 +99,6 @@ public class ModelNominalLabelDTO {
 
 	public void setModelDTO(ModelDTO modelDTO) throws PropertyNotSetException {
 		this.modelDTO = modelDTO;
-		/*
-		if (modelDTO != null) {
-		this.modelDTO = modelDTO;
-		} else {
-			throw new IllegalArgumentException();
-		}*/
 	}
 
 	public Double getLabelPrecision() {

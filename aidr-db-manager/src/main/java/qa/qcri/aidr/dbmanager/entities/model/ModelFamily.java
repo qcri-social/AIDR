@@ -19,7 +19,6 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import org.hibernate.Hibernate;
-import org.hibernate.collection.internal.PersistentList;
 
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 
@@ -105,6 +104,10 @@ public class ModelFamily implements java.io.Serializable {
 
 	public void setModels(List<Model> models) {
 		this.models = models;
+	}
+	
+	public boolean hasNominalAttribute() {
+		return Hibernate.isInitialized(this.nominalAttribute);
 	}
 	
 	public boolean hasModels() {

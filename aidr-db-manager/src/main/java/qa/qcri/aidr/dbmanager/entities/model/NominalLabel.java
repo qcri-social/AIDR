@@ -17,7 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.collection.internal.PersistentList;
+import org.hibernate.Hibernate;
 
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 
@@ -156,15 +156,18 @@ public class NominalLabel implements java.io.Serializable {
 	}
 
 	public boolean hasDocumentNominalLabels() {
-		return ((PersistentList) this.documentNominalLabels).wasInitialized();
+		return Hibernate.isInitialized(this.documentNominalLabels);
 	}
 	
 	public boolean hasModelNominalLabels() {
-		return ((PersistentList) this.modelNominalLabels).wasInitialized();
+		return Hibernate.isInitialized(this.modelNominalLabels);
 	}
 	
 	public boolean hasNominalAttributeDependentLabels() {
-		return ((PersistentList) this.nominalAttributeDependentLabels).wasInitialized();
+		return Hibernate.isInitialized(this.nominalAttributeDependentLabels);
 	}
 	
+	public boolean hasNominalAttribute() {
+		return Hibernate.isInitialized(this.nominalAttribute);
+	}
 }
