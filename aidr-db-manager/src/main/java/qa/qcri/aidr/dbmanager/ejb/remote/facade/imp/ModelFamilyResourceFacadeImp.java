@@ -5,6 +5,7 @@
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
+import java.util.ArrayList;
 import java.util.List;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
@@ -19,7 +20,12 @@ import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFamily , Long> implements ModelFamilyResourceFacade {
 
     public List<ModelFamilyDTO> getAllModelFamilies() throws PropertyNotSetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<ModelFamilyDTO> modelFamilyDTOList = new ArrayList<ModelFamilyDTO>();
+        List<ModelFamily> modelFamilyList = getAll();
+        for (ModelFamily modelFamily: modelFamilyList){
+            modelFamilyDTOList.add(new ModelFamilyDTO(modelFamily));
+        }
+        return modelFamilyDTOList;
     }
 
     public List<ModelFamilyDTO> getAllModelFamiliesByCrisis(Long crisisID) throws PropertyNotSetException {
