@@ -103,8 +103,12 @@ public class CrisisDTO implements Serializable  {
 		}
 	}
 
-	public Long getCrisisID() {
+	public Long getCrisisID() throws PropertyNotSetException {
+		if (this.crisisID != null) {
 		return this.crisisID;
+		} else {
+			throw new PropertyNotSetException("crisisID cannot be null");
+		}
 	}
 
 	public void setCrisisID(Long crisisID) {
@@ -131,15 +135,13 @@ public class CrisisDTO implements Serializable  {
 		this.name = name;
 	}
 
-	public CrisisTypeDTO getCrisisTypeDTO() {
-		/*
+	public CrisisTypeDTO getCrisisTypeDTO() throws PropertyNotSetException {
 		if (null == this.crisisTypeDTO) {
 			logger.error("Attempt to access unset property");
 			throw new PropertyNotSetException();
 		} else {
 			return this.crisisTypeDTO;
-		}*/
-		return this.crisisTypeDTO;
+		}
 	}
 
 	public void setCrisisTypeDTO(CrisisTypeDTO crisisTypeDTO) {
@@ -172,13 +174,6 @@ public class CrisisDTO implements Serializable  {
 	}
 
 	public UsersDTO getUsersDTO() {
-		/*
-		if (this.usersDTO == null ) {
-			logger.error( "Attempt to access unset property" );
-			throw new PropertyNotSetException();
-		} else {
-			return this.usersDTO;
-		}*/
 		return this.usersDTO;
 	}
 
@@ -208,22 +203,10 @@ public class CrisisDTO implements Serializable  {
 	}
 	
 	public List<ModelFamilyDTO> getModelFamiliesDTO() {
-		/*
-		if(this.modelFamiliesDTO == null ) {
-			logger.error( "Attempt to access unset property" );
-			throw new PropertyNotSetException();
-		} else {
-			return this.modelFamiliesDTO;
-		}*/
 		return this.modelFamiliesDTO;
 	}
 
 	public void setModelFamiliesDTO(List<ModelFamilyDTO> modelFamiliesDTO) {
-		/*
-		if (null == modelFamiliesDTO) {
-			logger.error( "Attempt to set a model family to null" );
-			throw new IllegalArgumentException("Model family cannot be null");
-		}*/
 		this.modelFamiliesDTO = modelFamiliesDTO;
 	}
 

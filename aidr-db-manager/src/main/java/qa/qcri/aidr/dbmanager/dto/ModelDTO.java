@@ -105,8 +105,12 @@ public class ModelDTO implements Serializable {
 		return model;
 	}
 
-	public Long getModelId() {
+	public Long getModelId() throws PropertyNotSetException {
+		if (this.modelId != null) {
 		return this.modelId;
+		} else {
+			throw new PropertyNotSetException();
+		}
 	}
 
 	public void setModelId(Long modelId) {
@@ -179,7 +183,6 @@ public class ModelDTO implements Serializable {
 	}
 
 	public int getTrainingCount() {
-		//add custom propertyNotSet exaception here.
 		return this.trainingCount;
 	}
 
@@ -194,7 +197,6 @@ public class ModelDTO implements Serializable {
 	}
 
 	public Date getTrainingTime() {
-		//add custom propertyNotSet exaception here.
 		return this.trainingTime;
 	}
 
@@ -219,12 +221,8 @@ public class ModelDTO implements Serializable {
 		}
 	}
 
-	public List<ModelNominalLabelDTO> getModelNominalLabelsDTO() throws PropertyNotSetException {
-		if (this.modelNominalLabelsDTO != null) {
+	public List<ModelNominalLabelDTO> getModelNominalLabelsDTO() {
 			return this.modelNominalLabelsDTO;
-		} else {
-			throw new PropertyNotSetException("ModelNominalLabel not set");
-		}
 	}
 
 	public void setModelNominalLabelsDTO(List<ModelNominalLabelDTO> modelNominalLabelsDTO) {
@@ -232,11 +230,7 @@ public class ModelDTO implements Serializable {
 	}
 
 	public ModelFamilyDTO getModelFamilyDTO() throws PropertyNotSetException {
-		//if (this.modelFamilyDTO != null) { 
 			return modelFamilyDTO;
-//		} else {
-//			throw new PropertyNotSetException("ModelFamily not set");
-//		}
 	}
 
 	public void setModelFamilyDTO(ModelFamilyDTO modelFamilyDTO) {
