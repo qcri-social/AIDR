@@ -8,8 +8,10 @@ package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
@@ -34,12 +36,18 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
         return modelDTOList;
     }
 
-    public ModelDTO getModelByID(int id) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public ModelDTO getModelByID(Long id) throws PropertyNotSetException{
+        return new ModelDTO(getById(id));
     }
 
-    public Integer getModelCountByModelFamilyID(int modelFamilyID) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    /*
+     Use this method to get number of models associated with a model family.
+    */
+    public Integer getModelCountByModelFamilyID(Long modelFamilyID) throws PropertyNotSetException{
+        Criteria criteria = getCurrentSession().createCriteria(Model.class);
+        criteria.add(Restrictions.eq("modelFamilyID", modelFamilyID));
+        List<Model> modelList = criteria.list();
+        return modelList != null ? Integer.valueOf(modelList.size()) : 0;
     }
 
 }

@@ -22,9 +22,9 @@ public interface ModelResourceFacade extends CoreDBServiceFacade<Model, Long>{
     
     public List<ModelDTO> getAllModels() throws PropertyNotSetException;
 
-    public ModelDTO getModelByID(int id);
+    public ModelDTO getModelByID(Long id) throws PropertyNotSetException;
 
-    public Integer getModelCountByModelFamilyID(int modelFamilyID);
+    public Integer getModelCountByModelFamilyID(Long modelFamilyID) throws PropertyNotSetException;
 
     //public List<ModelHistoryWrapper> getModelByModelFamilyID(int modelFamilyID, Integer start, Integer limit);
 
