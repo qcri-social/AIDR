@@ -44,11 +44,19 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
     }
 
     public ModelFamilyDTO addCrisisAttribute(ModelFamilyDTO modelFamily) throws PropertyNotSetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        getEntityManager().persist(modelFamily);
+        return modelFamily;
     }
 
-    public void deleteModelFamily(Integer modelFamilyID) throws PropertyNotSetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean deleteModelFamily(Long modelFamilyID) throws PropertyNotSetException {
+        ModelFamily modelFamily = getEntityManager().find(ModelFamily.class, modelFamilyID);
+        if (modelFamily != null){
+            getEntityManager().remove(modelFamily);
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
 }
