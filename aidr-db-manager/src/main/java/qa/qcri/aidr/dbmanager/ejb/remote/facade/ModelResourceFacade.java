@@ -26,8 +26,10 @@ public interface ModelResourceFacade extends CoreDBServiceFacade<Model, Long>{
 
     public Integer getModelCountByModelFamilyID(Long modelFamilyID) throws PropertyNotSetException;
 
+    //TODO
     //public List<ModelHistoryWrapper> getModelByModelFamilyID(int modelFamilyID, Integer start, Integer limit);
 
+    //TODO
     //public List<ModelWrapper> getModelByCrisisID(long crisisID);
     
 }

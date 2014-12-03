@@ -7,16 +7,12 @@ package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.EntityManager;
 import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelResourceFacade;
-import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.model.Model;
 
 /**
