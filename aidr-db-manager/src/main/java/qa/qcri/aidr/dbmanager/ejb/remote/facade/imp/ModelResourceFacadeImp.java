@@ -11,7 +11,7 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelDTO;
-import qa.qcri.aidr.dbmanager.dto.ModelDTOWrapper;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelDTOWrapper;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;

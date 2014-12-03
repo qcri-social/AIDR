@@ -10,7 +10,7 @@ import java.util.List;
 import javax.ejb.Remote;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelDTO;
-import qa.qcri.aidr.dbmanager.dto.ModelDTOWrapper;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelDTOWrapper;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.CoreDBServiceFacade;
 import qa.qcri.aidr.dbmanager.entities.model.Model;
 
