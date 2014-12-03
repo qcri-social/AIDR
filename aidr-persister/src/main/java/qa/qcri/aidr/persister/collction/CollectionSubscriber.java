@@ -148,8 +148,10 @@ public class CollectionSubscriber extends JedisPubSub {
 
     public void closeFileWriting() {
         try {
-            out.flush();
-            out.close();
+            if ( out != null ) {
+                out.flush();
+                out.close();
+            }
         } catch (IOException ex) {
             logger.error(collectionCode + "Error in closing file writer");
             logger.error(elog.toStringException(ex));

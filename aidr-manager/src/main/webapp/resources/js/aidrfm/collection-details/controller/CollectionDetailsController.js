@@ -802,8 +802,16 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         var id = datailsController.DetailsComponent.currentCollection.id;
         var status = datailsController.DetailsComponent.currentCollection.status;
-        var startDate = datailsController.DetailsComponent.currentCollection.startDate;
-        var endDate = datailsController.DetailsComponent.currentCollection.endDate;
+
+        var startDate = null;
+        if(datailsController.DetailsComponent.currentCollection.startDate) {
+            startDate = Ext.Date.format( new Date(datailsController.DetailsComponent.currentCollection.startDate ), 'Y-m-d' );
+        }
+
+        var endDate = null;
+        if(datailsController.DetailsComponent.currentCollection.endDate) {
+            endDate = Ext.Date.format( new Date(datailsController.DetailsComponent.currentCollection.endDate ), 'Y-m-d' );
+        }
 
         var cmp = Ext.getCmp('collectionForm');
         var form = cmp.getForm();
