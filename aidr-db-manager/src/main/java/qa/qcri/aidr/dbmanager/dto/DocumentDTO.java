@@ -253,7 +253,7 @@ public class DocumentDTO implements Serializable {
 	}
 
 
-	private List<TaskAssignment> toTaskAssignmentList(List<TaskAssignmentDTO> list) {
+	private List<TaskAssignment> toTaskAssignmentList(List<TaskAssignmentDTO> list) throws PropertyNotSetException {
 		if (list != null) {
 			List<TaskAssignment> eList = new ArrayList<TaskAssignment>();
 			for (TaskAssignmentDTO dto: list) {

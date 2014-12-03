@@ -21,14 +21,14 @@ public class NominalLabelTrainingDataDTO implements Serializable {
 	@XmlElement
 	private NominalLabelTrainingDataIdDTO idDTO;
 
-	
+
 	public NominalLabelTrainingDataDTO() {
 	}
 
 	public NominalLabelTrainingDataDTO(NominalLabelTrainingDataIdDTO idDTO) throws PropertyNotSetException {
 		this.setIdDTO(idDTO);
 	}
-	
+
 	public NominalLabelTrainingDataDTO(NominalLabelTrainingDataId id) throws PropertyNotSetException {
 		this.setIdDTO(new NominalLabelTrainingDataIdDTO(id));
 	}
@@ -39,12 +39,12 @@ public class NominalLabelTrainingDataDTO implements Serializable {
 
 	public void setIdDTO(NominalLabelTrainingDataIdDTO idDTO) throws PropertyNotSetException {
 		if (idDTO != null) {
-		this.idDTO = idDTO;
+			this.idDTO = idDTO;
 		} else {
 			throw new PropertyNotSetException("Primary key not set!");
 		}
 	}
-	
+
 	public NominalLabelTrainingData toEntity() {
 		NominalLabelTrainingData entity = new NominalLabelTrainingData(this.getIdDTO().toEntity());
 		return entity;

@@ -52,9 +52,11 @@ public class CrisisTypeDTO implements java.io.Serializable {
 		if (crisisType != null) {
 			this.setCrisisTypeId(crisisType.getCrisisTypeId());
 			this.setName(crisisType.getName());
-			if (crisisType.getCrisises() != null) {
+			if (crisisType.hasCrisises()) {
 				this.setCrisisesDTO(toCrisisDTOList(crisisType.getCrisises()));
 			}
+		} else {
+			throw new IllegalArgumentException("Cannot be null");
 		}
 	}
 	
@@ -79,7 +81,11 @@ public class CrisisTypeDTO implements java.io.Serializable {
 	}
 
 	public void setCrisisesDTO(List<CrisisDTO> crisisesDTO) {
+		if (crisisesDTO != null) {
 		this.crisisesDTO = crisisesDTO;
+		} else {
+			throw new IllegalArgumentException("cannot be null");
+		}
 	}
 
 	private List<CrisisDTO> toCrisisDTOList(List<Crisis> list) throws PropertyNotSetException {
@@ -100,17 +106,22 @@ public class CrisisTypeDTO implements java.io.Serializable {
 				crisises.add(dto.toEntity());
 			}
 			return crisises;
+		} else {
+			throw new IllegalArgumentException("Cannot be null");
 		}
-		return null;
 	}
 
 	public CrisisType toEntity() throws PropertyNotSetException {
 		CrisisType cType = new CrisisType(this.getName());
 		if (this.getCrisisTypeId() != null) {
 			cType.setCrisisTypeId(this.getCrisisTypeId());
+		} else {
+			throw new PropertyNotSetException();
 		}
 		cType.setName(this.getName());
-		cType.setCrisises(toCrisisList(this.getCrisisesDTO()));
+		if (this.getCrisisesDTO() != null) {
+			cType.setCrisises(toCrisisList(this.getCrisisesDTO()));
+		}
 
 		return cType;
 	}

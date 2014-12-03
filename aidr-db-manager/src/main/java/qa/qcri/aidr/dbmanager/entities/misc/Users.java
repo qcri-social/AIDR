@@ -3,7 +3,6 @@
 
 package qa.qcri.aidr.dbmanager.entities.misc;
 
-import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -18,6 +17,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.Hibernate;
 import org.hibernate.collection.internal.PersistentList;
 
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
@@ -102,10 +102,12 @@ public class Users implements java.io.Serializable {
 	}
 
 	public boolean hasCrisises() {
-		return ((PersistentList) this.crisises).wasInitialized();
+		//return ((PersistentList) this.crisises).wasInitialized();
+		return Hibernate.isInitialized(this.crisises);
 	}
 	
 	public boolean hasNominalAttributes() {
-		return ((PersistentList) this.nominalAttributes).wasInitialized();
+		//return ((PersistentList) this.nominalAttributes).wasInitialized();
+		return Hibernate.isInitialized(this.nominalAttributes);
 	}
 }

@@ -85,8 +85,12 @@ public class CrisisDTO implements Serializable  {
 		this.setName(crisis.getName());
 		this.setCode(crisis.getCode());
 		this.setIsTrashed(crisis.isIsTrashed());
-		this.setCrisisTypeDTO(new CrisisTypeDTO(crisis.getCrisisType()));
-		
+		if (crisis.hasCrisisType()) {
+			this.setCrisisTypeDTO(new CrisisTypeDTO(crisis.getCrisisType()));
+		}
+		if (crisis.hasUsers()) {
+			this.setUsersDTO(new UsersDTO(crisis.getUsers()));
+		}
 		// Setting optional fields that were lazily initialized
 		if (crisis.hasDocuments()) {
 			this.setDocumentsDTO(toDocumentDTOList(crisis.getDocuments()));
@@ -97,11 +101,14 @@ public class CrisisDTO implements Serializable  {
 		if (crisis.hasModelFamilies()) {
 			this.setModelFamiliesDTO(toModelFamilyDTOList(crisis.getModelFamilies()));
 		}
-		
 	}
 
-	public Long getCrisisID() {
+	public Long getCrisisID() throws PropertyNotSetException {
+		if (this.crisisID != null) {
 		return this.crisisID;
+		} else {
+			throw new PropertyNotSetException("crisisID cannot be null");
+		}
 	}
 
 	public void setCrisisID(Long crisisID) {
@@ -166,13 +173,8 @@ public class CrisisDTO implements Serializable  {
 		this.isTrashed = isTrashed;
 	}
 
-	public UsersDTO getUsersDTO() throws PropertyNotSetException {
-		if (this.usersDTO == null ) {
-			logger.error( "Attempt to access unset property" );
-			throw new PropertyNotSetException();
-		} else {
-			return this.usersDTO;
-		}
+	public UsersDTO getUsersDTO() {
+		return this.usersDTO;
 	}
 
 	public void setUsersDTO(UsersDTO usersDTO) {
@@ -200,20 +202,11 @@ public class CrisisDTO implements Serializable  {
 		this.documentsDTO = documentsDTO;
 	}
 	
-	public List<ModelFamilyDTO> getModelFamiliesDTO() throws PropertyNotSetException {
-		if(this.modelFamiliesDTO == null ) {
-			logger.error( "Attempt to access unset property" );
-			throw new PropertyNotSetException();
-		} else {
-			return this.modelFamiliesDTO;
-		}
+	public List<ModelFamilyDTO> getModelFamiliesDTO() {
+		return this.modelFamiliesDTO;
 	}
 
 	public void setModelFamiliesDTO(List<ModelFamilyDTO> modelFamiliesDTO) {
-		if (null == modelFamiliesDTO) {
-			logger.error( "Attempt to set a model family to null" );
-			throw new IllegalArgumentException("Model family cannot be null");
-		}
 		this.modelFamiliesDTO = modelFamiliesDTO;
 	}
 

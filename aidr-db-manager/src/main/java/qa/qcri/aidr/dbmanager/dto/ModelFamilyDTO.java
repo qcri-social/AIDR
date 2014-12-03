@@ -18,91 +18,91 @@ import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class ModelFamilyDTO implements Serializable {
 
-    /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 7377627785888285732L;
 	private Long modelFamilyId;
-    private NominalAttributeDTO nominalAttributeDTO;
-    private CrisisDTO crisisDTO;
-    private boolean isActive;
+	private NominalAttributeDTO nominalAttributeDTO;
+	private CrisisDTO crisisDTO;
+	private boolean isActive;
 
-  
-    private List<ModelDTO> modelCollectionDTO;
 
-    public ModelFamilyDTO() {
-    }
+	private List<ModelDTO> modelsDTO;
 
-    public ModelFamilyDTO(ModelFamily model) throws PropertyNotSetException {
-        this.setModelFamilyId(model.getModelFamilyId());
-    	this.setNominalAttributeDTO(new NominalAttributeDTO(model.getNominalAttribute()));
-        this.setCrisisDTO(new CrisisDTO(model.getCrisis()));
-        this.setIsActive(model.isIsActive());
-        this.setModelFamilyId(model.getModelFamilyId());
-        if (model.hasModelCollection()) {
-        	this.setModelCollectionDTO(this.toModelDTOList(model.getModelCollection()));
-        }
-    }
-    
-    public ModelFamilyDTO(NominalAttributeDTO nominalAttributeDTO, CrisisDTO crisisDTO,
-            boolean isActive) {
-        this.setNominalAttributeDTO(nominalAttributeDTO);
-        this.setCrisisDTO(crisisDTO);
-        this.setIsActive(isIsActive());
-    }
+	public ModelFamilyDTO() {
+	}
 
-    public Long getModelFamilyId() {
-        return this.modelFamilyId;
-    }
+	public ModelFamilyDTO(ModelFamily model) throws PropertyNotSetException {
+		this.setModelFamilyId(model.getModelFamilyId());
+		if (model.hasNominalAttribute()) {
+			this.setNominalAttributeDTO(new NominalAttributeDTO(model.getNominalAttribute()));
+		}
+		if (model.hasCrisis()) {
+			this.setCrisisDTO(new CrisisDTO(model.getCrisis()));
+		}
+		this.setIsActive(model.isIsActive());
+		this.setModelFamilyId(model.getModelFamilyId());
+		if (model.hasModels()) {
+			this.setModelsDTO(this.toModelDTOList(model.getModels()));
+		}
+	}
 
-    public void setModelFamilyId(Long modelFamilyId) {
-        this.modelFamilyId = modelFamilyId;
-    }
+	public ModelFamilyDTO(NominalAttributeDTO nominalAttributeDTO, CrisisDTO crisisDTO,
+			boolean isActive) {
+		this.setNominalAttributeDTO(nominalAttributeDTO);
+		this.setCrisisDTO(crisisDTO);
+		this.setIsActive(isIsActive());
+	}
 
-    public NominalAttributeDTO getNominalAttributeDTO() {
-        return this.nominalAttributeDTO;
-    }
+	public Long getModelFamilyId() {
+		return this.modelFamilyId;
+	}
 
-    public void setNominalAttributeDTO(NominalAttributeDTO nominalAttributeDTO) {
-        if (nominalAttributeDTO != null) {
-    	this.nominalAttributeDTO = nominalAttributeDTO;
-        } else {
+	public void setModelFamilyId(Long modelFamilyId) {
+		this.modelFamilyId = modelFamilyId;
+	}
+
+	public NominalAttributeDTO getNominalAttributeDTO() {
+		return this.nominalAttributeDTO;
+	}
+
+	public void setNominalAttributeDTO(NominalAttributeDTO nominalAttributeDTO) {
+		if (nominalAttributeDTO != null) {
+			this.nominalAttributeDTO = nominalAttributeDTO;
+		} else {
 			throw new IllegalArgumentException("Argument cannot be null!");
 		}
-    }
+	}
 
-    public CrisisDTO getCrisisDTO() {
-        return this.crisisDTO;
-    }
+	public CrisisDTO getCrisisDTO() {
+		return this.crisisDTO;
+	}
 
-    public void setCrisisDTO(CrisisDTO crisisDTO) {
-        if (crisisDTO != null) {
-    	this.crisisDTO = crisisDTO;
-        } else {
+	public void setCrisisDTO(CrisisDTO crisisDTO) {
+		if (crisisDTO != null) {
+			this.crisisDTO = crisisDTO;
+		} else {
 			throw new IllegalArgumentException("Argument cannot be null!");
 		}
-    }
+	}
 
-    public boolean isIsActive() {
-        return this.isActive;
-    }
+	public boolean isIsActive() {
+		return this.isActive;
+	}
 
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
-    }
+	public void setIsActive(boolean isActive) {
+		this.isActive = isActive;
+	}
 
-    public List<ModelDTO> getModelCollectionDTO() {
-        return modelCollectionDTO;
-    }
+	public List<ModelDTO> getModelsDTO() {
+		return modelsDTO;
+	}
 
-    public void setModelCollectionDTO(List<ModelDTO> modelCollectionDTO) {
-        if (modelCollectionDTO != null) {
-    	this.modelCollectionDTO = modelCollectionDTO;
-        } else {
-			throw new IllegalArgumentException("Argument cannot be null!");
-		}
-    }
-    
+	public void setModelsDTO(List<ModelDTO> modelsDTO) {
+		this.modelsDTO = modelsDTO;
+	}
+
 	private List<ModelDTO> toModelDTOList(List<Model> list) throws PropertyNotSetException {
 		if (list != null) {
 			List<ModelDTO> dtoList = new ArrayList<ModelDTO>();
@@ -125,15 +125,15 @@ public class ModelFamilyDTO implements Serializable {
 		}
 		return null;
 	}
-	
+
 	public ModelFamily toEntity() throws PropertyNotSetException {
 		ModelFamily entity = new ModelFamily(this.getNominalAttributeDTO().toEntity(), 
-									this.getCrisisDTO().toEntity(), this.isIsActive());
+				this.getCrisisDTO().toEntity(), this.isIsActive());
 		if (this.getModelFamilyId() != null) {
 			entity.setModelFamilyId(modelFamilyId);
 		}
-		if (this.modelCollectionDTO != null) {
-			entity.setModelCollection(this.toModelList(this.getModelCollectionDTO()));
+		if (this.modelsDTO != null) {
+			entity.setModels(this.toModelList(this.getModelsDTO()));
 		}
 		return entity;
 	}

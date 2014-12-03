@@ -17,6 +17,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
+import org.hibernate.Hibernate;
+
 import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 
 /**
@@ -88,5 +90,12 @@ public class DocumentNominalLabel implements java.io.Serializable {
 	public void setDocument(Document document) {
 		this.document = document;
 	}
-
+	
+	public boolean hasDocument() {
+		return Hibernate.isInitialized(this.document);
+	}
+	
+	public boolean hasNominalLabel() {
+		return Hibernate.isInitialized(this.nominalLabel);
+	}
 }

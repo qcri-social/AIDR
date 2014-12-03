@@ -16,10 +16,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.Hibernate;
 import org.hibernate.collection.internal.PersistentList;
 
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
@@ -157,18 +157,18 @@ public class NominalAttribute implements java.io.Serializable {
 	}
 
 	public boolean hasCrisises() {
-		return ((PersistentList) this.crisises).wasInitialized();
+		return Hibernate.isInitialized(this.crisises);
 	}
 	
 	public boolean hasNominalLabels() {
-		return ((PersistentList) this.nominalLabels).wasInitialized();
+		return Hibernate.isInitialized(this.nominalLabels);
 	}
 	
 	public boolean hasNominalAttributeDependentLabel() {
-		return ((PersistentList) this.nominalAttributeDependentLabels).wasInitialized();
+		return Hibernate.isInitialized(this.nominalAttributeDependentLabels);
 	}
 	
 	public boolean hasModelFamily() {
-		return ((PersistentList) this.modelFamilies).wasInitialized();
+		return Hibernate.isInitialized(this.modelFamilies);
 	}
 }

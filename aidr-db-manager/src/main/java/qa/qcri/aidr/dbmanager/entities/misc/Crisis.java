@@ -20,7 +20,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import org.hibernate.collection.internal.PersistentList;
+import org.hibernate.Hibernate;
 
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
@@ -43,9 +43,9 @@ public class Crisis implements java.io.Serializable {
 	private String name;
 	private String code;
 	private boolean isTrashed;
-	private List<NominalAttribute> nominalAttributes = null;
-	private List<Document> documents = null;
-	private List<ModelFamily> modelFamilies = null;
+	private List<NominalAttribute> nominalAttributes;
+	private List<Document> documents;
+	private List<ModelFamily> modelFamilies;
 
 	public Crisis() {
 	}
@@ -157,16 +157,27 @@ public class Crisis implements java.io.Serializable {
 	public void setModelFamilies(List<ModelFamily> modelFamilies) {
 		this.modelFamilies = modelFamilies;
 	}
-
+	
+	public boolean hasUsers() {
+		return Hibernate.isInitialized(this.users);
+	}
+	
+	public boolean hasCrisisType() {
+		return Hibernate.isInitialized(this.crisisType);
+	}
+	
 	public boolean hasDocuments() {
-		return ((PersistentList) this.documents).wasInitialized();
+		//return ((PersistentList) this.documents).wasInitialized();
+		return Hibernate.isInitialized(this.documents);
 	}
 	
 	public boolean hasNominalAttributes() {
-		return ((PersistentList) this.nominalAttributes).wasInitialized();
+		//return ((PersistentList) this.nominalAttributes).wasInitialized();
+		return Hibernate.isInitialized(this.nominalAttributes);
 	}
 	
 	public boolean hasModelFamilies() {
-		return ((PersistentList) this.modelFamilies).wasInitialized();
+		//return ((PersistentList) this.modelFamilies).wasInitialized();
+		return Hibernate.isInitialized(this.modelFamilies);
 	}
 }

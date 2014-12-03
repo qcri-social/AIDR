@@ -6,8 +6,10 @@ import java.util.Date;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.TaskAssignment;
 
 @XmlRootElement
@@ -19,10 +21,10 @@ public class TaskAssignmentDTO implements Serializable {
 	private static final long serialVersionUID = 6766433678441426060L;
 
 	@XmlElement
-	private Long documentID;
+	private Document document;
 
 	@XmlElement
-	private Long userID;
+	private TaskAssignmentIdDTO idDTO;
 
 	@XmlElement
 	private Date assignedAt;
@@ -31,54 +33,95 @@ public class TaskAssignmentDTO implements Serializable {
 
 	}
 
-    public TaskAssignmentDTO(TaskAssignment taskAssignment){
-        this.documentID = taskAssignment.getId().getDocumentId();
-        this.userID = taskAssignment.getId().getUserId();
-        this.assignedAt = taskAssignment.getAssignedAt();
+	public TaskAssignmentDTO(TaskAssignment taskAssignment){
+		if (taskAssignment.hasDocument()) {
+			this.setDocument(taskAssignment.getDocument());
+		}
+		this.setIdDTO(new TaskAssignmentIdDTO(taskAssignment.getId()));
+		this.setAssignedAt(taskAssignment.getAssignedAt());
 
-    }
+	}
 
 	public TaskAssignmentDTO(Long documentID, Long userID, Date assignedAt){
-		this.documentID = documentID;
-		this.userID = userID;
+		this.getIdDTO().setDocumentId(documentID);
+		this.getIdDTO().setUserId(userID);
 		this.assignedAt = assignedAt;
 	}
 
-	public  TaskAssignment toEntity() {
-        TaskAssignment taskAssignment = new TaskAssignment(this.documentID, this.userID);
-        return taskAssignment;
-    }
+	public  TaskAssignment toEntity() throws PropertyNotSetException {
+		TaskAssignment taskAssignment = new TaskAssignment(this.getDocumentID(), this.getUserID());
+		if (this.getIdDTO() != null) {
+			taskAssignment.setId(this.getIdDTO().toEntity());
+		}
+		if (this.getAssignedAt() != null) {
+			taskAssignment.setAssignedAt(getAssignedAt());
+		}
+		return taskAssignment;
+	}
 
-    public  TaskAssignment toEntity(Long documentID, Long userId) {
-        TaskAssignment taskAssignment = new TaskAssignment(documentID, userId);
-        return taskAssignment;
-    }
+	public  TaskAssignment toEntity(Long documentID, Long userId) {
+		TaskAssignment taskAssignment = new TaskAssignment(documentID, userId);
+		if (this.getAssignedAt() != null) {
+			taskAssignment.setAssignedAt(getAssignedAt());
+		}
+		return taskAssignment;
+	}
+
+	public Document getDocument() throws PropertyNotSetException {
+		if (this.document != null) {
+			return this.document;
+		} else {
+			throw new PropertyNotSetException();
+		}
+	}
+
+	public void setDocument(Document document) {
+		if (document == null) {
+			throw new IllegalArgumentException("document cannot be null");
+		}
+		else{
+			this.document = document;
+		}
+
+	}
+
+	public TaskAssignmentIdDTO getIdDTO() {
+		return this.idDTO;
+	}
+
+	public void setIdDTO(TaskAssignmentIdDTO idDTO) {
+		if (idDTO != null) {
+			this.idDTO = idDTO;
+		} else {
+			throw new IllegalArgumentException("Primary key cannot be null");
+		}
+	}
 
 	public Long getDocumentID() {
-		return documentID;
+		return document.getDocumentId();
 	}
 
-	public void setDocumentID(Long documentID) {
-        if (documentID == null) {
-            throw new IllegalArgumentException("documentID cannot be null");
-        }
-        else{
-            this.documentID = documentID;
-        }
+	public void setDocumentID(Long documentID) throws PropertyNotSetException {
+		if (documentID == null) {
+			throw new IllegalArgumentException("documentID cannot be null");
+		}
+		else{
+			this.getDocument().setDocumentId(documentID);
+		}
 
 	}
 
-	public Long getUserID() {
-		return userID;
+	public Long getUserID() throws PropertyNotSetException {
+		return getIdDTO().getUserId();
 	}
 
 	public void setUserID(Long userID) {
-        if (userID == null) {
-            throw new IllegalArgumentException("userID cannot be null");
-        }
-        else{
-            this.userID = userID;
-        }
+		if (userID == null) {
+			throw new IllegalArgumentException("userID cannot be null");
+		}
+		else{
+			this.getIdDTO().setUserId(userID);
+		}
 
 	}
 
@@ -87,22 +130,6 @@ public class TaskAssignmentDTO implements Serializable {
 	}
 
 	public void setAssignedAt(Date assignedAt) {
-        if (assignedAt == null) {
-            throw new IllegalArgumentException("assignedAt cannot be null");
-        }
-        else{
-		    this.assignedAt = assignedAt;
-        }
+		this.assignedAt = assignedAt;
 	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		TaskAssignmentDTO taskAssignment = (TaskAssignmentDTO) o;
-
-		return documentID.equals(taskAssignment.getDocumentID());
-	}
-
 }

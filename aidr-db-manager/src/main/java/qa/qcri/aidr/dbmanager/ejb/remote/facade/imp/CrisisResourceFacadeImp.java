@@ -72,6 +72,21 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 			return null;
 		}
 	}
+	
+	@Override
+	public CrisisDTO getCrisisWithAllFieldsByID(Long id) throws PropertyNotSetException {
+		Crisis crisis = getById(id);
+		if (crisis != null) {
+			Hibernate.initialize(crisis.getModelFamilies());
+			Hibernate.initialize(crisis.getNominalAttributes());
+			Hibernate.initialize(crisis.getDocuments());
+
+			CrisisDTO dto = new CrisisDTO(crisis);
+			return dto;
+		} else {
+			return null;
+		}
+	}
 
 	@Override
 	public CrisisDTO getCrisisByCode(String code) throws PropertyNotSetException {
@@ -82,33 +97,46 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 
 	@Override
 	public CrisisDTO editCrisis(CrisisDTO crisis) throws PropertyNotSetException {
-		Crisis c = crisis.toEntity();
-		Crisis cr = getById(c.getCrisisId()); 
-		if (cr != null) {
-			cr = em.merge(c);
-			/*
+		System.out.println("Received request for: " + crisis.getCrisisID() + ", " + crisis.getCode());
+		try {
+			Crisis c = crisis.toEntity();
+			Crisis cr = getById(c.getCrisisId()); 
+			if (cr != null) {
+				cr = em.merge(c);
+				/*
 			if (crisis.getCrisisTypeDTO() != null) {
 				cr.setCrisisType(crisis.getCrisisTypeDTO().toEntity());
 			}
 			cr.setCode(crisis.getCode());
 			cr.setName(crisis.getName());
-			*/
-			return cr != null ? new CrisisDTO(cr) : null;
-		} else {
-			throw new RuntimeException("Not found");
+				 */
+				return cr != null ? new CrisisDTO(cr) : null;
+			} else {
+				throw new RuntimeException("Not found");
+			}
+		} catch (Exception e) {
+			System.out.println("Exception in merging/updating crisis: " + crisis.getCrisisID());
+			e.printStackTrace();	
 		}
+		return null;
+
 	}
 
 	@Override
 	public List<CrisisDTO> getAllCrisis() throws PropertyNotSetException {
+		System.out.println("Received request for fetching all crisis!!!");
 		List<CrisisDTO> dtoList = new ArrayList<CrisisDTO>();
 		List<Crisis> crisisList = getAll();
 		if (crisisList != null) {
 			for (Crisis crisis : crisisList) {
+				System.out.println("Converting to DTO crisis: " + crisis.getCode() + ", " + crisis.getName() + ", " + crisis.getCrisisId()
+						+ ", " + crisis.getUsers().getUserId() + ":" + crisis.getUsers().getName());
+
 				CrisisDTO dto = new CrisisDTO(crisis);
 				dtoList.add(dto);
 			}
-		} 
+		}
+		System.out.println("Done creating DTO list, size = " + dtoList.size());
 		return dtoList;
 	}
 

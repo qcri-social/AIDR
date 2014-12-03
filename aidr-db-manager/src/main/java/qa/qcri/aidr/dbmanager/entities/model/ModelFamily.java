@@ -4,7 +4,6 @@ package qa.qcri.aidr.dbmanager.entities.model;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,9 +17,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.xml.bind.annotation.XmlTransient;
 
-import org.hibernate.collection.internal.PersistentList;
+import org.hibernate.Hibernate;
 
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 
@@ -36,74 +34,88 @@ public class ModelFamily implements java.io.Serializable {
      *
      */
     private static final long serialVersionUID = -1064917491408243168L;
-    private Long modelFamilyId;
-    private NominalAttribute nominalAttribute;
-    private Crisis crisis;
-    private boolean isActive;
+	private Long modelFamilyId;
+	private NominalAttribute nominalAttribute;
+	private Crisis crisis;
+	private boolean isActive;
+	private List<Model> models = null;
 
-  
-    private List<Model> modelCollection;
-
-    public ModelFamily() {
-    }
-
-    public ModelFamily(NominalAttribute nominalAttribute, Crisis crisis,
-            boolean isActive) {
-        this.nominalAttribute = nominalAttribute;
-        this.crisis = crisis;
-        this.isActive = isActive;
-    }
-
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "modelFamilyID", unique = true, nullable = false)
-    public Long getModelFamilyId() {
-        return this.modelFamilyId;
-    }
-
-    public void setModelFamilyId(Long modelFamilyId) {
-        this.modelFamilyId = modelFamilyId;
-    }
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "nominalAttributeID", nullable = false)
-    public NominalAttribute getNominalAttribute() {
-        return this.nominalAttribute;
-    }
-
-    public void setNominalAttribute(NominalAttribute nominalAttribute) {
-        this.nominalAttribute = nominalAttribute;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "crisisID", nullable = false)
-    public Crisis getCrisis() {
-        return this.crisis;
-    }
-
-    public void setCrisis(Crisis crisis) {
-        this.crisis = crisis;
-    }
-
-    @Column(name = "isActive", nullable = false)
-    public boolean isIsActive() {
-        return this.isActive;
-    }
-
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "modelFamily")
-    public List<Model> getModelCollection() {
-        return modelCollection;
-    }
-
-    public void setModelCollection(List<Model> modelCollection) {
-        this.modelCollection = modelCollection;
-    }
-
-	public boolean hasModelCollection() {
-		return ((PersistentList) this.modelCollection).wasInitialized();
+	public ModelFamily() {
 	}
+
+	public ModelFamily(NominalAttribute nominalAttribute, Crisis crisis,
+			boolean isActive) {
+		this.nominalAttribute = nominalAttribute;
+		this.crisis = crisis;
+		this.isActive = isActive;
+	}
+
+	public ModelFamily(NominalAttribute nominalAttribute, Crisis crisis,
+			boolean isActive, List<Model> models) {
+		this.crisis = crisis;
+		this.isActive = isActive;
+		this.models = models;
+	}
+
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "modelFamilyID", unique = true, nullable = false)
+	public Long getModelFamilyId() {
+		return this.modelFamilyId;
+	}
+
+	public void setModelFamilyId(Long modelFamilyId) {
+		this.modelFamilyId = modelFamilyId;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "nominalAttributeID", nullable = false)
+	public NominalAttribute getNominalAttribute() {
+		return this.nominalAttribute;
+	}
+
+	public void setNominalAttribute(NominalAttribute nominalAttribute) {
+		this.nominalAttribute = nominalAttribute;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "crisisID", nullable = false)
+	public Crisis getCrisis() {
+		return this.crisis;
+	}
+
+	public void setCrisis(Crisis crisis) {
+		this.crisis = crisis;
+	}
+
+	@Column(name = "isActive", nullable = false)
+	public boolean isIsActive() {
+		return this.isActive;
+	}
+
+	public void setIsActive(boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "modelFamily")
+	public List<Model> getModels() {
+		return this.models;
+	}
+
+	public void setModels(List<Model> models) {
+		this.models = models;
+	}
+	
+	public boolean hasNominalAttribute() {
+		return Hibernate.isInitialized(this.nominalAttribute);
+	}
+	
+	public boolean hasModels() {
+		return Hibernate.isInitialized(this.models);
+	}
+	
+	public boolean hasCrisis() {
+		return Hibernate.isInitialized(this.crisis);
+	}
+
 }
