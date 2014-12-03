@@ -10,6 +10,7 @@ import java.util.List;
 import javax.ejb.Remote;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelDTO;
+import qa.qcri.aidr.dbmanager.dto.ModelDTOWrapper;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.CoreDBServiceFacade;
 import qa.qcri.aidr.dbmanager.entities.model.Model;
 
@@ -26,10 +27,10 @@ public interface ModelResourceFacade extends CoreDBServiceFacade<Model, Long>{
 
     public Integer getModelCountByModelFamilyID(Long modelFamilyID) throws PropertyNotSetException;
 
-    //TODO
-    //public List<ModelHistoryWrapper> getModelByModelFamilyID(int modelFamilyID, Integer start, Integer limit);
+    //Client fix needed: as this method was originally returning ModelHistoryWrapper (see this class in tagger_api) class
+    public List<ModelDTO> getModelByModelFamilyID(Integer modelFamilyID, Integer start, Integer limit) throws PropertyNotSetException;
 
-    //TODO
-    //public List<ModelWrapper> getModelByCrisisID(long crisisID);
+    //ModelWrapper -> ModelDTOWrapper
+    public List<ModelDTOWrapper> getModelByCrisisID(Long crisisID);
     
 }
