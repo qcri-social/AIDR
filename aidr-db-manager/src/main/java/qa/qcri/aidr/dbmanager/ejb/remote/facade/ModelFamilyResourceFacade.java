@@ -27,7 +27,7 @@ public interface ModelFamilyResourceFacade extends CoreDBServiceFacade<ModelFami
     //Clien to fix: return type chagned from void to boolean
     public boolean deleteModelFamily(Long modelFamilyID) throws PropertyNotSetException;
     
-    //TODO
+    //TODO for Koushik
     //public List<TaggersForCodes> getTaggersByCodes(List<String> codes);
     
 }
