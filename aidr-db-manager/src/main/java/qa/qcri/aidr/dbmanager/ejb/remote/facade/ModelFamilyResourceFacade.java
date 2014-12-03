@@ -19,7 +19,7 @@ import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 public interface ModelFamilyResourceFacade {
     public List<ModelFamilyDTO> getAllModelFamilies() throws PropertyNotSetException;;
     public List<ModelFamilyDTO> getAllModelFamiliesByCrisis(Long crisisID) throws PropertyNotSetException;
-    public ModelFamilyDTO getModelFamilyByID(Integer id) throws PropertyNotSetException;
+    public ModelFamilyDTO getModelFamilyByID(Long id) throws PropertyNotSetException;
     public ModelFamilyDTO addCrisisAttribute(ModelFamilyDTO modelFamily) throws PropertyNotSetException;
     public void deleteModelFamily(Integer modelFamilyID) throws PropertyNotSetException;
     

@@ -32,11 +32,9 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
     public List<ModelDTO> getAllModels() throws PropertyNotSetException {
         List<ModelDTO> modelDTOList = new ArrayList<ModelDTO>();
         List<Model> modelList = getAll();
-        if (modelList != null) {
             for (Model model : modelList) {
                 modelDTOList.add(new ModelDTO(model));
             }
-        }
         return modelDTOList;
     }
 
@@ -59,11 +57,9 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
         Criteria criteria = getCurrentSession().createCriteria(Model.class);
         criteria.add(Restrictions.eq("modelFamilyID", modelFamilyID));
         List<Model> modelList = criteria.list();
-        if (modelList != null) {
             for (Model model : modelList) {
                 modelDTOList.add(new ModelDTO(model));
             }
-        }
         return modelDTOList;
     }
 

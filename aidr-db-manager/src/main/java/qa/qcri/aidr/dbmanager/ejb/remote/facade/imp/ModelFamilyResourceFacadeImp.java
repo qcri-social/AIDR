@@ -11,29 +11,36 @@ import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelFamilyResourceFacade;
+import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 
 /**
  *
  * @author Imran
  */
-public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFamily , Long> implements ModelFamilyResourceFacade {
+public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFamily, Long> implements ModelFamilyResourceFacade {
 
     public List<ModelFamilyDTO> getAllModelFamilies() throws PropertyNotSetException {
         List<ModelFamilyDTO> modelFamilyDTOList = new ArrayList<ModelFamilyDTO>();
         List<ModelFamily> modelFamilyList = getAll();
-        for (ModelFamily modelFamily: modelFamilyList){
+        for (ModelFamily modelFamily : modelFamilyList) {
             modelFamilyDTOList.add(new ModelFamilyDTO(modelFamily));
         }
         return modelFamilyDTOList;
     }
 
     public List<ModelFamilyDTO> getAllModelFamiliesByCrisis(Long crisisID) throws PropertyNotSetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<ModelFamilyDTO> modelFamilyDTOList = new ArrayList<ModelFamilyDTO>();
+        Crisis crisis = getEntityManager().find(Crisis.class, crisisID);
+        List<ModelFamily> modelFamilyList = crisis.getModelFamilies();
+        for (ModelFamily modelFamily : modelFamilyList) {
+            modelFamilyDTOList.add(new ModelFamilyDTO(modelFamily));
+        }
+        return modelFamilyDTOList;
     }
 
-    public ModelFamilyDTO getModelFamilyByID(Integer id) throws PropertyNotSetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public ModelFamilyDTO getModelFamilyByID(Long id) throws PropertyNotSetException {
+        return new ModelFamilyDTO(getById(id));
     }
 
     public ModelFamilyDTO addCrisisAttribute(ModelFamilyDTO modelFamily) throws PropertyNotSetException {
@@ -44,5 +51,4 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    
 }
