@@ -7,6 +7,7 @@ package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.ejb.Stateless;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
@@ -21,6 +22,7 @@ import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
  *
  * @author Imran
  */
+@Stateless(name="ModelFamilyResourceFacadeImp")
 public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFamily, Long> implements ModelFamilyResourceFacade {
 
     private static Logger logger = Logger.getLogger("db-manager-log");
