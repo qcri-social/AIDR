@@ -7,6 +7,7 @@ package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
@@ -28,6 +29,8 @@ import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
  * @author Imran
  */
 public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> implements ModelResourceFacade {
+
+    private static Logger logger = Logger.getLogger("db-manager-log");
 
     public List<ModelDTO> getAllModels() throws PropertyNotSetException {
         List<ModelDTO> modelDTOList = new ArrayList<ModelDTO>();

@@ -22,7 +22,9 @@ public interface ModelFamilyResourceFacade extends CoreDBServiceFacade<ModelFami
     public List<ModelFamilyDTO> getAllModelFamilies() throws PropertyNotSetException;;
     public List<ModelFamilyDTO> getAllModelFamiliesByCrisis(Long crisisID) throws PropertyNotSetException;
     public ModelFamilyDTO getModelFamilyByID(Long id) throws PropertyNotSetException;
-    public ModelFamilyDTO addCrisisAttribute(ModelFamilyDTO modelFamily) throws PropertyNotSetException;
+    
+    //Client to fix: return type changed from ModelFamilyDTO to boolean
+    public boolean addCrisisAttribute(ModelFamilyDTO modelFamily) throws PropertyNotSetException;
     
     //Clien to fix: return type chagned from void to boolean
     public boolean deleteModelFamily(Long modelFamilyID) throws PropertyNotSetException;
