@@ -5,6 +5,7 @@
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import org.apache.log4j.Logger;
@@ -19,40 +20,66 @@ import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
  *
  * @author Imran
  */
-@Stateless(name="NominalAttributeResourceFacadeImp")
+@Stateless(name = "NominalAttributeResourceFacadeImp")
 public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<NominalAttribute, Long> implements NominalAttributeResourceFacade {
 
     private static Logger logger = Logger.getLogger("db-manager-log");
 
     public boolean addAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException {
-        try{
+        try {
             save(attribute.toEntity());
-        }catch (HibernateException he){
-            logger.error("Hibernate exception on save Nominal Attribute. \n"  + he.getStackTrace());
+        } catch (HibernateException he) {
+            logger.error("Hibernate exception on save Nominal Attribute. \n" + he.getStackTrace());
             return false;
         }
         return true;
     }
 
-    public NominalAttribute editAttribute(NominalAttribute attribute) throws PropertyNotSetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public NominalAttributeDTO editAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException {
+        if (attribute == null) {
+            throw new RuntimeException("Missing data values");
+        }
+        NominalAttribute nominalAttributeDB = getEntityManager().find(NominalAttribute.class, attribute.getNominalAttributeId());
+        if (nominalAttributeDB != null) {
+            getEntityManager().merge(attribute);
+            return attribute;
+        } else {
+            throw new RuntimeException("Can't edit");
+        }
     }
 
-    public void deleteAttribute(int attributeID) throws PropertyNotSetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean deleteAttribute(Long attributeID) throws PropertyNotSetException {
+        NominalAttribute attribute = getEntityManager().find(NominalAttribute.class, attributeID);
+        if (attribute != null) {
+            try {
+                getEntityManager().remove(attribute);
+            } catch (HibernateException he) {
+                logger.error("Error occured while removing Attribute with ID = " + attributeID + "\n" + he.getStackTrace());
+                return false; // exception occured
+            }
+            return true; //successfully deleted
+        } else {
+            return false; // attribute does not exist with the provided id.
+        }
     }
 
-    public NominalAttribute getAttributeByID(int attributeID) throws PropertyNotSetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public NominalAttributeDTO getAttributeByID(Long attributeID) throws PropertyNotSetException {
+        NominalAttribute nominalAttribute = getById(attributeID);
+        nominalAttribute.getNominalLabels(); //loading labels too
+        return new NominalAttributeDTO(nominalAttribute);
     }
 
-    public List<NominalAttribute> getAllAttributes() throws PropertyNotSetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<NominalAttributeDTO> getAllAttributes() throws PropertyNotSetException {
+        List<NominalAttributeDTO> nominalAttributeDTOList = new ArrayList<NominalAttributeDTO>();
+        List<NominalAttribute> nominalAttributeList = getAll();
+        for (NominalAttribute nominalAttribute : nominalAttributeList) {
+            nominalAttributeDTOList.add(new NominalAttributeDTO(nominalAttribute));
+        }
+        return nominalAttributeDTOList;
     }
 
     public Integer isAttributeExists(String attributeCode) throws PropertyNotSetException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    
 }

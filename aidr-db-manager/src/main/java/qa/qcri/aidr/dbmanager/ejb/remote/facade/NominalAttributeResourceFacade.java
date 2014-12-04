@@ -24,10 +24,14 @@ public interface NominalAttributeResourceFacade extends CoreDBServiceFacade<Nomi
     //client to fix: return type changed from NominalAttribute to boolean
     public boolean addAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException;
     
-    public NominalAttribute editAttribute(NominalAttribute attribute) throws PropertyNotSetException;
-    public void deleteAttribute(int attributeID) throws PropertyNotSetException;
-    public NominalAttribute getAttributeByID(int attributeID) throws PropertyNotSetException;
-    public List<NominalAttribute> getAllAttributes() throws PropertyNotSetException;
+    public NominalAttributeDTO editAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException;
+    
+    //client to fix: return type changed from void to boolean. And, attributeID parameter datatype is changed from int to Long
+    public boolean deleteAttribute(Long attributeID) throws PropertyNotSetException;
+    public NominalAttributeDTO getAttributeByID(Long attributeID) throws PropertyNotSetException;
+    public List<NominalAttributeDTO> getAllAttributes() throws PropertyNotSetException;
+    
+    //TODO
     //public List<CrisisAttributesDTO> getAllAttributesExceptCrisis(int crisisID) throws PropertyNotSetException;
     public Integer isAttributeExists(String attributeCode) throws PropertyNotSetException;
     
