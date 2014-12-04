@@ -63,7 +63,7 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 	}
 
 	@Override
-	public CrisisDTO getCrisisByID(Long id) throws PropertyNotSetException {
+	public CrisisDTO findCrisisByID(Long id) throws PropertyNotSetException {
 		Crisis crisis = getById(id);
 		if (crisis != null) {
 			CrisisDTO dto = new CrisisDTO(crisis);
@@ -169,10 +169,11 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 		CrisisDTO dto = getCrisisByCode(crisisCode); 
 		return dto != null ? true : false;
 	}
-
+	
 	@SuppressWarnings("rawtypes")
 	@Override
 	public HashMap<String, Integer> countClassifiersByCrisisCodes(List<String> codes) {
+		// TODO: convert native query to Hibernate/JPA
 		String sqlQuery = "select cr.code, " +
 				"       (select count(*) from model_family mf where mf.crisisID = cr.crisisID) as mf_amount " +
 				" from crisis cr " +

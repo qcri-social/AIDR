@@ -21,7 +21,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.Hibernate;
-import org.hibernate.collection.internal.PersistentList;
 
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 
@@ -204,6 +203,10 @@ public class Document implements java.io.Serializable {
 
 	public void setDocumentNominalLabels(List<DocumentNominalLabel> documentNominalLabels) {
 		this.documentNominalLabels = documentNominalLabels;
+	}
+	
+	public boolean hasCrisis() {
+		return Hibernate.isInitialized(this.crisis);
 	}
 	
 	public boolean hasTaskAssignments() {

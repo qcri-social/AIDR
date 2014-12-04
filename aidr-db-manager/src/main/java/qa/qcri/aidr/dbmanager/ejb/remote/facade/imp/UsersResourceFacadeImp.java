@@ -33,7 +33,7 @@ public class UsersResourceFacadeImp extends CoreDBServiceFacadeImp<Users, Long> 
 	}
 
 	@Override
-	public UsersDTO findUserByName(String name) throws PropertyNotSetException {
+	public UsersDTO getUserByName(String name) throws PropertyNotSetException {
 		List<Users> usersList = (List<Users>) getAllByCriteria(Restrictions.eq("name", name));
 		if(usersList != null){
 			return new UsersDTO(usersList.get(0));
@@ -42,7 +42,7 @@ public class UsersResourceFacadeImp extends CoreDBServiceFacadeImp<Users, Long> 
 	}
 
 	@Override
-	public UsersDTO findUserByID(Long id) throws PropertyNotSetException {
+	public UsersDTO getUserById(Long id) throws PropertyNotSetException {
 		Users user = getById(id);
 		if (user != null) {
 			return new UsersDTO(user);
@@ -51,7 +51,7 @@ public class UsersResourceFacadeImp extends CoreDBServiceFacadeImp<Users, Long> 
 	}
 
 	@Override
-	public List<UsersDTO> findAllUsersByName(String name) throws PropertyNotSetException {
+	public List<UsersDTO> getAllUsersByName(String name) throws PropertyNotSetException {
 		List<UsersDTO> dtoList = new ArrayList<UsersDTO>();
 		List<Users> usersList = (List<Users>) getAllByCriteria(Restrictions.eq("name", name));
 		if (usersList != null){

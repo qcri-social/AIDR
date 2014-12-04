@@ -13,8 +13,9 @@ import javax.ejb.Remote;
 
 @Remote
 public interface UsersResourceFacade extends CoreDBServiceFacade<Users, Long> {
-	public UsersDTO findUserByName(String name) throws PropertyNotSetException;
-	public UsersDTO findUserByID(Long id) throws PropertyNotSetException;
-	public List<UsersDTO> findAllUsersByName(String name) throws PropertyNotSetException;
+	public UsersDTO getUserByName(String name) throws PropertyNotSetException;
+	public UsersDTO getUserById(Long id) throws PropertyNotSetException;
+	
+	public List<UsersDTO> getAllUsersByName(String name) throws PropertyNotSetException;
 	public List<CrisisDTO> findAllCrisisByUserID(Long id) throws PropertyNotSetException;
 }

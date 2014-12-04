@@ -399,7 +399,7 @@ public class CrisisResourceFacadeImpTest {
         EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
         CrisisResourceFacade instance = (CrisisResourceFacade)container.getContext().lookup("java:global/classes/CrisisResourceFacadeImp");
         CrisisDTO expResult = null;
-        CrisisDTO result = instance.getCrisisByID(id);
+        CrisisDTO result = instance.findCrisisByID(id);
         assertEquals(expResult, result);
         container.close();
         // TODO review the generated test code and remove the default call to fail.

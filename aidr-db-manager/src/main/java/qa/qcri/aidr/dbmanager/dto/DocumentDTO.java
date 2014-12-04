@@ -73,11 +73,9 @@ public class DocumentDTO implements Serializable {
 	public DocumentDTO(Document doc) throws PropertyNotSetException {
 		this.setDocumentID(doc.getDocumentId());
 		this.setHasHumanLabels(doc.isHasHumanLabels());
-		if (doc.getCrisis() != null) {
+		if (doc.hasCrisis()) {
 			this.setCrisisDTO(new CrisisDTO(doc.getCrisis()));
-		} else {
-			throw new PropertyNotSetException("Crisis ID not set in document id: " + doc.getDocumentId());
-		}
+		} 
 		this.setDoctype(doc.getDoctype());
 		this.setGeoFeatures(doc.getGeoFeatures());
 		this.setIsEvaluationSet(doc.isIsEvaluationSet());
@@ -131,11 +129,7 @@ public class DocumentDTO implements Serializable {
 	}
 
 	public void setCrisisDTO(CrisisDTO crisisDTO) {
-		if (crisisDTO != null) {
-			this.crisisDTO = crisisDTO;
-		} else {
-			throw new IllegalArgumentException("Argument cannot be null!");
-		}
+		this.crisisDTO = crisisDTO;
 	}
 
 	public boolean getIsEvaluationSet() {
@@ -199,11 +193,7 @@ public class DocumentDTO implements Serializable {
 	}
 
 	public void setTaskAssignmentDTO(List<TaskAssignmentDTO> taskAssignmentsDTO) {
-		if (taskAssignmentsDTO != null) {
-			this.taskAssignmentsDTO = taskAssignmentsDTO;
-		} else {
-			throw new IllegalArgumentException("Argument cannot be null!");
-		}
+		this.taskAssignmentsDTO = taskAssignmentsDTO;
 	}
 
 	public List<DocumentNominalLabelDTO> getDocumentNominalLabelsDTO() {
@@ -211,11 +201,7 @@ public class DocumentDTO implements Serializable {
 	}
 
 	public void setDocumentNominalLabelsDTO(List<DocumentNominalLabelDTO> documentNominalLabelsDTO) {
-		if (documentNominalLabelsDTO != null) {
-			this.documentNominalLabelsDTO = documentNominalLabelsDTO;
-		} else {
-			throw new IllegalArgumentException("Argument cannot be null!");
-		}
+		this.documentNominalLabelsDTO = documentNominalLabelsDTO;
 	}
 
 	private List<DocumentNominalLabelDTO> toDocumentNominalLabelDTOList(List<DocumentNominalLabel> list) throws PropertyNotSetException {

@@ -30,7 +30,7 @@ public class TestDBManagerResource {
 	@Path("/crisis/{id}")
 	public Response getCrisisByID(@PathParam("id") long id) {
 		try {
-			CrisisDTO dto = remoteCrisisEJB.getCrisisByID(id);
+			CrisisDTO dto = remoteCrisisEJB.findCrisisByID(id);
 			if (dto != null) 
 			{
 				return Response.ok(dto).build();
@@ -45,6 +45,26 @@ public class TestDBManagerResource {
 		return Response.ok("Null object returned for crisis ID = " + id).build();
 	}
 
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/crisis/fulldata/{id}")
+	public Response getCrisisWithAllParamsByID(@PathParam("id") long id) {
+		try {
+			CrisisDTO dto = remoteCrisisEJB.getCrisisWithAllFieldsByID(id);
+			if (dto != null) 
+			{
+				return Response.ok(dto).build();
+			} 
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("Exception in fetching crisis from remote EJB for id = " + id);
+			logger.error("stacktrace: ", e);
+			e.printStackTrace();
+			return Response.ok("Exception: " + e).build();
+		}
+		return Response.ok("Null object returned for crisis ID = " + id).build();
+	}
+	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/crisis/all")
@@ -71,7 +91,7 @@ public class TestDBManagerResource {
 	@Path("/crisis/update/{id}")
 	public Response updateCrisisByID(@PathParam("id") long id, @QueryParam("value") boolean value) {
 		try {
-			CrisisDTO dto = remoteCrisisEJB.getCrisisByID(id);
+			CrisisDTO dto = remoteCrisisEJB.findCrisisByID(id);
 			if (dto != null) 
 			{
 				System.out.println("Fetched crisis: " + dto.getCrisisID() + ", " + dto.getCrisisID());

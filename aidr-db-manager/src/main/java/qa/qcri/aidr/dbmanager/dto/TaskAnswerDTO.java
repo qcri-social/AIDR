@@ -39,8 +39,8 @@ public class TaskAnswerDTO implements Serializable {
     }
 
 
-    public TaskAnswer toEntity(TaskAnswerDTO taskAnswerDTO){
-        return new TaskAnswer(taskAnswerDTO.getDocumentID(), taskAnswerDTO.getUserID(), taskAnswerDTO.getAnswer(), taskAnswerDTO.isFromTrustedUser());
+    public TaskAnswer toEntity(){
+        return new TaskAnswer(this.getDocumentID(), this.getUserID(), this.getAnswer(), this.isFromTrustedUser());
 
     }
 
