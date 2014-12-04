@@ -5,6 +5,7 @@
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import org.apache.log4j.Logger;
@@ -62,12 +63,19 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
         }
     }
 
-    public NominalAttribute getAttributeByID(Long attributeID) throws PropertyNotSetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public NominalAttributeDTO getAttributeByID(Long attributeID) throws PropertyNotSetException {
+        NominalAttribute nominalAttribute = getById(attributeID);
+        nominalAttribute.getNominalLabels(); //loading labels too
+        return new NominalAttributeDTO(nominalAttribute);
     }
 
     public List<NominalAttributeDTO> getAllAttributes() throws PropertyNotSetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<NominalAttributeDTO> nominalAttributeDTOList = new ArrayList<NominalAttributeDTO>();
+        List<NominalAttribute> nominalAttributeList = getAll();
+        for (NominalAttribute nominalAttribute : nominalAttributeList) {
+            nominalAttributeDTOList.add(new NominalAttributeDTO(nominalAttribute));
+        }
+        return nominalAttributeDTOList;
     }
 
     public Integer isAttributeExists(String attributeCode) throws PropertyNotSetException {
