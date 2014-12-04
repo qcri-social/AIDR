@@ -98,12 +98,9 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
                             totalClassifiedDocuments += label.getClassifiedDocumentCount();
                         }
                         classigiedElements = totalClassifiedDocuments;
-
                     }
-
                 }
             }
-
             //getting trainingCount
             trainingExamples = 0;
             NominalAttribute nominalAttribute = modelFamily.getNominalAttribute();
@@ -120,7 +117,6 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
                     }
                 }
             }
-
             modelDTOWrapper.setTrainingExamples(trainingExamples);
             modelDTOWrapper.setAttribute(modelFamily.getNominalAttribute().getName());
             modelDTOWrapper.setAttributeID(modelFamily.getNominalAttribute().getNominalAttributeId());

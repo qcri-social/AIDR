@@ -52,7 +52,7 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 
     public boolean addCrisisAttribute(ModelFamilyDTO modelFamily) throws PropertyNotSetException {
         try {
-            getEntityManager().persist(modelFamily);
+            getEntityManager().persist(modelFamily.toEntity());
         } catch (HibernateException he) {
             logger.error("Hibernate exception on adding ModelFamily.\n" + he.getStackTrace());
             return false;
