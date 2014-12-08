@@ -7,8 +7,11 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
@@ -30,7 +33,8 @@ public class NominalAttributeDTO implements java.io.Serializable {
 	private Long nominalAttributeId;
 
 	@XmlElement
-	private UsersDTO usersDTO;
+	@JsonBackReference
+	private UsersDTO usersDTO = null;
 
 	@XmlElement
 	private String name;
@@ -42,15 +46,19 @@ public class NominalAttributeDTO implements java.io.Serializable {
 	private String code;
 
 	@XmlElement
+	@JsonManagedReference
 	private List<ModelFamilyDTO> modelFamiliesDTO = null;
 
 	@XmlElement
+	@JsonManagedReference
 	private List<NominalAttributeDependentLabelDTO> nominalAttributeDependentLabelsDTO = null;
 
-	@XmlElement
+	//@XmlTransient
+	@JsonManagedReference
 	private List<CrisisDTO> crisisesDTO = null;
 
 	@XmlElement
+	@JsonManagedReference
 	private List<NominalLabelDTO> nominalLabelsDTO = null;
 
 	public NominalAttributeDTO() {
@@ -71,26 +79,27 @@ public class NominalAttributeDTO implements java.io.Serializable {
 	}
 
 	public NominalAttributeDTO(NominalAttribute nominalAttribute) throws PropertyNotSetException {
-		this.setNominalAttributeId(nominalAttribute.getNominalAttributeId());
-		this.nominalAttributeId = nominalAttribute.getNominalAttributeId();
-		this.name = nominalAttribute.getName();
-		this.description = nominalAttribute.getDescription();
-		this.code = nominalAttribute.getCode();
+		if (nominalAttribute != null) {
+			this.setNominalAttributeId(nominalAttribute.getNominalAttributeId());
+			this.nominalAttributeId = nominalAttribute.getNominalAttributeId();
+			this.name = nominalAttribute.getName();
+			this.description = nominalAttribute.getDescription();
+			this.code = nominalAttribute.getCode();
 
-		if (nominalAttribute.hasCrisises()) {
-			this.setCrisisesDTO(toCrisisDTOList(nominalAttribute.getCrisises()));
+			if (nominalAttribute.hasCrisises()) {
+				this.setCrisisesDTO(toCrisisDTOList(nominalAttribute.getCrisises()));
+			}
+			if (nominalAttribute.hasModelFamily()) {
+				this.setModelFamiliesDTO(this.toModelFamilyDTOList(nominalAttribute.getModelFamilies()));
+			}
+			if (nominalAttribute.hasNominalAttributeDependentLabel()) {
+				this.setNominalAttributeDependentLabelsDTO(
+						this.toNominalAttributeDependentLabelDTOList(nominalAttribute.getNominalAttributeDependentLabels()));
+			}
+			if (nominalAttribute.hasNominalLabels()) {
+				this.setNominalLabelsDTO(this.toNominalLabelDTOList(nominalAttribute.getNominalLabels()));
+			}
 		}
-		if (nominalAttribute.hasModelFamily()) {
-			this.setModelFamiliesDTO(this.toModelFamilyDTOList(nominalAttribute.getModelFamilies()));
-		}
-		if (nominalAttribute.hasNominalAttributeDependentLabel()) {
-			this.setNominalAttributeDependentLabelsDTO(
-					this.toNominalAttributeDependentLabelDTOList(nominalAttribute.getNominalAttributeDependentLabels()));
-		}
-		if (nominalAttribute.hasNominalLabels()) {
-			this.setNominalLabelsDTO(this.toNominalLabelDTOList(nominalAttribute.getNominalLabels()));
-		}
-
 	}
 
 	public Long getNominalAttributeId() {
@@ -211,7 +220,7 @@ public class NominalAttributeDTO implements java.io.Serializable {
 		}
 		return null;
 	} 
-	
+
 	private List<ModelFamilyDTO> toModelFamilyDTOList(List<ModelFamily> list) throws PropertyNotSetException {
 		if (list != null) {
 			List<ModelFamilyDTO> dtoList = new ArrayList<ModelFamilyDTO>();
@@ -260,7 +269,7 @@ public class NominalAttributeDTO implements java.io.Serializable {
 
 	public NominalAttribute toEntity() throws PropertyNotSetException {
 		NominalAttribute entity = new NominalAttribute(this.getUsersDTO().toEntity(), 
-									this.getName(), this.getDescription(), this.getCode());
+				this.getName(), this.getDescription(), this.getCode());
 		if (this.getNominalAttributeId() != null) {
 			entity.setNominalAttributeId(nominalAttributeId);
 		}
@@ -279,6 +288,6 @@ public class NominalAttributeDTO implements java.io.Serializable {
 		}
 		return entity;
 	}
-	
+
 }
 

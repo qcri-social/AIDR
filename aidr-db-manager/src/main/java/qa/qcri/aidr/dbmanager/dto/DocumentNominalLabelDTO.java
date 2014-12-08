@@ -2,13 +2,20 @@ package qa.qcri.aidr.dbmanager.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabel;
+import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
+import qa.qcri.aidr.dbmanager.entities.model.NominalAttributeDependentLabel;
+import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
+import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @XmlRootElement
@@ -35,14 +42,31 @@ public class DocumentNominalLabelDTO implements Serializable {
 	public  DocumentNominalLabelDTO() {}
 
 	public  DocumentNominalLabelDTO(DocumentNominalLabel doc) throws PropertyNotSetException {
-		this.setIdDTO(new DocumentNominalLabelIdDTO(doc.getId()));
-		if (doc.hasDocument()) {
-			this.setDocumentDTO(new DocumentDTO(doc.getDocument()));
+		if (doc != null) {
+			this.setIdDTO(new DocumentNominalLabelIdDTO(doc.getId()));
+			if (doc.hasDocument()) {
+				Document d = new Document(doc.getDocument().getCrisis(), doc.getDocument().isIsEvaluationSet(),
+						doc.getDocument().isHasHumanLabels(), doc.getDocument().getValueAsTrainingSample(),
+						doc.getDocument().getReceivedAt(), doc.getDocument().getLanguage(), doc.getDocument().getDoctype(), doc.getDocument().getData());
+						
+				d.setWordFeatures(doc.getDocument().getWordFeatures());
+				d.setGeoFeatures(doc.getDocument().getGeoFeatures()); 
+				d.setTaskAssignments(doc.getDocument().getTaskAssignments());
+				d.setDocumentId(doc.getDocument().getDocumentId());
+				this.setDocumentDTO(new DocumentDTO(d));
+			}
+			if (doc.hasNominalLabel()) {
+				NominalLabel nb = new NominalLabel(doc.getNominalLabel().getNominalAttribute(),
+						doc.getNominalLabel().getNominalLabelCode(), doc.getNominalLabel().getName(), doc.getNominalLabel().getDescription(),
+						doc.getNominalLabel().getSequence());
+				nb.setNominalLabelId(doc.getNominalLabel().getNominalLabelId());
+				nb.setModelNominalLabels(doc.getNominalLabel().getModelNominalLabels());
+				nb.setNominalAttribute(doc.getNominalLabel().getNominalAttribute());
+				nb.setNominalAttributeDependentLabels(doc.getNominalLabel().getNominalAttributeDependentLabels());
+				this.setNominalLabelDTO(new NominalLabelDTO(nb));
+			}
+			this.setTimestamp(doc.getTimestamp());
 		}
-		if (doc.hasNominalLabel()) {
-			this.setNominalLabelDTO(new NominalLabelDTO(doc.getNominalLabel()));
-		}
-		this.setTimestamp(doc.getTimestamp());
 	}
 
 	public DocumentNominalLabelDTO(DocumentNominalLabelIdDTO idDTO,
@@ -73,7 +97,7 @@ public class DocumentNominalLabelDTO implements Serializable {
 	}
 
 	public NominalLabelDTO getNominalLabelDTO() {
-			return this.nominalLabelDTO;
+		return this.nominalLabelDTO;
 	}
 
 	public void setNominalLabelDTO(NominalLabelDTO nominalLabelDTO) {
@@ -85,7 +109,7 @@ public class DocumentNominalLabelDTO implements Serializable {
 	}
 
 	public DocumentDTO getDocumentDTO() {
-			return this.documentDTO;
+		return this.documentDTO;
 	}
 
 	public void setDocumentDTO(DocumentDTO documentDTO) {

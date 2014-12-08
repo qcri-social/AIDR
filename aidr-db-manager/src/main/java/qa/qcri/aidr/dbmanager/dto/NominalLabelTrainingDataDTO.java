@@ -33,6 +33,10 @@ public class NominalLabelTrainingDataDTO implements Serializable {
 		this.setIdDTO(new NominalLabelTrainingDataIdDTO(id));
 	}
 
+	public NominalLabelTrainingDataDTO(NominalLabelTrainingData data) throws PropertyNotSetException {
+		this.setIdDTO(new NominalLabelTrainingDataIdDTO(data.getId()));
+	}
+	
 	public NominalLabelTrainingDataIdDTO getIdDTO() {
 		return this.idDTO;
 	}

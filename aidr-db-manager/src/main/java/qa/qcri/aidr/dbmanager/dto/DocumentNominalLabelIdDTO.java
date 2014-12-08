@@ -29,7 +29,7 @@ public class DocumentNominalLabelIdDTO implements Serializable {
 
 	public DocumentNominalLabelIdDTO() {
 	}
-
+	
 	public DocumentNominalLabelIdDTO(DocumentNominalLabelId id) {
 		this.setDocumentId(id.getDocumentId());
 		this.setNominalLabelId(id.getNominalLabelId());

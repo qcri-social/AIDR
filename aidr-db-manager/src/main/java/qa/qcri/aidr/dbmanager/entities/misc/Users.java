@@ -16,9 +16,12 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.Hibernate;
 import org.hibernate.collection.internal.PersistentList;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 
@@ -33,10 +36,22 @@ public class Users implements java.io.Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -1155167281183767570L;
+	
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "userID", unique = true, nullable = false)
 	private Long userId;
+	
 	private String name;
 	private String role;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "users")
+	@XmlTransient
+	@JsonManagedReference
 	private List<NominalAttribute> nominalAttributes = null;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "users")
+	@JsonManagedReference
 	private List<Crisis> crisises = null;
 
 	public Users() {
@@ -54,9 +69,7 @@ public class Users implements java.io.Serializable {
 		this.crisises = crisises;
 	}
 
-	@Id
-	@GeneratedValue(strategy = IDENTITY)
-	@Column(name = "userID", unique = true, nullable = false)
+
 	public Long getUserId() {
 		return this.userId;
 	}
@@ -83,7 +96,7 @@ public class Users implements java.io.Serializable {
 		this.role = role;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "users")
+
 	public List<NominalAttribute> getNominalAttributes() {
 		return this.nominalAttributes;
 	}
@@ -92,7 +105,7 @@ public class Users implements java.io.Serializable {
 		this.nominalAttributes = nominalAttributes;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "users")
+
 	public List<Crisis> getCrisises() {
 		return this.crisises;
 	}

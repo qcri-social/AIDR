@@ -16,8 +16,11 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.Hibernate;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 
@@ -73,6 +76,7 @@ public class DocumentNominalLabel implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "nominalLabelID", nullable = false, insertable = false, updatable = false)
+	@JsonBackReference
 	public NominalLabel getNominalLabel() {
 		return this.nominalLabel;
 	}
@@ -83,6 +87,7 @@ public class DocumentNominalLabel implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "documentID", nullable = false, insertable = false, updatable = false)
+	@JsonBackReference
 	public Document getDocument() {
 		return this.document;
 	}

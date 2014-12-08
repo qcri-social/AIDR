@@ -5,13 +5,18 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.model.Model;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
+import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 
 
 @XmlRootElement
@@ -21,31 +26,55 @@ public class ModelFamilyDTO implements Serializable {
 	/**
 	 * 
 	 */
+
 	private static final long serialVersionUID = 7377627785888285732L;
+
+	@XmlElement
 	private Long modelFamilyId;
-	private NominalAttributeDTO nominalAttributeDTO;
-	private CrisisDTO crisisDTO;
+
+	@XmlElement
+	@JsonBackReference
+	private NominalAttributeDTO nominalAttributeDTO = null;
+
+	@XmlElement
+	@JsonBackReference
+	private CrisisDTO crisisDTO = null;
+
+	@XmlElement
 	private boolean isActive;
 
-
-	private List<ModelDTO> modelsDTO;
+	@XmlElement
+	@JsonManagedReference
+	private List<ModelDTO> modelsDTO = null;
 
 	public ModelFamilyDTO() {
 	}
 
 	public ModelFamilyDTO(ModelFamily model) throws PropertyNotSetException {
-		this.setModelFamilyId(model.getModelFamilyId());
-		if (model.hasNominalAttribute()) {
-			this.setNominalAttributeDTO(new NominalAttributeDTO(model.getNominalAttribute()));
+		if (model != null) {
+			System.out.println("ModelFamily Hash code: " + model.hashCode());
+			this.setModelFamilyId(model.getModelFamilyId());
+			if (model.hasNominalAttribute()) {
+				NominalAttribute na = new NominalAttribute(model.getNominalAttribute().getUsers(), 
+						model.getNominalAttribute().getName(), model.getNominalAttribute().getDescription(), model.getNominalAttribute().getCode());
+				na.setNominalAttributeId(model.getNominalAttribute().getNominalAttributeId());
+				na.setCrisises(model.getNominalAttribute().getCrisises());
+				na.setModelFamilies(model.getNominalAttribute().getModelFamilies());
+				this.setNominalAttributeDTO(new NominalAttributeDTO(na));
+			}
+			if (model.hasCrisis()) {
+				Crisis c = new Crisis(model.getCrisis().getUsers(), model.getCrisis().getCrisisType(), model.getCrisis().getName(), model.getCrisis().getCode(),
+						model.getCrisis().isIsTrashed());
+				c.setCrisisId(model.getCrisis().getCrisisId());
+				this.setCrisisDTO(new CrisisDTO(c));
+			}
+			this.setIsActive(model.isIsActive());
+			this.setModelFamilyId(model.getModelFamilyId());
+			if (model.hasModels()) {
+				this.setModelsDTO(this.toModelDTOList(model.getModels()));
+			} 
 		}
-		if (model.hasCrisis()) {
-			this.setCrisisDTO(new CrisisDTO(model.getCrisis()));
-		}
-		this.setIsActive(model.isIsActive());
-		this.setModelFamilyId(model.getModelFamilyId());
-		if (model.hasModels()) {
-			this.setModelsDTO(this.toModelDTOList(model.getModels()));
-		}
+
 	}
 
 	public ModelFamilyDTO(NominalAttributeDTO nominalAttributeDTO, CrisisDTO crisisDTO,

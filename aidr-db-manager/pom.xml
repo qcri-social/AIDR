@@ -101,10 +101,7 @@
             <artifactId>gson</artifactId>
             <version>2.3</version>
         </dependency>
-        <!-- Jackson Dependencies -->
-        <!-- dependency> <groupId>org.codehaus.jackson</groupId> <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.9.13</version> </dependency> <dependency> <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId> <version>1.9.13</version> </dependency -->
+  
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>

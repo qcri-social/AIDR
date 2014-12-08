@@ -18,9 +18,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.Hibernate;
 import org.hibernate.collection.internal.PersistentList;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
@@ -36,14 +40,35 @@ public class NominalAttribute implements java.io.Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -8597872499380166539L;
+	
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "nominalAttributeID", unique = true, nullable = false)
 	private Long nominalAttributeId;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "userID", nullable = false)
+	@JsonBackReference
 	private Users users;
+	
 	private String name;
 	private String description;
 	private String code;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalAttribute")
+	@JsonManagedReference
 	private List<ModelFamily> modelFamilies = null;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalAttribute")
+	@JsonManagedReference
 	private List<NominalAttributeDependentLabel> nominalAttributeDependentLabels = null;
+	
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "nominalAttributes")
+	@JsonManagedReference
 	private List<Crisis> crisises = null;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalAttribute")
+	@JsonManagedReference
 	private List<NominalLabel> nominalLabels = null;
 
 	public NominalAttribute() {
@@ -71,9 +96,6 @@ public class NominalAttribute implements java.io.Serializable {
 		this.nominalLabels = nominalLabels;
 	}
 
-	@Id
-	@GeneratedValue(strategy = IDENTITY)
-	@Column(name = "nominalAttributeID", unique = true, nullable = false)
 	public Long getNominalAttributeId() {
 		return this.nominalAttributeId;
 	}
@@ -82,8 +104,6 @@ public class NominalAttribute implements java.io.Serializable {
 		this.nominalAttributeId = nominalAttributeId;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "userID", nullable = false)
 	public Users getUsers() {
 		return this.users;
 	}
@@ -119,7 +139,6 @@ public class NominalAttribute implements java.io.Serializable {
 		this.code = code;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalAttribute")
 	public List<ModelFamily> getModelFamilies() {
 		return this.modelFamilies;
 	}
@@ -128,7 +147,6 @@ public class NominalAttribute implements java.io.Serializable {
 		this.modelFamilies = modelFamilies;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalAttribute")
 	public List<NominalAttributeDependentLabel> getNominalAttributeDependentLabels() {
 		return this.nominalAttributeDependentLabels;
 	}
@@ -138,7 +156,6 @@ public class NominalAttribute implements java.io.Serializable {
 		this.nominalAttributeDependentLabels = nominalAttributeDependentLabels;
 	}
 
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "nominalAttributes")
 	public List<Crisis> getCrisises() {
 		return this.crisises;
 	}
@@ -147,7 +164,6 @@ public class NominalAttribute implements java.io.Serializable {
 		this.crisises = crisises;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalAttribute")
 	public List<NominalLabel> getNominalLabels() {
 		return this.nominalLabels;
 	}

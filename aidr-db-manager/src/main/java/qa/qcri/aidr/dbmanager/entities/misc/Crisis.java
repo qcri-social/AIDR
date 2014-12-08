@@ -19,8 +19,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.Hibernate;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
@@ -37,14 +41,38 @@ public class Crisis implements java.io.Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -7692349620189189978L;
+	
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "crisisID", unique = true, nullable = false)
 	private Long crisisId;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "userID", nullable = false)
+	@JsonBackReference
 	private Users users;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "crisisTypeID", nullable = false)
+	@JsonBackReference
 	private CrisisType crisisType;
+	
 	private String name;
 	private String code;
 	private boolean isTrashed;
+	
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "crisis_nominal_attribute", catalog = "aidr_predict", joinColumns = { @JoinColumn(name = "crisisID", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "nominalAttributeID", nullable = false, updatable = false) })
+	@XmlTransient
+	@JsonManagedReference
 	private List<NominalAttribute> nominalAttributes;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "crisis")
+	@JsonManagedReference
 	private List<Document> documents;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "crisis")
+	@JsonManagedReference
 	private List<ModelFamily> modelFamilies;
 
 	public Crisis() {
@@ -72,9 +100,7 @@ public class Crisis implements java.io.Serializable {
 		this.modelFamilies = modelFamilies;
 	}
 
-	@Id
-	@GeneratedValue(strategy = IDENTITY)
-	@Column(name = "crisisID", unique = true, nullable = false)
+
 	public Long getCrisisId() {
 		return this.crisisId;
 	}
@@ -83,8 +109,6 @@ public class Crisis implements java.io.Serializable {
 		this.crisisId = crisisId;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "userID", nullable = false)
 	public Users getUsers() {
 		return this.users;
 	}
@@ -93,8 +117,7 @@ public class Crisis implements java.io.Serializable {
 		this.users = users;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "crisisTypeID", nullable = false)
+	
 	public CrisisType getCrisisType() {
 		return this.crisisType;
 	}
@@ -129,9 +152,7 @@ public class Crisis implements java.io.Serializable {
 	public void setIsTrashed(boolean isTrashed) {
 		this.isTrashed = isTrashed;
 	}
-
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "crisis_nominal_attribute", catalog = "aidr_predict", joinColumns = { @JoinColumn(name = "crisisID", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "nominalAttributeID", nullable = false, updatable = false) })
+	
 	public List<NominalAttribute> getNominalAttributes() {
 		return this.nominalAttributes;
 	}
@@ -140,7 +161,6 @@ public class Crisis implements java.io.Serializable {
 		this.nominalAttributes = nominalAttributes;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "crisis")
 	public List<Document> getDocuments() {
 		return this.documents;
 	}
@@ -149,7 +169,6 @@ public class Crisis implements java.io.Serializable {
 		this.documents = documents;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "crisis")
 	public List<ModelFamily> getModelFamilies() {
 		return this.modelFamilies;
 	}

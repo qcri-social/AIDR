@@ -1,35 +1,40 @@
 package qa.qcri.aidr.dbmanager.dto;
 
 
+import java.util.Date;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.dbmanager.entities.model.Model;
+import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabel;
+import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ModelNominalLabelDTO {
 	@XmlElement
 	private ModelNominalLabelIdDTO idDTO;
-	
+
 	@XmlElement
 	private NominalLabelDTO nominalLabelDTO;
-	
+
 	@XmlElement
 	private ModelDTO modelDTO;
-	
+
 	@XmlElement
 	private Double labelPrecision;
-	
+
 	@XmlElement
 	private Double labelRecall;
-	
+
 	@XmlElement
 	private Double labelAuc;
-	
+
 	@XmlElement
 	private Integer classifiedDocumentCount;
 
@@ -56,26 +61,39 @@ public class ModelNominalLabelDTO {
 	}
 
 	public ModelNominalLabelDTO(ModelNominalLabel modelNominalLabel) throws PropertyNotSetException {
+		if (modelNominalLabel != null) {
+			this.setLabelPrecision(modelNominalLabel.getLabelPrecision()); 
+			this.setLabelRecall(modelNominalLabel.getLabelRecall());
+			this.setLabelAuc(modelNominalLabel.getLabelAuc());
+			this.setClassifiedDocumentCount(modelNominalLabel.getClassifiedDocumentCount());
 
-		this.setLabelPrecision(modelNominalLabel.getLabelPrecision()); 
-		this.setLabelRecall(modelNominalLabel.getLabelRecall());
-		this.setLabelAuc(modelNominalLabel.getLabelAuc());
-		this.setClassifiedDocumentCount(modelNominalLabel.getClassifiedDocumentCount());
-		
-		if (modelNominalLabel.getId() != null) {
-			this.setIdDTO(new ModelNominalLabelIdDTO(modelNominalLabel.getId()));
-		} else {
-			throw new PropertyNotSetException("Primary key not set!");
+			if (modelNominalLabel.getId() != null) {
+				this.setIdDTO(new ModelNominalLabelIdDTO(modelNominalLabel.getId()));
+			} else {
+				throw new PropertyNotSetException("Primary key not set!");
+			}
+			if (modelNominalLabel.hasModel()) {
+				Model m = new Model(modelNominalLabel.getModel().getModelFamily(), modelNominalLabel.getModel().getAvgPrecision(), 
+						modelNominalLabel.getModel().getAvgRecall(), modelNominalLabel.getModel().getAvgAuc(), 
+						modelNominalLabel.getModel().getTrainingCount(), modelNominalLabel.getModel().getTrainingTime(),
+						modelNominalLabel.getModel().isIsCurrentModel());
+				m.setModelId(modelNominalLabel.getModel().getModelId());
+				this.setModelDTO(new ModelDTO(m));
+			} 
+			if (modelNominalLabel.hasNominalLabel()) {
+				NominalLabel nb = new NominalLabel(modelNominalLabel.getNominalLabel().getNominalAttribute(),
+						modelNominalLabel.getNominalLabel().getNominalLabelCode(), modelNominalLabel.getNominalLabel().getName(),
+						modelNominalLabel.getNominalLabel().getDescription(),
+						modelNominalLabel.getNominalLabel().getSequence());
+				nb.setNominalLabelId(modelNominalLabel.getNominalLabel().getNominalLabelId());
+				nb.setNominalAttribute(modelNominalLabel.getNominalLabel().getNominalAttribute());
+				nb.setNominalAttributeDependentLabels(modelNominalLabel.getNominalLabel().getNominalAttributeDependentLabels());
+				this.setNominalLabelDTO(new NominalLabelDTO(nb));
+			} 
 		}
-		if (modelNominalLabel.hasModel()) {
-			this.setModelDTO(new ModelDTO(modelNominalLabel.getModel()));
-		} 
-		if (modelNominalLabel.hasNominalLabel()) {
-			this.setNominalLabelDTO(new NominalLabelDTO(modelNominalLabel.getNominalLabel()));
-		} 
 	}
-	
-	
+
+
 	public ModelNominalLabelIdDTO getIdDTO() {
 		return this.idDTO;
 	}
@@ -132,12 +150,12 @@ public class ModelNominalLabelDTO {
 	public void setClassifiedDocumentCount(Integer classifiedDocumentCount) {
 		this.classifiedDocumentCount = classifiedDocumentCount;
 	}
-	
+
 	public ModelNominalLabel toEntity() throws PropertyNotSetException {
 		ModelNominalLabel entity = new ModelNominalLabel(this.idDTO.toEntity(), this.nominalLabelDTO.toEntity(),
 				this.modelDTO.toEntity(), this.labelPrecision, this.labelRecall,
 				this.labelAuc, this.classifiedDocumentCount);
-		
+
 		return entity;
 	}
 }

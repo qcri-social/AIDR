@@ -4,12 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabel;
+import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttributeDependentLabel;
 import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
@@ -55,27 +55,34 @@ public class NominalLabelDTO  implements Serializable {
 	}
 
 	public NominalLabelDTO(NominalLabel nominalLabel) throws PropertyNotSetException {
-		if (nominalLabel.hasNominalAttribute()) {
-			this.setNominalAttributeDTO(new NominalAttributeDTO(nominalLabel.getNominalAttribute()));
-		}
-		this.setNominalLabelId(nominalLabel.getNominalLabelId());
-		this.setNominalLabelCode(nominalLabel.getNominalLabelCode());
-		this.setName(nominalLabel.getName());
-		this.setDescription(nominalLabel.getDescription());
-		this.setSequence(nominalLabel.getSequence());
+		if (nominalLabel != null) {
+			if (nominalLabel.hasNominalAttribute()) {
+				NominalAttribute na = new NominalAttribute(nominalLabel.getNominalAttribute().getUsers(), 
+						nominalLabel.getNominalAttribute().getName(), nominalLabel.getNominalAttribute().getDescription(), 
+						nominalLabel.getNominalAttribute().getCode());
+				na.setNominalAttributeId(nominalLabel.getNominalAttribute().getNominalAttributeId());
+				na.setCrisises(nominalLabel.getNominalAttribute().getCrisises());
+				na.setModelFamilies(nominalLabel.getNominalAttribute().getModelFamilies());
+				this.setNominalAttributeDTO(new NominalAttributeDTO(na));
+			}
+			this.setNominalLabelId(nominalLabel.getNominalLabelId());
+			this.setNominalLabelCode(nominalLabel.getNominalLabelCode());
+			this.setName(nominalLabel.getName());
+			this.setDescription(nominalLabel.getDescription());
+			this.setSequence(nominalLabel.getSequence());
 
-		if (nominalLabel.hasDocumentNominalLabels()) {
-			this.setDocumentNominalLabelsDTO(
-					this.toDocumentNominalLabelDTOList(nominalLabel.getDocumentNominalLabels()));
+			if (nominalLabel.hasDocumentNominalLabels()) {
+				this.setDocumentNominalLabelsDTO(
+						this.toDocumentNominalLabelDTOList(nominalLabel.getDocumentNominalLabels()));
+			}
+			if (nominalLabel.hasModelNominalLabels()) {
+				this.setModelNominalLabelsDTO(this.toModelNominalLabelDTOList(nominalLabel.getModelNominalLabels()));
+			}
+			if (nominalLabel.hasNominalAttributeDependentLabels()) {
+				this.setNominalAttributeDependentLabelsDTO(
+						this.toNominalAttributeDependentLabelDTOList(nominalLabel.getNominalAttributeDependentLabels()));
+			}
 		}
-		if (nominalLabel.hasModelNominalLabels()) {
-			this.setModelNominalLabelsDTO(this.toModelNominalLabelDTOList(nominalLabel.getModelNominalLabels()));
-		}
-		if (nominalLabel.hasNominalAttributeDependentLabels()) {
-			this.setNominalAttributeDependentLabelsDTO(
-					this.toNominalAttributeDependentLabelDTOList(nominalLabel.getNominalAttributeDependentLabels()));
-		}
-
 	}
 
 	public NominalLabelDTO(NominalAttributeDTO nominalAttributeDTO,

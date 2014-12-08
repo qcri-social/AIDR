@@ -1,11 +1,14 @@
 package qa.qcri.aidr.dbmanager.dto;
 
 import java.io.Serializable;
+import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.log4j.Logger;
 
@@ -14,8 +17,13 @@ import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
+import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
+import qa.qcri.aidr.dbmanager.entities.task.TaskAssignment;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 
 
 @XmlRootElement
@@ -36,24 +44,28 @@ public class CrisisDTO implements Serializable  {
 	private  String name;
 
 	@XmlElement
+	//@JsonBackReference
 	private CrisisTypeDTO crisisTypeDTO = null;
 
 	@XmlElement
 	private  String code;
 
 	@XmlElement
+	//@JsonBackReference
 	private UsersDTO usersDTO = null;
 
 	@XmlElement
 	private boolean isTrashed;
 
-	@XmlElement
+	@JsonManagedReference
 	private List<NominalAttributeDTO> nominalAttributesDTO = null;
 
 	@XmlElement
+	//@JsonManagedReference
 	private List<DocumentDTO> documentsDTO = null;
 
 	@XmlElement
+	//@JsonManagedReference
 	private List<ModelFamilyDTO> modelFamiliesDTO = null;
 
 
@@ -61,7 +73,7 @@ public class CrisisDTO implements Serializable  {
 
 	public CrisisDTO(String name, String code, boolean isTrashed, 
 			CrisisTypeDTO crisisTypeDTO, UsersDTO usersDTO) {
-            
+
 		this.setName(name);
 		this.setCode(code);
 		this.setIsTrashed(isTrashed);
@@ -71,7 +83,7 @@ public class CrisisDTO implements Serializable  {
 
 	public CrisisDTO(Long crisisID, String name, String code, boolean isTrashed, 
 			CrisisTypeDTO crisisTypeDTO, UsersDTO usersDTO) {
-           
+
 		this.setCrisisID(crisisID);
 		this.setName(name);
 		this.setCode(code);
@@ -81,31 +93,42 @@ public class CrisisDTO implements Serializable  {
 	}
 
 	public CrisisDTO(Crisis crisis) throws PropertyNotSetException {
-		this.setCrisisID(crisis.getCrisisId());
-		this.setName(crisis.getName());
-		this.setCode(crisis.getCode());
-		this.setIsTrashed(crisis.isIsTrashed());
-		if (crisis.hasCrisisType()) {
-			this.setCrisisTypeDTO(new CrisisTypeDTO(crisis.getCrisisType()));
+		if (crisis != null) {
+			System.out.println("Crisis Hash code: " + crisis.hashCode());
+			
+			this.setCrisisID(crisis.getCrisisId());
+			this.setName(crisis.getName());
+			this.setCode(crisis.getCode());
+			this.setIsTrashed(crisis.isIsTrashed());
+			if (crisis.hasCrisisType()) {
+				this.setCrisisTypeDTO(new CrisisTypeDTO(crisis.getCrisisType()));
+			}
+			if (crisis.hasUsers()) {
+				this.setUsersDTO(new UsersDTO(crisis.getUsers()));
+			}
+			System.out.println("Done setting user DTO");
+			// Setting optional fields that were lazily initialized
+			if (crisis.hasNominalAttributes()) {
+				this.setNominalAttributesDTO(toNominalAttributeDTOList(crisis.getNominalAttributes()));
+			}
+			System.out.println("Done setting nominalAttributes DTO");
+			if (crisis.hasModelFamilies()) {
+				this.setModelFamiliesDTO(toModelFamilyDTOList(crisis.getModelFamilies()));
+			}
+			System.out.println("Done setting modelfamily DTO");
+			if (crisis.hasDocuments()) {
+				this.setDocumentsDTO(toDocumentDTOList(crisis.getDocuments()));
+			}
+			System.out.println("Done setting document DTO");
+		} else {
+			System.out.println("Entity = null in constructor");
 		}
-		if (crisis.hasUsers()) {
-			this.setUsersDTO(new UsersDTO(crisis.getUsers()));
-		}
-		// Setting optional fields that were lazily initialized
-		if (crisis.hasDocuments()) {
-			this.setDocumentsDTO(toDocumentDTOList(crisis.getDocuments()));
-		}
-		if (crisis.hasNominalAttributes()) {
-			this.setNominalAttributesDTO(toNominalAttributeDTOList(crisis.getNominalAttributes()));
-		}
-		if (crisis.hasModelFamilies()) {
-			this.setModelFamiliesDTO(toModelFamilyDTOList(crisis.getModelFamilies()));
-		}
+
 	}
 
 	public Long getCrisisID() throws PropertyNotSetException {
 		if (this.crisisID != null) {
-		return this.crisisID;
+			return this.crisisID;
 		} else {
 			throw new PropertyNotSetException("crisisID cannot be null");
 		}
@@ -164,7 +187,7 @@ public class CrisisDTO implements Serializable  {
 		}
 		this.code = code;
 	}
-	
+
 	public boolean isIsTrashed() {
 		return this.isTrashed;
 	}
@@ -185,7 +208,7 @@ public class CrisisDTO implements Serializable  {
 			this.usersDTO = usersDTO;
 		}
 	}
-	
+
 	public List<NominalAttributeDTO> getNominalAttributesDTO() {
 		return this.nominalAttributesDTO;
 	}
@@ -201,7 +224,7 @@ public class CrisisDTO implements Serializable  {
 	public void setDocumentsDTO(List<DocumentDTO> documentsDTO) {
 		this.documentsDTO = documentsDTO;
 	}
-	
+
 	public List<ModelFamilyDTO> getModelFamiliesDTO() {
 		return this.modelFamiliesDTO;
 	}
@@ -210,13 +233,27 @@ public class CrisisDTO implements Serializable  {
 		this.modelFamiliesDTO = modelFamiliesDTO;
 	}
 
-	private List<DocumentDTO> toDocumentDTOList(List<Document> list) throws PropertyNotSetException {
+	private List<DocumentDTO> toDocumentDTOList(List<Document> list) {
+		try {
 		if (list != null) {
-			List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
-			for (Document d: list) {
-				dtoList.add(new DocumentDTO(d));
+			try {
+				List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
+				for (Document d: list) {
+					Document doc = new Document(d.getCrisis(), d.isIsEvaluationSet(),
+											d.isHasHumanLabels(), d.getValueAsTrainingSample(),
+											d.getReceivedAt(), d.getLanguage(), d.getDoctype(), d.getData(),
+											d.getWordFeatures(), d.getGeoFeatures(), d.getTaskAssignments(),
+											d.getDocumentNominalLabels());					
+					doc.setDocumentId(d.getDocumentId());
+					dtoList.add(new DocumentDTO(doc));
+				}
+				return dtoList;
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			return dtoList;
+		}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -231,7 +268,7 @@ public class CrisisDTO implements Serializable  {
 		}
 		return null;
 	}
-	
+
 	private List<ModelFamilyDTO> toModelFamilyDTOList(List<ModelFamily> list) throws PropertyNotSetException {
 		if (list != null) {
 			List<ModelFamilyDTO> dtoList = new ArrayList<ModelFamilyDTO>();
@@ -243,7 +280,7 @@ public class CrisisDTO implements Serializable  {
 		return null;
 	}
 
-	
+
 	private List<ModelFamily> toModelFamilyList(List<ModelFamilyDTO> list) throws PropertyNotSetException {
 		if (list != null) {
 			List<ModelFamily> eList = new ArrayList<ModelFamily>();
@@ -266,7 +303,7 @@ public class CrisisDTO implements Serializable  {
 		return null;
 	}
 
-	
+
 	private List<NominalAttribute> toNominalAttributeList(List<NominalAttributeDTO> list) throws PropertyNotSetException {
 		if (list != null) {
 			List<NominalAttribute> eList = new ArrayList<NominalAttribute>();
@@ -277,8 +314,8 @@ public class CrisisDTO implements Serializable  {
 		}
 		return null;
 	}
-	
-	
+
+
 	/* Mapping to entity */
 	public Crisis toEntity() throws PropertyNotSetException {
 		Crisis crisis = new Crisis();
@@ -298,7 +335,7 @@ public class CrisisDTO implements Serializable  {
 		} else {
 			throw new PropertyNotSetException("Unset crisisType property");
 		}
-		
+
 		// Optional fields conversion
 		if (this.getDocumentsDTO() != null) {
 			crisis.setDocuments(this.toDocumentList(this.getDocumentsDTO()));

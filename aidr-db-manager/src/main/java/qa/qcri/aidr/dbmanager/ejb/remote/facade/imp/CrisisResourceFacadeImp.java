@@ -56,6 +56,16 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 		return dtoList;
 	}
 
+	@Override 
+	public Integer deleteCrisis(CrisisDTO crisis) throws PropertyNotSetException {
+		try {
+			em.remove(crisis.toEntity()); 
+		} catch (Exception e) {
+			return 0;
+		}
+		return 1;
+	}
+
 	@Override
 	public CrisisDTO addCrisis(CrisisDTO crisis) throws PropertyNotSetException {
 		em.persist(crisis.toEntity());
@@ -72,7 +82,7 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 			return null;
 		}
 	}
-	
+
 	@Override
 	public CrisisDTO getCrisisWithAllFieldsByID(Long id) throws PropertyNotSetException {
 		Crisis crisis = getById(id);
@@ -103,13 +113,6 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 			Crisis cr = getById(c.getCrisisId()); 
 			if (cr != null) {
 				cr = em.merge(c);
-				/*
-			if (crisis.getCrisisTypeDTO() != null) {
-				cr.setCrisisType(crisis.getCrisisTypeDTO().toEntity());
-			}
-			cr.setCode(crisis.getCode());
-			cr.setName(crisis.getName());
-				 */
 				return cr != null ? new CrisisDTO(cr) : null;
 			} else {
 				throw new RuntimeException("Not found");
@@ -169,7 +172,7 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 		CrisisDTO dto = getCrisisByCode(crisisCode); 
 		return dto != null ? true : false;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	public HashMap<String, Integer> countClassifiersByCrisisCodes(List<String> codes) {

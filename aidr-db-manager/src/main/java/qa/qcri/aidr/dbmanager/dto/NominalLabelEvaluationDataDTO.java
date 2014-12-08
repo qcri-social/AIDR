@@ -24,15 +24,18 @@ public class NominalLabelEvaluationDataDTO implements Serializable {
 
 	public NominalLabelEvaluationDataDTO() {
 	}
-
+	
 	public NominalLabelEvaluationDataDTO(NominalLabelEvaluationDataIdDTO idDTO) {
 		this.idDTO = idDTO;
 	}
-
+	
 	public NominalLabelEvaluationDataDTO(NominalLabelEvaluationDataId id) throws PropertyNotSetException {
 		this.setIdDTO(new NominalLabelEvaluationDataIdDTO(id));
 	}
-
+	
+	public NominalLabelEvaluationDataDTO(NominalLabelEvaluationData data) throws PropertyNotSetException {
+		this.setIdDTO(new NominalLabelEvaluationDataIdDTO(data.getId()));
+	}
 	
 	public NominalLabelEvaluationDataIdDTO getIdDTO() {
 		return this.idDTO;

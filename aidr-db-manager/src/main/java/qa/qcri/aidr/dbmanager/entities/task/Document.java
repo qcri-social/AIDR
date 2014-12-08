@@ -22,6 +22,9 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.Hibernate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 
 /**
@@ -35,8 +38,18 @@ public class Document implements java.io.Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 5732646538544293262L;
+	
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "documentID", unique = true, nullable = false)
 	private Long documentId;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "crisisID", nullable = false)
+	@JsonBackReference
 	private Crisis crisis;
+	
+	
 	private boolean isEvaluationSet;
 	private boolean hasHumanLabels;
 	private Double valueAsTrainingSample;
@@ -46,7 +59,13 @@ public class Document implements java.io.Serializable {
 	private String data;
 	private String wordFeatures;
 	private String geoFeatures;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "document")
+	@JsonManagedReference
 	private List<TaskAssignment> taskAssignments = null;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "document")
+	@JsonManagedReference
 	private List<DocumentNominalLabel> documentNominalLabels = null;
 
 	public Document() {
@@ -84,9 +103,7 @@ public class Document implements java.io.Serializable {
 		this.documentNominalLabels = documentNominalLabels;
 	}
 
-	@Id
-	@GeneratedValue(strategy = IDENTITY)
-	@Column(name = "documentID", unique = true, nullable = false)
+
 	public Long getDocumentId() {
 		return this.documentId;
 	}
@@ -95,8 +112,7 @@ public class Document implements java.io.Serializable {
 		this.documentId = documentId;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "crisisID", nullable = false)
+
 	public Crisis getCrisis() {
 		return this.crisis;
 	}
@@ -187,7 +203,7 @@ public class Document implements java.io.Serializable {
 		this.geoFeatures = geoFeatures;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "document")
+	
 	public List<TaskAssignment> getTaskAssignments() {
 		return this.taskAssignments;
 	}
@@ -196,7 +212,7 @@ public class Document implements java.io.Serializable {
 		this.taskAssignments = taskAssignments;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "document")
+
 	public List<DocumentNominalLabel> getDocumentNominalLabels() {
 		return this.documentNominalLabels;
 	}

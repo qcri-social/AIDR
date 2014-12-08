@@ -9,7 +9,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttributeDependentLabel;
+import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
@@ -55,10 +57,23 @@ public class NominalAttributeDependentLabelDTO implements Serializable {
 		this.setIdDTO(new NominalAttributeDependentLabelIdDTO(t.getId()));
 
 		if (t.hasNominalLabel()) {
+			NominalLabel nb = new NominalLabel(t.getNominalLabel().getNominalAttribute(),
+					t.getNominalLabel().getNominalLabelCode(), t.getNominalLabel().getName(), t.getNominalLabel().getDescription(),
+					t.getNominalLabel().getSequence());
+			nb.setNominalLabelId(t.getNominalLabel().getNominalLabelId());
+			nb.setModelNominalLabels(t.getNominalLabel().getModelNominalLabels());
+			nb.setNominalAttribute(t.getNominalLabel().getNominalAttribute());
+			nb.setNominalAttributeDependentLabels(t.getNominalLabel().getNominalAttributeDependentLabels());
+			this.setNominalLabelDTO(new NominalLabelDTO(nb));
 			this.setNominalLabelDTO(new NominalLabelDTO(t.getNominalLabel()));
 		}
 		if (t.hasNominalAttribute()) {
-			this.setNominalAttributeDTO(new NominalAttributeDTO(t.getNominalAttribute()));
+			NominalAttribute na = new NominalAttribute(t.getNominalAttribute().getUsers(), 
+					t.getNominalAttribute().getName(), t.getNominalAttribute().getDescription(), t.getNominalAttribute().getCode());
+			na.setNominalAttributeId(t.getNominalAttribute().getNominalAttributeId());
+			na.setCrisises(t.getNominalAttribute().getCrisises());
+			na.setModelFamilies(t.getNominalAttribute().getModelFamilies());
+			this.setNominalAttributeDTO(new NominalAttributeDTO(na));
 		}
 		this.threshold = t.getThreshold();
 	}

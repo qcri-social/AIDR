@@ -11,6 +11,7 @@ import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
@@ -28,6 +29,7 @@ public class CrisisTypeDTO implements java.io.Serializable {
 	private String name;
 
 	@XmlElement
+	@JsonManagedReference
 	private List<CrisisDTO> crisisesDTO = null;
 
 	public CrisisTypeDTO() {
@@ -50,16 +52,19 @@ public class CrisisTypeDTO implements java.io.Serializable {
 
 	public CrisisTypeDTO(CrisisType crisisType) throws PropertyNotSetException {
 		if (crisisType != null) {
+			System.out.println("CrisisType Hash code: " + crisisType.hashCode());
+			
 			this.setCrisisTypeId(crisisType.getCrisisTypeId());
 			this.setName(crisisType.getName());
 			if (crisisType.hasCrisises()) {
 				this.setCrisisesDTO(toCrisisDTOList(crisisType.getCrisises()));
 			}
 		} else {
-			throw new IllegalArgumentException("Cannot be null");
+			//throw new IllegalArgumentException("Cannot be null");
+			System.out.println("Entity = null in constructor");
 		}
 	}
-	
+
 	public Long getCrisisTypeId() {
 		return this.crisisTypeId;
 	}
@@ -82,7 +87,7 @@ public class CrisisTypeDTO implements java.io.Serializable {
 
 	public void setCrisisesDTO(List<CrisisDTO> crisisesDTO) {
 		if (crisisesDTO != null) {
-		this.crisisesDTO = crisisesDTO;
+			this.crisisesDTO = crisisesDTO;
 		} else {
 			throw new IllegalArgumentException("cannot be null");
 		}

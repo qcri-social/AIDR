@@ -143,15 +143,19 @@ public class UsersDTO implements Serializable {
 	}
 
 	public UsersDTO(Users user) throws PropertyNotSetException {
-		this.name = user.getName();
-		this.role = user.getRole();
-		this.setUserID(user.getUserId());
-		
-		if (user.hasCrisises()) {
-			this.setCrisisesDTO(toCrisisDTOList(user.getCrisises()));
-		}
-		if (user.hasNominalAttributes()) {
-			this.setNominalAttributesDTO(toNominalAttributeDTOList(user.getNominalAttributes()));
+		if (user != null) {
+			System.out.println("Users Hash code: " + user.hashCode());
+			
+			this.name = user.getName();
+			this.role = user.getRole();
+			this.setUserID(user.getUserId());
+
+			if (user.hasCrisises()) {
+				this.setCrisisesDTO(toCrisisDTOList(user.getCrisises()));
+			}
+			if (user.hasNominalAttributes()) {
+				this.setNominalAttributesDTO(toNominalAttributeDTOList(user.getNominalAttributes()));
+			}
 		}
 	}
 

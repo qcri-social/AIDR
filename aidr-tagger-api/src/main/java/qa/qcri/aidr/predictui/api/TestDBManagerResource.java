@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
-import qa.qcri.aidr.predictui.api.CrisisResource;
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 
 @Path("/test")
 @Stateless
@@ -25,6 +25,9 @@ public class TestDBManagerResource {
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade remoteCrisisEJB;
 
+	@EJB
+	private qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade remoteDocumentEJB;
+	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/crisis/{id}")
@@ -107,4 +110,85 @@ public class TestDBManagerResource {
 		}
 		return Response.ok("Null object returned for: " + id).build();
 	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/document/{id}")
+	public Response getDocumentByID(@PathParam("id") long id) {
+		try {
+			DocumentDTO dto = remoteDocumentEJB.findDocumentByID(id);
+			if (dto != null) 
+			{
+				return Response.ok(dto).build();
+			} 
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("Exception in fetching crisis from remote EJB for id = " + id);
+			logger.error("stacktrace: ", e);
+			e.printStackTrace();
+			return Response.ok("Exception: " + e).build();
+		}
+		return Response.ok("Null object returned for document ID = " + id).build();
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/document/crisis/{id}")
+	public Response getDocumentsByCrisisID(@PathParam("id") long id) {
+		try {
+			List<DocumentDTO> dtoList = remoteDocumentEJB.findDocumentsByCrisisID(id);
+			if (dtoList != null) 
+			{
+				return Response.ok(dtoList).build();
+			} 
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("Exception in fetching crisis from remote EJB for id = " + id);
+			logger.error("stacktrace: ", e);
+			e.printStackTrace();
+			return Response.ok("Exception: " + e).build();
+		}
+		return Response.ok("Null object returned for document ID = " + id).build();
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/document/labeled/{id}")
+	public Response getLabeledDocumentsByCrisisID(@PathParam("id") long id) {
+		try {
+			List<DocumentDTO> dtoList = remoteDocumentEJB.findLabeledDocumentsByCrisisID(id);
+			if (dtoList != null) 
+			{
+				return Response.ok(dtoList).build();
+			} 
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("Exception in fetching crisis from remote EJB for id = " + id);
+			logger.error("stacktrace: ", e);
+			e.printStackTrace();
+			return Response.ok("Exception: " + e).build();
+		}
+		return Response.ok("Null object returned for document ID = " + id).build();
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/document/fulldata/{id}")
+	public Response getWithAllFieldsDocument(@PathParam("id") long id) {
+		try {
+			DocumentDTO dto = remoteDocumentEJB.getDocumentWithAllFieldsByID(id);
+			if (dto != null) 
+			{
+				return Response.ok(dto).build();
+			} 
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("Exception in fetching crisis from remote EJB for id = " + id);
+			logger.error("stacktrace: ", e);
+			e.printStackTrace();
+			return Response.ok("Exception: " + e).build();
+		}
+		return Response.ok("Null object returned for document ID = " + id).build();
+	}
+
 }

@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
@@ -35,7 +36,13 @@ public class TaskAssignmentDTO implements Serializable {
 
 	public TaskAssignmentDTO(TaskAssignment taskAssignment){
 		if (taskAssignment.hasDocument()) {
-			this.setDocument(taskAssignment.getDocument());
+			Document doc = new Document(taskAssignment.getDocument().getCrisis(), taskAssignment.getDocument().isIsEvaluationSet(),
+					taskAssignment.getDocument().isHasHumanLabels(), taskAssignment.getDocument().getValueAsTrainingSample(),
+					taskAssignment.getDocument().getReceivedAt(), taskAssignment.getDocument().getLanguage(), taskAssignment.getDocument().getDoctype(), taskAssignment.getDocument().getData(),
+					taskAssignment.getDocument().getWordFeatures(), taskAssignment.getDocument().getGeoFeatures(), taskAssignment.getDocument().getTaskAssignments(),
+					taskAssignment.getDocument().getDocumentNominalLabels());					
+			doc.setDocumentId(taskAssignment.getDocument().getDocumentId());
+			//this.setDocument(new DocumentDTO(doc));
 		}
 		this.setIdDTO(new TaskAssignmentIdDTO(taskAssignment.getId()));
 		this.setAssignedAt(taskAssignment.getAssignedAt());

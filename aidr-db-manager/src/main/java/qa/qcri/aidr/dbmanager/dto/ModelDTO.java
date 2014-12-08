@@ -13,8 +13,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.model.Model;
+import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabel;
+import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -61,7 +64,10 @@ public class ModelDTO implements Serializable {
 	public ModelDTO(Model model) throws PropertyNotSetException {
 		setModelId(model.getModelId());
 		if (model.hasModelFamily()) {
-			setModelFamilyDTO(new ModelFamilyDTO(model.getModelFamily()));
+			ModelFamily mf = new ModelFamily(model.getModelFamily().getNominalAttribute(), model.getModelFamily().getCrisis(),
+					model.getModelFamily().isIsActive());
+			mf.setModelFamilyId(model.getModelFamily().getModelFamilyId());
+			this.setModelFamilyDTO(new ModelFamilyDTO(mf));
 		}
 		setAvgPrecision(model.getAvgPrecision());
 		setAvgRecall(model.getAvgRecall());

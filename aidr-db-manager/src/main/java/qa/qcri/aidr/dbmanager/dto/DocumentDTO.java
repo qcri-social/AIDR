@@ -7,13 +7,19 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
+import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
+import qa.qcri.aidr.dbmanager.entities.misc.Users;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 import qa.qcri.aidr.dbmanager.entities.task.TaskAssignment;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 @XmlRootElement
@@ -31,7 +37,8 @@ public class DocumentDTO implements Serializable {
 	private boolean hasHumanLabels;
 
 	@XmlElement
-	private CrisisDTO crisisDTO;
+	@JsonBackReference
+	private CrisisDTO crisisDTO = null;
 
 	@XmlElement
 	private boolean isEvaluationSet;
@@ -57,10 +64,12 @@ public class DocumentDTO implements Serializable {
 	@XmlElement
 	private String geoFeatures;
 
-	@XmlElement
+	//@XmlTransient
+	@JsonManagedReference
 	private List<TaskAssignmentDTO> taskAssignmentsDTO = null;
 
-	@XmlElement
+	//@XmlTransient
+	@JsonManagedReference
 	private List<DocumentNominalLabelDTO> documentNominalLabelsDTO = null;
 
 	public DocumentDTO(){}
@@ -71,28 +80,39 @@ public class DocumentDTO implements Serializable {
 	}
 
 	public DocumentDTO(Document doc) throws PropertyNotSetException {
-		this.setDocumentID(doc.getDocumentId());
-		this.setHasHumanLabels(doc.isHasHumanLabels());
-		if (doc.hasCrisis()) {
-			this.setCrisisDTO(new CrisisDTO(doc.getCrisis()));
-		} 
-		this.setDoctype(doc.getDoctype());
-		this.setGeoFeatures(doc.getGeoFeatures());
-		this.setIsEvaluationSet(doc.isIsEvaluationSet());
-		this.setLanguage(doc.getLanguage());
-		this.setReceivedAt(doc.getReceivedAt());
-		this.setData(doc.getData());
-		this.setValueAsTrainingSample(doc.getValueAsTrainingSample());
-		this.setWordFeatures(doc.getWordFeatures());
+		if (doc != null) {
+			System.out.println("Document Hash code: " + doc.hashCode());
+			
+			this.setDocumentID(doc.getDocumentId());
+			this.setHasHumanLabels(doc.isHasHumanLabels());
+			if (doc.hasCrisis()) {
+				Crisis c = new Crisis(doc.getCrisis().getUsers(), doc.getCrisis().getCrisisType(), doc.getCrisis().getName(), doc.getCrisis().getCode(),
+										doc.getCrisis().isIsTrashed());
+				c.setCrisisId(doc.getCrisis().getCrisisId());
+				this.setCrisisDTO(new CrisisDTO(c));
+			} 
+			System.out.println("Done setting crisis DTO");
+			this.setDoctype(doc.getDoctype());
+			this.setGeoFeatures(doc.getGeoFeatures());
+			this.setIsEvaluationSet(doc.isIsEvaluationSet());
+			this.setLanguage(doc.getLanguage());
+			this.setReceivedAt(doc.getReceivedAt());
+			this.setData(doc.getData());
+			this.setValueAsTrainingSample(doc.getValueAsTrainingSample());
+			this.setWordFeatures(doc.getWordFeatures());
 
-		// now the optional fields
-		if (doc.hasDocumentNominalLabels()) {
-			this.setDocumentNominalLabelsDTO(this.toDocumentNominalLabelDTOList(doc.getDocumentNominalLabels()));
+			// now the optional fields
+			if (doc.hasDocumentNominalLabels()) {
+				this.setDocumentNominalLabelsDTO(this.toDocumentNominalLabelDTOList(doc.getDocumentNominalLabels()));
+			}
+			System.out.println("Done setting DocumentNominalLabels DTO");
+			if (doc.hasTaskAssignments()) {
+				this.setTaskAssignmentDTO(this.toTaskAssignmentDTOList(doc.getTaskAssignments()));
+			}
+			System.out.println("Done setting TaskAssignments DTO");
+		} else {
+			System.out.println("Entity = null in constructor");
 		}
-		if (doc.hasTaskAssignments()) {
-			this.setTaskAssignmentDTO(this.toTaskAssignmentDTOList(doc.getTaskAssignments()));
-		}
-
 	}
 
 

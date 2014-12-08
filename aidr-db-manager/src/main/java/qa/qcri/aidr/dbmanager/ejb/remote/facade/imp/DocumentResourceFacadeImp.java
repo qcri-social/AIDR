@@ -6,6 +6,7 @@ import java.util.List;
 import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
 import org.hibernate.Session;
@@ -14,9 +15,11 @@ import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade;
+import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 
 /**
@@ -288,6 +291,143 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 				metric = "DAY";
 		}
 		return metric;
+	}
+
+	@Override
+	public DocumentDTO addDocument(DocumentDTO doc) throws PropertyNotSetException {
+		em.persist(doc.toEntity());
+		return doc;
+	}
+
+	@Override
+	public DocumentDTO editDocument(DocumentDTO doc) throws PropertyNotSetException {
+		System.out.println("Received request for: " + doc.getDocumentID() + ", " + doc.getCrisisDTO().getCode());
+		try {
+			Document d = doc.toEntity();
+			Document oldDoc = getById(d.getDocumentId()); 
+			if (oldDoc != null) {
+				oldDoc = em.merge(d);
+				return oldDoc != null ? new DocumentDTO(oldDoc) : null;
+			} else {
+				throw new RuntimeException("Not found");
+			}
+		} catch (Exception e) {
+			System.out.println("Exception in merging/updating document: " + doc.getDocumentID());
+			e.printStackTrace();	
+		}
+		return null;
+	}
+
+	@Override
+	public Integer deleteDocument(DocumentDTO doc) {
+		try {
+			em.remove(doc.toEntity()); 
+		} catch (Exception e) {
+			return 0;
+		}
+		return 1;
+	}
+
+	@Override
+	public List<DocumentDTO> findByCriteria(String columnName, Long value) throws PropertyNotSetException {
+		List<Document> list = getAllByCriteria(Restrictions.eq(columnName,value));
+		List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
+		if (list != null) {
+			for (Document c: list) {
+				dtoList.add(new DocumentDTO(c));
+			}
+		}
+		return dtoList;
+	}
+
+	@Override
+	public DocumentDTO findDocumentByID(Long id) throws PropertyNotSetException {
+		Document doc = getById(id);
+		if (doc != null) {
+			DocumentDTO dto = new DocumentDTO(doc);
+			return dto;
+		} else {
+			return null;
+		}
+	}
+	
+	@Override
+	public List<DocumentDTO> findDocumentsByCrisisID(Long crisisId) throws PropertyNotSetException {
+		List<DocumentDTO> dtoList = findByCriteria("crisisID", crisisId);
+		return dtoList;
+	}
+
+	@Override
+	public DocumentDTO getDocumentWithAllFieldsByID(Long id) throws PropertyNotSetException {
+		Document doc = getById(id);
+		if (doc != null) {
+			Hibernate.initialize(doc.getCrisis());
+			Hibernate.initialize(doc.getDocumentNominalLabels());
+			Hibernate.initialize(doc.getTaskAssignments());
+		
+			DocumentDTO dto = new DocumentDTO(doc);
+			return dto;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public boolean isDocumentExists(Long id) throws PropertyNotSetException {
+		DocumentDTO dto = findDocumentByID(id); 
+		return dto != null ? true : false;
+	}
+
+	@Override
+	public List<DocumentDTO> getAllDocuments() throws PropertyNotSetException {
+		System.out.println("Received request for fetching all Documents!!!");
+		List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
+		List<Document> list = getAll();
+		if (list != null) {
+			for (Document doc : list) {
+				//System.out.println("Converting to DTO Document: " + doc.getDocumentId() + ", " + doc.getCrisis().getCode() + ", " + doc.isHasHumanLabels());
+				DocumentDTO dto = new DocumentDTO(doc);
+				dtoList.add(dto);
+			}
+		}
+		System.out.println("Done creating DTO list, size = " + dtoList.size());
+		return dtoList;
+	}
+
+	@Override
+	public List<DocumentDTO> findLabeledDocumentsByCrisisID(Long crisisId) throws PropertyNotSetException {
+		Criterion criterion = Restrictions.conjunction()
+				.add(Restrictions.eq("crisisID",crisisId))
+				.add(Restrictions.eq("hasHumanLabels", true));
+		List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
+		List<Document> list = this.getAllByCriteria(criterion);
+		if (list != null) {
+			for (Document doc : list) {
+				//System.out.println("Converting to DTO Document: " + doc.getDocumentId() + ", " + doc.getCrisis().getCode() + ", " + doc.isHasHumanLabels());
+				DocumentDTO dto = new DocumentDTO(doc);
+				dtoList.add(dto);
+			}
+		}
+		System.out.println("Done creating DTO list, size = " + dtoList.size());
+		return dtoList;
+	}
+	
+	@Override
+	public List<DocumentDTO> findUnLabeledDocumentsByCrisisID(Long crisisId) throws PropertyNotSetException {
+		Criterion criterion = Restrictions.conjunction()
+				.add(Restrictions.eq("crisisID",crisisId))
+				.add(Restrictions.eq("hasHumanLabels", false));
+		List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
+		List<Document> list = this.getAllByCriteria(criterion);
+		if (list != null) {
+			for (Document doc : list) {
+				//System.out.println("Converting to DTO Document: " + doc.getDocumentId() + ", " + doc.getCrisis().getCode() + ", " + doc.isHasHumanLabels());
+				DocumentDTO dto = new DocumentDTO(doc);
+				dtoList.add(dto);
+			}
+		}
+		System.out.println("Done creating DTO list, size = " + dtoList.size());
+		return dtoList;
 	}
 }
 

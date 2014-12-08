@@ -19,6 +19,9 @@ import javax.persistence.Table;
 
 import org.hibernate.Hibernate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 
 /**
@@ -83,6 +86,7 @@ public class NominalLabel implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "nominalAttributeID", nullable = false)
+	@JsonBackReference
 	public NominalAttribute getNominalAttribute() {
 		return this.nominalAttribute;
 	}
@@ -128,6 +132,7 @@ public class NominalLabel implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalLabel")
+	@JsonManagedReference
 	public List<ModelNominalLabel> getModelNominalLabels() {
 		return this.modelNominalLabels;
 	}
@@ -137,6 +142,7 @@ public class NominalLabel implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalLabel")
+	@JsonManagedReference
 	public List<NominalAttributeDependentLabel> getNominalAttributeDependentLabels() {
 		return this.nominalAttributeDependentLabels;
 	}
@@ -147,6 +153,7 @@ public class NominalLabel implements java.io.Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalLabel")
+	@JsonManagedReference
 	public List<DocumentNominalLabel> getDocumentNominalLabels() {
 		return this.documentNominalLabels;
 	}

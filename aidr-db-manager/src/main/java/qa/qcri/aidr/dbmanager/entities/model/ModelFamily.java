@@ -17,8 +17,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.Hibernate;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 
@@ -34,10 +38,26 @@ public class ModelFamily implements java.io.Serializable {
      *
      */
     private static final long serialVersionUID = -1064917491408243168L;
-	private Long modelFamilyId;
+	
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "modelFamilyID", unique = true, nullable = false)
+    private Long modelFamilyId;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "nominalAttributeID", nullable = false)
+	@JsonBackReference
 	private NominalAttribute nominalAttribute;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "crisisID", nullable = false)
+	@JsonBackReference
 	private Crisis crisis;
+
 	private boolean isActive;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "modelFamily")
+	@JsonManagedReference
 	private List<Model> models = null;
 
 	public ModelFamily() {
@@ -57,9 +77,6 @@ public class ModelFamily implements java.io.Serializable {
 		this.models = models;
 	}
 
-	@Id
-	@GeneratedValue(strategy = IDENTITY)
-	@Column(name = "modelFamilyID", unique = true, nullable = false)
 	public Long getModelFamilyId() {
 		return this.modelFamilyId;
 	}
@@ -68,8 +85,7 @@ public class ModelFamily implements java.io.Serializable {
 		this.modelFamilyId = modelFamilyId;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "nominalAttributeID", nullable = false)
+	
 	public NominalAttribute getNominalAttribute() {
 		return this.nominalAttribute;
 	}
@@ -78,8 +94,7 @@ public class ModelFamily implements java.io.Serializable {
 		this.nominalAttribute = nominalAttribute;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "crisisID", nullable = false)
+
 	public Crisis getCrisis() {
 		return this.crisis;
 	}
@@ -97,7 +112,7 @@ public class ModelFamily implements java.io.Serializable {
 		this.isActive = isActive;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "modelFamily")
+
 	public List<Model> getModels() {
 		return this.models;
 	}
