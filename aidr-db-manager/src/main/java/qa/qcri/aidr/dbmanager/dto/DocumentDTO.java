@@ -64,12 +64,10 @@ public class DocumentDTO implements Serializable {
 	@XmlElement
 	private String geoFeatures;
 
-	//@XmlTransient
-	@JsonManagedReference
+	@XmlElement
 	private List<TaskAssignmentDTO> taskAssignmentsDTO = null;
 
-	//@XmlTransient
-	@JsonManagedReference
+	@XmlElement
 	private List<DocumentNominalLabelDTO> documentNominalLabelsDTO = null;
 
 	public DocumentDTO(){}
@@ -79,6 +77,40 @@ public class DocumentDTO implements Serializable {
 		this.setHasHumanLabels(hasHumanLabels);
 	}
 
+	public DocumentDTO(CrisisDTO crisis, boolean isEvaluationSet,
+			boolean hasHumanLabels, Double valueAsTrainingSample,
+			Date receivedAt, String language, String doctype, String data) {
+		this.setCrisisDTO(crisis);
+		this.setIsEvaluationSet(isEvaluationSet);
+		this.setHasHumanLabels(hasHumanLabels);
+		this.setValueAsTrainingSample(valueAsTrainingSample);
+		this.setReceivedAt(receivedAt);
+		this.setLanguage(language);
+		this.setDoctype(doctype);
+		this.setData(data);
+	}
+
+	public DocumentDTO(CrisisDTO crisis, boolean isEvaluationSet,
+			boolean hasHumanLabels, Double valueAsTrainingSample,
+			Date receivedAt, String language, String doctype, String data,
+			String wordFeatures, String geoFeatures, List<TaskAssignmentDTO> taskAssignments,
+			List<DocumentNominalLabelDTO> documentNominalLabels) {
+		this.setCrisisDTO(crisis);
+		this.setIsEvaluationSet(isEvaluationSet);
+		this.setHasHumanLabels(hasHumanLabels);
+		this.setValueAsTrainingSample(valueAsTrainingSample);
+		this.setReceivedAt(receivedAt);
+		this.setLanguage(language);
+		this.setDoctype(doctype);
+		this.setData(data);
+		
+		this.setWordFeatures(wordFeatures);
+		this.setGeoFeatures(geoFeatures);
+		this.setTaskAssignmentDTO(taskAssignments);
+		this.setDocumentNominalLabelsDTO(documentNominalLabels);
+	}
+	
+	
 	public DocumentDTO(Document doc) throws PropertyNotSetException {
 		if (doc != null) {
 			System.out.println("Document Hash code: " + doc.hashCode());

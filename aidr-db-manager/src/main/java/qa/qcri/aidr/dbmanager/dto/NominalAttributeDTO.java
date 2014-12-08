@@ -33,7 +33,6 @@ public class NominalAttributeDTO implements java.io.Serializable {
 	private Long nominalAttributeId;
 
 	@XmlElement
-	@JsonBackReference
 	private UsersDTO usersDTO = null;
 
 	@XmlElement
@@ -46,19 +45,15 @@ public class NominalAttributeDTO implements java.io.Serializable {
 	private String code;
 
 	@XmlElement
-	@JsonManagedReference
 	private List<ModelFamilyDTO> modelFamiliesDTO = null;
 
 	@XmlElement
-	@JsonManagedReference
 	private List<NominalAttributeDependentLabelDTO> nominalAttributeDependentLabelsDTO = null;
 
-	//@XmlTransient
-	@JsonManagedReference
+	@XmlElement
 	private List<CrisisDTO> crisisesDTO = null;
 
 	@XmlElement
-	@JsonManagedReference
 	private List<NominalLabelDTO> nominalLabelsDTO = null;
 
 	public NominalAttributeDTO() {

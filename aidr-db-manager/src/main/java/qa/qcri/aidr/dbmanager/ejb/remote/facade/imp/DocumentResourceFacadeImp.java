@@ -358,8 +358,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	
 	@Override
 	public List<DocumentDTO> findDocumentsByCrisisID(Long crisisId) throws PropertyNotSetException {
-		Crisis crisis = crisisEJB.getById(crisisId);
-		List<DocumentDTO> dtoList = findByCriteria("crisis", crisis);
+		List<DocumentDTO> dtoList = findByCriteria("crisis.crisisId", crisisId);
 		return dtoList;
 	}
 

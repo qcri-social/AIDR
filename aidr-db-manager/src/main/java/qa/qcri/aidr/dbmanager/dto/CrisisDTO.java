@@ -14,6 +14,8 @@ import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
+import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
+import qa.qcri.aidr.dbmanager.entities.misc.Users;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
@@ -44,28 +46,24 @@ public class CrisisDTO implements Serializable  {
 	private  String name;
 
 	@XmlElement
-	//@JsonBackReference
 	private CrisisTypeDTO crisisTypeDTO = null;
 
 	@XmlElement
 	private  String code;
 
 	@XmlElement
-	//@JsonBackReference
 	private UsersDTO usersDTO = null;
 
 	@XmlElement
 	private boolean isTrashed;
 
-	@JsonManagedReference
+	@XmlElement
 	private List<NominalAttributeDTO> nominalAttributesDTO = null;
 
 	@XmlElement
-	//@JsonManagedReference
 	private List<DocumentDTO> documentsDTO = null;
 
 	@XmlElement
-	//@JsonManagedReference
 	private List<ModelFamilyDTO> modelFamiliesDTO = null;
 
 
@@ -101,10 +99,14 @@ public class CrisisDTO implements Serializable  {
 			this.setCode(crisis.getCode());
 			this.setIsTrashed(crisis.isIsTrashed());
 			if (crisis.hasCrisisType()) {
-				this.setCrisisTypeDTO(new CrisisTypeDTO(crisis.getCrisisType()));
+				CrisisType cType = new CrisisType(crisis.getCrisisType().getName());
+				cType.setCrisisTypeId(crisis.getCrisisType().getCrisisTypeId());
+				this.setCrisisTypeDTO(new CrisisTypeDTO(cType));
 			}
 			if (crisis.hasUsers()) {
-				this.setUsersDTO(new UsersDTO(crisis.getUsers()));
+				Users user = new Users(crisis.getUsers().getName(), crisis.getUsers().getRole());
+				user.setUserId(crisis.getUsers().getUserId());
+				this.setUsersDTO(new UsersDTO(user));
 			}
 			System.out.println("Done setting user DTO");
 			// Setting optional fields that were lazily initialized

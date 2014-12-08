@@ -12,11 +12,14 @@ import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.UsersResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
+import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
+import qa.qcri.aidr.dbmanager.entities.task.Document;
 
 
 /**
@@ -71,6 +74,48 @@ public class UsersResourceFacadeImp extends CoreDBServiceFacadeImp<Users, Long> 
 			for (Crisis c: u.getCrisises()) {
 				Hibernate.initialize(c.getModelFamilies());		// fetching lazily loaded data
 				dtoList.add(new CrisisDTO(c));
+			}
+		}
+		return dtoList;
+	}
+
+	@Override
+	public UsersDTO addUser(UsersDTO user) throws PropertyNotSetException {
+		em.persist(user.toEntity());
+		return getUserByName(user.getName());
+	}
+	
+	@Override
+	public Integer deleteUser(Long id) {
+		Users user = getById(id);
+		if (user != null) {
+			this.delete(user);
+			return 1;
+		}
+		else {
+			throw new RuntimeException("User requested to be deleted does not exist! id = " + id);
+		}
+	}
+
+	@Override
+	public List<UsersDTO> findByCriteria(String columnName, Object value) throws PropertyNotSetException {
+		List<Users> list = getAllByCriteria(Restrictions.eq(columnName,value));
+		List<UsersDTO> dtoList = new ArrayList<UsersDTO>();
+		if (list != null) {
+			for (Users c: list) {
+				dtoList.add(new UsersDTO(c));
+			}
+		}
+		return dtoList;
+	}
+
+	@Override
+	public List<UsersDTO> getAllUsers() throws PropertyNotSetException {
+		List<UsersDTO> dtoList = new ArrayList<UsersDTO>();
+		List<Users> list = this.getAll();
+		if (list != null) {
+			for (Users u: list) {
+				dtoList.add(new UsersDTO(u));
 			}
 		}
 		return dtoList;

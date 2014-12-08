@@ -69,7 +69,7 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 	@Override
 	public CrisisDTO addCrisis(CrisisDTO crisis) throws PropertyNotSetException {
 		em.persist(crisis.toEntity());
-		return crisis;
+		return findByCriteria("code", crisis.getCode()).get(0);
 	}
 
 	@Override

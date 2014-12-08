@@ -34,8 +34,17 @@
     <class>qa.qcri.aidr.predictdb.entities.task.DocumentNominalLabel</class>
     <class>qa.qcri.aidr.predictdb.entities.task.TaskAnswer</class>
     <class>qa.qcri.aidr.predictdb.entities.task.TaskAssignment</class>
+    <class>qa.qcri.aidr.dbmanager.entities.model.Model</class>
+    <class>qa.qcri.aidr.dbmanager.entities.model.ModelFamily</class>
+    <class>qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabel</class>
+    <class>qa.qcri.aidr.dbmanager.entities.model.NominalAttribute</class>
+    <class>qa.qcri.aidr.dbmanager.entities.model.NominalAttributeDependentLabel</class>
     <class>qa.qcri.aidr.dbmanager.entities.model.NominalLabel</class>
+    <class>qa.qcri.aidr.dbmanager.entities.model.NominalLabelEvaluationData</class>
+    <class>qa.qcri.aidr.dbmanager.entities.model.NominalLabelTrainingData</class>
     <class>qa.qcri.aidr.dbmanager.entities.misc.Crisis</class>
+    <class>qa.qcri.aidr.dbmanager.entities.misc.CrisisType</class>
+    <class>qa.qcri.aidr.dbmanager.entities.misc.CustomuiTemplate</class>
     <class>qa.qcri.aidr.dbmanager.entities.misc.Users</class>
     <properties>
       <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>

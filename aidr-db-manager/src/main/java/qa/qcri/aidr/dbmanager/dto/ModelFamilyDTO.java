@@ -33,18 +33,15 @@ public class ModelFamilyDTO implements Serializable {
 	private Long modelFamilyId;
 
 	@XmlElement
-	@JsonBackReference
 	private NominalAttributeDTO nominalAttributeDTO = null;
 
 	@XmlElement
-	@JsonBackReference
 	private CrisisDTO crisisDTO = null;
 
 	@XmlElement
 	private boolean isActive;
 
 	@XmlElement
-	@JsonManagedReference
 	private List<ModelDTO> modelsDTO = null;
 
 	public ModelFamilyDTO() {

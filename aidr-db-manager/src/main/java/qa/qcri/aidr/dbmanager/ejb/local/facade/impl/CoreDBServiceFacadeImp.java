@@ -122,7 +122,7 @@ public class CoreDBServiceFacadeImp<E, I extends Serializable> implements CoreDB
 		Criteria criteria = getCurrentSession().createCriteria(entityClass);
 		List<E> fetchedList = new ArrayList<E>();
 		try {	
-			fetchedList = criteria.list();
+			fetchedList  = criteria.list();
 			return fetchedList;
 		} catch (Exception e) {
 			logger.error(elog.toStringException(e));

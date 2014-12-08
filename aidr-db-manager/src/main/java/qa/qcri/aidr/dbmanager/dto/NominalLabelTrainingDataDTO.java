@@ -18,6 +18,7 @@ public class NominalLabelTrainingDataDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -6001563823600724945L;
+	
 	@XmlElement
 	private NominalLabelTrainingDataIdDTO idDTO;
 

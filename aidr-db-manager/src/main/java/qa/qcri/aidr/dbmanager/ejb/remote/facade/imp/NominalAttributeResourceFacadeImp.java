@@ -7,14 +7,18 @@ package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.ejb.Stateless;
+
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
+
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalAttributeResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
+import qa.qcri.aidr.dbmanager.entities.task.Document;
 
 /**
  *
@@ -25,6 +29,10 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 
     private static Logger logger = Logger.getLogger("db-manager-log");
 
+    public NominalAttributeResourceFacadeImp() {
+		super(NominalAttribute.class);
+	}
+    
     public boolean addAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException {
         try {
             save(attribute.toEntity());

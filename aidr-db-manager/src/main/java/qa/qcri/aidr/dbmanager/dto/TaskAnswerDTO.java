@@ -16,117 +16,118 @@ import qa.qcri.aidr.dbmanager.entities.task.TaskAnswer;
 public class TaskAnswerDTO implements Serializable {
 
 
-    /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5525860415454423643L;
 
+	@XmlElement
+	private Long taskID;
+
+	@XmlElement
+	private Long documentID;
+
+	@XmlElement
+	private Long userID;
+
+	@XmlElement
+	private String answer;
+
+	@XmlElement
+	private Date timestamp;
+
+	@XmlElement
+	private boolean fromTrustedUser;
+
+
 	public TaskAnswerDTO(){
-      // default
-    }
+		// default
+	}
 
-    public  TaskAnswerDTO(Long documentID, Long userID, String answer){
-        this.documentID = documentID;
-        this.userID = userID;
-        this.answer = answer;
-    }
+	public  TaskAnswerDTO(Long documentID, Long userID, String answer){
+		this.documentID = documentID;
+		this.userID = userID;
+		this.answer = answer;
+	}
 
-    public  TaskAnswerDTO(TaskAnswer taskAnswer){
-        this.documentID = taskAnswer.getId().getDocumentId();
-        this.userID = taskAnswer.getId().getUserId();
-        this.answer = taskAnswer.getAnswer();
-        this.timestamp = taskAnswer.getTimestamp();
-    }
-
-
-    public TaskAnswer toEntity(){
-        return new TaskAnswer(this.getDocumentID(), this.getUserID(), this.getAnswer(), this.isFromTrustedUser());
-
-    }
-
-    public List<TaskAnswer> toEntity(List<TaskAnswerDTO> answers){
-        List<TaskAnswer> taskAnswers = new ArrayList<TaskAnswer>();
-
-        for (TaskAnswerDTO dto: answers) {
-            TaskAnswer t = new TaskAnswer(dto.getDocumentID(), dto.getUserID(), dto.getAnswer(), dto.isFromTrustedUser());
-            taskAnswers.add(t);
-        }
-
-        return taskAnswers;
-    }
+	public  TaskAnswerDTO(TaskAnswer taskAnswer){
+		this.documentID = taskAnswer.getId().getDocumentId();
+		this.userID = taskAnswer.getId().getUserId();
+		this.answer = taskAnswer.getAnswer();
+		this.timestamp = taskAnswer.getTimestamp();
+	}
 
 
-    public Long getDocumentID() {
-        return documentID;
-    }
+	public TaskAnswer toEntity(){
+		return new TaskAnswer(this.getDocumentID(), this.getUserID(), this.getAnswer(), this.isFromTrustedUser());
 
-    public void setDocumentID(Long documentID) {
-        if(documentID == null)
-            throw new IllegalArgumentException("documentID cannot be null");
+	}
 
-        this.documentID = documentID;
-    }
+	public List<TaskAnswer> toEntity(List<TaskAnswerDTO> answers){
+		List<TaskAnswer> taskAnswers = new ArrayList<TaskAnswer>();
 
-    public Long getUserID() {
-        return userID;
-    }
+		for (TaskAnswerDTO dto: answers) {
+			TaskAnswer t = new TaskAnswer(dto.getDocumentID(), dto.getUserID(), dto.getAnswer(), dto.isFromTrustedUser());
+			taskAnswers.add(t);
+		}
 
-    public void setUserID(Long userID) {
-        if(userID == null)
-            throw new IllegalArgumentException("userID cannot be null");
+		return taskAnswers;
+	}
 
-        this.userID = userID;
-    }
 
-    public String getAnswer() {
-        return answer;
-    }
+	public Long getDocumentID() {
+		return documentID;
+	}
 
-    public void setAnswer(String answer) {
-        this.answer = answer;
-    }
+	public void setDocumentID(Long documentID) {
+		if(documentID == null)
+			throw new IllegalArgumentException("documentID cannot be null");
 
-    public Date getTimestamp() {
-        return timestamp;
-    }
+		this.documentID = documentID;
+	}
 
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-    }
+	public Long getUserID() {
+		return userID;
+	}
 
-    public boolean isFromTrustedUser() {
-        return fromTrustedUser;
-    }
+	public void setUserID(Long userID) {
+		if(userID == null)
+			throw new IllegalArgumentException("userID cannot be null");
 
-    public void setFromTrustedUser(boolean fromTrustedUser) {
-        this.fromTrustedUser = fromTrustedUser;
-    }
+		this.userID = userID;
+	}
 
-    public Long getTaskID() {
-        return taskID;
-    }
+	public String getAnswer() {
+		return answer;
+	}
 
-    public void setTaskID(Long taskID) {
-        this.taskID = taskID;
-    }
+	public void setAnswer(String answer) {
+		this.answer = answer;
+	}
 
-    @XmlElement
-    private Long taskID;
+	public Date getTimestamp() {
+		return timestamp;
+	}
 
-    @XmlElement
-    private Long documentID;
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
+	}
 
-    @XmlElement
-    private Long userID;
+	public boolean isFromTrustedUser() {
+		return fromTrustedUser;
+	}
 
-    @XmlElement
-    private String answer;
+	public void setFromTrustedUser(boolean fromTrustedUser) {
+		this.fromTrustedUser = fromTrustedUser;
+	}
 
-    @XmlElement
-    private Date timestamp;
+	public Long getTaskID() {
+		return taskID;
+	}
 
-    @XmlElement
-    private boolean fromTrustedUser;
+	public void setTaskID(Long taskID) {
+		this.taskID = taskID;
+	}
 
 
 }

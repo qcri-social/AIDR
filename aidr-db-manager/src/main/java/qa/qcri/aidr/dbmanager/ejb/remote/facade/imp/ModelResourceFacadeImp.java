@@ -34,6 +34,10 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 
     private static Logger logger = Logger.getLogger("db-manager-log");
 
+    public ModelResourceFacadeImp() {
+		super(Model.class);
+	}
+    
     public List<ModelDTO> getAllModels() throws PropertyNotSetException {
         List<ModelDTO> modelDTOList = new ArrayList<ModelDTO>();
         List<Model> modelList = getAll();
