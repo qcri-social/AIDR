@@ -23,7 +23,7 @@ public interface DocumentResourceFacade extends CoreDBServiceFacade<Document, Lo
 
 	public Integer deleteDocument(DocumentDTO doc);
 
-	public List<DocumentDTO> findByCriteria(String columnName, Long value) throws PropertyNotSetException;
+	public List<DocumentDTO> findByCriteria(String columnName, Object value) throws PropertyNotSetException;
 
 	public DocumentDTO findDocumentByID(Long id) throws PropertyNotSetException;
 

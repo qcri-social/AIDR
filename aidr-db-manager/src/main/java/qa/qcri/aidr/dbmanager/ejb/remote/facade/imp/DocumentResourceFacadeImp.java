@@ -3,6 +3,7 @@ package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
@@ -18,6 +19,7 @@ import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
@@ -33,6 +35,9 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	private Logger logger = Logger.getLogger("db-manager-log");
 	private ErrorLog elog = new ErrorLog();
 
+	@EJB
+	CrisisResourceFacade crisisEJB;
+	
 	public DocumentResourceFacadeImp() {
 		super(Document.class);
 	}
@@ -329,7 +334,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	}
 
 	@Override
-	public List<DocumentDTO> findByCriteria(String columnName, Long value) throws PropertyNotSetException {
+	public List<DocumentDTO> findByCriteria(String columnName, Object value) throws PropertyNotSetException {
 		List<Document> list = getAllByCriteria(Restrictions.eq(columnName,value));
 		List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
 		if (list != null) {
@@ -353,7 +358,8 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	
 	@Override
 	public List<DocumentDTO> findDocumentsByCrisisID(Long crisisId) throws PropertyNotSetException {
-		List<DocumentDTO> dtoList = findByCriteria("crisisID", crisisId);
+		Crisis crisis = crisisEJB.getById(crisisId);
+		List<DocumentDTO> dtoList = findByCriteria("crisis", crisis);
 		return dtoList;
 	}
 

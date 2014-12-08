@@ -45,7 +45,7 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 	}
 
 	@Override
-	public List<CrisisDTO> findByCriteria(String columnName, Long value) throws PropertyNotSetException {
+	public List<CrisisDTO> findByCriteria(String columnName, Object value) throws PropertyNotSetException {
 		List<Crisis> list = getAllByCriteria(Restrictions.eq(columnName,value));
 		List<CrisisDTO> dtoList = new ArrayList<CrisisDTO>();
 		if (list != null) {
