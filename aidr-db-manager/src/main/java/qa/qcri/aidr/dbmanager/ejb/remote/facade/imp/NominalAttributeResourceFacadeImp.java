@@ -11,7 +11,9 @@ import java.util.List;
 import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
+import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
@@ -86,8 +88,11 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
         return nominalAttributeDTOList;
     }
 
-    public Integer isAttributeExists(String attributeCode) throws PropertyNotSetException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Long isAttributeExists(String attributeCode) throws PropertyNotSetException {
+        Criteria criteria = getCurrentSession().createCriteria(NominalAttribute.class);
+        criteria.add(Restrictions.eq("code", attributeCode));
+        NominalAttribute nominalAttribute = (NominalAttribute)criteria.uniqueResult();
+        return nominalAttribute != null ? nominalAttribute.getNominalAttributeId() : null;
     }
 
 }
