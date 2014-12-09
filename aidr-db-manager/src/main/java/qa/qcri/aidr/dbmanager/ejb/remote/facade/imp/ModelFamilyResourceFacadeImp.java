@@ -14,13 +14,11 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelFamilyResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
-import qa.qcri.aidr.dbmanager.entities.task.Document;
 
 /**
  *

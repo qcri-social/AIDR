@@ -33,6 +33,8 @@ public interface NominalAttributeResourceFacade extends CoreDBServiceFacade<Nomi
     
     //TODO
     //public List<CrisisAttributesDTO> getAllAttributesExceptCrisis(int crisisID) throws PropertyNotSetException;
-    public Integer isAttributeExists(String attributeCode) throws PropertyNotSetException;
+    
+    //client to fix: return type changed from Integer to Long
+    public Long isAttributeExists(String attributeCode) throws PropertyNotSetException;
     
 }
