@@ -7,6 +7,7 @@ import javax.ejb.Local;
 import qa.qcri.aidr.predictui.entities.Crisis;
 import qa.qcri.aidr.predictui.entities.Document;
 
+
 /**
  *
  * @author Imran

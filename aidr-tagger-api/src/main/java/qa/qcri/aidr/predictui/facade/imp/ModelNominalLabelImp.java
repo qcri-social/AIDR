@@ -4,6 +4,8 @@
  */
 package qa.qcri.aidr.predictui.facade.imp;
 
+import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.predictui.facade.*;
 
 import java.util.List;
@@ -35,7 +37,7 @@ import java.util.ArrayList;
 public class ModelNominalLabelImp implements ModelNominalLabelFacade {
 
 	@EJB
-	private TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
+	private TaskManagerRemote<DocumentDTO, Long> taskManager;
 
 	@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
 	private EntityManager em;
@@ -77,13 +79,19 @@ public class ModelNominalLabelImp implements ModelNominalLabelFacade {
 				
 				Collection<Document> docList = null;
 				if (nominalLabel != null && !nominalLabel.getNominalLabelCode().equalsIgnoreCase("null")) {
-					List<qa.qcri.aidr.task.dto.DocumentDTO> dtoList = taskManager.getNominalLabelDocumentCollection(nominalLabel.getNominalLabelID());
-					docList = Document.toLocalDocumentList(dtoList);
-					for (Document document : docList) {
-						if (!(document.getIsEvaluationSet())) {
-							trainingSet++;
+					try {
+					List<DocumentDTO> dtoList = taskManager.getNominalLabelDocumentCollection(nominalLabel.getNominalLabelID());
+						docList = Document.toLocalDocumentList(dtoList);
+						for (Document document : docList) {
+							if (!(document.getIsEvaluationSet())) {
+								trainingSet++;
+							}
 						}
+					} catch (PropertyNotSetException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
+					
 				}
 				// Deep copying modelNominalLabel to ModelNominalLabelDTO
 				ModelNominalLabelDTO mnlDTO = new ModelNominalLabelDTO();

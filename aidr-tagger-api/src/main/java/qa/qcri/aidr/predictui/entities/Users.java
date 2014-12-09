@@ -27,9 +27,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 
+
 //import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 //import org.codehaus.jackson.annotate.JsonManagedReference;
+
+
+import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 //import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -158,27 +162,28 @@ public class Users implements Serializable {
         return "qa.qcri.aidr.predictui.entities.Users[ userID=" + userID + " ]";
     }
     
-	public static Users toLocalUsers(qa.qcri.aidr.task.dto.UsersDTO userDTO) {
+	public static Users toLocalUsers(UsersDTO userDTO) {
 		Users user = new Users(userDTO.getUserID().intValue(), userDTO.getName(), userDTO.getRole());
 		return user;
 	}
 	
-	public static qa.qcri.aidr.task.dto.UsersDTO toTaskManagerUsersDTO(Users user) {
+	public static UsersDTO toTaskManagerUsersDTO(Users user) {
 		Long userID = user.getUserID().longValue();
-		qa.qcri.aidr.task.dto.UsersDTO userDTO = new qa.qcri.aidr.task.dto.UsersDTO(userID, user.getName(), user.getRole());
+		UsersDTO userDTO = new UsersDTO(userID, user.getName(), user.getRole());
 		return userDTO;
 	}
 	
-	public static qa.qcri.aidr.task.entities.Users toTaskManagerUsers(Users user) {
+	public static qa.qcri.aidr.dbmanager.entities.misc.Users toTaskManagerUsers(Users user) {
 		Long userID = user.getUserID().longValue();
-		qa.qcri.aidr.task.entities.Users u = new qa.qcri.aidr.task.entities.Users(userID, user.getName(), user.getRole());
+		qa.qcri.aidr.dbmanager.entities.misc.Users u = new qa.qcri.aidr.dbmanager.entities.misc.Users(user.getName(), user.getRole());
+		u.setUserId(userID);
 		return u;
 	}
 	
-	public static List<Users> toLocalUsersList(List<qa.qcri.aidr.task.dto.UsersDTO> list) {
+	public static List<Users> toLocalUsersList(List<UsersDTO> list) {
 		if (list != null) {
 			List<Users> usersList = new ArrayList<Users>();
-			for (qa.qcri.aidr.task.dto.UsersDTO u: list) {
+			for (UsersDTO u: list) {
 				usersList.add(toLocalUsers(u));
 			}
 			return usersList;
@@ -186,9 +191,9 @@ public class Users implements Serializable {
 		return null;
 	}
 	
-	public static List<qa.qcri.aidr.task.dto.UsersDTO> toTaskManagerUsersDTOList(List<Users> list) {
+	public static List<UsersDTO> toTaskManagerUsersDTOList(List<Users> list) {
 		if (list != null) {
-			List<qa.qcri.aidr.task.dto.UsersDTO> usersDTOList = new ArrayList<qa.qcri.aidr.task.dto.UsersDTO>();
+			List<UsersDTO> usersDTOList = new ArrayList<UsersDTO>();
 			for (Users u: list) {
 				usersDTOList.add(toTaskManagerUsersDTO(u));
 			}
@@ -197,9 +202,9 @@ public class Users implements Serializable {
 		return null;
 	}
 	
-	public static List<qa.qcri.aidr.task.entities.Users> toTaskManagerUsersList(List<Users> list) {
+	public static List<qa.qcri.aidr.dbmanager.entities.misc.Users> toTaskManagerUsersList(List<Users> list) {
 		if (list != null) {
-			List<qa.qcri.aidr.task.entities.Users> usersList = new ArrayList<qa.qcri.aidr.task.entities.Users>();
+			List<qa.qcri.aidr.dbmanager.entities.misc.Users> usersList = new ArrayList<qa.qcri.aidr.dbmanager.entities.misc.Users>();
 			for (Users u: list) {
 				usersList.add(toTaskManagerUsers(u));
 			}
@@ -207,4 +212,5 @@ public class Users implements Serializable {
 		}
 		return null;
 	}
+
 }

@@ -10,42 +10,18 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-
-
-
-
-
-//import org.codehaus.jackson.annotate.JsonBackReference;
-//import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.hibernate.Hibernate;
+
+import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-//import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  *
@@ -113,14 +89,14 @@ public class Document implements Serializable {
         this.data = data;
     }
    
-    public Document(qa.qcri.aidr.task.dto.DocumentDTO document) {
+    public Document(DocumentDTO document) throws PropertyNotSetException {
 		this();
     	if (document != null) {
-			Hibernate.initialize(document.getNominalLabelCollection());
+    		//Hibernate.initialize(document.getNominalLabelCollection());
+    		
+    		this.setDocumentID(document.getDocumentID());
 			
-			this.setDocumentID(document.getDocumentID());
-			
-			this.setCrisisID(document.getCrisisID());
+			this.setCrisisID(document.getCrisisDTO().getCrisisID());
 			this.setDoctype(document.getDoctype());
 			this.setData(document.getData());
 			this.setIsEvaluationSet(document.getIsEvaluationSet());
@@ -132,7 +108,7 @@ public class Document implements Serializable {
 			this.setWordFeatures(document.getWordFeatures());
 			this.setValueAsTrainingSample(document.getValueAsTrainingSample());
 	
-			this.setNominalLabelCollection(toLocalNominalLabelCollection(document.getNominalLabelCollection()));
+			//this.setNominalLabelCollection(toLocalNominalLabelCollection(document.getNominalLabelCollection()));
 		} 
     }
     
@@ -261,14 +237,14 @@ public class Document implements Serializable {
 	}
 
 	
-	public static Document toLocalDocument(qa.qcri.aidr.task.dto.DocumentDTO document) {
+	public static Document toLocalDocument(DocumentDTO document) throws PropertyNotSetException {
 		Document doc = new Document();
 		if (document != null) {
-			Hibernate.initialize(document.getNominalLabelCollection());
+			//Hibernate.initialize(document.getNominalLabelCollection());
 			
 			doc.setDocumentID(document.getDocumentID());
 			
-			doc.setCrisisID(document.getCrisisID());
+			doc.setCrisisID(document.getCrisisDTO().getCrisisID());
 			doc.setDoctype(document.getDoctype());
 			doc.setData(document.getData());
 			doc.setIsEvaluationSet(document.getIsEvaluationSet());
@@ -280,25 +256,26 @@ public class Document implements Serializable {
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
 	
-			doc.setNominalLabelCollection(toLocalNominalLabelCollection(document.getNominalLabelCollection()));
+			//doc.setNominalLabelCollection(toLocalNominalLabelCollection(document.getNominalLabelCollection()));
 			return doc;
 		} 
 		return null;
 	}
 
-	public static List<Document> toLocalDocumentList(List<qa.qcri.aidr.task.dto.DocumentDTO> documentList) {
+	public static List<Document> toLocalDocumentList(List<DocumentDTO> documentList) throws PropertyNotSetException {
 		List<Document> docList = null;
 		if (documentList != null) {
 			docList = new ArrayList<Document>(documentList.size());
-			for (qa.qcri.aidr.task.dto.DocumentDTO document: documentList) {
+			for (DocumentDTO document: documentList) {
 					docList.add(toLocalDocument(document));
 			}
 		} 
 		return docList;
 	}
-
-	public static qa.qcri.aidr.task.dto.DocumentDTO toTaskManagerDocumentDTO(Document document) {
-		qa.qcri.aidr.task.dto.DocumentDTO doc = new qa.qcri.aidr.task.dto.DocumentDTO();
+	
+	/*
+	public static DocumentDTO toTaskManagerDocumentDTO(Document document) {
+		DocumentDTO doc = new DocumentDTO();
 		if (document != null) {
 			doc.setDocumentID(document.getDocumentID());
 			doc.setCrisisID(document.getCrisisID());
@@ -319,10 +296,10 @@ public class Document implements Serializable {
 		return null;
 	}
 
-	public static List<qa.qcri.aidr.task.dto.DocumentDTO> toTaskManagerDocumentDTOList(List<Document> documentList) {
-		List<qa.qcri.aidr.task.dto.DocumentDTO> docList = null;
+	public static List<DocumentDTO> toTaskManagerDocumentDTOList(List<Document> documentList) {
+		List<DocumentDTO> docList = null;
 		if (documentList != null) {
-			docList = new ArrayList<qa.qcri.aidr.task.dto.DocumentDTO>(documentList.size());
+			docList = new ArrayList<DocumentDTO>(documentList.size());
 			for (Document document: documentList) {
 					docList.add(toTaskManagerDocumentDTO(document));
 			}
@@ -405,4 +382,5 @@ public class Document implements Serializable {
 		}
 		return null;
 	}
+	*/
 }

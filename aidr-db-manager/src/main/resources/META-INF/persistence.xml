@@ -4,10 +4,10 @@
     <!-- provider>org.hibernate.ejb.HibernatePersistence</provider -->
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <jta-data-source>JNDI/aidr_db_manager</jta-data-source>
-    <class>qa.qcri.aidr.predictdb.entities.task.Document</class>
-    <class>qa.qcri.aidr.predictdb.entities.task.DocumentNominalLabel</class>
-    <class>qa.qcri.aidr.predictdb.entities.task.TaskAnswer</class>
-    <class>qa.qcri.aidr.predictdb.entities.task.TaskAssignment</class>
+    <class>qa.qcri.aidr.dbmanager.entities.task.Document</class>
+    <class>qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel</class>
+    <class>qa.qcri.aidr.dbmanager.entities.task.TaskAnswer</class>
+    <class>qa.qcri.aidr.dbmanager.entities.task.TaskAssignment</class>
     <class>qa.qcri.aidr.dbmanager.entities.model.Model</class>
     <class>qa.qcri.aidr.dbmanager.entities.model.ModelFamily</class>
     <class>qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabel</class>
@@ -30,10 +30,10 @@
   <persistence-unit name="ProjectDBManagerTest-ejbPU" transaction-type="RESOURCE_LOCAL">
     <!-- provider>org.hibernate.ejb.HibernatePersistence</provider -->
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-    <class>qa.qcri.aidr.predictdb.entities.task.Document</class>
-    <class>qa.qcri.aidr.predictdb.entities.task.DocumentNominalLabel</class>
-    <class>qa.qcri.aidr.predictdb.entities.task.TaskAnswer</class>
-    <class>qa.qcri.aidr.predictdb.entities.task.TaskAssignment</class>
+    <class>qa.qcri.aidr.dbmanager.entities.task.Document</class>
+    <class>qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel</class>
+    <class>qa.qcri.aidr.dbmanager.entities.task.TaskAnswer</class>
+    <class>qa.qcri.aidr.dbmanager.entities.task.TaskAssignment</class>
     <class>qa.qcri.aidr.dbmanager.entities.model.Model</class>
     <class>qa.qcri.aidr.dbmanager.entities.model.ModelFamily</class>
     <class>qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabel</class>

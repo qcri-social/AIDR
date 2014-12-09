@@ -13,21 +13,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.predictui.api.CrisisManagementResource;
 import qa.qcri.aidr.predictui.entities.Crisis;
-import qa.qcri.aidr.predictui.entities.Document;
+//import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.entities.ModelFamily;
 import qa.qcri.aidr.predictui.facade.CrisisManagementResourceFacade;
 import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
-import qa.qcri.aidr.predictui.facade.DocumentFacade;
 import qa.qcri.aidr.predictui.facade.ModelFamilyFacade;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
+
 
 @Stateless
 public class CrisisManagementResourceFacadeImp implements CrisisManagementResourceFacade {
 
 	@EJB
-	private DocumentFacade documentLocalEJB;
+	private qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade remoteDocumentEJB;
 
 	@EJB
 	private CrisisResourceFacade crisisLocalEJB;
@@ -39,7 +40,7 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 	private EntityManager em;
 
 	@EJB
-	private TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
+	private TaskManagerRemote<qa.qcri.aidr.dbmanager.dto.DocumentDTO, Long> taskManager;
 
 	private static Logger logger = LoggerFactory.getLogger(CrisisManagementResource.class);
 	private static ErrorLog elog = new ErrorLog();
@@ -79,7 +80,7 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 				em.merge(model);
 			}
 
-			List<Document> associatedDocs = documentLocalEJB.getAllUnlabeledDocumentbyCrisisID(crisis);
+			List<DocumentDTO> associatedDocs = remoteDocumentEJB.findUnLabeledDocumentsByCrisisID(crisis.getCrisisID());
 			if (null == associatedDocs) {
 				StringBuilder sb = new StringBuilder().append("{\"TRASHED\":").append(crisis.getCrisisID()).append("}");
 				logger.info("Success in deleting crisis: " + crisisCode);
@@ -87,17 +88,16 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 			}			
 			logger.info("Found for " + crisisCode + ", unlabeled docs to delete  = " + associatedDocs.size());
 			//TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();		
-			for (Document document: associatedDocs) {
+			for (DocumentDTO document: associatedDocs) {
 				//em.remove(document);
 				try {
-					qa.qcri.aidr.task.entities.Document doc = Document.toTaskManagerDocument(document);;
-					taskManager.deleteTask(doc);
+					taskManager.deleteTask(document);
 				} catch (Exception e) {
 					logger.error("Error in deleting document: " + document);
 					logger.error(elog.toStringException(e));
 				}
 			}
-			List<Document> temp = documentLocalEJB.getAllUnlabeledDocumentbyCrisisID(crisis);
+			List<DocumentDTO> temp = remoteDocumentEJB.findUnLabeledDocumentsByCrisisID(crisis.getCrisisID());
 			logger.info("Post Trashing: found for " + crisisCode + ", unlabeled docs after delete = " + temp.size());		
 			if (temp.isEmpty()) {
 				StringBuilder sb = new StringBuilder().append("{\"TRASHED\":").append(crisis.getCrisisID()).append("}");

@@ -6,6 +6,7 @@ package qa.qcri.aidr.predictui.facade.imp;
 
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -32,6 +33,9 @@ public class UserResourceImp implements UserResourceFacade {
 
     private static Logger logger = LoggerFactory.getLogger(UserResourceImp.class);
 	private static ErrorLog elog = new ErrorLog();
+	
+	@EJB
+	private qa.qcri.aidr.dbmanager.ejb.remote.facade.UsersResourceFacade remoteUsersEJB;
 	
     public Users addUser(Users user) {
         try {

@@ -1,50 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
-  <persistence-unit name="qa.qcri.aidr.taskmanager-EJBS" transaction-type="JTA">
-    <!-- provider>org.hibernate.ejb.HibernatePersistence</provider -->
-    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-    <jta-data-source>JNDI/aidr_task_manager</jta-data-source>
-    <class>qa.qcri.aidr.task.entities.Document</class>
-    <class>qa.qcri.aidr.task.entities.Crisis</class>
-    <class>qa.qcri.aidr.task.entities.DocumentNominalLabel</class>
-    <class>qa.qcri.aidr.task.entities.TaskAnswer</class>
-    <class>qa.qcri.aidr.task.entities.TaskAssignment</class>
-    <class>qa.qcri.aidr.task.entities.NominalLabel</class>
-    <class>qa.qcri.aidr.task.entities.Users</class>
-    <properties>
-      <property name="hibernate.show_sql" value="false"/>
-      <property name="hibernate.format_sql" value="false"/>
-      <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
-    </properties>
-  </persistence-unit>
-  <persistence-unit name="qa.qcri.aidr.TaskManager-PU" transaction-type="JTA">
-    <!-- provider>org.hibernate.ejb.HibernatePersistence</provider -->
-    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-    <jta-data-source>JNDI/aidr_predict</jta-data-source>
-    <properties>
-      <property name="hibernate.show_sql" value="false"/>
-      <property name="hibernate.format_sql" value="false"/>
-      <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
-    </properties>
-  </persistence-unit>
-  <persistence-unit name="ProjectTest-ejbPU" transaction-type="RESOURCE_LOCAL">
-    <!-- provider>org.hibernate.ejb.HibernatePersistence</provider -->
-    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-    <class>qa.qcri.aidr.task.entities.Document</class>
-    <class>qa.qcri.aidr.task.entities.Crisis</class>
-    <class>qa.qcri.aidr.task.entities.DocumentNominalLabel</class>
-    <class>qa.qcri.aidr.task.entities.TaskAnswer</class>
-    <class>qa.qcri.aidr.task.entities.TaskAssignment</class>
-    <class>qa.qcri.aidr.task.entities.NominalLabel</class>
-    <class>qa.qcri.aidr.task.entities.Users</class>
-    <properties>
-      <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/aidr_predict"/>
-      <property name="javax.persistence.jdbc.user" value="root"/>
-      <property name="javax.persistence.jdbc.password" value="admin"/>
-      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
-      <property name="hibernate.show_sql" value="false"/>
-      <property name="hibernate.hbm2ddl.auto" value="update"/>
-    </properties>
-  </persistence-unit>
+<persistence version="2.0"
+	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+	<persistence-unit name="qa.qcri.aidr.taskmanager-EJBS" transaction-type="JTA">
+		<!-- provider>org.hibernate.ejb.HibernatePersistence</provider -->
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+		<jta-data-source>JNDI/aidr_task_manager</jta-data-source>
+		<class>qa.qcri.aidr.dbmanager.entities.task.Document</class>
+		<class>qa.qcri.aidr.dbmanager.entities.misc.Crisis</class>
+		<class>qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel</class>
+		<class>qa.qcri.aidr.dbmanager.entities.task.TaskAnswer</class>
+		<class>qa.qcri.aidr.dbmanager.entities.task.TaskAssignment</class>
+		<class>qa.qcri.aidr.dbmanager.entities.model.NominalLabel</class>
+		<class>qa.qcri.aidr.dbmanager.entities.misc.Users</class>
+		<properties>
+			<property name="hibernate.show_sql" value="false" />
+			<property name="hibernate.format_sql" value="false" />
+			<property name="hibernate.transaction.jta.platform"
+				value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform" />
+		</properties>
+	</persistence-unit>
+	<persistence-unit name="qa.qcri.aidr.TaskManager-PU" transaction-type="JTA">
+		<!-- provider>org.hibernate.ejb.HibernatePersistence</provider -->
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+		<jta-data-source>JNDI/aidr_predict</jta-data-source>
+		<properties>
+			<property name="hibernate.show_sql" value="false" />
+			<property name="hibernate.format_sql" value="false" />
+			<property name="hibernate.transaction.jta.platform"
+				value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform" />
+		</properties>
+	</persistence-unit>
+	<persistence-unit name="ProjectTest-ejbPU" transaction-type="RESOURCE_LOCAL">
+		<!-- provider>org.hibernate.ejb.HibernatePersistence</provider -->
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+		<class>qa.qcri.aidr.dbmanager.entities.task.Document</class>
+		<class>qa.qcri.aidr.dbmanager.entities.misc.Crisis</class>
+		<class>qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel</class>
+		<class>qa.qcri.aidr.dbmanager.entities.task.TaskAnswer</class>
+		<class>qa.qcri.aidr.dbmanager.entities.task.TaskAssignment</class>
+		<class>qa.qcri.aidr.dbmanager.entities.model.NominalLabel</class>
+		<class>qa.qcri.aidr.dbmanager.entities.misc.Users</class>
+		<properties>
+			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/aidr_predict" />
+			<property name="javax.persistence.jdbc.user" value="root" />
+			<property name="javax.persistence.jdbc.password" value="admin" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+			<property name="hibernate.show_sql" value="false" />
+			<property name="hibernate.hbm2ddl.auto" value="update" />
+		</properties>
+	</persistence-unit>
 </persistence>

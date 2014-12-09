@@ -208,6 +208,7 @@ public class NominalLabel implements Serializable {
         return "qa.qcri.aidr.predictui.entities.NominalLabel[ nominalLabelID=" + nominalLabelID + " ]";
     }
     
+    /*
 	public static Collection<NominalLabel> toLocalNominalLabelCollection(Collection<qa.qcri.aidr.task.dto.NominalLabelDTO> list) {
 		if (list != null) {
 			Collection<NominalLabel> nominalLabelList = new ArrayList<NominalLabel>();
@@ -249,4 +250,5 @@ public class NominalLabel implements Serializable {
 		}
 		return null;
 	}
+	*/
 }

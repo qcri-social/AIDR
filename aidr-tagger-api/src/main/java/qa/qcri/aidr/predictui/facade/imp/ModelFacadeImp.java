@@ -7,6 +7,8 @@ package qa.qcri.aidr.predictui.facade.imp;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.predictui.dto.ModelHistoryWrapper;
 import qa.qcri.aidr.predictui.facade.*;
 
@@ -39,8 +41,8 @@ import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 public class ModelFacadeImp implements ModelFacade {
 
 	@EJB
-	private TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
-	
+	private TaskManagerRemote<DocumentDTO, Long> taskManager;
+
 	@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
 	private EntityManager em;
 
@@ -156,14 +158,21 @@ public class ModelFacadeImp implements ModelFacade {
 			for (NominalLabel label : nlc) {
 				if (!(label.getNominalLabelCode().equalsIgnoreCase("null"))) {
 					//Collection<Document> dc = label.getDocumentCollection();
-					
-					List<qa.qcri.aidr.task.dto.DocumentDTO> dtoList = taskManager.getNominalLabelDocumentCollection(label.getNominalLabelID());
-					Collection<Document> dc = Document.toLocalDocumentList(dtoList);
-					for (Document doc : dc) {
-						if (!doc.getIsEvaluationSet() && doc.getHasHumanLabels()) {
-							trainingExamples++;
+
+					List<DocumentDTO> dtoList = taskManager.getNominalLabelDocumentCollection(label.getNominalLabelID());
+
+					try {
+						Collection<Document> dc = Document.toLocalDocumentList(dtoList);
+						for (Document doc : dc) {
+							if (!doc.getIsEvaluationSet() && doc.getHasHumanLabels()) {
+								trainingExamples++;
+							}
 						}
+					} catch (PropertyNotSetException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
+
 				}
 			}
 

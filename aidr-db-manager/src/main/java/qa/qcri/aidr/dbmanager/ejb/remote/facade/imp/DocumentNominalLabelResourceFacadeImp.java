@@ -22,6 +22,7 @@ import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentNominalLabelResourceFaca
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
+import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabelId;
 
 /**
  * @author Koushik

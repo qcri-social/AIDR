@@ -29,24 +29,11 @@ public class TaskBufferScannerImp implements TaskBufferScannerFacade {
 	//@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
 	//private EntityManager em;
 	@EJB
-	private TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
+	private TaskManagerRemote<qa.qcri.aidr.dbmanager.dto.DocumentDTO, Long> taskManager;
 
 	@Override
 	public void ScanTaskBuffer(final String maxTaskAge, final String scanInterval) {
 		try {
-			/*String deleteStaleDocsSql = "DELETE d FROM aidr_predict.document d LEFT JOIN "
-					+ "aidr_predict.task_assignment t ON d.documentID = t.documentID WHERE "
-					+ "(!d.hasHumanLabels && t.documentID IS NULL && TIMESTAMPDIFF(" 
-					+ getMetric(scanInterval) + ", d.receivedAt, now()) > :task_expiry_age);";
-
-			Query querySelect1 = em.createNativeQuery(deleteStaleDocsSql);
-			querySelect1.setParameter("task_expiry_age", Integer.parseInt(getTimeValue(maxTaskAge)));
-
-			// no need - Hibernate automatically acquires LockModeType.WRITE lock
-			// Also, test showed that the problem is still coming from trainer-api
-			//querySelect1.setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT);		
-			int result = querySelect1.executeUpdate();
-			*/
 			int result = taskManager.deleteStaleTasks("LEFT JOIN", 
 											"aidr_predict.task_assignment", "documentID", 
 											"ASC", null, maxTaskAge, scanInterval);
@@ -56,20 +43,6 @@ public class TaskBufferScannerImp implements TaskBufferScannerFacade {
 			logger.error(elog.toStringException(e));
 		}
 		try {
-			/*
-			String deleteNoAnswerDocsSql = "DELETE d FROM aidr_predict.document d JOIN "
-					+ "aidr_predict.task_assignment t ON d.documentID = t.documentID WHERE "
-					+ "(!d.hasHumanLabels && TIMESTAMPDIFF(" 
-					+ getMetric(scanInterval) + ", t.assignedAt, now()) > :task_expiry_age);";
-			
-			Query querySelect2 = em.createNativeQuery(deleteNoAnswerDocsSql);
-			querySelect2.setParameter("task_expiry_age", Integer.parseInt(getTimeValue(maxTaskAge)));
-
-			// no need - Hibernate automatically acquires LockModeType.WRITE lock
-			// Also, test showed that the problem is still coming from trainer-api
-			//querySelect2.setLockMode(LockModeType.OPTIMISTIC_FORCE_INCREMENT);		
-			int result = querySelect2.executeUpdate();
-			*/
 			int result = taskManager.deleteStaleTasks("JOIN", 
 										"aidr_predict.task_assignment", "documentID", 
 										"ASC", null, maxTaskAge, scanInterval);

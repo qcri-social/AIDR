@@ -4,7 +4,9 @@
  */
 package qa.qcri.aidr.predictui.facade.imp;
 
+import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.predictui.dto.ItemToLabelDTO;
 import qa.qcri.aidr.predictui.dto.NominalAttributeDTO;
 import qa.qcri.aidr.predictui.dto.NominalLabelDTO;
@@ -24,6 +26,8 @@ import javax.persistence.Query;
 //import org.codehaus.jackson.map.ObjectMapper;
 //import org.hibernate.criterion.Criterion;
 //import org.hibernate.criterion.Restrictions;
+
+
 
 
 
@@ -50,7 +54,7 @@ public class MiscResourceImp implements MiscResourceFacade {
 	private EntityManager em;
 
 	@EJB
-	private TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
+	private TaskManagerRemote<DocumentDTO, Long> taskManager;
 
 	//private static Logger logger = Logger.getLogger(MiscResourceImp.class);
 	private static Logger logger = LoggerFactory.getLogger(MiscResourceImp.class);
@@ -197,7 +201,7 @@ public class MiscResourceImp implements MiscResourceFacade {
 			itemToLabel.setItemText(documentResult.getData());
 			itemToLabel.setAttribute(attributeDTO);
 
-		} catch(NoResultException e) {
+		} catch(NoResultException | PropertyNotSetException e) {
 			return null;  
 		}
 		return itemToLabel;

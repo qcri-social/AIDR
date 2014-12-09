@@ -8,6 +8,12 @@ import javax.ejb.Remote;
 
 import org.hibernate.criterion.Criterion;
 
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
+import qa.qcri.aidr.dbmanager.dto.TaskAssignmentDTO;
+import qa.qcri.aidr.dbmanager.dto.UsersDTO;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 
 @Remote
@@ -16,7 +22,7 @@ public interface TaskManagerRemote<T, Serializable> {
 	public Class<T> getClassType();
 	
 	//public String getAllTasks();
-	public List<qa.qcri.aidr.task.dto.DocumentDTO> getAllTasks();
+	public List<DocumentDTO> getAllTasks();
 	
 	public long insertNewTask(T task);
 	public void insertNewTask(List<T> collection);
@@ -39,40 +45,40 @@ public interface TaskManagerRemote<T, Serializable> {
 	
 	public void updateTask(T task);
 	public void updateTaskList(List<T> collection);
-	public void updateTask(qa.qcri.aidr.task.dto.DocumentDTO dto);
+	public void updateTask(DocumentDTO dto);
 	
 	public void taskUpdate(Criterion criterion, String joinType, String joinTable, 
 			  			   String joinColumn, String sortOrder, String[] orderBy);
 	
-	public qa.qcri.aidr.task.dto.DocumentDTO getNewTask(Long crisisID);
-	public qa.qcri.aidr.task.dto.DocumentDTO getNewTask(Long crisisID, Criterion criterion);
-	public List<qa.qcri.aidr.task.dto.DocumentDTO> getNewTaskCollection(Long crisisID, Integer count, String order, Criterion criterion);
+	public DocumentDTO getNewTask(Long crisisID);
+	public DocumentDTO getNewTask(Long crisisID, Criterion criterion);
+	public List<DocumentDTO> getNewTaskCollection(Long crisisID, Integer count, String order, Criterion criterion);
 	public Integer getPendingTaskCountByUser(Long userId);
 	
-	public qa.qcri.aidr.task.dto.DocumentDTO getTaskById(Long id);
+	public DocumentDTO getTaskById(Long id);
 	
-	public List<qa.qcri.aidr.task.dto.TaskAssignmentDTO> getAssignedTasksById(Long id);
-	public qa.qcri.aidr.task.dto.TaskAssignmentDTO getAssignedTaskByUserId(Long id, Long userId);
+	public List<TaskAssignmentDTO> getAssignedTasksById(Long id);
+	public TaskAssignmentDTO getAssignedTaskByUserId(Long id, Long userId);
 	
-	public qa.qcri.aidr.task.dto.DocumentDTO getDocumentById(Long id);
+	public DocumentDTO getDocumentById(Long id);
 	
-	public qa.qcri.aidr.task.dto.UsersDTO getUserByName(String name);
-	public qa.qcri.aidr.task.dto.UsersDTO getUserById(Long id);
-	public List<qa.qcri.aidr.task.dto.UsersDTO> getAllUserByName(String name);
+	public UsersDTO getUserByName(String name);
+	public UsersDTO getUserById(Long id);
+	public List<UsersDTO> getAllUserByName(String name);
 	
-	public void insertTaskAnswer(qa.qcri.aidr.task.entities.TaskAnswer taskAnswer);
+	public void insertTaskAnswer(TaskAnswerDTO taskAnswer);
 	
-	public void saveDocumentNominalLabel(qa.qcri.aidr.task.entities.DocumentNominalLabel documentNominalLabel);
-	public boolean foundDuplicateDocumentNominalLabel(qa.qcri.aidr.task.entities.DocumentNominalLabel documentNominalLabel);
-	public List<qa.qcri.aidr.task.dto.DocumentDTO> getNominalLabelDocumentCollection(Integer nominalLabelID);
+	public void saveDocumentNominalLabel(DocumentNominalLabelDTO documentNominalLabel);
+	public boolean foundDuplicateDocumentNominalLabel(DocumentNominalLabelDTO documentNominalLabel);
+	public List<DocumentDTO> getNominalLabelDocumentCollection(Integer nominalLabelID);
 	
-	public qa.qcri.aidr.task.dto.DocumentDTO getTaskByCriterion(Long crisisID, Criterion criterion);
-	public List<qa.qcri.aidr.task.dto.DocumentDTO> getTaskCollectionByCriterion(Long crisisID, Integer count, Criterion criterion);
+	public DocumentDTO getTaskByCriterion(Long crisisID, Criterion criterion);
+	public List<DocumentDTO> getTaskCollectionByCriterion(Long crisisID, Integer count, Criterion criterion);
 	
 	//public qa.qcri.aidr.task.entities.Document getNewDocumentByCriterion(Long id, Criterion criterion);
 	//public qa.qcri.aidr.task.entities.Document getNewDocumentByCrisisId(Long crisisID);
 	
-	public Object setTaskParameter(Class<T> entityType, Long id, Map<String, String> paramMap);
+	public Object  setTaskParameter(Class entityType, Long id, Map<String, String> paramMap);
 	
 	public <E> Boolean isTaskAssigned(E task);
 	public <E> Boolean isTaskNew(E task);
