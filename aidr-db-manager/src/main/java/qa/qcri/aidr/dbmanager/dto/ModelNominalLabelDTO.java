@@ -1,7 +1,7 @@
 package qa.qcri.aidr.dbmanager.dto;
 
 
-import java.util.Date;
+
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.entities.model.Model;
-import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabel;
 import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 
@@ -37,6 +36,15 @@ public class ModelNominalLabelDTO {
 
 	@XmlElement
 	private Integer classifiedDocumentCount;
+
+	@XmlElement 
+	private String modelStatus;
+
+	@XmlElement 
+	private Long nominalAttributeId;
+
+	@XmlElement 
+	private Integer trainingDocuments;
 
 	public ModelNominalLabelDTO() {
 	}
@@ -155,5 +163,38 @@ public class ModelNominalLabelDTO {
 				this.labelAuc, this.classifiedDocumentCount);
 
 		return entity;
+	}
+
+	public Long getNominalAttributeId() {
+		return nominalAttributeId;
+	}
+
+	public void setNominalAttributeId(Long nominalAttributeId) {
+		this.nominalAttributeId = nominalAttributeId;
+	}
+
+	/**
+	 * @return the modelStatus
+	 */
+	public String isModelStatus() {
+		return modelStatus;
+	}
+
+	/**
+	 * @param modelStatus the modelStatus to set
+	 */
+	public void setModelStatus(String modelStatus) {
+		this.modelStatus = modelStatus;
+	}
+
+	public Integer getTrainingDocuments() {
+		return trainingDocuments;
+	}
+
+	/**
+	 * @param trainingDocuments the trainingDocuments to set
+	 */
+	public void setTrainingDocuments(Integer trainingDocuments) {
+		this.trainingDocuments = trainingDocuments;
 	}
 }

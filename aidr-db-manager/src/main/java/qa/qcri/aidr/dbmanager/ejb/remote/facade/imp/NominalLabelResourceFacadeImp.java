@@ -32,7 +32,6 @@ public class NominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<Nomina
 	@Override
 	public void saveNominalLabel(NominalLabelDTO nominalLabel) throws PropertyNotSetException {
 		save(nominalLabel.toEntity());
-		return ;
 	}
 	
 	@Override
