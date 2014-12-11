@@ -84,7 +84,7 @@ public class NominalLabel implements java.io.Serializable {
 		this.nominalLabelId = nominalLabelId;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "nominalAttributeID", nullable = false)
 	@JsonBackReference
 	public NominalAttribute getNominalAttribute() {

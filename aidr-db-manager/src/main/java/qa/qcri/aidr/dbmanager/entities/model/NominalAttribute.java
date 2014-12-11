@@ -172,6 +172,10 @@ public class NominalAttribute implements java.io.Serializable {
 		this.nominalLabels = nominalLabels;
 	}
 
+	public boolean hasUsers() {
+		return Hibernate.isInitialized(this.users);
+	}
+	
 	public boolean hasCrisises() {
 		return Hibernate.isInitialized(this.crisises);
 	}

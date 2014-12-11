@@ -86,8 +86,6 @@ public class ModelNominalLabelDTO {
 						modelNominalLabel.getNominalLabel().getDescription(),
 						modelNominalLabel.getNominalLabel().getSequence());
 				nb.setNominalLabelId(modelNominalLabel.getNominalLabel().getNominalLabelId());
-				nb.setNominalAttribute(modelNominalLabel.getNominalLabel().getNominalAttribute());
-				nb.setNominalAttributeDependentLabels(modelNominalLabel.getNominalLabel().getNominalAttributeDependentLabels());
 				this.setNominalLabelDTO(new NominalLabelDTO(nb));
 			} 
 		}

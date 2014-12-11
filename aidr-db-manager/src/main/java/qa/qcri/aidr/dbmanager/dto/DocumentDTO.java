@@ -70,6 +70,9 @@ public class DocumentDTO implements Serializable {
 	@XmlElement
 	private List<DocumentNominalLabelDTO> documentNominalLabelsDTO = null;
 
+	@XmlElement
+	private NominalLabelDTO nominalLabelDTO = null;
+	
 	public DocumentDTO(){}
 
 	public DocumentDTO(Long documentID, boolean hasHumanLabels){
@@ -255,6 +258,14 @@ public class DocumentDTO implements Serializable {
 	public void setDocumentNominalLabelsDTO(List<DocumentNominalLabelDTO> documentNominalLabelsDTO) {
 		this.documentNominalLabelsDTO = documentNominalLabelsDTO;
 	}
+	
+	public NominalLabelDTO getNominaLabel() {
+		return this.nominalLabelDTO;
+	}
+	
+	public void setNominalLabelDTO(NominalLabelDTO nominalLabelDTO) {
+		this.nominalLabelDTO = nominalLabelDTO;
+	}
 
 	private List<DocumentNominalLabelDTO> toDocumentNominalLabelDTOList(List<DocumentNominalLabel> list) throws PropertyNotSetException {
 		if (list != null) {
@@ -279,7 +290,7 @@ public class DocumentDTO implements Serializable {
 		return null;
 	} 
 
-	private List<TaskAssignmentDTO> toTaskAssignmentDTOList(List<TaskAssignment> list) {
+	private List<TaskAssignmentDTO> toTaskAssignmentDTOList(List<TaskAssignment> list) throws PropertyNotSetException {
 		if (list != null) {
 			List<TaskAssignmentDTO> dtoList = new ArrayList<TaskAssignmentDTO>();
 			for (TaskAssignment d: list) {

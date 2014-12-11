@@ -51,7 +51,6 @@ public class DocumentNominalLabelDTO implements Serializable {
 						
 				d.setWordFeatures(doc.getDocument().getWordFeatures());
 				d.setGeoFeatures(doc.getDocument().getGeoFeatures()); 
-				d.setTaskAssignments(doc.getDocument().getTaskAssignments());
 				d.setDocumentId(doc.getDocument().getDocumentId());
 				this.setDocumentDTO(new DocumentDTO(d));
 			}
@@ -60,9 +59,6 @@ public class DocumentNominalLabelDTO implements Serializable {
 						doc.getNominalLabel().getNominalLabelCode(), doc.getNominalLabel().getName(), doc.getNominalLabel().getDescription(),
 						doc.getNominalLabel().getSequence());
 				nb.setNominalLabelId(doc.getNominalLabel().getNominalLabelId());
-				nb.setModelNominalLabels(doc.getNominalLabel().getModelNominalLabels());
-				nb.setNominalAttribute(doc.getNominalLabel().getNominalAttribute());
-				nb.setNominalAttributeDependentLabels(doc.getNominalLabel().getNominalAttributeDependentLabels());
 				this.setNominalLabelDTO(new NominalLabelDTO(nb));
 			}
 			this.setTimestamp(doc.getTimestamp());

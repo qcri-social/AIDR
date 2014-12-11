@@ -22,7 +22,7 @@ public class TaskAssignmentDTO implements Serializable {
 	private static final long serialVersionUID = 6766433678441426060L;
 
 	@XmlElement
-	private Document document;
+	private DocumentDTO document;
 
 	@XmlElement
 	private TaskAssignmentIdDTO idDTO;
@@ -34,15 +34,16 @@ public class TaskAssignmentDTO implements Serializable {
 
 	}
 
-	public TaskAssignmentDTO(TaskAssignment taskAssignment){
+	public TaskAssignmentDTO(TaskAssignment taskAssignment) throws PropertyNotSetException{
 		if (taskAssignment.hasDocument()) {
 			Document doc = new Document(taskAssignment.getDocument().getCrisis(), taskAssignment.getDocument().isIsEvaluationSet(),
 					taskAssignment.getDocument().isHasHumanLabels(), taskAssignment.getDocument().getValueAsTrainingSample(),
-					taskAssignment.getDocument().getReceivedAt(), taskAssignment.getDocument().getLanguage(), taskAssignment.getDocument().getDoctype(), taskAssignment.getDocument().getData(),
-					taskAssignment.getDocument().getWordFeatures(), taskAssignment.getDocument().getGeoFeatures(), taskAssignment.getDocument().getTaskAssignments(),
-					taskAssignment.getDocument().getDocumentNominalLabels());					
+					taskAssignment.getDocument().getReceivedAt(), taskAssignment.getDocument().getLanguage(), taskAssignment.getDocument().getDoctype(), 
+					taskAssignment.getDocument().getData());
+			doc.setWordFeatures(taskAssignment.getDocument().getWordFeatures());
+			doc.setGeoFeatures(taskAssignment.getDocument().getGeoFeatures());
 			doc.setDocumentId(taskAssignment.getDocument().getDocumentId());
-			//this.setDocument(new DocumentDTO(doc));
+			this.setDocument(new DocumentDTO(doc));
 		}
 		this.setIdDTO(new TaskAssignmentIdDTO(taskAssignment.getId()));
 		this.setAssignedAt(taskAssignment.getAssignedAt());
@@ -74,22 +75,12 @@ public class TaskAssignmentDTO implements Serializable {
 		return taskAssignment;
 	}
 
-	public Document getDocument() throws PropertyNotSetException {
-		if (this.document != null) {
+	public DocumentDTO getDocument() throws PropertyNotSetException {
 			return this.document;
-		} else {
-			throw new PropertyNotSetException();
-		}
 	}
 
-	public void setDocument(Document document) {
-		if (document == null) {
-			throw new IllegalArgumentException("document cannot be null");
-		}
-		else{
-			this.document = document;
-		}
-
+	public void setDocument(DocumentDTO document) {
+		this.document = document;
 	}
 
 	public TaskAssignmentIdDTO getIdDTO() {
@@ -105,7 +96,7 @@ public class TaskAssignmentDTO implements Serializable {
 	}
 
 	public Long getDocumentID() {
-		return document.getDocumentId();
+		return document.getDocumentID();
 	}
 
 	public void setDocumentID(Long documentID) throws PropertyNotSetException {
@@ -113,7 +104,7 @@ public class TaskAssignmentDTO implements Serializable {
 			throw new IllegalArgumentException("documentID cannot be null");
 		}
 		else{
-			this.getDocument().setDocumentId(documentID);
+			this.getDocument().setDocumentID(documentID);
 		}
 
 	}

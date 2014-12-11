@@ -8,15 +8,19 @@ package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.HashMap;
 import java.util.List;
+
 import javax.ejb.embeddable.EJBContainer;
 import javax.persistence.EntityManager;
+
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
@@ -228,10 +232,10 @@ public class CrisisResourceFacadeImpTest {
         String order = "";
         String[] orderBy = null;
         Integer count = null;
-        String aliasTable = "";
+        String aliasTable = "document";
         CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
         List<Crisis> expResult = null;
-        List<Crisis> result = instance.getByCriteriaWithInnerJoinByOrder(criterion, order, orderBy, count, aliasTable);
+        List<Crisis> result = instance.getByCriteriaWithInnerJoinByOrder(criterion, order, orderBy, count, aliasTable, Restrictions.isNotEmpty("crisis"));
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");

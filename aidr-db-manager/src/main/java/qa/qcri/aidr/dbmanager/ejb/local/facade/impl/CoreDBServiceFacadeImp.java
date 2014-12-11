@@ -154,7 +154,7 @@ public class CoreDBServiceFacadeImp<E, I extends Serializable> implements CoreDB
 		List<E> fetchedList = new ArrayList<E>();
 		Criteria criteria = getCurrentSession().createCriteria(entityClass);
 		criteria.add(criterion);
-		if(count != null){
+		if(count != null && count > 0){
 			criteria.setMaxResults(count);
 		}
 		try {	
@@ -174,13 +174,13 @@ public class CoreDBServiceFacadeImp<E, I extends Serializable> implements CoreDB
 		Criteria criteria = getCurrentSession().createCriteria(entityClass);
 		criteria.add(criterion);
 		for(int i = 0; i< orderBy.length; i++){
-			if (order.equalsIgnoreCase("desc")) {
+			if (order != null && order.equalsIgnoreCase("desc")) {
 				criteria.addOrder(Order.desc(orderBy[i]));
 			} else {
 				criteria.addOrder(Order.asc(orderBy[i]));
 			}
 		}
-		if(count != null){
+		if(count != null && count > 0){
 			criteria.setMaxResults(count);
 		}
 		try {	
@@ -204,14 +204,14 @@ public class CoreDBServiceFacadeImp<E, I extends Serializable> implements CoreDB
 		criteria.createAlias(aliasTable, aliasTable, org.hibernate.sql.JoinType.LEFT_OUTER_JOIN).add(aliasCriterion);
 		if (orderBy != null) {
 			for(int i = 0; i< orderBy.length; i++){
-				if (order.equalsIgnoreCase("desc")) {
+				if (order != null && order.equalsIgnoreCase("desc")) {
 					criteria.addOrder(Order.desc(orderBy[i]));
 				} else {
 					criteria.addOrder(Order.asc(orderBy[i]));
 				}
 			}
 		}
-		if(count != null){
+		if(count != null && count > 0){
 			criteria.setMaxResults(count);
 		}
 		//System.out.println("fetched List count = " + (fetchedList != null ? fetchedList.size() : null));
@@ -227,23 +227,23 @@ public class CoreDBServiceFacadeImp<E, I extends Serializable> implements CoreDB
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<E> getByCriteriaWithInnerJoinByOrder(Criterion criterion, String order, String[] orderBy, Integer count, String aliasTable) {
+	public List<E> getByCriteriaWithInnerJoinByOrder(Criterion criterion, String order, String[] orderBy, Integer count, String aliasTable, Criterion aliasCriterion) {
 		Session session = getCurrentSession();
 		List<E> fetchedList = new ArrayList<E>();
 		logger.info("Entity: " + entityClass + ", current Session = " + session);
 		Criteria criteria = session.createCriteria(entityClass);
 		criteria.add(criterion); 
-		criteria.createAlias(aliasTable, aliasTable, org.hibernate.sql.JoinType.INNER_JOIN);
+		criteria.createAlias(aliasTable, aliasTable, org.hibernate.sql.JoinType.INNER_JOIN).add(aliasCriterion);
 		if (orderBy != null) {
 			for(int i = 0; i< orderBy.length; i++){
-				if (order.equalsIgnoreCase("desc")) {
+				if (order != null && order.equalsIgnoreCase("desc")) {
 					criteria.addOrder(Order.desc(orderBy[i]));
 				} else {
 					criteria.addOrder(Order.asc(orderBy[i]));
 				}
 			}
 		}
-		if(count != null){
+		if(count != null && count > 0){
 			criteria.setMaxResults(count);
 		}
 		//System.out.println("fetched List count = " + (fetchedList != null ? fetchedList.size() : null));

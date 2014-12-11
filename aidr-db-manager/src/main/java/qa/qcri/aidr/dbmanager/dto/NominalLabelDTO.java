@@ -61,8 +61,6 @@ public class NominalLabelDTO  implements Serializable {
 						nominalLabel.getNominalAttribute().getName(), nominalLabel.getNominalAttribute().getDescription(), 
 						nominalLabel.getNominalAttribute().getCode());
 				na.setNominalAttributeId(nominalLabel.getNominalAttribute().getNominalAttributeId());
-				na.setCrisises(nominalLabel.getNominalAttribute().getCrisises());
-				na.setModelFamilies(nominalLabel.getNominalAttribute().getModelFamilies());
 				this.setNominalAttributeDTO(new NominalAttributeDTO(na));
 			}
 			this.setNominalLabelId(nominalLabel.getNominalLabelId());
@@ -179,11 +177,7 @@ public class NominalLabelDTO  implements Serializable {
 	}
 
 	public void setDocumentNominalLabelsDTO(List<DocumentNominalLabelDTO> documentNominalLabelsDTO) {
-		if (documentNominalLabelsDTO != null) {
 			this.documentNominalLabelsDTO = documentNominalLabelsDTO;
-		} else {
-			throw new IllegalArgumentException("Argument cannot be null!");
-		}
 	}
 
 

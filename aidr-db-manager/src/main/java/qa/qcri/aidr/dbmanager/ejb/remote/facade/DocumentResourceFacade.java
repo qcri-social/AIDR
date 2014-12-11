@@ -8,6 +8,7 @@ import javax.ejb.Remote;
 
 import org.hibernate.criterion.Criterion;
 
+import qa.qcri.aidr.common.exception.AidrException;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.CoreDBServiceFacade;
@@ -51,6 +52,8 @@ public interface DocumentResourceFacade extends CoreDBServiceFacade<Document, Lo
 	
 	public List<DocumentDTO> findLabeledDocumentsByCrisisID(Long crisisId) throws PropertyNotSetException;
 
-	List<DocumentDTO> findUnLabeledDocumentsByCrisisID(Long crisisId) throws PropertyNotSetException;
+	public List<DocumentDTO> findUnLabeledDocumentsByCrisisID(Long crisisId) throws PropertyNotSetException;
+
+	public List<DocumentDTO> getDocumentCollectionWithNominalLabelData(Long nominalLabelID) throws Exception;
 
 }

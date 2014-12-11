@@ -24,7 +24,7 @@ public interface CoreDBServiceFacade<E, I extends Serializable> {
 	
 	public List<E> getByCriteriaByOrder(Criterion criterion, String order, String[] orderBy, Integer count);
 	public List<E> getByCriteriaWithAliasByOrder(Criterion criterion, String order, String[] orderBy, Integer count, String aliasTable, Criterion aliasCriterion);
-	public List<E> getByCriteriaWithInnerJoinByOrder(Criterion criterion, String order, String[] orderBy, Integer count, String aliasTable);
+	public List<E> getByCriteriaWithInnerJoinByOrder(Criterion criterion, String order, String[] orderBy, Integer count, String aliasTable, Criterion aliasCriterion);
 	
 	public void update(E e);
 	public void update(List<E> entityCollection);

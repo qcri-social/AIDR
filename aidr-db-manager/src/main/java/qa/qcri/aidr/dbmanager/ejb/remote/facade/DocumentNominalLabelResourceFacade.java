@@ -23,13 +23,19 @@ public interface DocumentNominalLabelResourceFacade extends CoreDBServiceFacade<
 
 	public DocumentNominalLabelDTO findDocumentByPrimaryKey(DocumentNominalLabelIdDTO id) throws PropertyNotSetException;
 	
-	public DocumentNominalLabelDTO findDocumentByID(Long id) throws PropertyNotSetException;
+	public DocumentNominalLabelDTO findLabeledDocumentByID(Long id) throws PropertyNotSetException;
 
 	public boolean isDocumentExists(DocumentNominalLabelIdDTO id) throws PropertyNotSetException;
-
+	
+	public boolean isDocumentExists(Long id) throws PropertyNotSetException;
+	
 	public List<DocumentNominalLabelDTO> getAllDocuments() throws PropertyNotSetException; 
 
 	
 	public void saveDocumentNominalLabel(DocumentNominalLabelDTO documentNominalLabel) throws PropertyNotSetException;
+	
 	public boolean foundDuplicate(DocumentNominalLabelDTO documentNominalLabel);
+
+	public List<DocumentNominalLabelDTO> getLabeledDocumentCollectionForNominalLabel(Integer nominalLabelID) throws PropertyNotSetException;
+
 }

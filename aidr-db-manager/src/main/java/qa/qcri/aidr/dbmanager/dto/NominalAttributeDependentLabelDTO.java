@@ -61,18 +61,12 @@ public class NominalAttributeDependentLabelDTO implements Serializable {
 					t.getNominalLabel().getNominalLabelCode(), t.getNominalLabel().getName(), t.getNominalLabel().getDescription(),
 					t.getNominalLabel().getSequence());
 			nb.setNominalLabelId(t.getNominalLabel().getNominalLabelId());
-			nb.setModelNominalLabels(t.getNominalLabel().getModelNominalLabels());
-			nb.setNominalAttribute(t.getNominalLabel().getNominalAttribute());
-			nb.setNominalAttributeDependentLabels(t.getNominalLabel().getNominalAttributeDependentLabels());
 			this.setNominalLabelDTO(new NominalLabelDTO(nb));
-			this.setNominalLabelDTO(new NominalLabelDTO(t.getNominalLabel()));
 		}
 		if (t.hasNominalAttribute()) {
 			NominalAttribute na = new NominalAttribute(t.getNominalAttribute().getUsers(), 
 					t.getNominalAttribute().getName(), t.getNominalAttribute().getDescription(), t.getNominalAttribute().getCode());
 			na.setNominalAttributeId(t.getNominalAttribute().getNominalAttributeId());
-			na.setCrisises(t.getNominalAttribute().getCrisises());
-			na.setModelFamilies(t.getNominalAttribute().getModelFamilies());
 			this.setNominalAttributeDTO(new NominalAttributeDTO(na));
 		}
 		this.threshold = t.getThreshold();
@@ -95,11 +89,7 @@ public class NominalAttributeDependentLabelDTO implements Serializable {
 	}
 
 	public void setNominalLabelDTO(NominalLabelDTO nominalLabelDTO) throws PropertyNotSetException {
-		if (nominalLabelDTO != null) {
 			this.nominalLabelDTO = nominalLabelDTO;
-		} else {
-			throw new PropertyNotSetException();
-		}
 	}
 
 	public NominalAttributeDTO getNominalAttributeDTO() {
@@ -107,11 +97,7 @@ public class NominalAttributeDependentLabelDTO implements Serializable {
 	}
 
 	public void setNominalAttributeDTO(NominalAttributeDTO nominalAttributeDTO) throws PropertyNotSetException {
-		if (nominalAttributeDTO != null) {
 			this.nominalAttributeDTO = nominalAttributeDTO;
-		} else {
-			throw new PropertyNotSetException();
-		}
 	}
 
 	public Float getThreshold() {

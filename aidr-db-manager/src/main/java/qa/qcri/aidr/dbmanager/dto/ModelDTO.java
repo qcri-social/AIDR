@@ -222,11 +222,7 @@ public class ModelDTO implements Serializable {
 	}
 
 	public void setIsCurrentModel(Boolean isCurrentModel) {
-		if (isCurrentModel == null) {
-			throw new IllegalArgumentException("isCurrentModel cannot be null");
-		} else {
-			this.isCurrentModel = isCurrentModel;
-		}
+		this.isCurrentModel = isCurrentModel;
 	}
 
 	public List<ModelNominalLabelDTO> getModelNominalLabelsDTO() {
@@ -242,11 +238,7 @@ public class ModelDTO implements Serializable {
 	}
 
 	public void setModelFamilyDTO(ModelFamilyDTO modelFamilyDTO) {
-		if (modelFamilyDTO == null) {
-			throw new IllegalArgumentException("modelFamily cannot be null");
-		} else {
-			this.modelFamilyDTO = modelFamilyDTO;
-		}
+		this.modelFamilyDTO = modelFamilyDTO;
 	}
 
 	private List<ModelNominalLabelDTO> toModelNominalLabelDTOList(List<ModelNominalLabel> list) throws PropertyNotSetException {

@@ -67,7 +67,7 @@ public class Document implements java.io.Serializable {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "document")
 	@JsonManagedReference
 	private List<DocumentNominalLabel> documentNominalLabels = null;
-
+	
 	public Document() {
 	}
 

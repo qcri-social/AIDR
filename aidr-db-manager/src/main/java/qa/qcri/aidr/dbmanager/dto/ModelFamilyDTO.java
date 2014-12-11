@@ -55,8 +55,6 @@ public class ModelFamilyDTO implements Serializable {
 				NominalAttribute na = new NominalAttribute(model.getNominalAttribute().getUsers(), 
 						model.getNominalAttribute().getName(), model.getNominalAttribute().getDescription(), model.getNominalAttribute().getCode());
 				na.setNominalAttributeId(model.getNominalAttribute().getNominalAttributeId());
-				na.setCrisises(model.getNominalAttribute().getCrisises());
-				na.setModelFamilies(model.getNominalAttribute().getModelFamilies());
 				this.setNominalAttributeDTO(new NominalAttributeDTO(na));
 			}
 			if (model.hasCrisis()) {
@@ -94,11 +92,7 @@ public class ModelFamilyDTO implements Serializable {
 	}
 
 	public void setNominalAttributeDTO(NominalAttributeDTO nominalAttributeDTO) {
-		if (nominalAttributeDTO != null) {
 			this.nominalAttributeDTO = nominalAttributeDTO;
-		} else {
-			throw new IllegalArgumentException("Argument cannot be null!");
-		}
 	}
 
 	public CrisisDTO getCrisisDTO() {
@@ -106,11 +100,7 @@ public class ModelFamilyDTO implements Serializable {
 	}
 
 	public void setCrisisDTO(CrisisDTO crisisDTO) {
-		if (crisisDTO != null) {
 			this.crisisDTO = crisisDTO;
-		} else {
-			throw new IllegalArgumentException("Argument cannot be null!");
-		}
 	}
 
 	public boolean isIsActive() {

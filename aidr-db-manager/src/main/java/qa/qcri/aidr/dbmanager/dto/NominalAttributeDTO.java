@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
+import qa.qcri.aidr.dbmanager.entities.misc.Users;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttributeDependentLabel;
@@ -80,7 +81,12 @@ public class NominalAttributeDTO implements java.io.Serializable {
 			this.name = nominalAttribute.getName();
 			this.description = nominalAttribute.getDescription();
 			this.code = nominalAttribute.getCode();
-
+			
+			if (nominalAttribute.hasUsers()) {
+				Users user = new Users(nominalAttribute.getUsers().getName(), nominalAttribute.getUsers().getRole());
+				user.setUserId(nominalAttribute.getUsers().getUserId());
+				this.setUsersDTO(new UsersDTO(user));
+			}
 			if (nominalAttribute.hasCrisises()) {
 				this.setCrisisesDTO(toCrisisDTOList(nominalAttribute.getCrisises()));
 			}

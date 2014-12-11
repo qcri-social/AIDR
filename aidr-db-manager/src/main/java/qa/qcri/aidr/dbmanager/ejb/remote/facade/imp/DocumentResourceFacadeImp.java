@@ -14,15 +14,19 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
+import qa.qcri.aidr.common.exception.AidrException;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
+import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 
 /**
  * 
@@ -37,6 +41,9 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 
 	@EJB
 	CrisisResourceFacade crisisEJB;
+
+	@EJB
+	NominalLabelResourceFacade nominalLabelEJB;
 	
 	public DocumentResourceFacadeImp() {
 		super(Document.class);
@@ -44,7 +51,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 
 	@Override
 	public void updateHasHumanLabel(DocumentDTO document) {
-		Document doc = (Document) getByCriteria(Restrictions.eq("documentID", document.getDocumentID()));
+		Document doc = (Document) getByCriteria(Restrictions.eq("documentId", document.getDocumentID()));
 		if (doc != null) {
 			doc.setHasHumanLabels(true);
 			update(doc);
@@ -53,10 +60,11 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 
 	@Override
 	public List<DocumentDTO> getDocumentCollectionForNominalLabel(Criterion criterion) throws PropertyNotSetException {
-		String aliasTable = "document_nominal_label";
-		String[] orderBy = {"documentID"};
-		
-		List<Document> fetchedList = getByCriteriaWithInnerJoinByOrder(criterion, "ASC", orderBy, null, aliasTable);
+		String aliasTable = "documentNominalLabels";
+		String aliasTableKey = "documentNominalLabels.id";
+		String[] orderBy = {"documentId"};
+
+		List<Document> fetchedList = getByCriteriaWithInnerJoinByOrder(criterion, "ASC", orderBy, null, aliasTable, Restrictions.isNotEmpty(aliasTableKey));
 		if (fetchedList != null) {
 			List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
 			for (Document doc: fetchedList) {
@@ -355,7 +363,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 			return null;
 		}
 	}
-	
+
 	@Override
 	public List<DocumentDTO> findDocumentsByCrisisID(Long crisisId) throws PropertyNotSetException {
 		List<DocumentDTO> dtoList = findByCriteria("crisis.crisisId", crisisId);
@@ -369,7 +377,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 			Hibernate.initialize(doc.getCrisis());
 			Hibernate.initialize(doc.getDocumentNominalLabels());
 			Hibernate.initialize(doc.getTaskAssignments());
-		
+
 			DocumentDTO dto = new DocumentDTO(doc);
 			return dto;
 		} else {
@@ -402,7 +410,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	@Override
 	public List<DocumentDTO> findLabeledDocumentsByCrisisID(Long crisisId) throws PropertyNotSetException {
 		Criterion criterion = Restrictions.conjunction()
-				.add(Restrictions.eq("crisisID",crisisId))
+				.add(Restrictions.eq("crisis.crisisId",crisisId))
 				.add(Restrictions.eq("hasHumanLabels", true));
 		List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
 		List<Document> list = this.getAllByCriteria(criterion);
@@ -416,11 +424,11 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 		System.out.println("Done creating DTO list, size = " + dtoList.size());
 		return dtoList;
 	}
-	
+
 	@Override
 	public List<DocumentDTO> findUnLabeledDocumentsByCrisisID(Long crisisId) throws PropertyNotSetException {
 		Criterion criterion = Restrictions.conjunction()
-				.add(Restrictions.eq("crisisID",crisisId))
+				.add(Restrictions.eq("crisis.crisisId",crisisId))
 				.add(Restrictions.eq("hasHumanLabels", false));
 		List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
 		List<Document> list = this.getAllByCriteria(criterion);
@@ -434,5 +442,35 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 		System.out.println("Done creating DTO list, size = " + dtoList.size());
 		return dtoList;
 	}
-}
 
+	@Override
+	public List<DocumentDTO> getDocumentCollectionWithNominalLabelData(Long nominalLabelID) throws Exception {
+		List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
+		if (nominalLabelID != null) {
+			String aliasTable = "documentNominalLabels";
+			String aliasTableKeyField = "documentNominalLabels.id.nominalLabelId";
+			String[] orderBy = {"documentId"};
+
+			Criterion criterion = Restrictions.eq("hasHumanLabels", true);
+			Criterion aliasCriterion =  Restrictions.eq(aliasTableKeyField, nominalLabelID);
+			try {
+				List<Document> docList = this.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion);
+				logger.debug("docList = " + docList);
+				if (docList != null) {
+					logger.info("Fetched size = " + docList.size());
+					NominalLabelDTO nominalLabel = nominalLabelEJB.getNominalLabelByID(nominalLabelID);
+					for (Document doc: docList) {
+						DocumentDTO dto = new DocumentDTO(doc);
+						dto.setNominalLabelDTO(nominalLabel);
+						dtoList.add(dto);	
+					}
+					System.out.println("Done creating DTO list, size = " + dtoList.size());
+				}
+			} catch (Exception e) {
+				throw new Exception();
+			}
+		}
+		return dtoList;
+	}
+
+}

@@ -9,6 +9,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.hibernate.Hibernate;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +50,8 @@ public class DocumentNominalLabelResourceFacadeImp
     @Override
     public boolean foundDuplicate(DocumentNominalLabelDTO documentNominalLabel) {
         Map<String, Long> attMap = new HashMap<String, Long>();
-        attMap.put("documentID", documentNominalLabel.getDocumentDTO().getDocumentID());
-        attMap.put("nominalLabelID", documentNominalLabel.getNominalLabelDTO().getNominalLabelId());
+        attMap.put("id.documentId", documentNominalLabel.getDocumentDTO().getDocumentID());
+        attMap.put("id.nominalLabelId", documentNominalLabel.getNominalLabelDTO().getNominalLabelId());
 
         DocumentNominalLabel obj =  getByCriterionID(Restrictions.allEq(attMap));
 
@@ -63,7 +64,7 @@ public class DocumentNominalLabelResourceFacadeImp
 	@Override
 	public DocumentNominalLabelDTO addDocument(DocumentNominalLabelDTO doc) throws PropertyNotSetException {
 		em.persist(doc.toEntity());
-		return this.findDocumentByID(doc.getDocumentDTO().getDocumentID());
+		return this.findLabeledDocumentByID(doc.getDocumentDTO().getDocumentID());
 	}
 
 	@Override
@@ -74,7 +75,7 @@ public class DocumentNominalLabelResourceFacadeImp
 			DocumentNominalLabel oldDoc = getById(d.getId().getDocumentId()); 
 			if (oldDoc != null) {
 				oldDoc = em.merge(d);
-				return oldDoc != null ? new DocumentNominalLabelDTO(oldDoc) : null;
+				return (oldDoc != null) ? new DocumentNominalLabelDTO(oldDoc) : null;
 			} else {
 				throw new RuntimeException("Not found");
 			}
@@ -120,6 +121,12 @@ public class DocumentNominalLabelResourceFacadeImp
 	}
 
 	@Override
+	public boolean isDocumentExists(Long id) throws PropertyNotSetException {
+		List<DocumentNominalLabelDTO> docList = findByCriteria("id.documentId", id);
+		return docList != null ? true : false;
+	}
+	
+	@Override
 	public List<DocumentNominalLabelDTO> getAllDocuments() throws PropertyNotSetException {
 		System.out.println("Received request for fetching all Documents!!!");
 		List<DocumentNominalLabelDTO> dtoList = new ArrayList<DocumentNominalLabelDTO>();
@@ -136,9 +143,16 @@ public class DocumentNominalLabelResourceFacadeImp
 	}
 
 	@Override
-	public DocumentNominalLabelDTO findDocumentByID(Long id) throws PropertyNotSetException {
+	public DocumentNominalLabelDTO findLabeledDocumentByID(Long id) throws PropertyNotSetException {
 		List<DocumentNominalLabelDTO> dtoList = findByCriteria("document.documentId", id); 
 		return dtoList != null ? dtoList.get(0) : null;
+	}
+	
+	@Override
+	public List<DocumentNominalLabelDTO> getLabeledDocumentCollectionForNominalLabel(Integer nominalLabelID) throws PropertyNotSetException {
+	
+		List<DocumentNominalLabelDTO> fetchedList = findByCriteria("id.nominalLabelId", nominalLabelID);
+		return fetchedList;
 	}
 }
 
