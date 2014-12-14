@@ -145,6 +145,11 @@ After the above steps have been executed, you can build the project:
 * Include the `aidr-task-manager.jar` file in the build path.
 * Build using maven following the instructions above; this should generate a file `aidr-tagger-api-X.war`
 * Deploy `aidr-tagger-api-X.war` to Glassfish using the instructions above.
+* Test the deployment (optional). You can check if `aidr-tagger-api` was installed correctly:
+```
+$ curl http://localhost:9080/AIDRTaggerAPI/rest/misc/ping
+{"application":"AIDRTaggerAPI", "status":"RUNNING"}
+```
 
 # 8. Output (aidr-output)
 
