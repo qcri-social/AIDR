@@ -34,8 +34,8 @@ other modules can thereafter automatically find the dependency.
 # 3. Collector (aidr-collector)
 
 * Build using maven following the instructions above; this should generate a file `aidr-collector-X.war`
-* In `utils/Config.java`, appropriately set the configuration parameters. Note that the FETCHER_REST_URI and the PERSISTER_REST_URI should match the actual URI's used. 
-* Appropriately set the `fetchMainUrl` in the `system.properties` file under `aidr-manager`. 
+* In [config.properties](../../blob/master/aidr-collector/src/main/resources/config.properties), appropriately set the configuration parameters. Note that the FETCHER_REST_URI and the PERSISTER_REST_URI should match the actual URI's used. 
+* Appropriately set the `fetchMainUrl` in the [system.properties](../../blob/master/aidr-manager/src/main/resources/system.properties) file under `aidr-manager`. 
 * Deploy `aidr-collector-X.war` to Glassfish following the instructions above.
 * Test the deployment (optional). You can ping the collector service using the following command:
 ```
