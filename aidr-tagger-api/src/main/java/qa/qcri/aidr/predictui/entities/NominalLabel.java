@@ -101,7 +101,6 @@ public class NominalLabel implements Serializable {
         this.nominalLabelCode = nominalLabelCode;
         this.name = name;
         this.description = description;
-        this.sequence = sequence;
     }
 
 

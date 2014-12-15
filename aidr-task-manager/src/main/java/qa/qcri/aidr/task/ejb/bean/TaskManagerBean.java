@@ -17,6 +17,10 @@ import javax.ejb.Stateless;
 
 
 
+
+
+
+import org.hibernate.Hibernate;
 //import org.apache.log4j.Logger;
 //import org.codehaus.jackson.map.ObjectMapper;
 //import org.codehaus.jackson.type.TypeReference;
@@ -57,9 +61,11 @@ import qa.qcri.aidr.task.entities.Users;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAssignmentDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.task.*;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
@@ -116,6 +122,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskAssignmentResourceFacade remoteTaskAssignmentEJB;
 
+	@EJB
+	private qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade remoteNominalLabelEJB;
 
 	private Class<T> entityType;
 
@@ -230,7 +238,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		}
 		return eList;
 	}
-	
+
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -313,12 +321,12 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public int truncateLabelingTaskBufferForCrisis(final long crisisID, final int maxLength, final int ERROR_MARGIN) {
 		List<Document> docList = null;
 		try {
-			String aliasTable = "taskAssignment";
+			String aliasTable = "taskAssignments";
 			String order = "ASC";
-			String aliasTableKey = "taskAssignment.documentID";
-			String[] orderBy = {"valueAsTrainingSample", "documentID"};
+			String aliasTableKey = "taskAssignments.id.documentId";
+			String[] orderBy = {"valueAsTrainingSample", "documentId"};
 			Criterion criterion = Restrictions.conjunction()
-					.add(Restrictions.eq("crisisID",crisisID))
+					.add(Restrictions.eq("crisis.crisisId",crisisID))
 					.add(Restrictions.eq("hasHumanLabels",false));
 
 			Criterion aliasCriterion =  (Restrictions.isNull(aliasTableKey));
@@ -425,11 +433,11 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			if (criterion != null) {
 				newCriterion = Restrictions.conjunction()
 						.add(criterion)
-						.add(Restrictions.eq("crisisID",crisisID))
+						.add(Restrictions.eq("crisis.crisisId",crisisID))
 						.add(Restrictions.eq("hasHumanLabels",false));
 			} else {
 				newCriterion = Restrictions.conjunction()
-						.add(Restrictions.eq("crisisID",crisisID))
+						.add(Restrictions.eq("crisis.crisisId",crisisID))
 						.add(Restrictions.eq("hasHumanLabels",false));
 			}
 
@@ -437,11 +445,10 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			logger.debug("New task: " + document);
 			if (document != null && !isTaskAssigned(document)) {
 				logger.info("New task: " + document.getDocumentId());
+				return new DocumentDTO(document);
 			} else {
 				logger.info("[getNewTask] New task: " + document);
 			}
-
-			return new DocumentDTO(document);
 		} catch (Exception e) {
 			logger.error("Error in getting new Task for crisisID: " + crisisID);
 			logger.error(elog.toStringException(e));
@@ -453,18 +460,18 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	@Override
 	public List<DocumentDTO> getNewTaskCollection(Long crisisID, Integer count, String order, Criterion criterion) {
 		logger.info("Received request for crisisID = " + crisisID + ", count = " + count);
-		String aliasTable = "taskAssignment";
-		String aliasTableKey = "taskAssignment.documentID";
-		String[] orderBy = {"valueAsTrainingSample","documentID"};
-		Criterion newCriterion = null;
+		String aliasTable = "taskAssignments";
+		String aliasTableKey = "taskAssignments.id.documentId";
+		String[] orderBy = {"valueAsTrainingSample","documentId"};
+		Criterion newCriterion = criterion;
 		if (criterion != null) {
 			newCriterion = Restrictions.conjunction()
 					.add(criterion)
-					.add(Restrictions.eq("crisisID",crisisID))
+					.add(Restrictions.eq("crisis.crisisId",crisisID))
 					.add(Restrictions.eq("hasHumanLabels",false));
 		} else {
 			newCriterion = Restrictions.conjunction()
-					.add(Restrictions.eq("crisisID",crisisID))
+					.add(Restrictions.eq("crisis.crisisId",crisisID))
 					.add(Restrictions.eq("hasHumanLabels",false));
 		}
 		Criterion aliasCriterion =  (Restrictions.isNull(aliasTableKey));
@@ -556,7 +563,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			if (criterion != null) {
 				Criterion newCriterion = Restrictions.conjunction()
 						.add(criterion)
-						.add(Restrictions.eq("crisisID", crisisID));
+						.add(Restrictions.eq("crisis.crisisId", crisisID));
 				Document document = remoteDocumentEJB.getByCriteria(newCriterion);
 
 				return new DocumentDTO(document);
@@ -574,7 +581,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			if (criterion != null) {
 				Criterion newCriterion = Restrictions.conjunction()
 						.add(criterion)
-						.add(Restrictions.eq("crisisID", crisisID));
+						.add(Restrictions.eq("crisis.crisisId", crisisID));
 				List<Document> docList =  remoteDocumentEJB.getByCriteriaWithLimit(newCriterion, count);
 				return createDocumentDTOList(docList);
 			}
@@ -586,13 +593,17 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 	@Override
-	public List<DocumentDTO> getNominalLabelDocumentCollection(Integer nominalLabelID) {
-		Criterion criterion = Restrictions.eq("nominalLabelID", nominalLabelID);
+	public List<DocumentDTO> getNominalLabelDocumentCollection(Long nominalLabelID) {
+		logger.info("Received fetch document request with nominal label = " + nominalLabelID);
 		try {
-			List<DocumentDTO> docList =  remoteDocumentEJB.getDocumentCollectionForNominalLabel(criterion);
-			return docList;
+			List<DocumentDTO> docList = remoteDocumentEJB.getDocumentCollectionWithNominalLabelData(nominalLabelID);
+			logger.debug("docList = " + docList);
+			if (docList != null) {
+				logger.info("Fetched size = " + docList.size());
+				return docList;
+			} 
 		} catch (Exception e) {
-			logger.error("Error in finding documents for given criterion: " + criterion.toString());
+			logger.error("Error in getting new document collection for nominal Label ID: " + nominalLabelID);
 			logger.error(elog.toStringException(e));
 		}
 		return null;
@@ -761,7 +772,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	 * of the entity to be modified. Returns the modified entity.
 	 */
 	@Override
-	public Object setTaskParameter(Class entityType, Long id, Map<String, String> paramMap) {
+	public <E> Object setTaskParameter(Class<E> entityType, Long id, Map<String, String> paramMap) {
 		logger.info("Received request for task ID = " + id + ", param Map = " + paramMap);
 		Object doc = null;
 		try {
@@ -978,8 +989,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public boolean foundDuplicateDocumentNominalLabel(DocumentNominalLabelDTO documentNominalLabel) {
 		Map<String, Long> attMap = new HashMap<String, Long>();
 		try {
-			attMap.put("documentID", documentNominalLabel.getIdDTO().getDocumentId());
-			attMap.put("nominalLabelID", documentNominalLabel.getIdDTO().getNominalLabelId());
+			attMap.put("id.documentId", documentNominalLabel.getIdDTO().getDocumentId());
+			attMap.put("id.nominalLabelId", documentNominalLabel.getIdDTO().getNominalLabelId());
 		} catch (PropertyNotSetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

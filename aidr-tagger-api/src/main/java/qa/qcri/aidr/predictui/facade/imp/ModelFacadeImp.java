@@ -159,7 +159,7 @@ public class ModelFacadeImp implements ModelFacade {
 				if (!(label.getNominalLabelCode().equalsIgnoreCase("null"))) {
 					//Collection<Document> dc = label.getDocumentCollection();
 
-					List<DocumentDTO> dtoList = taskManager.getNominalLabelDocumentCollection(label.getNominalLabelID());
+					List<DocumentDTO> dtoList = taskManager.getNominalLabelDocumentCollection(new Long(label.getNominalLabelID()));
 
 					try {
 						Collection<Document> dc = Document.toLocalDocumentList(dtoList);

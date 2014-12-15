@@ -70,7 +70,7 @@ public interface TaskManagerRemote<T, Serializable> {
 	
 	public void saveDocumentNominalLabel(DocumentNominalLabelDTO documentNominalLabel);
 	public boolean foundDuplicateDocumentNominalLabel(DocumentNominalLabelDTO documentNominalLabel);
-	public List<DocumentDTO> getNominalLabelDocumentCollection(Integer nominalLabelID);
+	public List<DocumentDTO> getNominalLabelDocumentCollection(Long nominalLabelID);
 	
 	public DocumentDTO getTaskByCriterion(Long crisisID, Criterion criterion);
 	public List<DocumentDTO> getTaskCollectionByCriterion(Long crisisID, Integer count, Criterion criterion);
@@ -78,7 +78,7 @@ public interface TaskManagerRemote<T, Serializable> {
 	//public qa.qcri.aidr.task.entities.Document getNewDocumentByCriterion(Long id, Criterion criterion);
 	//public qa.qcri.aidr.task.entities.Document getNewDocumentByCrisisId(Long crisisID);
 	
-	public Object  setTaskParameter(Class entityType, Long id, Map<String, String> paramMap);
+	public <E> Object  setTaskParameter(Class<E> entityType, Long id, Map<String, String> paramMap);
 	
 	public <E> Boolean isTaskAssigned(E task);
 	public <E> Boolean isTaskNew(E task);

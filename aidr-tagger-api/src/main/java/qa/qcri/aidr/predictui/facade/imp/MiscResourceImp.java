@@ -157,28 +157,29 @@ public class MiscResourceImp implements MiscResourceFacade {
 			Query attributeQuery = em.createNativeQuery(sqlToGetAttribute);
 			attributeQuery.setParameter("modelFamilyID", modelFamilyID);
 			List<Object[]> attributeResults = attributeQuery.getResultList();
-			attributeDTO.setNominalAttributeID(((Integer)attributeResults.get(0)[0]).intValue());
-			attributeDTO.setCode((String) attributeResults.get(0)[1]);
-			attributeDTO.setName((String) attributeResults.get(0)[2]);
-			attributeDTO.setDescription((String) attributeResults.get(0)[3]);
+			if (attributeResults != null && !attributeResults.isEmpty()) {
+				attributeDTO.setNominalAttributeID(((Integer)attributeResults.get(0)[0]).intValue());
+				attributeDTO.setCode((String) attributeResults.get(0)[1]);
+				attributeDTO.setName((String) attributeResults.get(0)[2]);
+				attributeDTO.setDescription((String) attributeResults.get(0)[3]);
 
-			String sqlToGetLabel = "SELECT nominalLabelCode, name, description FROM nominal_label WHERE nominalAttributeID = :attributeID";
-			Query labelQuery = em.createNativeQuery(sqlToGetLabel);
-			labelQuery.setParameter("attributeID", attributeDTO.getNominalAttributeID());
-			List<Object[]> labelsResults = labelQuery.getResultList();
+				String sqlToGetLabel = "SELECT nominalLabelCode, name, description FROM nominal_label WHERE nominalAttributeID = :attributeID";
+				Query labelQuery = em.createNativeQuery(sqlToGetLabel);
+				labelQuery.setParameter("attributeID", attributeDTO.getNominalAttributeID());
+				List<Object[]> labelsResults = labelQuery.getResultList();
 
-			Collection<NominalLabelDTO> labelDTOList = new ArrayList<NominalLabelDTO>();
+				Collection<NominalLabelDTO> labelDTOList = new ArrayList<NominalLabelDTO>();
 
-			for (Object[] label: labelsResults){
-				NominalLabelDTO labelDTO = new NominalLabelDTO();
-				labelDTO.setNominalLabelCode((String)label[0]);
-				labelDTO.setName((String) label[1]);
-				labelDTO.setDescription((String) label[2]);
+				for (Object[] label: labelsResults){
+					NominalLabelDTO labelDTO = new NominalLabelDTO();
+					labelDTO.setNominalLabelCode((String)label[0]);
+					labelDTO.setName((String) label[1]);
+					labelDTO.setDescription((String) label[2]);
 
-				labelDTOList.add(labelDTO);
+					labelDTOList.add(labelDTO);
+				}
+				attributeDTO.setNominalLabelCollection(labelDTOList);
 			}
-			attributeDTO.setNominalLabelCollection(labelDTOList);
-
 			//here retrieve data from document table
 			//String sqlToGetItem = "SELECT documentID, data FROM document WHERE crisisID = :crisisID AND hasHumanLabels = 0 ORDER BY RAND() LIMIT 0, 1";
 			//Query documentQuery = em.createNativeQuery(sqlToGetItem);
@@ -193,13 +194,12 @@ public class MiscResourceImp implements MiscResourceFacade {
 			Document documentResult = Document.toLocalDocument(taskManager.getNewTask(new Long(crisisID)));
 			if (documentResult != null) {
 				logger.info("For crisisID: " + crisisID + ", converted doc id: " + documentResult.getDocumentID());
+				itemToLabel.setItemID(BigInteger.valueOf(documentResult.getDocumentID()));
+				itemToLabel.setItemText(documentResult.getData());
+				itemToLabel.setAttribute(attributeDTO);
 			} else {
 				logger.info("For crisisID: " + crisisID + ", doc id: null");
 			}
-
-			itemToLabel.setItemID(BigInteger.valueOf(documentResult.getDocumentID()));
-			itemToLabel.setItemText(documentResult.getData());
-			itemToLabel.setAttribute(attributeDTO);
 
 		} catch(NoResultException | PropertyNotSetException e) {
 			return null;  

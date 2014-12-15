@@ -80,7 +80,7 @@ public class ModelNominalLabelImp implements ModelNominalLabelFacade {
 				Collection<Document> docList = null;
 				if (nominalLabel != null && !nominalLabel.getNominalLabelCode().equalsIgnoreCase("null")) {
 					try {
-					List<DocumentDTO> dtoList = taskManager.getNominalLabelDocumentCollection(nominalLabel.getNominalLabelID());
+					List<DocumentDTO> dtoList = taskManager.getNominalLabelDocumentCollection(new Long(nominalLabel.getNominalLabelID()));
 						docList = Document.toLocalDocumentList(dtoList);
 						for (Document document : docList) {
 							if (!(document.getIsEvaluationSet())) {
