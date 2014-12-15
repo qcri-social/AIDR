@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
@@ -16,6 +18,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.dbmanager.dto.CrisisAttributesDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalAttributeResourceFacade;
@@ -93,6 +96,36 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
         criteria.add(Restrictions.eq("code", attributeCode));
         NominalAttribute nominalAttribute = (NominalAttribute)criteria.uniqueResult();
         return nominalAttribute != null ? nominalAttribute.getNominalAttributeId() : null;
+    }
+
+    //TODO: Native query used in this method should be translated into a criteria query.
+    public List<CrisisAttributesDTO> getAllAttributesExceptCrisis(Long crisisID) throws PropertyNotSetException {
+        List<CrisisAttributesDTO> attributesList = new ArrayList();
+        String sql = "SELECT na.nominalAttributeID, na.userID, na.name, na.description, na.code, "
+                + " nl.nominalLabelID, nl.name AS lblName FROM nominal_attribute na \n"
+                + " JOIN nominal_label nl ON na.nominalAttributeID = nl.nominalAttributeID \n"
+                + " LEFT JOIN model_family mf ON na.nominalAttributeID = mf.nominalAttributeID \n"
+                + " AND mf.crisisID = :crisisID WHERE mf.crisisID IS NULL";
+        try {
+            Query query = em.createNativeQuery(sql);
+            query.setParameter("crisisID", crisisID);
+            List<Object[]> rows = query.getResultList();
+            CrisisAttributesDTO attribute;
+            for (Object[] row : rows) {
+                attribute = new CrisisAttributesDTO();
+                attribute.setNominalAttributeID(((Integer) row[0]).intValue());
+                attribute.setUserID(((Integer) row[1]).intValue());
+                attribute.setName((String) row[2]);
+                attribute.setDescription((String) row[3]);
+                attribute.setCode(((String) row[4]));
+                attribute.setLabelID(((Integer) row[5]).intValue());
+                attribute.setLabelName(((String) row[6]));
+                attributesList.add(attribute);
+            }
+            return attributesList;
+        } catch (NoResultException e) {
+            return attributesList;
+        }
     }
 
 }

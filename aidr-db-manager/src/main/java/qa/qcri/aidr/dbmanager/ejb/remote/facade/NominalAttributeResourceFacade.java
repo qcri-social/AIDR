@@ -9,6 +9,7 @@ package qa.qcri.aidr.dbmanager.ejb.remote.facade;
 import java.util.List;
 import javax.ejb.Remote;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.dbmanager.dto.CrisisAttributesDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.CoreDBServiceFacade;
 import qa.qcri.aidr.dbmanager.entities.model.Model;
@@ -31,8 +32,8 @@ public interface NominalAttributeResourceFacade extends CoreDBServiceFacade<Nomi
     public NominalAttributeDTO getAttributeByID(Long attributeID) throws PropertyNotSetException;
     public List<NominalAttributeDTO> getAllAttributes() throws PropertyNotSetException;
     
-    //TODO
-    //public List<CrisisAttributesDTO> getAllAttributesExceptCrisis(int crisisID) throws PropertyNotSetException;
+    //client to fix: datatype of the parameter crisisID is changed from "int" to "Long"
+    public List<CrisisAttributesDTO> getAllAttributesExceptCrisis(Long crisisID) throws PropertyNotSetException;
     
     //client to fix: return type changed from Integer to Long
     public Long isAttributeExists(String attributeCode) throws PropertyNotSetException;
