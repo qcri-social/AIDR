@@ -36,9 +36,8 @@ public interface NominalAttributeFacade {
     //1- client to fix: datatype of the parameter "crisisID" is changed from int to Long
     //2- client to fix: retrun type is changed from taggar-api local crisisAttributeDTO to db-manager crisisAttributeDTO. 
     public List<CrisisAttributesDTO> getAllAttributesExceptCrisis(Long crisisID) throws PropertyNotSetException;
-    public Integer isAttributeExists(String attributeCode) throws PropertyNotSetException;
     
-    
-    
+    //client to fix: return type is changed from Integer to Long
+    public Long isAttributeExists(String attributeCode) throws PropertyNotSetException;
     
 }

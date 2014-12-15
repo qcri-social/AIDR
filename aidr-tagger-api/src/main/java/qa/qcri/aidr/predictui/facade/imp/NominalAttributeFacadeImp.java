@@ -8,14 +8,9 @@ import qa.qcri.aidr.predictui.facade.*;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalAttributeResourceFacade;
-import qa.qcri.aidr.predictui.entities.NominalAttribute;
 
 /**
  *
@@ -24,9 +19,6 @@ import qa.qcri.aidr.predictui.entities.NominalAttribute;
 @Stateless
 public class NominalAttributeFacadeImp implements NominalAttributeFacade {
 
-    @PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
-    private EntityManager em;
-    
     @EJB
     NominalAttributeResourceFacade nominalAttributeRemoteEJB;
 
@@ -55,19 +47,8 @@ public class NominalAttributeFacadeImp implements NominalAttributeFacade {
         return nominalAttributeRemoteEJB.deleteAttribute(attributeID);
     }
 
-    @Override
-    public Integer isAttributeExists(String attributeCode) {
-        try {
-            Query query = em.createNamedQuery("NominalAttribute.findByCode", NominalAttribute.class);
-            query.setParameter("code", attributeCode);
+    public Long isAttributeExists(String attributeCode) throws PropertyNotSetException{
+        return nominalAttributeRemoteEJB.isAttributeExists(attributeCode);
 
-            if (query.getSingleResult() != null) {
-                NominalAttribute attribute = (NominalAttribute) query.getSingleResult();
-                return attribute.getNominalAttributeID();
-            }
-        } catch (NoResultException e) {
-            return null;
-        }
-        return null;
     }
 }
