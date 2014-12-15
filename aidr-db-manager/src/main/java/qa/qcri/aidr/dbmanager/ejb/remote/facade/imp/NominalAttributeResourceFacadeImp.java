@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.ArrayList;
@@ -23,7 +18,6 @@ import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalAttributeResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
-import qa.qcri.aidr.dbmanager.entities.task.Document;
 
 /**
  *
@@ -100,7 +94,7 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 
     //TODO: Native query used in this method should be translated into a criteria query.
     public List<CrisisAttributesDTO> getAllAttributesExceptCrisis(Long crisisID) throws PropertyNotSetException {
-        List<CrisisAttributesDTO> attributesList = new ArrayList();
+        List<CrisisAttributesDTO> attributesList = new ArrayList<>();
         String sql = "SELECT na.nominalAttributeID, na.userID, na.name, na.description, na.code, "
                 + " nl.nominalLabelID, nl.name AS lblName FROM nominal_attribute na \n"
                 + " JOIN nominal_label nl ON na.nominalAttributeID = nl.nominalAttributeID \n"
