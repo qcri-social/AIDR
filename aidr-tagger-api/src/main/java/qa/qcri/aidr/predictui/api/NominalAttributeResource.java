@@ -116,16 +116,8 @@ public class NominalAttributeResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteAttribute(@PathParam("id") Long id) throws PropertyNotSetException {
         boolean response;
-        try {
-            response = attributeLocalEJB.deleteAttribute(id);
-        } catch (RuntimeException e) {
-            logger.error("failed to delete attribute: " + id);
-            logger.error(elog.toStringException(e));
-            return Response.ok(
-                    new ResponseWrapper(getProperty("STATUS_CODE_FAILED"),
-                            "Error while deleting Attribute.")).build();
-        }
-        return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"))).build();
+        response = attributeLocalEJB.deleteAttribute(id);
+        return response == true ? Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"))).build() : Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"))).build();
     }
 
     @GET
