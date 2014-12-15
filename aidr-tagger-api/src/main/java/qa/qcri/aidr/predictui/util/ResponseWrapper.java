@@ -4,7 +4,6 @@
  */
 package qa.qcri.aidr.predictui.util;
 
-import qa.qcri.aidr.predictui.dto.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -21,6 +20,14 @@ import javax.xml.bind.annotation.XmlType;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import qa.qcri.aidr.dbmanager.dto.CrisisAttributesDTO;
+import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
+import qa.qcri.aidr.dbmanager.dto.ModelNominalLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelDTOWrapper;
+import qa.qcri.aidr.predictui.dto.ModelHistoryWrapper;
+import qa.qcri.aidr.predictui.dto.TaggersForCodes;
+import qa.qcri.aidr.predictui.dto.TrainingDataDTO;
 
 import qa.qcri.aidr.predictui.entities.AidrCollection;
 import qa.qcri.aidr.predictui.entities.Crisis;
@@ -28,7 +35,6 @@ import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.entities.Model;
 import qa.qcri.aidr.predictui.entities.ModelFamily;
 import qa.qcri.aidr.predictui.entities.ModelNominalLabel;
-import qa.qcri.aidr.predictui.entities.NominalAttribute;
 import qa.qcri.aidr.predictui.entities.NominalLabel;
 
 /**
@@ -73,14 +79,14 @@ public class ResponseWrapper implements Serializable {
 	@XmlElement private List<CrisisTypeDTO> crisisTypes;
 	@XmlElement private List<Crisis> crisises;
 	@XmlElement private List<NominalLabel> nominalLabels;
-	@XmlElement private List<NominalAttribute> nominalAttributes;
+	@XmlElement private List<NominalAttributeDTO> nominalAttributes;
 	@XmlElement private List<Model> models;
 	@XmlElement private List<Document> documents;
 	@XmlElement private List<ModelFamily> modelFamilies;
 	@XmlElement private List<ModelNominalLabel> modelNominalLabels;
 	@XmlElement private List<ModelNominalLabelDTO> modelNominalLabelsDTO;
 	@XmlElement private List<AidrCollection> collections;
-	@XmlElement private List<ModelWrapper> modelWrapper;
+	@XmlElement private List<ModelDTOWrapper> modelWrapper;
 	@XmlElement private List<ModelHistoryWrapper> modelHistoryWrapper;
 	@XmlElement private List<TaggersForCodes> taggersForCodes;
 	@XmlElement private List<CrisisAttributesDTO> crisisAttributes;
@@ -185,14 +191,14 @@ public class ResponseWrapper implements Serializable {
     /**
      * @return the nominalAttributes
      */
-    public List<NominalAttribute> getNominalAttributes() {
+    public List<NominalAttributeDTO> getNominalAttributes() {
         return nominalAttributes;
     }
 
     /**
      * @param nominalAttributes the nominalAttributes to set
      */
-    public void setNominalAttributes(List<NominalAttribute> nominalAttributes) {
+    public void setNominalAttributes(List<NominalAttributeDTO> nominalAttributes) {
         this.nominalAttributes = nominalAttributes;
     }
 
@@ -269,14 +275,14 @@ public class ResponseWrapper implements Serializable {
     /**
      * @return the modelWrapper
      */
-    public List<ModelWrapper> getModelWrapper() {
+    public List<ModelDTOWrapper> getModelWrapper() {
         return modelWrapper;
     }
 
     /**
      * @param modelWrapper the modelWrapper to set
      */
-    public void setModelWrapper(List<ModelWrapper> modelWrapper) {
+    public void setModelWrapper(List<ModelDTOWrapper> modelWrapper) {
         this.modelWrapper = modelWrapper;
     }
 
