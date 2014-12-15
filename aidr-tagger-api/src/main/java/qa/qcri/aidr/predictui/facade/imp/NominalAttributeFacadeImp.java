@@ -26,28 +26,28 @@ public class NominalAttributeFacadeImp implements NominalAttributeFacade {
         return nominalAttributeRemoteEJB.getAllAttributes();
     }
 
-    public List<qa.qcri.aidr.dbmanager.dto.CrisisAttributesDTO> getAllAttributesExceptCrisis(Long crisisID) throws PropertyNotSetException{
-       return nominalAttributeRemoteEJB.getAllAttributesExceptCrisis(crisisID);
+    public List<qa.qcri.aidr.dbmanager.dto.CrisisAttributesDTO> getAllAttributesExceptCrisis(Long crisisID) throws PropertyNotSetException {
+        return nominalAttributeRemoteEJB.getAllAttributesExceptCrisis(crisisID);
     }
 
-    public boolean addAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException{
+    public boolean addAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException {
         return nominalAttributeRemoteEJB.addAttribute(attribute);
     }
 
-    public NominalAttributeDTO editAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException{
+    public NominalAttributeDTO editAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException {
         return nominalAttributeRemoteEJB.editAttribute(attribute);
 
     }
 
-    public NominalAttributeDTO getAttributeByID(Long attributeID) throws PropertyNotSetException{
+    public NominalAttributeDTO getAttributeByID(Long attributeID) throws PropertyNotSetException {
         return nominalAttributeRemoteEJB.getAttributeByID(attributeID);
     }
 
-    public boolean deleteAttribute(Long attributeID) throws PropertyNotSetException{
+    public boolean deleteAttribute(Long attributeID) throws PropertyNotSetException {
         return nominalAttributeRemoteEJB.deleteAttribute(attributeID);
     }
 
-    public Long isAttributeExists(String attributeCode) throws PropertyNotSetException{
+    public Long isAttributeExists(String attributeCode) throws PropertyNotSetException {
         return nominalAttributeRemoteEJB.isAttributeExists(attributeCode);
 
     }
