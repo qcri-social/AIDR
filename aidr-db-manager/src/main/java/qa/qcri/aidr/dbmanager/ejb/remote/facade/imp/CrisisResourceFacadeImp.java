@@ -35,7 +35,6 @@ import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long> implements CrisisResourceFacade {
 
 	private static Logger logger = Logger.getLogger("db-manager-log");
-	private static ErrorLog elog = new ErrorLog();
 
 	@EJB
 	private UsersResourceFacade userLocalEJB;
@@ -192,7 +191,7 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 			}
 			return rv;
 		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
+			logger.error(e.getMessage());
 		}
 		return null;
 	}
