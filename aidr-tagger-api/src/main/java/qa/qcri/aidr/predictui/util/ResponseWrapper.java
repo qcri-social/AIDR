@@ -4,21 +4,11 @@
  */
 package qa.qcri.aidr.predictui.util;
 
-
 import java.io.Serializable;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
-
-//import org.codehaus.jackson.map.annotate.JsonSerialize;
-//import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
-
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import qa.qcri.aidr.dbmanager.dto.CrisisAttributesDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
@@ -41,63 +31,55 @@ import qa.qcri.aidr.predictui.entities.NominalLabel;
  *
  * @author Muhammad Imran
  */
-/*
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "responseWrapper", propOrder = {
-    "statusCode",
-    "message",
-    "dataObject",
-    "crisisTypes",
-    "crisises",
-    "nominalLabels",
-    "nominalAttributes",
-    "models",
-    "documents",
-    "modelFamilies",
-    "modelNominalLabels",
-    "modelNominalLabelsDTO",
-    "collections",
-    "modelWrapper",
-    "modelHistoryWrapper",
-    "taggersForCodes",
-    "crisisAttributes",
-    "trainingData",
-    "total"
-})*/
 @XmlRootElement(name = "responseWrapper")
-//@JsonSerialize(include = Inclusion.NON_DEFAULT)
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class ResponseWrapper implements Serializable {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	@XmlElement protected String statusCode;
-	@XmlElement protected String message;
-	@XmlElement protected Object dataObject;
-	@XmlElement private List<CrisisTypeDTO> crisisTypes;
-	@XmlElement private List<Crisis> crisises;
-	@XmlElement private List<NominalLabel> nominalLabels;
-	@XmlElement private List<NominalAttributeDTO> nominalAttributes;
-	@XmlElement private List<Model> models;
-	@XmlElement private List<Document> documents;
-	@XmlElement private List<ModelFamily> modelFamilies;
-	@XmlElement private List<ModelNominalLabel> modelNominalLabels;
-	@XmlElement private List<ModelNominalLabelDTO> modelNominalLabelsDTO;
-	@XmlElement private List<AidrCollection> collections;
-	@XmlElement private List<ModelDTOWrapper> modelWrapper;
-	@XmlElement private List<ModelHistoryWrapper> modelHistoryWrapper;
-	@XmlElement private List<TaggersForCodes> taggersForCodes;
-	@XmlElement private List<CrisisAttributesDTO> crisisAttributes;
-	@XmlElement private List<TrainingDataDTO> trainingData;
-	@XmlElement private Integer total;
+
+    private static final long serialVersionUID = 1L;
+    @XmlElement
+    protected String statusCode;
+    @XmlElement
+    protected String message;
+    @XmlElement
+    protected Object dataObject;
+    @XmlElement
+    private List<CrisisTypeDTO> crisisTypes;
+    @XmlElement
+    private List<Crisis> crisises;
+    @XmlElement
+    private List<NominalLabel> nominalLabels;
+    @XmlElement
+    private List<NominalAttributeDTO> nominalAttributes;
+    @XmlElement
+    private List<Model> models;
+    @XmlElement
+    private List<Document> documents;
+    @XmlElement
+    private List<ModelFamily> modelFamilies;
+    @XmlElement
+    private List<ModelNominalLabel> modelNominalLabels;
+    @XmlElement
+    private List<ModelNominalLabelDTO> modelNominalLabelsDTO;
+    @XmlElement
+    private List<AidrCollection> collections;
+    @XmlElement
+    private List<ModelDTOWrapper> modelWrapper;
+    @XmlElement
+    private List<ModelHistoryWrapper> modelHistoryWrapper;
+    @XmlElement
+    private List<TaggersForCodes> taggersForCodes;
+    @XmlElement
+    private List<CrisisAttributesDTO> crisisAttributes;
+    @XmlElement
+    private List<TrainingDataDTO> trainingData;
+    @XmlElement
+    private Integer total;
 
     public ResponseWrapper(String statusCode, String message) {
         this.statusCode = statusCode;
         this.message = message;
     }
-    
+
     public ResponseWrapper(String statusCode) {
         this.statusCode = statusCode;
     }
@@ -109,8 +91,6 @@ public class ResponseWrapper implements Serializable {
     }
 
     public ResponseWrapper() {
-//        why do we need initialize it in default constructor?
-//        crisisTypes = new ArrayList<CrisisTypeDTO>();
     }
 
     public String getStatusCode() {
