@@ -20,6 +20,7 @@ import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
+import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 @Path("/test")
 @Stateless
@@ -31,17 +32,20 @@ public class TestDBManagerResource {
 
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade remoteDocumentEJB;
-	
+
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.UsersResourceFacade remoteUsersEJB;
-	
+
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentNominalLabelResourceFacade remoteDocumentNominalLabelEJB;		
-	
+
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisTypeResourceFacade remoteCrisisTypeEJB;
-	
-	
+
+	@EJB
+	private TaskManagerRemote<DocumentDTO, Long> taskManager;
+
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/crisisType/{id}")
@@ -62,7 +66,7 @@ public class TestDBManagerResource {
 		}
 		return Response.ok("Null object returned").build();
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/crisisType/all")
@@ -83,7 +87,7 @@ public class TestDBManagerResource {
 		}
 		return Response.ok("Null object returned").build();
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/crisisType/crisis/{id}")
@@ -104,8 +108,8 @@ public class TestDBManagerResource {
 		}
 		return Response.ok("Null object returned").build();
 	}
-	
-	
+
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/crisis/{id}")
@@ -145,7 +149,7 @@ public class TestDBManagerResource {
 		}
 		return Response.ok("Null object returned for crisis ID = " + id).build();
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/crisis/all")
@@ -188,7 +192,7 @@ public class TestDBManagerResource {
 		}
 		return Response.ok("Null object returned for: " + id).build();
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/document/{id}")
@@ -228,7 +232,7 @@ public class TestDBManagerResource {
 		}
 		return Response.ok("Null object returned for document ID = " + id).build();
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/document/labeled/{id}")
@@ -268,7 +272,7 @@ public class TestDBManagerResource {
 		}
 		return Response.ok("Null object returned for document ID = " + id).build();
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/user/{id}")
@@ -289,13 +293,13 @@ public class TestDBManagerResource {
 		return Response.ok("Null object returned for document ID = " + id).build();
 	}
 
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/dn/{id}")
 	public Response getDocumentNominalLabelByID(@PathParam("id") long id) {
 		try {
-			DocumentNominalLabelDTO dto = remoteDocumentNominalLabelEJB.findDocumentByID(id);
+			DocumentNominalLabelDTO dto = remoteDocumentNominalLabelEJB.findLabeledDocumentByID(id);
 			if (dto != null) 
 			{
 				return Response.ok(dto).build();
@@ -330,8 +334,8 @@ public class TestDBManagerResource {
 		}
 		return Response.ok("CrisisType add-Delete test failed").build();
 	}
-	
-	
+
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/crisis/adddel")
@@ -344,7 +348,7 @@ public class TestDBManagerResource {
 			if (dto != null) 
 			{
 				System.out.println("Add crisis successful: " + dto.getCrisisID() + ":" + dto.getName() + ":" + dto.getCode() 
-								+ ":" + dto.getCrisisTypeDTO().getName() + ":" + dto.getCrisisTypeDTO().getCrisisTypeId());
+						+ ":" + dto.getCrisisTypeDTO().getName() + ":" + dto.getCrisisTypeDTO().getCrisisTypeId());
 				Integer ret = remoteCrisisEJB.deleteCrisis(dto);
 				if (ret != null && ret.intValue() == 1) return Response.ok("Crisis Add-Delete test successful" + dto).build();
 			} 
@@ -355,7 +359,7 @@ public class TestDBManagerResource {
 		}
 		return Response.ok("Crisis add-Delete test failed").build();
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/document/adddel")
@@ -367,7 +371,7 @@ public class TestDBManagerResource {
 			if (dto != null) 
 			{
 				System.out.println("Add document successful: " + dto.getDocumentID() + ":" + dto.getCrisisDTO().getCode() 
-									+ ":" + dto.getCrisisDTO().getCrisisID());
+						+ ":" + dto.getCrisisDTO().getCrisisID());
 				Integer ret = remoteDocumentEJB.deleteDocument(dto);
 				if (ret != null && ret.intValue() == 1) return Response.ok("Document Add-Delete test successful" + dto).build();
 			} 
@@ -378,7 +382,7 @@ public class TestDBManagerResource {
 		}
 		return Response.ok("Document add-Delete test failed").build();
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/user/adddel")
@@ -399,5 +403,49 @@ public class TestDBManagerResource {
 		}
 		return Response.ok("User add-Delete test failed").build();
 	}
-	
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/task/new/{crisisID}")
+	public Response TestGetNewTask(@PathParam("crisisID") long crisisID) {
+		System.out.println("Going to fetch new task collection for crisis ID = " + crisisID);
+		try {
+			DocumentDTO dto = taskManager.getNewTask(crisisID, null);
+			if (dto != null) {
+				System.out.println("Fetched DTO: " + dto.getDocumentID() + dto.getCrisisDTO().getCrisisID());
+			} else {
+				System.out.println("Fetched DTO: null");
+			}
+			List<DocumentDTO> dtoList = taskManager.getNewTaskCollection(crisisID, 10, "DESC", null);
+			if (dtoList != null) {
+				return Response.ok(dtoList).build();
+			} else {
+				return Response.ok("Null object returned for crisis ID = " + crisisID).build();
+			}
+		} catch (Exception e) {
+			logger.error("stacktrace: ", e);
+			e.printStackTrace();
+			return Response.ok("Exception: " + e).build();
+		}
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/document/nominalLabel/{nominalLabelID}")
+	public Response TestGetLabeled(@PathParam("nominalLabelID") long nominalLabelID) {
+		System.out.println("Going to fetch labled documents for nominalLabel ID = " + nominalLabelID);
+		try {
+			List<DocumentDTO> dtoList = taskManager.getNominalLabelDocumentCollection(nominalLabelID);
+			if (dtoList != null) {
+				return Response.ok(dtoList).build();
+			} else {
+				return Response.ok("Null object returned for nominalLabelID = " + nominalLabelID).build();
+			}
+		} catch (Exception e) {
+			logger.error("stacktrace: ", e);
+			e.printStackTrace();
+			return Response.ok("Exception: " + e).build();
+		}
+	}
+
 }

@@ -19,6 +19,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -62,8 +63,7 @@ public class Document implements Serializable {
   
     @XmlElement private String geoFeatures;
     
-    @Transient
-    @JsonBackReference
+    @XmlElement
     private Collection<NominalLabel> nominalLabelCollection;
     
     // Added by Koushik instead of Crisis
@@ -108,7 +108,7 @@ public class Document implements Serializable {
 			this.setWordFeatures(document.getWordFeatures());
 			this.setValueAsTrainingSample(document.getValueAsTrainingSample());
 	
-			//this.setNominalLabelCollection(toLocalNominalLabelCollection(document.getNominalLabelCollection()));
+			this.setNominalLabelCollection(toLocalNominalLabelCollection(document.getNominaLabel()));
 		} 
     }
     
@@ -256,7 +256,7 @@ public class Document implements Serializable {
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
 	
-			//doc.setNominalLabelCollection(toLocalNominalLabelCollection(document.getNominalLabelCollection()));
+			doc.setNominalLabelCollection(toLocalNominalLabelCollection(document.getNominaLabel()));
 			return doc;
 		} 
 		return null;
@@ -272,6 +272,18 @@ public class Document implements Serializable {
 		} 
 		return docList;
 	}
+	
+	public static Collection<NominalLabel> toLocalNominalLabelCollection(NominalLabelDTO dto) {
+		if (dto != null) {
+			Collection<NominalLabel> nominalLabelList = new ArrayList<NominalLabel>();
+			NominalLabel nominalLabel  = new NominalLabel(dto.getNominalLabelId().intValue(), dto.getNominalLabelCode(), dto.getName(), dto.getDescription(), dto.getSequence().intValue());
+			nominalLabelList.add(nominalLabel);
+		
+			return nominalLabelList;
+		}
+		return null;
+	}
+	
 	
 	/*
 	public static DocumentDTO toTaskManagerDocumentDTO(Document document) {
