@@ -4,8 +4,6 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
-import org.codehaus.jackson.annotate.JsonMethod;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -142,13 +140,12 @@ public class TaggerServiceImpl implements TaggerService {
 		}
 	}
 
+	// (6)
 	@Override
 	public Collection<TaggerAttribute> getAttributesForCrises(Integer crisisID, Integer userId) throws AidrException{
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
-			/**
-			 * Rest call to Tagger
-			 */
+			// Rest call to Tagger
 			//WebResource webResource = client.resource(taggerMainUrl + "/attribute/crisis/all?exceptCrisis=" + crisisID);
 			WebTarget webResource = client.target(taggerMainUrl + "/attribute/crisis/all?exceptCrisis=" + crisisID);
 
@@ -443,14 +440,11 @@ public class TaggerServiceImpl implements TaggerService {
 		}
 	}
 
+	// (1)
 	@Override
-	public TaggerAttribute createNewAttribute(TaggerAttribute attribute) throws AidrException {
+	public boolean createNewAttribute(TaggerAttribute attribute) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
-			/**
-			 * Rest call to Tagger
-			 */
-			//WebResource webResource = client.resource(taggerMainUrl + "/attribute");
 			WebTarget webResource = client.target(taggerMainUrl + "/attribute");
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
@@ -465,25 +459,22 @@ public class TaggerServiceImpl implements TaggerService {
 			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
 
-			TaggerAttribute response = objectMapper.readValue(jsonResponse, TaggerAttribute.class);
+			Boolean response = objectMapper.readValue(jsonResponse, Boolean.class);
 			if (response != null) {
-				logger.info("Attribute with ID " + response.getNominalAttributeID() + " was created in Tagger");
-				return response;
+				logger.info("Attribute with ID " + attribute.getNominalAttributeID() + " was created in Tagger");
 			}
-			return null;
+			return response;
 		} catch (Exception e) {
 			throw new AidrException("Error while creating new attribute in Tagger", e);
 		}
 	}
 
+	// (4)
 	@Override
 	public TaggerAttribute getAttributeInfo(Integer id) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
-			/**
-			 * Rest call to Tagger
-			 */
-			//WebResource webResource = client.resource(taggerMainUrl + "/attribute/" + id);
+			// Rest call to Tagger
 			WebTarget webResource = client.target(taggerMainUrl + "/attribute/" + id);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
@@ -511,10 +502,7 @@ public class TaggerServiceImpl implements TaggerService {
 	public TaggerLabel getLabelInfo(Integer id) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
-			/**
-			 * Rest call to Tagger
-			 */
-			//WebResource webResource = client.resource(taggerMainUrl + "/label/" + id);
+			// Rest call to Tagger
 			WebTarget webResource = client.target(taggerMainUrl + "/label/" + id);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
@@ -537,14 +525,11 @@ public class TaggerServiceImpl implements TaggerService {
 		}
 	}
 
+	// (3)
 	@Override
 	public boolean deleteAttribute(Integer id) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
-			/**
-			 * Rest call to Tagger
-			 */
-			//WebResource webResource = client.resource(taggerMainUrl + "/attribute/" + id);
 			WebTarget webResource = client.target(taggerMainUrl + "/attribute/" + id);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
@@ -650,14 +635,11 @@ public class TaggerServiceImpl implements TaggerService {
 		}
 	}
 
+	// (2)
 	@Override
 	public TaggerAttribute updateAttribute(TaggerAttribute attribute) throws AidrException{
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
-			/**
-			 * Rest call to Tagger
-			 */
-			//WebResource webResource = client.resource(taggerMainUrl + "/attribute");
 			WebTarget webResource = client.target(taggerMainUrl + "/attribute");
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
@@ -754,6 +736,7 @@ public class TaggerServiceImpl implements TaggerService {
 		}
 	}
 
+	// (7)
 	@Override
 	public TaggerAttribute attributeExists(String code) throws AidrException{
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();

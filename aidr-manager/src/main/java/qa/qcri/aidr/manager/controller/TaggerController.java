@@ -225,9 +225,9 @@ public class TaggerController extends BaseController {
 			TaggerUser taggerUser = new TaggerUser(taggerUserId);
 			attribute.setUsers(taggerUser);
 
-			TaggerAttribute response = taggerService.createNewAttribute(attribute);
-			if (response != null){
-				return getUIWrapper(response, true);
+			boolean response = taggerService.createNewAttribute(attribute);
+			if (response){
+				return getUIWrapper(attribute, true);
 			} else {
 				return getUIWrapper(false, "Error while creating new attribute in Tagger");
 			}
