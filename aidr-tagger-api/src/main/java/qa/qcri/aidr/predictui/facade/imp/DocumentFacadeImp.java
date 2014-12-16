@@ -33,7 +33,8 @@ public class DocumentFacadeImp implements DocumentFacade{
 
 	@EJB
 	private TaskManagerRemote<DocumentDTO, Long> taskManager;
-
+	
+	
 	protected static Logger logger = LoggerFactory.getLogger(DocumentFacadeImp.class);
 	private ErrorLog elog = new ErrorLog();
 

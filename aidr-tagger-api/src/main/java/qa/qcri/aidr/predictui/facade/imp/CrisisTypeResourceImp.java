@@ -7,14 +7,18 @@ package qa.qcri.aidr.predictui.facade.imp;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import qa.qcri.aidr.predictui.dto.CrisisTypeDTO;
-import qa.qcri.aidr.predictui.entities.CrisisType;
+import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
+import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
+//import qa.qcri.aidr.predictui.dto.CrisisTypeDTO;
+//import qa.qcri.aidr.predictui.entities.CrisisType;
 import qa.qcri.aidr.predictui.facade.CrisisTypeResourceFacade;
 
 /**
@@ -24,12 +28,26 @@ import qa.qcri.aidr.predictui.facade.CrisisTypeResourceFacade;
 @Stateless
 public class CrisisTypeResourceImp implements CrisisTypeResourceFacade {
 
-	@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
-	private EntityManager em;
+	//@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
+	//private EntityManager em;
+	
+	@EJB
+	private qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisTypeResourceFacade remoteCrisisTypeEJB;
 
 	public List<CrisisTypeDTO> getCrisisTypes() {
+		try {
+			List<CrisisTypeDTO> dtoList = remoteCrisisTypeEJB.getAllCrisisTypes();
+			return dtoList;
+		} catch (PropertyNotSetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+		
+		/*
 		List<CrisisType> crisisList = new ArrayList<CrisisType>();
 		List<CrisisTypeDTO> crisisTypeDTOList = new ArrayList<CrisisTypeDTO>();
+
 		Query q = em.createNamedQuery("CrisisType.findAll", CrisisType.class);
 		try {
 			crisisList = q.getResultList();
@@ -46,33 +64,59 @@ public class CrisisTypeResourceImp implements CrisisTypeResourceFacade {
 			return crisisTypeDTOList;
 		} catch (NoResultException e) {
 			return null;
-		}
+		}*/
 	}
 
-	public CrisisType addCrisisType(CrisisType crisisType) {
+	public CrisisTypeDTO addCrisisType(CrisisTypeDTO crisisType) {
 		System.out.println(crisisType.getName());
-		em.persist(crisisType);
-		return crisisType;
+		try {
+			return remoteCrisisTypeEJB.addCrisisType(crisisType);
+		} catch (PropertyNotSetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+		//em.persist(crisisType);
+		//return crisisType;
 	}
 
-	public CrisisType getCrisisTypeByID(int id) {
+	public CrisisTypeDTO getCrisisTypeByID(Long id) {
+		try {
+			return remoteCrisisTypeEJB.findCrisisTypeByID(id);
+		} catch (PropertyNotSetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+		/*
 		Query query = em.createNamedQuery("CrisisType.findByCrisisTypeID", CrisisType.class);
 		query.setParameter("crisisTypeID", id);
 		return (CrisisType) query.getSingleResult();
+		*/
 	}
 
-	public CrisisType editCrisisType(CrisisType crisis) {
-		CrisisType newCrisisType = em.merge(crisis);
-		return newCrisisType;
+	public CrisisTypeDTO editCrisisType(CrisisTypeDTO crisis) {
+		try {
+			return remoteCrisisTypeEJB.editCrisisType(crisis);
+		} catch (PropertyNotSetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+		//CrisisType newCrisisType = em.merge(crisis);
+		//return newCrisisType;
 	}
 
-	public void deleteCrisisType(int id) {
+	public void deleteCrisisType(Long id) {
+		remoteCrisisTypeEJB.deleteCrisisType(id);
+		
+		/*
 		CrisisType crisisType = em.find(CrisisType.class, id);
 		if (crisisType != null) {
 			em.remove(crisisType);
 		}
 		else{
 			throw new RuntimeException();
-		}
+		}*/
 	}
 }

@@ -9,6 +9,7 @@ import java.util.Collection;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.ModelDTO;
 import qa.qcri.aidr.predictui.dto.ModelHistoryWrapper;
 import qa.qcri.aidr.predictui.facade.*;
 
@@ -22,7 +23,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import qa.qcri.aidr.predictui.entities.Crisis;
-import qa.qcri.aidr.predictui.entities.Model;
+//import qa.qcri.aidr.predictui.entities.Model;
 import qa.qcri.aidr.predictui.entities.ModelFamily;
 import qa.qcri.aidr.predictui.entities.ModelNominalLabel;
 import qa.qcri.aidr.predictui.entities.NominalAttribute;
@@ -43,21 +44,40 @@ public class ModelFacadeImp implements ModelFacade {
 	@EJB
 	private TaskManagerRemote<DocumentDTO, Long> taskManager;
 
-	@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
-	private EntityManager em;
+	@EJB
+	private qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelResourceFacade remoteModelEJB;
+	
+	//@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
+	//private EntityManager em;
 
-	public List<Model> getAllModels() {
+	public List<ModelDTO> getAllModels() {
+		try {
+			return remoteModelEJB.getAllModels();
+		} catch (PropertyNotSetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+		/*
 		Query query = em.createNamedQuery("Model.findAll", Model.class);
 		try {
 			List<Model> modelsList = query.getResultList();
 			return modelsList;
 		} catch (NoResultException e) {
 			return null;
-		}
+		}*/
 
 	}
 
-	public Model getModelByID(int id) {
+	public ModelDTO getModelByID(Long id) {
+		try {
+			return remoteModelEJB.getModelByID(id);
+		} catch (PropertyNotSetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+		/*
 		Model model = null;
 		try {
 			Query query = em.createNamedQuery("Model.findByModelID", Model.class);
@@ -67,9 +87,10 @@ public class ModelFacadeImp implements ModelFacade {
 			return null;
 		}
 		return model;
+		*/
 	}
 
-	public Integer getModelCountByModelFamilyID(int modelFamilyID) {
+	public Integer getModelCountByModelFamilyID(Long modelFamilyID) {
 		String sqlCount = " SELECT count(*) "
 				+ " FROM model m "
 				+ " WHERE m.modelFamilyID = :modelFamilyID ";

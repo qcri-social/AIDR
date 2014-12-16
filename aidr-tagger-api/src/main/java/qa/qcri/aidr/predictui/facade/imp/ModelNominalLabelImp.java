@@ -4,28 +4,18 @@
  */
 package qa.qcri.aidr.predictui.facade.imp;
 
-import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
-import qa.qcri.aidr.predictui.facade.*;
+import qa.qcri.aidr.dbmanager.dto.ModelNominalLabelDTO;
+import qa.qcri.aidr.predictui.facade.ModelNominalLabelFacade;
+import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
-import qa.qcri.aidr.predictui.dto.ModelNominalLabelDTO;
-import qa.qcri.aidr.predictui.entities.Document;
-import qa.qcri.aidr.predictui.entities.Model;
-import qa.qcri.aidr.predictui.entities.ModelNominalLabel;
-import qa.qcri.aidr.predictui.entities.NominalLabel;
-import qa.qcri.aidr.task.ejb.TaskManagerRemote;
+//import qa.qcri.aidr.predictui.dto.ModelNominalLabelDTO;
 
-import java.util.Collection;
-import java.util.ArrayList;
 
 /**
  *
@@ -39,10 +29,18 @@ public class ModelNominalLabelImp implements ModelNominalLabelFacade {
 	@EJB
 	private TaskManagerRemote<DocumentDTO, Long> taskManager;
 
-	@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
-	private EntityManager em;
+	@EJB
+	private qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelNominalLabelResourceFacade remoteModelNominalLabelEJB;
+	
+	//@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
+	//private EntityManager em;
 
-	public List<ModelNominalLabel> getAllModelNominalLabels() {
+	public List<ModelNominalLabelDTO> getAllModelNominalLabels() {
+		List<ModelNominalLabelDTO> modelNominalLabelList = remoteModelNominalLabelEJB.getAllModelNominalLabels();
+		
+		return modelNominalLabelList;
+		
+		/*
 		Query query = em.createNamedQuery("ModelNominalLabel.findAll", ModelNominalLabel.class);
 		try {
 			List<ModelNominalLabel> modelNominalLabelList = query.getResultList();
@@ -50,10 +48,15 @@ public class ModelNominalLabelImp implements ModelNominalLabelFacade {
 		} catch (NoResultException e) {
 			return null;
 		}
+		*/
 
 	}
 
-	public List<ModelNominalLabelDTO> getAllModelNominalLabelsByModelID(int modelID) {
+	public List<ModelNominalLabelDTO> getAllModelNominalLabelsByModelID(Long modelID) {
+		List<ModelNominalLabelDTO> modelNominalLabelDTOList = remoteModelNominalLabelEJB.getAllModelNominalLabelsByModelID(modelID);
+		return modelNominalLabelDTOList;
+		
+		/*
 		List<ModelNominalLabel> modelNominalLabelList = null;
 		List<ModelNominalLabelDTO> modelNominalLabelDTOList = new ArrayList<ModelNominalLabelDTO>();
 		Model model = em.find(Model.class, modelID);
@@ -111,5 +114,6 @@ public class ModelNominalLabelImp implements ModelNominalLabelFacade {
 
 		}
 		return modelNominalLabelDTOList;
+		*/
 	}
 }

@@ -22,6 +22,7 @@ import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
+
 @Path("/test")
 @Stateless
 public class TestDBManagerResource {
@@ -449,3 +450,4 @@ public class TestDBManagerResource {
 	}
 
 }
+

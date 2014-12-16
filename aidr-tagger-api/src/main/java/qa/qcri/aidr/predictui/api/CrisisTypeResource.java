@@ -5,7 +5,10 @@
 package qa.qcri.aidr.predictui.api;
 
 import java.util.List;
+
+import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.core.Context;
@@ -21,10 +24,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import qa.qcri.aidr.predictui.dto.CrisisTypeDTO;
-import qa.qcri.aidr.predictui.entities.CrisisType;
-import qa.qcri.aidr.predictui.facade.CrisisTypeResourceFacade;
 
+//import qa.qcri.aidr.predictui.dto.CrisisTypeDTO;
+//import qa.qcri.aidr.predictui.entities.CrisisType;
+import qa.qcri.aidr.predictui.facade.CrisisTypeResourceFacade;
 import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 
 /**
@@ -47,8 +50,8 @@ public class CrisisTypeResource {
     @GET
     @Produces("application/json")
     @Path("{id}")
-    public Response getCrisisTypeByID(@PathParam("id") int id) {
-        CrisisType crisistype = null;
+    public Response getCrisisTypeByID(@PathParam("id") Long id) {
+        CrisisTypeDTO crisistype = null;
         try {
             crisistype = crisisTypeLocal.getCrisisTypeByID(id);
         } catch (RuntimeException e) {
@@ -70,7 +73,7 @@ public class CrisisTypeResource {
     @POST
     @Consumes("application/json")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addCrisisType(CrisisType crisis) {
+    public Response addCrisisType(CrisisTypeDTO crisis) {
         try {
             crisis = crisisTypeLocal.addCrisisType(crisis);
         } catch (RuntimeException e) {
@@ -82,7 +85,7 @@ public class CrisisTypeResource {
     @PUT
     @Consumes("application/json")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response editCrisisType(CrisisType crisis) {
+    public Response editCrisisType(CrisisTypeDTO crisis) {
         try {
             crisis = crisisTypeLocal.editCrisisType(crisis);
         } catch (RuntimeException e) {
@@ -94,7 +97,7 @@ public class CrisisTypeResource {
     @DELETE
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteCrisisType(@PathParam("id") int id) {
+    public Response deleteCrisisType(@PathParam("id") Long id) {
         try {
             crisisTypeLocal.deleteCrisisType(id);
         } catch (RuntimeException e) {
