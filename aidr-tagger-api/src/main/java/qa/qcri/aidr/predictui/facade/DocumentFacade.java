@@ -4,8 +4,7 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import qa.qcri.aidr.predictui.entities.Crisis;
-import qa.qcri.aidr.predictui.entities.Document;
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 
 
 /**
@@ -15,10 +14,10 @@ import qa.qcri.aidr.predictui.entities.Document;
 @Local
 public interface DocumentFacade {
     
-    public List<Document> getAllDocuments();
-    public Document getDocumentByID(long id);
-    public List<Document> getAllLabeledDocumentbyCrisisID(long crisisID, long attributeID);
-    public List<Document> getAllUnlabeledDocumentbyCrisisID(Crisis crisis);
+    public List<DocumentDTO> getAllDocuments();
+    public DocumentDTO getDocumentByID(Long id);
+    public List<DocumentDTO> getAllLabeledDocumentbyCrisisID(Long crisisID, Long attributeID);
+    public List<DocumentDTO> getAllUnlabeledDocumentbyCrisisID(Long crisisID);
     public int deleteDocument(Long documentID);
     public void removeTrainingExample(Long documentID);
 

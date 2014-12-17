@@ -7,9 +7,12 @@
 package qa.qcri.aidr.dbmanager.ejb.remote.facade;
 
 import java.util.List;
+
 import javax.ejb.Remote;
+
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
+import qa.qcri.aidr.dbmanager.dto.TaggersForCodes;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.CoreDBServiceFacade;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 
@@ -29,7 +32,7 @@ public interface ModelFamilyResourceFacade extends CoreDBServiceFacade<ModelFami
     //Clien to fix: return type chagned from void to boolean
     public boolean deleteModelFamily(Long modelFamilyID) throws PropertyNotSetException;
     
-    //TODO for Koushik
-    //public List<TaggersForCodes> getTaggersByCodes(List<String> codes);
+    //TODO for Koushik - convert to Hibernate query and remove TaggerForCodes & TaggerForCodesRequest DTOs from db-manager eventually
+    public List<TaggersForCodes> getTaggersByCodes(List<String> codes);
     
 }

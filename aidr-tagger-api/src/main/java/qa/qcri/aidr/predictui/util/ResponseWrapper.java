@@ -9,16 +9,22 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import qa.qcri.aidr.dbmanager.dto.CrisisAttributesDTO;
+import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.ModelDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelNominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
+import qa.qcri.aidr.dbmanager.dto.TaggersForCodes;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelDTOWrapper;
 import qa.qcri.aidr.predictui.dto.ModelHistoryWrapper;
-import qa.qcri.aidr.predictui.dto.TaggersForCodes;
+import qa.qcri.aidr.predictui.dto.ModelWrapper;
+//import qa.qcri.aidr.predictui.dto.TaggersForCodes;
 import qa.qcri.aidr.predictui.dto.TrainingDataDTO;
-
 import qa.qcri.aidr.predictui.entities.AidrCollection;
 import qa.qcri.aidr.predictui.entities.Crisis;
 import qa.qcri.aidr.predictui.entities.Document;
@@ -45,15 +51,15 @@ public class ResponseWrapper implements Serializable {
     @XmlElement
     private List<CrisisTypeDTO> crisisTypes;
     @XmlElement
-    private List<Crisis> crisises;
+    private List<CrisisDTO> crisises;
     @XmlElement
     private List<NominalLabel> nominalLabels;
     @XmlElement
     private List<NominalAttributeDTO> nominalAttributes;
     @XmlElement
-    private List<Model> models;
+    private List<ModelDTO> models;
     @XmlElement
-    private List<Document> documents;
+    private List<DocumentDTO> documents;
     @XmlElement
     private List<ModelFamily> modelFamilies;
     @XmlElement
@@ -63,7 +69,7 @@ public class ResponseWrapper implements Serializable {
     @XmlElement
     private List<AidrCollection> collections;
     @XmlElement
-    private List<ModelDTOWrapper> modelWrapper;
+    private List<ModelWrapper> modelWrapper;
     @XmlElement
     private List<ModelHistoryWrapper> modelHistoryWrapper;
     @XmlElement
@@ -143,14 +149,14 @@ public class ResponseWrapper implements Serializable {
     /**
      * @return the crisises
      */
-    public List<Crisis> getCrisises() {
+    public List<CrisisDTO> getCrisises() {
         return crisises;
     }
 
     /**
      * @param crisises the crisises to set
      */
-    public void setCrisises(List<Crisis> crisises) {
+    public void setCrisises(List<CrisisDTO> crisises) {
         this.crisises = crisises;
     }
 
@@ -185,28 +191,28 @@ public class ResponseWrapper implements Serializable {
     /**
      * @return the models
      */
-    public List<Model> getModels() {
+    public List<ModelDTO> getModels() {
         return models;
     }
 
     /**
      * @param models the models to set
      */
-    public void setModels(List<Model> models) {
+    public void setModels(List<ModelDTO> models) {
         this.models = models;
     }
 
     /**
      * @return the documents
      */
-    public List<Document> getDocuments() {
+    public List<DocumentDTO> getDocuments() {
         return documents;
     }
 
     /**
      * @param documents the documents to set
      */
-    public void setDocuments(List<Document> documents) {
+    public void setDocuments(List<DocumentDTO> documents) {
         this.documents = documents;
     }
 
@@ -255,14 +261,14 @@ public class ResponseWrapper implements Serializable {
     /**
      * @return the modelWrapper
      */
-    public List<ModelDTOWrapper> getModelWrapper() {
+    public List<ModelWrapper> getModelWrapper() {
         return modelWrapper;
     }
 
     /**
      * @param modelWrapper the modelWrapper to set
      */
-    public void setModelWrapper(List<ModelDTOWrapper> modelWrapper) {
+    public void setModelWrapper(List<ModelWrapper> modelWrapper) {
         this.modelWrapper = modelWrapper;
     }
 

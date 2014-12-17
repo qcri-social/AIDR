@@ -7,8 +7,10 @@ package qa.qcri.aidr.predictui.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import qa.qcri.aidr.dbmanager.dto.ModelDTO;
 import qa.qcri.aidr.predictui.dto.ModelHistoryWrapper;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
@@ -16,10 +18,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import qa.qcri.aidr.predictui.entities.Model;
 import qa.qcri.aidr.predictui.facade.ModelFacade;
 import qa.qcri.aidr.predictui.dto.ModelWrapper;
-
 import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 
 /**
@@ -43,7 +45,7 @@ public class ModelResource {
     @Produces("application/json")
     @Path("/all")
     public Response getAllModels() {
-        List<Model> modelList = modelLocalEJB.getAllModels();
+        List<ModelDTO> modelList = modelLocalEJB.getAllModels();
         ResponseWrapper response = new ResponseWrapper();
         response.setMessage(getProperty("STATUS_CODE_SUCCESS"));
         response.setModels(modelList);
@@ -53,8 +55,8 @@ public class ModelResource {
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{id}")
-   public Response getModelByID(@PathParam("id") int id){
-       Model model = modelLocalEJB.getModelByID(id);
+   public Response getModelByID(@PathParam("id") Long id){
+       ModelDTO model = modelLocalEJB.getModelByID(id);
        return Response.ok(model).build();
    }
    
@@ -76,7 +78,7 @@ public class ModelResource {
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("modelFamily/{modelFamilyID}")
-   public Response getModelsByModelFamilyID(@PathParam("modelFamilyID") int modelFamilyID,
+   public Response getModelsByModelFamilyID(@PathParam("modelFamilyID") Long modelFamilyID,
                                             @QueryParam("start") Integer start,
                                             @QueryParam("limit") Integer limit){
        start = (start != null) ? start : 0;

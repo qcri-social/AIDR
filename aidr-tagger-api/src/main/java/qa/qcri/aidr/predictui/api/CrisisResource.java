@@ -54,7 +54,7 @@ public class CrisisResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("{id}")
-	public Response getCrisisByID(@PathParam("id") int id) {
+	public Response getCrisisByID(@PathParam("id") Long id) {
 		Crisis crisis = null;
 		try {
 			crisis = crisisLocalEJB.getCrisisByID((long) id);

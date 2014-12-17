@@ -56,7 +56,7 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
      */
     public Integer getModelCountByModelFamilyID(Long modelFamilyID) throws PropertyNotSetException {
         Criteria criteria = getCurrentSession().createCriteria(Model.class);
-        criteria.add(Restrictions.eq("modelFamilyID", modelFamilyID));
+        criteria.add(Restrictions.eq("modelFamily.modelFamilyId", modelFamilyID));
         List<Model> modelList = criteria.list();
         return modelList != null ? Integer.valueOf(modelList.size()) : 0;
     }
@@ -64,7 +64,7 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
     public List<ModelDTO> getModelByModelFamilyID(Integer modelFamilyID, Integer start, Integer limit) throws PropertyNotSetException {
         List<ModelDTO> modelDTOList = new ArrayList<ModelDTO>();
         Criteria criteria = getCurrentSession().createCriteria(Model.class);
-        criteria.add(Restrictions.eq("modelFamilyID", modelFamilyID));
+        criteria.add(Restrictions.eq("modelFamily.modelFamilyId", modelFamilyID));
         List<Model> modelList = criteria.list();
             for (Model model : modelList) {
                 modelDTOList.add(new ModelDTO(model));

@@ -34,56 +34,24 @@ public class DocumentFacadeImp implements DocumentFacade{
 	@EJB
 	private TaskManagerRemote<DocumentDTO, Long> taskManager;
 	
+	protected static Logger logger = LoggerFactory.getLogger("aidr-tagger-api");
 	
-	protected static Logger logger = LoggerFactory.getLogger(DocumentFacadeImp.class);
-	private ErrorLog elog = new ErrorLog();
-
-	public List<Document> getAllDocuments() {
-		List<Document> docList = null;
+	public List<DocumentDTO> getAllDocuments() {
 		List<DocumentDTO> fetchedList = taskManager.getAllTasks();
-
-		if (fetchedList != null) {
-			try {
-				docList = Document.toLocalDocumentList(fetchedList); 
-
-				logger.info("retrieved doc count = " + docList.size());
-				System.out.println("retrieved doc count = " + docList.size());
-			} catch (Exception e) {
-				logger.error("Error in converting to local document enetity type");
-				logger.error(elog.toStringException(e));
-				e.printStackTrace();
-			}
-		}
-		return docList;   
+		return fetchedList;   
 	}
 
-	public Document getDocumentByID(long id) {
-		qa.qcri.aidr.dbmanager.dto.DocumentDTO fetchedDoc  = taskManager.getTaskById(id);
-		Document document = null;
-		try {
-			document = Document.toLocalDocument(fetchedDoc);
-		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return document;
+	public DocumentDTO getDocumentByID(Long id) {
+		DocumentDTO fetchedDoc  = taskManager.getTaskById(id);
+		return fetchedDoc;
 	}
 
-	public List<Document> getAllLabeledDocumentbyCrisisID(long crisisID, long attributeID) {
+	public List<DocumentDTO> getAllLabeledDocumentbyCrisisID(Long crisisID, Long attributeID) {
 
 		Criterion criterion = Restrictions.eq("hasHumanLabels", true);
-		List<qa.qcri.aidr.dbmanager.dto.DocumentDTO> fetchedList = taskManager.getTaskCollectionByCriterion(crisisID, null, criterion);
-		if (fetchedList != null) {
-			try {
-				List<Document> documentList = Document.toLocalDocumentList(fetchedList);
-				return documentList;
-			} catch (Exception e) {
-				logger.error("Error in converting to local document enetity type");
-				logger.error(elog.toStringException(e));
-				e.printStackTrace();
-			}
-		}
-		return null;
+		List<DocumentDTO> fetchedList = taskManager.getTaskCollectionByCriterion(crisisID, null, criterion);
+		
+		return fetchedList;
 	}
 
 	@Override
@@ -113,20 +81,11 @@ public class DocumentFacadeImp implements DocumentFacade{
 	}
 
 	@Override
-	public List<Document> getAllUnlabeledDocumentbyCrisisID(Crisis crisis) {
+	public List<DocumentDTO> getAllUnlabeledDocumentbyCrisisID(Long crisisID) {
 		Criterion criterion = Restrictions.eq("hasHumanLabels", false);
-		List<DocumentDTO> fetchedList = taskManager.getTaskCollectionByCriterion(crisis.getCrisisID(), null, criterion);
-		if (fetchedList != null) {
-			try {
-				List<Document> documentList = Document.toLocalDocumentList(fetchedList);
-				return documentList;
-			} catch (Exception e) {
-				logger.error("Error in converting to local document enetity type");
-				logger.error(elog.toStringException(e));
-				e.printStackTrace();
-			}
-		}
-		return null;
+		List<DocumentDTO> fetchedList = taskManager.getTaskCollectionByCriterion(crisisID, null, criterion);
+		
+		return fetchedList;
 	}
 
 }

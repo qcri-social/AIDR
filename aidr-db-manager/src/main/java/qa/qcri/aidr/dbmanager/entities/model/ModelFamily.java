@@ -56,7 +56,7 @@ public class ModelFamily implements java.io.Serializable {
 
 	private boolean isActive;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "modelFamily")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "modelFamily")
 	@JsonManagedReference
 	private List<Model> models = null;
 

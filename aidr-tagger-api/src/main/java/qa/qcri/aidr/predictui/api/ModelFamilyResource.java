@@ -8,9 +8,11 @@ import java.util.Collections;
 import java.util.List;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.dbmanager.dto.TaggersForCodes;
+import qa.qcri.aidr.dbmanager.dto.TaggersForCodesRequest;
 import qa.qcri.aidr.predictui.dto.ModelFamilyDTO;
-import qa.qcri.aidr.predictui.dto.TaggersForCodes;
-import qa.qcri.aidr.predictui.dto.TaggersForCodesRequest;
+//import qa.qcri.aidr.predictui.dto.TaggersForCodes;
+//import qa.qcri.aidr.predictui.dto.TaggersForCodesRequest;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
 import javax.ejb.EJB;
@@ -31,12 +33,13 @@ import javax.ws.rs.core.Response;
 
 
 
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.predictui.entities.ModelFamily;
 import qa.qcri.aidr.predictui.facade.ModelFamilyFacade;
-
 import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 
 /**
@@ -85,7 +88,7 @@ public class ModelFamilyResource {
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{id}")
-   public Response getModelByID(@PathParam("id") int id){
+   public Response getModelByID(@PathParam("id") Long id){
        ModelFamily modelFamily = modelFamilyLocalEJB.getModelFamilyByID(id);
        return Response.ok(modelFamily).build();
    }
@@ -133,7 +136,7 @@ public class ModelFamilyResource {
     @DELETE
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteAttribute(@PathParam("id") int modelFamilyID) {
+    public Response deleteAttribute(@PathParam("id") Long modelFamilyID) {
         try {
             modelFamilyLocalEJB.deleteModelFamily(modelFamilyID);
         } catch (RuntimeException e) {

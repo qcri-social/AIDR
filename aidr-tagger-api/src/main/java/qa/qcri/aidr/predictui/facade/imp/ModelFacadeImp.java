@@ -10,6 +10,7 @@ import java.util.Collection;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelDTO;
+import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 import qa.qcri.aidr.predictui.dto.ModelHistoryWrapper;
 import qa.qcri.aidr.predictui.facade.*;
 
@@ -23,7 +24,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import qa.qcri.aidr.predictui.entities.Crisis;
-//import qa.qcri.aidr.predictui.entities.Model;
+import qa.qcri.aidr.predictui.entities.Model;
 import qa.qcri.aidr.predictui.entities.ModelFamily;
 import qa.qcri.aidr.predictui.entities.ModelNominalLabel;
 import qa.qcri.aidr.predictui.entities.NominalAttribute;
@@ -47,8 +48,8 @@ public class ModelFacadeImp implements ModelFacade {
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelResourceFacade remoteModelEJB;
 	
-	//@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
-	//private EntityManager em;
+	@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
+	private EntityManager em;
 
 	public List<ModelDTO> getAllModels() {
 		try {
@@ -106,7 +107,7 @@ public class ModelFacadeImp implements ModelFacade {
 		}
 	}
 
-	public List<ModelHistoryWrapper> getModelByModelFamilyID(int modelFamilyID, Integer start, Integer limit) {
+	public List<ModelHistoryWrapper> getModelByModelFamilyID(Long modelFamilyID, Integer start, Integer limit) {
 		ModelFamily modelFamily = em.find(ModelFamily.class, modelFamilyID);
 		Query query = em.createNamedQuery("Model.findByModelFamilyID", Model.class);
 		query.setParameter("modelFamily", modelFamily);
@@ -137,10 +138,12 @@ public class ModelFacadeImp implements ModelFacade {
 		}
 	}
 
-	public List<ModelWrapper> getModelByCrisisID(long crisisID) {
+	public List<ModelWrapper> getModelByCrisisID(Long crisisID) {
 		List<ModelWrapper> modelWrapperList = new ArrayList<ModelWrapper>();
+		
 		Crisis crisis = em.find(Crisis.class, crisisID);
 		Collection<ModelFamily> modelFamilyList = crisis.getModelFamilyCollection();
+		
 		// for each modelFamily get all the models and take avg
 		for (ModelFamily modelFamily : modelFamilyList) {
 			Collection<Model> modelList = modelFamily.getModelCollection();
@@ -215,4 +218,6 @@ public class ModelFacadeImp implements ModelFacade {
 		}
 		return modelWrapperList;
 	}
+
+
 }

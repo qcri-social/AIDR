@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
 import javax.ejb.EJB;
@@ -14,28 +15,15 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-
-
-
-
-import org.codehaus.jackson.type.TypeReference;
-//import org.apache.log4j.Logger;
+import org.apache.log4j.Logger;
 //import org.codehaus.jackson.map.ObjectMapper;
 //import org.codehaus.jackson.type.TypeReference;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 //import com.fasterxml.jackson.core.type.TypeReference;
 //import com.fasterxml.jackson.databind.ObjectMapper;
 
-
-
-import qa.qcri.aidr.predictui.entities.Document;
 import qa.qcri.aidr.predictui.facade.DocumentFacade;
-import qa.qcri.aidr.task.ejb.TaskManagerRemote;
-
 import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 
 /**
@@ -53,9 +41,7 @@ public class DocumentResource {
 	@EJB
 	private DocumentFacade documentLocalEJB;
 
-	//private static Logger logger = Logger.getLogger(DocumentResource.class);
-	private static Logger logger = LoggerFactory.getLogger(DocumentResource.class);
-	private static ErrorLog elog = new ErrorLog();
+	private static Logger logger = Logger.getLogger("aidr-tagger-api");
 	
 	public DocumentResource() {
 	}
@@ -64,10 +50,7 @@ public class DocumentResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/all")
 	public Response getAllDocuments() {
-		//List<Document> documentList = documentLocalEJB.getAllDocuments();
-		
-		//TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-		List<Document> docList = documentLocalEJB.getAllDocuments();
+		List<DocumentDTO> docList = documentLocalEJB.getAllDocuments();
 
 		ResponseWrapper response = new ResponseWrapper();
 		response.setMessage("SUCCESS");
@@ -78,19 +61,19 @@ public class DocumentResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("{id}")
-	public Response getDocumentByID(@PathParam("id") long id){
+	public Response getDocumentByID(@PathParam("id") Long id){
 		logger.info("received request for : " + id);
 
-		Document doc = documentLocalEJB.getDocumentByID(id);
+		DocumentDTO doc = documentLocalEJB.getDocumentByID(id);
 		return Response.ok(doc).build();
 	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/{crisisID}/{attributeID}/labeled/all")
-	public Response getAllLabeledDocumentByCrisisID(@PathParam("crisisID") int crisisID, @PathParam("attributeID") long attributeID){
+	public Response getAllLabeledDocumentByCrisisID(@PathParam("crisisID") Long crisisID, @PathParam("attributeID") Long attributeID){
 
-		List<Document> documentList = documentLocalEJB.getAllLabeledDocumentbyCrisisID(crisisID, attributeID);
+		List<DocumentDTO> documentList = documentLocalEJB.getAllLabeledDocumentbyCrisisID(crisisID, attributeID);
 		
 		ResponseWrapper response = new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"));
 		response.setDocuments(documentList);

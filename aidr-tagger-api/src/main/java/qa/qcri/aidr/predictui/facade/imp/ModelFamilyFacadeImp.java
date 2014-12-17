@@ -5,12 +5,13 @@
 package qa.qcri.aidr.predictui.facade.imp;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.predictui.dto.TaggersForCodes;
+import qa.qcri.aidr.dbmanager.dto.TaggersForCodes;
 import qa.qcri.aidr.predictui.facade.*;
 
 import java.math.BigInteger;
 import java.util.*;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -38,6 +39,9 @@ public class ModelFamilyFacadeImp implements ModelFamilyFacade{
 	private static Logger logger = LoggerFactory.getLogger(ModelFamilyFacadeImp.class);
 	private static ErrorLog elog = new ErrorLog();
 	
+	@EJB
+	private qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelFamilyResourceFacade remoteModelFamilyEJB;
+	
 	public List<ModelFamily> getAllModelFamilies() {
 		Query query = em.createNamedQuery("ModelFamily.findAll", ModelFamily.class);
 		try {
@@ -49,7 +53,7 @@ public class ModelFamilyFacadeImp implements ModelFamilyFacade{
 
 	}
 
-	public ModelFamily getModelFamilyByID(int id) {
+	public ModelFamily getModelFamilyByID(Long id) {
 		Query query = em.createNamedQuery("ModelFamily.findByModelFamilyID", ModelFamily.class);
 		query.setParameter("modelFamilyID", id);
 		try {
@@ -60,7 +64,7 @@ public class ModelFamilyFacadeImp implements ModelFamilyFacade{
 		}
 	}
 
-	public List<ModelFamily> getAllModelFamiliesByCrisis(long crisisID) {
+	public List<ModelFamily> getAllModelFamiliesByCrisis(Long crisisID) {
 		Query query = em.createNamedQuery("Crisis.findByCrisisID", Crisis.class);
 		query.setParameter("crisisID", crisisID);
 		Crisis crisis = null;
@@ -84,7 +88,7 @@ public class ModelFamilyFacadeImp implements ModelFamilyFacade{
 		return modelFamily;
 	}
 
-	public void deleteModelFamily(int modelFamilyID){
+	public void deleteModelFamily(Long modelFamilyID){
 		ModelFamily mf = em.find(ModelFamily.class, modelFamilyID);
 		if (mf != null){
 			em.remove(mf);
@@ -92,30 +96,7 @@ public class ModelFamilyFacadeImp implements ModelFamilyFacade{
 	}
 
 	public List<TaggersForCodes> getTaggersByCodes(final List<String> codes) {
-		List<TaggersForCodes> result = new ArrayList<TaggersForCodes>();
-
-		String sql = "select c.code as code, " +
-				" count(mf.modelFamilyID) as modelsCount " +
-				" from model_family mf " +
-				" right outer join crisis c on c.crisisID = mf.crisisID " +
-				" where c.code in :codes " +
-				" group by mf.crisisID ";
-
-		Query query = em.createNativeQuery(sql);
-		query.setParameter("codes", codes);
-		List<Object[]> rows = null;
-		try {
-			rows = query.getResultList();
-		} catch (NoResultException e) {
-			return null;
-		}
-		for (Object[] row : rows) {
-			TaggersForCodes taggersForCodes = new TaggersForCodes();
-			taggersForCodes.setCode((String) row[0]);
-			taggersForCodes.setCount((BigInteger) row[1]);
-			result.add(taggersForCodes);
-		}
-
+		List<TaggersForCodes> result = remoteModelFamilyEJB.getTaggersByCodes(codes);
 		return result;
 	}
 

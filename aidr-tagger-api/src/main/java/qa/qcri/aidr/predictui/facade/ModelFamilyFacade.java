@@ -5,9 +5,10 @@
 package qa.qcri.aidr.predictui.facade;
 
 import java.util.List;
+
 import javax.ejb.Local;
 
-import qa.qcri.aidr.predictui.dto.TaggersForCodes;
+import qa.qcri.aidr.dbmanager.dto.TaggersForCodes;
 import qa.qcri.aidr.predictui.entities.ModelFamily;
 
 /**
@@ -18,10 +19,10 @@ import qa.qcri.aidr.predictui.entities.ModelFamily;
 public interface ModelFamilyFacade {
     
     public List<ModelFamily> getAllModelFamilies();
-    public List<ModelFamily> getAllModelFamiliesByCrisis(long crisisID);
-    public ModelFamily getModelFamilyByID(int id);
+    public List<ModelFamily> getAllModelFamiliesByCrisis(Long crisisID);
+    public ModelFamily getModelFamilyByID(Long id);
     public ModelFamily addCrisisAttribute(ModelFamily modelFamily);
-    public void deleteModelFamily(int modelFamilyID);
+    public void deleteModelFamily(Long modelFamilyID);
     public List<TaggersForCodes> getTaggersByCodes(List<String> codes);
 
 }
