@@ -7,6 +7,7 @@ package qa.qcri.aidr.predictui.facade;
 import java.util.List;
 
 import javax.ejb.Local;
+import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 
 import qa.qcri.aidr.dbmanager.dto.TaggersForCodes;
 import qa.qcri.aidr.predictui.entities.ModelFamily;
@@ -18,11 +19,11 @@ import qa.qcri.aidr.predictui.entities.ModelFamily;
 @Local
 public interface ModelFamilyFacade {
     
-    public List<ModelFamily> getAllModelFamilies();
-    public List<ModelFamily> getAllModelFamiliesByCrisis(Long crisisID);
-    public ModelFamily getModelFamilyByID(Long id);
-    public ModelFamily addCrisisAttribute(ModelFamily modelFamily);
-    public void deleteModelFamily(Long modelFamilyID);
+    public List<ModelFamilyDTO> getAllModelFamilies();
+    public List<ModelFamilyDTO> getAllModelFamiliesByCrisis(Long crisisID);
+    public ModelFamilyDTO getModelFamilyByID(Long id);
+    public boolean addCrisisAttribute(ModelFamilyDTO modelFamily);
+    public boolean deleteModelFamily(Long modelFamilyID);
     public List<TaggersForCodes> getTaggersByCodes(List<String> codes);
 
 }
