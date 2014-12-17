@@ -7,7 +7,6 @@ package qa.qcri.aidr.predictui.facade.imp;
 import java.util.ArrayList;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelDTO;
 import qa.qcri.aidr.predictui.facade.*;
 
@@ -15,11 +14,8 @@ import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelDTOWrapper;
 
-import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 /**
  *
@@ -31,14 +27,9 @@ import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 public class ModelFacadeImp implements ModelFacade {
 
     @EJB
-    private TaskManagerRemote<DocumentDTO, Long> taskManager;
-
-    @EJB
     private qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelResourceFacade remoteModelEJB;
 
-    @PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
-    private EntityManager em;
-
+    @Override
     public List<ModelDTO> getAllModels() {
         try {
             return remoteModelEJB.getAllModels();
@@ -49,6 +40,7 @@ public class ModelFacadeImp implements ModelFacade {
 
     }
 
+    @Override
     public ModelDTO getModelByID(Long id) {
         try {
             return remoteModelEJB.getModelByID(id);
@@ -59,6 +51,7 @@ public class ModelFacadeImp implements ModelFacade {
         return null;
     }
 
+    @Override
     public Integer getModelCountByModelFamilyID(Long modelFamilyID) {
         try {
             return remoteModelEJB.getModelCountByModelFamilyID(modelFamilyID);
@@ -68,6 +61,7 @@ public class ModelFacadeImp implements ModelFacade {
         return null;
     }
 
+    @Override
     public List<ModelDTO> getModelByModelFamilyID(Long modelFamilyID, Integer start, Integer limit) {
         List<ModelDTO> modelDTOsList = new ArrayList<>();
         try {
@@ -78,6 +72,7 @@ public class ModelFacadeImp implements ModelFacade {
         return modelDTOsList;
     }
 
+    @Override
     public List<ModelDTOWrapper> getModelByCrisisID(Long crisisID) {
         try {
             return remoteModelEJB.getModelByCrisisID(crisisID);
