@@ -4,17 +4,10 @@
  */
 package qa.qcri.aidr.predictui.facade.imp;
 
-import java.util.ArrayList;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import qa.qcri.aidr.predictui.dto.NominalLabelDTO;
-import qa.qcri.aidr.predictui.entities.Crisis;
-import qa.qcri.aidr.predictui.entities.NominalAttribute;
-import qa.qcri.aidr.predictui.entities.NominalLabel;
+import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.predictui.facade.NominalLabelResourceFacade;
 
 /**
@@ -24,85 +17,31 @@ import qa.qcri.aidr.predictui.facade.NominalLabelResourceFacade;
 @Stateless
 public class NominalLabelResourceImp implements NominalLabelResourceFacade {
 
-    @PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
-    private EntityManager em;
+    @EJB
+    NominalLabelResourceFacade remoteNominalLabelEJB;
 
-    public NominalLabel addNominalLabel(NominalLabelDTO label) {
-
-        Query attributeQuery = em.createNamedQuery("NominalAttribute.findByNominalAttributeID", NominalAttribute.class);
-        attributeQuery.setParameter("nominalAttributeID", label.getNominalAttributeID());
-        NominalAttribute dbAtt = (NominalAttribute) attributeQuery.getSingleResult();
-
-        NominalLabel labelDB = new NominalLabel();
-        labelDB.setDescription(label.getDescription());
-        labelDB.setName(label.getName());
-        labelDB.setNominalAttribute(dbAtt);
-        labelDB.setNominalLabelCode(label.getNominalLabelCode());
-        labelDB.setSequence(label.getSequence());
-
-        em.persist(labelDB);
-        return labelDB;
-    }
-
-    public NominalLabel getNominalLabelByID(int id) {
-        NominalLabel label = null;
-        try {
-            Query query = em.createNamedQuery("NominalLabel.findByNominalLabelID", NominalLabel.class);
-            query.setParameter("nominalLabelID", id);
-
-            label = (NominalLabel) query.getSingleResult();
-
-        } catch (NoResultException e) {
-            return null;
-        }
-
-        return label;
+    @Override
+    public NominalLabelDTO addNominalLabel(NominalLabelDTO label) {
+        return remoteNominalLabelEJB.addNominalLabel(label);
     }
 
     @Override
-    public NominalLabel editNominalLabel(NominalLabelDTO label) {
-        if (label == null) {
-            return null;
-        }
-        NominalLabel labelToDB = new NominalLabel();
-        try {
-            
-            Query attributeQuery = em.createNamedQuery("NominalAttribute.findByNominalAttributeID", NominalAttribute.class);
-            attributeQuery.setParameter("nominalAttributeID", label.getNominalAttributeID());
-            NominalAttribute dbAtt = (NominalAttribute) attributeQuery.getSingleResult();
-
-        
-            labelToDB.setDescription(label.getDescription());
-            labelToDB.setName(label.getName());
-            labelToDB.setNominalAttribute(dbAtt);
-            labelToDB.setNominalLabelCode(label.getNominalLabelCode());
-            labelToDB.setNominalLabelID(label.getNominalLabelID());
-            labelToDB.setSequence(label.getSequence());
-            
-            NominalLabel dbLabel = em.find(NominalLabel.class, labelToDB.getNominalLabelID());
-            if (dbLabel != null) {
-                em.merge(labelToDB);
-                return labelToDB;
-            }
-        } catch (NoResultException e) {
-            return null;
-        }
-        return labelToDB;
-
-    }
-
-    public List<NominalLabel> getAllNominalLabel() {
-        List<NominalLabel> labelList = new ArrayList<NominalLabel>();
-        Query q = em.createNamedQuery("NominalLabel.findAll", NominalLabel.class);
-        labelList = q.getResultList();
-        return labelList;
+    public NominalLabelDTO getNominalLabelByID(Long id) {
+        return remoteNominalLabelEJB.getNominalLabelByID(id);
     }
 
     @Override
-    public void deleteNominalLabel(int labelID) {
-        NominalLabel label = em.find(NominalLabel.class, labelID);
-        if (label != null) {
-            em.remove(label);
-        }
+    public NominalLabelDTO editNominalLabel(NominalLabelDTO label) {
+        return remoteNominalLabelEJB.editNominalLabel(label);
+    }
+
+    @Override
+    public List<NominalLabelDTO> getAllNominalLabel() {
+        return remoteNominalLabelEJB.getAllNominalLabel();
+    }
+
+    @Override
+    public void deleteNominalLabel(Long labelID) {
+        remoteNominalLabelEJB.deleteNominalLabel(labelID);
     }
 }
