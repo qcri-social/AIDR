@@ -4,7 +4,6 @@
  */
 package qa.qcri.aidr.dbmanager.dto.taggerapi;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -15,28 +14,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Imran
  */
 @XmlRootElement
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class ModelDTOWrapper implements Serializable {
-
-    @XmlElement
-    private Long modelID;
-    @XmlElement
-    private Long modelFamilyID;
-    @XmlElement
-    private Long attributeID;
-    @XmlElement
-    private String attribute;
-    @XmlElement
-    private String status;
-    @XmlElement
-    private long trainingExamples;
-    @XmlElement
-    private long classifiedDocuments;
-    @XmlElement
-    private double auc;
-
-    public ModelDTOWrapper() {}
+public class ModelWrapper implements Serializable{
     
+	@XmlElement private Long modelID;
+	@XmlElement private Long modelFamilyID;
+	@XmlElement private Long attributeID;
+	@XmlElement private String attribute;
+	@XmlElement private String status;
+	@XmlElement private long trainingExamples;
+	@XmlElement private long classifiedDocuments;
+	@XmlElement private double auc;
+
+	public ModelWrapper() {}
     /**
      * @return the attribute
      */

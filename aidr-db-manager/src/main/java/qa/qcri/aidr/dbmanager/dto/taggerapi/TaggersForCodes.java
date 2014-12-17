@@ -1,4 +1,4 @@
-package qa.qcri.aidr.dbmanager.dto;
+package qa.qcri.aidr.dbmanager.dto.taggerapi;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -13,6 +13,8 @@ public class TaggersForCodes implements Serializable {
 
 	@XmlElement private BigInteger count;
 
+	public TaggersForCodes() {}
+	
     public String getCode() {
         return code;
     }

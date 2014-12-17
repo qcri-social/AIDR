@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import qa.qcri.aidr.dbmanager.dto.ModelDTO;
-import qa.qcri.aidr.predictui.dto.ModelHistoryWrapper;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelHistoryWrapper;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelWrapper;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
 import javax.ejb.EJB;
@@ -19,9 +20,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import qa.qcri.aidr.predictui.entities.Model;
 import qa.qcri.aidr.predictui.facade.ModelFacade;
-import qa.qcri.aidr.predictui.dto.ModelWrapper;
 import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 
 /**
@@ -64,8 +63,8 @@ public class ModelResource {
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("crisis/{crisisID}")
-   public Response getModelByCrisisID(@PathParam("crisisID") int crisisID){
-       List<ModelWrapper> modelList = modelLocalEJB.getModelByCrisisID((long) crisisID);
+   public Response getModelByCrisisID(@PathParam("crisisID") Long crisisID){
+       List<ModelWrapper> modelList = modelLocalEJB.getModelByCrisisID(crisisID);
        ResponseWrapper response = new ResponseWrapper();
        if (modelList == null){
            response.setMessage("No models found for the given crisis-id");

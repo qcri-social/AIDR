@@ -17,21 +17,17 @@ import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelDTO;
+import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelNominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
-import qa.qcri.aidr.dbmanager.dto.TaggersForCodes;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelDTOWrapper;
-import qa.qcri.aidr.predictui.dto.ModelHistoryWrapper;
-import qa.qcri.aidr.predictui.dto.ModelWrapper;
-//import qa.qcri.aidr.predictui.dto.TaggersForCodes;
+import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelHistoryWrapper;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelWrapper;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
+import qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabel;
 import qa.qcri.aidr.predictui.dto.TrainingDataDTO;
 import qa.qcri.aidr.predictui.entities.AidrCollection;
-import qa.qcri.aidr.predictui.entities.Crisis;
-import qa.qcri.aidr.predictui.entities.Document;
-import qa.qcri.aidr.predictui.entities.Model;
-import qa.qcri.aidr.predictui.entities.ModelFamily;
-import qa.qcri.aidr.predictui.entities.ModelNominalLabel;
-import qa.qcri.aidr.predictui.entities.NominalLabel;
+
 
 /**
  *
@@ -53,7 +49,7 @@ public class ResponseWrapper implements Serializable {
     @XmlElement
     private List<CrisisDTO> crisises;
     @XmlElement
-    private List<NominalLabel> nominalLabels;
+    private List<NominalLabelDTO> nominalLabels;
     @XmlElement
     private List<NominalAttributeDTO> nominalAttributes;
     @XmlElement
@@ -61,7 +57,7 @@ public class ResponseWrapper implements Serializable {
     @XmlElement
     private List<DocumentDTO> documents;
     @XmlElement
-    private List<ModelFamily> modelFamilies;
+    private List<ModelFamilyDTO> modelFamilies;
     @XmlElement
     private List<ModelNominalLabel> modelNominalLabels;
     @XmlElement
@@ -163,14 +159,14 @@ public class ResponseWrapper implements Serializable {
     /**
      * @return the nominalLabels
      */
-    public List<NominalLabel> getNominalLabels() {
+    public List<NominalLabelDTO> getNominalLabels() {
         return nominalLabels;
     }
 
     /**
      * @param nominalLabels the nominalLabels to set
      */
-    public void setNominalLabels(List<NominalLabel> nominalLabels) {
+    public void setNominalLabels(List<NominalLabelDTO> nominalLabels) {
         this.nominalLabels = nominalLabels;
     }
 
@@ -219,14 +215,14 @@ public class ResponseWrapper implements Serializable {
     /**
      * @return the modelFamilies
      */
-    public List<ModelFamily> getModelFamilies() {
+    public List<ModelFamilyDTO> getModelFamilies() {
         return modelFamilies;
     }
 
     /**
      * @param modelFamilies the modelFamilies to set
      */
-    public void setModelFamilies(List<ModelFamily> modelFamilies) {
+    public void setModelFamilies(List<ModelFamilyDTO> modelFamilies) {
         this.modelFamilies = modelFamilies;
     }
 

@@ -5,7 +5,10 @@
 package qa.qcri.aidr.predictui.api;
 
 import java.util.List;
+
+import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.core.Context;
@@ -20,7 +23,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import qa.qcri.aidr.predictui.dto.NominalLabelDTO;
+
+//import qa.qcri.aidr.predictui.dto.NominalLabelDTO;
 import qa.qcri.aidr.predictui.entities.NominalLabel;
 import qa.qcri.aidr.predictui.facade.NominalLabelResourceFacade;
 
@@ -45,7 +49,7 @@ public class NominalLabelResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/all")
     public Response getAllNominalLabels() {
-        List<NominalLabel> labelList = labelLocal.getAllNominalLabel();
+        List<NominalLabelDTO> labelList = labelLocal.getAllNominalLabel();
         ResponseWrapper response = new ResponseWrapper();
         response.setNominalLabels(labelList);
         return Response.ok(response).build();
@@ -54,8 +58,8 @@ public class NominalLabelResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}")
-    public Response getNominalLabelByID(@PathParam("id") int labelID) {
-        NominalLabel label = labelLocal.getNominalLabelByID(labelID);
+    public Response getNominalLabelByID(@PathParam("id") Long labelID) {
+        NominalLabelDTO label = labelLocal.getNominalLabelByID(labelID);
         if (label == null)
             return Response.noContent().build();
         
@@ -68,7 +72,7 @@ public class NominalLabelResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response addLabel(NominalLabelDTO label){
      
-        NominalLabel newLabel =  labelLocal.addNominalLabel(label);
+        NominalLabelDTO newLabel =  labelLocal.addNominalLabel(label);
         return Response.ok(newLabel).build();
     }
     
@@ -76,7 +80,7 @@ public class NominalLabelResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response editLabel(NominalLabelDTO label){
-        NominalLabel newLabel =  labelLocal.editNominalLabel(label);
+        NominalLabelDTO newLabel =  labelLocal.editNominalLabel(label);
         return Response.ok(newLabel).build();
     }
     
@@ -84,7 +88,7 @@ public class NominalLabelResource {
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteLabel(@PathParam("id") int labelID){
+    public Response deleteLabel(@PathParam("id") Long labelID){
         try{
         labelLocal.deleteNominalLabel(labelID);
         }catch(RuntimeException e){

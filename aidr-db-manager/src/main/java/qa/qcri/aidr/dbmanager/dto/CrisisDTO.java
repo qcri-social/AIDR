@@ -128,12 +128,8 @@ public class CrisisDTO implements Serializable  {
 
 	}
 
-	public Long getCrisisID() throws PropertyNotSetException {
-		if (this.crisisID != null) {
+	public Long getCrisisID() {
 			return this.crisisID;
-		} else {
-			throw new PropertyNotSetException("crisisID cannot be null");
-		}
 	}
 
 	public void setCrisisID(Long crisisID) {

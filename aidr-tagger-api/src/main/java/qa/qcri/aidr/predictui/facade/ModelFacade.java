@@ -9,10 +9,8 @@ import java.util.List;
 import javax.ejb.Local;
 
 import qa.qcri.aidr.dbmanager.dto.ModelDTO;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelDTOWrapper;
-import qa.qcri.aidr.predictui.dto.ModelHistoryWrapper;
-//import qa.qcri.aidr.predictui.entities.Model;
-import qa.qcri.aidr.predictui.dto.ModelWrapper;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelHistoryWrapper;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelWrapper;
 
 /**
  *
@@ -27,8 +25,8 @@ public interface ModelFacade {
 
     public Integer getModelCountByModelFamilyID(Long modelFamilyID);
 
-    public List<ModelDTO> getModelByModelFamilyID(Long modelFamilyID, Integer start, Integer limit);
+    public List<ModelHistoryWrapper> getModelByModelFamilyID(Long modelFamilyID, Integer start, Integer limit);
 
-    public List<ModelDTOWrapper> getModelByCrisisID(Long crisisID);
+    public List<ModelWrapper> getModelByCrisisID(Long crisisID);
 
 }

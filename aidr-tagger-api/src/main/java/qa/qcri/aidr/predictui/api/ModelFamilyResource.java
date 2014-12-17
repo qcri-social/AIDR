@@ -8,11 +8,9 @@ import java.util.Collections;
 import java.util.List;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.dbmanager.dto.TaggersForCodes;
-import qa.qcri.aidr.dbmanager.dto.TaggersForCodesRequest;
-import qa.qcri.aidr.predictui.dto.ModelFamilyDTO;
-//import qa.qcri.aidr.predictui.dto.TaggersForCodes;
-//import qa.qcri.aidr.predictui.dto.TaggersForCodesRequest;
+import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodesRequest;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
 import javax.ejb.EJB;
@@ -29,14 +27,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-//import org.apache.log4j.Logger;
-
-
-
-
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.predictui.entities.ModelFamily;
 import qa.qcri.aidr.predictui.facade.ModelFamilyFacade;
@@ -57,7 +48,7 @@ public class ModelFamilyResource {
     private ModelFamilyFacade modelFamilyLocalEJB;
 
     //private static Logger logger = Logger.getLogger(ModelFamilyResource.class);
-    private static Logger logger = LoggerFactory.getLogger(ModelFamilyResource.class);
+    private static Logger logger = Logger.getLogger("aidr-tagger-api");
     private static ErrorLog elog = new ErrorLog();
     
     public ModelFamilyResource() {
@@ -67,7 +58,7 @@ public class ModelFamilyResource {
     @Produces("application/json")
     @Path("/all")
     public Response getAllModelFamilies() {
-        List<ModelFamily> modelFamilyList = modelFamilyLocalEJB.getAllModelFamilies();
+        List<ModelFamilyDTO> modelFamilyList = modelFamilyLocalEJB.getAllModelFamilies();
         ResponseWrapper response = new ResponseWrapper();
         response.setMessage("SUCCESS");
         response.setModelFamilies(modelFamilyList);
@@ -77,8 +68,8 @@ public class ModelFamilyResource {
     @GET
     @Produces("application/json")
     @Path("/crisis/{id}")
-    public Response getAllModelFamiliesByCrisisID(@PathParam("id") int crisisID) {
-        List<ModelFamily> modelFamilyList = modelFamilyLocalEJB.getAllModelFamiliesByCrisis((long) crisisID);
+    public Response getAllModelFamiliesByCrisisID(@PathParam("id") Long crisisID) {
+        List<ModelFamilyDTO> modelFamilyList = modelFamilyLocalEJB.getAllModelFamiliesByCrisis(crisisID);
         ResponseWrapper response = new ResponseWrapper();
         response.setMessage("SUCCESS");
         response.setModelFamilies(modelFamilyList);
@@ -89,7 +80,7 @@ public class ModelFamilyResource {
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{id}")
    public Response getModelByID(@PathParam("id") Long id){
-       ModelFamily modelFamily = modelFamilyLocalEJB.getModelFamilyByID(id);
+       ModelFamilyDTO modelFamily = modelFamilyLocalEJB.getModelFamilyByID(id);
        return Response.ok(modelFamily).build();
    }
    
@@ -98,17 +89,15 @@ public class ModelFamilyResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response addCrisisAttribute(ModelFamilyDTO modelFamilyDTO) {
 //      because ModelFamily has @XmlTransient annotation for crises and crisis was always null
-        ModelFamily modelFamily = transformModelFamilyDTO(modelFamilyDTO);
         try {
-            modelFamily = modelFamilyLocalEJB.addCrisisAttribute(modelFamily);
+            modelFamilyLocalEJB.addCrisisAttribute(modelFamilyDTO);
+            ModelFamilyDTO modelFamily = modelFamilyLocalEJB.getModelFamilyByID(modelFamilyDTO.getModelFamilyId());
+            return Response.ok(modelFamily).build();
         } catch (RuntimeException e) {
-            logger.error("Error while adding Crisis attribute. Possible causes could be duplication of primary key, incomplete data, incompatible data format: " + modelFamilyDTO.getCrisis().getCode() + "," + modelFamilyDTO.getNominalAttribute().getCode());
+            logger.error("Error while adding Crisis attribute. Possible causes could be duplication of primary key, incomplete data, incompatible data format: " + modelFamilyDTO.getCrisisDTO().getCode() + "," + modelFamilyDTO.getNominalAttributeDTO().getCode());
             logger.error(elog.toStringException(e));
         	return Response.ok("Error while adding Crisis attribute. Possible causes could be duplication of primary key, incomplete data, incompatible data format.").build();
         }
-
-        return Response.ok(modelFamily).build();
-
     }
 
     @POST
@@ -125,6 +114,7 @@ public class ModelFamilyResource {
         return Response.ok(response).build();
     }
 
+    /*
     private ModelFamily transformModelFamilyDTO(ModelFamilyDTO modelFamilyDTO){
         ModelFamily modelFamily = new ModelFamily();
         modelFamily.setCrisis(modelFamilyDTO.getCrisis());
@@ -132,6 +122,7 @@ public class ModelFamilyResource {
         modelFamily.setIsActive(modelFamilyDTO.getIsActive());
         return modelFamily;
     }
+    */
     
     @DELETE
     @Path("{id}")

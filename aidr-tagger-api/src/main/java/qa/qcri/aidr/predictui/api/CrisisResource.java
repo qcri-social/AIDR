@@ -7,12 +7,13 @@ package qa.qcri.aidr.predictui.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.predictui.dto.CrisisDTO;
-import qa.qcri.aidr.predictui.dto.CrisisTypeDTO;
-import qa.qcri.aidr.predictui.entities.Crisis;
+import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
@@ -23,11 +24,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 
 /**
@@ -55,9 +58,9 @@ public class CrisisResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("{id}")
 	public Response getCrisisByID(@PathParam("id") Long id) {
-		Crisis crisis = null;
+		CrisisDTO crisis = null;
 		try {
-			crisis = crisisLocalEJB.getCrisisByID((long) id);
+			crisis = crisisLocalEJB.getCrisisByID(id);
 			System.out.println("fetched crisis for id " + id + ": " + (crisis != null ? crisis.getCode() : "null"));
 		} catch (RuntimeException e) {
 			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
@@ -76,31 +79,33 @@ public class CrisisResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/by-code/{code}")
 	public Response getCrisisByCode(@PathParam("code") String crisisCode) {
-		Crisis crisis = null;
+		CrisisDTO crisis = null;
 		try {
 			crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
 		} catch (RuntimeException e) {
 			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
 		}
-		CrisisDTO dto = transformCrisisToDto(crisis);
-		return Response.ok(dto).build();
+		return Response.ok(crisis).build();
 	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/code/{code}")
 	public Response isCrisisExists(@PathParam("code") String crisisCode) {
-		Integer crisisId = crisisLocalEJB.isCrisisExists(crisisCode);
+		CrisisDTO crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
+		long crisisId = 0;
 		//        null value can not be correct deserialized
-		if (crisisId == null){
+		if (crisis == null){
 			crisisId = 0;
+		} else {
+				crisisId = crisis.getCrisisID();
 		}
-		//TODO: Following way of creating JSON should be changed through a proper and automatic way
+			
         Gson gson = new Gson();
 		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("crisisCode", crisisCode);
 		result.put("crisisId", crisisId);
-		//String response = "{\"crisisCode\":\"" + crisisCode + "\", \"crisisId\":\"" + crisisId + "\"}";
+
 		return Response.ok(gson.toJson(result)).build();
 	}
 
@@ -111,9 +116,7 @@ public class CrisisResource {
 	public Response getCrisesByCodes(List<String> codes) {
 		try {
 			ObjectMapper objectMapper = new ObjectMapper();
-
 			HashMap<String, Integer> classifiersNumbers = crisisLocalEJB.countClassifiersByCrisisCodes(codes);
-
 			String rv = objectMapper.writeValueAsString(classifiersNumbers);
 
 			return Response.ok(rv).build();
@@ -133,7 +136,7 @@ public class CrisisResource {
 	public Response getAllCrisis() {
 		System.out.println("Received request");
 
-		List<Crisis> crisisList = crisisLocalEJB.getAllCrisis();
+		List<CrisisDTO> crisisList = crisisLocalEJB.getAllCrisis();
 		ResponseWrapper response = new ResponseWrapper();
 		response.setMessage(getProperty("STATUS_CODE_SUCCESS"));
 		response.setCrisises(crisisList);
@@ -152,8 +155,8 @@ public class CrisisResource {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public ResponseWrapper getAllCrisisByUserID(@QueryParam("userID") int userID) throws Exception {
-		List<Crisis> crisisList = crisisLocalEJB.getAllCrisisByUserID(userID);
+	public ResponseWrapper getAllCrisisByUserID(@QueryParam("userID") Long userID) throws Exception {
+		List<CrisisDTO> crisisList = crisisLocalEJB.getAllCrisisByUserID(userID);
 		System.out.println("list of crisis for userID " + userID + ": " + (crisisList != null ? crisisList.size() : 0));
 		ResponseWrapper response = new ResponseWrapper();
 		if (crisisList == null) {
@@ -167,34 +170,32 @@ public class CrisisResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response addCrisis(Crisis crisis) {
+	public Response addCrisis(CrisisDTO crisis) {
 		try {
-			// koushik: set default 
 			crisis.setIsTrashed(false);
 			crisisLocalEJB.addCrisis(crisis);
+			return Response.ok(getProperty("STATUS_CODE_SUCCESS")).build();
 		} catch (RuntimeException e) {
 			logger.error("Error while adding Crisis. Possible causes could be duplication of primary key, incomplete data, incompatible data format. For crisis: " + crisis.getCode());
 			logger.error(elog.toStringException(e));
 			return Response.ok("Error while adding Crisis. Possible causes could be duplication of primary key, incomplete data, incompatible data format.").build();
 		}
-
-		return Response.ok(getProperty("STATUS_CODE_SUCCESS")).build();
-
 	}
 
 	@PUT
 	@Consumes("application/json")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response editCrisis(Crisis crisis) {
+	public Response editCrisis(CrisisDTO crisis) {
 		try {
-			crisis = crisisLocalEJB.editCrisis(crisis);
+			CrisisDTO updatedCrisis = crisisLocalEJB.editCrisis(crisis);
+			return Response.ok(updatedCrisis).build();
 		} catch (RuntimeException e) {
 			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
 		}
-		CrisisDTO dto = transformCrisisToDto(crisis);
-		return Response.ok(dto).build();
+		
 	}
-
+	
+	/*
 	private CrisisDTO transformCrisisToDto(Crisis c){
 		CrisisTypeDTO typeDTO = null;
 		if (c.getCrisisType() != null) {
@@ -207,7 +208,8 @@ public class CrisisResource {
 		dto.setCrisisType(typeDTO);
 		return dto;
 	}
-
+	*/
+	
 	@GET
 	@Produces("application/json")
 	@Path("/attributes/count/{crisisCode}")

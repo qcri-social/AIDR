@@ -10,7 +10,7 @@ import java.util.List;
 import javax.ejb.Local;
 import javax.persistence.PersistenceException;
 
-import qa.qcri.aidr.predictui.entities.Crisis;
+import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 
 /**
  *
@@ -19,19 +19,19 @@ import qa.qcri.aidr.predictui.entities.Crisis;
 @Local
 public interface CrisisResourceFacade {
     
-   public Crisis addCrisis(Crisis crisis) throws PersistenceException; 
+   public CrisisDTO addCrisis(CrisisDTO crisis) throws PersistenceException; 
    
-   public Crisis editCrisis(Crisis crisis); 
+   public CrisisDTO editCrisis(CrisisDTO crisis); 
    
-   public Crisis getCrisisByID(long id);
+   public CrisisDTO getCrisisByID(Long id);
 
-   public Crisis getCrisisByCode(String code);
+   public CrisisDTO getCrisisByCode(String code);
 
-   public Integer isCrisisExists(String crisisCode);
+   public Boolean isCrisisExists(String crisisCode);
    
-   public List<Crisis> getAllCrisis(); 
+   public List<CrisisDTO> getAllCrisis(); 
    
-   public List<Crisis> getAllCrisisByUserID(int userID); 
+   public List<CrisisDTO> getAllCrisisByUserID(Long userID); 
 
    HashMap<String, Integer> countClassifiersByCrisisCodes(List<String> codes);
 }

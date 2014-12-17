@@ -7,10 +7,9 @@ package qa.qcri.aidr.predictui.facade;
 import java.util.List;
 
 import javax.ejb.Local;
-import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 
-import qa.qcri.aidr.dbmanager.dto.TaggersForCodes;
-import qa.qcri.aidr.predictui.entities.ModelFamily;
+import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
 
 /**
  *

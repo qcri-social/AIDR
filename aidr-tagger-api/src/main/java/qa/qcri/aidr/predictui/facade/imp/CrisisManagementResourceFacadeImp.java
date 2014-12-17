@@ -1,5 +1,6 @@
 package qa.qcri.aidr.predictui.facade.imp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -13,11 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
+import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.predictui.api.CrisisManagementResource;
-import qa.qcri.aidr.predictui.entities.Crisis;
-//import qa.qcri.aidr.predictui.entities.Document;
-import qa.qcri.aidr.predictui.entities.ModelFamily;
 import qa.qcri.aidr.predictui.facade.CrisisManagementResourceFacade;
 import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 import qa.qcri.aidr.predictui.facade.ModelFamilyFacade;
@@ -31,13 +32,10 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade remoteDocumentEJB;
 
 	@EJB
-	private CrisisResourceFacade crisisLocalEJB;
+	private qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade remoteCrisisEJB;
 
 	@EJB
-	private ModelFamilyFacade modelFamilyLocalEJB;
-
-	@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
-	private EntityManager em;
+	private qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelFamilyResourceFacade remoteModelFamilyEJB;
 
 	@EJB
 	private TaskManagerRemote<qa.qcri.aidr.dbmanager.dto.DocumentDTO, Long> taskManager;
@@ -58,7 +56,7 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 		logger.info("Received request to trash collection from aidr_predict DB: " + crisisCode);
 
 		try {
-			Crisis crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
+			CrisisDTO crisis = remoteCrisisEJB.getCrisisByCode(crisisCode);
 			logger.info("crisis found for crisis code " + crisisCode + ": " + crisis);
 			if (null == crisis) {
 				StringBuilder sb = new StringBuilder().append("{\"TRASHED\":").append(new Long(-1)).append("}");
@@ -67,18 +65,20 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 			}
 			//Otherwise go ahead with trashing
 			crisis.setIsTrashed(true);
-			em.merge(crisis);
+			remoteCrisisEJB.merge(crisis.toEntity());
 
-			List<ModelFamily> associatedModels = modelFamilyLocalEJB.getAllModelFamiliesByCrisis(crisis.getCrisisID());
+			List<ModelFamilyDTO> associatedModels = remoteModelFamilyEJB.getAllModelFamiliesByCrisis(crisis.getCrisisID());
 			if (null == associatedModels) {
 				StringBuilder sb = new StringBuilder().append("{\"TRASHED\":").append(crisis.getCrisisID()).append("}");
 				logger.info("Success in deleting crisis: " + crisisCode);
 				return null;
 			}
-			for (ModelFamily model: associatedModels) {
+			List<ModelFamily> list = new ArrayList<ModelFamily>();
+			for (ModelFamilyDTO model: associatedModels) {
 				model.setIsActive(false);
-				em.merge(model);
+				list.add(model.toEntity());
 			}
+			remoteModelFamilyEJB.merge(list);
 
 			List<DocumentDTO> associatedDocs = remoteDocumentEJB.findUnLabeledDocumentsByCrisisID(crisis.getCrisisID());
 			if (null == associatedDocs) {
@@ -87,15 +87,11 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 				return sb.toString();
 			}			
 			logger.info("Found for " + crisisCode + ", unlabeled docs to delete  = " + associatedDocs.size());
-			//TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();		
-			for (DocumentDTO document: associatedDocs) {
-				//em.remove(document);
-				try {
-					taskManager.deleteTask(document);
-				} catch (Exception e) {
-					logger.error("Error in deleting document: " + document);
-					logger.error(elog.toStringException(e));
-				}
+			try {
+				taskManager.deleteTask(associatedDocs);
+			} catch (Exception e) {
+				logger.error("Error in deleting document set");
+				logger.error(elog.toStringException(e));
 			}
 			List<DocumentDTO> temp = remoteDocumentEJB.findUnLabeledDocumentsByCrisisID(crisis.getCrisisID());
 			logger.info("Post Trashing: found for " + crisisCode + ", unlabeled docs after delete = " + temp.size());		
@@ -123,11 +119,11 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 		// 2. set model_family.isActive = 1
 		System.out.println("Received request to untrash collection from aidr_predict DB: " + crisisCode);
 		logger.info("Received request to untrash collection from aidr_predict DB: " + crisisCode);
-		Crisis crisis = null;
+		CrisisDTO crisis = null;
 
 		StringBuilder sb = new StringBuilder();
 		try {
-			crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
+			crisis = remoteCrisisEJB.getCrisisByCode(crisisCode);
 			if (null == crisis) {
 				logger.warn("crisis does not exist in aidr_predict DB for: " + crisisCode);
 				return sb.append("{\"status\": \"UNTRASHED\"}").toString();
@@ -141,14 +137,16 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 		try {
 			if (crisis != null) {
 				crisis.setIsTrashed(false);
-				em.merge(crisis);
+				remoteCrisisEJB.merge(crisis.toEntity());
 
-				List<ModelFamily> associatedModels = modelFamilyLocalEJB.getAllModelFamiliesByCrisis(crisis.getCrisisID());
+				List<ModelFamilyDTO> associatedModels = remoteModelFamilyEJB.getAllModelFamiliesByCrisis(crisis.getCrisisID());
 				if (associatedModels != null) {
-					for (ModelFamily model: associatedModels) {
+					List<ModelFamily> list = new ArrayList<ModelFamily>();
+					for (ModelFamilyDTO model: associatedModels) {
 						model.setIsActive(true);
-						em.merge(model);
+						list.add(model.toEntity());
 					}
+					remoteModelFamilyEJB.merge(list);
 					logger.info("Found for " + crisisCode + ", model families  = " + associatedModels.size());
 				}
 			}

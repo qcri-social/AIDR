@@ -19,7 +19,7 @@ import org.hibernate.HibernateException;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
-import qa.qcri.aidr.dbmanager.dto.TaggersForCodes;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelFamilyResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
@@ -90,7 +90,7 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
     }
 
 	public List<TaggersForCodes> getTaggersByCodes(final List<String> codes) {
-		List<qa.qcri.aidr.dbmanager.dto.TaggersForCodes> result = new ArrayList<TaggersForCodes>();
+		List<qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes> result = new ArrayList<TaggersForCodes>();
 
 		String sql = "select c.code as code, " +
 				" count(mf.modelFamilyID) as modelsCount " +

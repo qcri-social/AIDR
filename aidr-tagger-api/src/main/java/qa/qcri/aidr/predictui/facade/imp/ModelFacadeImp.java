@@ -8,13 +8,16 @@ import java.util.ArrayList;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelDTO;
+
 import qa.qcri.aidr.predictui.facade.*;
 
 import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelDTOWrapper;
+
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelWrapper;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelHistoryWrapper;
 
 
 /**
@@ -62,18 +65,18 @@ public class ModelFacadeImp implements ModelFacade {
     }
 
     @Override
-    public List<ModelDTO> getModelByModelFamilyID(Long modelFamilyID, Integer start, Integer limit) {
-        List<ModelDTO> modelDTOsList = new ArrayList<>();
+    public List<ModelHistoryWrapper> getModelByModelFamilyID(Long modelFamilyID, Integer start, Integer limit) {
+        List<ModelHistoryWrapper> modelsList = new ArrayList<ModelHistoryWrapper>();
         try {
-            modelDTOsList = remoteModelEJB.getModelByModelFamilyID(modelFamilyID, start, limit);
+            modelsList = remoteModelEJB.getModelByModelFamilyID(modelFamilyID, start, limit);
         } catch (PropertyNotSetException pe) {
             pe.printStackTrace();
         }
-        return modelDTOsList;
+        return modelsList;
     }
 
     @Override
-    public List<ModelDTOWrapper> getModelByCrisisID(Long crisisID) {
+    public List<ModelWrapper> getModelByCrisisID(Long crisisID) {
         try {
             return remoteModelEJB.getModelByCrisisID(crisisID);
         } catch (PropertyNotSetException pe) {

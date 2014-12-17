@@ -53,7 +53,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
     @NamedQuery(name = "Model.findByAvgAuc", query = "SELECT m FROM Model m WHERE m.avgAuc = :avgAuc"),
     @NamedQuery(name = "Model.findByTrainingCount", query = "SELECT m FROM Model m WHERE m.trainingCount = :trainingCount"),
     @NamedQuery(name = "Model.findByTrainingTime", query = "SELECT m FROM Model m WHERE m.trainingTime = :trainingTime"),
-    @NamedQuery(name = "Model.findByModelFamilyID", query = "SELECT m FROM Model m WHERE m.modelFamily = :modelFamily order by trainingTime desc")})
+    })
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Model implements Serializable {
     

@@ -1,4 +1,4 @@
-package qa.qcri.aidr.dbmanager.dto;
+package qa.qcri.aidr.dbmanager.dto.taggerapi;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;

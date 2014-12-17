@@ -5,7 +5,6 @@
 package qa.qcri.aidr.predictui.facade.imp;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.dbmanager.dto.TaggersForCodes;
 import qa.qcri.aidr.predictui.facade.*;
 
 import java.util.*;
@@ -15,8 +14,10 @@ import javax.ejb.Stateless;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
 
 
 /**

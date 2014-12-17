@@ -12,7 +12,7 @@ import javax.ejb.Remote;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
-import qa.qcri.aidr.dbmanager.dto.TaggersForCodes;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.CoreDBServiceFacade;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 

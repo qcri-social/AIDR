@@ -22,16 +22,15 @@ import javax.ws.rs.core.UriInfo;
 
 
 
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.predictui.dto.CrisisDTO;
-import qa.qcri.aidr.predictui.dto.CrisisTypeDTO;
-import qa.qcri.aidr.predictui.entities.Crisis;
+import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
-
 import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 
 /**
@@ -58,44 +57,45 @@ public class TrainingDataResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{crisisCode}/getItem")
-    public Response getTweetToTag(@PathParam("crisisCode") int crisisCode) {
-        Crisis crisis = null;
+    public Response getTweetToTag(@PathParam("crisisCode") Long crisisId) {
+        CrisisDTO crisis = null;
         try {
-            crisis = crisisLocalEJB.getCrisisByID(crisisCode);
+            crisis = crisisLocalEJB.getCrisisByID(crisisId);
+            return Response.ok(crisis).build();
         } catch (RuntimeException e) {
-            logger.error("Error in getting tweet to tag for crisis: " + crisisCode);
+            logger.error("Error in getting tweet to tag for crisis: " + crisisId);
             logger.error(elog.toStringException(e));
         	return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
         }
-        return Response.ok(crisis).build();
+      
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/by-code/{code}")
     public Response getCrisisByCode(@PathParam("code") String crisisCode) {
-        Crisis crisis = null;
+        CrisisDTO crisis = null;
         try {
             crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
+            return Response.ok(crisis).build();
         } catch (RuntimeException e) {
             logger.error("Error in getting crisis by code: " + crisisCode);
             logger.error(elog.toStringException(e));
         	return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
         }
-        CrisisDTO dto = transformCrisisToDto(crisis);
-        return Response.ok(dto).build();
+  
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/code/{code}")
     public Response isCrisisExists(@PathParam("code") String crisisCode) {
-        Integer crisisId = crisisLocalEJB.isCrisisExists(crisisCode);
-//        null value can not be correct deserialized
-        if (crisisId == null){
-            crisisId = 0;
+        long crisisId = 0;
+        CrisisDTO crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
+        if (crisis != null) {
+            crisisId =  crisis.getCrisisID();
         }
-        //TODO: Following way of creating JSON should be chagned through a proper and automatic way
+        //TODO: Following way of creating JSON should be changed through a proper and automatic way
         String response = "{\"crisisCode\":\"" + crisisCode + "\", \"crisisId\":\"" + crisisId + "\"}";
         return Response.ok(response).build();
     }
@@ -104,7 +104,7 @@ public class TrainingDataResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/all")
     public Response getAllCrisis() {
-        List<Crisis> crisisList = crisisLocalEJB.getAllCrisis();
+        List<CrisisDTO> crisisList = crisisLocalEJB.getAllCrisis();
         ResponseWrapper response = new ResponseWrapper();
         response.setMessage(getProperty("STATUS_CODE_SUCCESS"));
         response.setCrisises(crisisList);
@@ -113,8 +113,8 @@ public class TrainingDataResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public ResponseWrapper getAllCrisisByUserID(@QueryParam("userID") int userID) throws Exception {
-        List<Crisis> crisisList = crisisLocalEJB.getAllCrisisByUserID(userID);
+    public ResponseWrapper getAllCrisisByUserID(@QueryParam("userID") Long userID) throws Exception {
+        List<CrisisDTO> crisisList = crisisLocalEJB.getAllCrisisByUserID(userID);
         ResponseWrapper response = new ResponseWrapper();
         if (crisisList == null) {
             response.setMessage("No crisis found associated with the given user id.");
@@ -127,9 +127,9 @@ public class TrainingDataResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addCrisis(Crisis crisis) {
+    public Response addCrisis(CrisisDTO crisis) {
         try {
-            crisisLocalEJB.addCrisis(crisis);
+            CrisisDTO newCrisis = crisisLocalEJB.addCrisis(crisis);
         } catch (RuntimeException e) {
         	logger.error("Error while adding crisis: " + crisis.getCode() + ". Possible causes could be duplication of primary key, incomplete data, incompatible data format.");
         	logger.error(elog.toStringException(e));
@@ -143,18 +143,18 @@ public class TrainingDataResource {
     @PUT
     @Consumes("application/json")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response editCrisis(Crisis crisis) {
+    public Response editCrisis(CrisisDTO crisis) {
         try {
-            crisis = crisisLocalEJB.editCrisis(crisis);
+            CrisisDTO dto = crisisLocalEJB.editCrisis(crisis);
+            return Response.ok(dto).build();
         } catch (RuntimeException e) {
             logger.error("Error in editing crisis: " + crisis.getCode());
             logger.error(elog.toStringException(e));
         	return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
         }
-        CrisisDTO dto = transformCrisisToDto(crisis);
-        return Response.ok(dto).build();
     }
 
+    /*
     private CrisisDTO transformCrisisToDto(Crisis c){
         CrisisTypeDTO typeDTO = null;
         if (c.getCrisisType() != null) {
@@ -167,7 +167,8 @@ public class TrainingDataResource {
         dto.setCrisisType(typeDTO);
         return dto;
     }
-
+	*/
+    
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/samplecountthreshold")
