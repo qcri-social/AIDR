@@ -32,37 +32,37 @@ public class DocumentFacadeImp implements DocumentFacade{
 	//private EntityManager em;
 
 	@EJB
-	private TaskManagerRemote<DocumentDTO, Long> taskManager;
+	private TaskManagerRemote remoteTaskManager;
 	
 	protected static Logger logger = LoggerFactory.getLogger("aidr-tagger-api");
 	
 	public List<DocumentDTO> getAllDocuments() {
-		List<DocumentDTO> fetchedList = taskManager.getAllTasks();
+		List<DocumentDTO> fetchedList = remoteTaskManager.getAllTasks();
 		return fetchedList;   
 	}
 
 	public DocumentDTO getDocumentByID(Long id) {
-		DocumentDTO fetchedDoc  = taskManager.getTaskById(id);
+		DocumentDTO fetchedDoc  = remoteTaskManager.getTaskById(id);
 		return fetchedDoc;
 	}
 
 	public List<DocumentDTO> getAllLabeledDocumentbyCrisisID(Long crisisID, Long attributeID) {
 
 		Criterion criterion = Restrictions.eq("hasHumanLabels", true);
-		List<DocumentDTO> fetchedList = taskManager.getTaskCollectionByCriterion(crisisID, null, criterion);
+		List<DocumentDTO> fetchedList = remoteTaskManager.getTaskCollectionByCriterion(crisisID, null, criterion);
 		
 		return fetchedList;
 	}
 
 	@Override
 	public int deleteDocument(Long documentID) {
-		return taskManager.deleteTaskById(documentID);
+		return remoteTaskManager.deleteTaskById(documentID);
 	}
 
 	@Override
 	public void removeTrainingExample(Long documentID) {
 		// Alternative way of doing the same update
-		//qa.qcri.aidr.task.dto.DocumentDTO fetchedDoc  = taskManager.getTaskById(id);
+		//qa.qcri.aidr.task.dto.DocumentDTO fetchedDoc  = remoteTaskManager.getTaskById(id);
 		//fetchedDoc.setHasHumanLabels(false);
 		//fetchedDoc.setNominalLabelCollection(null);
 		//taskManager.updateTask(fetchedDoc);
@@ -70,7 +70,7 @@ public class DocumentFacadeImp implements DocumentFacade{
 		Map<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("setHasHumanLabels", new Boolean(false).toString());
 		paramMap.put("setNominalLabelCollection", null);
-		DocumentDTO newDoc = (DocumentDTO) taskManager.setTaskParameter(qa.qcri.aidr.dbmanager.entities.task.Document.class, documentID, paramMap);
+		DocumentDTO newDoc = (DocumentDTO) remoteTaskManager.setTaskParameter(qa.qcri.aidr.dbmanager.entities.task.Document.class, documentID, paramMap);
 	
 		try {
 			logger.info("Removed training example: " + newDoc.getDocumentID() + ", for crisisID = " + newDoc.getCrisisDTO().getCrisisID());
@@ -83,7 +83,7 @@ public class DocumentFacadeImp implements DocumentFacade{
 	@Override
 	public List<DocumentDTO> getAllUnlabeledDocumentbyCrisisID(Long crisisID) {
 		Criterion criterion = Restrictions.eq("hasHumanLabels", false);
-		List<DocumentDTO> fetchedList = taskManager.getTaskCollectionByCriterion(crisisID, null, criterion);
+		List<DocumentDTO> fetchedList = remoteTaskManager.getTaskCollectionByCriterion(crisisID, null, criterion);
 		
 		return fetchedList;
 	}
