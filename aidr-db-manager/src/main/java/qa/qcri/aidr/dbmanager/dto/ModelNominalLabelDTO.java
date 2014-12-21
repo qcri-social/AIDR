@@ -92,7 +92,9 @@ public class ModelNominalLabelDTO implements Serializable {
 						modelNominalLabel.getModel().getAvgRecall(), modelNominalLabel.getModel().getAvgAuc(), 
 						modelNominalLabel.getModel().getTrainingCount(), modelNominalLabel.getModel().getTrainingTime(),
 						modelNominalLabel.getModel().isIsCurrentModel());
-				m.setModelId(modelNominalLabel.getModel().getModelId());
+			
+				Long modelID = new Long(modelNominalLabel.getModel().getModelId());
+				m.setModelId(modelID);
 				this.setModelDTO(new ModelDTO(m));
 			} 
 			if (modelNominalLabel.hasNominalLabel()) {

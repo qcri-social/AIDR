@@ -51,7 +51,7 @@ public class CrisisTypeDTO implements java.io.Serializable {
 
 	public CrisisTypeDTO(CrisisType crisisType) throws PropertyNotSetException {
 		if (crisisType != null) {
-			System.out.println("CrisisType Hash code: " + crisisType.hashCode());
+			//System.out.println("CrisisType Hash code: " + crisisType.hashCode());
 			
 			this.setCrisisTypeId(crisisType.getCrisisTypeId());
 			this.setName(crisisType.getName());

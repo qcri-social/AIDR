@@ -66,7 +66,8 @@ public class ModelDTO implements Serializable {
 		if (model.hasModelFamily()) {
 			ModelFamily mf = new ModelFamily(model.getModelFamily().getNominalAttribute(), model.getModelFamily().getCrisis(),
 					model.getModelFamily().isIsActive());
-			mf.setModelFamilyId(model.getModelFamily().getModelFamilyId());
+			Long modelFamilyID = new Long(model.getModelFamily().getModelFamilyId());
+			mf.setModelFamilyId(modelFamilyID);
 			this.setModelFamilyDTO(new ModelFamilyDTO(mf));
 		}
 		setAvgPrecision(model.getAvgPrecision());
@@ -115,12 +116,8 @@ public class ModelDTO implements Serializable {
 		return model;
 	}
 
-	public Long getModelId() throws PropertyNotSetException {
-		if (this.modelId != null) {
-			return this.modelId;
-		} else {
-			throw new PropertyNotSetException();
-		}
+	public Long getModelId() {
+		return this.modelId;
 	}
 
 	public void setModelId(Long modelId) {
@@ -138,14 +135,7 @@ public class ModelDTO implements Serializable {
 	}
 
 	public void setModelFamilyId(Long modelFamilyId) {
-		if (modelFamilyId == null) {
-			throw new IllegalArgumentException("modelFamilyID cannot be null");
-		} else if (modelFamilyId <= 0) {
-			throw new IllegalArgumentException("modelFamilyID cannot be zero or a negative number");
-		} else {
-			this.modelFamilyId = modelFamilyId;
-		}
-
+		this.modelFamilyId = modelFamilyId;
 	}
 
 	public double getAvgPrecision() {

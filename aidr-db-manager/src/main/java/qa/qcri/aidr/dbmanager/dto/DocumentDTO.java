@@ -116,7 +116,7 @@ public class DocumentDTO implements Serializable {
 	
 	public DocumentDTO(Document doc) throws PropertyNotSetException {
 		if (doc != null) {
-			System.out.println("Document Hash code: " + doc.hashCode());
+			//System.out.println("Document Hash code: " + doc.hashCode());
 			
 			this.setDocumentID(doc.getDocumentId());
 			this.setHasHumanLabels(doc.isHasHumanLabels());
@@ -126,7 +126,7 @@ public class DocumentDTO implements Serializable {
 				c.setCrisisId(doc.getCrisis().getCrisisId());
 				this.setCrisisDTO(new CrisisDTO(c));
 			} 
-			System.out.println("Done setting crisis DTO");
+			//System.out.println("Done setting crisis DTO");
 			this.setDoctype(doc.getDoctype());
 			this.setGeoFeatures(doc.getGeoFeatures());
 			this.setIsEvaluationSet(doc.isIsEvaluationSet());
@@ -140,11 +140,11 @@ public class DocumentDTO implements Serializable {
 			if (doc.hasDocumentNominalLabels()) {
 				this.setDocumentNominalLabelsDTO(this.toDocumentNominalLabelDTOList(doc.getDocumentNominalLabels()));
 			}
-			System.out.println("Done setting DocumentNominalLabels DTO");
+			//System.out.println("Done setting DocumentNominalLabels DTO");
 			if (doc.hasTaskAssignments()) {
 				this.setTaskAssignmentDTO(this.toTaskAssignmentDTOList(doc.getTaskAssignments()));
 			}
-			System.out.println("Done setting TaskAssignments DTO");
+			//System.out.println("Done setting TaskAssignments DTO");
 		} else {
 			System.out.println("Entity = null in constructor");
 		}

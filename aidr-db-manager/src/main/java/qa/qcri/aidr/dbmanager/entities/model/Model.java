@@ -64,7 +64,7 @@ public class Model implements java.io.Serializable {
     @Column(name = "isCurrentModel", nullable = false)
     private boolean isCurrentModel;
     
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "model")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "model")
     @JsonManagedReference
     private List<ModelNominalLabel> modelNominalLabels = null;
     

@@ -48,6 +48,7 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 		List<Model> modelList = getAll();
 		System.out.println("Fetched models list size: " + modelList.size());
 		for (Model model : modelList) {
+			System.out.println("Adding model ID = " + model.getModelId());
 			modelDTOList.add(new ModelDTO(model));
 		}
 		return modelDTOList;

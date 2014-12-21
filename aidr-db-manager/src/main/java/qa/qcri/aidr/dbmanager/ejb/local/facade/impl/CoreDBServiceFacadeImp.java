@@ -123,6 +123,7 @@ public class CoreDBServiceFacadeImp<E, I extends Serializable> implements CoreDB
 		List<E> fetchedList = new ArrayList<E>();
 		try {	
 			fetchedList  = criteria.list();
+			System.out.println("CoreDBServiceFacade: getAll fetched list size: " + fetchedList.size());
 			return fetchedList;
 		} catch (Exception e) {
 			logger.error(elog.toStringException(e));
