@@ -24,8 +24,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-//import qa.qcri.aidr.predictui.dto.NominalLabelDTO;
-import qa.qcri.aidr.predictui.entities.NominalLabel;
 import qa.qcri.aidr.predictui.facade.NominalLabelResourceFacade;
 
 /**

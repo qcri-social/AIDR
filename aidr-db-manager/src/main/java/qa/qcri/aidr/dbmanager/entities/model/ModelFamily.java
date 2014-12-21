@@ -37,13 +37,13 @@ public class ModelFamily implements java.io.Serializable {
      *
      */
     private static final long serialVersionUID = -1064917491408243168L;
-	
-	@Id
-	@GeneratedValue(strategy = IDENTITY)
-	@Column(name = "modelFamilyID", unique = true, nullable = false)
+
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "modelFamilyID", unique = true, nullable = false)
     private Long modelFamilyId;
-	
-	@ManyToOne(fetch = FetchType.EAGER)
+
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "nominalAttributeID", nullable = false)
 	@JsonBackReference
 	private NominalAttribute nominalAttribute;
@@ -55,7 +55,7 @@ public class ModelFamily implements java.io.Serializable {
 
 	private boolean isActive;
 	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "modelFamily")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "modelFamily")
 	@JsonManagedReference
 	private List<Model> models = null;
 
@@ -131,5 +131,4 @@ public class ModelFamily implements java.io.Serializable {
 	public boolean hasCrisis() {
 		return Hibernate.isInitialized(this.crisis);
 	}
-
 }

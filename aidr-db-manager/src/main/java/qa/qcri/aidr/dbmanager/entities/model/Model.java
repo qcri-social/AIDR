@@ -64,11 +64,11 @@ public class Model implements java.io.Serializable {
     @Column(name = "isCurrentModel", nullable = false)
     private boolean isCurrentModel;
     
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "model")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "model")
     @JsonManagedReference
     private List<ModelNominalLabel> modelNominalLabels = null;
     
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "modelFamilyID", referencedColumnName = "modelFamilyID", nullable = false)
 	@JsonBackReference
     private ModelFamily modelFamily;
@@ -162,16 +162,6 @@ public class Model implements java.io.Serializable {
     public void setIsCurrentModel(boolean isCurrentModel) {
         this.isCurrentModel = isCurrentModel;
     }
-
- 
-    public List<ModelNominalLabel> getModelNominalLabels() {
-        return this.modelNominalLabels;
-    }
-
-    public void setModelNominalLabels(List<ModelNominalLabel> modelNominalLabels) {
-        this.modelNominalLabels = modelNominalLabels;
-    }
-
 
 	public ModelFamily getModelFamily() {
 		return this.modelFamily;

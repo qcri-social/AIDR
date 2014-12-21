@@ -43,6 +43,7 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
         List<ModelFamilyDTO> modelFamilyDTOList = new ArrayList<ModelFamilyDTO>();
         List<ModelFamily> modelFamilyList = getAll();
         for (ModelFamily modelFamily : modelFamilyList) {
+            Hibernate.initialize(modelFamily.getModels());
             modelFamilyDTOList.add(new ModelFamilyDTO(modelFamily));
         }
         return modelFamilyDTOList; //returns empty list if no data is found in the database
