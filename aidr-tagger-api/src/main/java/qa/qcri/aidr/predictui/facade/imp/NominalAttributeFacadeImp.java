@@ -19,9 +19,9 @@ import qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalAttributeResourceFacade;
 @Stateless
 public class NominalAttributeFacadeImp implements NominalAttributeFacade {
 
-    @EJB
-    NominalAttributeResourceFacade nominalAttributeRemoteEJB;
-
+	@EJB
+	private qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalAttributeResourceFacade nominalAttributeRemoteEJB;
+	
     public List<NominalAttributeDTO> getAllAttributes() throws PropertyNotSetException {
         return nominalAttributeRemoteEJB.getAllAttributes();
     }
