@@ -3,6 +3,8 @@ package qa.qcri.aidr.dbmanager.dto;
 
 
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -15,7 +17,12 @@ import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ModelNominalLabelDTO {
+public class ModelNominalLabelDTO implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6522772017803560098L;
+
 	@XmlElement
 	private ModelNominalLabelIdDTO idDTO;
 

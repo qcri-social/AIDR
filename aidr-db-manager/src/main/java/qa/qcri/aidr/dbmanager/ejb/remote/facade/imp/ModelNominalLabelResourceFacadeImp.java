@@ -43,7 +43,9 @@ public class ModelNominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<M
 		try {
 			List<ModelNominalLabel> list = this.getAll();
 			if (list != null) {
+				System.out.println("Fetched list size: " + list.size());
 				for (ModelNominalLabel m: list) {
+					System.out.println("fetched entity: " + m.getId());
 					dtoList.add(new ModelNominalLabelDTO(m));
 				}
 			}

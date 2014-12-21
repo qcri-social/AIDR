@@ -9,6 +9,7 @@ import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.criterion.Restrictions;
 
@@ -72,7 +73,7 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 
     public NominalAttributeDTO getAttributeByID(Long attributeID) throws PropertyNotSetException {
         NominalAttribute nominalAttribute = getById(attributeID);
-        nominalAttribute.getNominalLabels(); //loading labels too
+        Hibernate.initialize(nominalAttribute.getNominalLabels()); //loading labels too
         return new NominalAttributeDTO(nominalAttribute);
     }
 
@@ -93,7 +94,8 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
     }
 
     //TODO: Native query used in this method should be translated into a criteria query.
-    public List<CrisisAttributesDTO> getAllAttributesExceptCrisis(Long crisisID) throws PropertyNotSetException {
+    @SuppressWarnings("unchecked")
+	public List<CrisisAttributesDTO> getAllAttributesExceptCrisis(Long crisisID) throws PropertyNotSetException {
         List<CrisisAttributesDTO> attributesList = new ArrayList<>();
         String sql = "SELECT na.nominalAttributeID, na.userID, na.name, na.description, na.code, "
                 + " nl.nominalLabelID, nl.name AS lblName FROM nominal_attribute na \n"
