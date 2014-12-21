@@ -19,8 +19,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-//import qa.qcri.aidr.predictui.dto.ModelNominalLabelDTO;
-//import qa.qcri.aidr.predictui.entities.ModelNominalLabel;
 import qa.qcri.aidr.predictui.facade.ModelNominalLabelFacade;
 
 /**

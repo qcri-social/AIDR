@@ -9,8 +9,6 @@ import java.util.List;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodesRequest;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
 import javax.ejb.EJB;
@@ -28,6 +26,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodesRequest;
 
 import qa.qcri.aidr.predictui.entities.ModelFamily;
 import qa.qcri.aidr.predictui.facade.ModelFamilyFacade;
