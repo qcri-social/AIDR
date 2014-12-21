@@ -29,7 +29,6 @@ import org.apache.log4j.Logger;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodesRequest;
 
-import qa.qcri.aidr.predictui.entities.ModelFamily;
 import qa.qcri.aidr.predictui.facade.ModelFamilyFacade;
 import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 
