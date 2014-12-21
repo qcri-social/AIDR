@@ -48,7 +48,7 @@ public class ModelFamily implements java.io.Serializable {
 	@JsonBackReference
 	private NominalAttribute nominalAttribute;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "crisisID", nullable = false)
 	@JsonBackReference
 	private Crisis crisis;
