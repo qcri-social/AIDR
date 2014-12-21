@@ -142,7 +142,7 @@ public class Model implements java.io.Serializable {
         this.isCurrentModel = isCurrentModel;
     }
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "model")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "model")
     @JsonManagedReference
     public List<ModelNominalLabel> getModelNominalLabels() {
         return this.modelNominalLabels;
@@ -152,7 +152,7 @@ public class Model implements java.io.Serializable {
         this.modelNominalLabels = modelNominalLabels;
     }
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "modelFamilyID", referencedColumnName = "modelFamilyID", nullable = false)
 	@JsonBackReference
 	public ModelFamily getModelFamily() {

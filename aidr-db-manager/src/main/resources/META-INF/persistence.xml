@@ -18,7 +18,7 @@
     <class>qa.qcri.aidr.dbmanager.entities.model.NominalLabelTrainingData</class>
     <class>qa.qcri.aidr.dbmanager.entities.misc.Crisis</class>
     <class>qa.qcri.aidr.dbmanager.entities.misc.CrisisType</class>
-    <class>qa.qcri.aidr.dbmanager.entities.misc.CustomuiTemplate</class>
+    <class>qa.qcri.aidr.dbmanager.entities.misc.CustomUiTemplate</class>
     <class>qa.qcri.aidr.dbmanager.entities.misc.Users</class>
     
     <properties>

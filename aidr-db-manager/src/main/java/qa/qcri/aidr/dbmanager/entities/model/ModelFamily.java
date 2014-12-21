@@ -38,99 +38,96 @@ public class ModelFamily implements java.io.Serializable {
      *
      */
     private static final long serialVersionUID = -1064917491408243168L;
-	
-	@Id
-	@GeneratedValue(strategy = IDENTITY)
-	@Column(name = "modelFamilyID", unique = true, nullable = false)
+
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "modelFamilyID", unique = true, nullable = false)
     private Long modelFamilyId;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "nominalAttributeID", nullable = false)
-	@JsonBackReference
-	private NominalAttribute nominalAttribute;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "crisisID", nullable = false)
-	@JsonBackReference
-	private Crisis crisis;
 
-	private boolean isActive;
-	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "modelFamily")
-	@JsonManagedReference
-	private List<Model> models = null;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "nominalAttributeID", nullable = false)
+    @JsonBackReference
+    private NominalAttribute nominalAttribute;
 
-	public ModelFamily() {
-	}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "crisisID", nullable = false)
+    @JsonBackReference
+    private Crisis crisis;
 
-	public ModelFamily(NominalAttribute nominalAttribute, Crisis crisis,
-			boolean isActive) {
-		this.nominalAttribute = nominalAttribute;
-		this.crisis = crisis;
-		this.isActive = isActive;
-	}
+    private boolean isActive;
 
-	public ModelFamily(NominalAttribute nominalAttribute, Crisis crisis,
-			boolean isActive, List<Model> models) {
-		this.crisis = crisis;
-		this.isActive = isActive;
-		this.models = models;
-	}
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "modelFamily")
+    @JsonManagedReference
+    private List<Model> models = null;
 
-	public Long getModelFamilyId() {
-		return this.modelFamilyId;
-	}
+    public ModelFamily() {
+    }
 
-	public void setModelFamilyId(Long modelFamilyId) {
-		this.modelFamilyId = modelFamilyId;
-	}
+    public ModelFamily(NominalAttribute nominalAttribute, Crisis crisis,
+            boolean isActive) {
+        this.nominalAttribute = nominalAttribute;
+        this.crisis = crisis;
+        this.isActive = isActive;
+    }
 
-	
-	public NominalAttribute getNominalAttribute() {
-		return this.nominalAttribute;
-	}
+    public ModelFamily(NominalAttribute nominalAttribute, Crisis crisis,
+            boolean isActive, List<Model> models) {
+        this.crisis = crisis;
+        this.isActive = isActive;
+        this.models = models;
+    }
 
-	public void setNominalAttribute(NominalAttribute nominalAttribute) {
-		this.nominalAttribute = nominalAttribute;
-	}
+    public Long getModelFamilyId() {
+        return this.modelFamilyId;
+    }
 
+    public void setModelFamilyId(Long modelFamilyId) {
+        this.modelFamilyId = modelFamilyId;
+    }
 
-	public Crisis getCrisis() {
-		return this.crisis;
-	}
+    public NominalAttribute getNominalAttribute() {
+        return this.nominalAttribute;
+    }
 
-	public void setCrisis(Crisis crisis) {
-		this.crisis = crisis;
-	}
+    public void setNominalAttribute(NominalAttribute nominalAttribute) {
+        this.nominalAttribute = nominalAttribute;
+    }
 
-	@Column(name = "isActive", nullable = false)
-	public boolean isIsActive() {
-		return this.isActive;
-	}
+    public Crisis getCrisis() {
+        return this.crisis;
+    }
 
-	public void setIsActive(boolean isActive) {
-		this.isActive = isActive;
-	}
+    public void setCrisis(Crisis crisis) {
+        this.crisis = crisis;
+    }
 
+    @Column(name = "isActive", nullable = false)
+    public boolean isIsActive() {
+        return this.isActive;
+    }
 
-	public List<Model> getModels() {
-		return this.models;
-	}
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
 
-	public void setModels(List<Model> models) {
-		this.models = models;
-	}
-	
-	public boolean hasNominalAttribute() {
-		return Hibernate.isInitialized(this.nominalAttribute);
-	}
-	
-	public boolean hasModels() {
-		return Hibernate.isInitialized(this.models);
-	}
-	
-	public boolean hasCrisis() {
-		return Hibernate.isInitialized(this.crisis);
-	}
+    public List<Model> getModels() {
+        return this.models;
+    }
+
+    public void setModels(List<Model> models) {
+        this.models = models;
+    }
+
+    public boolean hasNominalAttribute() {
+        return Hibernate.isInitialized(this.nominalAttribute);
+    }
+
+    public boolean hasModels() {
+        return Hibernate.isInitialized(this.models);
+    }
+
+    public boolean hasCrisis() {
+        return Hibernate.isInitialized(this.crisis);
+    }
 
 }
