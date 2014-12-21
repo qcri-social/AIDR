@@ -82,8 +82,10 @@ public class ModelDTO implements Serializable {
 
 	public ModelDTO(ModelFamilyDTO modelFamilyDTO, double avgPrecision, double avgRecall,
 			double avgAuc, int trainingCount, Date trainingTime,
-			boolean isCurrentModel) {
-		setModelFamilyDTO(modelFamilyDTO);
+			boolean isCurrentModel) throws PropertyNotSetException {
+		if (this.getModelFamilyDTO() != null) {
+			setModelFamilyDTO(modelFamilyDTO);
+		}
 		setAvgPrecision(avgPrecision);
 		setAvgRecall(avgRecall);
 		setAvgAuc(avgAuc);
@@ -107,7 +109,7 @@ public class ModelDTO implements Serializable {
 		model.setTrainingTime(getTrainingTime());
 		model.setIsCurrentModel(isIsCurrentModel());
 
-		if (this.modelNominalLabelsDTO != null) {
+		if (this.getModelNominalLabelsDTO() != null) {
 			model.setModelNominalLabels(this.toModelNominalLabelList(this.getModelNominalLabelsDTO()));
 		}
 		return model;

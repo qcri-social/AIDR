@@ -46,7 +46,6 @@ public class Users implements java.io.Serializable {
 	private String role;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "users")
-	@XmlTransient
 	@JsonManagedReference
 	private List<NominalAttribute> nominalAttributes = null;
 	

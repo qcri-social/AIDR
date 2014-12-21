@@ -35,14 +35,39 @@ public class NominalLabel implements java.io.Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 8467620180557868662L;
+	
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "nominalLabelID", unique = true, nullable = false)
 	private Long nominalLabelId;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "nominalAttributeID", nullable = false)
+	@JsonBackReference
 	private NominalAttribute nominalAttribute;
+	
+	@Column(name = "nominalLabelCode", nullable = false, length = 64)
 	private String nominalLabelCode;
+	
+	@Column(name = "name", nullable = false, length = 140)
 	private String name;
+	
+	@Column(name = "description", nullable = false, length = 600)
 	private String description;
+	
+	@Column(name = "sequence", nullable = false)
 	private Integer sequence;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalLabel")
+	@JsonManagedReference
 	private List<ModelNominalLabel> modelNominalLabels = null;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalLabel")
+	@JsonManagedReference
 	private List<NominalAttributeDependentLabel> nominalAttributeDependentLabels = null;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalLabel")
+	@JsonManagedReference
 	private List<DocumentNominalLabel> documentNominalLabels = null;
 
 	public NominalLabel() {
@@ -73,9 +98,7 @@ public class NominalLabel implements java.io.Serializable {
 		this.documentNominalLabels = documentNominalLabels;
 	}
 
-	@Id
-	@GeneratedValue(strategy = IDENTITY)
-	@Column(name = "nominalLabelID", unique = true, nullable = false)
+
 	public Long getNominalLabelId() {
 		return this.nominalLabelId;
 	}
@@ -84,9 +107,7 @@ public class NominalLabel implements java.io.Serializable {
 		this.nominalLabelId = nominalLabelId;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "nominalAttributeID", nullable = false)
-	@JsonBackReference
+
 	public NominalAttribute getNominalAttribute() {
 		return this.nominalAttribute;
 	}
@@ -95,7 +116,7 @@ public class NominalLabel implements java.io.Serializable {
 		this.nominalAttribute = nominalAttribute;
 	}
 
-	@Column(name = "nominalLabelCode", nullable = false, length = 64)
+
 	public String getNominalLabelCode() {
 		return this.nominalLabelCode;
 	}
@@ -104,7 +125,7 @@ public class NominalLabel implements java.io.Serializable {
 		this.nominalLabelCode = nominalLabelCode;
 	}
 
-	@Column(name = "name", nullable = false, length = 140)
+
 	public String getName() {
 		return this.name;
 	}
@@ -113,7 +134,7 @@ public class NominalLabel implements java.io.Serializable {
 		this.name = name;
 	}
 
-	@Column(name = "description", nullable = false, length = 600)
+	
 	public String getDescription() {
 		return this.description;
 	}
@@ -122,7 +143,7 @@ public class NominalLabel implements java.io.Serializable {
 		this.description = description;
 	}
 
-	@Column(name = "sequence", nullable = false)
+
 	public Integer getSequence() {
 		return this.sequence;
 	}
@@ -131,8 +152,7 @@ public class NominalLabel implements java.io.Serializable {
 		this.sequence = sequence;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalLabel")
-	@JsonManagedReference
+	
 	public List<ModelNominalLabel> getModelNominalLabels() {
 		return this.modelNominalLabels;
 	}
@@ -141,8 +161,7 @@ public class NominalLabel implements java.io.Serializable {
 		this.modelNominalLabels = modelNominalLabels;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalLabel")
-	@JsonManagedReference
+
 	public List<NominalAttributeDependentLabel> getNominalAttributeDependentLabels() {
 		return this.nominalAttributeDependentLabels;
 	}
@@ -152,8 +171,7 @@ public class NominalLabel implements java.io.Serializable {
 		this.nominalAttributeDependentLabels = nominalAttributeDependentLabels;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalLabel")
-	@JsonManagedReference
+
 	public List<DocumentNominalLabel> getDocumentNominalLabels() {
 		return this.documentNominalLabels;
 	}

@@ -27,9 +27,24 @@ public class NominalAttributeDependentLabel implements java.io.Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 4200478432355906054L;
+	
+	@EmbeddedId
+	@AttributeOverrides({
+			@AttributeOverride(name = "nominalAttributeId", column = @Column(name = "nominalAttributeID", nullable = false)),
+			@AttributeOverride(name = "nominalLabelId", column = @Column(name = "nominalLabelID", nullable = false)) })
 	private NominalAttributeDependentLabelId id;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "nominalLabelID", nullable = false, insertable = false, updatable = false)
+	@JsonBackReference
 	private NominalLabel nominalLabel;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "nominalAttributeID", nullable = false, insertable = false, updatable = false)
+	@JsonBackReference
 	private NominalAttribute nominalAttribute;
+	
+	@Column(name = "threshold", precision = 12, scale = 0)
 	private Float threshold;
 
 	public NominalAttributeDependentLabel() {
@@ -51,10 +66,7 @@ public class NominalAttributeDependentLabel implements java.io.Serializable {
 		this.threshold = threshold;
 	}
 
-	@EmbeddedId
-	@AttributeOverrides({
-			@AttributeOverride(name = "nominalAttributeId", column = @Column(name = "nominalAttributeID", nullable = false)),
-			@AttributeOverride(name = "nominalLabelId", column = @Column(name = "nominalLabelID", nullable = false)) })
+
 	public NominalAttributeDependentLabelId getId() {
 		return this.id;
 	}
@@ -63,9 +75,7 @@ public class NominalAttributeDependentLabel implements java.io.Serializable {
 		this.id = id;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "nominalLabelID", nullable = false, insertable = false, updatable = false)
-	@JsonBackReference
+
 	public NominalLabel getNominalLabel() {
 		return this.nominalLabel;
 	}
@@ -74,9 +84,7 @@ public class NominalAttributeDependentLabel implements java.io.Serializable {
 		this.nominalLabel = nominalLabel;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "nominalAttributeID", nullable = false, insertable = false, updatable = false)
-	@JsonBackReference
+
 	public NominalAttribute getNominalAttribute() {
 		return this.nominalAttribute;
 	}
@@ -85,7 +93,7 @@ public class NominalAttributeDependentLabel implements java.io.Serializable {
 		this.nominalAttribute = nominalAttribute;
 	}
 
-	@Column(name = "threshold", precision = 12, scale = 0)
+
 	public Float getThreshold() {
 		return this.threshold;
 	}

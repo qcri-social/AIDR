@@ -17,7 +17,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.Hibernate;
 
@@ -44,12 +43,12 @@ public class ModelFamily implements java.io.Serializable {
 	@Column(name = "modelFamilyID", unique = true, nullable = false)
     private Long modelFamilyId;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "nominalAttributeID", nullable = false)
 	@JsonBackReference
 	private NominalAttribute nominalAttribute;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "crisisID", nullable = false)
 	@JsonBackReference
 	private Crisis crisis;

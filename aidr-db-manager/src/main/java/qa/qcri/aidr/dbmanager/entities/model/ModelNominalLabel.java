@@ -28,12 +28,33 @@ public class ModelNominalLabel implements java.io.Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1454244707175228621L;
+	
+	@EmbeddedId
+	@AttributeOverrides({
+			@AttributeOverride(name = "modelId", column = @Column(name = "modelID", nullable = false)),
+			@AttributeOverride(name = "nominalLabelId", column = @Column(name = "nominalLabelID", nullable = false)) })
 	private ModelNominalLabelId id;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "nominalLabelID", nullable = false, insertable = false, updatable = false)
+	@JsonBackReference
 	private NominalLabel nominalLabel;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "modelID", nullable = false, insertable = false, updatable = false)
+	@JsonBackReference
 	private Model model;
+	
+	@Column(name = "labelPrecision", precision = 22, scale = 0)
 	private Double labelPrecision;
+	
+	@Column(name = "labelRecall", precision = 22, scale = 0)
 	private Double labelRecall;
+	
+	@Column(name = "labelAuc", precision = 22, scale = 0)
 	private Double labelAuc;
+	
+	@Column(name = "classifiedDocumentCount")
 	private Integer classifiedDocumentCount;
 
 	public ModelNominalLabel() {
@@ -58,10 +79,7 @@ public class ModelNominalLabel implements java.io.Serializable {
 		this.classifiedDocumentCount = classifiedDocumentCount;
 	}
 
-	@EmbeddedId
-	@AttributeOverrides({
-			@AttributeOverride(name = "modelId", column = @Column(name = "modelID", nullable = false)),
-			@AttributeOverride(name = "nominalLabelId", column = @Column(name = "nominalLabelID", nullable = false)) })
+
 	public ModelNominalLabelId getId() {
 		return this.id;
 	}
@@ -70,9 +88,7 @@ public class ModelNominalLabel implements java.io.Serializable {
 		this.id = id;
 	}
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "nominalLabelID", nullable = false, insertable = false, updatable = false)
-	@JsonBackReference
+
 	public NominalLabel getNominalLabel() {
 		return this.nominalLabel;
 	}
@@ -81,9 +97,7 @@ public class ModelNominalLabel implements java.io.Serializable {
 		this.nominalLabel = nominalLabel;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "modelID", nullable = false, insertable = false, updatable = false)
-	@JsonBackReference
+
 	public Model getModel() {
 		return this.model;
 	}
@@ -92,7 +106,7 @@ public class ModelNominalLabel implements java.io.Serializable {
 		this.model = model;
 	}
 
-	@Column(name = "labelPrecision", precision = 22, scale = 0)
+
 	public Double getLabelPrecision() {
 		return this.labelPrecision;
 	}
@@ -101,7 +115,7 @@ public class ModelNominalLabel implements java.io.Serializable {
 		this.labelPrecision = labelPrecision;
 	}
 
-	@Column(name = "labelRecall", precision = 22, scale = 0)
+
 	public Double getLabelRecall() {
 		return this.labelRecall;
 	}
@@ -110,7 +124,7 @@ public class ModelNominalLabel implements java.io.Serializable {
 		this.labelRecall = labelRecall;
 	}
 
-	@Column(name = "labelAuc", precision = 22, scale = 0)
+
 	public Double getLabelAuc() {
 		return this.labelAuc;
 	}
@@ -119,7 +133,7 @@ public class ModelNominalLabel implements java.io.Serializable {
 		this.labelAuc = labelAuc;
 	}
 
-	@Column(name = "classifiedDocumentCount")
+
 	public Integer getClassifiedDocumentCount() {
 		return this.classifiedDocumentCount;
 	}

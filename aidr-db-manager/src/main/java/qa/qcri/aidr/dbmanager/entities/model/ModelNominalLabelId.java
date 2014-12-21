@@ -15,7 +15,11 @@ public class ModelNominalLabelId implements java.io.Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 4746086718641115270L;
+	
+	@Column(name = "modelID", nullable = false)
 	private Long modelId;
+
+	@Column(name = "nominalLabelID", nullable = false)
 	private Long nominalLabelId;
 
 	public ModelNominalLabelId() {
@@ -26,7 +30,7 @@ public class ModelNominalLabelId implements java.io.Serializable {
 		this.nominalLabelId = nominalLabelId;
 	}
 
-	@Column(name = "modelID", nullable = false)
+
 	public Long getModelId() {
 		return this.modelId;
 	}
@@ -35,7 +39,7 @@ public class ModelNominalLabelId implements java.io.Serializable {
 		this.modelId = modelId;
 	}
 
-	@Column(name = "nominalLabelID", nullable = false)
+
 	public Long getNominalLabelId() {
 		return this.nominalLabelId;
 	}

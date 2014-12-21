@@ -51,8 +51,13 @@ public class NominalAttribute implements java.io.Serializable {
 	@JsonBackReference
 	private Users users;
 	
+	@Column(name = "name", nullable = false, length = 140)
 	private String name;
+	
+	@Column(name = "description", nullable = false, length = 600)
 	private String description;
+	
+	@Column(name = "code", unique = true, nullable = false, length = 64)
 	private String code;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalAttribute")
@@ -112,7 +117,7 @@ public class NominalAttribute implements java.io.Serializable {
 		this.users = users;
 	}
 
-	@Column(name = "name", nullable = false, length = 140)
+
 	public String getName() {
 		return this.name;
 	}
@@ -121,7 +126,7 @@ public class NominalAttribute implements java.io.Serializable {
 		this.name = name;
 	}
 
-	@Column(name = "description", nullable = false, length = 600)
+
 	public String getDescription() {
 		return this.description;
 	}
@@ -130,7 +135,7 @@ public class NominalAttribute implements java.io.Serializable {
 		this.description = description;
 	}
 
-	@Column(name = "code", unique = true, nullable = false, length = 64)
+
 	public String getCode() {
 		return this.code;
 	}

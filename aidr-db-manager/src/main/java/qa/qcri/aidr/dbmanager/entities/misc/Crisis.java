@@ -63,7 +63,6 @@ public class Crisis implements java.io.Serializable {
 	
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "crisis_nominal_attribute", catalog = "aidr_predict", joinColumns = { @JoinColumn(name = "crisisID", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "nominalAttributeID", nullable = false, updatable = false) })
-	@XmlTransient
 	@JsonManagedReference
 	private List<NominalAttribute> nominalAttributes;
 	

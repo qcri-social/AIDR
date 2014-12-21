@@ -20,6 +20,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.hibernate.Hibernate;
 import org.hibernate.collection.internal.PersistentList;
@@ -38,14 +39,38 @@ public class Model implements java.io.Serializable {
      *
      */
     private static final long serialVersionUID = -258497973511763596L;
+    
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "modelID", unique = true, nullable = false)
     private Long modelId;
+    
+    @Column(name = "avgPrecision", nullable = false, precision = 22, scale = 0)
     private double avgPrecision;
+    
+    @Column(name = "avgRecall", nullable = false, precision = 22, scale = 0)
     private double avgRecall;
+   
+    @Column(name = "avgAuc", nullable = false, precision = 22, scale = 0)
     private double avgAuc;
+    
+    @Column(name = "trainingCount", nullable = false)
     private int trainingCount;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "trainingTime", nullable = false, length = 19)
     private Date trainingTime;
+    
+    @Column(name = "isCurrentModel", nullable = false)
     private boolean isCurrentModel;
+    
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "model")
+    @JsonManagedReference
     private List<ModelNominalLabel> modelNominalLabels = null;
+    
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "modelFamilyID", referencedColumnName = "modelFamilyID", nullable = false)
+	@JsonBackReference
     private ModelFamily modelFamily;
 
     public Model() {
@@ -76,9 +101,6 @@ public class Model implements java.io.Serializable {
         this.setModelNominalLabels(modelNominalLabels);
     }
 
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "modelID", unique = true, nullable = false)
     public Long getModelId() {
         return this.modelId;
     }
@@ -87,7 +109,7 @@ public class Model implements java.io.Serializable {
         this.modelId = modelId;
     }
 
-    @Column(name = "avgPrecision", nullable = false, precision = 22, scale = 0)
+  
     public double getAvgPrecision() {
         return this.avgPrecision;
     }
@@ -96,7 +118,7 @@ public class Model implements java.io.Serializable {
         this.avgPrecision = avgPrecision;
     }
 
-    @Column(name = "avgRecall", nullable = false, precision = 22, scale = 0)
+  
     public double getAvgRecall() {
         return this.avgRecall;
     }
@@ -105,7 +127,7 @@ public class Model implements java.io.Serializable {
         this.avgRecall = avgRecall;
     }
 
-    @Column(name = "avgAuc", nullable = false, precision = 22, scale = 0)
+  
     public double getAvgAuc() {
         return this.avgAuc;
     }
@@ -114,7 +136,7 @@ public class Model implements java.io.Serializable {
         this.avgAuc = avgAuc;
     }
 
-    @Column(name = "trainingCount", nullable = false)
+ 
     public int getTrainingCount() {
         return this.trainingCount;
     }
@@ -123,8 +145,7 @@ public class Model implements java.io.Serializable {
         this.trainingCount = trainingCount;
     }
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "trainingTime", nullable = false, length = 19)
+ 
     public Date getTrainingTime() {
         return this.trainingTime;
     }
@@ -133,7 +154,7 @@ public class Model implements java.io.Serializable {
         this.trainingTime = trainingTime;
     }
 
-    @Column(name = "isCurrentModel", nullable = false)
+ 
     public boolean isIsCurrentModel() {
         return this.isCurrentModel;
     }
@@ -142,8 +163,7 @@ public class Model implements java.io.Serializable {
         this.isCurrentModel = isCurrentModel;
     }
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "model")
-    @JsonManagedReference
+ 
     public List<ModelNominalLabel> getModelNominalLabels() {
         return this.modelNominalLabels;
     }
@@ -152,9 +172,7 @@ public class Model implements java.io.Serializable {
         this.modelNominalLabels = modelNominalLabels;
     }
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "modelFamilyID", referencedColumnName = "modelFamilyID", nullable = false)
-	@JsonBackReference
+
 	public ModelFamily getModelFamily() {
 		return this.modelFamily;
 	}
