@@ -11,11 +11,9 @@ import java.util.Date;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
 
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.dbentities.NominalLabel;
 
@@ -58,13 +56,13 @@ public class TaggerDocument extends Document implements Serializable {
 		super();
 	}
 
-	public TaggerDocument(qa.qcri.aidr.task.dto.DocumentDTO document) {
+	public TaggerDocument(DocumentDTO document) {
 		this();
 		if (document != null) {
 			//Hibernate.initialize(document.getNominalLabelCollection());
 			
 			this.setDocumentID(document.getDocumentID());
-			this.setCrisisID(document.getCrisisID());
+			this.setCrisisID(document.getCrisisDTO().getCrisisID());
 			this.setDoctype(document.getDoctype());
 			this.setData(document.getData());
 			this.setIsEvaluationSet(document.getIsEvaluationSet());
@@ -76,7 +74,7 @@ public class TaggerDocument extends Document implements Serializable {
 			this.setWordFeatures(document.getWordFeatures());
 			this.setValueAsTrainingSample(document.getValueAsTrainingSample());
 
-			this.setNominalLabelCollection(NominalLabel.toNominalLabelCollection(document.getNominalLabelCollection()));
+			//this.setNominalLabelCollection(NominalLabel.toNominalLabelCollection(document.getNominaLabel()));
 		}
 	} 
 
@@ -192,13 +190,13 @@ public class TaggerDocument extends Document implements Serializable {
 		return true;
 	}
 
-	public static TaggerDocument toTaggerDocument(qa.qcri.aidr.task.dto.DocumentDTO document) {
+	public static TaggerDocument toTaggerDocument(DocumentDTO document) {
 		TaggerDocument doc = new TaggerDocument();
 		if (document != null) {
 			//Hibernate.initialize(document.getNominalLabelCollection());
 			
 			doc.setDocumentID(document.getDocumentID());
-			doc.setCrisisID(document.getCrisisID());
+			doc.setCrisisID(document.getCrisisDTO().getCrisisID());
 			doc.setDoctype(document.getDoctype());
 			doc.setData(document.getData());
 			doc.setIsEvaluationSet(document.getIsEvaluationSet());
@@ -210,17 +208,17 @@ public class TaggerDocument extends Document implements Serializable {
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
 
-			doc.setNominalLabelCollection(NominalLabel.toNominalLabelCollection(document.getNominalLabelCollection()));
+			//doc.setNominalLabelCollection(NominalLabel.toNominalLabelCollection(document.getNominaLabel()));
 			return doc;
 		} 
 		return null;
 	}
 
-	public static qa.qcri.aidr.task.entities.Document toTaskManagerDocument(TaggerDocument document) {
-		qa.qcri.aidr.task.entities.Document doc = new qa.qcri.aidr.task.entities.Document();
+	public static DocumentDTO toDocumentDTO(TaggerDocument document) {
+		DocumentDTO doc = new DocumentDTO();
 		if (document != null) {
 			doc.setDocumentID(document.getDocumentID());
-			doc.setCrisisID(document.getCrisisID());
+			//doc.setCrisisID(document.getCrisisID());
 			doc.setDoctype(document.getDoctype());
 			doc.setData(document.getData());
 			doc.setIsEvaluationSet(document.getIsEvaluationSet());
@@ -232,7 +230,7 @@ public class TaggerDocument extends Document implements Serializable {
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
 
-			doc.setNominalLabelCollection(NominalLabel.toTaskManagerNominalLabelCollection(document.getNominalLabelCollection()));
+			//doc.setNominalLabelCollection(NominalLabel.toTaskManagerNominalLabelCollection(document.getNominalLabelCollection()));
 			return doc;
 		} 
 		return null;

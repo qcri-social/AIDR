@@ -44,6 +44,9 @@ public abstract class Document implements java.io.Serializable {
 	public int humanLabelCount = 0;
 	public double valueAsTrainingSample = 0.5;
 
+	// added by koushik: 21/12/2014
+	Long userID;
+
 	public Document() {
 
 	}
@@ -108,6 +111,14 @@ public abstract class Document implements java.io.Serializable {
 
 	public String getCrisisCode() {
 		return crisisCode;
+	}
+
+	public Long getUserID() {
+		return userID;
+	}
+
+	public void setUserID(Long userID) {
+		this.userID = userID;
 	}
 
 
@@ -220,7 +231,7 @@ public abstract class Document implements java.io.Serializable {
 			document.humanLabelCount = (doc.hasHumanLabels() == false) ? 0 : 1;
 			document.setCrisisCode(doc.getCrisisCode());
 			document.setLanguage(doc.getLanguage());
-	
+
 			WordSet wordSet = new WordSet();
 			String text = doc.getWordFeatures();
 			wordSet.addAll(FeatureExtractor.getWordsInStringWithBigrams(text, false));

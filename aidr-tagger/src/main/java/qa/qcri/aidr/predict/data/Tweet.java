@@ -13,16 +13,18 @@ import qa.qcri.aidr.predict.common.DocumentType;
 public class Tweet extends Document implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    long userID;
+    Long userID;
     boolean isRetweet;
     GeoLabel.LonLatPair geotag;
     String text;
 
-    public long getUserID() {
+    @Override
+    public Long getUserID() {
         return userID;
     }
 
-    public void setUserID(long userID) {
+    @Override
+    public void setUserID(Long userID) {
         this.userID = userID;
     }
 

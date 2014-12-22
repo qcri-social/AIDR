@@ -2,6 +2,8 @@ package qa.qcri.aidr.predict.dbentities;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import qa.qcri.aidr.dbmanager.dto.TaskAssignmentDTO;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -68,7 +70,7 @@ public class TaskAssignment implements Serializable {
         return documentID.equals(taskAssignment.documentID);
     }
 
-	public static TaskAssignment toLocalTaskAssignment(qa.qcri.aidr.task.dto.TaskAssignmentDTO t) {
+	public static TaskAssignment toLocalTaskAssignment(TaskAssignmentDTO t) {
 		if (t != null) {
 				TaskAssignment taskAssignment  = new TaskAssignment(t.getDocumentID(), t.getUserID(), t.getAssignedAt());
 				return taskAssignment;
@@ -76,9 +78,9 @@ public class TaskAssignment implements Serializable {
 		return null;
 	}
 
-	public static qa.qcri.aidr.task.entities.TaskAssignment toTaskManagerTaskAssignment(TaskAssignment t) {
+	public static TaskAssignmentDTO toTaskAssignmentDTO(TaskAssignment t) {
 		if (t != null) {
-				qa.qcri.aidr.task.entities.TaskAssignment taskAssignment  = new qa.qcri.aidr.task.entities.TaskAssignment(t.getDocumentID(), t.getUserID(), t.getAssignedAt());
+				TaskAssignmentDTO taskAssignment  = new TaskAssignmentDTO(t.getDocumentID(), t.getUserID(), t.getAssignedAt());
 				return taskAssignment;
 		}
 		return null;

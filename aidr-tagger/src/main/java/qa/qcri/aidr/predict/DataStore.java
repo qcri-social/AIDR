@@ -27,6 +27,9 @@ import java.util.Properties;
 
 
 
+
+
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -37,6 +40,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelIdDTO;
 import qa.qcri.aidr.predict.classification.nominal.Model;
 import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
 import qa.qcri.aidr.predict.classification.nominal.ModelNominalLabelPerformance;
@@ -72,7 +78,7 @@ import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
  */
 public class DataStore {
 
-	public static TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager = null;
+	public static TaskManagerRemote<DocumentDTO, Long> taskManager = null;
 
 	private static Logger logger = Logger.getLogger(DataStore.class);
 	private static ErrorLog elog = new ErrorLog();
@@ -103,7 +109,7 @@ public class DataStore {
 			//InitialContext ctx = new InitialContext(props);
 			InitialContext ctx = new InitialContext();
 			
-			taskManager = (TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long>) ctx.lookup(DataStore.remoteEJBJNDIName);
+			taskManager = (TaskManagerRemote<DocumentDTO, Long>) ctx.lookup(DataStore.remoteEJBJNDIName);
 			System.out.println("taskManager: " + taskManager + ", time taken to initialize = " + (System.currentTimeMillis() - startTime));
 			logger.info("taskManager: " + taskManager + ", time taken to initialize = " + (System.currentTimeMillis() - startTime));
 			if (taskManager != null) {
@@ -442,8 +448,7 @@ public class DataStore {
 			for (Document item : items) {
 				//TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
 				TaggerDocument doc = Document.fromDocumentToTaggerDocument(item);
-				
-				long docID = taskManager.insertNewTask(TaggerDocument.toTaskManagerDocument(doc));
+				long docID = taskManager.saveHumanLabeledDocument(TaggerDocument.toDocumentDTO(doc), doc.getCrisisID());
 			}
 		} catch (Exception e) {
 			logger.error("Exception when attempting to write Document to database");
@@ -464,6 +469,13 @@ public class DataStore {
 			/*
 				String insertSql = "INSERT INTO document_nominal_label (documentID, nominalLabelID) VALUES (?,?)";
 			*/
+			for (Document d: documents) {
+				Long userID = d.getUserID() != null ? d.getUserID() : 1L;		// default labeller : 'System' user (userID = 1 in DB)
+				DocumentNominalLabelIdDTO idDTO = new DocumentNominalLabelIdDTO(d.getDocumentID(), d.getCrisisID(), userID);
+				DocumentNominalLabelDTO dto = new DocumentNominalLabelDTO();
+				dto.setIdDTO(idDTO);
+				taskManager.saveDocumentNominalLabel(dto);
+			}
 			ArrayList<Integer> docsWithLabels = new ArrayList<>();
 			ArrayList<TrainingSampleNotification> notifications = new ArrayList<>();
 			
@@ -852,7 +864,7 @@ public class DataStore {
 		nbList.add(new NominalLabel(322));
 		DTOdoc.setNominalLabelCollection(nbList);
 	
-		long docID = DataStore.taskManager.insertNewTask(TaggerDocument.toTaskManagerDocument(DTOdoc));
+		long docID = DataStore.taskManager.saveHumanLabeledDocument(TaggerDocument.toDocumentDTO(DTOdoc), doc.getCrisisID());
 		System.out.println("Inserted new document with documentID = " + docID);
 		logger.info("Inserted new document with documentID = " + docID);
 		

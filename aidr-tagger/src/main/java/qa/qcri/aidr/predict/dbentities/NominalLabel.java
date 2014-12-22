@@ -13,6 +13,9 @@ import javax.xml.bind.annotation.XmlTransient;
 
 
 
+
+import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
+
 //import org.codehaus.jackson.annotate.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -120,12 +123,12 @@ public class NominalLabel implements Serializable {
         return "qa.qcri.aidr.predict.dbentities.NominalLabel[ nominalLabelID=" + nominalLabelID + " ]";
     }
     
-	public static Collection<NominalLabel> toNominalLabelCollection(Collection<qa.qcri.aidr.task.dto.NominalLabelDTO> list) {
+	public static Collection<NominalLabel> toNominalLabelCollection(Collection<NominalLabelDTO> list) {
 		if (list != null) {
 				Collection<NominalLabel> nominalLabelList = new ArrayList<NominalLabel>();
-				for (qa.qcri.aidr.task.dto.NominalLabelDTO t: list) {
+				for (NominalLabelDTO t: list) {
 					if (t != null) {
-						NominalLabel nominalLabel  = new NominalLabel(t.getNominalLabelID(), t.getNominalLabelCode(), t.getName(), t.getDescription());
+						NominalLabel nominalLabel  = new NominalLabel(t.getNominalLabelId().intValue(), t.getNominalLabelCode(), t.getName(), t.getDescription());
 						nominalLabelList.add(nominalLabel);
 					}
 				}
@@ -134,12 +137,16 @@ public class NominalLabel implements Serializable {
 		return null;
 	}
 
-	public static Collection<qa.qcri.aidr.task.entities.NominalLabel> toTaskManagerNominalLabelCollection(Collection<NominalLabel> list) {
+	public static Collection<NominalLabelDTO> toNominalLabelDTOCollection(Collection<NominalLabel> list) {
 		if (list != null) {
-				Collection<qa.qcri.aidr.task.entities.NominalLabel> nominalLabelList = new ArrayList<qa.qcri.aidr.task.entities.NominalLabel>();
+				Collection<NominalLabelDTO> nominalLabelList = new ArrayList<NominalLabelDTO>();
 				for (NominalLabel t: list) {
 					if (t != null) {
-						qa.qcri.aidr.task.entities.NominalLabel nominalLabel = new qa.qcri.aidr.task.entities.NominalLabel(t.getNominalLabelID(), t.getNominalLabelCode(), t.getName(), t.getDescription());
+						NominalLabelDTO nominalLabel = new NominalLabelDTO();
+						nominalLabel.setNominalLabelId(new Long(t.getNominalLabelID()));
+						nominalLabel.setNominalLabelCode(t.getNominalLabelCode());
+						nominalLabel.setName(t.getName());
+						nominalLabel.setDescription(t.getDescription());
 						nominalLabelList.add(nominalLabel);
 					}
 				}
