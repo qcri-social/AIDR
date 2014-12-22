@@ -40,12 +40,8 @@ public class TaskAssignmentIdDTO implements Serializable {
 	}
 
 	@Column(name = "documentID", nullable = false)
-	public Long getDocumentId() throws PropertyNotSetException {
-		if (this.documentId != null) {
+	public Long getDocumentId() {
 			return this.documentId;
-		} else {
-			throw new PropertyNotSetException();
-		}
 	}
 
 	public void setDocumentId(Long documentId) {
@@ -53,19 +49,15 @@ public class TaskAssignmentIdDTO implements Serializable {
 	}
 
 	@Column(name = "userID", nullable = false)
-	public Long getUserId() throws PropertyNotSetException {
-		if (this.userId != null) {
+	public Long getUserId() {
 			return this.userId;
-		} else {
-			throw new PropertyNotSetException();
-		}
 	}
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 
-	public TaskAssignmentId toEntity() throws PropertyNotSetException {
+	public TaskAssignmentId toEntity() {
 		TaskAssignmentId entity = new TaskAssignmentId(this.getDocumentId(), this.getUserId());
 		return entity;
 	}

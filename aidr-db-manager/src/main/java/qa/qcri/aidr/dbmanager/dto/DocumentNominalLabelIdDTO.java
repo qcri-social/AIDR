@@ -75,20 +75,12 @@ public class DocumentNominalLabelIdDTO implements Serializable {
 		}
 	}
 
-	public Long getUserId() throws PropertyNotSetException {
-		if (userId != null) {
+	public Long getUserId() {
 			return this.userId;
-		} else {
-			throw new PropertyNotSetException();
-		}
 	}
 
 	public void setUserId(Long userId) {
-		if (userId != null) {
 			this.userId = userId;
-		} else {
-			throw new IllegalArgumentException("Argument cannot be null!");
-		}
 	}
 
 	public DocumentNominalLabelId toEntity() {

@@ -27,6 +27,9 @@ public interface TaskManagerRemote<T, Serializable> {
 	public long insertNewTask(T task);
 	public void insertNewTask(List<T> collection);
 	
+	public long saveHumanLabeledDocument(T task, Long crisisID);
+	public void saveHumanLabeledDocuments(List<T> collection, Long crisisID);
+	
 	public void assignNewTaskToUser(Long id, Long userId) throws Exception;
 	public void assignNewTaskToUser(List<T> collection, Long userId) throws Exception;
 	

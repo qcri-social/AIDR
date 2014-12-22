@@ -45,7 +45,7 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 		try {
 			for (Iterator<DocumentDTO> it = taskList.iterator(); it.hasNext();){
 				DocumentDTO tb = (DocumentDTO) it.next();
-				List<TaskAssignment> taskAssignments = getAllByCriteria(Restrictions.eq("documentID", tb.getDocumentID()));
+				List<TaskAssignment> taskAssignments = getAllByCriteria(Restrictions.eq("id.documentId", tb.getDocumentID()));
 				if(null == taskAssignments || taskAssignments.size()== 0){
 					// No assigned tasks currently for user
 					TaskAssignment taskAssignment = new TaskAssignment(tb.getDocumentID(), userID, new Date());
@@ -66,7 +66,7 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 	@Override
 	public int insertOneTaskAssignment(Long documentID, Long userID) {
 		try {
-			List<TaskAssignment> taskAssignments = getAllByCriteria(Restrictions.eq("documentID", documentID));
+			List<TaskAssignment> taskAssignments = getAllByCriteria(Restrictions.eq("id.documentId", documentID));
 			if(null == taskAssignments || taskAssignments.size()== 0){
 				TaskAssignment taskAssignment = new TaskAssignment(documentID, userID, new Date());
 				save(taskAssignment);
@@ -161,8 +161,8 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 
 	private TaskAssignment getTaskAssignment(Long documentID, Long userID) {
 		Map<String, Long> attMap = new HashMap<String, Long>();
-		attMap.put("documentID", documentID);
-		attMap.put("userID", userID);
+		attMap.put("id.documentId", documentID);
+		attMap.put("id.userId", userID);
 		try {
 			TaskAssignment t = getByCriteria(Restrictions.allEq(attMap));
 			return t;
@@ -176,8 +176,8 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 	@Override
 	public TaskAssignmentDTO findTaskAssignment(Long documentID, Long userID) {
 		Map<String, Long> attMap = new HashMap<String, Long>();
-		attMap.put("documentID", documentID);
-		attMap.put("userID", userID);
+		attMap.put("id.documentId", documentID);
+		attMap.put("id.userId", userID);
 		try {
 			TaskAssignment t = getByCriteria(Restrictions.allEq(attMap));
 			return t != null ? new TaskAssignmentDTO(t) : null;
@@ -191,7 +191,7 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 	@Override
 	public List<TaskAssignmentDTO> findTaskAssignmentByID(Long documentID) {
 		try {
-			List<TaskAssignment> list = getAllByCriteria(Restrictions.eq("documentID", documentID));  
+			List<TaskAssignment> list = getAllByCriteria(Restrictions.eq("id.documentId", documentID));  
 			if (list != null) {
 				List<TaskAssignmentDTO> dtoList = new ArrayList<TaskAssignmentDTO>();
 				for (TaskAssignment t: list) {
@@ -212,7 +212,7 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 	@Override
 	public Integer getPendingTaskCount(Long userID) {
 		try {
-			List<TaskAssignment> taskAssignments = getAllByCriteria(Restrictions.eq("userID",userID));
+			List<TaskAssignment> taskAssignments = getAllByCriteria(Restrictions.eq("id.userId",userID));
 			logger.info("pending for userID " + userID + "tasks = " + (taskAssignments != null ? taskAssignments.size() : "null"));
 			return (taskAssignments != null ? taskAssignments.size() : 0);
 		} catch (Exception e) {

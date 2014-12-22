@@ -1,22 +1,17 @@
 package qa.qcri.aidr.trainer.api.service.impl;
 
-import org.codehaus.jackson.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
-import qa.qcri.aidr.trainer.api.dao.TaskAssignmentDao;
 import qa.qcri.aidr.trainer.api.dao.UsersDao;
-import qa.qcri.aidr.trainer.api.entity.Document;
 import qa.qcri.aidr.trainer.api.entity.Users;
 import qa.qcri.aidr.trainer.api.service.TaskAssignmentService;
-import qa.qcri.aidr.trainer.api.util.TaskManagerEntityMapper;
-
 import java.util.List;
-import java.util.Map;
 
 
 @Service("taskAssignmentService")
@@ -29,7 +24,7 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
     @Autowired
     private UsersDao usersDao;
     
-    @Autowired TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
+    @Autowired TaskManagerRemote<DocumentDTO, Long> taskManager;
     
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
@@ -79,13 +74,12 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
 
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
-    public void addToTaskAssignment(List<Document> documents, long userID){
+    public void addToTaskAssignment(List<DocumentDTO> documents, Long userID){
         //taskAssignmentDao.insertTaskAssignment(documents, userID);
  
     	//List<qa.qcri.aidr.task.entities.Document> docList = mapper.deSerializeList(jsonString, new TypeReference<List<qa.qcri.aidr.task.entities.Document>>() {});
     	try {
-    		List<qa.qcri.aidr.task.entities.Document> docList = Document.toTaskManagerDocumentList(documents);
-    		taskManager.assignNewTaskToUser(docList, userID);
+    		taskManager.assignNewTaskToUser(documents, userID);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -93,7 +87,7 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
 
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
-    public void addToOneTaskAssignment(long documentID, long userID){
+    public void addToOneTaskAssignment(Long documentID, Long userID){
         //taskAssignmentDao.insertOneTaskAssignment(documentID, userID);
     	try {
 			taskManager.assignNewTaskToUser(documentID, userID);

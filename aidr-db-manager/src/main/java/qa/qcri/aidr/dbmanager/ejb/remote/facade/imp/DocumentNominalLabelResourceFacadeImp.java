@@ -144,7 +144,7 @@ public class DocumentNominalLabelResourceFacadeImp
 
 	@Override
 	public DocumentNominalLabelDTO findLabeledDocumentByID(Long id) throws PropertyNotSetException {
-		List<DocumentNominalLabelDTO> dtoList = findByCriteria("document.documentId", id); 
+		List<DocumentNominalLabelDTO> dtoList = findByCriteria("id.documentId", id); 
 		return dtoList != null ? dtoList.get(0) : null;
 	}
 	

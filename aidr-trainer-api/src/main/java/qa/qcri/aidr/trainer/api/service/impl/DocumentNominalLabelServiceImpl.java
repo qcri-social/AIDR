@@ -5,11 +5,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelIdDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentNominalLabelResourceFacade;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
-import qa.qcri.aidr.trainer.api.dao.DocumentNominalLabelDao;
 import qa.qcri.aidr.trainer.api.entity.DocumentNominalLabel;
 import qa.qcri.aidr.trainer.api.service.DocumentNominalLabelService;
-import qa.qcri.aidr.trainer.api.util.TaskManagerEntityMapper;
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,24 +28,41 @@ import qa.qcri.aidr.trainer.api.util.TaskManagerEntityMapper;
 @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 public class DocumentNominalLabelServiceImpl implements DocumentNominalLabelService {
 
-    //@Autowired
-    //private DocumentNominalLabelDao documentNominalLabelDao;
-    
-    @Autowired TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
-    
-    @Override
-    public void saveDocumentNominalLabel(DocumentNominalLabel documentNominalLabel) {
-        //documentNominalLabelDao.saveDocumentNominalLabel(documentNominalLabel);
- 
-    	qa.qcri.aidr.task.entities.DocumentNominalLabel doc = DocumentNominalLabel.toTaskManagerDocumentNominalLabel(documentNominalLabel);
-    	taskManager.saveDocumentNominalLabel(doc);
-    }
+	//@Autowired
+	//private DocumentNominalLabelDao documentNominalLabelDao;
 
-    @Override
-    public boolean foundDuplicateEntry(DocumentNominalLabel documentNominalLabel) {
-        //return documentNominalLabelDao.foundDuplicate(documentNominalLabel);  //To change body of implemented methods use File | Settings | File Templates.
-    	
-    	qa.qcri.aidr.task.entities.DocumentNominalLabel doc = DocumentNominalLabel.toTaskManagerDocumentNominalLabel(documentNominalLabel);
-    	return taskManager.foundDuplicateDocumentNominalLabel(doc);
-    }
+	@Autowired TaskManagerRemote<DocumentNominalLabelDTO, Long> taskManager;
+
+	@Autowired DocumentNominalLabelResourceFacade remoteDocumentNominalLabelEJB;	
+
+	@Autowired NominalLabelResourceFacade remoteNominalLabelEJB;
+
+	@Autowired DocumentResourceFacade remoteDocumentEJB;
+
+	@Override
+	public void saveDocumentNominalLabel(DocumentNominalLabel documentNominalLabel) {
+		//documentNominalLabelDao.saveDocumentNominalLabel(documentNominalLabel);
+		DocumentNominalLabelIdDTO id = new DocumentNominalLabelIdDTO(documentNominalLabel.getDocumentID(), documentNominalLabel.getNominalLabelID(), documentNominalLabel.getUserID());
+		try {
+			DocumentDTO doc = remoteDocumentEJB.findDocumentByID(documentNominalLabel.getDocumentID());
+			NominalLabelDTO nb = remoteNominalLabelEJB.getNominalLabelByID(documentNominalLabel.getNominalLabelID());
+
+			DocumentNominalLabelDTO dto = new DocumentNominalLabelDTO(id, nb, doc);
+			taskManager.saveDocumentNominalLabel(dto);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public boolean foundDuplicateEntry(DocumentNominalLabel documentNominalLabel) {
+		//return documentNominalLabelDao.foundDuplicate(documentNominalLabel);  //To change body of implemented methods use File | Settings | File Templates.
+		try {
+			DocumentNominalLabelIdDTO id = new DocumentNominalLabelIdDTO(documentNominalLabel.getDocumentID(), documentNominalLabel.getNominalLabelID(), documentNominalLabel.getUserID());
+			return remoteDocumentNominalLabelEJB.isDocumentExists(id);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 }

@@ -1,5 +1,6 @@
 package qa.qcri.aidr.trainer.api.service;
 
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.trainer.api.entity.Document;
 import qa.qcri.aidr.trainer.api.template.TaskBufferJsonModel;
 
@@ -15,12 +16,12 @@ import java.util.List;
 public interface DocumentService {
 
     void updateHasHumanLabel(Long documentID, boolean value);
-    Document findDocument(Long documentID);
-    List<Document> getDocumentForTask(Long crisisID, int count, String userName);
-    List<TaskBufferJsonModel> findOneDocumentForTaskByCririsID(Document document, Long crisisID);
-    public void addToOneTaskAssignmentWithUserName(long documentID, String userName) ;
-    public void addToOneTaskAssignment(long documentID, long userID) ;
+    DocumentDTO findDocument(Long documentID);
+    List<DocumentDTO> getDocumentForTask(Long crisisID, int count, String userName);
+    List<TaskBufferJsonModel> findOneDocumentForTaskByCririsID(DocumentDTO document, Long crisisID);
+    public void addToOneTaskAssignmentWithUserName(Long documentID, String userName) ;
+    public void addToOneTaskAssignment(Long documentID, Long userID) ;
     //public List<Document> getAvailableDocument(long crisisID, int maxresult);
-    public List<Document> getAvailableDocument(long crisisID, Integer maxresult);
-    public List<Document> getDocumentForOneTask(Long crisisID, int count, String userName);
+    public List<DocumentDTO> getAvailableDocument(Long crisisID, Integer maxresult);
+    public List<DocumentDTO> getDocumentForOneTask(Long crisisID, int count, String userName);
 }

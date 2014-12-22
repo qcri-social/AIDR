@@ -3,9 +3,9 @@ package qa.qcri.aidr.trainer.api.controller;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import qa.qcri.aidr.trainer.api.entity.Document;
+
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.trainer.api.service.DocumentService;
-import qa.qcri.aidr.trainer.api.store.StatusCodeType;
 import qa.qcri.aidr.trainer.api.template.TaskBufferJsonModel;
 
 import javax.ws.rs.GET;
@@ -13,6 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
 import java.util.List;
 
 /**
@@ -33,7 +34,7 @@ public class DocumentController {
     @GET
     @Produces( MediaType.APPLICATION_JSON )
     @Path("/getbatchtaskbuffer/{userName}/{crisisID}/{maxresult}")
-    public List<Document> getAllTaskBufferToAssign(
+    public List<DocumentDTO> getAllTaskBufferToAssign(
             @PathParam("userName") String userName,
             @PathParam("crisisID") String crisisID,
             @PathParam("maxresult") String maxresult){
@@ -49,10 +50,10 @@ public class DocumentController {
                                                               @PathParam("userName") String userName,
                                                               @PathParam("maxresult") String maxresult){
 
-        Document document = null;
+        DocumentDTO document = null;
         Long id = new Long(crisisID);
         if(userName != null){
-            List<Document> documents =  documentService.getDocumentForOneTask(id,Integer.valueOf(maxresult),userName )  ;
+            List<DocumentDTO> documents =  documentService.getDocumentForOneTask(id,Integer.valueOf(maxresult),userName )  ;
 
             if(documents!= null){
                 if(documents.size() > 0){

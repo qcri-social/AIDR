@@ -10,22 +10,24 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
+
+import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
+import qa.qcri.aidr.trainer.api.entity.DocumentNominalLabel;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 import qa.qcri.aidr.trainer.api.Jedis.JedisNotifier;
-import qa.qcri.aidr.trainer.api.dao.TaskAnswerDao;
-import qa.qcri.aidr.trainer.api.entity.*;
+
+import qa.qcri.aidr.trainer.api.entity.TaskAnswer;
 import qa.qcri.aidr.trainer.api.service.*;
 
 import java.util.List;
 
 import qa.qcri.aidr.trainer.api.template.PybossaTemplate;
 import qa.qcri.aidr.trainer.api.template.TaskAnswerResponse;
-import qa.qcri.aidr.trainer.api.util.TaskManagerEntityMapper;
-
 
 /**
  * Created with IntelliJ IDEA.
- * User: jilucas
+ * User: jilucas, koushik
  * Date: 9/15/13
  * Time: 7:57 AM
  * To change this template use File | Settings | File Templates.
@@ -54,7 +56,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 	@Autowired
 	private DocumentService documentService;
 
-	@Autowired TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
+	@Autowired TaskManagerRemote<DocumentDTO, Long> taskManager;
 
 	@Override
 	public TaskAnswerResponse getTaskAnswerResponseData(String data){
@@ -93,7 +95,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
-	public void markOnHasHumanTag(long documentID){
+	public void markOnHasHumanTag(Long documentID){
 		documentService.updateHasHumanLabel(documentID, true);
 	}
 
@@ -107,9 +109,9 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
             taskAnswerDao.insertTaskAnswer(taskAnswer);
         }
 		 */
-		if(taskAnswerList.size() > 0){
+		if(taskAnswerList.size() > 0) {
 			TaskAnswer taskAnswer = taskAnswerList.get(0);
-			qa.qcri.aidr.task.entities.TaskAnswer t = TaskAnswer.toTaskManagerTaskAnswer(taskAnswer);
+			TaskAnswerDTO t = TaskAnswer.toTaskAnswerDTO(taskAnswer);
 			try {
 				taskManager.insertTaskAnswer(t);
 			} catch (Exception e) {
@@ -154,11 +156,11 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 
 			if(taskAnswerResponse != null && documentService.findDocument(taskAnswerResponse.getDocumentID()) != null){
 				documentService.updateHasHumanLabel(taskAnswerResponse.getDocumentID(), true);
-				TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
+
 				for(int i = 0; i < taskAnswerList.size(); i++){
 					TaskAnswer taskAnswer = taskAnswerList.get(i);
 					//taskAnswerDao.insertTaskAnswer(taskAnswer);
-					qa.qcri.aidr.task.entities.TaskAnswer t = TaskAnswer.toTaskManagerTaskAnswer(taskAnswer);
+					TaskAnswerDTO t = TaskAnswer.toTaskAnswerDTO(taskAnswer);
 					try {
 						taskManager.insertTaskAnswer(t);
 					} catch (Exception e) {
@@ -173,7 +175,8 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 					for(int i = 0; i < documentNominalLabelSet.size(); i++){
 						DocumentNominalLabel documentNominalLabel = documentNominalLabelSet.get(i);
 						if(!documentNominalLabelService.foundDuplicateEntry(documentNominalLabel)){
-							documentNominalLabelService.saveDocumentNominalLabel(documentNominalLabel);}
+							documentNominalLabelService.saveDocumentNominalLabel(documentNominalLabel);
+						}
 					}
 				}
 				if (jedisNotifier == null) {

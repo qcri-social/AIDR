@@ -1,10 +1,6 @@
 package qa.qcri.aidr.trainer.api.controller;
 
-import java.io.Serializable;
-import java.util.Properties;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import javax.ws.rs.core.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -15,13 +11,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
-import qa.qcri.aidr.trainer.api.entity.Document;
-import qa.qcri.aidr.trainer.api.util.TaskManagerEntityMapper;
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 
@@ -34,9 +27,9 @@ public class TestTaskManager {
 
 	private static final String remoteEJBJNDIName = "java:global/AIDRTaskManager/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote";
 	//@EJB(mappedName=remoteEJBJNDIName)
-	
-	@Autowired TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long> taskManager;
-	
+
+	@Autowired TaskManagerRemote<DocumentDTO, Long> taskManager;
+
 	public TestTaskManager() {
 	}
 
@@ -58,29 +51,21 @@ public class TestTaskManager {
 			InitialContext ctx = new InitialContext();
 
 			taskManager = (TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long>) ctx.lookup(remoteEJBJNDIName);
-			*/
+			 */
 			System.out.println("taskManager: " + taskManager + ", time taken to initialize = " + (System.currentTimeMillis() - startTime));
 			if (taskManager != null) {
 				System.out.println("Success in connecting to remote EJB to initialize taskManager");
 			}
 			long elapsed = 0L;
-			qa.qcri.aidr.task.dto.DocumentDTO dto = taskManager.getTaskById(4579257L);
-			if (dto != null) {
-				Document document = null;
-				try {
-					document = Document.toLocalDocument(dto);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
 
-				elapsed = System.currentTimeMillis() - startTime;
-				if (document != null) {
-					respString.append("documentID: ").append(document.getDocumentID()).append(", crisisID: ").append(document.getCrisisID());
-					respString.append(", taskAssignment: ").append(document.getTaskAssignment() != null ? document.getTaskAssignment().getDocumentID() : null);
-					//respString.append(", nominalLabel size: ").append(document.getNominalLabelCollection() != null ? document.getNominalLabelCollection().size() : 0);
-				} else {
-					respString.append("null");
-				}
+			DocumentDTO dto = taskManager.getTaskById(4579257L);
+			elapsed = System.currentTimeMillis() - startTime;
+			if (dto != null) {
+				respString.append("documentID: ").append(dto.getDocumentID()).append(", crisisID: ").append(dto.getCrisisDTO().getCrisisID());
+				respString.append(", taskAssignment: ").append(dto.getTaskAssignmentsDTO() != null ? dto.getTaskAssignmentsDTO().size() : null);
+				//respString.append(", nominalLabel size: ").append(document.getNominalLabelCollection() != null ? document.getNominalLabelCollection().size() : 0);
+			} else {
+				respString.append("null");
 			}
 			System.out.println("[main] " + respString.toString() + ", time taken = " + elapsed);
 		} catch (Exception e) {

@@ -75,7 +75,7 @@ public class TaskAssignmentDTO implements Serializable {
 		return taskAssignment;
 	}
 
-	public DocumentDTO getDocument() throws PropertyNotSetException {
+	public DocumentDTO getDocument()  {
 			return this.document;
 	}
 
@@ -109,7 +109,7 @@ public class TaskAssignmentDTO implements Serializable {
 
 	}
 
-	public Long getUserID() throws PropertyNotSetException {
+	public Long getUserID() {
 		return getIdDTO().getUserId();
 	}
 

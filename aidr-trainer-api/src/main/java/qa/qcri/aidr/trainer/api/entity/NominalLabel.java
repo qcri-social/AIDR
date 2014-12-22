@@ -82,34 +82,6 @@ public class NominalLabel implements Serializable {
     public void setSequence(Integer sequence) {
         this.sequence = sequence;
     }
-
-	public static Collection<NominalLabel> toLocalNominalLabelCollection(Collection<qa.qcri.aidr.task.dto.NominalLabelDTO> list) {
-		if (list != null) {
-			Collection<NominalLabel> nominalLabelList = new ArrayList<NominalLabel>();
-			for (qa.qcri.aidr.task.dto.NominalLabelDTO t: list) {
-				if (t != null) {
-					NominalLabel nominalLabel  = new NominalLabel(t.getNominalLabelID().longValue(), t.getNominalLabelCode(), t.getName(), t.getDescription());
-					nominalLabelList.add(nominalLabel);
-				}
-			}
-			return nominalLabelList;
-		}
-		return null;
-	}
-
-	public static Collection<qa.qcri.aidr.task.entities.NominalLabel> toTaskManagerNominalLabelCollection(Collection<NominalLabel> list) {
-		if (list != null) {
-			Collection<qa.qcri.aidr.task.entities.NominalLabel> nominalLabelList = new ArrayList<qa.qcri.aidr.task.entities.NominalLabel>();
-			for (NominalLabel t: list) {
-				if (t != null) {
-					qa.qcri.aidr.task.entities.NominalLabel nominalLabel = new qa.qcri.aidr.task.entities.NominalLabel(t.getNominalLabelID().intValue(), t.getNominalLabelCode(), t.getName(), t.getDescription());
-					nominalLabelList.add(nominalLabel);
-				}
-			}
-			return nominalLabelList;
-		}
-		return null;
-	}
     
     @Id
     @Column(name = "nominalLabelID")

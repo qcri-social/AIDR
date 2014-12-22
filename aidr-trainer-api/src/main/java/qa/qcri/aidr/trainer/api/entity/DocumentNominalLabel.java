@@ -1,29 +1,21 @@
 package qa.qcri.aidr.trainer.api.entity;
 
-import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-
-
-
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import java.io.Serializable;
 import java.util.Date;
 
-import qa.qcri.aidr.trainer.api.entity.keychain.DocumentNominalLabelKey;
+import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelIdDTO;
 
 /**
- * Created with IntelliJ IDEA.
- * User: jilucas
- * Date: 9/15/13
- * Time: 5:32 PM
- * To change this template use File | Settings | File Templates.
+ * Created by: koushik
  */
-@Entity @IdClass(DocumentNominalLabelKey.class)
-@Table(catalog = "aidr_predict",name = "document_nominal_label")
+
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class DocumentNominalLabel implements Serializable {
@@ -70,39 +62,38 @@ public class DocumentNominalLabel implements Serializable {
         this.timestamp = timestamp;
     }
 
-	public static DocumentNominalLabel toLocalDocumentNominalLabel(qa.qcri.aidr.task.dto.DocumentNominalLabelDTO doc) {
+	public static DocumentNominalLabel toLocalDocumentNominalLabel(DocumentNominalLabelDTO doc) {
 		if (doc != null) {
-			DocumentNominalLabel nominalDoc = new DocumentNominalLabel(doc.getDocumentID(), doc.getNominalLabelID(), doc.getUserID());
-			return nominalDoc;
+			try {
+				DocumentNominalLabel nominalDoc = new DocumentNominalLabel(doc.getIdDTO().getDocumentId(), doc.getIdDTO().getNominalLabelId(), doc.getIdDTO().getUserId());
+				return nominalDoc;
+			} catch (PropertyNotSetException e) {
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}
 	
-	public static qa.qcri.aidr.task.entities.DocumentNominalLabel toTaskManagerDocumentNominalLabel(DocumentNominalLabel doc) {
+	public static DocumentNominalLabelDTO toDocumentNominalLabelDTO(DocumentNominalLabel doc) {
 		if (doc != null) {
-			qa.qcri.aidr.task.entities.DocumentNominalLabel nominalDoc = new qa.qcri.aidr.task.entities.DocumentNominalLabel(doc.getDocumentID(), doc.getNominalLabelID(), doc.getUserID());
+			DocumentNominalLabelIdDTO idDTO = new DocumentNominalLabelIdDTO(doc.getDocumentID(), doc.getNominalLabelID(), doc.getUserID());
+			DocumentNominalLabelDTO nominalDoc = new DocumentNominalLabelDTO();
+			nominalDoc.setIdDTO(idDTO);
 			return nominalDoc;
 		}
 		return null;
 	}
     
     @XmlElement
-    @Id
-    @Column(name = "documentID")
     private Long documentID;
 
     @XmlElement
-    @Id
-    @Column (name = "nominalLabelID", nullable = false)
     private Long nominalLabelID;
     
     @XmlElement
-    @Id
-    @Column (name = "userID", nullable = false)
     private Long userID;
 
     @XmlElement
-    @Column (name = "timestamp", nullable = false)
     private Date timestamp;
 
 

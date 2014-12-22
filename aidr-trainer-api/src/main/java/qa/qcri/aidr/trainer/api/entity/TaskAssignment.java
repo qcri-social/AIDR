@@ -1,6 +1,5 @@
 package qa.qcri.aidr.trainer.api.entity;
 
-import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -9,8 +8,6 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.Date;
 
-@Entity
-@Table (catalog = "aidr_predict",name = "task_assignment")
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class TaskAssignment implements Serializable {
@@ -18,16 +15,12 @@ public class TaskAssignment implements Serializable {
     private static final long serialVersionUID = -5527566248002296042L;
     
     @XmlElement
-    @Id
-    @Column (name = "documentID",  nullable = false)
     private Long documentID;
     
     @XmlElement
-    @Column (name = "userID", nullable = false)
     private Long userID;
     
     @XmlElement
-    @Column (name = "assignedAt", nullable = false)
     private Date assignedAt;
 
     public TaskAssignment(){
@@ -73,20 +66,4 @@ public class TaskAssignment implements Serializable {
 
         return documentID.equals(taskAssignment.documentID);
     }
-
-	public static TaskAssignment toLocalTaskAssignment(qa.qcri.aidr.task.dto.TaskAssignmentDTO t) {
-		if (t != null) {
-			TaskAssignment taskAssignment  = new TaskAssignment(t.getDocumentID(), t.getUserID(), t.getAssignedAt());
-			return taskAssignment;
-		}
-		return null;
-	}
-
-	public static qa.qcri.aidr.task.entities.TaskAssignment toTaskManagerTaskAssignment(TaskAssignment t) {
-		if (t != null) {
-			qa.qcri.aidr.task.entities.TaskAssignment taskAssignment  = new qa.qcri.aidr.task.entities.TaskAssignment(t.getDocumentID(), t.getUserID(), t.getAssignedAt());
-			return taskAssignment;
-		}
-		return null;
-	}
 }

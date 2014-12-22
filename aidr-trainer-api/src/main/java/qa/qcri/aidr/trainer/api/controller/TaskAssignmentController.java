@@ -34,7 +34,7 @@ public class TaskAssignmentController {
     @Produces( MediaType.APPLICATION_JSON )
     @Path("/get/searchByUserID/{userID}")
     public Integer getCrisisByID(@PathParam("userID") String userID){
-        return  taskAssignmentService.getPendingTaskCount(new Long(userID));
+        return  taskAssignmentService.getPendingTaskCount(Long.parseLong(userID));
     }
 
     @GET

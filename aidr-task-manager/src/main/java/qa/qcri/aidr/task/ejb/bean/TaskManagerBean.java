@@ -168,6 +168,28 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		return -1;
 	}
 
+	@Override
+	public long saveHumanLabeledDocument(T task, Long crisisID) {
+		if (task == null) {
+			logger.error("Attempting to insert NULL");
+			return -1;
+		}
+		try {
+			DocumentDTO doc = (DocumentDTO) task;
+			CrisisDTO crisisDTO = remoteCrisisEJB.findCrisisByID(crisisID);
+			doc.setCrisisDTO(crisisDTO);
+			doc.setHasHumanLabels(true);
+			DocumentDTO savedDoc = remoteDocumentEJB.addDocument(doc);
+			
+			return savedDoc.getDocumentID();
+		} catch (Exception e) {
+			logger.error("Error in insertion");
+			logger.error(elog.toStringException(e));
+		}
+		return -1;
+	}
+
+
 
 	@Override
 	public void insertNewTask(List<T> collection) {
@@ -186,6 +208,25 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		}
 	}
 
+	@Override
+	public void saveHumanLabeledDocuments(List<T> collection, Long crisisID) {
+		if (collection != null) {
+			try {
+				for (T doc: collection) {
+					CrisisDTO crisisDTO = remoteCrisisEJB.findCrisisByID(crisisID);
+					((DocumentDTO) doc).setCrisisDTO(crisisDTO);
+					((DocumentDTO) doc).setHasHumanLabels(true);
+					remoteDocumentEJB.addDocument((DocumentDTO) doc);
+				}
+			} catch (Exception e) {
+				logger.error("Error in collection insertion");
+				logger.error(elog.toStringException(e));
+			}
+		} else {
+			logger.warn("Attempting to insert NULL");
+		}
+	}
+	
 
 	@Override
 	public int deleteTaskById(Long id) {

@@ -42,7 +42,7 @@ public class TaskAnswerResourceFacadeImp extends CoreDBServiceFacadeImp<TaskAnsw
 
 	@Override
 	public List<TaskAnswerDTO> getTaskAnswer(Long documentID) {
-		Criterion criterion = Restrictions.eq("documentID", documentID);
+		Criterion criterion = Restrictions.eq("id.documentId", documentID);
 		List<TaskAnswer> list = getAllByCriteria(criterion);
 		if (list != null) {
 			List<TaskAnswerDTO> dtoList = new ArrayList<TaskAnswerDTO>();
@@ -57,8 +57,8 @@ public class TaskAnswerResourceFacadeImp extends CoreDBServiceFacadeImp<TaskAnsw
 	@Override
 	public TaskAnswerDTO getTaskAnswer(Long documentID, Long userID) {
 		Criterion criterion = Restrictions.conjunction()
-								.add(Restrictions.eq("documentID", documentID))
-								.add(Restrictions.eq("userID", userID));
+								.add(Restrictions.eq("id.documentId", documentID))
+								.add(Restrictions.eq("id.userId", userID));
 		TaskAnswer t = getByCriteria(criterion);
 		return t != null ? new TaskAnswerDTO(t) : null;
 	}

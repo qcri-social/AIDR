@@ -1,23 +1,19 @@
 package qa.qcri.aidr.trainer.api.entity;
 
-import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
+import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
+
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Created with IntelliJ IDEA.
- * User: jilucas
- * Date: 9/15/13
- * Time: 7:12 AM
- * To change this template use File | Settings | File Templates.
+ * reated by: koushik
  */
-@Entity
-@Table(catalog = "aidr_predict",name = "task_answer")
+
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class TaskAnswer implements Serializable {
@@ -84,7 +80,7 @@ public class TaskAnswer implements Serializable {
         this.taskID = taskID;
     }
 
-	public static TaskAnswer toLocalTaskAnswer(qa.qcri.aidr.task.dto.TaskAnswerDTO t) {
+	public static TaskAnswer toLocalTaskAnswer(TaskAnswerDTO t) {
 		if (t != null) {
 			TaskAnswer taskAnswer = new TaskAnswer(t.getDocumentID(), t.getUserID(), t.getAnswer());
 			return taskAnswer;
@@ -92,38 +88,30 @@ public class TaskAnswer implements Serializable {
 		return null;
 	}
 	
-	public static qa.qcri.aidr.task.entities.TaskAnswer toTaskManagerTaskAnswer(TaskAnswer t) {
+	public static TaskAnswerDTO toTaskAnswerDTO(TaskAnswer t) {
 		if (t != null) {
-			qa.qcri.aidr.task.entities.TaskAnswer taskAnswer = new qa.qcri.aidr.task.entities.TaskAnswer(t.getDocumentID(), t.getUserID(), t.getAnswer());
-			return taskAnswer;
+			TaskAnswerDTO dto = new TaskAnswerDTO(t.getDocumentID(), t.getUserID(), t.getAnswer());
+			return dto;
 		}
 		return null;
 	}
     
     @XmlElement
-    @Id
-    @GeneratedValue
-    @Column (name = "taskID")
     private Long taskID;
 
     @XmlElement
-    @Column(name = "documentID", nullable = false)
     private Long documentID;
     
     @XmlElement
-    @Column (name = "userID", nullable = false)
     private Long userID;
     
     @XmlElement
-    @Column (name = "answer", nullable = true)
     private String answer;
 
     @XmlElement
-    @Column (name = "timestamp", nullable = false)
     private Date timestamp;
 
     @XmlElement
-    @Column (name = "fromTrustedUser", nullable = false)
     private boolean fromTrustedUser;
 
 

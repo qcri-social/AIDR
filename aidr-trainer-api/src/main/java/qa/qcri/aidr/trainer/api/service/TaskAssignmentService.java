@@ -1,15 +1,14 @@
 package qa.qcri.aidr.trainer.api.service;
 
 
-import qa.qcri.aidr.trainer.api.entity.Document;
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import java.util.List;
-import java.util.Map;
 
 
 public interface TaskAssignmentService {
     void revertTaskAssignment(Long documentID, Long userID);
     void revertTaskAssignmentByUserName(Long documentID, String userName);
     Integer getPendingTaskCount(Long userID);
-    void addToOneTaskAssignment(long documentID, long userID);
-    void addToTaskAssignment(List<Document> documents, long userID);
+    void addToOneTaskAssignment(Long documentID, Long userID);
+    void addToTaskAssignment(List<DocumentDTO> documents, Long userID);
 }
