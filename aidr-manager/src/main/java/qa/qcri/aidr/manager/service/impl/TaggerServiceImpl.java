@@ -48,6 +48,7 @@ public class TaggerServiceImpl implements TaggerService {
     @Value("${outputAPIMainUrl}")
     private String outputAPIMainUrl;
 
+    //new DTOs introduced. -Imran
     @Override
     public List<TaggerCrisisType> getAllCrisisTypes() throws AidrException {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
