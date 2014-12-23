@@ -123,7 +123,7 @@ public class TaggerController extends BaseController {
 
 	@RequestMapping(value = "/addAttributeToCrisis.action", method = {RequestMethod.GET})
 	@ResponseBody
-	public Map<String, Object> addAttributeToCrisis(Integer crisesId, Integer attributeId, Boolean isActive) {
+	public Map<String, Object> addAttributeToCrisis(Long crisesId, Integer attributeId, Boolean isActive) {
 		logger.info("Add Attribute To Crises");
 		try {
 			TaggerModelFamily modelFamily = transformCrisesIdAndAttributeIdToTaggerModelFamily(crisesId, attributeId, isActive);
@@ -647,7 +647,7 @@ public class TaggerController extends BaseController {
 		return new TaggerCrisisRequest(request.getCode(), request.getName(), crisisType, taggerUser);
 	}
 
-	private TaggerModelFamily transformCrisesIdAndAttributeIdToTaggerModelFamily (Integer crisesId, Integer attributeId, Boolean isActive) throws Exception{
+	private TaggerModelFamily transformCrisesIdAndAttributeIdToTaggerModelFamily (Long crisesId, Integer attributeId, Boolean isActive) throws Exception{
 		TaggerCrisis crisis = new TaggerCrisis(crisesId);
 		TaggerAttribute nominalAttribute = new TaggerAttribute(attributeId);
 		return new TaggerModelFamily(crisis, nominalAttribute, isActive);

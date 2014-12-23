@@ -27,7 +27,7 @@ public class AidrCollection implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(length = 64, name = "code", unique = true)
     private String code;
@@ -68,7 +68,7 @@ public class AidrCollection implements Serializable {
 
     private Integer durationHours;
 
-    private Integer crisisType;
+    private Long crisisType;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -82,11 +82,11 @@ public class AidrCollection implements Serializable {
     @Enumerated(EnumType.STRING)
     private CollectionType collectionType;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -230,11 +230,11 @@ public class AidrCollection implements Serializable {
         this.durationHours = durationHours;
     }
 
-    public Integer getCrisisType() {
+    public Long getCrisisType() {
         return crisisType;
     }
 
-    public void setCrisisType(Integer crisisType) {
+    public void setCrisisType(Long crisisType) {
         this.crisisType = crisisType;
     }
 

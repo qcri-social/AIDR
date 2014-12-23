@@ -12,7 +12,7 @@ public class TaggerCrisis {
 
     private TaggerUser users;
 
-    private Integer crisisID;
+    private Long crisisID;
     
     private Boolean isTrashed;
     
@@ -22,7 +22,7 @@ public class TaggerCrisis {
     	this.isTrashed = false;
     }
 
-    public TaggerCrisis(Integer crisisID) {
+    public TaggerCrisis(Long crisisID) {
         this.crisisID = crisisID;
         this.isTrashed = false;
     }
@@ -67,11 +67,11 @@ public class TaggerCrisis {
         this.users = users;
     }
 
-    public Integer getCrisisID() {
+    public Long getCrisisID() {
         return crisisID;
     }
 
-    public void setCrisisID(Integer crisisID) {
+    public void setCrisisID(Long crisisID) {
         this.crisisID = crisisID;
     }
 

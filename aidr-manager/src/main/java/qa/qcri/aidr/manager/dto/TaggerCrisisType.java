@@ -2,29 +2,29 @@ package qa.qcri.aidr.manager.dto;
 
 public class TaggerCrisisType {
 
-    private Integer crisisTypeID;
+    private Long crisisTypeID;
 
     private String name;
 
     private int numberOfCrisisAssociated;
-
+    
     public TaggerCrisisType() {
     }
 
-    public TaggerCrisisType(Integer crisisTypeID) {
+    public TaggerCrisisType(Long crisisTypeID) {
         this.crisisTypeID = crisisTypeID;
     }
 
-    public TaggerCrisisType(Integer crisisTypeID, String name) {
+    public TaggerCrisisType(Long crisisTypeID, String name) {
         this.crisisTypeID = crisisTypeID;
         this.name = name;
     }
 
-    public Integer getCrisisTypeID() {
+    public Long getCrisisTypeID() {
         return crisisTypeID;
     }
 
-    public void setCrisisTypeID(Integer crisisTypeID) {
+    public void setCrisisTypeID(Long crisisTypeID) {
         this.crisisTypeID = crisisTypeID;
     }
 
@@ -43,4 +43,6 @@ public class TaggerCrisisType {
     public void setNumberOfCrisisAssociated(int numberOfCrisisAssociated) {
         this.numberOfCrisisAssociated = numberOfCrisisAssociated;
     }
+
+    
 }

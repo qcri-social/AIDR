@@ -6,11 +6,11 @@ public class UpdateCrisisDTO {
 
     private String name;
 
-    private Integer crisisTypeID;
+    private Long crisisTypeID;
 
     private String crisisTypeName;
 
-    private Integer crisisID;
+    private Long crisisID;
 
     public String getCode() {
         return code;
@@ -28,19 +28,19 @@ public class UpdateCrisisDTO {
         this.name = name;
     }
 
-    public Integer getCrisisTypeID() {
+    public Long getCrisisTypeID() {
         return crisisTypeID;
     }
 
-    public void setCrisisTypeID(Integer crisisTypeID) {
+    public void setCrisisTypeID(Long crisisTypeID) {
         this.crisisTypeID = crisisTypeID;
     }
 
-    public Integer getCrisisID() {
+    public Long getCrisisID() {
         return crisisID;
     }
 
-    public void setCrisisID(Integer crisisID) {
+    public void setCrisisID(Long crisisID) {
         this.crisisID = crisisID;
     }
 

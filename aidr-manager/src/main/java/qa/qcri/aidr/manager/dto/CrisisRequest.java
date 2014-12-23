@@ -6,7 +6,7 @@ public class CrisisRequest {
 
     private String name;
 
-    private Integer crisisTypeID;
+    private Long crisisTypeID;
 
     public String getCode() {
         return code;
@@ -24,11 +24,11 @@ public class CrisisRequest {
         this.name = name;
     }
 
-    public Integer getCrisisTypeID() {
+    public Long getCrisisTypeID() {
         return crisisTypeID;
     }
 
-    public void setCrisisTypeID(Integer crisisTypeID) {
+    public void setCrisisTypeID(Long crisisTypeID) {
         this.crisisTypeID = crisisTypeID;
     }
 }
