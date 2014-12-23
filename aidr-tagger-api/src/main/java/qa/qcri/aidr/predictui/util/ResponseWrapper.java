@@ -85,6 +85,10 @@ public class ResponseWrapper implements Serializable {
     public ResponseWrapper(String statusCode) {
         this.statusCode = statusCode;
     }
+    
+    public ResponseWrapper(String statusCode, Object obj) {
+        this.statusCode = statusCode;
+    }
 
     public ResponseWrapper(String statusCode, String message, Object obj) {
         this.statusCode = statusCode;

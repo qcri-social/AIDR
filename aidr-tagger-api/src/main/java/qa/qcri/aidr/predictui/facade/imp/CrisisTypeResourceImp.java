@@ -4,21 +4,13 @@
  */
 package qa.qcri.aidr.predictui.facade.imp;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
-import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
-//import qa.qcri.aidr.predictui.dto.CrisisTypeDTO;
-//import qa.qcri.aidr.predictui.entities.CrisisType;
 import qa.qcri.aidr.predictui.facade.CrisisTypeResourceFacade;
 
 /**
