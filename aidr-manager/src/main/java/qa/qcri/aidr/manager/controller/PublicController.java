@@ -488,7 +488,7 @@ public class PublicController extends BaseController{
 			List<TaggerCrisisType> crisisTypes = taggerService.getAllCrisisTypes();
 
 			for (TaggerCrisisType cType : crisisTypes) {
-				if(cType.getCrisisTypeID() == typeID) {
+				if(cType.getCrisisTypeId() == typeID) {
 					name = cType.getName();
 				}
 			}
