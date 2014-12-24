@@ -8,21 +8,21 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import qa.qcri.aidr.predictui.entities.Users;
+import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 
 /**
  *
- * @author Imran
+ * @author Koushik
  */
 @Local
 public interface UserResourceFacade {
 
-	public Users addUser(Users user);
+	public UsersDTO addUser(UsersDTO user);
 
-	public Users getUserByName(String userName);
+	public UsersDTO getUserByName(String userName);
 
-	public Users getUserByID(Integer userID);
+	public UsersDTO getUserByID(Long userID);
 
-	public List<Users> getAllUsers();
+	public List<UsersDTO> getAllUsers();
 
 }

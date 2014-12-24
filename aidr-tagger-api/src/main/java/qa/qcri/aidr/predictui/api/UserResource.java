@@ -23,22 +23,23 @@ import javax.ws.rs.core.UriInfo;
 
 
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.predictui.entities.Users;
 import qa.qcri.aidr.predictui.facade.UserResourceFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
-
 import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 
 /**
  * REST Web Service
  *
- * @author Imran
+ * @author Imran, Koushik
  */
 @Path("/user")
 @Stateless
@@ -60,9 +61,9 @@ public class UserResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addUser(Users user) {
+    public Response addUser(UsersDTO user) {
 
-        Users createdUser = userLocalEJB.addUser(user);
+        UsersDTO createdUser = userLocalEJB.addUser(user);
         if (createdUser == null){
             return Response.ok("Error while creating new user.").build();
         }
@@ -83,11 +84,11 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response findUserByName(@PathParam("name") String userName) {
 
-        Users user = userLocalEJB.getUserByName(userName);
+        UsersDTO user = userLocalEJB.getUserByName(userName);
         System.out.println("fetched user data: " + (user != null ? user.getUserID() : "null"));
         if (user == null){
 //            return the same object but with empty id and role. By empty id we can see that user does not exist.
-            user = new Users(null, userName, null);
+            user = new UsersDTO(null, userName, null);
         }
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -103,13 +104,13 @@ public class UserResource {
     @GET 
     @Path("/id/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Users findUserByID(@PathParam("id") Integer id) {
+    public UsersDTO findUserByID(@PathParam("id") Long id) {
 
-        Users user = userLocalEJB.getUserByID(id);
+        UsersDTO user = userLocalEJB.getUserByID(id);
         System.out.println("fetched user data: " + (user != null ? user.getUserID() : "null"));
         if (user == null){
 //            return the same object but with empty id and role. By empty id we can see that user does not exist.
-            user = new Users(id, "doesn't exist", null);
+            user = new UsersDTO(id, "doesn't exist", null);
         }
         return user;
 
@@ -119,7 +120,7 @@ public class UserResource {
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     public Response findAllUsers() {
-        List<Users> users = userLocalEJB.getAllUsers();
+        List<UsersDTO> users = userLocalEJB.getAllUsers();
         logger.info("fetched user data size: " + (users != null ? users.size(): "null"));
         ObjectMapper mapper = new ObjectMapper();
         try {
