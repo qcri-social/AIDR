@@ -79,6 +79,9 @@ public class CrisisTypeResourceFacadeImp extends CoreDBServiceFacadeImp<CrisisTy
     @Override
     public CrisisTypeDTO findCrisisTypeByID(Long id) throws PropertyNotSetException {
         CrisisType c = getById(id);
+        if (c != null) {
+        	Hibernate.initialize(c.getCrisises());
+        }
         return c != null ? new CrisisTypeDTO(c) : null;
     }
 

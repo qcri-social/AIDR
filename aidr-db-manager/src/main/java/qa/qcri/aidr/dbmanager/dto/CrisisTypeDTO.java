@@ -54,7 +54,7 @@ public class CrisisTypeDTO implements java.io.Serializable {
             this.setName(crisisType.getName());
             if (crisisType.hasCrisises()) {
                 this.setCrisisesDTO(toCrisisDTOList(crisisType.getCrisises()));
-                this.numberOfCrisisAssociated = crisisType.getCrisises().size();
+                this.numberOfCrisisAssociated = crisisType.getCrisises() != null ? crisisType.getCrisises().size() : 0;
             }
         } else {
             System.out.println("Entity = null in constructor");
