@@ -1,6 +1,10 @@
 package qa.qcri.aidr.manager.dto;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 
 public class TaggerAttribute {
 
@@ -33,6 +37,35 @@ public class TaggerAttribute {
         this.nominalLabelCollection = nominalLabelCollection;
     }
 
+    public TaggerAttribute(NominalAttributeDTO dto) throws Exception {
+    	if (dto != null) {
+    		this.setCode(dto.getCode());
+    		this.setDescription(dto.getDescription());
+    		this.setName(dto.getName());
+    		this.setNominalAttributeID(dto.getNominalAttributeId().intValue());
+    		this.setUsers(new TaggerUser(dto.getUsersDTO()));
+    		
+    		List<TaggerLabel> labelList = new ArrayList<TaggerLabel>();
+    		for (NominalLabelDTO nb: dto.getNominalLabelsDTO()) {
+    			labelList.add(new TaggerLabel(nb));
+    		}
+    		this.setNominalLabelCollection(labelList);
+    	}
+    }
+
+    public NominalAttributeDTO toDTO() throws Exception {
+    	NominalAttributeDTO dto = new NominalAttributeDTO(new Long(this.getNominalAttributeID()), this.getName(), this.getDescription(), this.getCode());
+    	dto.setUsersDTO(this.getUsers().toDTO());
+    	
+    	List<NominalLabelDTO> nbList = new ArrayList<NominalLabelDTO>();
+    	for (TaggerLabel label: this.getNominalLabelCollection()) {
+    		nbList.add(label.toDTO());
+    	}
+    	dto.setNominalLabelsDTO(nbList);
+    	return dto;
+    }
+    
+    
     public String getCode() {
         return code;
     }

@@ -66,6 +66,8 @@ public class UserResource {
         UsersDTO createdUser = userLocalEJB.addUser(user);
         if (createdUser == null){
             return Response.ok("Error while creating new user.").build();
+        } else {
+        	System.out.println("Created new user with id = " + createdUser.getUserID() + ", name = " + createdUser.getName());
         }
         //return Response.ok(createdUser).build();
         ObjectMapper mapper = new ObjectMapper();

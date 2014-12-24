@@ -1,46 +1,61 @@
 package qa.qcri.aidr.manager.dto;
 
+import qa.qcri.aidr.dbmanager.dto.UsersDTO;
+
 public class TaggerUser {
 
-    private Integer userID;
+	private Integer userID;
 
-    private String name;
+	private String name;
 
-    private String role;
+	private String role;
 
-    public TaggerUser() {
-    }
+	public TaggerUser() {
+	}
 
-    public TaggerUser(Integer userID) {
-        this.userID = userID;
-    }
+	public TaggerUser(Integer userID) {
+		this.userID = userID;
+	}
 
-    public TaggerUser(String name, String role) {
-        this.name = name;
-        this.role = role;
-    }
+	public TaggerUser(String name, String role) {
+		this.name = name;
+		this.role = role;
+	}
 
-    public Integer getUserID() {
-        return userID;
-    }
+	public TaggerUser(UsersDTO dto) throws Exception {
+		if (dto != null) {
+			this.setName(dto.getName());
+			this.setRole(dto.getRole());
+			this.setUserID(dto.getUserID().intValue());
+		}
+	}
 
-    public void setUserID(Integer userID) {
-        this.userID = userID;
-    }
+	public UsersDTO toDTO() throws Exception {
+		UsersDTO dto = new UsersDTO(new Long(this.getUserID()), this.getName(), this.getRole());
+		return dto;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public Integer getUserID() {
+		return userID;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setUserID(Integer userID) {
+		this.userID = userID;
+	}
 
-    public String getRole() {
-        return role;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setRole(String role) {
-        this.role = role;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
 }

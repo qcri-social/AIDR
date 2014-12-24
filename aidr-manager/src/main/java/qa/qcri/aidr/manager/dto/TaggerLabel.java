@@ -1,5 +1,7 @@
 package qa.qcri.aidr.manager.dto;
 
+import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
+
 public class TaggerLabel {
 
     private Integer nominalLabelID;
@@ -30,6 +32,28 @@ public class TaggerLabel {
         this.sequence = sequence;
     }
 
+    public TaggerLabel(NominalLabelDTO dto) throws Exception {
+    	if (dto != null) {
+    		this.setNominalLabelID(dto.getNominalLabelId().intValue());
+    		this.setName(dto.getName());
+    		this.setDescription(dto.getDescription());
+    		this.setNominalLabelCode(dto.getNominalLabelCode());
+    		this.setSequence(dto.getSequence());
+    		this.setNominalAttribute(new TaggerAttribute(dto.getNominalAttributeDTO()));
+    	}
+    }
+    
+    public NominalLabelDTO toDTO() throws Exception {
+    	NominalLabelDTO dto = new NominalLabelDTO();
+    	dto.setNominalLabelId(new Long(this.getNominalLabelID()));
+    	dto.setName(this.getName());
+    	dto.setDescription(this.getDescription());
+    	dto.setSequence(this.getSequence());
+    	dto.setNominalAttributeDTO(this.getNominalAttribute().toDTO());
+    	
+    	return dto;
+    }
+    
     public Integer getNominalLabelID() {
         return nominalLabelID;
     }

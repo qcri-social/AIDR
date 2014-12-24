@@ -226,7 +226,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         var me = this;
 
         var crisisTypeId = me.mainComponent.crysisTypesCombo.getValue();
-        var crisisTypeName = me.mainComponent.crisisTypesStore.findRecord("crisisTypeID", crisisTypeId).data.name;
+        var crisisTypeName = me.mainComponent.crisisTypesStore.findRecord("crisisTypeId", crisisTypeId).data.name;
 
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/updateCrisis.action',
@@ -234,7 +234,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
             params: {
                 code: CRISIS_CODE,
                 crisisID: CRISIS_ID,
-                crisisTypeID: crisisTypeId,
+                crisisTypeId: crisisTypeId,
                 crisisTypeName: Ext.String.trim( crisisTypeName )
             },
             headers: {

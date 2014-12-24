@@ -173,9 +173,11 @@ public class CrisisResource {
 	public Response addCrisis(CrisisDTO crisis) {
 		try {
 			crisis.setIsTrashed(false);
-			crisisLocalEJB.addCrisis(crisis);
+			CrisisDTO newCrisis = crisisLocalEJB.addCrisis(crisis);
+			System.out.println("Added crisis successfully: id = " + newCrisis.getCrisisID() + ", " + newCrisis.getCode());
 			return Response.ok(getProperty("STATUS_CODE_SUCCESS")).build();
 		} catch (RuntimeException e) {
+			e.printStackTrace();
 			logger.error("Error while adding Crisis. Possible causes could be duplication of primary key, incomplete data, incompatible data format. For crisis: " + crisis.getCode());
 			logger.error(elog.toStringException(e));
 			return Response.ok("Error while adding Crisis. Possible causes could be duplication of primary key, incomplete data, incompatible data format.").build();
@@ -194,21 +196,6 @@ public class CrisisResource {
 		}
 		
 	}
-	
-	/*
-	private CrisisDTO transformCrisisToDto(Crisis c){
-		CrisisTypeDTO typeDTO = null;
-		if (c.getCrisisType() != null) {
-			typeDTO = new CrisisTypeDTO(c.getCrisisType().getCrisisTypeID(), c.getCrisisType().getName());
-		}
-		CrisisDTO dto = new CrisisDTO();
-		dto.setCode(c.getCode());
-		dto.setName(c.getName());
-		dto.setCrisisID(c.getCrisisID().intValue());
-		dto.setCrisisType(typeDTO);
-		return dto;
-	}
-	*/
 	
 	@GET
 	@Produces("application/json")

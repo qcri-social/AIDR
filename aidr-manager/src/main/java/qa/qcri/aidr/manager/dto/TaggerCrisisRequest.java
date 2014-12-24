@@ -1,5 +1,11 @@
 package qa.qcri.aidr.manager.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
+
 public class TaggerCrisisRequest {
 
     private String code;
@@ -19,7 +25,18 @@ public class TaggerCrisisRequest {
         this.crisisType = crisisType;
         this.users = users;
     }
+    
+    public CrisisDTO toDTO() throws Exception {
+		CrisisDTO dto = new CrisisDTO();
 
+		dto.setCode(this.getCode());
+		dto.setName(this.getName());
+		dto.setIsTrashed(false);
+		dto.setUsersDTO(this.getUsers().toDTO());
+		dto.setCrisisTypeDTO(this.getCrisisType().toDTO());
+
+		return dto;
+	}
     public String getCode() {
         return code;
     }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.DownloadType;
+import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
@@ -91,14 +92,16 @@ public class TaggerController extends BaseController {
 				TaggerUser taggerUser = new TaggerUser(userName, "normal");
 				taggerUserId = taggerService.addNewUser(taggerUser);
 			}
-			System.out.println("userID = " + taggerUserId + ", name = " + userName);
+			logger.info("userID = " + taggerUserId + ", name = " + userName);
 			TaggerCrisisRequest crisis = transformCrisesRequestToTaggerCrises(crisisRequest, taggerUserId);
-			System.out.println("After transformation:, crisis = " + crisis.getCode() + ": " + crisis.getCrisisType() + ":" + crisis.getName());
+			logger.info("After transformation:, crisis = " + crisis.getCode() + ": " + crisis.getCrisisType() + ":" + crisis.getName());
 			String response = taggerService.createNewCrises(crisis);
-			System.out.println("createNewCrises: " + response);
+			logger.info("createNewCrises: " + response);
 			if ("SUCCESS".equals(response)){
+				logger.info("Returning : " + response);
 				return getUIWrapper(true);
 			} else {
+				logger.info("Returning : " + response);
 				return getUIWrapper(false, response);
 			}
 		} catch (Exception e) {
@@ -646,7 +649,7 @@ public class TaggerController extends BaseController {
 		TaggerUserRequest taggerUser = new TaggerUserRequest(taggerUserId);
 		return new TaggerCrisisRequest(request.getCode(), request.getName(), crisisType, taggerUser);
 	}
-
+	
 	private TaggerModelFamily transformCrisesIdAndAttributeIdToTaggerModelFamily (Integer crisesId, Integer attributeId, Boolean isActive) throws Exception{
 		TaggerCrisis crisis = new TaggerCrisis(crisesId);
 		TaggerAttribute nominalAttribute = new TaggerAttribute(attributeId);
