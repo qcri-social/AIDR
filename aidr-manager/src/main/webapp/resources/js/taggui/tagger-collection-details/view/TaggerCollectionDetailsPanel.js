@@ -103,7 +103,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
         this.crisisTypesStore = Ext.create('Ext.data.Store', {
             pageSize: 30,
             storeId: 'crisisTypesStore',
-            fields: ['crisisTypeId', 'name'],
+            fields: ['crisisTypeID', 'name'],
             proxy: {
                 type: 'ajax',
                 url: BASE_URL + '/protected/tagger/getAllCrisisTypes.action',
@@ -126,7 +126,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             store: this.crisisTypesStore,
             queryMode: 'local',
             displayField: 'name',
-            valueField: 'crisisTypeId',
+            valueField: 'crisisTypeID',
             width: 280,
             listeners: {
                 change: function(combo, newValue, oldValue, eOpts) {

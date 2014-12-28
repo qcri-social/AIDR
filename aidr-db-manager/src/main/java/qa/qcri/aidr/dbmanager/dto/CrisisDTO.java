@@ -323,11 +323,7 @@ public class CrisisDTO implements Serializable  {
 		crisis.setName(getName());
 		crisis.setCode(this.getCode());
 		crisis.setIsTrashed(this.isTrashed);
-		if (this.getUsersDTO() != null) {
-			crisis.setUsers(this.getUsersDTO().toEntity());
-		} else {
-			throw new PropertyNotSetException("Unset users property");
-		}
+		crisis.setUsers(this.getUsersDTO().toEntity());
 		if (this.getCrisisTypeDTO() != null) {
 			crisis.setCrisisType(this.getCrisisTypeDTO().toEntity());
 		} else {

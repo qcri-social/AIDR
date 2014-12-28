@@ -233,7 +233,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         this.crisisTypesStore = Ext.create('Ext.data.Store', {
             pageSize: 30,
             storeId: 'crisisTypesStore',
-            fields: ['crisisTypeId', 'name'],
+            fields: ['crisisTypeID', 'name'],
             proxy: {
                 type: 'ajax',
                 url: BASE_URL + '/protected/tagger/getAllCrisisTypes.action',
@@ -249,7 +249,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             store: this.crisisTypesStore,
             queryMode: 'local',
             displayField: 'name',
-            valueField: 'crisisTypeId',
+            valueField: 'crisisTypeID',
             fieldLabel: 'Crisis Type',
             flex: 1,
             name: 'crisisType',

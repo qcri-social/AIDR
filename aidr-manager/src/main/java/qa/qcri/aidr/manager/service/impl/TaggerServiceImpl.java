@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
@@ -58,19 +60,13 @@ public class TaggerServiceImpl implements TaggerService {
 			/**
 			 * Rest call to Tagger
 			 */
-			//WebResource webResource = client.resource(taggerMainUrl + "/crisisType/all");
 			WebTarget webResource = client.target(taggerMainUrl + "/crisisType/all");
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .get(ClientResponse.class);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
-			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
-
 			TaggerAllCrisesTypesResponse crisesTypesResponse = objectMapper.readValue(jsonResponse, TaggerAllCrisesTypesResponse.class);
 
 			if (crisesTypesResponse.getCrisisTypes() != null) {
@@ -90,17 +86,12 @@ public class TaggerServiceImpl implements TaggerService {
 			/**
 			 * Rest call to Tagger
 			 */
-			//WebResource webResource = client.resource(taggerMainUrl + "/crisis?userID=" + userId);
 			WebTarget webResource = client.target(taggerMainUrl + "/crisis?userID=" + userId);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .get(ClientResponse.class);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
-			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			TaggerAllCrisesResponse taggerAllCrisesResponse = objectMapper.readValue(jsonResponse, TaggerAllCrisesResponse.class);
@@ -141,17 +132,12 @@ public class TaggerServiceImpl implements TaggerService {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
 			// Rest call to Tagger
-			//WebResource webResource = client.resource(taggerMainUrl + "/attribute/crisis/all?exceptCrisis=" + crisisID);
 			WebTarget webResource = client.target(taggerMainUrl + "/attribute/crisis/all?exceptCrisis=" + crisisID);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .get(ClientResponse.class);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
-			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			TaggerCrisisAttributesResponse crisisAttributesResponse = objectMapper.readValue(jsonResponse, TaggerCrisisAttributesResponse.class);
@@ -193,17 +179,13 @@ public class TaggerServiceImpl implements TaggerService {
 	public TaggerCrisisExist isCrisesExist(String code) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
-			//WebResource webResource = client.resource(taggerMainUrl + "/crisis/code/" + code);
 			WebTarget webResource = client.target(taggerMainUrl + "/crisis/code/" + code);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .get(ClientResponse.class);
+
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
-			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			TaggerCrisisExist crisisExist = objectMapper.readValue(jsonResponse, TaggerCrisisExist.class);
@@ -226,20 +208,16 @@ public class TaggerServiceImpl implements TaggerService {
 			/**
 			 * Rest call to Tagger
 			 */
-			//WebResource webResource = client.resource(taggerMainUrl + "/user/" + userName);
 			WebTarget webResource = client.target(taggerMainUrl + "/user/" + userName);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//         .accept(MediaType.APPLICATION_JSON)
-			//        .get(ClientResponse.class);
+	
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-
-			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
-
-			TaggerUser taggerUser = objectMapper.readValue(jsonResponse, TaggerUser.class);
+			
+			UsersDTO user = objectMapper.readValue(jsonResponse, UsersDTO.class);
+			TaggerUser taggerUser = new TaggerUser(user);
 
 			if (taggerUser != null && taggerUser.getUserID() != null) {
 				logger.info("User with the user name " + userName + " already exist in Tagger and has ID: " + taggerUser.getUserID());
@@ -265,11 +243,10 @@ public class TaggerServiceImpl implements TaggerService {
 			objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
-					.post(Entity.json(objectMapper.writeValueAsString(taggerUser)), Response.class);
+					.post(Entity.json(objectMapper.writeValueAsString(taggerUser.toDTO())), Response.class);
 
 			String jsonResponse = clientResponse.readEntity(String.class);
 
-			//TaggerUser createdUser = objectMapper.readValue(jsonResponse, TaggerUser.class);
 			UsersDTO dto = objectMapper.readValue(jsonResponse, UsersDTO.class);
 			if (dto != null) {
 				TaggerUser createdUser = new TaggerUser(dto); 
@@ -334,7 +311,6 @@ public class TaggerServiceImpl implements TaggerService {
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 			String jsonResponse = clientResponse.readEntity(String.class);
 
-			//TaggerCrisis crisis = objectMapper.readValue(jsonResponse, TaggerCrisis.class);
 			CrisisDTO dto = objectMapper.readValue(jsonResponse, CrisisDTO.class);
 			if (dto != null) {
 				TaggerCrisis crisis = new TaggerCrisis(dto);
@@ -383,18 +359,12 @@ public class TaggerServiceImpl implements TaggerService {
 			/**
 			 * Rest call to Tagger
 			 */
-			//WebResource webResource = client.resource(taggerMainUrl + "/model/crisis/" + crisisID);
-
 			int retrainingThreshold = getCurrentRetrainingThreshold();
 			WebTarget webResource = client.target(taggerMainUrl + "/model/crisis/" + crisisID);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .get(ClientResponse.class);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
-			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			TaggerCrisisModelsResponse crisisModelsResponse = objectMapper.readValue(jsonResponse, TaggerCrisisModelsResponse.class);
@@ -437,11 +407,8 @@ public class TaggerServiceImpl implements TaggerService {
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .post(ClientResponse.class, objectMapper.writeValueAsString(attribute));
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
-					.post(Entity.json(objectMapper.writeValueAsString(attribute)), Response.class);
+					.post(Entity.json(objectMapper.writeValueAsString(attribute.toDTO())), Response.class);
 
 			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
@@ -465,16 +432,11 @@ public class TaggerServiceImpl implements TaggerService {
 			WebTarget webResource = client.target(taggerMainUrl + "/attribute/" + id);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
-
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .get(ClientResponse.class);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-
-			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
-
-			TaggerAttribute response = objectMapper.readValue(jsonResponse, TaggerAttribute.class);
+			NominalAttributeDTO dto = objectMapper.readValue(jsonResponse, NominalAttributeDTO.class);
+			TaggerAttribute response = new TaggerAttribute(dto);
+			
 			if (response != null) {
 				logger.info("Attribute with ID " + response.getNominalAttributeID() + " was retrieved from Tagger");
 				return response;
@@ -493,15 +455,11 @@ public class TaggerServiceImpl implements TaggerService {
 			WebTarget webResource = client.target(taggerMainUrl + "/label/" + id);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
-
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .get(ClientResponse.class);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
-			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
-			TaggerLabel response = objectMapper.readValue(jsonResponse, TaggerLabel.class);
+			NominalLabelDTO dto = objectMapper.readValue(jsonResponse, NominalLabelDTO.class); 
+			TaggerLabel response = new TaggerLabel(dto);
 			if (response != null) {
 				logger.info("Label with ID " + response.getNominalLabelID() + " was retrieved from Tagger");
 				return response;
@@ -522,12 +480,7 @@ public class TaggerServiceImpl implements TaggerService {
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .delete(ClientResponse.class);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).delete();
-
-			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			TaggerStatusResponse response = objectMapper.readValue(jsonResponse, TaggerStatusResponse.class);
@@ -552,18 +505,12 @@ public class TaggerServiceImpl implements TaggerService {
 			/**
 			 * Rest call to Tagger
 			 */
-			//WebResource webResource = client.resource(taggerMainUrl + "/document/removeTrainingExample/" + id);
-			WebTarget webResource = client.target(taggerMainUrl + "/document/removeTrainingExample/" + id);
+			WebTarget webResource = client.target(taggerMainUrl + "/document/removeTrainingExample/" + new Long(id));
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
-
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .delete(ClientResponse.class);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).delete();
 
-			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			TaggerStatusResponse response = objectMapper.readValue(jsonResponse, TaggerStatusResponse.class);
@@ -589,21 +536,12 @@ public class TaggerServiceImpl implements TaggerService {
 			 * Rest call to Tagger
 			 */
 			deletePybossaApp(modelFamilyID);
-			//WebResource webResource = client.resource(taggerMainUrl + "/modelfamily/" + modelFamilyID);
-			WebTarget webResource = client.target(taggerMainUrl + "/modelfamily/" + modelFamilyID);
+			WebTarget webResource = client.target(taggerMainUrl + "/modelfamily/" + new Long(modelFamilyID));
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
-
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .delete(ClientResponse.class);
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .get(ClientResponse.class);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).delete();
 
-			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			TaggerStatusResponse response = objectMapper.readValue(jsonResponse, TaggerStatusResponse.class);
@@ -631,16 +569,12 @@ public class TaggerServiceImpl implements TaggerService {
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .put(ClientResponse.class, objectMapper.writeValueAsString(attribute));
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
-					.put(Entity.json(objectMapper.writeValueAsString(attribute)), Response.class);
+					.put(Entity.json(objectMapper.writeValueAsString(attribute.toDTO())), Response.class);
 
-			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
-
-			TaggerAttribute updatedAttribute = objectMapper.readValue(jsonResponse, TaggerAttribute.class);
+			NominalAttributeDTO dto = objectMapper.readValue(jsonResponse, NominalAttributeDTO.class);
+			TaggerAttribute updatedAttribute = new TaggerAttribute(dto);
 			if (updatedAttribute != null) {
 				logger.info("Attribute with id " + updatedAttribute.getNominalAttributeID() + " was updated in Tagger");
 			} else {
@@ -666,16 +600,12 @@ public class TaggerServiceImpl implements TaggerService {
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .put(ClientResponse.class, objectMapper.writeValueAsString(label));
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
-					.put(Entity.json(objectMapper.writeValueAsString(label)), Response.class);
+					.put(Entity.json(objectMapper.writeValueAsString(label.toDTO())), Response.class);
 
-			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
-
-			TaggerLabel updatedLabel = objectMapper.readValue(jsonResponse, TaggerLabel.class);
+			NominalLabelDTO dto = objectMapper.readValue(jsonResponse, NominalLabelDTO.class);
+			TaggerLabel updatedLabel = new TaggerLabel(dto);
 			if (updatedLabel != null) {
 				logger.info("Label with id " + updatedLabel.getNominalLabelID() + " was updated in Tagger");
 			} else {
@@ -695,22 +625,17 @@ public class TaggerServiceImpl implements TaggerService {
 			/**
 			 * Rest call to Tagger
 			 */
-			//WebResource webResource = client.resource(taggerMainUrl + "/label");
 			WebTarget webResource = client.target(taggerMainUrl + "/label");
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .post(ClientResponse.class, objectMapper.writeValueAsString(label));
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
-					.post(Entity.json(objectMapper.writeValueAsString(label)), Response.class);
+					.post(Entity.json(objectMapper.writeValueAsString(label.toDTO())), Response.class);
 
-			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
-
-			TaggerLabel response = objectMapper.readValue(jsonResponse, TaggerLabel.class);
+			NominalLabelDTO dto = objectMapper.readValue(jsonResponse, NominalLabelDTO.class);
+			TaggerLabel response = new TaggerLabel(dto);
 			if (response != null) {
 				logger.info("Label with ID " + response.getNominalLabelID() + " was created in Tagger");
 				return response;
@@ -727,16 +652,11 @@ public class TaggerServiceImpl implements TaggerService {
 	public TaggerAttribute attributeExists(String code) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
-			//WebResource webResource = client.resource(taggerMainUrl + "/attribute/code/" + code);
 			WebTarget webResource = client.target(taggerMainUrl + "/attribute/code/" + code);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .get(ClientResponse.class);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
-			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			TaggerAttribute attribute = objectMapper.readValue(jsonResponse, TaggerAttribute.class);

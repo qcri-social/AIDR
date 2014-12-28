@@ -1,5 +1,9 @@
 package qa.qcri.aidr.manager.dto;
 
+import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
+
 public class TaggerLabelRequest {
 
     private Integer nominalLabelID;
@@ -50,5 +54,18 @@ public class TaggerLabelRequest {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+    
+    public NominalLabelDTO toDTO() throws Exception {
+       	NominalLabelDTO dto = new NominalLabelDTO();
+    	dto.setNominalLabelId(new Long(this.getNominalLabelID()));
+    	dto.setName(this.getName());
+    	dto.setDescription(this.getDescription());
+    	
+    	NominalAttributeDTO na = new NominalAttributeDTO();
+    	na.setNominalAttributeId(new Long(this.getNominalAttributeID()));
+    	dto.setNominalAttributeDTO(na);
+    	
+    	return dto;
     }
 }

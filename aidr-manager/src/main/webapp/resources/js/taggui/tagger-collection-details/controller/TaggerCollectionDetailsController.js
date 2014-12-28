@@ -234,7 +234,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
             params: {
                 code: CRISIS_CODE,
                 crisisID: CRISIS_ID,
-                crisisTypeId: crisisTypeId,
+                crisisTypeID: crisisTypeId,
                 crisisTypeName: Ext.String.trim( crisisTypeName )
             },
             headers: {
