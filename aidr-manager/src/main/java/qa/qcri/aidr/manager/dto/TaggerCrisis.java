@@ -44,8 +44,12 @@ public class TaggerCrisis {
 			this.setCode(dto.getCode());
 			this.setName(dto.getName());
 			this.setCrisisID(dto.getCrisisID().intValue());
-			this.setCrisisType(new TaggerCrisisType(dto.getCrisisTypeDTO()));
-			this.setUsers(new TaggerUser(dto.getUsersDTO()));
+			if (dto.getCrisisTypeDTO() != null) {
+				this.setCrisisType(new TaggerCrisisType(dto.getCrisisTypeDTO()));
+			}
+			if (dto.getUsersDTO() != null) {
+				this.setUsers(new TaggerUser(dto.getUsersDTO()));
+			}
 			this.setIsTrashed(dto.isIsTrashed());
 
 			List<TaggerModelFamilyCollection> mfList = new ArrayList<TaggerModelFamilyCollection>();
@@ -60,13 +64,18 @@ public class TaggerCrisis {
 
 	public CrisisDTO toDTO() throws Exception {
 		CrisisDTO dto = new CrisisDTO();
-
-		dto.setCrisisID(new Long(this.getCrisisID()));
+		if (this.getCrisisID() != null) {
+			dto.setCrisisID(new Long(this.getCrisisID()));
+		}
 		dto.setCode(this.getCode());
 		dto.setName(this.getName());
 		dto.setIsTrashed(this.getIsTrashed());
-		dto.setUsersDTO(this.getUsers().toDTO());
-		dto.setCrisisTypeDTO(this.getCrisisType().toDTO());
+		if (this.getUsers() != null) {
+			dto.setUsersDTO(this.getUsers().toDTO());
+		}
+		if (this.getCrisisType() != null) {
+			dto.setCrisisTypeDTO(this.getCrisisType().toDTO());
+		}
 
 		List<ModelFamilyDTO> mfDTOList = new ArrayList<ModelFamilyDTO>();
 		if (this.getModelFamilyCollection() != null) {

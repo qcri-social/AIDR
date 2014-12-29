@@ -252,8 +252,14 @@ public class NominalLabelDTO  implements Serializable {
 
 
 	public NominalLabel toEntity() throws PropertyNotSetException {
-		NominalLabel entity  = new NominalLabel(this.getNominalAttributeDTO().toEntity(),
-				this.getNominalLabelCode(), this.getName(), this.getDescription(), this.getSequence());
+		NominalLabel entity  = new NominalLabel();
+		if (this.getNominalAttributeDTO() != null) {
+			entity.setNominalAttribute(this.getNominalAttributeDTO().toEntity());
+		}
+		entity.setNominalLabelCode(this.getNominalLabelCode());
+		entity.setName(this.getName()); 
+		entity.setDescription(this.getDescription());
+		entity.setSequence(this.getSequence());
 
 		if (this.getNominalLabelId() != null) {
 			entity.setNominalLabelId(this.getNominalLabelId());

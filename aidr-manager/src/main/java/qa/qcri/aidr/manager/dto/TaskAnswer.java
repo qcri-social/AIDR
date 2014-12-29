@@ -1,5 +1,7 @@
 package qa.qcri.aidr.manager.dto;
 
+import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
+
 public class TaskAnswer {
 
     private Integer user_id;
@@ -31,4 +33,7 @@ public class TaskAnswer {
     public void setInfo(TaskInfo info) {
         this.info = info;
     }
+    
+    public TaskAnswer() {}
+    
 }

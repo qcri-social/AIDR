@@ -31,7 +31,12 @@ public class TaggerUser {
 	}
 
 	public UsersDTO toDTO() throws Exception {
-		UsersDTO dto = new UsersDTO(new Long(this.getUserID()), this.getName(), this.getRole());
+		UsersDTO dto = new UsersDTO();
+		if (this.getUserID() != null) {
+			dto.setUserID(new Long(this.getUserID()));
+		}
+		dto.setName(this.getName());
+		dto.setRole(this.getRole());
 		return dto;
 	}
 

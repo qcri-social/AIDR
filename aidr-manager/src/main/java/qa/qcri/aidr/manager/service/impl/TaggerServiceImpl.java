@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
@@ -69,7 +70,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			String jsonResponse = clientResponse.readEntity(String.class);
 			TaggerAllCrisesTypesResponse crisesTypesResponse = objectMapper.readValue(jsonResponse, TaggerAllCrisesTypesResponse.class);
-			
+
 			if (crisesTypesResponse.getCrisisTypes() != null) {
 				logger.info("Tagger returned " + crisesTypesResponse.getCrisisTypes().size() + " crises types");
 			}
@@ -140,7 +141,7 @@ public class TaggerServiceImpl implements TaggerService {
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
 			String jsonResponse = clientResponse.readEntity(String.class);
-
+			
 			TaggerCrisisAttributesResponse crisisAttributesResponse = objectMapper.readValue(jsonResponse, TaggerCrisisAttributesResponse.class);
 
 			if (crisisAttributesResponse.getCrisisAttributes() != null) {
@@ -213,10 +214,10 @@ public class TaggerServiceImpl implements TaggerService {
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-	
+
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 			String jsonResponse = clientResponse.readEntity(String.class);
-			
+
 			UsersDTO user = objectMapper.readValue(jsonResponse, UsersDTO.class);
 			TaggerUser taggerUser = new TaggerUser(user);
 
@@ -273,22 +274,23 @@ public class TaggerServiceImpl implements TaggerService {
 			/**
 			 * Rest call to Tagger
 			 */
+			logger.info("Received add Attirbute request for crisis = " + modelFamily.getCrisis().getCrisisID() + ", attribute = " + modelFamily.getNominalAttribute().getNominalAttributeID());
 			WebTarget webResource = client.target(taggerMainUrl + "/modelfamily");
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
 			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-	
+
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
-					.post(Entity.json(objectMapper.writeValueAsString(modelFamily)), Response.class);
+					.post(Entity.json(objectMapper.writeValueAsString(modelFamily.toDTO())), Response.class);
 
 			String jsonResponse = clientResponse.readEntity(String.class);
-
-			TaggerModelFamily createdModelFamily = objectMapper.readValue(jsonResponse, TaggerModelFamily.class);
-			if (createdModelFamily != null && createdModelFamily.getModelFamilyID() != null) {
-				logger.info("Attribute was added to crises");
-				return createdModelFamily.getModelFamilyID();
+			if (jsonResponse != null && Long.parseLong(jsonResponse) > 0) {
+				Integer modelFamilyID = new Long(jsonResponse).intValue();
+				logger.info("Attribute was added to crises: " + modelFamilyID);
+				return modelFamilyID;
 			} else {
+				logger.info("Attribute was NOT added to crises: ");
 				return null;
 			}
 		} catch (Exception e) {
@@ -685,11 +687,11 @@ public class TaggerServiceImpl implements TaggerService {
 		logger.info("Received request for fetching training data for crisisID = " + crisisId + "and modelFamilyId = " + modelFamilyId);
 		try {
 			WebTarget webResource = client.target(taggerMainUrl + "/misc/getTrainingData?crisisID=" + new Long(crisisId)
-					+ "&modelFamilyID=" + new Long(modelFamilyId)
-					+ "&fromRecord=" + start
-					+ "&limit=" + limit
-					+ "&sortColumn=" + sortColumn
-					+ "&sortDirection=" + sortDirection);
+			+ "&modelFamilyID=" + new Long(modelFamilyId)
+			+ "&fromRecord=" + start
+			+ "&limit=" + limit
+			+ "&sortColumn=" + sortColumn
+			+ "&sortDirection=" + sortDirection);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
@@ -783,14 +785,11 @@ public class TaggerServiceImpl implements TaggerService {
 	public boolean saveTaskAnswer(List<TaskAnswer> taskAnswer) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
-			//WebResource webResource = client.resource(crowdsourcingAPIMainUrl + "/taskanswer/save");
 			WebTarget webResource = client.target(crowdsourcingAPIMainUrl + "/taskanswer/save");
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 
 			logger.info("saveTaskAnswer - postData : " + objectMapper.writeValueAsString(taskAnswer));
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .post(ClientResponse.class, objectMapper.writeValueAsString(taskAnswer));
+
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(objectMapper.writeValueAsString(taskAnswer)), Response.class);
 			logger.info("saveTaskAnswer - response status : " + clientResponse.getStatus());
@@ -859,16 +858,11 @@ public class TaggerServiceImpl implements TaggerService {
 			/**
 			 * Rest call to Tagger
 			 */
-			//WebResource webResource = client.resource(taggerMainUrl + "/modelNominalLabel/" + modelID);
+			logger.info("received request for modelID = " + modelID);
 			WebTarget webResource = client.target(taggerMainUrl + "/modelNominalLabel/" + modelID);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .get(ClientResponse.class);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-
-			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			TaggerModelLabelsResponse modelLabelsResponse = objectMapper.readValue(jsonResponse, TaggerModelLabelsResponse.class);
@@ -916,13 +910,9 @@ public class TaggerServiceImpl implements TaggerService {
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .post(ClientResponse.class, objectMapper.writeValueAsString(new TaggersForCollectionsRequest(collectionCodes)));
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(objectMapper.writeValueAsString(new TaggersForCollectionsRequest(collectionCodes))), Response.class);
 
-			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			TaggersForCollectionsResponse taggersResponse = objectMapper.readValue(jsonResponse, TaggersForCollectionsResponse.class);
@@ -1232,6 +1222,8 @@ public class TaggerServiceImpl implements TaggerService {
 				labels.add(label);
 			}
 		}
+		logger.info("Created attributes collection of size = " + result.size());
+		logger.info(result);
 		return result.values();
 	}
 

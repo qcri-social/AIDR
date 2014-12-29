@@ -1,5 +1,7 @@
 package qa.qcri.aidr.manager.dto;
 
+import qa.qcri.aidr.dbmanager.dto.ModelDTO;
+
 public class TaggerModel {
 
     private Integer modelID;
@@ -99,5 +101,5 @@ public class TaggerModel {
     }
     
     public TaggerModel() {}
-   
+    
 }

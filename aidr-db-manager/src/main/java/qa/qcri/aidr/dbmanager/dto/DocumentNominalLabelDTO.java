@@ -48,7 +48,7 @@ public class DocumentNominalLabelDTO implements Serializable {
 				Document d = new Document(doc.getDocument().getCrisis(), doc.getDocument().isIsEvaluationSet(),
 						doc.getDocument().isHasHumanLabels(), doc.getDocument().getValueAsTrainingSample(),
 						doc.getDocument().getReceivedAt(), doc.getDocument().getLanguage(), doc.getDocument().getDoctype(), doc.getDocument().getData());
-						
+
 				d.setWordFeatures(doc.getDocument().getWordFeatures());
 				d.setGeoFeatures(doc.getDocument().getGeoFeatures()); 
 				d.setDocumentId(doc.getDocument().getDocumentId());
@@ -121,8 +121,12 @@ public class DocumentNominalLabelDTO implements Serializable {
 		if (this.idDTO != null) {
 			doc.setId(this.getIdDTO().toEntity());
 		}
-		doc.setDocument(this.getDocumentDTO().toEntity());
-		doc.setNominalLabel(this.getNominalLabelDTO().toEntity());
+		if (this.getDocumentDTO() != null) {
+			doc.setDocument(this.getDocumentDTO().toEntity());
+		}
+		if (this.getNominalLabelDTO() != null) {
+			doc.setNominalLabel(this.getNominalLabelDTO().toEntity());
+		}
 		doc.setTimestamp(this.getTimestamp());
 		return doc;
 	}

@@ -4,102 +4,107 @@ import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 
 public class TaggerLabel {
 
-    private Integer nominalLabelID;
+	private Integer nominalLabelID;
 
-    private String name;
+	private String name;
 
-    private String nominalLabelCode;
+	private String nominalLabelCode;
 
-    private String description;
+	private String description;
 
-    private int sequence = 100;
+	private int sequence = 100;
 
-    private TaggerAttribute nominalAttribute;
+	private TaggerAttribute nominalAttribute;
 
-    public TaggerLabel() {
-    }
+	public TaggerLabel() {
+	}
 
-    public TaggerLabel(String name, Integer nominalLabelID) {
-        this.name = name;
-        this.nominalLabelID = nominalLabelID;
-    }
+	public TaggerLabel(String name, Integer nominalLabelID) {
+		this.name = name;
+		this.nominalLabelID = nominalLabelID;
+	}
 
-    public TaggerLabel(String name, String nominalLabelCode, String description, TaggerAttribute nominalAttribute, int sequence) {
-        this.name = name;
-        this.nominalLabelCode = nominalLabelCode;
-        this.description = description;
-        this.nominalAttribute = nominalAttribute;
-        this.sequence = sequence;
-    }
+	public TaggerLabel(String name, String nominalLabelCode, String description, TaggerAttribute nominalAttribute, int sequence) {
+		this.name = name;
+		this.nominalLabelCode = nominalLabelCode;
+		this.description = description;
+		this.nominalAttribute = nominalAttribute;
+		this.sequence = sequence;
+	}
 
-    public TaggerLabel(NominalLabelDTO dto) throws Exception {
-    	if (dto != null) {
-    		this.setNominalLabelID(dto.getNominalLabelId().intValue());
-    		this.setName(dto.getName());
-    		this.setDescription(dto.getDescription());
-    		this.setNominalLabelCode(dto.getNominalLabelCode());
-                if (null != dto.getSequence())
-    		this.setSequence(dto.getSequence());
-    		this.setNominalAttribute(new TaggerAttribute(dto.getNominalAttributeDTO()));
-    	}
-    }
-    
-    public NominalLabelDTO toDTO() throws Exception {
-    	NominalLabelDTO dto = new NominalLabelDTO();
-    	dto.setNominalLabelId(new Long(this.getNominalLabelID()));
-    	dto.setName(this.getName());
-    	dto.setDescription(this.getDescription());
-    	dto.setSequence(this.getSequence());
-    	dto.setNominalAttributeDTO(this.getNominalAttribute().toDTO());
-    	
-    	return dto;
-    }
-    
-    public Integer getNominalLabelID() {
-        return nominalLabelID;
-    }
+	public TaggerLabel(NominalLabelDTO dto) throws Exception {
+		if (dto != null) {
+			this.setNominalLabelID(dto.getNominalLabelId().intValue());
+			this.setName(dto.getName());
+			this.setDescription(dto.getDescription());
+			this.setNominalLabelCode(dto.getNominalLabelCode());
+			if (null != dto.getSequence())
+				this.setSequence(dto.getSequence());
+			if (dto.getNominalAttributeDTO() != null) {
+				this.setNominalAttribute(new TaggerAttribute(dto.getNominalAttributeDTO()));
+			}
+		}
+	}
 
-    public void setNominalLabelID(Integer nominalLabelID) {
-        this.nominalLabelID = nominalLabelID;
-    }
+	public NominalLabelDTO toDTO() throws Exception {
+		NominalLabelDTO dto = new NominalLabelDTO();
+		if (this.getNominalLabelID() != null) {
+			dto.setNominalLabelId(new Long(this.getNominalLabelID()));
+		}
+		dto.setName(this.getName());
+		dto.setDescription(this.getDescription());
+		dto.setSequence(this.getSequence());
+		if (this.getNominalAttribute() != null) {
+			dto.setNominalAttributeDTO(this.getNominalAttribute().toDTO());
+		}
+		return dto;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public Integer getNominalLabelID() {
+		return nominalLabelID;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setNominalLabelID(Integer nominalLabelID) {
+		this.nominalLabelID = nominalLabelID;
+	}
 
-    public String getNominalLabelCode() {
-        return nominalLabelCode;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setNominalLabelCode(String nominalLabelCode) {
-        this.nominalLabelCode = nominalLabelCode;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getNominalLabelCode() {
+		return nominalLabelCode;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setNominalLabelCode(String nominalLabelCode) {
+		this.nominalLabelCode = nominalLabelCode;
+	}
 
-    public TaggerAttribute getNominalAttribute() {
-        return nominalAttribute;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setNominalAttribute(TaggerAttribute nominalAttribute) {
-        this.nominalAttribute = nominalAttribute;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public int getSequence() {
-        return sequence;
-    }
+	public TaggerAttribute getNominalAttribute() {
+		return nominalAttribute;
+	}
 
-    public void setSequence(int sequence) {
-        this.sequence = sequence;
-    }
+	public void setNominalAttribute(TaggerAttribute nominalAttribute) {
+		this.nominalAttribute = nominalAttribute;
+	}
+
+	public int getSequence() {
+		return sequence;
+	}
+
+	public void setSequence(int sequence) {
+		this.sequence = sequence;
+	}
 }

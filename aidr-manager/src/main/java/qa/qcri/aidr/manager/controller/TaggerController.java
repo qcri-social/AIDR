@@ -127,11 +127,17 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/addAttributeToCrisis.action", method = {RequestMethod.GET})
 	@ResponseBody
 	public Map<String, Object> addAttributeToCrisis(Integer crisesId, Integer attributeId, Boolean isActive) {
-		logger.info("Add Attribute To Crises");
+		logger.info("Add Attribute To Crises, received request for crisisID:" + crisesId + ", attributeID = " + attributeId + ", isActive = " + isActive);
 		try {
 			TaggerModelFamily modelFamily = transformCrisesIdAndAttributeIdToTaggerModelFamily(crisesId, attributeId, isActive);
+			if (modelFamily != null) {
+				logger.info("Created modelFamily: crisis = " + modelFamily.getCrisis().getCrisisID() + ", attributeId = " + modelFamily.getNominalAttribute().getNominalAttributeID());
+			} else {
+				logger.info("Something wrong, created modelFamily = null!!!");
+			}
 			Integer modelFamilyId = taggerService.addAttributeToCrisis(modelFamily);
 			if (modelFamilyId != null) {
+				logger.info("success in adding attribute to crisis for modelFamily : " + modelFamilyId);
 				return getUIWrapper(modelFamilyId, true);
 			} else {
 				return getUIWrapper("Error while adding attribute to crises", false);
@@ -654,6 +660,7 @@ public class TaggerController extends BaseController {
 	private TaggerModelFamily transformCrisesIdAndAttributeIdToTaggerModelFamily (Integer crisesId, Integer attributeId, Boolean isActive) throws Exception{
 		TaggerCrisis crisis = new TaggerCrisis(crisesId);
 		TaggerAttribute nominalAttribute = new TaggerAttribute(attributeId);
+		logger.info("crisis = " + crisis.getCrisisID() + ", attribute = " + nominalAttribute.getNominalAttributeID());
 		return new TaggerModelFamily(crisis, nominalAttribute, isActive);
 	}
 

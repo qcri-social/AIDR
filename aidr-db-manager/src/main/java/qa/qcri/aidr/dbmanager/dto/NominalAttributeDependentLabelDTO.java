@@ -109,8 +109,14 @@ public class NominalAttributeDependentLabelDTO implements Serializable {
 	}
 
 	public NominalAttributeDependentLabel toEntity() throws PropertyNotSetException {
-		NominalAttributeDependentLabel entity = new NominalAttributeDependentLabel(this.getIdDTO().toEntity(),
-				this.getNominalLabelDTO().toEntity(), this.getNominalAttributeDTO().toEntity());
+		NominalAttributeDependentLabel entity = new NominalAttributeDependentLabel();
+		entity.setId(this.getIdDTO().toEntity());
+		if (this.getNominalLabelDTO() != null) {
+			entity.setNominalLabel(this.getNominalLabelDTO().toEntity());
+		}
+		if (this.getNominalAttributeDTO() != null) {
+			entity.setNominalAttribute(this.getNominalAttributeDTO().toEntity());
+		}
 		entity.setThreshold(this.getThreshold());
 
 		return entity;

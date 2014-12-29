@@ -143,8 +143,14 @@ public class ModelFamilyDTO implements Serializable {
 	}
 
 	public ModelFamily toEntity() throws PropertyNotSetException {
-		ModelFamily entity = new ModelFamily(this.getNominalAttributeDTO().toEntity(), 
-				this.getCrisisDTO().toEntity(), this.isIsActive());
+		ModelFamily entity = new ModelFamily();
+		if (this.getNominalAttributeDTO() != null) {
+			entity.setNominalAttribute(this.getNominalAttributeDTO().toEntity());
+		}
+		if (this.getCrisisDTO() != null) {
+				entity.setCrisis(this.getCrisisDTO().toEntity());
+		}
+		entity.setIsActive(this.isIsActive());
 		if (this.getModelFamilyId() != null) {
 			entity.setModelFamilyId(modelFamilyId);
 		}

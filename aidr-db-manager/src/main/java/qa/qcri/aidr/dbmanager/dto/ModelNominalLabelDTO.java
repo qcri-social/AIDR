@@ -167,9 +167,18 @@ public class ModelNominalLabelDTO implements Serializable {
 	}
 
 	public ModelNominalLabel toEntity() throws PropertyNotSetException {
-		ModelNominalLabel entity = new ModelNominalLabel(this.idDTO.toEntity(), this.nominalLabelDTO.toEntity(),
-				this.modelDTO.toEntity(), this.labelPrecision, this.labelRecall,
-				this.labelAuc, this.classifiedDocumentCount);
+		ModelNominalLabel entity = new ModelNominalLabel();
+		entity.setId(this.idDTO.toEntity());
+		if (this.getNominalLabelDTO() != null) {
+			entity.setNominalLabel(this.nominalLabelDTO.toEntity());
+		}
+		if (this.getModelDTO() != null) {
+			entity.setModel(this.getModelDTO().toEntity()); 
+		}
+		entity.setLabelPrecision(this.getLabelPrecision()); 
+		entity.setLabelRecall(this.getLabelRecall());
+		entity.setLabelAuc(this.getLabelAuc());
+		entity.setClassifiedDocumentCount(this.getClassifiedDocumentCount());
 
 		return entity;
 	}

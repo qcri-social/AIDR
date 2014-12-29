@@ -1,6 +1,6 @@
 package qa.qcri.aidr.manager.dto;
 
-import qa.qcri.aidr.common.exception.PropertyNotSetException;
+
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 

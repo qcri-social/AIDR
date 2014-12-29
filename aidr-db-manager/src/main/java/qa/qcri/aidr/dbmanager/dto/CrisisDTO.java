@@ -133,10 +133,7 @@ public class CrisisDTO implements Serializable  {
 	}
 
 	public void setCrisisID(Long crisisID) {
-		if (crisisID == null) {
-			logger.error( "Attempt to set a crisisID to null" );
-			throw new IllegalArgumentException("crisisID cannot be null");
-		} else if(crisisID.longValue() <= 0) {
+		if(crisisID.longValue() <= 0) {
 			logger.error( "Attempt to set a crisisID to zero or a negative number" );
 			throw new IllegalArgumentException("crisisID cannot be zero or a negative number");
 		} else {
@@ -149,29 +146,15 @@ public class CrisisDTO implements Serializable  {
 	}
 
 	public void setName(String name) {
-		if (null == name) {
-			logger.error( "Attempt to set a name to null" );
-			throw new IllegalArgumentException("name cannot be null");
-		}
 		this.name = name;
 	}
 
-	public CrisisTypeDTO getCrisisTypeDTO() throws PropertyNotSetException {
-		if (null == this.crisisTypeDTO) {
-			logger.error("Attempt to access unset property");
-			throw new PropertyNotSetException();
-		} else {
+	public CrisisTypeDTO getCrisisTypeDTO() {
 			return this.crisisTypeDTO;
-		}
 	}
 
 	public void setCrisisTypeDTO(CrisisTypeDTO crisisTypeDTO) {
-		if (crisisTypeDTO == null) {
-			logger.error( "Attempt to set a crisisType to null" );
-			throw new IllegalArgumentException("crisisType cannot be null");
-		} else {
-			this.crisisTypeDTO = crisisTypeDTO;
-		}
+		this.crisisTypeDTO = crisisTypeDTO;
 	}
 
 	public String getCode() {
@@ -179,10 +162,6 @@ public class CrisisDTO implements Serializable  {
 	}
 
 	public void setCode(String code) {
-		if (null == code) {
-			logger.error( "Attempt to set code to null" );
-			throw new IllegalArgumentException("code cannot be null");
-		}
 		this.code = code;
 	}
 
@@ -199,12 +178,7 @@ public class CrisisDTO implements Serializable  {
 	}
 
 	public void setUsersDTO(UsersDTO usersDTO) {
-		if (usersDTO == null) {
-			logger.error( "Attempt to set a user to null" );
-			throw new IllegalArgumentException("user cannot be null");
-		} else {
 			this.usersDTO = usersDTO;
-		}
 	}
 
 	public List<NominalAttributeDTO> getNominalAttributesDTO() {
@@ -323,12 +297,12 @@ public class CrisisDTO implements Serializable  {
 		crisis.setName(getName());
 		crisis.setCode(this.getCode());
 		crisis.setIsTrashed(this.isTrashed);
-		crisis.setUsers(this.getUsersDTO().toEntity());
+		if (this.getUsersDTO() != null) {
+			crisis.setUsers(this.getUsersDTO().toEntity());
+		}
 		if (this.getCrisisTypeDTO() != null) {
 			crisis.setCrisisType(this.getCrisisTypeDTO().toEntity());
-		} else {
-			throw new PropertyNotSetException("Unset crisisType property");
-		}
+		} 
 
 		// Optional fields conversion
 		if (this.getDocumentsDTO() != null) {

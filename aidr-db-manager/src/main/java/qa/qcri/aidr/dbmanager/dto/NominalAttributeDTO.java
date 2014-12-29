@@ -81,10 +81,13 @@ public class NominalAttributeDTO implements java.io.Serializable {
 			this.name = nominalAttribute.getName();
 			this.description = nominalAttribute.getDescription();
 			this.code = nominalAttribute.getCode();
-			
-			if (nominalAttribute.hasUsers()) {
-				Users user = new Users(nominalAttribute.getUsers().getName(), nominalAttribute.getUsers().getRole());
+
+			if (nominalAttribute.hasUsers() && nominalAttribute.getUsers() != null) {
+				Users user = new Users();
+				user.setName(nominalAttribute.getUsers().getName());
+				user.setRole(nominalAttribute.getUsers().getRole());
 				user.setUserId(nominalAttribute.getUsers().getUserId());
+
 				this.setUsersDTO(new UsersDTO(user));
 			}
 			if (nominalAttribute.hasCrisises()) {
@@ -269,10 +272,15 @@ public class NominalAttributeDTO implements java.io.Serializable {
 	}
 
 	public NominalAttribute toEntity() throws PropertyNotSetException {
-		NominalAttribute entity = new NominalAttribute(this.getUsersDTO().toEntity(), 
-				this.getName(), this.getDescription(), this.getCode());
+		NominalAttribute entity = new NominalAttribute();
+		if (this.getUsersDTO() != null) {
+			entity.setUsers(this.getUsersDTO().toEntity());
+		}
+		entity.setName(this.getName());
+		entity.setDescription(this.getDescription());
+		entity.setCode(this.getCode());
 		if (this.getNominalAttributeId() != null) {
-			entity.setNominalAttributeId(nominalAttributeId);
+			entity.setNominalAttributeId(this.getNominalAttributeId());
 		}
 		if (this.crisisesDTO != null) {
 			entity.setCrisises(this.toCrisisList(this.getCrisisesDTO()));

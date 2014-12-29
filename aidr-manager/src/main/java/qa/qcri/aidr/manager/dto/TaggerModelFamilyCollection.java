@@ -40,7 +40,9 @@ public class TaggerModelFamilyCollection {
 		if (dto != null) {
 			this.setModelFamilyID(dto.getModelFamilyId().intValue());
 			this.setIsActive(dto.isIsActive() == true ? "true" : "false");
-			this.setNominalAttribute(new TaggerAttribute(dto.getNominalAttributeDTO()));
+			if (dto.getNominalAttributeDTO() != null) {
+				this.setNominalAttribute(new TaggerAttribute(dto.getNominalAttributeDTO()));
+			}
 		}
 	}
 
@@ -48,7 +50,9 @@ public class TaggerModelFamilyCollection {
 		ModelFamilyDTO dto = new ModelFamilyDTO();
 		dto.setIsActive(this.getIsActive().equalsIgnoreCase("true") ? true : false);
 		dto.setModelFamilyId(new Long(this.getModelFamilyID()));
-		dto.setNominalAttributeDTO(this.getNominalAttribute().toDTO());
+		if (this.getNominalAttribute() != null) {
+			dto.setNominalAttributeDTO(this.getNominalAttribute().toDTO());
+		}
 
 		return dto;
 	}

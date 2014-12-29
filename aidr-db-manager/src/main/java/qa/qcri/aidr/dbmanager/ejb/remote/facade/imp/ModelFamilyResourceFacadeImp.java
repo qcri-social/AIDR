@@ -18,12 +18,15 @@ import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelFamilyResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
+import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 
 
 /**
@@ -56,18 +59,26 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
         for (ModelFamily modelFamily : modelFamilyList) {
             Hibernate.initialize(modelFamily.getModels());
             Hibernate.initialize(modelFamily.getNominalAttribute());
+            Hibernate.initialize(modelFamily.getCrisis());
         	modelFamilyDTOList.add(new ModelFamilyDTO(modelFamily));
         }
         return modelFamilyDTOList; //returns empty list if no data is found in the database
     }
 
     public ModelFamilyDTO getModelFamilyByID(Long id) throws PropertyNotSetException {
-        return new ModelFamilyDTO(getById(id));
+        ModelFamily mf = this.getById(id);
+        Hibernate.initialize(mf.getModels());
+        Hibernate.initialize(mf.getNominalAttribute());
+    	return new ModelFamilyDTO(mf);
     }
 
     public boolean addCrisisAttribute(ModelFamilyDTO modelFamily) throws PropertyNotSetException {
         try {
-            getEntityManager().persist(modelFamily.toEntity());
+        	Crisis crisis = getEntityManager().find(Crisis.class, modelFamily.getCrisisDTO().getCrisisID());
+        	NominalAttribute attribute = getEntityManager().find(NominalAttribute.class, modelFamily.getNominalAttributeDTO().getNominalAttributeId());
+        	modelFamily.setCrisisDTO(new CrisisDTO(crisis));
+        	modelFamily.setNominalAttributeDTO(new NominalAttributeDTO(attribute));
+        	getEntityManager().persist(modelFamily.toEntity());
         } catch (HibernateException he) {
             logger.error("Hibernate exception on adding ModelFamily.\n" + he.getStackTrace());
             return false;

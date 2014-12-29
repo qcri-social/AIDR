@@ -1,53 +1,84 @@
 package qa.qcri.aidr.manager.dto;
 
+import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
+
 public class TaggerModelFamily {
 
-    private TaggerCrisis crisis;
+	private TaggerCrisis crisis;
 
-    private TaggerAttribute nominalAttribute;
+	private TaggerAttribute nominalAttribute;
 
-    private Boolean isActive;
+	private Boolean isActive;
 
-    private Integer modelFamilyID;
+	private Integer modelFamilyID;
 
-    public TaggerModelFamily() {
-    }
+	public TaggerModelFamily() {
+	}
 
-    public TaggerModelFamily(TaggerCrisis crisis, TaggerAttribute nominalAttribute, Boolean active) {
-        this.crisis = crisis;
-        this.nominalAttribute = nominalAttribute;
-        isActive = active;
-    }
+	public TaggerModelFamily(TaggerCrisis crisis, TaggerAttribute nominalAttribute, Boolean active) {
+		this.crisis = crisis;
+		this.nominalAttribute = nominalAttribute;
+		isActive = active;
+	}
 
-    public TaggerCrisis getCrisis() {
-        return crisis;
-    }
+	public TaggerModelFamily(ModelFamilyDTO dto) throws Exception {
+		if (dto != null) {
+			this.setIsActive(dto.isIsActive());
+			this.setModelFamilyID(dto.getModelFamilyId().intValue());
+			if (dto.getCrisisDTO() != null) {
+				this.setCrisis(new TaggerCrisis(dto.getCrisisDTO()));
+			}
+			if (dto.getNominalAttributeDTO() != null) {
+				this.setNominalAttribute(new TaggerAttribute(dto.getNominalAttributeDTO()));
+			}
+		}
+	}
 
-    public void setCrisis(TaggerCrisis crisis) {
-        this.crisis = crisis;
-    }
+	public ModelFamilyDTO toDTO() throws Exception {
+		ModelFamilyDTO dto = new ModelFamilyDTO();
+		dto.setIsActive(this.getIsActive());
+		if (this.getModelFamilyID() != null) { 
+			dto.setModelFamilyId(new Long(this.getModelFamilyID()));
+		}
+		if (this.getCrisis() != null) { 
+			dto.setCrisisDTO(this.getCrisis().toDTO());
+		}
+		if (this.getNominalAttribute() != null) {
+			dto.setNominalAttributeDTO(this.getNominalAttribute().toDTO());
+		}
 
-    public TaggerAttribute getNominalAttribute() {
-        return nominalAttribute;
-    }
+		return dto;
+	}
 
-    public void setNominalAttribute(TaggerAttribute nominalAttribute) {
-        this.nominalAttribute = nominalAttribute;
-    }
+	public TaggerCrisis getCrisis() {
+		return crisis;
+	}
 
-    public Boolean getIsActive() {
-        return isActive;
-    }
+	public void setCrisis(TaggerCrisis crisis) {
+		this.crisis = crisis;
+	}
 
-    public void setIsActive(Boolean active) {
-        isActive = active;
-    }
+	public TaggerAttribute getNominalAttribute() {
+		return nominalAttribute;
+	}
 
-    public Integer getModelFamilyID() {
-        return modelFamilyID;
-    }
+	public void setNominalAttribute(TaggerAttribute nominalAttribute) {
+		this.nominalAttribute = nominalAttribute;
+	}
 
-    public void setModelFamilyID(Integer modelFamilyID) {
-        this.modelFamilyID = modelFamilyID;
-    }
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean active) {
+		isActive = active;
+	}
+
+	public Integer getModelFamilyID() {
+		return modelFamilyID;
+	}
+
+	public void setModelFamilyID(Integer modelFamilyID) {
+		this.modelFamilyID = modelFamilyID;
+	}
 }

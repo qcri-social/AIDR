@@ -1,5 +1,7 @@
 package qa.qcri.aidr.manager.dto;
 
+import qa.qcri.aidr.dbmanager.dto.CrisisAttributesDTO;
+
 public class TaggerCrisesAttribute {
 
     private String code;
@@ -70,5 +72,32 @@ public class TaggerCrisesAttribute {
 
     public void setLabelID(Integer labelID) {
         this.labelID = labelID;
+    }
+    
+    public TaggerCrisesAttribute() {}
+    
+    public TaggerCrisesAttribute(CrisisAttributesDTO dto) {
+    	if (dto != null) {
+    		this.setCode(dto.getCode());
+    		this.setDescription(dto.getDescription());
+    		this.setLabelID(dto.getLabelID());
+    		this.setLabelName(dto.getLabelName());
+    		this.setName(dto.getName());
+    		this.setNominalAttributeID(dto.getNominalAttributeID());
+    		this.setUserID(dto.getUserID());
+    	}
+    }
+    
+    public CrisisAttributesDTO toDTO() {
+    	CrisisAttributesDTO dto = new CrisisAttributesDTO();
+    	dto.setCode(this.getCode());
+    	dto.setDescription(this.getDescription());
+    	dto.setLabelID(this.getLabelID());
+    	dto.setLabelName(this.getLabelName());
+    	dto.setName(this.getName());
+    	dto.setNominalAttributeID(this.getNominalAttributeID());
+    	dto.setUserID(this.getUserID());
+    	
+    	return dto;
     }
 }
