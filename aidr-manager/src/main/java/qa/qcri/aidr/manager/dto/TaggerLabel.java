@@ -38,6 +38,7 @@ public class TaggerLabel {
     		this.setName(dto.getName());
     		this.setDescription(dto.getDescription());
     		this.setNominalLabelCode(dto.getNominalLabelCode());
+                if (null != dto.getSequence())
     		this.setSequence(dto.getSequence());
     		this.setNominalAttribute(new TaggerAttribute(dto.getNominalAttributeDTO()));
     	}
