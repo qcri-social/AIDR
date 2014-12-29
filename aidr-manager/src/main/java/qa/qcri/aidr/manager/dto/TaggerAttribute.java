@@ -44,12 +44,13 @@ public class TaggerAttribute {
     		this.setName(dto.getName());
     		this.setNominalAttributeID(dto.getNominalAttributeId().intValue());
     		this.setUsers(new TaggerUser(dto.getUsersDTO()));
-    		
+    		if(null != dto.getNominalLabelsDTO()){
     		List<TaggerLabel> labelList = new ArrayList<TaggerLabel>();
     		for (NominalLabelDTO nb: dto.getNominalLabelsDTO()) {
     			labelList.add(new TaggerLabel(nb));
     		}
     		this.setNominalLabelCollection(labelList);
+                }
     	}
     }
 
