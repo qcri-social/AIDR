@@ -36,9 +36,6 @@ import java.util.List;
 import static qa.qcri.aidr.manager.util.CollectionType.SMS;
 import static qa.qcri.aidr.manager.util.CollectionType.Twitter;
 
-//import com.sun.jersey.api.client.Client;		// gf 3 way
-//import com.sun.jersey.api.client.ClientResponse;
-//import com.sun.jersey.api.client.WebResource;
 
 @Service("collectionService")
 public class CollectionServiceImpl implements CollectionService {
@@ -400,6 +397,7 @@ public class CollectionServiceImpl implements CollectionService {
 				Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
 				String jsonResponse = clientResponse.readEntity(String.class);
+                                System.out.println("**********Collector response : " + jsonResponse);
 
 				collection = updateStatusCollection(jsonResponse, collection);
 				return collection;
