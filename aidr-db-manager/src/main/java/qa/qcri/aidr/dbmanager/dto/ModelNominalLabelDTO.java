@@ -1,8 +1,5 @@
 package qa.qcri.aidr.dbmanager.dto;
 
-
-
-
 import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -215,4 +212,5 @@ public class ModelNominalLabelDTO implements Serializable {
 	public void setTrainingDocuments(Integer trainingDocuments) {
 		this.trainingDocuments = trainingDocuments;
 	}
+
 }
