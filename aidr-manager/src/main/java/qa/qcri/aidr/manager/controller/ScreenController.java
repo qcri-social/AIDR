@@ -1,11 +1,13 @@
 package qa.qcri.aidr.manager.controller;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+
 import qa.qcri.aidr.manager.dto.TaggerCrisis;
 import qa.qcri.aidr.manager.dto.TaggerModel;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
@@ -34,6 +36,8 @@ public class ScreenController extends BaseController{
     @Autowired
     private CollectionLogService collectionLogService;
 
+	private Logger logger = Logger.getLogger(ScreenController.class);
+    
 	@RequestMapping("protected/home")
 	public ModelAndView home() throws Exception {
         String userName = getAuthenticatedUserName();
@@ -117,12 +121,16 @@ public class ScreenController extends BaseController{
 
     @RequestMapping("protected/{code}/tagger-collection-details")
     public ModelAndView taggerCollectionDetails(@PathVariable(value="code") String code) throws Exception {
-        if (!isHasPermissionForCollection(code)){
-            return new ModelAndView("redirect:/protected/access-error");
+    	logger.info("Received request for crisis code = " + code);
+    	if (!isHasPermissionForCollection(code)){
+            logger.info("protected access-error");
+    		return new ModelAndView("redirect:/protected/access-error");
         }
 
         TaggerCrisis crisis = taggerService.getCrisesByCode(code);
+        logger.info("returned from getCrisesByCode");
         AidrCollection collection = collectionService.findByCode(code);
+        logger.info("returned from findByCode");
 
         Integer crisisId = 0;
         String crisisName = "";
@@ -134,7 +142,8 @@ public class ScreenController extends BaseController{
                 crisisTypeId = crisis.getCrisisType().getCrisisTypeId();
             }
         }
-
+        logger.info("Fetched tagger crisis: " + crisis.getCode() + ", aidr collection: " + collection.getCode());
+        
         ModelAndView model = new ModelAndView("tagger/tagger-collection-details");
         model.addObject("crisisId", crisisId);
         model.addObject("name", crisisName);
@@ -142,7 +151,8 @@ public class ScreenController extends BaseController{
         model.addObject("code", code);
         model.addObject("collectionType", collection.getCollectionType());
         model.addObject("collectionTypes", CollectionType.JSON());
-
+        
+        logger.info("Returning model: " + model.getModel());
         return model;
     }
 

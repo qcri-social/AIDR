@@ -82,6 +82,7 @@ public class CrisisResource {
 		CrisisDTO crisis = null;
 		try {
 			crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
+			System.out.println("Returning crisis: " + crisis.getCode());
 		} catch (RuntimeException e) {
 			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
 		}
@@ -172,6 +173,7 @@ public class CrisisResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addCrisis(CrisisDTO crisis) {
 		try {
+			System.out.println("Received request to add crisis: " + crisis.getCode());
 			crisis.setIsTrashed(false);
 			CrisisDTO newCrisis = crisisLocalEJB.addCrisis(crisis);
 			System.out.println("Added crisis successfully: id = " + newCrisis.getCrisisID() + ", " + newCrisis.getCode());
@@ -189,6 +191,7 @@ public class CrisisResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response editCrisis(CrisisDTO crisis) {
 		try {
+			System.out.println("Received request to edit crisis: " + crisis.getCode());
 			CrisisDTO updatedCrisis = crisisLocalEJB.editCrisis(crisis);
 			return Response.ok(updatedCrisis).build();
 		} catch (RuntimeException e) {

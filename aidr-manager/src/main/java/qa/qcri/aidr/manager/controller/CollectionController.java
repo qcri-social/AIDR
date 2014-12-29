@@ -311,14 +311,17 @@ public class CollectionController extends BaseController{
 	public AidrCollectionTotalDTO findById(Integer id) throws Exception {
 		logger.info("Fetch AidrCollection for Id  "+id);
 		AidrCollection collection = collectionService.findById(id);
+		logger.info("found collection: " + collection.getCode());
 		AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
 		if (dto != null) {
 			Integer totalCount = collectionLogService.countTotalDownloadedItemsForCollection(id);
+			logger.info("returned tweet count = " + totalCount);
 			if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())){
 				totalCount += dto.getCount();
 			}
 			dto.setTotalCount(totalCount);
 		}
+		logger.info("returning dto: " + dto.getCode());
 		return dto;
 	}
 

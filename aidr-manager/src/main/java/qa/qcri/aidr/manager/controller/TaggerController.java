@@ -50,7 +50,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/getAllCrisisTypes.action", method = {RequestMethod.GET})
 	@ResponseBody
 	public Map<String, Object> getAllCrisis() {
-		logger.info("Getting all Crisis from Tagger");
+		logger.info("Getting all CrisisTypes from Tagger");
 		try {
 			return getUIWrapper(taggerService.getAllCrisisTypes(), true);
 		} catch (AidrException e) {
@@ -429,6 +429,7 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> crisisExists(@RequestParam String code) throws Exception {
 		TaggerCrisisExist taggerCrisisExist = null;
+		logger.info("Received request for crisis code: " + code);
 		try {
 			taggerCrisisExist = taggerService.isCrisesExist(code);
 		} catch (AidrException e) {
@@ -436,10 +437,10 @@ public class TaggerController extends BaseController {
 			return getUIWrapper(false);
 		}
 		if (taggerCrisisExist != null && taggerCrisisExist.getCrisisId() != null && taggerCrisisExist.getCrisisId() != 0){
-			logger.debug("Classifier already exists for the code: \"" + code + "\"");
+			logger.info("Classifier already exists for the code: \"" + code + "\"");
 			return getUIWrapper(true, true);
 		} else {
-			logger.debug("Classifier doesn't exists yet for the code: \"" + code + "\"");
+			logger.info("Classifier doesn't exists yet for the code: \"" + code + "\"");
 			return getUIWrapper(false, true);
 		}
 	}

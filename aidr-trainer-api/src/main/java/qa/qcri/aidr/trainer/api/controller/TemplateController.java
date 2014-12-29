@@ -64,7 +64,8 @@ public class TemplateController {
     @Produces( MediaType.APPLICATION_JSON )
     @Path("/status/crisis/code/{code}")
     public CrisisLandingStatusModel getCrisisTemplateByID(@PathParam("code") String code){
-        return templateService.getCrisisLandingStatusByCrisisCode(code);
+        System.out.println("[getCrisisTemplateByID] received request for code = " + code);
+    	return templateService.getCrisisLandingStatusByCrisisCode(code);
     }
 
 

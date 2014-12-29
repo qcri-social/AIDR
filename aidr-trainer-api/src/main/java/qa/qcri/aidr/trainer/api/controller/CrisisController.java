@@ -31,9 +31,10 @@ public class CrisisController {
 	@GET
 	@Produces( MediaType.APPLICATION_JSON )
 	@Path("/id/{crisisid}")
-	public CrisisJsonModel getCrisisByID(@PathParam("crisisid") String crisisid){
+	public CrisisJsonModel getCrisisByID(@PathParam("crisisid") Long crisisid){
+		System.out.println("received request for crisisId = " + crisisid);
 		try {
-			return  crisisService.findByOptimizedCrisisID(Long.parseLong(crisisid));
+			return  crisisService.findByOptimizedCrisisID(crisisid);
 		} catch (Exception e) {
 			System.out.println("Error in getting crisisID for crisis ID = " + crisisid);
 			e.printStackTrace();

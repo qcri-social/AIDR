@@ -64,10 +64,10 @@ public class UITemplateController extends BaseController {
     @RequestMapping(value = "/getTemplate.action", method = {RequestMethod.GET})
     @ResponseBody
     public Map<String, Object> getTemplate(long crisisID) {
-        logger.info("get Template");
+        logger.info("get Template for crisisID = " + crisisID);
 
         try {
-            System.out.println("crisisID :" + crisisID);
+            logger.info("crisisID :" + crisisID);
             String response = uiTemplateService.getTemplatesByCrisisID(crisisID);
 
             if (response != null){

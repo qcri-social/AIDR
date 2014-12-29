@@ -49,10 +49,12 @@ public class TaggerCrisis {
 			this.setIsTrashed(dto.isIsTrashed());
 
 			List<TaggerModelFamilyCollection> mfList = new ArrayList<TaggerModelFamilyCollection>();
-			for (ModelFamilyDTO mf: dto.getModelFamiliesDTO()) {
-				mfList.add(new TaggerModelFamilyCollection(mf));
+			if (dto.getModelFamiliesDTO() != null) {
+				for (ModelFamilyDTO mf: dto.getModelFamiliesDTO()) {
+					mfList.add(new TaggerModelFamilyCollection(mf));
+				}
+				this.setModelFamilyCollection(mfList);
 			}
-			this.setModelFamilyCollection(mfList);
 		}
 	}
 
@@ -67,10 +69,12 @@ public class TaggerCrisis {
 		dto.setCrisisTypeDTO(this.getCrisisType().toDTO());
 
 		List<ModelFamilyDTO> mfDTOList = new ArrayList<ModelFamilyDTO>();
-		for (TaggerModelFamilyCollection mf: this.getModelFamilyCollection()) {
-			mfDTOList.add(mf.toDTO());
+		if (this.getModelFamilyCollection() != null) {
+			for (TaggerModelFamilyCollection mf: this.getModelFamilyCollection()) {
+				mfDTOList.add(mf.toDTO());
+			}
+			dto.setModelFamiliesDTO(mfDTOList);
 		}
-		dto.setModelFamiliesDTO(mfDTOList);
 		return dto;
 	}
 

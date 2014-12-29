@@ -47,7 +47,8 @@ public class CustomUITemplateController {
     @Produces( MediaType.APPLICATION_JSON )
     @Path("/get/customUI/{crisisID}")
     public List<CustomUITemplate> getCustomUIByID(@PathParam("crisisID") Long crisisID){
-        return  customUITemplateService.getCustomTemplateForLandingPage(crisisID);
+        System.out.println("[getCustomUIByID] Received request for crisisID = " + crisisID);
+    	return  customUITemplateService.getCustomTemplateForLandingPage(crisisID);
     }
 
     @POST

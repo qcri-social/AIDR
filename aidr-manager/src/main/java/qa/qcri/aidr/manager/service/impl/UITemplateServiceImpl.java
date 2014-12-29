@@ -102,15 +102,15 @@ public class UITemplateServiceImpl implements UITemplateService {
     public String getTemplatesByCrisisID(long crisisID) throws AidrException {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
-            System.out.println("getPublicLandingPageTemplate: " + crisisID);
-            System.out.println("url: " + taggerMainUrl + "/customuitemplate/crisisID/" + crisisID);
+            logger.info("getPublicLandingPageTemplate: " + crisisID);
+            logger.info("url: " + taggerMainUrl + "/customuitemplate/crisisID/" + crisisID);
 
             WebTarget webResource = client.target(taggerMainUrl + "/customuitemplate/crisisID/" + crisisID);
             ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             String jsonResponse = clientResponse.readEntity(String.class);
-            //System.out.println("jsonResponse: " + jsonResponse);
+            logger.info("Received jsonResponse: " + jsonResponse);
 
             if (jsonResponse != null) {
                 logger.info("getPublicLandingPageTemplate");
@@ -125,14 +125,14 @@ public class UITemplateServiceImpl implements UITemplateService {
     @Override
     public String getCrisisChildrenElement(Integer id) throws AidrException {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+        logger.info("Received request for trainer-api getCrisisChildrenElement with crisisID = " + id);
         try {
              WebTarget webResource = client.target(crowdsourcingAPIMainUrl
-                    + "/crisis/id/" + id);
+                    + "/crisis/id/" + new Long(id));
 
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-            logger.info("getCrisisChildrenElement - clientResponse : " + clientResponse);
-
             String jsonResponse = clientResponse.readEntity(String.class);
+            logger.info("getCrisisChildrenElement - clientResponse : " + jsonResponse);
 
             return jsonResponse;
         } catch (Exception e) {
