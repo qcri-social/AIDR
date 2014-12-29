@@ -72,10 +72,16 @@
             <version>20090211</version>
         </dependency>
         <dependency>
+           <groupId>org.twitter4j</groupId>
+           <artifactId>twitter4j-core</artifactId>
+           <version>[4.0,)</version>
+       </dependency>
+       
+<!--        <dependency>
             <groupId>org.twitter4j</groupId>
             <artifactId>twitter4j-core</artifactId>
             <version>4.0.2</version>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>commons-lang</groupId>
@@ -85,7 +91,7 @@
         <dependency>
             <groupId>org.twitter4j</groupId>
             <artifactId>twitter4j-stream</artifactId>
-            <version>4.0.2</version>
+            <version>[4.0,)</version> <!-- 4.0.2 -->
         </dependency>
 
         <dependency>

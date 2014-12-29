@@ -4,10 +4,6 @@
  */
 package qa.qcri.aidr.collector.api;
 
-//import com.sun.jersey.api.client.Client;
-//import com.sun.jersey.api.client.ClientResponse;
-//import com.sun.jersey.api.client.WebResource;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -31,13 +27,8 @@ import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
-import qa.qcri.aidr.common.code.ResponseWrapperNEW;
 
 import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
-import qa.qcri.aidr.common.values.ReturnCode;
-
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
 
 /**
  * REST Web Service
@@ -63,19 +54,19 @@ public class TwitterCollectorAPI {
     public Response startTask(CollectionTask collectionTask) {
         logger.info("Collection start request received for " + collectionTask.getCollectionCode());
         logger.info("Details:\n" + collectionTask.toString());
-        ResponseWrapperNEW response = new ResponseWrapperNEW();
+        ResponseWrapper response = new ResponseWrapper();
 
         //check if all twitter specific information is available in the request
         if (!collectionTask.isTwitterInfoPresent()) {
-            response.setDeveloperMessage("One or more Twitter authentication token(s) are missing");
-            response.setReturnCode(getProperty("STATUS_CODE_ERROR"));
+            response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
+            response.setMessage("One or more Twitter authentication token(s) are missing");
             return Response.ok(response).build();
         }
 
         //check if all query parameters are missing in the query
         if (!collectionTask.isToTrackAvailable() && !collectionTask.isToFollowAvailable() && !collectionTask.isGeoLocationAvailable()) {
-            response.setDeveloperMessage("Missing one or more fields (toTrack, toFollow, and geoLocation). At least one field is required");
-            response.setReturnCode(getProperty("STATUS_CODE_ERROR"));
+            response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
+            response.setMessage("Missing one or more fields (toTrack, toFollow, and geoLocation). At least one field is required");
             return Response.ok(response).build();
         }
 
@@ -92,8 +83,8 @@ public class TwitterCollectorAPI {
         if (GenericCache.getInstance().isTwtConfigExists(collectionTask)) {
             String msg = "Provided OAuth configurations already in use. Please stop this collection and then start again.";
             logger.info(collectionTask.getCollectionCode() + ": " + msg);
-            response.setDeveloperMessage(msg);
-            response.setReturnCode(getProperty("STATUS_CODE_ERROR"));
+            response.setMessage(msg);
+            response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
             return Response.ok(response).build();
         }
 
@@ -106,8 +97,8 @@ public class TwitterCollectorAPI {
             String langFilter = StringUtils.isNotEmpty(collectionTask.getLanguageFilter()) ? collectionTask.getLanguageFilter() : getProperty("LANGUAGE_ALLOWED_ALL");
             queryBuilder = new TwitterStreamQueryBuilder(collectionTask.getToTrack(), collectionTask.getToFollow(), collectionTask.getGeoLocation(), langFilter);
         } catch (Exception e) {
-            response.setDeveloperMessage(e.getMessage());
-            response.setReturnCode(getProperty("STATUS_CODE_ERROR"));
+            response.setMessage(e.getMessage());
+            response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
             return Response.ok(response).build();
         }
 
@@ -125,9 +116,8 @@ public class TwitterCollectorAPI {
             startPersister(collectionCode);
         }
 
-        response.setUserMessages(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
-        response.setDeveloperMessage(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
-        response.setReturnCode(getProperty("STATUS_CODE_SUCCESS"));
+        response.setMessage(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
+        response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
         return Response.ok(response).build();
     }
 
@@ -148,8 +138,9 @@ public class TwitterCollectorAPI {
         if (tracker != null) {
             tracker.abortCollection();
 
-            if (Boolean.valueOf(getProperty("DEFAULT_PERSISTANCE_MODE")))
+            if (Boolean.valueOf(getProperty("DEFAULT_PERSISTANCE_MODE"))) {
                 stopPersister(collectionCode);
+            }
 
             logger.info(collectionCode + ": " + "Collector has been successfully stopped.");
         } else {
@@ -160,9 +151,9 @@ public class TwitterCollectorAPI {
             return Response.ok(task).build();
         }
 
-        ResponseWrapperNEW response = new ResponseWrapperNEW();
-        response.setDeveloperMessage("Invalid key. No running collector found for the given id.");
-        response.setReturnCode(getProperty("STATUS_CODE_ERROR"));
+        ResponseWrapper response = new ResponseWrapper();
+        response.setMessage("Invalid key. No running collector found for the given id.");
+        response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_NOTFOUND"));
         return Response.ok(response).build();
     }
 
@@ -170,11 +161,11 @@ public class TwitterCollectorAPI {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/status")
     public Response getStatus(@QueryParam("id") String id) {
-        ResponseWrapperNEW response = new ResponseWrapperNEW();
+        ResponseWrapper response = new ResponseWrapper();
         String responseMsg = null;
         if (StringUtils.isEmpty(id)) {
-            response.setDeveloperMessage("Invalid key. No running collector found for the given id.");
-            response.setReturnCode(getProperty("STATUS_CODE_ERROR"));
+            response.setMessage("Invalid key. No running collector found for the given id.");
+            response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_NOTFOUND"));
             return Response.ok(response).build();
         }
         CollectionTask task = GenericCache.getInstance().getConfig(id);
@@ -187,8 +178,8 @@ public class TwitterCollectorAPI {
             return Response.ok(failedTask).build();
         }
 
-        response.setDeveloperMessage("Invalid key. No running collector found for the given id.");
-        response.setReturnCode(getProperty("STATUS_CODE_ERROR"));
+        response.setMessage("Invalid key. No running collector found for the given id.");
+        response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_NOTFOUND"));
         return Response.ok(response).build();
 
     }
@@ -228,7 +219,7 @@ public class TwitterCollectorAPI {
     }
 
     @Deprecated
-     public void startCollectorPersister(String collectionCode) {
+    public void startCollectorPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
             WebTarget webResource = client.target(getProperty("PERSISTER_REST_URI") + "persister/start?file="
@@ -246,7 +237,7 @@ public class TwitterCollectorAPI {
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }
-    
+
     public void startPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
@@ -283,7 +274,7 @@ public class TwitterCollectorAPI {
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }
-    
+
     public void stopPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
