@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
-import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
@@ -285,8 +284,11 @@ public class TaggerServiceImpl implements TaggerService {
 					.post(Entity.json(objectMapper.writeValueAsString(modelFamily.toDTO())), Response.class);
 
 			String jsonResponse = clientResponse.readEntity(String.class);
-			if (jsonResponse != null && Long.parseLong(jsonResponse) > 0) {
-				Integer modelFamilyID = new Long(jsonResponse).intValue();
+                        TaggerResponseWrap responseWrapper = objectMapper.readValue(jsonResponse, TaggerResponseWrap.class);
+			if (responseWrapper != null ) {
+                            
+                            Long modelFamilyIDLong = responseWrapper.getEntityID();
+				Integer modelFamilyID = new Long(modelFamilyIDLong).intValue();
 				logger.info("Attribute was added to crises: " + modelFamilyID);
 				return modelFamilyID;
 			} else {
@@ -294,6 +296,7 @@ public class TaggerServiceImpl implements TaggerService {
 				return null;
 			}
 		} catch (Exception e) {
+                        e.printStackTrace();
 			throw new AidrException("Error while adding attribute to crises", e);
 		}
 	}
