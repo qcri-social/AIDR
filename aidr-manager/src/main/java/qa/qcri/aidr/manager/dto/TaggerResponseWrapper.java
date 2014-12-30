@@ -33,7 +33,7 @@ import qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabel;
  */
 @XmlRootElement(name = "responseWrapper")
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public class TaggerResponseWrap implements Serializable {
+public class TaggerResponseWrapper implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @XmlElement
@@ -76,26 +76,26 @@ public class TaggerResponseWrap implements Serializable {
     @XmlElement
     private Long entityID; // use this field to send IDs to manager
 
-    public TaggerResponseWrap(String statusCode, String message) {
+    public TaggerResponseWrapper(String statusCode, String message) {
         this.statusCode = statusCode;
         this.message = message;
     }
 
-    public TaggerResponseWrap(String statusCode) {
+    public TaggerResponseWrapper(String statusCode) {
         this.statusCode = statusCode;
     }
     
-    public TaggerResponseWrap(String statusCode, Object obj) {
+    public TaggerResponseWrapper(String statusCode, Object obj) {
         this.statusCode = statusCode;
     }
 
-    public TaggerResponseWrap(String statusCode, String message, Object obj) {
+    public TaggerResponseWrapper(String statusCode, String message, Object obj) {
         this.statusCode = statusCode;
         this.message = message;
         this.dataObject = obj;
     }
 
-    public TaggerResponseWrap() {
+    public TaggerResponseWrapper() {
     }
 
     public String getStatusCode() {

@@ -94,7 +94,8 @@ public class ModelFamilyResource {
             boolean retval = modelFamilyLocalEJB.addCrisisAttribute(modelFamilyDTO);
             System.out.println("addedCrisisAttribute = " + retval);
             if (retval) {
-                List<ModelFamilyDTO> dtoList = modelFamilyLocalEJB.getAllModelFamiliesByCrisis(modelFamilyDTO.getCrisisDTO().getCrisisID());
+                // TODO: move the following code to db-manager and return modelFamilyID directly from db-manager
+            	List<ModelFamilyDTO> dtoList = modelFamilyLocalEJB.getAllModelFamiliesByCrisis(modelFamilyDTO.getCrisisDTO().getCrisisID());
                 if (dtoList != null) {
                     System.out.println("fetched list size for crisisID " + modelFamilyDTO.getCrisisDTO().getCrisisID() + " = " + dtoList.size());
                 }
@@ -103,19 +104,22 @@ public class ModelFamilyResource {
                     if (mf.getCrisisDTO().getCrisisID().equals(modelFamilyDTO.getCrisisDTO().getCrisisID())
                             && mf.getNominalAttributeDTO().getNominalAttributeId().equals(modelFamilyDTO.getNominalAttributeDTO().getNominalAttributeId())) {
                         System.out.println("Found added modelFamily = " + mf.getModelFamilyId() + " for crisis = " + modelFamilyDTO.getCrisisDTO().getCrisisID());
-                        response.setMessage("Successfully added.");
+                        response.setStatusCode(getProperty("STATUS_CODE_SUCCESS"));
+                        response.setMessage("Adding Attribute to crisis " + modelFamilyDTO.getCrisisDTO().getCrisisID() + " succeeded");
                         response.setEntityID(mf.getModelFamilyId());
                         return Response.ok(response).build();
                     }
                 }
             }
-            response.setMessage("Failed to add.");
+            response.setStatusCode(getProperty("STATUS_CODE_FAILED"));
+            response.setMessage("Adding Attribute to crisis " + modelFamilyDTO.getCrisisDTO().getCrisisID() + " failed");
             response.setEntityID(new Long(-1));
             return Response.ok(response).build();
         } catch (RuntimeException e) {
             System.out.println("Error while adding Crisis attribute. Possible causes could be duplication of primary key, incomplete data, incompatible data format: " + modelFamilyDTO.getCrisisDTO().getCode() + "," + modelFamilyDTO.getNominalAttributeDTO().getCode());
-            logger.error(elog.toStringException(e));
-            response.setMessage("Failed to add.");
+            logger.error("Exception", e);
+            response.setStatusCode(getProperty("STATUS_CODE_FAILED"));
+            response.setMessage("Adding Attribute to crisis " + modelFamilyDTO.getCrisisDTO().getCrisisID() + " failed due to exception" + e);
             response.setEntityID(new Long(-1));
             return Response.ok(response).build();
         }

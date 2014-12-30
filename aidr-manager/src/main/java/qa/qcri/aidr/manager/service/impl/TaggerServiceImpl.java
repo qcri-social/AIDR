@@ -140,7 +140,7 @@ public class TaggerServiceImpl implements TaggerService {
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
 			String jsonResponse = clientResponse.readEntity(String.class);
-			
+
 			TaggerCrisisAttributesResponse crisisAttributesResponse = objectMapper.readValue(jsonResponse, TaggerCrisisAttributesResponse.class);
 
 			if (crisisAttributesResponse.getCrisisAttributes() != null) {
@@ -284,19 +284,24 @@ public class TaggerServiceImpl implements TaggerService {
 					.post(Entity.json(objectMapper.writeValueAsString(modelFamily.toDTO())), Response.class);
 
 			String jsonResponse = clientResponse.readEntity(String.class);
-                        TaggerResponseWrap responseWrapper = objectMapper.readValue(jsonResponse, TaggerResponseWrap.class);
+			TaggerResponseWrapper responseWrapper = objectMapper.readValue(jsonResponse, TaggerResponseWrapper.class);
 			if (responseWrapper != null ) {
-                            
-                            Long modelFamilyIDLong = responseWrapper.getEntityID();
+				Long modelFamilyIDLong = responseWrapper.getEntityID();
 				Integer modelFamilyID = new Long(modelFamilyIDLong).intValue();
-				logger.info("Attribute was added to crises: " + modelFamilyID);
-				return modelFamilyID;
+				if (modelFamilyID.intValue() > 0) {
+					logger.info("Attribute was added to crises: " + modelFamilyID);
+					return modelFamilyID;
+				} else {
+					logger.info("Attribute was NOT added to crises: ");
+					logger.info("Received message from tagger-api: " + responseWrapper.getStatusCode() + "\n" + responseWrapper.getMessage());
+					return null;
+				}
 			} else {
 				logger.info("Attribute was NOT added to crises: ");
 				return null;
 			}
 		} catch (Exception e) {
-                        e.printStackTrace();
+			e.printStackTrace();
 			throw new AidrException("Error while adding attribute to crises", e);
 		}
 	}
@@ -308,7 +313,7 @@ public class TaggerServiceImpl implements TaggerService {
 			/**
 			 * Rest call to Tagger
 			 */
-			logger.info("Receid request for crisis : " + code);
+			logger.info("Received request for crisis : " + code);
 			WebTarget webResource = client.target(taggerMainUrl + "/crisis/by-code/" + code);
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
