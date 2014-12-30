@@ -76,6 +76,9 @@ public class ResponseWrapper implements Serializable {
     private List<TrainingDataDTO> trainingData;
     @XmlElement
     private Integer total;
+    
+    @XmlElement
+    private Long entityID; // use this field to send IDs to manager
 
     public ResponseWrapper(String statusCode, String message) {
         this.statusCode = statusCode;
@@ -354,5 +357,19 @@ public class ResponseWrapper implements Serializable {
      */
     public void setTotal(Integer total) {
         this.total = total;
+    }
+
+    /**
+     * @return the entityID
+     */
+    public Long getEntityID() {
+        return entityID;
+    }
+
+    /**
+     * @param entityID the entityID to set
+     */
+    public void setEntityID(Long entityID) {
+        this.entityID = entityID;
     }
 }
