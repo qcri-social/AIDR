@@ -97,11 +97,7 @@ public class DocumentNominalLabelDTO implements Serializable {
 	}
 
 	public void setNominalLabelDTO(NominalLabelDTO nominalLabelDTO) {
-		if (nominalLabelDTO != null) {
-			this.nominalLabelDTO = nominalLabelDTO;
-		} else {
-			throw new IllegalArgumentException("Argument cannot be null!");
-		}
+		this.nominalLabelDTO = nominalLabelDTO;
 	}
 
 	public DocumentDTO getDocumentDTO() {
@@ -109,11 +105,7 @@ public class DocumentNominalLabelDTO implements Serializable {
 	}
 
 	public void setDocumentDTO(DocumentDTO documentDTO) {
-		if (documentDTO != null) {
-			this.documentDTO = documentDTO;
-		} else {
-			throw new IllegalArgumentException("Argument cannot be null!");
-		}
+		this.documentDTO = documentDTO;
 	}
 
 	public DocumentNominalLabel toEntity() throws PropertyNotSetException {

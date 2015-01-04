@@ -138,8 +138,8 @@ public class ScreenController extends BaseController{
         if (crisis != null && crisis.getCrisisID() != null && crisis.getName() != null){
             crisisId = crisis.getCrisisID();
             crisisName = crisis.getName();
-            if (crisis.getCrisisType() != null && crisis.getCrisisType().getCrisisTypeId() != null){
-                crisisTypeId = crisis.getCrisisType().getCrisisTypeId();
+            if (crisis.getCrisisType() != null && crisis.getCrisisType().getCrisisTypeID() != null){
+                crisisTypeId = crisis.getCrisisType().getCrisisTypeID();
             }
         }
         logger.info("Fetched tagger crisis: " + crisis.getCode() + ", aidr collection: " + collection.getCode());

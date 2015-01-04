@@ -30,6 +30,7 @@ import java.util.Properties;
 
 
 
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -82,19 +83,19 @@ public class DataStore {
 
 	private static Logger logger = Logger.getLogger(DataStore.class);
 	private static ErrorLog elog = new ErrorLog();
-	
+
 	//private static final String remoteEJBJNDIName = "java:global/aidr-task-managerEAR-1.0/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote";
 	private static final String remoteEJBJNDIName = "java:global/AIDRTaskManager/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote";
-	
-	
+
+
 	@SuppressWarnings("unchecked")
 	public static void initTaskManager() {
 		if (taskManager != null) {
 			logger.warn("taskManager has already been initialized: " + taskManager
-						+ ". Hence, skipping taskManager initialization attempt...");
+					+ ". Hence, skipping taskManager initialization attempt...");
 			return;
 		}
-		
+
 		// Else initialize taskManager
 		try {
 			long startTime = System.currentTimeMillis();
@@ -102,13 +103,13 @@ public class DataStore {
 			//props.setProperty("java.naming.factory.initial", "com.sun.enterprise.naming.SerialInitContextFactory");
 			//props.setProperty("java.naming.factory, url.pkgs", "com.sun.enterprise.naming");
 			//props.setProperty("java.naming.factory.state", "com.sun.corba.ee.impl.presentation.rmi.JNDIStateFactoryImpl");
-			  
+
 			//props.setProperty("org.omg.CORBA.ORBInitialHost", "localhost");
 			//props.setProperty("org.omg.CORBA.ORBInitialPort", "3700");
-			
+
 			//InitialContext ctx = new InitialContext(props);
 			InitialContext ctx = new InitialContext();
-			
+
 			taskManager = (TaskManagerRemote<DocumentDTO, Long>) ctx.lookup(DataStore.remoteEJBJNDIName);
 			System.out.println("taskManager: " + taskManager + ", time taken to initialize = " + (System.currentTimeMillis() - startTime));
 			logger.info("taskManager: " + taskManager + ", time taken to initialize = " + (System.currentTimeMillis() - startTime));
@@ -149,7 +150,7 @@ public class DataStore {
 		try {
 			if (jedisPool == null) {
 				jedisPool = new JedisPool(new JedisPoolConfig(),
-                        getProperty("redis_host"));
+						getProperty("redis_host"));
 			}
 			return jedisPool.getResource();
 		} catch (Exception e) {
@@ -188,8 +189,8 @@ public class DataStore {
 					50, // max-pool default = 5
 					50, // max-size default 30
 					180000, // timeout (ms)
-                    getProperty("mysql_path"), getProperty("mysql_username"),
-                    getProperty("mysql_password"));
+					getProperty("mysql_path"), getProperty("mysql_username"),
+					getProperty("mysql_password"));
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			logger.error("Exception when initializing MySQL connection");
 			logger.error(elog.toStringException(e));
@@ -446,12 +447,21 @@ public class DataStore {
 	public static void saveDocumentsToDatabase(List<Document> items) {
 		try {
 			for (Document item : items) {
-				//TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
 				TaggerDocument doc = Document.fromDocumentToTaggerDocument(item);
-				long docID = taskManager.saveHumanLabeledDocument(TaggerDocument.toDocumentDTO(doc), doc.getCrisisID());
+				System.out.println("Attempting to save NEW document for crisis = " + doc.getCrisisCode());
+				logger.info("Attempting to save NEW document for crisis = " + doc.getCrisisCode());
+				Long docID = taskManager.saveNewTask(TaggerDocument.toDocumentDTO(doc), doc.getCrisisID());
+				if (docID.longValue() != -1) {
+					// Update document with auto generated Doc
+					item.setDocumentID(docID);
+					System.out.println("Success in saving document: " + item.getDocumentID() + ", for crisis = " + item.getCrisisCode());
+				} else {
+					System.out.println("Something went wrong in saving document: " + item.getDocumentID() + ", for crisis = " + item.getCrisisCode());
+				}
 			}
 		} catch (Exception e) {
 			logger.error("Exception when attempting to write Document to database");
+			e.printStackTrace();
 			logger.error(elog.toStringException(e));
 		} 
 		saveHumanLabels(items);
@@ -464,41 +474,36 @@ public class DataStore {
 	 * @param documents A list of human-annotated documents.
 	 */
 	static void saveHumanLabels(List<Document> documents) {
-
 		try {
 			/*
 				String insertSql = "INSERT INTO document_nominal_label (documentID, nominalLabelID) VALUES (?,?)";
-			*/
-			for (Document d: documents) {
-				Long userID = d.getUserID() != null ? d.getUserID() : 1L;		// default labeller : 'System' user (userID = 1 in DB)
-				DocumentNominalLabelIdDTO idDTO = new DocumentNominalLabelIdDTO(d.getDocumentID(), d.getCrisisID(), userID);
-				DocumentNominalLabelDTO dto = new DocumentNominalLabelDTO();
-				dto.setIdDTO(idDTO);
-				taskManager.saveDocumentNominalLabel(dto);
-			}
+			 */
 			ArrayList<Integer> docsWithLabels = new ArrayList<>();
 			ArrayList<TrainingSampleNotification> notifications = new ArrayList<>();
-			
 			int rows = 0;
-			for (Document doc : documents) {
-				List<NominalLabelBC> labels = doc
-						.getHumanLabels(NominalLabelBC.class);
-
-				if (labels.isEmpty()) // Skip document if it has no
-					// human-provided labels
+			for (Document d: documents) {
+				List<NominalLabelBC> labels = d.getHumanLabels(NominalLabelBC.class);
+				if (labels.isEmpty()) // Skip document if it has no human-provided labels
 				{
 					continue;
 				}
-				
-				docsWithLabels.add(doc.getDocumentID().intValue());
+				docsWithLabels.add(d.getDocumentID().intValue());
+
 				for (NominalLabelBC label : labels) {
+					//statement.setInt(1, doc.getDocumentID());
+					//statement.setInt(2, label.getNominalLabelID());
+					//statement.execute();
+					Long userID = d.getUserID() != null ? d.getUserID() : 1L;		// default labeler : 'System' user (userID = 1 in DB)
+					DocumentNominalLabelIdDTO idDTO = new DocumentNominalLabelIdDTO(d.getDocumentID(), new Long(label.getNominalLabelID()), userID);
+					DocumentNominalLabelDTO dto = new DocumentNominalLabelDTO();
+					dto.setIdDTO(idDTO);
+					logger.info("Attempting to save LABELED document: " + dto.getIdDTO().getDocumentId() + " with nominal labelID=" + dto.getIdDTO().getNominalLabelId() + ", for crisis = " + d.getCrisisCode() + ", userID = " + dto.getIdDTO().getUserId());
+					System.out.println("Attempting to save LABELED document: " + dto.getIdDTO().getDocumentId() + " with nominal labelID=" + dto.getIdDTO().getNominalLabelId() + ", for crisis = " + d.getCrisisCode() + ", userID = " + dto.getIdDTO().getUserId());
+					taskManager.saveDocumentNominalLabel(dto);
 					rows++;
 				}
-			 	
-				notifications.add(new TrainingSampleNotification(doc
-						.getCrisisID().intValue(), getAttributeIDs(labels)));
+				notifications.add(new TrainingSampleNotification(d.getCrisisID().intValue(), getAttributeIDs(labels)));
 			}
-
 			if (rows == 0) {
 				return;
 			}
@@ -688,7 +693,7 @@ public class DataStore {
 		final int ERROR_MARGIN = 0;		// if less than this, then skip delete
 		int deleteCount = taskManager.truncateLabelingTaskBufferForCrisis(crisisID, maxLength, ERROR_MARGIN);
 		logger.info("Truncation results for crisis " + crisisID + ", deleted doc count = " + deleteCount);
-		
+
 	}
 
 	public static int saveModelToDatabase(int crisisID, int nominalAttributeID,
@@ -845,33 +850,33 @@ public class DataStore {
 
 	public static void main(String[] args) throws Exception {
 		DataStore.initTaskManager();
-		
+
 		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
 		JSONObject tweet = new JSONObject();
 		tweet.put("docType", "twitter");
 		tweet.put("payload", "This is a test document to test task-manager save");
 		tweet.put("nominal_labels", new JSONArray());
-		
+
 		Document doc = new Tweet();
 		doc.setCrisisID(117L);
 		doc.setValueAsTrainingSample(0.8);
 		doc.setInputJson(tweet);
 		doc.humanLabelCount = 0;
 		TaggerDocument DTOdoc = Document.fromDocumentToTaggerDocument(doc);
-		
+
 		List<NominalLabel> nbList = new ArrayList<NominalLabel>();
 		nbList.add(new NominalLabel(320));
 		nbList.add(new NominalLabel(322));
 		DTOdoc.setNominalLabelCollection(nbList);
-	
-		long docID = DataStore.taskManager.saveHumanLabeledDocument(TaggerDocument.toDocumentDTO(DTOdoc), doc.getCrisisID());
+
+		Long docID = DataStore.taskManager.saveNewTask(TaggerDocument.toDocumentDTO(DTOdoc), doc.getCrisisID());
 		System.out.println("Inserted new document with documentID = " + docID);
 		logger.info("Inserted new document with documentID = " + docID);
-		
+
 		System.out.println("Testing truncate Labeling buffer for crisisID = " + 117);
 		logger.info("Testing truncate Labeling buffer for crisisID = " + 117);
 		//DataStore.taskManager.truncateLabelingTaskBufferForCrisis(117L, Config.LABELING_TASK_BUFFER_MAX_LENGTH, 0);
 		DataStore.taskManager.truncateLabelingTaskBufferForCrisis(117L, Integer.parseInt(getProperty("labeling_task_buffer_max_length")), 0);
 	}
-	
+
 }

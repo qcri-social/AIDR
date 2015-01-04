@@ -1,7 +1,7 @@
 package qa.qcri.aidr.manager.controller;
 
 import org.apache.log4j.Logger;
-import org.glassfish.jersey.jackson.JacksonFeature;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.DownloadType;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+
 import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
@@ -22,11 +22,7 @@ import java.util.*;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+
 
 @Controller
 @RequestMapping("protected/tagger")

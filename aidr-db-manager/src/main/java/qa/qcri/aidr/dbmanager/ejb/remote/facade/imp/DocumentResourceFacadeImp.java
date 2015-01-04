@@ -309,6 +309,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	@Override
 	public DocumentDTO addDocument(DocumentDTO doc) throws PropertyNotSetException {
 		em.persist(doc.toEntity());
+		// TODO: send back new documentID
 		return doc;
 	}
 

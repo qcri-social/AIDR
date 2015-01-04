@@ -217,7 +217,9 @@ public class TaggerDocument extends Document implements Serializable {
 	public static DocumentDTO toDocumentDTO(TaggerDocument document) {
 		DocumentDTO doc = new DocumentDTO();
 		if (document != null) {
-			doc.setDocumentID(document.getDocumentID());
+			if (document.getDocumentID() != null) {
+				doc.setDocumentID(document.getDocumentID());
+			}
 			//doc.setCrisisID(document.getCrisisID());
 			doc.setDoctype(document.getDoctype());
 			doc.setData(document.getData());

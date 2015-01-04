@@ -169,10 +169,10 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 	@Override
-	public long saveHumanLabeledDocument(T task, Long crisisID) {
+	public Long saveNewTask(T task, Long crisisID) {
 		if (task == null) {
 			logger.error("Attempting to insert NULL");
-			return -1;
+			return -1L;
 		}
 		try {
 			DocumentDTO doc = (DocumentDTO) task;
@@ -180,13 +180,15 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			doc.setCrisisDTO(crisisDTO);
 			doc.setHasHumanLabels(true);
 			DocumentDTO savedDoc = remoteDocumentEJB.addDocument(doc);
-			
+			System.out.println("Saved to DB document: " + savedDoc.getDocumentID() + ", for crisis = " + savedDoc.getCrisisDTO().getCode());
+			logger.info("Saved to DB document: " + savedDoc.getDocumentID() + ", for crisis = " + savedDoc.getCrisisDTO().getCode());
 			return savedDoc.getDocumentID();
 		} catch (Exception e) {
 			logger.error("Error in insertion");
 			logger.error(elog.toStringException(e));
+			e.printStackTrace();
 		}
-		return -1;
+		return -1L;
 	}
 
 
@@ -209,14 +211,18 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 	@Override
-	public void saveHumanLabeledDocuments(List<T> collection, Long crisisID) {
+	public List<Long> saveNewTasks(List<T> collection, Long crisisID) {
+		List<Long> newList = new ArrayList<Long>();
 		if (collection != null) {
 			try {
 				for (T doc: collection) {
 					CrisisDTO crisisDTO = remoteCrisisEJB.findCrisisByID(crisisID);
 					((DocumentDTO) doc).setCrisisDTO(crisisDTO);
 					((DocumentDTO) doc).setHasHumanLabels(true);
-					remoteDocumentEJB.addDocument((DocumentDTO) doc);
+					DocumentDTO savedDoc = remoteDocumentEJB.addDocument((DocumentDTO) doc);
+					if (savedDoc != null) { 
+						newList.add(savedDoc.getDocumentID());
+					}
 				}
 			} catch (Exception e) {
 				logger.error("Error in collection insertion");
@@ -225,6 +231,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		} else {
 			logger.warn("Attempting to insert NULL");
 		}
+		return newList;
 	}
 	
 
@@ -1020,9 +1027,12 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public void saveDocumentNominalLabel(DocumentNominalLabelDTO documentNominalLabel) {
 		try {
 			remoteDocumentNominalLabelEJB.save(documentNominalLabel.toEntity());
+			System.out.println("Saved to DB document nominal label: " + documentNominalLabel.getIdDTO().getDocumentId() + ", with nominal label = " + documentNominalLabel.getIdDTO().getNominalLabelId());
+			logger.info("Saved to DB document nominal label: " + documentNominalLabel.getIdDTO().getDocumentId() + ", with nominal label = " + documentNominalLabel.getIdDTO().getNominalLabelId());
 		} catch (Exception e) {
 			logger.error("Error in saving document nominal label : " + documentNominalLabel);
 			logger.error(elog.toStringException(e));
+			e.printStackTrace();
 		}
 	}
 

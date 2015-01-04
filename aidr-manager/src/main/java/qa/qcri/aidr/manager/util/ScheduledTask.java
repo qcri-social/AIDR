@@ -27,7 +27,7 @@ public class ScheduledTask {
 			collections = collectionService.getRunningCollections();
 		} catch (Exception e) {
 			logger.error("Error while executing update collections scheduled task");
-			e.printStackTrace();
+			logger.error("exception: ", e);
 			return;
 		}
 		if (collections != null) {
@@ -38,7 +38,7 @@ public class ScheduledTask {
 					collectionService.statusByCollection(item);
 				} catch (Exception e) {
 					logger.error("Error while updating collection with ID: " + item.getId());
-					e.printStackTrace();
+					logger.error("exception: ", e);
 				}
 			}
 		}
@@ -52,7 +52,7 @@ public class ScheduledTask {
 			collections = collectionService.getRunningCollections();
 		} catch (Exception e) {
 			logger.error("Error while executing checking for collections running duration");
-			e.printStackTrace();
+			logger.error("exception: ", e);
 			return;
 		}
 		if (collections != null) {
@@ -67,7 +67,7 @@ public class ScheduledTask {
 						logger.info("Collection with ID: " + item.getId() + " was automatically stopped as it reached duration interval.");
 					} catch (Exception e) {
 						logger.info("Error while stopping collection with ID: " + item.getId());
-						e.printStackTrace();
+						logger.error("exception: ", e);
 					}
 				}
 			}

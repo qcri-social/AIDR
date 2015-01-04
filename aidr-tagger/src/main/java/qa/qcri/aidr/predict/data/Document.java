@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import qa.qcri.aidr.predict.classification.DocumentLabel;
 import qa.qcri.aidr.predict.classification.DocumentLabelFilter;
 import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
+import qa.qcri.aidr.predict.common.DocumentType;
 import qa.qcri.aidr.predict.common.Helpers;
 import qa.qcri.aidr.predict.dbentities.NominalLabel;
 import qa.qcri.aidr.predict.dbentities.TaggerDocument;
@@ -204,7 +205,8 @@ public abstract class Document implements java.io.Serializable {
 			}
 			document.setGeoFeatures(null);
 			document.setValueAsTrainingSample(doc.getValueAsTrainingSample());
-
+			
+			/*
 			List<NominalLabelBC> labels = doc.getHumanLabels(NominalLabelBC.class);
 			if (!labels.isEmpty()) {
 				List<NominalLabel> nbList = new ArrayList<NominalLabel>();
@@ -215,7 +217,7 @@ public abstract class Document implements java.io.Serializable {
 				document.setNominalLabelCollection(nbList);
 			} else {
 				document.setNominalLabelCollection(null);
-			}
+			}*/
 
 			return document;
 		}
@@ -223,7 +225,12 @@ public abstract class Document implements java.io.Serializable {
 	}
 
 	public static Document fromTaggerDocumentToDocument(TaggerDocument doc) {
-		Document document = new Tweet();
+		Document document = null;
+		if (doc.getDoctype().equalsIgnoreCase(DocumentType.TWIITER_DOC)) {
+			 document = new Tweet();
+		} else if (doc.getDoctype().equalsIgnoreCase(DocumentType.SMS_DOC)) {
+			document = new SMS();
+		}
 
 		if (doc != null) {
 			document.setDocumentID(doc.getDocumentID());
@@ -238,13 +245,13 @@ public abstract class Document implements java.io.Serializable {
 			document.addFeatureSet(wordSet);
 
 			document.setValueAsTrainingSample(doc.getValueAsTrainingSample());
-
+			/*
 			List<NominalLabelBC> labels = doc.getHumanLabels(NominalLabelBC.class);
 			if (!labels.isEmpty()) {
 				for (NominalLabelBC label : labels) {
 					document.addLabel(label);
 				}
-			}
+			}*/
 
 			return document;
 

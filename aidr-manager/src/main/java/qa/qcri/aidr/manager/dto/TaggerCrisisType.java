@@ -4,7 +4,7 @@ import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 
 public class TaggerCrisisType {
 
-	private Integer crisisTypeId;
+	private Integer crisisTypeID;
 
 	private String name;
 
@@ -14,34 +14,34 @@ public class TaggerCrisisType {
 	}
 
 	public TaggerCrisisType(Integer crisisTypeId) {
-		this.crisisTypeId = crisisTypeId;
+		this.crisisTypeID = crisisTypeId;
 	}
 
 	public TaggerCrisisType(Integer crisisTypeId, String name) {
-		this.crisisTypeId = crisisTypeId;
+		this.crisisTypeID = crisisTypeId;
 		this.name = name;
 	}
 
 	public TaggerCrisisType(CrisisTypeDTO dto) throws Exception {
 		if (dto != null) {
-			this.setCrisisTypeId(dto.getCrisisTypeId().intValue());
+			this.setCrisisTypeID(dto.getCrisisTypeId().intValue());
 			this.setName(dto.getName());
 			this.setNumberOfCrisisAssociated(dto.getNumberOfCrisisAssociated());
 		}
 	}
 
 	public CrisisTypeDTO toDTO() throws Exception {
-		CrisisTypeDTO dto = new CrisisTypeDTO(new Long(this.getCrisisTypeId()), this.getName());
+		CrisisTypeDTO dto = new CrisisTypeDTO(new Long(this.getCrisisTypeID()), this.getName());
 		dto.setNumberOfCrisisAssociated(this.getNumberOfCrisisAssociated());
 		return dto;
 	}
 
-	public Integer getCrisisTypeId() {
-		return crisisTypeId;
+	public Integer getCrisisTypeID() {
+		return crisisTypeID;
 	}
 
-	public void setCrisisTypeId(Integer crisisTypeId) {
-		this.crisisTypeId = crisisTypeId;
+	public void setCrisisTypeID(Integer crisisTypeId) {
+		this.crisisTypeID = crisisTypeId;
 	}
 
 	public String getName() {

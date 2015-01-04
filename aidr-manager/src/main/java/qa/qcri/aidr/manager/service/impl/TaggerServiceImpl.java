@@ -76,6 +76,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			return crisesTypesResponse.getCrisisTypes();
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while getting all crisis from Tagger", e);
 		}
 	}
@@ -103,6 +104,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			return taggerAllCrisesResponse.getCrisises();
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("No collection is enabled for Tagger. Please enable tagger for one of your collections.", e);
 		}
 	}
@@ -123,6 +125,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			return clientResponse.readEntity(String.class);
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while creating new crises in Tagger", e);
 		}
 	}
@@ -151,6 +154,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			return convertTaggerCrisesAttributeToDTO(crisisAttributesResponse.getCrisisAttributes(), userId);
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while getting all attributes for crisis from Tagger", e);
 		}
 	}
@@ -172,6 +176,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			return rv;
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while getting amount of classifiers by collection codes in Tagger", e);
 		}
 	}
@@ -198,6 +203,7 @@ public class TaggerServiceImpl implements TaggerService {
 				return null;
 			}
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while checking if crisis exist in Tagger", e);
 		}
 	}
@@ -227,6 +233,7 @@ public class TaggerServiceImpl implements TaggerService {
 				return null;
 			}
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while checking if user exist in Tagger", e);
 		}
 	}
@@ -262,6 +269,7 @@ public class TaggerServiceImpl implements TaggerService {
 				return null;
 			}
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while adding new user to Tagger", e);
 		}
 	}
@@ -301,7 +309,7 @@ public class TaggerServiceImpl implements TaggerService {
 				return null;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info("exception", e);
 			throw new AidrException("Error while adding attribute to crises", e);
 		}
 	}
@@ -359,6 +367,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			return crisis;
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while getting crisis by code from Tagger", e);
 		}
 	}
@@ -405,6 +414,7 @@ public class TaggerServiceImpl implements TaggerService {
 			}
 			return null;
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while getting all models for crisis from Tagger", e);
 		}
 	}
@@ -431,6 +441,7 @@ public class TaggerServiceImpl implements TaggerService {
 			}
 			return response;
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while creating new attribute in Tagger", e);
 		}
 	}
@@ -456,6 +467,7 @@ public class TaggerServiceImpl implements TaggerService {
 			}
 			return null;
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while getting attribute from Tagger", e);
 		}
 	}
@@ -479,6 +491,7 @@ public class TaggerServiceImpl implements TaggerService {
 			}
 			return null;
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while getting label from Tagger", e);
 		}
 	}
@@ -507,6 +520,7 @@ public class TaggerServiceImpl implements TaggerService {
 			}
 			return false;
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while deleting attribute in Tagger", e);
 		}
 	}
@@ -537,6 +551,7 @@ public class TaggerServiceImpl implements TaggerService {
 			}
 			return false;
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while deleting document in Tagger", e);
 		}
 	}
@@ -568,6 +583,7 @@ public class TaggerServiceImpl implements TaggerService {
 			}
 			return false;
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while removing classifier from crisis in Tagger", e);
 		}
 	}
@@ -596,6 +612,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			return attribute;
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while updating attribute in Tagger", e);
 		}
 	}
@@ -627,6 +644,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			return updatedLabel;
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while updating label in Tagger", e);
 		}
 	}
@@ -656,6 +674,7 @@ public class TaggerServiceImpl implements TaggerService {
 				throw new AidrException("Error while creating new label in Tagger");
 			}
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while creating new label in Tagger", e);
 		}
 	}
@@ -680,6 +699,7 @@ public class TaggerServiceImpl implements TaggerService {
 				return null;
 			}
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while checking if attribute exist in Tagger", e);
 		}
 	}
@@ -719,6 +739,7 @@ public class TaggerServiceImpl implements TaggerService {
 				return null;
 			}
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while Getting training data for Crisis and Model.", e);
 		}
 	}
@@ -745,6 +766,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			return jsonResponse;
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while getting Assignable Task in Tagger", e);
 		}
 	}
@@ -761,6 +783,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			return jsonResponse;
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while getting Template Status in Tagger", e);
 		}
 	}
@@ -785,6 +808,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			return jsonResponse;
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while Skip Task operation", e);
 		}
 	}
@@ -804,6 +828,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			return clientResponse.getStatus() == 204;
 		} catch (Exception e) {
+			logger.info("exception", e);
 			return true;
 			//throw new AidrException("Error while saving TaskAnswer in AIDRCrowdsourcing", e);
 		}
@@ -828,6 +853,7 @@ public class TaggerServiceImpl implements TaggerService {
 				return "";
 			}
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while generating Tweet Ids link in taggerPersister", e);
 		}
 	}
@@ -855,6 +881,7 @@ public class TaggerServiceImpl implements TaggerService {
 			ModelHistoryWrapper modelHistoryWrapper = objectMapper.readValue(jsonResponse, ModelHistoryWrapper.class);
 			return modelHistoryWrapper;
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while Getting history records for Model.", e);
 		}
 	}
@@ -881,6 +908,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			return modelLabelsResponse.getModelNominalLabelsDTO();
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while getting all labels for model from Tagger", e);
 		}
 	}
@@ -901,6 +929,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			return jsonResponse;
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("getRetainingThreshold : ", e);
 
 		}
@@ -934,6 +963,7 @@ public class TaggerServiceImpl implements TaggerService {
 				return Collections.emptyMap();
 			}
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while adding new user to Tagger", e);
 		}
 	}
@@ -961,6 +991,7 @@ public class TaggerServiceImpl implements TaggerService {
 				return false;
 			}
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while Getting training data for Crisis and Model.", e);
 		}
 	}
@@ -988,6 +1019,7 @@ public class TaggerServiceImpl implements TaggerService {
 				return false;
 			}
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while Getting training data for Crisis and Model.", e);
 		}
 	}
@@ -1015,6 +1047,7 @@ public class TaggerServiceImpl implements TaggerService {
 				return false;
 			}
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while Getting training data for Crisis and Model.", e);
 		}
 	}
@@ -1036,6 +1069,7 @@ public class TaggerServiceImpl implements TaggerService {
              return "";
              }*/
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("[generateCSVLink] Error while generating CSV link in Persister", e);
 		}
 	}
@@ -1062,6 +1096,7 @@ public class TaggerServiceImpl implements TaggerService {
              return "";
              }*/
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("[generateTweetIdsLink] Error while generating Tweet Ids link in Persister", e);
 		}
 	}
@@ -1083,6 +1118,7 @@ public class TaggerServiceImpl implements TaggerService {
              return "";
              }*/
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("[generateJSONLink] Error while generating JSON download link in Persister", e);
 		}
 	}
@@ -1109,6 +1145,7 @@ public class TaggerServiceImpl implements TaggerService {
              return "";
              }*/
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("[generateJsonTweetIdsLink] Error while generating JSON Tweet Ids download link in Persister", e);
 		}
 	}
@@ -1130,6 +1167,7 @@ public class TaggerServiceImpl implements TaggerService {
              return "";
              }*/
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("[generateCSVFilteredLink] Error while generating JSON download link in Persister", e);
 		}
 	}
@@ -1157,6 +1195,7 @@ public class TaggerServiceImpl implements TaggerService {
              return "";
              }*/
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("[generateTweetIdsFilteredLink] Error while generating JSON Tweet Ids download link in Persister", e);
 		}
 	}
@@ -1179,6 +1218,7 @@ public class TaggerServiceImpl implements TaggerService {
              return "";
              }*/
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("[generateJSONFilteredLink] Error while generating JSON download link in Persister", e);
 		}
 	}
@@ -1206,6 +1246,7 @@ public class TaggerServiceImpl implements TaggerService {
              return "";
              }*/
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("[generateJsonTweetIdsFilteredLink] Error while generating JSON Tweet Ids download link in Persister", e);
 		}
 	}
@@ -1250,6 +1291,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			return sampleCountThreshold;
 		} catch (Exception e) {
+			logger.info("exception", e);
 			return 50;
 
 		}
@@ -1286,6 +1328,7 @@ public class TaggerServiceImpl implements TaggerService {
 			Response clientResp = webResource.request(MediaType.APPLICATION_JSON).get();
 			logger.info("deactivated - clientResponse : " + clientResp);
 		} catch (Exception e) {
+			logger.info("exception", e);
 			logger.error("deactivated - deletePybossaApp : " + e);
 		}
 	}
@@ -1304,6 +1347,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			return jsonResponse;
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while getting all nominal attributes and their labels for a given crisisID", e);
 		}
 	}
@@ -1328,6 +1372,7 @@ public class TaggerServiceImpl implements TaggerService {
 				retVal = 0;
 			}
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while attempting /trash REST call for aidr_predict", e);
 		}
 		System.out.println("[trashCollection] result of cleaning aidr-predict: " + crisisID);
@@ -1350,6 +1395,7 @@ public class TaggerServiceImpl implements TaggerService {
 					return 0;
 				}
 			} catch (Exception e) {
+				logger.info("exception", e);
 				throw new AidrException("Error while attempting /trash REST call for aidr_scheduler", e);
 			}
 		}
@@ -1373,6 +1419,7 @@ public class TaggerServiceImpl implements TaggerService {
 				return 0;
 			}
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while attempting /untrash REST call", e);
 		}
 	}
@@ -1398,6 +1445,7 @@ public class TaggerServiceImpl implements TaggerService {
 				return "";
 			}
 		} catch (Exception e) {
+			logger.info("exception", e);
 			throw new AidrException("Error while loadLatestTweetsWithCount", e);
 		}
 	}

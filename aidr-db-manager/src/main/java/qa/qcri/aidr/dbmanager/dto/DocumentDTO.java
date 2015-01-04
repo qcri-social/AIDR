@@ -117,8 +117,9 @@ public class DocumentDTO implements Serializable {
 	public DocumentDTO(Document doc) throws PropertyNotSetException {
 		if (doc != null) {
 			//System.out.println("Document Hash code: " + doc.hashCode());
-			
-			this.setDocumentID(doc.getDocumentId());
+			if (doc.getDocumentId() != null) {
+				this.setDocumentID(doc.getDocumentId());
+			}
 			this.setHasHumanLabels(doc.isHasHumanLabels());
 			if (doc.hasCrisis()) {
 				Crisis c = new Crisis(doc.getCrisis().getUsers(), doc.getCrisis().getCrisisType(), doc.getCrisis().getName(), doc.getCrisis().getCode(),
@@ -156,11 +157,7 @@ public class DocumentDTO implements Serializable {
 	}
 
 	public void setDocumentID(Long documentID) {
-		if (documentID != null) {
 			this.documentID = documentID;
-		} else {
-			throw new IllegalArgumentException("Argument cannot be null!");
-		}
 	}
 
 	public boolean getHasHumanLabels() {
@@ -317,7 +314,7 @@ public class DocumentDTO implements Serializable {
 		Document doc = new Document(this.getCrisisDTO().toEntity(), isEvaluationSet, hasHumanLabels, 
 				valueAsTrainingSample, receivedAt, language, doctype, data, wordFeatures, geoFeatures, null, null);
 		if (this.documentID != null) {
-			doc.setDocumentId(getDocumentID());
+			doc.setDocumentId(this.getDocumentID());
 		}
 		if (this.getDocumentNominalLabelsDTO() != null) {
 			doc.setDocumentNominalLabels(this.toDocumentNominalLabelList(getDocumentNominalLabelsDTO()));
