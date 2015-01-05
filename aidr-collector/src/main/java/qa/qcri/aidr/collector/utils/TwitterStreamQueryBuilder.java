@@ -29,7 +29,16 @@ public class TwitterStreamQueryBuilder {
 	public TwitterStreamQueryBuilder() {
 		langMap = new HashMap<Integer, String>();
 	}
-    
+	
+	/**
+	 * Setting this parameter to a comma-separated list of BCP 47
+	 * language identifiers corresponding to any of the languages
+	 * listed on Twitter’s advanced search page will only return
+	 * Tweets that have been detected as being written in the
+	 * specified languages. For example, connecting with
+	 * language=en will only stream Tweets detected to be in
+	 * the English language.
+	 */
     public void setLanguageFilter(String langFilters) {
         if (StringUtils.isNotEmpty(langFilters)) {
             String[] languages = langFilters.split(",");
@@ -48,6 +57,14 @@ public class TwitterStreamQueryBuilder {
         return false;
     }
 
+    /**
+     * A comma-separated list of longitude,latitude pairs specifying
+     * a set of bounding boxes to filter Tweets by. Only geolocated
+     * Tweets falling within the requested bounding boxes will be
+     * included—unlike the Search API, the user’s location field
+     * is not used to filter tweets.
+     * @see https://dev.twitter.com/streaming/overview/request-parameters#locations
+     */
     public void setGeoLocation(String geoLocationStr) {
 
         if (StringUtils.isNotEmpty(geoLocationStr)) {
@@ -70,6 +87,10 @@ public class TwitterStreamQueryBuilder {
         return this.geoLocations;
     }
 
+    /**
+     * A comma-separated list of user IDs, indicating the users whose Tweets
+     * should be delivered on the stream.
+     */
     public void setToFollow(String toFollow) {
 
         if (StringUtils.isNotEmpty(toFollow)) {
@@ -83,6 +104,16 @@ public class TwitterStreamQueryBuilder {
         }
     }
 
+    /**
+     * A comma-separated list of phrases which will be used to determine
+     * what Tweets will be delivered on the stream. A phrase may be one or
+     * more terms separated by spaces, and a phrase will match if all of
+     * the terms in the phrase are present in the Tweet, regardless of
+     * order and ignoring case. By this model, you can think of commas
+     * as logical ORs, while spaces are equivalent to logical ANDs (e.g.
+     * ‘the twitter’ is the AND twitter, and ‘the,twitter’ is the OR twitter).
+     * @see https://dev.twitter.com/streaming/overview/request-parameters#track
+     */
     public void setToTrack(String track) {
         if (StringUtils.isNotEmpty(track)) {
             this.toTrackArray = track.split(",");
