@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package qa.qcri.aidr.collector.collectors;
 
 import java.io.Serializable;

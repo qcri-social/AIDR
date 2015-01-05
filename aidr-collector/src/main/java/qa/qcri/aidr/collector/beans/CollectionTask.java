@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package qa.qcri.aidr.collector.beans;
 
 import org.apache.commons.lang.StringUtils;
@@ -171,15 +167,10 @@ public class CollectionTask {
     }
 
     public boolean isTwitterInfoPresent() {
-        if (StringUtils.isNotEmpty(getAccessToken())
+        return StringUtils.isNotEmpty(getAccessToken())
                 && StringUtils.isNotEmpty(getAccessTokenSecret())
                 && StringUtils.isNotEmpty(getConsumerKey())
-                && StringUtils.isNotEmpty(getConsumerSecret())) {
-
-            return true;
-        } else {
-            return false;
-        }
+                && StringUtils.isNotEmpty(getConsumerSecret());
     }
 
     /**
