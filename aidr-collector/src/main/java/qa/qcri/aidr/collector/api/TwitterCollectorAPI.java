@@ -1,22 +1,18 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package qa.qcri.aidr.collector.api;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.glassfish.jersey.jackson.JacksonFeature;
-import qa.qcri.aidr.collector.beans.CollectionTask;
-import qa.qcri.aidr.collector.beans.ResponseWrapper;
-import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
+import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
 
-import qa.qcri.aidr.collector.utils.GenericCache;
-import qa.qcri.aidr.collector.utils.TwitterStreamQueryBuilder;
-import qa.qcri.aidr.common.logging.ErrorLog;
-import twitter4j.conf.ConfigurationBuilder;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.List;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -24,11 +20,18 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.List;
 
-import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.glassfish.jersey.jackson.JacksonFeature;
+
+import qa.qcri.aidr.collector.beans.CollectionTask;
+import qa.qcri.aidr.collector.beans.ResponseWrapper;
+import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
+import qa.qcri.aidr.collector.utils.GenericCache;
+import qa.qcri.aidr.common.logging.ErrorLog;
+import twitter4j.FilterQuery;
+import twitter4j.conf.ConfigurationBuilder;
 
 /**
  * REST Web Service
@@ -70,43 +73,41 @@ public class TwitterCollectorAPI {
             return Response.ok(response).build();
         }
 
-        ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.setDebugEnabled(false)
-                .setJSONStoreEnabled(true)
-                .setOAuthConsumerKey(collectionTask.getConsumerKey())
-                .setOAuthConsumerSecret(collectionTask.getConsumerSecret())
-                .setOAuthAccessToken(collectionTask.getAccessToken())
-                .setOAuthAccessTokenSecret(collectionTask.getAccessTokenSecret());
+        String collectionCode = collectionTask.getCollectionCode();
 
         //check if a task is already running with same configutations
-        logger.info("Checking OAuth parameters for " + collectionTask.getCollectionCode());
+        logger.info("Checking OAuth parameters for " + collectionCode);
         if (GenericCache.getInstance().isTwtConfigExists(collectionTask)) {
             String msg = "Provided OAuth configurations already in use. Please stop this collection and then start again.";
-            logger.info(collectionTask.getCollectionCode() + ": " + msg);
+            logger.info(collectionCode + ": " + msg);
             response.setMessage(msg);
             response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
             return Response.ok(response).build();
         }
 
-        String collectionCode = collectionTask.getCollectionCode();
-
-        //building filter for filtering twitter stream
-        logger.info("Building query for Twitter streaming API for collection " + collectionCode);
-        TwitterStreamQueryBuilder queryBuilder = null;
-        try {
-            String langFilter = StringUtils.isNotEmpty(collectionTask.getLanguageFilter()) ? collectionTask.getLanguageFilter() : getProperty("LANGUAGE_ALLOWED_ALL");
-            queryBuilder = new TwitterStreamQueryBuilder(collectionTask.getToTrack(), collectionTask.getToFollow(), collectionTask.getGeoLocation(), langFilter);
-        } catch (Exception e) {
-            response.setMessage(e.getMessage());
-            response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
-            return Response.ok(response).build();
-        }
+		// building filter for filtering twitter stream
+		logger.info("Building query for Twitter streaming API for collection " + collectionCode);
+		FilterQuery query;
+		try {
+			query = task2query(collectionTask);
+		} catch (NumberFormatException e) {
+			response.setMessage(e.getMessage());
+			response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
+			return Response.ok(response).build();
+		}
 
         collectionTask.setStatusCode(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
         logger.info("Initializing connection with Twitter streaming API for collection " + collectionCode);
         TwitterStreamTracker tracker;
         try {
-            tracker = new TwitterStreamTracker(queryBuilder, configurationBuilder, collectionTask);
+            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.setDebugEnabled(false)
+                    .setJSONStoreEnabled(true)
+                    .setOAuthConsumerKey(collectionTask.getConsumerKey())
+                    .setOAuthConsumerSecret(collectionTask.getConsumerSecret())
+                    .setOAuthAccessToken(collectionTask.getAccessToken())
+                    .setOAuthAccessTokenSecret(collectionTask.getAccessTokenSecret());
+            tracker = new TwitterStreamTracker(query, configurationBuilder.build(), collectionTask);
         } catch (Exception ex) {
             logger.error("Exception in creating TwitterStreamTracker for collection " + collectionCode);
             logger.error(elog.toStringException(ex));
@@ -120,6 +121,40 @@ public class TwitterCollectorAPI {
         response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
         return Response.ok(response).build();
     }
+
+	/*default*/ FilterQuery task2query(CollectionTask collectionTask) throws NumberFormatException {
+		FilterQuery query;
+		query = new FilterQuery();
+		String toTrack = collectionTask.getToTrack();
+		if (toTrack != null && !toTrack.isEmpty())
+			query.track(toTrack.split(","));
+
+		String toFollow = collectionTask.getToFollow();
+		if (toFollow != null && !toFollow.isEmpty()) {
+			List<String> list = Arrays.asList(toFollow.split(","));
+			query.follow(list.stream().mapToLong(Long::parseLong).toArray());
+		}
+
+		String locations = collectionTask.getGeoLocation();
+		if (locations != null && !locations.isEmpty()) {
+			List<String> list = Arrays.asList(locations.split(","));
+			double[] flat = list.stream().mapToDouble(Double::parseDouble).toArray();
+			assert flat.length % 4 == 0;
+			double[][] square = new double[flat.length / 2][2];
+			for (int i = 0; i < flat.length; i = i + 2) {
+				// Read 2 elements at a time, into each 2-element sub-array
+				// of 'locations'
+				square[i / 2][0] = flat[i];
+				square[i / 2][1] = flat[i + 1];
+			}
+			query.locations(square);
+		}
+
+		String language = collectionTask.getLanguageFilter();
+		if (language != null && !language.isEmpty())
+			query.language(language.split(","));
+		return query;
+	}
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
