@@ -1,13 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package qa.qcri.aidr.collector.utils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -22,17 +17,18 @@ public class TwitterStreamQueryBuilder {
     private Map<Integer, String> langMap;
     
 
-    // add geolocation 
-    public TwitterStreamQueryBuilder(String track, String follow, String geoLocation, String langFilters) {
-        setToFollow(follow);
-        setToTrack(track);
-        setGeoLocation(geoLocation);
-        langMap = new HashMap<Integer, String>();
-        setLanguageFilter(langFilters.toLowerCase());
-    }
+	// add geolocation
+	public TwitterStreamQueryBuilder(String track, String follow, String geoLocation, String langFilters) {
+		this();
+		setToFollow(follow);
+		setToTrack(track);
+		setGeoLocation(geoLocation);
+		setLanguageFilter(langFilters.toLowerCase());
+	}
 
-    public TwitterStreamQueryBuilder() {
-    }
+	public TwitterStreamQueryBuilder() {
+		langMap = new HashMap<Integer, String>();
+	}
     
     public void setLanguageFilter(String langFilters) {
         if (StringUtils.isNotEmpty(langFilters)) {
