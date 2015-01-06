@@ -1,8 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package qa.qcri.aidr.collector.collectors;
+
+import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
 
 import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,10 +12,8 @@ import org.json.JSONObject;
 import qa.qcri.aidr.collector.beans.AIDR;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.FetcherResponseToStringChannel;
-
 import qa.qcri.aidr.collector.redis.JedisConnectionPool;
 import qa.qcri.aidr.collector.utils.GenericCache;
-import qa.qcri.aidr.collector.utils.TwitterStreamQueryBuilder;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.redis.LoadShedder;
 import redis.clients.jedis.Jedis;
@@ -29,9 +25,7 @@ import twitter4j.StatusListener;
 import twitter4j.TwitterObjectFactory;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
-import twitter4j.conf.ConfigurationBuilder;
-
-import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
+import twitter4j.conf.Configuration;
 
 /**
  *
@@ -42,8 +36,8 @@ public class TwitterStreamTracker implements Serializable {
     private static Logger logger = Logger.getLogger(TwitterStreamTracker.class.getName());
     private static ErrorLog elog = new ErrorLog();
     private TwitterStream twitterStream;
-    private ConfigurationBuilder configBuilder;
-    private TwitterStreamQueryBuilder streamQuery;
+    private Configuration config;
+    private FilterQuery query;
     private Jedis publisherJedis;
     private String collectionCode; 
     private String cacheKey;
@@ -52,20 +46,16 @@ public class TwitterStreamTracker implements Serializable {
 
     private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
 
-    public TwitterStreamTracker() {
-    }
-
-    public TwitterStreamTracker(TwitterStreamQueryBuilder streamFilterQuery, ConfigurationBuilder configurationBuilder, CollectionTask collectionTask) throws Exception {
+    public TwitterStreamTracker(FilterQuery query, Configuration config, CollectionTask collectionTask) throws Exception {
 
         logger.info("Waiting to aquire Jedis connection for collection " + collectionTask.getCollectionCode());
         this.publisherJedis = JedisConnectionPool.getJedisConnection();
         logger.info("Jedis connection acquired for collection " + collectionTask.getCollectionCode());
-        this.streamQuery = new TwitterStreamQueryBuilder();
         this.collectionCode = collectionTask.getCollectionCode();
         this.collectionName = collectionTask.getCollectionName();
         this.cacheKey = collectionTask.getCollectionCode();
-        this.streamQuery = streamFilterQuery;
-        this.configBuilder = configurationBuilder;
+        this.config = config;
+        this.query = query;
 
         GenericCache.getInstance().setTwtConfigMap(cacheKey, collectionTask);
         GenericCache.getInstance().setTwitterTracker(cacheKey, this);
@@ -80,25 +70,18 @@ public class TwitterStreamTracker implements Serializable {
 
     private void collectThroughStreaming() {
 
-        StatusListener listener = new StatusListener() {
-            JSONObject tweetJSONObject = null;
+        twitterStream = new TwitterStreamFactory(config).getInstance();
+        twitterStream.filter(query);
+        twitterStream.addListener(new StatusListener() {
             CollectionTask collection = GenericCache.getInstance().getTwtConfigMap(getCacheKey());
             JSONObject aidrObject = new JSONObject(new FetcherResponseToStringChannel(new AIDR(getCollectionCode(), getCollectionName(), "twitter")));
             String aidrJson = StringUtils.replace(aidrObject.toString(), "{", ",", 1); // replacing the first occurance of { with ,
-            boolean allowAllLanguages = getStreamQuery().isLanguageAllowed(getProperty("LANGUAGE_ALLOWED_ALL"));
             String channelName = getProperty("FETCHER_CHANNEL") + "." + getCollectionCode();
             GenericCache cache = GenericCache.getInstance();
 
             @Override
             public void onStatus(Status status) {
-                String lang = status.getLang();
-                if (allowAllLanguages) {
-                    publishMessage(status);
-                } else {
-                    if (getStreamQuery().isLanguageAllowed(lang)) {
-                        publishMessage(status);
-                    }
-                }
+                publishMessage(status);
             }
 
             @Override
@@ -148,23 +131,8 @@ public class TwitterStreamTracker implements Serializable {
                     }
                 }
             }
-        };
+        });
 
-        twitterStream = new TwitterStreamFactory(getConfigBuilder().build()).getInstance();
-        twitterStream.addListener(listener);
-
-        // Setup the filter
-        FilterQuery query = new FilterQuery();
-        if (getStreamQuery().getToFollow() != null) {
-            query.follow(getStreamQuery().getToFollow());
-        }
-        if (getStreamQuery().getGeoLocation() != null) {
-            query.locations(getStreamQuery().getGeoLocation());
-
-        }
-
-        query.track(getStreamQuery().getToTrack());
-        twitterStream.filter(query);
 
         // if twitter streaming connection successful then change the status code
         CollectionTask coll = GenericCache.getInstance().getTwtConfigMap(getCacheKey());
@@ -184,41 +152,13 @@ public class TwitterStreamTracker implements Serializable {
         twitterStream.cleanUp();
         twitterStream.shutdown();
         cleanCache();
-        logger.warn("AIDR-Fetcher: Collection aborted which was tracking [" + getStreamQuery().getToTrackToString() + "] AND following [" + getStreamQuery().getToFollowToString() + "]");
+        logger.warn("AIDR-Fetcher: Collection aborted which was tracking " + query);
     }
 
     public void cleanCache() {
         GenericCache.getInstance().deleteCounter(getCacheKey());
         GenericCache.getInstance().delTwtConfigMap(getCacheKey());
         GenericCache.getInstance().delLastDownloadedDoc(getCacheKey());
-    }
-
-    /**
-     * @return the configBuilder
-     */
-    public ConfigurationBuilder getConfigBuilder() {
-        return configBuilder;
-    }
-
-    /**
-     * @param configBuilder the configBuilder to set
-     */
-    public void setConfigBuilder(ConfigurationBuilder cb) {
-        this.configBuilder = cb;
-    }
-
-    /**
-     * @return the streamQuery
-     */
-    public TwitterStreamQueryBuilder getStreamQuery() {
-        return streamQuery;
-    }
-
-    /**
-     * @param streamQuery the streamQuery to set
-     */
-    public void setStreamQuery(TwitterStreamQueryBuilder streamQuery) {
-        this.streamQuery = streamQuery;
     }
 
     /**

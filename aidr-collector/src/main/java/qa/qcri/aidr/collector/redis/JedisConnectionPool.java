@@ -17,7 +17,7 @@ public class JedisConnectionPool {
     private static Logger logger = Logger.getLogger(JedisConnectionPool.class);
     private static ErrorLog elog = new ErrorLog();
     
-    static JedisPool jedisPool;
+    private static JedisPool jedisPool;
 
     public static Jedis getJedisConnection() throws Exception {
         try {

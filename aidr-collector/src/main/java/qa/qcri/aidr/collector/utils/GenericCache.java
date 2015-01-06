@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package qa.qcri.aidr.collector.utils;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
