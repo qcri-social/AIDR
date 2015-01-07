@@ -2,9 +2,9 @@ package qa.qcri.aidr.collector.api;
 
 import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -29,9 +29,6 @@ import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.ResponseWrapper;
 import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
 import qa.qcri.aidr.collector.utils.GenericCache;
-import qa.qcri.aidr.common.logging.ErrorLog;
-import twitter4j.FilterQuery;
-import twitter4j.conf.ConfigurationBuilder;
 
 /**
  * REST Web Service
@@ -42,7 +39,6 @@ import twitter4j.conf.ConfigurationBuilder;
 public class TwitterCollectorAPI {
 
     private static Logger logger = Logger.getLogger(TwitterCollectorAPI.class.getName());
-    private static ErrorLog elog = new ErrorLog();
 
     @Context
     private UriInfo context;
@@ -54,30 +50,31 @@ public class TwitterCollectorAPI {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/start")
-    public Response startTask(CollectionTask collectionTask) {
-        logger.info("Collection start request received for " + collectionTask.getCollectionCode());
-        logger.info("Details:\n" + collectionTask.toString());
+    public Response startTask(CollectionTask task) {
+        logger.info("Collection start request received for " + task.getCollectionCode());
+        logger.info("Details:\n" + task.toString());
         ResponseWrapper response = new ResponseWrapper();
 
         //check if all twitter specific information is available in the request
-        if (!collectionTask.isTwitterInfoPresent()) {
+        if (!task.isTwitterInfoPresent()) {
             response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
             response.setMessage("One or more Twitter authentication token(s) are missing");
             return Response.ok(response).build();
         }
 
         //check if all query parameters are missing in the query
-        if (!collectionTask.isToTrackAvailable() && !collectionTask.isToFollowAvailable() && !collectionTask.isGeoLocationAvailable()) {
+        if (!task.isToTrackAvailable() && !task.isToFollowAvailable() && !task.isGeoLocationAvailable()) {
             response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
             response.setMessage("Missing one or more fields (toTrack, toFollow, and geoLocation). At least one field is required");
             return Response.ok(response).build();
         }
 
-        String collectionCode = collectionTask.getCollectionCode();
+        String collectionCode = task.getCollectionCode();
 
         //check if a task is already running with same configutations
         logger.info("Checking OAuth parameters for " + collectionCode);
-        if (GenericCache.getInstance().isTwtConfigExists(collectionTask)) {
+        GenericCache cache = GenericCache.getInstance();
+		if (cache.isTwtConfigExists(task)) {
             String msg = "Provided OAuth configurations already in use. Please stop this collection and then start again.";
             logger.info(collectionCode + ": " + msg);
             response.setMessage(msg);
@@ -85,75 +82,34 @@ public class TwitterCollectorAPI {
             return Response.ok(response).build();
         }
 
-		// building filter for filtering twitter stream
-		logger.info("Building query for Twitter streaming API for collection " + collectionCode);
-		FilterQuery query;
+		task.setStatusCode(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
+		logger.info("Initializing connection with Twitter streaming API for collection " + collectionCode);
+		TwitterStreamTracker tracker;
 		try {
-			query = task2query(collectionTask);
-		} catch (NumberFormatException e) {
-			response.setMessage(e.getMessage());
-			response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
-			return Response.ok(response).build();
-		}
+			tracker = new TwitterStreamTracker(task);
 
-        collectionTask.setStatusCode(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
-        logger.info("Initializing connection with Twitter streaming API for collection " + collectionCode);
-        TwitterStreamTracker tracker;
-        try {
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.setDebugEnabled(false)
-                    .setJSONStoreEnabled(true)
-                    .setOAuthConsumerKey(collectionTask.getConsumerKey())
-                    .setOAuthConsumerSecret(collectionTask.getConsumerSecret())
-                    .setOAuthAccessToken(collectionTask.getAccessToken())
-                    .setOAuthAccessTokenSecret(collectionTask.getAccessTokenSecret());
-            tracker = new TwitterStreamTracker(query, configurationBuilder.build(), collectionTask);
-        } catch (Exception ex) {
-            logger.error("Exception in creating TwitterStreamTracker for collection " + collectionCode);
-            logger.error(elog.toStringException(ex));
-        }
+			String cacheKey = task.getCollectionCode();
+			cache.incrCounter(cacheKey, new Long(0));
 
-        if (Boolean.valueOf(getProperty("DEFAULT_PERSISTANCE_MODE"))) {
-            startPersister(collectionCode);
-        }
+			// if twitter streaming connection successful then change the status
+			// code
+			task.setStatusCode(getProperty("STATUS_CODE_COLLECTION_RUNNING"));
+			task.setStatusMessage(null);
+			cache.setTwtConfigMap(cacheKey, task);
+			cache.setTwitterTracker(cacheKey, tracker);
 
-        response.setMessage(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
-        response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
-        return Response.ok(response).build();
-    }
-
-	/*default*/ FilterQuery task2query(CollectionTask collectionTask) throws NumberFormatException {
-		FilterQuery query;
-		query = new FilterQuery();
-		String toTrack = collectionTask.getToTrack();
-		if (toTrack != null && !toTrack.isEmpty())
-			query.track(toTrack.split(","));
-
-		String toFollow = collectionTask.getToFollow();
-		if (toFollow != null && !toFollow.isEmpty()) {
-			List<String> list = Arrays.asList(toFollow.split(","));
-			query.follow(list.stream().mapToLong(Long::parseLong).toArray());
-		}
-
-		String locations = collectionTask.getGeoLocation();
-		if (locations != null && !locations.isEmpty()) {
-			List<String> list = Arrays.asList(locations.split(","));
-			double[] flat = list.stream().mapToDouble(Double::parseDouble).toArray();
-			assert flat.length % 4 == 0;
-			double[][] square = new double[flat.length / 2][2];
-			for (int i = 0; i < flat.length; i = i + 2) {
-				// Read 2 elements at a time, into each 2-element sub-array
-				// of 'locations'
-				square[i / 2][0] = flat[i];
-				square[i / 2][1] = flat[i + 1];
+			if (Boolean.valueOf(getProperty("DEFAULT_PERSISTANCE_MODE"))) {
+				startPersister(collectionCode);
 			}
-			query.locations(square);
-		}
 
-		String language = collectionTask.getLanguageFilter();
-		if (language != null && !language.isEmpty())
-			query.language(language.split(","));
-		return query;
+			response.setMessage(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
+			response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
+		} catch (Exception ex) {
+			logger.error("Exception in creating TwitterStreamTracker for collection " + collectionCode, ex);
+			response.setMessage(ex.getMessage());
+			response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
+		}
+		return Response.ok(response).build();
 	}
 
     @GET
@@ -170,8 +126,15 @@ public class TwitterCollectorAPI {
         cache.delLastDownloadedDoc(collectionCode);
         cache.delTwitterTracker(collectionCode);
 
-        if (tracker != null) {
-            tracker.abortCollection();
+		if (tracker != null) {
+			try {
+				tracker.close();
+			} catch (IOException e) {
+				ResponseWrapper response = new ResponseWrapper();
+				response.setMessage(e.getMessage());
+				response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_NOTFOUND"));
+				return Response.ok(response).build();
+			}
 
             if (Boolean.valueOf(getProperty("DEFAULT_PERSISTANCE_MODE"))) {
                 stopPersister(collectionCode);
@@ -197,7 +160,6 @@ public class TwitterCollectorAPI {
     @Path("/status")
     public Response getStatus(@QueryParam("id") String id) {
         ResponseWrapper response = new ResponseWrapper();
-        String responseMsg = null;
         if (StringUtils.isEmpty(id)) {
             response.setMessage("Invalid key. No running collector found for the given id.");
             response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_NOTFOUND"));
@@ -265,15 +227,14 @@ public class TwitterCollectorAPI {
 
             logger.info(collectionCode + ": Collector persister response = " + jsonResponse);
         } catch (RuntimeException e) {
-            logger.error(collectionCode + ": Could not start persister. Is persister running?");
-            logger.error(elog.toStringException(e));
+            logger.error(collectionCode + ": Could not start persister. Is persister running?", e);
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }
 
-    public void startPersister(String collectionCode) {
+    private void startPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
             WebTarget webResource = client.target(getProperty("PERSISTER_REST_URI") + "collectionPersister/start?channel_provider="
@@ -284,10 +245,8 @@ public class TwitterCollectorAPI {
 
             logger.info(collectionCode + ": Collector persister response = " + jsonResponse);
         } catch (RuntimeException e) {
-            logger.error(collectionCode + ": Could not start persister. Is persister running?");
-            logger.error(elog.toStringException(e));
+            logger.error(collectionCode + ": Could not start persister. Is persister running?", e);
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }
@@ -302,8 +261,7 @@ public class TwitterCollectorAPI {
             String jsonResponse = clientResponse.readEntity(String.class);
             logger.info(collectionCode + ": Collector persister response =  " + jsonResponse);
         } catch (RuntimeException e) {
-            logger.error(collectionCode + ": Could not stop persister. Is persister running?");
-            logger.error(elog.toStringException(e));
+            logger.error(collectionCode + ": Could not stop persister. Is persister running?", e);
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
@@ -319,8 +277,7 @@ public class TwitterCollectorAPI {
             String jsonResponse = clientResponse.readEntity(String.class);
             logger.info(collectionCode + ": Collector persister response =  " + jsonResponse);
         } catch (RuntimeException e) {
-            logger.error(collectionCode + ": Could not stop persister. Is persister running?");
-            logger.error(elog.toStringException(e));
+            logger.error(collectionCode + ": Could not stop persister. Is persister running?", e);
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
@@ -338,8 +295,7 @@ public class TwitterCollectorAPI {
             String jsonResponse = clientResponse.readEntity(String.class);
             logger.info(collectionCode + ": Tagger persister response = " + jsonResponse);
         } catch (RuntimeException e) {
-            logger.error(collectionCode + ": Could not start persister. Is persister running?");
-            logger.error(elog.toStringException(e));
+            logger.error(collectionCode + ": Could not start persister. Is persister running?", e);
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
@@ -356,8 +312,7 @@ public class TwitterCollectorAPI {
             String jsonResponse = clientResponse.readEntity(String.class);
             logger.info(collectionCode + ": Tagger persister response: " + jsonResponse);
         } catch (RuntimeException e) {
-            logger.error(collectionCode + ": Could not stop persister. Is persister running?");
-            logger.error(elog.toStringException(e));
+            logger.error(collectionCode + ": Could not stop persister. Is persister running?", e);
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
