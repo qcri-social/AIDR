@@ -4,10 +4,12 @@
  */
 package qa.qcri.aidr.predictui.facade;
 
-import qa.qcri.aidr.predictui.dto.ItemToLabelDTO;
-import qa.qcri.aidr.predictui.dto.TrainingDataDTO;
 
 import javax.ejb.Local;
+
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ItemToLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
+
 import java.util.List;
 
 /**

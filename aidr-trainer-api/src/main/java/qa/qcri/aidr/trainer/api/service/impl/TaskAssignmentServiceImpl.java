@@ -1,5 +1,7 @@
 package qa.qcri.aidr.trainer.api.service.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -11,6 +13,7 @@ import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 import qa.qcri.aidr.trainer.api.dao.UsersDao;
 import qa.qcri.aidr.trainer.api.entity.Users;
 import qa.qcri.aidr.trainer.api.service.TaskAssignmentService;
+
 import java.util.List;
 
 
@@ -26,6 +29,8 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
     
     @Autowired TaskManagerRemote<DocumentDTO, Long> taskManager;
     
+	protected static Logger logger = LoggerFactory.getLogger(TaskAnswerServiceImpl.class);
+
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
     public void revertTaskAssignmentByUserName(Long documentID, String userName) {
@@ -58,6 +63,7 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
         //taskAssignmentDao.undoTaskAssignment(documentID,userID);
     	try {
 			taskManager.undoTaskAssignment(documentID, userID);
+			logger.info("Removed from taskAssignment table: documentID = " + documentID + ", userID = " + userID);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

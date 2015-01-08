@@ -1,117 +1,117 @@
 package qa.qcri.aidr.predictui.facade.imp;
 
-
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.predictui.entities.CustomUITemplate;
+import qa.qcri.aidr.dbmanager.dto.CustomUiTemplateDTO;
 import qa.qcri.aidr.predictui.facade.CustomUITemplateFacade;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: jlucas
- * Date: 3/18/14
- * Time: 1:04 PM
- * To change this template use File | Settings | File Templates.
- * 
- * Modified by Koushik: added try/catch 
+ * Created by Koushik
  */
 
 @Stateless
 public class CustomUITemplateFacadeImp implements CustomUITemplateFacade{
 
-	@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
-	private EntityManager em;
+	//@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
+	//private EntityManager em;
 
+	@EJB
+	private qa.qcri.aidr.dbmanager.ejb.remote.facade.CustomUiTemplateResourceFacade remoteCustomUiTemplateEJB;
+	
 	private static Logger logger = Logger.getLogger(CustomUITemplateFacadeImp.class);
-	private static ErrorLog elog = new ErrorLog();
 	
 	@Override
-	public List<CustomUITemplate> getAllCustomUITemplateByCrisisID(long crisisID) {
-		Query query = em.createNamedQuery("CustomUITemplate.findByCrisisD", CustomUITemplate.class);
-		query.setParameter("crisisID", crisisID);
+	public List<CustomUiTemplateDTO> getAllCustomUITemplateByCrisisID(long crisisID) {
 		try {
-			List<CustomUITemplate> customUITemplates = query.getResultList();
+			List<CustomUiTemplateDTO> customUITemplates = remoteCustomUiTemplateEJB.getAllCustomUITemplateByCrisisID(crisisID);
 			return customUITemplates;
-		} catch (NoResultException e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
 
 	@Override
-	public List<CustomUITemplate> getCustomUITemplateBasedOnTypeByCrisisID(long crisisID, int templateType) {
+	public List<CustomUiTemplateDTO> getCustomUITemplateBasedOnTypeByCrisisID(long crisisID, int templateType) {
 
 		logger.info("getCustomUITemplateBasedOnTypeByCrisisID: " + crisisID + "-" + templateType );
-		Query query = em.createNamedQuery("CustomUITemplate.findBasedOnTypeByCrisisD", CustomUITemplate.class);
-		query.setParameter("crisisID", crisisID);
-		query.setParameter("templateType", templateType);
 		try {
-			List<CustomUITemplate> customUITemplates = query.getResultList();
+			List<CustomUiTemplateDTO> customUITemplates = remoteCustomUiTemplateEJB.getCustomUITemplateBasedOnTypeByCrisisID(crisisID, templateType);
 			return customUITemplates;
-		} catch (NoResultException e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
 
 	@Override
-	public List<CustomUITemplate> getCustomUITemplateBasedOnTypeByCrisisIDAndAttributeID(long crisisID, long attributeID, int templateType) {
-		Query query = em.createNamedQuery("CustomUITemplate.findBasedOnTypeByCrisisIDAndAttributeID", CustomUITemplate.class);
-		query.setParameter("crisisID", crisisID);
-		query.setParameter("templateType", templateType);
-		query.setParameter("nominalAttributeID", attributeID);
-		List<CustomUITemplate> customUITemplates = query.getResultList();
-		return customUITemplates;
-	}
-
-	@Override
-	public List<CustomUITemplate> getCustomUITemplateByCrisisIDAndAttributeID(long crisisID, long attributeID) {
-		Query query = em.createNamedQuery("CustomUITemplate.findByCrisisIDAndAttributeID", CustomUITemplate.class);
-		query.setParameter("crisisID", crisisID);
-		query.setParameter("nominalAttributeID", attributeID);
+	public List<CustomUiTemplateDTO> getCustomUITemplateBasedOnTypeByCrisisIDAndAttributeID(long crisisID, long attributeID, int templateType) {
 		try {
-			List<CustomUITemplate> customUITemplates = query.getResultList();
+			List<CustomUiTemplateDTO> customUITemplates = remoteCustomUiTemplateEJB.getCustomUITemplateBasedOnTypeByCrisisIDAndAttributeID(crisisID, attributeID, templateType);
 			return customUITemplates;
-		} catch (NoResultException e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
 
 	@Override
-	public CustomUITemplate addCustomUITemplate(CustomUITemplate customUITemplate) {
-		em.persist(customUITemplate);
-
-		return  customUITemplate;
+	public List<CustomUiTemplateDTO> getCustomUITemplateByCrisisIDAndAttributeID(long crisisID, long attributeID) {
+		try {
+			List<CustomUiTemplateDTO> customUITemplates = remoteCustomUiTemplateEJB.getCustomUITemplateByCrisisIDAndAttributeID(crisisID, attributeID);
+			return customUITemplates;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	@Override
-	public CustomUITemplate updateCustomUITemplate(CustomUITemplate currentTemplate, CustomUITemplate updatedTemplate) {
-		currentTemplate = em.merge(currentTemplate);
-		currentTemplate.setTemplateValue(updatedTemplate.getTemplateValue());
-		return currentTemplate;
+	public CustomUiTemplateDTO addCustomUITemplate(CustomUiTemplateDTO customUITemplate) {
+		try {
+			CustomUiTemplateDTO dto = remoteCustomUiTemplateEJB.addCustomUITemplate(customUITemplate);
+			return  dto;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	@Override
-	public CustomUITemplate updateCustomUITemplateStatus(CustomUITemplate currentTemplate, CustomUITemplate updatedTemplate) {
-		currentTemplate = em.merge(currentTemplate);
-		currentTemplate.setIsActive(updatedTemplate.getIsActive());
-		return currentTemplate;
+	public CustomUiTemplateDTO updateCustomUITemplate(CustomUiTemplateDTO currentTemplate, CustomUiTemplateDTO updatedTemplate) {
+		try {
+		CustomUiTemplateDTO dto = remoteCustomUiTemplateEJB.updateCustomUITemplate(currentTemplate, updatedTemplate);
+		return  dto;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	@Override
+	public CustomUiTemplateDTO updateCustomUITemplateStatus(CustomUiTemplateDTO currentTemplate, CustomUiTemplateDTO updatedTemplate) {
+		try {
+			CustomUiTemplateDTO dto = remoteCustomUiTemplateEJB.updateCustomUITemplateStatus(currentTemplate, updatedTemplate);
+			return  dto;
+			} catch (Exception e) {
+				return null;
+			}
 	}
 
 	@Override
 	public void deleteCustomUITemplateBasedOnTypeByCrisisID(long crisisID, int type) {
-		//To change body of implemented methods use File | Settings | File Templates.
+		try {
+			remoteCustomUiTemplateEJB.deleteCustomUITemplateBasedOnTypeByCrisisID(crisisID, type);
+		} catch (Exception e) {
+			logger.error("exception", e);
+		}
 	}
 
 	@Override
 	public void deleteCustomUITemplateByCrisisID(long crisisID) {
-		//To change body of implemented methods use File | Settings | File Templates.
+		try {
+			remoteCustomUiTemplateEJB.deleteCustomUITemplateByCrisisID(crisisID);
+		} catch (Exception e) {
+			logger.error("exception", e);
+		}
 	}
 }

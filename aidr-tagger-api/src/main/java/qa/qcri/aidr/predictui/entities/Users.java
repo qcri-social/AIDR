@@ -43,40 +43,23 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
  *
  * @author Imran
  */
-@Entity
-@Table(name = "users")
+
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Users.findAll", query = "SELECT u FROM Users u"),
-    @NamedQuery(name = "Users.findByUserID", query = "SELECT u FROM Users u WHERE u.userID = :userID"),
-    @NamedQuery(name = "Users.findByName", query = "SELECT u FROM Users u WHERE u.name = :name"),
-    @NamedQuery(name = "Users.findByRole", query = "SELECT u FROM Users u WHERE u.role = :role")})
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Users implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "userID")
+ 
     @XmlElement private Integer userID;
     
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 45)
-    @Column(name = "name")
+  
     @XmlElement private String name;
     
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 45)
-    @Column(name = "role")
+ 
     @XmlElement private String role;
     
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
     @JsonManagedReference
     private Collection<Crisis> crisisCollection;
     
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
     @JsonManagedReference
     private Collection<NominalAttribute> nominalAttributeCollection;
 

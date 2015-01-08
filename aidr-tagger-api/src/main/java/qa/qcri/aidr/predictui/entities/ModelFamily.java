@@ -39,43 +39,23 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
  *
  * @author Imran
  */
-@Entity
-@Table(name = "model_family")
+
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "ModelFamily.findAll", query = "SELECT m FROM ModelFamily m"),
-    @NamedQuery(name = "ModelFamily.findByModelFamilyID", query = "SELECT m FROM ModelFamily m WHERE m.modelFamilyID = :modelFamilyID"),
-    @NamedQuery(name = "ModelFamily.findByIsActive", query = "SELECT m FROM ModelFamily m WHERE m.isActive = :isActive"),
-    @NamedQuery(name = "ModelFamily.findByCrisis", query = "SELECT m FROM ModelFamily m WHERE m.crisis = :crisis")})
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class ModelFamily implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "modelFamilyID")
+ 
     @XmlElement private Integer modelFamilyID;
     
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "isActive")
+  
     @XmlElement private boolean isActive;
     
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "modelFamily")
     @JsonManagedReference
     private Collection<Model> modelCollection;
     
-    @JoinColumn(name = "nominalAttributeID", referencedColumnName = "nominalAttributeID")
-    @ManyToOne(optional = false)
     @JsonBackReference
     private NominalAttribute nominalAttribute;
 
-    //    @JoinColumn(name = "currentModelID", referencedColumnName = "modelID")
-//    @ManyToOne
-//    private Model model;
-   
-    @JoinColumn(name = "crisisID", referencedColumnName = "crisisID")
-    @ManyToOne(optional = false)
     @JsonBackReference
     private Crisis crisis;
 

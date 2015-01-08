@@ -35,19 +35,20 @@ public class TaskAssignmentDTO implements Serializable {
 	}
 
 	public TaskAssignmentDTO(TaskAssignment taskAssignment) throws PropertyNotSetException{
-		if (taskAssignment.hasDocument()) {
-			Document doc = new Document(taskAssignment.getDocument().getCrisis(), taskAssignment.getDocument().isIsEvaluationSet(),
-					taskAssignment.getDocument().isHasHumanLabels(), taskAssignment.getDocument().getValueAsTrainingSample(),
-					taskAssignment.getDocument().getReceivedAt(), taskAssignment.getDocument().getLanguage(), taskAssignment.getDocument().getDoctype(), 
-					taskAssignment.getDocument().getData());
-			doc.setWordFeatures(taskAssignment.getDocument().getWordFeatures());
-			doc.setGeoFeatures(taskAssignment.getDocument().getGeoFeatures());
-			doc.setDocumentId(taskAssignment.getDocument().getDocumentId());
-			this.setDocument(new DocumentDTO(doc));
+		if (taskAssignment != null) {
+			if (taskAssignment.hasDocument()) {
+				Document doc = new Document(taskAssignment.getDocument().getCrisis(), taskAssignment.getDocument().isIsEvaluationSet(),
+						taskAssignment.getDocument().isHasHumanLabels(), taskAssignment.getDocument().getValueAsTrainingSample(),
+						taskAssignment.getDocument().getReceivedAt(), taskAssignment.getDocument().getLanguage(), taskAssignment.getDocument().getDoctype(), 
+						taskAssignment.getDocument().getData());
+				doc.setWordFeatures(taskAssignment.getDocument().getWordFeatures());
+				doc.setGeoFeatures(taskAssignment.getDocument().getGeoFeatures());
+				doc.setDocumentId(taskAssignment.getDocument().getDocumentId());
+				this.setDocument(new DocumentDTO(doc));
+			}
+			this.setIdDTO(new TaskAssignmentIdDTO(taskAssignment.getId()));
+			this.setAssignedAt(taskAssignment.getAssignedAt());
 		}
-		this.setIdDTO(new TaskAssignmentIdDTO(taskAssignment.getId()));
-		this.setAssignedAt(taskAssignment.getAssignedAt());
-
 	}
 
 	public TaskAssignmentDTO(Long documentID, Long userID, Date assignedAt){
@@ -76,7 +77,7 @@ public class TaskAssignmentDTO implements Serializable {
 	}
 
 	public DocumentDTO getDocument()  {
-			return this.document;
+		return this.document;
 	}
 
 	public void setDocument(DocumentDTO document) {

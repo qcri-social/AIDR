@@ -44,7 +44,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 
 	@EJB
 	NominalLabelResourceFacade nominalLabelEJB;
-	
+
 	public DocumentResourceFacadeImp() {
 		super(Document.class);
 	}
@@ -307,10 +307,16 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	}
 
 	@Override
-	public DocumentDTO addDocument(DocumentDTO doc) throws PropertyNotSetException {
-		em.persist(doc.toEntity());
-		// TODO: send back new documentID
-		return doc;
+	public DocumentDTO addDocument(DocumentDTO doc) {
+		try {
+			Document d = doc.toEntity();
+			em.persist(d);
+			em.flush();
+			em.refresh(d);
+			return new DocumentDTO(d);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	@Override

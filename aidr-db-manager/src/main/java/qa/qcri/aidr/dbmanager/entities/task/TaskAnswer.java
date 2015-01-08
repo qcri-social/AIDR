@@ -29,31 +29,29 @@ public class TaskAnswer implements java.io.Serializable {
 	private Date timestamp;
 	private String answer;
 	private boolean fromTrustedUser;
-    private Long documentId;
-    private Long userId;
 
 	public TaskAnswer() {
 	}
 
 	public TaskAnswer(TaskAnswerId id, String answer, boolean fromTrustedUser) {
-		this.id = id;
-		this.answer = answer;
-		this.fromTrustedUser = fromTrustedUser;
+		this.setId(id); 
+		this.setAnswer(answer);
+		this.setFromTrustedUser(fromTrustedUser);
 	}
 
-    public TaskAnswer(Long documentId, Long userId, String answer, boolean fromTrustedUser) {
-        this.documentId = documentId;
-        this.userId = userId;
-        this.answer = answer;
-        this.fromTrustedUser = fromTrustedUser;
-    }
+	public TaskAnswer(Long documentId, Long userId, String answer, boolean fromTrustedUser) {
+		TaskAnswerId id = new TaskAnswerId(documentId, userId);
+		this.setId(id);
+		this.setAnswer(answer);
+		this.setFromTrustedUser(fromTrustedUser);
+	}
 
 
 	@EmbeddedId
 	@AttributeOverrides({
-			@AttributeOverride(name = "taskId", column = @Column(name = "taskID", unique = true, nullable = false)),
-			@AttributeOverride(name = "documentId", column = @Column(name = "documentID", nullable = false)),
-			@AttributeOverride(name = "userId", column = @Column(name = "userID", nullable = false)) })
+		@AttributeOverride(name = "taskId", column = @Column(name = "taskID", unique = true, nullable = false)),
+		@AttributeOverride(name = "documentId", column = @Column(name = "documentID", nullable = false)),
+		@AttributeOverride(name = "userId", column = @Column(name = "userID", nullable = false)) })
 	public TaskAnswerId getId() {
 		return this.id;
 	}
@@ -62,15 +60,7 @@ public class TaskAnswer implements java.io.Serializable {
 		this.id = id;
 	}
 
-    public void setDocumentId(Long documentId) {
-        this.documentId = documentId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    @Version
+	@Version
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "timestamp", nullable = false, length = 19)
 	public Date getTimestamp() {

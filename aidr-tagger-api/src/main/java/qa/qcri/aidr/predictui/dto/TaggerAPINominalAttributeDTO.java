@@ -4,34 +4,35 @@
  */
 package qa.qcri.aidr.predictui.dto;
 
-import qa.qcri.aidr.predictui.entities.*;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-//import org.codehaus.jackson.annotate.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
- * @author Imran
+ * @author Imran, Koushik
  */
 @XmlRootElement
-public class NominalAttributeDTO implements Serializable {
-    private Integer nominalAttributeID;
+public class TaggerAPINominalAttributeDTO implements Serializable {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8044878750148294318L;
+	private Integer nominalAttributeID;
     private String name;
     private String description;
     private String code;
-    private Collection<NominalLabelDTO> nominalLabelCollection;
+    private Collection<TaggerAPINominalLabelDTO> nominalLabelCollection;
 
-    public NominalAttributeDTO() {
+    public TaggerAPINominalAttributeDTO() {
     }
 
-    public NominalAttributeDTO(Integer nominalAttributeID) {
+    public TaggerAPINominalAttributeDTO(Integer nominalAttributeID) {
         this.nominalAttributeID = nominalAttributeID;
     }
 
-    public NominalAttributeDTO(Integer nominalAttributeID, String name, String description, String code) {
+    public TaggerAPINominalAttributeDTO(Integer nominalAttributeID, String name, String description, String code) {
         this.nominalAttributeID = nominalAttributeID;
         this.name = name;
         this.description = description;
@@ -72,11 +73,11 @@ public class NominalAttributeDTO implements Serializable {
 
     //@XmlTransient
     @JsonIgnore
-    public Collection<NominalLabelDTO> getNominalLabelCollection() {
+    public Collection<TaggerAPINominalLabelDTO> getNominalLabelCollection() {
         return nominalLabelCollection;
     }
 
-    public void setNominalLabelCollection(Collection<NominalLabelDTO> nominalLabelCollection) {
+    public void setNominalLabelCollection(Collection<TaggerAPINominalLabelDTO> nominalLabelCollection) {
         this.nominalLabelCollection = nominalLabelCollection;
     }
 

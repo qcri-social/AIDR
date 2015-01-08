@@ -23,10 +23,10 @@ public class CustomUiTemplateDTO implements Serializable {
 	private Long customUitemplateId;
 	
 	@XmlElement
-	private Long crisisId;
+	private Long crisisID;
 	
 	@XmlElement
-	private Long nominalAttributeId;
+	private Long nominalAttributeID;
 	
 	@XmlElement
 	private Integer templateType;
@@ -47,10 +47,10 @@ public class CustomUiTemplateDTO implements Serializable {
 	}
 	
 	public CustomUiTemplateDTO(CustomUiTemplate e) {
-		this.setCrisisId(e.getCrisisId());
+		this.setCrisisID(e.getCrisisID());
 		this.setCustomUitemplateId(e.getCustomUitemplateId());
 		this.setIsActive(e.isIsActive());
-		this.setNominalAttributeId(e.getNominalAttributeId());
+		this.setNominalAttributeID(e.getNominalAttributeID());
 		this.setStatus(e.getStatus());
 		this.setTemplateType(e.getTemplateType());
 		this.setTemplateValue(e.getTemplateValue());
@@ -60,7 +60,7 @@ public class CustomUiTemplateDTO implements Serializable {
 
 	public CustomUiTemplateDTO(Long crisisId, Integer templateType,
 			String templateValue, Boolean isActive, Date updated) {
-		this.crisisId = crisisId;
+		this.crisisID = crisisId;
 		this.templateType = templateType;
 		this.templateValue = templateValue;
 		this.isActive = isActive;
@@ -70,8 +70,8 @@ public class CustomUiTemplateDTO implements Serializable {
 	public CustomUiTemplateDTO(Long crisisId, Long nominalAttributeId,
 			Integer templateType, String templateValue, Integer status,
 			Boolean isActive, Date updated) {
-		this.crisisId = crisisId;
-		this.nominalAttributeId = nominalAttributeId;
+		this.crisisID = crisisId;
+		this.nominalAttributeID = nominalAttributeId;
 		this.templateType = templateType;
 		this.templateValue = templateValue;
 		this.status = status;
@@ -87,20 +87,20 @@ public class CustomUiTemplateDTO implements Serializable {
 		this.customUitemplateId = customUitemplateId;
 	}
 
-	public Long getCrisisId() {
-		return this.crisisId;
+	public Long getCrisisID() {
+		return this.crisisID;
 	}
 
-	public void setCrisisId(long crisisId) {
-		this.crisisId = crisisId;
+	public void setCrisisID(long crisisID) {
+		this.crisisID = crisisID;
 	}
 
-	public Long getNominalAttributeId() {
-		return this.nominalAttributeId;
+	public Long getNominalAttributeID() {
+		return this.nominalAttributeID;
 	}
 
-	public void setNominalAttributeId(Long nominalAttributeId) {
-		this.nominalAttributeId = nominalAttributeId;
+	public void setNominalAttributeID(Long nominalAttributeId) {
+		this.nominalAttributeID = nominalAttributeId;
 	}
 
 	public Integer getTemplateType() {
@@ -144,7 +144,7 @@ public class CustomUiTemplateDTO implements Serializable {
 	}
 	
 	public CustomUiTemplate toEntity() {
-		CustomUiTemplate entity = new CustomUiTemplate(crisisId, nominalAttributeId,
+		CustomUiTemplate entity = new CustomUiTemplate(this.getCrisisID(), this.getNominalAttributeID(),
 				templateType, templateValue, status, isActive, updated);
 		entity.setCustomUitemplateId(customUitemplateId);
 		return entity;

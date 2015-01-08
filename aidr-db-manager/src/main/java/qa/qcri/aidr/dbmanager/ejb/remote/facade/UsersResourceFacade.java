@@ -14,7 +14,7 @@ import javax.ejb.Remote;
 
 @Remote
 public interface UsersResourceFacade extends CoreDBServiceFacade<Users, Long> {
-	public UsersDTO addUser(UsersDTO user) throws PropertyNotSetException; 
+	public UsersDTO addUser(UsersDTO user); 
 
 	public List<UsersDTO> getAllUsers() throws PropertyNotSetException;
 	public UsersDTO getUserByName(String name) throws PropertyNotSetException;

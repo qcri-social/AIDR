@@ -30,45 +30,29 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  * @author Imran
  */
-@Entity
-@Table(name = "model_nominal_label")
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "ModelNominalLabel.findAll", query = "SELECT m FROM ModelNominalLabel m"),
-    @NamedQuery(name = "ModelNominalLabel.findByModelID", query = "SELECT m FROM ModelNominalLabel m WHERE m.modelNominalLabelPK.modelID = :modelID"),
-    @NamedQuery(name = "ModelNominalLabel.findByNominalLabelID", query = "SELECT m FROM ModelNominalLabel m WHERE m.modelNominalLabelPK.nominalLabelID = :nominalLabelID"),
-    @NamedQuery(name = "ModelNominalLabel.findByLabelPrecision", query = "SELECT m FROM ModelNominalLabel m WHERE m.labelPrecision = :labelPrecision"),
-    @NamedQuery(name = "ModelNominalLabel.findByLabelRecall", query = "SELECT m FROM ModelNominalLabel m WHERE m.labelRecall = :labelRecall"),
-    @NamedQuery(name = "ModelNominalLabel.findByLabelAuc", query = "SELECT m FROM ModelNominalLabel m WHERE m.labelAuc = :labelAuc"),
-    @NamedQuery(name = "ModelNominalLabel.findByClassifiedDocumentCount", query = "SELECT m FROM ModelNominalLabel m WHERE m.classifiedDocumentCount = :classifiedDocumentCount"),
-    @NamedQuery(name = "ModelNominalLabel.findByModel", query = "SELECT m FROM ModelNominalLabel m WHERE m.model = :model")})
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class ModelNominalLabel implements Serializable {
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
+  
     protected ModelNominalLabelPK modelNominalLabelPK;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "labelPrecision")
+    
     @XmlElement private Double labelPrecision;
     
-    @Column(name = "labelRecall")
+
     @XmlElement private Double labelRecall;
     
-    @Column(name = "labelAuc")
+  
     @XmlElement private Double labelAuc;
     
-    @Column(name = "classifiedDocumentCount")
+  
     @XmlElement private Integer classifiedDocumentCount;
     
-    @JoinColumn(name = "modelID", referencedColumnName = "modelID", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    @JsonBackReference
-    private Model model;
+ 
+    @XmlElement private Model model;
     
-    @JoinColumn(name = "nominalLabelID", referencedColumnName = "nominalLabelID", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    @JsonBackReference
-    private NominalLabel nominalLabel;
+    
+    @XmlElement private NominalLabel nominalLabel;
 
     public ModelNominalLabel() {
     }

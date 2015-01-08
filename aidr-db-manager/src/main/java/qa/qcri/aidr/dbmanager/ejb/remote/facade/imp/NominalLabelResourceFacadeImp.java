@@ -33,12 +33,19 @@ public class NominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<Nomina
 	public void saveNominalLabel(NominalLabelDTO nominalLabel) throws PropertyNotSetException {
 		save(nominalLabel.toEntity());
 	}
-	
+
 	@Override
-	public NominalLabelDTO addNominalLabel(NominalLabelDTO nominalLabel) throws PropertyNotSetException {
-		save(nominalLabel.toEntity());
-		NominalLabel nb = this.getById(nominalLabel.getNominalLabelId());
-		return nb != null ? new NominalLabelDTO(nb) : null;
+	public NominalLabelDTO addNominalLabel(NominalLabelDTO nominalLabel) {
+		try {
+			NominalLabel nb = nominalLabel.toEntity();
+			em.persist(nb);
+			em.flush();
+			em.refresh(nb);
+			return new NominalLabelDTO(nb);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override
@@ -68,7 +75,7 @@ public class NominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<Nomina
 		}
 		return 0;
 	}
-	
+
 	@Override
 	public Integer deleteNominalLabelByID(Long nominalLabelID) {
 		NominalLabel nb = this.getById(nominalLabelID);

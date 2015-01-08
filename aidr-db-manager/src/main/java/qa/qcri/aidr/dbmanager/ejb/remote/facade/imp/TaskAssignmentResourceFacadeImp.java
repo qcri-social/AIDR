@@ -50,6 +50,7 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 					// No assigned tasks currently for user
 					TaskAssignment taskAssignment = new TaskAssignment(tb.getDocumentID(), userID, new Date());
 					save(taskAssignment);
+					em.flush();
 					return 1;
 				}
 			}
@@ -70,6 +71,7 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 			if(null == taskAssignments || taskAssignments.size()== 0){
 				TaskAssignment taskAssignment = new TaskAssignment(documentID, userID, new Date());
 				save(taskAssignment);
+				em.flush();
 				return 1;
 			}
 		} catch (Exception e) {
@@ -88,6 +90,7 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 					DocumentDTO tb = (DocumentDTO) it.next();
 					TaskAssignment taskAssignment = (TaskAssignment) getTaskAssignment(tb.getDocumentID(), userID);
 					delete(taskAssignment);
+					em.flush();
 					++deleteCount;
 				}
 				return deleteCount;
@@ -111,6 +114,7 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 					Long value = (Long)entry.getValue();
 					TaskAssignment taskAssignment = (TaskAssignment) getTaskAssignment(key, value);
 					delete(taskAssignment);
+					em.flush();
 					++deleteCount;
 				}
 				return deleteCount;
@@ -128,6 +132,7 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 			TaskAssignment taskAssignment = (TaskAssignment) getTaskAssignment(documentID, userID);
 			if(taskAssignment!=null){
 				delete(taskAssignment);
+				em.flush();
 				return 1;
 			}
 		} catch (Exception e) {
@@ -192,21 +197,20 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 	public List<TaskAssignmentDTO> findTaskAssignmentByID(Long documentID) {
 		try {
 			List<TaskAssignment> list = getAllByCriteria(Restrictions.eq("id.documentId", documentID));  
+			List<TaskAssignmentDTO> dtoList = new ArrayList<TaskAssignmentDTO>();
 			if (list != null) {
-				List<TaskAssignmentDTO> dtoList = new ArrayList<TaskAssignmentDTO>();
 				for (TaskAssignment t: list) {
 					dtoList.add(new TaskAssignmentDTO(t));
 				}
-				return dtoList;
 			}
+			return dtoList;
 		} catch (Exception e) {
 			logger.error("Error in find operation: documentID = " + documentID);
 			logger.error(elog.toStringException(e));
 			System.out.println("Error in find operation: documentID = " + documentID);
 			e.printStackTrace();
+			return null;
 		}
-		return null;
-
 	}
 
 	@Override

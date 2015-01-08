@@ -1,14 +1,17 @@
-package qa.qcri.aidr.predictui.facade;
-
-import qa.qcri.aidr.dbmanager.dto.CustomUiTemplateDTO;
-
-import javax.ejb.Local;
+package qa.qcri.aidr.dbmanager.ejb.remote.facade;
 
 import java.util.List;
 
+import javax.ejb.Remote;
 
-@Local
-public interface CustomUITemplateFacade {
+import qa.qcri.aidr.dbmanager.dto.CustomUiTemplateDTO;
+import qa.qcri.aidr.dbmanager.ejb.local.facade.CoreDBServiceFacade;
+import qa.qcri.aidr.dbmanager.entities.misc.CustomUiTemplate;
+
+
+@Remote
+public interface CustomUiTemplateResourceFacade extends CoreDBServiceFacade<CustomUiTemplate, Long> {
+	
     public List<CustomUiTemplateDTO> getAllCustomUITemplateByCrisisID(long crisisID);
     public List<CustomUiTemplateDTO> getCustomUITemplateBasedOnTypeByCrisisID(long crisisID, int type);
     public List<CustomUiTemplateDTO> getCustomUITemplateBasedOnTypeByCrisisIDAndAttributeID(long crisisID, long attributeID,int type);

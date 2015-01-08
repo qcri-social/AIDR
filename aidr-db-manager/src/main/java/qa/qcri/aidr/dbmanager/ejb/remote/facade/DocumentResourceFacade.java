@@ -18,7 +18,7 @@ import qa.qcri.aidr.dbmanager.entities.task.Document;
 @Remote
 public interface DocumentResourceFacade extends CoreDBServiceFacade<Document, Long> {
 
-	public DocumentDTO addDocument(DocumentDTO doc) throws PropertyNotSetException; 
+	public DocumentDTO addDocument(DocumentDTO doc); 
 
 	public DocumentDTO editDocument(DocumentDTO doc) throws PropertyNotSetException; 
 

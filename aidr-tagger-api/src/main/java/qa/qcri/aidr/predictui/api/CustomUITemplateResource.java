@@ -1,7 +1,7 @@
 package qa.qcri.aidr.predictui.api;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.predictui.entities.CustomUITemplate;
+import qa.qcri.aidr.dbmanager.dto.CustomUiTemplateDTO;
 import qa.qcri.aidr.predictui.facade.CustomUITemplateFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
@@ -45,13 +45,13 @@ public class CustomUITemplateResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addNewTemplate(CustomUITemplate customUITemplate) {
+    public Response addNewTemplate(CustomUiTemplateDTO customUITemplate) {
         System.out.println("*************************************************************");
         boolean isUpdate = false;
-        CustomUITemplate dbTemplate = null;
+        CustomUiTemplateDTO dbTemplate = null;
         int type = customUITemplate.getTemplateType();
         if(!isAttributeInfoRequired(type)){
-            List<CustomUITemplate> templates = customUITemplateFacade.getCustomUITemplateBasedOnTypeByCrisisID(customUITemplate.getCrisisID(), customUITemplate.getTemplateType());
+            List<CustomUiTemplateDTO> templates = customUITemplateFacade.getCustomUITemplateBasedOnTypeByCrisisID(customUITemplate.getCrisisID(), customUITemplate.getTemplateType());
             logger.info("templates size : " + templates.size());
             if(templates.size() > 0){
                 isUpdate = true;
@@ -59,7 +59,7 @@ public class CustomUITemplateResource {
             }
         }
         else{
-            List<CustomUITemplate> templates = customUITemplateFacade.getCustomUITemplateBasedOnTypeByCrisisIDAndAttributeID(customUITemplate.getCrisisID(),customUITemplate.getNominalAttributeID(), customUITemplate.getTemplateType());
+            List<CustomUiTemplateDTO> templates = customUITemplateFacade.getCustomUITemplateBasedOnTypeByCrisisIDAndAttributeID(customUITemplate.getCrisisID(),customUITemplate.getNominalAttributeID(), customUITemplate.getTemplateType());
             logger.info("templates size : " + templates.size());
             if(templates.size() > 0){
                 isUpdate = true;
@@ -67,7 +67,7 @@ public class CustomUITemplateResource {
             }
         }
 
-        CustomUITemplate addedTemplate = null;
+        CustomUiTemplateDTO addedTemplate = null;
         logger.info("isUpdate : " + isUpdate);
 
         if(isUpdate) {
@@ -89,7 +89,7 @@ public class CustomUITemplateResource {
     @Path("/crisisID/{crisisID}")
     public Response getCrisisByCode(@PathParam("crisisID") int crisisID) {
 
-        List<CustomUITemplate> customUITemplate = null;
+        List<CustomUiTemplateDTO> customUITemplate = null;
 
         try {
             customUITemplate = customUITemplateFacade.getAllCustomUITemplateByCrisisID((long) crisisID);

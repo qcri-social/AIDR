@@ -22,23 +22,34 @@ import qa.qcri.aidr.dbmanager.entities.task.TaskAnswer;
  *
  */
 @Stateless(name="TaskAnswerResourceFacadeImp")
-public class TaskAnswerResourceFacadeImp extends CoreDBServiceFacadeImp<TaskAnswer, String> implements TaskAnswerResourceFacade {
-	
-	private Logger logger = Logger.getLogger("db-manager-log");
-	
-    protected TaskAnswerResourceFacadeImp(){
-        super(TaskAnswer.class);
-    }
+public class TaskAnswerResourceFacadeImp extends CoreDBServiceFacadeImp<TaskAnswer, Long> implements TaskAnswerResourceFacade {
 
-    @Override
-    public void insertTaskAnswer(TaskAnswerDTO taskAnswer) {
-        if (taskAnswer != null) {
-    	logger.info("Going to insert answer = " + taskAnswer.getAnswer() + " for  taskId = " + taskAnswer.getDocumentID());
-    	save(taskAnswer.toEntity());
-        } else {
-        	logger.warn("Warning! Attempted to insert null task answer!");
-        }
-    }
+	private Logger logger = Logger.getLogger("db-manager-log");
+
+	protected TaskAnswerResourceFacadeImp(){
+		super(TaskAnswer.class);
+	}
+
+	@Override
+	public TaskAnswerDTO insertTaskAnswer(TaskAnswerDTO taskAnswer) {
+		if (taskAnswer != null) {
+			logger.info("Going to insert answer = " + taskAnswer.getAnswer() + " for  taskId = " + taskAnswer.getDocumentID());
+			try {
+				TaskAnswer t = taskAnswer.toEntity();
+				em.persist(t);
+				em.flush();			
+				
+				return getTaskAnswer(taskAnswer.getDocumentID(), taskAnswer.getUserID());
+			} catch (Exception e) {
+				System.out.println("Unable to save taskAnswer: " + taskAnswer.getDocumentID() + ", " + taskAnswer.getUserID() + ", " + taskAnswer.getAnswer());
+				e.printStackTrace();
+				return null;
+			}
+		} else {
+			logger.warn("Warning! Attempted to insert null task answer!");
+			return null;
+		}
+	}
 
 	@Override
 	public List<TaskAnswerDTO> getTaskAnswer(Long documentID) {
@@ -57,8 +68,8 @@ public class TaskAnswerResourceFacadeImp extends CoreDBServiceFacadeImp<TaskAnsw
 	@Override
 	public TaskAnswerDTO getTaskAnswer(Long documentID, Long userID) {
 		Criterion criterion = Restrictions.conjunction()
-								.add(Restrictions.eq("id.documentId", documentID))
-								.add(Restrictions.eq("id.userId", userID));
+				.add(Restrictions.eq("id.documentId", documentID))
+				.add(Restrictions.eq("id.userId", userID));
 		TaskAnswer t = getByCriteria(criterion);
 		return t != null ? new TaskAnswerDTO(t) : null;
 	}

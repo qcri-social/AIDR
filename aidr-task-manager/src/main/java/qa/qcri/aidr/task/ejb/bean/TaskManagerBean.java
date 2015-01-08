@@ -5,7 +5,10 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,6 +22,9 @@ import javax.ejb.Stateless;
 
 
 
+
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
 
 import org.hibernate.Hibernate;
 //import org.apache.log4j.Logger;
@@ -65,6 +71,8 @@ import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAssignmentDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ItemToLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.task.*;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
@@ -178,7 +186,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			DocumentDTO doc = (DocumentDTO) task;
 			CrisisDTO crisisDTO = remoteCrisisEJB.findCrisisByID(crisisID);
 			doc.setCrisisDTO(crisisDTO);
-			doc.setHasHumanLabels(true);
+			doc.setHasHumanLabels(false);
 			DocumentDTO savedDoc = remoteDocumentEJB.addDocument(doc);
 			System.out.println("Saved to DB document: " + savedDoc.getDocumentID() + ", for crisis = " + savedDoc.getCrisisDTO().getCode());
 			logger.info("Saved to DB document: " + savedDoc.getDocumentID() + ", for crisis = " + savedDoc.getCrisisDTO().getCode());
@@ -218,7 +226,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				for (T doc: collection) {
 					CrisisDTO crisisDTO = remoteCrisisEJB.findCrisisByID(crisisID);
 					((DocumentDTO) doc).setCrisisDTO(crisisDTO);
-					((DocumentDTO) doc).setHasHumanLabels(true);
+					((DocumentDTO) doc).setHasHumanLabels(false);
 					DocumentDTO savedDoc = remoteDocumentEJB.addDocument((DocumentDTO) doc);
 					if (savedDoc != null) { 
 						newList.add(savedDoc.getDocumentID());
@@ -233,7 +241,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		}
 		return newList;
 	}
-	
+
 
 	@Override
 	public int deleteTaskById(Long id) {
@@ -758,7 +766,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	@Override
 	@SuppressWarnings("unchecked")
 	public void assignNewTaskToUser(List<T> collection, Long userId) throws Exception {
-		int retVal = remoteTaskAssignmentEJB.insertTaskAssignment(createDocumentDTOList((List<Document>)collection), userId);
+		int retVal = remoteTaskAssignmentEJB.insertTaskAssignment((List<DocumentDTO>)collection, userId);
 		if (retVal <= 0) {
 			throw new Exception("[assignNewTaskToUser] Couldn't undo task assignment");
 		}
@@ -970,6 +978,20 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		return null;
 	}
 
+	@Override
+	public void insertTaskAnswer(TaskAnswerDTO taskAnswer) {
+		try {
+			TaskAnswerDTO t = remoteTaskAnswerEJB.insertTaskAnswer(taskAnswer);
+			if (t != null) {
+				System.out.println("Successfully inserted taskAnswer: taskID = " + t.getTaskID() + ", documentID = " + t.getDocumentID() + "answer = " + t.getAnswer() + ", from user = " + t.getUserID());
+			}
+		} catch (Exception e) {
+			logger.error("Error in saving task answer : " + taskAnswer.getDocumentID() + ", " + taskAnswer.getAnswer() + ", " + taskAnswer.getUserID());
+			logger.error(elog.toStringException(e));
+		}
+	}
+
+
 
 
 	////////////////////////////////////////////
@@ -1012,23 +1034,17 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		return userList;
 	}
 
-	@Override
-	public void insertTaskAnswer(TaskAnswerDTO taskAnswer) {
-		try {
-			remoteTaskAnswerEJB.save(taskAnswer.toEntity());
-		} catch (Exception e) {
-			logger.error("Error in saving task answer : " + taskAnswer);
-			logger.error(elog.toStringException(e));
-		}
-	}
 
+	////////////////////////??////////////////////
+	// DocumentNominalLabel service related APIs
+	//////////////////////////??//////////////////
 
 	@Override
 	public void saveDocumentNominalLabel(DocumentNominalLabelDTO documentNominalLabel) {
 		try {
-			remoteDocumentNominalLabelEJB.save(documentNominalLabel.toEntity());
-			System.out.println("Saved to DB document nominal label: " + documentNominalLabel.getIdDTO().getDocumentId() + ", with nominal label = " + documentNominalLabel.getIdDTO().getNominalLabelId());
-			logger.info("Saved to DB document nominal label: " + documentNominalLabel.getIdDTO().getDocumentId() + ", with nominal label = " + documentNominalLabel.getIdDTO().getNominalLabelId());
+			DocumentNominalLabelDTO dto = remoteDocumentNominalLabelEJB.addDocument(documentNominalLabel);
+			System.out.println("Saved to DB document nominal label: " + dto.getIdDTO().getDocumentId() + ", with nominal label = " + dto.getIdDTO().getNominalLabelId());
+			logger.info("Saved to DB document nominal label: " + dto.getIdDTO().getDocumentId() + ", with nominal label = " + dto.getIdDTO().getNominalLabelId());
 		} catch (Exception e) {
 			logger.error("Error in saving document nominal label : " + documentNominalLabel);
 			logger.error(elog.toStringException(e));
@@ -1068,7 +1084,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		}
 		return null;
 	}
-
+	
 	@Override
 	public String pingRemoteEJB() {
 		StringBuilder sb = new StringBuilder("{\"status\": \"RUNNING\"}");

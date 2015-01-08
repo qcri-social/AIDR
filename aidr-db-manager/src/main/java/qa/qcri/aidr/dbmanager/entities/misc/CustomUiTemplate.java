@@ -24,8 +24,8 @@ public class CustomUiTemplate implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = 4549440030648604692L;
 	private Long customUitemplateId;
-	private Long crisisId;
-	private Long nominalAttributeId;
+	private Long crisisID;
+	private Long nominalAttributeID;
 	private Integer templateType;
 	private String templateValue;
 	private Integer status;
@@ -37,7 +37,7 @@ public class CustomUiTemplate implements java.io.Serializable {
 
 	public CustomUiTemplate(Long crisisId, Integer templateType,
 			String templateValue, Boolean isActive, Date updated) {
-		this.crisisId = crisisId;
+		this.crisisID = crisisId;
 		this.templateType = templateType;
 		this.templateValue = templateValue;
 		this.isActive = isActive;
@@ -47,8 +47,8 @@ public class CustomUiTemplate implements java.io.Serializable {
 	public CustomUiTemplate(Long crisisId, Long nominalAttributeId,
 			Integer templateType, String templateValue, Integer status,
 			Boolean isActive, Date updated) {
-		this.crisisId = crisisId;
-		this.nominalAttributeId = nominalAttributeId;
+		this.crisisID = crisisId;
+		this.nominalAttributeID = nominalAttributeId;
 		this.templateType = templateType;
 		this.templateValue = templateValue;
 		this.status = status;
@@ -68,21 +68,21 @@ public class CustomUiTemplate implements java.io.Serializable {
 	}
 
 	@Column(name = "crisisID", nullable = false)
-	public Long getCrisisId() {
-		return this.crisisId;
+	public Long getCrisisID() {
+		return this.crisisID;
 	}
 
-	public void setCrisisId(long crisisId) {
-		this.crisisId = crisisId;
+	public void setCrisisID(long crisisId) {
+		this.crisisID = crisisId;
 	}
 
 	@Column(name = "nominalAttributeID")
-	public Long getNominalAttributeId() {
-		return this.nominalAttributeId;
+	public Long getNominalAttributeID() {
+		return this.nominalAttributeID;
 	}
 
-	public void setNominalAttributeId(Long nominalAttributeId) {
-		this.nominalAttributeId = nominalAttributeId;
+	public void setNominalAttributeID(Long nominalAttributeId) {
+		this.nominalAttributeID = nominalAttributeId;
 	}
 
 	@Column(name = "templateType", nullable = false)

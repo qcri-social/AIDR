@@ -7,11 +7,9 @@ package qa.qcri.aidr.predictui.entities;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 //import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -28,21 +26,44 @@ import java.util.Collection;
  *
  * @author Imran
  */
-@Entity
-@Table(name = "crisis")
+
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Crisis.findAll", query = "SELECT c FROM Crisis c"),
-    @NamedQuery(name = "Crisis.findByCrisisID", query = "SELECT c FROM Crisis c WHERE c.crisisID = :crisisID"),
-    @NamedQuery(name = "Crisis.findByName", query = "SELECT c FROM Crisis c WHERE c.name = :name"),
-    @NamedQuery(name = "Crisis.findByCode", query = "SELECT c FROM Crisis c WHERE c.code = :code"),
-    @NamedQuery(name = "Crisis.findByUserID", query = "SELECT c FROM Crisis c WHERE c.users = :user")})
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Crisis implements Serializable {
 
 
     private static final long serialVersionUID = -5527566248002296042L;
 
+    @XmlElement 
+    private Long crisisID;
+
+ 
+    @XmlElement 
+    private String name;
+
+ 
+    @JoinColumn(name = "crisisTypeID", referencedColumnName = "crisisTypeID")
+    @ManyToOne(optional = false)
+    @JsonBackReference
+    private CrisisType crisisType;
+    
+  
+    @XmlElement 
+    private String code;
+
+ 
+    @JsonBackReference
+    private Users users;
+
+    
+    @XmlTransient
+    @JsonIgnore
+    private Collection<ModelFamily> modelFamilyCollection;
+    
+ 
+    @XmlElement 
+    private Boolean isTrashed;
+    
     public Crisis(){}
 
     public Long getCrisisID() {
@@ -84,56 +105,7 @@ public class Crisis implements Serializable {
     public void setUsers(Users users) {
         this.users = users;
     }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "crisisID")
-    @XmlElement 
-    private Long crisisID;
-
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 140)
-    @Column(name = "name")
-    @XmlElement 
-    private String name;
-
-    //@Column (name = "crisisTypeID", nullable = false)
-    //private Long crisisTypeID;
     
-    @JoinColumn(name = "crisisTypeID", referencedColumnName = "crisisTypeID")
-    @ManyToOne(optional = false)
-    @JsonBackReference
-    private CrisisType crisisType;
-    
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
-    @XmlElement 
-    private String code;
-
-    //@Column (name = "userID", nullable = false)
-    //private Long userID;
-    @JoinColumn(name = "userID", referencedColumnName = "userID")
-    @ManyToOne(optional = false)
-    @JsonBackReference
-    private Users users;
-
-    
-    @OneToMany( cascade = CascadeType.ALL, mappedBy = "crisis")
-    @JsonManagedReference
-    @XmlElement 
-    private Collection<ModelFamily> modelFamilyCollection;
-    
-    @Basic(optional = false)
-    @NotNull
-    @Column(name="isTrashed")
-    @XmlElement 
-    private Boolean isTrashed;
-    
-    @XmlTransient
-    @JsonIgnore
     public Collection<ModelFamily> getModelFamilyCollection() {
         return modelFamilyCollection;
     }

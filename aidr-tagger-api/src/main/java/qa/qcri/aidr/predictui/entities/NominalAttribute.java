@@ -41,55 +41,29 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
  *
  * @author Imran
  */
-@Entity
-@Table(name = "nominal_attribute")
+
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "NominalAttribute.findAll", query = "SELECT n FROM NominalAttribute n"),
-    @NamedQuery(name = "NominalAttribute.findByNominalAttributeID", query = "SELECT n FROM NominalAttribute n WHERE n.nominalAttributeID = :nominalAttributeID"),
-    @NamedQuery(name = "NominalAttribute.findByName", query = "SELECT n FROM NominalAttribute n WHERE n.name = :name"),
-    @NamedQuery(name = "NominalAttribute.findByDescription", query = "SELECT n FROM NominalAttribute n WHERE n.description = :description"),
-    @NamedQuery(name = "NominalAttribute.findByCode", query = "SELECT n FROM NominalAttribute n WHERE n.code = :code")})
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class NominalAttribute implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "nominalAttributeID")
+   
     @XmlElement private Integer nominalAttributeID;
     
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 140)
-    @Column(name = "name")
+  
     @XmlElement private String name;
     
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 600)
-    @Column(name = "description")
+  
     @XmlElement private String description;
     
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
-    @Column(name = "code")
+ 
     @XmlElement private String code;
     
-//    @ManyToMany(mappedBy = "nominalAttributeCollection")
-//    private Collection<Crisis> crisisCollection;
-    
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "nominalAttribute")
     @JsonManagedReference
     private Collection<ModelFamily> modelFamilyCollection;
-    
-    @JoinColumn(name = "userID", referencedColumnName = "userID")
-    @ManyToOne(optional = false)
+   
     @JsonBackReference
     private Users users;
     
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "nominalAttribute")
     @JsonManagedReference
     private Collection<NominalLabel> nominalLabelCollection;
 
@@ -138,16 +112,6 @@ public class NominalAttribute implements Serializable {
     public void setCode(String code) {
         this.code = code;
     }
-
-//    @XmlTransient
-//    @JsonIgnore
-//    public Collection<Crisis> getCrisisCollection() {
-//        return crisisCollection;
-//    }
-//
-//    public void setCrisisCollection(Collection<Crisis> crisisCollection) {
-//        this.crisisCollection = crisisCollection;
-//    }
 
     @XmlTransient
     @JsonIgnore

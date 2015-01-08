@@ -14,7 +14,7 @@ import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
 @Remote
 public interface CrisisTypeResourceFacade extends CoreDBServiceFacade<CrisisType, Long>{
 
-	public CrisisTypeDTO addCrisisType(CrisisTypeDTO crisisType) throws PropertyNotSetException; 
+	public CrisisTypeDTO addCrisisType(CrisisTypeDTO crisisType); 
 
 	public CrisisTypeDTO editCrisisType(CrisisTypeDTO crisisType) throws PropertyNotSetException; 
 

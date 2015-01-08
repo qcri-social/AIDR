@@ -11,8 +11,8 @@ import qa.qcri.aidr.dbmanager.entities.task.TaskAnswer;
 
 
 @Remote
-public interface TaskAnswerResourceFacade extends CoreDBServiceFacade<TaskAnswer, String>{
-    void insertTaskAnswer(TaskAnswerDTO taskAnswer);
+public interface TaskAnswerResourceFacade extends CoreDBServiceFacade<TaskAnswer, Long>{
+    TaskAnswerDTO insertTaskAnswer(TaskAnswerDTO taskAnswer);
     List<TaskAnswerDTO> getTaskAnswer(Long documentID);
     TaskAnswerDTO getTaskAnswer(Long documentID, Long userID);
 }

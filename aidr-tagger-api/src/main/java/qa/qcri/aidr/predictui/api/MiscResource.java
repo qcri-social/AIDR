@@ -6,8 +6,8 @@ package qa.qcri.aidr.predictui.api;
 
 
 import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.predictui.dto.ItemToLabelDTO;
-import qa.qcri.aidr.predictui.dto.TrainingDataDTO;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ItemToLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
 import qa.qcri.aidr.predictui.facade.MiscResourceFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
@@ -20,6 +20,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 //import org.apache.log4j.Logger;
+
+
 
 
 
@@ -65,6 +67,7 @@ public class MiscResource {
 		ResponseWrapper response = new ResponseWrapper();
 		try {
 			List<TrainingDataDTO> trainingDataList = miscEJB.getTraningDataByCrisisAndAttribute((long) crisisID, modelFamilyID, fromRecord, limit, sortColumn, sortDirection);
+			logger.info("Returning result size for crisisID = " + crisisID + " and modelFamilyId = " + modelFamilyID + ", training data count = " + (trainingDataList != null ? trainingDataList.size() : 0)); 
 			response.setTrainingData(trainingDataList);
 		} catch (RuntimeException e) {
 			logger.error("Error in getting training data for crisis: " + crisisID);
@@ -81,6 +84,7 @@ public class MiscResource {
 		ItemToLabelDTO item = new ItemToLabelDTO();
 		try {
 			item = miscEJB.getItemToLabel((long) crisisID, attributeID);
+			logger.info("Found item to label = " + (item != null ? item.getItemID() : "NONE!"));
 		} catch (RuntimeException e) {
 			logger.error("Exception in getting item to label for crisis: " + crisisID);
 			logger.error(elog.toStringException(e));

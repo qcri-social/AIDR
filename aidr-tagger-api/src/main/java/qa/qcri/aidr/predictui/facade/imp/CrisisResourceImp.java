@@ -52,7 +52,7 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 	public CrisisDTO addCrisis(CrisisDTO crisis) {
         try {
 			return remoteCrisisEJB.addCrisis(crisis);
-		} catch (PropertyNotSetException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
