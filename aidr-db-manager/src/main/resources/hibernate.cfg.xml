@@ -6,7 +6,7 @@
     <session-factory name="mysql-aidr_predict-db">
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
         <property name="hibernate.connection.password">admin</property>
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/aidr_predict_prod</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/aidr_predict</property>
         <property name="hibernate.connection.username">root</property>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
     </session-factory>

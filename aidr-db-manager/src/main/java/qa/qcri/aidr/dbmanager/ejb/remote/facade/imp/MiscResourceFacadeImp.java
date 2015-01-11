@@ -8,9 +8,9 @@ import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
 
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
@@ -83,27 +83,34 @@ public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long
 				+ " JOIN model_family mf on mf.nominalAttributeID=lbl.nominalAttributeID "
 				+ " JOIN document d on d.documentID = dnl.documentID "
 				+ " JOIN users u on u.userID = dnl.userID "
-				+ " WHERE mf.modelFamilyID = :modelFamilyID AND d.crisisID = :crisisID ";
+				+ " WHERE mf.modelFamilyID = :modelFamilyID AND d.crisisID = :crisisID";
 
-		logger.info("getTraningDataByCrisisAndAttribute : " + sql);
 		try {
-			Integer totalRows;
-
-			Query queryCount = em.createNativeQuery(sqlCount);
-			queryCount.setParameter("crisisID", crisisID);
-			queryCount.setParameter("modelFamilyID", modelFamilyID);
-			Object res = queryCount.getSingleResult();
-			totalRows = Integer.parseInt(res.toString());
-
-			if (totalRows > 0){
-				Query query = em.createNativeQuery(sql);
-				query.setParameter("crisisID", crisisID);
-				query.setParameter("modelFamilyID", modelFamilyID);
+			Integer totalRows = null;
+			Session session = getCurrentSession();
+			//Query queryCount = em.createNativeQuery(sqlCount);
+			Query queryCount = session.createSQLQuery(sqlCount);
+			logger.info("getTraningDataByCrisisAndAttribute count query: " + sqlCount);
+			queryCount.setParameter("modelFamilyID", modelFamilyID.intValue());
+			queryCount.setParameter("crisisID", crisisID.intValue());
+			
+			Object res = queryCount.uniqueResult();
+			if (res != null) { 
+				totalRows = Integer.parseInt(res.toString());
+			}
+			logger.info("Native sql-count query fetched rows count = " + res);
+			if (totalRows != null && totalRows > 0) {
+				Query query = session.createSQLQuery(sql);
+				query.setParameter("crisisID", crisisID.intValue());
+				query.setParameter("modelFamilyID", modelFamilyID.intValue());
 				query.setParameter("fromRecord", fromRecord);
 				query.setParameter("limit", limit);
-
-				List<Object[]> rows = query.getResultList();
-				TrainingDataDTO trainingDataRow;
+				
+				logger.info("getTraningDataByCrisisAndAttribute fetch query: " + sql);
+				List<Object[]> rows = query.list();
+				logger.info("Native query fetched rows count = " + (rows != null ? rows.size() : "null"));
+				TrainingDataDTO trainingDataRow = null;
+				int count = 0;
 				for (Object[] row : rows) {
 					trainingDataRow = new TrainingDataDTO();
 					//                    Removed .intValue() as we already cast to Integer
@@ -116,11 +123,14 @@ public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long
 					trainingDataRow.setDocumentID(((BigInteger) row[6]).longValue());
 					trainingDataRow.setTotalRows(totalRows);
 					trainingDataList.add(trainingDataRow);
+					logger.info("Added to DTO training data, training data #" + count);
+					++count;
 				}
 			}
 			logger.info("Fetched training data list size: " + (trainingDataList != null ? trainingDataList.size() : 0));
 			return trainingDataList;
-		} catch (NoResultException e) {
+		} catch (Exception e) {
+			logger.error("exception", e);
 			return null;
 		}
 	}
@@ -136,11 +146,13 @@ public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long
 		NominalAttributeDTO attributeDTO = new NominalAttributeDTO();
 		ItemToLabelDTO itemToLabel = new ItemToLabelDTO();
 		try{
+			Session session = getCurrentSession();
 			String sqlToGetAttribute = "SELECT na.nominalAttributeID, na.code, na.name, na.description FROM nominal_attribute na"
 					+ " JOIN model_family mf on mf.nominalAttributeID = na.nominalAttributeID WHERE mf.modelFamilyID = :modelFamilyID";
-			Query attributeQuery = em.createNativeQuery(sqlToGetAttribute);
-			attributeQuery.setParameter("modelFamilyID", modelFamilyID);
-			List<Object[]> attributeResults = attributeQuery.getResultList();
+			Query attributeQuery = session.createSQLQuery(sqlToGetAttribute);
+			attributeQuery.setParameter("modelFamilyID", modelFamilyID.intValue());
+			
+			List<Object[]> attributeResults = attributeQuery.list();
 			if (attributeResults != null && !attributeResults.isEmpty()) {
 				attributeDTO.setNominalAttributeId(((Long)attributeResults.get(0)[0]).longValue());
 				attributeDTO.setCode((String) attributeResults.get(0)[1]);
@@ -148,9 +160,9 @@ public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long
 				attributeDTO.setDescription((String) attributeResults.get(0)[3]);
 
 				String sqlToGetLabel = "SELECT nominalLabelCode, name, description FROM nominal_label WHERE nominalAttributeID = :attributeID";
-				Query labelQuery = em.createNativeQuery(sqlToGetLabel);
+				Query labelQuery = session.createSQLQuery(sqlToGetLabel);
 				labelQuery.setParameter("attributeID", attributeDTO.getNominalAttributeId());
-				List<Object[]> labelsResults = labelQuery.getResultList();
+				List<Object[]> labelsResults = labelQuery.list();
 
 				List<NominalLabelDTO> labelDTOList = new ArrayList<NominalLabelDTO>();
 
