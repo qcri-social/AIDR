@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xmlns:jee="http://www.springframework.org/schema/jee"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
                            http://www.springframework.org/schema/mvc
                            http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
@@ -12,33 +10,41 @@
                            http://www.springframework.org/schema/context/spring-context-3.2.xsd
                            http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.2.xsd">
 
-    <context:component-scan base-package="qa.qcri.aidr.trainer"/>
+	<context:component-scan base-package="qa.qcri.aidr.trainer" />
 
-    <mvc:annotation-driven />
+	<mvc:annotation-driven />
 
-    <mvc:view-controller path="/login" view-name="login"/>
-    <mvc:view-controller path="/protected" view-name="protected"/>
-	
-	<jee:remote-slsb id="TaskManagerRemote" 
-		jndi-name="java:global/AIDRTaskManager/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote" 
+	<mvc:view-controller path="/login" view-name="login" />
+	<mvc:view-controller path="/protected" view-name="protected" />
+
+	<jee:remote-slsb id="TaskManagerRemote"
+		jndi-name="java:global/AIDRTaskManager/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote"
 		business-interface="qa.qcri.aidr.task.ejb.TaskManagerRemote" />
-		
-	<jee:remote-slsb id="DocumentNominalLabelResourceFacade" 
-		jndi-name="java:global/AIDRDBManager/aidr-db-manager-1.0/DocumentNominalLabelResourceFacadeImp!qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentNominalLabelResourceFacade" 
+
+	<jee:remote-slsb id="DocumentNominalLabelResourceFacade"
+		jndi-name="java:global/AIDRDBManager/aidr-db-manager-1.0/DocumentNominalLabelResourceFacadeImp!qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentNominalLabelResourceFacade"
 		business-interface="qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentNominalLabelResourceFacade" />
-		
-	<jee:remote-slsb id="NominalLabelResourceFacade" 
-		jndi-name="java:global/AIDRDBManager/aidr-db-manager-1.0/NominalLabelResourceFacadeImp!qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade" 
+
+	<jee:remote-slsb id="NominalLabelResourceFacade"
+		jndi-name="java:global/AIDRDBManager/aidr-db-manager-1.0/NominalLabelResourceFacadeImp!qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade"
 		business-interface="qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade" />
-		
-    <jee:remote-slsb id="DocumentResourceFacade" 
-		jndi-name="java:global/AIDRDBManager/aidr-db-manager-1.0/DocumentResourceFacadeImp!qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade" 
+
+	<jee:remote-slsb id="DocumentResourceFacade"
+		jndi-name="java:global/AIDRDBManager/aidr-db-manager-1.0/DocumentResourceFacadeImp!qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade"
 		business-interface="qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade" />
+
+	<jee:remote-slsb id="CrisisResourceFacade"
+		jndi-name="java:global/AIDRDBManager/aidr-db-manager-1.0/CrisisResourceFacadeImp!qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade"
+		business-interface="qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade" />
+
+	<jee:remote-slsb id="TaskAssignmentResourceFacade"
+		jndi-name="java:global/AIDRDBManager/aidr-db-manager-1.0/TaskAssignmentResourceFacadeImp!qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskAssignmentResourceFacade"
+		business-interface="qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskAssignmentResourceFacade" />
 		
-    
-    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix" value="/WEB-INF/jsp/" />
-        <property name="suffix" value=".jsp" />
-    </bean>
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
 
 </beans>

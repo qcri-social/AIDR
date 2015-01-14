@@ -80,16 +80,25 @@ public class UsersResourceFacadeImp extends CoreDBServiceFacadeImp<Users, Long> 
 	}
 
 	@Override
-	public UsersDTO addUser(UsersDTO user) throws PropertyNotSetException {
-		em.persist(user.toEntity());
-		return getUserByName(user.getName());
+	public UsersDTO addUser(UsersDTO user) {
+		try {
+			Users u = user.toEntity();
+			em.persist(u);
+			em.flush();
+			em.refresh(u);
+			return new UsersDTO(u);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
-	
+
 	@Override
 	public Integer deleteUser(Long id) {
 		Users user = getById(id);
 		if (user != null) {
-			this.delete(user);
+			delete(user);
+			em.flush();
 			return 1;
 		}
 		else {

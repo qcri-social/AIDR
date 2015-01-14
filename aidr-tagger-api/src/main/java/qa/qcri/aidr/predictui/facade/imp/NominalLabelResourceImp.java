@@ -29,7 +29,7 @@ public class NominalLabelResourceImp implements NominalLabelResourceFacade {
     public NominalLabelDTO addNominalLabel(NominalLabelDTO label) {
         try {
 			return remoteNominalLabelEJB.addNominalLabel(label);
-		} catch (PropertyNotSetException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;

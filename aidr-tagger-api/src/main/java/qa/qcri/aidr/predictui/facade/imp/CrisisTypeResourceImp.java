@@ -63,7 +63,7 @@ public class CrisisTypeResourceImp implements CrisisTypeResourceFacade {
 		System.out.println(crisisType.getName());
 		try {
 			return remoteCrisisTypeEJB.addCrisisType(crisisType);
-		} catch (PropertyNotSetException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

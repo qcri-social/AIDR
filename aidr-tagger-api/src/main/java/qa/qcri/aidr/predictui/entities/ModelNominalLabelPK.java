@@ -16,16 +16,12 @@ import javax.xml.bind.annotation.XmlElement;
  *
  * @author Imran
  */
-@Embeddable
+
 public class ModelNominalLabelPK implements Serializable {
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "modelID")
+
     @XmlElement private int modelID;
     
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "nominalLabelID")
+  
     @XmlElement private int nominalLabelID;
 
     public ModelNominalLabelPK() {

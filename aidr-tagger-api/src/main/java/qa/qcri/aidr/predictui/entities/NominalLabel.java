@@ -41,39 +41,24 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
  *
  * @author Imran
  */
-@Entity
-@Table(name = "nominal_label")
+
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class NominalLabel implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "nominalLabelID")
+    
     @XmlElement private Integer nominalLabelID;
     
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
-    @Column(name = "nominalLabelCode")
+    
     @XmlElement private String nominalLabelCode;
     
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 45)
-    @Column(name = "name")
+    
     @XmlElement private String name;
     
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 600)
-    @Column(name = "description")
+ 
     @XmlElement private String description;
 
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "sequence")
+  
     @XmlElement private Integer sequence;
 
     @Transient
@@ -84,8 +69,7 @@ public class NominalLabel implements Serializable {
     @JsonManagedReference
     private Collection<ModelNominalLabel> modelNominalLabelCollection;
     
-    @JoinColumn(name = "nominalAttributeID", referencedColumnName = "nominalAttributeID")
-    @ManyToOne(optional = false)
+ 
     @JsonBackReference
     private NominalAttribute nominalAttribute;
 

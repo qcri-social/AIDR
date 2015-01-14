@@ -42,66 +42,37 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
  *
  * @author Imran
  */
-@Entity
-@Table(name = "model")
+
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "Model.findAll", query = "SELECT m FROM Model m"),
-    @NamedQuery(name = "Model.findByModelID", query = "SELECT m FROM Model m WHERE m.modelID = :modelID"),
-    @NamedQuery(name = "Model.findByAvgPrecision", query = "SELECT m FROM Model m WHERE m.avgPrecision = :avgPrecision"),
-    @NamedQuery(name = "Model.findByAvgRecall", query = "SELECT m FROM Model m WHERE m.avgRecall = :avgRecall"),
-    @NamedQuery(name = "Model.findByAvgAuc", query = "SELECT m FROM Model m WHERE m.avgAuc = :avgAuc"),
-    @NamedQuery(name = "Model.findByTrainingCount", query = "SELECT m FROM Model m WHERE m.trainingCount = :trainingCount"),
-    @NamedQuery(name = "Model.findByTrainingTime", query = "SELECT m FROM Model m WHERE m.trainingTime = :trainingTime"),
-    })
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Model implements Serializable {
     
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "modelID")
+
     @XmlElement private Integer modelID;
     
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "avgPrecision")
+ 
     @XmlElement private double avgPrecision;
     
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "avgRecall")
+  
     @XmlElement private double avgRecall;
     
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "avgAuc")
+  
     @XmlElement private double avgAuc;
     
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "trainingCount")
+ 
     @XmlElement private int trainingCount;
     
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "trainingTime")
-    @Temporal(TemporalType.TIMESTAMP)
+
     @XmlElement private Date trainingTime;
     
-    @JoinColumn(name = "modelFamilyID", referencedColumnName = "modelFamilyID")
-    @ManyToOne(optional = false)
+ 
     @JsonBackReference
     private ModelFamily modelFamily;
-    
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "model")
+   
     @JsonManagedReference
     private Collection<ModelNominalLabel> modelNominalLabelCollection;
-//    @OneToMany(mappedBy = "model")
-//    private Collection<ModelFamily> modelFamilyCollection;
-    
-    @Column(name = "isCurrentModel")
+
     @XmlElement private Boolean isCurrentModel;
 
     public Model() {

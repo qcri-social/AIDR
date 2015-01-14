@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package qa.qcri.aidr.predictui.dto;
+package qa.qcri.aidr.dbmanager.dto.taggerapi;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -17,6 +17,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class TrainingDataDTO implements Serializable {
     
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2392073534449776415L;
 	@XmlElement private Integer labelID;
 	@XmlElement private String labelName;
 	@XmlElement private String tweetJSON;

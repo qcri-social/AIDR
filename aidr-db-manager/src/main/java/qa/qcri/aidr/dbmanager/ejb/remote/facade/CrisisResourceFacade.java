@@ -16,7 +16,7 @@ public interface CrisisResourceFacade extends CoreDBServiceFacade<Crisis, Long> 
 
 	public Integer deleteCrisis(CrisisDTO crisis) throws PropertyNotSetException;
 	
-	public CrisisDTO addCrisis(CrisisDTO crisis) throws PropertyNotSetException; 
+	public CrisisDTO addCrisis(CrisisDTO crisis); 
 
 	public CrisisDTO editCrisis(CrisisDTO crisis) throws PropertyNotSetException; 
 

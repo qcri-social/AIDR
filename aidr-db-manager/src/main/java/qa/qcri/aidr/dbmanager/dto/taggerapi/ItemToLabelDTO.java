@@ -2,22 +2,34 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package qa.qcri.aidr.predictui.dto;
+package qa.qcri.aidr.dbmanager.dto.taggerapi;
 
+import java.io.Serializable;
 import java.math.BigInteger;
+
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import qa.qcri.aidr.predictui.entities.NominalAttribute;
+
+import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
+
 
 /**
  *
- * @author Imran
+ * @author Imran, koushik
  */
 @XmlRootElement
-public class ItemToLabelDTO {
+public class ItemToLabelDTO implements Serializable {
     
-    private BigInteger itemID;
-    private String itemText;
-    private TaggerAPINominalAttributeDTO attribute;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -4435113285927401893L;
+	
+	@XmlElement private BigInteger itemID;
+    
+	@XmlElement private String itemText;
+    
+	@XmlElement private NominalAttributeDTO attribute;
 
     /**
      * @return the itemText
@@ -36,14 +48,14 @@ public class ItemToLabelDTO {
     /**
      * @return the attribute
      */
-    public TaggerAPINominalAttributeDTO getAttribute() {
+    public NominalAttributeDTO getAttribute() {
         return attribute;
     }
 
     /**
      * @param attribute the attribute to set
      */
-    public void setAttribute(TaggerAPINominalAttributeDTO attribute) {
+    public void setAttribute(NominalAttributeDTO attribute) {
         this.attribute = attribute;
     }
 

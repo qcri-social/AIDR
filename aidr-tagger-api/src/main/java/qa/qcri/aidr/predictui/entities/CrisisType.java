@@ -36,35 +36,21 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
  *
  * @author Imran
  */
-@Entity
-@Table(name = "crisis_type")
+
 @XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "CrisisType.findAll", query = "SELECT c FROM CrisisType c"),
-    @NamedQuery(name = "CrisisType.findByCrisisTypeID", query = "SELECT c FROM CrisisType c WHERE c.crisisTypeID = :crisisTypeID"),
-    @NamedQuery(name = "CrisisType.findByName", query = "SELECT c FROM CrisisType c WHERE c.name = :name")})
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class CrisisType implements Serializable {
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "crisisTypeID")
+ 
     @XmlElement private Integer crisisTypeID;
     
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 140)
-    @Column(name = "name")
+ 
     @XmlElement private String name;
     
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "crisisType")
     @JsonManagedReference
     private Collection<Crisis> crisisCollection;
     
-    //@XmlTransient
-    //Integer numberOfCrisisAssociated;
-    
+  
     public CrisisType() {
     }
 

@@ -13,6 +13,8 @@ import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAssignmentDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ItemToLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -93,6 +95,7 @@ public interface TaskManagerRemote<T, Serializable> {
 
 	public <E> String serializeTask(E task);
 	
+
 	// for testing purpose
 	public String pingRemoteEJB();
 

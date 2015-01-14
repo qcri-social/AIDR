@@ -111,7 +111,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 		 */
 		if(taskAnswerList.size() > 0) {
 			TaskAnswer taskAnswer = taskAnswerList.get(0);
-			TaskAnswerDTO t = TaskAnswer.toTaskAnswerDTO(taskAnswer);
+			TaskAnswerDTO t = taskAnswer.toDTO();
 			try {
 				taskManager.insertTaskAnswer(t);
 			} catch (Exception e) {
@@ -160,7 +160,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 				for(int i = 0; i < taskAnswerList.size(); i++){
 					TaskAnswer taskAnswer = taskAnswerList.get(i);
 					//taskAnswerDao.insertTaskAnswer(taskAnswer);
-					TaskAnswerDTO t = TaskAnswer.toTaskAnswerDTO(taskAnswer);
+					TaskAnswerDTO t = taskAnswer.toDTO();
 					try {
 						taskManager.insertTaskAnswer(t);
 					} catch (Exception e) {
@@ -171,10 +171,13 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 
 
 				List<DocumentNominalLabel> documentNominalLabelSet =   taskAnswerResponse.getDocumentNominalLabelList();
+				logger.info("Size of documentNominalLabel list = " + documentNominalLabelSet.size());
 				if (documentNominalLabelSet != null) {
 					for(int i = 0; i < documentNominalLabelSet.size(); i++){
 						DocumentNominalLabel documentNominalLabel = documentNominalLabelSet.get(i);
+						logger.info("Looking at documentNominalLabel: " + documentNominalLabel.getDocumentID() + ", " + documentNominalLabel.getNominalLabelID() + ", duplicate status = " + documentNominalLabelService.foundDuplicateEntry(documentNominalLabel));
 						if(!documentNominalLabelService.foundDuplicateEntry(documentNominalLabel)){
+							logger.info("Attempting to save documentNominalLabel: " + documentNominalLabel.getDocumentID() + ", " + documentNominalLabel.getNominalLabelID());
 							documentNominalLabelService.saveDocumentNominalLabel(documentNominalLabel);
 						}
 					}

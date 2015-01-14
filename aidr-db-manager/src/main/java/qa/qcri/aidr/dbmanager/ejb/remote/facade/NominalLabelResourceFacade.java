@@ -14,7 +14,7 @@ public interface NominalLabelResourceFacade extends CoreDBServiceFacade<NominalL
     
     public void saveNominalLabel(NominalLabelDTO nominalLabel) throws PropertyNotSetException;
     
-    public NominalLabelDTO addNominalLabel(NominalLabelDTO nominalLabel) throws PropertyNotSetException;
+    public NominalLabelDTO addNominalLabel(NominalLabelDTO nominalLabel);
     
     public NominalLabelDTO editNominalLabel(NominalLabelDTO nominalLabel) throws PropertyNotSetException;
     

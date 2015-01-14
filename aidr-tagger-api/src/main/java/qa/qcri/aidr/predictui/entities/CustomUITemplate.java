@@ -14,36 +14,27 @@ import java.io.Serializable;
  * Time: 10:00 PM
  * To change this template use File | Settings | File Templates.
  */
-@Entity
-@Table(name = "custom_ui_template")
+
 @XmlRootElement
-@NamedQueries({
-        @NamedQuery(name = "CustomUITemplate.findByCrisisD", query = "SELECT c FROM CustomUITemplate c WHERE c.crisisID = :crisisID"),
-        @NamedQuery(name = "CustomUITemplate.findBasedOnTypeByCrisisD", query = "SELECT c FROM CustomUITemplate c WHERE c.crisisID = :crisisID and c.templateType = :templateType"),
-        @NamedQuery(name = "CustomUITemplate.findByCrisisIDAndAttributeID", query = "SELECT c FROM CustomUITemplate c WHERE c.crisisID = :crisisID and c.nominalAttributeID = :nominalAttributeID"),
-        @NamedQuery(name = "CustomUITemplate.findBasedOnTypeByCrisisIDAndAttributeID", query = "SELECT c FROM CustomUITemplate c WHERE c.crisisID = :crisisID and c.nominalAttributeID = :nominalAttributeID and c.templateType = :templateType")})
 public class CustomUITemplate implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "customUITemplateID")
+ 
     @XmlElement private Long customUITemplateID;
 
     @Column(name = "crisisID")
     @XmlElement private Long crisisID;
 
-    @Column(name = "nominalAttributeID")
+  
     @XmlElement private Long nominalAttributeID;
 
-    @Column(name = "templateType")
+
     @XmlElement private Integer templateType;
 
-    @Column(name = "templateValue")
+  
     private String templateValue;
 
-    @Column(name = "isActive")
+  
     @XmlElement private boolean isActive;
 
     public Long getCustomUITemplateID() {

@@ -50,17 +50,30 @@ public class TaskAnswerDTO implements Serializable {
 		this.answer = answer;
 	}
 
-	public  TaskAnswerDTO(TaskAnswer taskAnswer){
-		this.documentID = taskAnswer.getId().getDocumentId();
-		this.userID = taskAnswer.getId().getUserId();
-		this.answer = taskAnswer.getAnswer();
-		this.timestamp = taskAnswer.getTimestamp();
+	public TaskAnswerDTO(TaskAnswer taskAnswer){
+		if (taskAnswer != null) {
+			if (taskAnswer.getId() != null) {
+				if (taskAnswer.getId().getTaskId() != null) {
+					this.setTaskID(taskAnswer.getId().getTaskId());
+				}
+				this.setDocumentID(taskAnswer.getId().getDocumentId());
+				this.setUserID(taskAnswer.getId().getUserId());
+			}
+			this.setAnswer(taskAnswer.getAnswer());
+			this.setTimestamp(taskAnswer.getTimestamp());
+		}
 	}
 
 
-	public TaskAnswer toEntity(){
-		return new TaskAnswer(this.getDocumentID(), this.getUserID(), this.getAnswer(), this.isFromTrustedUser());
-
+	public TaskAnswer toEntity() {
+		TaskAnswer entity = new TaskAnswer(this.getDocumentID(), this.getUserID(), this.getAnswer(), this.isFromTrustedUser());
+		if (this.getTaskID() != null) {
+			entity.getId().setTaskId(this.getTaskID());
+		}
+		if (this.getTimestamp() != null) {
+			entity.setTimestamp(this.getTimestamp());
+		}
+		return entity;
 	}
 
 	public List<TaskAnswer> toEntity(List<TaskAnswerDTO> answers){
@@ -68,6 +81,12 @@ public class TaskAnswerDTO implements Serializable {
 
 		for (TaskAnswerDTO dto: answers) {
 			TaskAnswer t = new TaskAnswer(dto.getDocumentID(), dto.getUserID(), dto.getAnswer(), dto.isFromTrustedUser());
+			if (this.getTaskID() != null) {
+				t.getId().setTaskId(this.getTaskID());
+			}
+			if (this.getTimestamp() != null) {
+				t.setTimestamp(this.getTimestamp());
+			}
 			taskAnswers.add(t);
 		}
 

@@ -22,6 +22,11 @@ public class TaskAnswerId implements java.io.Serializable {
 	public TaskAnswerId() {
 	}
 
+	public TaskAnswerId(Long documentId, Long userId) {
+		this.documentId = documentId;
+		this.userId = userId;
+	}
+
 	public TaskAnswerId(Long taskId, Long documentId, Long userId) {
 		this.taskId = taskId;
 		this.documentId = documentId;
@@ -64,17 +69,21 @@ public class TaskAnswerId implements java.io.Serializable {
 		if (!(other instanceof TaskAnswerId))
 			return false;
 		TaskAnswerId castOther = (TaskAnswerId) other;
-
+		/*
 		return (this.getTaskId() == castOther.getTaskId())
 				&& (this.getDocumentId() == castOther.getDocumentId())
+				&& (this.getUserId() == castOther.getUserId());
+		*/
+		return (this.getDocumentId() == castOther.getDocumentId())
 				&& (this.getUserId() == castOther.getUserId());
 	}
 
 	@Override
 	public int hashCode() {
 		int result = 17;
-
-		result = 37 * result + this.getTaskId().intValue();
+		if (this.getTaskId() != null) {
+			result = 37 * result + this.getTaskId().intValue();
+		}
 		result = 37 * result + this.getDocumentId().intValue();
 		result = 37 * result + this.getUserId().intValue();
 		return result;

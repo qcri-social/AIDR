@@ -14,11 +14,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
- * @author Imran
+ * @author Imran, Koushik
  */
 @XmlRootElement
-public class NominalLabelDTO implements Serializable {
-    private Integer nominalLabelID;
+public class TaggerAPINominalLabelDTO implements Serializable {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8898613041122388429L;
+	private Integer nominalLabelID;
     private String nominalLabelCode;
     private String name;
     private String description;
@@ -27,21 +31,21 @@ public class NominalLabelDTO implements Serializable {
     private Integer nominalAttributeID;
     private Integer sequence;
 
-    public NominalLabelDTO() {
+    public TaggerAPINominalLabelDTO() {
     }
 
-    public NominalLabelDTO(Integer nominalLabelID) {
+    public TaggerAPINominalLabelDTO(Integer nominalLabelID) {
         this.nominalLabelID = nominalLabelID;
     }
 
-    public NominalLabelDTO(Integer nominalLabelID, String nominalLabelCode, String name, String description) {
+    public TaggerAPINominalLabelDTO(Integer nominalLabelID, String nominalLabelCode, String name, String description) {
         this.nominalLabelID = nominalLabelID;
         this.nominalLabelCode = nominalLabelCode;
         this.name = name;
         this.description = description;
     }
 
-    public NominalLabelDTO(Integer nominalLabelID, String nominalLabelCode, String name, String description, Integer sequence) {
+    public TaggerAPINominalLabelDTO(Integer nominalLabelID, String nominalLabelCode, String name, String description, Integer sequence) {
         this.nominalLabelID = nominalLabelID;
         this.nominalLabelCode = nominalLabelCode;
         this.name = name;

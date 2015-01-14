@@ -1,7 +1,6 @@
 package qa.qcri.aidr.manager.controller;
 
 import org.apache.log4j.Logger;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -10,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.DownloadType;
-
+import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
 import qa.qcri.aidr.manager.dto.*;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
@@ -388,6 +387,7 @@ public class TaggerController extends BaseController {
 		List<TrainingDataDTO> response;
 		try {
 			response = taggerService.getTrainingDataByModelIdAndCrisisId(modelFamilyId, crisisId, start, limit, sortColumn, sortDirection);
+			logger.info("For crisis ID " + crisisId + ", model family ID " + modelFamilyId + ", Returned response: " + response);
 		} catch (AidrException e) {
 			logger.error(e.getMessage(), e);
 			return getUIWrapper(false, e.getMessage());
@@ -396,6 +396,7 @@ public class TaggerController extends BaseController {
 		if (response != null) {
 			total = response.get(0).getTotalRows();
 		}
+		logger.info("Returning for crisis ID " + crisisId + ", model family ID " + modelFamilyId + " total count = " + total + ", response data: " + response);
 		return getUIWrapper(response, true, Long.valueOf(total), null);
 	}
 

@@ -174,6 +174,11 @@ public class CrisisResource {
 	public Response addCrisis(CrisisDTO crisis) {
 		try {
 			System.out.println("Received request to add crisis: " + crisis.getCode());
+			if (crisisLocalEJB.isCrisisExists(crisis.getCode())) {
+				logger.warn("Crisis with code = " + crisis.getCode() + " already has at least one classifier attached!");
+				return Response.ok(getProperty("STATUS_CODE_SUCCESS")).build();
+			}
+			// Otherwise, add the new crisis to aidr_predict database
 			crisis.setIsTrashed(false);
 			CrisisDTO newCrisis = crisisLocalEJB.addCrisis(crisis);
 			System.out.println("Added crisis successfully: id = " + newCrisis.getCrisisID() + ", " + newCrisis.getCode());

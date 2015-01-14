@@ -36,6 +36,7 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
     public boolean addAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException {
         try {
             save(attribute.toEntity());
+            em.flush();
         } catch (HibernateException he) {
             logger.error("Hibernate exception on save Nominal Attribute. \n" + he.getStackTrace());
             return false;
