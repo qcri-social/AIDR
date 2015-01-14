@@ -1,8 +1,24 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package qa.qcri.aidr.collector.api;
+
+import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -11,24 +27,10 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.ResponseWrapper;
 import qa.qcri.aidr.collector.beans.SMS;
-import qa.qcri.aidr.collector.redis.JedisConnectionPool;
+import qa.qcri.aidr.collector.collectors.JedisPublisher;
 import qa.qcri.aidr.collector.utils.GenericCache;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.redis.LoadShedder;
-
-import javax.ws.rs.*;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
 
 /**
  * REST Web Service
@@ -93,7 +95,7 @@ public class SMSCollectorAPI  {
                 ObjectMapper objectMapper = new ObjectMapper();
                 String channelName = String.format(CHANNEL, code);
                 if (redisLoadShedder.get(channelName).canProcess(channelName)) {
-                    JedisConnectionPool.getJedisConnection().publish(channelName, objectMapper.writeValueAsString(sms));
+                    JedisPublisher.newInstance().publish(channelName, objectMapper.writeValueAsString(sms));
                     cache.increaseSMSCount(code);
                     cache.setLastDownloadedDoc(code, sms.getText());
                 }

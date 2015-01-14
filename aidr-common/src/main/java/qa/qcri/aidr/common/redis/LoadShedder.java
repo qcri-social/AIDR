@@ -55,7 +55,7 @@ public class LoadShedder {
 		this.maxLimit = maxLimit;
 	}
 	
-	public boolean canProcess(final String channel) {	
+	public boolean canProcess(String channel) {	
 		logger.debug("For channel: " + channel + ", counter:maxLimit" + counter + ":" + maxLimit);
 		if ((System.currentTimeMillis() - lastSetTime) <= intervalMillis) {
 			if (counter < maxLimit) {
@@ -78,6 +78,6 @@ public class LoadShedder {
 		counter = 0;
 		lastSetTime = System.currentTimeMillis();
 		loadWarning = false;
-		return true;	  
+		return true;
 	}
 }
