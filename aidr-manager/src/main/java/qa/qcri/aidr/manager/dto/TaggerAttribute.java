@@ -42,7 +42,7 @@ public class TaggerAttribute {
 			this.setCode(dto.getCode());
 			this.setDescription(dto.getDescription());
 			this.setName(dto.getName());
-			this.setNominalAttributeID(dto.getNominalAttributeId().intValue());
+			this.setNominalAttributeID(dto.getNominalAttributeId() != null ? dto.getNominalAttributeId().intValue() : null);
 			if (dto.getUsersDTO() != null) {
 				this.setUsers(new TaggerUser(dto.getUsersDTO()));
 			}

@@ -38,7 +38,7 @@ public class TaggerModelFamilyCollection {
 
 	public TaggerModelFamilyCollection(ModelFamilyDTO dto) throws Exception {
 		if (dto != null) {
-			this.setModelFamilyID(dto.getModelFamilyId().intValue());
+			this.setModelFamilyID(dto.getModelFamilyId() != null ? dto.getModelFamilyId().intValue() : null);
 			this.setIsActive(dto.isIsActive() == true ? "true" : "false");
 			if (dto.getNominalAttributeDTO() != null) {
 				this.setNominalAttribute(new TaggerAttribute(dto.getNominalAttributeDTO()));

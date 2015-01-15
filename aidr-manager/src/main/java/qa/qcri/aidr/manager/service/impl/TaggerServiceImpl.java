@@ -225,6 +225,7 @@ public class TaggerServiceImpl implements TaggerService {
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			UsersDTO user = objectMapper.readValue(jsonResponse, UsersDTO.class);
+
 			TaggerUser taggerUser = new TaggerUser(user);
 
 			if (taggerUser != null && taggerUser.getUserID() != null) {
@@ -259,7 +260,6 @@ public class TaggerServiceImpl implements TaggerService {
 			UsersDTO dto = objectMapper.readValue(jsonResponse, UsersDTO.class);
 			if (dto != null) {
 				TaggerUser createdUser = new TaggerUser(dto); 
-
 				if (createdUser != null && createdUser.getUserID() != null) {
 					logger.info("User with ID " + createdUser.getUserID() + " was created in Tagger");
 					return createdUser.getUserID();
@@ -1315,19 +1315,23 @@ public class TaggerServiceImpl implements TaggerService {
 			Response resp = webResource.request(MediaType.APPLICATION_JSON).get();
 			String jsonResp = resp.readEntity(String.class);
 			TaggerModelFamily tm = objectMapper.readValue(jsonResp, TaggerModelFamily.class);
-			String crisisCode = tm.getCrisis().getCode();
-			String attributeCode = tm.getNominalAttribute().getCode();
+			if (tm != null && tm.getCrisis() != null && tm.getNominalAttribute() != null) {
+				String crisisCode = tm.getCrisis().getCode();
+				String attributeCode = tm.getNominalAttribute().getCode();
 
-			System.out.print("crisisCode: " + crisisCode);
-			System.out.print("attributeCode: " + attributeCode);
+				logger.info("crisisCode: " + crisisCode);
+				logger.info("attributeCode: " + attributeCode);
 
-			WebTarget webResp = client.target(crowdsourcingAPIMainUrl + "/clientapp/delete/" + crisisCode + "/" + attributeCode);
+				WebTarget webResp = client.target(crowdsourcingAPIMainUrl + "/clientapp/delete/" + crisisCode + "/" + attributeCode);
 
-			//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
-			//        .accept(MediaType.APPLICATION_JSON)
-			//        .get(ClientResponse.class);
-			Response clientResp = webResource.request(MediaType.APPLICATION_JSON).get();
-			logger.info("deactivated - clientResponse : " + clientResp);
+				//ClientResponse clientResponse = webResource.type(MediaType.APPLICATION_JSON)
+				//        .accept(MediaType.APPLICATION_JSON)
+				//        .get(ClientResponse.class);
+				Response clientResp = webResource.request(MediaType.APPLICATION_JSON).get();
+				logger.info("deactivated - clientResponse : " + clientResp);
+			} else {
+				logger.info("No modelfamily found for id = " + modelFamilyID);
+			}
 		} catch (Exception e) {
 			logger.info("exception", e);
 			logger.error("deactivated - deletePybossaApp : " + e);
@@ -1357,7 +1361,7 @@ public class TaggerServiceImpl implements TaggerService {
 	public int trashCollection(AidrCollection collection) throws Exception {
 		int retVal = 0;
 		Long crisisID = -1L;
-		System.out.println("[trashCollection] request received for collection: " + collection.getCode());
+		logger.info("[trashCollection] request received for collection: " + collection.getCode());
 		// First clean up the aidr-predict database of documents
 		try {
 			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
@@ -1365,7 +1369,7 @@ public class TaggerServiceImpl implements TaggerService {
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
 			String jsonResponse = clientResponse.readEntity(String.class);
-			System.out.println("[trashCollection] response from tagger-api: " + jsonResponse);
+			logger.info("[trashCollection] response from tagger-api: " + jsonResponse);
 			if (jsonResponse != null && jsonResponse.contains("TRASHED")) {
 				retVal = 1;
 				crisisID = Long.parseLong(jsonResponse.substring(jsonResponse.indexOf(":") + 1, jsonResponse.indexOf("}")));
@@ -1376,7 +1380,7 @@ public class TaggerServiceImpl implements TaggerService {
 			logger.info("exception", e);
 			throw new AidrException("Error while attempting /trash REST call for aidr_predict", e);
 		}
-		System.out.println("[trashCollection] result of cleaning aidr-predict: " + crisisID);
+		logger.info("[trashCollection] result of cleaning aidr-predict: " + crisisID);
 		if (retVal > 0 && crisisID < 0) {
 			return 1;		// crisis does not exist in aidr_predict table. Reason: no classifier attached
 		}
@@ -1388,16 +1392,16 @@ public class TaggerServiceImpl implements TaggerService {
 				Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
 				String jsonResponse = clientResponse.readEntity(String.class);
-				System.out.println("[trashCollection] response from trainer-api: " + jsonResponse);
+				logger.info("[trashCollection] response from trainer-api: " + jsonResponse);
 				if (jsonResponse != null && jsonResponse.equalsIgnoreCase("{\"status\":200}")) {
-					System.out.println("[trashCollection] Success in trashing " + collection.getCode());
+					logger.info("[trashCollection] Success in trashing " + collection.getCode());
 					return 1;
 				} else {
 					return 0;
 				}
 			} catch (Exception e) {
 				logger.info("exception", e);
-				throw new AidrException("Error while attempting /trash REST call for aidr_scheduler", e);
+				throw new AidrException("Error while attempting trash REST call for aidr_scheduler", e);
 			}
 		}
 		return 0;

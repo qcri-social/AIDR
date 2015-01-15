@@ -4,6 +4,7 @@
  */
 package qa.qcri.aidr.predictui.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -20,6 +21,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 //import org.apache.log4j.Logger;
+
 
 
 
@@ -45,92 +47,77 @@ import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 @Stateless
 public class UserResource {
 
-    @Context
-    private UriInfo context;
-    @EJB
-    private UserResourceFacade userLocalEJB;
+	@Context
+	private UriInfo context;
+	@EJB
+	private UserResourceFacade userLocalEJB;
 
-    //private Logger logger = Logger.getLogger(UserResource.class.getName());
+	//private Logger logger = Logger.getLogger(UserResource.class.getName());
 	private Logger logger = LoggerFactory.getLogger(UserResource.class);
 	private ErrorLog elog = new ErrorLog();
-    
-    public UserResource() {
-    }
+
+	public UserResource() {
+	}
 
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response addUser(UsersDTO user) {
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response addUser(UsersDTO user) {
 
-        UsersDTO createdUser = userLocalEJB.addUser(user);
-        if (createdUser == null){
-            return Response.ok("Error while creating new user.").build();
-        } else {
-        	System.out.println("Created new user with id = " + createdUser.getUserID() + ", name = " + createdUser.getName());
-        }
-        //return Response.ok(createdUser).build();
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-        	//System.out.println("serialized user data: " + mapper.writeValueAsString(createdUser));
-        	return Response.ok(mapper.writeValueAsString(createdUser)).build();
-        } catch (Exception e) {
-        	e.printStackTrace();
-        }
-        return Response.ok().build();
+		UsersDTO createdUser = userLocalEJB.addUser(user);
+		if (createdUser == null){
+			logger.error("Error while creating new user.");
+			UsersDTO newUser = new UsersDTO(null, null, null);
+			return Response.ok(newUser).build();
+		} else {
+			System.out.println("Created new user with id = " + createdUser.getUserID() + ", name = " + createdUser.getName());
+			return Response.ok(createdUser).build();
+		}
+	}
 
-    }
-    
-    @GET 
-    @Path("{name}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response findUserByName(@PathParam("name") String userName) {
+	@GET 
+	@Path("{name}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findUserByName(@PathParam("name") String userName) {
 
-        UsersDTO user = userLocalEJB.getUserByName(userName);
-        System.out.println("fetched user data: " + (user != null ? user.getUserID() : "null"));
-        if (user == null){
-//            return the same object but with empty id and role. By empty id we can see that user does not exist.
-            user = new UsersDTO(null, userName, null);
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-        	//System.out.println("serialized user data: " + mapper.writeValueAsString(user));
-        	return Response.ok(mapper.writeValueAsString(user)).build();
-        } catch (Exception e) {
-        	e.printStackTrace();
-        }
-        return Response.ok().build();
+		UsersDTO user = userLocalEJB.getUserByName(userName);
+		logger.info("fetched user data: " + (user != null ? user.getUserID() : "null"));
+		if (user == null){
+			//  return the same object but with empty id and role. By empty id we can see that user does not exist.
+			user = new UsersDTO(null, null, null);
+		}
+		return Response.ok(user).build();
+	}
 
-    }
-    
-    @GET 
-    @Path("/id/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public UsersDTO findUserByID(@PathParam("id") Long id) {
+	@GET 
+	@Path("/id/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public UsersDTO findUserByID(@PathParam("id") Long id) {
 
-        UsersDTO user = userLocalEJB.getUserByID(id);
-        System.out.println("fetched user data: " + (user != null ? user.getUserID() : "null"));
-        if (user == null){
-//            return the same object but with empty id and role. By empty id we can see that user does not exist.
-            user = new UsersDTO(id, "doesn't exist", null);
-        }
-        return user;
+		UsersDTO user = userLocalEJB.getUserByID(id);
+		logger.info("fetched user data: " + (user != null ? user.getUserID() : "null"));
+		if (user == null){
+			//  return the same object but with empty id and role. By empty id we can see that user does not exist.
+			user = new UsersDTO(null, null, null);
+		}
+		return user;
 
-    }
-    
-    @GET 
-    @Path("/all")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response findAllUsers() {
-        List<UsersDTO> users = userLocalEJB.getAllUsers();
-        logger.info("fetched user data size: " + (users != null ? users.size(): "null"));
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-        	return Response.ok(mapper.writeValueAsString(users)).build();
-        } catch (Exception e) {
-        	logger.error("Error in getting all users");
-        	logger.error(elog.toStringException(e));
-        	return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
-        }
-    }
+	}
+
+	@GET 
+	@Path("/all")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findAllUsers() {
+		List<UsersDTO> users = userLocalEJB.getAllUsers();
+		logger.info("fetched user data size: " + (users != null ? users.size(): "null"));
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			return Response.ok(mapper.writeValueAsString(users)).build();
+		} catch (Exception e) {
+			logger.error("Error in getting all users");
+			logger.error(elog.toStringException(e));
+			return Response.ok(new ArrayList<UsersDTO>()).build();
+		}
+	}
 }

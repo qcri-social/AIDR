@@ -80,7 +80,11 @@ public class ModelFamilyResource {
     @Path("{id}")
     public Response getModelByID(@PathParam("id") Long id) {
         ModelFamilyDTO modelFamily = modelFamilyLocalEJB.getModelFamilyByID(id);
-        return Response.ok(modelFamily).build();
+        if (modelFamily != null) {
+        	return Response.ok(modelFamily).build();
+        } else {
+        	return Response.ok(new ModelFamilyDTO()).build();
+        }
     }
 
     @POST

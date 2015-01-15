@@ -50,8 +50,8 @@ public class ModelFamilyFacadeImp implements ModelFamilyFacade {
     public ModelFamilyDTO getModelFamilyByID(Long id) {
         try {
             return remoteModelFamilyEJB.getModelFamilyByID(id);
-        } catch (PropertyNotSetException pe) {
-            pe.printStackTrace();
+        } catch (Exception e) {
+            logger.error("exception", e);
         }
         return null;
 

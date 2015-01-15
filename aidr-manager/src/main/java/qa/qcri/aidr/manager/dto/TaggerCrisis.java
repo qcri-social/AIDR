@@ -43,7 +43,7 @@ public class TaggerCrisis {
 		if (dto != null) {
 			this.setCode(dto.getCode());
 			this.setName(dto.getName());
-			this.setCrisisID(dto.getCrisisID().intValue());
+			this.setCrisisID(dto.getCrisisID() != null ? dto.getCrisisID().intValue() : null);
 			if (dto.getCrisisTypeDTO() != null) {
 				this.setCrisisType(new TaggerCrisisType(dto.getCrisisTypeDTO()));
 			}

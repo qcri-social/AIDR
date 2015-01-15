@@ -42,7 +42,7 @@ public class DocumentResource {
 	private DocumentFacade documentLocalEJB;
 
 	private static Logger logger = Logger.getLogger("aidr-tagger-api");
-	
+
 	public DocumentResource() {
 	}
 
@@ -74,7 +74,7 @@ public class DocumentResource {
 	public Response getAllLabeledDocumentByCrisisID(@PathParam("crisisID") Long crisisID, @PathParam("attributeID") Long attributeID){
 
 		List<DocumentDTO> documentList = documentLocalEJB.getAllLabeledDocumentbyCrisisID(crisisID, attributeID);
-		
+
 		ResponseWrapper response = new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"));
 		response.setDocuments(documentList);
 		return Response.ok(response).build();
@@ -99,13 +99,18 @@ public class DocumentResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response removeTrainingExample(@PathParam("id") Long id) {
 		try {
-			documentLocalEJB.removeTrainingExample(id);
+			if (documentLocalEJB.removeTrainingExample(id).getStatusCode().equalsIgnoreCase(getProperty("STATUS_CODE_SUCCESS"))) {
+				logger.info("Successfully removed document with id = " + id);
+				return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"))).build();
+			} else {
+				return Response.ok(
+						new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "Error while removing Training Example.")).build();
+			}
 		} catch (RuntimeException e) {
 			return Response.ok(
 					new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "Error while removing Training Example.")).build();
 		}
-		return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"))).build();
 	}
 
-	
+
 }
