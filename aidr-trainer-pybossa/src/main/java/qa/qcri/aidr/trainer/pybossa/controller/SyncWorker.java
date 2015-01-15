@@ -38,11 +38,11 @@ public class SyncWorker implements Worker {
 
             pybossaWorker.doCreateApp();
             clientAppRunWorker.processTaskPublish();
-            //clientAppRunWorker.processTaskRunImport();
+            clientAppRunWorker.processTaskRunImport();
 
-            //microMapperWorker.processTaskPublish();
-            //microMapperWorker.processTaskImport();
-            //microMapperWorker.processTaskExport();
+            microMapperWorker.processTaskPublish();
+            microMapperWorker.processTaskImport();
+            microMapperWorker.processTaskExport();
 
             Thread.sleep(180000); // simulates work
 
