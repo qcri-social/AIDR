@@ -104,7 +104,7 @@ public class TaggerModelNominalLabel {
 			this.setLabelRecall(dto.getLabelRecall());
 			this.setModelStatus(dto.isModelStatus());
 			if (dto.getNominalAttributeId() != null) {
-				this.setNominalAttributeId(dto.getNominalAttributeId().intValue());
+				this.setNominalAttributeId(dto.getNominalAttributeId() != null ? dto.getNominalAttributeId().intValue() : null);
 			}
 			if (dto.getNominalLabelDTO() != null) {
 				this.setNominalLabel(new TaggerLabel(dto.getNominalLabelDTO()));

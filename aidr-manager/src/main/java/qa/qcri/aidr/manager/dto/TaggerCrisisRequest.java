@@ -32,8 +32,8 @@ public class TaggerCrisisRequest {
 		dto.setCode(this.getCode());
 		dto.setName(this.getName());
 		dto.setIsTrashed(false);
-		dto.setUsersDTO(this.getUsers().toDTO());
-		dto.setCrisisTypeDTO(this.getCrisisType().toDTO());
+		dto.setUsersDTO(this.getUsers() != null ? this.getUsers().toDTO() : null);
+		dto.setCrisisTypeDTO(this.getCrisisType() != null ? this.getCrisisType().toDTO() : null);
 
 		return dto;
 	}

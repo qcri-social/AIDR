@@ -24,7 +24,7 @@ public class TaggerCrisisType {
 
 	public TaggerCrisisType(CrisisTypeDTO dto) throws Exception {
 		if (dto != null) {
-			this.setCrisisTypeID(dto.getCrisisTypeId().intValue());
+			this.setCrisisTypeID(dto.getCrisisTypeId() != null ? dto.getCrisisTypeId().intValue() : null);
 			this.setName(dto.getName());
 			this.setNumberOfCrisisAssociated(dto.getNumberOfCrisisAssociated());
 		}

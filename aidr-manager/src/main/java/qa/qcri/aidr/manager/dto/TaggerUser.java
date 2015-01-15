@@ -18,15 +18,15 @@ public class TaggerUser {
 	}
 
 	public TaggerUser(String name, String role) {
-		this.name = name;
-		this.role = role;
+		this.setName(name);
+		this.setRole(role);
 	}
 
 	public TaggerUser(UsersDTO dto) throws Exception {
 		if (dto != null) {
 			this.setName(dto.getName());
 			this.setRole(dto.getRole());
-			this.setUserID(dto.getUserID().intValue());
+			this.setUserID(dto.getUserID() != null ? dto.getUserID().intValue() : null);
 		}
 	}
 

@@ -24,7 +24,7 @@ public class TaggerModelFamily {
 	public TaggerModelFamily(ModelFamilyDTO dto) throws Exception {
 		if (dto != null) {
 			this.setIsActive(dto.isIsActive());
-			this.setModelFamilyID(dto.getModelFamilyId().intValue());
+			this.setModelFamilyID(dto.getModelFamilyId() != null ? dto.getModelFamilyId().intValue() : null);
 			if (dto.getCrisisDTO() != null) {
 				this.setCrisis(new TaggerCrisis(dto.getCrisisDTO()));
 			}

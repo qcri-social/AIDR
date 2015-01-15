@@ -34,7 +34,7 @@ public class TaggerLabel {
 
 	public TaggerLabel(NominalLabelDTO dto) throws Exception {
 		if (dto != null) {
-			this.setNominalLabelID(dto.getNominalLabelId().intValue());
+			this.setNominalLabelID(dto.getNominalLabelId() != null ? dto.getNominalLabelId().intValue() : null);
 			this.setName(dto.getName());
 			this.setDescription(dto.getDescription());
 			this.setNominalLabelCode(dto.getNominalLabelCode());

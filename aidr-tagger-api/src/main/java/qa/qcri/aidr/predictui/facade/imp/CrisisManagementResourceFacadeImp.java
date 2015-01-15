@@ -68,10 +68,10 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 			remoteCrisisEJB.merge(crisis.toEntity());
 
 			List<ModelFamilyDTO> associatedModels = remoteModelFamilyEJB.getAllModelFamiliesByCrisis(crisis.getCrisisID());
-			if (null == associatedModels) {
+			if (associatedModels.isEmpty()) {
 				StringBuilder sb = new StringBuilder().append("{\"TRASHED\":").append(crisis.getCrisisID()).append("}");
 				logger.info("Success in deleting crisis: " + crisisCode);
-				return null;
+				return sb.toString();
 			}
 			List<ModelFamily> list = new ArrayList<ModelFamily>();
 			for (ModelFamilyDTO model: associatedModels) {
@@ -81,7 +81,7 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 			remoteModelFamilyEJB.merge(list);
 
 			List<DocumentDTO> associatedDocs = remoteDocumentEJB.findUnLabeledDocumentsByCrisisID(crisis.getCrisisID());
-			if (null == associatedDocs) {
+			if (associatedDocs.isEmpty()) {
 				StringBuilder sb = new StringBuilder().append("{\"TRASHED\":").append(crisis.getCrisisID()).append("}");
 				logger.info("Success in deleting crisis: " + crisisCode);
 				return sb.toString();

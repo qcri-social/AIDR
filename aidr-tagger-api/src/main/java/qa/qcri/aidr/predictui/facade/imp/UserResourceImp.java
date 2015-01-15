@@ -43,24 +43,25 @@ public class UserResourceImp implements UserResourceFacade {
         try {
             //em.persist(user);
         	remoteUsersEJB.addUser(user);
+        	return remoteUsersEJB.getUserByName(user.getName());
         } catch (Exception ex) {
-            logger.error(elog.toStringException(ex));
+            logger.error("exception:", ex);
             return null;
         }
-        return user;
-
     }
 
     public UsersDTO getUserByName(String userName) {
         try {
             //Query userQuery = em.createNamedQuery("Users.findByName", Users.class);
             //userQuery.setParameter("name", userName);
+        	logger.info("Querying remote EJB for user name: " + userName);
         	List<UsersDTO> dto = remoteUsersEJB.getAllUsersByName(userName);
+        	logger.info("Fetched userslist size: " + (dto != null ? dto.size() : "null"));
         	if (dto != null && !dto.isEmpty()) {
         		return dto.get(0);
         	}
         } catch (Exception e) {
-            e.printStackTrace();
+        	logger.error("exception:", e);
         }
         return null;
     }
@@ -69,7 +70,7 @@ public class UserResourceImp implements UserResourceFacade {
         try {
             return remoteUsersEJB.getUserById(userID);
         } catch (Exception e) {
-        	e.printStackTrace();
+        	logger.error("exception:", e);
             return null;
         }
 
@@ -82,7 +83,7 @@ public class UserResourceImp implements UserResourceFacade {
             System.out.println("Fetched users list: " + dbUsers.size());
             return dbUsers;
         } catch (Exception e) {
-        	e.printStackTrace();
+        	logger.error("exception:", e);
             return null;
         }
     }

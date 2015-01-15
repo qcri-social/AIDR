@@ -139,6 +139,7 @@ public class CollectionController extends BaseController{
 	@RequestMapping(value = "/trash.action", method = { RequestMethod.POST ,RequestMethod.GET })
 	@ResponseBody
 	public Map<String,Object> trash(@RequestParam Integer id) throws Exception {
+		logger.info("In trash collection, id = " + id);
 		try {
 			AidrCollection collection = collectionService.findById(id);
 			if (null == collection) {
@@ -161,6 +162,7 @@ public class CollectionController extends BaseController{
 				return getUIWrapper(false, msg);
 			} else {
 				// Trash collection
+				logger.info("Received request to trash collection code: " + collection.getCode());
 				CollectionStatus oldStatus = collection.getStatus();
 				if (oldStatus.equals(CollectionStatus.STOPPED)
 						|| oldStatus.equals(CollectionStatus.NOT_RUNNING)) {
@@ -171,6 +173,7 @@ public class CollectionController extends BaseController{
 						collectionService.update(collection);
 						if (taggerService.trashCollection(collection) > 0) {
 							AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
+							logger.info("Attempting to trash collection " + collection.getCode() + " succeeded!");
 							return getUIWrapper(dto, true);
 						} else {
 							String msg = "Attempting to trash collection " + collection.getCode() + " failed!";

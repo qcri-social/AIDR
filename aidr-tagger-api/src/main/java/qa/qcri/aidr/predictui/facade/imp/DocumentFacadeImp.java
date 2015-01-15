@@ -1,6 +1,7 @@
 package qa.qcri.aidr.predictui.facade.imp;
 
-import qa.qcri.aidr.common.exception.PropertyNotSetException;
+
+import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.predictui.facade.DocumentFacade;
+import qa.qcri.aidr.predictui.util.ResponseWrapper;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 /**
@@ -22,10 +24,16 @@ import qa.qcri.aidr.task.ejb.TaskManagerRemote;
  * @author koushik
  */
 @Stateless
-public class DocumentFacadeImp implements DocumentFacade{
+public class DocumentFacadeImp implements DocumentFacade {
 
 	@EJB
 	private TaskManagerRemote<DocumentDTO, Long> remoteTaskManager;
+
+	@EJB
+	private qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade remoteDocument;
+
+	@EJB
+	private qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentNominalLabelResourceFacade remoteDocumentNominalLabel;
 
 	protected static Logger logger = Logger.getLogger("aidr-tagger-api");
 
@@ -53,7 +61,7 @@ public class DocumentFacadeImp implements DocumentFacade{
 	}
 
 	@Override
-	public void removeTrainingExample(Long documentID) {
+	public ResponseWrapper removeTrainingExample(Long documentID) {
 		// Alternative way of doing the same update
 		//qa.qcri.aidr.task.dto.DocumentDTO fetchedDoc  = remoteTaskManager.getTaskById(id);
 		//fetchedDoc.setHasHumanLabels(false);
@@ -62,14 +70,29 @@ public class DocumentFacadeImp implements DocumentFacade{
 
 		Map<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("setHasHumanLabels", new Boolean(false).toString());
-		paramMap.put("setNominalLabelCollection", null);
 		try {
 			DocumentDTO newDoc = (DocumentDTO) remoteTaskManager.setTaskParameter(qa.qcri.aidr.dbmanager.entities.task.Document.class, documentID, paramMap);
 			if (newDoc != null) {
-				logger.info("Removed training example: " + newDoc.getDocumentID() + ", for crisisID = " + newDoc.getCrisisDTO().getCrisisID());
+				Criterion criterion = Restrictions.eq("id.documentId", documentID);
+				remoteDocumentNominalLabel.deleteByCriteria(criterion);
+				if (!remoteDocumentNominalLabel.isDocumentExists(documentID)) {
+					logger.info("Removed training example: " + newDoc.getDocumentID() + ", for crisisID = " + newDoc.getCrisisDTO().getCrisisID());
+					return new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"),
+							"Deleted training example id " + documentID);
+				} else {
+					logger.error("Could NOT remove document from document nominal label table! id = " + documentID + "hasHumanLabels = " + remoteDocument.findDocumentByID(documentID).getHasHumanLabels());
+					return new ResponseWrapper(getProperty("STATUS_CODE_FAILED"),
+							"Error while deleting training example id " + documentID);
+				}
+			} else {
+				logger.error("Could NOT remove document from document nominal label table! id = " + documentID + "hasHumanLabels = " + remoteDocument.findDocumentByID(documentID).getHasHumanLabels());
+				return new ResponseWrapper(getProperty("STATUS_CODE_FAILED"),
+						"Error while deleting training example id " + documentID);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("exception", e);
+			return new ResponseWrapper(getProperty("STATUS_CODE_FAILED"),
+					"Error while deleting training example id " + documentID);
 		}
 	}
 

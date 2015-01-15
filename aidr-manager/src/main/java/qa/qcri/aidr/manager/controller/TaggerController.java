@@ -88,16 +88,20 @@ public class TaggerController extends BaseController {
 				taggerUserId = taggerService.addNewUser(taggerUser);
 			}
 			logger.info("userID = " + taggerUserId + ", name = " + userName);
-			TaggerCrisisRequest crisis = transformCrisesRequestToTaggerCrises(crisisRequest, taggerUserId);
-			logger.info("After transformation:, crisis = " + crisis.getCode() + ": " + crisis.getCrisisType() + ":" + crisis.getName());
-			String response = taggerService.createNewCrises(crisis);
-			logger.info("createNewCrises: " + response);
-			if ("SUCCESS".equals(response)){
-				logger.info("Returning : " + response);
-				return getUIWrapper(true);
+			if (taggerUserId != null) {
+				TaggerCrisisRequest crisis = transformCrisesRequestToTaggerCrises(crisisRequest, taggerUserId);
+				logger.info("After transformation:, crisis = " + crisis.getCode() + ": " + crisis.getCrisisType() + ":" + crisis.getName());
+				String response = taggerService.createNewCrises(crisis);
+				logger.info("createNewCrises: " + response);
+				if ("SUCCESS".equals(response)){
+					logger.info("Returning : " + response);
+					return getUIWrapper(true);
+				} else {
+					logger.info("Returning : " + response);
+					return getUIWrapper(false, response);
+				}
 			} else {
-				logger.info("Returning : " + response);
-				return getUIWrapper(false, response);
+				return getUIWrapper(false, "Unable to create new user in predict DB");
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -653,7 +657,7 @@ public class TaggerController extends BaseController {
 		TaggerUserRequest taggerUser = new TaggerUserRequest(taggerUserId);
 		return new TaggerCrisisRequest(request.getCode(), request.getName(), crisisType, taggerUser);
 	}
-	
+
 	private TaggerModelFamily transformCrisesIdAndAttributeIdToTaggerModelFamily (Integer crisesId, Integer attributeId, Boolean isActive) throws Exception{
 		TaggerCrisis crisis = new TaggerCrisis(crisesId);
 		TaggerAttribute nominalAttribute = new TaggerAttribute(attributeId);
@@ -739,12 +743,12 @@ public class TaggerController extends BaseController {
 		//return getUIWrapper(result,true);
 	}
 
-	
+
 	// Added by koushik
 	@RequestMapping(value = "/taggerGenerateCSVFilteredLink.action", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String,Object> generateCSVFilteredLink(@RequestParam String code,
-								String queryString) throws Exception {
+			String queryString) throws Exception {
 		Map<String, Object> result = null;
 		try {
 			result = taggerService.generateCSVFilteredLink(code, queryString);
@@ -763,7 +767,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/taggerGenerateTweetIdsFilteredLink.action", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String,Object> generateTweetIdsFilteredLink(@RequestParam String code,
-								String queryString) throws Exception {
+			String queryString) throws Exception {
 		System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
 		Map<String, Object> result = null;
 		try {
@@ -782,7 +786,7 @@ public class TaggerController extends BaseController {
 		//return getUIWrapper(result,true);
 	}
 
-	
+
 	@RequestMapping(value = "/taggerGenerateJSONFilteredLink.action", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String,Object> generateJSONFilteredLink(@RequestParam String code,
@@ -825,22 +829,22 @@ public class TaggerController extends BaseController {
 		}
 	}
 
-    @RequestMapping(value = "/updateMobilePush.action", method = { RequestMethod.POST ,RequestMethod.GET })
-    @ResponseBody
-    public Map<String,Object> updateMobilePushStatus(AidrCollection collection) throws Exception {
-        System.out.println("[updateMobilePushStatus: " + collection.getCode());
-        String result = "";
-        try {
-            TaggerCrisis tagCrisis = taggerService.getCrisesByCode(collection.getCode());
-            List<TaggerModelFamilyCollection> taggerModelFamilies =  tagCrisis.getModelFamilyCollection();
-            /// all clientapp based on crisisID should be enable to push to mobile app.
+	@RequestMapping(value = "/updateMobilePush.action", method = { RequestMethod.POST ,RequestMethod.GET })
+	@ResponseBody
+	public Map<String,Object> updateMobilePushStatus(AidrCollection collection) throws Exception {
+		System.out.println("[updateMobilePushStatus: " + collection.getCode());
+		String result = "";
+		try {
+			TaggerCrisis tagCrisis = taggerService.getCrisesByCode(collection.getCode());
+			List<TaggerModelFamilyCollection> taggerModelFamilies =  tagCrisis.getModelFamilyCollection();
+			/// all clientapp based on crisisID should be enable to push to mobile app.
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
-        }
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+		}
 
-        return getUIWrapper(result,true);
-    }
-	
+		return getUIWrapper(result,true);
+	}
+
 }
