@@ -15,27 +15,36 @@
  */
 package qa.qcri.aidr.output.utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import static qa.qcri.aidr.output.utils.ConfigProperties.getProperty;
-//import org.apache.log4j.BasicConfigurator;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-
-
-
 
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.common.code.ResponseWrapperNEW;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisConnectionException;
+import twitter4j.ResponseList;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.User;
+import twitter4j.auth.AccessToken;
 
 
 @Path("/manage")
@@ -55,9 +64,9 @@ public class AIDROutputPing {
 	}
 
 	public AIDROutputPing(final String host, final int port) {
-		
-//		AIDROutputConfig configuration = new AIDROutputConfig();
-//		HashMap<String, String> configParams = configuration.getConfigProperties();
+
+		//		AIDROutputConfig configuration = new AIDROutputConfig();
+		//		HashMap<String, String> configParams = configuration.getConfigProperties();
 		AIDROutputPing.host = getProperty("host");
 		AIDROutputPing.port = Integer.parseInt(getProperty("port"));
 		/*
@@ -69,7 +78,7 @@ public class AIDROutputPing {
 		if (configParams.get("logger").equalsIgnoreCase("slf4j")) {
 			System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");	// set logging level for slf4j
 		}
-		*/
+		 */
 		APIHashMap = new HashMap<String, Method>();
 
 		// Register available REST APIs
@@ -103,7 +112,7 @@ public class AIDROutputPing {
 						apiResult = APIHashMap.get(s).invoke(t, "JSONP", "1", 0, true).toString();
 						// TODO: Add code for deeper testing of returned result?
 					}	
-					
+
 					if (s.equalsIgnoreCase("stream")) {
 						// TODO - implement code here
 					}
@@ -119,7 +128,7 @@ public class AIDROutputPing {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * 
 	 * @param callbackName JSONP callback name (optional)
@@ -146,7 +155,7 @@ public class AIDROutputPing {
 		}
 		StringBuilder jsonpRes = new StringBuilder();
 		if (callbackName != null) jsonpRes.append(callbackName).append("(");
-		
+
 		if (null != result && result.equalsIgnoreCase("pong")) {
 			// REDIS connection is working - now to test if APIs are workings
 			boolean isAPIRunning = testAIDROutputAPI("fetch");
@@ -170,5 +179,128 @@ public class AIDROutputPing {
 			jsonpRes.append(responseStr);
 		}
 		return Response.ok(jsonpRes.toString()).build();
+	}
+
+	static String consumerKeyStr = "N7rabH3deIdq9Lv7yVSQ";
+	static String consumerSecretStr = "y9oK24PlIjO60Xb3iqO0v7yY7mqFr29CmGeVsCPbwRY";
+	static String accessTokenStr = "1026972480-VhLwHExdBtzEuOqm9vA0jKFKGU2wMoYTtuGpYQw";
+	static String accessTokenSecretStr = "ul1KFh97baltaKsqpw9PXCTuR5SAJ55Kffs3Lyx4wv64d";
+
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/username")
+	public Response getTwitterUserData(TwitterUserLookUp userList) {
+		String[] userNameList = null;
+		long[] userIdList = null;
+		if (userList != null) {
+			if (userList.getUserNames() != null) {
+				try {
+					userNameList = new String[userList.getUserNames().size()];
+					int i = 0;
+					for (String user: userList.getUserNames()) {
+						userNameList[i] = user;
+						//System.out.println("Going to fetch twitter IDs for the following set of screen names: " + userNameList[i]);
+						++i;
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			if (userList.getUserIds() != null) {
+				try {
+					userIdList = new long[userList.getUserIds().size()];
+					int i = 0;
+					for (Long id: userList.getUserIds()) {
+						userIdList[i] = id.longValue();
+						//System.out.println("Going to fetch twitter IDs for the following set of screen IDs: " + userIdList[i]);
+						++i;
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		List<User> dataList = new ArrayList<User>();
+		dataList.addAll(getUserDataFromScreenName(userNameList));
+		dataList.addAll(getUserDataFromTwitterID(userIdList));
+		
+		if (!dataList.isEmpty()) {
+			return Response.ok(dataList).build();
+		}
+		else {
+			ResponseWrapperNEW response = new qa.qcri.aidr.common.code.ResponseWrapperNEW();
+			response.setReturnCode("FETCH_TWITTER_ERROR");
+			response.setDeveloperMessage("Error in twitter user data lookup");
+			response.setUserMessages("Twitter user data lookup unsuccessful");
+			return Response.ok(response).build();
+		}
+
+	}
+
+	private List<User> getUserDataFromScreenName(String[] userNameList)	{		
+		if (userNameList != null) {
+			//System.out.println("input array size = " + userNameList.length);
+			try {
+				Twitter twitter = new TwitterFactory().getInstance();
+
+				twitter.setOAuthConsumer(consumerKeyStr, consumerSecretStr);
+				AccessToken accessToken = new AccessToken(accessTokenStr, accessTokenSecretStr);
+
+				twitter.setOAuthAccessToken(accessToken);
+				final int batchSize = 100;
+				String[] batchList = new String[Math.min(userNameList.length, batchSize)];
+				ResponseList<User> list = null; 
+				for (int i = 0; i < userNameList.length;i = i + batchSize) {
+					//System.out.println("i = " + i + ", user: " + userNameList[i] + ", size: " + Math.min(userNameList.length, batchSize));
+					System.arraycopy(userNameList, i, batchList, 0, Math.min(userNameList.length, batchSize));
+					ResponseList<User> tempList = twitter.lookupUsers(batchList);
+					if (null == list) {
+						list = tempList;
+					} else {
+						list.addAll(tempList);
+					}
+					//System.out.println("done lookup : " + i);
+				}
+				System.out.println("Successfully looked up in Twitter by screen name: " + list.size());
+				return list;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return new ArrayList<User>();
+	}
+
+	private List<User> getUserDataFromTwitterID(long[] userIdList)	{		
+		if (userIdList != null) {
+			//System.out.println("input array size = " + userIdList.length);
+			try {
+				Twitter twitter = new TwitterFactory().getInstance();
+
+				twitter.setOAuthConsumer(consumerKeyStr, consumerSecretStr);
+				AccessToken accessToken = new AccessToken(accessTokenStr, accessTokenSecretStr);
+
+				twitter.setOAuthAccessToken(accessToken);
+				final int batchSize = 100;
+				long[] batchList = new long[Math.min(userIdList.length, batchSize)];
+				ResponseList<User> list = null; 
+				for (int i = 0; i < userIdList.length;i = i + batchSize) {
+					//System.out.println("i = " + i + ", user: " + userIdList[i] + ", size: " + Math.min(userIdList.length, batchSize));
+					System.arraycopy(userIdList, i, batchList, 0, Math.min(userIdList.length, batchSize));
+					ResponseList<User> tempList = twitter.lookupUsers(batchList);
+					if (null == list) {
+						list = tempList;
+					} else {
+						list.addAll(tempList);
+					}
+					//System.out.println("done lookup : " + i);
+				}
+				System.out.println("Successfully looked up in Twitter by ID: " + list.size());
+				return list;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return new ArrayList<User>();
 	}
 }
