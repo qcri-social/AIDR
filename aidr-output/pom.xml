@@ -32,6 +32,12 @@
 			<version>2.3</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.twitter4j</groupId>
+			<artifactId>twitter4j-core</artifactId>
+			<version>[4.0,)</version>
+		</dependency>
+		
 		<!-- logging dependencies -->
 		<dependency>
 			<groupId>org.slf4j</groupId>

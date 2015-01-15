@@ -27,7 +27,11 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 @JsonSerialize(include = Inclusion.NON_DEFAULT)
 public class ResponseWrapperNEW implements Serializable{
     
-    private String returnCode;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7835885665823356986L;
+	private String returnCode;
     private String userMessages;
     private String developerMessage;
     
