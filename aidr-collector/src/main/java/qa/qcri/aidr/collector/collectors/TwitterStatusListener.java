@@ -5,7 +5,6 @@ import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -13,6 +12,7 @@ import javax.json.JsonObject;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
+import qa.qcri.aidr.collector.java7.Predicate;
 import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;

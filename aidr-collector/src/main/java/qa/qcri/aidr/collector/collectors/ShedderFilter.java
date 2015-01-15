@@ -1,9 +1,8 @@
 package qa.qcri.aidr.collector.collectors;
 
-import java.util.function.Predicate;
-
 import javax.json.JsonObject;
 
+import qa.qcri.aidr.collector.java7.Predicate;
 import qa.qcri.aidr.common.redis.LoadShedder;
 
 public class ShedderFilter implements Predicate<JsonObject> {

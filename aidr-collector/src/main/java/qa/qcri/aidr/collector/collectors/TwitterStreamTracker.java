@@ -91,13 +91,28 @@ public class TwitterStreamTracker implements Closeable {
 		String toFollow = collectionTask.getToFollow();
 		if (toFollow != null && !toFollow.isEmpty()) {
 			List<String> list = Arrays.asList(toFollow.split(","));
-			query.follow(list.stream().mapToLong(Long::parseLong).toArray());
+			// TODO: Java 8 update. Replace the following block with one single line
+			// query.follow(list.stream().mapToLong(Long::parseLong).toArray());
+			long[] tmp = new long[list.size()];
+			for (int i=0; i<list.size(); ++i) {
+				long val = Long.parseLong(list.get(i));
+				tmp[i] = val;
+			}
+			query.follow(tmp);
+			// End of Java 8 Update
 		}
 
 		String locations = collectionTask.getGeoLocation();
 		if (locations != null && !locations.isEmpty()) {
 			List<String> list = Arrays.asList(locations.split(","));
-			double[] flat = list.stream().mapToDouble(Double::parseDouble).toArray();
+			// TODO: Java 8 update. Replace the following block with one single line
+			// double[] flat = list.stream().mapToDouble(Double::parseDouble).toArray();
+			double[] flat = new double[list.size()];
+			for (int i=0; i<list.size(); ++i) {
+				double val = Double.parseDouble(list.get(i));
+				flat[i] = val;
+			}
+			// End of Java 8 Update
 			assert flat.length % 4 == 0;
 			double[][] square = new double[flat.length / 2][2];
 			for (int i = 0; i < flat.length; i = i + 2) {
