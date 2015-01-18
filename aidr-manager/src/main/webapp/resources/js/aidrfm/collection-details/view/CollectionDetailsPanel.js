@@ -176,8 +176,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
         
         this.geoR = Ext.create('Ext.form.Panel', {
-            name: 'geoR',
             items:[{
+                name: 'geoR',
                 xtype: 'radiogroup',
                 fieldLabel: 'Geo boundry strickness',
                 labelWidth: 130,
@@ -185,8 +185,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 columns: 1,
                 vertical: true,
                 items: [
-                    { boxLabel: 'Collect tweets using approximate geographical regions (a tweet may be collected if it comes from a country that overlaps with the bounding box)', name: 'geoR', inputValue: 'approximate' },
-                    { boxLabel: 'Collect tweets using strict geographical matching (a tweet is only collected if its geographical coordinates are strictly inside the bounding box)', name: 'geoR', inputValue: 'strict', checked: true }
+                    { boxLabel: 'Collect tweets using approximate geographical regions (a tweet may be collected if it comes from a country that overlaps with the bounding box)', name: 'geoR1', inputValue: 'approximate' },
+                    { boxLabel: 'Collect tweets using strict geographical matching (a tweet is only collected if its geographical coordinates are strictly inside the bounding box)', name: 'geoR1', inputValue: 'strict', checked: true }
                 ]
             }]
         });
@@ -715,8 +715,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 }
                             ]
                         },
-                        this.geoR,
                         this.geoDescription,
+                        this.geoR,
                         {
                             xtype: 'container',
                             layout: 'hbox',
