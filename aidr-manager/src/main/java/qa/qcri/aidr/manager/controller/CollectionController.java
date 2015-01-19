@@ -237,7 +237,7 @@ public class CollectionController extends BaseController{
 
 	@RequestMapping(value = "/update.action", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String,Object> update( AidrCollection collection) throws Exception {
+	public Map<String,Object> update(AidrCollection collection) throws Exception {
 		Integer collectionId = collection.getId();
 		logger.info("Updating AidrCollection into Database having id " + collectionId);
 		try{
@@ -248,6 +248,7 @@ public class CollectionController extends BaseController{
 				collection.setTrack(null);
 				collection.setLangFilters(null);
 				collection.setGeo(null);
+				collection.setGeoR(null);
 				collection.setFollow(null);
 			}
 

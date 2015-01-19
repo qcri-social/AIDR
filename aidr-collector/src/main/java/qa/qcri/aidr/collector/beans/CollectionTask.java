@@ -19,6 +19,7 @@ import javax.xml.bind.annotation.XmlType;
     "toTrack",
     "toFollow",
     "geoLocation",
+    "geoR",
     "languageFilter",
     "collectionCount",
     "statusCode",
@@ -32,7 +33,7 @@ public class CollectionTask {
     private String collectionName;
     private String toTrack;
     private String toFollow;
-    private String geoLocation;
+    private String geoLocation, geoR;
     private String languageFilter;
     private String lastDocument;
     private String statusCode;
@@ -267,7 +268,15 @@ public class CollectionTask {
         this.geoLocation = geoLocation;
     }
 
-    /**
+    public String getGeoR() {
+		return geoR;
+	}
+
+	public void setGeoR(String geoR) {
+		this.geoR = geoR;
+	}
+
+	/**
      * @return the status
      */
     public String getStatusCode() {

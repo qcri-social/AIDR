@@ -84,9 +84,9 @@ public class TwitterCollectorAPI {
 
 		task.setStatusCode(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
 		logger.info("Initializing connection with Twitter streaming API for collection " + collectionCode);
-		TwitterStreamTracker tracker;
 		try {
-			tracker = new TwitterStreamTracker(task);
+			TwitterStreamTracker tracker = new TwitterStreamTracker(task);
+			tracker.start();
 
 			String cacheKey = task.getCollectionCode();
 			cache.incrCounter(cacheKey, new Long(0));

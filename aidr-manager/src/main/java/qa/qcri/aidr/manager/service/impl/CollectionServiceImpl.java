@@ -222,6 +222,7 @@ public class CollectionServiceImpl implements CollectionService {
 		dto.setToFollow(dbCollection.getFollow());
 		dto.setToTrack(dbCollection.getTrack());
 		dto.setGeoLocation(dbCollection.getGeo());
+		dto.setGeoR(dbCollection.getGeoR());
 		dto.setLanguageFilter(dbCollection.getLangFilters());
 		return dto;
 	}
