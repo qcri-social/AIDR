@@ -1,7 +1,5 @@
 package qa.qcri.aidr.manager.social.configuration;
 
-import javax.inject.Inject;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.web.ConnectInterceptor;

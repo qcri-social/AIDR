@@ -38,7 +38,7 @@ public class SocialConfig {
     }
  
     @Bean
-        public ConnectController connectController() {
+    public ConnectController connectController() {
         ConnectController controller = new ConnectController(connectionFactoryLocator, connectionRepository);
         controller.setApplicationUrl(callbackURL);
         return controller;
