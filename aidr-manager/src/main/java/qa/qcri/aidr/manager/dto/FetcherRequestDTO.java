@@ -19,7 +19,7 @@ public class FetcherRequestDTO implements Serializable {
     private String consumerSecret;
     private String accessToken;
     private String accessTokenSecret;
-    private String geoLocation;
+    private String geoLocation, geoR;
     private String languageFilter;
     
     public FetcherRequestDTO() {}		// gf 3 - modified attempt
@@ -32,7 +32,15 @@ public class FetcherRequestDTO implements Serializable {
         this.geoLocation = geoLocation;
     }
 
-    public String getCollectionName() {
+    public String getGeoR() {
+		return geoR;
+	}
+
+	public void setGeoR(String geoR) {
+		this.geoR = geoR;
+	}
+
+	public String getCollectionName() {
         return collectionName;
     }
 

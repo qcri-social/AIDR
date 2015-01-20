@@ -44,7 +44,9 @@ public class TwitterStreamTracker implements Closeable {
 		String channelName = getProperty("FETCHER_CHANNEL") + "." + task.getCollectionCode();
 		TwitterStatusListener listener = new TwitterStatusListener(task, channelName);
 		listener.addFilter(new ShedderFilter(channelName, shedder));
-		listener.addFilter(new StrictLocationFilter());
+		if ("strict".equals(task.getGeoR())) {
+			listener.addFilter(new StrictLocationFilter());
+		}
 		listener.addPublisher(publisherJedis);
 		long threhold = Long.parseLong(getProperty("FETCHER_REDIS_COUNTER_UPDATE_THRESHOLD"));
 		String cacheKey = task.getCollectionCode();
@@ -52,7 +54,6 @@ public class TwitterStreamTracker implements Closeable {
 
 		twitterStream = new TwitterStreamFactory(config).getInstance();
 		twitterStream.addListener(listener);
-                start();
 	}
 	
 	/**

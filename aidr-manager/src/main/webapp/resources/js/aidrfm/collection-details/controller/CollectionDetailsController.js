@@ -828,6 +828,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 track: Ext.String.trim( form.findField('track').getValue() ),
                 follow: Ext.String.trim( form.findField('follow').getValue() ),
                 geo: Ext.String.trim(  form.findField('geo').getValue() ),
+                geoR: Ext.String.trim(  form.findField('geoR').getValue().geoR1 ),
                 status: status,
                 fromDate: startDate,
                 endDate: endDate,

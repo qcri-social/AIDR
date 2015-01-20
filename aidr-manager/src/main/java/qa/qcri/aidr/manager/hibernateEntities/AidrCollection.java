@@ -50,7 +50,7 @@ public class AidrCollection implements Serializable {
 
     private String follow;
 
-    private String geo;
+    private String geo, geoR;
 
     private String langFilters;
 
@@ -162,7 +162,15 @@ public class AidrCollection implements Serializable {
         this.geo = geo;
     }
 
-    @JsonSerialize(using = JsonDateSerializer.class)
+    public String getGeoR() {
+		return geoR;
+	}
+
+	public void setGeoR(String geoR) {
+		this.geoR = geoR;
+	}
+
+	@JsonSerialize(using = JsonDateSerializer.class)
     public Date getStartDate() {
         return startDate;
     }
