@@ -5,9 +5,12 @@ import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
 
 import org.apache.log4j.Logger;
 
@@ -73,12 +76,16 @@ class TwitterStatusListener implements StatusListener {
 	@Override
 	public void onStatus(Status status) {
 		String json = TwitterObjectFactory.getRawJSON(status);
-		JsonObject doc = Json.createReader(new StringReader(json)).readObject();
+		JsonObject originalDoc = Json.createReader(new StringReader(json)).readObject();
 		for (Predicate<JsonObject> filter : filters) {
-			if (!filter.test(doc))
+			if (!filter.test(originalDoc))
 				return;
 		}
-		doc.put("aidr", aidr);
+		JsonObjectBuilder builder = Json.createObjectBuilder();
+		for (Entry<String, JsonValue> entry: originalDoc.entrySet())
+			builder.add(entry.getKey(), entry.getValue());
+		builder.add("aidr", aidr);
+		JsonObject doc = builder.build();
 		for (Publisher p : publishers)
 			p.publish(channelName, doc);
 	}
