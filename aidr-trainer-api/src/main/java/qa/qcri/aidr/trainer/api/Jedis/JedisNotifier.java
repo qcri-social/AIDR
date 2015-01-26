@@ -17,16 +17,17 @@ import redis.clients.jedis.Jedis;
  */
 public class JedisNotifier {
     protected static Logger logger = LoggerFactory.getLogger(JedisNotifier.class);
-    private static ErrorLog elog = new ErrorLog();
-    
+   
     Jedis jedis;
 
     public JedisNotifier() {
         try {
             jedis = JedisDataStore.getJedisConnection();
+            System.out.println("Obtained jedis connection: " + jedis);
         } catch (Exception e) {
         	logger.error("failed to create jedis connection");
-            logger.error(elog.toStringException(e));
+            logger.error("exception", e);
+            e.printStackTrace();
         }
     }
 
@@ -35,13 +36,15 @@ public class JedisNotifier {
         // String itemJosn ="'[{\"labelID\":3,\"attributeID\":15}]'";
         try {
             //  jedis.r
-            //logger.debug("input data : " + itemJosn);
+            logger.info("input data : " + itemJosn);
+            System.out.println("input data : " + itemJosn);
             jedis.rpush("training_sample_info_stream", itemJosn);
             JedisDataStore.close(jedis);
             //outputCount++;
         } catch (Exception e) {
             logger.error("Error when serializing output document.");
-            logger.error(elog.toStringException(e));
+            logger.error("exception", e);
+            e.printStackTrace();
         }
     }
 

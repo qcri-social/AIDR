@@ -76,11 +76,13 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 			if(jedisNotifier == null) {
 				try {
 					jedisNotifier= new JedisNotifier();
-					// logger.debug("jedisNotifier created : " + jedisNotifier);
+					System.out.println("jedisNotifier created : " + jedisNotifier);
+					logger.info("jedisNotifier created : " + jedisNotifier);
 				}
 				catch (Exception e){
 					logger.error("jedisNotifier creation error for :" + taskAnswerResponse.getDocumentID());
-					logger.error(elog.toStringException(e));
+					logger.error("exception", e);
+					e.printStackTrace();
 				}
 			}
 
@@ -152,6 +154,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 			PybossaTemplate pybossaTemplate = new PybossaTemplate();
 			TaskAnswerResponse taskAnswerResponse = pybossaTemplate.getPybossaTaskAnswer(data, crisisService);
 			logger.info("taskAnswerResponse = " + taskAnswerResponse);
+			System.out.println("taskAnswerResponse = " + taskAnswerResponse);
 			List<TaskAnswer> taskAnswerList = taskAnswerResponse != null ? taskAnswerResponse.getTaskAnswerList() : null;
 
 			if(taskAnswerResponse != null && documentService.findDocument(taskAnswerResponse.getDocumentID()) != null){
@@ -164,6 +167,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 					try {
 						taskManager.insertTaskAnswer(t);
 					} catch (Exception e) {
+						logger.error("exception", e);
 						System.err.println("[processTaskAnswer] Error in saving task answer : " + taskAnswer);
 						e.printStackTrace();
 					}
@@ -185,16 +189,22 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 				if (jedisNotifier == null) {
 					try {
 						jedisNotifier= new JedisNotifier();
-						// logger.debug("jedisNotifier created : " + jedisNotifier);
+						logger.info("jedisNotifier created : " + jedisNotifier);
 					}
 					catch (Exception e){
 						logger.error("jedisNotifier creation error for: " + data);
-						logger.error(elog.toStringException(e));
+						logger.error("exception", e);
+						e.printStackTrace();
 					}
 				}
-
+				System.out.println("Attempting to push to JEDIS now: " + taskAnswerResponse.getDocumentID());
+				logger.info("Attempting to push to JEDIS now: " + taskAnswerResponse.getDocumentID());
+				System.out.println("taskAnswerResponse jedisJson = " + taskAnswerResponse.getJedisJson());
+				logger.info("taskAnswerResponse jedisJson = " + taskAnswerResponse.getJedisJson());
 				jedisNotifier.notifyToJedis(taskAnswerResponse.getJedisJson());
 
+				System.out.println("Attempting remove task from task_assignment table now: " + taskAnswerResponse.getDocumentID());
+				logger.info("Attempting to remove task from task_assignment table now: " + taskAnswerResponse.getDocumentID());
 				taskAssignmentService.revertTaskAssignment(taskAnswerResponse.getDocumentID(), taskAnswerResponse.getUserID());
 
 			}
@@ -204,7 +214,8 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 		}
 		catch(Exception e){
 			logger.error("Exception for saving task answer data : " + data);
-			logger.error(elog.toStringException(e));
+			logger.error("exception", e);
+			e.printStackTrace();
 		}
 
 	}
