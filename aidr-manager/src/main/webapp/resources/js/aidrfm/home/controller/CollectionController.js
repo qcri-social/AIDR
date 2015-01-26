@@ -73,7 +73,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
         mask.show();
 
         Ext.Ajax.request({
-            url: 'collection/getRunningCollectionStatusByUser.action',
+            url: 'protected/collection/getRunningCollectionStatusByUser.action',
             method: 'GET',
             params: {
                 id: ownerId
@@ -117,7 +117,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
         mask.show();
 
         Ext.Ajax.request({
-            url: 'collection/stop.action',
+            url: 'protected/collection/stop.action',
             method: 'GET',
             params: {
                 id: id
@@ -147,7 +147,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
 
         var me = this;
         Ext.Ajax.request({
-            url: 'collection/start.action',
+            url: 'protected/collection/start.action',
             method: 'GET',
             params: {
                 id: id
@@ -242,7 +242,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
         var me = this;
 
         Ext.Ajax.request({
-            url:  BASE_URL + '/protected/user/getCurrentUserRoles.action',
+            url:  'protected/user/getCurrentUserRoles.action',
             method: 'GET',
             headers: {
                 'Accept': 'application/json'
@@ -274,7 +274,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
         mask.show();
 
         Ext.Ajax.request({
-            url: BASE_URL + '/protected/collection/untrash.action',
+            url: 'protected/collection/untrash.action',
             method: 'GET',
             params: {
                 id: id,
@@ -305,7 +305,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
         }
 
         Ext.Ajax.request({
-            url: BASE_URL + '/protected/tagger/createCrises.action',
+            url: 'protected/tagger/createCrises.action',
             method: 'POST',
             params: {
                 code: Ext.String.trim( code ),
