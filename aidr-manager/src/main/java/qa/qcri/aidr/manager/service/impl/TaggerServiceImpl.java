@@ -801,7 +801,7 @@ public class TaggerServiceImpl implements TaggerService {
 			//        .accept(MediaType.APPLICATION_JSON)
 			//        .get(ClientResponse.class);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-
+			logger.info("Skipping task: " + id + " for user = " + userName);
 			logger.info("skipTask - clientResponse : " + clientResponse);
 
 			//String jsonResponse = clientResponse.getEntity(String.class);

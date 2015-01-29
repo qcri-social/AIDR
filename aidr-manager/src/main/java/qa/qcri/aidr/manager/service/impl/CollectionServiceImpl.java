@@ -1,5 +1,7 @@
 package qa.qcri.aidr.manager.service.impl;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -7,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import qa.qcri.aidr.common.code.JacksonWrapper;
 import qa.qcri.aidr.manager.dto.FetcheResponseDTO;
 import qa.qcri.aidr.manager.dto.FetcherRequestDTO;
@@ -22,6 +25,13 @@ import qa.qcri.aidr.manager.repository.CollectionRepository;
 import qa.qcri.aidr.manager.repository.UserConnectionRepository;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
+import twitter4j.ResponseList;
+import twitter4j.Twitter;
+import twitter4j.TwitterFactory;
+import twitter4j.User;
+import twitter4j.auth.AccessToken;
+
+
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -29,13 +39,15 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static qa.qcri.aidr.manager.util.CollectionType.SMS;
 import static qa.qcri.aidr.manager.util.CollectionType.Twitter;
-
 
 @Service("collectionService")
 public class CollectionServiceImpl implements CollectionService {
@@ -60,6 +72,9 @@ public class CollectionServiceImpl implements CollectionService {
 	private String consumerKey;
 	@Value("${twitter.consumerSecret}")
 	private String consumerSecret;
+
+	private String accessTokenStr = null;
+	private String accessTokenSecretStr = null;
 
 	@Override
 	@Transactional(readOnly = false)
@@ -219,11 +234,17 @@ public class CollectionServiceImpl implements CollectionService {
 		dto.setConsumerSecret(consumerSecret);
 		dto.setCollectionName(dbCollection.getName());
 		dto.setCollectionCode(dbCollection.getCode());
+		dto.setToFollow(getFollowTwitterIDs(dbCollection.getFollow(), dbCollection.getUser().getUserName()));
 		dto.setToFollow(dbCollection.getFollow());
 		dto.setToTrack(dbCollection.getTrack());
 		dto.setGeoLocation(dbCollection.getGeo());
 		dto.setGeoR(dbCollection.getGeoR());
 		dto.setLanguageFilter(dbCollection.getLangFilters());
+
+		// Added by koushik
+		accessTokenStr = dto.getAccessToken();
+		accessTokenSecretStr = dto.getAccessTokenSecret();
+
 		return dto;
 	}
 
@@ -252,37 +273,37 @@ public class CollectionServiceImpl implements CollectionService {
 			/**
 			 * Rest call to Fetcher
 			 */
-			 Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
-			 // gf 3 way
-			 if (aidrCollection.getCollectionType() == Twitter) {
-				 WebTarget webResource = client.target(fetchMainUrl + "/twitter/start");
+			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+			// gf 3 way
+			if (aidrCollection.getCollectionType() == Twitter) {
+				WebTarget webResource = client.target(fetchMainUrl + "/twitter/start");
 
-				 System.out.println("In startFetcher...");
-				 ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+				System.out.println("In startFetcher...");
+				ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 
-				 Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
-						 .post(Entity.json(objectMapper.writeValueAsString(fetcherRequest)), Response.class);
+				Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
+						.post(Entity.json(objectMapper.writeValueAsString(fetcherRequest)), Response.class);
 
-				 System.out.println("ObjectMapper: " + objectMapper.writeValueAsString(fetcherRequest));
-				 System.out.println("Response = " + clientResponse);
+				System.out.println("ObjectMapper: " + objectMapper.writeValueAsString(fetcherRequest));
+				System.out.println("Response = " + clientResponse);
 
-				 String jsonResponse = clientResponse.readEntity(String.class);
+				String jsonResponse = clientResponse.readEntity(String.class);
 
-				 logger.info("NEW STRING: " + jsonResponse);
-				 FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);
-				 logger.info("start Response from fetchMain " + objectMapper.writeValueAsString(response));
-				 aidrCollection.setStatus(CollectionStatus.getByStatus(response.getStatusCode()));
-			 } else if (aidrCollection.getCollectionType() == SMS){
-				 WebTarget webResource = client.target(fetchMainUrl + "/sms/start?collection_code=" + URLEncoder.encode(aidrCollection.getCode(), "UTF-8"));
-				 Response response = webResource.request(MediaType.APPLICATION_JSON).get();
-				 if (response.getStatus() == 200)
-					 aidrCollection.setStatus(CollectionStatus.RUNNING);
-			 }
-			 /**
-			  * Update Status To database
-			  */
-			 collectionRepository.update(aidrCollection);
-			 return aidrCollection;
+				logger.info("NEW STRING: " + jsonResponse);
+				FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);
+				logger.info("start Response from fetchMain " + objectMapper.writeValueAsString(response));
+				aidrCollection.setStatus(CollectionStatus.getByStatus(response.getStatusCode()));
+			} else if (aidrCollection.getCollectionType() == SMS){
+				WebTarget webResource = client.target(fetchMainUrl + "/sms/start?collection_code=" + URLEncoder.encode(aidrCollection.getCode(), "UTF-8"));
+				Response response = webResource.request(MediaType.APPLICATION_JSON).get();
+				if (response.getStatus() == 200)
+					aidrCollection.setStatus(CollectionStatus.RUNNING);
+			}
+			/**
+			 * Update Status To database
+			 */
+			collectionRepository.update(aidrCollection);
+			return aidrCollection;
 		} catch (Exception e) {
 			logger.error("Error while starting Remote FetchMain Collection", e);
 		}
@@ -398,7 +419,7 @@ public class CollectionServiceImpl implements CollectionService {
 				Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
 				String jsonResponse = clientResponse.readEntity(String.class);
-                                System.out.println("**********Collector response : " + jsonResponse);
+				System.out.println("**********Collector response : " + jsonResponse);
 
 				collection = updateStatusCollection(jsonResponse, collection);
 				return collection;
@@ -463,5 +484,107 @@ public class CollectionServiceImpl implements CollectionService {
 	@Transactional(readOnly = true)
 	public List<AidrCollection> geAllCollectionByUser(Integer userId) throws Exception{
 		return collectionRepository.getAllCollectionByUser(userId);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public String getFollowTwitterIDs(String followList, String userName) {
+		if (followList != null && !followList.isEmpty()) {
+			List<String> userList = Arrays.asList(followList.split(","));
+
+			if (null == accessTokenStr || null == accessTokenSecretStr) {
+				UserConnection userConnection = userConnectionRepository.fetchbyUsername(userName);
+				accessTokenStr = userConnection.getAccessToken();
+				accessTokenSecretStr = userConnection.getSecret();
+			}
+
+			String[] userNameList = null;
+			long[] userIdList = null;
+			if (userList != null) {
+				try {
+					userNameList = new String[userList.size()];
+					userIdList = new long[userList.size()];
+					int i = 0;
+					int j = 0;
+					System.out.println("Received string: " + followList + ", Split follow string: " + userList);
+					for (String user: userList) {
+						System.out.println("Looking at follow data: " + user);
+						if (StringUtils.isAlpha(user)) {
+							userNameList[i] = user.trim();
+							System.out.println("Going to fetch twitter userData for the following screen name: " + userNameList[i]);
+							++i;
+						} else {
+							userIdList[j] = Long.parseLong(user.trim());
+							System.out.println("Going to fetch twitter userData for the following twitterID: " + userIdList[j]);
+							++j;
+						}
+					}
+					userNameList = ArrayUtils.subarray(userNameList, 0, i);
+					userIdList = ArrayUtils.subarray(userIdList, 0, j);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			List<User> dataList = new ArrayList<User>();
+			if (userNameList != null && userNameList.length > 0) {
+				dataList.addAll(getUserDataFromScreenName(userNameList, userName));
+			}
+			if (userIdList != null && userIdList.length > 0) {
+				dataList.addAll(getUserDataFromTwitterID(userIdList, userName));
+			}
+
+			if (!dataList.isEmpty()) {
+				StringBuffer followIDs = new StringBuffer();
+				for (User u: dataList) {
+					followIDs.append(u.getId()).append(",");
+				}
+				followIDs.deleteCharAt(followIDs.lastIndexOf(","));
+				System.out.println("Created follow twitterID list: " + followIDs.toString());
+				return followIDs.toString();		
+			}
+			else {
+				return null;
+			}
+
+		}
+		return null;
+	}
+
+	private List<User> getUserDataFromScreenName(String[] userNameList, String userName)	{		
+		if (userNameList != null) {
+			//System.out.println("input array size = " + userNameList.length);
+			try {
+				Twitter twitter = new TwitterFactory().getInstance();
+				twitter.setOAuthConsumer(consumerKey, consumerSecret);
+				AccessToken accessToken = new AccessToken(accessTokenStr, accessTokenSecretStr);
+				twitter.setOAuthAccessToken(accessToken);
+				
+				ResponseList<User> list = twitter.lookupUsers(userNameList);
+				System.out.println("Successfully looked up in Twitter by screen name, size of list: " + list.size());
+				return (list != null ? list : new ArrayList<User>());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return new ArrayList<User>();
+	}
+
+	private List<User> getUserDataFromTwitterID(long[] userIdList, String userName)	{		
+		if (userIdList != null) {
+			//System.out.println("input array size = " + userIdList.length);
+			try {
+				Twitter twitter = new TwitterFactory().getInstance();
+				twitter.setOAuthConsumer(consumerKey, consumerSecret);
+				AccessToken accessToken = new AccessToken(accessTokenStr, accessTokenSecretStr);
+				twitter.setOAuthAccessToken(accessToken);
+
+				ResponseList<User> list = twitter.lookupUsers(userIdList);
+				System.out.println("Successfully looked up in Twitter by ID, size of list: " + list.size());
+				return (list != null ? list : new ArrayList<User>());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return new ArrayList<User>();
 	}
 }
