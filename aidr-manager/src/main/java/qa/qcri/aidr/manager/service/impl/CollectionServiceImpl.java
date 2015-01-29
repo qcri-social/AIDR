@@ -274,7 +274,7 @@ public class CollectionServiceImpl implements CollectionService {
 			 * Rest call to Fetcher
 			 */
 			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
-			// gf 3 way
+			
 			if (aidrCollection.getCollectionType() == Twitter) {
 				WebTarget webResource = client.target(fetchMainUrl + "/twitter/start");
 
@@ -509,14 +509,18 @@ public class CollectionServiceImpl implements CollectionService {
 					System.out.println("Received string: " + followList + ", Split follow string: " + userList);
 					for (String user: userList) {
 						System.out.println("Looking at follow data: " + user);
-						if (StringUtils.isAlpha(user)) {
+						if (StringUtils.isNumeric(user.trim())) {
+							try {
+								userIdList[j] = Long.parseLong(user.trim());
+								System.out.println("Going to fetch twitter userData for the following twitterID: " + userIdList[j]);
+								++j;
+							} catch (Exception ex) {
+								logger.error("Exception in parsing string to number: ", ex);
+							}		
+						} else {
 							userNameList[i] = user.trim();
 							System.out.println("Going to fetch twitter userData for the following screen name: " + userNameList[i]);
 							++i;
-						} else {
-							userIdList[j] = Long.parseLong(user.trim());
-							System.out.println("Going to fetch twitter userData for the following twitterID: " + userIdList[j]);
-							++j;
 						}
 					}
 					userNameList = ArrayUtils.subarray(userNameList, 0, i);
@@ -550,6 +554,64 @@ public class CollectionServiceImpl implements CollectionService {
 		return null;
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public String getFollowTwitterScreenNames(String followList, String userName) {
+		if (followList != null && !followList.isEmpty()) {
+			List<String> userList = Arrays.asList(followList.split(","));
+
+			if (null == accessTokenStr || null == accessTokenSecretStr) {
+				UserConnection userConnection = userConnectionRepository.fetchbyUsername(userName);
+				accessTokenStr = userConnection.getAccessToken();
+				accessTokenSecretStr = userConnection.getSecret();
+			}
+			
+			long[] userIdList = null;
+			if (userList != null) {
+				try {
+					userIdList = new long[userList.size()];
+					int j = 0;
+					System.out.println("Received string: " + followList + ", Split follow string: " + userList);
+					for (String user: userList) {
+						System.out.println("Looking at follow data: " + user);
+						if (StringUtils.isNumeric(user.trim())) {
+							try {
+								userIdList[j] = Long.parseLong(user.trim());
+								System.out.println("Going to fetch twitter userData for the following twitterID: " + userIdList[j]);
+								++j;
+							} catch (Exception ex) {
+								logger.error("Exception in parsing string to number: ", ex);
+							}		
+						} 
+					}
+					userIdList = ArrayUtils.subarray(userIdList, 0, j);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			List<User> dataList = new ArrayList<User>();
+			if (userIdList != null && userIdList.length > 0) {
+				dataList.addAll(getUserDataFromTwitterID(userIdList, userName));
+			}
+
+			if (!dataList.isEmpty()) {
+				StringBuffer followScreenNames = new StringBuffer();
+				for (User u: dataList) {
+					followScreenNames.append(u.getScreenName()).append(",");
+				}
+				followScreenNames.deleteCharAt(followScreenNames.lastIndexOf(","));
+				System.out.println("Created follow twitterID list: " + followScreenNames.toString());
+				return followScreenNames.toString();		
+			}
+			else {
+				return null;
+			}
+
+		}
+		return null;
+	}
+	
+	
 	private List<User> getUserDataFromScreenName(String[] userNameList, String userName)	{		
 		if (userNameList != null) {
 			//System.out.println("input array size = " + userNameList.length);
@@ -558,7 +620,7 @@ public class CollectionServiceImpl implements CollectionService {
 				twitter.setOAuthConsumer(consumerKey, consumerSecret);
 				AccessToken accessToken = new AccessToken(accessTokenStr, accessTokenSecretStr);
 				twitter.setOAuthAccessToken(accessToken);
-				
+
 				ResponseList<User> list = twitter.lookupUsers(userNameList);
 				System.out.println("Successfully looked up in Twitter by screen name, size of list: " + list.size());
 				return (list != null ? list : new ArrayList<User>());

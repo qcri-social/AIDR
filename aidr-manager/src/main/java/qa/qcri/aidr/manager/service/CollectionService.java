@@ -73,4 +73,6 @@ public interface CollectionService {
     
 	public String getFollowTwitterIDs(String followList, String userName);
 
+	public String getFollowTwitterScreenNames(String followList, String userName);
+
 }
