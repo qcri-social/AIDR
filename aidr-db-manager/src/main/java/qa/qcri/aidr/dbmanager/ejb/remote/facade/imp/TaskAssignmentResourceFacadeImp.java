@@ -41,7 +41,7 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 	@Override
 	public int insertTaskAssignment(List<DocumentDTO> taskList, Long userID) {
 		// hard code, will create user service
-		System.out.println("Going to insert/create task list of size = " + taskList.size() + ", for userID: " + userID);
+		System.out.println("[insertTaskAssignment] Going to insert/create task list of size = " + taskList.size() + ", for userID: " + userID);
 		try {
 			for (Iterator<DocumentDTO> it = taskList.iterator(); it.hasNext();){
 				DocumentDTO tb = (DocumentDTO) it.next();
@@ -69,14 +69,15 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 		try {
 			List<TaskAssignment> taskAssignments = getAllByCriteria(Restrictions.eq("id.documentId", documentID));
 			if(null == taskAssignments || taskAssignments.size()== 0){
+				System.out.println("[insertOneTaskAssignment] Going to insert/create task list of size = " + taskAssignments.size() + ", for userID: " + userID);
 				TaskAssignment taskAssignment = new TaskAssignment(documentID, userID, new Date());
 				save(taskAssignment);
 				em.flush();
 				return 1;
 			}
 		} catch (Exception e) {
-			logger.error("Error in insert operation!");
-			logger.error(elog.toStringException(e));
+			logger.error("Error in insert operation!", e);
+			e.printStackTrace();
 		}
 		return 0;
 	}
