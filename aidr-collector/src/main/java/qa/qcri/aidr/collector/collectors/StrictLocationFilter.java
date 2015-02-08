@@ -19,6 +19,10 @@ public class StrictLocationFilter implements Predicate<JsonObject> {
 	
 	private BRect[] square;
 	
+	public StrictLocationFilter(){
+		square = new BRect[]{};
+	}
+	
 	public StrictLocationFilter(CollectionTask task){
 		String locations = task.getGeoLocation();
 		if (locations != null && !locations.isEmpty()) {
@@ -60,11 +64,10 @@ public class StrictLocationFilter implements Predicate<JsonObject> {
 		double lat = a.getJsonNumber(1).doubleValue();
 		for (BRect r : square) {
 			if (lon < r.minLon || lon > r.maxLon)
-				return false;
-			if (lat < r.minLat || lat > r.maxLat)
-				return false;
+				continue;
+			if (lat >= r.minLat || lat <= r.maxLat)
+				return true;
 		}
-		return true;
+		return false;
 	}
-
 }
