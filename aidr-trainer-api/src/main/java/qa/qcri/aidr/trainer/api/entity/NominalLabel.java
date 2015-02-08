@@ -99,8 +99,8 @@ public class NominalLabel implements Serializable {
     @Column (name = "description", nullable = false)
     private String description;
 
-    @Column (name = "sequence", nullable = false)
-    private Integer sequence;
+    @Column(name = "sequence", nullable = false)
+	private Integer sequence;
 
     @ManyToOne
     @JoinColumn(name="nominalAttributeID" ,nullable = false, insertable = false, updatable = false)

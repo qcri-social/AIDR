@@ -52,18 +52,21 @@ public class DocumentController {
 
         DocumentDTO document = null;
         Long id = new Long(crisisID);
+        System.out.println("Going to fetch internal training document for crisisID = " + crisisID + ", userName = " + userName + ", count = " + maxresult);
         if(userName != null){
-            List<DocumentDTO> documents =  documentService.getDocumentForOneTask(id,Integer.valueOf(maxresult),userName )  ;
-
+            List<DocumentDTO> documents =  documentService.getDocumentForOneTask(id,Integer.valueOf(maxresult),userName );
             if(documents!= null){
                 if(documents.size() > 0){
                     document = documents.get(0);
+                    System.out.println("Fetched document for internal tagging task: " + document.getDocumentID() + ", for crisisID = " + document.getCrisisDTO().getCrisisID());
                 }
             }
 
         }
-
-        return documentService.findOneDocumentForTaskByCririsID(document, id);
-
+        List<TaskBufferJsonModel> jsonData = documentService.findOneDocumentForTaskByCririsID(document, id);
+        for (int i = 0;i < jsonData.size();i++) {
+        	System.out.println("To be returned json Data, documentID = " + jsonData.get(i).getDocumentID() + ", for crisisID = " + jsonData.get(i).getCrisisID() );
+        }
+        return jsonData;
     }
 }

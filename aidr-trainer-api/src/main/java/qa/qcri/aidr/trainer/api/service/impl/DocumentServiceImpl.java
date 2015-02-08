@@ -117,9 +117,10 @@ public class DocumentServiceImpl implements DocumentService {
 
 		if(users != null){
 			documents =  this.getAvailableDocument(crisisID, count) ;
-			//logger.info("documents : " + documents.size());
+			System.out.println("For crisisID = " + crisisID + ", user = " + userName + ", documents available: " + (documents != null ? documents.size() : "empty list"));
 			if(documents != null && documents.size() > 0){
 				taskAssignmentService.addToTaskAssignment(documents, users.getUserID());
+				System.out.println("Added to task_assignment table: " + documents.size() + "docID = " + documents.get(0).getDocumentID());
 			}
 
 		}
@@ -170,6 +171,10 @@ public class DocumentServiceImpl implements DocumentService {
 	public  List<DocumentDTO> getAvailableDocument(Long crisisID, Integer maxresult){
 		//return documentDao.findDocumentForTask(crisisID, maxresult);
 		List<DocumentDTO> dtoList = taskManager.getNewTaskCollection(crisisID, maxresult, "DESC", null);
+		System.out.println("Fetched from DB manager, documents list size = " + dtoList.size());
+		for (int i = 0;i < dtoList.size();i++) {
+			System.out.println("Fetched document ID = " + dtoList.get(i).getDocumentID());
+		}
 		return dtoList;
 	}
 
