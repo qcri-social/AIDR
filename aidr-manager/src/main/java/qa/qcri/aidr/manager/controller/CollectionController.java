@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+import qa.qcri.aidr.common.code.ResponseWrapperNEW;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.manager.dto.*;
@@ -20,12 +21,15 @@ import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 
+import twitter4j.User;
+
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.xml.ws.ResponseWrapper;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -61,11 +65,12 @@ public class CollectionController extends BaseController{
 	@RequestMapping(value = "/save.action", method={RequestMethod.POST})
 	@ResponseBody
 	public Map<String,Object> save(
-            AidrCollection collection,
-            @RequestParam(value = "runAfterCreate", defaultValue = "false", required = false)
-            Boolean runAfterCreate) throws Exception {
+			AidrCollection collection,
+			@RequestParam(value = "runAfterCreate", defaultValue = "false", required = false)
+			Boolean runAfterCreate) throws Exception {
 
 		logger.info("Save AidrCollection to Database having code : "+collection.getCode());
+		logger.info("Following users: " + collection.getFollow());
 		try{
 			UserEntity entity = getAuthenticatedUser();
 			collection.setUser(entity);
@@ -86,10 +91,10 @@ public class CollectionController extends BaseController{
 
 			collectionService.create(collection);
 
-            //Running collection right after creation
-            if (runAfterCreate) {
-                return start(collection.getId());
-            }
+			//Running collection right after creation
+			if (runAfterCreate) {
+				return start(collection.getId());
+			}
 
 			return getUIWrapper(true);  
 		}catch(Exception e){
@@ -281,6 +286,7 @@ public class CollectionController extends BaseController{
 				collection.setManagers(dbCollection.getManagers());
 				collection.setCreatedDate(dbCollection.getCreatedDate());
 				collection.setPubliclyListed(dbCollection.getPubliclyListed());
+				collection.setFollow(collectionService.getFollowTwitterIDs(collection.getFollow(), collection.getUser().getUserName()));
 				collectionService.update(collection);
 
 				//              start collection
@@ -291,6 +297,7 @@ public class CollectionController extends BaseController{
 				collection.setManagers(dbCollection.getManagers());
 				collection.setCreatedDate(dbCollection.getCreatedDate());
 				collection.setPubliclyListed(dbCollection.getPubliclyListed());
+				collection.setFollow(collectionService.getFollowTwitterIDs(collection.getFollow(), collection.getUser().getUserName()));
 				collectionService.update(collection);
 			}
 
@@ -680,7 +687,7 @@ public class CollectionController extends BaseController{
 		}
 		dto.setStatus(collection.getStatus());
 		dto.setTrack(collection.getTrack());
-		dto.setFollow(collection.getFollow());
+		dto.setFollow(collectionService.getFollowTwitterScreenNames(collection.getFollow(), user.getUserName()));
 		dto.setGeo(collection.getGeo());
 		dto.setLangFilters(collection.getLangFilters());
 		dto.setStartDate(collection.getStartDate());
@@ -735,6 +742,32 @@ public class CollectionController extends BaseController{
 		} catch (Exception e) {
 			e.printStackTrace();
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
+		}
+	}
+
+	@RequestMapping(value = "/getTwitterUserIds.action", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> getTwitterUserID(@RequestParam(value ="userId", required=true) Integer userId, @RequestParam("userList") String userList) {
+		try {
+			UserEntity user = userService.getById(userId);
+			if (user != null) {
+				String userName = user.getUserName();
+				if (userList != null && !userList.isEmpty()) {
+					String dataList = collectionService.getFollowTwitterIDs(userList, userName);
+					if (dataList != null) {
+						return getUIWrapper(dataList, true);
+					} else {
+						return getUIWrapper(null, false, 0L, "Error in twitter user data lookup");
+					}
+				} else {
+					return getUIWrapper(null, false, 0L, "User list to lookup is empty");
+				}
+			} else {
+				return getUIWrapper(null, false, 0L, "User ID provided is incorrect or doesn't exist");
+			}
+		} catch (Exception e) {
+			logger.error("exception", e);
+			return getUIWrapper(false, "Exception in twitter user data lookup.");
 		}
 	}
 }
