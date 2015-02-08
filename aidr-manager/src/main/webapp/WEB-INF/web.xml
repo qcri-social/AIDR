@@ -1,7 +1,10 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
-  <display-name>QCRI Fetch Manage</display-name>
-  <description>QCRI Fetch Manage</description>
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	version="3.0">
+	<display-name>QCRI Fetch Manage</display-name>
+	<description>QCRI Fetch Manage</description>
   
     <context-param>
 		<param-name>contextConfigLocation</param-name>
@@ -33,12 +36,16 @@
   
 	  <welcome-file-list>
 	    <welcome-file>index.html</welcome-file>
-	    <welcome-file>index.htm</welcome-file>
 	    <welcome-file>index.jsp</welcome-file>
 	  </welcome-file-list>
           
           <session-config>
     <session-timeout>25</session-timeout> <!-- in minutes -->
   </session-config>
-          
+	<jsp-config>
+		<jsp-property-group>
+			<url-pattern>*.jsp</url-pattern>
+			<trim-directive-whitespaces>true</trim-directive-whitespaces>
+		</jsp-property-group>
+	</jsp-config>
 </web-app>

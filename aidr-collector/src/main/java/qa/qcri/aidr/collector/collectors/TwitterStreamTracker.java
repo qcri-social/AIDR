@@ -45,7 +45,7 @@ public class TwitterStreamTracker implements Closeable {
 		TwitterStatusListener listener = new TwitterStatusListener(task, channelName);
 		listener.addFilter(new ShedderFilter(channelName, shedder));
 		if ("strict".equals(task.getGeoR())) {
-			listener.addFilter(new StrictLocationFilter());
+			listener.addFilter(new StrictLocationFilter(task));
 		}
 		listener.addPublisher(publisherJedis);
 		long threhold = Long.parseLong(getProperty("FETCHER_REDIS_COUNTER_UPDATE_THRESHOLD"));
