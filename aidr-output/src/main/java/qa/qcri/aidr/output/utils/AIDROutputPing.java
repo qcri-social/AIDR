@@ -181,10 +181,11 @@ public class AIDROutputPing {
 		return Response.ok(jsonpRes.toString()).build();
 	}
 
-	static String consumerKeyStr = "N7rabH3deIdq9Lv7yVSQ";
-	static String consumerSecretStr = "y9oK24PlIjO60Xb3iqO0v7yY7mqFr29CmGeVsCPbwRY";
-	static String accessTokenStr = "1026972480-VhLwHExdBtzEuOqm9vA0jKFKGU2wMoYTtuGpYQw";
-	static String accessTokenSecretStr = "ul1KFh97baltaKsqpw9PXCTuR5SAJ55Kffs3Lyx4wv64d";
+	static String consumerKeyStr = "****";
+	static String consumerSecretStr = "****";
+	static String accessTokenStr = "****";
+	static String accessTokenSecretStr = "****";
+
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -194,7 +195,7 @@ public class AIDROutputPing {
 		String[] userNameList = null;
 		long[] userIdList = null;
 		if (userList != null) {
-			if (userList.getUserNames() != null) {
+			if (userList.getUserNames() != null && !userList.getUserNames().isEmpty()) {
 				try {
 					userNameList = new String[userList.getUserNames().size()];
 					int i = 0;
@@ -207,7 +208,7 @@ public class AIDROutputPing {
 					e.printStackTrace();
 				}
 			}
-			if (userList.getUserIds() != null) {
+			if (userList.getUserIds() != null && !userList.getUserIds().isEmpty()) {
 				try {
 					userIdList = new long[userList.getUserIds().size()];
 					int i = 0;
@@ -262,7 +263,7 @@ public class AIDROutputPing {
 					}
 					//System.out.println("done lookup : " + i);
 				}
-				System.out.println("Successfully looked up in Twitter by screen name: " + list.size());
+				System.out.println("Successfully looked up in Twitter by screen name: " + (list != null ? list.size() : "null"));
 				return list;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -295,7 +296,7 @@ public class AIDROutputPing {
 					}
 					//System.out.println("done lookup : " + i);
 				}
-				System.out.println("Successfully looked up in Twitter by ID: " + list.size());
+				System.out.println("Successfully looked up in Twitter by ID: " + (list != null ? list.size() : "null"));
 				return list;
 			} catch (Exception e) {
 				e.printStackTrace();
