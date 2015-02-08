@@ -6,6 +6,7 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.manager.dto.*;
@@ -20,7 +21,12 @@ import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -331,10 +337,14 @@ public class CollectionController extends BaseController{
 
 	@RequestMapping(value = "/findAll.action", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String,Object>  findAll(@RequestParam Integer start, @RequestParam Integer limit,
-			@DefaultValue("no") @QueryParam("trashed") String trashed) throws Exception {
-		start = (start != null) ? start : 0;
-		limit = (limit != null) ? limit : 50;
+//	@Path("/findAll.action") @GET
+//	@Produces(MediaType.APPLICATION_JSON)
+	public Map<String,Object>  findAll(
+			@QueryParam("start") @DefaultValue("0") Integer start,
+			@QueryParam("limit") @DefaultValue("50") Integer limit,
+			@QueryParam("trashed") @DefaultValue("no") String trashed) throws Exception {
+		if (start<0) start = 0;
+		if (limit>50) limit = 50;
 		UserEntity userEntity = getAuthenticatedUser();
 		if (userEntity != null) {
 			List<AidrCollectionTotalDTO> dtoList = new ArrayList<AidrCollectionTotalDTO>();

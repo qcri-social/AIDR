@@ -60,7 +60,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
             fields: ['id', 'code', 'name', 'target', 'langFilters', 'startDate', 'endDate', 'status', 'count', 'track', 'geo', 'follow', 'lastDocument', 'user', 'collectionType'],
             proxy: {
                 type: 'ajax',
-                url: 'collection/findAll.action',
+                url: 'protected/collection/findAll.action',
                 reader: {
                     root: 'data',
                     totalProperty: 'total'
@@ -77,7 +77,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                          * redirecting to "home page" (which will redirect to "connect to twitter page" )
                          *
                          */
-                        document.location.href = BASE_URL + '/protected/home'
+                        document.location.href = BASE_URL + '/protected/home';
                     }
                     var count = store.getCount();
 
@@ -196,7 +196,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
             fields: ['id', 'code', 'name', 'target', 'langFilters', 'startDate', 'endDate', 'status', 'count', 'track', 'geo', 'follow', 'lastDocument', 'user'],
             proxy: {
                 type: 'ajax',
-                url: 'collection/findAll.action',
+                url: 'protected/collection/findAll.action',
                 reader: {
                     root: 'data',
                     totalProperty: 'total'
@@ -361,7 +361,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                 ]
             }
 
-        ]
+        ];
 
         this.callParent(arguments);
     }

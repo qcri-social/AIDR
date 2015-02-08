@@ -66,7 +66,7 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
             fields: ['id', 'code', 'name', 'target', 'langFilters', 'startDate', 'endDate', 'status', 'count', 'track', 'geo', 'follow', 'lastDocument', 'user', 'collectionType', 'classifiersNumber', 'crisisType'],
             proxy: {
                 type: 'ajax',
-                url: 'collection/findAll.action',
+                url: 'protected/collection/findAll.action',
                 reader: {
                     root: 'data',
                     totalProperty: 'total'
@@ -83,7 +83,7 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
                          * redirecting to "home page" (which will redirect to "connect to twitter page" )
                          *
                          */
-                        document.location.href = BASE_URL + '/protected/home'
+                        document.location.href = BASE_URL + '/protected/home';
                     }
                     var count = store.getCount();
 
@@ -120,9 +120,9 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
             '<div class="img">',
                 '<a href="{[this.getEncodedCode(values.code)]}/collection-details">' +
                 '<tpl if="this.isTwitter(values.collectionType)">'+
-                '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/collection-icon.png" width="70">' +
+                '<img alt="Collection image" height="70" src="resources/img/collection-icon.png" width="70">' +
                 '<tpl else>'+
-                '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/sms_icon.png" width="70">' +
+                '<img alt="Collection image" height="70" src="resources/img/sms_icon.png" width="70">' +
                 '</tpl>'+
                 '</a>',
             '</div>',
@@ -221,7 +221,7 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
             fields: ['id', 'code', 'name', 'target', 'langFilters', 'startDate', 'endDate', 'status', 'count', 'track', 'geo', 'follow', 'lastDocument', 'user', 'collectionType'],
             proxy: {
                 type: 'ajax',
-                url: 'collection/findAll.action',
+                url: 'protected/collection/findAll.action',
                 reader: {
                     root: 'data',
                     totalProperty: 'total'
@@ -262,9 +262,9 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
             '<div class="img">',
             '<a href="{[this.getEncodedCode(values.code)]}/collection-details">' +
                 '<tpl if="this.isTwitter(values.collectionType)">'+
-                '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/collection-icon.png" width="70">' +
+                '<img alt="Collection image" height="70" src="resources/img/collection-icon.png" width="70">' +
                 '<tpl else>'+
-                '<img alt="Collection image" height="70" src="/AIDRFetchManager/resources/img/sms_icon.png" width="70">' +
+                '<img alt="Collection image" height="70" src="resources/img/sms_icon.png" width="70">' +
                 '</tpl>'+
             '</div>',
 
