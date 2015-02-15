@@ -22,7 +22,7 @@ public class FetcherRequestDTO implements Serializable {
     private String geoLocation, geoR;
     private String languageFilter;
     
-    public FetcherRequestDTO() {}		// gf 3 - modified attempt
+    public FetcherRequestDTO() {}		
     
     public String getGeoLocation() {
         return geoLocation;

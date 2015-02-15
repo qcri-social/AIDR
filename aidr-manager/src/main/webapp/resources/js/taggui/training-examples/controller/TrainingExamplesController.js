@@ -80,7 +80,11 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                             me.mainComponent.skipTaskButton.disable();
                         }
                         if (obj && obj[0]) {
-                            me.mainComponent.optionPanel.removeAll();
+                        	if (fromSkipAction){
+                                var skippedDocumentID = me.mainComponent.documentID;
+                        		me.skipTask(skippedDocumentID);
+                            }
+                        	me.mainComponent.optionPanel.removeAll();
                             var r = obj[0];
                             me.mainComponent.documentID = r.documentID;
                             me.mainComponent.createDate = Ext.Date.format(new Date(), "c");
@@ -99,9 +103,10 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                                     }
                                 });
                             }
+                            /*
                             if (fromSkipAction){
                                 me.skipTask();
-                            }
+                            }*/
                         } else{
                             AIDRFMFunctions.setAlert("Error", "No "+ COLLECTION_TYPES[TYPE]["plural"] + " to tag available for this crisis. Please come back to this page later.");
                             me.mainComponent.documentTextLabel.setText("No "+ COLLECTION_TYPES[TYPE]["plural"] + " to tag available for this crisis. Please come back to this page later.", false);
@@ -188,7 +193,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
         me.loadData(true);
     },
 
-    skipTask: function() {
+    skipTask: function(skippedDocumentID) {
         var me = this;
 
         if (!me.mainComponent.previousDocumentID) {
@@ -203,7 +208,8 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
             url: BASE_URL + '/protected/tagger/saveTaskAnswer.action',
             method: 'POST',
             params: {
-                documentID: me.mainComponent.documentID,
+                //documentID: me.mainComponent.documentID,
+            	documentID: skippedDocumentID,
                 crisisID: CRISIS_ID,
                 category: Ext.String.trim('null'),
                 taskcreated: me.mainComponent.createDate,

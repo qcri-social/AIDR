@@ -207,7 +207,7 @@ public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long
 				.add(Restrictions.eq("hasHumanLabels",false));
 		try {
 			Document document = getByCriteria(newCriterion);
-			logger.debug("New task: " + document);
+			logger.info("New task: " + document);
 			if (document != null)  {
 				List<TaskAssignmentDTO> tList = taskAssignmentEJB.findTaskAssignmentByID(document.getDocumentId());
 				if (tList != null && tList.isEmpty()) {

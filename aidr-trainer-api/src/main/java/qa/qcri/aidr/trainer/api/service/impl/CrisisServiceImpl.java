@@ -5,6 +5,8 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
 import qa.qcri.aidr.trainer.api.dao.CrisisDao;
 import qa.qcri.aidr.trainer.api.dao.CustomUITemplateDao;
 import qa.qcri.aidr.trainer.api.dao.ModelFamilyDao;
@@ -40,6 +42,9 @@ public class CrisisServiceImpl implements CrisisService {
     @Autowired
     private CustomUITemplateDao customUITemplateDao;
 
+    @Autowired
+	private CrisisResourceFacade crisisService;
+    
     @Override
     public Crisis findByCrisisID(Long id) {
 

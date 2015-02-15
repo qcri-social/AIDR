@@ -78,8 +78,6 @@ public class CrisisController {
 				labelJsonArrary.add(qa);
 			}
 		}
-
-
 		return labelJsonArrary.toJSONString();
 	}
 

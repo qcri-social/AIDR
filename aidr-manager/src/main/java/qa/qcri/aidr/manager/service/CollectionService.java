@@ -70,5 +70,9 @@ public interface CollectionService {
     public AidrCollection findTrashedByCode(String code) throws Exception;
 
     public AidrCollection findTrashedById(Integer id) throws Exception;
+    
+	public String getFollowTwitterIDs(String followList, String userName);
+
+	public String getFollowTwitterScreenNames(String followList, String userName);
 
 }

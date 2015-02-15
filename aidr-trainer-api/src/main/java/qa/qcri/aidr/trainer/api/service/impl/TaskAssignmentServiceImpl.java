@@ -85,6 +85,7 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
  
     	//List<qa.qcri.aidr.task.entities.Document> docList = mapper.deSerializeList(jsonString, new TypeReference<List<qa.qcri.aidr.task.entities.Document>>() {});
     	try {
+    		System.out.println("[addToTaskAssignment] Going to insert task list of size = " + documents.size() + ", for userID: " + userID);
     		taskManager.assignNewTaskToUser(documents, userID);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -96,7 +97,8 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
     public void addToOneTaskAssignment(Long documentID, Long userID){
         //taskAssignmentDao.insertOneTaskAssignment(documentID, userID);
     	try {
-			taskManager.assignNewTaskToUser(documentID, userID);
+    		System.out.println("[addToOneTaskAssignment] Going to insert document = " + documentID + ", for userID: " + userID);
+    		taskManager.assignNewTaskToUser(documentID, userID);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

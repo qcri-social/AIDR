@@ -533,10 +533,9 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		Criterion aliasCriterion =  (Restrictions.isNull(aliasTableKey));
 		try {
 			List<Document> docList = remoteDocumentEJB.getByCriteriaWithAliasByOrder(newCriterion, order, orderBy, count, aliasTable, aliasCriterion);
-			logger.debug("[getNewTaskCollection] docList = " + docList);
+			System.out.println("[getNewTaskCollection] docList = " + docList);
 			if (docList != null) {
-				logger.info("Fetched size = " + docList.size());
-
+				System.out.println("Fetched size = " + docList.size());
 				return createDocumentDTOList(docList);
 			} else {
 				return null;
@@ -756,10 +755,14 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	////////////////////////////////////////////////////////////
 	@Override
 	public void assignNewTaskToUser(Long id, Long userId) throws Exception {
+		try {
 		int retVal = remoteTaskAssignmentEJB.insertOneTaskAssignment(id, userId);
 		if (retVal <= 0) {
 			logger.error("unable to undo task assignment");
 			throw new Exception("[assignNewTaskToUser] Couldn't undo task assignment");
+		}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
