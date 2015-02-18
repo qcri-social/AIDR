@@ -387,6 +387,11 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
         }
 
         var result = date + USER_NAME + '-' + Ext.util.Format.substr(v, 0, length);
+
+        if(result.length > 64){
+            return false;
+        }
+
         me.isExistForGenerated(result);
     },
 

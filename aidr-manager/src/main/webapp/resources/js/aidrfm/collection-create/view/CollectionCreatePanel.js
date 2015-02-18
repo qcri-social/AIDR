@@ -53,7 +53,9 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             allowBlank: false,
             labelWidth: 240,
             emptyText: 'e.g., Hurricane Sandy',
-            flex:1
+            flex:1 ,
+            regex: /^[A-Za-z0-9_-]$/i,
+            invalidText: 'Not a valid crisis name. Supports alphabets and numbers no special characters except underscore and hyphen".'
         });
 
         this.keywordsE = Ext.create('Ext.form.field.TextArea', {
