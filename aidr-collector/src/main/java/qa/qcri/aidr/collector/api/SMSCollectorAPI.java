@@ -89,15 +89,16 @@ public class SMSCollectorAPI  {
     public Response receive(@PathParam("collection_code") String code, SMS sms) {
         GenericCache cache = GenericCache.getInstance();
         String smsCollections = cache.getSMSCollection(code.trim());
-        
         if (getProperty("STATUS_CODE_COLLECTION_RUNNING").equals(smsCollections)) {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 String channelName = String.format(CHANNEL, code);
                 if (redisLoadShedder.get(channelName).canProcess(channelName)) {
-                    JedisPublisher.newInstance().publish(channelName, objectMapper.writeValueAsString(sms));
+                    JedisPublisher publisherJedis = JedisPublisher.newInstance();
+                    publisherJedis.publish(channelName, objectMapper.writeValueAsString(sms));
                     cache.increaseSMSCount(code);
                     cache.setLastDownloadedDoc(code, sms.getText());
+                    publisherJedis.close();
                 }
             } catch (Exception e) {
                 logger.error("Exception in receiving from SMS collection: " + code + ", data: " + sms);
