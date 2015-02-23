@@ -11,6 +11,15 @@ import javax.json.JsonValue.ValueType;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.java7.Predicate;
 
+class ParseException extends Exception {
+	public ParseException(String message) {
+		super(message);
+	}
+	public ParseException(String message, Throwable cause) {
+		super(message, cause);
+	}
+}
+
 public class StrictLocationFilter implements Predicate<JsonObject> {
 	
 	private class BRect {
@@ -19,13 +28,11 @@ public class StrictLocationFilter implements Predicate<JsonObject> {
 	
 	private BRect[] square;
 	
-	public StrictLocationFilter(){
-		square = new BRect[]{};
-	}
-	
-	public StrictLocationFilter(CollectionTask task){
+	public StrictLocationFilter(CollectionTask task) throws ParseException{
 		String locations = task.getGeoLocation();
-		if (locations != null && !locations.isEmpty()) {
+		try {
+			if (locations == null || locations.trim().isEmpty())
+				throw new ParseException("GeoLocation should be a non-empty string");
 			List<String> list = Arrays.asList(locations.split(","));
 			// TODO: Java 8 update. Replace the following block with one single line
 			// double[] flat = list.stream().mapToDouble(Double::parseDouble).toArray();
@@ -35,7 +42,8 @@ public class StrictLocationFilter implements Predicate<JsonObject> {
 				flat[i] = val;
 			}
 			// End of Java 8 Update
-			assert flat.length % 4 == 0;
+			if (flat.length % 4 != 0)
+				throw new ParseException("GeoLocation should contain N numbers, where N is multiple of 4");
 			square = new BRect[flat.length / 4];
 			for (int i = 0; i < flat.length; i = i + 4) {
 				BRect r = new BRect();
@@ -45,6 +53,8 @@ public class StrictLocationFilter implements Predicate<JsonObject> {
 				r.maxLat = flat[i+3];
 				square[i/4] = r;
 			}
+		} catch (NumberFormatException ex) {
+			throw new ParseException(String.format("Can not parse locations '%s'", locations), ex);
 		}
 	}
 
