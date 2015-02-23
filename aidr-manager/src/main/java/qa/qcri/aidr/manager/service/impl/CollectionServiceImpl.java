@@ -274,7 +274,7 @@ public class CollectionServiceImpl implements CollectionService {
 			 * Rest call to Fetcher
 			 */
 			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
-			
+
 			if (aidrCollection.getCollectionType() == Twitter) {
 				WebTarget webResource = client.target(fetchMainUrl + "/twitter/start");
 
@@ -565,7 +565,7 @@ public class CollectionServiceImpl implements CollectionService {
 				accessTokenStr = userConnection.getAccessToken();
 				accessTokenSecretStr = userConnection.getSecret();
 			}
-			
+
 			long[] userIdList = null;
 			if (userList != null) {
 				try {
@@ -610,8 +610,8 @@ public class CollectionServiceImpl implements CollectionService {
 		}
 		return null;
 	}
-	
-	
+
+
 	private List<User> getUserDataFromScreenName(String[] userNameList, String userName)	{		
 		if (userNameList != null) {
 			//System.out.println("input array size = " + userNameList.length);

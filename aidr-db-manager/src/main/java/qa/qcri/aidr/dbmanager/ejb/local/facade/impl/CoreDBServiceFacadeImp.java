@@ -22,7 +22,7 @@ import javax.persistence.PersistenceContext;
  *
  */
 @Stateless(name = "CoreDBServiceFacadeImp")
-public class CoreDBServiceFacadeImp<E, I extends Serializable> implements CoreDBServiceFacade<E,I> {
+public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializable> implements CoreDBServiceFacade<E,I> {
 
 	@PersistenceContext(unitName = "qa.qcri.aidr.dbmanager-EJBS") 
 	protected EntityManager em;
@@ -296,13 +296,15 @@ public class CoreDBServiceFacadeImp<E, I extends Serializable> implements CoreDB
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void save(E e) {
+	public E save(E e) {
 		try {
 			Session session = getCurrentSession();
-			session.save(e);
+			E savedEntity = (E) session.save(e);
 			session.flush();
 			session.evict(e);
+			return savedEntity;
 
 		} catch (Exception ex) {
 			System.out.println("Unable to save entity: " + e);
@@ -314,12 +316,13 @@ public class CoreDBServiceFacadeImp<E, I extends Serializable> implements CoreDB
 	}
 
 	@Override
-	public void merge(E e) {
+	public Object merge(E e) {
 		try {
 			Session session = getCurrentSession();
-			session.merge(e);
+			Object o = (Object) session.merge(e);
 			session.flush();
 			session.evict(e);
+			return o;
 		} catch (Exception ex) {
 			logger.error(elog.toStringException(ex));
 			ex.printStackTrace();

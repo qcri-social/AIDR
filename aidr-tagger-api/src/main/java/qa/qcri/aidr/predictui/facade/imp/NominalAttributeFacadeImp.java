@@ -30,7 +30,7 @@ public class NominalAttributeFacadeImp implements NominalAttributeFacade {
         return nominalAttributeRemoteEJB.getAllAttributesExceptCrisis(crisisID);
     }
 
-    public boolean addAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException {
+    public NominalAttributeDTO addAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException {
         return nominalAttributeRemoteEJB.addAttribute(attribute);
     }
 

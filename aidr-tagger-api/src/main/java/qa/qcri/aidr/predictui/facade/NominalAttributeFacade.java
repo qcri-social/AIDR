@@ -18,7 +18,7 @@ import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 public interface NominalAttributeFacade {
 
     //client to fix: return type is chagned from NominalAttribute to boolean
-    public boolean addAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException;
+    public NominalAttributeDTO addAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException;
 
     //client to fix: both return type and parameter is changed from NominalAttribute to NominalAttributeDTO
     public NominalAttributeDTO editAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException;

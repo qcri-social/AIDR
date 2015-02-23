@@ -422,7 +422,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 	// (1)
 	@Override
-	public boolean createNewAttribute(TaggerAttribute attribute) throws AidrException {
+	public TaggerAttribute createNewAttribute(TaggerAttribute attribute) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
 			WebTarget webResource = client.target(taggerMainUrl + "/attribute");
@@ -435,12 +435,12 @@ public class TaggerServiceImpl implements TaggerService {
 
 			//String jsonResponse = clientResponse.getEntity(String.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
-
-			Boolean response = objectMapper.readValue(jsonResponse, Boolean.class);
-			if (response != null) {
-				logger.info("Attribute with ID " + attribute.getNominalAttributeID() + " was created in Tagger");
+			NominalAttributeDTO dto = objectMapper.readValue(jsonResponse, NominalAttributeDTO.class);
+			TaggerAttribute newAttribute = dto != null ? new TaggerAttribute(dto) : null;
+			if (newAttribute != null) {
+				logger.info("Attribute with ID " + newAttribute.getNominalAttributeID() + " was created in Tagger");
 			}
-			return response;
+			return newAttribute;
 		} catch (Exception e) {
 			logger.info("exception", e);
 			throw new AidrException("Error while creating new attribute in Tagger", e);
@@ -460,13 +460,12 @@ public class TaggerServiceImpl implements TaggerService {
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 			String jsonResponse = clientResponse.readEntity(String.class);
 			NominalAttributeDTO dto = objectMapper.readValue(jsonResponse, NominalAttributeDTO.class);
-			TaggerAttribute response = new TaggerAttribute(dto);
+			TaggerAttribute response = dto != null ? new TaggerAttribute(dto) : null;
 			logger.info("Received response: " + response != null ? response.getName() : "no attribute for id = " + id);
 			if (response != null) {
 				logger.info("Attribute with ID " + response.getNominalAttributeID() + " was retrieved from Tagger");
-				return response;
 			}
-			return null;
+			return response;
 		} catch (Exception e) {
 			logger.info("exception", e);
 			throw new AidrException("Error while getting attribute from Tagger", e);

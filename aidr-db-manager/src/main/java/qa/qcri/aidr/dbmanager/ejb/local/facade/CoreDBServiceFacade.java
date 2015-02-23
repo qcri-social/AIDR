@@ -29,10 +29,10 @@ public interface CoreDBServiceFacade<E, I extends Serializable> {
 	public void update(E e);
 	public void update(List<E> entityCollection);
 	
-	public void merge(E e);
+	public Object merge(E e);
 	public void merge(List<E> entityCollection);
 	
-	public void save(E e);
+	public E save(E e);
 	public void save(List<E> entityCollection);
 	
 	public void delete(E e);

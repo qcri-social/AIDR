@@ -23,7 +23,7 @@ import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 public interface NominalAttributeResourceFacade extends CoreDBServiceFacade<NominalAttribute, Long>{
     
     //client to fix: return type changed from NominalAttribute to boolean
-    public boolean addAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException;
+    public NominalAttributeDTO addAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException;
     
     public NominalAttributeDTO editAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException;
     

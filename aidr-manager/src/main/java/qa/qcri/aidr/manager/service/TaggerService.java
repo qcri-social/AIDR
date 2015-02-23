@@ -35,7 +35,7 @@ public interface TaggerService {
 
 	public List<TaggerModelNominalLabel> getAllLabelsForModel(Integer modelID) throws AidrException;
 
-	public boolean createNewAttribute(TaggerAttribute attribute) throws AidrException;
+	public TaggerAttribute createNewAttribute(TaggerAttribute attribute) throws AidrException;
 
 	public TaggerAttribute getAttributeInfo(Integer id) throws AidrException;
 

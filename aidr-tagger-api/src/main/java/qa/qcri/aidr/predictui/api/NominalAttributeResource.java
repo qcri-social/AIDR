@@ -41,94 +41,101 @@ import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 @Stateless
 public class NominalAttributeResource {
 
-    @Context
-    private UriInfo context;
-    @EJB
-    private NominalAttributeFacade attributeLocalEJB;
+	@Context
+	private UriInfo context;
+	@EJB
+	private NominalAttributeFacade attributeLocalEJB;
 
-    public NominalAttributeResource() {
-    }
+	public NominalAttributeResource() {
+	}
 
-    private static Logger logger = LoggerFactory.getLogger(NominalAttributeResource.class);
-    private static ErrorLog elog = new ErrorLog();
+	private static Logger logger = LoggerFactory.getLogger(NominalAttributeResource.class);
 
-    @GET
-    @Produces("application/json")
-    @Path("/all")
-    public Response getAllNominalAttributes() throws PropertyNotSetException {
-        List<NominalAttributeDTO> attributeList = attributeLocalEJB.getAllAttributes();
-        ResponseWrapper response = new ResponseWrapper();
-        response.setNominalAttributes(attributeList);
-        return Response.ok(response).build();
-    }
+	@GET
+	@Produces("application/json")
+	@Path("/all")
+	public Response getAllNominalAttributes() throws PropertyNotSetException {
+		List<NominalAttributeDTO> attributeList = attributeLocalEJB.getAllAttributes();
+		ResponseWrapper response = new ResponseWrapper();
+		response.setNominalAttributes(attributeList);
+		return Response.ok(response).build();
+	}
 
-    @GET
-    @Produces("application/json")
-    @Path("/crisis/all")
-    public Response getAllNominalAttributesWithCrisis(@QueryParam("exceptCrisis") Long crisisID) throws PropertyNotSetException {
-        List<CrisisAttributesDTO> attributeList = attributeLocalEJB.getAllAttributesExceptCrisis(crisisID);
-        ResponseWrapper response = new ResponseWrapper();
-        if (attributeList.isEmpty() || attributeList == null) {
-            response.setMessage("No attribute left.");
-            return Response.ok(response).build();
-        }
-        response.setCrisisAttributes(attributeList);
-        return Response.ok(response).build();
-    }
+	@GET
+	@Produces("application/json")
+	@Path("/crisis/all")
+	public Response getAllNominalAttributesWithCrisis(@QueryParam("exceptCrisis") Long crisisID) throws PropertyNotSetException {
+		List<CrisisAttributesDTO> attributeList = attributeLocalEJB.getAllAttributesExceptCrisis(crisisID);
+		ResponseWrapper response = new ResponseWrapper();
+		if (attributeList.isEmpty() || attributeList == null) {
+			response.setMessage("No attribute left.");
+			return Response.ok(response).build();
+		}
+		response.setCrisisAttributes(attributeList);
+		return Response.ok(response).build();
+	}
 
-    @GET
-    @Produces("application/json")
-    @Path("{attributeID}")
-    public Response getAttributesnLabelByAttrID(@PathParam("attributeID") Long attributeID) throws PropertyNotSetException {
-        NominalAttributeDTO attribute = attributeLocalEJB.getAttributeByID(attributeID);
-        ResponseWrapper response = new ResponseWrapper();
-        if (attribute != null) {
-            return Response.ok(attribute).build();
-        }
-        response.setMessage("no attribute found with the given id.");
-        return Response.ok(response).build();
-    }
+	@GET
+	@Produces("application/json")
+	@Path("{attributeID}")
+	public Response getAttributesnLabelByAttrID(@PathParam("attributeID") Long attributeID) throws PropertyNotSetException {
+		NominalAttributeDTO attribute = attributeLocalEJB.getAttributeByID(attributeID);
+		ResponseWrapper response = new ResponseWrapper();
+		if (attribute != null) {
+			return Response.ok(attribute).build();
+		}
+		response.setMessage("no attribute found with the given id.");
+		return Response.ok(response).build();
+	}
 
-    @POST
-    @Consumes("application/json")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response addAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException {
-        boolean response = attributeLocalEJB.addAttribute(attribute);
-        return Response.ok(response).build();
-    }
+	@POST
+	@Consumes("application/json")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response addAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException {
+		try {
+			NominalAttributeDTO dto = attributeLocalEJB.addAttribute(attribute);
+			if (dto != null) {
+				return Response.ok(dto).build();
+			} else {
+				return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"))).build();
+			}
+		} catch (Exception e) {
+			logger.error("failed to attribute attribute: " + attribute.getCode());
+			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
+		}
+	}
 
-    @PUT
-    @Consumes("application/json")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response editAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException {
-        try {
-            attribute = attributeLocalEJB.editAttribute(attribute);
-        } catch (RuntimeException e) {
-            logger.error("failed to edit attribute: " + attribute.getCode());
-            logger.error(elog.toStringException(e));
-            return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
-        }
-        return Response.ok(attribute).build();
-    }
+	@PUT
+	@Consumes("application/json")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response editAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException {
+		try {
+			attribute = attributeLocalEJB.editAttribute(attribute);
+		} catch (RuntimeException e) {
+			logger.error("failed to edit attribute: " + attribute.getCode());
+			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
+		}
+		return Response.ok(attribute).build();
+	}
 
-    @DELETE
-    @Path("{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteAttribute(@PathParam("id") Long id) throws PropertyNotSetException {
-        boolean response;
-        response = attributeLocalEJB.deleteAttribute(id);
-        return response == true ? Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"))).build() : Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"))).build();
-    }
+	@DELETE
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteAttribute(@PathParam("id") Long id) throws PropertyNotSetException {
+		boolean response;
+		response = attributeLocalEJB.deleteAttribute(id);
+		return response == true ? Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"))).build() : Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"))).build();
+	}
 
-    @GET
-    @Produces("application/json")
-    @Path("/code/{code}")
-    public Response isAttributeExists(@PathParam("code") String code) throws PropertyNotSetException {
-        Long attributeID = attributeLocalEJB.isAttributeExists(code);
-        if (attributeID == null) {
-            attributeID = 0l;
-        }
-        String response = "{\"code\":\"" + code + "\", \"nominalAttributeID\":\"" + attributeID + "\"}";
-        return Response.ok(response).build();
-    }
+	@GET
+	@Produces("application/json")
+	@Path("/code/{code}")
+	public Response isAttributeExists(@PathParam("code") String code) throws PropertyNotSetException {
+		Long attributeID = attributeLocalEJB.isAttributeExists(code);
+		if (attributeID == null) {
+			attributeID = 0l;
+		}
+		String response = "{\"code\":\"" + code + "\", \"nominalAttributeID\":\"" + attributeID + "\"}";
+		return Response.ok(response).build();
+	}
 }
