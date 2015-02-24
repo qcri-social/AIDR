@@ -36,9 +36,11 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 	public NominalAttributeDTO addAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException {
 		try {
 			NominalAttribute e = attribute.toEntity();
-			NominalAttribute savedEntity = save(e);
-			if (savedEntity != null) {
-				return new NominalAttributeDTO(savedEntity);
+			Long id  = save(e);
+			System.out.println("Saved entity ID = " + id);
+			if (id != null) {
+				NominalAttributeDTO savedEntity = this.getAttributeByID(id);
+				return savedEntity;
 			} else {
 				return null;
 			}

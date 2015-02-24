@@ -186,7 +186,8 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
                     return r == 'Twitter';
                 },
                 getEncodedCode: function(code) {
-                    return encodeURI(code);
+                	URIString = BASE_URL + '/protected/' + code;
+                	return encodeURI(URIString);
                 },
                 getSharedBy: function(owner) {
                     if (owner.userName == USER_NAME){
@@ -291,7 +292,8 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
                     return r ? Ext.util.Format.number(r,'0,000') : 0;
                 },
                 getEncodedCode: function(code) {
-                    return encodeURI(code);
+                    URIString = BAS_URL + '/protected/' + code;
+                	return encodeURI(URIString);
                 },
                 isTwitter: function (r) {
                     return r == 'Twitter';

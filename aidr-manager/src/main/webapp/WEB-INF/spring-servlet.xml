@@ -26,7 +26,8 @@
 
      <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost:3306/aidr_fetch_manager?characterEncoding=utf-8" />
+		<!-- property name="url" value="jdbc:mysql://localhost:3306/aidr_fetch_manager?characterEncoding=utf-8" / -->
+		<property name="url" value = "jdbc:mysql://localhost:3306/aidr_fetch_manager?useUnicode=true" />
 		<property name="username" value="aidr_admin" />
 		<property name="password" value="aidr_admin" />
 	</bean>
@@ -38,8 +39,8 @@
                 <prop key="hibernate.show_sql">false</prop>
                 <prop key="hibernate.max_fetch_depth">1</prop>
                 <prop key="hibernate.dbcp.poolPreparedStatements">true</prop>
-                <prop key="hibernate.connection.CharSet">utf8</prop>
-                <prop key="hibernate.connection.characterEncoding">utf8</prop>
+                <!--  prop key="hibernate.connection.CharSet">utf8</prop -->
+                <!--  prop key="hibernate.connection.characterEncoding">utf8</prop -->
                 <prop key="hibernate.hbm2ddl.auto">update</prop>
             </props>
         </property>

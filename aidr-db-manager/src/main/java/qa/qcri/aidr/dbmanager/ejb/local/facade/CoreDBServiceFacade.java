@@ -32,7 +32,7 @@ public interface CoreDBServiceFacade<E, I extends Serializable> {
 	public Object merge(E e);
 	public void merge(List<E> entityCollection);
 	
-	public E save(E e);
+	public I save(E e);
 	public void save(List<E> entityCollection);
 	
 	public void delete(E e);

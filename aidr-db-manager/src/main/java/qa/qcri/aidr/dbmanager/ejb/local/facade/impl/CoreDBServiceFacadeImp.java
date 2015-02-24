@@ -298,13 +298,13 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public E save(E e) {
+	public I save(E e) {
 		try {
 			Session session = getCurrentSession();
-			E savedEntity = (E) session.save(e);
+			I id = (I) session.save(e);
 			session.flush();
 			session.evict(e);
-			return savedEntity;
+			return id;
 
 		} catch (Exception ex) {
 			System.out.println("Unable to save entity: " + e);
