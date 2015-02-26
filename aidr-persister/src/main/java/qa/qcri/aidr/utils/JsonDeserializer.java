@@ -1698,9 +1698,9 @@ public class JsonDeserializer {
 
 	public boolean satisfiesFilter(final JsonQueryList queryList, final FilterQueryMatcher tweetFilter, final ClassifiedTweet tweet) {
 		// Apply filter on tweet
-		logger.info("queryList = " + queryList + ", constraints = " + (queryList != null ? queryList.getConstraints().isEmpty() : "null"));
+		//logger.info("queryList = " + queryList + ", constraints = " + (queryList != null ? queryList.getConstraints().isEmpty() : "null"));
 		if (null == queryList || queryList.getConstraints().isEmpty()) {
-			logger.info("No filtering");
+			//logger.info("No filtering");
 			return true;		// no filtering
 		} else { 
 			if (!tweet.getNominalLabels().isEmpty()) {
