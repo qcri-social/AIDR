@@ -44,6 +44,8 @@ Under `[mysql]` section add:
 default-character-set = utf8mb4
 
 Finally, do a sanity check: 
+
+
 7. SHOW VARIABLES WHERE Variable_name LIKE 'character\_set\_%' OR Variable_name LIKE 'collation%';
 
 
