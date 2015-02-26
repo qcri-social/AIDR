@@ -439,7 +439,8 @@ public class ScreenController extends BaseController{
         String crisisName = "";
         if (crisis != null && crisis.getCrisisID() != null && crisis.getName() != null){
             crisisId = crisis.getCrisisID();
-            crisisName = crisis.getName();
+            //crisisName = crisis.getName();
+            crisisName = collection.getName();
         }
 
         Integer collectionCount = 0;

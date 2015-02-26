@@ -48,9 +48,13 @@ public class AidrCollection implements Serializable {
     @Column(length = 1000, name = "track")
     private String track;
 
+    @Column(length = 1000, name = "follow")
     private String follow;
 
-    private String geo, geoR;
+    @Column(length = 1000, name = "geo")
+    private String geo;
+    
+    private String geoR;
 
     private String langFilters;
 

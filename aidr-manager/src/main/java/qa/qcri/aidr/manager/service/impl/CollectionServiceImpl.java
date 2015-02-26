@@ -252,6 +252,11 @@ public class CollectionServiceImpl implements CollectionService {
 	@Transactional(readOnly = false)
 	public AidrCollection stop(Integer collectionId) throws Exception {
 		AidrCollection collection = collectionRepository.findById(collectionId);
+		
+		// Follwoing 2 lines added by koushik for downloadCount bug
+		AidrCollection c = this.statusByCollection(collection);
+		collection.setCount(c.getCount());
+		
 		AidrCollection updateCollection = stopAidrFetcher(collection);
 
 		AidrCollectionLog collectionLog = new AidrCollectionLog();
@@ -332,7 +337,7 @@ public class CollectionServiceImpl implements CollectionService {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
+	//@SuppressWarnings("deprecation")
 	public AidrCollection stopAidrFetcher(AidrCollection collection) {
 		try {
 			/**
@@ -368,6 +373,7 @@ public class CollectionServiceImpl implements CollectionService {
 		ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 		FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);
 		if (response != null) {
+			collection.setCount(response.getCollectionCount());
 			if (!CollectionStatus.getByStatus(response.getStatusCode()).equals(collection.getStatus())) {
 				//if local=running and fetcher=NOT-FOUND then put local as NOT-RUNNING
 				if (CollectionStatus.NOT_FOUND.equals(CollectionStatus.getByStatus(response.getStatusCode()))) {
@@ -379,9 +385,9 @@ public class CollectionServiceImpl implements CollectionService {
 					collection = collectionRepository.start(collection.getId());
 				}
 			}
-
+			
 			if (response.getCollectionCount() != null && !response.getCollectionCount().equals(collection.getCount())) {
-				collection.setCount(response.getCollectionCount());
+				//collection.setCount(response.getCollectionCount());		// Commented by koushik for downloadCount bug
 				String lastDocument = response.getLastDocument();
 				if (lastDocument != null)
 					collection.setLastDocument(lastDocument);
@@ -391,14 +397,14 @@ public class CollectionServiceImpl implements CollectionService {
 		return collection;
 	}
 
-	@SuppressWarnings("deprecation")
+	//@SuppressWarnings("deprecation")
 	@Override
 	public AidrCollection statusById(Integer id) throws Exception {
 		AidrCollection collection = this.findById(id);
 		return statusByCollection(collection);
 	}
 
-	@SuppressWarnings("deprecation")
+	//@SuppressWarnings("deprecation")
 	@Override
 	public AidrCollection statusByCollection(AidrCollection collection) throws Exception {
 		if (collection != null) {
