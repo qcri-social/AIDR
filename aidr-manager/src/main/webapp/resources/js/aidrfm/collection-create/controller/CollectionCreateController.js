@@ -23,19 +23,6 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 }
             },
 
-/*
-            "#collectionCodeInfo": {
-                render: function (infoPanel, eOpts) {
-                    var tip = Ext.create('Ext.tip.ToolTip', {
-                        trackMouse: true,
-                        html: ' Collection code consists of alpha-numeric short code name to a collection. ' +
-                            'Spaces are not allowed in the code name. For example, Sandy2012, EQJapan2013 are valid code names',
-                        target: infoPanel.el,
-                        dismissDelay: 0
-                    });
-                }
-            },
-*/
 
             "#collectionkeywordsInfo": {
                 render: function (infoPanel, eOpts) {
@@ -378,21 +365,24 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
         v = v.replace(/ /g, '_');
         v = Ext.util.Format.lowercase(v);
 
-        var date = Ext.Date.format(new Date(), "Ymd-hi-");
+        var date = Ext.Date.format(new Date(), "ymdHis");
         date = Ext.util.Format.lowercase(date);
 
         var length = value.length;
-        if (length > 56){
-            length = 56;
+
+
+        if(length > 64){
+            v =  Ext.util.Format.substr(v, 0, length - date.length ) ;
         }
 
-        var result = date + USER_NAME + '-' + Ext.util.Format.substr(v, 0, length);
+        var result = date + "_" + v;
 
         if(result.length > 64){
             return false;
         }
-
-        me.isExistForGenerated(result);
+        else{
+            me.isExistForGenerated(result);
+        }
     },
 
     isExistForGenerated: function (code, attempt) {
