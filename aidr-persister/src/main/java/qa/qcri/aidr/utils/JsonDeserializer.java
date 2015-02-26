@@ -635,6 +635,7 @@ public class JsonDeserializer {
 						br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 						while ((line = br.readLine()) != null) {
 							ClassifiedTweet tweet = getClassifiedTweet(line, collectionCode);
+							//logger.info("Parsed tweet = " + tweet);
 							if (tweet != null && satisfiesFilter(queryList, tweetFilter, tweet)) {
 								if (tweetsList.size() < LIST_BUFFER_SIZE) {
 									// Apply filter on tweet
@@ -672,12 +673,12 @@ public class JsonDeserializer {
 				}	// end for
 			}	// end createTweetList block
 			int countToWrite = Math.min(tweetsList.size(), exportLimit - currentSize);
+			logger.info("Outside for loop: currentSize = " + currentSize + ", countToWrite = " + countToWrite + " tweetsList size = " + tweetsList.size());
 			if (countToWrite > 0) {
 				//System.out.println("exportLimit = " + exportLimit + ", currentSize = " + currentSize + ", countToWrite = " + countToWrite);
 				if (0 == currentSize) {
 					runningHeader  = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweetsList.get(0));
 				}
-				logger.info("Outside for loop: currentSize = " + currentSize + ", countToWrite = " + countToWrite);
 				writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList.subList(0, countToWrite), collectionCode, fileName, writer);
 				tweetsList.clear();
 			}
@@ -946,7 +947,7 @@ public class JsonDeserializer {
 				if (!aidrObject.get("crisis_code").isJsonNull()) {
 					tweet.setCrisisCode(aidrObject.get("crisis_code").getAsString());
 				}
-				if (!aidrObject.get("nominal_labels").isJsonNull()) {
+				if (aidrObject.has("nominal_labels") && !aidrObject.get("nominal_labels").isJsonNull()) {
 					//JSONArray nominalLabels = (JSONArray) aidrObject.get("nominal_labels");
 					JsonArray nominalLabels = aidrObject.get("nominal_labels").getAsJsonArray();
 					StringBuffer allAttributeNames = new StringBuffer();
@@ -1006,6 +1007,7 @@ public class JsonDeserializer {
 			}
 
 		} catch (Exception ex) {
+			logger.error("exception", ex);
 			return null;
 		}
 		return tweet;
@@ -1696,7 +1698,9 @@ public class JsonDeserializer {
 
 	public boolean satisfiesFilter(final JsonQueryList queryList, final FilterQueryMatcher tweetFilter, final ClassifiedTweet tweet) {
 		// Apply filter on tweet
+		logger.info("queryList = " + queryList + ", constraints = " + (queryList != null ? queryList.getConstraints().isEmpty() : "null"));
 		if (null == queryList || queryList.getConstraints().isEmpty()) {
+			logger.info("No filtering");
 			return true;		// no filtering
 		} else { 
 			if (!tweet.getNominalLabels().isEmpty()) {

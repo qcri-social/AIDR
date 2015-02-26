@@ -218,7 +218,8 @@ public class CrisisResource {
 				Map<String, Integer> retVal = crisisLocalEJB.countClassifiersByCrisisCodes(crisisList);
 				System.out.println("retrieved result: " + retVal);
 				if (retVal != null) {
-					result.put("count", retVal.get(crisisCode));
+					result.put("count", retVal.get(crisisCode) != null ? retVal.get(crisisCode) : 0);
+					System.out.println("Generated response: " + result);
 					return Response.ok(mapper.writeValueAsString(result)).build();
 				}
 			}

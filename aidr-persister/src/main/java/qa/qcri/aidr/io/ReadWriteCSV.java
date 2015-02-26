@@ -453,7 +453,7 @@ public class ReadWriteCSV<CellProcessors> {
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 			jsonResponse = clientResponse.readEntity(Map.class); 
 			logger.info("Tagger API returned: " + jsonResponse);
-			if (jsonResponse.containsKey("count")) {
+			if (jsonResponse.containsKey("count") && jsonResponse.get("count") >= 0) {
 				return jsonResponse;
 			} else {
 				jsonResponse = new HashMap<String, Integer>();
