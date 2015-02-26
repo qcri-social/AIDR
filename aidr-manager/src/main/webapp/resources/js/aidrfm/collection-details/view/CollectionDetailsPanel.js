@@ -133,6 +133,19 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.managersL = Ext.create('Ext.form.Label', {flex: 1});
 
+        this.codeE = Ext.create('Ext.form.field.Text', {
+            fieldLabel: 'Short name',
+            name: 'code',
+            allowBlank: false,
+            width: 370,
+            emptyText: 'e.g., Sandy2012 or EQJapan2011',
+            maxLength: 64,
+            maxLengthText: 'The maximum length for this field is 64',
+            maskRe: /[^ ]/,
+            disabled: true,
+            labelWidth: 130
+        });
+
         this.nameE = Ext.create('Ext.form.field.Text', {
             width: 370,
             fieldLabel: 'Name',
@@ -579,7 +592,22 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 }
                             ]
                         },
-
+                        {
+                            xtype: 'container',
+                            layout: 'hbox',
+                            margin: '5 0',
+                            items: [
+                                this.codeE,
+                                {
+                                    border: false,
+                                    bodyStyle: 'background:none',
+                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+                                    height: 22,
+                                    width: 22,
+                                    id: 'collectionCodeInfo'
+                                }
+                            ]
+                        },
                         {
                             xtype: 'container',
                             layout: 'hbox',
