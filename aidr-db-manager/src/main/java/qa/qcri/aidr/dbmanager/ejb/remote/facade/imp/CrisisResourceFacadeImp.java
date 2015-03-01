@@ -114,12 +114,15 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 
 	@Override
 	public CrisisDTO editCrisis(CrisisDTO crisis) throws PropertyNotSetException {
-		System.out.println("Received request for: " + crisis.getCrisisID() + ", " + crisis.getCode());
+		System.out.println("Received edit request for: " + crisis.getCrisisID() + ", " + crisis.getCode() + ", " + crisis.getName());
 		try {
 			Crisis c = crisis.toEntity();
 			Crisis cr = getById(c.getCrisisId()); 
 			if (cr != null) {
 				cr = em.merge(c);
+				em.flush();
+				em.refresh(cr);
+				System.out.println("Updated crisis: " + cr.getCode() + ", " + cr.getName() + ", " + cr.getCrisisType().getName());
 				return cr != null ? new CrisisDTO(cr) : null;
 			} else {
 				throw new RuntimeException("Not found");

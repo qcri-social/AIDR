@@ -57,8 +57,23 @@ public class CrisisTypeResourceFacadeImp extends CoreDBServiceFacadeImp<CrisisTy
 
 	@Override
 	public CrisisTypeDTO editCrisisType(CrisisTypeDTO crisisType) throws PropertyNotSetException {
-		CrisisType newCrisisType = em.merge(crisisType.toEntity());
-		return new CrisisTypeDTO(newCrisisType);
+		System.out.println("Received edit request for: " + crisisType.getName() + ", " + crisisType.getCrisisTypeId());
+		try {
+			CrisisType cType = getById(crisisType.getCrisisTypeId());
+			if (cType != null) {
+				cType = em.merge(crisisType.toEntity());
+				em.flush();
+				em.refresh(cType);
+				System.out.println("Updated crisisType: " + cType.getName() + ", " + cType.getCrisisTypeId());
+				return cType != null ? new CrisisTypeDTO(cType) : null;
+			} else {
+				throw new RuntimeException("Not found");
+			}
+		} catch (Exception e) {
+			System.out.println("Exception in merging/updating crisisType: " + crisisType.getCrisisTypeId());
+			e.printStackTrace();	
+		}
+		return null;
 	}
 
 	@Override

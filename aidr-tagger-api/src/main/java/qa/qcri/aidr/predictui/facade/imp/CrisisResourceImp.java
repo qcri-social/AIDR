@@ -23,6 +23,7 @@ import javax.persistence.Query;
 
 
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,13 +51,13 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade remoteCrisisEJB;
 
 	public CrisisDTO addCrisis(CrisisDTO crisis) {
-        try {
+		try {
 			return remoteCrisisEJB.addCrisis(crisis);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        return null;
+		return null;
 	}
 
 	public CrisisDTO getCrisisByID(Long id) {
@@ -81,7 +82,8 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 
 	public CrisisDTO editCrisis(CrisisDTO crisis) {
 		try {
-			return remoteCrisisEJB.editCrisis(crisis);
+			CrisisDTO editedDTO = remoteCrisisEJB.editCrisis(crisis);
+			return editedDTO;
 		} catch (PropertyNotSetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

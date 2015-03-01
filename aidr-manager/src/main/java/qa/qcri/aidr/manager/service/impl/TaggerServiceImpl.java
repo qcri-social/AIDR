@@ -198,7 +198,7 @@ public class TaggerServiceImpl implements TaggerService {
 			TaggerCrisisExist crisisExist = objectMapper.readValue(jsonResponse, TaggerCrisisExist.class);
 
 			if (crisisExist.getCrisisId() != null) {
-				logger.info("Crises with the code " + code + " already exist in Tagger.");
+				logger.info("Response from Tagger-API for Crises with the code " + code + ", found crisisID = " + crisisExist.getCrisisId());
 				return crisisExist;
 			} else {
 				return null;
@@ -361,11 +361,10 @@ public class TaggerServiceImpl implements TaggerService {
 			String jsonResponse = clientResponse.readEntity(String.class);
 			CrisisDTO updatedDTO = objectMapper.readValue(jsonResponse, CrisisDTO.class);
 			TaggerCrisis updatedCrisis = new TaggerCrisis(updatedDTO);
-			logger.info("Received response: " + updatedCrisis.getCode());
+			logger.info("Received response: " + updatedCrisis.getCode() + ", " + updatedCrisis.getName() + "," + updatedCrisis.getCrisisType().getCrisisTypeID());
 			if (updatedCrisis != null) {
 				logger.info("Crisis with id " + updatedCrisis.getCrisisID() + " was updated in Tagger");
 			}
-
 			return crisis;
 		} catch (Exception e) {
 			logger.info("exception", e);

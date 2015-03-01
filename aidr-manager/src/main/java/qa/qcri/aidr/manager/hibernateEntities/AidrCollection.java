@@ -67,7 +67,7 @@ public class AidrCollection implements Serializable {
     private Boolean publiclyListed;
     
     
-    @Column(length = 1000, name = "last_document")
+    @Column(name = "last_document")
     private String lastDocument;
 
     private Integer durationHours;

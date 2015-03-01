@@ -123,5 +123,4 @@ public interface TaggerService {
 
 	//Added by koushik
 	public Map<String, Object> generateTweetIdsFilteredLink(String code, String queryString) throws AidrException;
-
 }

@@ -4,7 +4,7 @@ public class TaggerCrisisExist {
 
     private String crisisCode;
 
-    private Integer crisisId;
+    private Long crisisId;
 
     public String getCrisisCode() {
         return crisisCode;
@@ -14,11 +14,11 @@ public class TaggerCrisisExist {
         this.crisisCode = crisisCode;
     }
 
-    public Integer getCrisisId() {
+    public Long getCrisisId() {
         return crisisId;
     }
 
-    public void setCrisisId(Integer crisisId) {
+    public void setCrisisId(Long crisisId) {
         this.crisisId = crisisId;
     }
 }
