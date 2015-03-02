@@ -40,12 +40,16 @@ public class AidrCollectionLog implements Serializable {
     //private AidrCollection collection;
     private Integer collectionID;
     private Integer count;
+    
     @Column(length = 1000, name = "track")
     private String track;
+    
     @Column(length=1000, name="follow")
     private String follow;
+    
     @Column(length=1000, name="geo")
     private String geo;
+    
     private String langFilters;
     private Date startDate;
     private Date endDate;

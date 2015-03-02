@@ -251,15 +251,25 @@ public class CollectionController extends BaseController{
 		try{
 			CollectionStatus status = collection.getStatus();
 			AidrCollection dbCollection = collectionService.findById(collectionId);
-
-			if (collection.getCollectionType() == SMS) {
+			
+			logger.info("GeoR: ui = " + collection.getGeoR() + ", db = " + dbCollection.getGeoR());
+			if (!collection.getGeoR().equals(dbCollection.getGeoR())) {
+				dbCollection.setGeoR(collection.getGeoR());
+				logger.info("Updated dBCollection geoR");
+			}
+			logger.info("CollectionType: ui = " + collection.getCollectionType() + ", db = " + dbCollection.getCollectionType());
+			if (!collection.getCollectionType().equals(dbCollection.getCollectionType())) {
+				dbCollection.setCollectionType(collection.getCollectionType());
+			}
+			
+			if (collection.getCollectionType().equals(SMS)) {
 				collection.setTrack(null);
 				collection.setLangFilters(null);
 				collection.setGeo(null);
 				collection.setGeoR(null);
 				collection.setFollow(null);
 			}
-
+			
 			if (CollectionStatus.RUNNING_WARNING.equals(status) || CollectionStatus.RUNNING.equals(status)) {
 				//              stop collection
 				AidrCollection collectionAfterStop = collectionService.stopAidrFetcher(dbCollection);
@@ -298,17 +308,38 @@ public class CollectionController extends BaseController{
 				collectionService.update(collection);
 			}
 
-			// if collection type was changed and if crisis for this collection exists so we need to update crisis type
-			if (dbCollection.getCrisisType() != null && collection.getCrisisType() != null){
+			// Finally, sync Predict DB, if required
+			TaggerCrisisExist taggerCrisisExist = taggerService.isCrisesExist(collection.getCode());
+			if (taggerCrisisExist != null && taggerCrisisExist.getCrisisId() != 0) { 
+				// if collection name was changed, then update in Manager DB. Also update Predict DB, if classifier attached
+				if (!collection.getName().equals(dbCollection.getName())) {
+					try {
+						TaggerCrisis crisis = taggerService.getCrisesByCode(collection.getCode());
+						crisis.setName(collection.getName());
+						TaggerCrisis updatedCrisis = taggerService.updateCode(crisis);
+						if (updatedCrisis == null) {
+							logger.error("Error in updating the crisis name from " + crisis.getName() + " to new name: " + collection.getName());
+						}
+					} catch (AidrException e) {
+						logger.error("Error in updating the crisis name from " + dbCollection.getName() + " to new name: " + collection.getName());
+						logger.error("exception", e);
+					}
+				}
+				// if collection type was changed and if crisis for this collection exists so we need to update crisis type
 				if (!dbCollection.getCrisisType().equals(collection.getCrisisType())){
 					try {
-						TaggerCrisisExist taggerCrisisExist = taggerService.isCrisesExist(collection.getCode());
-						TaggerCrisis crisis = new TaggerCrisis(taggerCrisisExist.getCrisisId());
+						// Only if crisis exists in predict DB update predict DB:
+
+						TaggerCrisis crisis = taggerService.getCrisesByCode(collection.getCode());
 						TaggerCrisisType crisisType = new TaggerCrisisType(collection.getCrisisType());
 						crisis.setCrisisType(crisisType);
-						taggerService.updateCode(crisis);
+						TaggerCrisis updatedCrisis = taggerService.updateCode(crisis);
+						if (updatedCrisis == null) {
+							logger.error("Error in updating the crisis type from " + crisis.getCrisisType().getCrisisTypeID() + " to new name: " + collection.getCrisisType());
+						}
 					} catch (AidrException e) {
-						e.printStackTrace();
+						logger.error("Error in updating the crisis type from " + dbCollection.getCrisisType() + " to new type: " + collection.getCrisisType());
+						logger.error("exception", e);
 					}
 				}
 			}
