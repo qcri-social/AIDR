@@ -266,7 +266,7 @@ public class ReadWriteCSV<CellProcessors> {
 				//logger.info("Current header length :: Actual number of cells needed: " + runningHeader.length + "::" + getClassifedTweetHeaderSize(FIXED_CLASSIFIED_TWEET_ID_HEADER_SIZE, tweet.getNominalLabels().size()));
 				if (runningHeader.length < getClassifedTweetHeaderSize(FIXED_CLASSIFIED_TWEET_ID_HEADER_SIZE, tweet.getNominalLabels().size())) {
 					// reallocate header
-					runningHeader = resetClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet.getNominalLabels().size());
+					runningHeader = resetClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetIDCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_ID_HEADER_SIZE, tweet.getNominalLabels().size());
 					
 					logger.info("Reallocated running header. After reallocation, Current header length :: Actual number of cells needed: " 
 							+ runningHeader.length + "::" + getClassifedTweetHeaderSize(FIXED_CLASSIFIED_TWEET_ID_HEADER_SIZE, tweet.getNominalLabels().size()));
