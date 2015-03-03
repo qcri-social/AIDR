@@ -153,8 +153,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             allowBlank: false,
             emptyText: 'e.g., Hurricane Sandy',
             labelWidth: 130,
-            maskRe: /[a-z0-9_-]/i,
-            regex: /^[a-zA-Z0-9_-]+$/,
+            maskRe: /[a-z0-9-_ ]/i,
+            regex: /^[a-zA-Z0-9-_ ]+$/,
             invalidText: 'Not a valid crisis name. Supports alphabets and numbers no special characters except underscore and hyphen".'
         });
 
