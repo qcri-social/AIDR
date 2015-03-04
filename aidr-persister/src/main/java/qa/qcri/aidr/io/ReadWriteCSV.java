@@ -78,7 +78,7 @@ public class ReadWriteCSV<CellProcessors> {
 	public static final int VARIABLE_HEADER_SIZE = 7;	// number of variable header elements per classifier
 	private static final int DEFAULT_CLASSIFIER_COUNT = 1;
 	
-	private static int countWritten = 0;
+	//private static int countWritten = 0;
 	
 	public ReadWriteCSV(String collectionCode) {
 		this.collectionCode = collectionCode;
@@ -352,7 +352,7 @@ public class ReadWriteCSV<CellProcessors> {
 				final CellProcessor[] processors = getClassifiedTweetVariableProcessors(runningHeader.length);
 				//logger.info("Going to write: " + tweetToWrite);
 				mapWriter.write(tweetToWrite, runningHeader, processors);
-				++countWritten;
+				//++countWritten;
 
 			} catch (SuperCsvCellProcessorException e) {
 				logger.error(collectionDIR + ": SuperCSV error. Offending tweet: " + tweet.getTweetID());
@@ -361,7 +361,7 @@ public class ReadWriteCSV<CellProcessors> {
 				logger.error(collectionDIR + "IOException in writing tweet: " + tweet.getTweetID());
 			}
 		}
-		logger.info("Actual number of tweets written so far: " + countWritten);
+		//logger.info("Actual number of tweets written so far: " + countWritten);
 		return mapWriter;
 	}
 
