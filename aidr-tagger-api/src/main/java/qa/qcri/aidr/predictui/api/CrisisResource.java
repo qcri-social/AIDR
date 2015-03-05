@@ -82,7 +82,7 @@ public class CrisisResource {
 		CrisisDTO crisis = null;
 		try {
 			crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
-			System.out.println("Returning crisis: " + crisis.getCode());
+			System.out.println("Returning crisis: " + (crisis != null ? crisis.getCode() : "null"));
 		} catch (RuntimeException e) {
 			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
 		}

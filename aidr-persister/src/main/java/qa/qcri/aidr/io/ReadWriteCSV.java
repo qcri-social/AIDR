@@ -23,6 +23,8 @@ import java.util.Set;
 
 
 
+
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -76,7 +78,7 @@ public class ReadWriteCSV<CellProcessors> {
 	public static final int VARIABLE_HEADER_SIZE = 7;	// number of variable header elements per classifier
 	private static final int DEFAULT_CLASSIFIER_COUNT = 1;
 	
-	private static int countWritten = 0;
+	//private static int countWritten = 0;
 	
 	public ReadWriteCSV(String collectionCode) {
 		this.collectionCode = collectionCode;
@@ -260,37 +262,17 @@ public class ReadWriteCSV<CellProcessors> {
 		// Now write to CSV file using CsvMapWriter
 		// int count = 0;
 		for (final ClassifiedTweet tweet : tweetsList) {
-			//String[] runningHeader  = setClassifiedTweetHeader(header, header.length, tweet);
 			try {
 				//logger.info("Current header length :: Actual number of cells needed: " + runningHeader.length + "::" + getClassifedTweetHeaderSize(FIXED_CLASSIFIED_TWEET_ID_HEADER_SIZE, tweet.getNominalLabels().size()));
 				if (runningHeader.length < getClassifedTweetHeaderSize(FIXED_CLASSIFIED_TWEET_ID_HEADER_SIZE, tweet.getNominalLabels().size())) {
 					// reallocate header
-					runningHeader = new String[getClassifedTweetHeaderSize(FIXED_CLASSIFIED_TWEET_ID_HEADER_SIZE, tweet.getNominalLabels().size())];
+					runningHeader = resetClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetIDCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_ID_HEADER_SIZE, tweet.getNominalLabels().size());
+					
 					logger.info("Reallocated running header. After reallocation, Current header length :: Actual number of cells needed: " 
 							+ runningHeader.length + "::" + getClassifedTweetHeaderSize(FIXED_CLASSIFIED_TWEET_ID_HEADER_SIZE, tweet.getNominalLabels().size()));
 				}
 				final Map<String, Object> tweetToWrite = createClassifiedTweetIDCsvMap(runningHeader, tweet);
 				final CellProcessor[] processors = getClassifiedTweetVariableProcessors(runningHeader.length);
-				/*
-				if (count == 0) {
-					System.out.print("Running Header: " + mapWriter.getLineNumber());
-					for (int j = 0;j < runningHeader.length;j++) {
-						System.out.print(runningHeader[j] + ", ");
-					}
-					System.out.print("Tweet received : " + tweet.getTweetID() + "," 
-							+ tweet.getMessage() + "," + tweet.getCrisisName() + ",");
-
-					for (int j = 0;j < tweet.getNominalLabels().size();j++) {
-						NominalLabel nb = tweet.getNominalLabels().get(j);
-						System.out.print("Attribute DETAILS: " 
-								+ nb.attribute_name + "," + nb.attribute_code + ","
-								+ nb.label_name + "," + nb.label_description + "," 
-								+ nb.label_code + "," + nb.confidence + "," 
-								+ nb.from_human);
-					}
-					System.out.println("Tweet to Write: " + tweetToWrite);
-				}
-				++count;*/
 				mapWriter.write(tweetToWrite, runningHeader, processors);
 			} catch (SuperCsvCellProcessorException e) {
 				//logger.error(collectionDIR + ": SuperCSV error. Offending tweet: " + tweet.getTweetID());
@@ -314,8 +296,6 @@ public class ReadWriteCSV<CellProcessors> {
 				//fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
 				String fileToWrite = persisterDIR + collectionDIR + "/" + fileName;
 				logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
-				//beanWriter = new CsvBeanWriter(new FileWriter(fileToWrite, true),
-				//        CsvPreference.EXCEL_PREFERENCE);
 				beanWriter = getCSVBeanWriter(fileToWrite);
 				beanWriter.writeHeader(header);
 			}
@@ -338,9 +318,6 @@ public class ReadWriteCSV<CellProcessors> {
 
 
 	public ICsvMapWriter writeClassifiedTweetsCSV(String[] runningHeader, List<ClassifiedTweet> tweetsList, String collectionDIR, String fileName, ICsvMapWriter mapWriter) {
-		//String[] header = new String[]{"tweetID", "message","userID", "userName", "userURL", "createdAt", "tweetURL", "crisisName"}; 
-		//System.out.println("mapWriter = " + mapWriter);
-		//String[] runningHeader = null;
 		String[] header = ClassifiedTweetCSVHeader;
 		try {
 			if (null == mapWriter) {
@@ -352,11 +329,6 @@ public class ReadWriteCSV<CellProcessors> {
 
 				// First write the header
 				mapWriter.writeHeader(runningHeader);
-				/*
-				System.out.print("Initiating Running Header: " + mapWriter.getLineNumber());
-				for (int j = 0;j < runningHeader.length;j++) {
-					System.out.print(runningHeader[j] + ", ");
-				}*/
 			}
 		} catch (Exception ex) {
 			logger.error(collectionDIR + ": Exception occured when creating a mapWriter instance");
@@ -367,39 +339,21 @@ public class ReadWriteCSV<CellProcessors> {
 		// Now write to CSV file using CsvMapWriter
 		logger.info("Received length of tweets List to write = " + tweetsList.size());
 		for (final ClassifiedTweet tweet : tweetsList) {
-			//String[] runningHeader  = setClassifiedTweetHeader(header, header.length, tweet);
 			try {
 				//logger.info("Current header length :: Actual number of cells needed: " + runningHeader.length + "::" + getClassifedTweetHeaderSize(FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet.getNominalLabels().size()));
 				if (runningHeader.length < getClassifedTweetHeaderSize(FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet.getNominalLabels().size())) {
 					// reallocate header
-					runningHeader = new String[getClassifedTweetHeaderSize(FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet.getNominalLabels().size())];
+					runningHeader = resetClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet.getNominalLabels().size());
+					
 					logger.info("Reallocated running header. After reallocation, Current header length :: Actual number of cells needed: " 
 								+ runningHeader.length + "::" + getClassifedTweetHeaderSize(FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet.getNominalLabels().size()));
 				}
 				final Map<String, Object> tweetToWrite = createClassifiedTweetCsvMap(runningHeader, tweet);
 				final CellProcessor[] processors = getClassifiedTweetVariableProcessors(runningHeader.length);
+				//logger.info("Going to write: " + tweetToWrite);
 				mapWriter.write(tweetToWrite, runningHeader, processors);
-				++countWritten;
-				/*
-				if (count == 0) {
-					System.out.print("Running Header: " + mapWriter.getLineNumber());
-					for (int j = 0;j < runningHeader.length;j++) {
-						System.out.print(runningHeader[j] + ", ");
-					}
-					System.out.print("Tweet received : " + tweet.getTweetID() + "," 
-							+ tweet.getMessage() + "," + tweet.getCrisisName() + ",");
+				//++countWritten;
 
-					for (int j = 0;j < tweet.getNominalLabels().size();j++) {
-						NominalLabel nb = tweet.getNominalLabels().get(j);
-						System.out.print("Attribute DETAILS: " 
-								+ nb.attribute_name + "," + nb.attribute_code + ","
-								+ nb.label_name + "," + nb.label_description + "," 
-								+ nb.label_code + "," + nb.confidence + "," 
-								+ nb.from_human);
-					}
-					System.out.println("Tweet to Write: " + tweetToWrite);
-				}
-				++count;*/
 			} catch (SuperCsvCellProcessorException e) {
 				logger.error(collectionDIR + ": SuperCSV error. Offending tweet: " + tweet.getTweetID());
 				logger.error(elog.toStringException(e));
@@ -407,22 +361,11 @@ public class ReadWriteCSV<CellProcessors> {
 				logger.error(collectionDIR + "IOException in writing tweet: " + tweet.getTweetID());
 			}
 		}
-		logger.info("Actual number of tweets written so far: " + countWritten);
+		//logger.info("Actual number of tweets written so far: " + countWritten);
 		return mapWriter;
 	}
 
-	public String[] setClassifiedTweetHeader(String[] header, int fixedHeaderSize, ClassifiedTweet tweet) {
-
-		int numberOfClassifiers = 0;
-		Map<String, Integer> classifierCount = getClassifierCountForCrisis(this.collectionCode);
-		if (classifierCount.containsKey("count") && classifierCount.get("count") == -1) {
-			// estimate based on current 'tweet'
-			numberOfClassifiers = getClassifedTweetHeaderSize(fixedHeaderSize, tweet);
-		} else {
-			// set as per obtained value
-			numberOfClassifiers = classifierCount.get("count");
-		}
-		//String[] fullHeader = new String[getClassifedTweetHeaderSize(fixedHeaderSize, tweet)];
+	public String[] resetClassifiedTweetHeader(String[] header, int fixedHeaderSize, int numberOfClassifiers) {
 		String[] fullHeader = new String[getClassifedTweetHeaderSize(fixedHeaderSize, numberOfClassifiers)];
 		for (int i = 0;i < header.length;i++) {
 			fullHeader[i] = header[i];
@@ -438,6 +381,37 @@ public class ReadWriteCSV<CellProcessors> {
 			fullHeader[endPoint+6] = new String("humanLabeled_" + (i+1));
 			endPoint += VARIABLE_HEADER_SIZE;
 		}
+		logger.info("Number of classifiers = " + numberOfClassifiers + ", headerSize = " + fullHeader.length);
+		return fullHeader;
+	}
+	
+	public String[] setClassifiedTweetHeader(String[] header, int fixedHeaderSize, ClassifiedTweet tweet) {
+
+		int numberOfClassifiers = 0;
+		Map<String, Integer> classifierCount = getClassifierCountForCrisis(this.collectionCode);
+		if (classifierCount.containsKey("count") && classifierCount.get("count") == -1) {
+			// estimate based on current 'tweet'
+			numberOfClassifiers = getClassifedTweetHeaderSize(fixedHeaderSize, tweet);
+		} else {
+			// set as per obtained value
+			numberOfClassifiers = classifierCount.get("count");
+		}
+		String[] fullHeader = new String[getClassifedTweetHeaderSize(fixedHeaderSize, numberOfClassifiers)];
+		for (int i = 0;i < header.length;i++) {
+			fullHeader[i] = header[i];
+		}
+		int endPoint = header.length;
+		for (int i = 0;i < numberOfClassifiers;i++) {
+			fullHeader[endPoint] = new String("attributeName_" + (i+1));
+			fullHeader[endPoint+1] = new String("attributeCode_" + (i+1));
+			fullHeader[endPoint+2] = new String("labelName_" + (i+1));
+			fullHeader[endPoint + 3] = new String("labelDescription_" + (i+1));
+			fullHeader[endPoint + 4] = new String("labelCode_" + (i+1));
+			fullHeader[endPoint+5] = new String("confidence_" + (i+1));
+			fullHeader[endPoint+6] = new String("humanLabeled_" + (i+1));
+			endPoint += VARIABLE_HEADER_SIZE;
+		}
+		logger.info("Number of classifiers = " + numberOfClassifiers + ", headerSize = " + fullHeader.length);
 		return fullHeader;
 	}
 

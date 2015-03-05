@@ -52,6 +52,8 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             name: 'name',
             allowBlank: false,
             labelWidth: 240,
+            maxLength: 50,
+            maxLengthText: 'The maximum length for this field is 50',
             emptyText: 'e.g., Hurricane Sandy',
             flex:1 ,
             maskRe: /[ a-z0-9-_ ]/i,

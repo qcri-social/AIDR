@@ -151,6 +151,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             fieldLabel: 'Name',
             name: 'name',
             allowBlank: false,
+            maxLength: 50,
+            maxLengthText: 'The maximum length for this field is 50',
             emptyText: 'e.g., Hurricane Sandy',
             labelWidth: 130,
             maskRe: /[a-z0-9-_ ]/i,
