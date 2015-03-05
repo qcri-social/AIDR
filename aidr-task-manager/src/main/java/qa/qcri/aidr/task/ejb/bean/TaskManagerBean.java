@@ -1120,6 +1120,12 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				labeledDocList = new ArrayList<HumanLabeledDocumentDTO>();
 				for (Document doc: docList) {
 					DocumentNominalLabelDTO labeledDataDTO = remoteDocumentNominalLabelEJB.findLabeledDocumentByID(doc.getDocumentId());
+					NominalLabelDTO nominalLabel = remoteNominalLabelEJB.getNominalLabelWithAllFieldsByID(labeledDataDTO.getIdDTO().getNominalLabelId());
+					if (nominalLabel != null) {
+						nominalLabel.setDocumentNominalLabelsDTO(null);
+						nominalLabel.setModelNominalLabelsDTO(null);
+					}
+					labeledDataDTO.setNominalLabelDTO(nominalLabel);
 					labeledDataDTO.setDocumentDTO(null);
 					labeledDocList.add(new HumanLabeledDocumentDTO(new DocumentDTO(doc), labeledDataDTO));
 				}
@@ -1177,6 +1183,12 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				labeledDocList = new ArrayList<HumanLabeledDocumentDTO>();
 				for (Document doc: docList) {
 					DocumentNominalLabelDTO labeledDataDTO = remoteDocumentNominalLabelEJB.findLabeledDocumentByID(doc.getDocumentId());
+					NominalLabelDTO nominalLabel = remoteNominalLabelEJB.getNominalLabelWithAllFieldsByID(labeledDataDTO.getIdDTO().getNominalLabelId());
+					if (nominalLabel != null) {
+						nominalLabel.setDocumentNominalLabelsDTO(null);
+						nominalLabel.setModelNominalLabelsDTO(null);
+					}
+					labeledDataDTO.setNominalLabelDTO(nominalLabel);
 					labeledDataDTO.setDocumentDTO(null);
 					labeledDocList.add(new HumanLabeledDocumentDTO(new DocumentDTO(doc), labeledDataDTO));
 				}
