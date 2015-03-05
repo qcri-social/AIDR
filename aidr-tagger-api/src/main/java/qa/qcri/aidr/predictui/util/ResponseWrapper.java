@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import qa.qc.qcri.aidr.task.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisAttributesDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
@@ -74,6 +75,10 @@ public class ResponseWrapper implements Serializable {
     private List<CrisisAttributesDTO> crisisAttributes;
     @XmlElement
     private List<TrainingDataDTO> trainingData;
+    
+    @XmlElement 
+    List<HumanLabeledDocumentDTO> labeledData;
+    
     @XmlElement
     private Integer total;
     
@@ -91,6 +96,7 @@ public class ResponseWrapper implements Serializable {
     
     public ResponseWrapper(String statusCode, Object obj) {
         this.statusCode = statusCode;
+        this.dataObject = obj;
     }
 
     public ResponseWrapper(String statusCode, String message, Object obj) {
@@ -371,5 +377,13 @@ public class ResponseWrapper implements Serializable {
      */
     public void setEntityID(Long entityID) {
         this.entityID = entityID;
+    }
+    
+    public List<HumanLabeledDocumentDTO> getLabeledData() {
+    	return this.labeledData;
+    }
+    
+    public void setLabeledData(List<HumanLabeledDocumentDTO> labeledData) {
+    	this.labeledData = labeledData;
     }
 }

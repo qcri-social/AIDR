@@ -128,7 +128,7 @@ public class NominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<Nomina
 	public List<NominalLabelDTO> getAllNominalLabels() throws PropertyNotSetException {
 		List<NominalLabelDTO> dtoList = new ArrayList<NominalLabelDTO>();
 		List<NominalLabel> list = this.getAll();
-		if (list != null) {
+		if (list != null && !list.isEmpty()) {
 			for (NominalLabel nb: list) {
 				dtoList.add(new NominalLabelDTO(nb));
 			}

@@ -210,7 +210,7 @@ public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long
 			logger.info("New task: " + document);
 			if (document != null)  {
 				List<TaskAssignmentDTO> tList = taskAssignmentEJB.findTaskAssignmentByID(document.getDocumentId());
-				if (tList != null && tList.isEmpty()) {
+				if (tList != null && !tList.isEmpty()) {
 					logger.info("New task: " + document.getDocumentId());
 					return new DocumentDTO(document);
 				}

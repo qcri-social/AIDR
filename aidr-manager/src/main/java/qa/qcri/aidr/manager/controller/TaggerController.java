@@ -847,4 +847,52 @@ public class TaggerController extends BaseController {
 		return getUIWrapper(result,true);
 	}
 
+	@RequestMapping(value = "/getHumanLabeledDocumentsByCrisisID.action", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String,Object> getHumanLabeledDocumentsByCrisisID(Long crisisID, Integer count) throws Exception {
+		try {
+			TaggerResponseWrapper labeledDataList = taggerService.getHumanLabeledDocumentsByCrisisID(crisisID, count);
+			return getUIWrapper(labeledDataList, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getUIWrapper(false, "Error in fetching human labeled documents");
+		}
+	}
+	
+	@RequestMapping(value = "/getHumanLabeledDocumentsByCrisisCode.action", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String,Object> getHumanLabeledDocumentsByCrisisCode(String crisisCode, Integer count) throws Exception {
+		try {
+			TaggerResponseWrapper labeledDataList = taggerService.getHumanLabeledDocumentsByCrisisCode(crisisCode, count);
+			return getUIWrapper(labeledDataList, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getUIWrapper(false, "Error in fetching human labeled documents");
+		}
+	}
+	
+	@RequestMapping(value = "/getHumanLabeledDocumentsByCrisisIDUserID.action", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String,Object> getHumanLabeledDocumentsByCrisisIDUserID(Long crisisID, Long userID, Integer count) throws Exception {
+		try {
+			TaggerResponseWrapper labeledDataList = taggerService.getHumanLabeledDocumentsByCrisisIDUserID(crisisID, userID, count);
+			return getUIWrapper(labeledDataList, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getUIWrapper(false, "Error in fetching human labeled documents");
+		}
+	}
+	
+	@RequestMapping(value = "/getHumanLabeledDocumentsByCrisisIDUserName.action", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String,Object> getHumanLabeledDocumentsByCrisisIDUserID(Long crisisID, String userName, Integer count) throws Exception {
+		try {
+			TaggerResponseWrapper labeledDataList = taggerService.getHumanLabeledDocumentsByCrisisIDUserName(crisisID, userName, count);
+			return getUIWrapper(labeledDataList, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getUIWrapper(false, "Error in fetching human labeled documents");
+		}
+	}
+	
 }

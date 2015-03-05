@@ -84,7 +84,7 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 
 	@Override
 	public int undoTaskAssignment(List<DocumentDTO> taskList, Long userID) {
-		if (taskList != null) {
+		if (taskList != null && !taskList.isEmpty()) {
 			try {
 				int deleteCount = 0;
 				for (Iterator<DocumentDTO> it = taskList.iterator(); it.hasNext();){
@@ -199,7 +199,7 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 		try {
 			List<TaskAssignment> list = getAllByCriteria(Restrictions.eq("id.documentId", documentID));  
 			List<TaskAssignmentDTO> dtoList = new ArrayList<TaskAssignmentDTO>();
-			if (list != null) {
+			if (list != null && !list.isEmpty()) {
 				for (TaskAssignment t: list) {
 					dtoList.add(new TaskAssignmentDTO(t));
 				}

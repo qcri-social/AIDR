@@ -65,7 +65,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 		String[] orderBy = {"documentId"};
 
 		List<Document> fetchedList = getByCriteriaWithInnerJoinByOrder(criterion, "ASC", orderBy, null, aliasTable, Restrictions.isNotEmpty(aliasTableKey));
-		if (fetchedList != null) {
+		if (fetchedList != null && !fetchedList.isEmpty()) {
 			List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
 			for (Document doc: fetchedList) {
 				dtoList.add(new DocumentDTO(doc));
@@ -352,7 +352,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	public List<DocumentDTO> findByCriteria(String columnName, Object value) throws PropertyNotSetException {
 		List<Document> list = getAllByCriteria(Restrictions.eq(columnName,value));
 		List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
-		if (list != null) {
+		if (list != null && !list.isEmpty()) {
 			for (Document c: list) {
 				dtoList.add(new DocumentDTO(c));
 			}
@@ -403,7 +403,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 		System.out.println("Received request for fetching all Documents!!!");
 		List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
 		List<Document> list = getAll();
-		if (list != null) {
+		if (list != null && !list.isEmpty()) {
 			for (Document doc : list) {
 				//System.out.println("Converting to DTO Document: " + doc.getDocumentId() + ", " + doc.getCrisis().getCode() + ", " + doc.isHasHumanLabels());
 				DocumentDTO dto = new DocumentDTO(doc);
@@ -421,7 +421,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 				.add(Restrictions.eq("hasHumanLabels", true));
 		List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
 		List<Document> list = this.getAllByCriteria(criterion);
-		if (list != null) {
+		if (list != null && !list.isEmpty()) {
 			for (Document doc : list) {
 				//System.out.println("Converting to DTO Document: " + doc.getDocumentId() + ", " + doc.getCrisis().getCode() + ", " + doc.isHasHumanLabels());
 				DocumentDTO dto = new DocumentDTO(doc);
@@ -439,7 +439,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 				.add(Restrictions.eq("hasHumanLabels", false));
 		List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
 		List<Document> list = this.getAllByCriteria(criterion);
-		if (list != null) {
+		if (list != null && !list.isEmpty()) {
 			for (Document doc : list) {
 				//System.out.println("Converting to DTO Document: " + doc.getDocumentId() + ", " + doc.getCrisis().getCode() + ", " + doc.isHasHumanLabels());
 				DocumentDTO dto = new DocumentDTO(doc);
@@ -463,7 +463,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 			try {
 				List<Document> docList = this.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion);
 				logger.debug("docList = " + docList);
-				if (docList != null) {
+				if (docList != null && !docList.isEmpty()) {
 					logger.info("Fetched size = " + docList.size());
 					NominalLabelDTO nominalLabel = nominalLabelEJB.getNominalLabelByID(nominalLabelID);
 					for (Document doc: docList) {

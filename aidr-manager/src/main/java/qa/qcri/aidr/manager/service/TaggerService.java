@@ -123,4 +123,10 @@ public interface TaggerService {
 
 	//Added by koushik
 	public Map<String, Object> generateTweetIdsFilteredLink(String code, String queryString) throws AidrException;
+	
+	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisID(Long crisisID, Integer count) throws AidrException;
+	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisCode(String crisisCode, Integer count) throws AidrException;
+	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisIDUserID(Long crisisID, Long userID, Integer count) throws AidrException;
+	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisIDUserName(Long crisisID, String userName, Integer count) throws AidrException;
+	
 }

@@ -7,6 +7,7 @@ package qa.qcri.aidr.predictui.facade;
 
 import javax.ejb.Local;
 
+import qa.qc.qcri.aidr.task.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.ItemToLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
 
@@ -27,5 +28,10 @@ public interface MiscResourceFacade {
                                                                    String sortDirection);
 
    public ItemToLabelDTO getItemToLabel(long crisisID, int attributeID);
+   
+   public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisID(Long crisisID, Integer count);
+   public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisCode(String crisisCode, Integer count);
+   public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisIDUserID(Long crisisID, Long userID, Integer count);
+   public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisIDUserName(Long crisisID, String userName, Integer count);
    
 }

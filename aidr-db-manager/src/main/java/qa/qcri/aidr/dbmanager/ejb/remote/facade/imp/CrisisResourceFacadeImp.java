@@ -47,7 +47,7 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 	public List<CrisisDTO> findByCriteria(String columnName, Object value) throws PropertyNotSetException {
 		List<Crisis> list = getAllByCriteria(Restrictions.eq(columnName,value));
 		List<CrisisDTO> dtoList = new ArrayList<CrisisDTO>();
-		if (list != null) {
+		if (list != null && !list.isEmpty()) {
 			for (Crisis c: list) {
 				dtoList.add(new CrisisDTO(c));
 			}
@@ -140,7 +140,7 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 		System.out.println("Received request for fetching all crisis!!!");
 		List<CrisisDTO> dtoList = new ArrayList<CrisisDTO>();
 		List<Crisis> crisisList = getAll();
-		if (crisisList != null) {
+		if (crisisList != null && !crisisList.isEmpty()) {
 			for (Crisis crisis : crisisList) {
 				System.out.println("Converting to DTO crisis: " + crisis.getCode() + ", " + crisis.getName() + ", " + crisis.getCrisisId()
 						+ ", " + crisis.getUsers().getUserId() + ":" + crisis.getUsers().getName());
@@ -157,7 +157,7 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 	public List<CrisisDTO> getAllCrisisWithModelFamilies() throws PropertyNotSetException {
 		List<CrisisDTO> dtoList = new ArrayList<CrisisDTO>();
 		List<Crisis> crisisList = getAll();
-		if (crisisList != null) {
+		if (crisisList != null && !crisisList.isEmpty()) {
 			for (Crisis crisis : crisisList) {
 				try {
 					Hibernate.initialize(crisis.getModelFamilies());		// fetching lazily loaded data
@@ -211,7 +211,7 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 	public List<CrisisDTO> getAllCrisisWithModelFamilyNominalAttribute() throws PropertyNotSetException {
 		List<CrisisDTO> dtoList = new ArrayList<CrisisDTO>();
 		List<Crisis> list = getAll();
-		if (list != null) {
+		if (list != null && !list.isEmpty()) {
 			for (Crisis c: list) {
 				try {
 					Hibernate.initialize(c.getModelFamilies());
@@ -244,7 +244,7 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 	public List<CrisisDTO> findActiveCrisis() throws PropertyNotSetException {
 		List<CrisisDTO> dtoList = new ArrayList<CrisisDTO>();
 		List<Crisis> list = getAllByCriteria(Restrictions.eq("isTrashed", false));
-		if (list != null) {
+		if (list != null && !list.isEmpty()) {
 			for (Crisis c: list) {
 				try {
 					Hibernate.initialize(c.getModelFamilies());

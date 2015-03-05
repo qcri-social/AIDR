@@ -71,6 +71,9 @@ public class TaggerResponseWrapper implements Serializable {
     private List<CrisisAttributesDTO> crisisAttributes;
     @XmlElement
     private List<TrainingDataDTO> trainingData;
+    
+    @XmlElement private List<HumanLabeledDocumentDTO> labeledData;
+    
     @XmlElement
     private Integer total;
     
@@ -356,4 +359,15 @@ public class TaggerResponseWrapper implements Serializable {
     public void setEntityID(Long entityID) {
         this.entityID = entityID;
     }
+    
+	public List<HumanLabeledDocumentDTO> getLabeledData() {
+		return this.labeledData;
+	}
+
+	public void setLabeledData(List<HumanLabeledDocumentDTO> labeledData) {
+		this.labeledData = labeledData;
+		if (labeledData != null && !labeledData.isEmpty()) {
+			this.setTotal(labeledData.size());
+		}
+	}
 }

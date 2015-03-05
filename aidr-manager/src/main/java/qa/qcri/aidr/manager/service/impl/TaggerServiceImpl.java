@@ -1453,4 +1453,96 @@ public class TaggerServiceImpl implements TaggerService {
 		}
 	}
 
+	@Override
+	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisID(Long crisisID, Integer count) throws AidrException {
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		try {
+			// Rest call to Tagger
+			WebTarget webResource = client.target(taggerMainUrl + "/misc/humanLabeled/crisisID/" + crisisID + "?count=" + count);
+
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+
+			String jsonResponse = clientResponse.readEntity(String.class);
+
+			TaggerResponseWrapper dtoList = objectMapper.readValue(jsonResponse, TaggerResponseWrapper.class);
+			logger.info("Number of human labeled documents returned by Tagger: " + (dtoList.getLabeledData() != null ? dtoList.getLabeledData().size() : 0));
+		
+			return dtoList;
+		} catch (Exception e) {
+			logger.info("exception", e);
+			throw new AidrException("Error while getting all human labeled documents for crisisID = " + crisisID + " from Tagger", e);
+		}
+	}
+
+	@Override
+	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisCode(String crisisCode, Integer count) throws AidrException {
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		try {
+			// Rest call to Tagger
+			WebTarget webResource = client.target(taggerMainUrl + "/misc/humanLabeled/crisisCode/" + crisisCode + "?count=" + count);
+
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+
+			String jsonResponse = clientResponse.readEntity(String.class);
+
+			TaggerResponseWrapper dtoList = objectMapper.readValue(jsonResponse, TaggerResponseWrapper.class);
+			logger.info("Number of human labeled documents returned by Tagger: " + (dtoList.getLabeledData() != null ? dtoList.getLabeledData().size() : 0));
+		
+			return dtoList;
+		} catch (Exception e) {
+			logger.info("exception", e);
+			throw new AidrException("Error while getting all human labeled documents for crisis code = " + crisisCode + " from Tagger", e);
+		}
+	}
+
+	@Override
+	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisIDUserID(Long crisisID, Long userID, Integer count) throws AidrException {
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		try {
+			// Rest call to Tagger
+			WebTarget webResource = client.target(taggerMainUrl + "/misc/humanLabeled/crisisID/" + crisisID + "/userID/"+ userID + "?count=" + count);
+
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+
+			String jsonResponse = clientResponse.readEntity(String.class);
+
+			TaggerResponseWrapper dtoList = objectMapper.readValue(jsonResponse, TaggerResponseWrapper.class);
+			logger.info("Number of human labeled documents returned by Tagger: " + (dtoList.getLabeledData() != null ? dtoList.getLabeledData().size() : 0));
+		
+			return dtoList;
+		} catch (Exception e) {
+			logger.info("exception", e);
+			throw new AidrException("Error while getting all human labeled documents for crisisID = " + crisisID + ", userId = " + userID + " from Tagger", e);
+		}
+	}
+
+	@Override
+	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisIDUserName(Long crisisID, String userName, Integer count) throws AidrException {
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		try {
+			// Rest call to Tagger
+			WebTarget webResource = client.target(taggerMainUrl + "/misc/humanLabeled/crisisID/" + crisisID + "/userName/"+ userName + "?count=" + count);
+
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+
+			String jsonResponse = clientResponse.readEntity(String.class);
+
+			TaggerResponseWrapper dtoList = objectMapper.readValue(jsonResponse, TaggerResponseWrapper.class);
+			logger.info("Number of human labeled documents returned by Tagger: " + (dtoList.getLabeledData() != null ? dtoList.getLabeledData().size() : 0));
+		
+			return dtoList;
+		} catch (Exception e) {
+			logger.info("exception", e);
+			throw new AidrException("Error while getting all human labeled documents for crisisID = " + crisisID + ", user name = " + userName + " from Tagger", e);
+		}
+	}
+
 }

@@ -39,6 +39,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import qa.qc.qcri.aidr.task.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.common.logging.ErrorLog;
 /*
@@ -1092,6 +1093,118 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public String pingRemoteEJB() {
 		StringBuilder sb = new StringBuilder("{\"status\": \"RUNNING\"}");
 		return sb.toString();
+	}
+
+	@Override
+	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisID(Long crisisID, Integer count) throws Exception {
+		if (null == crisisID) {
+			logger.error("crisisID can't be null");
+			throw new PropertyNotSetException("crisisID can't be null");
+		}
+		logger.info("Received request for crisisID = " + crisisID + ", count = " + count);
+		List <HumanLabeledDocumentDTO> labeledDocList = null;
+		
+		String aliasTable = "documentNominalLabels";
+		String aliasTableKeyField = "documentNominalLabels.id.nominalLabelId";
+		String[] orderBy = {"documentId"};
+
+		Criterion criterion = Restrictions.conjunction()
+								.add(Restrictions.eq("crisis.crisisId",crisisID))
+								.add(Restrictions.eq("hasHumanLabels", true));
+		Criterion aliasCriterion =  Restrictions.isNotNull(aliasTableKeyField);
+		try {
+			List<Document> docList = remoteDocumentEJB.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, count, aliasTable, aliasCriterion);
+			if (docList != null) {
+				System.out.println("Fetched size = " + docList.size());
+				// First get all labels for the fetched documents
+				labeledDocList = new ArrayList<HumanLabeledDocumentDTO>();
+				for (Document doc: docList) {
+					DocumentNominalLabelDTO labeledDataDTO = remoteDocumentNominalLabelEJB.findLabeledDocumentByID(doc.getDocumentId());
+					labeledDataDTO.setDocumentDTO(null);
+					labeledDocList.add(new HumanLabeledDocumentDTO(new DocumentDTO(doc), labeledDataDTO));
+				}
+				return labeledDocList;
+			} else {
+				return null;
+			}
+		} catch (Exception e) {
+			logger.error("Error in getting human labeled documents collection for crisisID: " + crisisID);
+			logger.error("exception", e);
+		}
+		return null;
+	}
+
+	@Override
+	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisCode(String crisisCode, Integer count) throws Exception{
+		if (null == crisisCode) {
+			logger.error("crisis code can't be null");
+			throw new PropertyNotSetException("crisis code can't be null");
+		}
+		CrisisDTO crisis = remoteCrisisEJB.getCrisisByCode(crisisCode);
+		if (null == crisis) {
+			logger.error("crisis code is invalid");
+			throw new PropertyNotSetException("crisis code is invalid");
+		}
+		logger.info("Received request for crisis code = " + crisisCode + ", count = " + count);
+		return this.getHumanLabeledDocumentsByCrisisID(crisis.getCrisisID(), count);
+	}
+
+	@Override
+	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisIDUserID(Long crisisID, Long userID, Integer count) throws Exception {
+		if (null == crisisID || null == userID) {
+			logger.error("crisis ID or userID can't be null");
+			throw new PropertyNotSetException("crisis ID or userID can't be null");
+		}
+		logger.info("Received request for crisisID = " + crisisID + ", userID = " + userID + ", count = " + count);
+		List <HumanLabeledDocumentDTO> labeledDocList = null;
+		
+		String aliasTable = "documentNominalLabels";
+		String aliasTableKeyField = "documentNominalLabels.id.nominalLabelId";
+		String[] orderBy = {"documentId"};
+
+		Criterion criterion = Restrictions.conjunction()
+								.add(Restrictions.eq("crisis.crisisId",crisisID))
+								.add(Restrictions.eq("hasHumanLabels", true));
+		Criterion aliasCriterion =  Restrictions.conjunction()
+										.add(Restrictions.isNotNull(aliasTableKeyField))
+										.add(Restrictions.eq("documentNominalLabels.id.userId", userID));
+		try {
+			List<Document> docList = remoteDocumentEJB.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, count, aliasTable, aliasCriterion);
+			System.out.println("[getHumanLabeledDocumentsByCrisisIDUserID] docList = " + docList);
+			if (docList != null) {
+				System.out.println("Fetched size = " + docList.size());
+				// First get all labels for the fetched documents
+				labeledDocList = new ArrayList<HumanLabeledDocumentDTO>();
+				for (Document doc: docList) {
+					DocumentNominalLabelDTO labeledDataDTO = remoteDocumentNominalLabelEJB.findLabeledDocumentByID(doc.getDocumentId());
+					labeledDataDTO.setDocumentDTO(null);
+					labeledDocList.add(new HumanLabeledDocumentDTO(new DocumentDTO(doc), labeledDataDTO));
+				}
+				return labeledDocList;
+			} else {
+				return null;
+			}
+		} catch (Exception e) {
+			logger.error("Error in getting human labeled documents collection for crisisID: " + crisisID);
+			logger.error("exception", e);
+		}
+		return null;
+	
+	}
+
+	@Override
+	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisIDUserName(Long crisisID, String userName, Integer count) throws Exception {
+		if (null == crisisID || null == userName) {
+			logger.error("crisis ID or userName can't be null");
+			throw new PropertyNotSetException("crisis ID or userName can't be null");
+		}
+		UsersDTO user = remoteUsersEJB.getUserByName(userName);
+		if (null == user) {
+			logger.error("User name is invalid");
+			throw new PropertyNotSetException("User name is invalid");
+		}
+		logger.info("Received request for crisisID = " + crisisID + ", userName = " + userName + ", count = " + count);
+		return this.getHumanLabeledDocumentsByCrisisIDUserID(crisisID, user.getUserID(), count);
 	}
 
 

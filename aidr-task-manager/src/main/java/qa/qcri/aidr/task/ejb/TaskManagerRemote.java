@@ -8,6 +8,7 @@ import javax.ejb.Remote;
 
 import org.hibernate.criterion.Criterion;
 
+import qa.qc.qcri.aidr.task.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
@@ -95,6 +96,10 @@ public interface TaskManagerRemote<T, Serializable> {
 
 	public <E> String serializeTask(E task);
 	
+	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisID(Long crisisID, Integer count) throws Exception;
+	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisCode(String crisisCode, Integer count) throws Exception;
+	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisIDUserID(Long crisisID, Long userID, Integer count) throws Exception;
+	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisIDUserName(Long crisisID, String userName, Integer count) throws Exception;
 
 	// for testing purpose
 	public String pingRemoteEJB();
