@@ -6,6 +6,7 @@ package qa.qcri.aidr.predictui.facade.imp;
 
 
 import qa.qcri.aidr.common.values.DownloadType;
+import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentList;
@@ -44,6 +45,9 @@ public class MiscResourceImp implements MiscResourceFacade {
 
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.MiscResourceFacade remoteMiscEJB;
+
+	@EJB
+	private qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade remoteCrisisEJB;
 
 	@EJB
 	private TaskManagerRemote<DocumentDTO, Long> remoteTaskManager;
@@ -120,6 +124,22 @@ public class MiscResourceImp implements MiscResourceFacade {
 			return remoteTaskManager.getHumanLabeledDocumentsByCrisisIDUserName(crisisID, userName, count);
 		} catch (Exception e) {
 			logger.error("exception for crisisID = " + crisisID + ", userName = " + userName);
+			e.printStackTrace();
+			return null;  
+		}
+	}
+	
+	@Override
+	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisCodeUserName(String crisisCode, String userName, Integer count)  {
+		try {
+			CrisisDTO crisis = remoteCrisisEJB.getCrisisByCode(crisisCode);
+			if (crisis != null) {
+			return remoteTaskManager.getHumanLabeledDocumentsByCrisisIDUserName(crisis.getCrisisID(), userName, count);
+			} else {
+				return null;
+			}
+		} catch (Exception e) {
+			logger.error("exception for crisis = " + crisisCode + ", userName = " + userName);
 			e.printStackTrace();
 			return null;  
 		}

@@ -205,18 +205,18 @@ public class MiscResource {
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/humanLabeled/download/crisisID/{crisisID}/userName/{userName}")
+	@Path("/humanLabeled/download/crisis/{crisisCode}/userName/{userName}")
 	public Response downloadHumanLabeledDocumentsByCrisisIDUserName(String queryString,
-			@PathParam("crisisID") Long crisisID, @PathParam("userName") String userName, 
+			@PathParam("crisisCode") String crisisCode, @PathParam("userName") String userName, 
 			@QueryParam("count") Integer count,
 			@DefaultValue("CSV") @QueryParam("fileType") String fileType,
 			@DefaultValue("full") @QueryParam("fileType") String contentType) {
-		if (null == crisisID || null == userName) {
+		if (null == crisisCode || null == userName) {
 			return Response.ok(
 					new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "crisisID or user name can't be null")).build();
 		}
 		try {
-			List<HumanLabeledDocumentDTO> dtoList = miscEJB.getHumanLabeledDocumentsByCrisisIDUserName(crisisID, userName, count);
+			List<HumanLabeledDocumentDTO> dtoList = miscEJB.getHumanLabeledDocumentsByCrisisCodeUserName(crisisCode, userName, count);
 			System.out.println("REST call will return dto List size = " + (dtoList != null ? dtoList.size() : "null"));
 			if (dtoList != null) {
 				ResponseWrapper response = new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"));

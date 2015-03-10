@@ -129,6 +129,6 @@ public interface TaggerService {
 	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisIDUserID(Long crisisID, Long userID, Integer count) throws AidrException;
 	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisIDUserName(Long crisisID, String userName, Integer count) throws AidrException;
 
-	public Map<String, Object> downloadHumanLabeledDocumentsByCrisisIDUserName(String queryString, Long crisisID, String userName, Integer count, String fileType, String contentType) throws AidrException;
+	public Map<String, Object> downloadHumanLabeledDocumentsByCrisisUserName(String queryString, String crisisCode, String userName, Integer count, String fileType, String contentType) throws AidrException;
 	
 }

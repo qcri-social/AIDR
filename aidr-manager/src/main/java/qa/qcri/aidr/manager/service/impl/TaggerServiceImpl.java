@@ -1558,12 +1558,12 @@ public class TaggerServiceImpl implements TaggerService {
 	}
 	
 	@Override
-	public Map<String, Object> downloadHumanLabeledDocumentsByCrisisIDUserName(String queryString, Long crisisID, String userName, Integer count,
+	public Map<String, Object> downloadHumanLabeledDocumentsByCrisisUserName(String queryString, String crisisCode, String userName, Integer count,
 			String fileType, String contentType) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
 			// Rest call to Tagger
-			WebTarget webResource = client.target(taggerMainUrl + "/misc/humanLabeled/download/crisisID/" + crisisID + "/userName/"+ userName 
+			WebTarget webResource = client.target(taggerMainUrl + "/misc/humanLabeled/download/crisis/" + crisisCode + "/userName/"+ userName 
 						+ "?count=" + count + "&fileType=" + fileType + "&contentType=" + contentType);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
@@ -1581,7 +1581,7 @@ public class TaggerServiceImpl implements TaggerService {
 			return retVal;
 		} catch (Exception e) {
 			logger.info("exception", e);
-			throw new AidrException("Error while getting download link for human labeled documents for crisisID = " + crisisID + ", user name = " + userName + " from Tagger", e);
+			throw new AidrException("Error while getting download link for human labeled documents for crisis code = " + crisisCode + ", user name = " + userName + " from Tagger", e);
 		}
 	}
 

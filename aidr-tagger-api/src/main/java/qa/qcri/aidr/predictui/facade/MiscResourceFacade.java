@@ -34,7 +34,8 @@ public interface MiscResourceFacade {
    public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisCode(String crisisCode, Integer count);
    public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisIDUserID(Long crisisID, Long userID, Integer count);
    public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisIDUserName(Long crisisID, String userName, Integer count);
-
+   public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisCodeUserName(String crisisCode, String userName, Integer count);
+   
    public String downloadItems(HumanLabeledDocumentList dtoList, String queryString, String crisisCode, String userName, Integer count, String fileType, String contentType);
    
 }

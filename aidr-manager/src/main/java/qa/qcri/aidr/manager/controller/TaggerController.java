@@ -897,12 +897,12 @@ public class TaggerController extends BaseController {
 
 	@RequestMapping(value = "/downloadHumanLabeledDocuments.action", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String,Object> downloadHumanLabeledDocumentsByCrisisIDUserName(String queryString, 
-			@RequestParam Long crisisID, @RequestParam String userName, @RequestParam Integer count,
+	public Map<String,Object> downloadHumanLabeledDocuments(String queryString, 
+			@RequestParam String crisisCode, @RequestParam String userName, @RequestParam Integer count,
 			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("fileType") String fileType, 
 			@DefaultValue(DownloadType.FULL_TWEETS) @QueryParam("contentType") String contentType) throws Exception {
 		try {
-			Map<String, Object> downloadLink = taggerService.downloadHumanLabeledDocumentsByCrisisIDUserName(queryString, crisisID, userName, count, fileType, contentType);
+			Map<String, Object> downloadLink = taggerService.downloadHumanLabeledDocumentsByCrisisUserName(queryString, crisisCode, userName, count, fileType, contentType);
 			if (downloadLink.get("fileName") != null) {
 				return getUIWrapper(downloadLink, true);
 			} else {
