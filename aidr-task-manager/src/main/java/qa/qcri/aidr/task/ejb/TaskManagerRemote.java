@@ -8,14 +8,13 @@ import javax.ejb.Remote;
 
 import org.hibernate.criterion.Criterion;
 
-import qa.qc.qcri.aidr.task.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAssignmentDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.ItemToLabelDTO;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
+
 
 import com.fasterxml.jackson.core.type.TypeReference;
 

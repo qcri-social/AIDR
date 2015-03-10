@@ -5,9 +5,8 @@
 	<groupId>org.qcri.aidr.persister</groupId>
 	<artifactId>aidr-persister</artifactId>
 	<packaging>war</packaging>
+	<name>AIDRPersister</name>
 	<version>1.0</version>
-
-	<name>aidr-persister</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
@@ -21,6 +20,15 @@
 			<artifactId>aidr-common</artifactId>
 			<version>1.0</version>
 		</dependency>
+
+		<dependency>
+			<groupId>qa.qcri.aidr.predictdb</groupId>
+			<artifactId>aidr-db-manager</artifactId>
+			<version>1.0</version>
+			<scope>compile</scope>
+			<type>ejb-client</type>
+		</dependency>
+
 
 		<dependency>
 			<groupId>log4j</groupId>

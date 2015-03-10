@@ -5,8 +5,12 @@
 package qa.qcri.aidr.predictui.api;
 
 
-import qa.qc.qcri.aidr.task.dto.HumanLabeledDocumentDTO;
-import qa.qcri.aidr.common.logging.ErrorLog;
+
+import java.util.List;
+
+import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentList;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.HumanLabeledDocumentListWrapper;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.ItemToLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
 import qa.qcri.aidr.predictui.facade.MiscResourceFacade;
@@ -20,18 +24,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-//import org.apache.log4j.Logger;
-
-
-
-
-
-
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
+import org.apache.log4j.Logger;
 
 import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 
@@ -53,8 +46,7 @@ public class MiscResource {
 	}
 
 	//private static Logger logger = Logger.getLogger(MiscResource.class);
-	private static Logger logger = LoggerFactory.getLogger(MiscResource.class);
-	private static ErrorLog elog = new ErrorLog();
+	private static Logger logger = Logger.getLogger(MiscResource.class);
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -74,7 +66,7 @@ public class MiscResource {
 			response.setTrainingData(trainingDataList);
 		} catch (RuntimeException e) {
 			logger.error("Error in getting training data for crisis: " + crisisID);
-			logger.error(elog.toStringException(e));
+			logger.error("Exception", e);
 			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
 		}
 		return Response.ok(response).build();
@@ -90,7 +82,7 @@ public class MiscResource {
 			logger.info("Found item to label = " + (item != null ? item.getItemID() : "NONE!"));
 		} catch (RuntimeException e) {
 			logger.error("Exception in getting item to label for crisis: " + crisisID);
-			logger.error(elog.toStringException(e));
+			logger.error("Exception", e);
 		}
 		return Response.ok(item).build();
 	}
@@ -102,7 +94,7 @@ public class MiscResource {
 		String response = "{\"application\":\"aidr-tagger-api\", \"status\":\"RUNNING\"}";
 		return Response.ok(response).build();
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/humanLabeled/crisisID/{crisisID}")
@@ -116,18 +108,19 @@ public class MiscResource {
 			System.out.println("REST call will return dto List size = " + (dtoList != null ? dtoList.size() : "null"));
 			if (dtoList != null) {
 				ResponseWrapper response = new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"));
-				response.setLabeledData(dtoList);
+				response.setItems(dtoList);
 				response.setTotal(dtoList.size());
 				return Response.ok(response).build();
 			} else {
 				return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"), "Found 0 human labeled documents")).build();
 			}
 		} catch (Exception e) {
+			logger.error("Exception", e);
 			return Response.ok(
-				new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "Exception in fetching human labeled documents")).build();
+					new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "Exception in fetching human labeled documents")).build();
 		}
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/humanLabeled/crisisCode/{crisisCode}")
@@ -141,23 +134,24 @@ public class MiscResource {
 			System.out.println("REST call will return dto List size = " + (dtoList != null ? dtoList.size() : "null"));
 			if (dtoList != null) {
 				ResponseWrapper response = new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"));
-				response.setLabeledData(dtoList);
+				response.setItems(dtoList);
 				response.setTotal(dtoList.size());
 				return Response.ok(response).build();
 			} else {
 				return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"), "Found 0 human labeled documents")).build();
 			}
 		} catch (Exception e) {
+			logger.error("Exception", e);
 			return Response.ok(
-				new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "Exception in fetching human labeled documents")).build();
+					new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "Exception in fetching human labeled documents")).build();
 		}
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/humanLabeled/crisisID/{crisisID}/userID/{userID}")
 	public Response getHumanLabeledDocumentsByCrisisIDUserID(@PathParam("crisisID") Long crisisID, @PathParam("userID") Long userID, 
-														@QueryParam("count") Integer count) {
+			@QueryParam("count") Integer count) {
 		if (null == crisisID || null == userID) {
 			return Response.ok(
 					new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "crisisID or userID can't be null")).build();
@@ -167,23 +161,26 @@ public class MiscResource {
 			System.out.println("REST call will return dto List size = " + (dtoList != null ? dtoList.size() : "null"));
 			if (dtoList != null) {
 				ResponseWrapper response = new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"));
-				response.setLabeledData(dtoList);
+				response.setItems(dtoList);
 				response.setTotal(dtoList.size());
 				return Response.ok(response).build();
 			} else {
 				return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"), "Found 0 human labeled documents")).build();
 			}
 		} catch (Exception e) {
+			logger.error("Exception", e);
 			return Response.ok(
-				new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "Exception in fetching human labeled documents")).build();
+					new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "Exception in fetching human labeled documents")).build();
 		}
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/humanLabeled/crisisID/{crisisID}/userName/{userName}")
 	public Response getHumanLabeledDocumentsByCrisisIDUserName(@PathParam("crisisID") Long crisisID, @PathParam("userName") String userName, 
-														@QueryParam("count") Integer count) {
+			@QueryParam("count") Integer count,
+			@DefaultValue("CSV") @QueryParam("fileType") String fileType,
+			@DefaultValue("full") @QueryParam("fileType") String contentType) {
 		if (null == crisisID || null == userName) {
 			return Response.ok(
 					new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "crisisID or user name can't be null")).build();
@@ -193,16 +190,48 @@ public class MiscResource {
 			System.out.println("REST call will return dto List size = " + (dtoList != null ? dtoList.size() : "null"));
 			if (dtoList != null) {
 				ResponseWrapper response = new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"));
-				response.setLabeledData(dtoList);
+				response.setItems(dtoList);
 				response.setTotal(dtoList.size());
 				return Response.ok(response).build();
 			} else {
 				return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"), "Found 0 human labeled documents")).build();
 			}
 		} catch (Exception e) {
+			logger.error("Exception", e);
 			return Response.ok(
-				new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "Exception in fetching human labeled documents")).build();
+					new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "Exception in fetching human labeled documents")).build();
 		}
 	}
-
+	
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/humanLabeled/download/crisisID/{crisisID}/userName/{userName}")
+	public Response downloadHumanLabeledDocumentsByCrisisIDUserName(String queryString,
+			@PathParam("crisisID") Long crisisID, @PathParam("userName") String userName, 
+			@QueryParam("count") Integer count,
+			@DefaultValue("CSV") @QueryParam("fileType") String fileType,
+			@DefaultValue("full") @QueryParam("fileType") String contentType) {
+		if (null == crisisID || null == userName) {
+			return Response.ok(
+					new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "crisisID or user name can't be null")).build();
+		}
+		try {
+			List<HumanLabeledDocumentDTO> dtoList = miscEJB.getHumanLabeledDocumentsByCrisisIDUserName(crisisID, userName, count);
+			System.out.println("REST call will return dto List size = " + (dtoList != null ? dtoList.size() : "null"));
+			if (dtoList != null) {
+				ResponseWrapper response = new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"));
+				response.setTotal(dtoList.size());
+				HumanLabeledDocumentList list = new HumanLabeledDocumentList(dtoList);
+				response.setMessage(miscEJB.downloadItems(list, queryString, dtoList.get(0).getDoc().getCrisisDTO().getCode(), 
+															userName, count, fileType, contentType));
+				return Response.ok(response).build();
+			} else {
+				return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"), "Found 0 human labeled documents")).build();
+			}
+		} catch (Exception e) {
+			logger.error("Exception", e);
+			return Response.ok(
+					new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "Exception in fetching human labeled documents")).build();
+		}
+	}
 }

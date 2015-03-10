@@ -29,6 +29,9 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.util.*;
 
 //import com.sun.jersey.api.client.Client;
@@ -328,7 +331,15 @@ public class TaggerServiceImpl implements TaggerService {
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 			String jsonResponse = clientResponse.readEntity(String.class);
 			logger.info("received response: " + jsonResponse);
-			CrisisDTO dto = objectMapper.readValue(jsonResponse, CrisisDTO.class);
+			CrisisDTO dto = null;
+			TaggerResponseWrapper response = objectMapper.readValue(jsonResponse, TaggerResponseWrapper.class);
+			if (response.getDataObject() != null) {
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ObjectOutput out = new ObjectOutputStream(bos);   
+				out.writeObject(response.getDataObject());
+				byte[] byteStream = bos.toByteArray();
+				dto = objectMapper.readValue(byteStream, CrisisDTO.class);
+			}
 			logger.info("deserialization result: " + dto);
 			if (dto != null) {
 				TaggerCrisis crisis = new TaggerCrisis(dto);
@@ -340,7 +351,8 @@ public class TaggerServiceImpl implements TaggerService {
 			return null;
 		} catch (Exception e) {
 			logger.info("exception: ", e);
-			throw new AidrException("Error while getting crisis by code from Tagger", e);
+			return null;
+			//throw new AidrException("Error while getting crisis by code from Tagger", e);
 		}
 	}
 
@@ -1467,8 +1479,8 @@ public class TaggerServiceImpl implements TaggerService {
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			TaggerResponseWrapper dtoList = objectMapper.readValue(jsonResponse, TaggerResponseWrapper.class);
-			logger.info("Number of human labeled documents returned by Tagger: " + (dtoList.getLabeledData() != null ? dtoList.getLabeledData().size() : 0));
-		
+			logger.info("Number of human labeled documents returned by Tagger: " + (dtoList.getHumanLabeledItems() != null ? dtoList.getHumanLabeledItems().size() : 0));
+
 			return dtoList;
 		} catch (Exception e) {
 			logger.info("exception", e);
@@ -1490,8 +1502,8 @@ public class TaggerServiceImpl implements TaggerService {
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			TaggerResponseWrapper dtoList = objectMapper.readValue(jsonResponse, TaggerResponseWrapper.class);
-			logger.info("Number of human labeled documents returned by Tagger: " + (dtoList.getLabeledData() != null ? dtoList.getLabeledData().size() : 0));
-		
+			logger.info("Number of human labeled documents returned by Tagger: " + (dtoList.getHumanLabeledItems() != null ? dtoList.getHumanLabeledItems().size() : 0));
+
 			return dtoList;
 		} catch (Exception e) {
 			logger.info("exception", e);
@@ -1513,8 +1525,8 @@ public class TaggerServiceImpl implements TaggerService {
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			TaggerResponseWrapper dtoList = objectMapper.readValue(jsonResponse, TaggerResponseWrapper.class);
-			logger.info("Number of human labeled documents returned by Tagger: " + (dtoList.getLabeledData() != null ? dtoList.getLabeledData().size() : 0));
-		
+			logger.info("Number of human labeled documents returned by Tagger: " + (dtoList.getHumanLabeledItems() != null ? dtoList.getHumanLabeledItems().size() : 0));
+
 			return dtoList;
 		} catch (Exception e) {
 			logger.info("exception", e);
@@ -1536,12 +1548,40 @@ public class TaggerServiceImpl implements TaggerService {
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			TaggerResponseWrapper dtoList = objectMapper.readValue(jsonResponse, TaggerResponseWrapper.class);
-			logger.info("Number of human labeled documents returned by Tagger: " + (dtoList.getLabeledData() != null ? dtoList.getLabeledData().size() : 0));
-		
+			logger.info("Number of human labeled documents returned by Tagger: " + (dtoList.getHumanLabeledItems() != null ? dtoList.getHumanLabeledItems().size() : 0));
+
 			return dtoList;
 		} catch (Exception e) {
 			logger.info("exception", e);
 			throw new AidrException("Error while getting all human labeled documents for crisisID = " + crisisID + ", user name = " + userName + " from Tagger", e);
+		}
+	}
+	
+	@Override
+	public Map<String, Object> downloadHumanLabeledDocumentsByCrisisIDUserName(String queryString, Long crisisID, String userName, Integer count,
+			String fileType, String contentType) throws AidrException {
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		try {
+			// Rest call to Tagger
+			WebTarget webResource = client.target(taggerMainUrl + "/misc/humanLabeled/download/crisisID/" + crisisID + "/userName/"+ userName 
+						+ "?count=" + count + "&fileType=" + fileType + "&contentType=" + contentType);
+
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
+					.post(Entity.json(queryString), Response.class);
+			String jsonResponse = clientResponse.readEntity(String.class);
+
+			TaggerResponseWrapper response = objectMapper.readValue(jsonResponse, TaggerResponseWrapper.class);
+			logger.info("Number of human labeled documents returned by Tagger: " + response.getHumanLabeledItems().size());
+			
+			Map<String, Object> retVal = new HashMap<String, Object>();
+			retVal.put("fileName", response.getMessage());
+			retVal.put("total", response.getTotal());
+			return retVal;
+		} catch (Exception e) {
+			logger.info("exception", e);
+			throw new AidrException("Error while getting download link for human labeled documents for crisisID = " + crisisID + ", user name = " + userName + " from Tagger", e);
 		}
 	}
 

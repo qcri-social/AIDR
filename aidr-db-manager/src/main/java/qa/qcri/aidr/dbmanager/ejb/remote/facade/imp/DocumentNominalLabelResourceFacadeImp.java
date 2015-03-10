@@ -175,6 +175,12 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 		List<DocumentNominalLabelDTO> dtoList = findByCriteria("id.documentId", id.longValue()); 
 		return (dtoList != null && !dtoList.isEmpty()) ? dtoList.get(0) : null;
 	}
+	
+	@Override
+	public List<DocumentNominalLabelDTO> findLabeledDocumentListByID(Long id) throws PropertyNotSetException {
+		List<DocumentNominalLabelDTO> dtoList = findByCriteria("id.documentId", id.longValue()); 
+		return (dtoList != null && !dtoList.isEmpty()) ? dtoList : null;
+	}
 
 	@Override
 	public List<DocumentNominalLabelDTO> getLabeledDocumentCollectionForNominalLabel(Integer nominalLabelID) throws PropertyNotSetException {

@@ -47,5 +47,6 @@ public class ApplicationConfig extends Application {
     	resources.add(qa.qcri.aidr.persister.api.Persister4CollectionAPI.class);
         resources.add(qa.qcri.aidr.persister.api.Persister4CollectorAPI.class);
         resources.add(qa.qcri.aidr.persister.api.Persister4TaggerAPI.class);
+        resources.add(qa.qcri.aidr.persister.api.Persist2FileAPI.class);
     }
 }

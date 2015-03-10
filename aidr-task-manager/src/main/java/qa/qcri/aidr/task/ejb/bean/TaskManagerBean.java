@@ -5,31 +5,19 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-
-
-
-
-
-
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
-
-import org.hibernate.Hibernate;
-//import org.apache.log4j.Logger;
-//import org.codehaus.jackson.map.ObjectMapper;
-//import org.codehaus.jackson.type.TypeReference;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
@@ -39,42 +27,16 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import qa.qc.qcri.aidr.task.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.common.logging.ErrorLog;
-/*
-import qa.qcri.aidr.task.dto.DocumentDTO;
-import qa.qcri.aidr.task.dto.util.CrisisDTOHelper;
-import qa.qcri.aidr.task.dto.util.DocumentDTOHelper;
-import qa.qcri.aidr.task.dto.util.DocumentNominalLabelDTOHelper;
-import qa.qcri.aidr.task.dto.util.TaskAnswerDTOHelper;
-import qa.qcri.aidr.task.dto.util.TaskAssignmentDTOHelper;
-import qa.qcri.aidr.task.dto.util.UsersDTOHelper;
-import qa.qcri.aidr.task.ejb.CrisisService;
-import qa.qcri.aidr.task.ejb.DocumentNominalLabelService;
-import qa.qcri.aidr.task.ejb.DocumentService;
-import qa.qcri.aidr.task.ejb.TaskAnswerService;
-import qa.qcri.aidr.task.ejb.TaskAssignmentService;
-import qa.qcri.aidr.task.ejb.TaskManagerRemote;
-import qa.qcri.aidr.task.ejb.UsersService;
-import qa.qcri.aidr.task.entities.Document;
-import qa.qcri.aidr.task.entities.DocumentNominalLabel;
-import qa.qcri.aidr.task.entities.NominalLabel;
-import qa.qcri.aidr.task.entities.TaskAnswer;
-import qa.qcri.aidr.task.entities.TaskAssignment;
-import qa.qcri.aidr.task.entities.Users;
- */
-
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAssignmentDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.ItemToLabelDTO;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
-import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.task.*;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
@@ -1103,31 +1065,39 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		}
 		logger.info("Received request for crisisID = " + crisisID + ", count = " + count);
 		List <HumanLabeledDocumentDTO> labeledDocList = null;
-		
+
 		String aliasTable = "documentNominalLabels";
 		String aliasTableKeyField = "documentNominalLabels.id.nominalLabelId";
 		String[] orderBy = {"documentId"};
 
 		Criterion criterion = Restrictions.conjunction()
-								.add(Restrictions.eq("crisis.crisisId",crisisID))
-								.add(Restrictions.eq("hasHumanLabels", true));
+				.add(Restrictions.eq("crisis.crisisId",crisisID))
+				.add(Restrictions.eq("hasHumanLabels", true));
 		Criterion aliasCriterion =  Restrictions.isNotNull(aliasTableKeyField);
 		try {
 			List<Document> docList = remoteDocumentEJB.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, count, aliasTable, aliasCriterion);
 			if (docList != null) {
 				System.out.println("Fetched size = " + docList.size());
+				Set<Document> docSet = new TreeSet<Document>(new DocumentComparator());
+				docSet.addAll(docList);
+				System.out.println("Sizeof document collection set = " + docSet.size());
+
 				// First get all labels for the fetched documents
 				labeledDocList = new ArrayList<HumanLabeledDocumentDTO>();
-				for (Document doc: docList) {
-					DocumentNominalLabelDTO labeledDataDTO = remoteDocumentNominalLabelEJB.findLabeledDocumentByID(doc.getDocumentId());
-					NominalLabelDTO nominalLabel = remoteNominalLabelEJB.getNominalLabelWithAllFieldsByID(labeledDataDTO.getIdDTO().getNominalLabelId());
-					if (nominalLabel != null) {
-						nominalLabel.setDocumentNominalLabelsDTO(null);
-						nominalLabel.setModelNominalLabelsDTO(null);
+				for (Document doc: docSet) {
+					List<DocumentNominalLabelDTO> labeledDataDTO = remoteDocumentNominalLabelEJB.findLabeledDocumentListByID(doc.getDocumentId());
+					if (labeledDataDTO != null) {
+						for (DocumentNominalLabelDTO dto: labeledDataDTO) {
+							NominalLabelDTO nominalLabel = remoteNominalLabelEJB.getNominalLabelWithAllFieldsByID(dto.getIdDTO().getNominalLabelId());
+							if (nominalLabel != null) {
+								nominalLabel.setDocumentNominalLabelsDTO(null);
+								nominalLabel.setModelNominalLabelsDTO(null);
+							}
+							dto.setNominalLabelDTO(nominalLabel);
+							dto.setDocumentDTO(null);
+						}
+						labeledDocList.add(new HumanLabeledDocumentDTO(new DocumentDTO(doc), labeledDataDTO));
 					}
-					labeledDataDTO.setNominalLabelDTO(nominalLabel);
-					labeledDataDTO.setDocumentDTO(null);
-					labeledDocList.add(new HumanLabeledDocumentDTO(new DocumentDTO(doc), labeledDataDTO));
 				}
 				return labeledDocList;
 			} else {
@@ -1163,34 +1133,42 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		}
 		logger.info("Received request for crisisID = " + crisisID + ", userID = " + userID + ", count = " + count);
 		List <HumanLabeledDocumentDTO> labeledDocList = null;
-		
+
 		String aliasTable = "documentNominalLabels";
 		String aliasTableKeyField = "documentNominalLabels.id.nominalLabelId";
 		String[] orderBy = {"documentId"};
 
 		Criterion criterion = Restrictions.conjunction()
-								.add(Restrictions.eq("crisis.crisisId",crisisID))
-								.add(Restrictions.eq("hasHumanLabels", true));
+				.add(Restrictions.eq("crisis.crisisId",crisisID))
+				.add(Restrictions.eq("hasHumanLabels", true));
 		Criterion aliasCriterion =  Restrictions.conjunction()
-										.add(Restrictions.isNotNull(aliasTableKeyField))
-										.add(Restrictions.eq("documentNominalLabels.id.userId", userID));
+				.add(Restrictions.isNotNull(aliasTableKeyField))
+				.add(Restrictions.eq("documentNominalLabels.id.userId", userID));
 		try {
 			List<Document> docList = remoteDocumentEJB.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, count, aliasTable, aliasCriterion);
 			System.out.println("[getHumanLabeledDocumentsByCrisisIDUserID] docList = " + docList);
 			if (docList != null) {
 				System.out.println("Fetched size = " + docList.size());
+				Set<Document> docSet = new TreeSet<Document>(new DocumentComparator());
+				docSet.addAll(docList);
+				System.out.println("Sizeof document collection set = " + docSet.size());
+
 				// First get all labels for the fetched documents
 				labeledDocList = new ArrayList<HumanLabeledDocumentDTO>();
-				for (Document doc: docList) {
-					DocumentNominalLabelDTO labeledDataDTO = remoteDocumentNominalLabelEJB.findLabeledDocumentByID(doc.getDocumentId());
-					NominalLabelDTO nominalLabel = remoteNominalLabelEJB.getNominalLabelWithAllFieldsByID(labeledDataDTO.getIdDTO().getNominalLabelId());
-					if (nominalLabel != null) {
-						nominalLabel.setDocumentNominalLabelsDTO(null);
-						nominalLabel.setModelNominalLabelsDTO(null);
+				for (Document doc: docSet) {
+					List<DocumentNominalLabelDTO> labeledDataDTO = remoteDocumentNominalLabelEJB.findLabeledDocumentListByID(doc.getDocumentId());
+					if (labeledDataDTO != null) {
+						for (DocumentNominalLabelDTO dto: labeledDataDTO) {
+							NominalLabelDTO nominalLabel = remoteNominalLabelEJB.getNominalLabelWithAllFieldsByID(dto.getIdDTO().getNominalLabelId());
+							if (nominalLabel != null) {
+								nominalLabel.setDocumentNominalLabelsDTO(null);
+								nominalLabel.setModelNominalLabelsDTO(null);
+							}
+							dto.setNominalLabelDTO(nominalLabel);
+							dto.setDocumentDTO(null);
+						}
+						labeledDocList.add(new HumanLabeledDocumentDTO(new DocumentDTO(doc), labeledDataDTO));
 					}
-					labeledDataDTO.setNominalLabelDTO(nominalLabel);
-					labeledDataDTO.setDocumentDTO(null);
-					labeledDocList.add(new HumanLabeledDocumentDTO(new DocumentDTO(doc), labeledDataDTO));
 				}
 				return labeledDocList;
 			} else {
@@ -1201,7 +1179,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			logger.error("exception", e);
 		}
 		return null;
-	
+
 	}
 
 	@Override
@@ -1219,7 +1197,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		return this.getHumanLabeledDocumentsByCrisisIDUserID(crisisID, user.getUserID(), count);
 	}
 
-
 	/*
 	public static void main(String args[]) {
 		TaskManagerRemote<Document, Serializable> tm = new TaskManagerBean<Document, Long>();
@@ -1231,4 +1208,12 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 	 */
 
+	private class DocumentComparator implements Comparator<Document> {
+
+		@Override
+		public int compare(Document d1, Document d2) {
+			return d1.getDocumentId().compareTo(d2.getDocumentId());
+		}
+		
+	}
 }

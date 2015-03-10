@@ -12,11 +12,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import qa.qc.qcri.aidr.task.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisAttributesDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelNominalLabelDTO;
@@ -77,7 +77,7 @@ public class ResponseWrapper implements Serializable {
     private List<TrainingDataDTO> trainingData;
     
     @XmlElement 
-    List<HumanLabeledDocumentDTO> labeledData;
+    List<HumanLabeledDocumentDTO> items;
     
     @XmlElement
     private Integer total;
@@ -379,11 +379,14 @@ public class ResponseWrapper implements Serializable {
         this.entityID = entityID;
     }
     
-    public List<HumanLabeledDocumentDTO> getLabeledData() {
-    	return this.labeledData;
+    public List<HumanLabeledDocumentDTO> getItems() {
+    	return this.items;
     }
     
-    public void setLabeledData(List<HumanLabeledDocumentDTO> labeledData) {
-    	this.labeledData = labeledData;
+    public void setItems(List<HumanLabeledDocumentDTO> items) {
+    	this.items = items;
+    	if (items != null && !items.isEmpty()) {
+    		this.setTotal(items.size());
+    	}
     }
 }

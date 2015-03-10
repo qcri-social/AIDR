@@ -16,6 +16,7 @@ import qa.qcri.aidr.dbmanager.dto.CrisisAttributesDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelNominalLabelDTO;
@@ -72,7 +73,7 @@ public class TaggerResponseWrapper implements Serializable {
     @XmlElement
     private List<TrainingDataDTO> trainingData;
     
-    @XmlElement private List<HumanLabeledDocumentDTO> labeledData;
+    @XmlElement private List<HumanLabeledDocumentDTO> humanLabeledItems;
     
     @XmlElement
     private Integer total;
@@ -360,14 +361,14 @@ public class TaggerResponseWrapper implements Serializable {
         this.entityID = entityID;
     }
     
-	public List<HumanLabeledDocumentDTO> getLabeledData() {
-		return this.labeledData;
+	public List<HumanLabeledDocumentDTO> getHumanLabeledItems() {
+		return this.humanLabeledItems;
 	}
 
-	public void setLabeledData(List<HumanLabeledDocumentDTO> labeledData) {
-		this.labeledData = labeledData;
-		if (labeledData != null && !labeledData.isEmpty()) {
-			this.setTotal(labeledData.size());
+	public void setLabeledData(List<HumanLabeledDocumentDTO> humanLabeledItems) {
+		this.humanLabeledItems = humanLabeledItems;
+		if (humanLabeledItems != null && !humanLabeledItems.isEmpty()) {
+			this.setTotal(humanLabeledItems.size());
 		}
 	}
 }

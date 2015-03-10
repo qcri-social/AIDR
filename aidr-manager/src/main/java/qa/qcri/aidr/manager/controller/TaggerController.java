@@ -858,7 +858,7 @@ public class TaggerController extends BaseController {
 			return getUIWrapper(false, "Error in fetching human labeled documents");
 		}
 	}
-	
+
 	@RequestMapping(value = "/getHumanLabeledDocumentsByCrisisCode.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> getHumanLabeledDocumentsByCrisisCode(String crisisCode, Integer count) throws Exception {
@@ -870,7 +870,7 @@ public class TaggerController extends BaseController {
 			return getUIWrapper(false, "Error in fetching human labeled documents");
 		}
 	}
-	
+
 	@RequestMapping(value = "/getHumanLabeledDocumentsByCrisisIDUserID.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> getHumanLabeledDocumentsByCrisisIDUserID(Long crisisID, Long userID, Integer count) throws Exception {
@@ -882,10 +882,10 @@ public class TaggerController extends BaseController {
 			return getUIWrapper(false, "Error in fetching human labeled documents");
 		}
 	}
-	
+
 	@RequestMapping(value = "/getHumanLabeledDocumentsByCrisisIDUserName.action", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String,Object> getHumanLabeledDocumentsByCrisisIDUserID(Long crisisID, String userName, Integer count) throws Exception {
+	public Map<String,Object> getHumanLabeledDocumentsByCrisisIDUserName(Long crisisID, String userName, Integer count) throws Exception {
 		try {
 			TaggerResponseWrapper labeledDataList = taggerService.getHumanLabeledDocumentsByCrisisIDUserName(crisisID, userName, count);
 			return getUIWrapper(labeledDataList, true);
@@ -894,5 +894,24 @@ public class TaggerController extends BaseController {
 			return getUIWrapper(false, "Error in fetching human labeled documents");
 		}
 	}
-	
+
+	@RequestMapping(value = "/downloadHumanLabeledDocuments.action", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> downloadHumanLabeledDocumentsByCrisisIDUserName(String queryString, 
+			@RequestParam Long crisisID, @RequestParam String userName, @RequestParam Integer count,
+			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("fileType") String fileType, 
+			@DefaultValue(DownloadType.FULL_TWEETS) @QueryParam("contentType") String contentType) throws Exception {
+		try {
+			Map<String, Object> downloadLink = taggerService.downloadHumanLabeledDocumentsByCrisisIDUserName(queryString, crisisID, userName, count, fileType, contentType);
+			if (downloadLink.get("fileName") != null) {
+				return getUIWrapper(downloadLink, true);
+			} else {
+				return getUIWrapper(downloadLink, false);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getUIWrapper(false, "Error in getting dlownload link for human labeled documents");
+		}
+	}
+
 }

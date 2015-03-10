@@ -5,42 +5,55 @@
 package qa.qcri.aidr.utils;
 
 import java.io.Serializable;
+import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
+
 import qa.qcri.aidr.common.code.DateFormatConfig;
 import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.persister.filter.NominalLabel;
 
 /**
  *
- * @author Imran, modified by Koushik
+ * @author Koushik
  */
-@SuppressWarnings("serial")
+
 public class ClassifiedTweet  implements Document, Serializable {
-	
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3780215910578547404L;
+
 	private static Logger logger = Logger.getLogger(ClassifiedTweet.class);
-	private static ErrorLog elog = new ErrorLog();
-	
 
 	/**
 	 * 
 	 */
 	private String tweetID;
 	private String message;
-	//private String reTweeted;
-	//private String reTweetCount;
 	private String createdAt;
 	private long timestamp;
-	
+
 	private String userID;
 	private String userName;
 	private String userURL;
@@ -48,6 +61,7 @@ public class ClassifiedTweet  implements Document, Serializable {
 
 	private String crisisName;
 	private String crisisCode;
+
 	private String attributeName_1;
 	private String attributeCode_1;
 	private String labelName_1;
@@ -55,13 +69,13 @@ public class ClassifiedTweet  implements Document, Serializable {
 	private String labelDescription_1;
 	private String confidence_1;
 	private String humanLabeled_1;
-	
-	// Added by koushik
-	//@JsonIgnore
-	public ArrayList<NominalLabel> nominal_labels;		// transient?
+
+	public List<NominalLabel> nominal_labels;		
+	private AidrObject aidr;
 
 	public ClassifiedTweet() {
 		nominal_labels = new ArrayList<NominalLabel>();
+		aidr = new AidrObject();
 	}
 
 	/**
@@ -166,25 +180,24 @@ public class ClassifiedTweet  implements Document, Serializable {
 	public String toString(){
 		StringBuffer tweetString = new StringBuffer();
 		tweetString.append(tweetID).append(",")
-				   .append(message).append(",")
-				   .append(createdAt).append(",")
-				   .append(userID).append(",")
-				   .append(userName).append(",")
-				   .append(userURL).append(",")
-				   .append(tweetURL).append(",")
-				   .append(crisisName).append(",")
-				   .append(attributeName_1).append(",")
-				   .append(attributeCode_1).append(",")
-				   .append(labelName_1).append(",")
-				   .append(labelDescription_1).append(",")
-				   .append(confidence_1).append(",")
-				   .append(humanLabeled_1);
-		if (tweetString != null) {
-			return tweetString.toString();	
-		} 
-		return null;
-		//return tweetID+","+message+","+createdAt+","+userID+","+userName+","+userURL+","+tweetURL;
+		.append(message).append(",")
+		.append(createdAt).append(",")
+		.append(userID).append(",")
+		.append(userName).append(",")
+		.append(userURL).append(",")
+		.append(tweetURL).append(",")
+		.append(crisisName).append(",")
+		.append(attributeName_1).append(",")
+		.append(attributeCode_1).append(",")
+		.append(labelName_1).append(",")
+		.append(labelDescription_1).append(",")
+		.append(confidence_1).append(",")
+		.append(humanLabeled_1);
+
+		return tweetString.toString();	
+
 	}
+
 
 	/**
 	 * @return the crisisName
@@ -203,19 +216,19 @@ public class ClassifiedTweet  implements Document, Serializable {
 	public String getAttributeName_1() {
 		return attributeName_1;
 	}
-	
+
 	public void setAttributeName_1(String attributeName) {
 		this.attributeName_1 = attributeName;
 	}
-	
+
 	public String getAttributeCode_1() {
 		return attributeCode_1;
 	}
-	
+
 	public void setAttributeCode_1(String attributeCode) {
 		this.attributeCode_1 = attributeCode;
 	}
-	
+
 	/**
 	 * @return the labelName
 	 */
@@ -243,16 +256,16 @@ public class ClassifiedTweet  implements Document, Serializable {
 	public void setLabelDescription_1(String labelDescription) {
 		this.labelDescription_1 = labelDescription;
 	}
-	
+
 	public String getLabelCode_1() {
 		return labelCode_1;
-		
+
 	}
 
 	public void setLabelCode_1(String labelCode) {
 		this.labelCode_1 = labelCode;
 	}
-	
+
 	/**
 	 * @return the confidence
 	 */
@@ -282,7 +295,6 @@ public class ClassifiedTweet  implements Document, Serializable {
 	}
 
 
-	// Added by koushik
 	public Date getDate(String timeString) {
 		//SimpleDateFormat formatter = new SimpleDateFormat(StandardDateFormat);
 		DateFormat formatter = new SimpleDateFormat(DateFormatConfig.ISODateFormat);
@@ -294,7 +306,7 @@ public class ClassifiedTweet  implements Document, Serializable {
 				return newDate;
 			} catch (ParseException e) {
 				logger.error("Parse Error in getting Date string = " + timeString);
-				logger.error(elog.toStringException(e));
+				logger.error("exception", e);
 			}
 		}
 		logger.warn("[getDate] Warning! returning Date = null for time String = " + timeString);
@@ -303,7 +315,7 @@ public class ClassifiedTweet  implements Document, Serializable {
 
 	public String setDateString(String timeString) {
 		//System.out.println("[setDateString] Received time string: " + timeString);
-		
+
 		DateFormat dateFormatISO = new SimpleDateFormat(DateFormatConfig.ISODateFormat);
 		dateFormatISO.setTimeZone(TimeZone.getTimeZone("GMT"));
 		if (timeString != null) {
@@ -315,43 +327,35 @@ public class ClassifiedTweet  implements Document, Serializable {
 				return dateFormatISO.format(newDate);
 			} catch (ParseException e) {
 				logger.error("Error in setting createdAt field = " + timeString);
-				logger.error(elog.toStringException(e));
+				logger.error("exception", e);
 			}
 		}
 		setTimestamp(0);
 		return timeString;
 	}
 
-	public ArrayList<NominalLabel> getNominalLabels() {
+	public List<NominalLabel> getNominalLabels() {
 		return nominal_labels;
 	}
 
-	public void setNominalLabels(ArrayList<NominalLabel> nLabels) {
-		if (null == this.nominal_labels) {
-			this.nominal_labels = nLabels;
-		} else {
-			this.nominal_labels.addAll(nLabels);
-		}
+	public void setNominalLabels(List<NominalLabel> nLabels) {			
+		this.nominal_labels = nLabels;
 	}
-	
+
 	public long getTimestamp() {
 		return this.timestamp;
 	}
-	
+
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
 	}
-	
+
 	public String getCrisisCode() {
 		return this.crisisCode;
 	}
-	
+
 	public void setCrisisCode(String crisisCode) {
 		this.crisisCode = crisisCode;
-	}
-	
-	public static void main(String args[]) {
-		
 	}
 
 	public Map<String, Object> prettyPrint() {
@@ -373,12 +377,9 @@ public class ClassifiedTweet  implements Document, Serializable {
 		return obj;
 	}
 
-	public void createDummyNominalLabels(final String crisisCode) {
+	public NominalLabel createDummyNominalLabels(final String crisisCode) {
 		//System.out.println("Creating dummy nominal labels array");
-		
-		this.crisisCode = crisisCode;
-		this.crisisName = crisisCode;
-		this.nominal_labels = new ArrayList<NominalLabel>();
+
 		NominalLabel nLabel = new NominalLabel();
 		nLabel.attribute_code = "null";
 		nLabel.label_code = "null";
@@ -391,5 +392,187 @@ public class ClassifiedTweet  implements Document, Serializable {
 		nLabel.from_human = false;
 
 		this.nominal_labels.add(nLabel);
+		return nLabel;
 	}
- }
+
+	public void toClassifiedTweet(String data, String collectionCode) {
+		//System.out.println("Received string to deserialize: " + data);
+		if (data != null) {
+			try {
+				StringReader reader = new StringReader(data.trim());
+				JsonReader jsonReader = new JsonReader(reader);
+				jsonReader.setLenient(true);
+
+				JsonParser parser = new JsonParser();
+				JsonObject jsonObj = (JsonObject) parser.parse(jsonReader);
+
+				//System.out.println("Unparsed tweet data: " + jsonObj.get("id") + ", " + jsonObj.get("created_at") + ", " + jsonObj.get("user")  + ", " + jsonObj.get("aidr"));
+
+				if (!jsonObj.get("id").isJsonNull()) {
+					this.setTweetID(jsonObj.get("id").getAsString());
+				} 
+
+				if (!jsonObj.get("text").isJsonNull()) {
+					this.setMessage(jsonObj.get("text").getAsString());
+				}
+
+				if (!jsonObj.get("created_at").isJsonNull()) {
+					this.setCreatedAt(jsonObj.get("created_at").getAsString());
+				}
+
+				JsonObject jsonUserObj = null;
+				if (!jsonObj.get("user").isJsonNull()) {				
+					jsonUserObj = jsonObj.get("user").getAsJsonObject();
+					if (jsonUserObj.get("id") != null) {
+						this.setUserID(jsonUserObj.get("id").getAsString());
+					}
+
+					if (!jsonUserObj.get("screen_name").isJsonNull()) {
+						this.setUserName(jsonUserObj.get("screen_name").getAsString());
+						this.setTweetURL("https://twitter.com/" + this.getUserName() + "/status/" + this.getTweetID());
+					}
+					if (jsonUserObj.get("url") != null) {
+						this.setUserURL(jsonUserObj.get("url").toString());
+					}
+				}
+
+				JsonObject aidrObject = null;
+				if (jsonObj.has("aidr") && !jsonObj.get("aidr").isJsonNull()) {
+					aidrObject = jsonObj.get("aidr").getAsJsonObject();
+					if (!aidrObject.get("crisis_name").isJsonNull()) {
+						this.setCrisisName(aidrObject.get("crisis_name").getAsString());
+					}
+					if (!aidrObject.get("crisis_code").isJsonNull()) {
+						this.setCrisisCode(aidrObject.get("crisis_code").getAsString());
+					}
+					if (aidrObject.has("nominal_labels") && !aidrObject.get("nominal_labels").isJsonNull()) {
+						//JSONArray nominalLabels = (JSONArray) aidrObject.get("nominal_labels");
+						JsonArray nominalLabels = aidrObject.get("nominal_labels").getAsJsonArray();
+						StringBuffer allAttributeNames = new StringBuffer();
+						StringBuffer allAttributeCodes = new StringBuffer();
+						StringBuffer allLabelNames = new StringBuffer();
+						StringBuffer allLabelCodes = new StringBuffer();
+						StringBuffer allLabelDescriptions = new StringBuffer();
+						StringBuffer allConfidences = new StringBuffer();
+						StringBuffer humanLabeled = new StringBuffer();
+						for (int i = 0; i < nominalLabels.size(); i++) {
+							//JSONObject label = (JSONObject) nominalLabels.get(i);
+							JsonObject label = nominalLabels.get(i).getAsJsonObject();
+							allAttributeNames.append(!label.get("attribute_name").isJsonNull() ? label.get("attribute_name").getAsString() : "null");
+							allAttributeCodes.append(!label.get("attribute_code").isJsonNull() ? label.get("attribute_code").getAsString() : "null");
+							allLabelNames.append(!label.get("label_name").isJsonNull() ? label.get("label_name").getAsString() : "null");
+							allLabelCodes.append(!label.get("label_code").isJsonNull() ? label.get("label_code").getAsString() : "null");
+							allLabelDescriptions.append(!label.get("label_description").isJsonNull() ? label.get("label_description").getAsString() : "null");
+							allConfidences.append(!label.get("confidence").isJsonNull() ? label.get("confidence").getAsFloat() : 0);
+							humanLabeled.append(!label.get("from_human").isJsonNull() ? label.get("from_human").getAsBoolean() : false);
+
+							NominalLabel nLabel = new NominalLabel();
+							nLabel.attribute_code = label.get("attribute_code").isJsonNull() ? "null" : label.get("attribute_code").getAsString();
+							nLabel.label_code = label.get("label_code").isJsonNull() ? "null" : label.get("label_code").getAsString();
+							nLabel.confidence = label.get("confidence").isJsonNull() ? 0 : Float.parseFloat(label.get("confidence").getAsString());
+
+							nLabel.attribute_name = label.get("attribute_name").isJsonNull() ? "null" : label.get("attribute_name").getAsString();
+							nLabel.label_name = label.get("label_name").isJsonNull() ? "null" : label.get("label_name").getAsString();
+							nLabel.attribute_description = label.get("attribute_description").isJsonNull() ? "null" : label.get("attribute_description").getAsString();
+							nLabel.label_description = label.get("label_description").isJsonNull() ? "null" : label.get("label_description").getAsString();
+							nLabel.from_human = label.get("from_human").isJsonNull() ? false : Boolean.parseBoolean(label.get("from_human").getAsString());
+
+							this.nominal_labels.add(nLabel);
+
+							// remove the ugly ';' from end-of-list
+							if (i < nominalLabels.size() - 1) {
+								allAttributeNames.append(";");
+								allAttributeCodes.append(";");
+								allLabelNames.append(";");
+								allLabelDescriptions.append(";");
+								allConfidences.append(";");
+								humanLabeled.append(";");
+							}
+						}
+						this.setAttributeName_1(allAttributeNames.toString());
+						this.setAttributeCode_1(allAttributeCodes.toString());
+						this.setLabelName_1(allLabelNames.toString());
+						this.setLabelDescription_1(allLabelDescriptions.toString());
+						this.setConfidence_1(allConfidences.toString());
+						this.setHumanLabeled_1(humanLabeled.toString());
+
+					} else {
+						//System.out.println("Creating dummy nominal labels");
+						this.createDummyNominalLabels(collectionCode);        	
+					}
+				} else {
+					//System.out.println("Creating dummy nominal labels");
+					this.createDummyAIDRField(collectionCode);
+				}
+			} catch (Exception ex) {
+				logger.error("Exception in deserialization, returning null");
+				logger.error("exception", ex);
+				ex.printStackTrace();
+			}
+		}
+	}
+
+	public void createDummyAIDRField(String collectionCode) {
+		this.getAidr().setCrisisCode(collectionCode);
+		this.getAidr().getNominalLabels().add(this.createDummyNominalLabels(collectionCode));
+		this.createDummyNominalLabels(collectionCode);
+	}
+
+	public void toClassifiedTweetFromLabeledDoc(HumanLabeledDocumentDTO doc) {
+		if (doc != null) {
+			try {
+				this.toClassifiedTweet(doc.getDoc().getData(), doc.getDoc().getCrisisDTO().getCode());
+				this.getAidr().setCrisisName(doc.getDoc().getCrisisDTO().getName());
+
+				// Now fill up the nominal_label field
+				if (doc.getLabelData() != null && !doc.getLabelData().isEmpty()) {
+					// first remove the dummy nominal_label list
+					this.nominal_labels.clear();
+					this.getAidr().getNominalLabels().clear();
+					
+					// Now add the actual nominal_label data
+					for (DocumentNominalLabelDTO label: doc.getLabelData()) {
+						NominalLabel nb = new NominalLabel();
+						nb.from_human = doc.getDoc().getHasHumanLabels();
+						nb.attribute_code = label.getNominalLabelDTO().getNominalAttributeDTO().getCode();
+						nb.attribute_description = label.getNominalLabelDTO().getNominalAttributeDTO().getDescription();
+						nb.attribute_name = label.getNominalLabelDTO().getNominalAttributeDTO().getName();
+						nb.confidence = 1;		// default confidence for human labelers = 1.0
+						nb.label_code = label.getNominalLabelDTO().getNominalLabelCode();
+						nb.label_description = label.getNominalLabelDTO().getDescription();
+						nb.label_name = label.getNominalLabelDTO().getName();
+						this.nominal_labels.add(nb);
+						this.getAidr().getNominalLabels().add(nb);
+					}
+				}
+				//System.out.println(this.toJsonString());
+
+			} catch (Exception e) {
+				System.out.println("Exception in parsing labeled document");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public String toJsonString() {
+		Gson jsonObject = new GsonBuilder().serializeNulls().disableHtmlEscaping()
+				.serializeSpecialFloatingPointValues().setPrettyPrinting()
+				.create();
+		try {
+			String jsonString = jsonObject.toJson(this, ClassifiedTweet.class);
+			return jsonString;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public AidrObject getAidr() {
+		return this.aidr;
+	}
+
+
+	public void setAidr(AidrObject aidr) {
+		this.aidr = aidr;
+	}
+}

@@ -23,6 +23,8 @@ public class DeserializeFilters {
 		Gson jsonObject = new GsonBuilder().serializeNulls().disableHtmlEscaping()
 											.serializeSpecialFloatingPointValues()	
 											.create();
+		
+		System.out.println("queryString = " + queryString);
 		JsonParser parser = new JsonParser();
 		JsonObject obj = (JsonObject) parser.parse(queryString);
 		JsonArray constraintsArray = null;
