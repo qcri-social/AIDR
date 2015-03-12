@@ -85,6 +85,9 @@ public class CollectionController extends BaseController{
 				collection.setGeo(null);
 				collection.setFollow(null);
 			}
+                        //
+                        if(collection.getGeoR().equalsIgnoreCase("null"))
+                            collection.setGeoR(null);
 
 			collectionService.create(collection);
 
@@ -253,10 +256,19 @@ public class CollectionController extends BaseController{
 			AidrCollection dbCollection = collectionService.findById(collectionId);
 			
 			logger.info("GeoR: ui = " + collection.getGeoR() + ", db = " + dbCollection.getGeoR());
-			if (!collection.getGeoR().equals(dbCollection.getGeoR())) {
-				dbCollection.setGeoR(collection.getGeoR());
-				logger.info("Updated dBCollection geoR");
+                        if (collection.getGeoR() != null) {
+                            logger.info("geoR is not null ");
+                            if(collection.getGeoR().equalsIgnoreCase("null")) {
+                                collection.setGeoR(null);
+                                logger.info("geoR is updated to null ");
+                            }
 			}
+                        else {
+                            logger.info("geoR is null ");
+                        }
+			dbCollection.setGeoR(collection.getGeoR());
+                        logger.info("Updated dBCollection geoR");
+                        //
 			logger.info("CollectionType: ui = " + collection.getCollectionType() + ", db = " + dbCollection.getCollectionType());
 			if (!collection.getCollectionType().equals(dbCollection.getCollectionType())) {
 				dbCollection.setCollectionType(collection.getCollectionType());

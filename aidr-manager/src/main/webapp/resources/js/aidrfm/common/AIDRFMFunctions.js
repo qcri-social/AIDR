@@ -140,11 +140,11 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
             }
         }
         //
-        console.log('geo value');
-        console.log(form.findField('geo').getValue());
+        //console.log('geo value');
+        //console.log(form.findField('geo').getValue());
         if (form.findField('geo').getValue() === '') {
             if(form.findField('geoR').getValue().geoR1 !== 'null') {
-               AIDRFMFunctions.setAlert('Error', 'Select Do not apply option please');
+               AIDRFMFunctions.setAlert('Error', 'You have to add Geographical regions for this option');
                isValid = false; 
             }
         }
