@@ -1827,7 +1827,7 @@ public class JsonDeserializer {
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileNameforCSVGen);
 		fileName = getProperty("SCD1_URL") + "/" + collectionCode + "/" + compressor.zip();
 		FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforCSVGen);
-
+		System.out.println("Deleted raw file post compression: " + fileNameforCSVGen);
 		return fileName;
 	}
 
@@ -1920,6 +1920,7 @@ public class JsonDeserializer {
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileNameforCSVGen);
 		fileName = getProperty("SCD1_URL") + collectionCode + "/" + compressor.zip();
 		FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforCSVGen);
+		System.out.println("Deleted raw file post compression: " + fileNameforCSVGen);
 		return ResultStatus.getUIWrapper("fileName", fileName, "count", totalCount);
 	}
 
@@ -2016,7 +2017,7 @@ public class JsonDeserializer {
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileNameforGen);
 		fileName = getProperty("SCD1_URL") + collectionCode + "/" + compressor.zip();
 		FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforGen);
-
+		System.out.println("Deleted raw file post compression: " + fileNameforGen);
 		return fileName;
 
 	}
@@ -2105,9 +2106,8 @@ public class JsonDeserializer {
 		}
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileNameforGen);
 		fileName = getProperty("SCD1_URL") + collectionCode + "/" + compressor.zip();
-		System.out.println("Deleteing uncompressed file : " + fileToDelete);
 		FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a file with same name
-
+		System.out.println("Deleted raw file post compression: " + fileToDelete);
 		return ResultStatus.getUIWrapper("fileName", fileName, "count", totalCount);
 	}
 
