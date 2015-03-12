@@ -61,6 +61,8 @@ public class AidrCollectionTotalDTO {
     private CollectionType collectionType;
 
     private Integer classifiersNumber;
+    
+    private String geoR;
 
     public Integer getId() {
         return id;
@@ -263,5 +265,13 @@ public class AidrCollectionTotalDTO {
 
     public void setClassifiersNumber(Integer classifiersNumber) {
         this.classifiersNumber = classifiersNumber;
+    }
+
+    public String getGeoR() {
+        return geoR;
+    }
+
+    public void setGeoR(String geoR) {
+        this.geoR = geoR;
     }
 }

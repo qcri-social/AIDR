@@ -441,9 +441,16 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         if (r.geo){
             p.geoL.setText(r.geo, false);
+            if (r.geoR === 'approximate') {
+                p.geoR.items.items[0].items.items[1].setValue(true);
+            }
+            else if (r.geoR === 'strict') {
+                p.geoR.items.items[0].items.items[2].setValue(true);
+            }
             p.geoContainer.show();
         } else {
             p.geoL.setText(this.ns, false);
+            p.geoR.items.items[0].items.items[0].setValue(true);
             p.geoContainer.hide();
         }
 
@@ -535,6 +542,16 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         p.keywordsE.setValue(r.track);
 
         p.geoE.setValue(r.geo ? r.geo : '');
+        if (r.geo){
+            if (r.geoR === 'approximate') {
+                p.geoR.items.items[0].items.items[1].setValue(true);
+            }
+            else if (r.geoR === 'strict') {
+                p.geoR.items.items[0].items.items[2].setValue(true);
+            }
+        } else {
+            p.geoR.items.items[0].items.items[0].setValue(true);
+        }
         p.followE.setValue(r.follow ? r.follow : '');
 //        default duration is 2 days (48 hours)
         var duration = r.durationHours ? r.durationHours : 48;

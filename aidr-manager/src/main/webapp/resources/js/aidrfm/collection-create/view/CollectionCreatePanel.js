@@ -99,8 +99,9 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             	columns: 1,
             	vertical: true,
             	items: [
+                    { boxLabel: 'Do not apply', name: 'geoR1', inputValue: 'null', checked: true},
                     { boxLabel: 'Collect tweets using approximate geographical regions (a tweet may be collected if it comes from a country that overlaps with the bounding box)', name: 'geoR1', inputValue: 'approximate' },
-                    { boxLabel: 'Collect tweets using strict geographical matching (a tweet is only collected if its geographical coordinates are strictly inside the bounding box)', name: 'geoR1', inputValue: 'strict', checked: true }
+                    { boxLabel: 'Collect tweets using strict geographical matching (a tweet is only collected if its geographical coordinates are strictly inside the bounding box)', name: 'geoR1', inputValue: 'strict' }
                 ]
         	}]
         });
