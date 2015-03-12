@@ -139,6 +139,21 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
                 AIDRFMFunctions.setAlert('Error', errors);
             }
         }
+        //
+        console.log('geo value');
+        console.log(form.findField('geo').getValue());
+        if (form.findField('geo').getValue() === '') {
+            if(form.findField('geoR').getValue().geoR1 !== 'null') {
+               AIDRFMFunctions.setAlert('Error', 'Select Do not apply option please');
+               isValid = false; 
+            }
+        }
+        else {
+            if(form.findField('geoR').getValue().geoR1 === 'null') {
+                AIDRFMFunctions.setAlert('Error', 'Choose another option of Geo boundry strickness');
+                isValid = false;
+            }
+        }
         return isValid;
     },
 

@@ -699,6 +699,7 @@ public class CollectionController extends BaseController{
 		dto.setCode(collection.getCode());
 		dto.setName(collection.getName());
 		dto.setTarget(collection.getTarget());
+                dto.setGeoR(collection.getGeoR());
 
 		UserEntity user = collection.getUser();
 		user.setRoles(null);
