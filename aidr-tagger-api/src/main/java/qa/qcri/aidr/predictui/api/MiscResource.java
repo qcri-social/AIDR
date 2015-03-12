@@ -216,7 +216,7 @@ public class MiscResource {
 					new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "crisisID or user name can't be null")).build();
 		}
 		try {
-			List<HumanLabeledDocumentDTO> dtoList = miscEJB.getHumanLabeledDocumentsByCrisisCodeUserName(crisisCode, userName, count);
+			List<HumanLabeledDocumentDTO> dtoList = miscEJB.getHumanLabeledDocumentsByCrisisCode(crisisCode, count);
 			System.out.println("REST call will return dto List size = " + (dtoList != null ? dtoList.size() : "null"));
 			if (dtoList != null) {
 				ResponseWrapper response = new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"));
