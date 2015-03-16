@@ -45,7 +45,7 @@ public class JsonQueryList implements Serializable {
 		for (GenericInputQuery q: constraints) {
 			object.append("{query_type: ").append(q.queryType).append(", ");
 			object.append("classifier_code: ").append(q.classifier_code).append(", ");
-			object.append("timestamp: ").append(q.timestamp).append(", ");
+			object.append("time: ").append(q.timestamp).append(", ");
 			object.append("label_code: ").append(q.label_code).append(", ");
 			object.append("comparator: ").append(q.comparator).append(", ");
 			object.append("min_confidence: ").append(q.min_confidence).append("},");

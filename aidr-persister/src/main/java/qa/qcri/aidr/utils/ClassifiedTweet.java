@@ -395,6 +395,10 @@ public class ClassifiedTweet  implements Document, Serializable {
 		return nLabel;
 	}
 
+	public void toClassifiedTweet(String data) {
+		this.toClassifiedTweet(data, null);
+	}
+	
 	public void toClassifiedTweet(String data, String collectionCode) {
 		//System.out.println("Received string to deserialize: " + data);
 		if (data != null) {
@@ -441,9 +445,11 @@ public class ClassifiedTweet  implements Document, Serializable {
 					aidrObject = jsonObj.get("aidr").getAsJsonObject();
 					if (!aidrObject.get("crisis_name").isJsonNull()) {
 						this.setCrisisName(aidrObject.get("crisis_name").getAsString());
+						this.getAidr().setCrisisName(this.getCrisisName());
 					}
 					if (!aidrObject.get("crisis_code").isJsonNull()) {
 						this.setCrisisCode(aidrObject.get("crisis_code").getAsString());
+						this.getAidr().setCrisisCode(this.getCrisisCode());
 					}
 					if (aidrObject.has("nominal_labels") && !aidrObject.get("nominal_labels").isJsonNull()) {
 						//JSONArray nominalLabels = (JSONArray) aidrObject.get("nominal_labels");
@@ -489,6 +495,8 @@ public class ClassifiedTweet  implements Document, Serializable {
 								humanLabeled.append(";");
 							}
 						}
+						this.getAidr().setNominalLabels(this.getNominalLabels());
+						
 						this.setAttributeName_1(allAttributeNames.toString());
 						this.setAttributeCode_1(allAttributeCodes.toString());
 						this.setLabelName_1(allLabelNames.toString());

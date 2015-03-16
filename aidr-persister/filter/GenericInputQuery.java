@@ -8,8 +8,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
-import qa.qcri.aidr.common.code.DateFormatConfig;
-
 @SuppressWarnings("serial")
 @XmlRootElement(name="GenericInputQuery")
 public class GenericInputQuery extends QueryJsonObject {
@@ -65,14 +63,14 @@ public class GenericInputQuery extends QueryJsonObject {
 
 	@Override
 	@JsonProperty("timestamp")
-	public long getTimestamp() {
+	public long getTime() {
 		return timestamp;
 	}
 
 	@Override
 	@JsonProperty("timestamp")
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
+	public void setTime(long time) {
+		this.timestamp = time;
 	}
 
 	@Override
@@ -87,10 +85,10 @@ public class GenericInputQuery extends QueryJsonObject {
 
 	@Override
 	public Date getDate() {
-		SimpleDateFormat dateFormat = new SimpleDateFormat(DateFormatConfig.StandardDateFormat);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-		Date date = new Date(this.timestamp * 1000);
-		//System.out.println("current timestamp = " + timestamp + ", created date string = " + date);
+		Date date = new Date(this.timestamp * 1000L);
+		
 		return date;
 	}
 
