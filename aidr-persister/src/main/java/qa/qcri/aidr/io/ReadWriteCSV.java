@@ -251,7 +251,7 @@ public class ReadWriteCSV<CellProcessors> {
 				mapWriter = getCSVMapWriter(fileToWrite);
 
 				// First write the header
-				mapWriter.writeHeader(runningHeader);
+				if (runningHeader != null) mapWriter.writeHeader(runningHeader);
 			}
 		} catch (Exception ex) {
 			logger.error(collectionDIR + ": Exception occured when creating a mapWriter instance");
@@ -328,7 +328,7 @@ public class ReadWriteCSV<CellProcessors> {
 				mapWriter = getCSVMapWriter(fileToWrite);
 
 				// First write the header
-				mapWriter.writeHeader(runningHeader);
+				if (runningHeader != null) mapWriter.writeHeader(runningHeader);
 			}
 		} catch (Exception ex) {
 			logger.error(collectionDIR + ": Exception occured when creating a mapWriter instance");

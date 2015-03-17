@@ -100,7 +100,7 @@ public class FilterQueryMatcher {
 				matchResult = tweet.getDate(tweet.getCreatedAt()).after(q.getDate());
 				
 				//logger.info("For " + tweet.getDate(tweet.getCreatedAt()) + " comparing after date " + q.getDate() + " : " + matchResult);
-				System.out.println("For " + tweet.getDate(tweet.getCreatedAt()) + " comparing after date " + q.getDate() + " : " + " :: result = " + matchResult);
+				//System.out.println("For " + tweet.getDate(tweet.getCreatedAt()) + " comparing after date " + q.getDate() + " : " + " :: result = " + matchResult);
 
 				return matchResult;
 			}
@@ -113,7 +113,7 @@ public class FilterQueryMatcher {
 				matchResult = tweet.getDate(tweet.getCreatedAt()).before(q.getDate());
 
 				//logger.info("For " + tweet.getDate(tweet.getCreatedAt()) + " comparing before date " + q.getDate() + " : " + matchResult);
-				System.out.println("For " + tweet.getDate(tweet.getCreatedAt()) + " comparing before date " + q.getDate() + " : " + " :: result = " + matchResult);
+				//System.out.println("For " + tweet.getDate(tweet.getCreatedAt()) + " comparing before date " + q.getDate() + " : " + " :: result = " + matchResult);
 
 				return matchResult;
 			}
@@ -129,12 +129,12 @@ public class FilterQueryMatcher {
 					// classifier code matches, next match comparator
 					matchResult = true;
 					//logger.info("comparing classifier code '" + nLabel.attribute_code + "': " + matchResult);
-					System.out.println("comparing classifier code '" + nLabel.attribute_code + "': " + " :: result = " + matchResult);	
+					//System.out.println("comparing classifier code '" + nLabel.attribute_code + "': " + " :: result = " + matchResult);	
 					// First check confidence parameter
 					if (q.getComparator().equals(ComparatorType.has_confidence)) {
 						matchResult = matchResult && (nLabel.confidence >= q.getConfidence());
 						//logger.info("comparing confidence: " + matchResult);
-						System.out.println("comparing confidence: " + + nLabel.confidence + " >= " + q.getConfidence() + " :: result = " + matchResult);
+						//System.out.println("comparing confidence: " + + nLabel.confidence + " >= " + q.getConfidence() + " :: result = " + matchResult);
 						if (matchResult) break;
 						continue;	// else go for next nLabel
 					}
@@ -146,7 +146,7 @@ public class FilterQueryMatcher {
 						// Now check confidence value
 						matchResult = matchResult && (nLabel.confidence >= q.getConfidence());
 						//logger.info("comparing tweet label '" + nLabel.label_code + "', confidence: " + nLabel.confidence + " >= " + q.getConfidence() + " with 'is': " + matchResult);
-						System.out.println("comparing tweet label '" + nLabel.label_code + "', confidence: " + nLabel.confidence + " >= " + q.getConfidence() + " with 'is' query label: " + q.getLabelCode() + " :: result = " + matchResult);
+						//System.out.println("comparing tweet label '" + nLabel.label_code + "', confidence: " + nLabel.confidence + " >= " + q.getConfidence() + " with 'is' query label: " + q.getLabelCode() + " :: result = " + matchResult);
 						if (matchResult) break;
 						continue;		// else go for next nLabel
 					}
@@ -158,7 +158,7 @@ public class FilterQueryMatcher {
 						// Now check confidence value
 						matchResult = (matchResult) && (nLabel.confidence >= q.getConfidence());
 						//logger.info("comparing tweet label '" + nLabel.label_code  + "', confidence: " + nLabel.confidence + " >= " + q.getConfidence() + " with 'is_not': " + matchResult);
-						System.out.println("comparing tweet label '" + nLabel.label_code  + "', confidence: " + nLabel.confidence + " >= " + q.getConfidence() + " with 'is_not' query label: " + q.getLabelCode() + " :: result = " + matchResult);
+						//System.out.println("comparing tweet label '" + nLabel.label_code  + "', confidence: " + nLabel.confidence + " >= " + q.getConfidence() + " with 'is_not' query label: " + q.getLabelCode() + " :: result = " + matchResult);
 						if (matchResult) break;
 						continue;		// else go for next nLabel
 					}
@@ -166,7 +166,7 @@ public class FilterQueryMatcher {
 			}
 			return matchResult;
 		}
-		System.err.println("Something terribly wrong with the query constraints ! Should never come here!");
+		logger.fatal("Something terribly wrong with the query matching ! Should never come here!");
 		return false;			// should never come here
 	}
 
@@ -228,7 +228,7 @@ public class FilterQueryMatcher {
 		while ((query = getNextQueryObject()) != null) {
 			matcherArray.add(serializeQuery(query));
 			//logger.info("Added query to matcher array: " + query);
-			System.out.println("Added query to matcher array: " + query);
+			//System.out.println("Added query to matcher array: " + query);
 		}
 	}
 
@@ -248,6 +248,9 @@ public class FilterQueryMatcher {
 		temp.add("{\"queryType\":\"date_query\",\"comparator\":\"is_before\",\"timestamp\": 1396529759}");
 		temp.add("{\"queryType\":\"date_query\",\"comparator\":\"is_after\",\"timestamp\": 1364993759}");
 		temp.add("{\"queryType\":\"classifier_query\",\"classifier_code\":\"informative_v2\","
+				+ "\"comparator\":\"has_confidence\","
+				+ "\"min_confidence\":0.6}");
+		temp.add("{\"queryType\":\"classifier_query\",\"classifier_code\":\"informative_v2\","
 				+ "\"label_code\":\"030_info\","  
 				+ "\"comparator\":\"is\","
 				+ "\"min_confidence\":0.5}");
@@ -255,10 +258,7 @@ public class FilterQueryMatcher {
 				+ "\"label_code\":\"030_not_info\","  
 				+ "\"comparator\":\"is_not\","
 				+ "\"min_confidence\":0.4}");
-		temp.add("{\"queryType\":\"classifier_query\",\"classifier_code\":\"informative_v1\","
-				+ "\"label_code\":\"null\","  
-				+ "\"comparator\":\"has_confidence\","
-				+ "\"min_confidence\":0.5}");
+		
 
 		FilterQueryMatcher test = new FilterQueryMatcher();
 		Gson gson = new Gson();

@@ -562,10 +562,32 @@ public class ClassifiedTweet  implements Document, Serializable {
 		}
 	}
 
+	/**
+	 * 
+	 * @return serialized JSON string without pretty printing (default behavior)
+	 */
 	public String toJsonString() {
-		Gson jsonObject = new GsonBuilder().serializeNulls().disableHtmlEscaping()
+		return this.toJsonString(false);
+	}
+	
+	/**
+	 * 
+	 * @param isPrettyPrinting turn PrettyPrinting on/off
+	 * @return serialized JSON string
+	 */
+	public String toJsonString(boolean isPrettyPrinting) {
+		Gson jsonObject = null;
+		
+		if (isPrettyPrinting) {
+		jsonObject = new GsonBuilder().serializeNulls().disableHtmlEscaping()
 				.serializeSpecialFloatingPointValues().setPrettyPrinting()
 				.create();
+		} else {
+			jsonObject = new GsonBuilder().serializeNulls().disableHtmlEscaping()
+					.serializeSpecialFloatingPointValues()
+					.create();
+		}
+		
 		try {
 			String jsonString = jsonObject.toJson(this, ClassifiedTweet.class);
 			return jsonString;
