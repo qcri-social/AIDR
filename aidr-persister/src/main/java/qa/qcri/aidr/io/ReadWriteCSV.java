@@ -78,7 +78,7 @@ public class ReadWriteCSV<CellProcessors> {
 	public static final int VARIABLE_HEADER_SIZE = 7;	// number of variable header elements per classifier
 	private static final int DEFAULT_CLASSIFIER_COUNT = 1;
 	
-	//private static int countWritten = 0;
+	private static int countWritten = 0;
 	
 	public ReadWriteCSV(String collectionCode) {
 		this.collectionCode = collectionCode;
@@ -252,6 +252,7 @@ public class ReadWriteCSV<CellProcessors> {
 
 				// First write the header
 				if (runningHeader != null) mapWriter.writeHeader(runningHeader);
+				countWritten = 0;
 			}
 		} catch (Exception ex) {
 			logger.error(collectionDIR + ": Exception occured when creating a mapWriter instance");
@@ -260,7 +261,6 @@ public class ReadWriteCSV<CellProcessors> {
 		}
 
 		// Now write to CSV file using CsvMapWriter
-		// int count = 0;
 		for (final ClassifiedTweet tweet : tweetsList) {
 			try {
 				//logger.info("Current header length :: Actual number of cells needed: " + runningHeader.length + "::" + getClassifedTweetHeaderSize(FIXED_CLASSIFIED_TWEET_ID_HEADER_SIZE, tweet.getNominalLabels().size()));
@@ -274,6 +274,7 @@ public class ReadWriteCSV<CellProcessors> {
 				final Map<String, Object> tweetToWrite = createClassifiedTweetIDCsvMap(runningHeader, tweet);
 				final CellProcessor[] processors = getClassifiedTweetVariableProcessors(runningHeader.length);
 				mapWriter.write(tweetToWrite, runningHeader, processors);
+				++countWritten;
 			} catch (SuperCsvCellProcessorException e) {
 				//logger.error(collectionDIR + ": SuperCSV error. Offending tweet: " + tweet.getTweetID());
 				//logger.error(elog.toStringException(e));
@@ -326,10 +327,11 @@ public class ReadWriteCSV<CellProcessors> {
 				String fileToWrite = persisterDIR + collectionDIR + "/" + fileName;
 				logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
 				mapWriter = getCSVMapWriter(fileToWrite);
-
+				
 				// First write the header
 				if (runningHeader != null) mapWriter.writeHeader(runningHeader);
-			}
+				countWritten = 0;
+			}		
 		} catch (Exception ex) {
 			logger.error(collectionDIR + ": Exception occured when creating a mapWriter instance");
 			logger.error(elog.toStringException(ex));
@@ -352,7 +354,7 @@ public class ReadWriteCSV<CellProcessors> {
 				final CellProcessor[] processors = getClassifiedTweetVariableProcessors(runningHeader.length);
 				//logger.info("Going to write: " + tweetToWrite);
 				mapWriter.write(tweetToWrite, runningHeader, processors);
-				//++countWritten;
+				++countWritten;
 
 			} catch (SuperCsvCellProcessorException e) {
 				logger.error(collectionDIR + ": SuperCSV error. Offending tweet: " + tweet.getTweetID());
@@ -361,7 +363,7 @@ public class ReadWriteCSV<CellProcessors> {
 				logger.error(collectionDIR + "IOException in writing tweet: " + tweet.getTweetID());
 			}
 		}
-		//logger.info("Actual number of tweets written so far: " + countWritten);
+		logger.info("Actual number of tweets written so far: " + countWritten);
 		return mapWriter;
 	}
 
