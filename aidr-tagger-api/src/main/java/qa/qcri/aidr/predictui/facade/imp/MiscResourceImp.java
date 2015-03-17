@@ -151,13 +151,14 @@ public class MiscResourceImp implements MiscResourceFacade {
 
 		try {
 			HumanLabeledDocumentListWrapper postBody = new HumanLabeledDocumentListWrapper(dtoList, queryString);
-			//System.out.println("Request POST body: " + postBody.toJsonString());
+			System.out.println("Request POST body: " + postBody.toJsonString());
 
 			System.out.println("Received request to create file for: " + dtoList.getTotal() + "items for crisis = " + crisisCode + "userName = " + userName);
 			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 
 			String targetAPI = getPersisterTargetAPI(fileType, contentType, count);
 			WebTarget webResource = client.target(persisterMainUrl + targetAPI + "collectionCode=" + crisisCode + "&userName=" + userName);
+			System.out.println("Invoking REST call: " + persisterMainUrl + targetAPI + "collectionCode=" + crisisCode + "&userName=" + userName);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(postBody), Response.class);
 			System.out.println("received raw response from persister: " + clientResponse);

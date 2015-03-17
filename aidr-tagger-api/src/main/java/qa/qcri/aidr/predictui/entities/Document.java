@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
- * @author Imran
+ * @author Koushik
  */
 
 @XmlRootElement
@@ -108,7 +108,7 @@ public class Document implements Serializable {
 			this.setWordFeatures(document.getWordFeatures());
 			this.setValueAsTrainingSample(document.getValueAsTrainingSample());
 	
-			this.setNominalLabelCollection(toLocalNominalLabelCollection(document.getNominaLabel()));
+			this.setNominalLabelCollection(toLocalNominalLabelCollection(document.getNominalLabel()));
 		} 
     }
     
@@ -256,7 +256,7 @@ public class Document implements Serializable {
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
 	
-			doc.setNominalLabelCollection(toLocalNominalLabelCollection(document.getNominaLabel()));
+			doc.setNominalLabelCollection(toLocalNominalLabelCollection(document.getNominalLabel()));
 			return doc;
 		} 
 		return null;
@@ -284,115 +284,4 @@ public class Document implements Serializable {
 		return null;
 	}
 	
-	
-	/*
-	public static DocumentDTO toTaskManagerDocumentDTO(Document document) {
-		DocumentDTO doc = new DocumentDTO();
-		if (document != null) {
-			doc.setDocumentID(document.getDocumentID());
-			doc.setCrisisID(document.getCrisisID());
-			doc.setDoctype(document.getDoctype());
-			doc.setData(document.getData());
-			doc.setIsEvaluationSet(document.getIsEvaluationSet());
-			doc.setGeoFeatures(document.getGeoFeatures());
-			doc.setLanguage(document.getLanguage());
-			doc.setHasHumanLabels(document.getHasHumanLabels());
-
-			doc.setReceivedAt(document.getReceivedAt());
-			doc.setWordFeatures(document.getWordFeatures());
-			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
-	
-			doc.setNominalLabelCollection(toTaskManagerNominalLabelDTOCollection(document.getNominalLabelCollection()));
-			return doc;
-		} 
-		return null;
-	}
-
-	public static List<DocumentDTO> toTaskManagerDocumentDTOList(List<Document> documentList) {
-		List<DocumentDTO> docList = null;
-		if (documentList != null) {
-			docList = new ArrayList<DocumentDTO>(documentList.size());
-			for (Document document: documentList) {
-					docList.add(toTaskManagerDocumentDTO(document));
-			}
-		}
-		return docList;
-	}
-	
-	public static qa.qcri.aidr.task.entities.Document toTaskManagerDocument(Document document) {
-		qa.qcri.aidr.task.entities.Document doc = new qa.qcri.aidr.task.entities.Document();
-		if (document != null) {
-			doc.setDocumentID(document.getDocumentID());
-			doc.setCrisisID(document.getCrisisID());
-			doc.setDoctype(document.getDoctype());
-			doc.setData(document.getData());
-			doc.setIsEvaluationSet(document.getIsEvaluationSet());
-			doc.setGeoFeatures(document.getGeoFeatures());
-			doc.setLanguage(document.getLanguage());
-			doc.setHasHumanLabels(document.getHasHumanLabels());
-
-			doc.setReceivedAt(document.getReceivedAt());
-			doc.setWordFeatures(document.getWordFeatures());
-			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
-	
-			//doc.setNominalLabelCollection(toTaskManagerNominalLabelCollection(document.getNominalLabelCollection()));
-			return doc;
-		} 
-		return null;
-	}
-
-	public static List<qa.qcri.aidr.task.entities.Document> toTaskManagerDocumentList(List<Document> documentList) {
-		List<qa.qcri.aidr.task.entities.Document> docList = null;
-		if (documentList != null) {
-			docList = new ArrayList<qa.qcri.aidr.task.entities.Document>(documentList.size());
-			for (Document document: documentList) {
-					docList.add(toTaskManagerDocument(document));
-			}
-		}
-		return docList;
-	}
-    
-    
-	public static Collection<NominalLabel> toLocalNominalLabelCollection(Collection<qa.qcri.aidr.task.dto.NominalLabelDTO> list) {
-		if (list != null) {
-			Collection<NominalLabel> nominalLabelList = new ArrayList<NominalLabel>();
-			for (qa.qcri.aidr.task.dto.NominalLabelDTO t: list) {
-				if (t != null) {
-					NominalLabel nominalLabel  = new NominalLabel(t.getNominalLabelID(), t.getNominalLabelCode(), t.getName(), t.getDescription());
-					nominalLabelList.add(nominalLabel);
-				}
-			}
-			return nominalLabelList;
-		}
-		return null;
-	}
-
-	public static Collection<qa.qcri.aidr.task.dto.NominalLabelDTO> toTaskManagerNominalLabelDTOCollection(Collection<NominalLabel> list) {
-		if (list != null) {
-			Collection<qa.qcri.aidr.task.dto.NominalLabelDTO> nominalLabelDTOList = new ArrayList<qa.qcri.aidr.task.dto.NominalLabelDTO>();
-			for (NominalLabel t: list) {
-				if (t != null) {
-					qa.qcri.aidr.task.dto.NominalLabelDTO nominalLabelDTO = new qa.qcri.aidr.task.dto.NominalLabelDTO(t.getNominalLabelID(), t.getNominalLabelCode(), t.getName(), t.getDescription());
-					nominalLabelDTOList.add(nominalLabelDTO);
-				}
-			}
-			return nominalLabelDTOList;
-		}
-		return null;
-	}
-	
-	public static Collection<qa.qcri.aidr.task.entities.NominalLabel> toTaskManagerNominalLabelCollection(Collection<NominalLabel> list) {
-		if (list != null) {
-			Collection<qa.qcri.aidr.task.entities.NominalLabel> nominalLabelList = new ArrayList<qa.qcri.aidr.task.entities.NominalLabel>();
-			for (NominalLabel t: list) {
-				if (t != null) {
-					qa.qcri.aidr.task.entities.NominalLabel nominalLabel = new qa.qcri.aidr.task.entities.NominalLabel(t.getNominalLabelID(), t.getNominalLabelCode(), t.getName(), t.getDescription());
-					nominalLabelList.add(nominalLabel);
-				}
-			}
-			return nominalLabelList;
-		}
-		return null;
-	}
-	*/
 }

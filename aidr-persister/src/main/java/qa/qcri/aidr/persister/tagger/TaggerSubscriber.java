@@ -140,7 +140,9 @@ public class TaggerSubscriber extends JedisPubSub {
 
     private void createBufferWriter() {
         try {
-            out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file, true), Charset.forName("UTF-8")), Integer.parseInt(getProperty("DEFAULT_FILE_WRITER_BUFFER_SIZE")));
+            //out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file, true), Charset.forName("UTF-8")), Integer.parseInt(getProperty("DEFAULT_FILE_WRITER_BUFFER_SIZE")));
+        	out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file, true)), Integer.parseInt(getProperty("DEFAULT_FILE_WRITER_BUFFER_SIZE")));
+        	
         } catch (IOException ex) {
             //Logger.getLogger(TaggerSubscriber.class.getName()).log(Level.SEVERE, null, ex);
         	logger.error(collectionCode + "Error in creating Buffered writer");

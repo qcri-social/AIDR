@@ -33,6 +33,7 @@ public class HumanLabeledDocumentList implements Serializable {
 		this();
 		if (items != null) {
 			this.setItems(items);
+			this.setTotal(items.size());
 		} 
 	}
 	

@@ -240,11 +240,12 @@ public class CrisisResource {
 				}
 			}
 			result.put("count", 0);
+			System.out.println("Response string from tagger-api on classifier count: " + mapper.writeValueAsString(result));
 			return Response.ok(mapper.writeValueAsString(result)).build();
 		} catch (Exception e) {
 			e.printStackTrace();
 			result.put("count", -1);
-			return Response.ok(result.toString()).build();
+			return Response.ok(result).build();
 		}
 	}
 }

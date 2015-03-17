@@ -210,7 +210,7 @@ public class MiscResource {
 			@PathParam("crisisCode") String crisisCode, @PathParam("userName") String userName, 
 			@QueryParam("count") Integer count,
 			@DefaultValue("CSV") @QueryParam("fileType") String fileType,
-			@DefaultValue("full") @QueryParam("fileType") String contentType) {
+			@DefaultValue("full") @QueryParam("contentType") String contentType) {
 		if (null == crisisCode || null == userName) {
 			return Response.ok(
 					new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), "crisisID or user name can't be null")).build();

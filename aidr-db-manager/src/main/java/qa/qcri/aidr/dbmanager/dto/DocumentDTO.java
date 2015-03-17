@@ -20,6 +20,7 @@ import qa.qcri.aidr.dbmanager.entities.task.TaskAssignment;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 @XmlRootElement
@@ -256,7 +257,7 @@ public class DocumentDTO implements Serializable {
 		this.documentNominalLabelsDTO = documentNominalLabelsDTO;
 	}
 	
-	public NominalLabelDTO getNominaLabel() {
+	public NominalLabelDTO getNominalLabel() {
 		return this.nominalLabelDTO;
 	}
 	

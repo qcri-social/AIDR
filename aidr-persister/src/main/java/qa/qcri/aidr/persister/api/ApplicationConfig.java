@@ -26,14 +26,14 @@ public class ApplicationConfig extends Application {
         //resources.add(JacksonFeature.class);		// gf 3 way modified
         //resources.add(MoxyJsonFeature.class);
         // following code can be used to customize Jersey 1.x JSON provider:
-        
+        /*
         try {
             Class jacksonProvider = Class.forName("org.codehaus.jackson.jaxrs.JacksonJsonProvider");
             resources.add(jacksonProvider);
         } catch (ClassNotFoundException ex) {
             java.util.logging.Logger.getLogger(getClass().getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        
+        */
         addRestResourceClasses(resources);
         return resources;
     }
