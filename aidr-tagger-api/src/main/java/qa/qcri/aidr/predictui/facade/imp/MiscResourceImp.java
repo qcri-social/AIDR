@@ -151,7 +151,7 @@ public class MiscResourceImp implements MiscResourceFacade {
 
 		try {
 			HumanLabeledDocumentListWrapper postBody = new HumanLabeledDocumentListWrapper(dtoList, queryString);
-			System.out.println("Request POST body: " + postBody.toJsonString());
+			//System.out.println("Request POST body: " + postBody.toJsonString());
 
 			System.out.println("Received request to create file for: " + dtoList.getTotal() + "items for crisis = " + crisisCode + "userName = " + userName);
 			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
