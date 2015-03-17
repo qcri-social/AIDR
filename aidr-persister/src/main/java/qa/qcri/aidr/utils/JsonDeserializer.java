@@ -356,7 +356,7 @@ public class JsonDeserializer {
 				countToWrite = Math.min(tweetsList.size(), Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT")) - totalCount);
 			} 
 			if (countToWrite > 0 && !tweetsList.isEmpty()) {
-				if (0 == totalCount) {
+				if (0 == totalCount && runningHeader == null && writer == null) {
 					runningHeader  = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetIDCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_ID_HEADER_SIZE, tweetsList.get(0));
 				}
 				writer = csv.writeClassifiedTweetIDsCSV(runningHeader, writer, tweetsList.subList(0, countToWrite), collectionCode, fileName);
@@ -541,6 +541,10 @@ public class JsonDeserializer {
 						br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 						while ((line = br.readLine()) != null) {
 							ClassifiedTweet tweet = getClassifiedTweet(line);
+							if (0 == currentSize && runningHeader == null && writer == null) {
+								runningHeader  = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet);
+								writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList, collectionCode, fileName, writer);
+							}
 							if (tweet != null && !tweet.getNominalLabels().isEmpty()) {
 								if (tweetsList.size() < LIST_BUFFER_SIZE) {
 									tweetsList.add(tweet);
@@ -549,9 +553,6 @@ public class JsonDeserializer {
 									int countToWrite = Math.min(tweetsList.size(), exportLimit - currentSize);
 									if (countToWrite > 0) {
 										// buffer full, write to csv file
-										if (0 == currentSize) {
-											runningHeader  = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweetsList.get(0));
-										}
 										writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList.subList(0, countToWrite), collectionCode, fileName, writer);
 										currentSize += countToWrite;
 									}
@@ -575,7 +576,7 @@ public class JsonDeserializer {
 			}
 			int countToWrite = Math.min(tweetsList.size(), exportLimit - currentSize);
 			if (countToWrite > 0) {
-				if (0 == currentSize) {
+				if (0 == currentSize && runningHeader == null && writer == null) {
 					runningHeader  = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweetsList.get(0));
 				}
 				writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList.subList(0, countToWrite), collectionCode, fileName, writer);
@@ -717,7 +718,7 @@ public class JsonDeserializer {
 				logger.info("Outside for loop: currentSize = " + currentSize + ", countToWrite = " + countToWrite + " tweetsList size = " + tweetsList.size());
 				if (countToWrite > 0 && tweetsList.size() >= countToWrite) {
 					logger.info("Outside loop, writing residual list: exportLimit = " + exportLimit + ", currentSize = " + currentSize + ", countToWrite = " + countToWrite);
-					if (0 == currentSize) {
+					if (0 == currentSize && runningHeader == null && writer == null) {
 						runningHeader  = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweetsList.get(0));
 					}
 					writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList.subList(0, countToWrite), collectionCode, fileName, writer);
@@ -1848,7 +1849,7 @@ public class JsonDeserializer {
 			logger.info("Outside for loop: currentSize = " + currentSize + ", countToWrite = " + countToWrite + " tweetsList size = " + tweetsList.size());
 			if (countToWrite > 0) {
 				//System.out.println("exportLimit = " + exportLimit + ", currentSize = " + currentSize + ", countToWrite = " + countToWrite);
-				if (0 == currentSize) {
+				if (0 == currentSize && runningHeader == null && writer == null) {
 					runningHeader  = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweetsList.get(0));
 				}
 				writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList.subList(0, countToWrite), collectionCode, fileNameforCSVGen, writer);
@@ -1944,7 +1945,7 @@ public class JsonDeserializer {
 				countToWrite = Math.min(tweetsList.size(), Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT")) - totalCount);
 			} 
 			if (countToWrite > 0 && !tweetsList.isEmpty()) {
-				if (0 == totalCount) {
+				if (0 == totalCount && runningHeader == null && writer == null) {
 					runningHeader  = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetIDCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_ID_HEADER_SIZE, tweetsList.get(0));
 				}
 				writer = csv.writeClassifiedTweetIDsCSV(runningHeader, writer, tweetsList.subList(0, countToWrite), collectionCode, fileNameforCSVGen);
