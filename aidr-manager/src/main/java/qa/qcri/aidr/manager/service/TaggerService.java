@@ -112,17 +112,17 @@ public interface TaggerService {
 
 	//Added by koushik
 	public Map<String, Object> generateJSONFilteredLink(String code,
-			String queryString, String jsonType) throws AidrException;
+			String queryString, String jsonType, String userName) throws AidrException;
 
 	//Added by koushik
 	public Map<String, Object> generateJsonTweetIdsFilteredLink(String code,
-			String queryString, String jsonType) throws AidrException;
+			String queryString, String jsonType, String userName) throws AidrException;
 
 	//Added by koushik
-	public Map<String, Object> generateCSVFilteredLink(String code, String queryString) throws AidrException;
+	public Map<String, Object> generateCSVFilteredLink(String code, String queryString, String userName) throws AidrException;
 
 	//Added by koushik
-	public Map<String, Object> generateTweetIdsFilteredLink(String code, String queryString) throws AidrException;
+	public Map<String, Object> generateTweetIdsFilteredLink(String code, String queryString, String userName) throws AidrException;
 	
 	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisID(Long crisisID, Integer count) throws AidrException;
 	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisCode(String crisisCode, Integer count) throws AidrException;

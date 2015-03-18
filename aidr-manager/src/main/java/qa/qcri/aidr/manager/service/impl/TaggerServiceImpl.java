@@ -1162,10 +1162,11 @@ public class TaggerServiceImpl implements TaggerService {
 	}
 
 	@Override
-	public Map<String, Object> generateCSVFilteredLink(String code, String queryString) throws AidrException {
+	public Map<String, Object> generateCSVFilteredLink(String code, String queryString, String userName) throws AidrException {
 		try {
 			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
-			WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/filter/genCSV?collectionCode=" + code + "&exportLimit=100000");
+			WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/filter/genCSV?collectionCode=" + code
+					+ "&exportLimit=100000&userName=" + userName);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(queryString), Response.class);
 			//String jsonResponse = clientResponse.readEntity(String.class);
@@ -1185,13 +1186,14 @@ public class TaggerServiceImpl implements TaggerService {
 
 	// Added by koushik
 	@Override
-	public Map<String, Object> generateTweetIdsFilteredLink(String code, String queryString) throws AidrException {
+	public Map<String, Object> generateTweetIdsFilteredLink(String code, String queryString, String userName) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		System.out.println("[generateJsonTweetIdsLink] Received request for code: " + code);
 		try {
 			System.out.println("[generateTweetIdsLink] Invoked URL: " + persisterMainUrl + "/taggerPersister/filter/genTweetIds?collectionCode=" + code
-					+ "&downloadLimited=true");
-			WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/filter/genTweetIds?collectionCode=" + code + "&downloadLimited=true");
+					+ "&downloadLimited=true&userName=" + userName);
+			WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/filter/genTweetIds?collectionCode=" + code 
+					+ "&downloadLimited=true&userName=" + userName);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(queryString), Response.class);
 			//String jsonResponse = clientResponse.readEntity(String.class);
@@ -1212,11 +1214,11 @@ public class TaggerServiceImpl implements TaggerService {
 	}
 
 	@Override
-	public Map<String, Object> generateJSONFilteredLink(String code, String queryString, String jsonType) throws AidrException {
+	public Map<String, Object> generateJSONFilteredLink(String code, String queryString, String jsonType, String userName) throws AidrException {
 		try {
 			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 			WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/filter/genJson?collectionCode=" + code + "&exportLimit=100000"
-					+ "&jsonType=" + jsonType);
+					+ "&jsonType=" + jsonType + "&userName=" + userName);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(queryString), Response.class);
 			//String jsonResponse = clientResponse.readEntity(String.class);
@@ -1236,13 +1238,14 @@ public class TaggerServiceImpl implements TaggerService {
 
 	// Added by koushik
 	@Override
-	public Map<String, Object> generateJsonTweetIdsFilteredLink(String code, String queryString, String jsonType) throws AidrException {
+	public Map<String, Object> generateJsonTweetIdsFilteredLink(String code, String queryString, String jsonType, String userName) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		System.out.println("[generateJsonTweetIdsLink] Received request for code: " + code);
 		try {
 			System.out.println("[generateJsonTweetIdsLink] Invoked URL: " + persisterMainUrl + "/taggerPersister/filter/genJsonTweetIds?collectionCode=" + code
-					+ "&downloadLimited=true&" + "&jsonType=" + jsonType);
-			WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/filter/genJsonTweetIds?collectionCode=" + code + "&downloadLimited=true&" + "&jsonType=" + jsonType);
+					+ "&downloadLimited=true&" + "&jsonType=" + jsonType + "&userName=" + userName);
+			WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/filter/genJsonTweetIds?collectionCode=" + code + "&downloadLimited=true&" 
+					+ "&jsonType=" + jsonType + "&userName=" + userName);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(queryString), Response.class);
 			//String jsonResponse = clientResponse.readEntity(String.class);

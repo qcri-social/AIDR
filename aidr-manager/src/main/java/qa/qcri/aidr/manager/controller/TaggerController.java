@@ -751,7 +751,10 @@ public class TaggerController extends BaseController {
 			String queryString) throws Exception {
 		Map<String, Object> result = null;
 		try {
-			result = taggerService.generateCSVFilteredLink(code, queryString);
+			String userName = getAuthenticatedUserName();
+			if (null == userName) userName = "System";
+			
+			result = taggerService.generateCSVFilteredLink(code, queryString, userName);
 			if (result != null && result.get("url") != null) {
 				return getUIWrapper(result.get("url"),true);
 			} else {
@@ -771,7 +774,10 @@ public class TaggerController extends BaseController {
 		System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
 		Map<String, Object> result = null;
 		try {
-			result = taggerService.generateTweetIdsFilteredLink(code, queryString);
+			String userName = getAuthenticatedUserName();
+			if (null == userName) userName = "System";
+			
+			result = taggerService.generateTweetIdsFilteredLink(code, queryString, userName);
 			if (result != null && result.get("url") != null) {
 				System.out.println("Returning success fo collection: " +  code + ", response: " + result);
 				return getUIWrapper(result.get("url"),true, null, (String)result.get("message"));
@@ -794,7 +800,10 @@ public class TaggerController extends BaseController {
 			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws Exception {
 		Map<String, Object> result = null;
 		try {
-			result = taggerService.generateJSONFilteredLink(code, queryString, jsonType);
+			String userName = getAuthenticatedUserName();
+			if (null == userName) userName = "System";
+			
+			result = taggerService.generateJSONFilteredLink(code, queryString, jsonType, userName);
 			if (result != null && result.get("url") != null) {
 				return getUIWrapper(result.get("url"),true);
 			} else {
@@ -816,7 +825,10 @@ public class TaggerController extends BaseController {
 		System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
 		Map<String, Object> result = null;
 		try {
-			result = taggerService.generateJsonTweetIdsFilteredLink(code, queryString, jsonType);
+			String userName = getAuthenticatedUserName();
+			if (null == userName) userName = "System";
+			
+			result = taggerService.generateJsonTweetIdsFilteredLink(code, queryString, jsonType, userName);
 			if (result != null && result.get("url") != null) {
 				System.out.println("Returning success fo collection: " +  code + ", response: " + result);
 				return getUIWrapper(result.get("url"),true, null, (String)result.get("message"));
