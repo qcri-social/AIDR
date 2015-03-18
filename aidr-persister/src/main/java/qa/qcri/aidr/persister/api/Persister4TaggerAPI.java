@@ -168,7 +168,7 @@ public class Persister4TaggerAPI {
 		JsonQueryList queryList = des.deserializeConstraints(queryString);
 		JsonDeserializer jsonD = new JsonDeserializer();
 		
-		logger.info("received request for collection: " + collectionCode + ", count = " + exportLimit);
+		logger.info("received request for collection: " + collectionCode + ", count = " + exportLimit + ", from user = " + userName);
 		if (queryList != null) {
 			logger.info(collectionCode + ": received constraints = " + queryList.toString());
 		} else {

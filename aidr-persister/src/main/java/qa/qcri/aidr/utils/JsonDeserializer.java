@@ -265,7 +265,7 @@ public class JsonDeserializer {
 		String fileNameforCSVGen = null;
 
 		try {
-			fileNameforCSVGen = collectionCode + "_" + MD5Hash.getMD5Hash(userName) + "_tweetIds_filtered";
+			fileNameforCSVGen = collectionCode + "_tweetIds_filtered" + "-" + MD5Hash.getMD5Hash(userName);
 		} catch (Exception e) {
 			fileNameforCSVGen = collectionCode + "_last_100k_tweets_filtered";
 		}
@@ -319,7 +319,7 @@ public class JsonDeserializer {
 						ClassifiedTweet tweet = getClassifiedTweet(line, collectionCode);
 						if (0 == totalCount && runningHeader == null && writer == null) {
 							runningHeader  = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet);
-							writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList, collectionCode, fileNameforCSVGen, writer);
+							writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList, collectionCode, fileName, writer);
 						}
 						if (tweet != null && satisfiesFilter(queryList, tweetFilter, tweet)) {
 							if (tweetsList.size() < LIST_BUFFER_SIZE && tweetsList.size() < Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT"))) { 								
@@ -618,7 +618,7 @@ public class JsonDeserializer {
 		String folderLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode;
 		String fileNameforCSVGen = null;
 		try {
-			fileNameforCSVGen = collectionCode + "_" + MD5Hash.getMD5Hash(userName) + "_last_100k_tweets_filtered";
+			fileNameforCSVGen = collectionCode + "_last_100k_tweets_filtered" + "-" + MD5Hash.getMD5Hash(userName);
 		} catch (Exception e) {
 			fileNameforCSVGen = collectionCode + "_last_100k_tweets_filtered";
 		}
@@ -674,7 +674,7 @@ public class JsonDeserializer {
 							ClassifiedTweet tweet = getClassifiedTweet(line, collectionCode);
 							if (0 == currentSize && runningHeader == null && writer == null) {
 								runningHeader  = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet);
-								writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList, collectionCode, fileNameforCSVGen, writer);
+								writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList, collectionCode, fileName, writer);
 							}
 							//logger.info("Parsed tweet = " + tweet.getTweetID() + "," + tweet.getMessage());
 							if (tweet != null && satisfiesFilter(queryList, tweetFilter, tweet)) {
@@ -1492,7 +1492,7 @@ public class JsonDeserializer {
 		String folderLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/";
 		String fileNameforJsonGen = null;
 		try {
-			fileNameforJsonGen = collectionCode + "_" + MD5Hash.getMD5Hash(userName) + "_last_100k_tweets_filtered";
+			fileNameforJsonGen = collectionCode + "_last_100k_tweets_filtered"  + "-" + MD5Hash.getMD5Hash(userName);
 		} catch (Exception e) {
 			fileNameforJsonGen = collectionCode + "_last_100k_tweets_filtered";
 		}
@@ -1634,7 +1634,7 @@ public class JsonDeserializer {
 		String folderLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/";
 		String fileNameforJsonGen = null;
 		try {
-			fileNameforJsonGen = collectionCode + "_" + MD5Hash.getMD5Hash(userName) + "_tweetIds_filtered";
+			fileNameforJsonGen = collectionCode + "_tweetIds_filtered"  + "-" + MD5Hash.getMD5Hash(userName);
 		} catch (Exception e) {
 			fileNameforJsonGen = collectionCode + "_last_100k_tweets_filtered";
 		}
