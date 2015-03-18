@@ -753,7 +753,7 @@ public class TaggerController extends BaseController {
 		try {
 			String userName = getAuthenticatedUserName();
 			if (null == userName) userName = "System";
-			
+			logger.info("Received request for download from user = " + userName);
 			result = taggerService.generateCSVFilteredLink(code, queryString, userName);
 			if (result != null && result.get("url") != null) {
 				return getUIWrapper(result.get("url"),true);

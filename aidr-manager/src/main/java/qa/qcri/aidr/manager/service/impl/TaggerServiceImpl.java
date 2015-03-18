@@ -334,11 +334,7 @@ public class TaggerServiceImpl implements TaggerService {
 			CrisisDTO dto = null;
 			TaggerResponseWrapper response = objectMapper.readValue(jsonResponse, TaggerResponseWrapper.class);
 			if (response.getDataObject() != null) {
-				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				ObjectOutput out = new ObjectOutputStream(bos);   
-				out.writeObject(response.getDataObject());
-				byte[] byteStream = bos.toByteArray();
-				dto = objectMapper.readValue(byteStream, CrisisDTO.class);
+				dto = objectMapper.readValue(objectMapper.writeValueAsString(response.getDataObject()), CrisisDTO.class);
 			}
 			logger.info("deserialization result: " + dto);
 			if (dto != null) {
