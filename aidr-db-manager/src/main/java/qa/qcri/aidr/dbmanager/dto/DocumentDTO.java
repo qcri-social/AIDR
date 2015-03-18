@@ -257,7 +257,7 @@ public class DocumentDTO implements Serializable {
 		this.documentNominalLabelsDTO = documentNominalLabelsDTO;
 	}
 	
-	public NominalLabelDTO getNominalLabel() {
+	public NominalLabelDTO getNominalLabelDTO() {
 		return this.nominalLabelDTO;
 	}
 	

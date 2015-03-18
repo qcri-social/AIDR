@@ -48,20 +48,12 @@ public class Persist2FileAPI {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/filter/genCSV")
-	public Response generateCSVFromListFiltered(String postBodyString,
+	public Response generateCSVFromListFiltered(HumanLabeledDocumentListWrapper postBody,
 			@QueryParam("collectionCode") String collectionCode, 
 			@QueryParam("exportLimit") Integer exportLimit,
 			@QueryParam("userName") String userName) throws UnknownHostException {
 
-		ObjectMapper mapper = new ObjectMapper();
-		HumanLabeledDocumentListWrapper postBody = null;
 		try {
-			mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
-			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-			postBody = mapper.readValue(postBodyString, HumanLabeledDocumentListWrapper.class);
-
-
 			DeserializeFilters des = new DeserializeFilters();
 			System.out.println("constraints string received = " + postBody.getQueryString());
 			JsonQueryList queryList = des.deserializeConstraints(postBody.getQueryString());
@@ -106,21 +98,13 @@ public class Persist2FileAPI {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/filter/genCSVTweetIds")
-	public Response generateTweetsIDSCSVFromListFiltered(String postBodyString,
+	public Response generateTweetsIDSCSVFromListFiltered(HumanLabeledDocumentListWrapper postBody,
 			@QueryParam("collectionCode") String collectionCode,
 			@DefaultValue("true") @QueryParam("downloadLimited") Boolean downloadLimited,
 			@QueryParam("userName") String userName) 
 					throws UnknownHostException {
 
-		ObjectMapper mapper = new ObjectMapper();
-		HumanLabeledDocumentListWrapper postBody = null;
 		try {
-			mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
-			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-			postBody = mapper.readValue(postBodyString, HumanLabeledDocumentListWrapper.class);
-
-
 			DeserializeFilters des = new DeserializeFilters();
 			JsonQueryList queryList = des.deserializeConstraints(postBody.getQueryString());
 
@@ -165,23 +149,15 @@ public class Persist2FileAPI {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/filter/genJson")
-	public Response generateJSONFromListFiltered(String postBodyString,
+	public Response generateJSONFromListFiltered(HumanLabeledDocumentListWrapper postBody,
 			@QueryParam("collectionCode") String collectionCode, 
 			@QueryParam("exportLimit") Integer exportLimit,
 			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType,
 			@QueryParam("userName") String userName)  throws UnknownHostException {
 		logger.debug("In list-persister genJson");
 		logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType);
-
-		ObjectMapper mapper = new ObjectMapper();
-		HumanLabeledDocumentListWrapper postBody = null;
+		
 		try {
-			mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
-			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-			postBody = mapper.readValue(postBodyString, HumanLabeledDocumentListWrapper.class);
-
-
 			DeserializeFilters des = new DeserializeFilters();
 			JsonQueryList queryList = des.deserializeConstraints(postBody.getQueryString());
 			if (queryList != null) {
@@ -211,21 +187,13 @@ public class Persist2FileAPI {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/filter/genJsonTweetIds")
-	public Response generateTweetsIDSJSONFromListFiltered(String postBodyString,
+	public Response generateTweetsIDSJSONFromListFiltered(HumanLabeledDocumentListWrapper postBody,
 			@QueryParam("collectionCode") String collectionCode, 
 			@DefaultValue("true") @QueryParam("downloadLimited") Boolean downloadLimited,
 			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType,
 			@QueryParam("userName") String userName)  throws UnknownHostException {
-		ObjectMapper mapper = new ObjectMapper();
-		HumanLabeledDocumentListWrapper postBody = null;
+		
 		try {
-			mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
-			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-			postBody = mapper.readValue(postBodyString, HumanLabeledDocumentListWrapper.class);
-
-
-
 			logger.debug("In list-persister genJsonTweetIds");
 			logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType);
 			DeserializeFilters des = new DeserializeFilters();
