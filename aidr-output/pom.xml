@@ -7,9 +7,9 @@
 	<packaging>war</packaging>
 	<name>aidr-output</name>
 	<description>Output redis data to client</description>
-    <properties>
-        <resource.dir>${basedir}/src/main/resources</resource.dir>
-    </properties>
+	<properties>
+		<resource.dir>${basedir}/src/main/resources</resource.dir>
+	</properties>
 
 
 	<dependencies>
@@ -37,7 +37,7 @@
 			<artifactId>twitter4j-core</artifactId>
 			<version>[4.0,)</version>
 		</dependency>
-		
+
 		<!-- logging dependencies -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -96,6 +96,11 @@
 			<version>3.2.1</version>
 		</dependency>
 
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
 
 		<!-- hibernate dependencies -->
 
@@ -134,7 +139,7 @@
 			<artifactId>jackson-jaxrs-json-provider</artifactId>
 			<version>2.3.1</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
@@ -249,17 +254,17 @@
 
 			</plugins>
 		</pluginManagement>
-        <resources>
-            <resource>
-                <directory>${resource.dir}</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                </includes>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-        <filters>
-            <filter>${basedir}/../aidr-common/src/main/resources/common_config.properties</filter>
-        </filters>
+		<resources>
+			<resource>
+				<directory>${resource.dir}</directory>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<filters>
+			<filter>${basedir}/../aidr-common/src/main/resources/common_config.properties</filter>
+		</filters>
 	</build>
 </project>

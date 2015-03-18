@@ -7,6 +7,8 @@ import java.util.TimeZone;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import qa.qcri.aidr.common.code.DateFormatConfig;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 //import org.codehaus.jackson.annotate.JsonProperty;
@@ -88,9 +90,9 @@ public class GenericInputQuery extends QueryJsonObject implements Serializable {
 
 	@Override
 	public Date getDate() {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat dateFormat = new SimpleDateFormat(DateFormatConfig.ISODateFormat);
 		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-		Date date = new Date(this.timestamp * 1000L);
+		Date date = new Date(this.timestamp * 1000);
 		
 		return date;
 	}

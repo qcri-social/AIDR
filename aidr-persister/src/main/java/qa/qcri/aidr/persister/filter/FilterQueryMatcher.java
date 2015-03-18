@@ -97,10 +97,10 @@ public class FilterQueryMatcher {
 					logger.warn("No createdAt field in Tweet!!! tweet = " + tweet);
 					return false;		// default behavior
 				}
-				matchResult = tweet.getDate(tweet.getCreatedAt()).after(q.getDate());
+				matchResult = tweet.getDate(tweet.getCreatedAt()).compareTo(q.getDate()) >= 0;
 				
 				//logger.info("For " + tweet.getDate(tweet.getCreatedAt()) + " comparing after date " + q.getDate() + " : " + matchResult);
-				//System.out.println("For " + tweet.getDate(tweet.getCreatedAt()) + " comparing after date " + q.getDate() + " : " + " :: result = " + matchResult);
+				System.out.println("For " + tweet.getDate(tweet.getCreatedAt()) + " comparing after date " + q.getDate() + " : " + " :: result = " + matchResult);
 
 				return matchResult;
 			}
@@ -110,10 +110,10 @@ public class FilterQueryMatcher {
 					logger.warn("No createdAt field in Tweet!!!" + tweet);
 					return false;		// default behavior
 				}
-				matchResult = tweet.getDate(tweet.getCreatedAt()).before(q.getDate());
+				matchResult = tweet.getDate(tweet.getCreatedAt()).compareTo(q.getDate()) <= 0;
 
 				//logger.info("For " + tweet.getDate(tweet.getCreatedAt()) + " comparing before date " + q.getDate() + " : " + matchResult);
-				//System.out.println("For " + tweet.getDate(tweet.getCreatedAt()) + " comparing before date " + q.getDate() + " : " + " :: result = " + matchResult);
+				System.out.println("For " + tweet.getDate(tweet.getCreatedAt()) + " comparing before date " + q.getDate() + " : " + " :: result = " + matchResult);
 
 				return matchResult;
 			}
