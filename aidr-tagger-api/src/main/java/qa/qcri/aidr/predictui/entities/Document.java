@@ -108,7 +108,7 @@ public class Document implements Serializable {
 			this.setWordFeatures(document.getWordFeatures());
 			this.setValueAsTrainingSample(document.getValueAsTrainingSample());
 	
-			this.setNominalLabelCollection(toLocalNominalLabelCollection(document.getNominalLabel()));
+			this.setNominalLabelCollection(toLocalNominalLabelCollection(document.getNominalLabelDTO()));
 		} 
     }
     
@@ -256,7 +256,7 @@ public class Document implements Serializable {
 			doc.setWordFeatures(document.getWordFeatures());
 			doc.setValueAsTrainingSample(document.getValueAsTrainingSample());
 	
-			doc.setNominalLabelCollection(toLocalNominalLabelCollection(document.getNominalLabel()));
+			doc.setNominalLabelCollection(toLocalNominalLabelCollection(document.getNominalLabelDTO()));
 			return doc;
 		} 
 		return null;

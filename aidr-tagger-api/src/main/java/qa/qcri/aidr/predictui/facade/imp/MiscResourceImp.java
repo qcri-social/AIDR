@@ -161,7 +161,7 @@ public class MiscResourceImp implements MiscResourceFacade {
 			System.out.println("Invoking REST call: " + persisterMainUrl + targetAPI + "collectionCode=" + crisisCode + "&userName=" + userName);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(postBody), Response.class);
-			System.out.println("received raw response from persister: " + clientResponse);
+			//System.out.println("received raw response from persister: " + clientResponse);
 			Map<String, Object> jsonResponse = clientResponse.readEntity(Map.class);
 			System.out.println("Received response from persister: " + jsonResponse);
 			if (jsonResponse.get("url") != null) {

@@ -6,5 +6,5 @@ public class DownloadType {
 	public static final String CSV = "CSV";
 	
 	public static final String FULL_TWEETS = "full";
-	public static final String TWEET_IDS = "tweetID";
+	public static final String TWEET_IDS = "id";
 }
