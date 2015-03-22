@@ -928,8 +928,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         {
                             xtype: 'container',
                             width: '100%',
-                            margin: '5 0 0 0',
-                            html: '<div class="horizontalLine"></div>'
+                            margin: '5 0 0 0'
+                            //html: '<div class="horizontalLine"></div>' // Blocked this line that shows a horizantal line on the collection details page.
                         },
                         this.configurationsL,
                         {
