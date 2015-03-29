@@ -14,7 +14,7 @@ public interface ModelNominalLabelResourceFacade extends CoreDBServiceFacade<Mod
 
 	public List<ModelNominalLabelDTO> getAllModelNominalLabels();
 
-	public List<ModelNominalLabelDTO> getAllModelNominalLabelsByModelID(Long modelID);
+	public List<ModelNominalLabelDTO> getAllModelNominalLabelsByModelID(Long modelID, String crisisCode);
 
 	public void saveModelNominalLabel(ModelNominalLabelDTO modelNominalLabel) throws PropertyNotSetException;
 

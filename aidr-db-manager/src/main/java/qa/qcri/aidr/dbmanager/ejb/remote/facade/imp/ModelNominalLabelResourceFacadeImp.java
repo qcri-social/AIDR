@@ -55,13 +55,13 @@ public class ModelNominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<M
 	}
 
 	@Override
-	public List<ModelNominalLabelDTO> getAllModelNominalLabelsByModelID(Long modelID) {
+	public List<ModelNominalLabelDTO> getAllModelNominalLabelsByModelID(Long modelID, String crisisCode) {
 		List<ModelNominalLabelDTO> dtoList = new ArrayList<ModelNominalLabelDTO>();;
 		List<ModelNominalLabel> modelNominalLabelList = new ArrayList<ModelNominalLabel>();
 
 		Model model = modelEJB.getById(modelID);
 		if (model != null) {
-			System.out.println("Model is not NULL in getAllModelNominalLabelsByModelID for modelID = "  + modelID);
+			System.out.println("Model is not NULL in getAllModelNominalLabelsByModelID for modelID = "  + modelID + ",crisis code = " + crisisCode);
 			Hibernate.initialize(model.getModelFamily());
 
 			try {
@@ -73,7 +73,7 @@ public class ModelNominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<M
 				//Long nominalAttributeId = model.getModelFamily().getNominalAttribute().getNominalAttributeId();
 
 				modelNominalLabelList = this.getAllByCriteria(Restrictions.eq("id.modelId", modelID));
-				System.out.println("modelNominalLabellist size = " + modelNominalLabelList.size());
+				System.out.println("modelNominalLabellist size = " + (modelNominalLabelList != null ? modelNominalLabelList.size() : "null"));
 
 				for (ModelNominalLabel labelEntity : modelNominalLabelList) {
 
@@ -85,8 +85,8 @@ public class ModelNominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<M
 						try {
 							List<DocumentDTO> docList = documentEJB.getDocumentCollectionWithNominalLabelData(nominalLabel.getNominalLabelId());
 							for (DocumentDTO document : docList) {
-								if (!(document.getIsEvaluationSet())) {
-									trainingSet++;
+								if (!document.getIsEvaluationSet() && document.getCrisisDTO().getCode().equals(crisisCode)) {
+									++trainingSet;
 								}
 							}
 						} catch (PropertyNotSetException e) {

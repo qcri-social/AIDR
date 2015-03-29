@@ -464,14 +464,14 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 				List<Document> docList = this.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion);
 				logger.debug("docList = " + docList);
 				if (docList != null && !docList.isEmpty()) {
-					logger.info("Fetched size = " + docList.size());
+					logger.info("[getDocumentCollectionWithNominalLabelData] Fetched size = " + docList.size());
 					NominalLabelDTO nominalLabel = nominalLabelEJB.getNominalLabelByID(nominalLabelID);
 					for (Document doc: docList) {
 						DocumentDTO dto = new DocumentDTO(doc);
 						dto.setNominalLabelDTO(nominalLabel);
 						dtoList.add(dto);	
 					}
-					System.out.println("Done creating DTO list, size = " + dtoList.size());
+					System.out.println("[getDocumentCollectionWithNominalLabelData] Done creating DTO list, size = " + dtoList.size());
 				}
 			} catch (Exception e) {
 				throw new Exception();

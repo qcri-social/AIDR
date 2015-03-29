@@ -34,7 +34,8 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
             url: BASE_URL + '/protected/tagger/getAllLabelsForModel.action',
             method: 'GET',
             params: {
-                id: MODEL_ID
+                id: MODEL_ID,
+                code: CRISIS_CODE
             },
             headers: {
                 'Accept': 'application/json'

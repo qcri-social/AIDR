@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
@@ -28,10 +29,6 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
 import java.util.*;
 
 //import com.sun.jersey.api.client.Client;
@@ -894,14 +891,14 @@ public class TaggerServiceImpl implements TaggerService {
 	}
 
 	@Override
-	public List<TaggerModelNominalLabel> getAllLabelsForModel(Integer modelID) throws AidrException {
+	public List<TaggerModelNominalLabel> getAllLabelsForModel(Integer modelID, String crisisCode) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
 			/**
 			 * Rest call to Tagger
 			 */
 			logger.info("received request for modelID = " + modelID);
-			WebTarget webResource = client.target(taggerMainUrl + "/modelNominalLabel/" + modelID);
+			WebTarget webResource = client.target(taggerMainUrl + "/modelNominalLabel/" + modelID + "/" + crisisCode);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
@@ -911,6 +908,9 @@ public class TaggerServiceImpl implements TaggerService {
 
 			if (modelLabelsResponse.getModelNominalLabelsDTO() != null) {
 				logger.info("Tagger returned " + modelLabelsResponse.getModelNominalLabelsDTO().size() + " labels for model with ID " + modelID);
+				for (TaggerModelNominalLabel dto: modelLabelsResponse.getModelNominalLabelsDTO()) {
+		        	logger.info("Training count for crisis = " + crisisCode + ", label: " + dto.getNominalLabel().getName() + " is = " + dto.getTrainingDocuments());
+		        }
 			}
 
 			return modelLabelsResponse.getModelNominalLabelsDTO();
