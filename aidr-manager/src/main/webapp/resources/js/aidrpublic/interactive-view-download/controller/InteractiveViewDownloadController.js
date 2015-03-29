@@ -189,6 +189,9 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                              tooltipText += "<br/>" + attributeName + ": " + val + " (" + record.data[key + '_confidence'] + ")";
                          }
                      });
+                     if(tooltipText.indexOf("\"") !== -1) {
+                         tooltipText = tooltipText.replace(/\"/g, "");
+                     }
                      meta.tdAttr = 'data-qtip="' + tooltipText + '"';
                      return value;
                  }

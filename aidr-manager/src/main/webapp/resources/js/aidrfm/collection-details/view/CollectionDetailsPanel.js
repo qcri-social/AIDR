@@ -78,7 +78,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             items: [
                 {
                     width: 220,
-                    text: 'Geographical regions:'
+                    text: 'Geographical boundaries:'
                 },
                 this.geoL
             ]
@@ -173,7 +173,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
 
         this.geoE = Ext.create('Ext.form.field.Text', {
-            fieldLabel: 'Geographical regions',
+            fieldLabel: 'Geographical boundaries',
             labelWidth: 130,
             name: 'geo',
             flex: 1,
@@ -184,15 +184,15 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             items:[{
                 name: 'geoR',
                 xtype: 'radiogroup',
-                fieldLabel: 'Geo boundry strickness',
+                fieldLabel: 'Geographical boundary strictness',
                 labelWidth: 130,
                 // Arrange radio buttons into two columns, distributed vertically
                 columns: 1,
                 vertical: true,
                 items: [
-                    { boxLabel: 'Do not apply', name: 'geoR1', inputValue: 'null'},
-                    { boxLabel: 'Collect tweets using approximate geographical regions (a tweet may be collected if it comes from a country that overlaps with the bounding box)', name: 'geoR1', inputValue: 'approximate' },
-                    { boxLabel: 'Collect tweets using strict geographical matching (a tweet is only collected if its geographical coordinates are strictly inside the bounding box)', name: 'geoR1', inputValue: 'strict'}
+                    { boxLabel: 'Strict: a tweet can only be collected if it has geographical coordinates strictly inside the geographical boundaries.', name: 'geoR1', inputValue: 'strict'},
+                    { boxLabel: 'Approximate: a tweet may be collected if it comes from a country that overlaps with the geographical boundaries.', name: 'geoR1', inputValue: 'approximate' },
+                    { boxLabel: 'Does not apply (no geographical boundary)', name: 'geoR1', inputValue: 'null'}
                 ]
             }]
         });
@@ -928,8 +928,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         {
                             xtype: 'container',
                             width: '100%',
-                            margin: '5 0 0 0',
-                            html: '<div class="horizontalLine"></div>'
+                            margin: '5 0 0 0'
+                            //html: '<div class="horizontalLine"></div>' // Blocked this line that shows a horizantal line on the collection details page.
                         },
                         this.configurationsL,
                         {
