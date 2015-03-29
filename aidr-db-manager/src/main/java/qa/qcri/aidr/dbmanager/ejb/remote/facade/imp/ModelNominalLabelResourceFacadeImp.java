@@ -85,8 +85,12 @@ public class ModelNominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<M
 						try {
 							List<DocumentDTO> docList = documentEJB.getDocumentCollectionWithNominalLabelData(nominalLabel.getNominalLabelId());
 							for (DocumentDTO document : docList) {
-								if (!document.getIsEvaluationSet() && document.getCrisisDTO().getCode().equals(crisisCode)) {
+								// TODO: is checking against isEvaluationSet() necessary here? (Koushik)
+								//if (!document.getIsEvaluationSet() && document.getCrisisDTO().getCode().equals(crisisCode)) {
+								if (document.getCrisisDTO().getCode().equals(crisisCode)) {
 									++trainingSet;
+								} else {
+									System.out.println("Rejecting document for crisis = " + document.getCrisisDTO().getCode() + "having isEvaluationSet = " + document.getIsEvaluationSet() + ", nominalLabel = " + nominalLabel.getName() + ", model = " + model.getModelId() + " coming from modelFamily = " + modelFamily.getModelFamilyId());
 								}
 							}
 						} catch (PropertyNotSetException e) {

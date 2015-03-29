@@ -52,7 +52,8 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        			url: BASE_URL + '/protected/tagger/getAllLabelsForModel.action',
 	        			method: 'GET',
 	        			params: {
-	        				id: MODEL_ID
+	        				id: MODEL_ID,
+	        				code: CRISIS_CODE
 	        			},
 	        			headers: {
 	        				'Accept': 'application/json'
@@ -83,7 +84,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        						//me.getRetrainingThreshold()
 	        						me.getRetrainingThreshold(totalMessages, count);
 	        						me.mainComponent.taggerDescription.setText('Status: <b><small>' + status + '</small></b>. ' +
-	        								'Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ': <b>' + totalMessages + '</b>.&nbsp;' + detailsForModel, false);
+	        								'Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ': <b>' + totalMessages + '</b> (since last change of the classifier).&nbsp;' + detailsForModel, false);
 
 
 	        						//  me.mainComponent.taggerDescription2line.setText('<b>' + totalExamples + '</b> training examples. Note: Value \"N/A\" doesn\'t count as training example.', false);
