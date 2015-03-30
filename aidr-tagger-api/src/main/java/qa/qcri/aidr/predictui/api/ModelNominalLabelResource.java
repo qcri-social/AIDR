@@ -52,12 +52,15 @@ public class ModelNominalLabelResource {
     
     @GET
     @Produces("application/json")
-    @Path("/{modelID}")
-    public Response getAllModelNominalLabelsByModelID(@PathParam("modelID") Long modelID) {
-        List<ModelNominalLabelDTO> modelNominalLabelList = modelNominalLabel.getAllModelNominalLabelsByModelID(modelID);
+    @Path("/{modelID}/{code}")
+    public Response getAllModelNominalLabelsByModelID(@PathParam("modelID") Long modelID, @PathParam("code") String code) {
+        List<ModelNominalLabelDTO> modelNominalLabelList = modelNominalLabel.getAllModelNominalLabelsByModelID(modelID, code);
         ResponseWrapper response = new ResponseWrapper();
         if (modelNominalLabelList != null){
         response.setModelNominalLabelsDTO(modelNominalLabelList);
+        for (ModelNominalLabelDTO dto: modelNominalLabelList) {
+        	System.out.println("[getAllModelNominalLabelsByModelID] Training count for label: " + dto.getNominalLabelDTO().getName() + " is = " + dto.getTrainingDocuments());
+        }
         return Response.ok(response).build();
         }
         response.setMessage("no labels found for the given model-id.");

@@ -34,7 +34,8 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
             url: BASE_URL + '/protected/tagger/getAllLabelsForModel.action',
             method: 'GET',
             params: {
-                id: MODEL_ID
+                id: MODEL_ID,
+                code: CRISIS_CODE
             },
             headers: {
                 'Accept': 'application/json'
@@ -116,9 +117,9 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
                         models.push(totalModel);
 
                         me.mainComponent.modelDetails.setText('Status: <b>' + status + '</b>.&nbsp;' +
-                            'Machine has tagged <b>' + totalMessages.format() + '</b> '+ COLLECTION_TYPES[TYPE]["plural"] + '.&nbsp;' +
-                            'Trained on <b>' + totalExamples.format() + '</b> human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '.&nbsp;' +
-                            '<a href="' + BASE_URL +  '/protected/'
+                            'Machine has tagged <b>' + totalMessages.format() + '</b> '+ COLLECTION_TYPES[TYPE]["plural"] + ' (since last change of the classifier)' +
+                            '.&nbsp;' + 'Trained on <b>' + totalExamples.format() + '</b> human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '.&nbsp;' +
+                            '<br><a href="' + BASE_URL +  '/protected/'
                             + CRISIS_CODE + '/' + MODEL_ID + '/' + MODEL_FAMILY_ID + '/' + ATTRIBUTE_ID
                             + '/training-data">Go to human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ' &raquo;</a>', false);
                         me.mainComponent.modelLabelsStore.loadData(models);

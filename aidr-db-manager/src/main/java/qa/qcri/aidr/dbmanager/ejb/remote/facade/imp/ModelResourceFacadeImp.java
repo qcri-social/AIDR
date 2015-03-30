@@ -12,6 +12,7 @@ import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
@@ -32,7 +33,7 @@ import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 
 /**
  *
- * @author Imran
+ * @author Imran, koushik
  */
 @Stateless(name="ModelResourceFacadeImp")
 public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> implements ModelResourceFacade {
@@ -94,14 +95,16 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 		List<ModelWrapper> modelWrapperList = new ArrayList<ModelWrapper>();
 
 		Crisis crisis = getEntityManager().find(Crisis.class, crisisID);
+		Hibernate.initialize(crisis.getModelFamilies());
 		List<ModelFamily> modelFamilyList = crisis.getModelFamilies();
 
 		// for each modelFamily get all the models and take avg
 		for (ModelFamily modelFamily : modelFamilyList) {
+			Hibernate.initialize(modelFamily.getModels());
 			List<Model> modelList = modelFamily.getModels();
 			ModelWrapper modelWrapper = new ModelWrapper();
 			modelWrapper.setModelFamilyID(modelFamily.getModelFamilyId());
-			long classigiedElements = 0;
+			long classifiedElements = 0;
 			double auc = 0.0;
 			Long modelID = 0l;
 			long trainingExamples = 0;
@@ -114,22 +117,25 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 						modelID = model.getModelId();
 
 						//for each model get all the labels and sum over classifiedDocumentCount
-						List<ModelNominalLabel> modelLabels = model.getModelNominalLabels();// .getModelNominalLabelCollection();
+						Hibernate.initialize(model.getModelNominalLabels());
 						long totalClassifiedDocuments = 0;
-						for (ModelNominalLabel label : modelLabels) {
+						for (ModelNominalLabel label : model.getModelNominalLabels()) {
 							totalClassifiedDocuments += label.getClassifiedDocumentCount();
 						}
-						classigiedElements = totalClassifiedDocuments;
+						classifiedElements = totalClassifiedDocuments;
 					}
 				}
 			}
 			//getting trainingCount
 			trainingExamples = 0;
+			Hibernate.initialize(modelFamily.getNominalAttribute());
 			NominalAttribute nominalAttribute = modelFamily.getNominalAttribute();
+			Hibernate.initialize(nominalAttribute.getNominalLabels());
 			List<NominalLabel> nominalLabelList = nominalAttribute.getNominalLabels();//.getNominalLabelCollection();
 			for (NominalLabel label : nominalLabelList) {
 				if (!(label.getNominalLabelCode().equalsIgnoreCase("null"))) {
 					//Collection<Document> dc = label.getDocumentCollection();
+					Hibernate.initialize(label.getDocumentNominalLabels());
 					List<DocumentNominalLabel> documentNominalList = label.getDocumentNominalLabels();
 					for (DocumentNominalLabel docNominalLabel : documentNominalList) {
 						Document doc = docNominalLabel.getDocument();
@@ -143,7 +149,7 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 			modelWrapper.setAttribute(modelFamily.getNominalAttribute().getName());
 			modelWrapper.setAttributeID(modelFamily.getNominalAttribute().getNominalAttributeId());
 			modelWrapper.setAuc(auc);
-			modelWrapper.setClassifiedDocuments(classigiedElements);
+			modelWrapper.setClassifiedDocuments(classifiedElements);
 			String status = "";
 			if (modelFamily.isIsActive()) {
 				status = "Active";

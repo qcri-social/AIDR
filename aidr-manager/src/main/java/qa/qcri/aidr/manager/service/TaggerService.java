@@ -33,7 +33,7 @@ public interface TaggerService {
 
 	public List<TaggerModel> getModelsForCrisis(Integer crisisID) throws AidrException;
 
-	public List<TaggerModelNominalLabel> getAllLabelsForModel(Integer modelID) throws AidrException;
+	public List<TaggerModelNominalLabel> getAllLabelsForModel(Integer modelID, String crisisCode) throws AidrException;
 
 	public TaggerAttribute createNewAttribute(TaggerAttribute attribute) throws AidrException;
 
