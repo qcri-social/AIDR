@@ -129,11 +129,11 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
 
             '<div class="info" style="width: 600px !important;">',
             '<div class="collection-title">' +
-                '<tpl if="classifiersNumber != null">',
+                //'<tpl if="classifiersNumber != null">',
                     '<a href="{[this.getEncodedCode(values.code)]}/interactive-view-download">{name}</a>' +
-                '<tpl else>',
-                    '<span>{name}</span>',
-                '</tpl>',
+                //'<tpl else>',
+                    //'<span>{name}</span>',
+                //'</tpl>',
             '{[this.getSharedBy(values.user)]}</div>',
 
             '<div class="styled-text-14" id="statusField_{id}">{[this.getStatus(values.status, values.collectionType)]}' +
