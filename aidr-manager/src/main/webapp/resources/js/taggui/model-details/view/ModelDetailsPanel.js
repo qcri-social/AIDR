@@ -192,7 +192,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             '<div class="rightColumn">',
             '<div>Precision:</div>',
             '<div>Recall:</div>',
-            '<div>AUC:</div>',
+            '<div><p title="If AUC is lower than 80%, or AUC is 100%, you urgently need more human-tagged tweets">AUC:</p></div>',
             '<div>Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ':</div>',
             '<div>Date/Time:</div>',
             '</div>',
