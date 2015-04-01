@@ -135,7 +135,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 		this.downloadFormat = Ext.create('Ext.form.RadioGroup', {
 			fieldLabel: 'Format',
 			labelWidth: 55,
-			columns: [150, 210, 220],
+			columns: [150, 210, 240],
 			items: [
 			        {
 			        	boxLabel: 'Spreadsheet (.csv)',
