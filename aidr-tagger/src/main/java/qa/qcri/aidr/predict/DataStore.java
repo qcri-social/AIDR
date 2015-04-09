@@ -849,6 +849,7 @@ public class DataStore {
 	}
 
 	public static void main(String[] args) throws Exception {
+	/*
 		DataStore.initTaskManager();
 
 		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
@@ -877,6 +878,6 @@ public class DataStore {
 		logger.info("Testing truncate Labeling buffer for crisisID = " + 117);
 		//DataStore.taskManager.truncateLabelingTaskBufferForCrisis(117L, Config.LABELING_TASK_BUFFER_MAX_LENGTH, 0);
 		DataStore.taskManager.truncateLabelingTaskBufferForCrisis(117L, Integer.parseInt(getProperty("labeling_task_buffer_max_length")), 0);
+		*/
 	}
-
 }

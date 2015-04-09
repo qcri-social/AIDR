@@ -153,7 +153,7 @@ public class JedisConnectionObject {
 			try {
 				if (null != jedisInstance) {
 					if (allotedJedis != null) allotedJedis.remove(jedisInstance);
-					logger.info("Returned jedis resource: " + jedisInstance);
+					logger.info("[returnJedis] Returned jedis resource: " + jedisInstance);
 					JedisConnectionObject.pool.returnResource(jedisInstance);
 					connectionSetup = false;
 				}

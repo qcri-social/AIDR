@@ -119,7 +119,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	private volatile static AtomicInteger inRequests = null;
 	private final int MAX_IN_REQUESTS = 1000;
 
-	private volatile static ChannelBufferManager masterCBManager = null; 			// managing buffers for each publishing channel
+	private static ChannelBufferManager masterCBManager = null; 			// managing buffers for each publishing channel
 	private static final boolean rejectNullFlag = true;
 
 

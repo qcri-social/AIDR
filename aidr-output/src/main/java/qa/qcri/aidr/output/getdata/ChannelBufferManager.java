@@ -86,7 +86,7 @@ public class ChannelBufferManager {
 
 	// DB access related
 	//private static DatabaseInterface dbController = null;
-	private static String managerMainUrl = "http://localhost:8080/AIDRFetchManager";
+	private static String managerMainUrl = null;
 
 	private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
 
@@ -98,10 +98,7 @@ public class ChannelBufferManager {
 	public ChannelBufferManager() {}
 
 	public void initiateChannelBufferManager(final String channelRegEx) {
-//        AIDROutputConfig configuration = new AIDROutputConfig();
-//		HashMap<String, String> configParams = configuration.getConfigProperties();
-
-		redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
+		redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>();
 
 		redisHost = getProperty("host");
 		redisPort = Integer.parseInt(getProperty("port"));
@@ -110,7 +107,8 @@ public class ChannelBufferManager {
 
 		managerMainUrl = getProperty("managerUrl");
 		logger.info("Initializing channel buffer manager.");
-		System.out.println("[ChannelBufferManager] Initializing channel buffer manager.");
+		System.out.println("[ChannelBufferManager] Initializing channel buffer manager with values: <" + redisHost + ", " + redisPort 
+				+ ", " + PERSISTER_LOAD_CHECK_INTERVAL_MINUTES + ", " + PERSISTER_LOAD_LIMIT + ", " + managerMainUrl + ">");
 
 		bufferSize = -1;
 		executorServicePool = Executors.newCachedThreadPool();	//Executors.newFixedThreadPool(10);		// max number of threads
@@ -161,6 +159,7 @@ public class ChannelBufferManager {
 
 	public void manageChannelBuffersWrapper(final String subscriptionPattern, final String channelName, 
 													final String receivedMessage) {
+		logger.info("New message on channel = " + channelName);
 		manageChannelBuffers(subscriptionPattern, channelName, receivedMessage);
 	}
 
@@ -171,6 +170,7 @@ public class ChannelBufferManager {
 	// 4. Deletes channelName and channel buffer if channelName not seen for TIMEOUT duration.
 	public void manageChannelBuffers(final String subscriptionPattern, final String channelName, 
 			final String receivedMessage) {
+		logger.info("Invoked from wrapper by new message on channel = " + channelName);
 		if (null == channelName) {
 			logger.error("Something terribly wrong! Fatal error in: " + channelName);
 			//System.exit(1);
@@ -181,6 +181,7 @@ public class ChannelBufferManager {
 		}
 		else {
 			//First create a new circular buffer and then add to that buffer
+			logger.info("isChannelPresent " + channelName + ": " + isChannelPresent(channelName));
 			createChannelQueue(channelName);
 			addMessageToChannelBuffer(channelName, receivedMessage);
 			logger.info("Created new channel: " + channelName);
@@ -254,8 +255,10 @@ public class ChannelBufferManager {
 	// TODO: define the appropriate collections data structure - HashMap, HashSet, ArrayList? 
 	public boolean isChannelPresent(String channelName) {
 		try {
+			logger.info("Checking channelName: " + channelName + ", result = " + subscribedChannels.containsKey(channelName));
 			return (subscribedChannels != null) ? subscribedChannels.containsKey(channelName) : false;
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("Unable to check if channel present: " + channelName);
 			return false;
 		}
@@ -269,10 +272,16 @@ public class ChannelBufferManager {
 				cb.createChannelBuffer();				// use default buffer size
 			else
 				cb.createChannelBuffer(bufferSize);		// use specified buffer size
+			logger.info("Subscribed channels: " + subscribedChannels);
+			if (subscribedChannels.containsKey(channelName)) {
+				logger.error("Fatal Error! Attempting to recreate an existing channel: " + channelName);
+				throw new Exception("Fatal Error! Attempting to recreate an existing channel: " + channelName);
+			}
 			subscribedChannels.put(channelName, cb);
 			cb.setPubliclyListed(getChannelPublicStatus(channelName));
 			logger.info("Created channel buffer for channel: " + channelName + ", public = " + cb.getPubliclyListed());
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("Unable to create buffer for channel: " + channelName);
 		}
 	}
