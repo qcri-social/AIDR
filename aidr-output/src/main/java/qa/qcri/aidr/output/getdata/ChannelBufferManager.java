@@ -16,6 +16,9 @@ package qa.qcri.aidr.output.getdata;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -76,8 +79,8 @@ public class ChannelBufferManager {
 	// Runtime related
 	private static boolean isConnected = false;
 	private static boolean isSubscribed =false;
-	private volatile static long lastCheckedTime = 0; 
-	private volatile static long lastPublicFlagCheckedTime = 0;
+	private static long lastCheckedTime = 0; 
+	private static long lastPublicFlagCheckedTime = 0;
 	private static int bufferSize = -1;
 
 	// Channel Buffering Algorithm related
@@ -133,33 +136,33 @@ public class ChannelBufferManager {
 				subscribeToChannel(channelRegEx);
 				isSubscribed = true;
 				aidrSubscriber.setChannelName(channelRegEx);
-				logger.info("Created pattern subscription");
+				logger.info("Created pattern subscription for pattern: " + channelRegEx);
 			} catch (Exception e) {
 				isSubscribed = false;
 				logger.error("Fatal exception occurred attempting subscription: " + e.toString());
 				logger.error(elog.toStringException(e));
 			}
 			if (isSubscribed) {
-				subscribedChannels = new ConcurrentHashMap<String,ChannelBuffer>(20);
-				logger.debug("Created HashMap");
+				subscribedChannels = new ConcurrentHashMap<String,ChannelBuffer>();
+				logger.info("Created HashMap for circular buffers");
 				loadBuffersFromDisk();
 			}
 		}
 
 	}
-	
+
 	public ExecutorService getExecutorServicePool() {
 		return executorServicePool;
 	}
-	
+
 	public void initiateChannelBufferManager(final int bufferSize, final String channelRegEx) {
 		initiateChannelBufferManager(channelRegEx);					// call default constructor
 		this.bufferSize = bufferSize;		// set buffer size
 	}
 
 	public void manageChannelBuffersWrapper(final String subscriptionPattern, final String channelName, 
-													final String receivedMessage) {
-		logger.info("New message on channel = " + channelName);
+			final String receivedMessage) {
+		//logger.info("New message on channel = " + channelName);
 		manageChannelBuffers(subscriptionPattern, channelName, receivedMessage);
 	}
 
@@ -170,11 +173,15 @@ public class ChannelBufferManager {
 	// 4. Deletes channelName and channel buffer if channelName not seen for TIMEOUT duration.
 	public void manageChannelBuffers(final String subscriptionPattern, final String channelName, 
 			final String receivedMessage) {
-		logger.info("Invoked from wrapper by new message on channel = " + channelName);
+		//logger.info("Invoked from wrapper by new message on channel = " + channelName);
 		if (null == channelName) {
 			logger.error("Something terribly wrong! Fatal error in: " + channelName);
 			//System.exit(1);
 		}
+		if (null == subscribedChannels || subscribedChannels.isEmpty()) {
+			logger.warn("subscribedChannels hashmap is NULL/EMPTY!! subscribedChannels = " + subscribedChannels);
+		}
+
 		if (isChannelPresent(channelName)) {
 			// Add to appropriate circular buffer
 			addMessageToChannelBuffer(channelName, receivedMessage);
@@ -255,11 +262,11 @@ public class ChannelBufferManager {
 	// TODO: define the appropriate collections data structure - HashMap, HashSet, ArrayList? 
 	public boolean isChannelPresent(String channelName) {
 		try {
-			logger.info("Checking channelName: " + channelName + ", result = " + subscribedChannels.containsKey(channelName));
+			//logger.info("Checking channelName: " + channelName + ", result = " + subscribedChannels.containsKey(channelName) + ", with message count = " + subscribedChannels.get(channelName).getCurrentMsgCount());
 			return (subscribedChannels != null) ? subscribedChannels.containsKey(channelName) : false;
 		} catch (Exception e) {
+			logger.error(Thread.currentThread().getName() + ":: Unable to check if channel present: " + channelName);
 			e.printStackTrace();
-			logger.error("Unable to check if channel present: " + channelName);
 			return false;
 		}
 	}
@@ -277,8 +284,8 @@ public class ChannelBufferManager {
 				logger.error("Fatal Error! Attempting to recreate an existing channel: " + channelName);
 				throw new Exception("Fatal Error! Attempting to recreate an existing channel: " + channelName);
 			}
-			subscribedChannels.put(channelName, cb);
 			cb.setPubliclyListed(getChannelPublicStatus(channelName));
+			subscribedChannels.put(channelName, cb);
 			logger.info("Created channel buffer for channel: " + channelName + ", public = " + cb.getPubliclyListed());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -318,10 +325,11 @@ public class ChannelBufferManager {
 	 */
 	public Set<String> getActiveChannelsList() {
 		try {
-			final Set<String> channelSet = (subscribedChannels != null) ? subscribedChannels.keySet() : null;
-			return channelSet.isEmpty() ? null : channelSet;
+			Set<String> channelSet = (subscribedChannels != null || !subscribedChannels.isEmpty()) ? subscribedChannels.keySet() : null;
+			return channelSet;
 		} catch (Exception e) {
 			logger.error("Unable to fetch list of active channels");
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -332,13 +340,13 @@ public class ChannelBufferManager {
 	public Set<String> getActiveChannelCodes() {
 		try {
 			Set<String> channelCodeSet = new HashSet<String>();
-			final Set<String> tempSet = (subscribedChannels != null) ? subscribedChannels.keySet() : null;
-			if (tempSet != null) {
-				for (String s:tempSet) {
+			if (subscribedChannels.keySet() != null && !subscribedChannels.keySet().isEmpty()) {
+				for (String s:subscribedChannels.keySet()) {
 					channelCodeSet.add(s.substring(CHANNEL_PREFIX_STRING.length()));
 				}
-				return channelCodeSet.isEmpty() ? null : channelCodeSet;
-			}
+
+			} 
+			return channelCodeSet;
 		} catch (Exception e) {
 			logger.error("Unable to get active channel codes");
 		}
@@ -385,7 +393,6 @@ public class ChannelBufferManager {
 	 */
 	@SuppressWarnings("unchecked")
 	public Map<String, Boolean> getAllRunningCollections() {
-		Map<String, Boolean> collectionList = null;
 		Response clientResponse = null;
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
@@ -418,8 +425,9 @@ public class ChannelBufferManager {
 
 		final int EXTRA = 3;		
 		try {
-			if (subscribedChannels != null) {
-				for (ChannelBuffer cb: subscribedChannels.values()) {
+			if (subscribedChannels != null && !subscribedChannels.keySet().isEmpty()) {
+				for (String channelName: subscribedChannels.keySet()) {
+					ChannelBuffer cb = subscribedChannels.get(channelName);
 					if (cb.getPubliclyListed()) {
 						//logger.info("Looking at buffer: " + cb.getChannelName());
 						//long startTime = System.currentTimeMillis();
@@ -449,8 +457,9 @@ public class ChannelBufferManager {
 	}
 
 
+	@SuppressWarnings("unused")
 	private void subscribeToChannel(final String channelRegEx) throws Exception {
-		Future redisThread = executorServicePool.submit(new Runnable() {
+		Future<?> redisThread = executorServicePool.submit(new Runnable() {
 			public void run() {
 				Thread.currentThread().setName("ChannelBufferManager Redis subscription Thread");
 				logger.info("New thread <" +  Thread.currentThread().getName() + "> created for subscribing to redis channel: " + channelRegEx);
@@ -463,32 +472,33 @@ public class ChannelBufferManager {
 					e.printStackTrace();
 					stopSubscription();
 					Thread.currentThread().interrupt();
-				} finally {
+				} /*finally {
 					try {
 						stopSubscription();
 					} catch (Exception e) {
 						logger.error(channelRegEx  + ": Exception occurred attempting stopSubscription: " + e.toString());
 						logger.error(elog.toStringException(e));
 					}
-				}
+				}*/
 				Thread.currentThread().interrupt();
 				logger.info("Exiting thread: " + Thread.currentThread().getName());
 			}
 		});
 	}
 
-	private synchronized void stopSubscription() {
+	private void stopSubscription() {
 		logger.info("Stopsubscription attempt for channel: " + aidrSubscriber.getChannelName());
 		try {
 			if (aidrSubscriber != null && aidrSubscriber.getSubscribedChannels() > 0) {
-				aidrSubscriber.punsubscribe();				
+				aidrSubscriber.punsubscribe();	
+				logger.info("Unsubscribed from channel pattern: " + CHANNEL_PREFIX_STRING);
 			}
 		} catch (JedisConnectionException e) {
 			logger.error("Connection to REDIS seems to be lost!");
 			logger.error(elog.toStringException(e));
 		}
 		try {
-			if (jedisConn != null && aidrSubscriber != null) { 
+			if (jedisConn != null && aidrSubscriber != null && subscriberJedis != null) { 
 				jedisConn.returnJedis(subscriberJedis);
 				subscriberJedis = null;
 				logger.info("Stopsubscription completed...");
@@ -640,7 +650,7 @@ public class ChannelBufferManager {
 				}
 				if (redisLoadShedder.get(channel).canProcess(channel)) {
 					manageChannelBuffersWrapper(pattern, channel, message);
-				} 
+				} 			
 			} catch (Exception e) {
 				logger.error("Exception occurred, redisLoadShedder = " + redisLoadShedder + ", channel status: " + redisLoadShedder.containsKey(channel));
 				logger.error(elog.toStringException(e));
