@@ -106,13 +106,7 @@ public class ChannelBuffer {
 		try {
 			synchronized(this.messageBuffer) {
 				tempList = new ArrayList<String>(this.messageBuffer.size());
-				//logger.info("current message buffer size = " + messageBuffer.size());
-				// first copy out the entire buffer to a list
-				Iterator<String> itr = this.messageBuffer.iterator();
-				while (itr.hasNext()) {
-					String element = itr.next();
-					if (element != null) tempList.add(element);		// only non-null elements
-				}
+				tempList.addAll(this.messageBuffer);
 			}
 			logger.info("Copied data : " + tempList.size() + ", msgCount:messageBuffer.size = " + msgCount + ":" + messageBuffer.size());
 			if (msgCount >= tempList.size()) {
@@ -120,14 +114,13 @@ public class ChannelBuffer {
 			}
 
 			// Otherwise, get the last msgCount elements, in oldest-first order
-			//Collections.reverse(tempList);	// in-situ reversal O(n) time
+			// Collections.reverse(tempList);	// in-situ reversal O(n) time
 			List<String> returnList = new ArrayList<String>(msgCount);
 			int index = Math.max(0, (tempList.size() - msgCount));	// from where to pick
-			for (int i = 0;i < msgCount;i++) {
-				returnList.add(tempList.get(index));
-				++index;
+			for (int i = index;i < tempList.size();i++) {
+				returnList.add(tempList.get(i));
 			}
-			logger.info("Fetched size = " + index + " from start loc = " + Math.max(0, (tempList.size() - msgCount)));
+			logger.info("Fetched size = " + msgCount + " from start loc = " + Math.max(0, (tempList.size() - msgCount)));
 			return returnList;
 		} catch (Exception e) {
 			logger.error("Error in creating list out of buffered messages");

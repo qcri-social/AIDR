@@ -385,9 +385,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			logger.info(channelCode + ": received POST list = " + queryList.toString());
 		} else {
 			logger.info(channelCode + ": received POST list = " + queryList);
-			//queryList = new JsonQueryList();
 		}
-		//ChannelBufferManager cbManager = new ChannelBufferManager();
 		if (null != cbManager.jedisConn && cbManager.jedisConn.isPoolSetup()) {
 			boolean error = false;
 			// Parse the HTTP GET request and generating results for output
@@ -427,8 +425,6 @@ public class GetBufferedAIDRData implements ServletContextListener {
 						// Now to serially filter each tweet in the bufferedMessages list
 						List<String> filteredMessages = new ArrayList<String>();
 						if (null == queryList || queryList.getConstraints().isEmpty()) {
-							//|| (queryList.getConstraints().get(0).queryType != QueryType.classifier_query
-							//&& queryList.getConstraints().get(0).queryType != QueryType.date_query)) {
 							// default behavior - no filtering if no POST payload
 							logger.info(channelCode + ": no filtering...");
 							filteredMessages.addAll(bufferedMessages);
@@ -440,8 +436,8 @@ public class GetBufferedAIDRData implements ServletContextListener {
 									filteredMessages.add(tweet);
 								}
 							}
-							logger.debug(channelCode + ": fetched bufferedMessages size = " + bufferedMessages.size());
-							logger.debug(channelCode + ": Final filteredMessages size = " + filteredMessages.size());
+							logger.info(channelCode + ": fetched bufferedMessages size = " + bufferedMessages.size());
+							logger.info(channelCode + ": Final filteredMessages size = " + filteredMessages.size());
 						}
 						// Finally the usual stuff - format tweets for tagger specific output
 						final JsonDataFormatter taggerOutput = new JsonDataFormatter(callbackName);	// Tagger specific JSONP output formatter
