@@ -79,7 +79,7 @@ class TwitterStatusListener implements StatusListener {
 		JsonObject originalDoc = Json.createReader(new StringReader(json)).readObject();
 		for (Predicate<JsonObject> filter : filters) {
 			if (!filter.test(originalDoc)) {
-				logger.info(originalDoc.get("text").toString() + ": failed on filter = " + filter.getFilterName());
+				//logger.info(originalDoc.get("text").toString() + ": failed on filter = " + filter.getFilterName());
 				return;
 			}
 		}

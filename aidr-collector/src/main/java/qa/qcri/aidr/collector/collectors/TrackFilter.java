@@ -2,8 +2,11 @@ package qa.qcri.aidr.collector.collectors;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,7 +24,12 @@ public class TrackFilter implements Predicate<JsonObject> {
 	private static Logger logger = Logger.getLogger(TrackFilter.class.getName());
 
 	private String[] toTrack = null;
+	private Set<KeywordPredicate> simpleWordBasedPredicates = null;
+	private Set<KeywordPredicate> phraseBasedPredicates = null;
+
 	private String patternString = "([^\"]\\S*|\".+?\")\\s*";
+	private String phrasePatternString = ".*\".*\".*";
+
 	private Pattern pattern = null;
 
 	public TrackFilter() {
@@ -48,13 +56,60 @@ public class TrackFilter implements Predicate<JsonObject> {
 
 	public void setToTrack(final String keywords) {
 		if (keywords != null && !keywords.isEmpty()) {
-			this.toTrack = keywords.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+			simpleWordBasedPredicates = new HashSet<KeywordPredicate>();
+			phraseBasedPredicates = new HashSet<KeywordPredicate>();
+			this.toTrack = keywords.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);	// split on comma, ignoring those within double quotations
+
 			for (int i = 0; i < toTrack.length;i++) {
-				this.toTrack[i] = this.toTrack[i].trim();		// remove leading and trailing whitespaces
+				this.toTrack[i] = this.toTrack[i].trim().toLowerCase();		// remove leading and trailing whitespaces, make all lower-case
+				KeywordPredicate pred = new KeywordPredicate(this.toTrack[i]);
+				// Now divide the list into two: simpleWordBased (strings without any quotes) and phraseBased (string of form "*"*)
+				if (this.toTrack[i].matches(phrasePatternString)) {
+					System.out.println("Matched phrase pattern, string = " + this.toTrack[i]);
+					this.phraseBasedPredicates.add(pred);
+				} else {
+					// simpleWord: either single or multi-word keyword
+					simpleWordBasedPredicates.add(pred);
+				}
 			}
 		} else {
 			this.toTrack = null;
 		}
+	}
+
+	private Set<String> createTweetSetOfWords(String tweetText) {
+		Set<String> tweetTextSet = toLowerCase(new HashSet<String>(splitOnWhitespace(tweetText)));
+
+		// first remove all punctuation
+		Set<String> strippedPuncts = new HashSet<String>();
+		Iterator<String> itr = tweetTextSet.iterator();
+		while (itr.hasNext()) {
+			String word = itr.next();
+			int start = word.indexOf("\"");
+			int end = word.lastIndexOf("\"");
+			if (start != -1) {
+				if (end > start) {
+					String strippedWord = word.substring(start+1, end);
+					strippedPuncts.add(strippedWord);
+				} else {
+					// Handle the special case of malformed quotations: runaway quote in text
+					String strippedWord = word.substring(start+1);
+					strippedPuncts.add(strippedWord);
+				}
+				itr.remove();
+			}
+		}
+		tweetTextSet.addAll(strippedPuncts);
+
+		// Next, handle all #-tagged words in the tweet text
+		// For each #-tagged word, add also the word following the #-tag to the tweetTextSet 
+		Set<String> hashWordSet = new HashSet<String>();
+		for (String w: tweetTextSet) {
+			String[] hashSplit = w.split("#");
+			hashWordSet.addAll(Arrays.asList(hashSplit));
+		}
+		tweetTextSet.addAll(hashWordSet);
+		return tweetTextSet;
 	}
 
 	private Set<String> toLowerCase(Set<String> wordSet) {
@@ -75,81 +130,82 @@ public class TrackFilter implements Predicate<JsonObject> {
 		}
 		// Otherwise test the tweet text for matching at least one of the keywords
 		boolean result = hasKeyWords(tweetText);
-		logger.info("Filtering result for tweet text : \"" + tweetText + "\": " + result);
+		//logger.info("Filtering result for tweet text : \"" + tweetText + "\": " + result);
 		return result;
 	}
 
 	public boolean test(String text) {
 		if (null == toTrack) return true;
-
-		String tweetText = text;
+		String tweetText = text.replaceAll("\"", "");
+		//System.out.println("Unquoted tweet text: " + tweetText);
 		if (null == tweetText) {
 			return false;		// there are filter-keywords but no text and hence reject tweet
 		}
 		boolean result = hasKeyWords(tweetText);
-		logger.info("Filtering result for text : \"" + tweetText + "\": " + result);
+		//logger.info("Filtering result for text : \"" + tweetText + "\": " + result);
 		return result;
 	}
 
-	private boolean hasKeyWords(final String tweetText) {
-		try {
-			Set<String> keywordSet = toLowerCase(new HashSet<String>(Arrays.asList(toTrack)));
-			Set<String> tweetTextSet = toLowerCase(new HashSet<String>(splitOnWhitespace(tweetText)));		
-
-			// first test - if a simple intersection is not null, then great!
-			Set<String> intersection = new HashSet<String>(keywordSet);
-			intersection.retainAll(tweetTextSet);
-			if (intersection != null && !intersection.isEmpty()) {
-				//System.out.println("Match found: " + intersection);
-				return true;
-			}
-			// if the above test failed - then we need to check for #-tag matches
-			// first expand the keyword set by creating new #-tagged entries for each non #-tagged keyword
-			Set<String> hashWordSet = new HashSet<String>();
-			for (String word: keywordSet) {
-				if (!word.startsWith("#")) {
-					String hashTaggedWord = "#" + word;
-					hashWordSet.add(hashTaggedWord);
+	private boolean matchSimplePredicates(Set<String> tweetTextSet) {
+		for (KeywordPredicate predicate: this.simpleWordBasedPredicates) {
+			boolean flag = true;
+			for (String word: predicate.getUnorderedWords()) {
+				//System.out.println("For keyword in simple predicate = " + word + ", contained in = " + tweetTextSet.contains(word));
+				if (!tweetTextSet.contains(word)) {
+					flag = false;
+					break;
 				}
 			}
-			if (!hashWordSet.isEmpty()) keywordSet.addAll(hashWordSet);
-
-			// Check again for intersection with tweet text
-			intersection = new HashSet<String>(keywordSet);
-			intersection.retainAll(tweetTextSet);
-			if (intersection != null && !intersection.isEmpty()) {
-				//System.out.println("#-tag Match found: " + intersection);
-				return true;
-			}
-
-			// Still false - next check multiword keywords for a match
-			for (String word: keywordSet) {
-				//System.out.println("Looking at keyword: " + word);
-				List<String> wordList = splitOnWhitespace(word);
-				if (!wordList.isEmpty()) {
-					// this is a multi-word keyword - check if ALL words are present in the tweet
-					boolean flag = true;
-					for (String w : wordList) {
-						//System.out.println(wordList.size() + ": For keyword = " + word + ", Check " + w + " contained in = " + tweetTextSet.contains(w));
-						if (!tweetTextSet.contains(w)) {
-							flag = false;
-							break;
-						}
-					}
-					if (flag) {
-						//System.out.println("Multiword match found: " + word);
-						return true;		// found a match!
-					}
-				}
-			}
-
-			//Otherwise return false - all attempts to find a match failed
-			return false;
-		} catch (Exception e) {
-			logger.error("Exception", e);
-			e.printStackTrace();
-			return false;
+			if (flag) {
+				//System.out.println("Simple Predicate match found: " + predicate);
+				return true;		// found a match!
+			}	
 		}
+		return false;
+	}
+
+	private boolean matchPhrasePredicates(String tweetText, Set<String> tweetTextSet) {
+		for (KeywordPredicate predicate: this.phraseBasedPredicates) {
+			boolean flag = true;
+			for (String word: predicate.getUnorderedWords()) {
+				//System.out.println("For unordered keyword in phrase predicate = " + word + ", contained in = " + tweetTextSet.contains(word));
+				if (!tweetTextSet.contains(word)) {
+					flag = false;
+					break;
+				}
+			}
+			if (!flag) {
+				//System.out.println("Simple word Predicate match NOT found ");
+				return false;		// Didn't find a match
+			}
+			// Otherwise, check for phrases too,  in original tweet text
+			for (String phrase: predicate.getPhraseSet()) {
+				flag = false;
+				//System.out.println("For phrase = " + phrase + ", contained in = " + tweetText.contains(phrase));
+				if (tweetText.contains(phrase)) {
+					//System.out.println("For phrase = " + phrase + " match found:  " + tweetText.contains(phrase));
+					flag = true;
+					break;
+				}
+			}
+			if (flag) {
+				//System.out.println("Phrase Predicate match found ");
+				return true;		// found a match!
+			}	
+		}
+		return false;
+	}
+
+	private boolean hasKeyWords(final String tweetText) {
+		Set<String> tweetTextSet = createTweetSetOfWords(tweetText);	
+
+		// first test simplePredicates
+		boolean result = matchSimplePredicates(tweetTextSet);
+		if (result) return result;		// Found a match
+
+		// Otherwise, we need to check for phrasePredicates
+		result = !this.phraseBasedPredicates.isEmpty() ? matchPhrasePredicates(tweetText, tweetTextSet) : false;
+		return result;
 	}
 
 	/**
@@ -169,13 +225,44 @@ public class TrackFilter implements Predicate<JsonObject> {
 
 	public static void main(String args[]) throws Exception {
 		String tweet = "The quick brown fox jumped over the internet #fence #Fox @google \"yeah right!\"";
-		String keywords = "hello, brown Internet, \"yeah, babby\", yeah,";
+		String keywords = "hello, brown Internets, \"yeah, babby\", \"yeah right\", \"yeah right!\"";
 		TrackFilter filter = new TrackFilter(keywords);
 		System.out.println("Keyword List: ");
 		for (String w: filter.getToTrack()) {
 			System.out.println(w);
 		}
 		System.out.println("Match result = " + filter.test(tweet));
+		
+		Map<String, String> testCases = new HashMap<String, String>();
+		testCases.put("a b, c", "b a");
+		testCases.put("\"a b\", c", "b a");
+		testCases.put("\"a b\" c", "c a b");
+		testCases.put("\"a b\" c", "d a b");
+		testCases.put("\"a, b\" c", "a b c");
+		testCases.put("\"a, b\" c", "a, b c");
+		testCases.put("#a", "a");
+		testCases.put("a", "#a");
+		testCases.put("aa bb", "naa bbm");
+		testCases.put("naa bbm", "naa bbm");
+		
+		Map<String, Boolean> results = new HashMap<String, Boolean>();
+		results.put("a b, c", true);
+		results.put("\"a b\", c", false);
+		results.put("\"a b\" c", true);
+		results.put("\"a b\" c", false);
+		results.put("\"a, b\" c", false);
+		results.put("\"a, b\" c", true);
+		results.put("#a", false);
+		results.put("a", true);
+		results.put("aa bb", false);
+		results.put("naa bbm", true);
+		
+		for (String q: testCases.keySet()) {
+			TrackFilter f = new TrackFilter(q);
+			System.out.println("Comparing q = " + q + ", with t = " + testCases.get(q) + ": result = " + f.test(testCases.get(q)));
+			assert(results.get(q).equals(f.test(testCases.get(q))));
+		}
+		
 	}
 
 	@Override
