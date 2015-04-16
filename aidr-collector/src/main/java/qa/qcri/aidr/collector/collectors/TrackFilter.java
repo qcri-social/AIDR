@@ -106,6 +106,7 @@ public class TrackFilter implements Predicate<JsonObject> {
 		// For each #-tagged word, add also the word following the #-tag to the tweetTextSet 
 		Set<String> hashWordSet = new HashSet<String>();
 		for (String w: tweetTextSet) {
+			/*
 			String[] hashSplit = w.split("#");
 			for (int i = 0;i < hashSplit.length;i++) {
 				hashSplit[i] = hashSplit[i].trim();
@@ -113,6 +114,12 @@ public class TrackFilter implements Predicate<JsonObject> {
 			Set<String> tokensSet = new HashSet<String>(Arrays.asList(hashSplit));
 			tokensSet.removeAll(Collections.singleton(""));
 			hashWordSet.addAll(tokensSet);
+			*/
+			if (w.startsWith("#")) {
+				// This is stricter check than the above commented code
+				String strippedHash = w.substring(1);
+				hashWordSet.add(strippedHash);
+			}
 		}
 		tweetTextSet.addAll(hashWordSet);
 		return tweetTextSet;
@@ -238,36 +245,6 @@ public class TrackFilter implements Predicate<JsonObject> {
 			System.out.println(w);
 		}
 		System.out.println("Match result = " + filter.test(tweet));
-		
-		Map<String, String> testCases = new HashMap<String, String>();
-		testCases.put("a b, c", "b a");
-		testCases.put("\"a b\", c", "b a");
-		testCases.put("\"a b\" c", "c a b");
-		testCases.put("\"a b\" c", "d a b");
-		testCases.put("\"a, b\" c", "a b c");
-		testCases.put("\"a, b\" c", "a, b c");
-		testCases.put("#a", "a");
-		testCases.put("a", "#a");
-		testCases.put("aa bb", "naa bbm");
-		testCases.put("naa bbm", "naa bbm");
-		
-		Map<String, Boolean> results = new HashMap<String, Boolean>();
-		results.put("a b, c", true);
-		results.put("\"a b\", c", false);
-		results.put("\"a b\" c", true);
-		results.put("\"a b\" c", false);
-		results.put("\"a, b\" c", false);
-		results.put("\"a, b\" c", true);
-		results.put("#a", false);
-		results.put("a", true);
-		results.put("aa bb", false);
-		results.put("naa bbm", true);
-		
-		for (String q: testCases.keySet()) {
-			TrackFilter f = new TrackFilter(q);
-			System.out.println("Comparing q = " + q + ", with t = " + testCases.get(q) + ": result = " + f.test(testCases.get(q)));
-			assert(results.get(q).equals(f.test(testCases.get(q))));
-		}
 		
 		String hashString = "abc#a ab ##a # #a#b";
 		String[] tokens = hashString.split("#");
