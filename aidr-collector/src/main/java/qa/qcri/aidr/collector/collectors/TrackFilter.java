@@ -2,6 +2,7 @@ package qa.qcri.aidr.collector.collectors;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -65,7 +66,7 @@ public class TrackFilter implements Predicate<JsonObject> {
 				KeywordPredicate pred = new KeywordPredicate(this.toTrack[i]);
 				// Now divide the list into two: simpleWordBased (strings without any quotes) and phraseBased (string of form "*"*)
 				if (this.toTrack[i].matches(phrasePatternString)) {
-					System.out.println("Matched phrase pattern, string = " + this.toTrack[i]);
+					//System.out.println("Matched phrase pattern, string = " + this.toTrack[i]);
 					this.phraseBasedPredicates.add(pred);
 				} else {
 					// simpleWord: either single or multi-word keyword
@@ -106,7 +107,12 @@ public class TrackFilter implements Predicate<JsonObject> {
 		Set<String> hashWordSet = new HashSet<String>();
 		for (String w: tweetTextSet) {
 			String[] hashSplit = w.split("#");
-			hashWordSet.addAll(Arrays.asList(hashSplit));
+			for (int i = 0;i < hashSplit.length;i++) {
+				hashSplit[i] = hashSplit[i].trim();
+			}
+			Set<String> tokensSet = new HashSet<String>(Arrays.asList(hashSplit));
+			tokensSet.removeAll(Collections.singleton(""));
+			hashWordSet.addAll(tokensSet);
 		}
 		tweetTextSet.addAll(hashWordSet);
 		return tweetTextSet;
@@ -261,6 +267,18 @@ public class TrackFilter implements Predicate<JsonObject> {
 			TrackFilter f = new TrackFilter(q);
 			System.out.println("Comparing q = " + q + ", with t = " + testCases.get(q) + ": result = " + f.test(testCases.get(q)));
 			assert(results.get(q).equals(f.test(testCases.get(q))));
+		}
+		
+		String hashString = "abc#a ab ##a # #a#b";
+		String[] tokens = hashString.split("#");
+		for (int i = 0; i < tokens.length;i++) {
+			tokens[i] = tokens[i].trim();
+			System.out.println("<start>" + tokens[i] + "<end>");
+		}
+		Set<String> tokensList = new HashSet<String>(Arrays.asList(tokens));
+		tokensList.removeAll(Collections.singleton(""));
+		for (String s: tokensList) {
+			System.out.println("<START>" + s + "<END>");
 		}
 		
 	}
