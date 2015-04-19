@@ -52,8 +52,8 @@ public class ModelNominalLabelImp implements ModelNominalLabelFacade {
 
 	}
 
-	public List<ModelNominalLabelDTO> getAllModelNominalLabelsByModelID(Long modelID) {
-		List<ModelNominalLabelDTO> modelNominalLabelDTOList = remoteModelNominalLabelEJB.getAllModelNominalLabelsByModelID(modelID);
+	public List<ModelNominalLabelDTO> getAllModelNominalLabelsByModelID(Long modelID, String crisisCode) {
+		List<ModelNominalLabelDTO> modelNominalLabelDTOList = remoteModelNominalLabelEJB.getAllModelNominalLabelsByModelID(modelID, crisisCode);
 		return modelNominalLabelDTOList;
 		
 		/*

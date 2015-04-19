@@ -21,7 +21,7 @@ class ParseException extends Exception {
 }
 
 public class StrictLocationFilter implements Predicate<JsonObject> {
-	
+		
 	private class BRect {
 		public double minLon, minLat, maxLon, maxLat;
 	}
@@ -79,5 +79,10 @@ public class StrictLocationFilter implements Predicate<JsonObject> {
 				return true;
 		}
 		return false;
+	}
+
+	@Override
+	public String getFilterName() {
+		return this.getClass().getSimpleName();
 	}
 }

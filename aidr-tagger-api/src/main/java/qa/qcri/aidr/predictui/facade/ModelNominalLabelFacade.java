@@ -20,6 +20,6 @@ import qa.qcri.aidr.dbmanager.dto.ModelNominalLabelDTO;
 public interface ModelNominalLabelFacade {
     
     public List<ModelNominalLabelDTO> getAllModelNominalLabels();
-    public List<ModelNominalLabelDTO> getAllModelNominalLabelsByModelID(Long modelID);
+    public List<ModelNominalLabelDTO> getAllModelNominalLabelsByModelID(Long modelID, String crisisCode);
     
 }

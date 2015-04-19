@@ -47,16 +47,18 @@ public class JedisConnectionObject {
 		{
 			if (null == JedisConnectionObject.poolConfig) {
 				JedisConnectionObject.poolConfig = new JedisPoolConfig();
-				JedisConnectionObject.poolConfig.setMaxActive(200);
+				JedisConnectionObject.poolConfig.setMaxTotal(200);
 				JedisConnectionObject.poolConfig.setMaxIdle(50);
 				JedisConnectionObject.poolConfig.setMinIdle(10);
+				JedisConnectionObject.poolConfig.setMaxWaitMillis(3000);
+				//JedisConnectionObject.poolConfig.setMaxActive(200);
 				//poolConfig.setTestWhileIdle(true);
 				//poolConfig.setTestOnBorrow(true);
 				//poolConfig.setTestOnReturn(true);
 				//poolConfig.numTestsPerEvictionRun = 10;
 				//poolConfig.timeBetweenEvictionRunsMillis = 3000;
-				JedisConnectionObject.poolConfig.maxWait = 3000;
-				JedisConnectionObject.poolConfig.whenExhaustedAction = org.apache.commons.pool.impl.GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW;
+				//JedisConnectionObject.poolConfig.whenExhaustedAction = org.apache.commons.pool.impl.GenericKeyedObjectPool.WHEN_EXHAUSTED_GROW;
+			
 				logger.info("New Jedis poolConfig: " + JedisConnectionObject.poolConfig);
 			} else {
 				logger.info("Reusing existing Jedis poolConfig: " + JedisConnectionObject.poolConfig);
@@ -151,25 +153,22 @@ public class JedisConnectionObject {
 	public void returnJedis(Jedis jedisInstance) {
 		if (JedisConnectionObject.pool != null) {
 			try {
-				if (null != jedisInstance) {
+				if (null != jedisInstance && jedisInstance.isConnected()) {
 					if (allotedJedis != null) allotedJedis.remove(jedisInstance);
-					logger.info("Returned jedis resource: " + jedisInstance);
-					JedisConnectionObject.pool.returnResource(jedisInstance);
+					logger.info("[returnJedis] Returned jedis resource: " + jedisInstance);
+					jedisInstance.close();
+					jedisInstance = null;
+					//JedisConnectionObject.pool.returnResource(jedisInstance);
 					connectionSetup = false;
 				}
 			} catch (JedisConnectionException e) {
 				logger.error("JedisConnectionException occurred...");
 				logger.error(elog.toStringException(e));
-				JedisConnectionObject.pool.returnBrokenResource(jedisInstance);
+				if (jedisInstance != null && jedisInstance.isConnected()) jedisInstance.close();
+				jedisInstance = null;
+				//JedisConnectionObject.pool.returnBrokenResource(jedisInstance);
 				connectionSetup = false;
-			} finally {
-				if (null != jedisInstance) { 
-					logger.info("Returned jedis resource in finally block: " + jedisInstance);
-					pool.returnResource(jedisInstance);
-					connectionSetup = false;
-				}
-			}
-
+			} 
 		}
 	}
 

@@ -448,15 +448,15 @@ public class DataStore {
 		try {
 			for (Document item : items) {
 				TaggerDocument doc = Document.fromDocumentToTaggerDocument(item);
-				System.out.println("Attempting to save NEW document for crisis = " + doc.getCrisisCode());
+				//System.out.println("Attempting to save NEW document for crisis = " + doc.getCrisisCode());
 				logger.info("Attempting to save NEW document for crisis = " + doc.getCrisisCode());
 				Long docID = taskManager.saveNewTask(TaggerDocument.toDocumentDTO(doc), doc.getCrisisID());
 				if (docID.longValue() != -1) {
 					// Update document with auto generated Doc
 					item.setDocumentID(docID);
-					System.out.println("Success in saving document: " + item.getDocumentID() + ", for crisis = " + item.getCrisisCode());
+					logger.info("Success in saving document: " + item.getDocumentID() + ", for crisis = " + item.getCrisisCode());
 				} else {
-					System.out.println("Something went wrong in saving document: " + item.getDocumentID() + ", for crisis = " + item.getCrisisCode());
+					logger.error("Something went wrong in saving document: " + item.getDocumentID() + ", for crisis = " + item.getCrisisCode());
 				}
 			}
 		} catch (Exception e) {
@@ -498,7 +498,7 @@ public class DataStore {
 					DocumentNominalLabelDTO dto = new DocumentNominalLabelDTO();
 					dto.setIdDTO(idDTO);
 					logger.info("Attempting to save LABELED document: " + dto.getIdDTO().getDocumentId() + " with nominal labelID=" + dto.getIdDTO().getNominalLabelId() + ", for crisis = " + d.getCrisisCode() + ", userID = " + dto.getIdDTO().getUserId());
-					System.out.println("Attempting to save LABELED document: " + dto.getIdDTO().getDocumentId() + " with nominal labelID=" + dto.getIdDTO().getNominalLabelId() + ", for crisis = " + d.getCrisisCode() + ", userID = " + dto.getIdDTO().getUserId());
+					//System.out.println("Attempting to save LABELED document: " + dto.getIdDTO().getDocumentId() + " with nominal labelID=" + dto.getIdDTO().getNominalLabelId() + ", for crisis = " + d.getCrisisCode() + ", userID = " + dto.getIdDTO().getUserId());
 					taskManager.saveDocumentNominalLabel(dto);
 					rows++;
 				}
@@ -849,6 +849,7 @@ public class DataStore {
 	}
 
 	public static void main(String[] args) throws Exception {
+	/*
 		DataStore.initTaskManager();
 
 		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
@@ -877,6 +878,6 @@ public class DataStore {
 		logger.info("Testing truncate Labeling buffer for crisisID = " + 117);
 		//DataStore.taskManager.truncateLabelingTaskBufferForCrisis(117L, Config.LABELING_TASK_BUFFER_MAX_LENGTH, 0);
 		DataStore.taskManager.truncateLabelingTaskBufferForCrisis(117L, Integer.parseInt(getProperty("labeling_task_buffer_max_length")), 0);
+		*/
 	}
-
 }

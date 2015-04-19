@@ -20,4 +20,9 @@ public class ShedderFilter implements Predicate<JsonObject> {
 		return delegate.canProcess(channel);
 	}
 
+	@Override
+	public String getFilterName() {
+		return this.getClass().getSimpleName();
+	}
+
 }

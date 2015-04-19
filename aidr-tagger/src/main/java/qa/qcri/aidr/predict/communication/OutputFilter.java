@@ -63,8 +63,8 @@ public class OutputFilter {
 
     public static OutputFilter fromJson(String json) {
         try {
-            System.out.println("Received JSON : " + json);
-            logger.info("Received JSON: " + json);
+            //System.out.println("Received JSON : " + json);
+            //logger.info("Received JSON: " + json);
             JSONObject obj = new JSONObject(json);
             OutputFilter filter = new OutputFilter();
             //filter.crisisID = obj.getInt(STR_CRISIS_ID);

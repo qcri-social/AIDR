@@ -201,7 +201,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
             '<tr><td>Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ':</td>',
             '<td>{[this.getNumber(values.classifiedDocuments)]} (since last change of the classifier)</td></tr>',
 
-            '<tr><td>Quality (AUC)<span class="redInfo">*</span>:</td>',
+            '<tr><td><p title="If AUC is lower than 80%, or AUC is 100%, you urgently need more human-tagged tweets">Quality (AUC)<span class="redInfo">*</span>:</p></td>',
             '<td>{[AIDRFMFunctions.getAucNumberAsPercentageWithColors(values.auc)]}</td>',
 
             '</td></tr></table></td>',

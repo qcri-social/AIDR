@@ -139,6 +139,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 		Session session = getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
 		criteria.add(criterion);
+		
 		try {	
 			fetchedList = criteria.list();
 			return fetchedList;
@@ -153,7 +154,8 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 	@Override
 	public List<E> getByCriteriaWithLimit(Criterion criterion, Integer count) {
 		List<E> fetchedList = new ArrayList<E>();
-		Criteria criteria = getCurrentSession().createCriteria(entityClass);
+		Session session = getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass);
 		criteria.add(criterion);
 		if(count != null && count > 0){
 			criteria.setMaxResults(count);
@@ -172,7 +174,8 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 	@Override
 	public List<E> getByCriteriaByOrder(Criterion criterion, String order, String[] orderBy, Integer count) {
 		List<E> fetchedList = new ArrayList<E>();
-		Criteria criteria = getCurrentSession().createCriteria(entityClass);
+		Session session = getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass);
 		criteria.add(criterion);
 		for(int i = 0; i< orderBy.length; i++){
 			if (order != null && order.equalsIgnoreCase("desc")) {
@@ -263,16 +266,13 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 		Transaction tx = null;
 		try {
 			Session session = getCurrentSession();
-			tx = session.beginTransaction();
 			session.saveOrUpdate(e);
 			session.flush();
 			session.evict(e);
-			if (!tx.wasCommitted()) tx.commit();
 		} catch (Exception ex) {
 			System.out.println("Unable to update entity: " + e);
 			logger.error(elog.toStringException(ex));
 			ex.printStackTrace();
-			tx.rollback();
 			throw new HibernateException("Update failed");
 		}
 	}
