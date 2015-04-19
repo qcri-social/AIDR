@@ -69,8 +69,11 @@ public class ChannelBuffer {
 	@SuppressWarnings("unchecked")
 	public void addMessage(String msg) {
 		try {
-			messageBuffer.add(msg);
-			lastAddTime = new Date().getTime(); 
+			//synchronized(this.messageBuffer) 
+			{
+				messageBuffer.add(msg);
+				lastAddTime = new Date().getTime();
+			}
 		} catch (Exception e) {
 			logger.error("Couldn't add message to buffer for channel: " + this.channelName);
 			logger.error(elog.toStringException(e));
@@ -80,8 +83,11 @@ public class ChannelBuffer {
 	@SuppressWarnings("unchecked")
 	public void addAllMessages(ArrayList<String> msgList) {
 		try {
-			messageBuffer.addAll(msgList);
-			lastAddTime = new Date().getTime();
+			//synchronized(this.messageBuffer) 
+			{
+				messageBuffer.addAll(msgList);
+				lastAddTime = new Date().getTime();
+			}
 		} catch (Exception e) {
 			logger.error("Couldn't add message to buffer for channel: " + this.channelName);
 			logger.error(elog.toStringException(e));
@@ -95,73 +101,32 @@ public class ChannelBuffer {
 	 */
 	public List<String> getMessages(int msgCount) { 
 		//long startTime = System.currentTimeMillis();
-		
+
 		List<String> tempList = null;
 		try {
-			synchronized(this) {
-			    tempList = new ArrayList<String>(this.messageBuffer.size());
-				//logger.info("current message buffer size = " + messageBuffer.size());
-			    // first copy out the entire buffer to a list
-				Iterator<String> itr = this.messageBuffer.iterator();
-				while (itr.hasNext()) {
-					String element = itr.next();
-					if (element != null) tempList.add(element);		// only non-null elements
-				}
+			synchronized(this.messageBuffer) {
+				tempList = new ArrayList<String>(this.messageBuffer.size());
+				tempList.addAll(this.messageBuffer);
 			}
-			//logger.info("Copied data : " + tempList.size() + ", msgCount:messageBuffer.size = " + msgCount + ":" + messageBuffer.size());
-			if (msgCount >= messageBuffer.size()) {
+			logger.info("Copied data : " + tempList.size() + ", msgCount:messageBuffer.size = " + msgCount + ":" + messageBuffer.size());
+			if (msgCount >= tempList.size()) {
 				return tempList;		// optimization
 			}
 
 			// Otherwise, get the last msgCount elements, in oldest-first order
-			//Collections.reverse(tempList);	// in-situ reversal O(n) time
+			// Collections.reverse(tempList);	// in-situ reversal O(n) time
 			List<String> returnList = new ArrayList<String>(msgCount);
 			int index = Math.max(0, (tempList.size() - msgCount));	// from where to pick
-			for (int i = 0;i < msgCount;i++) {
-				returnList.add(tempList.get(index));
-				++index;
+			for (int i = index;i < tempList.size();i++) {
+				returnList.add(tempList.get(i));
 			}
-			//logger.info("Fetched size = " + index + " from start loc = " + Math.max(0, (tempList.size() - msgCount)));
+			logger.info("Fetched size = " + msgCount + " from start loc = " + Math.max(0, (tempList.size() - msgCount)));
 			return returnList;
 		} catch (Exception e) {
 			logger.error("Error in creating list out of buffered messages");
 			logger.error(elog.toStringException(e));
 			return null;
 		}
-
-		/*
-		Object[] msgArray = null;
-		synchronized(this.messageBuffer) {
-			try {
-				msgArray = messageBuffer.toArray();
-			} catch (Exception e) {
-				logger.error("Couldn't convert buffer to array!");
-				logger.error(elog.toStringException(e));
-			}
-		}
-		String[] temp = new String[msgCount];
-		try {
-			System.arraycopy(msgArray, Math.max(0, (msgArray.length-msgCount)), temp, 0, Math.min(msgCount, msgArray.length));
-		} catch (Exception e) {
-			logger.error("msgArray length = " + msgArray.length + ", start = " + Math.max(0, (msgArray.length-msgCount)) + ", count = " + Math.min(msgCount, msgArray.length));
-			logger.error("temp array length = " + temp.length);
-			logger.error(elog.toStringException(e));
-			return null;
-		}
-		// Finally remove "null" elements and return the array
-		try {
-			List<String> fetchedList = new ArrayList<String>(Arrays.asList(temp));
-			fetchedList.removeAll(Collections.singleton(null));		// remove null values from list
-
-			//logger.info("Actual time taken to retrieve from channel " + channelName + " = " + (System.currentTimeMillis() - startTime));
-			if (fetchedList.isEmpty()) return null;
-			return fetchedList;
-		} catch (Exception e) {
-			logger.error("Error in creating list out of fetched array");
-			logger.error(elog.toStringException(e));
-			return null;
-		}
-		 */
 	}
 
 	public int getCurrentMsgCount() {

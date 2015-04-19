@@ -22,7 +22,7 @@ import qa.qcri.aidr.predict.dbentities.NominalAttributeEC;
 import qa.qcri.aidr.predict.dbentities.NominalLabelEC;
 import qa.qcri.aidr.predict.featureextraction.DocumentFeature;
 import qa.qcri.aidr.predict.featureextraction.WordSet;
- 
+
 /**
  * Helper class for converting between native Document objects and their JSON
  * representation.
@@ -44,6 +44,7 @@ public class DocumentJSONConverter {
 	public static Document parseDocument(String jsonInput)
 			throws JSONException, IOException {
 
+		//logger.info("Going to parse received doc on REDIS: " + jsonInput);
 		JSONObject jsonObj = new JSONObject(jsonInput);
 
 		if (!jsonObj.has("aidr")) {
@@ -51,13 +52,12 @@ public class DocumentJSONConverter {
 			throw new JSONException("Missing aidr field in input object");
 		}
 		JSONObject aidr = jsonObj.getJSONObject("aidr");
-
 		if (!aidr.has("doctype")) {
 			logger.error("Missing doctype in input object");
 			throw new JSONException("Missing doctype in input object");
 		}
 		String doctype = aidr.getString("doctype");
-		
+
 		Document doc = null;
 		switch (doctype) {
 		case DocumentType.TWIITER_DOC:
@@ -66,11 +66,10 @@ public class DocumentJSONConverter {
 		case DocumentType.SMS_DOC:
 			doc = parseSMS(jsonObj);
 			break;
-		default: {
+		default: 
 			logger.error("Exception when parsing input document: Unhandled doctype");
 			throw new RuntimeException(
 					"Exception when parsing input document: Unhandled doctype");
-		}
 		}
 
 		if (!aidr.has("crisis_code")) {
@@ -81,29 +80,26 @@ public class DocumentJSONConverter {
 		doc.crisisID = new Long(getCrisisID(aidr.getString("crisis_code")));
 		doc.crisisCode = aidr.getString("crisis_code");
 		doc.inputJson = jsonObj;
-
-		if (aidr.has("nominal_labels")) {
-			JSONArray labels = aidr.getJSONArray("nominal_labels");
-			for (int i = 0; i < labels.length(); i++) {
-				doc.addLabel(parseNominalLabel(labels.getJSONObject(i)));
-			}
-		} 
+		
+		
+		logger.info("Done creating new doc: " + aidr + ", has nominal_labels = " + aidr.has("nominal_labels"));
+		
 		return doc;
 	}
 
 	public static SMS parseSMS(JSONObject input) {
 		// TODO: the following code is only a placeholder!
-		logger.info("parsing as SMS doc");
+		//logger.info("parsing as SMS doc");
 		try {
 			SMS sms = new SMS();
 			sms.setText(input.getString("text"));
 			sms.setDoctype(DocumentType.SMS_DOC);
-                        JSONObject aidrJSON = input.getJSONObject("aidr");
-                        AIDR aidrObj = new AIDR();
-                        aidrObj.setCrisis_code(aidrJSON.getString("crisis_code"));
-                        aidrObj.setCrisis_name(aidrJSON.getString("crisis_name"));
-                        aidrObj.setDoctype(aidrJSON.getString("doctype"));
-                        sms.setAidr(aidrObj);
+			JSONObject aidrJSON = input.getJSONObject("aidr");
+			AIDR aidrObj = new AIDR();
+			aidrObj.setCrisis_code(aidrJSON.getString("crisis_code"));
+			aidrObj.setCrisis_name(aidrJSON.getString("crisis_name"));
+			aidrObj.setDoctype(aidrJSON.getString("doctype"));
+			sms.setAidr(aidrObj);
 			return sms;
 		} catch (JSONException e) {
 			logger.error("Json exception in parsing tweet: " + input);
@@ -115,7 +111,7 @@ public class DocumentJSONConverter {
 	public static Tweet parseTweet(JSONObject input) {
 		// Example of a tweet in JSON format:
 		// https://dev.twitter.com/docs/api/1/get/search
-		logger.info("parsing as twitter doc");
+		//logger.info("parsing as twitter doc");
 		try {
 			Tweet t = new Tweet();
 
@@ -135,7 +131,6 @@ public class DocumentJSONConverter {
 					geotag.setLatitude(coords.getDouble(1));
 				}
 			}
-
 			return t;
 		} catch (JSONException e) {
 			logger.error("Json exception in parsing tweet: " + input);
@@ -165,10 +160,12 @@ public class DocumentJSONConverter {
 						.getLabels(NominalLabelBC.class);
 				JSONArray labelArray = new JSONArray();
 				if (!labels.isEmpty()) {
+					//logger.info("labels field is non-empty");
 					for (NominalLabelBC l : labels) {
 						try {
 							JSONObject labelJson = getLabelJson(doc.crisisID.intValue(), l);
 							labelArray.put(labelJson);
+							//logger.info("Added label: " + l);
 						}
 						catch (RuntimeException e) {
 							logger.error("Exception while converting document to JSON:" + l);
@@ -180,7 +177,7 @@ public class DocumentJSONConverter {
 					labelArray.put(createEmptyLabelJson());
 				}
 				aidr.put("nominal_labels", labelArray);
-
+				//logger.info("Added nominal_labels with size = " + labelArray.length());
 			}
 
 			return unicodeEscaper.translate(input.toString());
@@ -232,6 +229,7 @@ public class DocumentJSONConverter {
 	}
 
 	public static JSONObject createEmptyLabelJson() {
+		//logger.info("Going to insert an empty nominal_labels");
 		JSONObject obj = new JSONObject();
 		try {
 			obj.put("source_id", 0);
@@ -250,11 +248,12 @@ public class DocumentJSONConverter {
 		}
 		return obj;
 	}
-	
-	
+
+
 	public static JSONObject getLabelJson(int crisisID, DocumentLabel label) {
 		try {
 			if (label instanceof NominalLabelBC) {
+				//logger.info("Going to insert existing label to nominal_labels");
 				NominalLabelBC l = (NominalLabelBC) label;
 				ModelFamilyEC family = getModelFamily(crisisID, l.getAttributeID());
 

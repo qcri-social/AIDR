@@ -10,7 +10,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 
+
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,7 +20,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import qa.qcri.aidr.common.redis.LoadShedder;
 import qa.qcri.aidr.predict.DataStore;
-
 import qa.qcri.aidr.predict.common.Serializer;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.data.DocumentJSONConverter;
@@ -35,9 +36,9 @@ import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 public class AidrFetcherJsonInputProcessor implements Runnable {
 
 	private static Logger logger = Logger.getLogger(AidrFetcherJsonInputProcessor.class);
-	
+
 	public static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
-	
+
 	public AidrFetcherJsonInputProcessor() {
 		if (null == redisLoadShedder) {
 			redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
@@ -102,7 +103,6 @@ public class AidrFetcherJsonInputProcessor implements Runnable {
 							JSONObject aidrObj = (JSONObject)docObj.get("aidr");
 							if (aidrObj.has("crisis_code")) {
 								String crisisCode = aidrObj.getString("crisis_code");
-								//log(LogLevel.WARNING, "Crisis code has not been defined: " + crisisCode);
 								OutputMatcher.PushToRedisStream(crisisCode, jsonDoc);
 							}
 						}
