@@ -80,7 +80,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                 '</div>'
         });
 
-        this.geoE = Ext.create( 'Ext.form.field.Text', {
+       /* this.geoE = Ext.create( 'Ext.form.field.Text', {
             fieldLabel: 'Additionally, collect all tweets from these geographical boundaries, independent of the keywords they contain',
             labelWidth: 240,
             name: 'geo',
@@ -88,6 +88,22 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             maxLength: 25,
             maxLengthText: 'The maximum length for this field is 25',
             emptyText: 'e.g., 43.43, 22.44, 89.32, 56.43 (max 25)'
+        });*/
+        this.geoE = Ext.create('Ext.form.FormPanel', {
+            bodyPadding: 5,
+            padding: '0 0 10 0',
+            items:[{
+                fieldLabel: 'Additionally, collect all tweets from these geographical regions, independent of the keywords they contain',
+                labelWidth: 240,
+                width: 550,
+                xtype: 'textareafield',
+                grow: true,
+                growMax: 100,
+                name: 'geo',
+                anchor: '100%',
+                maxLengthText: 'The maximum length for this field is 25',
+                emptyText: 'e.g., 43.43, 22.44, 89.32, 56.43 (max 25)'
+            }]
         });
         
         this.geoR = Ext.create('Ext.form.Panel', {
