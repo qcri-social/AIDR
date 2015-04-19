@@ -87,7 +87,7 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
 	public List<DocumentDTO> getDocumentForTask(Long crisisID, int count, String userName) {
-
+		/*
 		List<DocumentDTO> documents = null;
 		Users users = usersService.findUserByName(userName);
 
@@ -104,14 +104,17 @@ public class DocumentServiceImpl implements DocumentService {
 				}
 			}
 		}
-
-		return documents;  //To change body of implemented methods use File | Settings | File Templates.
+		*/
+		List<DocumentDTO> documents = taskManager.getDocumentsForTagging(crisisID, count, userName, CodeLookUp.DOCUMENT_REMAINING_COUNT);
+		logger.info("For crisisID = " + crisisID + ", user = " + userName + ", documents available for tagging: " + (documents != null ? documents.size() : "empty list"));
+		return documents;  
 	}
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
 	public List<DocumentDTO> getDocumentForOneTask(Long crisisID, int count, String userName) {
 		//logger.info("getDocumentForOneTask is called");
+		/*
 		List<DocumentDTO> documents = null;
 		Users users = usersService.findUserByName(userName);
 
@@ -124,7 +127,9 @@ public class DocumentServiceImpl implements DocumentService {
 			}
 
 		}
-
+		*/
+		List<DocumentDTO> documents = taskManager.getDocumentsForTagging(crisisID, count, userName, 0);
+		logger.info("For crisisID = " + crisisID + ", user = " + userName + ", documents available for tagging: " + (documents != null ? documents.size() : "empty list"));
 		return documents;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
