@@ -51,17 +51,15 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 					TaskAssignment taskAssignment = new TaskAssignment(tb.getDocumentID(), userID, new Date());
 					save(taskAssignment);
 					em.flush();
-					return 1;
 				}
 			}
+			return 1;
 		} catch (Exception e) {
 			logger.error("Error in insert operation!");
 			logger.error(elog.toStringException(e));
 			e.printStackTrace();
+			return 0;
 		}
-		return 0;
-
-
 	}
 
 	@Override

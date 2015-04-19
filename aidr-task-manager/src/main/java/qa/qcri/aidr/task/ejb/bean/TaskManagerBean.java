@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -41,7 +43,6 @@ import qa.qcri.aidr.dbmanager.entities.task.*;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
-
 
 /**
  * 
@@ -96,6 +97,9 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade remoteNominalLabelEJB;
 
+	private static Object lockObject = new Object();
+	//private static Lock lock = null;
+
 	private Class<T> entityType;
 
 	private Logger logger = LoggerFactory.getLogger(TaskManagerBean.class);
@@ -103,6 +107,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 	public TaskManagerBean()  {
 		this.entityType = getClassType();
+		//lock = new ReentrantLock();
 	}  
 
 	//private static final Object monitor = new Object();
@@ -151,8 +156,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			doc.setCrisisDTO(crisisDTO);
 			doc.setHasHumanLabels(false);
 			DocumentDTO savedDoc = remoteDocumentEJB.addDocument(doc);
-			System.out.println("Saved to DB document: " + savedDoc.getDocumentID() + ", for crisis = " + savedDoc.getCrisisDTO().getCode());
-			logger.info("Saved to DB document: " + savedDoc.getDocumentID() + ", for crisis = " + savedDoc.getCrisisDTO().getCode());
+			//System.out.println("Saved to DB document: " + savedDoc.getDocumentID() + ", for crisis = " + savedDoc.getCrisisDTO().getCode());
+			//logger.info("Saved to DB document: " + savedDoc.getDocumentID() + ", for crisis = " + savedDoc.getCrisisDTO().getCode());
 			return savedDoc.getDocumentID();
 		} catch (Exception e) {
 			logger.error("Error in insertion");
@@ -717,13 +722,67 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	// Trainer API Task Assignment related APIs
 	////////////////////////////////////////////////////////////
 	@Override
+	public List<DocumentDTO> getDocumentsForTagging(final Long crisisID, int count, final String userName, final int remainingCount) {
+		UsersDTO users = null;
+		try {
+			users = remoteUsersEJB.getUserByName(userName);
+		} catch (Exception e) {
+			System.err.println("[getDocumentsForTagging] Exception in finding user userName = " + userName + ". Aborting...");
+			logger.error("Exception", e);
+			e.printStackTrace();
+			return null;
+		}
+		if (users != null) {
+			int fetchedSize = 0;
+			//while (!lock.tryLock()) {}// spin-loop wait
+			synchronized(lockObject) {
+				try {
+					List<DocumentDTO> dtoList = getNewTaskCollection(crisisID, count, "DESC", null);
+					System.out.println("[getDocumentsForTagging] For crisisID = " + crisisID + ", user = " + userName 
+							+ ", documents available: " + (dtoList != null ? dtoList.size() : "empty list"));
+					if (dtoList != null) {
+						fetchedSize = dtoList.size();
+					}
+					int availableRequestSize = fetchedSize - remainingCount;
+					if (availableRequestSize > 0) {
+						count = Math.min(count, availableRequestSize);
+						if (!dtoList.isEmpty() && count > 0) {
+							System.out.println("[getDocumentsForTagging] Going to insert task list of size = " + count + ", for userID: " + users.getUserID());
+							List<DocumentDTO> assignList = new ArrayList<DocumentDTO>();
+							for (int i = 0; i < count;i++) {
+								assignList.add(dtoList.get(i));
+							}
+							assignNewTaskToUser(assignList, users.getUserID());
+							//lock.unlock();
+							return dtoList;
+						}
+					} else {
+						//lock.unlock();
+						return null;
+					}
+				} catch (Exception e) {
+					logger.error("Exception", e);
+					e.printStackTrace();
+					//lock.unlock();
+					return null;
+				}
+			}
+		} else {
+			System.err.println("[getDocumentsForTagging] No user found with userName = " + userName + ". Aborting...");
+		}
+		return null;
+	}
+
+
+
+	@Override
 	public void assignNewTaskToUser(Long id, Long userId) throws Exception {
 		try {
-		int retVal = remoteTaskAssignmentEJB.insertOneTaskAssignment(id, userId);
-		if (retVal <= 0) {
-			logger.error("unable to undo task assignment");
-			throw new Exception("[assignNewTaskToUser] Couldn't undo task assignment");
-		}
+			int retVal = remoteTaskAssignmentEJB.insertOneTaskAssignment(id, userId);
+			if (retVal <= 0) {
+				logger.error("unable to undo task assignment");
+				throw new Exception("[assignNewTaskToUser] Couldn't do task assignment");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -731,10 +790,10 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void assignNewTaskToUser(List<T> collection, Long userId) throws Exception {
-		int retVal = remoteTaskAssignmentEJB.insertTaskAssignment((List<DocumentDTO>)collection, userId);
+	public void assignNewTaskToUser(List<DocumentDTO> collection, Long userId) throws Exception {
+		int retVal = remoteTaskAssignmentEJB.insertTaskAssignment(collection, userId);
 		if (retVal <= 0) {
-			throw new Exception("[assignNewTaskToUser] Couldn't undo task assignment");
+			throw new Exception("[assignNewTaskToUser] Couldn't do task assignment");
 		}
 	}
 
@@ -1050,7 +1109,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		}
 		return null;
 	}
-	
+
 	@Override
 	public String pingRemoteEJB() {
 		StringBuilder sb = new StringBuilder("{\"status\": \"RUNNING\"}");
@@ -1214,6 +1273,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		public int compare(Document d1, Document d2) {
 			return d1.getDocumentId().compareTo(d2.getDocumentId());
 		}
-		
+
 	}
 }

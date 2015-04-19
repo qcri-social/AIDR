@@ -140,16 +140,12 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 		Criteria criteria = session.createCriteria(entityClass);
 		criteria.add(criterion);
 		
-		Transaction tx = null;
 		try {	
-			tx = session.beginTransaction();
 			fetchedList = criteria.list();
-			if (!tx.wasCommitted()) tx.commit();
 			return fetchedList;
 		} catch (Exception e) {
 			logger.error(elog.toStringException(e));
 			e.printStackTrace();
-			tx.rollback();
 			throw new HibernateException("getAllByCriteria failed, criteria = " + criterion.toString());
 		}
 	}
@@ -164,16 +160,12 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 		if(count != null && count > 0){
 			criteria.setMaxResults(count);
 		}
-		Transaction tx = null;
 		try {	
-			tx = session.beginTransaction();
 			fetchedList = criteria.list();
-			if (!tx.wasCommitted()) tx.commit();
 			return fetchedList;
 		} catch (Exception e) {
 			logger.error(elog.toStringException(e));
 			e.printStackTrace();
-			tx.rollback();
 			throw new HibernateException("getByCriteriaWithLimit failed, criteria = " + criterion.toString());
 		}
 	}
@@ -195,16 +187,12 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 		if(count != null && count > 0){
 			criteria.setMaxResults(count);
 		}
-		Transaction tx = null;
 		try {	
-			tx = session.beginTransaction();
 			fetchedList = criteria.list();
-			if (!tx.wasCommitted()) tx.commit();
 			return fetchedList;
 		} catch (Exception e) {
 			logger.error(elog.toStringException(e));
 			e.printStackTrace();
-			tx.rollback();
 			throw new HibernateException("getByCriteriaByOrder failed, criteria = " + criterion.toString());
 		}
 	}
@@ -231,16 +219,12 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			criteria.setMaxResults(count);
 		}
 		//System.out.println("fetched List count = " + (fetchedList != null ? fetchedList.size() : null));
-		Transaction tx = null;
 		try {	
-			tx = session.beginTransaction();
 			fetchedList = criteria.list();
-			if (!tx.wasCommitted()) tx.commit();
 			return fetchedList;
 		} catch (Exception e) {
 			logger.error(elog.toStringException(e));
 			e.printStackTrace();
-			tx.rollback();
 			throw new HibernateException("getByCriteriaWithAliasByOrder failed, criteria = " + criterion.toString());
 		}
 	}
@@ -267,16 +251,12 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			criteria.setMaxResults(count);
 		}
 		//System.out.println("fetched List count = " + (fetchedList != null ? fetchedList.size() : null));
-		Transaction tx = null;
 		try {	
-			tx = session.beginTransaction();
 			fetchedList = criteria.list();
-			if (!tx.wasCommitted()) tx.commit();
 			return fetchedList;
 		} catch (Exception e) {
 			logger.error(elog.toStringException(e));
 			e.printStackTrace();
-			tx.rollback();
 			throw new HibernateException("getByCriteriaWithInnerJoinByOrder failed, criteria = " + criterion.toString());
 		}
 	}
@@ -286,16 +266,13 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 		Transaction tx = null;
 		try {
 			Session session = getCurrentSession();
-			tx = session.beginTransaction();
 			session.saveOrUpdate(e);
 			session.flush();
 			session.evict(e);
-			if (!tx.wasCommitted()) tx.commit();
 		} catch (Exception ex) {
 			System.out.println("Unable to update entity: " + e);
 			logger.error(elog.toStringException(ex));
 			ex.printStackTrace();
-			tx.rollback();
 			throw new HibernateException("Update failed");
 		}
 	}
@@ -342,16 +319,13 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 	public Object merge(E e) {
 		try {
 			Session session = getCurrentSession();
-			Transaction tx = session.beginTransaction();
 			Object o = (Object) session.merge(e);
 			session.flush();
 			session.evict(e);
-			if (!tx.wasCommitted()) tx.commit();
 			return o;
 		} catch (Exception ex) {
 			logger.error(elog.toStringException(ex));
 			ex.printStackTrace();
-			tx.rollback();
 			throw new HibernateException("Merge failed");
 		}
 
