@@ -42,6 +42,7 @@ import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.dbmanager.entities.task.*;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
+import qa.qcri.aidr.task.common.TrainingDataFetchType;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 /**
@@ -722,7 +723,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	// Trainer API Task Assignment related APIs
 	////////////////////////////////////////////////////////////
 	@Override
-	public List<DocumentDTO> getDocumentsForTagging(final Long crisisID, int count, final String userName, final int remainingCount) {
+	public List<DocumentDTO> getDocumentsForTagging(final Long crisisID, int count, final String userName, final int remainingCount, final TrainingDataFetchType fetchType) {
 		UsersDTO users = null;
 		try {
 			users = remoteUsersEJB.getUserByName(userName);
@@ -734,10 +735,14 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		}
 		if (users != null) {
 			int fetchedSize = 0;
+			Integer fetchCount = count;
+			if (TrainingDataFetchType.BATCH_FETCH.equals(fetchType)) {
+				fetchCount = null;		// fetch all available tasks
+			}
 			//while (!lock.tryLock()) {}// spin-loop wait
 			synchronized(lockObject) {
 				try {
-					List<DocumentDTO> dtoList = getNewTaskCollection(crisisID, count, "DESC", null);
+					List<DocumentDTO> dtoList = getNewTaskCollection(crisisID, fetchCount, "DESC", null);
 					System.out.println("[getDocumentsForTagging] For crisisID = " + crisisID + ", user = " + userName 
 							+ ", documents available: " + (dtoList != null ? dtoList.size() : "empty list"));
 					if (dtoList != null) {
@@ -749,12 +754,10 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 						if (!dtoList.isEmpty() && count > 0) {
 							System.out.println("[getDocumentsForTagging] Going to insert task list of size = " + count + ", for userID: " + users.getUserID());
 							List<DocumentDTO> assignList = new ArrayList<DocumentDTO>();
-							for (int i = 0; i < count;i++) {
-								assignList.add(dtoList.get(i));
-							}
+							assignList.addAll(dtoList.subList(0, count));
 							assignNewTaskToUser(assignList, users.getUserID());
 							//lock.unlock();
-							return dtoList;
+							return assignList;
 						}
 					} else {
 						//lock.unlock();

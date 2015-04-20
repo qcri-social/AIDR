@@ -14,6 +14,7 @@ import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAssignmentDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
+import qa.qcri.aidr.task.common.TrainingDataFetchType;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -99,7 +100,8 @@ public interface TaskManagerRemote<T, Serializable> {
 	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisIDUserID(Long crisisID, Long userID, Integer count) throws Exception;
 	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisIDUserName(Long crisisID, String userName, Integer count) throws Exception;
 
-	public List<DocumentDTO> getDocumentsForTagging(final Long crisisID, final int count, final String userName, final int remainingCount);
+	public List<DocumentDTO> getDocumentsForTagging(final Long crisisID, final int count, final String userName, final int remainingCount,
+													final TrainingDataFetchType fetchType);
 	
 	// for testing purpose
 	public String pingRemoteEJB();
