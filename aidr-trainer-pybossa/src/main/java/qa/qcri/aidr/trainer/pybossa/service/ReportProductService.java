@@ -14,5 +14,4 @@ import java.util.List;
 public interface ReportProductService {
 
     void generateCVSReportForGeoClicker() throws Exception;
-    void generateGeoJsonForESRI(List<GeoJsonOutputModel> geoJsonOutputModels) throws Exception;
 }

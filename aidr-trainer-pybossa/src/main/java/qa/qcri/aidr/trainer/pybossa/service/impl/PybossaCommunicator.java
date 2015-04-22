@@ -3,18 +3,19 @@ package qa.qcri.aidr.trainer.pybossa.service.impl;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
-
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.trainer.pybossa.service.AbstractCommunicator;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URL;
 
 /**
@@ -27,9 +28,8 @@ import java.net.URL;
 
 public class PybossaCommunicator extends AbstractCommunicator {
     // will be placed on config.
-    protected static Logger logger = Logger.getLogger(PybossaCommunicator.class);
-    private static ErrorLog elog = new ErrorLog();
-    
+    protected static Logger logger = Logger.getLogger("PybossaCommunicator");
+
     public PybossaCommunicator(){
         super(PybossaCommunicator.class);
     }
@@ -39,7 +39,6 @@ public class PybossaCommunicator extends AbstractCommunicator {
         int responseCode = -1;
         HttpClient httpClient = new DefaultHttpClient();
         try {
-
             HttpPut request = new HttpPut(url);
             StringEntity params =new StringEntity(data,"UTF-8");
             params.setContentType("application/json");
@@ -62,16 +61,16 @@ public class PybossaCommunicator extends AbstractCommunicator {
                 }
             }
             else{
-            	logger.error("Failed : HTTP error code : "
-                        + response.getStatusLine().getStatusCode());
+                logger.error(response.getStatusLine().getStatusCode());
+
                 throw new RuntimeException("Failed : HTTP error code : "
                         + response.getStatusLine().getStatusCode());
             }
 
         }catch (Exception ex) {
-            logger.error("exception for data: " + data + ", url = " + url);
-            logger.error(elog.toStringException(ex));
-            
+            logger.error("ex Code sendPut: " + ex);
+            logger.error("url:" + url);
+            logger.error("data:" + data);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -103,16 +102,14 @@ public class PybossaCommunicator extends AbstractCommunicator {
                 }
             }
             else{
-            	logger.error("Failed : HTTP error code : "
-                        + response.getStatusLine().getStatusCode());
                 throw new RuntimeException("Failed : HTTP error code : "
                         + response.getStatusLine().getStatusCode());
             }
 
 
         }catch (Exception ex) {
-        	logger.error("exception for url = " + url);
-            logger.error(elog.toStringException(ex));
+            logger.error("ex Code deleteGet1: " + ex);
+            logger.error("ex Code deleteGet2: " + url);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -145,23 +142,22 @@ public class PybossaCommunicator extends AbstractCommunicator {
                             new InputStreamReader((response.getEntity().getContent())));
 
                     String output;
-                    //System.out.println("Output from Server ...." + response.getStatusLine().getStatusCode() + "\n");
+                    logger.info("Output from Server ...." + response.getStatusLine().getStatusCode() + "\n");
                     while ((output = br.readLine()) != null) {
-                        logger.info(output);
+                        logger.error(output);
                     }
                 }
             }
             else{
-            	logger.error("Failed : HTTP error code : "
-                        + response.getStatusLine().getStatusCode());
                 throw new RuntimeException("Failed : HTTP error code : "
                         + response.getStatusLine().getStatusCode());
             }
 
 
         }catch (Exception ex) {
-        	logger.error("exception for data: " + data + ", url = " + url);
-            logger.error(elog.toStringException(ex));
+            logger.error("ex Code sendPost1: " + ex);
+            logger.error("ex Code sendPost2: " + data);
+            logger.error("ex Code sendPost3: " + url);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -196,16 +192,14 @@ public class PybossaCommunicator extends AbstractCommunicator {
                 }
             }
             else{
-            	logger.error("Failed : HTTP error code : "
-                        + response.getStatusLine().getStatusCode());
+
                 throw new RuntimeException("Failed : HTTP error code : "
                         + response.getStatusLine().getStatusCode());
             }
 
 
         }catch (Exception ex) {
-        	logger.error("exception for data: " + data + ", url = " + url);
-            logger.error(elog.toStringException(ex));
+            logger.error("Exception Code : " + ex);
             responseOutput.append("Exception Code : " + ex);
 
         } finally {
@@ -216,17 +210,59 @@ public class PybossaCommunicator extends AbstractCommunicator {
     }
 
 
+    public String sendGetTester(String url) {
+        HttpClient httpClient = new DefaultHttpClient();
+
+        StringBuffer responseOutput = new StringBuffer();
+
+        try {
+            HttpGet request = new HttpGet(url);
+            HttpResponse response = httpClient.execute(request);
+
+
+            int responseCode = response.getStatusLine().getStatusCode();
+
+            if (responseCode == 200 || responseCode == 204) {
+                BufferedReader br = new BufferedReader(
+                        new InputStreamReader((response.getEntity().getContent())));
+
+                String output;
+                // System.out.println("Output from Server ...." + response.getStatusLine().getStatusCode() + "\n");
+                while ((output = br.readLine()) != null) {
+                    responseOutput.append(output);
+                }
+            }
+            else{
+
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + response.getStatusLine().getStatusCode());
+            }
+
+        }catch (Exception ex) {
+            logger.error("ex Code sendGet: " + ex + " : sendGet url = " + url);
+            logger.error("[errror on sendGet ]" + url);
+        }
+        finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+
+        return responseOutput.toString();
+    }
+
+
+
     @Override
     public String sendGet(String url) {
         HttpURLConnection con = null;
         StringBuffer response = new StringBuffer();
        // System.out.println("sendGet url : " + url);
        // logger.debug("[sendGet url  for debugger: ]" + url);
+     //   Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("123.0.0.1", 8080));
 
         try {
             URL connectionURL = new URL(url);
             con = (HttpURLConnection) connectionURL.openConnection();
-
+            con.setConnectTimeout(5000);
             con.setRequestMethod("GET");
             con.setRequestProperty("User-Agent", USER_AGENT);
 
@@ -241,10 +277,20 @@ public class PybossaCommunicator extends AbstractCommunicator {
                 response.append(inputLine);
             }
             in.close();
-
+        } catch (java.net.SocketTimeoutException e1) {
+            logger.error("ex Code sendGet 1: " + e1 + " : sendGet url = " + url);
+            logger.error("[errror on sendGet ]" + url);
+        } catch (java.io.IOException e2) {
+            logger.error("ex Code sendGet 2: " + e2 + " : sendGet url = " + url);
+            logger.error("[errror on sendGet ]" + url);
         }catch (Exception ex) {
-            logger.debug("[errror on sendGet ]" + url);
-            logger.debug(elog.toStringException(ex));
+            logger.error("ex Code sendGet 3: " + ex + " : sendGet url = " + url);
+            logger.error("[errror on sendGet ]" + url);
+        }
+        finally {
+            if(con != null){
+                con.disconnect();
+            }
         }
 
         return response.toString();

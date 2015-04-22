@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.trainer.pybossa.dao.TaskQueueDao;
 import qa.qcri.aidr.trainer.pybossa.entity.TaskQueue;
 import qa.qcri.aidr.trainer.pybossa.service.TaskQueueService;
@@ -21,7 +20,7 @@ public class TaskQueueServiceImpl implements TaskQueueService {
     private TaskQueueDao taskQueueDao;
 
     private static Logger logger = Logger.getLogger(TaskQueueServiceImpl.class);
-    private static ErrorLog elog = new ErrorLog();
+
     
     @Override
     @Transactional(readOnly = false)
@@ -47,7 +46,6 @@ public class TaskQueueServiceImpl implements TaskQueueService {
         }
         catch (Exception ex){
             logger.error("updateTaskQueue Exception : " + taskQueue.getTaskID());
-            logger.error(elog.toStringException(ex));
             throw new RuntimeException(ex.getMessage());
         }
     }

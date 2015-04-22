@@ -5,7 +5,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import qa.qcri.aidr.trainer.pybossa.entity.*;
+import qa.qcri.aidr.trainer.pybossa.service.ClientAppResponseService;
 import qa.qcri.aidr.trainer.pybossa.service.ReportTemplateService;
+import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
 import qa.qcri.aidr.trainer.pybossa.util.DataFormatValidator;
 import qa.qcri.aidr.trainer.pybossa.util.DateTimeConverter;
 import qa.qcri.aidr.trainer.pybossa.util.JsonSorter;
@@ -98,19 +100,23 @@ public class PybossaFormatter {
             oneFeatureJsonObj.put("dateHistory",dateJSON) ;
 
             String finalAnswer = this.getAnswerResponse(clientApp,pybossaResult,parser,clientAppAnswer);
-            Long attributeID = clientApp.getNominalAttributeID();
-            JSONObject infoJson =  this.buildInfoJson( (JSONObject)oneFeatureJsonObj.get("info"), finalAnswer, attributeID );
+            if(finalAnswer != null) {
+                Long attributeID = clientApp.getNominalAttributeID();
+                JSONObject infoJson =  this.buildInfoJson( (JSONObject)oneFeatureJsonObj.get("info"), finalAnswer, attributeID );
 
-            oneFeatureJsonObj.put("info", infoJson);
+                oneFeatureJsonObj.put("info", infoJson);
 
 
-            outJson.add(oneFeatureJsonObj);
+                outJson.add(oneFeatureJsonObj);
+
+                return outJson.toJSONString();
+            }
+
 
         }
 
-        return  outJson.toJSONString();
+        return null  ;
     }
-
 
 
     ///////////////////////////////////////////////////////////////////////
@@ -147,10 +153,12 @@ public class PybossaFormatter {
             }
         }
 
-        String finalAnswer = "";
+        String finalAnswer = null;
+
+        int cutOffValue = this.getCutOffNumber(array.size(), clientApp.getTaskRunsPerTask(), clientAppAnswer);
 
         for(int i=0; i < questions.length; i++ ){
-            if(responses[i] >= clientAppAnswer.getVoteCutOff()){
+            if(responses[i] >= cutOffValue){
                 finalAnswer =  questions[i];
             }
         }
@@ -158,6 +166,121 @@ public class PybossaFormatter {
         return  finalAnswer;
     }
 
+    public TaskQueueResponse getTaskQueueResponse(ClientApp clientApp, String pybossaResult, JSONParser parser, Long taskQueueID, ClientAppAnswer clientAppAnswer, ReportTemplateService rtpService) throws Exception{
+        if(clientAppAnswer == null){
+            return null;
+        }
+
+        JSONObject responseJSON = new JSONObject();
+
+        String[] questions = getQuestion( clientAppAnswer,  parser);
+        int[] responses = new int[questions.length];
+
+        JSONArray array = (JSONArray) parser.parse(pybossaResult) ;
+
+        int cutOffSize =  getCutOffNumber(array.size(),  clientApp.getTaskRunsPerTask(), clientAppAnswer) ;
+        Iterator itr= array.iterator();
+        String answer = null;
+        boolean foundCutoffItem = false;
+        while(itr.hasNext()){
+            JSONObject featureJsonObj = (JSONObject)itr.next();
+
+            JSONObject info = (JSONObject)featureJsonObj.get("info");
+
+            Long taskID = (Long) featureJsonObj.get("id");
+
+            answer = this.getUserAnswer(featureJsonObj, clientApp);
+
+            if(answer!=null && !clientApp.getAppType().equals(StatusCodeType.APP_MAP) ){
+                for(int i=0; i < questions.length; i++ ){
+                    if(questions[i].trim().equalsIgnoreCase(answer.trim())){
+                        responses[i] = responses[i] + 1;
+                        foundCutoffItem = handleItemAboveCutOff(taskQueueID,responses[i], answer, info, clientAppAnswer, rtpService, cutOffSize);
+                    }
+
+                }
+            }
+
+
+        }
+
+        String taskInfo = "";
+        String responseJsonString = "";
+        //if(!clientApp.getAppType().equals(StatusCodeType.APP_MAP)){
+        for(int i=0; i < questions.length; i++ ){
+            responseJSON.put(questions[i], responses[i]);
+        }
+        responseJsonString = responseJSON.toJSONString();
+        //}
+
+        TaskQueueResponse taskQueueResponse = new TaskQueueResponse(taskQueueID, responseJsonString, taskInfo);
+        return  taskQueueResponse;
+    }
+
+    private boolean handleItemAboveCutOff(Long taskQueueID,int responseCount, String answer, JSONObject info, ClientAppAnswer clientAppAnswer, ReportTemplateService reportTemplateService, int cutOffSize){
+        // MAKE SURE TO MODIFY TEMPLATE HTML  Standize OUTPUT FORMAT
+        boolean processed = false;
+        try{
+
+            String tweetID ;
+            String tweet;
+            String author= "";
+            String lat= "";
+            String lng= "";
+            String url= "";
+            String created = "";
+            Long taskID = taskQueueID;
+
+            if(responseCount >= cutOffSize){
+
+                Long tid = (Long)info.get("tweetid");
+                tweetID = tid + "";
+                if(info.get("tweet") == null){
+
+                    tweet = (String)info.get("text");
+                    author= "";
+                    lat= "";
+                    lng= "";
+                    url= "";
+                    created = "";
+                }
+                else{
+
+                    tweet = (String)info.get("tweet");
+
+                    if(info.get("author") != null){
+                        author= (String)info.get("author");
+                    }
+
+                    if(info.get("lat") != null){
+                        lat= (String)info.get("lat");
+                    }
+
+                    if(info.get("lon") != null){
+                        lng= (String)info.get("lon");
+                    }
+
+                    if(info.get("url") != null){
+                        url= (String)info.get("url");
+                    }
+
+                    created = (String)info.get("timestamp");
+                    taskID = (Long)info.get("taskid");
+                }
+
+                if(taskQueueID!=null && taskID!=null && tweetID!=null && (tweet!=null && !tweet.isEmpty())){
+                      ReportTemplate template = new ReportTemplate(taskQueueID,taskID,tweetID,tweet,author,lat,lng,url,created, answer, StatusCodeType.TEMPLATE_IS_READY_FOR_EXPORT, clientAppAnswer.getClientAppID());
+                      reportTemplateService.saveReportItem(template);
+                      processed = true;
+                }
+            }
+        }
+        catch(Exception e){
+            System.out.println("handleItemAboveCutOff exception");
+            System.out.println("exception e :" + e.toString());
+        }
+        return processed;
+    }
 
     private String getUserAnswer(JSONObject featureJsonObj, ClientApp clientApp){
         String answer = null;
@@ -171,7 +294,12 @@ public class PybossaFormatter {
     }
 
     private String[] getQuestion(ClientAppAnswer clientAppAnswer, JSONParser parser) throws ParseException {
-        JSONArray questionArrary =   (JSONArray) parser.parse(clientAppAnswer.getAnswer()) ;
+        String answerKey =   clientAppAnswer.getActiveAnswerKey();
+        if(answerKey == null){
+            answerKey = clientAppAnswer.getAnswer();
+        }
+
+        JSONArray questionArrary =   (JSONArray) parser.parse(answerKey) ;
         int questionSize =  questionArrary.size();
         String[] questions = new String[questionSize];
 
@@ -185,15 +313,16 @@ public class PybossaFormatter {
 
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    public int getCutOffNumber(int responseSize, int maxResponseSize, ClientAppAnswer clientAppAnswer){
 
+        int cutOffSize =    clientAppAnswer.getVoteCutOff();
 
+        if(responseSize > maxResponseSize){
+            cutOffSize = (int)Math.round(maxResponseSize * 0.5);
+        }
 
-
-
-
-
-
-
+        return cutOffSize;
+    }
 
     public List<String> assemblePybossaTaskPublishForm(String inputData, ClientApp clientApp) throws Exception {
 
@@ -224,6 +353,36 @@ public class PybossaFormatter {
 
         return outputFormatData;
     }
+
+    public List<String> assemblePybossaTaskPublishFormWithIndex(String inputData, ClientApp clientApp, int indexStart, int indexEnd) throws Exception {
+
+        List<String> outputFormatData = new ArrayList<String>();
+        JSONParser parser = new JSONParser();
+        Object obj = parser.parse(inputData);
+
+        JSONArray jsonObject = (JSONArray) obj;
+        Iterator itr= jsonObject.iterator();
+
+        for(int i = indexStart; i < indexEnd; i++){
+            JSONObject featureJsonObj = (JSONObject)jsonObject.get(i);
+            JSONObject info = assemblePybossaInfoFormat(featureJsonObj, parser, clientApp) ;
+
+            JSONObject tasks = new JSONObject();
+
+            tasks.put("info", info);
+            tasks.put("n_answers", clientApp.getTaskRunsPerTask());
+            tasks.put("quorum", clientApp.getQuorum());
+            tasks.put("calibration", new Integer(0));
+            tasks.put("app_id", clientApp.getPlatformAppID());
+            tasks.put("priority_0", new Integer(0));
+
+            outputFormatData.add(tasks.toJSONString());
+
+        }
+
+        return outputFormatData;
+    }
+
 
     public String updateApp(ClientApp clientApp,JSONObject attribute, JSONArray labelModel, Long categoryID) throws Exception {
         InputStream templateIS = Thread.currentThread().getContextClassLoader().getResourceAsStream("html/template.html");
@@ -303,7 +462,7 @@ public class PybossaFormatter {
         app2.put("allow_anonymous_contributors", true);
         app2.put("time_estimate", 0);
         app2.put("hidden", 0);
-        app2.put("category_id", categoryID);
+       // app2.put("category_id", categoryID);
       //  app2.put("owner_id", 1);
 
         //long_description
@@ -372,86 +531,6 @@ public class PybossaFormatter {
 
         }
         return isCompleted;
-    }
-
-    public Long getCategoryID(String data, JSONParser parser, boolean isJsonArray) throws Exception{
-        Long categoryID = null;
-        if(isJsonArray){
-            JSONArray array = (JSONArray) parser.parse(data);
-            Iterator itr= array.iterator();
-
-            while(itr.hasNext()){
-                JSONObject featureJsonObj = (JSONObject)itr.next();
-                categoryID = (Long)featureJsonObj.get("id");
-            }
-        }
-        else{
-            JSONObject jsonObject = (JSONObject) parser.parse(data);
-            categoryID = (Long)jsonObject.get("id");
-        }
-        return categoryID;
-    }
-
-    public String getCatagoryDataSet(String attributeName,  String attributeCode){
-        JSONObject categoryJSON = new JSONObject();
-        categoryJSON.put("name", attributeName) ;
-        categoryJSON.put("short_name", attributeCode) ;
-        categoryJSON.put("description", attributeName);
-
-        return categoryJSON.toJSONString();
-    }
-
-    public List<String> processPybossaCompletedTask(String data) throws Exception{
-        /// will do later for importing process
-        if(!data.isEmpty() && data.length() > 10){
-            List<String> completedTaskID = new ArrayList<String>();
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse(data);
-            JSONArray jsonObject = (JSONArray) obj;
-            Iterator itr= jsonObject.iterator();
-
-            while(itr.hasNext()){
-                JSONObject featureJsonObj = (JSONObject)itr.next();
-                Long id = (Long)featureJsonObj.get("id") ;
-                String taskID =  id.toString();
-               // System.out.println(taskID);
-                completedTaskID.add(taskID);
-            }
-
-            return completedTaskID;  //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        return null;
-    }
-
-    private void assembleToAIDRImportFormat(String data) throws Exception{
-       // System.out.println(data);
-        JSONParser parser = new JSONParser();
-        Object obj = parser.parse(data);
-        JSONArray jsonObject = (JSONArray) obj;
-        Iterator itr= jsonObject.iterator();
-        while(itr.hasNext()){
-            JSONObject featureJsonObj = (JSONObject)itr.next();
-
-            JSONObject info = (JSONObject) parser.parse((String)featureJsonObj.get("info"));
-
-            String userName = (String)featureJsonObj.get("user_id");
-            Long userID = (Long)featureJsonObj.get("user_id");
-            String answer = (String)info.get("category");
-
-            Long crisisID = (Long)info.get("crisisID");
-            Long documentID = (Long)info.get("documentID");
-            String attributeInfo =    (String)info.get("attributeInfo");
-
-            //'[{"attributeID":15,"labelID":"56"},
-            //{"attributeID":17,"labelID":"57"},
-            //{"attributeID":18,"labelID":"58"},
-            //{"attributeID":20,"labelID":"12"}
-            //]'
-            //outputFormatData.add(processPybossaOutputFormat(pybossaData));
-
-            //System.out.println(featureJsonObj.toString());
-        }
     }
 
 }

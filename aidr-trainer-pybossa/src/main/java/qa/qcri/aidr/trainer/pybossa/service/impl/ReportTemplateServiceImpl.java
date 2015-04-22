@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
+
 import qa.qcri.aidr.trainer.pybossa.dao.ReportTemplateDao;
 import qa.qcri.aidr.trainer.pybossa.entity.ReportTemplate;
 import qa.qcri.aidr.trainer.pybossa.service.ReportTemplateService;
@@ -25,7 +25,7 @@ import java.util.List;
 public class ReportTemplateServiceImpl implements ReportTemplateService {
 
 	private static Logger logger = Logger.getLogger(ReportTemplateServiceImpl.class);
-	private static ErrorLog elog = new ErrorLog();
+
 	
     @Autowired
     private ReportTemplateDao reportTemplateDao;
@@ -33,7 +33,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
     @Override
     @Transactional(readOnly = false, propagation= Propagation.REQUIRES_NEW)
     public void saveReportItem(ReportTemplate reportTemplate) {
-
+        System.out.println("saveReportItem is called");
         try{
             if(isNumeric(reportTemplate.getTweetID()) && reportTemplate.getUrl().length() < 300 && reportTemplate.getAuthor().length() < 100){
                 reportTemplateDao.saveReportItem(reportTemplate);
@@ -41,7 +41,8 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
         }
         catch(Exception ex){
             logger.error("saveReportItem exception");
-            logger.error(elog.toStringException(ex));            
+            logger.error(ex.getMessage());
+            System.out.println("saveReportItem is called error : " + ex.toString());
             throw new RuntimeException(ex.getMessage());
         }
 
@@ -73,7 +74,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
         }
         catch(Exception e){
             logger.error("isNumeric exception on TweetID: " + data);
-            logger.error(elog.toStringException(e));
+            logger.error(e.getMessage());
         }
 
         return returnValue;

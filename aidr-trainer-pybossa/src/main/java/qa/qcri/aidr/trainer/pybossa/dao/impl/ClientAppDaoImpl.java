@@ -4,7 +4,9 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import qa.qcri.aidr.trainer.pybossa.dao.ClientAppDao;
 import qa.qcri.aidr.trainer.pybossa.entity.ClientApp;
+import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -74,9 +76,10 @@ public class ClientAppDaoImpl extends AbstractDaoImpl<ClientApp, String> impleme
     }
 
     @Override
-    public List<ClientApp> getAllClientAppByCrisisIDAndStatus(Long clientID, Integer status) {
+    public List<ClientApp> getAllClientAppByCrisisIDAndStatus(Long crisisID, Integer status) {
+
         return findByCriteria(Restrictions.conjunction()
-                .add(Restrictions.eq("crisisID",clientID))
+                .add(Restrictions.eq("crisisID",crisisID))
                 .add(Restrictions.eq("status", status)));
         //To change body of implemented methods use File | Settings | File Templates.
     }

@@ -23,6 +23,7 @@ public class StatusCodeType {
     public static Integer HTTP_OK = 200;
     public static Integer HTTP_OK_NO_CONTENT = 204;
     public static Integer HTTP_OK_DUPLICATE_INFO_FOUND = 415 ;
+    public static Integer HTTP_NOT_OK = -1;
 
     public static Integer RESPONSE_MIN_LENGTH = 10;
 

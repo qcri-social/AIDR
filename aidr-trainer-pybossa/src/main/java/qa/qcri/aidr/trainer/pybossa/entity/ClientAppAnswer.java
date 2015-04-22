@@ -29,12 +29,24 @@ public class ClientAppAnswer implements Serializable {
     @Column(name="voteCutOff", nullable = false)
     private Integer voteCutOff;
 
+    @Column (name = "activeAnswerKey", nullable = true)
+    private String activeAnswerKey;
+
+
     public ClientAppAnswer(){}
 
     public ClientAppAnswer(Long clientAppID, String answer){
         this.clientAppID = clientAppID;
         this.answer = answer;
 
+    }
+
+    public String getActiveAnswerKey() {
+        return activeAnswerKey;
+    }
+
+    public void setActiveAnswerKey(String activeAnswerKey) {
+        this.activeAnswerKey = activeAnswerKey;
     }
 
     public Integer getVoteCutOff() {

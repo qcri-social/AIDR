@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.trainer.pybossa.dao.ClientAppSourceDao;
 import qa.qcri.aidr.trainer.pybossa.entity.ClientAppSource;
 import qa.qcri.aidr.trainer.pybossa.service.ClientAppSourceService;
@@ -24,7 +23,7 @@ import java.util.List;
 public class ClientAppSourceServiceImpl implements ClientAppSourceService {
 	
 	private static Logger logger = Logger.getLogger(ClientAppSourceServiceImpl.class);
-	private static ErrorLog elog = new ErrorLog();
+
 	
     @Autowired
     private ClientAppSourceDao clientAppSourceDao;
@@ -49,7 +48,6 @@ public class ClientAppSourceServiceImpl implements ClientAppSourceService {
         }
         catch(Exception ex){
             logger.error("insertNewClientAppSource exception for : " + clientAppSource.getClientAppID());
-            logger.error(elog.toStringException(ex));
             throw new RuntimeException(ex.getMessage());
         }
     }

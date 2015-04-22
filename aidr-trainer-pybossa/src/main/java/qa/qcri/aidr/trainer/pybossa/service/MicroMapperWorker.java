@@ -8,8 +8,5 @@ package qa.qcri.aidr.trainer.pybossa.service;
  * To change this template use File | Settings | File Templates.
  */
 public interface MicroMapperWorker {
-
-    void processTaskPublish() throws Exception;
-    void processTaskImport() throws Exception;
     void processTaskExport() throws Exception;
 }

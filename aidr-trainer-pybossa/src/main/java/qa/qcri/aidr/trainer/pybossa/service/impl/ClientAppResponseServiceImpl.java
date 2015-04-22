@@ -34,6 +34,7 @@ public class ClientAppResponseServiceImpl implements ClientAppResponseService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public void processTaskQueueResponse(TaskQueueResponse taskQueueResponse) {
 
         taskQueueResponseDao.addTaskQueueResponse(taskQueueResponse);

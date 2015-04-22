@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.trainer.pybossa.entity.Client;
 import qa.qcri.aidr.trainer.pybossa.entity.ClientApp;
 import qa.qcri.aidr.trainer.pybossa.format.impl.PybossaFormatter;
@@ -36,7 +35,6 @@ import java.util.List;
 public class PybossaAppCreateWorker implements ClientAppCreateWorker {
 
     protected static Logger logger = Logger.getLogger(PybossaAppCreateWorker.class);
-    private static ErrorLog elog = new ErrorLog();
     
     @Autowired
     private ClientService clientService;
@@ -50,7 +48,6 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
     private String PYBOSSA_API_APP_CREATE_URL ;
     private String AIDR_GET_CRISIS_URL;
     private String PYBOSSA_API_APP_UPDATE_BASE_URL;
-    private String PYBOSSA_API_CATEGORY_BASE_URL;
 
     private PybossaCommunicator pybossaCommunicator = new PybossaCommunicator();
     private JSONParser parser = new JSONParser();
@@ -64,7 +61,7 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
             AIDR_GET_CRISIS_URL = client.getAidrHostURL() + URLPrefixCode.AIDR_CRISIS_INFO ;
             PYBOSSA_API_APP_UPDATE_BASE_URL = client.getHostURL()  + URLPrefixCode.PYBOSAA_APP;
             PYBOSSA_API_APP_CREATE_URL = client.getHostURL()  + URLPrefixCode.PYBOSSA_APP_KEY + client.getHostAPIKey();
-            PYBOSSA_API_CATEGORY_BASE_URL = client.getHostURL() + URLPrefixCode.PYBOSSA_CATEGORY;
+
         }
     }
 
@@ -72,7 +69,6 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
     public void doCreateApp() throws Exception{
         setClassVariable();
         if(client != null){
-
 
             List<ClientApp> appList = clientAppService.getAllClientAppByClientID(client.getClientID());
             String crisisSet = pybossaCommunicator.sendGet(AIDR_ALL_ACTIVE_CRISIS_URL);
@@ -86,29 +82,34 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
 
                     Long cririsID = (Long)jsonObject.get("cririsID");
                     Long attID = (Long)jsonObject.get("nominalAttributeID");
+                    if(cririsID == 292)  {
 
-                    if(!findDuplicate(appList, cririsID, attID)){
-                        // AIDR_GET_CRISIS_URL = AIDR_GET_CRISIS_URL + id;
-                        String cririsInfo = pybossaCommunicator.sendGet(AIDR_GET_CRISIS_URL + cririsID);
-                        if(!cririsInfo.isEmpty()){
-                            JSONObject crisisJson = (JSONObject) parser.parse(cririsInfo);
-                            if(crisisJson.get("nominalAttributeJsonModelSet") != null ){
-                                String nominalModel = crisisJson.get("nominalAttributeJsonModelSet").toString();
-                                if(!nominalModel.isEmpty() && nominalModel.length() > StatusCodeType.RESPONSE_MIN_LENGTH){
-                                    String name = (String)crisisJson.get("name");
-                                    Long crisisID = (Long)crisisJson.get("crisisID");
-                                    String code = (String)crisisJson.get("code");
-                                    String description = name + "(" + crisisID + ")";
-                                    JSONArray attArray = (JSONArray)crisisJson.get("nominalAttributeJsonModelSet");
-                                    Iterator itr= attArray.iterator();
-                                    while(itr.hasNext()){
-                                        JSONObject featureJsonObj = (JSONObject)itr.next();
-                                        Long nominalAttributeID = (Long)featureJsonObj.get("nominalAttributeID");
-                                        processAppCreation(featureJsonObj, nominalAttributeID,crisisID,attID,code, name, description);
+
+                        if(!findDuplicate(appList, cririsID, attID) ){
+                            // AIDR_GET_CRISIS_URL = AIDR_GET_CRISIS_URL + id;
+                            String cririsInfo = pybossaCommunicator.sendGet(AIDR_GET_CRISIS_URL + cririsID);
+                            if(!cririsInfo.isEmpty()){
+                                JSONObject crisisJson = (JSONObject) parser.parse(cririsInfo);
+                                if(crisisJson.get("nominalAttributeJsonModelSet") != null ){
+                                    String nominalModel = crisisJson.get("nominalAttributeJsonModelSet").toString();
+                                    if(!nominalModel.isEmpty() && nominalModel.length() > StatusCodeType.RESPONSE_MIN_LENGTH){
+                                        String name = (String)crisisJson.get("name");
+                                        Long crisisID = (Long)crisisJson.get("crisisID");
+                                        String code = (String)crisisJson.get("code");
+                                        String description = name + "(" + crisisID + ")";
+                                        JSONArray attArray = (JSONArray)crisisJson.get("nominalAttributeJsonModelSet");
+                                        Iterator itr= attArray.iterator();
+                                        while(itr.hasNext()){
+                                            JSONObject featureJsonObj = (JSONObject)itr.next();
+                                            Long nominalAttributeID = (Long)featureJsonObj.get("nominalAttributeID");
+                                            processAppCreation(featureJsonObj, nominalAttributeID,crisisID,attID,code, name, description);
+                                        }
                                     }
                                 }
                             }
                         }
+
+
                     }
                 }
             }
@@ -135,7 +136,7 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
                 }
                 else{
                     if(responseCode == StatusCodeType.HTTP_OK_DUPLICATE_INFO_FOUND){
-                        // logger.info("duplicate app found : " + responseCode);
+                         logger.info("duplicate app found : " + responseCode);
                     }
                 }
             }
@@ -201,7 +202,6 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
         }
     }
 
-
     private ClientApp createClientAppInstance(Long crisisID, String appname, String description, Long appID, String appcode, Long nominalAttributeID){
         ClientApp clApp = new ClientApp(client.getClientID(),crisisID, appname,description,appID,appcode,nominalAttributeID, client.getDefaultTaskRunsPerTask(), StatusCodeType.APP_MULTIPLE_CHOICE);
         clientAppService.createClientApp(clApp);
@@ -228,23 +228,24 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
 
     private Long getCategoryID(String crisisName,  String crisisCode) throws Exception {
         Long categoryID = null;
-        String PYBOSSA_API_CATEGORY_FIND_URL = PYBOSSA_API_CATEGORY_BASE_URL+ URLPrefixCode.PYBOSSA_CATEGORY_SHORT_NAME +  crisisCode;
-        String responseData = pybossaCommunicator.sendGet(PYBOSSA_API_CATEGORY_FIND_URL);
+
+        //String PYBOSSA_API_CATEGORY_FIND_URL = PYBOSSA_API_CATEGORY_BASE_URL+ URLPrefixCode.PYBOSSA_CATEGORY_SHORT_NAME +  crisisCode;
+        //String responseData = pybossaCommunicator.sendGet(PYBOSSA_API_CATEGORY_FIND_URL);
 
         //System.out.println("PYBOSSA_API_CATEGORY_FIND_URL: " + PYBOSSA_API_CATEGORY_FIND_URL);
         //System.out.println("responseData: " +  responseData );
 
-        if(DataFormatValidator.isValidateJson(responseData)) {
-            categoryID = pybossaFormatter.getCategoryID(responseData,  parser, true);
-        }
-        else{
-            String PYBOSSA_API_CATEGORY_CREATE_URL =  PYBOSSA_API_CATEGORY_BASE_URL + URLPrefixCode.PYBOSSA_APP_UPDATE_KEY + client.getHostAPIKey();
-            String newCategoryData = pybossaFormatter.getCatagoryDataSet(crisisName, crisisCode);
-            responseData = pybossaCommunicator.sendPostGet(newCategoryData, PYBOSSA_API_CATEGORY_CREATE_URL);
-            categoryID = pybossaFormatter.getCategoryID(responseData,  parser, false);
+       // if(DataFormatValidator.isValidateJson(responseData)) {
+       //     categoryID = pybossaFormatter.getCategoryID(responseData,  parser, true);
+       // }
+       // else{
+        //    String PYBOSSA_API_CATEGORY_CREATE_URL =  PYBOSSA_API_CATEGORY_BASE_URL + URLPrefixCode.PYBOSSA_APP_UPDATE_KEY + client.getHostAPIKey();
+         //   String newCategoryData = pybossaFormatter.getCatagoryDataSet(crisisName, crisisCode);
+          //  responseData = pybossaCommunicator.sendPostGet(newCategoryData, PYBOSSA_API_CATEGORY_CREATE_URL);
+           // categoryID = pybossaFormatter.getCategoryID(responseData,  parser, false);
           // create and get
          //
-        }
+        //}
         return categoryID;
     }
 }
