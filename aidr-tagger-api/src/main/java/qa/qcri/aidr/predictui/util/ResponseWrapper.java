@@ -16,6 +16,7 @@ import qa.qcri.aidr.dbmanager.dto.CrisisAttributesDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelNominalLabelDTO;
@@ -74,6 +75,10 @@ public class ResponseWrapper implements Serializable {
     private List<CrisisAttributesDTO> crisisAttributes;
     @XmlElement
     private List<TrainingDataDTO> trainingData;
+    
+    @XmlElement 
+    List<HumanLabeledDocumentDTO> items;
+    
     @XmlElement
     private Integer total;
     
@@ -91,6 +96,7 @@ public class ResponseWrapper implements Serializable {
     
     public ResponseWrapper(String statusCode, Object obj) {
         this.statusCode = statusCode;
+        this.dataObject = obj;
     }
 
     public ResponseWrapper(String statusCode, String message, Object obj) {
@@ -371,5 +377,16 @@ public class ResponseWrapper implements Serializable {
      */
     public void setEntityID(Long entityID) {
         this.entityID = entityID;
+    }
+    
+    public List<HumanLabeledDocumentDTO> getItems() {
+    	return this.items;
+    }
+    
+    public void setItems(List<HumanLabeledDocumentDTO> items) {
+    	this.items = items;
+    	if (items != null && !items.isEmpty()) {
+    		this.setTotal(items.size());
+    	}
     }
 }

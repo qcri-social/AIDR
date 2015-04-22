@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
@@ -14,6 +15,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import com.google.gson.Gson;
 
+import qa.qcri.aidr.common.code.DateFormatConfig;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.output.filter.QueryType;
 import qa.qcri.aidr.output.filter.ClassifierQueryJsonObject;
@@ -94,7 +96,7 @@ public class FilterQueryMatcher {
 					logger.warn("No createdAt field in Tweet!!! tweet = " + tweet);
 					return false;		// default behavior
 				}
-				matchResult = tweet.getCreatedAt().after(q.getDate());
+				matchResult = tweet.getCreatedAt().compareTo(q.getDate()) >= 0;
 				//logger.debug("For " + tweet.getCreatedAt().toString() + " comparing after date " + q.getDate().toString() + " : " + matchResult);
 				return matchResult;
 			}
@@ -104,7 +106,7 @@ public class FilterQueryMatcher {
 					logger.warn("No createdAt field in Tweet!!!" + tweet);
 					return false;		// default behavior
 				}
-				matchResult = tweet.getCreatedAt().before(q.getDate());
+				matchResult = tweet.getCreatedAt().compareTo(q.getDate()) <= 0;
 				//logger.debug("For " + tweet.getCreatedAt().toString() + " comparing before date" + q.getDate().toString() + " : " + matchResult);
 				return matchResult;
 			}
@@ -163,7 +165,8 @@ public class FilterQueryMatcher {
 		QueryJsonObject queryObject = null;
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_EMPTY);
-		final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		final DateFormat df = new SimpleDateFormat(DateFormatConfig.ISODateFormat);
+		df.setTimeZone(TimeZone.getTimeZone("GMT"));
 		mapper.setDateFormat(df);
 
 		if (isDateQuery(queryString)) {

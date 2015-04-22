@@ -5,31 +5,21 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-
-
-
-
-
-
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
-
-import org.hibernate.Hibernate;
-//import org.apache.log4j.Logger;
-//import org.codehaus.jackson.map.ObjectMapper;
-//import org.codehaus.jackson.type.TypeReference;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
@@ -41,44 +31,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.common.logging.ErrorLog;
-/*
-import qa.qcri.aidr.task.dto.DocumentDTO;
-import qa.qcri.aidr.task.dto.util.CrisisDTOHelper;
-import qa.qcri.aidr.task.dto.util.DocumentDTOHelper;
-import qa.qcri.aidr.task.dto.util.DocumentNominalLabelDTOHelper;
-import qa.qcri.aidr.task.dto.util.TaskAnswerDTOHelper;
-import qa.qcri.aidr.task.dto.util.TaskAssignmentDTOHelper;
-import qa.qcri.aidr.task.dto.util.UsersDTOHelper;
-import qa.qcri.aidr.task.ejb.CrisisService;
-import qa.qcri.aidr.task.ejb.DocumentNominalLabelService;
-import qa.qcri.aidr.task.ejb.DocumentService;
-import qa.qcri.aidr.task.ejb.TaskAnswerService;
-import qa.qcri.aidr.task.ejb.TaskAssignmentService;
-import qa.qcri.aidr.task.ejb.TaskManagerRemote;
-import qa.qcri.aidr.task.ejb.UsersService;
-import qa.qcri.aidr.task.entities.Document;
-import qa.qcri.aidr.task.entities.DocumentNominalLabel;
-import qa.qcri.aidr.task.entities.NominalLabel;
-import qa.qcri.aidr.task.entities.TaskAnswer;
-import qa.qcri.aidr.task.entities.TaskAssignment;
-import qa.qcri.aidr.task.entities.Users;
- */
-
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAssignmentDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.ItemToLabelDTO;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
-import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.task.*;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
+import qa.qcri.aidr.task.common.TrainingDataFetchType;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
-
 
 /**
  * 
@@ -133,6 +98,9 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade remoteNominalLabelEJB;
 
+	private static Object lockObject = new Object();
+	//private static Lock lock = null;
+
 	private Class<T> entityType;
 
 	private Logger logger = LoggerFactory.getLogger(TaskManagerBean.class);
@@ -140,6 +108,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 	public TaskManagerBean()  {
 		this.entityType = getClassType();
+		//lock = new ReentrantLock();
 	}  
 
 	//private static final Object monitor = new Object();
@@ -188,8 +157,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			doc.setCrisisDTO(crisisDTO);
 			doc.setHasHumanLabels(false);
 			DocumentDTO savedDoc = remoteDocumentEJB.addDocument(doc);
-			System.out.println("Saved to DB document: " + savedDoc.getDocumentID() + ", for crisis = " + savedDoc.getCrisisDTO().getCode());
-			logger.info("Saved to DB document: " + savedDoc.getDocumentID() + ", for crisis = " + savedDoc.getCrisisDTO().getCode());
+			//System.out.println("Saved to DB document: " + savedDoc.getDocumentID() + ", for crisis = " + savedDoc.getCrisisDTO().getCode());
+			//logger.info("Saved to DB document: " + savedDoc.getDocumentID() + ", for crisis = " + savedDoc.getCrisisDTO().getCode());
 			return savedDoc.getDocumentID();
 		} catch (Exception e) {
 			logger.error("Error in insertion");
@@ -754,13 +723,69 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	// Trainer API Task Assignment related APIs
 	////////////////////////////////////////////////////////////
 	@Override
+	public List<DocumentDTO> getDocumentsForTagging(final Long crisisID, int count, final String userName, final int remainingCount, final TrainingDataFetchType fetchType) {
+		UsersDTO users = null;
+		try {
+			users = remoteUsersEJB.getUserByName(userName);
+		} catch (Exception e) {
+			System.err.println("[getDocumentsForTagging] Exception in finding user userName = " + userName + ". Aborting...");
+			logger.error("Exception", e);
+			e.printStackTrace();
+			return null;
+		}
+		if (users != null) {
+			int fetchedSize = 0;
+			Integer fetchCount = count;
+			if (TrainingDataFetchType.BATCH_FETCH.equals(fetchType)) {
+				fetchCount = null;		// fetch all available tasks
+			}
+			//while (!lock.tryLock()) {}// spin-loop wait
+			synchronized(lockObject) {
+				try {
+					List<DocumentDTO> dtoList = getNewTaskCollection(crisisID, fetchCount, "DESC", null);
+					System.out.println("[getDocumentsForTagging] For crisisID = " + crisisID + ", user = " + userName 
+							+ ", documents available: " + (dtoList != null ? dtoList.size() : "empty list"));
+					if (dtoList != null) {
+						fetchedSize = dtoList.size();
+					}
+					int availableRequestSize = fetchedSize - remainingCount;
+					if (availableRequestSize > 0) {
+						count = Math.min(count, availableRequestSize);
+						if (!dtoList.isEmpty() && count > 0) {
+							System.out.println("[getDocumentsForTagging] Going to insert task list of size = " + count + ", for userID: " + users.getUserID());
+							List<DocumentDTO> assignList = new ArrayList<DocumentDTO>();
+							assignList.addAll(dtoList.subList(0, count));
+							assignNewTaskToUser(assignList, users.getUserID());
+							//lock.unlock();
+							return assignList;
+						}
+					} else {
+						//lock.unlock();
+						return null;
+					}
+				} catch (Exception e) {
+					logger.error("Exception", e);
+					e.printStackTrace();
+					//lock.unlock();
+					return null;
+				}
+			}
+		} else {
+			System.err.println("[getDocumentsForTagging] No user found with userName = " + userName + ". Aborting...");
+		}
+		return null;
+	}
+
+
+
+	@Override
 	public void assignNewTaskToUser(Long id, Long userId) throws Exception {
 		try {
-		int retVal = remoteTaskAssignmentEJB.insertOneTaskAssignment(id, userId);
-		if (retVal <= 0) {
-			logger.error("unable to undo task assignment");
-			throw new Exception("[assignNewTaskToUser] Couldn't undo task assignment");
-		}
+			int retVal = remoteTaskAssignmentEJB.insertOneTaskAssignment(id, userId);
+			if (retVal <= 0) {
+				logger.error("unable to undo task assignment");
+				throw new Exception("[assignNewTaskToUser] Couldn't do task assignment");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -768,10 +793,10 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void assignNewTaskToUser(List<T> collection, Long userId) throws Exception {
-		int retVal = remoteTaskAssignmentEJB.insertTaskAssignment((List<DocumentDTO>)collection, userId);
+	public void assignNewTaskToUser(List<DocumentDTO> collection, Long userId) throws Exception {
+		int retVal = remoteTaskAssignmentEJB.insertTaskAssignment(collection, userId);
 		if (retVal <= 0) {
-			throw new Exception("[assignNewTaskToUser] Couldn't undo task assignment");
+			throw new Exception("[assignNewTaskToUser] Couldn't do task assignment");
 		}
 	}
 
@@ -1087,13 +1112,152 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		}
 		return null;
 	}
-	
+
 	@Override
 	public String pingRemoteEJB() {
 		StringBuilder sb = new StringBuilder("{\"status\": \"RUNNING\"}");
 		return sb.toString();
 	}
 
+	@Override
+	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisID(Long crisisID, Integer count) throws Exception {
+		if (null == crisisID) {
+			logger.error("crisisID can't be null");
+			throw new PropertyNotSetException("crisisID can't be null");
+		}
+		logger.info("Received request for crisisID = " + crisisID + ", count = " + count);
+		List <HumanLabeledDocumentDTO> labeledDocList = null;
+
+		String aliasTable = "documentNominalLabels";
+		String aliasTableKeyField = "documentNominalLabels.id.nominalLabelId";
+		String[] orderBy = {"documentId"};
+
+		Criterion criterion = Restrictions.conjunction()
+				.add(Restrictions.eq("crisis.crisisId",crisisID))
+				.add(Restrictions.eq("hasHumanLabels", true));
+		Criterion aliasCriterion =  Restrictions.isNotNull(aliasTableKeyField);
+		try {
+			List<Document> docList = remoteDocumentEJB.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, count, aliasTable, aliasCriterion);
+			if (docList != null) {
+				System.out.println("Fetched size = " + docList.size());
+				Set<Document> docSet = new TreeSet<Document>(new DocumentComparator());
+				docSet.addAll(docList);
+				System.out.println("Sizeof document collection set = " + docSet.size());
+
+				// First get all labels for the fetched documents
+				labeledDocList = new ArrayList<HumanLabeledDocumentDTO>();
+				for (Document doc: docSet) {
+					List<DocumentNominalLabelDTO> labeledDataDTO = remoteDocumentNominalLabelEJB.findLabeledDocumentListByID(doc.getDocumentId());
+					if (labeledDataDTO != null) {
+						for (DocumentNominalLabelDTO dto: labeledDataDTO) {
+							NominalLabelDTO nominalLabel = remoteNominalLabelEJB.getNominalLabelWithAllFieldsByID(dto.getIdDTO().getNominalLabelId());
+							if (nominalLabel != null) {
+								nominalLabel.setDocumentNominalLabelsDTO(null);
+								nominalLabel.setModelNominalLabelsDTO(null);
+							}
+							dto.setNominalLabelDTO(nominalLabel);
+							dto.setDocumentDTO(null);
+						}
+						labeledDocList.add(new HumanLabeledDocumentDTO(new DocumentDTO(doc), labeledDataDTO));
+					}
+				}
+				return labeledDocList;
+			} else {
+				return null;
+			}
+		} catch (Exception e) {
+			logger.error("Error in getting human labeled documents collection for crisisID: " + crisisID);
+			logger.error("exception", e);
+		}
+		return null;
+	}
+
+	@Override
+	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisCode(String crisisCode, Integer count) throws Exception{
+		if (null == crisisCode) {
+			logger.error("crisis code can't be null");
+			throw new PropertyNotSetException("crisis code can't be null");
+		}
+		CrisisDTO crisis = remoteCrisisEJB.getCrisisByCode(crisisCode);
+		if (null == crisis) {
+			logger.error("crisis code is invalid");
+			throw new PropertyNotSetException("crisis code is invalid");
+		}
+		logger.info("Received request for crisis code = " + crisisCode + ", count = " + count);
+		return this.getHumanLabeledDocumentsByCrisisID(crisis.getCrisisID(), count);
+	}
+
+	@Override
+	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisIDUserID(Long crisisID, Long userID, Integer count) throws Exception {
+		if (null == crisisID || null == userID) {
+			logger.error("crisis ID or userID can't be null");
+			throw new PropertyNotSetException("crisis ID or userID can't be null");
+		}
+		logger.info("Received request for crisisID = " + crisisID + ", userID = " + userID + ", count = " + count);
+		List <HumanLabeledDocumentDTO> labeledDocList = null;
+
+		String aliasTable = "documentNominalLabels";
+		String aliasTableKeyField = "documentNominalLabels.id.nominalLabelId";
+		String[] orderBy = {"documentId"};
+
+		Criterion criterion = Restrictions.conjunction()
+				.add(Restrictions.eq("crisis.crisisId",crisisID))
+				.add(Restrictions.eq("hasHumanLabels", true));
+		Criterion aliasCriterion =  Restrictions.conjunction()
+				.add(Restrictions.isNotNull(aliasTableKeyField))
+				.add(Restrictions.eq("documentNominalLabels.id.userId", userID));
+		try {
+			List<Document> docList = remoteDocumentEJB.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, count, aliasTable, aliasCriterion);
+			System.out.println("[getHumanLabeledDocumentsByCrisisIDUserID] docList = " + docList);
+			if (docList != null) {
+				System.out.println("Fetched size = " + docList.size());
+				Set<Document> docSet = new TreeSet<Document>(new DocumentComparator());
+				docSet.addAll(docList);
+				System.out.println("Sizeof document collection set = " + docSet.size());
+
+				// First get all labels for the fetched documents
+				labeledDocList = new ArrayList<HumanLabeledDocumentDTO>();
+				for (Document doc: docSet) {
+					List<DocumentNominalLabelDTO> labeledDataDTO = remoteDocumentNominalLabelEJB.findLabeledDocumentListByID(doc.getDocumentId());
+					if (labeledDataDTO != null) {
+						for (DocumentNominalLabelDTO dto: labeledDataDTO) {
+							NominalLabelDTO nominalLabel = remoteNominalLabelEJB.getNominalLabelWithAllFieldsByID(dto.getIdDTO().getNominalLabelId());
+							if (nominalLabel != null) {
+								nominalLabel.setDocumentNominalLabelsDTO(null);
+								nominalLabel.setModelNominalLabelsDTO(null);
+							}
+							dto.setNominalLabelDTO(nominalLabel);
+							dto.setDocumentDTO(null);
+						}
+						labeledDocList.add(new HumanLabeledDocumentDTO(new DocumentDTO(doc), labeledDataDTO));
+					}
+				}
+				return labeledDocList;
+			} else {
+				return null;
+			}
+		} catch (Exception e) {
+			logger.error("Error in getting human labeled documents collection for crisisID: " + crisisID);
+			logger.error("exception", e);
+		}
+		return null;
+
+	}
+
+	@Override
+	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisIDUserName(Long crisisID, String userName, Integer count) throws Exception {
+		if (null == crisisID || null == userName) {
+			logger.error("crisis ID or userName can't be null");
+			throw new PropertyNotSetException("crisis ID or userName can't be null");
+		}
+		UsersDTO user = remoteUsersEJB.getUserByName(userName);
+		if (null == user) {
+			logger.error("User name is invalid");
+			throw new PropertyNotSetException("User name is invalid");
+		}
+		logger.info("Received request for crisisID = " + crisisID + ", userName = " + userName + ", count = " + count);
+		return this.getHumanLabeledDocumentsByCrisisIDUserID(crisisID, user.getUserID(), count);
+	}
 
 	/*
 	public static void main(String args[]) {
@@ -1106,4 +1270,12 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 	 */
 
+	private class DocumentComparator implements Comparator<Document> {
+
+		@Override
+		public int compare(Document d1, Document d2) {
+			return d1.getDocumentId().compareTo(d2.getDocumentId());
+		}
+
+	}
 }

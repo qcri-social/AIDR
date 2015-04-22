@@ -45,7 +45,7 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 	public List<ModelFamilyDTO> getAllModelFamilies() throws PropertyNotSetException {
 		List<ModelFamilyDTO> modelFamilyDTOList = new ArrayList<ModelFamilyDTO>();
 		List<ModelFamily> modelFamilyList = getAll();
-		if (modelFamilyList != null) {
+		if (modelFamilyList != null && !modelFamilyList.isEmpty()) {
 			for (ModelFamily modelFamily : modelFamilyList) {
 				//Hibernate.initialize(modelFamily.getModels()); Enlable this line if models need to be populated.
 				modelFamilyDTOList.add(new ModelFamilyDTO(modelFamily));
@@ -58,7 +58,7 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 		List<ModelFamilyDTO> modelFamilyDTOList = new ArrayList<ModelFamilyDTO>();
 		Crisis crisis = getEntityManager().find(Crisis.class, crisisID);
 		List<ModelFamily> modelFamilyList = crisis.getModelFamilies();
-		if (modelFamilyList != null) {
+		if (modelFamilyList != null && !modelFamilyList.isEmpty()) {
 			for (ModelFamily modelFamily : modelFamilyList) {
 				Hibernate.initialize(modelFamily.getModels());
 				Hibernate.initialize(modelFamily.getNominalAttribute());

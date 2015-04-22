@@ -46,6 +46,20 @@ public class TwitterStreamTracker implements Closeable {
 		listener.addFilter(new ShedderFilter(channelName, shedder));
 		if ("strict".equals(task.getGeoR())) {
 			listener.addFilter(new StrictLocationFilter(task));
+			logger.info("Added StrictLocationFilter for collection = " + task.getCollectionCode() + ", BBox: " + task.getGeoLocation());
+		}
+		
+		// Added by koushik
+		if (task.isToFollowAvailable()) {
+			listener.addFilter(new FollowFilter(task));
+			logger.info("Added FollowFilter for collection = " + task.getCollectionCode() + ", toFollow: " + task.getToFollow());
+		}
+		
+		if (task.isToTrackAvailable() && (task.isGeoLocationAvailable() || task.isToFollowAvailable())) {
+			// New default behavior: filter tweets received from geolocation and/or followed users using tracked keywords
+			// Note: this override the default and old behavior of ORing the filter conditions by Twitter
+			listener.addFilter(new TrackFilter(task));
+			logger.info("Added TrackFilter for collection = " + task.getCollectionCode() + ", toTrack: " + task.getToTrack());
 		}
 		listener.addPublisher(publisherJedis);
 		long threhold = Long.parseLong(getProperty("FETCHER_REDIS_COUNTER_UPDATE_THRESHOLD"));

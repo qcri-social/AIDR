@@ -10,11 +10,11 @@ import org.hibernate.criterion.Criterion;
 
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAssignmentDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.ItemToLabelDTO;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
+import qa.qcri.aidr.task.common.TrainingDataFetchType;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -33,7 +33,7 @@ public interface TaskManagerRemote<T, Serializable> {
 	public List<Long> saveNewTasks(List<T> collection, Long crisisID);
 	
 	public void assignNewTaskToUser(Long id, Long userId) throws Exception;
-	public void assignNewTaskToUser(List<T> collection, Long userId) throws Exception;
+	public void assignNewTaskToUser(List<DocumentDTO> collection, Long userId) throws Exception;
 	
 	public void undoTaskAssignment(Map<Long, Long> taskMap) throws Exception;
 	public void undoTaskAssignment(Long documentID, Long userID) throws Exception;
@@ -95,7 +95,14 @@ public interface TaskManagerRemote<T, Serializable> {
 
 	public <E> String serializeTask(E task);
 	
+	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisID(Long crisisID, Integer count) throws Exception;
+	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisCode(String crisisCode, Integer count) throws Exception;
+	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisIDUserID(Long crisisID, Long userID, Integer count) throws Exception;
+	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisIDUserName(Long crisisID, String userName, Integer count) throws Exception;
 
+	public List<DocumentDTO> getDocumentsForTagging(final Long crisisID, final int count, final String userName, final int remainingCount,
+													final TrainingDataFetchType fetchType);
+	
 	// for testing purpose
 	public String pingRemoteEJB();
 

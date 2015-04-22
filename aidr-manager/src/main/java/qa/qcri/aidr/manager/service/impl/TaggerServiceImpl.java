@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
@@ -28,7 +29,6 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import java.util.*;
 
 //import com.sun.jersey.api.client.Client;
@@ -328,7 +328,11 @@ public class TaggerServiceImpl implements TaggerService {
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 			String jsonResponse = clientResponse.readEntity(String.class);
 			logger.info("received response: " + jsonResponse);
-			CrisisDTO dto = objectMapper.readValue(jsonResponse, CrisisDTO.class);
+			CrisisDTO dto = null;
+			TaggerResponseWrapper response = objectMapper.readValue(jsonResponse, TaggerResponseWrapper.class);
+			if (response.getDataObject() != null) {
+				dto = objectMapper.readValue(objectMapper.writeValueAsString(response.getDataObject()), CrisisDTO.class);
+			}
 			logger.info("deserialization result: " + dto);
 			if (dto != null) {
 				TaggerCrisis crisis = new TaggerCrisis(dto);
@@ -340,7 +344,8 @@ public class TaggerServiceImpl implements TaggerService {
 			return null;
 		} catch (Exception e) {
 			logger.info("exception: ", e);
-			throw new AidrException("Error while getting crisis by code from Tagger", e);
+			return null;
+			//throw new AidrException("Error while getting crisis by code from Tagger", e);
 		}
 	}
 
@@ -886,14 +891,14 @@ public class TaggerServiceImpl implements TaggerService {
 	}
 
 	@Override
-	public List<TaggerModelNominalLabel> getAllLabelsForModel(Integer modelID) throws AidrException {
+	public List<TaggerModelNominalLabel> getAllLabelsForModel(Integer modelID, String crisisCode) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
 			/**
 			 * Rest call to Tagger
 			 */
 			logger.info("received request for modelID = " + modelID);
-			WebTarget webResource = client.target(taggerMainUrl + "/modelNominalLabel/" + modelID);
+			WebTarget webResource = client.target(taggerMainUrl + "/modelNominalLabel/" + modelID + "/" + crisisCode);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
@@ -903,6 +908,9 @@ public class TaggerServiceImpl implements TaggerService {
 
 			if (modelLabelsResponse.getModelNominalLabelsDTO() != null) {
 				logger.info("Tagger returned " + modelLabelsResponse.getModelNominalLabelsDTO().size() + " labels for model with ID " + modelID);
+				for (TaggerModelNominalLabel dto: modelLabelsResponse.getModelNominalLabelsDTO()) {
+		        	logger.info("Training count for crisis = " + crisisCode + ", label: " + dto.getNominalLabel().getName() + " is = " + dto.getTrainingDocuments());
+		        }
 			}
 
 			return modelLabelsResponse.getModelNominalLabelsDTO();
@@ -1150,10 +1158,11 @@ public class TaggerServiceImpl implements TaggerService {
 	}
 
 	@Override
-	public Map<String, Object> generateCSVFilteredLink(String code, String queryString) throws AidrException {
+	public Map<String, Object> generateCSVFilteredLink(String code, String queryString, String userName) throws AidrException {
 		try {
 			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
-			WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/filter/genCSV?collectionCode=" + code + "&exportLimit=100000");
+			WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/filter/genCSV?collectionCode=" + code
+					+ "&exportLimit=100000&userName=" + userName);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(queryString), Response.class);
 			//String jsonResponse = clientResponse.readEntity(String.class);
@@ -1173,13 +1182,14 @@ public class TaggerServiceImpl implements TaggerService {
 
 	// Added by koushik
 	@Override
-	public Map<String, Object> generateTweetIdsFilteredLink(String code, String queryString) throws AidrException {
+	public Map<String, Object> generateTweetIdsFilteredLink(String code, String queryString, String userName) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		System.out.println("[generateJsonTweetIdsLink] Received request for code: " + code);
 		try {
 			System.out.println("[generateTweetIdsLink] Invoked URL: " + persisterMainUrl + "/taggerPersister/filter/genTweetIds?collectionCode=" + code
-					+ "&downloadLimited=true");
-			WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/filter/genTweetIds?collectionCode=" + code + "&downloadLimited=true");
+					+ "&downloadLimited=true&userName=" + userName);
+			WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/filter/genTweetIds?collectionCode=" + code 
+					+ "&downloadLimited=true&userName=" + userName);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(queryString), Response.class);
 			//String jsonResponse = clientResponse.readEntity(String.class);
@@ -1200,11 +1210,11 @@ public class TaggerServiceImpl implements TaggerService {
 	}
 
 	@Override
-	public Map<String, Object> generateJSONFilteredLink(String code, String queryString, String jsonType) throws AidrException {
+	public Map<String, Object> generateJSONFilteredLink(String code, String queryString, String jsonType, String userName) throws AidrException {
 		try {
 			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 			WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/filter/genJson?collectionCode=" + code + "&exportLimit=100000"
-					+ "&jsonType=" + jsonType);
+					+ "&jsonType=" + jsonType + "&userName=" + userName);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(queryString), Response.class);
 			//String jsonResponse = clientResponse.readEntity(String.class);
@@ -1224,13 +1234,14 @@ public class TaggerServiceImpl implements TaggerService {
 
 	// Added by koushik
 	@Override
-	public Map<String, Object> generateJsonTweetIdsFilteredLink(String code, String queryString, String jsonType) throws AidrException {
+	public Map<String, Object> generateJsonTweetIdsFilteredLink(String code, String queryString, String jsonType, String userName) throws AidrException {
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		System.out.println("[generateJsonTweetIdsLink] Received request for code: " + code);
 		try {
 			System.out.println("[generateJsonTweetIdsLink] Invoked URL: " + persisterMainUrl + "/taggerPersister/filter/genJsonTweetIds?collectionCode=" + code
-					+ "&downloadLimited=true&" + "&jsonType=" + jsonType);
-			WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/filter/genJsonTweetIds?collectionCode=" + code + "&downloadLimited=true&" + "&jsonType=" + jsonType);
+					+ "&downloadLimited=true&" + "&jsonType=" + jsonType + "&userName=" + userName);
+			WebTarget webResource = client.target(persisterMainUrl + "/taggerPersister/filter/genJsonTweetIds?collectionCode=" + code + "&downloadLimited=true&" 
+					+ "&jsonType=" + jsonType + "&userName=" + userName);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(queryString), Response.class);
 			//String jsonResponse = clientResponse.readEntity(String.class);
@@ -1450,6 +1461,126 @@ public class TaggerServiceImpl implements TaggerService {
 		} catch (Exception e) {
 			logger.info("exception", e);
 			throw new AidrException("Error while loadLatestTweetsWithCount", e);
+		}
+	}
+
+	@Override
+	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisID(Long crisisID, Integer count) throws AidrException {
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		try {
+			// Rest call to Tagger
+			WebTarget webResource = client.target(taggerMainUrl + "/misc/humanLabeled/crisisID/" + crisisID + "?count=" + count);
+
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+
+			String jsonResponse = clientResponse.readEntity(String.class);
+
+			TaggerResponseWrapper dtoList = objectMapper.readValue(jsonResponse, TaggerResponseWrapper.class);
+			logger.info("Number of human labeled documents returned by Tagger: " + (dtoList.getHumanLabeledItems() != null ? dtoList.getHumanLabeledItems().size() : 0));
+
+			return dtoList;
+		} catch (Exception e) {
+			logger.info("exception", e);
+			throw new AidrException("Error while getting all human labeled documents for crisisID = " + crisisID + " from Tagger", e);
+		}
+	}
+
+	@Override
+	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisCode(String crisisCode, Integer count) throws AidrException {
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		try {
+			// Rest call to Tagger
+			WebTarget webResource = client.target(taggerMainUrl + "/misc/humanLabeled/crisisCode/" + crisisCode + "?count=" + count);
+
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+
+			String jsonResponse = clientResponse.readEntity(String.class);
+
+			TaggerResponseWrapper dtoList = objectMapper.readValue(jsonResponse, TaggerResponseWrapper.class);
+			logger.info("Number of human labeled documents returned by Tagger: " + (dtoList.getHumanLabeledItems() != null ? dtoList.getHumanLabeledItems().size() : 0));
+
+			return dtoList;
+		} catch (Exception e) {
+			logger.info("exception", e);
+			throw new AidrException("Error while getting all human labeled documents for crisis code = " + crisisCode + " from Tagger", e);
+		}
+	}
+
+	@Override
+	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisIDUserID(Long crisisID, Long userID, Integer count) throws AidrException {
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		try {
+			// Rest call to Tagger
+			WebTarget webResource = client.target(taggerMainUrl + "/misc/humanLabeled/crisisID/" + crisisID + "/userID/"+ userID + "?count=" + count);
+
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+
+			String jsonResponse = clientResponse.readEntity(String.class);
+
+			TaggerResponseWrapper dtoList = objectMapper.readValue(jsonResponse, TaggerResponseWrapper.class);
+			logger.info("Number of human labeled documents returned by Tagger: " + (dtoList.getHumanLabeledItems() != null ? dtoList.getHumanLabeledItems().size() : 0));
+
+			return dtoList;
+		} catch (Exception e) {
+			logger.info("exception", e);
+			throw new AidrException("Error while getting all human labeled documents for crisisID = " + crisisID + ", userId = " + userID + " from Tagger", e);
+		}
+	}
+
+	@Override
+	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisIDUserName(Long crisisID, String userName, Integer count) throws AidrException {
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		try {
+			// Rest call to Tagger
+			WebTarget webResource = client.target(taggerMainUrl + "/misc/humanLabeled/crisisID/" + crisisID + "/userName/"+ userName + "?count=" + count);
+
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+
+			String jsonResponse = clientResponse.readEntity(String.class);
+
+			TaggerResponseWrapper dtoList = objectMapper.readValue(jsonResponse, TaggerResponseWrapper.class);
+			logger.info("Number of human labeled documents returned by Tagger: " + (dtoList.getHumanLabeledItems() != null ? dtoList.getHumanLabeledItems().size() : 0));
+
+			return dtoList;
+		} catch (Exception e) {
+			logger.info("exception", e);
+			throw new AidrException("Error while getting all human labeled documents for crisisID = " + crisisID + ", user name = " + userName + " from Tagger", e);
+		}
+	}
+	
+	@Override
+	public Map<String, Object> downloadHumanLabeledDocumentsByCrisisUserName(String queryString, String crisisCode, String userName, Integer count,
+			String fileType, String contentType) throws AidrException {
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		try {
+			// Rest call to Tagger
+			WebTarget webResource = client.target(taggerMainUrl + "/misc/humanLabeled/download/crisis/" + crisisCode + "/userName/"+ userName 
+						+ "?count=" + count + "&fileType=" + fileType + "&contentType=" + contentType);
+
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
+					.post(Entity.json(queryString), Response.class);
+			String jsonResponse = clientResponse.readEntity(String.class);
+
+			TaggerResponseWrapper response = objectMapper.readValue(jsonResponse, TaggerResponseWrapper.class);
+			logger.info("Number of human labeled documents returned by Tagger: " + response.getHumanLabeledItems().size());
+			
+			Map<String, Object> retVal = new HashMap<String, Object>();
+			retVal.put("fileName", response.getMessage());
+			retVal.put("total", response.getTotal());
+			return retVal;
+		} catch (Exception e) {
+			logger.info("exception", e);
+			throw new AidrException("Error while getting download link for human labeled documents for crisis code = " + crisisCode + ", user name = " + userName + " from Tagger", e);
 		}
 	}
 

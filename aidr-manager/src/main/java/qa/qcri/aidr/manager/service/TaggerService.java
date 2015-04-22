@@ -33,7 +33,7 @@ public interface TaggerService {
 
 	public List<TaggerModel> getModelsForCrisis(Integer crisisID) throws AidrException;
 
-	public List<TaggerModelNominalLabel> getAllLabelsForModel(Integer modelID) throws AidrException;
+	public List<TaggerModelNominalLabel> getAllLabelsForModel(Integer modelID, String crisisCode) throws AidrException;
 
 	public TaggerAttribute createNewAttribute(TaggerAttribute attribute) throws AidrException;
 
@@ -112,15 +112,23 @@ public interface TaggerService {
 
 	//Added by koushik
 	public Map<String, Object> generateJSONFilteredLink(String code,
-			String queryString, String jsonType) throws AidrException;
+			String queryString, String jsonType, String userName) throws AidrException;
 
 	//Added by koushik
 	public Map<String, Object> generateJsonTweetIdsFilteredLink(String code,
-			String queryString, String jsonType) throws AidrException;
+			String queryString, String jsonType, String userName) throws AidrException;
 
 	//Added by koushik
-	public Map<String, Object> generateCSVFilteredLink(String code, String queryString) throws AidrException;
+	public Map<String, Object> generateCSVFilteredLink(String code, String queryString, String userName) throws AidrException;
 
 	//Added by koushik
-	public Map<String, Object> generateTweetIdsFilteredLink(String code, String queryString) throws AidrException;
+	public Map<String, Object> generateTweetIdsFilteredLink(String code, String queryString, String userName) throws AidrException;
+	
+	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisID(Long crisisID, Integer count) throws AidrException;
+	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisCode(String crisisCode, Integer count) throws AidrException;
+	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisIDUserID(Long crisisID, Long userID, Integer count) throws AidrException;
+	public TaggerResponseWrapper getHumanLabeledDocumentsByCrisisIDUserName(Long crisisID, String userName, Integer count) throws AidrException;
+
+	public Map<String, Object> downloadHumanLabeledDocumentsByCrisisUserName(String queryString, String crisisCode, String userName, Integer count, String fileType, String contentType) throws AidrException;
+	
 }

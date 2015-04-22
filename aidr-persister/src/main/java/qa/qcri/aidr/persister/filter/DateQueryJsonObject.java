@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import qa.qcri.aidr.common.code.DateFormatConfig;
 import qa.qcri.aidr.persister.filter.ComparatorType;
 
 @SuppressWarnings("serial")
@@ -41,14 +42,14 @@ public class DateQueryJsonObject extends QueryJsonObject {
 	}
 	
 	@JsonProperty("timestamp")
-	public long getTime() {
+	public long getTimestamp() {
 		return timestamp;
 	}
 	
 	@Override
 	@JsonProperty("timestamp")
-	public void setTime(long time) {
-		this.timestamp = time;
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
 	}
 
 	@Override
@@ -59,12 +60,12 @@ public class DateQueryJsonObject extends QueryJsonObject {
 		
 		//return date;
 		
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+		DateFormat formatter = new SimpleDateFormat(DateFormatConfig.ISODateFormat);
 		formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
 		if (timestamp > 0) {
 			try {
-				Date date = new Date(this.timestamp * 1000L);
-				//System.out.println("[getDate] Converted date: " + date.toString());
+				Date date = new Date(this.timestamp * 1000);
+				//System.out.println("[getDate] Converted date: " + date.toString() + "from timestamp = " + this.timestamp); 
 				return date;
 			} catch (Exception e) {
 				System.err.println("[getDate] Error in creating Date from " + timestamp);

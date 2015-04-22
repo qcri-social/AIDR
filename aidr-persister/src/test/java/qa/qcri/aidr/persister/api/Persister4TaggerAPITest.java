@@ -13,6 +13,7 @@ public class Persister4TaggerAPITest {
 	//
 	static Persister4TaggerAPI persister4TaggerAPI;
 	static String collectionCode = "2014-05-emsc_landslides_2014";
+	static String userName = "SinhaKoushik";
 	//
 	@BeforeClass
 	public static void setUp() {
@@ -32,7 +33,7 @@ public class Persister4TaggerAPITest {
 	public void testGenerateCSVFromLastestJSONFiltered() throws UnknownHostException {
 		int exportLimit = 50;
 		String queryString = "{ \"constraints\": [ { \"queryType\": \"date_query\", \"comparator\": \"is_before\", \"timestamp\": 1495339860 }, { \"queryType\": \"date_query\", \"comparator\": \"is_after\", \"timestamp\": 1272339860 }, { \"queryType\": \"classifier_query\", \"classifier_code\": \"informative_pray_personal\", \"label_code\": \"praying\", \"comparator\": \"is\", \"min_confidence\": 0.8 }, { \"queryType\": \"classifier_query\", \"classifier_code\": \"informative_pray_personal\", \"label_code\": \"030_info\", \"comparator\": \"is_not\" }, { \"queryType\": \"classifier_query\", \"classifier_code\": \"informative_pray_personal\", \"label_code\": null, \"comparator\": \"has_confidence\", \"min_confidence\": 0.5 } ] }";
-		Response response = persister4TaggerAPI.generateCSVFromLastestJSONFiltered(queryString, collectionCode, exportLimit);
+		Response response = persister4TaggerAPI.generateCSVFromLastestJSONFiltered(queryString, collectionCode, exportLimit, userName);
 		//
 		assertEquals("OutboundJaxrsResponse{status=200, reason=OK, hasEntity=true, closed=false, buffered=false}", response.toString());
 	}
@@ -52,7 +53,7 @@ public class Persister4TaggerAPITest {
 		String queryString = "{ \"constraints\": [ { \"queryType\": \"date_query\", \"comparator\": \"is_before\", \"timestamp\": 1495339860 }, { \"queryType\": \"date_query\", \"comparator\": \"is_after\", \"timestamp\": 1272339860 }, { \"queryType\": \"classifier_query\", \"classifier_code\": \"informative_pray_personal\", \"label_code\": \"praying\", \"comparator\": \"is\", \"min_confidence\": 0.8 }, { \"queryType\": \"classifier_query\", \"classifier_code\": \"informative_pray_personal\", \"label_code\": \"030_info\", \"comparator\": \"is_not\" }, { \"queryType\": \"classifier_query\", \"classifier_code\": \"informative_pray_personal\", \"label_code\": null, \"comparator\": \"has_confidence\", \"min_confidence\": 0.5 } ] }";
 		
 		Boolean downloadLimited = true;
-		Response response = persister4TaggerAPI.generateTweetsIDSCSVFromAllJSONFiltered(queryString, collectionCode, downloadLimited);
+		Response response = persister4TaggerAPI.generateTweetsIDSCSVFromAllJSONFiltered(queryString, collectionCode, downloadLimited, userName);
 		//
 		assertEquals("OutboundJaxrsResponse{status=200, reason=OK, hasEntity=true, closed=false, buffered=false}", response.toString());
 	}
@@ -82,7 +83,7 @@ public class Persister4TaggerAPITest {
 		String queryString = "{\"constraints\": []}";
 		int exportLimit = 50;
 		String jsonType = "TEXT_JSON";
-		Response response = persister4TaggerAPI.generateJSONFromLastestJSONFiltered(queryString, collectionCode, exportLimit, jsonType);
+		Response response = persister4TaggerAPI.generateJSONFromLastestJSONFiltered(queryString, collectionCode, exportLimit, jsonType, userName);
 		//
 		assertEquals("OutboundJaxrsResponse{status=200, reason=OK, hasEntity=true, closed=false, buffered=false}", response.toString());
 	}
@@ -93,7 +94,7 @@ public class Persister4TaggerAPITest {
 		String queryString = "{\"constraints\": []}";
 		Boolean downloadLimited = true;
 		String jsonType = "TEXT_JSON";
-		Response response = persister4TaggerAPI.generateTweetsIDSJSONFromAllJSONFiltered(queryString, collectionCode , downloadLimited, jsonType);
+		Response response = persister4TaggerAPI.generateTweetsIDSJSONFromAllJSONFiltered(queryString, collectionCode , downloadLimited, jsonType, userName);
 		//
 		assertEquals("OutboundJaxrsResponse{status=200, reason=OK, hasEntity=true, closed=false, buffered=false}", response.toString());
 	}

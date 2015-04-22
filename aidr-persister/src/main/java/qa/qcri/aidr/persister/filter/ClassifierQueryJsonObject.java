@@ -70,13 +70,13 @@ public class ClassifierQueryJsonObject extends QueryJsonObject {
 
 
 	@Override
-	public long getTime() {
+	public long getTimestamp() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public void setTime(long time) {
+	public void setTimestamp(long timestamp) {
 		// TODO Auto-generated method stub
 	}
 	

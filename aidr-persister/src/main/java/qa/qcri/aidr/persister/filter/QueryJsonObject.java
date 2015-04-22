@@ -51,8 +51,8 @@ public abstract class QueryJsonObject implements Serializable {
 	abstract public void setComparator(ComparatorType comparator);
 
 
-	abstract public long getTime();
-	abstract public void setTime(long time);
+	abstract public long getTimestamp();
+	abstract public void setTimestamp(long timestamp);
 	
 	abstract public Date getDate();
 

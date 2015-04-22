@@ -128,7 +128,7 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 	public List<DocumentNominalLabelDTO> findByCriteria(String columnName, Object value) throws PropertyNotSetException {
 		List<DocumentNominalLabel> list = getAllByCriteria(Restrictions.eq(columnName,value));
 		List<DocumentNominalLabelDTO> dtoList = new ArrayList<DocumentNominalLabelDTO>();
-		if (list != null) {
+		if (list != null && !list.isEmpty()) {
 			for (DocumentNominalLabel c: list) {
 				dtoList.add(new DocumentNominalLabelDTO(c));
 			}
@@ -159,7 +159,7 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 		System.out.println("Received request for fetching all Documents!!!");
 		List<DocumentNominalLabelDTO> dtoList = new ArrayList<DocumentNominalLabelDTO>();
 		List<DocumentNominalLabel> list = getAll();
-		if (list != null) {
+		if (list != null && !list.isEmpty()) {
 			for (DocumentNominalLabel doc : list) {
 				//System.out.println("Converting to DTO Document: " + doc.getDocumentId() + ", " + doc.getCrisis().getCode() + ", " + doc.isHasHumanLabels());
 				DocumentNominalLabelDTO dto = new DocumentNominalLabelDTO(doc);
@@ -174,6 +174,12 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 	public DocumentNominalLabelDTO findLabeledDocumentByID(Long id) throws PropertyNotSetException {
 		List<DocumentNominalLabelDTO> dtoList = findByCriteria("id.documentId", id.longValue()); 
 		return (dtoList != null && !dtoList.isEmpty()) ? dtoList.get(0) : null;
+	}
+	
+	@Override
+	public List<DocumentNominalLabelDTO> findLabeledDocumentListByID(Long id) throws PropertyNotSetException {
+		List<DocumentNominalLabelDTO> dtoList = findByCriteria("id.documentId", id.longValue()); 
+		return (dtoList != null && !dtoList.isEmpty()) ? dtoList : null;
 	}
 
 	@Override

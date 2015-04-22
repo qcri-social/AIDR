@@ -69,17 +69,17 @@ public class ReadWriteCSV<CellProcessors> {
 	private static ErrorLog elog = new ErrorLog();
 
 	private String collectionCode = null; 
-	
+
 	public static final String[] ClassifiedTweetCSVHeader = new String[]{"tweetID", "message","userID", "userName", "userURL", "createdAt", "tweetURL", "crisisName"}; 
 	public static final String[] ClassifiedTweetIDCSVHeader = new String[]{"tweetID", "crisisName"};
-	
+
 	public static final int FIXED_CLASSIFIED_TWEET_HEADER_SIZE = ClassifiedTweetCSVHeader.length;
 	public static final int FIXED_CLASSIFIED_TWEET_ID_HEADER_SIZE = ClassifiedTweetIDCSVHeader.length;
 	public static final int VARIABLE_HEADER_SIZE = 7;	// number of variable header elements per classifier
 	private static final int DEFAULT_CLASSIFIER_COUNT = 1;
-	
-	//private static int countWritten = 0;
-	
+
+	private static int countWritten = 0;
+
 	public ReadWriteCSV(String collectionCode) {
 		this.collectionCode = collectionCode;
 	}
@@ -251,7 +251,8 @@ public class ReadWriteCSV<CellProcessors> {
 				mapWriter = getCSVMapWriter(fileToWrite);
 
 				// First write the header
-				mapWriter.writeHeader(runningHeader);
+				if (runningHeader != null) mapWriter.writeHeader(runningHeader);
+				countWritten = 0;
 			}
 		} catch (Exception ex) {
 			logger.error(collectionDIR + ": Exception occured when creating a mapWriter instance");
@@ -260,20 +261,20 @@ public class ReadWriteCSV<CellProcessors> {
 		}
 
 		// Now write to CSV file using CsvMapWriter
-		// int count = 0;
 		for (final ClassifiedTweet tweet : tweetsList) {
 			try {
 				//logger.info("Current header length :: Actual number of cells needed: " + runningHeader.length + "::" + getClassifedTweetHeaderSize(FIXED_CLASSIFIED_TWEET_ID_HEADER_SIZE, tweet.getNominalLabels().size()));
 				if (runningHeader.length < getClassifedTweetHeaderSize(FIXED_CLASSIFIED_TWEET_ID_HEADER_SIZE, tweet.getNominalLabels().size())) {
 					// reallocate header
 					runningHeader = resetClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetIDCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_ID_HEADER_SIZE, tweet.getNominalLabels().size());
-					
+
 					logger.info("Reallocated running header. After reallocation, Current header length :: Actual number of cells needed: " 
 							+ runningHeader.length + "::" + getClassifedTweetHeaderSize(FIXED_CLASSIFIED_TWEET_ID_HEADER_SIZE, tweet.getNominalLabels().size()));
 				}
 				final Map<String, Object> tweetToWrite = createClassifiedTweetIDCsvMap(runningHeader, tweet);
 				final CellProcessor[] processors = getClassifiedTweetVariableProcessors(runningHeader.length);
 				mapWriter.write(tweetToWrite, runningHeader, processors);
+				++countWritten;
 			} catch (SuperCsvCellProcessorException e) {
 				//logger.error(collectionDIR + ": SuperCSV error. Offending tweet: " + tweet.getTweetID());
 				//logger.error(elog.toStringException(e));
@@ -328,8 +329,9 @@ public class ReadWriteCSV<CellProcessors> {
 				mapWriter = getCSVMapWriter(fileToWrite);
 
 				// First write the header
-				mapWriter.writeHeader(runningHeader);
-			}
+				if (runningHeader != null) mapWriter.writeHeader(runningHeader);
+				countWritten = 0;
+			}		
 		} catch (Exception ex) {
 			logger.error(collectionDIR + ": Exception occured when creating a mapWriter instance");
 			logger.error(elog.toStringException(ex));
@@ -344,15 +346,15 @@ public class ReadWriteCSV<CellProcessors> {
 				if (runningHeader.length < getClassifedTweetHeaderSize(FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet.getNominalLabels().size())) {
 					// reallocate header
 					runningHeader = resetClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet.getNominalLabels().size());
-					
+
 					logger.info("Reallocated running header. After reallocation, Current header length :: Actual number of cells needed: " 
-								+ runningHeader.length + "::" + getClassifedTweetHeaderSize(FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet.getNominalLabels().size()));
+							+ runningHeader.length + "::" + getClassifedTweetHeaderSize(FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet.getNominalLabels().size()));
 				}
 				final Map<String, Object> tweetToWrite = createClassifiedTweetCsvMap(runningHeader, tweet);
 				final CellProcessor[] processors = getClassifiedTweetVariableProcessors(runningHeader.length);
 				//logger.info("Going to write: " + tweetToWrite);
 				mapWriter.write(tweetToWrite, runningHeader, processors);
-				//++countWritten;
+				++countWritten;
 
 			} catch (SuperCsvCellProcessorException e) {
 				logger.error(collectionDIR + ": SuperCSV error. Offending tweet: " + tweet.getTweetID());
@@ -361,7 +363,7 @@ public class ReadWriteCSV<CellProcessors> {
 				logger.error(collectionDIR + "IOException in writing tweet: " + tweet.getTweetID());
 			}
 		}
-		//logger.info("Actual number of tweets written so far: " + countWritten);
+		logger.info("Actual number of tweets written so far: " + countWritten);
 		return mapWriter;
 	}
 
@@ -384,17 +386,19 @@ public class ReadWriteCSV<CellProcessors> {
 		logger.info("Number of classifiers = " + numberOfClassifiers + ", headerSize = " + fullHeader.length);
 		return fullHeader;
 	}
-	
+
 	public String[] setClassifiedTweetHeader(String[] header, int fixedHeaderSize, ClassifiedTweet tweet) {
 
 		int numberOfClassifiers = 0;
 		Map<String, Integer> classifierCount = getClassifierCountForCrisis(this.collectionCode);
 		if (classifierCount.containsKey("count") && classifierCount.get("count") == -1) {
 			// estimate based on current 'tweet'
-			numberOfClassifiers = getClassifedTweetHeaderSize(fixedHeaderSize, tweet);
+			numberOfClassifiers = getClassiferCountFromTweet(tweet);
+			logger.info("Estimated classifier count based on first tweet = " + numberOfClassifiers);
 		} else {
 			// set as per obtained value
 			numberOfClassifiers = classifierCount.get("count");
+			logger.info("Number of classifier count based on tagger-API data = " + numberOfClassifiers);
 		}
 		String[] fullHeader = new String[getClassifedTweetHeaderSize(fixedHeaderSize, numberOfClassifiers)];
 		for (int i = 0;i < header.length;i++) {
@@ -427,8 +431,12 @@ public class ReadWriteCSV<CellProcessors> {
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 			jsonResponse = clientResponse.readEntity(Map.class); 
 			logger.info("Tagger API returned: " + jsonResponse);
-			if (jsonResponse.containsKey("count") && jsonResponse.get("count") >= 0) {
-				return jsonResponse;
+			if (jsonResponse.containsKey("count") && jsonResponse.get("count") != null) {
+				if (jsonResponse.get("count") > 0) {
+					return jsonResponse;
+				} else {
+					jsonResponse.put("count", DEFAULT_CLASSIFIER_COUNT);
+				}
 			} else {
 				jsonResponse = new HashMap<String, Integer>();
 				jsonResponse.put("count", -1);
@@ -445,8 +453,10 @@ public class ReadWriteCSV<CellProcessors> {
 		int numberOfClassifiers = 0;
 		if (tweet.getNominalLabels() != null) {
 			numberOfClassifiers = tweet.getNominalLabels().size();
+			logger.info("From nominal_labels size = " + tweet.getNominalLabels().size());
 		} else {
 			numberOfClassifiers = DEFAULT_CLASSIFIER_COUNT;
+			logger.info("From default value = " + DEFAULT_CLASSIFIER_COUNT);
 		}
 		return (fixedHeaderSize + numberOfClassifiers * VARIABLE_HEADER_SIZE);		// number of nominal_label elements
 
@@ -455,7 +465,19 @@ public class ReadWriteCSV<CellProcessors> {
 	public int getClassifedTweetHeaderSize(int fixedHeaderSize, int numberOfClassifiers) {
 		return (fixedHeaderSize + numberOfClassifiers * VARIABLE_HEADER_SIZE);		// number of nominal_label elements
 	}
-	
+
+	public int getClassiferCountFromTweet(ClassifiedTweet tweet) {
+		int numberOfClassifiers = 0;
+		if (tweet.getNominalLabels() != null) {
+			numberOfClassifiers = tweet.getNominalLabels().size();
+			logger.info("From nominal_labels size = " + tweet.getNominalLabels().size());
+		} else {
+			numberOfClassifiers = DEFAULT_CLASSIFIER_COUNT;
+			logger.info("From default value = " + DEFAULT_CLASSIFIER_COUNT);
+		}
+		return numberOfClassifiers; 	// number of nominal_labels
+	}
+
 	private Map<String, Object> createClassifiedTweetCsvMap(String[] header, ClassifiedTweet tweet) {
 		Map<String, Object> tweetToWrite = new HashMap<String, Object>();
 		int i = 0;	
@@ -469,8 +491,8 @@ public class ReadWriteCSV<CellProcessors> {
 		tweetToWrite.put(header[i+7], tweet.getCrisisName());
 		i = i + ClassifiedTweetCSVHeader.length;
 		if (tweet.getNominalLabels() != null) {
-            //logger.info("[createClassifiedTweetCsvMap] tweet toString :" + tweet.toString());
-            //logger.info("[createClassifiedTweetCsvMap] tweet getNominalLabels size :" + tweet.getNominalLabels().size());
+			//logger.info("[createClassifiedTweetCsvMap] tweet toString :" + tweet.toString());
+			//logger.info("[createClassifiedTweetCsvMap] tweet getNominalLabels size :" + tweet.getNominalLabels().size());
 			tweetToWrite = writeVariableAttributeData(header, i, tweetToWrite, tweet);
 		}
 		return tweetToWrite;
@@ -478,26 +500,26 @@ public class ReadWriteCSV<CellProcessors> {
 
 	private Map<String, Object> writeVariableAttributeData(final String[] header, final int startIndex, Map<String, Object> tweetToWrite, final ClassifiedTweet tweet) {
 		int i = startIndex;
-        //logger.info("[writeVariableAttributeData] tweet getNominalLabels size :" + tweet.getNominalLabels().size());        
-        //logger.info("[writeVariableAttributeData] startIndex :" + i);
-        for (int j = 0;j < tweet.getNominalLabels().size();j++) {
-            try{
-            	NominalLabel nLabel = tweet.getNominalLabels().get(j);
-            	if (nLabel != null) {
-                    //logger.info("[writeVariableAttributeData] nLabel attribute_name :" + nLabel.attribute_name);
-                    tweetToWrite.put(header[i], nLabel.attribute_name);
-                    tweetToWrite.put(header[i+1], nLabel.attribute_code);
-                    tweetToWrite.put(header[i+2], nLabel.label_name);
-                    tweetToWrite.put(header[i+3], nLabel.label_description);
-                    tweetToWrite.put(header[i+4], nLabel.label_code);
-                    tweetToWrite.put(header[i+5], nLabel.confidence);
-                    tweetToWrite.put(header[i+6], nLabel.from_human);
-                    i += VARIABLE_HEADER_SIZE;
-                }
-            }
-            catch(Exception e){
-                logger.error("[writeVariableAttributeData] excpetion : " + e.getMessage() + " - " + e.getStackTrace());
-            }
+		//logger.info("[writeVariableAttributeData] tweet getNominalLabels size :" + tweet.getNominalLabels().size());        
+		//logger.info("[writeVariableAttributeData] startIndex :" + i);
+		for (int j = 0;j < tweet.getNominalLabels().size();j++) {
+			try{
+				NominalLabel nLabel = tweet.getNominalLabels().get(j);
+				if (nLabel != null) {
+					//logger.info("[writeVariableAttributeData] nLabel attribute_name :" + nLabel.attribute_name);
+					tweetToWrite.put(header[i], nLabel.attribute_name);
+					tweetToWrite.put(header[i+1], nLabel.attribute_code);
+					tweetToWrite.put(header[i+2], nLabel.label_name);
+					tweetToWrite.put(header[i+3], nLabel.label_description);
+					tweetToWrite.put(header[i+4], nLabel.label_code);
+					tweetToWrite.put(header[i+5], nLabel.confidence);
+					tweetToWrite.put(header[i+6], nLabel.from_human);
+					i += VARIABLE_HEADER_SIZE;
+				}
+			}
+			catch(Exception e){
+				logger.error("[writeVariableAttributeData] excpetion : " + e.getMessage() + " - " + e.getStackTrace());
+			}
 		}
 		return tweetToWrite;
 	}

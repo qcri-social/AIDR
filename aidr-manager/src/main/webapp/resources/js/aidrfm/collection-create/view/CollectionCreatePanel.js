@@ -80,27 +80,44 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                 '</div>'
         });
 
-        this.geoE = Ext.create( 'Ext.form.field.Text', {
-            fieldLabel: 'Additionally, collect all tweets from these geographical regions, independent of the keywords they contain',
+       /* this.geoE = Ext.create( 'Ext.form.field.Text', {
+            fieldLabel: 'Additionally, collect all tweets from these geographical boundaries, independent of the keywords they contain',
             labelWidth: 240,
             name: 'geo',
             flex: 1,
             maxLength: 25,
             maxLengthText: 'The maximum length for this field is 25',
             emptyText: 'e.g., 43.43, 22.44, 89.32, 56.43 (max 25)'
+        });*/
+        this.geoE = Ext.create('Ext.form.FormPanel', {
+            bodyPadding: 5,
+            padding: '0 0 10 0',
+            items:[{
+                fieldLabel: 'Additionally, collect all tweets from these geographical regions, independent of the keywords they contain',
+                labelWidth: 240,
+                width: 550,
+                xtype: 'textareafield',
+                grow: true,
+                growMax: 100,
+                name: 'geo',
+                anchor: '100%',
+                maxLengthText: 'The maximum length for this field is 25',
+                emptyText: 'e.g., 43.43, 22.44, 89.32, 56.43 (max 25)'
+            }]
         });
         
         this.geoR = Ext.create('Ext.form.Panel', {
         	items:[{
             	name: 'geoR',
             	xtype: 'radiogroup',
-            	fieldLabel: 'Geo boundry strickness',
+            	fieldLabel: 'Geographical boundary strictness',
             	labelWidth: 130,
             	columns: 1,
             	vertical: true,
             	items: [
-                    { boxLabel: 'Collect tweets using approximate geographical regions (a tweet may be collected if it comes from a country that overlaps with the bounding box)', name: 'geoR1', inputValue: 'approximate' },
-                    { boxLabel: 'Collect tweets using strict geographical matching (a tweet is only collected if its geographical coordinates are strictly inside the bounding box)', name: 'geoR1', inputValue: 'strict', checked: true }
+                    { boxLabel: 'Strict: a tweet can only be collected if it has geographical coordinates strictly inside the geographical boundaries.', name: 'geoR1', inputValue: 'strict'},
+                    { boxLabel: 'Approximate: a tweet may be collected if it comes from a country that overlaps with the geographical boundaries.', name: 'geoR1', inputValue: 'approximate' },
+                    { boxLabel: 'Does not apply (no geographical boundary)', name: 'geoR1', inputValue: 'null'}
                 ]
         	}]
         });

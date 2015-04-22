@@ -80,13 +80,29 @@ public class CrisisResource {
 	@Path("/by-code/{code}")
 	public Response getCrisisByCode(@PathParam("code") String crisisCode) {
 		CrisisDTO crisis = null;
+		ResponseWrapper response = new ResponseWrapper();
 		try {
 			crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
 			System.out.println("Returning crisis: " + (crisis != null ? crisis.getCode() : "null"));
+			if (crisis != null) {
+				response.setDataObject(crisis);
+				response.setTotal(1);
+				response.setStatusCode(getProperty("STATUS_CODE_SUCCESS"));
+				return Response.ok(response).build();
+			} else {
+				response.setDataObject(null);
+				response.setTotal(0);
+				response.setStatusCode(getProperty("STATUS_CODE_SUCCESS"));
+				return Response.ok(response).build();
+			}
 		} catch (RuntimeException e) {
-			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
+			response.setDataObject(null);
+			response.setTotal(0);
+			response.setStatusCode(getProperty("STATUS_CODE_FAILED"));
+			response.setMessage(e.getCause().getCause().getMessage());
+			return Response.ok(response).build();
 		}
-		return Response.ok(crisis).build();
+		
 	}
 
 	@GET
@@ -224,11 +240,12 @@ public class CrisisResource {
 				}
 			}
 			result.put("count", 0);
+			System.out.println("Response string from tagger-api on classifier count: " + mapper.writeValueAsString(result));
 			return Response.ok(mapper.writeValueAsString(result)).build();
 		} catch (Exception e) {
 			e.printStackTrace();
 			result.put("count", -1);
-			return Response.ok(result.toString()).build();
+			return Response.ok(result).build();
 		}
 	}
 }

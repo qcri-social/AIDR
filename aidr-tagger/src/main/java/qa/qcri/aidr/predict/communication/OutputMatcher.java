@@ -42,8 +42,10 @@ public class OutputMatcher extends PipelineProcess  {
                 continue;
 
             pushToTaskWriteQueue(doc);
+            //logger.info("Going to add nominal_labels before final output to REDIS");
             String jsonDoc = DocumentJSONConverter.getDocumentSetJson(doc);
             pushToClients(doc, jsonDoc);
+            //logger.info("Going to push into REDIS json String: " + jsonDoc);
             PushToRedisStream(doc.getCrisisCode(), jsonDoc);
             outputCount++;
         }

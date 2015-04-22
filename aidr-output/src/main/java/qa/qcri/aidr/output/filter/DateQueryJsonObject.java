@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import qa.qcri.aidr.common.code.DateFormatConfig;
 import qa.qcri.aidr.output.filter.ComparatorType;
 
 @SuppressWarnings("serial")
@@ -52,9 +53,9 @@ public class DateQueryJsonObject extends QueryJsonObject {
 
 	@Override
 	public Date getDate() {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat dateFormat = new SimpleDateFormat(DateFormatConfig.ISODateFormat);
 		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-		Date date = new Date(this.timestamp * 1000L);
+		Date date = new Date(this.timestamp * 1000);
 		
 		return date;
 	}

@@ -51,17 +51,15 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 					TaskAssignment taskAssignment = new TaskAssignment(tb.getDocumentID(), userID, new Date());
 					save(taskAssignment);
 					em.flush();
-					return 1;
 				}
 			}
+			return 1;
 		} catch (Exception e) {
 			logger.error("Error in insert operation!");
 			logger.error(elog.toStringException(e));
 			e.printStackTrace();
+			return 0;
 		}
-		return 0;
-
-
 	}
 
 	@Override
@@ -84,7 +82,7 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 
 	@Override
 	public int undoTaskAssignment(List<DocumentDTO> taskList, Long userID) {
-		if (taskList != null) {
+		if (taskList != null && !taskList.isEmpty()) {
 			try {
 				int deleteCount = 0;
 				for (Iterator<DocumentDTO> it = taskList.iterator(); it.hasNext();){
@@ -199,7 +197,7 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 		try {
 			List<TaskAssignment> list = getAllByCriteria(Restrictions.eq("id.documentId", documentID));  
 			List<TaskAssignmentDTO> dtoList = new ArrayList<TaskAssignmentDTO>();
-			if (list != null) {
+			if (list != null && !list.isEmpty()) {
 				for (TaskAssignment t: list) {
 					dtoList.add(new TaskAssignmentDTO(t));
 				}

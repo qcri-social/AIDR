@@ -91,7 +91,7 @@ public class CrisisTypeResourceFacadeImp extends CoreDBServiceFacadeImp<CrisisTy
 	public List<CrisisTypeDTO> findByCriteria(String columnName, Object value) throws PropertyNotSetException {
 		List<CrisisType> list = getAllByCriteria(Restrictions.eq(columnName, value));
 		List<CrisisTypeDTO> dtoList = new ArrayList<CrisisTypeDTO>();
-		if (list != null) {
+		if (list != null && !list.isEmpty()) {
 			for (CrisisType c : list) {
 				dtoList.add(new CrisisTypeDTO(c));
 			}

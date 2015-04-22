@@ -55,7 +55,7 @@ public class TaskAnswerResourceFacadeImp extends CoreDBServiceFacadeImp<TaskAnsw
 	public List<TaskAnswerDTO> getTaskAnswer(Long documentID) {
 		Criterion criterion = Restrictions.eq("id.documentId", documentID);
 		List<TaskAnswer> list = getAllByCriteria(criterion);
-		if (list != null) {
+		if (list != null && list.isEmpty()) {
 			List<TaskAnswerDTO> dtoList = new ArrayList<TaskAnswerDTO>();
 			for (TaskAnswer t: list) {
 				dtoList.add(new TaskAnswerDTO(t));

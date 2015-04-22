@@ -16,6 +16,7 @@ import qa.qcri.aidr.dbmanager.dto.CrisisAttributesDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelNominalLabelDTO;
@@ -71,6 +72,9 @@ public class TaggerResponseWrapper implements Serializable {
     private List<CrisisAttributesDTO> crisisAttributes;
     @XmlElement
     private List<TrainingDataDTO> trainingData;
+    
+    @XmlElement private List<HumanLabeledDocumentDTO> humanLabeledItems;
+    
     @XmlElement
     private Integer total;
     
@@ -356,4 +360,15 @@ public class TaggerResponseWrapper implements Serializable {
     public void setEntityID(Long entityID) {
         this.entityID = entityID;
     }
+    
+	public List<HumanLabeledDocumentDTO> getHumanLabeledItems() {
+		return this.humanLabeledItems;
+	}
+
+	public void setLabeledData(List<HumanLabeledDocumentDTO> humanLabeledItems) {
+		this.humanLabeledItems = humanLabeledItems;
+		if (humanLabeledItems != null && !humanLabeledItems.isEmpty()) {
+			this.setTotal(humanLabeledItems.size());
+		}
+	}
 }
