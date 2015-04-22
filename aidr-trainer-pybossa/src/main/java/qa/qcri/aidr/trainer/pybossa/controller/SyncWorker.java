@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
+
 import qa.qcri.aidr.trainer.pybossa.service.ClientAppCreateWorker;
 import qa.qcri.aidr.trainer.pybossa.service.ClientAppRunWorker;
 import qa.qcri.aidr.trainer.pybossa.service.MicroMapperWorker;
@@ -19,7 +19,7 @@ import qa.qcri.aidr.trainer.pybossa.service.Worker;
 public class SyncWorker implements Worker {
 
 	protected static Logger logger = Logger.getLogger(SyncWorker.class);
-	private static ErrorLog elog = new ErrorLog();
+
 	
     @Autowired
     ClientAppCreateWorker pybossaWorker;
@@ -32,7 +32,7 @@ public class SyncWorker implements Worker {
 
 	public void work() {
 		String threadName = Thread.currentThread().getName();
-		//logger.debug("   " + threadName + " has began working.(SyncWorker - run ClientApps)");
+
         logger.info("Scheduler is starting");
         try {
 
@@ -40,19 +40,17 @@ public class SyncWorker implements Worker {
             clientAppRunWorker.processTaskPublish();
             clientAppRunWorker.processTaskRunImport();
 
-            microMapperWorker.processTaskPublish();
-            microMapperWorker.processTaskImport();
             microMapperWorker.processTaskExport();
 
-            Thread.sleep(180000); // simulates work
+            Thread.sleep(600000); // simulates work
 
         }
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (Exception e) {
-            logger.error(elog.toStringException(e));
+            logger.error(e.getMessage());
         }
-        //logger.debug("   " + threadName + " has completed work.(SyncWorker - run ClientApps)");
+
         logger.info("Scheduler is going sleep");
     }
 	
