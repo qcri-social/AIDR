@@ -14,7 +14,7 @@ The aidr-manager module contains the front-end for the application, which is wri
 
 ## Back-end
 
-The aidr-manager module has a back-end that interacts with [aidr-db-manager](DB Manager) to maintain data about each of the collections.
+The aidr-manager module has a back-end that interacts with [aidr-db-manager](DB Manager) to maintain data about each of the collections. The back-end also issues calls to all the other modules of AIDR.
 
 # Technologies
 
