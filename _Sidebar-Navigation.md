@@ -16,9 +16,7 @@
 ## Developers
 
 * [[User needs and personas]]
-* [[Database schema]]
 * [[Logging standards]]
-* [[DTO standards]]
 
 ## Per-module docs
 
