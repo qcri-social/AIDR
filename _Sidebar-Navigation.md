@@ -7,6 +7,12 @@
 
 * [[AIDR Operator's Manual]]
 
+## System administrators
+
+* [[Installation instructions]]
+* [[Starting and stopping]]
+* [[Release notes]]
+
 ## Backend Developers
 
 * [[API Documentation]]
@@ -17,11 +23,5 @@
 ## UX Developers
 
 * [[User needs]]
-
-## System administrators
-
-* [[Installation instructions]]
-* [[System administrator manual]]
-* [[Release notes]]
 
 ## [[Credits]]
