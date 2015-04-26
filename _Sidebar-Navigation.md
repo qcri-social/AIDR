@@ -1,11 +1,12 @@
+# Navigation
 
 * [[Home]]
 
-# Users
+## Users
 
 * [[AIDR Operator's Manual]]
 
-# Developers
+## Developers
 
 * [[Objectives and user needs]]
 * [[API Documentation]]
@@ -13,7 +14,7 @@
 * [[Logging standards]]
 * [[DTO standards]]
 
-# System administrators
+## System administrators
 
 * [[Installation instructions]]
 * [[System administrator manual]]
