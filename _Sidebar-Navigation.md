@@ -3,7 +3,7 @@
 * [[Home]]
 * [[What is AIDR?]]
 
-## Users
+## Operators
 
 * [[AIDR Operator's Manual]]
 
