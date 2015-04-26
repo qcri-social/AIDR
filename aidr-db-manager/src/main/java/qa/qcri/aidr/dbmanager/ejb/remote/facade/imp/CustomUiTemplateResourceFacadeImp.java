@@ -118,7 +118,7 @@ public class CustomUiTemplateResourceFacadeImp extends CoreDBServiceFacadeImp<Cu
 	@Override
 	public CustomUiTemplateDTO addCustomUITemplate(CustomUiTemplateDTO customUITemplate) {
 		CustomUiTemplate c = customUITemplate.toEntity();
-		em.persist(customUITemplate.toEntity());
+		em.persist(c);
 		em.flush();
 		em.refresh(c);
 		return new CustomUiTemplateDTO(c);

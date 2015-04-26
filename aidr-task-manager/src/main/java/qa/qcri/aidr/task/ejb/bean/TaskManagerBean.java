@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -99,7 +100,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade remoteNominalLabelEJB;
 
 	private static Object lockObject = new Object();
-	//private static Lock lock = null;
+	private static Integer inCS = 0;
 
 	private Class<T> entityType;
 
@@ -502,9 +503,9 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		Criterion aliasCriterion =  (Restrictions.isNull(aliasTableKey));
 		try {
 			List<Document> docList = remoteDocumentEJB.getByCriteriaWithAliasByOrder(newCriterion, order, orderBy, count, aliasTable, aliasCriterion);
-			System.out.println("[getNewTaskCollection] docList = " + docList);
+			//System.out.println("[getNewTaskCollection] docList = " + docList);
 			if (docList != null) {
-				System.out.println("Fetched size = " + docList.size());
+				System.out.println("[getNewTaskCollection] Fetched size = " + docList.size());
 				return createDocumentDTOList(docList);
 			} else {
 				return null;
@@ -741,9 +742,10 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			}
 			//while (!lock.tryLock()) {}// spin-loop wait
 			synchronized(lockObject) {
+				++inCS;
 				try {
 					List<DocumentDTO> dtoList = getNewTaskCollection(crisisID, fetchCount, "DESC", null);
-					System.out.println("[getDocumentsForTagging] For crisisID = " + crisisID + ", user = " + userName 
+					System.out.println("[getDocumentsForTagging] inCS = " + inCS + ". For crisisID = " + crisisID + ", user = " + userName 
 							+ ", documents available: " + (dtoList != null ? dtoList.size() : "empty list"));
 					if (dtoList != null) {
 						fetchedSize = dtoList.size();
@@ -757,10 +759,12 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 							assignList.addAll(dtoList.subList(0, count));
 							assignNewTaskToUser(assignList, users.getUserID());
 							//lock.unlock();
+							--inCS;
 							return assignList;
 						}
 					} else {
 						//lock.unlock();
+						--inCS;
 						return null;
 					}
 				} catch (Exception e) {
@@ -857,37 +861,37 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	 */
 	@Override
 	public <E> Object setTaskParameter(Class<E> entityType, Long id, Map<String, String> paramMap) {
-		logger.info("Received request for task ID = " + id + ", param Map = " + paramMap);
+		//logger.info("Received request for task ID = " + id + ", param Map = " + paramMap);
 		Object doc = null;
 		try {
 			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.task.Document")) {
-				logger.info("Detected of type Document.class, id = " + id);
+				//logger.info("Detected of type Document.class, id = " + id);
 				doc = (Document) remoteDocumentEJB.getById(id);
 			} 
 			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.task.TaskAssignment")) {
-				logger.info("Detected of type TaskAssignment.class");
+				//logger.info("Detected of type TaskAssignment.class");
 				doc = (TaskAssignment) remoteTaskAssignmentEJB.getById(id);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.task.TaskAnswer")) {
-				logger.info("Detected of type TaskAnswer.class");
+				//logger.info("Detected of type TaskAnswer.class");
 				List<TaskAnswerDTO> docList = remoteTaskAnswerEJB.getTaskAnswer(id);
 				if (docList != null) 
 					doc = docList.get(0).toEntity();			
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.misc.Users")) {
-				logger.info("Detected of type Users.class");
+				//logger.info("Detected of type Users.class");
 				doc = (Users) remoteUsersEJB.getById(id);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel")) {
-				logger.info("Detected of type DocumentNominalLabel.class");
+				//logger.info("Detected of type DocumentNominalLabel.class");
 				doc = (DocumentNominalLabel) remoteDocumentNominalLabelEJB.getById(id);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.misc.Crisis")) {
-				logger.info("Detected of type Crisis.class");
+				//logger.info("Detected of type Crisis.class");
 				doc = (Crisis) remoteCrisisEJB.getById(id);
 			}
-			logger.info("Fetched task of type: " + doc.getClass());
-			logger.info("received map: " + paramMap);
+			//logger.info("Fetched task of type: " + doc.getClass());
+			//logger.info("received map: " + paramMap);
 		} catch (Exception e) {
 			logger.error("Error in detecting Class Type");
 			logger.error(elog.toStringException(e));
@@ -905,7 +909,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				//obj = docClass.newInstance();
 				methods = docClass.getDeclaredMethods();
 				for (int i = 0; i < methods.length;i++) {
-					logger.info("discovered method: " + methods[i].getName());
+					//logger.info("discovered method: " + methods[i].getName());
 				}
 			} catch (Exception e) {
 				logger.error("Error in instantiating method class");
@@ -926,26 +930,26 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 					}
 					paramTypes = methods[pointer].getParameterTypes(); 
 					for (int j = 0; j < paramTypes.length;j++) {
-						logger.info(methods[pointer].getName() + ": discovered parameter types: " + paramTypes[j].getName());
+						//logger.info(methods[pointer].getName() + ": discovered parameter types: " + paramTypes[j].getName());
 					}
 					// Convert parameter to paramType
 					if (paramTypes[0].getName().toLowerCase().contains("long")) {
 						methods[pointer].invoke(doc, Long.parseLong(paramMap.get(name)));
-						logger.info("Invoking with Long parameter type");
+						//logger.info("Invoking with Long parameter type");
 					}
 					if (paramTypes[0].getName().toLowerCase().contains("int")) {
 						methods[pointer].invoke(doc, Integer.parseInt(paramMap.get(name)));
-						logger.info("Invoking with Integer parameter type");
+						//logger.info("Invoking with Integer parameter type");
 					}
 					if (paramTypes[0].getName().toLowerCase().contains("boolean")) {
 						methods[pointer].invoke(doc, Boolean.parseBoolean(paramMap.get(name)));
-						logger.info("Invoking with Boolean parameter type");
+						//logger.info("Invoking with Boolean parameter type");
 					}
 					if (paramTypes[0].getName().contains("String")) {
 						methods[pointer].invoke(doc, paramMap.get(name));
-						logger.info("Invoking with String parameter type");
+						//logger.info("Invoking with String parameter type");
 					}
-					logger.info("[setTaskParameter] Invoked method: " + methods[pointer].getName() + " with parameter: " + paramMap.get(name));
+					//logger.info("[setTaskParameter] Invoked method: " + methods[pointer].getName() + " with parameter: " + paramMap.get(name));
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					logger.error("Error in invoking method via reflection: ");
@@ -958,42 +962,42 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		try {
 			logger.info("Will attempt to merge update with document ID = " + id);
 			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.task.Document")) {
-				logger.info("Detected of type Document.class, id = " + id);
+				//logger.info("Detected of type Document.class, id = " + id);
 				remoteDocumentEJB.merge((Document) doc); 
 				logger.info("Merge update successful for task id = " + id);
 				//return serializeTask((qa.qcri.aidr.task.entities.Document) doc);
 				return new DocumentDTO((Document) doc);
 			} 
 			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.task.TaskAssignment")) {
-				logger.info("Detected of type TaskAssignment.class");
+				//logger.info("Detected of type TaskAssignment.class");
 				remoteTaskAssignmentEJB.merge((TaskAssignment) doc);
 				logger.info("Merge update successful for task id = " + id);
 				//return serializeTask((qa.qcri.aidr.task.entities.TaskAssignment) doc);
 				return new TaskAssignmentDTO((TaskAssignment) doc);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.task.TaskAnswer")) {
-				logger.info("Detected of type TaskAnswer.class");
+				//logger.info("Detected of type TaskAnswer.class");
 				remoteTaskAnswerEJB.merge((TaskAnswer) doc);
 				logger.info("Merge update successful for task id = " + id);
 				//return serializeTask((qa.qcri.aidr.task.entities.TaskAnswer) doc);
 				return new TaskAnswerDTO((TaskAnswer) doc);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.misc.Users")) {
-				logger.info("Detected of type Users.class");
+				//logger.info("Detected of type Users.class");
 				remoteUsersEJB.merge((Users) doc);
 				logger.info("Merge update successful for task id = " + id);
 				//return serializeTask((qa.qcri.aidr.task.entities.Users) doc);
 				return new UsersDTO((Users) doc);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel")) {
-				logger.info("Detected of type DocumentNominalLabel.class");
+				//logger.info("Detected of type DocumentNominalLabel.class");
 				remoteDocumentNominalLabelEJB.merge((DocumentNominalLabel) doc);
 				logger.info("Merge update successful for task id = " + id);
 				//return serializeTask((qa.qcri.aidr.task.entities.DocumentNominalLabel) doc);
 				return new DocumentNominalLabelDTO((DocumentNominalLabel) doc);
 			}
 			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.misc.Crisis")) {
-				logger.info("Detected of type Crisis.class");
+				//logger.info("Detected of type Crisis.class");
 				remoteCrisisEJB.merge((Crisis) doc);
 				logger.info("Merge update successful for task id = " + id);
 				//return serializeTask((qa.qcri.aidr.task.entities.Crisis) doc);

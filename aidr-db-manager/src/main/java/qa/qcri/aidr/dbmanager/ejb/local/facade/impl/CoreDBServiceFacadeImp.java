@@ -123,7 +123,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 		List<E> fetchedList = new ArrayList<E>();
 		try {	
 			fetchedList  = criteria.list();
-			System.out.println("CoreDBServiceFacade: getAll fetched list size: " + fetchedList.size());
+			//System.out.println("CoreDBServiceFacade: getAll fetched list size: " + fetchedList.size());
 			return fetchedList;
 		} catch (Exception e) {
 			logger.error(elog.toStringException(e));
@@ -202,7 +202,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 	public List<E> getByCriteriaWithAliasByOrder(Criterion criterion, String order, String[] orderBy, Integer count, String aliasTable, Criterion aliasCriterion) {
 		Session session = getCurrentSession();
 		List<E> fetchedList = new ArrayList<E>();
-		logger.info("Entity: " + entityClass + ", current Session = " + session);
+		//logger.info("Entity: " + entityClass + ", current Session = " + session);
 		Criteria criteria = session.createCriteria(entityClass);
 		criteria.add(criterion); 
 		criteria.createAlias(aliasTable, aliasTable, org.hibernate.sql.JoinType.LEFT_OUTER_JOIN).add(aliasCriterion);
@@ -234,7 +234,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 	public List<E> getByCriteriaWithInnerJoinByOrder(Criterion criterion, String order, String[] orderBy, Integer count, String aliasTable, Criterion aliasCriterion) {
 		Session session = getCurrentSession();
 		List<E> fetchedList = new ArrayList<E>();
-		logger.info("Entity: " + entityClass + ", current Session = " + session);
+		//logger.info("Entity: " + entityClass + ", current Session = " + session);
 		Criteria criteria = session.createCriteria(entityClass);
 		criteria.add(criterion); 
 		criteria.createAlias(aliasTable, aliasTable, org.hibernate.sql.JoinType.INNER_JOIN).add(aliasCriterion);
