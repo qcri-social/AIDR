@@ -11,10 +11,8 @@
 
 ## Developers
 
-* [[User needs and personas]]
 * [[High-level overview]]
  * [[Stream processing]]
-* [[Logging standards]]
 
 ### Modules
 
@@ -39,5 +37,10 @@
  * [[Analytics API]]
 * [[Persister]]
  * [[Persister API]]
+
+### Design and standards
+
+* [[User needs and personas]]
+* [[Logging standards]]
 
 ## [[Credits]]
