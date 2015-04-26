@@ -1,3 +1,3 @@
-Welcome to the AIDR wiki! If this is your first visit, read the [[objectives and user needs]] that guide AIDR's development.
+Welcome to the AIDR wiki! 
 
-See: [[Credits]]
+Use the **Navigation** sidebar on the right to browse through the documentation.
