@@ -12,6 +12,7 @@
 ## Developers
 
 * [[User needs and personas]]
+* [[Stream processing]]
 * [[Logging standards]]
 
 ## Per-module docs
