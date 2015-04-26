@@ -5,7 +5,7 @@
 
 ## Users
 
-* [[AIDR Operator's Manual]](AAa)
+* [AIDR Operator's Manual](AAa)
 
 ## System administrators
 
