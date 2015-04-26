@@ -8,6 +8,8 @@ The aidr-db-manager module provides a layer of abstraction for all the data that
 
 # Technologies
 
+This is implemented as a Java EE application, with methods accessed using EJB.
+
 * EJB 3.2 (JPA 2.1, business logic encapsulation and inter-module communication)
 * MySQL, Hibernate 4.3.5 (to access the MySQL DB)
 * Jersey 2+ (for JAX-RX 2.0)
