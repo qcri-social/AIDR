@@ -26,6 +26,5 @@
 * [[Common]]
 * [[Collector]]
  * [[Collector API]]
- * [[Collector dependencies]]
 
 ## [[Credits]]
