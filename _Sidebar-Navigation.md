@@ -1,10 +1,6 @@
 # Navigation
 
 * **[[Home]]**
-* [[What is AIDR?]]
-
-## Users
-
 * [Operator's manual](AIDR Operator's Manual)
 
 ## System administrators
