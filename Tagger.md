@@ -8,9 +8,11 @@ The aidr-tagger module reads collected items and annotates them using an automat
 
 # Automatic classification
 
-First, each item is converted to a set of unigrams (words) and bigrams (consecutive two-word sequences). For instance "the house is red" is converted into { "the", "house", "is", "red", "the house", "house is", "is read" }.
+**Features**: each item is converted to a set of unigrams (words) and bigrams (consecutive two-word sequences). For instance "the house is red" is converted into { "the", "house", "is", "red", "the house", "house is", "is red" }.
 
-The automatic classifier is created using Weka. 
+**Feature selection**: a feature selection algorithm is ran over the data, keeping the 500 most discriminant features for a given classifier.
+
+**Learning scheme**: the learning scheme is a [random forest](https://en.wikipedia.org/wiki/Random_forest) of decision trees.
 
 # Technologies
 
