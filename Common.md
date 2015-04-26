@@ -14,6 +14,8 @@ Additional elements may include utility functions common to more than one module
 
 # Technologies
 
+This is implemented as a Java EE application, using the following technologies:
+
 * Jackson 1.9.13 (JSON processor wrapper for backward compatibility)
 * FasterXML (JSON processor wrapper) -- (why not GSON? ChaTo)
 
