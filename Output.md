@@ -4,7 +4,9 @@ Code: https://github.com/qcri-social/AIDR/tree/master/aidr-output
 
 # Overview
 
-The aidr-output module provides query and subscription interfaces for examining items collected by aidr-collector and tagged by aidr-tagger. In both cases, aidr-output reads the items from a Redis interface.
+The aidr-output module provides query and subscription APIs that allow users to see the items collected by aidr-collector and tagged by aidr-tagger.
+
+In both cases, aidr-output reads the items from a Redis interface.
 
 ## Query interface
 
