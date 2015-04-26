@@ -4,6 +4,26 @@ Code: https://github.com/qcri-social/AIDR/tree/master/aidr-output
 
 # Overview
 
+The aidr-output module provides query and subscription interfaces for examining items collected by aidr-collector and tagged by aidr-tagger. In both cases, aidr-output reads the items from a Redis interface.
+
+## Query interface
+
+The aidr-output module maintains an in-memory buffer of the latest 1,000 items of each collection.
+
+Then, it provides an API to query this buffer, e.g. to see the latest items, including filtering them according to various criteria.
+
+## Subscription interface
+
+The aidr-output module also allow users to subscribe to an HTTP interface for receiving a live stream of items for a collection.
+
+# Packages
+
+* qa.qcri.aidr.output.getdata implements the querying interface.
+* qa.qcri.aidr.output.stream implements the subscription interface.
+* qa.qcri.aidr.output.filter contains code to build and apply different kinds of filtering over the data.
+* qa.qcri.aidr.output.util contains utility functions.
+ 
+
 # Technologies
 
 * JAVAX Servlet API 3.1.0 (Asynchronous servlets)
@@ -16,4 +36,4 @@ Code: https://github.com/qcri-social/AIDR/tree/master/aidr-output
 
 * [aidr-common](Common)
 * [aidr-collector](Collector)
-
+* [aidr-tagger](Tagger)
