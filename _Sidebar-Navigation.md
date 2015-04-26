@@ -27,7 +27,7 @@
 * [[DB Manager]]
  * [[DB Manager Entities]]
 * [[Task Manager]]
- * [[Task Manager API]]
+ * [[Task Manager Entities]]
 * [[Manager]]
  * [[Manager API]]
 * [[Collector]]
