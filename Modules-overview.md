@@ -1,0 +1,1 @@
+![High-level diagram](http://i.imgur.com/bEf5ErD.png)
