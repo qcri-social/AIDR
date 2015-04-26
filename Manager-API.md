@@ -1,0 +1,1 @@
+(The manager has a very large API, as it basically contains all the functionalities of the entire application. This API should be documented automatically using Java Doc.)
