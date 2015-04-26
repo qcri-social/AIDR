@@ -13,9 +13,6 @@
 
 * [[High-level overview]]
  * [[Stream processing]]
-
-### Modules
-
 * [[Common]]
 * [[DB Manager]]
  * [[DTO standards]]
