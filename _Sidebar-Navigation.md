@@ -23,6 +23,7 @@
 
 ## Per-module docs
 
+* [[Common]]
 * [[Collector]]
  * [[Collector API]]
  * [[Collector dependencies]]
