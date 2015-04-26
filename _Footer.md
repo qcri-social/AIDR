@@ -1,1 +1,1 @@
-[Wiki Home](Home) - [Repository Home](https://github.com/qcri-social/AIDR) - [AIDR Home](http://aidr.qcri.org/) - [[Credits]]
+[Wiki](Home) - [Repository](https://github.com/qcri-social/AIDR) - [AIDR Homepage](http://aidr.qcri.org/) - [[Credits]]
