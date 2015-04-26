@@ -1,6 +1,6 @@
 # Navigation
 
-* [[Home]]
+* **[[Home]]**
 * [[What is AIDR?]]
 
 ## Users
