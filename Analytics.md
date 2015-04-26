@@ -6,6 +6,8 @@ Code: https://github.com/qcri-social/AIDR/tree/master/aidr-analytics
 
 The aidr-analytics module maintains various statistics of the tagged items. It is responsible for keeping information about how many items on a collection have been tagged into various categories, at different time granularities (5 minutes, 1 hour, and 1 day). 
 
+The aidr-analytics module will be used to create a sort of _dashboard_ including tables and pie charts illustrating the percentage of items in different categories, and time-lines showing the volume of items in each category over time.
+
 # Technologies
 
 The aidr-analytics module is a Java EE application using Spring and the following libraries:
