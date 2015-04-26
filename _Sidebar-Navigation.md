@@ -33,8 +33,8 @@
 * [[PyBossa Trainer]]
 * [[Output]]
  * [[Output API]]
-* [[Analysis]]
- * [[Analysis API]]
+* [[Analytics]]
+ * [[Analytics API]]
 * [[Persister]]
  * [[Persister API]]
 
