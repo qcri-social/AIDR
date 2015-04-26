@@ -18,5 +18,5 @@ To-do: layers or data flows inside this module.
 
 # Module Dependencies
 
-* [[aidr-common]](Common)
+* [aidr-common](Common)
 
