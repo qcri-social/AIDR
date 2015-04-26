@@ -4,7 +4,13 @@ Code: https://github.com/qcri-social/AIDR/tree/master/aidr-tagger and https://gi
 
 # Overview
 
-The aidr-tagger module reads collected tweets and annotates them using an automatic classifier. Its operation is 
+The aidr-tagger module reads collected items and annotates them using an automatic classifier. The automatic classifier is a model created using Weka.
+
+# Automatic classification
+
+First, each item is converted to a set of unigrams (words) and bigrams (consecutive two-word sequences). For instance "the house is red" is converted into { "the", "house", "is", "red", "the house", "house is", "is read" }.
+
+The automatic classifier is created using Weka. 
 
 # Technologies
 
