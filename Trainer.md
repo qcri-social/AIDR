@@ -11,6 +11,7 @@ Items enter the task buffer if they are selected by the [tagger](Tagger). Items 
 Items can be labelled in the task buffer by an AIDR operator, or via crowdsourcing. In the first case, we say the items are labelled through the _internal tagging interface_, which is a part of AIDR's front-end that is accessible to AIDR operators. In the second case, we say the items are labelled through _PyBossa_, which happens our own [PyBossa](http://pybossa.com/) installation, named [MicroMappers](http://clickers.micromappers.org/).
 
 In both cases, an item passes through the following steps:
+
 1. The item is waiting to be assigned.
 1. The item is assigned to an operator, or to MicroMappers.
 1. The item is labelled by the person/group it was assigned.
