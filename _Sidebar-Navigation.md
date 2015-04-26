@@ -21,7 +21,7 @@
  * [[DTO standards]]
  * [[Database schema]]
 * [[Task Manager]]
- * [[Task Manager Entities]]
+ * [[Task buffer]]
 * [[Manager]]
  * [[Manager API]]
 * [[Collector]]
