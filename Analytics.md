@@ -1,11 +1,10 @@
-Name: aidr-analysis
+Name: aidr-analytics
 
-Code: https://github.com/qcri-social/AIDR/tree/master/aidr-analysis
+Code: https://github.com/qcri-social/AIDR/tree/master/aidr-analytics
 
 # Overview
 
-The aidr-analysis-module 
-
+The aidr-analytics module maintains various statistics of the tagged items. It is responsible for keeping information about how many items on a collection have been tagged into various categories, at different time granularities (5 minutes, 1 hour, and 1 day). 
 
 # Technologies
 
