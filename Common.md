@@ -1,26 +1,25 @@
 Name: aidr-common
+
 Code: https://github.com/qcri-social/AIDR/tree/master/aidr-common
 
 # Overview
 
-To-do: overview of this module.
+The aidr-common module contains code that is common to the entire application. The core elements of this common code are:
 
-# Module Design
+* Definition of logging mechanisms (package qa.qcri.aidr.common.logging)
+* Definition of common exceptions (package qa.qcri.aidr.common.exception)
+* Definition of common response formats (package qa.qcri.aidr.common.values)
 
-To-do: layers or data flows inside this module.
+Additional elements may include utility functions common to more than one module of the application.
 
 # Technologies
 
-* Jersey RESTful Web Services framework 2+ (for JAX-RX 2.0)
-* JEDIS 2.5.2 (REDIS API library)
-* Twitter4j 4.0+ (twitter API library)
-* Google GSON 2.2.4 (JSON processor)
-* Jackson 1.9.13 (JSON processor) -- (redundant? --ChaTo)
-* SuperCSV (CSV library) -- (why? --ChaTo)
+* Jackson 1.9.13 (JSON processor wrapper for backward compatibility)
+* FasterXML (JSON processor wrapper) -- (why not GSON? ChaTo)
 
 # Module Dependencies
 
-* [aidr-common](Common)
+* None.
 
 
 
