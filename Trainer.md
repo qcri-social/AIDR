@@ -1,8 +1,10 @@
-Name: aidr-trainer-api
+Name: aidr-trainer
 
 Code: https://github.com/qcri-social/AIDR/tree/master/aidr-trainer-api
 
 # Overview
+
+The 
 
 
 # Technologies
