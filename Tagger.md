@@ -1,4 +1,4 @@
-Name: aidr-tagger (stand-alone Java application) and aidr-tagger-api (Java EE application)
+Name: aidr-tagger
 
 Code: https://github.com/qcri-social/AIDR/tree/master/aidr-tagger and https://github.com/qcri-social/AIDR/tree/master/aidr-tagger-api
 
