@@ -16,11 +16,15 @@
 ## Developers
 
 * [[User needs and personas]]
-* [[Collector]]
- * [[Collector API]]
 * [[API Documentation]]
 * [[Database schema]]
 * [[Logging standards]]
 * [[DTO standards]]
+
+## Per-module docs
+
+* [[Collector overview]]
+ * [[Collector API]]
+ * [[Collector dependencies]]
 
 ## [[Credits]]
