@@ -24,6 +24,8 @@
 ## Per-module docs
 
 * [[Common]]
+* [[Manager]]
+ * [[Manager API]]
 * [[Collector]]
  * [[Collector API]]
 * [[Tagger]]
@@ -31,8 +33,11 @@
 * [[Trainer]]
  * [[Trainer API]]
 * [[Trainer PyBossa]]
+ * [[Trainer PyBossa API]]
 * [[Output]]
  * [[Output API]]
+* [[Analysis]]
+ * [[Analysis API]]
 * [[Persister]]
  * [[Persister API]]
 
