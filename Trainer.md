@@ -4,7 +4,7 @@ Code: https://github.com/qcri-social/AIDR/tree/master/aidr-trainer-api
 
 # Overview
 
-The aidr-trainer module manages the [[task buffer]].
+The aidr-trainer module manages the process of labelling items that are waiting to be labelled in the [[task buffer]].
 
 Items enter the task buffer if they are selected by the [tagger](Tagger). Items can exit the task buffer if a long time (e.g. 12 hours) pass and they have neither been assigned nor been labelled.
 
