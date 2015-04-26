@@ -1,4 +1,4 @@
-The following diagram illustrates at a very high level the relationships between the different modules.
+AIDR is a [[stream processing]] application in Java implemented through a series of modules. The following diagram illustrates at a very high level the relationships between the different modules.
 
 ![High-level diagram](http://i.imgur.com/bEf5ErD.png)
 
