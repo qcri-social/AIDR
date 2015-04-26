@@ -6,9 +6,11 @@ Code: https://github.com/qcri-social/AIDR/tree/master/aidr-manager
 
 The aidr-manager module provides an interface for interacting with AIDR services. It performs tasks including user authorization, and keeping track of data about the different collections that have been created.
 
+Login to the aidr-manager is done using Spring Social against Twitter.
+
 ## Front-end
 
-The aidr-manager module contains the front-end for the application, which is written in ExtJS.
+The aidr-manager module contains the front-end for the application, which is written in ExtJS. It interacts with the back-end via AJAX calls.
 
 ## Back-end
 
