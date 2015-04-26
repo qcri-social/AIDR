@@ -24,6 +24,10 @@
 ## Per-module docs
 
 * [[Common]]
+* [[DB Manager]]
+ * [[DB Manager Entities]]
+* [[Task Manager]]
+ * [[Task Manager API]]
 * [[Manager]]
  * [[Manager API]]
 * [[Collector]]
