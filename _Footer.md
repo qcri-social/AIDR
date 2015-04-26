@@ -1,1 +1,1 @@
-[http://aidr.qcri.org/](AIDR) - [Credits]
+[AIDR](http://aidr.qcri.org/) - [[Credits]]
