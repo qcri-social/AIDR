@@ -1,6 +1,7 @@
 # Navigation
 
 * [[Home]]
+* [[What is AIDR?]]
 
 ## Users
 
@@ -8,7 +9,7 @@
 
 ## Developers
 
-* [[Objectives and user needs]]
+* [[User needs]]
 * [[API Documentation]]
 * [[Database schema]]
 * [[Logging standards]]
