@@ -4,7 +4,7 @@ Code: https://github.com/qcri-social/AIDR/tree/master/aidr-trainer-pybossa
 
 # Overview
 
-The aidr-trainer-pybossa, also known as the _PyBossa Scheduler_ is responsible for exchanging items from the [[task buffer]] to and from our [PyBossa](http://pybossa.com/) installation, named [MicroMappers](http://clickers.micromappers.org/).
+The aidr-trainer-pybossa, also known as the **PyBossa Scheduler** is responsible for exchanging items from the [[task buffer]] to and from our [PyBossa](http://pybossa.com/) installation, named [MicroMappers](http://clickers.micromappers.org/).
 
 It operates periodically by:
 
