@@ -4,7 +4,11 @@ Code: https://github.com/qcri-social/AIDR/tree/master/aidr-tagger and https://gi
 
 # Overview
 
-The aidr-tagger module reads collected items and annotates them using an automatic classifier. The automatic classifier is a model created using Weka.
+The aidr-tagger module reads collected items from a Redis queue, annotates them using an automatic classifier, and writes them to another Redis queue. The input to this module is two-fold: elements to be automatically classified, and elements already classified by a human.
+
+When elements to be automatically classified are received, they are classified using the current classification model. Additionally, some items are sampled from the input and placed into a buffer (known as the _task buffer_) which is a set of items waiting to be classified by a human. The selection of these items is done using an [active learning](https://en.wikipedia.org/wiki/Active_learning) criterion by which the items for which the classifier's confidence is minimum are selected first.
+
+When elements already classified by a human are received, they are considered as _training data_. Whenever a pre-defined number of new training data items are received (e.g. 50 new items), the current classification model is re-trained using all the available training items to date.
 
 # Automatic classification
 
