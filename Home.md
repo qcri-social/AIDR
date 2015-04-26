@@ -8,9 +8,9 @@ AIDR is a platform to collect and classify in real-time a large amount of user-g
 
 # Where do I start?
 
-If you need to use AIDR, browse the [AIDR Operator's Manual](Operator's Manual).
+If you need to use AIDR, browse the [Operator's Manual](AIDR Operator's manual).
 
-If you need to install AIDR, go to the [[Installation instructions]].
+If you need to install AIDR, go to the [[Installation Instructions]].
 
-If you are a developer, go to the [[High-level overview]].
+If you are a developer, go to the [High-level Overview for Developers](High-level overview).
 
