@@ -1,0 +1,1 @@
+https://github.com/qcri-social/AIDR/tree/master/aidr-collector
