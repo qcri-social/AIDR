@@ -12,8 +12,8 @@ Items can be labelled in the task buffer by an AIDR operator, or via crowdsourci
 
 In both cases, an item passes through the following steps:
 1. The item is waiting to be assigned.
-2. The item is assigned to an operator, or to MicroMappers.
-3. The item is labelled by the person/group it was assigned.
+1. The item is assigned to an operator, or to MicroMappers.
+1. The item is labelled by the person/group it was assigned.
 
 The aidr-trainer module also takes care of expiring old items that wait for too long for a label, in order to keep the _task buffer_ relatively small.
 
