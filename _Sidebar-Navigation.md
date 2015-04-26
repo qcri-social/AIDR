@@ -26,5 +26,9 @@
 * [[Common]]
 * [[Collector]]
  * [[Collector API]]
+* [[Output]]
+ * [[Output API]]
+* [[Persister]]
+ * [[Persister API]]
 
 ## [[Credits]]
