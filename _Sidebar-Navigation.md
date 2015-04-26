@@ -20,7 +20,6 @@
 * [[DB Manager]]
  * [[DTO standards]]
  * [[Database schema]]
- * [[DB Manager Entities]]
 * [[Task Manager]]
  * [[Task Manager Entities]]
 * [[Manager]]
