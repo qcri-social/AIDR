@@ -6,3 +6,5 @@ AIDR is a stream processing application, and operates under the same assumptions
 * Data cannot be stored on disk.
 
 We relax the last assumption but only in the [[persister]], where we dump the contents of the items into files. However, the operation of AIDR does not rely on these items, and even when the persister is off, the application can continue working.
+
+AIDR is a series of **processing elements** connected by pipelines. The processing elements are Java applications, and the pipelines that connect them are Redis queues.
