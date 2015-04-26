@@ -16,7 +16,6 @@
 ## Developers
 
 * [[User needs and personas]]
-* [[API Documentation]]
 * [[Database schema]]
 * [[Logging standards]]
 * [[DTO standards]]
