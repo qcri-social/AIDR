@@ -4,7 +4,7 @@ Code: https://github.com/qcri-social/AIDR/tree/master/aidr-trainer-api
 
 # Overview
 
-The aidr-trainer module manages the _task buffer_. At a conceptual level, the _task buffer_ is the set of items that have been either labelled by a human, or are waiting to be labelled by a human. At an implementation level, the _task buffer_ is a set of elements in the database built around the **document** table.
+The aidr-trainer module manages the [[task buffer]].
 
 Items enter the task buffer if they are selected by the [tagger](Tagger). Items can exit the task buffer if a long time (e.g. 12 hours) pass and they have neither been assigned nor been labelled.
 
