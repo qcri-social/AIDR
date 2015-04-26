@@ -16,7 +16,7 @@
  * [[Stream processing]]
 * [[Logging standards]]
 
-## Per-module docs
+### Modules
 
 * [[Common]]
 * [[DB Manager]]
