@@ -23,7 +23,7 @@ Currently the post-processing done by the collector has two possible elements:
 
 The SMS collector passively listens for tweets that are posted by an external service using an API.
 
-An operator using the SMS collector would have a set-up in which their SMS receiving process includes a step in which they push the SMS to AIDR.
+An operator using the SMS collector would have a set-up in which their machine that receives the SMS, automatically pushes those SMS to AIDR.
 
 # Technologies
 
