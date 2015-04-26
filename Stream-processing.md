@@ -1,4 +1,4 @@
-AIDR is a stream processing application, and operates under the same assumptions as a [https://en.wikipedia.org/wiki/Streaming_algorithm](streaming algorithm):
+AIDR is a stream processing application, and operates under the same assumptions as a [streaming algorithm](https://en.wikipedia.org/wiki/Streaming_algorithm):
 
 * Data is received as an unbounded stream of items.
 * Data is read once and only once.
