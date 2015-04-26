@@ -12,12 +12,12 @@
 ## Developers
 
 * [[User needs and personas]]
-* [[Stream processing]]
 * [[Logging standards]]
 
 ## Per-module docs
 
 * [[Modules overview]]
+ * [[Stream processing]]
 * [[Common]]
 * [[DB Manager]]
  * [[DTO standards]]
