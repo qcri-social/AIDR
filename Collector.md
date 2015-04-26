@@ -6,7 +6,7 @@ Code: https://github.com/qcri-social/AIDR/tree/master/aidr-collector
 
 The aidr-collector module is responsible for acquiring data for the rest of the application. The basic concept is that of a _collection_, also known as a _crisis_ in some parts of the code, which defines an event or situation for which messages should be collected.
 
-After acquiring a message, aidr-collector may do small amounts of in-memory processing, including some degree of filtering, and then must push the resulting items into a Redis queue.
+After acquiring a message, aidr-collector does small amounts of in-memory processing, including some degree of filtering, and then push the resulting items into a Redis queue.
 
 There are two main types of collector: Twitter collector and SMS collector.
 
