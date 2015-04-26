@@ -30,7 +30,7 @@
  * [[Tagger API]]
 * [[Trainer]]
  * [[Trainer API]]
-* [[PyBossa Trainer]]
+ * [[PyBossa Trainer]]
 * [[Output]]
  * [[Output API]]
 * [[Analytics]]
