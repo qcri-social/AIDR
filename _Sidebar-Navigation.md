@@ -22,7 +22,9 @@
 
 * [[Common]]
 * [[DB Manager]]
+ * [[DTO standards]]
  * [[DB Manager Entities]]
+ * [[Database schema]]
 * [[Task Manager]]
  * [[Task Manager Entities]]
 * [[Manager]]
