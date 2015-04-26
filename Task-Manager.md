@@ -10,6 +10,8 @@ It interfaces with the [aidr-db-manager](DB Manager) to centralize access to the
 
 # Technologies
 
+This is implemented as a Java EE application, with methods accessed using EJB. It uses the following libraries:
+
 * EJB  3.2 (business logic encapsulation and inter-module communication)
 * FasterXML (JSON processor)
 
