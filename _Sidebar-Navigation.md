@@ -16,6 +16,8 @@
 ## Developers
 
 * [[User needs and personas]]
+* [[Collector]]
+** [[Collector API]]
 * [[API Documentation]]
 * [[Database schema]]
 * [[Logging standards]]
