@@ -23,7 +23,7 @@ The back-end is implemented as a Java EE application, using the Spring framework
 * Spring Security, Spring Social Web, Spring Social Security, Spring ORM, Spring MVC 3.2
 * Hibernate 3.6.9 (to access a MySQL DB) -- (why? isn't this done through aidr-db-manager? --ChaTo)
 * JPA 2.1, MySQL
-* Twitter4j 4+ (why?)
+* Twitter4j 4+ (why? --ChaTo)
 * Jackson 1.9.13 (JSON processor)
 * Jersey 2+
 
