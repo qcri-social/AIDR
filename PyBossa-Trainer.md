@@ -4,6 +4,8 @@ Code: https://github.com/qcri-social/AIDR/tree/master/aidr-trainer-pybossa
 
 # Overview
 
+The aidr-trainer-pybossa, also known as the _PyBossa Scheduler_ 
+
 
 
 # Technologies
