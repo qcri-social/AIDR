@@ -19,3 +19,5 @@
 * [[Installation instructions]]
 * [[System administrator manual]]
 * [[Release notes]]
+
+## [[Credits]]
