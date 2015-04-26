@@ -4,8 +4,11 @@ Code: https://github.com/qcri-social/AIDR/tree/master/aidr-tagger and https://gi
 
 # Overview
 
+The aidr-tagger module reads collected tweets and annotates them using an automatic classifier. Its operation is 
 
 # Technologies
+
+For legacy reasons, aidr-tagger is implemented in two different modules, one of them a stand-alone Java application, and the other a Java EE application. Both are needed for the tagger to operate, and the plan is to merge them both into a Java EE application.
 
 aidr-tagger (stand-alone Java application):
 
