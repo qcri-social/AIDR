@@ -4,8 +4,18 @@ Code: https://github.com/qcri-social/AIDR/tree/master/aidr-trainer-api
 
 # Overview
 
-The 
+The aidr-trainer module manages the _task buffer_. At a conceptual level, the _task buffer_ is the set of items that have been either labelled by a human, or are waiting to be labelled by a human. At an implementation level, the _task buffer_ is a set of elements in the database built around the **document** table.
 
+Items enter the task buffer if they are selected by the [tagger](Tagger). Items can exit the task buffer if a long time (e.g. 12 hours) pass and they have neither been assigned nor been labelled.
+
+Items can be labelled in the task buffer by an AIDR operator, or via crowdsourcing. In the first case, we say the items are labelled through the _internal tagging interface_, which is a part of AIDR's front-end that is accessible to AIDR operators. In the second case, we say the items are labelled through _PyBossa_, which happens our own [PyBossa](http://pybossa.com/) installation, named [MicroMappers](http://clickers.micromappers.org/).
+
+In both cases, an item passes through the following steps:
+1. The item is waiting to be assigned.
+2. The item is assigned to an operator, or to MicroMappers.
+3. The item is labelled by the person/group it was assigned.
+
+The aidr-trainer module also takes care of expiring old items that wait for too long for a label, in order to keep the _task buffer_ relatively small.
 
 # Technologies
 
