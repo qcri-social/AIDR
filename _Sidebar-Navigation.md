@@ -7,13 +7,16 @@
 
 * [[AIDR Operator's Manual]]
 
-## Developers
+## Backend Developers
 
-* [[User needs]]
 * [[API Documentation]]
 * [[Database schema]]
 * [[Logging standards]]
 * [[DTO standards]]
+
+## UX Developers
+
+* [[User needs]]
 
 ## System administrators
 
