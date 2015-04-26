@@ -16,9 +16,12 @@ The aidr-manager module has a back-end that interacts with [aidr-db-manager](DB 
 
 # Technologies
 
-* ExtJS
+The front-end is implemented using ExtJS.
+
+The back-end is implemented as a Java EE application, using the Spring framework and the following libraries:
+
 * Spring Security, Spring Social Web, Spring Social Security, Spring ORM, Spring MVC 3.2
-* Hibernate 3.6.9 (Persistence to aidr_fetch_manager MySQL DB)
+* Hibernate 3.6.9 (to access a MySQL DB) -- (why? isn't this done through aidr-db-manager? --ChaTo)
 * JPA 2.1, MySQL
 * Twitter4j 4+ (why?)
 * Jackson 1.9.13 (JSON processor)
