@@ -6,6 +6,8 @@ Code: https://github.com/qcri-social/AIDR/tree/master/aidr-task-manager
 
 The aidr-task-manager module provides a layer of abstraction for handling item labelling.
 
+Items that are labelled, or waiting to be labelled, from the [[task buffer]].
+
 It interfaces with the [aidr-db-manager](DB Manager) to centralize access to the tables _document_ (representing a data item), _task answer_ (representing a label of a data item), and _task assignment_ (representing a data item that is waiting to be labelled).
 
 # Technologies
