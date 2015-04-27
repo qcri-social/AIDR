@@ -11,15 +11,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import java.util.Set;
 import java.util.TreeSet;
-<<<<<<< Updated upstream
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-=======
->>>>>>> Stashed changes
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -315,8 +308,12 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	@Override
 	public int deleteUnassignedTaskCollection(List<T> collection) {
 		if (collection != null) {
+			List<Long> idList = new ArrayList<Long>();
+			for (DocumentDTO dto: (List<DocumentDTO>) collection) {
+				idList.add(dto.getDocumentID());
+			}
 			try {
-				return remoteDocumentEJB.deleteUnassignedDocumentCollection((List<DocumentDTO>) collection);
+				return remoteDocumentEJB.deleteUnassignedDocumentCollection(idList);
 			} catch (Exception e) {
 				logger.error("Error in collection deletion");
 				logger.error(elog.toStringException(e));
@@ -376,9 +373,15 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		if (docList != null) {
 			int docsToDelete = docList.size() - maxLength;
 			if (docsToDelete > ERROR_MARGIN) {		// if less than this, then skip delete
+				List<Long> documentIDList = new ArrayList<Long>();
+				for (int i = 0;i < docsToDelete;i++) {
+					Document d = docList.get(i);
+					documentIDList.add(d.getDocumentId());
+					logger.debug("To delete document: {" + d.getCrisis().getCrisisId() + ", " + d.getDocumentId() + ", " + d.isHasHumanLabels() + "}");
+				}
 				try {
 					// Delete the lowest confidence documents from document table
-					int deleteCount = remoteDocumentEJB.deleteUnassignedDocumentCollection(createDocumentDTOList((List<Document>) docList));
+					int deleteCount = remoteDocumentEJB.deleteUnassignedDocumentCollection(documentIDList);
 					logger.info("Number of documents actually deleted = " + deleteCount);
 					return deleteCount;
 				} catch (Exception e) {
