@@ -117,7 +117,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 			try {
 				taskManager.insertTaskAnswer(t);
 			} catch (Exception e) {
-				System.err.println("[addToTaskAnswer] Error in saving task answer : " + taskAnswer);
+				logger.error("[addToTaskAnswer] Error in saving task answer : " + taskAnswer);
 				e.printStackTrace();
 			}
 		}
@@ -154,12 +154,12 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 			PybossaTemplate pybossaTemplate = new PybossaTemplate();
 			TaskAnswerResponse taskAnswerResponse = pybossaTemplate.getPybossaTaskAnswer(data, crisisService);
 			logger.info("taskAnswerResponse = " + taskAnswerResponse);
-			System.out.println("taskAnswerResponse = " + taskAnswerResponse);
+			//System.out.println("taskAnswerResponse = " + taskAnswerResponse);
 			List<TaskAnswer> taskAnswerList = taskAnswerResponse != null ? taskAnswerResponse.getTaskAnswerList() : null;
 
 			if(taskAnswerResponse != null && documentService.findDocument(taskAnswerResponse.getDocumentID()) != null){
 				documentService.updateHasHumanLabel(taskAnswerResponse.getDocumentID(), true);
-				System.out.println("Updated hasHumanLabel field of documentID = " + taskAnswerResponse.getDocumentID());
+				//System.out.println("Updated hasHumanLabel field of documentID = " + taskAnswerResponse.getDocumentID());
 				for(int i = 0; i < taskAnswerList.size(); i++){
 					TaskAnswer taskAnswer = taskAnswerList.get(i);
 					//taskAnswerDao.insertTaskAnswer(taskAnswer);
@@ -168,20 +168,20 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 						taskManager.insertTaskAnswer(t);
 					} catch (Exception e) {
 						logger.error("exception", e);
-						System.err.println("[processTaskAnswer] Error in saving task answer : " + taskAnswer);
+						//System.err.println("[processTaskAnswer] Error in saving task answer : " + taskAnswer);
 						e.printStackTrace();
 					}
 				}
 
 
 				List<DocumentNominalLabel> documentNominalLabelSet =   taskAnswerResponse.getDocumentNominalLabelList();
-				logger.info("Size of documentNominalLabel list = " + documentNominalLabelSet.size());
+				//logger.info("Size of documentNominalLabel list = " + documentNominalLabelSet.size());
 				if (documentNominalLabelSet != null) {
 					for(int i = 0; i < documentNominalLabelSet.size(); i++){
 						DocumentNominalLabel documentNominalLabel = documentNominalLabelSet.get(i);
-						System.out.println("Looking at documentNominalLabel: " + documentNominalLabel.getDocumentID() + ", " + documentNominalLabel.getNominalLabelID() + ", duplicate status = " + documentNominalLabelService.foundDuplicateEntry(documentNominalLabel));
+						//System.out.println("Looking at documentNominalLabel: " + documentNominalLabel.getDocumentID() + ", " + documentNominalLabel.getNominalLabelID() + ", duplicate status = " + documentNominalLabelService.foundDuplicateEntry(documentNominalLabel));
 						if(!documentNominalLabelService.foundDuplicateEntry(documentNominalLabel)){
-							System.out.println("Attempting to save documentNominalLabel: " + documentNominalLabel.getDocumentID() + ", " + documentNominalLabel.getNominalLabelID());
+							//System.out.println("Attempting to save documentNominalLabel: " + documentNominalLabel.getDocumentID() + ", " + documentNominalLabel.getNominalLabelID());
 							documentNominalLabelService.saveDocumentNominalLabel(documentNominalLabel);
 						}
 					}
@@ -197,11 +197,11 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 						e.printStackTrace();
 					}
 				}
-				System.out.println("Attempting to push to JEDIS now: " + taskAnswerResponse.getDocumentID());
-				System.out.println("taskAnswerResponse jedisJson = " + taskAnswerResponse.getJedisJson());
+				//System.out.println("Attempting to push to JEDIS now: " + taskAnswerResponse.getDocumentID());
+				//System.out.println("taskAnswerResponse jedisJson = " + taskAnswerResponse.getJedisJson());
 				jedisNotifier.notifyToJedis(taskAnswerResponse.getJedisJson());
 
-				System.out.println("Attempting remove task from task_assignment table now: " + taskAnswerResponse.getDocumentID());
+				//System.out.println("Attempting remove task from task_assignment table now: " + taskAnswerResponse.getDocumentID());
 				taskAssignmentService.revertTaskAssignment(taskAnswerResponse.getDocumentID(), taskAnswerResponse.getUserID());
 
 			}
