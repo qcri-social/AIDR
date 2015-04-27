@@ -83,7 +83,7 @@ public class CrisisResource {
 		ResponseWrapper response = new ResponseWrapper();
 		try {
 			crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
-			System.out.println("Returning crisis: " + (crisis != null ? crisis.getCode() : "null"));
+			System.out.println("For code = " + crisisCode + ", Returning crisis: " + (crisis != null ? crisis.getCode() : "null"));
 			if (crisis != null) {
 				response.setDataObject(crisis);
 				response.setTotal(1);

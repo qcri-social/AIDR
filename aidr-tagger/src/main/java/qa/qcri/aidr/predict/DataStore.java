@@ -12,21 +12,13 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
-
-
-
-
 
 
 
@@ -34,10 +26,7 @@ import java.util.Properties;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
@@ -48,17 +37,12 @@ import qa.qcri.aidr.predict.classification.nominal.Model;
 import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
 import qa.qcri.aidr.predict.classification.nominal.ModelNominalLabelPerformance;
 import qa.qcri.aidr.predict.common.Helpers;
-import qa.qcri.aidr.predict.common.TaskManagerEntityMapper;
-import qa.qcri.aidr.predict.data.DocumentJSONConverter;
 import qa.qcri.aidr.predict.data.Document;
-import qa.qcri.aidr.predict.data.Tweet;
 import qa.qcri.aidr.predict.dbentities.ModelFamilyEC;
 import qa.qcri.aidr.predict.dbentities.NominalAttributeEC;
 import qa.qcri.aidr.predict.dbentities.NominalLabelEC;
 import qa.qcri.aidr.predict.dbentities.TaggerDocument;
-import qa.qcri.aidr.predict.featureextraction.WordSet;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
-import qa.qcri.aidr.predict.dbentities.NominalLabel;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -84,8 +68,11 @@ public class DataStore {
 	private static Logger logger = Logger.getLogger(DataStore.class);
 	private static ErrorLog elog = new ErrorLog();
 
-	//private static final String remoteEJBJNDIName = "java:global/aidr-task-managerEAR-1.0/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote";
-	private static final String remoteEJBJNDIName = "java:global/AIDRTaskManager/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote";
+	private static final String remoteEJBJNDIName = getProperty("REMOTE_TASK_MANAGER_JNDI_NAME");
+	
+	private static final long LOG_INTERVAL = Integer.parseInt(getProperty("LOG_INTERVAL_MINUTES")) * 60 * 1000;
+	private static int saveNewDocumentsCount = 0;
+	private static long lastSaveTime = 0;
 
 
 	@SuppressWarnings("unchecked")
@@ -142,22 +129,23 @@ public class DataStore {
 			this.attributeIDs = attributeIDs;
 		}
 	}
-	static JedisPool jedisPool;
-	static ConnectionPool mySqlPool;
+	static JedisPool jedisPool = null;
+	static ConnectionPool mySqlPool = null;
 
 	/* REDIS */
-	public static Jedis getJedisConnection() {
+	public static synchronized Jedis getJedisConnection() {
 		try {
 			if (jedisPool == null) {
 				jedisPool = new JedisPool(new JedisPoolConfig(),
 						getProperty("redis_host"));
+				logger.info("Initialized jedisPool = " + jedisPool);
 			}
 			return jedisPool.getResource();
 		} catch (Exception e) {
 			System.out
 			.println("Could not establish Redis connection. Is the Redis server running?");
 			logger.error("Could not establish Redis connection. Is the Redis server running?");
-			logger.error(elog.toStringException(e));
+			logger.error("Exception", e);
 			throw e;
 		}
 	}
@@ -180,7 +168,7 @@ public class DataStore {
 	/* MYSQL */
 	static void initializeMySqlPool() throws SQLException {
 		try {
-			Class<?> c = Class.forName("com.mysql.jdbc.Driver");
+			Class<?> c = Class.forName("com.mysql.jdbc.Driver");		
 			Driver driver = (Driver) c.newInstance();
 			DriverManager.registerDriver(driver);
 
@@ -191,13 +179,14 @@ public class DataStore {
 					180000, // timeout (ms)
 					getProperty("mysql_path"), getProperty("mysql_username"),
 					getProperty("mysql_password"));
+			logger.info("Initialized mySQLPool = " + mySqlPool);
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			logger.error("Exception when initializing MySQL connection");
-			logger.error(elog.toStringException(e));
+			logger.error("Exception:", e);
 		}
 	}
 
-	public static Connection getMySqlConnection() throws SQLException {
+	public static synchronized Connection getMySqlConnection() throws SQLException {
 		if (mySqlPool == null) {
 			initializeMySqlPool();
 		}
@@ -444,17 +433,37 @@ public class DataStore {
 		saveDocumentsToDatabase(wrapper);
 	}
 
+	public static boolean canLog()  {
+		if (0 == lastSaveTime) {
+			lastSaveTime = System.currentTimeMillis();
+			return true;
+		} else {
+			if ((System.currentTimeMillis() - lastSaveTime) > LOG_INTERVAL) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+
+	
 	public static void saveDocumentsToDatabase(List<Document> items) {
 		try {
 			for (Document item : items) {
 				TaggerDocument doc = Document.fromDocumentToTaggerDocument(item);
 				//System.out.println("Attempting to save NEW document for crisis = " + doc.getCrisisCode());
-				logger.info("Attempting to save NEW document for crisis = " + doc.getCrisisCode());
+				//logger.info("Attempting to save NEW document for crisis = " + doc.getCrisisCode());
 				Long docID = taskManager.saveNewTask(TaggerDocument.toDocumentDTO(doc), doc.getCrisisID());
+				++saveNewDocumentsCount;
 				if (docID.longValue() != -1) {
 					// Update document with auto generated Doc
 					item.setDocumentID(docID);
-					logger.info("Success in saving document: " + item.getDocumentID() + ", for crisis = " + item.getCrisisCode());
+					//logger.info("Success in saving NEW document: " + item.getDocumentID() + ", for crisis = " + item.getCrisisCode());
+					if (canLog()) {
+						logger.info("In interval " + new Date(lastSaveTime) + " - " + new Date() + ", save NEW documents count = " + saveNewDocumentsCount);
+						lastSaveTime = System.currentTimeMillis();
+						saveNewDocumentsCount = 0;
+					}
 				} else {
 					logger.error("Something went wrong in saving document: " + item.getDocumentID() + ", for crisis = " + item.getCrisisCode());
 				}
@@ -497,7 +506,11 @@ public class DataStore {
 					DocumentNominalLabelIdDTO idDTO = new DocumentNominalLabelIdDTO(d.getDocumentID(), new Long(label.getNominalLabelID()), userID);
 					DocumentNominalLabelDTO dto = new DocumentNominalLabelDTO();
 					dto.setIdDTO(idDTO);
-					logger.info("Attempting to save LABELED document: " + dto.getIdDTO().getDocumentId() + " with nominal labelID=" + dto.getIdDTO().getNominalLabelId() + ", for crisis = " + d.getCrisisCode() + ", userID = " + dto.getIdDTO().getUserId());
+					if (canLog()) {
+						logger.info("Attempting to save LABELED document: " + dto.getIdDTO().getDocumentId() + " with nominal labelID=" + dto.getIdDTO().getNominalLabelId() + ", for crisis = " + d.getCrisisCode() + ", userID = " + dto.getIdDTO().getUserId());
+						lastSaveTime = System.currentTimeMillis();
+						saveNewDocumentsCount = 0;
+					}
 					//System.out.println("Attempting to save LABELED document: " + dto.getIdDTO().getDocumentId() + " with nominal labelID=" + dto.getIdDTO().getNominalLabelId() + ", for crisis = " + d.getCrisisCode() + ", userID = " + dto.getIdDTO().getUserId());
 					taskManager.saveDocumentNominalLabel(dto);
 					rows++;

@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
-import qa.qcri.aidr.task.common.TrainingDataFetchType;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 import qa.qcri.aidr.trainer.api.entity.Crisis;
 
@@ -88,7 +87,7 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
 	public List<DocumentDTO> getDocumentForTask(Long crisisID, int count, String userName) {
-		/*
+
 		List<DocumentDTO> documents = null;
 		Users users = usersService.findUserByName(userName);
 
@@ -105,17 +104,14 @@ public class DocumentServiceImpl implements DocumentService {
 				}
 			}
 		}
-		*/
-		List<DocumentDTO> documents = taskManager.getDocumentsForTagging(crisisID, count, userName, CodeLookUp.DOCUMENT_REMAINING_COUNT, TrainingDataFetchType.BATCH_FETCH);
-		logger.info("For crisisID = " + crisisID + ", user = " + userName + ", documents available for tagging: " + (documents != null ? documents.size() : "empty list"));
-		return documents;  
+
+		return documents;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
 	public List<DocumentDTO> getDocumentForOneTask(Long crisisID, int count, String userName) {
 		//logger.info("getDocumentForOneTask is called");
-		/*
 		List<DocumentDTO> documents = null;
 		Users users = usersService.findUserByName(userName);
 
@@ -128,9 +124,7 @@ public class DocumentServiceImpl implements DocumentService {
 			}
 
 		}
-		*/
-		List<DocumentDTO> documents = taskManager.getDocumentsForTagging(crisisID, count, userName, 0, TrainingDataFetchType.INTERNAL_TRAINING);
-		logger.info("For crisisID = " + crisisID + ", user = " + userName + ", documents available for tagging: " + (documents != null ? documents.size() : "empty list"));
+
 		return documents;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 

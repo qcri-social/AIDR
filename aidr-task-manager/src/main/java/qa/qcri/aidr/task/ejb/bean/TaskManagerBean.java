@@ -11,12 +11,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.NavigableMap;
+
 import java.util.Set;
 import java.util.TreeSet;
+<<<<<<< Updated upstream
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+=======
+>>>>>>> Stashed changes
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -99,14 +102,14 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade remoteNominalLabelEJB;
 
+	protected static Logger logger = LoggerFactory.getLogger(TaskManagerBean.class);
+	private ErrorLog elog = new ErrorLog();
+
 	private static Object lockObject = new Object();
 	private static Integer inCS = 0;
 
 	private Class<T> entityType;
-
-	private Logger logger = LoggerFactory.getLogger(TaskManagerBean.class);
-	private ErrorLog elog = new ErrorLog();
-
+	
 	public TaskManagerBean()  {
 		this.entityType = getClassType();
 		//lock = new ReentrantLock();
@@ -751,6 +754,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 						fetchedSize = dtoList.size();
 					}
 					int availableRequestSize = fetchedSize - remainingCount;
+					System.out.println("available = " + availableRequestSize + ", total = " + fetchedSize + ", remainingCount = " + remainingCount);
 					if (availableRequestSize > 0) {
 						count = Math.min(count, availableRequestSize);
 						if (!dtoList.isEmpty() && count > 0) {

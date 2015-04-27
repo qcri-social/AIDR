@@ -7,6 +7,8 @@ import java.util.Map;
 import javax.ejb.Remote;
 
 import org.hibernate.criterion.Criterion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
@@ -15,11 +17,14 @@ import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAssignmentDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.task.common.TrainingDataFetchType;
+import qa.qcri.aidr.task.ejb.bean.TaskManagerBean;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 @Remote
 public interface TaskManagerRemote<T, Serializable> {
+	
+	static Logger logger = LoggerFactory.getLogger(TaskManagerRemote.class);
 	
 	public Class<T> getClassType();
 	

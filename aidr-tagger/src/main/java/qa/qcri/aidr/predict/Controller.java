@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.predict.classification.LabelingTaskWriter;
 import qa.qcri.aidr.predict.classification.nominal.ModelController;
-import qa.qcri.aidr.predict.common.*;
 import qa.qcri.aidr.predict.communication.*;
 import qa.qcri.aidr.predict.featureextraction.FeatureExtractor;
 import qa.qcri.aidr.common.logging.ErrorLog;

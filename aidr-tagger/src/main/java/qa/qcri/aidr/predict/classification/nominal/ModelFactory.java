@@ -41,6 +41,7 @@ public class ModelFactory {
 	//private static final double EPSILON = 0.05;		// Tolerance for comparing two models: added by koushik
 	private static final double PERFORMANCE_IMPROVEMENT_MARGIN = Double.parseDouble(getProperty("PERFORMANCE_IMPROVEMENT_MARGIN"));		
 	private static final int TRAINING_EXAMPLES_FORCE_RETRAIN = Integer.parseInt(getProperty("TRAINING_EXAMPLES_FORCE_RETRAIN"));
+	private static final int sampleCountThreshold = Integer.parseInt(getProperty("sampleCountThreshold"));
 	
 	public static Model buildModel(int crisisID, int attributeID, Model oldModel)
 			throws Exception {
