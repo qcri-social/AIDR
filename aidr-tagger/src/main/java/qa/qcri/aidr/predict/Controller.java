@@ -45,6 +45,7 @@ public class Controller  {
             }
         }));
         
+        DataStore.initDBPools();
         DataStore.clearRedisPipeline();
         DataStore.initTaskManager();
         

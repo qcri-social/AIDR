@@ -23,6 +23,8 @@ import java.util.Map;
 
 
 
+
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -69,11 +71,41 @@ public class DataStore {
 	private static ErrorLog elog = new ErrorLog();
 
 	private static final String remoteEJBJNDIName = getProperty("REMOTE_TASK_MANAGER_JNDI_NAME");
-	
+
 	private static final long LOG_INTERVAL = Integer.parseInt(getProperty("LOG_INTERVAL_MINUTES")) * 60 * 1000;
 	private static int saveNewDocumentsCount = 0;
 	private static long lastSaveTime = 0;
 
+	private static JedisPool jedisPool = null;
+	private static ConnectionPool mySqlPool = null;
+	private static int attempts = 0;
+	private static final int MAX_RECREATE_POOL_ATTEMPTS = 3;
+	private static Object lockObject = new Object();
+
+	public static synchronized void initializeJedisPool() throws Exception {
+		if (null == jedisPool) {
+			jedisPool = new JedisPool(new JedisPoolConfig(),
+					getProperty("redis_host"));
+			logger.info("Initialized jedisPool = " + jedisPool);
+		} else {
+			logger.warn("Attempting to initialize an active JedisPool!");
+		}
+	}
+
+	public static void initDBPools() {
+		try {
+			initializeJedisPool();
+		} catch (Exception e1) {
+			logger.error("Unable to allocate JEDIS Pool!");
+			logger.error("Exception", e1);
+		}
+		try {
+			initializeMySqlPool();
+		} catch (Exception e) {
+			logger.error("Unable to allocate MySQL Pool!");
+			logger.error("Exception", e);
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	public static void initTaskManager() {
@@ -129,25 +161,24 @@ public class DataStore {
 			this.attributeIDs = attributeIDs;
 		}
 	}
-	static JedisPool jedisPool = null;
-	static ConnectionPool mySqlPool = null;
 
 	/* REDIS */
-	public static synchronized Jedis getJedisConnection() {
+	public static Jedis getJedisConnection() {
 		try {
-			if (jedisPool == null) {
-				jedisPool = new JedisPool(new JedisPoolConfig(),
-						getProperty("redis_host"));
-				logger.info("Initialized jedisPool = " + jedisPool);
+			if (jedisPool != null) 
+				return jedisPool.getResource();
+			else {
+				logger.error("Jedis Pool is NULL!");
+				initializeJedisPool();
+				return jedisPool.getResource();
 			}
-			return jedisPool.getResource();
 		} catch (Exception e) {
 			System.out
 			.println("Could not establish Redis connection. Is the Redis server running?");
 			logger.error("Could not establish Redis connection. Is the Redis server running?");
 			logger.error("Exception", e);
-			throw e;
 		}
+		return null;
 	}
 
 	public static void close(Jedis resource) {
@@ -166,38 +197,84 @@ public class DataStore {
 	public static final int MODEL_ID_ERROR = -1;
 
 	/* MYSQL */
-	static void initializeMySqlPool() throws SQLException {
-		try {
-			Class<?> c = Class.forName("com.mysql.jdbc.Driver");		
-			Driver driver = (Driver) c.newInstance();
-			DriverManager.registerDriver(driver);
+	public static synchronized void initializeMySqlPool() throws SQLException {
+		if (null == mySqlPool) {
+			try {
+				Class<?> c = Class.forName("com.mysql.jdbc.Driver");		
+				Driver driver = (Driver) c.newInstance();
+				DriverManager.registerDriver(driver);
 
-			mySqlPool = new ConnectionPool("aidr-backend",
-					10, // min-pool default = 1
-					50, // max-pool default = 5
-					50, // max-size default 30
-					180000, // timeout (ms)
-					getProperty("mysql_path"), getProperty("mysql_username"),
-					getProperty("mysql_password"));
-			logger.info("Initialized mySQLPool = " + mySqlPool);
-		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-			logger.error("Exception when initializing MySQL connection");
-			logger.error("Exception:", e);
+				mySqlPool = new ConnectionPool("aidr-backend",
+						10, // min-pool default = 1
+						40, // max-pool default = 5
+						60, // max-size default 30
+						1, // timeout (sec)
+						getProperty("mysql_path"), getProperty("mysql_username"),
+						getProperty("mysql_password"));
+				logger.info("Initialized mySQLPool = " + mySqlPool);
+				attempts = 0;
+			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+				logger.error("Exception when initializing MySQL connection");
+				logger.error("Exception:", e);
+				++attempts;
+			}
+		} else {
+			logger.warn("Attempting to initialize an active MySqlPool, attempts = " + attempts);
 		}
 	}
 
 	public static synchronized Connection getMySqlConnection() throws SQLException {
-		if (mySqlPool == null) {
-			initializeMySqlPool();
-		}
+		long timeout = 30000;
+		Connection con = null;
+		try {
+			if (mySqlPool != null) {
+				con = mySqlPool.getConnection(timeout);
+			} else {
+				logger.error("MySql Pool is NULL");
+				initializeMySqlPool();
+				con = mySqlPool.getConnection(timeout);
+			}
+			if (con != null) {
+				attempts = 0;
+				return con;
+			} else {
+				if (attempts < MAX_RECREATE_POOL_ATTEMPTS) {
+					if (!mySqlPool.isReleased() && mySqlPool != null) {
+						mySqlPool.release();
+						mySqlPool = null;
+						++attempts;
+					}
+					initializeMySqlPool();
+					con = mySqlPool.getConnection(timeout);
+					logger.warn("MySQL Pool reallocated!");
+					if (null == con) {
+						logger.error("The created MySQL connection is null even AFTER Reinitializing the MySQL Pool!!! Giving up...");
+					} else {
+						attempts = 0;	//reset
+					}
+					return con;
+				}
 
-		long timeout = 3000;
-		Connection con = mySqlPool.getConnection(timeout);
-		if (con == null) {
-			logger.error("The created MySQL connection is null");
+			}	
+
+		} catch (Exception e) {
+			logger.error("Exception", e);
+
+			if (attempts < MAX_RECREATE_POOL_ATTEMPTS) {
+				if (!mySqlPool.isReleased() && mySqlPool != null) {
+					mySqlPool.release();
+					mySqlPool = null;
+					++attempts;
+				}
+				initializeMySqlPool();
+				con = mySqlPool.getConnection(timeout);
+				if (con != null) {
+					attempts = 0;		//reset
+				}
+			}
 		}
 		return con;
-	}
+	}		
 
 	public static void close(Connection con) {
 		if (con == null) {
@@ -239,10 +316,12 @@ public class DataStore {
 		String sql = "select nominalLabelID from nominal_label where nominalAttributeID="
 				+ attributeID + " and nominalLabelCode='null'";
 		Connection conn = null;
+		PreparedStatement query = null;
+		ResultSet result = null;
 		try {
 			conn = getMySqlConnection();
-			PreparedStatement query = conn.prepareStatement(sql);
-			ResultSet result = query.executeQuery();
+			query = conn.prepareStatement(sql);
+			result = query.executeQuery();
 			if (result.next()) {
 				return result.getInt(1);
 			}
@@ -250,6 +329,8 @@ public class DataStore {
 			logger.error("Error in executing SQL statement: " + sql);
 			logger.error(elog.toStringException(ex));
 		} finally {
+			close(result);
+			close(query);
 			close(conn);
 		}
 		return null;
@@ -446,7 +527,7 @@ public class DataStore {
 		}
 	}
 
-	
+
 	public static void saveDocumentsToDatabase(List<Document> items) {
 		try {
 			for (Document item : items) {
@@ -459,14 +540,14 @@ public class DataStore {
 					// Update document with auto generated Doc
 					item.setDocumentID(docID);
 					//logger.info("Success in saving NEW document: " + item.getDocumentID() + ", for crisis = " + item.getCrisisCode());
-					if (canLog()) {
-						logger.info("In interval " + new Date(lastSaveTime) + " - " + new Date() + ", save NEW documents count = " + saveNewDocumentsCount);
-						lastSaveTime = System.currentTimeMillis();
-						saveNewDocumentsCount = 0;
-					}
 				} else {
 					logger.error("Something went wrong in saving document: " + item.getDocumentID() + ", for crisis = " + item.getCrisisCode());
 				}
+			}
+			if (canLog()) {
+				logger.info("In interval " + new Date(lastSaveTime) + " - " + new Date() + ", save NEW documents count = " + saveNewDocumentsCount);
+				lastSaveTime = System.currentTimeMillis();
+				saveNewDocumentsCount = 0;
 			}
 		} catch (Exception e) {
 			logger.error("Exception when attempting to write Document to database");
@@ -766,6 +847,7 @@ public class DataStore {
 				PreparedStatement modelLabelPerfInsert = conn.prepareStatement(perfInsertSql);
 
 				modelLabelPerfInsert.executeUpdate();
+				close(modelLabelPerfInsert);
 			}
 
 			// Set the the new model as the active model of its model family
@@ -861,8 +943,9 @@ public class DataStore {
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
 	/*
+	public static void main(String[] args) throws Exception {
+
 		DataStore.initTaskManager();
 
 		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
@@ -891,6 +974,7 @@ public class DataStore {
 		logger.info("Testing truncate Labeling buffer for crisisID = " + 117);
 		//DataStore.taskManager.truncateLabelingTaskBufferForCrisis(117L, Config.LABELING_TASK_BUFFER_MAX_LENGTH, 0);
 		DataStore.taskManager.truncateLabelingTaskBufferForCrisis(117L, Integer.parseInt(getProperty("labeling_task_buffer_max_length")), 0);
-		*/
 	}
+	 */
+
 }
