@@ -1,3 +1,16 @@
+# Essential API
+
+The following are the essential elements of the API.
+
+_(to be done)_
+
+---
+
+# Additional API
+
+The following are additional elements of the API and/or obsolete documentation prior to 2015-04-28. These should be integrated into the documentation above or moved to the Javadoc-based documentation.
+
+
 Base URI: `http://localhost:port/AIDRAnalytics/rest/analytics`
 
 ## Provide the total number of tweets per each `tag` in the time window from `startTime` to current time
