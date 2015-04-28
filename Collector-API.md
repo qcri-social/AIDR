@@ -14,7 +14,7 @@ stopTask() - stop collection
 
 ---
 
-# Additional API.
+# Additional API
 
 The following are additional elements of the API and/or obsolete documentation prior to 2015-04-28.
 
