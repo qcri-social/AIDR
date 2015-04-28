@@ -15,7 +15,7 @@ Conversion operations are basically to allow three types of file format:
 * One JSON object on a line per item.
 * One comma-separated-value (CSV) line per item.
 
-This module [does not require an explicit per-collection start](No explicit start).
+The aidr-persister module has [no explicit per-collection start/stop](Per collection start or stop).
 
 # Technologies
 
