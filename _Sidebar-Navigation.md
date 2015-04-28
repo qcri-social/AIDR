@@ -28,12 +28,12 @@
 * [[Trainer]]
  * [[Trainer API]]
  * [[PyBossa Trainer]]
+* [[Persister]]
+ * [[Persister API]]
 * [[Output]]
  * [[Output API]]
 * [[Analytics]]
  * [[Analytics API]]
-* [[Persister]]
- * [[Persister API]]
 
 ### Design and standards
 
