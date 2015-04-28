@@ -2,6 +2,11 @@
 
 The following are the essential elements of the API.
 
+## GetBufferedAIDRData
+
+### /channel/filter/{crisisCode}
+
+Method GetBufferedAIDRData.getBufferedAIDRDataPostFilter() - load latest tweets
 
 ---
 
