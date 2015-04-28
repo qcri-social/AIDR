@@ -2,6 +2,25 @@
 
 The following are the essential elements of the API.
 
+## CrisisResource
+
+### crisis
+
+Method CrisisResource.addCrisis()
+
+### crisis
+
+Method CrisisResource.editCrisis()
+
+## MiscResource
+	
+### getTrainingData
+
+Method MiscResource.getTrainingDataByCrisisAndAttribute() - get the training data for a classifier
+
+### humanLabeled/download/crisis/{crisisCode}/userName/{userName}	
+
+Method MiscResource.downloadHumanLabeledDocumentsByCrisisIDUserName() - download HumanLabeled Documents By CrisisID UserName
 
 ---
 
