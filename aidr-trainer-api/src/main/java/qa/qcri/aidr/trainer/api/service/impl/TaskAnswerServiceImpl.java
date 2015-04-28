@@ -76,8 +76,8 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 			if(jedisNotifier == null) {
 				try {
 					jedisNotifier= new JedisNotifier();
-					System.out.println("jedisNotifier created : " + jedisNotifier);
-					logger.info("jedisNotifier created : " + jedisNotifier);
+					//System.out.println("jedisNotifier created : " + jedisNotifier);
+					//logger.info("jedisNotifier created : " + jedisNotifier);
 				}
 				catch (Exception e){
 					logger.error("jedisNotifier creation error for :" + taskAnswerResponse.getDocumentID());

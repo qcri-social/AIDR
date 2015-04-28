@@ -47,8 +47,7 @@ import java.util.Set;
 public class DocumentServiceImpl implements DocumentService {
 
 	protected static Logger logger = LoggerFactory.getLogger(DocumentServiceImpl.class);
-	private ErrorLog elog = new ErrorLog();
-
+	
 	//@Autowired
 	//private DocumentDao documentDao;
 
@@ -68,13 +67,13 @@ public class DocumentServiceImpl implements DocumentService {
 	public void updateHasHumanLabel(Long documentID, boolean value) {
 		Map<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("setHasHumanLabels", new Boolean(value).toString());
-		logger.info("Will use the merge attempt");
+		//logger.info("Will use the merge attempt");
 		try {
 			DocumentDTO dto = (DocumentDTO) taskManager.setTaskParameter(Document.class, documentID, paramMap);
-			logger.info("Update of hasHumanLabels successful for document " + dto.getDocumentID() + ", crisisId = " + dto.getCrisisDTO().getCrisisID());
+			//logger.info("Update of hasHumanLabels successful for document " + dto.getDocumentID() + ", crisisId = " + dto.getCrisisDTO().getCrisisID());
 		} catch (Exception e) {
 			logger.error("Update unsuccessful for documentID = " + documentID);
-			logger.error(elog.toStringException(e));
+			logger.error("Exception", e);
 		}
 	}
 
