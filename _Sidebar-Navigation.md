@@ -39,7 +39,7 @@
 
 * [[User needs and personas]]
 * [[Coding standards]]
-* [[No explicit start]]
+* [[Per collection start or stop]]
 * [[Logging standards]]
 
 ## [[Credits]]
