@@ -2,6 +2,57 @@
 
 The following are the essential elements of the API.
 
+## Persister4TaggerAPI
+
+### genCSV       
+
+Method Persister4TaggerAPI.generateCSVFromLastestJSON() - generate CSV for latest Json
+
+### genTweetIds  
+
+Method Persister4TaggerAPI.generateTweetsIDSCSVFromAllJSON() - generate Tweets IDs CSV From All JSON
+
+### genJson
+
+Method Persister4TaggerAPI.generateJSONFromLastestJSON() - generate JSON From Lastest JSON
+
+### genJsonTweetIds      
+
+Method Persister4TaggerAPI.generateTweetsIDSJSONFromAllJSON() - generate Tweets IDs JSON From All JSON
+
+### filter/genCSV
+
+Method Persister4TaggerAPI.generateCSVFromLastestJSONFiltered() - generate CSV From Lastest JSON Filtered
+
+### filter/genTweetIds
+
+Method Persister4TaggerAPI.generateTweetsIDSCSVFromAllJSONFiltered() - generate Tweets IDs CSV From All JSON Filtered
+
+### filter/genJson
+
+Method Persister4TaggerAPI.generateJSONFromLastestJSONFiltered() - generate JSON From Lastest JSON Filtered
+
+### filter/genJsonTweetIds
+
+Method Persister4TaggerAPI.generateTweetsIDSJSONFromAllJSONFiltered() - generate Tweets IDs JSON From All JSON Filtered
+
+## Persister4Collector
+
+### genCSV
+
+Method Persister4Collector.generateCSVFromLastestJSON() - generate CSV file
+
+### genJson
+
+Method Persister4Collector.generateJSONFromLastestJSON() - generate Json file
+
+### genTweetIds
+
+Method Persister4Collector.generateTweetsIDSCSVFromAllJSON() - generate Json file for tweet Ids
+
+### genJsonTweetIds
+
+Method Persister4Collector.generateTweetsIDSJSONFromAllJSON() - generate Json file for tweet Ids
 
 ---
 
