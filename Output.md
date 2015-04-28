@@ -18,6 +18,10 @@ Then, it provides an API to query this buffer, e.g. to see the latest items, inc
 
 The aidr-output module also allow users to subscribe to an HTTP interface for receiving a live stream of items for a collection.
 
+# Design element: no explicit per-collection start
+
+The aidr-output module does not require an explicit per-collection start. Instead, it listens to the Redis queue to which aidr-tagger writes, and every time it detects a new collection, it creates a new buffer for that collections. Buffered are destroyed if inactive for a long time, to preserve memory.
+
 # Packages
 
 * qa.qcri.aidr.output.getdata implements the querying interface.
