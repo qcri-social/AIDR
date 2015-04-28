@@ -40,7 +40,8 @@ public interface DocumentResourceFacade extends CoreDBServiceFacade<Document, Lo
 	public int deleteNoLabelDocument(DocumentDTO document);
 	public int deleteNoLabelDocument(List<DocumentDTO> collection);
 	public int deleteUnassignedDocument(DocumentDTO document);
-	public int deleteUnassignedDocumentCollection(List<DocumentDTO> collection) throws PropertyNotSetException;
+	public int deleteUnassignedDocument(Long documentID);
+	public int deleteUnassignedDocumentCollection(List<Long> documentIDList);
 
 	public int deleteStaleDocuments(String joinType, String joinTable, String joinColumn,
 			String sortOrder, String[] orderBy,
