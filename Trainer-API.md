@@ -1,3 +1,16 @@
+# Essential API
+
+The following are the essential elements of the API.
+
+_(To be done)_
+
+---
+
+# Additional API
+
+The following are additional elements of the API and/or obsolete documentation prior to 2015-04-28. These should be integrated into the documentation above or moved to the Javadoc-based documentation.
+
+
 Base URI: `http://localhost:port/AIDRTrainerAPI/rest`
 
 ## For a given crisisID, retrieve all nominal attributes and their labels
