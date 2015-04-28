@@ -8,6 +8,8 @@ The aidr-analytics module maintains various statistics of the tagged items. It i
 
 The aidr-analytics module will be used to create a sort of _dashboard_ including tables and pie charts illustrating the percentage of items in different categories, and time-lines showing the volume of items in each category over time.
 
+The aidr-analytics module has [no explicit per-collection start/stop](Per collection start or stop).
+
 # Technologies
 
 The aidr-analytics module is a Java EE application using Spring and the following libraries:
