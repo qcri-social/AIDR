@@ -1,5 +1,7 @@
 # Essential API
 
+The following are the essential elements of the API.
+
 ## CollectionController
 
 ### save.action
