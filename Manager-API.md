@@ -34,3 +34,56 @@ Method: CollectionController.generateJSONLink() - generate JSON link for tweets 
 
 Method: CollectionController.generateJsonTweetIdsLink() - generate JSON link for tweet Ids
 
+# TaggerController
+
+## createCrises.action
+
+Method: TaggerController.createCrises() - add crisis (classifier)
+
+## updateCrisis.action
+
+Method: TaggerController.update() - update crisis (classifier)
+
+## getTrainingDataByModelIdAndCrisisId.action
+
+Method: TaggerController.getTrainingDataByModelIdAndCrisisId() - get the training data for a classifier
+
+## loadLatestTweets.action
+
+Method: TaggerController.loadLatestTweets() - load latest tweets with filters in interactive view page
+
+## downloadHumanLabeledDocuments.action
+
+Method: TaggerController.downloadHumanLabeledDocuments() - download Human labeled document by crisis user name - but there is no access for UI yet
+
+## taggerGenerateCSVLink.action
+
+Method: TaggerController.generateCSVLink() - generate CSV link for tweets file
+
+## taggerGenerateTweetIdsLink.action
+
+Method: TaggerController.generateTweetIdsLink() - generate tweet Ids link for tweet Ids file
+
+## taggerGenerateJSONLink.action
+
+Method: TaggerController.generateJSONLink() - generate JSON link for tweets file
+
+## taggerGenerateJsonTweetIdsLink.action
+
+Method: TaggerController.generateJsonTweetIdsLink() - generate Json Tweet Ids Link
+
+## taggerGenerateCSVFilteredLink.action
+
+Method: TaggerController.generateCSVFilteredLink() - generate CSV Filtered Link
+
+## taggerGenerateTweetIdsFilteredLink.action
+
+Method: TaggerController.generateTweetIdsFilteredLink() - generate Tweet Ids Filtered Link
+
+## taggerGenerateJSONFilteredLink.action
+
+Method: TaggerController.generateJSONFilteredLink() - generate JSON Filtered Link
+
+## taggerGenerateJsonTweetIdsFilteredLink.action
+
+Method: TaggerController.generateJsonTweetIdsFilteredLink() - generate Json Tweet Ids Filtered Link
