@@ -1,7 +1,9 @@
 # CollectionController
 
-save.action	save() - create and start collection
-delete.action	delete() - delete collection
+## save.action
+save() - create and start collection
+##delete.action
+delete() - delete collection
 update.action	update() - update collection
 start.action	start() - start collection
 stop.action	stop() - stop collection
