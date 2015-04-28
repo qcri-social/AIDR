@@ -1,7 +1,18 @@
+# TwitterCollectorAPI
+
+## start
+
+startTask() - start collection
+
+## stop
+
+stopTask() - stop collection
 
 ---
 
-# Obsolete documentation (marked as obsolete on 2015-04-28)
+# Obsolete documentation
+
+The documentation below was marked as obsolete by ChaTo on 2015-04-28.
 
 Base URI: `http://host:port/AIDRCollector/webresources`
 
