@@ -38,6 +38,7 @@
 ### Design and standards
 
 * [[User needs and personas]]
+* [[Coding standards]]
 * [[Logging standards]]
 
 ## [[Credits]]
