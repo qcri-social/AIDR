@@ -8,6 +8,8 @@ The aidr-output module provides query and subscription APIs that allow users to 
 
 In both cases, aidr-output reads the items from a Redis interface.
 
+The aidr-output module has [no explicit per-collection start/stop](Per collection start or stop).
+
 ## Query interface
 
 The aidr-output module maintains an in-memory buffer of the latest 1,000 items of each collection.
@@ -17,10 +19,6 @@ Then, it provides an API to query this buffer, e.g. to see the latest items, inc
 ## Subscription interface
 
 The aidr-output module also allow users to subscribe to an HTTP interface for receiving a live stream of items for a collection.
-
-# Design element: no explicit per-collection start
-
-The aidr-output module does not require an explicit per-collection start. Instead, it listens to the Redis queue to which aidr-tagger writes, and every time it detects a new collection, it creates a new buffer for that collections. Buffered are destroyed if inactive for a long time, to preserve memory.
 
 # Packages
 
