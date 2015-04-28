@@ -10,7 +10,19 @@ When elements to be automatically classified are received, they are classified u
 
 When elements already classified by a human are received, they are considered as _training data_. Whenever a pre-defined number of new training data items are received (e.g. 50 new items), the current classification model is re-trained using all the available training items to date.
 
+# Important Entities
+
+A **nominal attribute** is an attribute that takes a number of values, such as "color".
+
+A **nominal label** is a possible value of a nominal attribute. For instance, if the nominal attribute is "color", possible nominal labels are "red", "green", and "blue".
+
+A **model** is an automatic classifier, associated to a collection and nominal attribute, that has been trained to assign automatically a nominal label to an item, based on a set of human-labelled items.
+
+A **model family** is a set of models for the same collection and nominal attribute. At every moment, only one model is active within a model family. The active model is usually the model that has been trained with the larger number of human-labelled items, or the one that has the greater [http://www.dataschool.io/roc-curves-and-auc-explained/](AUC).
+
 # Automatic classification
+
+Human-labelled items are converted to a set of features, which are then filtered by a feature selection method, and given to a learning scheme to create a model.
 
 **Features**: each item is converted to a set of unigrams (words) and bigrams (consecutive two-word sequences). For instance "the house is red" is converted into { "the", "house", "is", "red", "the house", "house is", "is red" }.
 
