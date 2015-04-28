@@ -6,11 +6,11 @@ The following are the essential elements of the API.
 
 ### start
 
-startTask() - start collection
+Method TwitterCollectorAPI.startTask() - start collection
 
 ### stop
 
-stopTask() - stop collection
+Method TwitterCollectorAPI.stopTask() - stop collection
 
 ---
 
