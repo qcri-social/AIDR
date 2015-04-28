@@ -1,18 +1,22 @@
-# TwitterCollectorAPI
+# Essential API
 
-## start
+The following are the essential elements of the API.
+
+## TwitterCollectorAPI
+
+### start
 
 startTask() - start collection
 
-## stop
+### stop
 
 stopTask() - stop collection
 
 ---
 
-# Obsolete documentation
+# Additional API.
 
-The documentation below was marked as obsolete by ChaTo on 2015-04-28.
+The following are additional elements of the API and/or obsolete documentation prior to 2015-04-28.
 
 Base URI: `http://host:port/AIDRCollector/webresources`
 
