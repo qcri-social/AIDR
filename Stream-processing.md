@@ -13,4 +13,5 @@ We relax the last assumption only in the [[persister]], where we dump the conten
 
 For an academic perspective on this issue, see:
 
-Muhammad Imran, Ioanna Lykourentzou, Yannick Naudet, Carlos Castillo: "Engineering Crowdsourced Stream Processing Systems". http://arxiv.org/abs/1310.5463
+* Muhammad Imran, Ioanna Lykourentzou, Yannick Naudet, Carlos Castillo: "Engineering Crowdsourced Stream Processing Systems". http://arxiv.org/abs/1310.5463
+
