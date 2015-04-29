@@ -40,6 +40,7 @@
 * [[User needs and personas]]
 * [[Coding standards]]
 * [[Per collection start or stop]]
+* [[Testing]]
 * [[Logging standards]]
 
 ## [[Credits]]
