@@ -1,18 +1,17 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package qa.qcri.aidr.common.code;
 
 import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
 /**
+ * A response sent to the front-end of the application.
  *
  * @author Muhammad Imran
  */
@@ -28,32 +27,53 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 public class ResponseWrapperNEW implements Serializable{
     
     /**
-	 * 
+	 * A serial versionID for this Serializable object.
 	 */
 	private static final long serialVersionUID = 7835885665823356986L;
+	
+	/**
+	 * A return code to give to the front-end.
+	 */
 	private String returnCode;
+	
+    /**
+     * A message meant to be seen by the end user.
+     */
     private String userMessages;
+    
+    /**
+     * A message meant to be seen by an application developer, in case of error/warning
+     */
     private String developerMessage;
     
 
+    /**
+     * Create an empty response.
+     */
     public ResponseWrapperNEW() {
     }
 
     /**
-     * @return the returnCode
+     * Gets the return code
+     * 
+     * @return the return code
      */
     public String getReturnCode() {
         return returnCode;
     }
 
     /**
-     * @param returnCode the returnCode to set
+     * Sets the return code
+     * 
+     * @param returnCode the return code
      */
     public void setReturnCode(String returnCode) {
         this.returnCode = returnCode;
     }
 
     /**
+     * Gets the message to be shown to the end user
+     * 
      * @return the userMessages
      */
     public String getUserMessages() {
@@ -61,13 +81,16 @@ public class ResponseWrapperNEW implements Serializable{
     }
 
     /**
-     * @param userMessages the userMessages to set
+     * Sets the message to be shown to the end user
+     * 
+     * @param userMessages the message
      */
     public void setUserMessages(String userMessages) {
         this.userMessages = userMessages;
     }
 
     /**
+     * Gets the message to be shown to the application developer, in case of error/warning
      * @return the developerMessage
      */
     public String getDeveloperMessage() {
@@ -75,12 +98,10 @@ public class ResponseWrapperNEW implements Serializable{
     }
 
     /**
-     * @param developerMessage the developerMessage to set
+     * Sets the message to be shown to the application developer, in case of error/warning
+     * @param developerMessage the message
      */
     public void setDeveloperMessage(String developerMessage) {
         this.developerMessage = developerMessage;
     }
-    
-    
-
 }
