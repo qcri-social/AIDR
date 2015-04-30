@@ -65,12 +65,34 @@ If the maven process creates a .war file, that file must be deployed to Glassfis
 * For most users, the maven build will also install the generated jar in maven's local repository so that
 other modules can thereafter automatically find the dependency.
 
+# 3. DB-manager (aidr-db-manager)
+Modify src/main/resources/META-INF/persistence.xml:
+* Set hibernate.hbm2ddl.auto property to "create" 
+* Set jdbc resource in the glassfish server for aidr_predict schema (connection pool URL jdbc:mysql://localhost:3306/aidr_predict) and specify its name at <jta-data-source>
+* Deploy the db-managerEAR-X.ear to Glassfish
 
-# 3. Collector (aidr-collector)
+# 4. Persister (aidr-persister)
+
+Edit [config.properties](../../blob/master/aidr-persister/src/main/resources/config.properties):
+* DEFAULT_PERSISTER_FILE_PATH : This is where the persister will store all tweets on the file system. This path should be accessible from the server, so a link to the location must be created on the web server.
+* SCD1_URL: This URL is used to download tweets - it should be a path in the persister application - http://localhost:8080/AIDRPersister/data/persister/
+
+* Build using maven following the instructions above; this should generate a file `aidr-persister-X.war`
+* Deploy `aidr-persister-X.war` to Glassfish using the instructions above.
+
+* If you are using Apache web server, edit the appropriate file in `/etc/apache2/sites-available` directory as follows: set `AllowOverride All` under the appropriate `<Directory>` section. Restart Apache web service. 
+* Create a file `.htaccess` in the `.../aidr/data/persister` directory with the following two lines:
+
+             Options -Indexes
+             AddType application/octet-stream .zip .json .csv
+
+# 5. Collector (aidr-collector)
+
+In [config.properties](../../blob/master/aidr-collector/src/main/resources/config.properties), appropriately set the configuration parameters:
+* FETCHER_REST_URI: Rest URI of the collector. If the collector is deployed as AIDRCollector on the server, then the REST URI would be: http://localhost:8080/AIDRCollector/webresources/
+* PERSISTER_REST_URI: Rest URI of the persiser module - http://localhost:8080/AIDRPersister/webresources/
 
 * Build using maven following the instructions above; this should generate a file `aidr-collector-X.war`
-* In [config.properties](../../blob/master/aidr-collector/src/main/resources/config.properties), appropriately set the configuration parameters. Note that the FETCHER_REST_URI and the PERSISTER_REST_URI should match the actual URI's used. 
-* Appropriately set the `fetchMainUrl` in the [system.properties](../../blob/master/aidr-manager/src/main/resources/system.properties) file under `aidr-manager`. 
 * Deploy `aidr-collector-X.war` to Glassfish following the instructions above.
 * Test the deployment (optional). You can ping the collector service using the following command:
 ```
@@ -82,21 +104,7 @@ $ curl http://localhost:8080/aidr-collector/webresources/manage/ping
 
 The AIDR Collector has a RESTFul API, that means all the operations have their corresponding REST services. For more details regarding the API, please refer to [API page](https://github.com/qcri-social/AIDR/wiki/API-documentation). The output of the aidr-collector pubished to Redis through channels. Every collection starts its dedicated sub-channel under the aidr-collector channel, which is `FetcherChannel`.
 
-# 4. Persister (aidr-persister)
-
-* Build using maven following the instructions above; this should generate a file `aidr-persister-X.war`
-* Modify the `utils/Config.java` file appropriately. Ensure that you have read-write permissions for the DEFAULT_PERSISTER_FILE_PATH and SCD1_URL. 
-* Appropriately set the `persisterMainUrl` in the `system.properties` file under `aidr-manager`.
-* Deploy `aidr-persister-X.war` to Glassfish using the instructions above.
-
-
-* If you are using Apache web server, edit the appropriate file in `/etc/apache2/sites-available` directory as follows: set `AllowOverride All` under the appropriate `<Directory>` section. Restart Apache web service. 
-* Create a file `.htaccess` in the `.../aidr/data/persister` directory with the following two lines:
-
-             Options -Indexes
-             AddType application/octet-stream .zip .json .csv
-
-# 5. Manager (aidr-manager)
+# 6. Manager (aidr-manager)
 
 Prior to start the project building process make sure you have completed the following steps (a-d):
 
