@@ -39,12 +39,12 @@ This module does not need a deployment in the Glassfish server.
 # 2. DB-manager (aidr-db-manager)
 * Create `aidr_predict schema` in the MySQL database, as shown below. This assumes database=aidr_predict, username=aidr_user, password=pass123:
 
-             % mysql -u root -p
-             Enter password: [your mysql root user password]
-             mysql> CREATE DATABASE aidr_predict;
-             mysql> GRANT ALL PRIVILEGES ON aidr_predict.* TO aidr_user@localhost IDENTIFIED BY 'pass123';
-             mysql> GRANT TRIGGER ON aidr_predict.* TO aidr_user@localhost IDENTIFIED BY 'pass123'; 
-             mysql> QUIT;
+        % mysql -u root -p
+        Enter password: [your mysql root user password]
+        mysql> CREATE DATABASE aidr_predict;
+        mysql> GRANT ALL PRIVILEGES ON aidr_predict.* TO aidr_user@localhost IDENTIFIED BY 'pass123';
+        mysql> GRANT TRIGGER ON aidr_predict.* TO aidr_user@localhost IDENTIFIED BY 'pass123'; 
+        mysql> QUIT;
 
 * Edit [persistence.xml](../tree/master/aidr-db-manager/src/main/resources/META-INF/persistence.xml):
   1. Set hibernate.hbm2ddl.auto property to "create". This means upon deployment aidr-predict schema will be created from scratch. If there exist already a populated schema, it will be re-written and all data will be lost. Make sure to set the value of this property to "update" for the subsequent deployments of this module to prevent schema refresh each time. 
@@ -77,8 +77,8 @@ As aidr-task-manager is an EJB module, the build process for aidr-task-manager d
 * If you are using Apache web server, edit the appropriate file in `/etc/apache2/sites-available` directory as follows: set `AllowOverride All` under the appropriate `<Directory>` section. Restart Apache web service. 
 * Create a file `.htaccess` in the `.../aidr/data/persister` directory with the following two lines:
 
-             Options -Indexes
-             AddType application/octet-stream .zip .json .csv
+        Options -Indexes 
+        AddType application/octet-stream .zip .json .csv
 
 # 5. Collector (aidr-collector)
 
