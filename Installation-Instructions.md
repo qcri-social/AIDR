@@ -66,16 +66,16 @@ If the maven process creates a .war file, that file must be deployed to Glassfis
 other modules can thereafter automatically find the dependency.
 
 # 3. DB-manager (aidr-db-manager)
-Modify src/main/resources/META-INF/persistence.xml:
-* Set hibernate.hbm2ddl.auto property to "create" 
-* Set jdbc resource in the glassfish server for aidr_predict schema (connection pool URL jdbc:mysql://localhost:3306/aidr_predict) and specify its name at <jta-data-source>
+* Modify src/main/resources/META-INF/persistence.xml:
+1 Set hibernate.hbm2ddl.auto property to "create" 
+2 Set jdbc resource in the glassfish server for aidr_predict schema (connection pool URL jdbc:mysql://localhost:3306/aidr_predict) and specify its name at <jta-data-source>
 * Deploy the db-managerEAR-X.ear to Glassfish
 
 # 4. Persister (aidr-persister)
 
-Edit [config.properties](../../blob/master/aidr-persister/src/main/resources/config.properties):
-* DEFAULT_PERSISTER_FILE_PATH : This is where the persister will store all tweets on the file system. This path should be accessible from the server, so a link to the location must be created on the web server.
-* SCD1_URL: This URL is used to download tweets - it should be a path in the persister application - http://localhost:8080/AIDRPersister/data/persister/
+* Edit [config.properties](../../tree/master/aidr-persister/src/main/resources/config.properties):
+1 DEFAULT_PERSISTER_FILE_PATH : This is where the persister will store all tweets on the file system. This path should be accessible from the server, so a link to the location must be created on the web server.
+2 SCD1_URL: This URL is used to download tweets - it should be a path in the persister application - http://localhost:8080/AIDRPersister/data/persister/
 
 * Build using maven following the instructions above; this should generate a file `aidr-persister-X.war`
 * Deploy `aidr-persister-X.war` to Glassfish using the instructions above.
@@ -88,9 +88,9 @@ Edit [config.properties](../../blob/master/aidr-persister/src/main/resources/con
 
 # 5. Collector (aidr-collector)
 
-In [config.properties](../../blob/master/aidr-collector/src/main/resources/config.properties), appropriately set the configuration parameters:
-* FETCHER_REST_URI: Rest URI of the collector. If the collector is deployed as AIDRCollector on the server, then the REST URI would be: http://localhost:8080/AIDRCollector/webresources/
-* PERSISTER_REST_URI: Rest URI of the persiser module - http://localhost:8080/AIDRPersister/webresources/
+* In [config.properties](../../tree/master/aidr-collector/src/main/resources/config.properties), appropriately set the configuration parameters:
+1 FETCHER_REST_URI: Rest URI of the collector. If the collector is deployed as AIDRCollector on the server, then the REST URI would be: http://localhost:8080/AIDRCollector/webresources/
+2 PERSISTER_REST_URI: Rest URI of the persiser module - http://localhost:8080/AIDRPersister/webresources/
 
 * Build using maven following the instructions above; this should generate a file `aidr-collector-X.war`
 * Deploy `aidr-collector-X.war` to Glassfish following the instructions above.
