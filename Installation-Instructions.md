@@ -57,19 +57,18 @@ This module does not need a deployment in the Glassfish server.
 
 The `aidr-task-manager` module is meant to provide a unified view of the `aidr_predict` database tables that are related to 'aidr tasks' - namely, `document`, `task_assignment`, `document_nominal_labels` and `crisis` tables. The various modules of AIDR such as `aidr-tagger-api`, `aidr-tagger` and `aidr-trainer-api` that access these tables will use the aidr-task-manager as the single access point (in phases). To enable this, `aidr-task-manager` uses remote EJBs. The instructions for enabling access through `aidr-task-manager` are outlined below:
 
-* Create a new JDBC resource in the server called `JNDI/aidr_task_manager` to match the entry in [persistence.xml](../tree/master/aidr-task-manager/src/main/resources/META-INF/persistence.xml) with `connection pool` set to that of the `aidr_predict database`.
+* Create a new JDBC resource in the Glassfish server, name it as `JNDI/aidr_task_manager` to match the entry in [persistence.xml](../tree/master/aidr-task-manager/src/main/resources/META-INF/persistence.xml) with `connection pool` set to that of the `aidr_predict database`.
 
 As aidr-task-manager is an EJB module, the build process for aidr-task-manager differs from the other modules:
 
 * First build using maven. This will generate 2 jar files: `aidr-task-manager-1.0.jar` and `aidr-task-manager-client-1.0.jar`. Maven will also install these in the local .m2 repository for access by other dependent modules. 
 * Next build `aidr-task-managerEAR.ear` file through `mvn install -f pom-ear.xml`.  
-* Deploy the aidr-task-managerEAR.ear file to Glassfish.
+* Finally, deploy the aidr-task-managerEAR.ear file to Glassfish.
 
 # 4. Persister (aidr-persister)
 
 * Edit [config.properties](../tree/master/aidr-persister/src/main/resources/config.properties):
   1. DEFAULT_PERSISTER_FILE_PATH : This is where the persister will store all tweets on the file system. This path should be accessible from the server, so a link to the location must be created on the web server.
-  2. SCD1_URL: This URL is used to download tweets - it should be a path in the persister application, e.g. http://localhost:8080/AIDRPersister/data/persister/
 
 * Build using maven following the instructions above; this should generate a file `aidr-persister-X.war`
 * Deploy `aidr-persister-X.war` to Glassfish using the instructions above.
@@ -91,11 +90,13 @@ As aidr-task-manager is an EJB module, the build process for aidr-task-manager d
 * Test the deployment (optional). You can ping the collector service using the following command:
 ```
 $ curl http://localhost:8080/aidr-collector/webresources/manage/ping
+
+Response: 
 {"startDate":"2014/12/14 16:22:12","currentStatus":"RUNNING"}
 ```
 # 6. Tagger (aidr-tagger)
 
-**NOTE**: A re-deployment of the `aidr-task-manager` module may require a re-deployment of the `aidr-tagger` module.
+**NOTE**: A re-deployment of the `aidr-task-manager` module may require a re-compilation and restart of the `aidr-tagger` module.
 
 * Edit [config.properties](../tree/master/aidr-tagger/src/main/resources/config.properties), to match the database login info.
 
@@ -103,12 +104,14 @@ $ curl http://localhost:8080/aidr-collector/webresources/manage/ping
 
  `% mvn install` (or right-click on `pom.xml`, Run as ... Maven build ... 'install')
      
-* Start the application
+* Start/run the application
 
   1. Run the following command: java -Xmx4048m -cp  $GLASSFISH_HOME/glassfish/lib/gf-client.jar:aidr-tagger-1.0-jar-with-dependencies.jar:libs/* qa.qcri.aidr.predict.Controller
   2. Make sure you are in the root directory (otherwise trained models will not be saved in the right part)
   3. The main method in the jar is in qa.qcri.aidr.predict.Controller
   4. You will see some incomprehensible debug output. If the numbers are not 0, input data is being processed.
+
+This module does not need a deployment in the Glassfish server.
       
 # 7. Tagger-API (aidr-tagger-api)
 
