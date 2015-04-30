@@ -61,6 +61,20 @@ public class DateFormatConfig {
 		return null;
 	}
 	
+	/**
+	 * Parses a string representing a time duration in seconds, minutes, hours, or days.
+	 * 
+	 * The input should be a number with a suffix from "s", "m", "d", "h", presenting
+	 * respectively seconds, minutes, days, and hours. For instance, "3d" means 3 days.
+	 * 
+	 * TODO: RENAME. this should be renamed to parseSuffixedTimeDurationToSeconds()
+	 * 
+	 * TODO: ERROR HANDLING. this should throw a parseException if the suffix is not recognized, or if the substring[0,length-1] is not a number.
+	 * 
+	 * @param timeString the suffixed time string, with a single-letter suffix that can be "s", "m", "h", or "d".
+	 * 
+	 * @return the time duration in seconds
+	 */
 	public static long parseTime(String timeString) {
 		long duration = 0;
 	
