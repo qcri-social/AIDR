@@ -85,11 +85,6 @@ As aidr-task-manager is an EJB module, the build process for aidr-task-manager d
 $ curl http://localhost:8080/aidr-collector/webresources/manage/ping
 {"startDate":"2014/12/14 16:22:12","currentStatus":"RUNNING"}
 ```
-
-## Running
-
-The AIDR Collector has a RESTFul API, that means all the operations have their corresponding REST services. For more details regarding the API, please refer to [API page](https://github.com/qcri-social/AIDR/wiki/API-documentation). The output of the aidr-collector pubished to Redis through channels. Every collection starts its dedicated sub-channel under the aidr-collector channel, which is `FetcherChannel`.
-
 # 6. Tagger (aidr-tagger)
 
 **NOTE**: A re-deployment of the `aidr-task-manager` module may require a re-deployment of the `aidr-tagger` module.
