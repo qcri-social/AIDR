@@ -131,7 +131,7 @@ $ curl http://localhost:b080/AIDRTaggerAPI/rest/misc/ping
 * Deploy `aidr-output-X.war` to Glassfish using the instructions above.
 
 
-# 9. AIDR Analytics
+# 9. AIDR Analytics (aidr-analytics)
 
 The `aidr-analytics` module is meant to provide data for various analytics and visualization of categorized tweet data. 
 
