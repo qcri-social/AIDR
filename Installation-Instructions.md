@@ -37,8 +37,9 @@ other modules can thereafter automatically find the dependency.
 This module does not need a deployment in the Glassfish server.
 
 # 2. DB-manager (aidr-db-manager)
+* Create aidr_predict schema in the MySQL database
 * Edit [persistence.xml](../tree/master/aidr-db-manager/src/main/resources/META-INF/persistence.xml):
-  1. Set hibernate.hbm2ddl.auto property to "create". This means upon deployment aidr-predict schema will be created from scratch. If there exist already a schema, it will be re-written and all data will be lost. Make sure to set the value of this property to "update" for the subsequent deployments of this module to prevent schema refresh each time. 
+  1. Set hibernate.hbm2ddl.auto property to "create". This means upon deployment aidr-predict schema will be created from scratch. If there exist already a populated schema, it will be re-written and all data will be lost. Make sure to set the value of this property to "update" for the subsequent deployments of this module to prevent schema refresh each time. 
   2. Set jdbc resource in the glassfish server for aidr_predict database (connection pool URL jdbc:mysql://localhost:3306/aidr_predict) and specify its name at <jta-data-source>
 * Deploy the db-managerEAR-X.ear to Glassfish
 
@@ -48,7 +49,7 @@ This module does not need a deployment in the Glassfish server.
 
 The `aidr-task-manager` module is meant to provide a unified view of the `aidr_predict` database tables that are related to 'aidr tasks' - namely, `document`, `task_assignment`, `document_nominal_labels` and `crisis` tables. The various modules of AIDR such as `aidr-tagger-api`, `aidr-tagger` and `aidr-trainer-api` that access these tables will use the aidr-task-manager as the single access point (in phases). To enable this, `aidr-task-manager` uses remote EJBs. The instructions for enabling access through `aidr-task-manager` are outlined below:
 
-* Create a new JDBC resource in the server called `JNDI/aidr_task_manager` to match the entry in the `persistence.xml` file with `connection pool` set to that of the `aidr_predict database`.
+* Create a new JDBC resource in the server called `JNDI/aidr_task_manager` to match the entry in [persistence.xml](../tree/master/aidr-task-manager/src/main/resources/META-INF/persistence.xml) with `connection pool` set to that of the `aidr_predict database`.
 
 As aidr-task-manager is an EJB module, the build process for aidr-task-manager differs from the other modules:
 
@@ -60,7 +61,7 @@ As aidr-task-manager is an EJB module, the build process for aidr-task-manager d
 
 * Edit [config.properties](../tree/master/aidr-persister/src/main/resources/config.properties):
   1. DEFAULT_PERSISTER_FILE_PATH : This is where the persister will store all tweets on the file system. This path should be accessible from the server, so a link to the location must be created on the web server.
-  2. SCD1_URL: This URL is used to download tweets - it should be a path in the persister application - http://localhost:8080/AIDRPersister/data/persister/
+  2. SCD1_URL: This URL is used to download tweets - it should be a path in the persister application, e.g. http://localhost:8080/AIDRPersister/data/persister/
 
 * Build using maven following the instructions above; this should generate a file `aidr-persister-X.war`
 * Deploy `aidr-persister-X.war` to Glassfish using the instructions above.
@@ -74,8 +75,8 @@ As aidr-task-manager is an EJB module, the build process for aidr-task-manager d
 # 5. Collector (aidr-collector)
 
 * In [config.properties](../tree/master/aidr-collector/src/main/resources/config.properties), appropriately set the configuration parameters:
-  1. FETCHER_REST_URI: Rest URI of the collector. If the collector is deployed as AIDRCollector on the server, then the REST URI would be: http://localhost:8080/AIDRCollector/webresources/
-  2. PERSISTER_REST_URI: Rest URI of the persiser module - http://localhost:8080/AIDRPersister/webresources/
+  1. FETCHER_REST_URI: Rest URI of the collector. For example, if the collector is deployed as AIDRCollector on the server, then the REST URI would be: http://localhost:8080/AIDRCollector/webresources/
+  2. PERSISTER_REST_URI: Rest URI of the persiser module, e.g. http://localhost:8080/AIDRPersister/webresources/
 
 * Build using maven following the instructions above; this should generate a file `aidr-collector-X.war`
 * Deploy `aidr-collector-X.war` to Glassfish following the instructions above.
@@ -134,7 +135,7 @@ $ curl http://localhost:b080/AIDRTaggerAPI/rest/misc/ping
 
 The `aidr-analytics` module is meant to provide data for various analytics and visualization of categorized tweet data. 
 
-* Create a new database called `aidr_analysis`. Grant appropriate table and trigger permissions (similar to the instructions for setting up the `aidr_predict` database. Run the `db_update.sql` script in the `db_scripts` folder.  
+* Create a new database called `aidr_analysis`. Grant appropriate table and trigger permissions (similar to the instructions for setting up the `aidr_predict` database. Run  [db_update.sql](../tree/master/aidr-analytics/db_scripts/db_update.sql) script.
 * For first time build, set the property `hibernate.hbm2ddl.auto` to `create` in [persistence.xml](../tree/master/aidr-analytics/src/main/resources/META-INF/persistence.xml). For subsequent deployments, change the value to `update`.
 
 **WARNING**: Setting "hibernate.hbm2ddl.auto" to `create` drops and creates the aidr_analysis database!
@@ -142,21 +143,21 @@ The `aidr-analytics` module is meant to provide data for various analytics and v
 * Create a new JDBC resource in server (e.g., Glassfish) 'aidr_analysis` database. Attach it with `connection pool` set to that of the `aidr_analysis` database.
 * Specify the JDBC resource name at <jta-data-source> in [persistence.xml](../tree/master/aidr-analytics/src/main/resources/META-INF/persistence.xml)
 
-* Appropriately set the parameters in the [granularity.properties](../tree/master/aidr-analytics/src/main/resources/granularity.properties) file. Use the suffix `s`, `m`, `h` and `d` to indicate seconds, minutes, hours and days respectively. 
+* Appropriately set the parameters in [granularity.properties](../tree/master/aidr-analytics/src/main/resources/granularity.properties) file. Use the suffix `s`, `m`, `h` and `d` to indicate seconds, minutes, hours and days respectively. 
 * Build using maven and deploy the WAR file. 
 
 # 10. Trainer API (aidr-trainer-api)
 
-* Pre-requisite: aidr-tagger database and aidr-scheduler database should be created. Aidr-tagger database script is located in aidr-tagger installtion details. Aidr-trainer database script (aidr_scheduler.sql) can be found in the root of the aidr-trainer-api project.
+* Pre-requisite: `aidr-tagger` database and `aidr-scheduler` database should be created. `aidr-tagger` database script is located in aidr-tagger installtion details. 'aidr-trainer' database script [aidr_scheduler.sql]((../tree/master/aidr-trainer-api/aidr_scheduler.sql) can be found in the root of the aidr-trainer-api project.
 * Appropriately set the properties in the [database.properties](../tree/master/aidr-trainer-api/src/main/resources/database.properties) and [databaseTemp.properties](../tree/master/aidr-trainer-api/src/main/resources/databaseTemp.properties) files under src/main/resources.
 * Build using maven following the instructions above; this should generate a file `aidr-trainer-api-X.war`
 * Deploy `aidr-trainer-api-X.war` to Glassfish using the instructions above. 
 
 # 11. Trainer Pybossa (aidr-trainer-pybossa)
 
-* Pre-requisite: aidr-tagger database and aidr-scheduler database should be created. Aidr-tagger database script is located in aidr-tagger installtion details. Aidr-trainer database script (aidr_scheduler.sql) can be found in the root of the aidr-trainer-api project.
+* Pre-requisite: 'aidr-tagger' database and 'aidr-scheduler' database should be created as specified in aidr-trainer-api details.
 * Pybossa Server or user should have pybossa account(s) with clickers.micromappers.org 
-* Appropriately set the properties in the database.properties under src/main/resources
+* Appropriately set the properties in [database.properties](../tree/master/aidr-trainer-pybossa/src/main/resources/database.properties) under src/main/resources
 * User should configure client table.
     * name: client name
     * hostURL: Pybossa api host url
@@ -165,7 +166,6 @@ The `aidr-analytics` module is meant to provide data for various analytics and v
     * queueSize: task pending size
     * aidrHostURL : train API rest service url
     * defaultTaskRunsPerTask : the numbers of user vote for a task
-* Appropriately set the `crowdsourcingAPIMainUrl` in the `system.properties` file under `aidr-manager`.     
 * Build using maven following the instructions above; this should generate a file `aidr-trainer-pybossa-X.war`
 * Deploy `aidr-trainer-pybossa-X.war` to Glassfish using the instructions above. 
 
