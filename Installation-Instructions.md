@@ -37,7 +37,7 @@ other modules can thereafter automatically find the dependency.
 This module does not need a deployment in the Glassfish server.
 
 # 2. DB-manager (aidr-db-manager)
-* Create `aidr_predict schema` in the MySQL database, as shown below. This assumes database=aidr_predict, username=aidr_user, password=pass123:
+* Create `aidr_predict` schema in the MySQL database, as shown below. This assumes database=aidr_predict, username=aidr_user, password=pass123:
 
         % mysql -u root -p
         Enter password: [your mysql root user password]
@@ -138,7 +138,7 @@ $ curl http://localhost:b080/AIDRTaggerAPI/rest/misc/ping
 
 The `aidr-analytics` module is meant to provide data for various analytics and visualization of categorized tweet data. 
 
-* Create a new database called `aidr_analysis`. Grant appropriate table and trigger permissions (similar to the instructions for setting up the `aidr_predict` database. Run  [db_update.sql](../tree/master/aidr-analytics/db_scripts/db_update.sql) script.
+* Create a new database called `aidr_analysis`. Grant appropriate table and trigger permissions (similar to the instructions for setting up the `aidr_predict` database). 
 * For first time build, set the property `hibernate.hbm2ddl.auto` to `create` in [persistence.xml](../tree/master/aidr-analytics/src/main/resources/META-INF/persistence.xml). For subsequent deployments, change the value to `update`.
 
 **WARNING**: Setting "hibernate.hbm2ddl.auto" to `create` drops and creates the aidr_analysis database!
@@ -151,14 +151,15 @@ The `aidr-analytics` module is meant to provide data for various analytics and v
 
 # 10. Trainer API (aidr-trainer-api)
 
-* Pre-requisite: `aidr-tagger` database and `aidr-scheduler` database should be created. `aidr-tagger` database script is located in aidr-tagger installtion details. 'aidr-trainer' database script [aidr_scheduler.sql]((../tree/master/aidr-trainer-api/aidr_scheduler.sql) can be found in the root of the aidr-trainer-api project.
+* Pre-requisite: `aidr_predict` database and `aidr_scheduler` database should be created. `aidr_predict' database is created by aidr-db-manager module. 
+* Create a new database called `aidr_scheduler`. Grant appropriate table and trigger permissions (similar to the instructions for setting up the `aidr_predict` database) 
 * Appropriately set the properties in the [database.properties](../tree/master/aidr-trainer-api/src/main/resources/database.properties) and [databaseTemp.properties](../tree/master/aidr-trainer-api/src/main/resources/databaseTemp.properties) files under src/main/resources.
 * Build using maven following the instructions above; this should generate a file `aidr-trainer-api-X.war`
 * Deploy `aidr-trainer-api-X.war` to Glassfish using the instructions above. 
 
 # 11. Trainer Pybossa (aidr-trainer-pybossa)
 
-* Pre-requisite: `aidr-tagger` database and `aidr-scheduler` database should be created as specified in aidr-trainer-api details.
+* Pre-requisite: `aidr_predict` database and `aidr_scheduler` database
 * Pybossa Server or user should have pybossa account(s) with clickers.micromappers.org 
 * Appropriately set the properties in [database.properties](../tree/master/aidr-trainer-pybossa/src/main/resources/database.properties) under src/main/resources
 * User should configure client table.
