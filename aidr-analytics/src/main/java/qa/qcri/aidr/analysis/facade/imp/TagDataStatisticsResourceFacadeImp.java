@@ -39,7 +39,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 					+ ", " + tagData.getLabelCode() + ", " + tagData.getTimestamp() + ", " + tagData.getGranularity() + ": " + tagData.getCount());
 			e.printStackTrace();
 			//logger.error(elog.toStringException(e));
-			return ReturnCode.FAIL;
+			return ReturnCode.ERROR;
 		}
 	}
 
