@@ -32,6 +32,8 @@ If the maven process creates a .war file, that file must be deployed to Glassfis
 * For most users, the maven build will also install the generated jar in maven's local repository so that
 other modules can thereafter automatically find the dependency.
 
+This module does not need a deployment in the Glassfish server.
+
 # 2. DB-manager (aidr-db-manager)
 * Edit [persistence.xml](../tree/master/aidr-db-manager/src/main/resources/META-INF/persistence.xml):
   1. Set hibernate.hbm2ddl.auto property to "create"
