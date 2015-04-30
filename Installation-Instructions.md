@@ -48,7 +48,7 @@ This module does not need a deployment in the Glassfish server.
 
 * Edit [persistence.xml](../tree/master/aidr-db-manager/src/main/resources/META-INF/persistence.xml):
   1. Set hibernate.hbm2ddl.auto property to "create". This means upon deployment aidr-predict schema will be created from scratch. If there exist already a populated schema, it will be re-written and all data will be lost. Make sure to set the value of this property to "update" for the subsequent deployments of this module to prevent schema refresh each time. 
-  2. Set jdbc resource in the glassfish server for aidr_predict database (connection pool URL jdbc:mysql://localhost:3306/aidr_predict) and specify its name at <jta-data-source>
+  2. Set jdbc resource in the glassfish server for aidr_predict database (connection pool URL jdbc:mysql://localhost:3306/aidr_predict) and specify its name at `jta-data-source`
 * Deploy the db-managerEAR-X.ear to Glassfish
 
 # 3. Task Manager (aidr-task-manager)
@@ -144,7 +144,7 @@ The `aidr-analytics` module is meant to provide data for various analytics and v
 **WARNING**: Setting "hibernate.hbm2ddl.auto" to `create` drops and creates the aidr_analysis database!
 
 * Create a new JDBC resource in server (e.g., Glassfish) 'aidr_analysis` database. Attach it with `connection pool` set to that of the `aidr_analysis` database.
-* Specify the JDBC resource name at <jta-data-source> in [persistence.xml](../tree/master/aidr-analytics/src/main/resources/META-INF/persistence.xml)
+* Specify the JDBC resource name at `jta-data-source` in [persistence.xml](../tree/master/aidr-analytics/src/main/resources/META-INF/persistence.xml)
 
 * Appropriately set the parameters in [granularity.properties](../tree/master/aidr-analytics/src/main/resources/granularity.properties) file. Use the suffix `s`, `m`, `h` and `d` to indicate seconds, minutes, hours and days respectively. 
 * Build using maven and deploy the WAR file. 
