@@ -34,8 +34,8 @@ other modules can thereafter automatically find the dependency.
 
 # 2. DB-manager (aidr-db-manager)
 * Edit [persistence.xml](../tree/master/aidr-db-manager/src/main/resources/META-INF/persistence.xml):
-1. Set hibernate.hbm2ddl.auto property to "create"
-2. Set jdbc resource in the glassfish server for aidr_predict database (connection pool URL jdbc:mysql://localhost:3306/aidr_predict) and specify its name at <jta-data-source>
+  1. Set hibernate.hbm2ddl.auto property to "create"
+  2. Set jdbc resource in the glassfish server for aidr_predict database (connection pool URL jdbc:mysql://localhost:3306/aidr_predict) and specify its name at <jta-data-source>
 * Deploy the db-managerEAR-X.ear to Glassfish
 
 # 3. Task Manager
@@ -55,8 +55,8 @@ As aidr-task-manager is an EJB module, the build process for aidr-task-manager d
 # 4. Persister (aidr-persister)
 
 * Edit [config.properties](../tree/master/aidr-persister/src/main/resources/config.properties):
-1. DEFAULT_PERSISTER_FILE_PATH : This is where the persister will store all tweets on the file system. This path should be accessible from the server, so a link to the location must be created on the web server.
-2. SCD1_URL: This URL is used to download tweets - it should be a path in the persister application - http://localhost:8080/AIDRPersister/data/persister/
+  1. DEFAULT_PERSISTER_FILE_PATH : This is where the persister will store all tweets on the file system. This path should be accessible from the server, so a link to the location must be created on the web server.
+  2. SCD1_URL: This URL is used to download tweets - it should be a path in the persister application - http://localhost:8080/AIDRPersister/data/persister/
 
 * Build using maven following the instructions above; this should generate a file `aidr-persister-X.war`
 * Deploy `aidr-persister-X.war` to Glassfish using the instructions above.
@@ -70,8 +70,8 @@ As aidr-task-manager is an EJB module, the build process for aidr-task-manager d
 # 5. Collector (aidr-collector)
 
 * In [config.properties](../tree/master/aidr-collector/src/main/resources/config.properties), appropriately set the configuration parameters:
-1. FETCHER_REST_URI: Rest URI of the collector. If the collector is deployed as AIDRCollector on the server, then the REST URI would be: http://localhost:8080/AIDRCollector/webresources/
-2. PERSISTER_REST_URI: Rest URI of the persiser module - http://localhost:8080/AIDRPersister/webresources/
+  1. FETCHER_REST_URI: Rest URI of the collector. If the collector is deployed as AIDRCollector on the server, then the REST URI would be: http://localhost:8080/AIDRCollector/webresources/
+  2. PERSISTER_REST_URI: Rest URI of the persiser module - http://localhost:8080/AIDRPersister/webresources/
 
 * Build using maven following the instructions above; this should generate a file `aidr-collector-X.war`
 * Deploy `aidr-collector-X.war` to Glassfish following the instructions above.
@@ -97,10 +97,10 @@ The AIDR Collector has a RESTFul API, that means all the operations have their c
      
 * Start the application
 
-  a) Run the following command: java -Xmx4048m -cp  $GLASSFISH_HOME/glassfish/lib/gf-client.jar:aidr-tagger-1.0-jar-with-dependencies.jar:libs/* qa.qcri.aidr.predict.Controller
-  b) Make sure you are in the root directory (otherwise trained models will not be saved in the right part)
-  c) The main method in the jar is in qa.qcri.aidr.predict.Controller
-      You will see some incomprehensible debug output. If the numbers are not 0, input data is being processed.
+  1. Run the following command: java -Xmx4048m -cp  $GLASSFISH_HOME/glassfish/lib/gf-client.jar:aidr-tagger-1.0-jar-with-dependencies.jar:libs/* qa.qcri.aidr.predict.Controller
+  2. Make sure you are in the root directory (otherwise trained models will not be saved in the right part)
+  3. The main method in the jar is in qa.qcri.aidr.predict.Controller
+  4. You will see some incomprehensible debug output. If the numbers are not 0, input data is being processed.
       
 # 7. Tagger-API (aidr-tagger-api)
 
@@ -182,17 +182,16 @@ Prior to start the project building process make sure you have completed the fol
 (c) In the same file `spring-servlet.xml` the database credentials can be specified/changed according to your installation.
 
 (d) Apply the following changes to [system.properties](../tree/master/aidr-manager/src/main/resources/system.properties)
-
-* twitter.consumerKey=<put here your Twitter's application consumer key>
-* twitter.consumerSecret=<put here your Twitter's application consumer key secret>
-* twitter.callBackURL=<here goes the URL where the aidr-manager application is accessible>. e.g., http://localhost:8080/AIDRFetchManager   
-* application.secureUrl=<here goes the URL where the application is accessible>. e.g., http://localhost:8080/AIDRFetchManager
-* fetchMainUrl=Put here aidr-collector webresources path (e.g., http://localhost:8084/aidr-collector/webresources)
-* taggerMainUrl=Put here aidr-tagger-api webresources path (e.g., http://localhost:8084/aidr-tagger-api/rest
-* persisterMainUrl=Put here aidr-persister webresources path (e.g., http://localhost:8084/aidr-persister/webresources)
-* crowdsourcingAPIMainUrl=Put here aidr-trainer-api webresources path (e.g., http://localhost:8084/aidr-trainer-api/rest)
-* outputAPIMainUrl=Put here aidr-output webresources path (e.g., http://localhost:8084/aidr-output/rest)
-* serverUrl=Put here the server name on which AIDR is hosted
+   * twitter.consumerKey=<put here your Twitter's application consumer key>
+   * twitter.consumerSecret=<put here your Twitter's application consumer key secret>
+   * twitter.callBackURL=<here goes the URL where the aidr-manager application is accessible>. e.g., http://localhost:8080/AIDRFetchManager
+   * application.secureUrl=<here goes the URL where the application is accessible>. e.g., http://localhost:8080/AIDRFetchManager
+   * fetchMainUrl=Put here aidr-collector webresources path (e.g., http://localhost:8084/aidr-collector/webresources)
+   * taggerMainUrl=Put here aidr-tagger-api webresources path (e.g., http://localhost:8084/aidr-tagger-api/rest
+   * persisterMainUrl=Put here aidr-persister webresources path (e.g., http://localhost:8084/aidr-persister/webresources)
+   * crowdsourcingAPIMainUrl=Put here aidr-trainer-api webresources path (e.g., http://localhost:8084/aidr-trainer-api/rest)
+   * outputAPIMainUrl=Put here aidr-output webresources path (e.g., http://localhost:8084/aidr-output/rest)
+   * serverUrl=Put here the server name on which AIDR is hosted
 
 After the above steps have been executed, you can build the project:
 
