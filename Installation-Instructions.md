@@ -33,9 +33,9 @@ If the maven process creates a .war file, that file must be deployed to Glassfis
 other modules can thereafter automatically find the dependency.
 
 # 2. DB-manager (aidr-db-manager)
-* Modify src/main/resources/META-INF/persistence.xml:
+* Edit [persistence.xml](../tree/master/aidr-db-manager/src/main/resources/META-INF/persistence.xml):
 1. Set hibernate.hbm2ddl.auto property to "create"
-2. Set jdbc resource in the glassfish server for aidr_predict schema (connection pool URL jdbc:mysql://localhost:3306/aidr_predict) and specify its name at <jta-data-source>
+2. Set jdbc resource in the glassfish server for aidr_predict database (connection pool URL jdbc:mysql://localhost:3306/aidr_predict) and specify its name at <jta-data-source>
 * Deploy the db-managerEAR-X.ear to Glassfish
 
 # 3. Task Manager
@@ -89,17 +89,17 @@ The AIDR Collector has a RESTFul API, that means all the operations have their c
 
 **NOTE**: A re-deployment of the `aidr-task-manager` module may require a re-deployment of the `aidr-tagger` module.
 
-4) Edit [config.properties](../tree/master/aidr-tagger/src/main/resources/config.properties), to match the database login info.
+* Edit [config.properties](../tree/master/aidr-tagger/src/main/resources/config.properties), to match the database login info.
 
-6) Compile the application to a jar file.
+* Compile the application to a jar file.
 
  `% mvn install` (or right-click on `pom.xml`, Run as ... Maven build ... 'install')
      
-6) Start the application
+* Start the application
 
-   a) Run the following command: java -Xmx4048m -cp  $GLASSFISH_HOME/glassfish/lib/gf-client.jar:aidr-tagger-1.0-jar-with-dependencies.jar:libs/* qa.qcri.aidr.predict.Controller
-   b) Make sure you are in the root directory (otherwise trained models will not be saved in the right part)
-   c) The main method in the jar is in qa.qcri.aidr.predict.Controller
+  a) Run the following command: java -Xmx4048m -cp  $GLASSFISH_HOME/glassfish/lib/gf-client.jar:aidr-tagger-1.0-jar-with-dependencies.jar:libs/* qa.qcri.aidr.predict.Controller
+  b) Make sure you are in the root directory (otherwise trained models will not be saved in the right part)
+  c) The main method in the jar is in qa.qcri.aidr.predict.Controller
       You will see some incomprehensible debug output. If the numbers are not 0, input data is being processed.
       
 # 7. Tagger-API (aidr-tagger-api)
@@ -122,9 +122,7 @@ $ curl http://localhost:b080/AIDRTaggerAPI/rest/misc/ping
 **Modules dependent**: `aidr-analysis`
 
 * Set the Redis host and port number appropriately in [config.properties](../tree/master/aidr-output/src/main/resources/config.properties) file. 
-
 * Build using maven following the instructions above; this should generate a file `aidr-output-X.war`.
-
 * Deploy `aidr-output-X.war` to Glassfish using the instructions above.
 
 
@@ -132,18 +130,15 @@ $ curl http://localhost:b080/AIDRTaggerAPI/rest/misc/ping
 
 The `aidr-analytics` module is meant to provide data for various analytics and visualization of categorized tweet data. 
 
-Steps to deploy `aidr-analytics`:
-
 * Create a new database called `aidr_analysis`. Grant appropriate table and trigger permissions (similar to the instructions for setting up the `aidr_predict` database. Run the `db_update.sql` script in the `db_scripts` folder.  
-
-* For first time build, set the property `hibernate.hbm2ddl.auto` to `create`. For subsequent deployments, change the value to `update`.
+* For first time build, set the property `hibernate.hbm2ddl.auto` to `create` in [persistence.xml](../tree/master/aidr-analytics/src/main/resources/META-INF/persistence.xml). For subsequent deployments, change the value to `update`.
 
 **WARNING**: Setting "hibernate.hbm2ddl.auto" to `create` drops and creates the aidr_analysis database!
 
-* Create a new JDBC resource in server (e.g., Glassfish) to match the JNDI name `JNDI/aidr_analysis` used in `src/main/resource/META-INF/persistence.xml`. Attach it with `connection pool` set to that of the `aidr_analysis` database.
+* Create a new JDBC resource in server (e.g., Glassfish) 'aidr_analysis` database. Attach it with `connection pool` set to that of the `aidr_analysis` database.
+* Specify the JDBC resource name at <jta-data-source> in [persistence.xml](../tree/master/aidr-analytics/src/main/resources/META-INF/persistence.xml)
 
 * Appropriately set the parameters in the [granularity.properties](../tree/master/aidr-analytics/src/main/resources/granularity.properties) file. Use the suffix `s`, `m`, `h` and `d` to indicate seconds, minutes, hours and days respectively. 
-
 * Build using maven and deploy the WAR file. 
 
 # 10. Trainer API (aidr-trainer-api)
@@ -175,11 +170,8 @@ Steps to deploy `aidr-analytics`:
 
 Prior to start the project building process make sure you have completed the following steps (a-d):
 
-(a) Create a database schema, name it  "aidr_fetch_manager". 
-
-The schema name can also be changed that requires to change application configurations which specify schema details as described in the next 2 steps.
-
-(b) In case of first time deployment, make sure you add the following line in the `spring-servlet.xml` file located under `<project-root>/src/main/webapp/WEB-INF/`:
+(a) Create a database schema, name it  "aidr_fetch_manager".
+(b) In case of first time deployment, make sure you add the following line in the [spring-servlet.xml](../tree/master/aidr-manager/src/main/webapp/WEB-INF/spring-servlet-xml)
 
 `<prop key="hibernate.hbm2ddl.auto">create</prop>`
 
@@ -187,14 +179,13 @@ The schema name can also be changed that requires to change application configur
 
 `<prop key="hibernate.hbm2ddl.auto">update</prop>`
 
-
 (c) In the same file `spring-servlet.xml` the database credentials can be specified/changed according to your installation.
 
-(d) Apply the following changes to "system.properties" file located under `<app-root>/src/main/resources/`
+(d) Apply the following changes to [system.properties](../tree/master/aidr-manager/src/main/resources/system.properties)
 
 * twitter.consumerKey=<put here your Twitter's application consumer key>
 * twitter.consumerSecret=<put here your Twitter's application consumer key secret>
-* twitter.callBackURL=<here goes the URL where the application is accessible>. e.g., http://localhost:8080/AIDRFetchManager   
+* twitter.callBackURL=<here goes the URL where the aidr-manager application is accessible>. e.g., http://localhost:8080/AIDRFetchManager   
 * application.secureUrl=<here goes the URL where the application is accessible>. e.g., http://localhost:8080/AIDRFetchManager
 * fetchMainUrl=Put here aidr-collector webresources path (e.g., http://localhost:8084/aidr-collector/webresources)
 * taggerMainUrl=Put here aidr-tagger-api webresources path (e.g., http://localhost:8084/aidr-tagger-api/rest
@@ -207,6 +198,9 @@ After the above steps have been executed, you can build the project:
 
 * Build using maven following the instructions above; this should generate a file `aidr-manager-X.war`
 * Deploy `aidr-manager-X.war` to Glassfish using the instructions above.
+
+
+# Miscallaneous
 
 **Please execute the following in MySQL, once the databases are created**
 
