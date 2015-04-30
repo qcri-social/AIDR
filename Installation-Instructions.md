@@ -37,7 +37,7 @@ other modules can thereafter automatically find the dependency.
 This module does not need a deployment in the Glassfish server.
 
 # 2. DB-manager (aidr-db-manager)
-* Create 'aidr_predict schema' in the MySQL database
+* Create `aidr_predict schema` in the MySQL database
 * Edit [persistence.xml](../tree/master/aidr-db-manager/src/main/resources/META-INF/persistence.xml):
   1. Set hibernate.hbm2ddl.auto property to "create". This means upon deployment aidr-predict schema will be created from scratch. If there exist already a populated schema, it will be re-written and all data will be lost. Make sure to set the value of this property to "update" for the subsequent deployments of this module to prevent schema refresh each time. 
   2. Set jdbc resource in the glassfish server for aidr_predict database (connection pool URL jdbc:mysql://localhost:3306/aidr_predict) and specify its name at <jta-data-source>
@@ -155,7 +155,7 @@ The `aidr-analytics` module is meant to provide data for various analytics and v
 
 # 11. Trainer Pybossa (aidr-trainer-pybossa)
 
-* Pre-requisite: 'aidr-tagger' database and 'aidr-scheduler' database should be created as specified in aidr-trainer-api details.
+* Pre-requisite: `aidr-tagger` database and `aidr-scheduler` database should be created as specified in aidr-trainer-api details.
 * Pybossa Server or user should have pybossa account(s) with clickers.micromappers.org 
 * Appropriately set the properties in [database.properties](../tree/master/aidr-trainer-pybossa/src/main/resources/database.properties) under src/main/resources
 * User should configure client table.
@@ -174,7 +174,7 @@ The `aidr-analytics` module is meant to provide data for various analytics and v
 
 Prior to start the project building process make sure you have completed the following steps (a-d):
 
-(a) Create a database schema 'aidr_fetch_manager'.
+(a) Create a database schema `aidr_fetch_manager`.
 (b) In case of first time deployment, make sure you add the following line in [spring-servlet.xml](../tree/master/aidr-manager/src/main/webapp/WEB-INF/spring-servlet-xml)
 
 `<prop key="hibernate.hbm2ddl.auto">create</prop>`
