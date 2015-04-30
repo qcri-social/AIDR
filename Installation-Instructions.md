@@ -24,6 +24,8 @@ This process initiates downloading process of required packages/libraries from t
 
 If the maven process creates a .war file, that file must be deployed to Glassfish. Go to the admin page of your Glassfish server, usually it can be accessed through http://hostname:4848/. Login and go to the applications tab, choose the _deploy_ option and upload the .war file.
 
+Compilation and deployment of the modules must follow the below-specified sequence i.e., #1 (aidr-common) should be complied/deployed first before #2 (aidr-db-manager).
+
 # 1. Common (aidr-common)
 
 `aidr-common` contains code that is reused across multiple modules: e.g., logging and REDIS load shedding. This module **must** be built before any other module. 
