@@ -122,12 +122,12 @@ public class PybossaFormatter {
     ///////////////////////////////////////////////////////////////////////
 
     private JSONObject buildInfoJson(JSONObject infoJson,  String finalAnswer, Long attributeID){
-
+        // TEMP UPDATE.
         JSONObject obj = new JSONObject();
         obj.put("documentID", infoJson.get("documentID"));
         obj.put("category", finalAnswer);
         obj.put("aidrID", infoJson.get("aidrID"));
-        obj.put("crisisID", infoJson.get("crisisID"));
+        obj.put("crisisID", 314);
         obj.put("attributeID", attributeID);
         return obj;
     }

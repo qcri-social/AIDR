@@ -53,6 +53,7 @@ public class ReportProductServiceImpl implements ReportProductService {
     private ClientAppEventService clientAppEventService;
 
     private Client client;
+    private PybossaCommunicator pybossaCommunicator = new PybossaCommunicator();
 
     public void setClassVariable() throws Exception{
         client = clientService.findClientByCriteria("name", UserAccount.SYSTEM_USER_NAME);
@@ -75,17 +76,18 @@ public class ReportProductServiceImpl implements ReportProductService {
 
             if(templateList.size() > 0){
                 CVSRemoteFileFormatter formatter = new CVSRemoteFileFormatter();
-
-                String fileName = PybossaConf.DEFAULT_TRAINER_FILE_PATH + DateTimeConverter.reformattedCurrentDateForFileName() + clientApp.getShortName() + "export.csv";
+                String sTemp = DateTimeConverter.reformattedCurrentDateForFileName() + clientApp.getShortName() + "export.csv";
+                String fileName = PybossaConf.DEFAULT_TRAINER_FILE_PATH + sTemp;
+                String mmFetchFileName = "http://aidr-prod.qcri.org/data/trainer/" +sTemp;
                 CSVWriter writer = formatter.instanceToOutput(fileName);
 
                 for(int i=0; i < templateList.size(); i++){
                     ReportTemplate rpt = templateList.get(i);
                     String answer = rpt.getAnswer().trim().toLowerCase();
 
-                    if(!answer.equals("05_not_relevant") && !answer.equals("null") ) {
+                   // if(!answer.equals("05_not_relevant") && !answer.equals("null") ) {
                         formatter.addToCVSOuputFile(generateOutputData(rpt),writer);
-                    }
+                    //}
 
                     rpt.setStatus(StatusCodeType.TEMPLATE_EXPORTED);
                     reportTemplateService.updateReportItem(rpt);
@@ -94,6 +96,18 @@ public class ReportProductServiceImpl implements ReportProductService {
                 ClientAppEvent targetClinetApp = clientAppEventService.getNextSequenceClientAppEvent(clientApp.getClientAppID());
                 ClientAppSource appSource = new ClientAppSource(targetClinetApp.getClientAppID(), StatusCodeType.EXTERNAL_DATA_SOURCE_ACTIVE, fileName);
                 clientAppSourceService.insertNewClientAppSource(appSource);
+
+                JSONArray jsonArray = new JSONArray();
+                JSONObject obj= new JSONObject();
+                obj.put("fileURL",mmFetchFileName);
+                obj.put("appID",260);
+
+                jsonArray.add(obj);
+
+                String returnValue = pybossaCommunicator.sendPostGet(jsonArray.toJSONString(), "http://gis.micromappers.org/MMAPI/rest/source/save");
+
+                System.out.println("generateCVSReportForGeoClicker returnValue :" + returnValue);
+
             }
             // insert into source for file
         }

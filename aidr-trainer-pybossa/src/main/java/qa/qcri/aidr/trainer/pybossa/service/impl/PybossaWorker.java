@@ -345,8 +345,8 @@ public class PybossaWorker implements ClientAppRunWorker {
                 responseCode = pybossaCommunicator.sendPost(pybossaResult, AIDR_TASK_ANSWER_URL);
                 System.out.println("sent : " + responseCode);
                 logger.info("*****************************************************************************************");
-               // logger.info("pybossaResult:********    " + pybossaResult);
-              //  logger.info("pybossaResult:********    " + importResult);
+                logger.info("pybossaResult:********    " + pybossaResult);
+                logger.info("pybossaResult:********    " + importResult);
                 logger.info("AIDR_TASK_ANSWER_URL:********    " + AIDR_TASK_ANSWER_URL);
                 logger.info("*****************************************************************************************");
             }
