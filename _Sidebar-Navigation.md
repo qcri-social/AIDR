@@ -12,7 +12,6 @@
 ## Developers
 
 * [[High-level overview]]
- * [[Stream processing]]
 * [[Common]]
 * [[DB Manager]]
  * [[DTO standards]]
@@ -38,9 +37,13 @@
 ### Design and standards
 
 * [[User needs and personas]]
-* [[Coding standards]]
-* [[Per collection start or stop]]
+* Design concepts
+ * [[Stream processing]]
+ * [[Per collection start or stop]]
+* Standards
+ * [[Logging standards]]
+ * [[Coding standards]]
 * [[Testing]]
-* [[Logging standards]]
+
 
 ## [[Credits]]
