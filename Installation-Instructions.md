@@ -49,8 +49,9 @@ This module does not need a deployment in the Glassfish server.
 * Edit [persistence.xml](../tree/master/aidr-db-manager/src/main/resources/META-INF/persistence.xml):
   1. Set hibernate.hbm2ddl.auto property to "create". This means upon deployment aidr-predict schema will be created from scratch. If there exist already a populated schema, it will be re-written and all data will be lost. Make sure to set the value of this property to "update" for the subsequent deployments of this module to prevent schema refresh each time. 
   2. Set jdbc resource in the glassfish server for aidr_predict database (connection pool URL jdbc:mysql://localhost:3306/aidr_predict) and specify its name at `jta-data-source`
-* Deploy the db-managerEAR-X.ear to Glassfish
-* Populate 'crisis_types' table in the database:
+* Build using maven following the instructions above; this should generate a file `db-managerEAR-X.ear`
+* Deploy the `db-managerEAR-X.ear` to Glassfish
+* Populate 'crisis_types' table in the database
 
         % mysql aidr_predict -u aidr_user -p < populate_db_crisistype.sql
 
@@ -59,14 +60,8 @@ This module does not need a deployment in the Glassfish server.
 **Modules dependent**: `aidr-tagger`, `aidr-tagger-api`
 
 The `aidr-task-manager` module is meant to provide a unified view of the `aidr_predict` database tables that are related to 'aidr tasks' - namely, `document`, `task_assignment`, `document_nominal_labels` and `crisis` tables. The various modules of AIDR such as `aidr-tagger-api`, `aidr-tagger` and `aidr-trainer-api` that access these tables will use the aidr-task-manager as the single access point (in phases). To enable this, `aidr-task-manager` uses remote EJBs. The instructions for enabling access through `aidr-task-manager` are outlined below:
-
-* Create a new JDBC resource in the Glassfish server, name it as `JNDI/aidr_task_manager` to match the entry in [persistence.xml](../tree/master/aidr-task-manager/src/main/resources/META-INF/persistence.xml) with `connection pool` set to that of the `aidr_predict database`.
-
-As aidr-task-manager is an EJB module, the build process for aidr-task-manager differs from the other modules:
-
-* First build using maven. This will generate 2 jar files: `aidr-task-manager-1.0.jar` and `aidr-task-manager-client-1.0.jar`. Maven will also install these in the local .m2 repository for access by other dependent modules. 
-* Next build `aidr-task-managerEAR.ear` file through `mvn install -f pom-ear.xml`.  
-* Finally, deploy the aidr-task-managerEAR.ear file to Glassfish.
+* Build using maven following the instructions above; this should generate a file `aidr-task-managerEAR.ear` file.
+* Deploy the `aidr-task-managerEAR.ear` file to Glassfish.
 
 # 4. Persister (aidr-persister)
 
