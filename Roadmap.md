@@ -9,6 +9,7 @@ The objective of this release is to streamline the installation of AIDR, and to 
 * installation of AIDR is streamlined
 * configuration files are reviewed
 * per-module and basic per-package documentation is available
+* urgent bugfixes
 
 # Release 3.0: robustness of collector, output, and persister
 
