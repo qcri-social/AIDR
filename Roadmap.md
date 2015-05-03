@@ -1,5 +1,3 @@
-(TO BE COMPLETED)
-
 Release numbering: [major.minor](https://www.gnu.org/prep/standards/html_node/Releases.html#index-version-numbers_002c-for-releases), optionally major.minor.revision for smaller changes. Release numbers are not related to compatibility.
 
 # Release 2.0: robustness of collector, output, and persister
