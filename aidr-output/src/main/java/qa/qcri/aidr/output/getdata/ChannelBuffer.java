@@ -108,7 +108,7 @@ public class ChannelBuffer {
 				tempList = new ArrayList<String>(this.messageBuffer.size());
 				tempList.addAll(this.messageBuffer);
 			}
-			logger.info("Copied data : " + tempList.size() + ", msgCount:messageBuffer.size = " + msgCount + ":" + messageBuffer.size());
+			//logger.info("Copied data : " + tempList.size() + ", msgCount:messageBuffer.size = " + msgCount + ":" + messageBuffer.size());
 			if (msgCount >= tempList.size()) {
 				return tempList;		// optimization
 			}
@@ -120,7 +120,7 @@ public class ChannelBuffer {
 			for (int i = index;i < tempList.size();i++) {
 				returnList.add(tempList.get(i));
 			}
-			logger.info("Fetched size = " + msgCount + " from start loc = " + Math.max(0, (tempList.size() - msgCount)));
+			//logger.info("Fetched size = " + msgCount + " from start loc = " + Math.max(0, (tempList.size() - msgCount)));
 			return returnList;
 		} catch (Exception e) {
 			logger.error("Error in creating list out of buffered messages");

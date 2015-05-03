@@ -44,7 +44,7 @@ public class ConfidenceStatisticsResourceFacadeImp extends CommonOperations impl
 					+ ", " + confData.getBin() + ": " + confData.getCount());
 			e.printStackTrace();
 			logger.error(elog.toStringException(e));
-			return ReturnCode.FAIL;
+			return ReturnCode.ERROR;
 		}
 	}
 

@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 public class RateLimiter {
     LinkedList<Long> timestamps = new LinkedList<Long>();
-    public int maxItemsPerMinute = 100;
+    public int maxItemsPerMinute = 100;		
 
     public RateLimiter(int maxItemsPerMinute) {
         this.maxItemsPerMinute = maxItemsPerMinute;

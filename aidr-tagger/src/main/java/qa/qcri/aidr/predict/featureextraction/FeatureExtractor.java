@@ -24,10 +24,10 @@ public class FeatureExtractor extends PipelineProcess {
 
 	protected void processItem(Document doc) {
 
-		logger.info("Received doc class: " + doc.getClass());
-		logger.info("Doc coming from crisis: " + doc.getCrisisCode() 
-				+ ", having docType: " + doc.getDoctype() 
-				+ ", having id: " + doc.getDocumentID());
+		//logger.info("Received doc class: " + doc.getClass());
+		//logger.info("Doc coming from crisis: " + doc.getCrisisCode() 
+		//		+ ", having docType: " + doc.getDoctype() 
+		//		+ ", having id: " + doc.getDocumentID());
 
 		if (doc.getDoctype().equals(DocumentType.TWIITER_DOC)) {
 			processTweet((Tweet) doc);

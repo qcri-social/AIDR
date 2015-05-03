@@ -123,7 +123,7 @@ public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long
 					trainingDataRow.setDocumentID(((BigInteger) row[6]).longValue());
 					trainingDataRow.setTotalRows(totalRows);
 					trainingDataList.add(trainingDataRow);
-					logger.info("Added to DTO training data, training data #" + count);
+					//logger.info("Added to DTO training data, training data #" + count);
 					++count;
 				}
 			}
@@ -207,18 +207,18 @@ public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long
 				.add(Restrictions.eq("hasHumanLabels",false));
 		try {
 			Document document = getByCriteria(newCriterion);
-			logger.info("New task: " + document);
+			logger.info("[MiscResourceFacadeImp:getNewTask] New task: " + document);
 			if (document != null)  {
 				List<TaskAssignmentDTO> tList = taskAssignmentEJB.findTaskAssignmentByID(document.getDocumentId());
 				if (tList != null && !tList.isEmpty()) {
-					logger.info("New task: " + document.getDocumentId());
+					logger.info("[MiscResourceFacadeImp:getNewTask] New task: " + document.getDocumentId());
 					return new DocumentDTO(document);
 				}
 			} else {
-				logger.info("[getNewTask] New task: " + document);
+				//logger.info("[getNewTask] New task: " + document);
 			}
 		} catch (Exception e) {
-			logger.error("Error in getting new Task for crisisID: " + crisisID);
+			logger.error("[MiscResourceFacadeImp:getNewTask] Error in getting new Task for crisisID: " + crisisID);
 			logger.error("exception", e);
 		}
 		return null;

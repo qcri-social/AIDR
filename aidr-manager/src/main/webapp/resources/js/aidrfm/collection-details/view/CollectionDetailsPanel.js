@@ -190,9 +190,9 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 columns: 1,
                 vertical: true,
                 items: [
-                    { boxLabel: 'Strict: a tweet can only be collected if it has geographical coordinates strictly inside the geographical boundaries.', name: 'geoR1', inputValue: 'strict'},
+                    { boxLabel: 'Does not apply (no geographical boundary)', name: 'geoR1', inputValue: 'null'},
                     { boxLabel: 'Approximate: a tweet may be collected if it comes from a country that overlaps with the geographical boundaries.', name: 'geoR1', inputValue: 'approximate' },
-                    { boxLabel: 'Does not apply (no geographical boundary)', name: 'geoR1', inputValue: 'null'}
+                    { boxLabel: 'Strict: a tweet can only be collected if it has geographical coordinates strictly inside the geographical boundaries.', name: 'geoR1', inputValue: 'strict'}
                 ]
             }]
         });
@@ -200,7 +200,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         this.geoDescription = Ext.create('Ext.form.Label', {
             flex: 1,
             id:'geoDescription',
-            html: '<span class="redInfo">*</span> <a href="http://boundingbox.klokantech.com/" target="_blank">boundingbox.klokantech.com</a> ("Copy/paste CSV format of a boundingbox")<div><span class="redInfo">*</span>The collection will include <strong>all items from these regions</strong>, independent of whether they contain the keywords or not</div>',
+            html: '<span class="redInfo">*</span> <a href="http://boundingbox.klokantech.com/" target="_blank">boundingbox.klokantech.com</a> ("Copy/paste CSV format of a boundingbox")',
             padding: '2 0 2 135'
         });
 

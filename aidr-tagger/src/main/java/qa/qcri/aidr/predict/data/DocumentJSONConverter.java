@@ -81,8 +81,7 @@ public class DocumentJSONConverter {
 		doc.crisisCode = aidr.getString("crisis_code");
 		doc.inputJson = jsonObj;
 		
-		
-		logger.info("Done creating new doc: " + aidr + ", has nominal_labels = " + aidr.has("nominal_labels"));
+		//logger.info("Done creating new doc: " + aidr + ", has nominal_labels = " + aidr.has("nominal_labels"));
 		
 		return doc;
 	}

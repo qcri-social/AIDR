@@ -39,6 +39,7 @@ public class DocumentController {
             @PathParam("crisisID") String crisisID,
             @PathParam("maxresult") String maxresult){
 
+    	logger.info("Request for batch task fetch, crisisID = " + crisisID + ", user = " + userName + ", count = " + maxresult);
         return documentService.getDocumentForTask(new Long(crisisID), Integer.valueOf(maxresult), userName);
 
     }

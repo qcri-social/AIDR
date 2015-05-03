@@ -47,8 +47,7 @@ import java.util.Set;
 public class DocumentServiceImpl implements DocumentService {
 
 	protected static Logger logger = LoggerFactory.getLogger(DocumentServiceImpl.class);
-	private ErrorLog elog = new ErrorLog();
-
+	
 	//@Autowired
 	//private DocumentDao documentDao;
 
@@ -68,13 +67,13 @@ public class DocumentServiceImpl implements DocumentService {
 	public void updateHasHumanLabel(Long documentID, boolean value) {
 		Map<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("setHasHumanLabels", new Boolean(value).toString());
-		logger.info("Will use the merge attempt");
+		//logger.info("Will use the merge attempt");
 		try {
 			DocumentDTO dto = (DocumentDTO) taskManager.setTaskParameter(Document.class, documentID, paramMap);
-			logger.info("Update of hasHumanLabels successful for document " + dto.getDocumentID() + ", crisisId = " + dto.getCrisisDTO().getCrisisID());
+			//logger.info("Update of hasHumanLabels successful for document " + dto.getDocumentID() + ", crisisId = " + dto.getCrisisDTO().getCrisisID());
 		} catch (Exception e) {
 			logger.error("Update unsuccessful for documentID = " + documentID);
-			logger.error(elog.toStringException(e));
+			logger.error("Exception", e);
 		}
 	}
 
@@ -91,10 +90,8 @@ public class DocumentServiceImpl implements DocumentService {
 		/*
 		List<DocumentDTO> documents = null;
 		Users users = usersService.findUserByName(userName);
-
 		if(users != null){
 			int availableRequestSize = this.getAvailableDocumentCount(crisisID) - CodeLookUp.DOCUMENT_REMAINING_COUNT;
-
 			if(availableRequestSize > 0){
 				if(availableRequestSize < count){
 					count = availableRequestSize;
@@ -118,7 +115,6 @@ public class DocumentServiceImpl implements DocumentService {
 		/*
 		List<DocumentDTO> documents = null;
 		Users users = usersService.findUserByName(userName);
-
 		if(users != null){
 			documents =  this.getAvailableDocument(crisisID, count) ;
 			System.out.println("For crisisID = " + crisisID + ", user = " + userName + ", documents available: " + (documents != null ? documents.size() : "empty list"));
@@ -126,7 +122,6 @@ public class DocumentServiceImpl implements DocumentService {
 				taskAssignmentService.addToTaskAssignment(documents, users.getUserID());
 				System.out.println("Added to task_assignment table: " + documents.size() + "docID = " + documents.get(0).getDocumentID());
 			}
-
 		}
 		*/
 		List<DocumentDTO> documents = taskManager.getDocumentsForTagging(crisisID, count, userName, 0, TrainingDataFetchType.INTERNAL_TRAINING);
@@ -178,9 +173,6 @@ public class DocumentServiceImpl implements DocumentService {
 		//return documentDao.findDocumentForTask(crisisID, maxresult);
 		List<DocumentDTO> dtoList = taskManager.getNewTaskCollection(crisisID, maxresult, "DESC", null);
 		System.out.println("Fetched from DB manager, documents list size = " + dtoList.size());
-		for (int i = 0;i < dtoList.size();i++) {
-			System.out.println("Fetched document ID = " + dtoList.get(i).getDocumentID());
-		}
 		return dtoList;
 	}
 

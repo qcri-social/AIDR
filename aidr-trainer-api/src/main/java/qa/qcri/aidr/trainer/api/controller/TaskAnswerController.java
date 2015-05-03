@@ -36,10 +36,10 @@ public class TaskAnswerController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/save")
     public void saveTaskAnswer(String data){
-        logger.info("saveTaskAnswer start: " + new Date());
-        logger.info("saveTaskAnswer..: " + data);
-        System.out.println("saveTaskAnswer start: " + new Date());
-        System.out.println("saveTaskAnswer..: " + data);
+        //logger.info("saveTaskAnswer start: " + new Date());
+        //logger.info("saveTaskAnswer..: " + data);
+        //System.out.println("saveTaskAnswer start: " + new Date());
+        //System.out.println("saveTaskAnswer..: " + data);
         // place into transaction block
         try{
             taskAnswerService.processTaskAnswer(data);

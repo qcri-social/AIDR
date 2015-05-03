@@ -75,6 +75,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 		return null;
 	}
 
+
 	@Override
 	public int deleteNoLabelDocument(DocumentDTO document) {
 		if (null == document) { 
@@ -87,14 +88,12 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 		if (!document.getHasHumanLabels()) {
 			try {
 				//delete(document);
-				String hql = "DELETE from document WHERE documentID = :documentID AND !hasHumanLabels";
+				String hql = "DELETE FROM document d WHERE d.documentID = :documentID AND !d.hasHumanLabels";
 				Session session = getCurrentSession();
 				Query collectionDeleteQuery = session.createSQLQuery(hql);
 				try {
 					collectionDeleteQuery.setParameter("documentID", document.getDocumentID());
-					Transaction tx = session.beginTransaction();
 					deleteCount = collectionDeleteQuery.executeUpdate();
-					tx.commit();
 					logger.info("deleted count = " + deleteCount);
 				} catch (Exception e) {
 					logger.error("deletion query failed, document: " + document.getDocumentID());
@@ -115,24 +114,16 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 		return 0;
 	}
 
-
-
 	@Override
 	public int deleteNoLabelDocument(List<DocumentDTO> collection) {
 		int deleteCount = 0;
 		if (collection != null && !collection.isEmpty()) {
-			List<Long>documentIDList = new ArrayList<Long>();
-			for (DocumentDTO d: collection) {
-				documentIDList.add(d.getDocumentID());
-			}
-			String hql = "DELETE from document WHERE (documentID IN (:documentID) "
-					+ " AND !hasHumanLabels)";
 			Session session = getCurrentSession();
-			Query collectionDeleteQuery = session.createSQLQuery(hql);
 			try {
 				Transaction tx = session.beginTransaction();
-				collectionDeleteQuery.setParameterList("documentID", documentIDList);
-				deleteCount = collectionDeleteQuery.executeUpdate();
+				for (DocumentDTO d: collection) {
+					deleteCount += deleteNoLabelDocument(d);
+				}
 				tx.commit();
 				logger.info("deleted count = " + deleteCount);
 			} catch (Exception e) {
@@ -143,15 +134,14 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 		return deleteCount;
 	}
 
-
 	@Override
 	public int deleteUnassignedDocument(DocumentDTO document) {
-		String hql = "DELETE from Document WHERE (documentID = :documentID AND "
-				+ " documentID NOT IN (SELECT documentID FROM TaskAssignment)"
-				+ " AND !hasHumanLabels)";
+		String hql = "DELETE d FROM aidr_predict.document d LEFT JOIN aidr_predict.task_assignment t "
+				+ "ON d.documentID = t.documentID WHERE (d.documentID = :documentID " 
+				+ "AND t.documentID IS NULL AND !d.hasHumanLabels)";		
 		if (!document.getHasHumanLabels()) {
 			try {
-				Query query = getCurrentSession().createQuery(hql);
+				Query query = getCurrentSession().createSQLQuery(hql);
 				query.setParameter("documentID", document.getDocumentID());
 				int result = query.executeUpdate();
 				return result;
@@ -165,28 +155,40 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	}
 
 	@Override
-	public int deleteUnassignedDocumentCollection(List<DocumentDTO> collection) throws PropertyNotSetException {
+	public int deleteUnassignedDocument(Long documentID) {
+		String hql = "DELETE d FROM aidr_predict.document d LEFT JOIN aidr_predict.task_assignment t "
+				+ "ON d.documentID = t.documentID WHERE (d.documentID = :documentID " 
+				+ "AND t.documentID IS NULL AND !d.hasHumanLabels)";
+		try {
+			Query query = getCurrentSession().createSQLQuery(hql);
+			query.setParameter("documentID", documentID);
+			int result = query.executeUpdate();
+			return result;
+		} catch (Exception e) {
+			logger.error("Deletion query failed");
+			logger.error(elog.toStringException(e));
+			return 0;
+		}
+	}
+
+
+	@Override
+	public int deleteUnassignedDocumentCollection(List<Long> documentIDList) {
 		int deleteCount = 0;
-		if (collection != null && !collection.isEmpty()) {
-			List<Long>documentIDList = new ArrayList<Long>();
-			for (DocumentDTO d: collection) {
-				documentIDList.add(d.getDocumentID());
-				logger.debug("To delete document: {" + d.getCrisisDTO().getCrisisID() + ", " + d.getDocumentID() + ", " + d.getHasHumanLabels() + "}");
-			}
-			logger.info("Size of docList to delete: " + documentIDList.size());
-			String hql = "DELETE from Document WHERE (documentID IN (:documentID) "
-					+ " AND documentID NOT IN (SELECT documentID FROM TaskAssignment)"
-					+ " AND !hasHumanLabels)";
+		if (documentIDList != null && !documentIDList.isEmpty()) {
+			System.out.println("[deleteUnassignedDocumentCollection] Size of docList to delete: " + documentIDList.size());
 			Session session = getCurrentSession();
-			Query collectionDeleteQuery = session.createQuery(hql);
 			try {
-				collectionDeleteQuery.setParameterList("documentID", documentIDList);
 				Transaction tx = session.beginTransaction();
-				deleteCount = collectionDeleteQuery.executeUpdate();
+				for (Long documentID: documentIDList) {
+					deleteCount += deleteUnassignedDocument(documentID);
+				}
 				tx.commit();
+				System.out.println("[deleteUnassignedDocumentCollection] number of deleted records = " + deleteCount);
 			} catch (Exception e) {
-				logger.error("Collection deletion query failed");
-				logger.error(elog.toStringException(e));
+				logger.error("[deleteUnassignedDocumentCollection] Collection deletion query failed");
+				logger.error("Exception", e);
+				e.printStackTrace();
 			}
 		}
 		return deleteCount;

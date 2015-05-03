@@ -137,7 +137,7 @@ public class WriteStatisticsData extends ChannelBufferManager implements Servlet
 		} catch (Exception e) {
 			System.err.println("[writeOutputDataToTagDataDB] Error in writing to TagDataDB table!");
 			e.printStackTrace();
-			return ReturnCode.FAIL;
+			return ReturnCode.ERROR;
 		}
 		return ReturnCode.SUCCESS;
 	}
@@ -160,7 +160,7 @@ public class WriteStatisticsData extends ChannelBufferManager implements Servlet
 		} catch (Exception e) {
 			System.err.println("[writeOutputDataToConfDataDB] Error in writing to ConfidenceDataDB table!");
 			e.printStackTrace();
-			return ReturnCode.FAIL;
+			return ReturnCode.ERROR;
 		}
 		return ReturnCode.SUCCESS;
 	}
