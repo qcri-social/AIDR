@@ -18,19 +18,34 @@ public class LoadShedder {
 	private static Logger logger = Logger.getLogger(LoadShedder.class);
 
 	/**
-	 * The beginning of the interval.
-	 */
-	long lastSetTime = 0;
-
-	/**
 	 * The duration of the interval in minutes.
 	 */
-	long intervalMinutes = 0;
+	final double intervalMinutes;
 
 	/**
 	 * The duration of the interval in milliseconds (computed from {@link #intervalMinutes}).
 	 */
-	long intervalMillis = 0;
+	final long intervalMillis;
+
+	/**
+	 * The maximum number of items that can be processed during an interval.
+	 */
+	final int maxLimit;
+
+	/**
+	 * Whether to emit a warning when loading or not.
+	 */
+	final boolean warnOnLimit;
+	
+	/**
+	 * String identifying this load shedder for logging purposes, e.g. a channel name
+	 */
+	final String name;
+
+	/**
+	 * The beginning of the interval.
+	 */
+	long lastSetTime = 0;
 
 	/**
 	 * The number of items processed in this interval.
@@ -38,31 +53,45 @@ public class LoadShedder {
 	int counter;
 
 	/**
-	 * The maximum number of items that can be processed during an interval.
+	 * Whether a warning has been issued already for this interval.
 	 */
-	int maxLimit;
-
-	boolean loadWarning = false;
-
-	boolean warn = true;
+	boolean warningEmitted;
 
 	/**
 	 * Creates a load shedder that will allow the processing of up to maxLimit items in a period of
 	 * intervalMinutes.
 	 * 
-	 * @param intervalMinutes duration of the interval in minutes
+	 * Use {@link #LoadShedder(int, double, boolean, String)} to avoid the "(generic)" name in the log.
+	 * 
+	 * @param intervalMinutes duration of the interval in minutes (int)
 	 * @param maxLimit maximum number of messages in an interval
-	 * @param warn if true, then log a warning message on rate exceed
+	 * @param warnOnLimit if true, then log a warning message when rate limit is exceeded
 	 */
-	public LoadShedder(final int maxLimit, final int intervalMinutes, final boolean warn) {
+	public LoadShedder(final int maxLimit, final int intervalMinutes, final boolean warnOnLimit) {
+		this(maxLimit, (double)intervalMinutes, warnOnLimit, "(generic)");
+	}
+
+	/**
+	 * Creates a load shedder that will allow the processing of up to maxLimit items in a period of
+	 * intervalMinutes.
+	 * 
+	 * @param intervalMinutes duration of the interval in minutes (double)
+	 * @param maxLimit maximum number of items in an interval
+	 * @param warnOnLimit if true, then log a warning message when rate limit is exceeded
+	 * @param name the name of this load shedder, used for logging purposes.
+	 */
+	public LoadShedder(final int maxLimit, final double intervalMinutes, final boolean warnOnLimit, String name) {
 		this.maxLimit = maxLimit;
-		this.counter = 0;
-		this.warn = warn;
-		this.lastSetTime = System.currentTimeMillis();
 		this.intervalMinutes = intervalMinutes;
-		this.intervalMillis = intervalMinutes * 1000 * 60;
-		this.loadWarning = false;
-		logger.info("Initialized Loadshedder with " + this.maxLimit + " per " + this.intervalMinutes + "min messages");
+		this.intervalMillis = (long)(intervalMinutes * 1000.0 * 60.0);
+		this.warnOnLimit = warnOnLimit;
+		this.name = name;
+		
+		this.counter = 0;
+		this.lastSetTime = 0;
+		this.warningEmitted = false;
+		
+		logger.info("Initialized Loadshedder[" + this.name + "] with " + this.maxLimit + " per " + this.intervalMinutes + "min of items");
 	}
 
 	/**
@@ -75,30 +104,12 @@ public class LoadShedder {
 	}
 
 	/**
-	 * Sets the number of messages processed so far in this interval.
-	 * 
-	 * @param counter
-	 */
-	public void setCounter(final int counter) {
-		this.counter = counter;
-	}
-
-	/**
-	 * Gets a flag indicating whether we should log a warning if the rate is exceeded
+	 * Gets the flag indicating whether we should log a warning if the rate is exceeded
 	 * 
 	 * @return the flag 
 	 */
 	public boolean getWarn() {
-		return warn;
-	}
-
-	/**
-	 * Sets a flag indicating whether we should log a warning if the rate is exceeded
-     *
-	 * @param warn
-	 */
-	public void setWarn(final boolean warn) {
-		this.warn = warn;
+		return warnOnLimit;
 	}
 
 	/**
@@ -109,14 +120,14 @@ public class LoadShedder {
 	public int getMaxLimit() {
 		return maxLimit;
 	}
-
+	
 	/**
-	 * Sets the maximum number of items that can be processed during an interval
+	 * Gets the name of this load shedder, a String used for logging purposes
 	 * 
-	 * @param maxLimit the limit
+	 * @return the name
 	 */
-	public void setMaxLimit(final int maxLimit) {
-		this.maxLimit = maxLimit;
+	public String getName() {
+		return name;
 	}
 
 	/**
@@ -124,8 +135,8 @@ public class LoadShedder {
 	 * be processed. If the method returns false, the item should not be processed, because we have
 	 * exceeded the number of items that can be processed during a certain period.
 	 * 
-	 * TODO: Move the "channel" parameter to the constructor and make more generic (i.e. a string
-	 * indicating what exactly this shedder is used for)
+	 * Deprecated: use the {@link #LoadShedder(int, double, boolean, String)} constructor to set the
+	 * name of this load shedder, and call {@link #canProcess()} instead.
 	 * 
 	 * TODO: Remove the "debug" level logging, which is unnecessary.
 	 * 
@@ -134,6 +145,7 @@ public class LoadShedder {
 	 * @return true if the current item should be processed, false if the current item should not be
 	 *         processed
 	 */
+	@Deprecated
 	public boolean canProcess(String channel) {
 		logger.debug("For channel: " + channel + ", counter:maxLimit" + counter + ":" + maxLimit);
 		if ((System.currentTimeMillis() - lastSetTime) <= intervalMillis) {
@@ -144,8 +156,8 @@ public class LoadShedder {
 			}
 
 			// Otherwise, reset and return false
-			if (warn && !loadWarning) {
-				loadWarning = true; // warn only once per interval
+			if (warnOnLimit && !warningEmitted) {
+				warningEmitted = true; // warn only once per interval
 				logger.warn("Limit of " + maxLimit + " messages per " + intervalMinutes + " mins reached with current count = " + counter);
 			}
 			logger.debug("For channel: " + channel + ", returning false");
@@ -155,7 +167,51 @@ public class LoadShedder {
 		logger.debug("For channel: " + channel + ", returning true as interval is over");
 		counter = 0;
 		lastSetTime = System.currentTimeMillis();
-		loadWarning = false;
+		warningEmitted = false;
 		return true;
+	}
+	
+	/**
+	 * This method is called before processing an item. If the method returns true, the item should
+	 * be processed. If the method returns false, the item should not be processed, because we have
+	 * exceeded the number of items that can be processed during a certain period.
+	 * 
+	 * @return true if the current item should be processed, false if the current item should not be
+	 *         processed
+	 */
+	public boolean canProcess() {
+		long currentTimeMillis = System.currentTimeMillis();
+		double deltaMillis = currentTimeMillis - lastSetTime;
+
+		if ( (deltaMillis <= intervalMillis) || ( lastSetTime == 0 ) ) {
+			
+			counter++;
+		
+			if (counter <= maxLimit) {
+
+				// Within limits
+				lastSetTime = currentTimeMillis;
+				
+				return true;
+				
+			} else {
+
+				// Outside limit, check if we need to emit a warning (only once per interval)
+				if (warnOnLimit && !warningEmitted) {
+					warningEmitted = true;
+					logger.warn("LoadShedder[" + name + " reached limit of " + maxLimit + " messages per " + intervalMinutes + " mins reached with current count = " + counter);
+				}
+				
+				return false;
+			}
+			
+		} else {
+			
+			// Interval over - now reset for next interval
+			counter = 1;
+			lastSetTime = currentTimeMillis;
+			warningEmitted = false;
+			return true;
+		}
 	}
 }
