@@ -61,14 +61,28 @@ public class LoadShedder {
 	 * Creates a load shedder that will allow the processing of up to maxLimit items in a period of
 	 * intervalMinutes.
 	 * 
-	 * Use {@link #LoadShedder(int, double, boolean, String)} to avoid the "(generic)" name in the log.
+	 * Deprecated: use {@link #LoadShedder(int, double, boolean, String)} to avoid the "(generic)" name in the log.
 	 * 
-	 * @param intervalMinutes duration of the interval in minutes (int)
 	 * @param maxLimit maximum number of messages in an interval
+	 * @param intervalMinutes duration of the interval in minutes (int)
 	 * @param warnOnLimit if true, then log a warning message when rate limit is exceeded
 	 */
+	@Deprecated
 	public LoadShedder(final int maxLimit, final int intervalMinutes, final boolean warnOnLimit) {
 		this(maxLimit, (double)intervalMinutes, warnOnLimit, "(generic)");
+	}
+	
+	/**
+	 * Creates a load shedder that will allow the processing of up to maxLimit items in a period of
+	 * intervalMinutes.
+	 * 
+	 * @param maxLimit maximum number of messages in an interval
+	 * @param intervalMinutes duration of the interval in minutes (int)
+	 * @param warnOnLimit if true, then log a warning message when rate limit is exceeded
+	 * @param name the name of this load shedder, used for logging purposes.
+	 */
+	public LoadShedder(final int maxLimit, final int intervalMinutes, final boolean warnOnLimit, String name) {
+		this(maxLimit, (double)intervalMinutes, warnOnLimit, name);
 	}
 
 	/**
@@ -91,7 +105,7 @@ public class LoadShedder {
 		this.lastSetTime = 0;
 		this.warningEmitted = false;
 		
-		logger.info("Initialized Loadshedder[" + this.name + "] with " + this.maxLimit + " per " + this.intervalMinutes + "min of items");
+		logger.info("Loadshedder[" + this.name + "] initialized with " + this.maxLimit + " per " + this.intervalMinutes + "min of items");
 	}
 
 	/**
@@ -199,7 +213,7 @@ public class LoadShedder {
 				// Outside limit, check if we need to emit a warning (only once per interval)
 				if (warnOnLimit && !warningEmitted) {
 					warningEmitted = true;
-					logger.warn("LoadShedder[" + name + " reached limit of " + maxLimit + " messages per " + intervalMinutes + " mins reached with current count = " + counter);
+					logger.warn("LoadShedder[" + name + "] reached limit of " + maxLimit + " messages per " + intervalMinutes + " mins reached with current count = " + counter);
 				}
 				
 				return false;
