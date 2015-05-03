@@ -22,6 +22,7 @@ The objective of this release is to make the collector, output, and persister mo
 * aidr-collector additionally has an automated testing suite covering start/status/stop collection.
 * aidr-output has an automated testing suite covering receiving elements and making them available through the get latest
 * aidr-persister has an automated testing suite covering receiving elements and saving them to disk.
+* urgent bugfixes and small UI enhancements
 
 # Release 4.0: robustness of tagger, trainer
 
