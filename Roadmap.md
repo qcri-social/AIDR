@@ -1,6 +1,14 @@
 Release numbering: [major.minor](https://www.gnu.org/prep/standards/html_node/Releases.html#index-version-numbers_002c-for-releases), optionally major.minor.revision for smaller changes. Release numbers are not related to compatibility.
 
-# Release 2.0: robustness of collector, output, and persister
+# Release 2.0: streamlined installer
+
+The objective of this release is to streamline the installation of AIDR, and to improve the quality of the AIDR documentation to enable better collaboration among development partners.
+
+* installation of AIDR is streamlined
+* configuration files are reviewed
+* per-module and basic per-package documentation is available
+
+# Release 3.0: robustness of collector, output, and persister
 
 The objective of this release is to make the collector, output, and persister modules more robust. This includes introducing a basic level of testing and fixing any bugs found during the testing.
 
@@ -10,7 +18,7 @@ The objective of this release is to make the collector, output, and persister mo
 * aidr-output has an automated testing suite covering receiving elements and making them available through the get latest
 * aidr-persister has an automated testing suite covering receiving elements and saving them to disk.
 
-# Release 3.0: robustness of tagger, trainer
+# Release 4.0: robustness of tagger, trainer
 
 The objective of this release is to make the tagger and trainer modules more robust. This includes introducing a basic level of testing and fixing any bugs found during the testing.
 
@@ -19,25 +27,25 @@ The objective of this release is to make the tagger and trainer modules more rob
 * aidr-trainer additionally has an automated testing suite covering the labelling of examples.
 * aidr-tagger additionally has an automated testing suite covering the creation of a classifier and the application of it to tag new items.
 
-# Release 4.0: integrating aidr-tagger into aidr-tagger-api
+# Release 5.0: integrating aidr-tagger into aidr-tagger-api
 
 The objective of this release is to transform aidr-tagger into a Java EE application, instead of a stand-alone application. This will mean merging the functionality of aidr-tagger into aidr-tagger-api.
 
-# Release 5.0: view/download complete
+# Release 6.0: view/download complete
 
 The objective of this release is to ensure users are able to view and download their collections correctly. This means completing all features necessary for people to download their collections, even the ones where there is no tagger.
 
-# Release 6.0: basic analytics
+# Release 7.0: basic analytics
 
 The objective of this release is to produce the first version of aidr-analytics module, which is a dashboard showing the percentage of tweets in different categories and some graphs.
 
 Epic: analysis-mvp, https://www.pivotaltracker.com/epic/show/1372904
 
-# Release 7.0: UI improvements
+# Release 8.0: UI improvements
 
 The objective of this release is to implement usability fixes from our user testing and feedback. This release might be accelerated if the usability fixes are done in parallel to the tasks needed for the previous releases.
 
-# Release 8.0: Cold-start collections
+# Release 9.0: Cold-start collections
 
 The objective create a collection without having to tag data, by re-using existing data.
 
