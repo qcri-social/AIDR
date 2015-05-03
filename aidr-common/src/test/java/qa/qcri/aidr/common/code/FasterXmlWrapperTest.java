@@ -16,10 +16,9 @@ public class FasterXmlWrapperTest extends JSONWrapperTest {
 		mapper = FasterXmlWrapper.getObjectMapper();
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public MyClass readValue(String jsonString, Class aClass) throws IOException {
-		return mapper.readValue(jsonString, aClass);
+	public MyClass readValue(String jsonString) throws IOException {
+		return mapper.readValue(jsonString, MyClass.class);
 	}
 	
 	@Test

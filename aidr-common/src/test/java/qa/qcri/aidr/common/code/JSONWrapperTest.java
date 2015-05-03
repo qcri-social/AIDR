@@ -18,7 +18,7 @@ public abstract class JSONWrapperTest {
 		public Integer bbb;
 	}
 
-	public abstract MyClass readValue(String jsonString, @SuppressWarnings("rawtypes") Class aClass) throws IOException;
+	public abstract MyClass readValue(String jsonString) throws IOException;
 
 	public void testGetObjectMapper() {
 
@@ -26,7 +26,7 @@ public abstract class JSONWrapperTest {
 
 		// Success case
 		try {
-			testObject = readValue("{ \"aaa\": \"hello\", \"bbb\": 42 }", MyClass.class);
+			testObject = readValue("{ \"aaa\": \"hello\", \"bbb\": 42 }");
 		} catch (IOException e) {
 			System.err.println(e);
 			fail();
@@ -36,7 +36,7 @@ public abstract class JSONWrapperTest {
 
 		// Malformed JavaScript case, should fail
 		try {
-			testObject = readValue("XXX aaa: \"hello\", \"bbb\": 42 YYY", MyClass.class);
+			testObject = readValue("XXX aaa: \"hello\", \"bbb\": 42 YYY");
 			fail();
 		} catch (IOException e) {
 
@@ -44,7 +44,7 @@ public abstract class JSONWrapperTest {
 
 		// Missing field #1
 		try {
-			testObject = readValue("{ \"aaa\": \"bye\" }", MyClass.class);
+			testObject = readValue("{ \"aaa\": \"bye\" }");
 		} catch (IOException e) {
 			System.err.println(e);
 			fail();
@@ -54,7 +54,7 @@ public abstract class JSONWrapperTest {
 
 		// Missing field #2
 		try {
-			testObject = readValue("{ \"bbb\": 123 }", MyClass.class);
+			testObject = readValue("{ \"bbb\": 123 }");
 		} catch (IOException e) {
 			System.err.println(e);
 			fail();
