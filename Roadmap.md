@@ -2,7 +2,7 @@ Release numbering: [major.minor](https://www.gnu.org/prep/standards/html_node/Re
 
 # Release 2.0: minimal level of test coverage for collector, output, and persister
 
-* dbmanager and taskmanager have unit tests which 
+* dbmanager and taskmanager have unit tests which cover CRUD of all entities in the successful cases, to avoid regressions.
 * aidr-collector, aidr-output, and aidr-persister have unit tests which cover all the essential APIs at a minimum in the successful cases, to avoid regressions.
 * aidr-collector additionally has an automated testing suite covering start/status/stop collection.
 * aidr-output has an automated testing suite covering receiving elements and making them available through the get latest
