@@ -1,4 +1,4 @@
-Release numbering: [major.minor.revision](https://www.gnu.org/prep/standards/html_node/Releases.html#index-version-numbers_002c-for-releases) with the revision optional. Release numbers are not related to compatibility.
+Release numbering: [major.minor](https://www.gnu.org/prep/standards/html_node/Releases.html#index-version-numbers_002c-for-releases), optionally major.minor.revision for smaller changes. Release numbers are not related to compatibility.
 
 # Release 1.5
 
