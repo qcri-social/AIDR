@@ -50,6 +50,9 @@ This module does not need a deployment in the Glassfish server.
   1. Set hibernate.hbm2ddl.auto property to "create". This means upon deployment aidr-predict schema will be created from scratch. If there exist already a populated schema, it will be re-written and all data will be lost. Make sure to set the value of this property to "update" for the subsequent deployments of this module to prevent schema refresh each time. 
   2. Set jdbc resource in the glassfish server for aidr_predict database (connection pool URL jdbc:mysql://localhost:3306/aidr_predict) and specify its name at `jta-data-source`
 * Deploy the db-managerEAR-X.ear to Glassfish
+* Populate 'crisis_types' table in the database:
+
+        % mysql aidr_predict -u aidr_user -p < populate_db_crisistype.sql
 
 # 3. Task Manager (aidr-task-manager)
 
