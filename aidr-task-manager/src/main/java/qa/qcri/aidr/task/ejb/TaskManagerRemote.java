@@ -1,6 +1,5 @@
 package qa.qcri.aidr.task.ejb;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +16,6 @@ import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAssignmentDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.task.common.TrainingDataFetchType;
-import qa.qcri.aidr.task.ejb.bean.TaskManagerBean;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
