@@ -1,6 +1,6 @@
 Release numbering: [major.minor](https://www.gnu.org/prep/standards/html_node/Releases.html#index-version-numbers_002c-for-releases), optionally major.minor.revision for smaller changes. Release numbers are not related to compatibility.
 
-# Release 2.0: streamlined installer and documentation
+# Release 1.5: streamlined installer and documentation
 
 **Target: mid-May.**
 
@@ -14,7 +14,7 @@ QCRI side:
 * per-module and basic per-package documentation is available
 * urgent bugfixes
 
-# Release 3.0: robustness of collector, output, and persister
+# Release 1.6: robustness of collector, output, and persister
 
 **Target: end-May.**
 
@@ -32,7 +32,7 @@ QCRI side:
 * fix bugs found during testing
 * small UI enhancements
 
-# Release 4.0: robustness of tagger, trainer
+# Release 1.7: robustness of tagger, trainer
 
 **Target: mid-June.**
 
@@ -49,7 +49,7 @@ QCRI side:
 * back-end fixes to view/download as needed
 * minor UI enhancements
 
-# Release 5.0: integrating aidr-tagger into aidr-tagger-api
+# Release 2.0: integrating aidr-tagger into aidr-tagger-api
 
 **Target: end-June.**
 
@@ -63,7 +63,7 @@ QCRI side:
 * progress on back-end of analysis module
 * UI enhancements
 
-# Release 6.0: view/download complete
+# Release 3.0: view/download complete
 
 **Target: mid-July.**
 
@@ -76,7 +76,7 @@ QCRI side:
 * back-end of analysis module
 * UI enhancements
 
-# Release 7.0: basic analytics
+# Release 4.0: basic analytics
 
 **Target: end-July.**
 
@@ -92,13 +92,13 @@ Metacube side:
 QCRI side:
 * analysis back-end
 
-# Release 8.0: UI improvements
+# Release 4.1: UI improvements
 
 **Target: mid-August.**
 
 The objective of this release is to implement usability fixes from our user testing and feedback. This release might be accelerated if the usability fixes are done in parallel to the tasks needed for the previous releases.
 
-# Release 9.0: Cold-start collections
+# Release 5.0: Cold-start collections
 
 **Target: end-August.**
 
