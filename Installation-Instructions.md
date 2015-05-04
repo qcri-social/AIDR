@@ -37,13 +37,13 @@ other modules can thereafter automatically find the dependency.
 This module does not need a deployment in the Glassfish server.
 
 # 2. DB-manager (aidr-db-manager)
-* Create `aidr_predict` schema in the MySQL database, as shown below. This assumes database=aidr_predict, username=aidr_user, password=pass123:
+* Create `aidr_predict` schema in the MySQL database, as shown below. This assumes database=aidr_predict, username=aidr_admin, password=aidr_admin:
 
         % mysql -u root -p
         Enter password: [your mysql root user password]
         mysql> CREATE DATABASE aidr_predict;
-        mysql> GRANT ALL PRIVILEGES ON aidr_predict.* TO aidr_user@localhost IDENTIFIED BY 'pass123';
-        mysql> GRANT TRIGGER ON aidr_predict.* TO aidr_user@localhost IDENTIFIED BY 'pass123'; 
+        mysql> GRANT ALL PRIVILEGES ON aidr_predict.* TO aidr_admin@localhost IDENTIFIED BY 'aidr_admin';
+        mysql> GRANT TRIGGER ON aidr_predict.* TO aidr_admin@localhost IDENTIFIED BY 'aidr_admin'; 
         mysql> QUIT;
 
 * Edit [persistence.xml](../tree/master/aidr-db-manager/src/main/resources/META-INF/persistence.xml):
@@ -51,9 +51,13 @@ This module does not need a deployment in the Glassfish server.
   2. Set jdbc resource in the glassfish server for aidr_predict database (connection pool URL jdbc:mysql://localhost:3306/aidr_predict) and specify its name at `jta-data-source`
 * Build using maven following the instructions above; this should generate a file `db-managerEAR-X.ear`
 * Deploy the `db-managerEAR-X.ear` to Glassfish
-* Populate 'crisis_types' table in the database
+* Populate `crisis_types` table in the database
 
-        % mysql aidr_predict -u aidr_user -p < populate_db_crisistype.sql
+        % mysql aidr_predict -u aidr_admin -p < populate_db_crisistype.sql
+
+* Populate `nominal_attributes` and `nominal_label` tables in the database
+
+        % mysql aidr_predict -u aidr_admin -p < populate_db_attributes.sql
 
 # 3. Task Manager (aidr-task-manager)
 
@@ -154,6 +158,10 @@ The `aidr-analytics` module is meant to provide data for various analytics and v
 
 * Pre-requisite: `aidr_predict` database and `aidr_scheduler` database should be created. `aidr_predict' database is created by aidr-db-manager module. 
 * Create a new database called `aidr_scheduler`. Grant appropriate table and trigger permissions (similar to the instructions for setting up the `aidr_predict` database) 
+* Run the script (aidr_scheduler.sql)[] to create the tables in the database:
+
+        % mysql aidr_scheduler -u aidr_admin -p < aidr_scheduler.sql
+
 * Appropriately set the properties in the [database.properties](../tree/master/aidr-trainer-api/src/main/resources/database.properties) and [databaseTemp.properties](../tree/master/aidr-trainer-api/src/main/resources/databaseTemp.properties) files under src/main/resources.
 * Build using maven following the instructions above; this should generate a file `aidr-trainer-api-X.war`
 * Deploy `aidr-trainer-api-X.war` to Glassfish using the instructions above. 
