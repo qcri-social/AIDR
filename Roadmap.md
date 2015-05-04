@@ -55,7 +55,7 @@ QCRI side:
 
 The objective of this release is to transform aidr-tagger into a Java EE application, instead of a stand-alone application.
 
-This may mean one of the following (to be decided later): (i) merging the functionality of aidr-tagger into aidr-tagger-api, (ii) deprecating aidr-tagger-api, so that aidr-manager speaks directly to dbmanager.
+This may mean one of the following, to be decided later: (i) merging the functionality of aidr-tagger into aidr-tagger-api, (ii) keeping both separate, or (ii) deprecating aidr-tagger-api, so that aidr-manager speaks directly to dbmanager.
 
 Metacube side:
 * Convert aidr-tagger into a Java EE application.
