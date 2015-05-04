@@ -115,9 +115,7 @@ This module does not need a deployment in the Glassfish server.
 
 **NOTE**: A re-deployment of the `aidr-task-manager` module may require a re-deployment of the `aidr-tagger-api` module.
 
-* Create JDBC resources in server (e.g., Glassfish) to match the JNDI names (JNDI/aidr_predict and JNDI/aidr_fetch_manager) used in src/main/resource/META-INF/persistence.xml.
-* Copy the `aidr-task-manager.jar` file generated as per the instructions in `aidr-task-manager` to the WEB-INF/lib folder.
-* Include the `aidr-task-manager.jar` file in the build path.
+* Create JDBC resources in server (e.g., Glassfish) to match the JNDI names (JNDI/aidr_predict and JNDI/aidr_fetch_manager) used in [persistence.xml](../tree/master/aidr-tagger-api/src/main/resources/META-INF/persistence.xml)
 * Build using maven following the instructions above; this should generate a file `aidr-tagger-api-X.war`
 * Deploy `aidr-tagger-api-X.war` to Glassfish using the instructions above.
 * Test the deployment (optional). You can check if `aidr-tagger-api` was installed correctly:
