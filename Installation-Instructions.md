@@ -120,7 +120,9 @@ This module does not need a deployment in the Glassfish server.
 * Deploy `aidr-tagger-api-X.war` to Glassfish using the instructions above.
 * Test the deployment (optional). You can check if `aidr-tagger-api` was installed correctly:
 ```
-$ curl http://localhost:b080/AIDRTaggerAPI/rest/misc/ping
+$ curl http://localhost:8080/AIDRTaggerAPI/rest/misc/ping
+
+Response:
 {"application":"AIDRTaggerAPI", "status":"RUNNING"}
 ```
 
@@ -142,7 +144,7 @@ The `aidr-analytics` module is meant to provide data for various analytics and v
 
 **WARNING**: Setting "hibernate.hbm2ddl.auto" to `create` drops and creates the aidr_analysis database!
 
-* Create a new JDBC resource in server (e.g., Glassfish) 'aidr_analysis` database. Attach it with `connection pool` set to that of the `aidr_analysis` database.
+* Create a new JDBC resource in server (e.g., Glassfish) 'aidr_analysis` database. Attach it with connection pool set to that of the `aidr_analysis` database.
 * Specify the JDBC resource name at `jta-data-source` in [persistence.xml](../tree/master/aidr-analytics/src/main/resources/META-INF/persistence.xml)
 
 * Appropriately set the parameters in [granularity.properties](../tree/master/aidr-analytics/src/main/resources/granularity.properties) file. Use the suffix `s`, `m`, `h` and `d` to indicate seconds, minutes, hours and days respectively. 
