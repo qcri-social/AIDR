@@ -5,10 +5,6 @@ import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.json.JsonObject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +16,6 @@ import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.predictui.api.CrisisManagementResource;
 import qa.qcri.aidr.predictui.facade.CrisisManagementResourceFacade;
-import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
-import qa.qcri.aidr.predictui.facade.ModelFamilyFacade;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 

@@ -14,7 +14,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import qa.qcri.aidr.predictui.entities.AidrCollection;
-import qa.qcri.aidr.predictui.entities.Crisis;
 import qa.qcri.aidr.predictui.facade.CollectionResourceFacade;
 
 /**
