@@ -49,11 +49,13 @@ QCRI side:
 * back-end fixes to view/download as needed
 * minor UI enhancements
 
-# Release 2.0: integrating aidr-tagger into aidr-tagger-api
+# Release 2.0: aidr-tagger is a Java EE application.
 
 **Target: end-June.**
 
-The objective of this release is to transform aidr-tagger into a Java EE application, instead of a stand-alone application. This will mean merging the functionality of aidr-tagger into aidr-tagger-api.
+The objective of this release is to transform aidr-tagger into a Java EE application, instead of a stand-alone application.
+
+This may mean one of the following (to be decided later): (i) merging the functionality of aidr-tagger into aidr-tagger-api, (ii) deprecating aidr-tagger-api, so that aidr-manager speaks directly to dbmanager.
 
 Metacube side:
 * Convert aidr-tagger into a Java EE application.
