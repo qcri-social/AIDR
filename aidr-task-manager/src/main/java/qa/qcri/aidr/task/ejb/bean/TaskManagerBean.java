@@ -871,29 +871,29 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		//logger.info("Received request for task ID = " + id + ", param Map = " + paramMap);
 		Object doc = null;
 		try {
-			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.task.Document")) {
+			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.task.Document.class)) {
 				//logger.info("Detected of type Document.class, id = " + id);
 				doc = (Document) remoteDocumentEJB.getById(id);
 			} 
-			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.task.TaskAssignment")) {
+			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.task.TaskAssignment.class)) {
 				//logger.info("Detected of type TaskAssignment.class");
 				doc = (TaskAssignment) remoteTaskAssignmentEJB.getById(id);
 			}
-			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.task.TaskAnswer")) {
+			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.task.TaskAnswer.class)) {
 				//logger.info("Detected of type TaskAnswer.class");
 				List<TaskAnswerDTO> docList = remoteTaskAnswerEJB.getTaskAnswer(id);
 				if (docList != null) 
 					doc = docList.get(0).toEntity();			
 			}
-			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.misc.Users")) {
+			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.misc.Users.class)) {
 				//logger.info("Detected of type Users.class");
 				doc = (Users) remoteUsersEJB.getById(id);
 			}
-			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel")) {
+			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel.class)) {
 				//logger.info("Detected of type DocumentNominalLabel.class");
 				doc = (DocumentNominalLabel) remoteDocumentNominalLabelEJB.getById(id);
 			}
-			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.misc.Crisis")) {
+			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.misc.Crisis.class)) {
 				//logger.info("Detected of type Crisis.class");
 				doc = (Crisis) remoteCrisisEJB.getById(id);
 			}
@@ -948,11 +948,11 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 						methods[pointer].invoke(doc, Integer.parseInt(paramMap.get(name)));
 						//logger.info("Invoking with Integer parameter type");
 					}
-					if (paramTypes[0].getName().toLowerCase().contains("boolean")) {
+					if (paramTypes[0].getName().toLowerCase().equals("boolean")) {
 						methods[pointer].invoke(doc, Boolean.parseBoolean(paramMap.get(name)));
 						//logger.info("Invoking with Boolean parameter type");
 					}
-					if (paramTypes[0].getName().contains("String")) {
+					if (paramTypes[0].getName().equals("String")) {
 						methods[pointer].invoke(doc, paramMap.get(name));
 						//logger.info("Invoking with String parameter type");
 					}
@@ -968,42 +968,42 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 		try {
 			logger.info("Will attempt to merge update with document ID = " + id);
-			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.task.Document")) {
+			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.task.Document.class)) {
 				//logger.info("Detected of type Document.class, id = " + id);
 				remoteDocumentEJB.merge((Document) doc); 
 				logger.info("Merge update successful for task id = " + id);
 				//return serializeTask((qa.qcri.aidr.task.entities.Document) doc);
 				return new DocumentDTO((Document) doc);
 			} 
-			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.task.TaskAssignment")) {
+			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.task.TaskAssignment.class)) {
 				//logger.info("Detected of type TaskAssignment.class");
 				remoteTaskAssignmentEJB.merge((TaskAssignment) doc);
 				logger.info("Merge update successful for task id = " + id);
 				//return serializeTask((qa.qcri.aidr.task.entities.TaskAssignment) doc);
 				return new TaskAssignmentDTO((TaskAssignment) doc);
 			}
-			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.task.TaskAnswer")) {
+			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.task.TaskAnswer.class)) {
 				//logger.info("Detected of type TaskAnswer.class");
 				remoteTaskAnswerEJB.merge((TaskAnswer) doc);
 				logger.info("Merge update successful for task id = " + id);
 				//return serializeTask((qa.qcri.aidr.task.entities.TaskAnswer) doc);
 				return new TaskAnswerDTO((TaskAnswer) doc);
 			}
-			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.misc.Users")) {
+			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.misc.Users.class)) {
 				//logger.info("Detected of type Users.class");
 				remoteUsersEJB.merge((Users) doc);
 				logger.info("Merge update successful for task id = " + id);
 				//return serializeTask((qa.qcri.aidr.task.entities.Users) doc);
 				return new UsersDTO((Users) doc);
 			}
-			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel")) {
+			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel.class)) {
 				//logger.info("Detected of type DocumentNominalLabel.class");
 				remoteDocumentNominalLabelEJB.merge((DocumentNominalLabel) doc);
 				logger.info("Merge update successful for task id = " + id);
 				//return serializeTask((qa.qcri.aidr.task.entities.DocumentNominalLabel) doc);
 				return new DocumentNominalLabelDTO((DocumentNominalLabel) doc);
 			}
-			if (entityType.getName().contains("qa.qcri.aidr.dbmanager.entities.misc.Crisis")) {
+			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.misc.Crisis.class)) {
 				//logger.info("Detected of type Crisis.class");
 				remoteCrisisEJB.merge((Crisis) doc);
 				logger.info("Merge update successful for task id = " + id);
