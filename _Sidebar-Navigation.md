@@ -46,5 +46,8 @@
  * [[Coding standards]]
 * [[Testing]]
 
+### QCRI-specific
+
+* [[Scrum implementation]]
 
 ## [[Credits]]
