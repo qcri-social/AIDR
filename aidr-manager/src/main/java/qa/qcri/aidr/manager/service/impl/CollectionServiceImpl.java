@@ -272,6 +272,28 @@ public class CollectionServiceImpl implements CollectionService {
 
 		return updateCollection;
 	}
+	
+	//MEGHNA: method for stopping a collection on FATAL_ERROR
+	//separate method from stop needed to prevent looping in
+	//updateStatusCollection() method
+	public AidrCollection stopFatalError(Integer collectionId) throws Exception {
+		AidrCollection collection = collectionRepository.findById(collectionId);
+		
+		AidrCollection updateCollection = stopAidrFetcher(collection);
+
+		AidrCollectionLog collectionLog = new AidrCollectionLog();
+		collectionLog.setCount(collection.getCount());
+		collectionLog.setEndDate(collection.getEndDate());
+		collectionLog.setFollow(collection.getFollow());
+		collectionLog.setGeo(collection.getGeo());
+		collectionLog.setLangFilters(collection.getLangFilters());
+		collectionLog.setStartDate(collection.getStartDate());
+		collectionLog.setTrack(collection.getTrack());
+		collectionLog.setCollectionID(collectionId);
+		collectionLogRepository.save(collectionLog);
+
+		return updateCollection;
+	}
 
 	public AidrCollection startFetcher(FetcherRequestDTO fetcherRequest, AidrCollection aidrCollection) {
 		try {
@@ -357,6 +379,7 @@ public class CollectionServiceImpl implements CollectionService {
 
 			String jsonResponse = clientResponse.readEntity(String.class);
 
+			logger.info("stopped collector, now status:");
 			collection = updateStatusCollection(jsonResponse, collection);
 
 			/**
@@ -369,27 +392,12 @@ public class CollectionServiceImpl implements CollectionService {
 		return null;
 	}
 
-	private AidrCollection updateStatusCollection(String jsonResponse, AidrCollection collection) throws IOException {
+	private AidrCollection updateStatusCollection(String jsonResponse, AidrCollection collection) throws Exception {
 		ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 		FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);
 		if (response != null) {
-			if (!CollectionStatus.getByStatus(response.getStatusCode()).equals(collection.getStatus())) {
-				//if local=running and fetcher=NOT-FOUND then put local as NOT-RUNNING
-				if (CollectionStatus.NOT_FOUND.equals(CollectionStatus.getByStatus(response.getStatusCode()))) {
-					collection.setCount(response.getCollectionCount());
-					collection.setStatus(CollectionStatus.NOT_RUNNING);
-					collectionRepository.update(collection);
-				}
-
-				if (CollectionStatus.RUNNING.equals(CollectionStatus.getByStatus(response.getStatusCode()))) {
-					collection.setCount(response.getCollectionCount());
-					collection = collectionRepository.start(collection.getId());
-				}
-				//MEGHNA: if status changes from running to running-warning, then lastDocument will not get updated
-				//because the if condition below becomes false
-				//so collection.setcount in individual if-blocks
-			}
-			
+			//MEGHNA: moved setting collection count to top of the method
+			//to avoid individual status blocks setting collection count below
 			if (response.getCollectionCount() != null && !response.getCollectionCount().equals(collection.getCount())) {
 				collection.setCount(response.getCollectionCount());		// Commented by koushik for downloadCount bug
 				//MEGHNA: uncommented - setting count at the beginning always makes this condition false 
@@ -398,6 +406,33 @@ public class CollectionServiceImpl implements CollectionService {
 				if (lastDocument != null)
 					collection.setLastDocument(lastDocument);
 				collectionRepository.update(collection);
+			}
+			
+			if (!CollectionStatus.getByStatus(response.getStatusCode()).equals(collection.getStatus())) {
+				logger.debug("Collection Status: " + CollectionStatus.getByStatus(response.getStatusCode()));
+				
+				//if local=running and fetcher=NOT-FOUND then put local as NOT-RUNNING
+				if (CollectionStatus.NOT_FOUND.equals(CollectionStatus.getByStatus(response.getStatusCode()))) {
+					//collection.setCount(response.getCollectionCount());
+					collection.setStatus(CollectionStatus.NOT_RUNNING);
+					collectionRepository.update(collection);
+				}
+				
+				if (CollectionStatus.STOPPED.equals(CollectionStatus.getByStatus(response.getStatusCode()))) {
+					//collection.setCount(response.getCollectionCount());
+					collection.setStatus(CollectionStatus.STOPPED);
+					collectionRepository.update(collection);
+				}
+
+				if (CollectionStatus.RUNNING.equals(CollectionStatus.getByStatus(response.getStatusCode()))) {
+					//collection.setCount(response.getCollectionCount());
+					collection = collectionRepository.start(collection.getId());
+				}
+				
+				if (CollectionStatus.FATAL_ERROR.equals(CollectionStatus.getByStatus(response.getStatusCode()))) {
+						collection = collectionRepository.stop(collection.getId());						
+						this.stopFatalError(collection.getId());
+					}
 			}
 		}
 		return collection;
@@ -431,7 +466,7 @@ public class CollectionServiceImpl implements CollectionService {
 				Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
 				String jsonResponse = clientResponse.readEntity(String.class);
-				System.out.println("**********Collector response : " + jsonResponse);
+				//System.out.println("**********Collector response : " + jsonResponse);
 
 				collection = updateStatusCollection(jsonResponse, collection);
 				return collection;
