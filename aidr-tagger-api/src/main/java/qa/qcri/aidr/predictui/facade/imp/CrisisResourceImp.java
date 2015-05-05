@@ -4,17 +4,11 @@
  */
 package qa.qcri.aidr.predictui.facade.imp;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 //import org.apache.log4j.Logger;
 
@@ -30,8 +24,6 @@ import org.slf4j.LoggerFactory;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
-import qa.qcri.aidr.predictui.entities.ModelFamily;
-import qa.qcri.aidr.predictui.entities.NominalLabel;
 import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 
 /**

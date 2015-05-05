@@ -10,7 +10,6 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
-import qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalAttributeResourceFacade;
 
 /**
  *

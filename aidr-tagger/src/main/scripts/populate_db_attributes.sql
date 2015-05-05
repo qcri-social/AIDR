@@ -1,115 +1,69 @@
+# create system user
 
-DELETE FROM `nominal_label`;
-DELETE FROM `nominal_attribute`;
+INSERT INTO `users` (`userID`, `name`, `role`) VALUES ('1', 'System', 'admin');
 
-INSERT INTO `nominal_attribute` (`nominalAttributeID`, `code`, `name`, `description`)
- VALUES (100, "unclusters_v1", "Clusters v1.0", "Humanitarian Clusters, v1.0");
-
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (100, "null", "Does not apply", "The label does not apply, or I am not sure about the label for this message");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (100, "010_camps", "Camp management", "Camp coordination and camp management (IOM, UNHCR, ...)");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (100, "020_recovery", "Early recovery", "Early recovery (UNDP, ...)");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (100, "030_education", "Education", "Education (UNICEF, Save the Children, ...)");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (100, "040_telecom", "Emergency telecommunications", "Emergency telecommunications (WFP, ...)");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (100, "050_foodsec", "Food security", "Food security (WFP, FAO, ...)");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (100, "060_health", "Health", "Health (WHO, ...)");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (100, "070_logistics", "Logistics", "Logistics (WFP, ...)");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (100, "080_nutrition", "Nutrition", "Nutrition (UNICEF, ...)");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (100, "090_protection", "Protection", "Protection (UNHCR, ...)");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (100, "100_shelter", "Shelter", "Shelter (IFRC, UNHCR, ...)");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (100, "110_sanitation", "Sanitation", "Water, sanitation and hygiene (UNICEF, ...)");
+# populate table nominal_attribute
+# ------------------------------------------------------------
 
 
-INSERT INTO `nominal_attribute` (`nominalAttributeID`, `code`, `name`, `description`)
- VALUES (200, "eyewitness_v1", "Eye witness v1.0", "Eye witness accounts, v1.0");
+INSERT INTO `nominal_attribute` (`nominalAttributeID`, `userID`, `name`, `description`, `code`)
+VALUES
+	
+	(1,1,'Informative','Indicate if the item contains information that is useful for capturing and understanding the situation on the ground','informative'),
+	(2,1,'Information provided','Indicate what type of information is provided in the message. This is a ranked list. If more than one information type is present, choose the one that appears first on the list','information_provided'),
+	(3,1,'Humanitarian Clusters','These categories are in line with those put forth by the United Nations \"clusters\" approach. If more than one category is equally represented in the message, choose \"multiple\"','un_cluster'),
+	(4,1,'Urgent needs','Indicate if the item mentions a need of the affected population that is immediate or short-term. If more than one applies, indicate \"multiple\"','needs'),
+	(5,1,'Information source','Indicate what the is the apparent source of this information. Click on links when necessary to identify the source','information_source');
+	
 
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (200, "null", "Does not apply", "The label does not apply, or I am not sure about the label for this message");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (200, "010_true", "Yes", "Describes an eyewitness account");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (200, "020_false", "No", "Does not describe an eyewitness account");
+# populatetable nominal_label
+# ------------------------------------------------------------
 
+INSERT INTO `nominal_label` (`nominalLabelCode`, `nominalAttributeID`, `name`, `description`, `sequence`)
+VALUES
+	('informative',1,'Informative','Contains useful information that helps you understand the situation',100),
+	('not_informative',1,'Not informative','Refers to the crisis, but does not contain useful information that helps you understand the situation',100),
+	('not_related',1,'Not related to crisis','Not related to this crisis',100),
+	('null',1,'N/A','Not applicable, cannot judge, not readable, not sure',100),
+	('casualties',2,'Injured or dead people','Casualties due to the crisis',100),
+	('missing',2,'Missing, trapped, or found people','Questions and/or reports about missing or found people',100),
+	('displaced',2,'Displaced people','People who have relocated due to the crisis, even for a short time (includes evacuations)',100),
+	('infrastructure',2,'Infrastructure and utilities','Buildings or roads damaged or operational; utilities/services interrupted or restored',100),
+	('supplies',2,'Shelter and supplies','Needs or donations of shelter and/or supplies such as food, water, clothing, medical supplies or blood',100),
+	('money',2,'Money','Money requested, donated or spent',100),
+	('services',2,'Volunteer or professional services','Services needed or offered by volunteers or professionals',100),
+	('animals',2,'Animal management','Pets and animals, living, missing, displaced, or injured/dead',100),
+	('caution_advice',2,'Caution and advice','Warnings issued or lifted, guidance and tips',100),
+	('personal',2,'Personal updates','Status updates about individuals or loved ones',100),
+	('sympathy',2,'Sympathy and emotional support','Thoughts and prayers',100),
+	('other',2,'Other relevant information','Other useful information that helps understand the situation',100),
+	('not_related',2,'Not related or irrelevant','Unrelated to the situation or irrelevant',100),
+	('null',2,'N/A','Not applicable, cannot judge, not readable, not sure',100),
+	('children',3,'Education/child welfare','Children\'s well being and education',100),
+	('telecommunications',3,'Telecommunications','Mobile and landline networks, internet',100),
+	('food',3,'Food/nutrition','Nutritional well being',100),
+	('health',3,'Health','Mental, physical, emotional well being',100),
+	('logistics',3,'Logistics/transportation','Delivery and storage of goods and supplies',100),
+	('shelter',3,'Camp/shelter','Condition and location of shelters and camps',100),
+	('hygiene',3,'Water, sanitation, hygiene','Availability of clean water, waste and sewage disposal, access to hygienic facilities',100),
+	('security',3,'Safety/security','Protection of people/property against harm such as violence or theft',100),
+	('multiple',3,'Multiple','More than one of the above are equally represented on this message',100),
+	('null',3,'N/A','Not applicable, cannot judge, not readable, not sure',100),
+	('money',4,'Money needed','Donations or transfers of money are needed/requested',100),
+	('food_water',4,'Food and/or water needed','Food and/or water are needed',100),
+	('clothing',4,'Clothing needed','Clothing, shoes and/or blankets are needed',100),
+	('shelter',4,'Shelter needed','Shelter space/beds are needed',100),
+	('medical',4,'Blood or other medical supplies needed','Blood donors or other medical supplies are needed',100),
+	('service',4,'Services are needed','Volunteer or professional services are needed',100),
+	('other',4,'Other type of need','Other type of help, supplies, equipment or machines are needed',100),
+	('multiple',4,'Multiple','More than one of the above is mentioned',100),
+	('not_need',4,'Not need-related','Not related to a need',100),
+	('null',4,'N/A','Not applicable, cannot judge, not readable, not sure',100),
+	('eyewitness',5,'Eye witness','Describes an eyewitness account',100),
+	('government',5,'Government','National, regional or local government agencies, police, and/or military',100),
+	('ngo',5,'Non-government','Non-governmental organizations',100),
+	('business',5,'Business','For-profit business or corporations',100),
+	('traditional_media',5,'Traditional media','Mentions traditional media: television, radio, or newspaper',100),
+	('internet_only_media',5,'Internet-only media','Mentions websites, blogs or other sites not associated with television, radio or newspapers',100),
+	('null',5,'N/A','Not applicable, cannot judge, not readable, not sure',100);
 
-INSERT INTO `nominal_attribute` (`nominalAttributeID`, `code`, `name`, `description`)
- VALUES (300, "informative_v1", "Informative v1.0", "Informative messages enhancing situational awareness, v1.0");
-
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (300, "null", "Does not apply", "The label does not apply, or I am not sure about the label for this message");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (300, "010_informative", "Informative", "Contributes useful information enhancing situational awareness");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (300, "020_personal", "Personal only", "Personal and only useful to a small circle of family/friends of the author");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (300, "030_not_info", "Not related to crisis", "Not related to the crisis");
-
-
-INSERT INTO `nominal_attribute` (`nominalAttributeID`, `code`, `name`, `description`)
- VALUES (400, "type_v1", "Type v1.0", "Main type of a message, broad types, v1.0");
-
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (400, "null", "Does not apply", "The label does not apply");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (400, "010_caution", "Caution and advice", "Warns about a potential danger or provides advice");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (400, "020_damage", "Casualties and damage", "Reports about people injured/dead, or infrastructure damage");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (400, "030_donation", "Donations", "Requests or offers donations of goods or services");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (400, "040_people", "People", "Informs about people missing or found, or celebrities/authorities reacting to the crisis");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (400, "050_sources", "Information sources", "Informs about information sources");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (400, "800_other_news", "Other news", "Generic news report that does not fit the above classes");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (400, "900_other", "None of the above", "Other, none of the above");
-
-
-INSERT INTO `nominal_attribute` (`nominalAttributeID`, `code`, `name`, `description`)
- VALUES (500, "media_v1", "Multimedia v1.0", "Multimedia resources, v1.0");
-
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (500, "null", "Does not apply", "The label does not apply");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (500, "010_photo", "Photo", "Contains a still photo or album");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (500, "020_video", "Video", "Contains video footage");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (500, "030_audio", "Audio", "Contains audio");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (500, "900_other", "None of the above", "Does not contain any of the above");
-
-INSERT INTO `nominal_attribute` (`nominalAttributeID`, `code`, `name`, `description`)
- VALUES (600, "needs_v1", "Individual needs v1.0", "Messages of type needs like water, food, blood");
-
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (600, "null", "N/A: does not apply, or cannot judge", "If these categories do not apply to this message, or you cannot be sure about which is the correct category");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
- VALUES (600, "010_food", "Food", "If the message talks about food requests");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
-    VALUES (600,"020_water","Water","If the message contains water request");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
-    VALUES (600,"030_clothes_shoes","Clothes or shoes","If the message contains clothes or shoes request");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
-    VALUES (600,"040_volunteer_work","Colunterr work","If the message contains any type of voluteers requests");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
-    VALUES (600,"050_medical","Medical supplies","If the message contains request for medical supplies");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
-    VALUES (600,"060_blood","Blood","If blood request is reported in the message");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
-    VALUES (600,"070_equipment","Equipment or machinery","If any kind of equipment or machinery is requested");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
-    VALUES (600,"080_transport","Means of transport","If any means of transport are requested");
-INSERT INTO `nominal_label` (`nominalAttributeID`, `nominalLabelCode`, `name`, `description`)
-    VALUES (600,"090_money","Other need","Any other kind of need/request");

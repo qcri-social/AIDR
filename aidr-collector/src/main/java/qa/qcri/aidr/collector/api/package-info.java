@@ -6,11 +6,3 @@
  */
 
 package qa.qcri.aidr.collector.api;
-
-/**
- *
- * @author Imran
- */
-public class package_info {
-    
-}
