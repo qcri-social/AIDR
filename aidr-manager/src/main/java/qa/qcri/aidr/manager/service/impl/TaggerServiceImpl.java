@@ -1071,7 +1071,6 @@ public class TaggerServiceImpl implements TaggerService {
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			PingResponse pingResponse = objectMapper.readValue(jsonResponse, PingResponse.class);
-			logger.info("persister status" + pingResponse.getStatus());
 			if (pingResponse != null && "RUNNING".equals(pingResponse.getStatus())) {
 				return true;
 			} else {

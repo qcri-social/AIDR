@@ -28,7 +28,12 @@ import javax.persistence.ManyToOne;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class AidrCollectionLog implements Serializable {
 
-    public AidrCollectionLog(AidrCollection collection) {
+	public AidrCollectionLog()
+	{
+		super();
+	}
+	
+	public AidrCollectionLog(AidrCollection collection) {
 		super();
 		this.collectionID = collection.getId();
 		this.count = collection.getCount();
