@@ -591,7 +591,10 @@ public class TaggerController extends BaseController {
 				result = taggerService.pingTrainer();
 			} else if ("AIDROutput".equals(service)) {
 				result = taggerService.pingAIDROutput();
+			} else if ("persister".equals(service)) {
+				result = taggerService.pingPersister();
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");

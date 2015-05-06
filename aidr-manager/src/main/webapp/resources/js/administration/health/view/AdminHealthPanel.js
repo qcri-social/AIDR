@@ -23,7 +23,7 @@ Ext.define('ADMIN.health.view.AdminHealthPanel', {
 
         this.collectorLabel = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
-            text: 'My Collections',
+            text: 'Collector',
             width: 150
         });
 
@@ -34,11 +34,22 @@ Ext.define('ADMIN.health.view.AdminHealthPanel', {
 
         this.taggerLabel = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
-            text: 'My Classifiers',
+            text: 'Classifier',
             width: 150
         });
 
         this.taggerStatus = Ext.create('Ext.form.Label', {
+            cls: 'styled-text',
+            flex: 1
+        });
+        
+        this.persisterLabel = Ext.create('Ext.form.Label', {
+            cls: 'styled-text',
+            text: 'Persister',
+            width: 150
+        });
+
+        this.persisterStatus = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             flex: 1
         });
@@ -63,7 +74,7 @@ Ext.define('ADMIN.health.view.AdminHealthPanel', {
         this.AIDROutputStatus = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             flex: 1
-        });
+        });  
 
         this.pageTitle = Ext.create('Ext.form.Label', {
             cls: 'header-h1 bold-text',
@@ -94,6 +105,14 @@ Ext.define('ADMIN.health.view.AdminHealthPanel', {
                 items: [
                     this.taggerLabel,
                     this.taggerStatus
+                ]
+            },{
+                xtype: 'container',
+                margin: '15 0 0 0',
+                layout: 'hbox',
+                items: [
+                    this.persisterLabel,
+                    this.persisterStatus
                 ]
             },{
                 xtype: 'container',

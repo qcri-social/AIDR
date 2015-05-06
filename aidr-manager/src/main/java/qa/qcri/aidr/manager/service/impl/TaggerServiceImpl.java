@@ -1058,6 +1058,30 @@ public class TaggerServiceImpl implements TaggerService {
 			throw new AidrException("Error while Getting training data for Crisis and Model.", e);
 		}
 	}
+	
+	@Override
+	public boolean pingPersister() throws AidrException {
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		try {
+			WebTarget webResource = client.target(persisterMainUrl + "/persister/ping");
+
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+
+			String jsonResponse = clientResponse.readEntity(String.class);
+
+			PingResponse pingResponse = objectMapper.readValue(jsonResponse, PingResponse.class);
+			logger.info("persister status" + pingResponse.getStatus());
+			if (pingResponse != null && "RUNNING".equals(pingResponse.getStatus())) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			logger.info("exception", e);
+			throw new AidrException("Error while Getting training data for Crisis and Model.", e);
+		}
+	}
 
 	// Added by koushik
 	@Override

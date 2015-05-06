@@ -259,15 +259,15 @@ public class CollectionServiceImpl implements CollectionService {
 		
 		AidrCollection updateCollection = stopAidrFetcher(collection);
 
-		AidrCollectionLog collectionLog = new AidrCollectionLog();
-		collectionLog.setCount(collection.getCount());
+		AidrCollectionLog collectionLog = new AidrCollectionLog(collection);
+		/*collectionLog.setCount(collection.getCount());
 		collectionLog.setEndDate(collection.getEndDate());
 		collectionLog.setFollow(collection.getFollow());
 		collectionLog.setGeo(collection.getGeo());
 		collectionLog.setLangFilters(collection.getLangFilters());
 		collectionLog.setStartDate(collection.getStartDate());
 		collectionLog.setTrack(collection.getTrack());
-		collectionLog.setCollectionID(collectionId);
+		collectionLog.setCollectionID(collectionId);*/
 		collectionLogRepository.save(collectionLog);
 
 		return updateCollection;
@@ -281,15 +281,7 @@ public class CollectionServiceImpl implements CollectionService {
 		
 		AidrCollection updateCollection = stopAidrFetcher(collection);
 
-		AidrCollectionLog collectionLog = new AidrCollectionLog();
-		collectionLog.setCount(collection.getCount());
-		collectionLog.setEndDate(collection.getEndDate());
-		collectionLog.setFollow(collection.getFollow());
-		collectionLog.setGeo(collection.getGeo());
-		collectionLog.setLangFilters(collection.getLangFilters());
-		collectionLog.setStartDate(collection.getStartDate());
-		collectionLog.setTrack(collection.getTrack());
-		collectionLog.setCollectionID(collectionId);
+		AidrCollectionLog collectionLog = new AidrCollectionLog(collection);
 		collectionLogRepository.save(collectionLog);
 
 		return updateCollection;
@@ -379,7 +371,6 @@ public class CollectionServiceImpl implements CollectionService {
 
 			String jsonResponse = clientResponse.readEntity(String.class);
 
-			logger.info("stopped collector, now status:");
 			collection = updateStatusCollection(jsonResponse, collection);
 
 			/**

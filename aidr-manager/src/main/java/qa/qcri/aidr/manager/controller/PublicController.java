@@ -121,15 +121,16 @@ public class PublicController extends BaseController{
             }
 
             //              save current state of the collection to collectionLog
-            AidrCollectionLog collectionLog = new AidrCollectionLog();
-            collectionLog.setCount(dbCollection.getCount());
+            AidrCollectionLog collectionLog = new AidrCollectionLog(dbCollection);
+            collectionLog.setEndDate(collectionLogEndData);
+            /*collectionLog.setCount(dbCollection.getCount());
             collectionLog.setEndDate(collectionLogEndData);
             collectionLog.setFollow(dbCollection.getFollow());
             collectionLog.setGeo(dbCollection.getGeo());
             collectionLog.setLangFilters(dbCollection.getLangFilters());
             collectionLog.setStartDate(dbCollection.getStartDate());
             collectionLog.setTrack(dbCollection.getTrack());
-            collectionLog.setCollectionID((int)collectionId);
+            collectionLog.setCollectionID((int)collectionId);*/
             collectionLogService.create(collectionLog);
 
             dbCollection.setGeo(geoString);

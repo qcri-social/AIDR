@@ -283,15 +283,16 @@ public class CollectionController extends BaseController{
 				AidrCollection collectionAfterStop = collectionService.stopAidrFetcher(dbCollection);
 
 				//              save current state of the collection to collectionLog
-				AidrCollectionLog collectionLog = new AidrCollectionLog();
-				collectionLog.setCount(dbCollection.getCount());
+				AidrCollectionLog collectionLog = new AidrCollectionLog(dbCollection);
+				collectionLog.setEndDate(collectionAfterStop.getEndDate());
+				/*collectionLog.setCount(dbCollection.getCount());
 				collectionLog.setEndDate(collectionAfterStop.getEndDate());
 				collectionLog.setFollow(dbCollection.getFollow());
 				collectionLog.setGeo(dbCollection.getGeo());
 				collectionLog.setLangFilters(dbCollection.getLangFilters());
 				collectionLog.setStartDate(dbCollection.getStartDate());
 				collectionLog.setTrack(dbCollection.getTrack());
-				collectionLog.setCollectionID(collectionId);
+				collectionLog.setCollectionID(collectionId);*/
 				collectionLogService.create(collectionLog);
 
 				//              set some fields from old collection and update collection

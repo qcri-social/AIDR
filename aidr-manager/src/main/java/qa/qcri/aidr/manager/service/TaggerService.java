@@ -81,6 +81,8 @@ public interface TaggerService {
 	public boolean pingTrainer() throws AidrException;
 
 	public boolean pingAIDROutput() throws AidrException;
+	
+	public boolean pingPersister() throws AidrException;
 
 	public String getRetainingThreshold() throws AidrException;
 
