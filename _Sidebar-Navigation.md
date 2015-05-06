@@ -46,7 +46,7 @@
  * [[Coding standards]]
 * [[Testing]]
 
-### Data
+### Data analysts
 
 * [[API documentation]]
 
