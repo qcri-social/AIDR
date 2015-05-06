@@ -53,5 +53,7 @@
 ### QCRI-specific
 
 * [[Scrum implementation]]
+* [[Branching]]
+
 
 ## [[Credits]]
