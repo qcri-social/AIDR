@@ -1,4 +1,4 @@
-/*
+/**
  * qa.qcri.aidr.collector.utils contains various utilities funcations.
  */
 

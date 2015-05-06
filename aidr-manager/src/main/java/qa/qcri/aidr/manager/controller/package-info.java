@@ -1,4 +1,4 @@
-/*
+/**
  * qa.qcri.aidr.manager.controller contains APIs used by manager's UI interface.
  */
 
