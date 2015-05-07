@@ -1,6 +1,13 @@
 # Current names
 
-The current names are: collector, tagger, trainer, output, persister, and analytics.
+The current names are:
+
+* collector
+* tagger
+* trainer
+* output
+* persister
+* analytics
 
 # Deprecated names
 
