@@ -1,4 +1,4 @@
-Designing a classifier is an art that requires a lot of practice to master. The following tips will help you through the process. The most important thing to keep it mind is that AIDR doesn't do magic (well, maybe a little :smile) but it simply learns from what you give to it as human-labeled examples.
+Designing a classifier is an art that requires a lot of practice to master. The following tips will help you through the process. The most important thing to keep it mind is that AIDR doesn't do magic (well, maybe a little :-) but it simply learns from what you give to it as human-labeled examples.
 
 # What is a "classifier"?
 
