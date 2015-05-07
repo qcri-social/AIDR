@@ -1,0 +1,25 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+    <modelVersion>4.0.0</modelVersion>
+	<groupId>qa.qcri.aidr</groupId>
+	<artifactId>aidr</artifactId>
+	<version>1.0</version>
+	<packaging>pom</packaging>
+    
+    <modules>
+        <module>aidr-common</module>
+        <module>aidr-db-manager</module>
+        <module>aidr-task-manager</module>
+        <module>aidr-persister</module>
+        <module>aidr-collector</module>
+        <module>aidr-tagger</module>
+        <module>aidr-tagger-api</module>
+        <module>aidr-output</module>
+        <module>aidr-analytics</module>
+        <module>aidr-trainer-api</module>
+        <module>aidr-trainer-pybossa</module>
+        <module>aidr-manager</module>
+    </modules>
+    
+</project>
