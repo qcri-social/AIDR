@@ -2,6 +2,7 @@
 
 * **[[Home]]**
 * [Operator's manual](AIDR Operator's Manual)
+* [Public API documentation(API documentation)
 
 ## System administrators
 
@@ -46,14 +47,9 @@
  * [[Coding standards]]
 * [[Testing]]
 
-### Data analysts
-
-* [[API documentation]]
-
 ### QCRI-specific
 
 * [[Scrum implementation]]
 * [[Branching]]
-
 
 ## [[Credits]]
