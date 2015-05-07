@@ -42,7 +42,7 @@ Don't add all the classifiers at the same time: that generates unnecessary work 
 
 # Should I create one classifier for every aspect, or one classifier for multiple aspects?
 
-It is best to create one classifier covering multiple aspects. There are many reasons. First, most likely some of the tags you have created will be useless, because they won't be present in the data or will be present in amounts that are so small that you will never provide human-labeled examples for them. That is fine, it happens all the time.
+It is best to create one classifier covering multiple aspects. There are many reasons. First, most likely some of the tags you have created will be useless, because they won't be present in the data or will be present in amounts that are so small that you will never provide human-labeled examples for them. That is fine, it happens all the time, but it shouldn't happen to all of the tags of a classifier, because then that classifier is meaningless.
 
 Second, applying a human-label to a message means reading the message. Once you have read a message, it is best to apply one of multiple tags, than to have to read the same message many times, one for each classifier. This is a matter of efficiency.
 
