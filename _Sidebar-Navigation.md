@@ -2,7 +2,7 @@
 
 * **[[Home]]**
 * [Operator's manual](AIDR Operator's Manual)
-* [Public API documentation(API documentation)
+* [Public API documentation](API documentation)
 
 ## System administrators
 
