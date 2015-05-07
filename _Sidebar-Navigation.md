@@ -45,6 +45,7 @@
 * Standards
  * [[Logging standards]]
  * [[Coding standards]]
+ * [[Naming conventions]]
 * [[Testing]]
 
 ### QCRI-specific
