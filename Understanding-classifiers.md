@@ -30,7 +30,7 @@ All you really need to know is 100% AUC means perfection, 50% means very bad, an
 
 # What does "confidence" means?
 
-AIDR uses statistical models, which involve probabilities: they are never black or white.
+AIDR uses statistical models, which involve probabilities: this means results are not black or white.
 
 When AIDR attaches a tag to an item, it does it with a certain **confidence**, which is how certain AIDR is that the item should have that tag. A confidence of 1.0 often means that AIDR has seen the exact same message in the past on its human-labeled examples. A low confidence means that AIDR isn't sure if the message belongs to a category or not.
 
@@ -39,6 +39,14 @@ When AIDR attaches a tag to an item, it does it with a certain **confidence**, w
 Start with one classifier, two maximum, and wait until you train them to reach a high value of AUC. After you have trained them, you can add more classifiers. 
 
 Don't add all the classifiers at the same time: that generates unnecessary work for AIDR, who has to move data back and forth from AIDR to MicroMappers and viceversa (as of May 2015; this may change in the future). Add the classifiers when you are ready to train them.
+
+# Should I create one classifier for every aspect, or one classifier for multiple aspects?
+
+It is best to create one classifier covering multiple aspects. There are many reasons. First, most likely some of the tags you have created will be useless, because they won't be present in the data or will be present in amounts that are so small that you will never provide human-labeled examples for them. That is fine, it happens all the time.
+
+Second, applying a human-label to a message means reading the message. Once you have read a message, it is best to apply one of multiple tags, than to have to read the same message many times, one for each classifier. This is a matter of efficiency.
+
+Third, AIDR works best when it understands when a message is NOT about something. For instance, if most messages are either about "infrastructure" or about "donations", then knowing that a message is about donations helps AIDR understand that the message is not about infrastructure. This cross-relationship is lost when multiple classifiers are used.
 
 # How many tags should I use in each classifier?
 
