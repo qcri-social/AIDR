@@ -2,12 +2,13 @@
 
 The current names are:
 
-* collector
-* tagger
-* trainer
-* output
-* persister
-* analytics
+* [[Manager]]
+* [[Collector]]
+* [[Tagger]]
+* [[Trainer]]
+* [[Output]]
+* [[Persister]]
+* [[Analytics]]
 
 # Deprecated names
 
