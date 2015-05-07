@@ -24,9 +24,9 @@ Precision is a measure of how specific is the classifier for a tag. For instance
 
 Recall is a measure of how sensitive is the classifier for a tag. For instance, if the classifier for the tag "missing people" has 80% recall, it means that AIDR is able to find 80% of the messages about missing people and label them as "missing people".
 
-There is a trade-off between precision and recall. You can have a lot of precision at the expense of little recall, and viceversa. AUC (Area Under the Curve) can be understand as a summary of precision and recall.
+There is a trade-off between precision and recall. You can have a lot of precision at the expense of little recall, and vice-versa. AUC (Area Under the Curve) can be understood as a summary of precision and recall.
 
-All you really need to know is 100% AUC means perfection, 50% means very bad, and that acceptable values start at 70%. With 80% and 90% you really start to feel the classifier is doing a good job. If your classifier doesn't reach that number for a tag, you need more training examples for that tag.
+All you really need to know is 100% AUC means perfection, 50% means random behavior which is very bad. Acceptable values start at 70%. With 80% and 90% you really start to feel the classifier is doing a good job. If your classifier doesn't reach that number for a tag, you need more training examples for that tag.
 
 # What does "confidence" means?
 
