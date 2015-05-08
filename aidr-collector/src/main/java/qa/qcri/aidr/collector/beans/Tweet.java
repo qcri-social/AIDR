@@ -1,13 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package qa.qcri.aidr.collector.beans;
 
 import java.io.Serializable;
 
 /**
- *
+ * Represents a tweet through a minimum set of fields.
+ * 
+ * WARNING: tagger, collector, and persister have a "Tweet" class.
+ *          They should all be merged and moved to aidr-common.
+ * 
  * @author Imran
  */
 public class Tweet  implements Document, Serializable{
