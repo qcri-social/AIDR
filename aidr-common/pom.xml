@@ -1,10 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>qa.qcri.aidr.common</groupId>
 	<artifactId>aidr-common</artifactId>
+	<name>AIDR Common</name>
 	<version>1.0</version>
 	<packaging>jar</packaging>
+	<description>Contains common code used in various modules of the application such as logging</description>
+	<url>http://aidr.qcri.org/</url>
 
 	<properties>
 		<java-version>1.7</java-version>
@@ -23,7 +27,7 @@
 			<version>4.10</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<!-- Jackson Dependencies -->
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>

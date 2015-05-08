@@ -1,11 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>qa.qcri.aidr.manager</groupId>
 	<artifactId>aidr-manager</artifactId>
-	<packaging>war</packaging>
+	<name>AIDR Manager</name>
 	<version>1.0</version>
-	<name>aidr-manager</name>
+	<packaging>war</packaging>
+	<description>provides an interface for interacting with AIDR services</description>
 	<url>http://aidr.qcri.org/</url>
 
 	<properties>
@@ -28,8 +30,8 @@
 			<version>1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>qa.qcri.aidr.predictdb</groupId>
-			<artifactId>aidr-db-manager</artifactId>
+			<groupId>qa.qcri.aidr.dbmanager</groupId>
+			<artifactId>aidr-db-manager-ejb</artifactId>
 			<version>1.0</version>
 			<scope>compile</scope>
 			<type>ejb-client</type>
@@ -176,14 +178,12 @@
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet</artifactId>
 			<version>2.5.1</version>
-
 		</dependency>
 
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
 			<version>2.5.1</version>
-
 		</dependency>
 
 		<!-- log4j -->
@@ -259,7 +259,7 @@
 		</repository>
 	</repositories>
 	<build>
-		<finalName>aidr-manager-1.0</finalName>
+		<finalName>aidr-manager</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

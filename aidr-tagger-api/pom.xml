@@ -4,11 +4,11 @@
 
 	<groupId>qa.qcri.aidr.predictui</groupId>
 	<artifactId>aidr-tagger-api</artifactId>
-	<packaging>war</packaging>
+	<name>AIDR Tagger API</name>
 	<version>1.0</version>
-
-	<name>aidr-tagger-api</name>
-	<url>http://maven.apache.org</url>
+	<packaging>war</packaging>
+	<description>Contains the API for the tagger module</description>
+	<url>http://aidr.qcri.org/</url>
 
 	<properties>
 		<slf4j.version>1.6.2</slf4j.version>
@@ -36,14 +36,14 @@
 		</dependency>
 		<dependency>
 			<groupId>qa.qcri.aidr.task</groupId>
-			<artifactId>aidr-task-manager</artifactId>
+			<artifactId>aidr-task-manager-ejb</artifactId>
 			<version>1.0</version>
 			<scope>compile</scope>
 			<type>ejb-client</type>
 		</dependency>
 		<dependency>
-			<groupId>qa.qcri.aidr.predictdb</groupId>
-			<artifactId>aidr-db-manager</artifactId>
+			<groupId>qa.qcri.aidr.dbmanager</groupId>
+			<artifactId>aidr-db-manager-ejb</artifactId>
 			<version>1.0</version>
 			<scope>compile</scope>
 			<type>ejb-client</type>
