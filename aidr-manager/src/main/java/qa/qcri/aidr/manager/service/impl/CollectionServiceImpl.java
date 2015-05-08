@@ -40,7 +40,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -210,19 +209,6 @@ public class CollectionServiceImpl implements CollectionService {
 		return startFetcher(prepareFetcherRequest(dbCollection), dbCollection);
 	}
 
-
-
-	//    @Override
-	//    @Transactional(readOnly = false)
-	//    public AidrCollection start(Integer collectionId, Integer userId) throws Exception {
-	//        AidrCollection alreadyRunningCollection = collectionRepository.getRunningCollectionStatusByUser(userId);
-	//        if (alreadyRunningCollection != null) {
-	//            this.stop(alreadyRunningCollection.getId());
-	//        }
-	//        AidrCollection dbCollection = collectionRepository.findById(collectionId);
-	//        return startFetcher(prepareFetcherRequest(dbCollection), dbCollection);
-	//    }
-
 	@Transactional(readOnly = true)
 	public FetcherRequestDTO prepareFetcherRequest(AidrCollection dbCollection) {
 		FetcherRequestDTO dto = new FetcherRequestDTO();
@@ -259,15 +245,7 @@ public class CollectionServiceImpl implements CollectionService {
 		
 		AidrCollection updateCollection = stopAidrFetcher(collection);
 
-		AidrCollectionLog collectionLog = new AidrCollectionLog();
-		collectionLog.setCount(collection.getCount());
-		collectionLog.setEndDate(collection.getEndDate());
-		collectionLog.setFollow(collection.getFollow());
-		collectionLog.setGeo(collection.getGeo());
-		collectionLog.setLangFilters(collection.getLangFilters());
-		collectionLog.setStartDate(collection.getStartDate());
-		collectionLog.setTrack(collection.getTrack());
-		collectionLog.setCollectionID(collectionId);
+		AidrCollectionLog collectionLog = new AidrCollectionLog(collection);
 		collectionLogRepository.save(collectionLog);
 
 		return updateCollection;
@@ -281,15 +259,7 @@ public class CollectionServiceImpl implements CollectionService {
 		
 		AidrCollection updateCollection = stopAidrFetcher(collection);
 
-		AidrCollectionLog collectionLog = new AidrCollectionLog();
-		collectionLog.setCount(collection.getCount());
-		collectionLog.setEndDate(collection.getEndDate());
-		collectionLog.setFollow(collection.getFollow());
-		collectionLog.setGeo(collection.getGeo());
-		collectionLog.setLangFilters(collection.getLangFilters());
-		collectionLog.setStartDate(collection.getStartDate());
-		collectionLog.setTrack(collection.getTrack());
-		collectionLog.setCollectionID(collectionId);
+		AidrCollectionLog collectionLog = new AidrCollectionLog(collection);
 		collectionLogRepository.save(collectionLog);
 
 		return updateCollection;
@@ -379,7 +349,6 @@ public class CollectionServiceImpl implements CollectionService {
 
 			String jsonResponse = clientResponse.readEntity(String.class);
 
-			logger.info("stopped collector, now status:");
 			collection = updateStatusCollection(jsonResponse, collection);
 
 			/**
@@ -661,7 +630,6 @@ public class CollectionServiceImpl implements CollectionService {
 
 	private List<User> getUserDataFromScreenName(String[] userNameList, String userName)	{		
 		if (userNameList != null) {
-			//System.out.println("input array size = " + userNameList.length);
 			try {
 				Twitter twitter = new TwitterFactory().getInstance();
 				twitter.setOAuthConsumer(consumerKey, consumerSecret);
@@ -680,7 +648,6 @@ public class CollectionServiceImpl implements CollectionService {
 
 	private List<User> getUserDataFromTwitterID(long[] userIdList, String userName)	{		
 		if (userIdList != null) {
-			//System.out.println("input array size = " + userIdList.length);
 			try {
 				Twitter twitter = new TwitterFactory().getInstance();
 				twitter.setOAuthConsumer(consumerKey, consumerSecret);

@@ -7,9 +7,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.DownloadType;
-import qa.qcri.aidr.manager.dto.*;
+import qa.qcri.aidr.manager.dto.AidrCollectionTotalDTO;
+import qa.qcri.aidr.manager.dto.TaggerCrisis;
+import qa.qcri.aidr.manager.dto.TaggerCrisisExist;
+import qa.qcri.aidr.manager.dto.TaggerCrisisType;
+import qa.qcri.aidr.manager.dto.ValueModel;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
@@ -20,12 +23,16 @@ import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 
-
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import static qa.qcri.aidr.manager.util.CollectionType.SMS;
 
@@ -34,7 +41,6 @@ import static qa.qcri.aidr.manager.util.CollectionType.SMS;
 public class CollectionController extends BaseController{
 
 	private Logger logger = Logger.getLogger(CollectionController.class);
-	private ErrorLog elog = new ErrorLog();
 
 	@Autowired
 	private CollectionService collectionService;
@@ -81,9 +87,9 @@ public class CollectionController extends BaseController{
 				collection.setGeo(null);
 				collection.setFollow(null);
 			}
-                        //
-                        if(collection.getGeoR().equalsIgnoreCase("null"))
-                            collection.setGeoR(null);
+			
+			if(collection.getGeoR().equalsIgnoreCase("null"))
+				collection.setGeoR(null);
 
 			collectionService.create(collection);
 
@@ -155,7 +161,7 @@ public class CollectionController extends BaseController{
 					AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
 					return getUIWrapper(dto, true);
 				} else {
-					String msg = "Attempting to trash collection " + collection.getCode() + " failed as collection not found!";
+					String msg = "Attempting to trash collection " + id + " failed as collection not found!";
 					logger.error(msg);
 					return getUIWrapper(false, msg);
 				}
@@ -283,15 +289,8 @@ public class CollectionController extends BaseController{
 				AidrCollection collectionAfterStop = collectionService.stopAidrFetcher(dbCollection);
 
 				//              save current state of the collection to collectionLog
-				AidrCollectionLog collectionLog = new AidrCollectionLog();
-				collectionLog.setCount(dbCollection.getCount());
+				AidrCollectionLog collectionLog = new AidrCollectionLog(dbCollection);
 				collectionLog.setEndDate(collectionAfterStop.getEndDate());
-				collectionLog.setFollow(dbCollection.getFollow());
-				collectionLog.setGeo(dbCollection.getGeo());
-				collectionLog.setLangFilters(dbCollection.getLangFilters());
-				collectionLog.setStartDate(dbCollection.getStartDate());
-				collectionLog.setTrack(dbCollection.getTrack());
-				collectionLog.setCollectionID(collectionId);
 				collectionLogService.create(collectionLog);
 
 				//              set some fields from old collection and update collection
@@ -542,7 +541,7 @@ public class CollectionController extends BaseController{
 			}
 		} catch (Exception e) {
 			logger.error("Exception in generating CSV download link for collection: " + code);
-			logger.error(elog.toStringException(e));
+			logger.error("exception", e);
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 	}

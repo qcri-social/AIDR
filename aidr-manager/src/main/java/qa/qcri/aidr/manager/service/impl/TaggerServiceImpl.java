@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
-
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
@@ -29,6 +28,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.util.*;
 
 //import com.sun.jersey.api.client.Client;
@@ -750,6 +750,13 @@ public class TaggerServiceImpl implements TaggerService {
 
 	@Override
 	public String getAssignableTask(Integer id, String userName) throws AidrException {
+		
+		Integer taggerUserId = isUserExistsByUsername(userName);
+		if (taggerUserId == null) {
+			TaggerUser taggerUser = new TaggerUser(userName, "normal");
+			taggerUserId = addNewUser(taggerUser);
+		}
+		
 		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 		try {
 			//            taskBufferNumber currently always 1
@@ -1045,6 +1052,29 @@ public class TaggerServiceImpl implements TaggerService {
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
 			//String jsonResponse = clientResponse.getEntity(String.class);
+			String jsonResponse = clientResponse.readEntity(String.class);
+
+			PingResponse pingResponse = objectMapper.readValue(jsonResponse, PingResponse.class);
+			if (pingResponse != null && "RUNNING".equals(pingResponse.getStatus())) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			logger.info("exception", e);
+			throw new AidrException("Error while Getting training data for Crisis and Model.", e);
+		}
+	}
+	
+	@Override
+	public boolean pingPersister() throws AidrException {
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		try {
+			WebTarget webResource = client.target(persisterMainUrl + "/persister/ping");
+
+			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
+
 			String jsonResponse = clientResponse.readEntity(String.class);
 
 			PingResponse pingResponse = objectMapper.readValue(jsonResponse, PingResponse.class);

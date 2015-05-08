@@ -24,6 +24,7 @@ Ext.define('ADMIN.health.controller.AdminHealthController', {
         this.pingService('collector');
         this.pingService('trainer');
         this.pingService('AIDROutput');
+        this.pingService('persister');
 
         this.mainComponent = component;
     },
@@ -56,6 +57,8 @@ Ext.define('ADMIN.health.controller.AdminHealthController', {
                     me.mainComponent.trainerStatus.setText(status, false);
                 } else if (service === 'AIDROutput') {
                     me.mainComponent.AIDROutputStatus.setText(status, false);
+                } else if (service === 'persister') {
+                    me.mainComponent.persisterStatus.setText(status, false);
                 }
             }
         });
