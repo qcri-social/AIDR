@@ -48,8 +48,16 @@ Second, applying a human-label to a message means reading the message. Once you 
 
 Third, AIDR works best when it understands when a message is NOT about something. For instance, if most messages are either about "infrastructure" or about "donations", then knowing that a message is about donations helps AIDR understand that the message is not about infrastructure. This cross-relationship is lost when multiple classifiers are used.
 
+# How is the "N/A" label interpreted?
+
+The N/A label is never used for learning, it is completely ignored by the classifier.
+
+This means that if you have a classifier with only two tags: "Yes", "N/A", then that classifier will never learn. Instead, you need to create a classifier with three tags: "Yes", "No", and "N/A".
+
+In other words, N/A does not mean negative label, it means absence of label.
+
 # How many tags should I use in each classifier?
 
-As a rule of thumb, you should have 3 to 10 tags in each classifier. If you have only two, you are most likely missing something (there are exceptions). If you have more than 10, then you are most likely including tags for which messages will be rarely found, meaning that those tags will never reach a good value of AUC.
+You should have at least 2 tags plus the N/A tag, for the reasons above. As a rule of thumb, you shouldn't have much more than 10 tags in each classifier. If you have more than 10, then you are most likely including tags for which messages will be rarely found, meaning that those tags will never reach a good value of AUC.
 
 It is best to experiment a little. Create a classifier with some tags, then tag some items. Once you are done, look at how many items you placed in each tag. Are there empty tags? Perhaps you can merge some tags into more general concepts. Are there tags that have all the messages? Perhaps you can divide them into more specific concepts.
