@@ -1,3 +1,5 @@
+See also: [[Understanding classifiers]].
+
 # Introduction
 
 Social media platforms are increasingly used to communicate crisis information when major disasters strike. Hence, the rise of Big (Crisis) Data. Humanitarian organizations, digital humanitarians and disaster-affected communities know that some of this user-generated content can increase situational awareness. To do this, relevant and actionable content must be identified in near real-time so that can be triangulated with other sources. By doing this, informed decisions can be made more quickly. However, finding potentially life-saving information in this growing stack of Big Crisis Data is like looking for the proverbial needle in a giant haystack. This is why AIDR was created.
