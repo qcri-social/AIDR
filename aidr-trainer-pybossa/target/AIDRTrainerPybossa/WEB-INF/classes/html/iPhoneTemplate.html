@@ -1,0 +1,326 @@
+<style type="text/css">
+
+    h1,h2,h3,h4,h5,h6 {font-family: 'Museo Slab', Arial, Helvetica, sans-serif;font-weight: normal;}
+    h1 {font-size: 24px; line-height: 26px;}
+    h2 {font-size: 18px; line-height: normal;}
+    h3 {font-size: 15px; line-height: normal;}
+    .alignright {float: right!important;}
+    .alignleft {float: left!important;}
+    .aligncenter {display: block; margin: 0 auto; clear: both}
+    .textright {text-align: right!important;}
+    .textleft {text-align: left!important;}
+    .clearleft {clear: left;}
+    .clearright {clear: right;}
+    .clearboth {clear: both;}
+    .smalltxt {font-size: 11px}
+
+    #iphone {
+        max-width: 100%;
+        background: url(../../../static/img/micromappers/textClicker/6XVZc9t.png) right top no-repeat;
+        width: 270px; /*880px*/
+        height: 404px; /*713px*/
+        margin-top: 0;
+        float:left;
+        padding:46px 279px 200px 160px;
+    }
+
+    #tweet {
+        max-width: 100%;
+        background-color: #fffafa;
+        width: 254px;
+        height: 160px;
+        float: left;
+        padding: 8px;
+    }
+
+
+    #tweet .tweettxt {
+        font-size: 17px;
+        line-height: 25px;
+    }
+
+    #tweet .dateTime {
+        clear: left;
+        font-size: 11px!important;
+        float: left;
+    }
+
+    #tweetDescription {
+        max-width: 100%;
+        background-color: #ddd;
+        width: 250px;
+        height: 272px;
+        float: left;
+        padding: 10px;
+    }
+
+    #tweetDescription {font-size: 17px!important; line-height: 24px;}
+
+    #tweetDescription ul {
+        font-size: 16px;
+        margin: 0;
+        padding: 5px 10px 10px 0px;
+    }
+    #tweetDescription ul li{
+        background: url(../../../static/img/micromappers/textClicker/xOlMdPx.png) left center no-repeat;
+        padding: 0 0 0 36px;
+        list-style: none;
+        line-height: 36px;}
+    #tweetDescription ul li:hover{
+        background: url(../../../static/img/micromappers/textClicker/vw6cJAr.png) left center no-repeat;
+        cursor: pointer;
+
+    }
+
+    #tweetDescription ul li:active{
+        background: url(../../../static/img/micromappers/textClicker/vw6cJAr.png) left center no-repeat;
+        cursor: pointer;
+        filter: hue-rotate(110deg);
+        -webkit-filter: hue-rotate(110deg);
+        -moz-filter: hue-rotate(110deg);
+        -o-filter: hue-rotate(110deg);
+        -ms-filter: hue-rotate(110deg);
+    }
+
+
+    #tweetDescription .radio {padding-left: 30px;}
+
+    #tweetDescription .radioBtn {
+        background: url(../../../static/img/micromappers/textClicker/xOlMdPx.png) left top no-repeat;
+        width: 24px;
+        height: 24px;
+        float: left;
+    }
+
+    #tweetDescription .radioBtn:hover {
+        background: url(../../../static/img/micromappers/textClicker/vw6cJAr.png) left top no-repeat;
+        width: 24px;
+        height: 24px;
+        float: left;
+    }
+
+    input {
+        max-width: 100%;
+    }
+    .btn {
+        margin: 0 6px 0 0;
+    }
+
+
+</style>
+
+
+<div class="row">
+    <!-- Success and Error Messages for the user -->
+    <!-- Question, task id, photo and action buttons for answering the question-->
+    <div class="span8 offset2" style="height:50px;">
+        <div id="success" class="alert alert-success" style="display:none;">
+
+            <div id="taskcompleted" class="alert alert-info" style="display:none;">
+
+                <strong>The task has been completed!</strong> Thanks a lot!</strong>
+            </div>
+        </div>
+
+        <div id="finish" class="alert alert-success" style="display:none;">
+            <strong>Congratulations!</strong> You have participated in all available tasks!</strong>
+            <br/>
+            <div class="alert-actions">
+                <a class="btn small" href="/">Go back</a>
+                <a class="btn small" href="/app">or, Check other applications</a>
+            </div>
+        </div>
+        <div id="error" class="alert alert-error" style="display:none;">
+            <a class="close">×</a>
+            <strong>Error!</strong> Something went wrong, please contact the site administrators</strong>
+        </div>
+        <div id="oldBrowser" class="alert alert-info" style="display:none;">
+            <a class="close">×</a>
+            <p><strong>Sorry!</strong> Your web browser does not support the application.<p>
+            <div class="alert-actions">
+                <a class="btn small" href="/app">Please, try with another application</a>
+            </div>
+        </div>
+    </div> <!-- End Success and Error Messages for the user -->
+</div>
+
+<!-- Throbber to show the progress while loading images -->
+
+<!-- UI for the task -->
+<div class="row skeleton" >
+    <div class="span12" style="margin-top: -50px;"><!-- Start of Question and Submission DIV (column) -->
+        <div class="row-fluid" >
+            <div class="span3">
+                <div style="text-align:center;margin-right:120px;padding-bottom: 10px;">
+                    <a class="btn btn-primary" href="../tutorial" ><i class="icon-question-sign"></i> Tutorial</a>
+                </div>
+
+                <div style="
+    margin-right: 4px;
+    padding: 7px;
+    background-color: #0FC5BA;
+    border: 1px solid #D5CECE;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px; border-radius: 4px; -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05); -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05); box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+">
+                    <input type="hidden" id="task-id">
+                    <p>Completed: <span id="done" class="label label-info"></span> out of
+                        <span id="total" class="label label-inverse"></span> Clicks</p>
+                    <p><span id="remain" class="label label-info"></span> Clicks remaining!</p>
+                    <p><b>Rank : <span id="rank"></span></b></p>
+                </div>
+            </div>
+            <div class="span9">
+
+                <div id="iphone">
+                    <div id="tweet">
+                        <div class="tweettxt" id="tweettext"></div>
+                    </div>
+
+                    <div id="tweetDescription">
+                        <p style="COLOR: #c95728;"><strong>What does this tweet refer to?</strong></p>
+                        <ul>TEMPLATE:FORLABELSFROMAIDR</ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+</div>
+
+<script>
+    var localtask;
+    var currentTaskItem;
+
+    // See http://stackoverflow.com/questions/37684/how-to-replace-plain-urls-with-links
+    // for more details on this function
+    function replaceURLWithHTMLLinks(text) {
+        var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        return text.replace(exp,"<a target='_blank' href='$1'>$1</a>");
+    }
+
+
+    function loadUserProgress() {
+        pybossa.userProgress('MM_TextClicker').done(function(data){
+
+            $("#total").text(data.total);
+            $("#done").text(data.done);
+
+            var remaining = data.total - data.done;
+            if(remaining > 100){}
+            $("#remain").text(remaining);
+
+            var completed = data.done;
+            var rankTitle = "Volunteer";
+
+            if(completed>10 && completed <= 29){
+                rankTitle = "Red Cross Intern";
+            }
+            else if(completed>30 && completed <= 59){
+                rankTitle = "New FEMA Recruit";
+            }
+            else if(completed>60 && completed <= 99){
+                rankTitle = "UN Humanitarian";
+            }
+            else if(completed>100 && completed <= 299){
+                rankTitle = "Senior UN Official";
+            }
+            else if(completed>300 && completed <= 499){
+                rankTitle = "UN Country Director";
+            }
+            else if(completed>500 && completed <= 999){
+                rankTitle = "Head of UN OCHA";
+            }
+            else if(completed>1000 ){
+                rankTitle = "UN Secretary General";
+            }
+
+            $("#rank").text(rankTitle);
+
+        });
+    }
+
+    // Function to submit and save the TaskRun in PyBossa
+    pybossa.taskLoaded(function(task, deferred) {
+        if ( !$.isEmptyObject(task) ) {
+            // $("#question h1").text(task.info.question); //date
+
+            task.answer = {
+                'category': null,
+                'tweet': task.info.tweet,
+                'tweetid': task.info.tweetid,
+                'taskid': task.id,
+                'timestamp': task.info.timestamp,
+                'author': task.info.author,
+                'lon': task.info.lon,
+                'lat': task.info.lat,
+                'url': task.info.url
+            };
+            deferred.resolve(task);
+        }
+        else {
+            deferred.resolve(task);
+        }
+    });
+
+
+
+    pybossa.presentTask(function(task, deferred) {
+        if ( !$.isEmptyObject(task) ) {
+            loadUserProgress();
+            currentTaskItem = task;
+            localtask = task.answer;
+////////////////////////////////////////////////////////////////////////////////////////////////
+            $("#task-id").text(task.id);
+            $("#tweettext").html("<p><img src=\"../../../static/img/tweet.png\" width=\"18px\"> "+replaceURLWithHTMLLinks(task.info.tweet) +"</p>");
+
+            $('#tweetDescription li').unbind("click").click(function(evt) {
+                // evt.preventDefault();
+                var answer = $(evt.currentTarget).text();
+                if (typeof answer != 'undefined' ) {
+                    console.log("answer is : " + answer);
+                    if(answer !=""){
+                        localtask.category = answer;
+                        var taskid = $("#task-id").text();
+                        //submitTask(localtask);
+                        pybossa.saveTask(taskid, localtask).done( function( data ) {
+                            // Uncoment next line for debugging purposes
+                            console.log("Answer saved!");
+                            // FadeIn & Out the success div feedback
+                            deferred.resolve();
+
+                        });
+                        $("#loading").fadeIn(500);
+
+
+                    }
+                }
+                else {
+                    $("#error").show();
+                }
+
+            });
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+            $("#loading").hide();
+        }
+        else {
+            $(".skeleton").hide();
+            $("#loading").hide();
+            $("#finish").fadeIn(500);
+        }
+    });
+
+    pybossa.run('TEMPLATE:SHORTNAME');
+
+</script>

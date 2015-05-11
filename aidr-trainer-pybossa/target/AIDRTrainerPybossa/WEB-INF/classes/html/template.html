@@ -1,0 +1,207 @@
+<style type="text/css">
+    label {
+        font-size:16px;
+    }
+    #map_canvas label {
+        width: auto;
+        display: inline;
+    }
+    #map_canvas img {
+        max-width: none;
+    }
+
+</style>
+
+<div class="row">
+    <!-- Success and Error Messages for the user -->
+    <!-- Question, task id, photo and action buttons for answering the question-->
+    <div class="span8 offset2" style="height:50px">
+        <div id="success" class="alert alert-success" style="display:none;">
+            <a class="close">×</a>
+            <strong>Well done!</strong> Your answer has been saved</strong>
+            <div id="taskcompleted" class="alert alert-info" style="display:none;">
+                <strong>The task has been completed!</strong> Thanks a lot!</strong>
+            </div>
+        </div>
+
+        <div id="finish" class="alert alert-success" style="display:none;">
+            <strong>Congratulations!</strong> You have participated in all available tasks!</strong>
+            <br/>
+            <div class="alert-actions">
+                <a class="btn small" href="/">Go back</a>
+                <a class="btn small" href="/app">or, Check other applications</a>
+            </div>
+        </div>
+        <div id="error" class="alert alert-error" style="display:none;">
+            <a class="close">×</a>
+            <strong>Error!</strong> Something went wrong, please contact the site administrators</strong>
+        </div>
+        <div id="oldBrowser" class="alert alert-info" style="display:none;">
+            <a class="close">×</a>
+            <p><strong>Sorry!</strong> Your web browser does not support the application.<p>
+            <div class="alert-actions">
+                <a class="btn small" href="/app">Please, try with another application</a>
+            </div>
+        </div>
+    </div> <!-- End Success and Error Messages for the user -->
+</div>
+
+<!-- Throbber to show the progress while loading images -->
+<div id="throbber"></div>
+
+<!-- UI for the task -->
+<div class="row skeleton">
+    <div id="question" class="span12">
+        <!--<h1>TEMPLATE:FORATTRIBUTEAIDR</h1>-->
+        <div class="row">
+            <div class="span8">
+                <div class="well well-small">
+                    <p id="tweettext" class="lead">Loading tweet...</p>
+                </div>
+                <div>TEMPLATE:FORLABELSFROMAIDR</div>
+
+                <div style="padding-top:5px;">
+                    <button class="btn btn-success" onclick="submitTask()"><i class="icon-thumbs-up"></i> Submit </button>
+                </div>
+            </div>
+            <div class="span3 well well-small">
+                <p>You are working now on task: <span id="task-id" class="label label-warning">#</span></p>
+                <p>You have completed: <span id="done" class="label label-info"></span> tweets from
+                    <span id="total" class="label label-inverse"></span></p>
+                <div class="progress progress-striped">
+                    <div id="progress" rel="tooltip" title="#" class="bar" style="width: 0%;"></div>
+                </div>
+                <span class="label label-warning"><i class="icon-bullhorn"></i> Tip</span> If you need help, check the
+                <div style="padding-top:5px; text-align:center;"><a class="btn btn-primary" href="../tutorial"><i class="icon-question-sign"></i> Tutorial</a>
+                </div>
+            </div>
+            <div id="searching" class="alert alert-info span2" style="display:none">
+                <strong>Searching...</strong>
+            </div>
+            <div id="searchingDone" class="alert alert-success span2" style="display:none">
+                <strong>Location found!</strong>
+            </div>
+            <div id="searchingError" class="alert alert-warning span2" style="display:none">
+                <strong>Oops! Location not found</strong> Please add the marker yourself
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/pybossa/pybossa.js" type="text/javascript"></script>
+<script src="/static/js/throbber/throbber.js" type="text/javascript"></script>
+<script>
+    var localtask;
+    var currentTaskItem;
+
+    function replaceURLWithHTMLLinks(text) {
+        var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+        return text.replace(exp,"<a target='_blank' href='$1'>$1</a>");
+    }
+
+
+    function loadTask( task_id ) {
+        var t = $.ajax({
+            url: '/api/task/'+task_id,
+            dataType: 'json'
+        });
+        t.done( function (task) {
+            if ( !$.isEmptyObject(task) ) {
+                if (task.state=='completed') {
+                    $('#answer').hide();
+                    $('#disqus_thread').hide();
+                    $('#taskcompleted').show();
+                }
+                currentTaskItem = task;
+                loadUserProgress();
+                $("#task-id").text(task.id);
+                $("#tweettext").html(replaceURLWithHTMLLinks(task.info.text));
+
+                task.answer = {
+                    'crisisID':task.info.crisisID,
+                    'documentID':task.info.documentID,
+                    'category': null,
+                    'text': task.info.text,
+                    'tweetid': task.info.tweetid,
+                    'date': task.info.date,
+                    'username': task.info.username,
+                    'userid': task.info.userid,
+                    'aidrID': task.info.aidrID
+                };
+                localtask = task.answer;
+            }
+            else {
+                $(".skeleton").hide();
+                $("#finish").fadeIn();
+            }
+        });
+    }
+
+    function loadUserProgress() {
+        pybossa.userProgress('TEMPLATE:SHORTNAME').done(function(data){
+            var pct = Math.round((data.done*100)/data.total);
+            $("#progress").css("width", pct.toString() +"%");
+            $("#progress").attr("title", pct.toString() + "% completed!");
+            $("#progress").tooltip({'placement': 'bottom'});
+            $("#total").text(data.total);
+            $("#done").text(data.done);
+        });
+    }
+
+    // Function to submit and save the TaskRun in PyBossa
+    function submitTask() {
+        // Get the task-id
+        var taskid = $("#task-id").text();
+        // Get classification:
+        var answer = getCheckedBoxes();
+
+        if(answer != null){
+            localtask.category = answer.join();
+        }
+        else{
+            localtask.category = 'N/A';
+        }
+        // Save the task
+        pybossa.saveTask(taskid, localtask).done( function( data ) {
+            $("#success").fadeIn();
+            setTimeout(function() { $("#success").fadeOut() }, 2000);
+            window.location.pathname = "/app/TEMPLATE:SHORTNAME/newtask";
+        });
+    }
+
+    function getCheckedBoxes() {
+        var checkboxes = document.getElementsByName('nominalLabel');
+        var checkboxesChecked = [];
+        // loop over them all
+        for (var i=0; i<checkboxes.length; i++) {
+            // And stick the checked ones onto an array...
+            if (checkboxes[i].checked) {
+                checkboxesChecked.push(checkboxes[i].value);
+            }
+        }
+        // Return the array if it is non-empty, or null
+        return checkboxesChecked.length > 0 ? checkboxesChecked : null;
+    }
+
+
+    // Check if the user is loading directly a task or requesting a new one
+    var taskId = pybossa.getCurrentTaskId(window.location.pathname);
+
+    if (taskId){
+        // The user is loading directly a task, so load then input data
+        loadTask(taskId);
+    }
+    else {
+        // The user is requesting a new task, so get a new one
+        pybossa.newTask("TEMPLATE:SHORTNAME").done( function( data ) {
+
+            if ( !$.isEmptyObject(data.task) ) {
+                window.location.pathname = "/app/TEMPLATE:SHORTNAME/task/" + data.task.id;
+            }
+            else {
+                $(".skeleton").hide();
+                $("#finish").fadeIn();
+            }
+        });
+    }
+</script>

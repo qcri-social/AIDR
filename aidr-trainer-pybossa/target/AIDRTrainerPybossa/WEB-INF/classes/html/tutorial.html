@@ -1,0 +1,51 @@
+<div class="row">
+    <div class="span12">
+        <div id="modal" class="modal hide fade">
+            <div class="modal-header">
+                <h3>TEMPLATE:NAME Tutorial</h3>
+            </div>
+            <div id="0" class="modal-body" style="display:none">
+                <p><strong>Hi!</strong> Many thanks for volunteering your time as a digital humanitarian. Disaster responders need to know the extent of the damage and resulting needs. This critical information is often shared on Twitter in real time, which is where you come in.
+               </p> 
+            </div>
+            <div id="1" class="modal-body" style="display:none">
+                <p>Being a Digital Humanitarian Volunteer is as easy and fast as a click of the mouse. This app will simply load a tweet and ask you to click on which category best describes the tweet.</p>
+
+                <p>While a tweet may fall in more than one category, simply click on the one/more category that best describes the tweet.</p>
+                <p>If you want to keep track of your progress, make sure to login.</p>
+            </div>
+            <div class="modal-footer">
+                <a id="prevBtn" href="#" onclick="showStep('prev')" class="btn">Previous</a>
+                <a id="nextBtn" href="#" onclick="showStep('next')" class="btn btn-success">Next</a>
+                <a id="startContrib" href="../TEMPLATE:SHORTNAME/newtask" class="btn btn-primary" style="display:none"><i class="icon-thumbs-up"></i> Start clicking!</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var step = -1;
+    function showStep(action) {
+        $("#" + step).hide();
+        if (action == 'next') {
+            step = step + 1;
+        }
+        if (action == 'prev') {
+            step = step - 1;
+        }
+        if (step == 0) {
+            $("#prevBtn").hide();
+        }
+        else {
+            $("#prevBtn").show();
+        }
+
+        if (step == 1 ) {
+            $("#nextBtn").hide();
+            $("#startContrib").show();
+        }
+        $("#" + step).show();
+    }
+
+    showStep('next');
+    $("#modal").modal('show');
+</script>
