@@ -138,7 +138,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             labelWidth: 240,
             name: 'follow',
             flex: 1,
-            emptyText: 'e.g., 47423744, 53324456 (max 5000)'
+            emptyText: 'e.g. cnnbrk, bbcbreaking, fema, lastquake'
         });
 
         this.durationDescription = Ext.create('Ext.form.Label', {
