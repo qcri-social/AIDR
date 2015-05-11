@@ -8,6 +8,9 @@ import qa.qcri.aidr.predict.common.DocumentType;
 /**
  * Structured representation of a single Tweet.
  * 
+ * WARNING: tagger, collector, and persister have a "Tweet" class.
+ *          They should all be merged and moved to aidr-common.
+ * 
  * @author jrogstadius
  */
 public class Tweet extends Document implements Serializable {
