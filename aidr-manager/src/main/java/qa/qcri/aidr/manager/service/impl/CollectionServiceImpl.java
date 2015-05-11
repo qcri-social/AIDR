@@ -399,7 +399,8 @@ public class CollectionServiceImpl implements CollectionService {
 				}
 				
 				if (CollectionStatus.FATAL_ERROR.equals(CollectionStatus.getByStatus(response.getStatusCode()))) {
-						collection = collectionRepository.stop(collection.getId());						
+					collection.setStatus(CollectionStatus.FATAL_ERROR);
+					collection = collectionRepository.stop(collection.getId());						
 						this.stopFatalError(collection.getId());
 					}
 			}
