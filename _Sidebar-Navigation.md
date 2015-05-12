@@ -24,6 +24,7 @@
  * [[Manager API]]
 * [[Collector]]
  * [[Collector API]]
+ * [[Collector Tester]]
 * [[Tagger]]
  * [[Tagger API]]
 * [[Trainer]]
