@@ -2,7 +2,7 @@
 
 The following names are deprecated, they should be replaced by newer names:
 
-* _crisis_ should be **collection**
+* _crisis_ should be **collection**, e.g. crisisCode should be collectionCode.
 * _predict_ should be called **tagger**
 * _fetcher_ should be called **collector**
 * _fetchManager_ or **fetcherManager** should be called **manager**
