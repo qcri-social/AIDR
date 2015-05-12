@@ -33,7 +33,8 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
             emptyText: 'e.g. donationtype',
             maxLength: 64,
             maxLengthText: 'The maximum length for this field is 64 ',
-            maskRe: /[^ ]/
+            maskRe: /[A-za-z0-9_]/,
+    	    stripCharsRe: /[^A-za-z0-9_]/
         });
 
         this.nameE = Ext.create('Ext.form.field.Text', {
@@ -61,7 +62,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
             emptyText: 'e.g. shoesdonation',
             maxLength: 64,
             maxLengthText: 'The maximum length for this field is 64 ',
-            maskRe: /[^ ]/
+            maskRe: /[^ ,.]/
         });
 
         this.nameLabelE = Ext.create('Ext.form.field.Text', {
