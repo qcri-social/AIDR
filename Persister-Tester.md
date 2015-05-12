@@ -10,7 +10,7 @@ The persister tester has the following command-line options:
 
 ```
 --config=FILE
---nitems=NUMBER (default 100)
+--nitems=NUMBER (default 1000)
 ```
 
 The _config_ is the name of the persister configuration (or of a centralized configuration) to read properties that the tester needs to know to perform the testing: the URL of the persister's API, the name of the REDIS queues from which the persister reads, the name of the directory in which the persister writes, the base URL from which the generated CSV files need to be downloaded.
