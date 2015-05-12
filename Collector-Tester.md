@@ -1,34 +1,32 @@
 # Collector Tester v1
 
-
-**Command line**
+## Command line
 
 The collector tester has the following command-line options:
 
 ```
 --config=FILE
 --collection-task=FILE
---time=SECONDS
+--time=SECONDS (default 60)
 --quiet
 ```
 
 The _config_ is the name of the collector configuration (or of a centralized configuration) to read properties such as the URL of the collector's API, and the name of the REDIS queue where the collector will write.
 
-The _collection-task_ is a file containing a CollectionTask object serialized in .properties, XML, or JSON format. A simple collection-task.properties file is included which describes the following test:
+The _collection-task_ is a file containing a CollectionTask object serialized in .properties, XML, or JSON format. A simple collection-task.properties file is included which describes the following test (search for tweets in English containing the keyword "uk", which are many):
 
-`collectionCode = testcollection`
-
-`keywords = hello`
-
-`languageFilter = en`
-
-`persist = false`
+```
+collectionCode = testcollection
+keywords = uk
+languageFilter = en
+persist = false
+```
 
 The _time_ is the number of seconds during which the test has to be done.
 
 The _quiet_ option suppresses the print of the tweets. All other messages are printed even in _quiet_ mode.
 
-**Execution**
+## Execution
 
 The collector tester should perform the following steps:
 
@@ -44,6 +42,6 @@ The collector tester should perform the following steps:
 1. Print the number of tweets received so far, and exit with an error code if this number is zero.
 1. Exit with normal exit code otherwise.
 
-**Signal handling**
+## Signal handling
 
 On interrupt by the user, the collector tester should attempt to call the collector's `/stop` method and exit.
