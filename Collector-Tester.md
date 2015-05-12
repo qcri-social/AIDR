@@ -1,4 +1,4 @@
-# Collector Tester v1
+# Collector Tester
 
 ## Command line
 
