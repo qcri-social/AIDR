@@ -39,7 +39,7 @@ The persister test should generate a collection name as `YYYYMMDDhhssmm-persiste
 
 1. After phase B is completed, call `taggerPersister/genCSV`, if it doesn't return OK, FAIL.
 1. Download the corresponding CSV file, if it is not downloadable, FAIL.
-1. Count the number of rows in this CSV file, if it doesn't match _ntimes_, FAIL.
+1. Count the number of rows in this CSV file, if it doesn't match _nitems_, FAIL.
 1. If this point is reached, exit with success code.
 
 FAIL means printing a clear and informative message describing the condition and exiting with code 1 (non success).
