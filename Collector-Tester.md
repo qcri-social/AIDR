@@ -44,6 +44,4 @@ The collector tester should perform the following steps:
 
 FAIL means printing an error message describing the condition and exiting with code 1 (non success).
 
-## Signal handling
-
-On interrupt by the user, the collector tester should attempt to call the collector's `/stop` method and exit.
+On interrupt by the user, the collector tester should attempt to call the collector's `/stop` method and exit with non-success code.
