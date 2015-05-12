@@ -40,9 +40,9 @@ The collector tester should perform the following steps:
 1. Call the collector's `/stop` method; if the return code is not OK, FAIL.
 1. Call the collector's  `/status` method, if the status returned is different from "not running", FAIL.
 1. Print the number of tweets received so far, if the number is zero, FAIL.
-1. Exit with normal exit code otherwise.
+1. Exit with exit code 0 (success) otherwise.
 
-FAIL means printing an error message describing the condition and exiting with a non-successful error code.
+FAIL means printing an error message describing the condition and exiting with code 1 (non success).
 
 ## Signal handling
 
