@@ -1,4 +1,4 @@
-# Collector Tester
+# Collector Tester (in development as of May 2015)
 
 The collector tester is a program that can be used after deploying the collector, to test the collector independently of the other modules.
 
