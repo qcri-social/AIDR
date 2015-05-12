@@ -32,7 +32,7 @@ The collector tester should perform the following steps:
 
 1. Read the _collection-task_
 1. Subscribe to the REDIS queue where the collector writes data. This thread will print to the screen the received tweets (just the timestamp and first 40 characters of the text), unless the _quiet_ option is specified. If subscription to REDIS fails, FAIL.
-1. Call the collector's `/start` method to start a collection; if the return code is not OK, exit with an error code.
+1. Call the collector's `/start` method to start a collection; if the return code is not OK, FAIL.
 1. Wait for 1/2 of the _time_
 1. Call the collector's  `/status` method to get the status of the collection.
 1. If the status returned is not OK, FAIL.
