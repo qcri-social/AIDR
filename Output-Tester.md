@@ -23,7 +23,7 @@ The output test should generate a collection name as `YYYYMMDDhhssmm-output-test
 
 1. Write to REDIS _nitems_ items in the channel expected by output, if it fails, FAIL.
 1. Call the `/crisis/fetch/channel/{crisisCode}` API, if it fails, FAIL.
-1. Read from that API up to MAX_MESSAGES_COUNT tweets, if it reads less, FAIL.
+1. Read from that API the returned tweets, if the number of messages is different from MAX_MESSAGES_COUNT (i.e. if it is greater than or less than MAX_MESSAGES_COUNT), FAIL.
 1. Compare all the tweets received with the latest MAX_MESSAGES_COUNT tweets sent. If any of them is different, FAIL.
 1. If this point is reached, exit with success code.
 
