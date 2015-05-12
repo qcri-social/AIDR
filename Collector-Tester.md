@@ -20,7 +20,7 @@ The _config_ is the name of the collector configuration (or of a centralized con
 The _collection-task_ is a file containing a CollectionTask object serialized in .properties, XML, or JSON format. A simple collection-task.properties file is included which describes the following test (listen for tweets in English containing the keyword "uk", which are many):
 
 ```
-collectionCode = testcollection
+collectionCode = collector_tester
 keywords = uk
 languageFilter = en
 persist = false
