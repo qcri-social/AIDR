@@ -69,7 +69,7 @@ QCRI side:
 
 **Target: mid-July.**
 
-The objective of this release is to ensure users are able to view and download their collections correctly. This means completing all features necessary for people to download their collections, even the ones where there is no tagger.
+The objective of this release is to ensure users are able to view and download their collections correctly. This means completing all features necessary for people to download their collections, even the ones that are very large, and even the ones where there is no tagger.
 
 Metacube side:
 * view/download complete
