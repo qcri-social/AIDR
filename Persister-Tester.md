@@ -21,7 +21,7 @@ The _nitems_ is the number of items that should be written to the persister.
 
 The persister test should generate a collection name as `YYYYMMDDhhssmm-persister-test`. It should also generate synthetic Twitter messages with a fixed text but different tweetid.
 
-Phase A: test the collector persister.
+**Phase A**: test the collector persister.
 
 1. Call the `collectorPersister/start` API, if it doesn't return OK, FAIL.
 1. Write to REDIS _nitems_/2 items, if writing is not possible, FAIL.
@@ -33,9 +33,9 @@ Phase A: test the collector persister.
 1. Count the number of items in the file, if it doesn't match _nitems_, FAIL.
 1. If this point is reached, exit with success code.
 
-Phase B: test the taggerPersister, doing the same operations as above but against the `taggerPersister/` APIs.
+**Phase B**: test the taggerPersister, doing the same operations as above but against the `taggerPersister/` APIs.
 
-Phase C: test a simple CSV generation routine.
+**Phase C**: test a simple CSV generation routine.
 
 1. After phase B is completed, call `taggerPersister/genCSV`, if it doesn't return OK, FAIL.
 1. Download the corresponding CSV file, if it is not downloadable, FAIL.
