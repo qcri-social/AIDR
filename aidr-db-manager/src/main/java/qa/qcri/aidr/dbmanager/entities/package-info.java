@@ -1,4 +1,4 @@
 /**
  * Database entities.
  */
-package qa.qcri.aidr.common.code;
+package qa.qcri.aidr.dbmanager.entities;

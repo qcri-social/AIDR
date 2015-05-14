@@ -1,4 +1,4 @@
 /**
- * Local and remote EJBs.
+ * EJBs.
  */
-package qa.qcri.aidr.common.code;
+package qa.qcri.aidr.dbmanager.ejb;

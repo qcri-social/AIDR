@@ -1,4 +1,4 @@
 /**
  * Exceptions thrown by the dbmanager.
  */
-package qa.qcri.aidr.common.code;
+package qa.qcri.aidr.dbmanager.exception;
