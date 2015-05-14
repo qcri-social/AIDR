@@ -35,6 +35,8 @@
  * [[Persister Tester]]
 * [[Output]]
  * [[Output API]]
+ * [[Output Buffered]]
+ * [[Output Streaming]]
  * [[Output Tester]]
 * [[Analytics]]
  * [[Analytics API]]
