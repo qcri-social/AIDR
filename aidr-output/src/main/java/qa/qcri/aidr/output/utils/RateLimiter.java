@@ -4,6 +4,14 @@ import java.util.Iterator;
 import java.util.TreeMap;
 
 
+/**
+ * This class reproduces functionality from the LoadShedder in aidr-common, should be deprecated.
+ * 
+ * TODO: remove this class, replace by LoadShedder.
+ * 
+ * @author ksingha
+ *
+ */
 public class RateLimiter {
 
 	public static final double MAX_INTERVAL_VAL = 0.8;		// [0,1]
