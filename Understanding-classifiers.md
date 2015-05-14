@@ -61,3 +61,7 @@ In other words, N/A does not mean negative label, it means absence of label.
 You should have at least 2 tags plus the N/A tag, for the reasons above. As a rule of thumb, you shouldn't have much more than 10 tags in each classifier. If you have more than 10, then you are most likely including tags for which messages will be rarely found, meaning that those tags will never reach a good value of AUC.
 
 It is best to experiment a little. Create a classifier with some tags, then tag some items. Once you are done, look at how many items you placed in each tag. Are there empty tags? Perhaps you can merge some tags into more general concepts. Are there tags that have all the messages? Perhaps you can divide them into more specific concepts.
+
+# How often should retraining be conducted during the use?
+
+(To be answered by ChaTo)
