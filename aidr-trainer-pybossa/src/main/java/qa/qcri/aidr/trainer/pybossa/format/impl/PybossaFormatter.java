@@ -4,9 +4,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
 import qa.qcri.aidr.trainer.pybossa.entity.*;
 import qa.qcri.aidr.trainer.pybossa.service.ClientAppResponseService;
 import qa.qcri.aidr.trainer.pybossa.service.ReportTemplateService;
+import qa.qcri.aidr.trainer.pybossa.service.TranslationService;
 import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
 import qa.qcri.aidr.trainer.pybossa.util.DataFormatValidator;
 import qa.qcri.aidr.trainer.pybossa.util.DateTimeConverter;
@@ -29,6 +31,9 @@ import java.util.List;
 public class PybossaFormatter {
    // protected static Logger logger = Logger.getLogger("service");
     public PybossaFormatter(){}
+    private static final String ANSWER_NOT_ENGLISH = "Not English";
+    @Autowired
+    TranslationService translationService;
 
     public String assmeblePybossaAppCreationForm(String name, String shortName, String description) throws Exception{
 
@@ -69,7 +74,7 @@ public class PybossaFormatter {
         return appID;
     }
 
-    public String getTaskLogDateHistory(List<TaskLog> taskLogList, String pybossaResult, JSONParser parser, ClientApp clientApp, ClientAppAnswer clientAppAnswer) throws Exception{
+    public String getTaskLogDateHistory(Long taskQueueId, List<TaskLog> taskLogList, String pybossaResult, JSONParser parser, ClientApp clientApp, ClientAppAnswer clientAppAnswer) throws Exception{
         //JSONObject aModified = new JSONObject();
         JSONArray outJson = new JSONArray();
         JSONObject dateJSON = new JSONObject();
@@ -99,7 +104,7 @@ public class PybossaFormatter {
 
             oneFeatureJsonObj.put("dateHistory",dateJSON) ;
 
-            String finalAnswer = this.getAnswerResponse(clientApp,pybossaResult,parser,clientAppAnswer);
+            String finalAnswer = this.getAnswerResponse(clientApp,pybossaResult,parser,clientAppAnswer, taskQueueId);
             if(finalAnswer != null) {
                 Long attributeID = clientApp.getNominalAttributeID();
                 JSONObject infoJson =  this.buildInfoJson( (JSONObject)oneFeatureJsonObj.get("info"), finalAnswer, attributeID );
@@ -132,23 +137,32 @@ public class PybossaFormatter {
         return obj;
     }
 
-    public String getAnswerResponse(ClientApp clientApp, String pybossaResult, JSONParser parser, ClientAppAnswer clientAppAnswer) throws Exception{
+    public String getAnswerResponse(ClientApp clientApp, String pybossaResult, JSONParser parser, ClientAppAnswer clientAppAnswer, Long taskQueueID) throws Exception{
         JSONObject responseJSON = new JSONObject();
 
         String[] questions = getQuestion( clientAppAnswer,  parser);
         int[] responses = new int[questions.length];
+        int[] translationResponses = new int[questions.length];
 
         JSONArray array = (JSONArray) parser.parse(pybossaResult) ;
 
         Iterator itr= array.iterator();
         String answer = null;
+        int cutoffSize = getCutOffNumber(array.size(), clientApp.getTaskRunsPerTask(), clientAppAnswer)  ;
 
         while(itr.hasNext()){
             JSONObject featureJsonObj = (JSONObject)itr.next();
+            JSONObject info = (JSONObject)featureJsonObj.get("info");
+
             answer = this.getUserAnswer(featureJsonObj, clientApp);
             for(int i=0; i < questions.length; i++ ){
                 if(questions[i].trim().equalsIgnoreCase(answer.trim())){
                     responses[i] = responses[i] + 1;
+                }else {
+                    if (answer.equals(ANSWER_NOT_ENGLISH)) {
+                        translationResponses[i]++;
+                        handleTranslationItem(taskQueueID,translationResponses[i], answer, info, clientAppAnswer, cutoffSize);
+                    }
                 }
             }
         }
@@ -165,6 +179,36 @@ public class PybossaFormatter {
 
         return  finalAnswer;
     }
+
+
+    private void handleTranslationItem(Long taskQueueID,int responseCount, String answer, JSONObject info, ClientAppAnswer clientAppAnswer, int cutOffSize){
+        if(responseCount >= cutOffSize){
+            String tweetID = (String)info.get("tweetid");
+            String tweet = (String)info.get("tweet");
+            String author= (String)info.get("author");
+            String lat= (String)info.get("lat");
+            String lng= (String)info.get("lon");
+            String url= (String)info.get("url");
+            String created = (String)info.get("timestamp");
+            Long taskID = (Long)info.get("taskid");
+
+            if(taskQueueID!=null && taskID!=null && tweetID!=null && (tweet!=null && !tweet.isEmpty())){
+                createTaskTranslation(taskID, tweetID, tweet, author, lat, lng, url, taskQueueID,created, clientAppAnswer);            }
+        }
+    }
+
+    private void createTaskTranslation(Long taskID, String tweetID, String tweet, String author, String lat, String lon, String url, Long taskQueueID, String created, ClientAppAnswer clientAppAnswer){
+
+        if (translationService.findByTaskId(taskID) != null) {
+            return;
+        }
+
+        TaskTranslation translation = new TaskTranslation(taskID, clientAppAnswer.getClientAppID().toString(), tweetID, author, lat, lon, url, taskQueueID, tweet, TaskTranslation.STATUS_NEW);
+        translationService.createTranslation(translation);
+
+
+    }
+
 
     public TaskQueueResponse getTaskQueueResponse(ClientApp clientApp, String pybossaResult, JSONParser parser, Long taskQueueID, ClientAppAnswer clientAppAnswer, ReportTemplateService rtpService) throws Exception{
         if(clientAppAnswer == null){

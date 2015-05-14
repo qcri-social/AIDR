@@ -65,6 +65,9 @@ public class PybossaWorker implements ClientAppRunWorker {
     private JSONParser parser = new JSONParser();
     private PybossaFormatter pybossaFormatter = new PybossaFormatter();
 
+    @Autowired
+    private TranslationService translationService;
+
     public void setClassVariable(Client theClient) throws Exception{
         boolean resetVariable = false;
 
@@ -107,8 +110,15 @@ public class PybossaWorker implements ClientAppRunWorker {
             ClientApp clientApp = (ClientApp)itr.next();
             setClassVariable(clientApp.getClient());
             processTaskRunPerClientAppImport(clientApp);
+            //added translation processing into the process
+            processTranslations(clientApp);
         }
 
+    }
+
+
+    private void processTranslations(ClientApp clientApp) throws Exception {
+       translationService.processTranslations(clientApp);
     }
 
     @Override
@@ -339,7 +349,7 @@ public class PybossaWorker implements ClientAppRunWorker {
         if(DataFormatValidator.isValidateJson(importResult)){
             List<TaskLog> taskLogList = taskLogService.getTaskLog(taskQueue.getTaskQueueID());
 
-            pybossaResult = pybossaFormatter.getTaskLogDateHistory(taskLogList,importResult, parser, clientApp, clientAppAnswer);
+            pybossaResult = pybossaFormatter.getTaskLogDateHistory(taskQueue.getTaskQueueID(), taskLogList,importResult, parser, clientApp, clientAppAnswer);
             int responseCode =  StatusCodeType.HTTP_OK;
             if(pybossaResult != null){
                 responseCode = pybossaCommunicator.sendPost(pybossaResult, AIDR_TASK_ANSWER_URL);
