@@ -5,8 +5,8 @@
 package qa.qcri.aidr.collector.beans;
 
 /**
- *
  * @author Imran
+ * Defines AIDR specific properties used to inject into incoming SMS so the other modules understands what is an SMS item about.
  */
 public class AIDR {
     

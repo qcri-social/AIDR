@@ -13,8 +13,8 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
 /**
- *
- * @author Muhammad Imran
+ * @author Imran
+ * This class is used to send response to the clients. 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "responseWrapper", propOrder = {
