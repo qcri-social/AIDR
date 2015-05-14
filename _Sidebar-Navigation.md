@@ -31,7 +31,6 @@
 * [[Trainer]]
  * [[Trainer API]]
  * [[PyBossa Trainer]]
- * [[Trainer Tester]]
 * [[Persister]]
  * [[Persister API]]
  * [[Persister Tester]]
