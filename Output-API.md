@@ -10,7 +10,7 @@ Method GetBufferedAIDRData.getBufferedAIDRDataPostFilter() - load latest tweets
 
 ---
 
-# Additional API
+# Additional API (possibly obsolete)
 
 The following are additional elements of the API and/or obsolete documentation prior to 2015-04-28. These should be integrated into the documentation above or moved to the Javadoc-based documentation.
 
