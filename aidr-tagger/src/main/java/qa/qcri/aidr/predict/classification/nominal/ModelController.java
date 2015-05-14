@@ -91,7 +91,7 @@ public class ModelController extends PipelineProcess {
 
         Calendar d = Calendar.getInstance();
         nowTime = d.getTimeInMillis();
-        if (nowTime - lastDocCountSaveTime < 10 || classifiedDocCount.isEmpty()) {
+        if (nowTime - lastDocCountSaveTime < 60000 || classifiedDocCount.isEmpty()) {
             return;
         }
 

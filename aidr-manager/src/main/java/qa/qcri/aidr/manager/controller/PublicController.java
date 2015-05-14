@@ -123,14 +123,6 @@ public class PublicController extends BaseController{
             //              save current state of the collection to collectionLog
             AidrCollectionLog collectionLog = new AidrCollectionLog(dbCollection);
             collectionLog.setEndDate(collectionLogEndData);
-            /*collectionLog.setCount(dbCollection.getCount());
-            collectionLog.setEndDate(collectionLogEndData);
-            collectionLog.setFollow(dbCollection.getFollow());
-            collectionLog.setGeo(dbCollection.getGeo());
-            collectionLog.setLangFilters(dbCollection.getLangFilters());
-            collectionLog.setStartDate(dbCollection.getStartDate());
-            collectionLog.setTrack(dbCollection.getTrack());
-            collectionLog.setCollectionID((int)collectionId);*/
             collectionLogService.create(collectionLog);
 
             dbCollection.setGeo(geoString);
@@ -172,7 +164,6 @@ public class PublicController extends BaseController{
 	@ResponseBody
 	public Map<String,Object>  findAll(@RequestParam Integer start, @RequestParam Integer limit,  @RequestParam Enum statusValue,
 			@DefaultValue("no") @QueryParam("trashed") String trashed) throws Exception {
-		//logger.info("public findall is called");
 		start = (start != null) ? start : 0;
 		limit = (limit != null) ? limit : 50;
 
@@ -194,7 +185,6 @@ public class PublicController extends BaseController{
 	@ResponseBody
 	public Map<String,Object>  findAllRunning(@RequestParam Integer start, @RequestParam Integer limit,
 			@DefaultValue("no") @QueryParam("trashed") String trashed) throws Exception {
-		// logger.info("public findAllRunning is called");
 		start = (start != null) ? start : 0;
 		limit = (limit != null) ? limit : 50;
 		Integer count = 0;
@@ -229,20 +219,16 @@ public class PublicController extends BaseController{
 	@ResponseBody
 	public Map<String,Object>  findAllRunningWithNoOutput(@RequestParam Integer start, @RequestParam Integer limit,
 			@DefaultValue("no") @QueryParam("trashed") String trashed) throws Exception {
-		// logger.info("public findAllRunning is called");
 		start = (start != null) ? start : 0;
 		limit = (limit != null) ? limit : 50;
 		Integer count = 0;
 		List<AidrCollectionTotalDTO> dtoList = new ArrayList<AidrCollectionTotalDTO>();
 
 		try {
-			//    logger.info("*************************************************  CollectionStatus.RUNNING ****************************");
 			List<AidrCollection> data = collectionService.findAllForPublic(start, limit, CollectionStatus.RUNNING);
-			//     logger.info("data size : " + data.size());
 			//count = collectionService.getPublicCollectionsCount(CollectionStatus.RUNNING);
 			for (AidrCollection collection : data) {
 				String taggingOutPut = taggerService.loadLatestTweetsWithCount(collection.getCode(), 1);
-				//System.out.println("taggingOutPut : " + taggingOutPut);
 				if(JsonDataValidator.isEmptySON(taggingOutPut))  {
 					AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, false);
 					dtoList.add(dto);
@@ -264,20 +250,16 @@ public class PublicController extends BaseController{
 	@ResponseBody
 	public Map<String,Object>  findAllStop(@RequestParam Integer start, @RequestParam Integer limit,
 			@DefaultValue("no") @QueryParam("trashed") String trashed) throws Exception {
-		// logger.info("public findAllStop is called");
 		start = (start != null) ? start : 0;
 		limit = (limit != null) ? limit : 50;
 		Integer count = 0;
 		List<AidrCollectionTotalDTO> dtoList = new ArrayList<AidrCollectionTotalDTO>();
 		try {
-			// logger.info("*************************************************  CollectionStatus.STOPPED ****************************");
 			List<AidrCollection> data = collectionService.findAllForPublic(start, limit, CollectionStatus.STOPPED);
 			count = collectionService.getPublicCollectionsCount(CollectionStatus.STOPPED);
-			//  logger.info("data size : " + data.size());
 			boolean hasTagggerOutput;
 			for (AidrCollection collection : data) {
 				String taggingOutPut = taggerService.loadLatestTweetsWithCount(collection.getCode(), 1);
-				//System.out.println("taggingOutPut : " + taggingOutPut);
 				if(JsonDataValidator.isEmptySON(taggingOutPut))  {
 					hasTagggerOutput = false;
 				}
@@ -295,8 +277,6 @@ public class PublicController extends BaseController{
 			logger.error(elog.toStringException(e));
 			return getUIWrapper(false);
 		}
-
-		//return getUIWrapper(false);
 	}
 
 	@RequestMapping(value = "/findById.action", method = RequestMethod.GET)
@@ -484,7 +464,6 @@ public class PublicController extends BaseController{
 
 	private String getCrisisTypeName(int typeID){
 		String name = "Not specified";
-		// System.out.println("getCrisisTypeName: " + typeID);
 		try {
 			List<TaggerCrisisType> crisisTypes = taggerService.getAllCrisisTypes();
 

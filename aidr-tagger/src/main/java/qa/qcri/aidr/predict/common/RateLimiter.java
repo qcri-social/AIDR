@@ -2,6 +2,13 @@ package qa.qcri.aidr.predict.common;
 
 import java.util.LinkedList;
 
+/**
+ * Rate limits an actions.
+ * 
+ * TODO: REMOVE and replace with the LoadShedder in aidr-common, which provides the same functionality.
+ * 
+ * @author jrogstadius
+ */
 public class RateLimiter {
     LinkedList<Long> timestamps = new LinkedList<Long>();
     public int maxItemsPerMinute = 100;		

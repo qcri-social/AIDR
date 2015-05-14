@@ -89,7 +89,7 @@ public class LoadShedder {
 	 * Creates a load shedder that will allow the processing of up to maxLimit items in a period of
 	 * intervalMinutes.
 	 * 
-	 * @param intervalMinutes duration of the interval in minutes (double)
+	 * @param intervalMinutes duration of the interval in minutes or fractions of minutes (double)
 	 * @param maxLimit maximum number of items in an interval
 	 * @param warnOnLimit if true, then log a warning message when rate limit is exceeded
 	 * @param name the name of this load shedder, used for logging purposes.

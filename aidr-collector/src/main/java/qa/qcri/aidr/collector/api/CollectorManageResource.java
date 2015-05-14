@@ -32,9 +32,9 @@ import qa.qcri.aidr.common.logging.ErrorLog;
 import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
 
 /**
- * REST Web Service
- *
  * @author Imran
+ * Provides RESTFul APIs to various management-related services.
+ * 
  */
 @Path("/manage")
 public class CollectorManageResource {

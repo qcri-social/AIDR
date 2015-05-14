@@ -1,20 +1,16 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package qa.qcri.aidr.utils;
 
 import java.io.Serializable;
 
-import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- *
+ * Represents a Tweet
+ * 
+ * WARNING: tagger, collector, and persister have a "Tweet" class.
+ *          They should all be merged and moved to aidr-common.
+ * 
  * @author Imran
  */
 @SuppressWarnings("serial")
