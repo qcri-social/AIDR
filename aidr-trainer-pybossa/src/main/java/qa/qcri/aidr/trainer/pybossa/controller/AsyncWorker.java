@@ -1,19 +1,15 @@
 package qa.qcri.aidr.trainer.pybossa.controller;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import qa.qcri.aidr.trainer.pybossa.service.ClientAppCreateWorker;
-import qa.qcri.aidr.trainer.pybossa.service.ClientAppRunWorker;
-import qa.qcri.aidr.trainer.pybossa.service.MicroMapperWorker;
 import qa.qcri.aidr.trainer.pybossa.service.Worker;
-
-
 
 /**
  * An asynchronous worker
+ * 
+ * TODO: delete this deprecated class.
+ * 
  */
 @Deprecated
 @Component("asyncWorker")

@@ -1,18 +1,20 @@
 package qa.qcri.aidr.trainer.api.util;
 
+import java.util.Iterator;
+
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
 import qa.qcri.aidr.common.logging.ErrorLog;
-import java.util.Iterator;
 
 /**
- * Created with IntelliJ IDEA.
- * User: jlucas
- * Date: 6/28/14
- * Time: 2:07 PM
- * To change this template use File | Settings | File Templates.
+ * Utility class for handling GIS.
+ * 
+ * TODO: Move this class out of here, this class probably does not belong to the trainer.
+ * 
+ * @author jlucas
  */
 public class GISUtil {
     //String urlBase = "http://nominatim.openstreetmap.org/search/";
