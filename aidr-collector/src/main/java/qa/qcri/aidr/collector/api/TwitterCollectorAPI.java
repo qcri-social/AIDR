@@ -31,9 +31,9 @@ import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
 import qa.qcri.aidr.collector.utils.GenericCache;
 
 /**
- * REST Web Service
- *
  * @author Imran
+ * RESTFul APIs to start and stop Twitter collections.
+ * TODO: remove non-API related operations such as startPersister to other appropriate classes.
  */
 @Path("/twitter")
 public class TwitterCollectorAPI {
