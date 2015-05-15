@@ -62,11 +62,12 @@
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
-				<excludes>
-					<exclude>log4j.properties</exclude>
-				</excludes>
+				<filtering>true</filtering>
 			</resource>
 		</resources>
+		<filters>
+			<filter>${basedir}/../profiles/${build.profile.id}/config.properties</filter>
+		</filters>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -84,16 +85,27 @@
 					<configuration>
 						<source>1.7</source>
 						<target>1.7</target>
-
-						<excludes>
-							<exclude>**/log4j.properties</exclude>
-						</excludes>
-
 					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
+
+	<!-- Profile configuration this should match the one in the master POM -->
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<build.profile.id>dev</build.profile.id>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<build.profile.id>prod</build.profile.id>
+			</properties>
+		</profile>
+	</profiles>
 
 
 

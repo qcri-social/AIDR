@@ -12,7 +12,7 @@
 	<url>http://aidr.qcri.org/</url>
 
 	<properties>
-		<org.springframework.version>3.2.1.RELEASE</org.springframework.version>
+		<org.springframework.version>4.0.0.RELEASE</org.springframework.version>
 	</properties>
 
 	<dependencies>
@@ -165,8 +165,32 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-
 		</plugins>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<filters>
+			<filter>${basedir}/../profiles/${build.profile.id}/config.properties</filter>
+		</filters>
 	</build>
+
+	<!-- Profile configuration this should match the one in the master POM -->
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<build.profile.id>dev</build.profile.id>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<build.profile.id>prod</build.profile.id>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>

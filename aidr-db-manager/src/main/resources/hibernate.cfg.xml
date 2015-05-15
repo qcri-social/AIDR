@@ -4,10 +4,10 @@
 		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
     <session-factory name="mysql-aidr_predict-db">
-        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="hibernate.connection.password">admin</property>
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/aidr_predict?useUnicode=true</property>
-        <property name="hibernate.connection.username">root</property>
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.connection.driver_class">${SQL_DRIVER}</property>
+        <property name="hibernate.connection.password">${TAGGER_DB_PASSWORD}</property>
+        <property name="hibernate.connection.url">jdbc:${SQL_SERVER_TYPE}://${SQL_SERVER_HOST}:${SQL_SERVER_PORT}/${TAGGER_DB_NAME}?useUnicode=true</property>
+        <property name="hibernate.connection.username">${TAGGER_DB_USERNAME}</property>
+        <property name="hibernate.dialect">${HIBERNATE_DIALECT}</property>
     </session-factory>
 </hibernate-configuration>

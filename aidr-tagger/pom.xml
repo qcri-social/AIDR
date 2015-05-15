@@ -21,6 +21,7 @@
 					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -62,7 +63,7 @@
 			</resource>
 		</resources>
 		<filters>
-			<filter>${basedir}/../aidr-common/src/main/resources/common_config.properties</filter>
+			<filter>${basedir}/../profiles/${build.profile.id}/config.properties</filter>
 		</filters>
 	</build>
 	<dependencies>
@@ -233,4 +234,21 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<resource.dir>${basedir}/src/main/resources</resource.dir>
 	</properties>
+
+	<!-- Profile configuration this should match the one in the master POM -->
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<build.profile.id>dev</build.profile.id>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<build.profile.id>prod</build.profile.id>
+			</properties>
+		</profile>
+	</profiles>
+
 </project>

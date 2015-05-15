@@ -18,33 +18,43 @@
 	<mvc:view-controller path="/protected" view-name="protected" />
 
 	<jee:remote-slsb id="TaskManagerRemote"
-		jndi-name="java:global/AIDRTaskManager/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote"
+		jndi-name="${REMOTE_TASK_MANAGER_REMOTE_JNDI_NAME}"
 		business-interface="qa.qcri.aidr.task.ejb.TaskManagerRemote" />
 
 	<jee:remote-slsb id="DocumentNominalLabelResourceFacade"
-		jndi-name="java:global/AIDRDBManager/aidr-db-manager-1.0/DocumentNominalLabelResourceFacadeImp!qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentNominalLabelResourceFacade"
+		jndi-name="${REMOTE_DB_MANAGER_DOCUMENT_NOMINAL_LABEL_RESOURCE_FACADE_JNDI_NAME}"
 		business-interface="qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentNominalLabelResourceFacade" />
 
 	<jee:remote-slsb id="NominalLabelResourceFacade"
-		jndi-name="java:global/AIDRDBManager/aidr-db-manager-1.0/NominalLabelResourceFacadeImp!qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade"
+		jndi-name="${REMOTE_DB_MANAGER_NOMINAL_LABEL_RESOURCE_FACADE_JNDI_NAME}"
 		business-interface="qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade" />
 
 	<jee:remote-slsb id="DocumentResourceFacade"
-		jndi-name="java:global/AIDRDBManager/aidr-db-manager-1.0/DocumentResourceFacadeImp!qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade"
+		jndi-name="${REMOTE_DB_MANAGER_DOCUMENT_RESOURCE_FACADE_JNDI_NAME}"
 		business-interface="qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade" />
 
 	<jee:remote-slsb id="CrisisResourceFacade"
-		jndi-name="java:global/AIDRDBManager/aidr-db-manager-1.0/CrisisResourceFacadeImp!qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade"
+		jndi-name="${REMOTE_DB_MANAGER_CRISIS_RESOURCE_FACADE_JNDI_NAME}"
 		business-interface="qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade" />
 
 	<jee:remote-slsb id="TaskAssignmentResourceFacade"
-		jndi-name="java:global/AIDRDBManager/aidr-db-manager-1.0/TaskAssignmentResourceFacadeImp!qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskAssignmentResourceFacade"
+		jndi-name="${REMOTE_DB_MANAGER_TASK_ASSIGNMENT_RESOURCE_FACADE_JNDI_NAME}"
 		business-interface="qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskAssignmentResourceFacade" />
-		
+
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/WEB-INF/jsp/" />
 		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:config.properties</value>
+				<value>classpath:database.properties</value>
+			</list>
+		</property>
 	</bean>
 
 </beans>

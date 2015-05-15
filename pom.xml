@@ -7,6 +7,79 @@
 	<version>1.0</version>
 	<packaging>pom</packaging>
     
+    <!-- Profile configuration -->
+    <profiles>
+        <!-- The configuration of the development profile -->
+        <profile>
+            <id>dev</id>
+            <!-- The development profile is active by default -->
+            <properties>
+                <!--
+                 Specifies the build.profile.id property that must be equal than the name of
+                 the directory that contains the profile specific configuration file.
+                 Because the name of the directory that contains the configuration file of the
+                 development profile is dev, we must set the value of the build.profile.id
+                 property to dev.
+                 -->
+                <build.profile.id>dev</build.profile.id>
+            </properties>
+        </profile>
+        <!-- The configuration of the production profile -->
+        <profile>
+            <id>prod</id>
+            <properties>
+                <!--
+                 Specifies the build.profile.id property that must be equal than the name of
+                 the directory that contains the profile specific configuration file.
+                 Because the name of the directory that contains the configuration file of the
+                 production profile is prod, we must set the value of the build.profile.id
+                 property to prod.
+                 -->
+                <build.profile.id>prod</build.profile.id>
+            </properties>
+        </profile>
+    </profiles>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                    <compilerArguments>
+                        <endorseddirs>${endorsed.dir}</endorseddirs>
+                    </compilerArguments>
+                </configuration>
+            </plugin>
+        </plugins>
+        
+        <resources>
+        <!--
+         Placeholders that are found from the files located in the configured resource
+         directories are replaced with the property values found from the profile
+         specific configuration file.
+         -->
+            <resource>
+                <filtering>true</filtering>
+                <directory>${basedir}/*/src/main/resources</directory>
+            </resource>
+        </resources>
+    
+        <filters>
+        <!--
+         Ensures that the config.properties file is always loaded from the
+         configuration directory of the active Maven profile.
+         
+         -->
+            <filter>profiles/${build.profile.id}/config.properties</filter>
+        </filters>
+
+    </build>
+    
+    
     <modules>
         <module>aidr-common</module>
         <module>aidr-db-manager</module>
