@@ -10,7 +10,7 @@ AIDR is a platform to collect and classify in real-time a large amount of user-g
 
 # Where do I start?
 
-If you need to use AIDR, browse the [Operator's Manual](AIDR Operator's manual). Also remember to join the aidr-users@googlegroups.com mailing list.
+If you need to use AIDR, browse the [Operator's Manual](http://en.flossmanuals.net/aidr/). Also remember to join the aidr-users@googlegroups.com mailing list.
 
 If you need to install AIDR, go to the [[Installation Instructions]].
 
