@@ -1,4 +1,4 @@
-package qa.qcri.aidr.persister.api;
+/*package qa.qcri.aidr.persister.api;
 
 import static org.junit.Assert.*;
 
@@ -41,3 +41,4 @@ public class Persister4CollectionAPITest {
 		return persister4CollectionAPI.stopPersister(collectionCode);
 	}
 }
+*/

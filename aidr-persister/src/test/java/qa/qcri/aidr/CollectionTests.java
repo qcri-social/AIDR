@@ -1,7 +1,7 @@
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
- */
+ 
 package qa.qcri.aidr;
 
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -45,4 +45,4 @@ public class CollectionTests {
         Assert.assertEquals("Stop collection successfully", "Persistance of [" + COLLECTION_CODE + "] has been stopped.", message);
     }
 
-}
+}*/
