@@ -1,4 +1,4 @@
-Welcome to the AIDR wiki! 
+Welcome to the AIDR wiki! It contains information for AIDR developers and system administrators. If you want to use AIDR, see the Operator's Manual in FLOSS Manuals: http://en.flossmanuals.net/aidr
 
 Use the **Navigation** sidebar on the right to browse through the documentation, and collapse the "Pages" sidebar for easier navigation.
 
