@@ -2,7 +2,6 @@
 
 * **[[Home]]**
 * [Operator's manual](AIDR Operator's Manual)
-* [[Understanding classifiers]]
 * [Public API documentation](API documentation)
 
 ## System administrators
