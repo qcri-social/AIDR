@@ -20,20 +20,13 @@ public class SchedulerService {
 	@Qualifier("syncWorker")
 	private Worker syncWorker;
 
-    //@Autowired
-   // @Qualifier("asyncWorker")
-    //private Worker asyncWorker;
-	
     //set 5 sec. for testing. update to 5min later
     //"0 0/5 * * * ?"
 	@Scheduled(cron="0/3 * * * * ?")
 	public void doSchedule() {
-	//	logger.debug("Start schedule");
 
         syncWorker.work();
-       // asyncWorker.work();
 
-	//	logger.debug("End schedule");
 	}
 	
 
