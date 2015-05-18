@@ -64,7 +64,7 @@ public class UITemplateServiceImpl implements UITemplateService {
 
 
             String jsonResponse = clientResponse.readEntity(String.class);
-            System.out.println("jsonResponse: " + jsonResponse);
+            //System.out.println("jsonResponse: " + jsonResponse);
             UITemplateRequest response = objectMapper.readValue(jsonResponse, UITemplateRequest.class);
             if (response != null) {
 

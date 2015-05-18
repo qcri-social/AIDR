@@ -282,7 +282,7 @@ public class CollectionServiceImpl implements CollectionService {
 						.post(Entity.json(objectMapper.writeValueAsString(fetcherRequest)), Response.class);
 
 				System.out.println("ObjectMapper: " + objectMapper.writeValueAsString(fetcherRequest));
-				System.out.println("Response = " + clientResponse);
+				//System.out.println("Response = " + clientResponse);
 
 				String jsonResponse = clientResponse.readEntity(String.class);
 
@@ -401,7 +401,7 @@ public class CollectionServiceImpl implements CollectionService {
 				if (CollectionStatus.FATAL_ERROR.equals(CollectionStatus.getByStatus(response.getStatusCode()))) {
 					collection.setStatus(CollectionStatus.FATAL_ERROR);
 					collection = collectionRepository.stop(collection.getId());						
-						this.stopFatalError(collection.getId());
+					this.stopFatalError(collection.getId());
 					}
 			}
 		}

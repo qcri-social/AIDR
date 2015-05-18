@@ -88,21 +88,43 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
         });
 
         this.dateField = Ext.create('Ext.form.field.Date', {
-            padding: '0 0 0 15',
-            hidden: true,
-            format: 'Y-m-d',
-            width: 150,
-            listeners: {
-                select: function (cmp, value) {
-                    me.onDateFieldSelect(cmp, value);
-                }
-            }
+        	padding: '0 0 0 15',
+        	hidden: true,
+        	format: 'Y-m-d',
+        	width: 150,
+        	listeners: {
+        		select: function (cmp, value) {
+        			me.onDateFieldSelect(cmp, value);
+        		}
+        	}
+        });
+
+        //hidden field to save date and time together
+        this.dateTime = Ext.create('Ext.form.field.Date',{
+        	format: 'Y-m-d h:i A',
+        	hidden     : true
         });
 
         this.dateFieldHint = Ext.create('Ext.form.Label', {
             padding: '3 0 0 15',
             html: 'Date as YYYY-MM-DD',
             hidden: true
+        });
+        
+        this.timeField = Ext.create('Ext.form.field.Time', {
+        	padding: '0 0 0 15',
+        	hidden: true,
+        	format: 'h:i A',
+        	width: 150,
+        	increment: 1,
+        	value: Ext.Date.parse('12:01 AM', 'h:i A'),
+        	minValue: Ext.Date.parse('12:01 AM', 'h:i A'),
+        	maxValue: Ext.Date.parse('11:59 PM', 'h:i A'),            
+        	listeners: {
+        		select: function (cmp, value) {
+                    me.onTimeFieldSelect(cmp, value);
+                }
+            }
         });
 
         this.confidenceStore = Ext.create('Ext.data.Store', {
@@ -215,6 +237,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
             this.dateTypeCombo,
             this.dateField,
             this.dateFieldHint,
+            this.timeField,
             this.classifierTypeCombo,
             this.labelCombo,
             this.confidenceCombo,
@@ -243,6 +266,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
             if (this.dateTypeCombo.getValue()){
                 this.dateField.show();
                 this.dateFieldHint.show();
+                this.timeField.show();
             }
             this.classifierTypeCombo.hide();
             this.confidenceCombo.hide();
@@ -251,6 +275,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
             this.dateTypeCombo.hide();
             this.dateField.hide();
             this.dateFieldHint.hide();
+            this.timeField.hide();
             this.classifierTypeCombo.setValue();
             this.classifierTypeCombo.show();
             this.confidenceCombo.hide();
@@ -272,6 +297,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
         if (!val){
             this.dateField.hide();
             this.dateFieldHint.hide();
+            this.timeField.hide();
             this.markNotValid();
             return false;
         }
@@ -280,6 +306,11 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
 
         this.dateField.show();
         this.dateFieldHint.show();
+        this.timeField.show();
+	if(val == 'is_after')
+            this.timeField.setValue('11:59 PM');
+	else
+            this.timeField.setValue('12:01 AM');
 
         this.suspendLayout = false;
         this.forceComponentLayout();
@@ -349,6 +380,16 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
         this.onChange();
         return true;
     },
+    
+    onTimeFieldSelect: function(cmp, value){     
+	if (!value){
+            this.markNotValid();
+            return false;
+        }
+
+        this.onChange();
+        return true;
+    },
 
     getValue: function(){
         var values = {};
@@ -359,16 +400,21 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
         }
 
         if (queryType == 'date_query'){
-            values.queryType = queryType;
-            values.comparator = this.dateTypeCombo.getValue();
-            values.timestamp = Ext.Date.format(this.dateField.getValue(), 'U');
+        	values.queryType = queryType;
+        	values.comparator = this.dateTypeCombo.getValue();
+        	
+        	//concatenate date and time values and convert to timestamp
+        	var d = Ext.Date.format(this.dateField.getValue(),'Y-m-d');
+        	var t = Ext.Date.format(this.timeField.getValue(),'h:i A');  
+        	this.dateTime.setValue(d + ' ' + t);
+        	values.timestamp = Ext.Date.format(this.dateTime.getValue(), 'U');
         } else {
-            values.queryType = 'classifier_query';
-            values.classifier_code = queryType;
-            values.comparator = this.classifierTypeCombo.getValue();
-            if (values.comparator == 'has_confidence'){
-                values.label_code = null;
-            } else {
+        	values.queryType = 'classifier_query';
+        	values.classifier_code = queryType;
+        	values.comparator = this.classifierTypeCombo.getValue();
+        	if (values.comparator == 'has_confidence'){
+        		values.label_code = null;
+        	} else {
                 values.label_code = this.labelCombo.getValue();
             }
             values.min_confidence = this.confidenceCombo.getValue();
