@@ -184,6 +184,8 @@ public class Tweet  implements Document, Serializable{
 		return null;
 	}
 	
+	/*
+	 * HumanLabeledDocumentDTO class is not meant to be part of aidr-persister
 	public Tweet toTweetFromLabeledDoc(HumanLabeledDocumentDTO doc) {
 		if (doc != null) {
 			try {
@@ -197,4 +199,5 @@ public class Tweet  implements Document, Serializable{
 			return null;
 		}
   	}
+  	*/
 }

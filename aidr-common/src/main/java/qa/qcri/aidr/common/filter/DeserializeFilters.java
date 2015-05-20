@@ -1,9 +1,7 @@
-package qa.qcri.aidr.persister.filter;
+package qa.qcri.aidr.common.filter;
 
 
 import org.apache.log4j.Logger;
-
-import qa.qcri.aidr.common.logging.ErrorLog;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,8 +12,7 @@ import com.google.gson.JsonParser;
 
 public class DeserializeFilters {
 	
-	private static Logger logger = Logger.getLogger(DeserializeFilters.class.getName());
-	private static ErrorLog elog = new ErrorLog();
+	private static Logger logger = Logger.getLogger(DeserializeFilters.class);
 	
 	public DeserializeFilters() {}
 	
@@ -23,14 +20,12 @@ public class DeserializeFilters {
 		Gson jsonObject = new GsonBuilder().serializeNulls().disableHtmlEscaping()
 											.serializeSpecialFloatingPointValues()	
 											.create();
-		
-		//System.out.println("queryString = " + queryString);
 		JsonParser parser = new JsonParser();
 		JsonObject obj = (JsonObject) parser.parse(queryString);
 		JsonArray constraintsArray = null;
 		if (obj.has("constraints")) {					// should always be true
-			constraintsArray = obj.has("constraints") ? obj.get("constraints").getAsJsonArray() : new JsonArray();
-			//System.out.println("constraints: " + constraintsArray);
+			constraintsArray = obj.get("constraints") != null ? obj.get("constraints").getAsJsonArray() : new JsonArray();
+			//logger.debug("constraints: " + constraintsArray);
 		}
 		JsonQueryList queryList = new JsonQueryList();
 		if (constraintsArray.size() > 0) {
@@ -42,12 +37,14 @@ public class DeserializeFilters {
 					queryList.createConstraint(constraint);
 				} catch (Exception e) {
 					logger.error("Error in deserializing received constraints");
-					logger.error(elog.toStringException(e));
+					logger.error(e);
 					return null;
 				}
 			}
+			logger.debug("Output: deserialized queryList: " + queryList);
 			return queryList;
 		}
+		logger.debug("Output: deserialized queryList: null" );
 		return null;
 	}
 }

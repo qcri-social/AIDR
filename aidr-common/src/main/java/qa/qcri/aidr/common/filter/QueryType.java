@@ -1,4 +1,4 @@
-package qa.qcri.aidr.output.filter;
+package qa.qcri.aidr.common.filter;
 
 public enum QueryType {
 	date_query,

@@ -23,7 +23,13 @@
 			<version>4.10</version>
 			<scope>test</scope>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.3</version>
+		</dependency>
+
 		<!-- Jackson Dependencies -->
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>

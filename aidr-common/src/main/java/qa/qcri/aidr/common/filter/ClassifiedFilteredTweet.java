@@ -1,4 +1,4 @@
-package qa.qcri.aidr.persister.filter;
+package qa.qcri.aidr.common.filter;
 
 
 import java.io.Serializable;
@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -17,11 +18,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import qa.qcri.aidr.persister.filter.NominalLabel;
+
 
 @SuppressWarnings("serial")
 @XmlRootElement(name="ClassifiedFilteredTweet")
-@Deprecated
 public class ClassifiedFilteredTweet implements Serializable {
 
 	private static Logger logger = Logger.getLogger(ClassifiedFilteredTweet.class);
@@ -30,7 +30,7 @@ public class ClassifiedFilteredTweet implements Serializable {
 	private String text = null;
 	private String crisis_code = null;
 	private String crisis_name = null;
-	private ArrayList<NominalLabel> nominal_labels;
+	private List<NominalLabel> nominal_labels;
 
 	private String id = null;
 	private String screen_name = null;
@@ -133,7 +133,6 @@ public class ClassifiedFilteredTweet implements Serializable {
 					for (int i = 0;i < nominalLabels.size();i++) {
 						NominalLabel nLabel = new NominalLabel();
 						JsonObject temp = (JsonObject) nominalLabels.get(i);
-						
 						nLabel.attribute_code = temp.has("attribute_code") ? temp.get("attribute_code").getAsString() : null;
 						nLabel.label_code = temp.has("label_code") ? temp.get("label_code").getAsString() : null;
 						nLabel.confidence = temp.has("confidence") ? temp.get("confidence").getAsFloat() : 0;
@@ -209,14 +208,14 @@ public class ClassifiedFilteredTweet implements Serializable {
 		crisis_name = crisisName;
 	}
 
-	public ArrayList<NominalLabel> getNominalLabels() {
-		ArrayList<NominalLabel> arr = new ArrayList<NominalLabel>();
+	public List<NominalLabel> getNominalLabels() {
+		List<NominalLabel> arr = new ArrayList<NominalLabel>();
 		if (nominal_labels != null) 
 			arr.addAll(nominal_labels);
 		return arr;
 	}
 
-	public void setNominalLabels(ArrayList<NominalLabel> nLabels) {
+	public void setNominalLabels(List<NominalLabel> nLabels) {
 		if (nominal_labels != null) {
 			nominal_labels.addAll(nLabels);
 		}

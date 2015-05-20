@@ -46,7 +46,7 @@ import org.supercsv.exception.SuperCsvCellProcessorException;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.SystemProperties;
-import qa.qcri.aidr.persister.filter.NominalLabel;
+import qa.qcri.aidr.common.filter.NominalLabel;
 import qa.qcri.aidr.utils.Tweet;
 
 import org.apache.commons.lang.StringUtils;

@@ -1,6 +1,5 @@
-package qa.qcri.aidr.output.filter;
+package qa.qcri.aidr.common.filter;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -10,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import qa.qcri.aidr.common.code.DateFormatConfig;
-import qa.qcri.aidr.output.filter.ComparatorType;
+
 
 @SuppressWarnings("serial")
 @XmlRootElement(name="DateQueryJsonObject")
