@@ -1,13 +1,13 @@
 package qa.qcri.aidr.collector.collectors;
 
-import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.logging.Logger;
 
 import javax.json.JsonObject;
 
+import qa.qcri.aidr.collector.utils.CollectorConfigurator;
+import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -16,7 +16,9 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 public class JedisPublisher implements Closeable, Publisher {
 
 	private static Logger logger = Logger.getLogger(JedisPublisher.class.getName());
-
+	
+	private static CollectorConfigurator configProperties=CollectorConfigurator.getInstance();
+	
 	private static JedisPool jedisPool;
 	static {
 		JedisPoolConfig poolConfig = new JedisPoolConfig();
@@ -27,7 +29,7 @@ public class JedisPublisher implements Closeable, Publisher {
 		poolConfig.setTestOnReturn(true);
 		poolConfig.setTestWhileIdle(true);
 		poolConfig.setTimeBetweenEvictionRunsMillis(30000);
-		jedisPool = new JedisPool(poolConfig, getProperty("REDIS_HOST"), 6379, 0);
+		jedisPool = new JedisPool(poolConfig, configProperties.getProperty(CollectorConfigurationProperty.REDIS_HOST), 6379, 0);
 	}
 
 	public static JedisPublisher newInstance() {

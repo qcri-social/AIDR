@@ -37,19 +37,19 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.MediaType;
 
+import qa.qcri.aidr.common.code.Configurator;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.redis.LoadShedder;
 //import qa.qcri.aidr.output.utils.AIDROutputConfig;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
+import qa.qcri.aidr.output.utils.OutputConfigurationProperty;
+import qa.qcri.aidr.output.utils.OutputConfigurator;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.apache.log4j.Logger;
-
-import static qa.qcri.aidr.output.utils.ConfigProperties.getProperty;
-
 
 public class ChannelBufferManager {
 
@@ -101,14 +101,14 @@ public class ChannelBufferManager {
 	public ChannelBufferManager() {}
 
 	public void initiateChannelBufferManager(final String channelRegEx) {
+		Configurator configurator = OutputConfigurator.getInstance();
 		redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>();
+		redisHost = configurator.getProperty(OutputConfigurationProperty.REDIS_HOST);
+		redisPort = Integer.parseInt(configurator.getProperty(OutputConfigurationProperty.REDIS_PORT));
+		PERSISTER_LOAD_CHECK_INTERVAL_MINUTES = Integer.parseInt(configurator.getProperty(OutputConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES));
+		PERSISTER_LOAD_LIMIT = Integer.parseInt(configurator.getProperty(OutputConfigurationProperty.PERSISTER_LOAD_LIMIT));
 
-		redisHost = getProperty("host");
-		redisPort = Integer.parseInt(getProperty("port"));
-		PERSISTER_LOAD_CHECK_INTERVAL_MINUTES = Integer.parseInt(getProperty("PERSISTER_LOAD_CHECK_INTERVAL_MINUTES"));
-		PERSISTER_LOAD_LIMIT = Integer.parseInt(getProperty("PERSISTER_LOAD_LIMIT"));
-
-		managerMainUrl = getProperty("managerUrl");
+		managerMainUrl = configurator.getProperty(OutputConfigurationProperty.MANAGER_URL);
 		logger.info("Initializing channel buffer manager.");
 		System.out.println("[ChannelBufferManager] Initializing channel buffer manager with values: <" + redisHost + ", " + redisPort 
 				+ ", " + PERSISTER_LOAD_CHECK_INTERVAL_MINUTES + ", " + PERSISTER_LOAD_LIMIT + ", " + managerMainUrl + ">");

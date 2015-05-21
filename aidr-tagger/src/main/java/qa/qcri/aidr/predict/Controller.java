@@ -7,11 +7,12 @@ import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.predict.classification.LabelingTaskWriter;
 import qa.qcri.aidr.predict.classification.nominal.ModelController;
+import qa.qcri.aidr.predict.common.TaggerConfigurationProperty;
+import qa.qcri.aidr.predict.common.TaggerConfigurator;
 import qa.qcri.aidr.predict.communication.*;
 import qa.qcri.aidr.predict.featureextraction.FeatureExtractor;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.redis.LoadShedder;
-import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 /**
  * Controller is the main entrypoint of AIDR. It starts all subprocesses. In the
@@ -32,11 +33,16 @@ public class Controller  {
     
     static ArrayList<Thread> workers = new ArrayList<Thread>();
 
- // Debugging
+    // Debugging
  	private static Logger logger = Logger.getLogger(Controller.class);
  	private static ErrorLog elog = new ErrorLog();
     
     public static void main(String[] args) {
+    	
+		// Initializing the properties enumeration.
+		TaggerConfigurator.getInstance().initProperties(
+				TaggerConfigurator.configLoadFileName,
+				TaggerConfigurationProperty.values());
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
@@ -57,26 +63,42 @@ public class Controller  {
         if (null == AidrFetcherJsonInputProcessor.redisLoadShedder) {
         	AidrFetcherJsonInputProcessor.redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
         }
-        aidrInputProcessor.inputQueueName = getProperty("redis_input_channel");
-        aidrInputProcessor.outputQueueName = getProperty("redis_for_extraction_queue");
-        
+		aidrInputProcessor.inputQueueName = TaggerConfigurator.getInstance()
+				.getProperty(TaggerConfigurationProperty.REDIS_INPUT_CHANNEL);
+		aidrInputProcessor.outputQueueName = TaggerConfigurator.getInstance()
+				.getProperty(
+						TaggerConfigurationProperty.REDIS_FOR_EXTRACTION_QUEUE);
 
         featureExtractor = new FeatureExtractor();
-        featureExtractor.inputQueueName = getProperty("redis_for_extraction_queue")
-                .getBytes();
-        featureExtractor.outputQueueName = getProperty("redis_for_classification_queue")
-                .getBytes();
+		featureExtractor.inputQueueName = TaggerConfigurator
+				.getInstance()
+				.getProperty(
+						TaggerConfigurationProperty.REDIS_FOR_EXTRACTION_QUEUE)
+				.getBytes();
+		featureExtractor.outputQueueName = TaggerConfigurator
+				.getInstance()
+				.getProperty(
+						TaggerConfigurationProperty.REDIS_FOR_CLASSIFICATION_QUEUE)
+				.getBytes();
 
         modelController = new ModelController();
-        modelController.inputQueueName = getProperty("redis_for_classification_queue")
-                .getBytes();
-        modelController.outputQueueName = getProperty("redis_for_output_queue")
-                .getBytes();
+		modelController.inputQueueName = TaggerConfigurator
+				.getInstance()
+				.getProperty(
+						TaggerConfigurationProperty.REDIS_FOR_CLASSIFICATION_QUEUE)
+				.getBytes();
+		modelController.outputQueueName = TaggerConfigurator
+				.getInstance()
+				.getProperty(TaggerConfigurationProperty.REDIS_FOR_OUTPUT_QUEUE)
+				.getBytes();
         modelController.initialize();
 
         labelingTaskWriter = new LabelingTaskWriter();
-        labelingTaskWriter.inputQueueName = getProperty("redis_label_task_write_queue")
-                .getBytes();
+		labelingTaskWriter.inputQueueName = TaggerConfigurator
+				.getInstance()
+				.getProperty(
+						TaggerConfigurationProperty.REDIS_LABEL_TASK_WRITE_QUEUE)
+				.getBytes();
 
         startProcess(aidrInputProcessor);
         startProcess(httpInputManager);

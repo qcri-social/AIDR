@@ -1,7 +1,5 @@
 package qa.qcri.aidr.collector.collectors;
 
-import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
-
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +14,8 @@ import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.java7.Predicate;
+import qa.qcri.aidr.collector.utils.CollectorConfigurator;
+import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
 import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
@@ -41,6 +41,8 @@ class TwitterStatusListener implements StatusListener {
 
 	private static Logger logger = Logger.getLogger(TwitterStatusListener.class.getName());
 
+	private static CollectorConfigurator configProperties = CollectorConfigurator.getInstance();
+	
 	private CollectionTask task;
 
 	private List<Predicate<JsonObject>> filters = new ArrayList<>();
@@ -100,7 +102,7 @@ class TwitterStatusListener implements StatusListener {
 	public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
 		logger.info(task.getCollectionName() + ": Track limitation notice: " + numberOfLimitedStatuses);
 		// TODO: thread safety
-		task.setStatusCode(getProperty("STATUS_CODE_COLLECTION_RUNNING_WARNING"));
+		task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_RUNNING_WARNING));
 		task.setStatusMessage("Track limitation notice: " + numberOfLimitedStatuses);
 	}
 
@@ -108,7 +110,7 @@ class TwitterStatusListener implements StatusListener {
 	public void onException(Exception ex) {
 		logger.error("Twitter Exception for collection " + task.getCollectionCode(), ex);
 		// TODO: thread safety
-		task.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
+		task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
 		task.setStatusMessage(ex.getMessage());
 	}
 

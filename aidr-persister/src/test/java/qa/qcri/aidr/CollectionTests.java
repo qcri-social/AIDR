@@ -8,16 +8,18 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import org.junit.Assert;
 import org.junit.Test;
 
+import qa.qcri.aidr.utils.PersisterConfigurationProperty;
+import qa.qcri.aidr.utils.PersisterConfigurator;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
-
 public class CollectionTests {
-    public static final String PERSISTER_URL = "http://localhost:8084/AIDRPersister/webresources";
+    
+	public static final String PERSISTER_URL = "http://localhost:8084/AIDRPersister/webresources";
     public static final String COLLECTION_CODE = "test";
 
     @Test
@@ -30,7 +32,7 @@ public class CollectionTests {
         Response response = webResource.request(MediaType.APPLICATION_JSON).get();
         String message = response.readEntity(String.class);
 
-        Assert.assertEquals("Start collection successfully", "Started persisting to " + getProperty("DEFAULT_PERSISTER_FILE_PATH"), message);
+        Assert.assertEquals("Start collection successfully", "Started persisting to " + PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH), message);
     }
 
     @Test

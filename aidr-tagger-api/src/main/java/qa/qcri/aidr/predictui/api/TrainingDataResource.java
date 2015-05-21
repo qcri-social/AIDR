@@ -18,12 +18,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-//import org.apache.log4j.Logger;
-
-
-
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +25,8 @@ import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
-import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
 
 /**
  * REST Web Service
@@ -65,7 +60,7 @@ public class TrainingDataResource {
         } catch (RuntimeException e) {
             logger.error("Error in getting tweet to tag for crisis: " + crisisId);
             logger.error(elog.toStringException(e));
-        	return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
+        	return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
         }
       
     }
@@ -81,7 +76,7 @@ public class TrainingDataResource {
         } catch (RuntimeException e) {
             logger.error("Error in getting crisis by code: " + crisisCode);
             logger.error(elog.toStringException(e));
-        	return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
+        	return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
         }
   
     }
@@ -106,7 +101,7 @@ public class TrainingDataResource {
     public Response getAllCrisis() {
         List<CrisisDTO> crisisList = crisisLocalEJB.getAllCrisis();
         ResponseWrapper response = new ResponseWrapper();
-        response.setMessage(getProperty("STATUS_CODE_SUCCESS"));
+        response.setMessage(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
         response.setCrisises(crisisList);
         return Response.ok(response).build();
     }
@@ -136,7 +131,7 @@ public class TrainingDataResource {
             return Response.ok("Error while adding Crisis. Possible causes could be duplication of primary key, incomplete data, incompatible data format.").build();
         }
 
-        return Response.ok(getProperty("STATUS_CODE_SUCCESS")).build();
+        return Response.ok(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS)).build();
 
     }
 
@@ -150,7 +145,7 @@ public class TrainingDataResource {
         } catch (RuntimeException e) {
             logger.error("Error in editing crisis: " + crisis.getCode());
             logger.error(elog.toStringException(e));
-        	return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
+        	return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
         }
     }
 
@@ -177,7 +172,7 @@ public class TrainingDataResource {
         Properties prop = new Properties();
         int sampleCountThreshold = 20;
         try {
-            prop.load(new FileInputStream(getProperty("AIDR_TAGGER_CONFIG_URL")));
+            prop.load(new FileInputStream(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.AIDR_TAGGER_CONFIG_URL)));
             String value = prop.getProperty("sampleCountThreshold") ;
 
             if(value != null){
@@ -186,11 +181,11 @@ public class TrainingDataResource {
             }
 
         } catch (FileNotFoundException ex1) {
-            logger.error("Couldn't create input stream for file" + getProperty("AIDR_TAGGER_CONFIG_URL"));
+            logger.error("Couldn't create input stream for file" + TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.AIDR_TAGGER_CONFIG_URL));
             logger.error(elog.toStringException(ex1));
             throw new RuntimeException(ex1);
         } catch (IOException ex2) {
-        	logger.error("Couldn't load file" + getProperty("AIDR_TAGGER_CONFIG_URL"));
+        	logger.error("Couldn't load file" + TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.AIDR_TAGGER_CONFIG_URL));
             logger.error(elog.toStringException(ex2));
             throw new RuntimeException(ex2);
 		} catch (NumberFormatException ex3) {

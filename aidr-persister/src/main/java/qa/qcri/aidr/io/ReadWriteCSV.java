@@ -15,15 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
-
-
-
-
-
-
-
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -33,7 +24,6 @@ import javax.ws.rs.core.Response;
 
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.constraint.NotNull;
-//import org.supercsv.cellprocessor.constraint.UniqueHashCode;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.CsvMapWriter;
@@ -47,6 +37,8 @@ import org.supercsv.exception.SuperCsvCellProcessorException;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.SystemProperties;
 import qa.qcri.aidr.persister.filter.NominalLabel;
+import qa.qcri.aidr.utils.PersisterConfigurationProperty;
+import qa.qcri.aidr.utils.PersisterConfigurator;
 import qa.qcri.aidr.utils.Tweet;
 
 import org.apache.commons.lang.StringUtils;
@@ -55,7 +47,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.utils.ClassifiedTweet;
-import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
 
 /**
  *
@@ -206,7 +197,7 @@ public class ReadWriteCSV<CellProcessors> {
 
 			final CellProcessor[] processors = getProcessors4TweetIDSCCSV();
 
-			String persisterDIR = getProperty("DEFAULT_PERSISTER_FILE_PATH");
+			String persisterDIR = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH);
 			//fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
 			String fileToWrite = persisterDIR + collectionDIR + "/" + fileName;
 			logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
@@ -244,7 +235,7 @@ public class ReadWriteCSV<CellProcessors> {
 		//String[] runningHeader = null;
 		try {
 			if (null == mapWriter) {
-				String persisterDIR = getProperty("DEFAULT_PERSISTER_FILE_PATH");
+				String persisterDIR = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH);
 				//String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName;
 				String fileToWrite = persisterDIR + collectionDIR + "/" + fileName;
 				logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
@@ -293,7 +284,7 @@ public class ReadWriteCSV<CellProcessors> {
 			final CellProcessor[] processors = getCollectorTweetsProcessors();
 
 			if(null == beanWriter){
-				String persisterDIR = getProperty("DEFAULT_PERSISTER_FILE_PATH");
+				String persisterDIR = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH);
 				//fileName = StringUtils.substringBefore(fileName, ".json"); //removing .json extension
 				String fileToWrite = persisterDIR + collectionDIR + "/" + fileName;
 				logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
@@ -322,7 +313,7 @@ public class ReadWriteCSV<CellProcessors> {
 		String[] header = ClassifiedTweetCSVHeader;
 		try {
 			if (null == mapWriter) {
-				String persisterDIR = getProperty("DEFAULT_PERSISTER_FILE_PATH");
+				String persisterDIR = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH);
 				//String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName;
 				String fileToWrite = persisterDIR + collectionDIR + "/" + fileName;
 				logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);

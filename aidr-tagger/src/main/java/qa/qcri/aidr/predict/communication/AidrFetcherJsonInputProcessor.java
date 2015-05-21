@@ -2,18 +2,9 @@ package qa.qcri.aidr.predict.communication;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.util.concurrent.ConcurrentHashMap;
 
-
-
-
-
-
-
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import redis.clients.jedis.Jedis;
@@ -21,10 +12,10 @@ import redis.clients.jedis.JedisPubSub;
 import qa.qcri.aidr.common.redis.LoadShedder;
 import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.common.Serializer;
+import qa.qcri.aidr.predict.common.TaggerConfigurationProperty;
+import qa.qcri.aidr.predict.common.TaggerConfigurator;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.data.DocumentJSONConverter;
-import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
-
 
 /**
  * AidrFetcherJsonInputProcessor receives tweets in JSON format from the AIDR
@@ -82,7 +73,18 @@ public class AidrFetcherJsonInputProcessor implements Runnable {
 		@Override
 		public void onMessage(String channel, String jsonDoc) {
 			if (!redisLoadShedder.containsKey(channel)) {
-				redisLoadShedder.put(channel, new LoadShedder(Integer.parseInt(getProperty("persister_load_limit")), Integer.parseInt(getProperty("persister_load_check_interval_minutes")), true));
+				redisLoadShedder
+						.put(channel,
+								new LoadShedder(
+										Integer.parseInt(TaggerConfigurator
+												.getInstance()
+												.getProperty(
+														TaggerConfigurationProperty.PERSISTER_LOAD_LIMIT)),
+										Integer.parseInt(TaggerConfigurator
+												.getInstance()
+												.getProperty(
+														TaggerConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)),
+										true));
 			}
 			if (redisLoadShedder.get(channel).canProcess(channel)) {
 				Document doc;
@@ -165,8 +167,19 @@ public class AidrFetcherJsonInputProcessor implements Runnable {
 
 				Subscriber subscriber = new Subscriber(outputQueueName);
 				redis.psubscribe(subscriber, inputQueueName);
-				redisLoadShedder.put(inputQueueName, new LoadShedder(Integer.parseInt(getProperty("persister_load_limit")), Integer.parseInt(getProperty("persister_load_check_interval_minutes")), true));
-				Thread.sleep(60000);
+				redisLoadShedder
+						.put(inputQueueName,
+								new LoadShedder(
+										Integer.parseInt(TaggerConfigurator
+												.getInstance()
+												.getProperty(
+														TaggerConfigurationProperty.PERSISTER_LOAD_LIMIT)),
+										Integer.parseInt(TaggerConfigurator
+												.getInstance()
+												.getProperty(
+														TaggerConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)),
+										true));
+	Thread.sleep(60000);
 			} catch (Exception e) {
 				logger.error("RedisInputProcessor", e);
 			} finally {

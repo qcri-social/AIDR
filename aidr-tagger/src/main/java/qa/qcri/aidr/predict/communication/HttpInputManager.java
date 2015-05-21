@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predict.common.*;
-import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 /**
  * InputManager listens for new connections on a specified port. New
@@ -25,9 +24,15 @@ public class HttpInputManager implements Runnable {
     @Override
     public void run() {
         try {
-            server = new ServerSocket(Integer.parseInt(getProperty("http_input_port")));
-            logger.info("Listening for provider connections on port "
-                    + Integer.parseInt(getProperty("http_input_port")));
+			server = new ServerSocket(Integer.parseInt(TaggerConfigurator
+					.getInstance().getProperty(
+							TaggerConfigurationProperty.HTTP_INPUT_PORT)));
+			logger.info("Listening for provider connections on port "
+					+ Integer
+							.parseInt(TaggerConfigurator
+									.getInstance()
+									.getProperty(
+											TaggerConfigurationProperty.HTTP_INPUT_PORT)));
 
             while (true) {
                 if (Thread.interrupted()) {
@@ -40,12 +45,16 @@ public class HttpInputManager implements Runnable {
                     t.start();
                 } catch (IOException e) {
                     logger.warn("Failed to establish connection with client on port "
-                                    + Integer.parseInt(getProperty("http_input_port")));
+                                    + Integer.parseInt(TaggerConfigurator
+                        					.getInstance().getProperty(
+                        							TaggerConfigurationProperty.HTTP_INPUT_PORT)));
                 }
             }
         } catch (IOException e) {
             logger.error("Could not listen on port "
-                    + Integer.parseInt(getProperty("http_input_port")));
+                    + Integer.parseInt(TaggerConfigurator
+        					.getInstance().getProperty(
+        							TaggerConfigurationProperty.HTTP_INPUT_PORT)));
             logger.error(elog.toStringException(e));
         } finally {
 

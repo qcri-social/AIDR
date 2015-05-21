@@ -8,6 +8,8 @@ import java.util.List;
 
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -25,10 +27,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+
 //import qa.qcri.aidr.predictui.dto.CrisisTypeDTO;
 //import qa.qcri.aidr.predictui.entities.CrisisType;
 import qa.qcri.aidr.predictui.facade.CrisisTypeResourceFacade;
-import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 
 /**
  * REST Web Service
@@ -55,7 +57,7 @@ public class CrisisTypeResource {
         try {
             crisistype = crisisTypeLocal.getCrisisTypeByID(id);
         } catch (RuntimeException e) {
-            return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
+            return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
         }
         return Response.ok(crisistype).build();
     }
@@ -77,7 +79,7 @@ public class CrisisTypeResource {
         try {
             crisis = crisisTypeLocal.addCrisisType(crisis);
         } catch (RuntimeException e) {
-            return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
+            return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
         }
         return Response.ok(crisis).build();
     }
@@ -89,7 +91,7 @@ public class CrisisTypeResource {
         try {
             crisis = crisisTypeLocal.editCrisisType(crisis);
         } catch (RuntimeException e) {
-            return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
+            return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
         }
         return Response.ok(crisis).build();
     }
@@ -102,9 +104,9 @@ public class CrisisTypeResource {
             crisisTypeLocal.deleteCrisisType(id);
         } catch (RuntimeException e) {
             return Response.ok(
-                    new ResponseWrapper(getProperty("STATUS_CODE_FAILED"),
+                    new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED),
                     "Error while deleting CrisisType. Possible cause(s): (1) Given crisis-type ID does not exist.")).build();
         }
-        return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"))).build();
+        return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS))).build();
     }
 }

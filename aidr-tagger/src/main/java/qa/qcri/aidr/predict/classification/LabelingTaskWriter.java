@@ -13,9 +13,10 @@ import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.common.PipelineProcess;
 import qa.qcri.aidr.predict.common.RateLimiter;
+import qa.qcri.aidr.predict.common.TaggerConfigurationProperty;
+import qa.qcri.aidr.predict.common.TaggerConfigurator;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.featureextraction.WordSet;
-import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 /**
  * LabelingTaskWriter consumes fully classified items and writes them to the
@@ -67,7 +68,8 @@ public class LabelingTaskWriter extends PipelineProcess {
 	static Map<Integer, Long> crisisLastTruncateTime = new HashMap<Integer, Long>();
 	
 	RateLimiter taskRateLimiter = new RateLimiter(
-			Integer.parseInt(getProperty("max_new_tasks_per_minute")));
+			Integer.parseInt(TaggerConfigurator.getInstance().getProperty(
+					TaggerConfigurationProperty.MAX_NEW_TASKS_PER_MINUTE)));
 	DocumentHistory history = new DocumentHistory();
 
 	protected void processItem(Document item) {
@@ -105,45 +107,70 @@ public class LabelingTaskWriter extends PipelineProcess {
 
 	void writeToDB() {
 		DataStore.saveDocumentsToDatabase(writeBuffer);
-		writeCount += writeBuffer.size(); 
+		writeCount += writeBuffer.size();
 		writeBuffer.clear();
 
 		if (!isTruncateRunLimited() || 0 == lastDBWrite) {
-			for (Integer crisisID: activeCrisisIDList.keySet()) {
-				logger.info("Looking at possible truncation for crisisID = " + crisisID 
-							+ "last save count = " + activeCrisisIDList.get(crisisID) 
-							+ " [" + Integer.parseInt(getProperty("max_new_tasks_per_minute")) + "]");
-				if (!isTruncateRateLimited(crisisID) || 
-						activeCrisisIDList.get(crisisID) > Integer.parseInt(getProperty("max_new_tasks_per_minute"))) {
+			for (Integer crisisID : activeCrisisIDList.keySet()) {
+				logger.info("Looking at possible truncation for crisisID = "
+						+ crisisID
+						+ "last save count = "
+						+ activeCrisisIDList.get(crisisID)
+						+ " ["
+						+ Integer
+								.parseInt(TaggerConfigurator
+										.getInstance()
+										.getProperty(
+												TaggerConfigurationProperty.MAX_NEW_TASKS_PER_MINUTE))
+						+ "]");
+				if (!isTruncateRateLimited(crisisID)
+						|| activeCrisisIDList.get(crisisID) > Integer
+								.parseInt(TaggerConfigurator
+										.getInstance()
+										.getProperty(
+												TaggerConfigurationProperty.MAX_NEW_TASKS_PER_MINUTE))) {
 
-					logger.info("Going to truncate for crisisID = " + crisisID 
-								+ " [" + activeCrisisIDList.get(crisisID) + "] new docs");
+					logger.info("Going to truncate for crisisID = " + crisisID
+							+ " [" + activeCrisisIDList.get(crisisID)
+							+ "] new docs");
 					DataStore
-					.truncateLabelingTaskBufferForCrisis(crisisID, Integer.parseInt(getProperty("labeling_task_buffer_max_length")));
-					activeCrisisIDList.put(crisisID, 0L);	// reset count for next interval
+							.truncateLabelingTaskBufferForCrisis(
+									crisisID,
+									Integer.parseInt(TaggerConfigurator
+											.getInstance()
+											.getProperty(
+													TaggerConfigurationProperty.LABELLING_TASK_BUFFER_MAX_LENGTH)));
+					activeCrisisIDList.put(crisisID, 0L); // reset count for
+															// next interval
 					try {
 						Thread.sleep(200);
-					} catch (InterruptedException e) {}
+					} catch (InterruptedException e) {
+					}
 				}
 			}
 		}
 		lastDBWrite = System.currentTimeMillis();
 	}
 
-
 	boolean isWriteRateLimited() {
-		return (System.currentTimeMillis() - lastDBWrite) < Integer.parseInt(getProperty("max_task_write_fq_ms"));
+		return (System.currentTimeMillis() - lastDBWrite) < Integer
+				.parseInt(TaggerConfigurator.getInstance().getProperty(
+						TaggerConfigurationProperty.MAX_TASK_WRITE_FQ_MS));
 	}
 
 	boolean isTruncateRateLimited(int crisisID) {
 		Long lastTruncateTime = crisisLastTruncateTime.containsKey(crisisID) ? crisisLastTruncateTime.get(crisisID) : 0L;
-		boolean result = (System.currentTimeMillis() - lastTruncateTime) < Integer.parseInt(getProperty("min_truncate_interval_ms"));
+		boolean result = (System.currentTimeMillis() - lastTruncateTime) < Integer
+				.parseInt(TaggerConfigurator.getInstance().getProperty(
+						TaggerConfigurationProperty.MIN_TRUNCATE_INTERVAL_MS));
 		if (!result) crisisLastTruncateTime.put(crisisID, System.currentTimeMillis());
 		return result;
 	}
 	
 	boolean isTruncateRunLimited() {
-		boolean result = (System.currentTimeMillis() - lastTruncateTime) < Long.parseLong(getProperty("truncate_run_interval_ms"));
+		boolean result = (System.currentTimeMillis() - lastTruncateTime) < Long
+				.parseLong(TaggerConfigurator.getInstance().getProperty(
+						TaggerConfigurationProperty.TRUNCATE_RUN_INTERVAL_MS));
 		if (!result) lastTruncateTime = System.currentTimeMillis();
 		return result;
 	}

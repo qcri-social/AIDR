@@ -8,6 +8,9 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
+import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
+import qa.qcri.aidr.collector.utils.CollectorConfigurator;
+
 /**
  *
  * @author Imran
@@ -15,13 +18,16 @@ import javax.servlet.annotation.WebListener;
 @WebListener
 public class InitNDestroyTomcat implements ServletContextListener {
 
-    @Override
-    public void contextInitialized(ServletContextEvent event) {
-        //code here
-    }
+	@Override
+	public void contextInitialized(ServletContextEvent event) {
+		// Initializing the configuration properties.
+		CollectorConfigurator.getInstance().initProperties(
+				CollectorConfigurator.configLoadFileName,
+				CollectorConfigurationProperty.values());
+	}
 
-    @Override
-    public void contextDestroyed(ServletContextEvent event) {
-        //code here
-    }
+	@Override
+	public void contextDestroyed(ServletContextEvent event) {
+		// code here
+	}
 }

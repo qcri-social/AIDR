@@ -1,7 +1,5 @@
 package qa.qcri.aidr.collector.api;
 
-import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -28,6 +26,8 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.ResponseWrapper;
 import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
+import qa.qcri.aidr.collector.utils.CollectorConfigurator;
+import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
 import qa.qcri.aidr.collector.utils.GenericCache;
 
 /**
@@ -39,7 +39,8 @@ import qa.qcri.aidr.collector.utils.GenericCache;
 public class TwitterCollectorAPI {
 
     private static Logger logger = Logger.getLogger(TwitterCollectorAPI.class.getName());
-
+    private static CollectorConfigurator configProperties = CollectorConfigurator.getInstance();
+    
     @Context
     private UriInfo context;
 
@@ -57,14 +58,14 @@ public class TwitterCollectorAPI {
 
         //check if all twitter specific information is available in the request
         if (!task.isTwitterInfoPresent()) {
-            response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
+            response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
             response.setMessage("One or more Twitter authentication token(s) are missing");
             return Response.ok(response).build();
         }
 
         //check if all query parameters are missing in the query
         if (!task.isToTrackAvailable() && !task.isToFollowAvailable() && !task.isGeoLocationAvailable()) {
-            response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
+            response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
             response.setMessage("Missing one or more fields (toTrack, toFollow, and geoLocation). At least one field is required");
             return Response.ok(response).build();
         }
@@ -78,11 +79,11 @@ public class TwitterCollectorAPI {
             String msg = "Provided OAuth configurations already in use. Please stop this collection and then start again.";
             logger.info(collectionCode + ": " + msg);
             response.setMessage(msg);
-            response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
+            response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
             return Response.ok(response).build();
         }
 
-		task.setStatusCode(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
+		task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_INITIALIZING));
 		logger.info("Initializing connection with Twitter streaming API for collection " + collectionCode);
 		try {
 			TwitterStreamTracker tracker = new TwitterStreamTracker(task);
@@ -93,21 +94,21 @@ public class TwitterCollectorAPI {
 
 			// if twitter streaming connection successful then change the status
 			// code
-			task.setStatusCode(getProperty("STATUS_CODE_COLLECTION_RUNNING"));
+			task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_RUNNING));
 			task.setStatusMessage(null);
 			cache.setTwtConfigMap(cacheKey, task);
 			cache.setTwitterTracker(cacheKey, tracker);
 
-			if (Boolean.valueOf(getProperty("DEFAULT_PERSISTANCE_MODE"))) {
+			if (Boolean.valueOf(configProperties.getProperty(CollectorConfigurationProperty.DEFAULT_PERSISTANCE_MODE))) {
 				startPersister(collectionCode);
 			}
 
-			response.setMessage(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
-			response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
+			response.setMessage(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_INITIALIZING));
+			response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_INITIALIZING));
 		} catch (Exception ex) {
 			logger.error("Exception in creating TwitterStreamTracker for collection " + collectionCode, ex);
 			response.setMessage(ex.getMessage());
-			response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_ERROR"));
+			response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
 		}
 		return Response.ok(response).build();
 	}
@@ -132,11 +133,11 @@ public class TwitterCollectorAPI {
 			} catch (IOException e) {
 				ResponseWrapper response = new ResponseWrapper();
 				response.setMessage(e.getMessage());
-				response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_NOTFOUND"));
+				response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_NOTFOUND));
 				return Response.ok(response).build();
 			}
 
-            if (Boolean.valueOf(getProperty("DEFAULT_PERSISTANCE_MODE"))) {
+            if (Boolean.valueOf(configProperties.getProperty(CollectorConfigurationProperty.DEFAULT_PERSISTANCE_MODE))) {
                 stopPersister(collectionCode);
             }
 
@@ -151,7 +152,7 @@ public class TwitterCollectorAPI {
 
         ResponseWrapper response = new ResponseWrapper();
         response.setMessage("Invalid key. No running collector found for the given id.");
-        response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_NOTFOUND"));
+        response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_NOTFOUND));
         return Response.ok(response).build();
     }
 
@@ -162,7 +163,7 @@ public class TwitterCollectorAPI {
         ResponseWrapper response = new ResponseWrapper();
         if (StringUtils.isEmpty(id)) {
             response.setMessage("Invalid key. No running collector found for the given id.");
-            response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_NOTFOUND"));
+            response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_NOTFOUND));
             return Response.ok(response).build();
         }
         CollectionTask task = GenericCache.getInstance().getConfig(id);
@@ -176,7 +177,7 @@ public class TwitterCollectorAPI {
         }
 
         response.setMessage("Invalid key. No running collector found for the given id.");
-        response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_NOTFOUND"));
+        response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_NOTFOUND));
         return Response.ok(response).build();
 
     }
@@ -219,8 +220,8 @@ public class TwitterCollectorAPI {
     public void startCollectorPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
-            WebTarget webResource = client.target(getProperty("PERSISTER_REST_URI") + "persister/start?file="
-                    + URLEncoder.encode(getProperty("DEFAULT_PERSISTER_FILE_LOCATION"), "UTF-8")
+            WebTarget webResource = client.target(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_REST_URI) + "persister/start?file="
+                    + URLEncoder.encode(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_REST_URI), "UTF-8")
                     + "&collectionCode=" + URLEncoder.encode(collectionCode, "UTF-8"));
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             String jsonResponse = clientResponse.readEntity(String.class);
@@ -237,8 +238,8 @@ public class TwitterCollectorAPI {
     private void startPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
-            WebTarget webResource = client.target(getProperty("PERSISTER_REST_URI") + "collectionPersister/start?channel_provider="
-                    + URLEncoder.encode(getProperty("TAGGER_CHANNEL"), "UTF-8")
+            WebTarget webResource = client.target(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_REST_URI) + "collectionPersister/start?channel_provider="
+                    + URLEncoder.encode(configProperties.getProperty(CollectorConfigurationProperty.TAGGER_CHANNEL), "UTF-8")
                     + "&collection_code=" + URLEncoder.encode(collectionCode, "UTF-8"));
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             String jsonResponse = clientResponse.readEntity(String.class);
@@ -255,7 +256,7 @@ public class TwitterCollectorAPI {
     public void stopCollectorPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
-            WebTarget webResource = client.target(getProperty("PERSISTER_REST_URI")
+            WebTarget webResource = client.target(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_REST_URI)
                     + "persister/stop?collectionCode=" + URLEncoder.encode(collectionCode, "UTF-8"));
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             String jsonResponse = clientResponse.readEntity(String.class);
@@ -271,7 +272,7 @@ public class TwitterCollectorAPI {
     public void stopPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
-            WebTarget webResource = client.target(getProperty("PERSISTER_REST_URI")
+            WebTarget webResource = client.target(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_REST_URI)
                     + "collectionPersister/stop?collection_code=" + URLEncoder.encode(collectionCode, "UTF-8"));
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             String jsonResponse = clientResponse.readEntity(String.class);
@@ -288,8 +289,8 @@ public class TwitterCollectorAPI {
     public void startTaggerPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
-            WebTarget webResource = client.target(getProperty("PERSISTER_REST_URI") + "taggerPersister/start?file="
-                    + URLEncoder.encode(getProperty("DEFAULT_PERSISTER_FILE_LOCATION"), "UTF-8")
+            WebTarget webResource = client.target(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_REST_URI) + "taggerPersister/start?file="
+                    + URLEncoder.encode(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_REST_URI), "UTF-8")
                     + "&collectionCode=" + URLEncoder.encode(collectionCode, "UTF-8"));
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             String jsonResponse = clientResponse.readEntity(String.class);
@@ -306,7 +307,7 @@ public class TwitterCollectorAPI {
     public void stopTaggerPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
-            WebTarget webResource = client.target(getProperty("PERSISTER_REST_URI")
+            WebTarget webResource = client.target(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_REST_URI)
                     + "taggerPersister/stop?collectionCode=" + URLEncoder.encode(collectionCode, "UTF-8"));
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             String jsonResponse = clientResponse.readEntity(String.class);

@@ -24,6 +24,8 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -32,28 +34,28 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-//import org.apache.log4j.Logger;
-
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import qa.qcri.aidr.common.exception.ConfigurationPropertyFileException;
+import qa.qcri.aidr.common.exception.ConfigurationPropertyNotRecognizedException;
+import qa.qcri.aidr.common.exception.ConfigurationPropertyNotSetException;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.facade.TaskBufferScannerFacade;
-
-import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
 
 @Path("/taskscanner")
 @Singleton
 @Startup
-public class TaskBufferScanner {
+public class TaskBufferScanner  {
 	@Context
 	private UriInfo context;
 	@EJB
 	private TaskBufferScannerFacade taskBufferScannerEJB;
 
 	public TaskBufferScanner() {
+		
 	}
 
 	//private static Logger logger = Logger.getLogger(TaskBufferScanner.class);
@@ -71,9 +73,14 @@ public class TaskBufferScanner {
 	 */
 	@PostConstruct
 	public void contextInitialized() {
+		
+		TaggerAPIConfigurator.getInstance().initProperties(
+				TaggerAPIConfigurator.configLoadFileName,
+				TaggerAPIConfigurationProperty.values());
+		
 		threadStatus = false;
 		executorService = Executors.newCachedThreadPool();
-		boolean isSuccess = startTaskBufferScannerThread(getProperty("TASK_EXPIRY_AGE_LIMIT"), getProperty("TASK_BUFFER_SCAN_INTERVAL"));
+		boolean isSuccess = startTaskBufferScannerThread(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.TASK_EXPIRY_AGE_LIMIT), TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.TASK_BUFFER_SCAN_INTERVAL));
 		if (isSuccess) {
 			logger.info("Context Initialized - started task buffer scanner thread.");
 		}
@@ -150,8 +157,8 @@ public class TaskBufferScanner {
 		final String newMaxTaskAge;
 		final String newScanInterval;
 		if (null == scanInterval || null == maxTaskAge) {
-			newMaxTaskAge = getProperty("TASK_EXPIRY_AGE_LIMIT");
-			newScanInterval = getProperty("TASK_BUFFER_SCAN_INTERVAL");
+			newMaxTaskAge = TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.TASK_EXPIRY_AGE_LIMIT);
+			newScanInterval = TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.TASK_BUFFER_SCAN_INTERVAL);
 		} else {
 			newMaxTaskAge = maxTaskAge;
 			newScanInterval = scanInterval;
@@ -231,4 +238,6 @@ public class TaskBufferScanner {
 		}
 		executorService = null;
 	}
+
+	
 }

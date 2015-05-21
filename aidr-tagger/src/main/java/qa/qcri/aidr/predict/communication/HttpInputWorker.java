@@ -13,7 +13,6 @@ import qa.qcri.aidr.predict.common.*;
 import qa.qcri.aidr.predict.data.DocumentJSONConverter;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.DataStore;
-import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 /**
  * InputWorker maintains a persistent HTTP connection to clients who provide
@@ -93,14 +92,18 @@ public class HttpInputWorker implements Runnable {
     private void enqueue(Document doc) {
         Jedis jedis = DataStore.getJedisConnection();
 
-        try {
-            jedis.rpush(getProperty("redis_for_extraction_queue").getBytes(),
-                    Serializer.serialize(doc));
-        } catch (IOException e) {
-            logger.error("Error when serializing input document.");
-            logger.error(elog.toStringException(e));
-        } finally {
-            DataStore.close(jedis);
-        }
-    }
+		try {
+			jedis.rpush(
+					TaggerConfigurator
+							.getInstance()
+							.getProperty(
+									TaggerConfigurationProperty.REDIS_FOR_EXTRACTION_QUEUE)
+							.getBytes(), Serializer.serialize(doc));
+		} catch (IOException e) {
+			logger.error("Error when serializing input document.");
+			logger.error(elog.toStringException(e));
+		} finally {
+			DataStore.close(jedis);
+		}
+	}
 }

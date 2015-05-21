@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
-
 /**
  *
  * @author Imran
@@ -26,6 +24,7 @@ public class GenericCache {
     private Map<String, CollectionTask> failedCollections = null; // keeps failed collections
     private CollectorStatus collectorStatus; // keeps collector status inforamtion
     private Map<String, String> SMSCollections;
+    private static CollectorConfigurator configProperties = CollectorConfigurator.getInstance();
 
     private GenericCache() {
         twitterTrackerMap = new HashMap<String, TwitterStreamTracker>();
@@ -179,7 +178,7 @@ public class GenericCache {
             task.setCollectionCount(smsCounter);
             task.setLastDocument(lastDownloadedDoc);
         } else {
-            task.setStatusCode(getProperty("STATUS_CODE_COLLECTION_NOTFOUND"));
+            task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_NOTFOUND));
         }
 
         return task;
@@ -259,7 +258,7 @@ public class GenericCache {
             if (storedQM != null) {
                 if (storedQM.equals(qm)) {
                     if (qm.getStatusCode() != null) {
-                        if (!(qm.getStatusCode().equals(getProperty("STATUS_CODE_COLLECTION_ERROR")))) {
+                        if (!(qm.getStatusCode().equals(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR)))) {
                             return true;
                         }
                     }

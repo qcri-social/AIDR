@@ -76,12 +76,11 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static qa.qcri.aidr.output.utils.ConfigProperties.getProperty;
-
-
 //import org.apache.log4j.BasicConfigurator;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
+
+
 
 
 
@@ -96,6 +95,8 @@ import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
 import qa.qcri.aidr.output.filter.FilterQueryMatcher;
 import qa.qcri.aidr.output.filter.JsonQueryList;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
+import qa.qcri.aidr.output.utils.OutputConfigurationProperty;
+import qa.qcri.aidr.output.utils.OutputConfigurator;
 import qa.qcri.aidr.output.utils.SimpleRateLimiter;
 import qa.qcri.aidr.output.filter.DeserializeFilters;
 
@@ -596,6 +597,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		// Most important action - setup channel buffering thread
 		if (null == cbManager) {
 			logger.info("Initializing channel buffer manager with regEx pattern: " + CHANNEL_REG_EX);
+			OutputConfigurator.getInstance().initProperties(OutputConfigurator.configLoadFileName, OutputConfigurationProperty.values());
 			System.out.println("[contextInitialized] Initializing channel buffer manager with regEx pattern: " + CHANNEL_REG_EX);
 			//cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
 			cbManager = new ChannelBufferManager();

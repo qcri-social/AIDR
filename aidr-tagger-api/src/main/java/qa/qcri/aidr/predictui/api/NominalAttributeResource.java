@@ -8,6 +8,8 @@ import java.util.List;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -24,13 +26,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.CrisisAttributesDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.predictui.facade.NominalAttributeFacade;
-import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 
 /**
  * REST Web Service
@@ -97,11 +100,11 @@ public class NominalAttributeResource {
 			if (dto != null) {
 				return Response.ok(dto).build();
 			} else {
-				return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"))).build();
+				return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED))).build();
 			}
 		} catch (Exception e) {
 			logger.error("failed to attribute attribute: " + attribute.getCode());
-			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
+			return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
 		}
 	}
 
@@ -113,7 +116,7 @@ public class NominalAttributeResource {
 			attribute = attributeLocalEJB.editAttribute(attribute);
 		} catch (RuntimeException e) {
 			logger.error("failed to edit attribute: " + attribute.getCode());
-			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
+			return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
 		}
 		return Response.ok(attribute).build();
 	}
@@ -124,7 +127,7 @@ public class NominalAttributeResource {
 	public Response deleteAttribute(@PathParam("id") Long id) throws PropertyNotSetException {
 		boolean response;
 		response = attributeLocalEJB.deleteAttribute(id);
-		return response == true ? Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"))).build() : Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"))).build();
+		return response == true ? Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED))).build() : Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS))).build();
 	}
 
 	@GET
