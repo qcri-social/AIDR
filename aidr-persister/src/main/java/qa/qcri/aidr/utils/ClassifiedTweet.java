@@ -30,14 +30,15 @@ import qa.qcri.aidr.common.code.DateFormatConfig;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
-import qa.qcri.aidr.persister.filter.NominalLabel;
+import qa.qcri.aidr.common.filter.ClassifiedFilteredTweet;
+import qa.qcri.aidr.common.filter.NominalLabel;
 
 /**
  *
  * @author Koushik
  */
 
-public class ClassifiedTweet  implements Document, Serializable {
+public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Document, Serializable {
 
 	/**
 	 * 
@@ -70,7 +71,7 @@ public class ClassifiedTweet  implements Document, Serializable {
 	private String confidence_1;
 	private String humanLabeled_1;
 
-	public List<NominalLabel> nominal_labels;		
+	public List<qa.qcri.aidr.common.filter.NominalLabel> nominal_labels;		
 	private AidrObject aidr;
 
 	public ClassifiedTweet() {
@@ -152,14 +153,14 @@ public class ClassifiedTweet  implements Document, Serializable {
 	/**
 	 * @return the createdAt
 	 */
-	public String getCreatedAt() {
+	public String getCreatedAtString() {
 		return createdAt;
 	}
 
 	/**
 	 * @param createdAt the createdAt to set
 	 */
-	public void setCreatedAt(String createdAtString) {
+	public void setCreatedAtString(String createdAtString) {
 		this.createdAt = setDateString(createdAtString);
 	}
 
@@ -421,7 +422,7 @@ public class ClassifiedTweet  implements Document, Serializable {
 				}
 
 				if (!jsonObj.get("created_at").isJsonNull()) {
-					this.setCreatedAt(jsonObj.get("created_at").getAsString());
+					this.setCreatedAtString(jsonObj.get("created_at").getAsString());
 				}
 
 				JsonObject jsonUserObj = null;

@@ -1,4 +1,4 @@
-package qa.qcri.aidr.output.filter;
+package qa.qcri.aidr.common.filter;
 
 import java.io.Serializable;
 import java.util.ArrayList;

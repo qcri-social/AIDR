@@ -37,6 +37,7 @@ public class CrisisType implements java.io.Serializable {
 	@Column(name = "crisisTypeID", unique = true, nullable = false)
 	private Long crisisTypeId;
 	
+	@Column(name = "name", nullable = false, length = 140)
 	private String name;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "crisisType")
@@ -64,7 +65,6 @@ public class CrisisType implements java.io.Serializable {
 		this.crisisTypeId = crisisTypeId;
 	}
 
-	@Column(name = "name", nullable = false, length = 140)
 	public String getName() {
 		return this.name;
 	}

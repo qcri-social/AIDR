@@ -1,4 +1,4 @@
-package qa.qcri.aidr.output.filter;
+package qa.qcri.aidr.common.filter;
 
 public enum ComparatorType {
 	is_before, 

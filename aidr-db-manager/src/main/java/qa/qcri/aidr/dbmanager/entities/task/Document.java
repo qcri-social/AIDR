@@ -49,15 +49,32 @@ public class Document implements java.io.Serializable {
 	@JsonBackReference
 	private Crisis crisis;
 	
-	
+	@Column(name = "isEvaluationSet", nullable = false)
 	private boolean isEvaluationSet;
+	
+	@Column(name = "hasHumanLabels", nullable = false)
 	private boolean hasHumanLabels;
+	
+	@Column(name = "valueAsTrainingSample", nullable = false, precision = 22, scale = 0)
 	private Double valueAsTrainingSample;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "receivedAt", nullable = false, length = 19)
 	private Date receivedAt;
+	
+	@Column(name = "language", nullable = false, length = 5)
 	private String language;
+	
+	@Column(name = "doctype", nullable = false, length = 20)
 	private String doctype;
+	
+	@Column(name = "data", nullable = false, length = 65535, columnDefinition="Text")
 	private String data;
+	
+	@Column(name = "wordFeatures", nullable = false, length = 65535, columnDefinition="mediumText")
 	private String wordFeatures;
+	
+	@Column(name = "geoFeatures", nullable = false, length = 65535, columnDefinition="mediumText")
 	private String geoFeatures;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "document")
@@ -121,7 +138,6 @@ public class Document implements java.io.Serializable {
 		this.crisis = crisis;
 	}
 
-	@Column(name = "isEvaluationSet", nullable = false)
 	public boolean isIsEvaluationSet() {
 		return this.isEvaluationSet;
 	}
@@ -130,7 +146,6 @@ public class Document implements java.io.Serializable {
 		this.isEvaluationSet = isEvaluationSet;
 	}
 
-	@Column(name = "hasHumanLabels", nullable = false)
 	public boolean isHasHumanLabels() {
 		return this.hasHumanLabels;
 	}
@@ -139,7 +154,6 @@ public class Document implements java.io.Serializable {
 		this.hasHumanLabels = hasHumanLabels;
 	}
 
-	@Column(name = "valueAsTrainingSample", nullable = false, precision = 22, scale = 0)
 	public double getValueAsTrainingSample() {
 		return this.valueAsTrainingSample;
 	}
@@ -148,8 +162,6 @@ public class Document implements java.io.Serializable {
 		this.valueAsTrainingSample = valueAsTrainingSample;
 	}
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "receivedAt", nullable = false, length = 19)
 	public Date getReceivedAt() {
 		return this.receivedAt;
 	}
@@ -158,7 +170,6 @@ public class Document implements java.io.Serializable {
 		this.receivedAt = receivedAt;
 	}
 
-	@Column(name = "language", nullable = false, length = 5)
 	public String getLanguage() {
 		return this.language;
 	}
@@ -167,7 +178,6 @@ public class Document implements java.io.Serializable {
 		this.language = language;
 	}
 
-	@Column(name = "doctype", nullable = false, length = 20)
 	public String getDoctype() {
 		return this.doctype;
 	}
@@ -176,7 +186,6 @@ public class Document implements java.io.Serializable {
 		this.doctype = doctype;
 	}
 
-	@Column(name = "data", nullable = false, length = 65535)
 	public String getData() {
 		return this.data;
 	}
@@ -185,7 +194,6 @@ public class Document implements java.io.Serializable {
 		this.data = data;
 	}
 
-	@Column(name = "wordFeatures", length = 65535)
 	public String getWordFeatures() {
 		return this.wordFeatures;
 	}
@@ -194,7 +202,6 @@ public class Document implements java.io.Serializable {
 		this.wordFeatures = wordFeatures;
 	}
 
-	@Column(name = "geoFeatures", length = 65535)
 	public String getGeoFeatures() {
 		return this.geoFeatures;
 	}

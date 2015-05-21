@@ -1,6 +1,8 @@
 package qa.qcri.aidr.output.filter;
 
 import static org.junit.Assert.*;
+import qa.qcri.aidr.common.filter.ClassifiedFilteredTweet;
+import qa.qcri.aidr.common.filter.FilterQueryMatcher;
 
 import org.junit.BeforeClass;
 import org.junit.Test;

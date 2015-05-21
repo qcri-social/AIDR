@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
-import qa.qcri.aidr.persister.filter.NominalLabel;
+import qa.qcri.aidr.common.filter.NominalLabel;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 @XmlRootElement

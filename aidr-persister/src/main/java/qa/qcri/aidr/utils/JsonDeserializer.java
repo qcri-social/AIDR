@@ -11,9 +11,9 @@ import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.io.ICsvMapWriter;
 
-import qa.qcri.aidr.persister.filter.JsonQueryList;
-import qa.qcri.aidr.persister.filter.FilterQueryMatcher;
-import qa.qcri.aidr.persister.filter.NominalLabel;
+import qa.qcri.aidr.common.filter.JsonQueryList;
+import qa.qcri.aidr.common.filter.FilterQueryMatcher;
+import qa.qcri.aidr.common.filter.NominalLabel;
 
 import java.io.*;
 
@@ -965,7 +965,7 @@ public class JsonDeserializer {
 			}
 
 			if (!jsonObj.get("created_at").isJsonNull()) {
-				tweet.setCreatedAt(jsonObj.get("created_at").getAsString());
+				tweet.setCreatedAtString(jsonObj.get("created_at").getAsString());
 			}
 
 			JsonObject jsonUserObj = null;

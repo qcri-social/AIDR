@@ -42,7 +42,10 @@ public class Users implements java.io.Serializable {
 	@Column(name = "userID", unique = true, nullable = false)
 	private Long userId;
 	
+	@Column(name = "name", unique = true, nullable = false, length = 45)
 	private String name;
+	
+	@Column(name = "role", nullable = false, length = 45)
 	private String role;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "users")
@@ -77,7 +80,6 @@ public class Users implements java.io.Serializable {
 		this.userId = userId;
 	}
 
-	@Column(name = "name", unique = true, nullable = false, length = 45)
 	public String getName() {
 		return this.name;
 	}
@@ -86,7 +88,6 @@ public class Users implements java.io.Serializable {
 		this.name = name;
 	}
 
-	@Column(name = "role", nullable = false, length = 45)
 	public String getRole() {
 		return this.role;
 	}

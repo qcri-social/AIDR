@@ -57,8 +57,13 @@ public class Crisis implements java.io.Serializable {
 	@JsonBackReference
 	private CrisisType crisisType;
 	
+	@Column(name = "name", nullable = false, length = 140)
 	private String name;
+	
+	@Column(name = "code", unique = true, nullable = false, length = 64)
 	private String code;
+	
+	@Column(name = "isTrashed", nullable = false)
 	private boolean isTrashed;
 	
 	@ManyToMany(fetch = FetchType.LAZY)
@@ -125,7 +130,6 @@ public class Crisis implements java.io.Serializable {
 		this.crisisType = crisisType;
 	}
 
-	@Column(name = "name", nullable = false, length = 140)
 	public String getName() {
 		return this.name;
 	}
@@ -134,7 +138,6 @@ public class Crisis implements java.io.Serializable {
 		this.name = name;
 	}
 
-	@Column(name = "code", unique = true, nullable = false, length = 64)
 	public String getCode() {
 		return this.code;
 	}
@@ -143,7 +146,6 @@ public class Crisis implements java.io.Serializable {
 		this.code = code;
 	}
 
-	@Column(name = "isTrashed", nullable = false)
 	public boolean isIsTrashed() {
 		return this.isTrashed;
 	}

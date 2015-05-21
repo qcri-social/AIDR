@@ -1,4 +1,4 @@
-package qa.qcri.aidr.persister.filter;
+package qa.qcri.aidr.common.filter;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -6,7 +6,7 @@ import java.util.Date;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+//import org.codehaus.jackson.annotate.JsonProperty;
 
 /*
 @JsonTypeInfo(  
@@ -51,8 +51,8 @@ public abstract class QueryJsonObject implements Serializable {
 	abstract public void setComparator(ComparatorType comparator);
 
 
-	abstract public long getTimestamp();
-	abstract public void setTimestamp(long timestamp);
+	abstract public long getTime();
+	abstract public void setTime(long time);
 	
 	abstract public Date getDate();
 
@@ -60,12 +60,20 @@ public abstract class QueryJsonObject implements Serializable {
 	public String toString() {
 		StringBuilder object = new StringBuilder();
 		
-		object.append("{query_type: ").append(queryType).append(", ");
-		object.append("classifier_code: ").append(classifier_code).append(", ");
-		object.append("timestamp: ").append(timestamp).append(", ");
-		object.append("label_code: ").append(label_code).append(", ");
-		object.append("comparator: ").append(comparator).append(", ");
-		object.append("min_confidence: ").append(min_confidence).append("}");
+		object.append("{\"query_type\": \"").append(queryType).append("\", ");
+		if (classifier_code != null) {
+			object.append("\"classifier_code\": \"").append(classifier_code).append("\", ");
+		} else {
+			object.append("\"classifier_code\": null, ");
+		}
+		object.append("\"timestamp\": ").append(timestamp).append(", ");
+		object.append("\"comparator\": \"").append(comparator).append("\", ");
+		if (label_code != null) {
+			object.append("\"label_code\": \"").append(label_code).append("\", ");
+		} else {
+			object.append("\"label_code\": null, ");
+		}
+		object.append("\"min_confidence\": ").append(min_confidence).append("}");
 		
 		return object.toString();
 	}

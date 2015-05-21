@@ -1,4 +1,4 @@
-package qa.qcri.aidr.persister.filter;
+package qa.qcri.aidr.common.filter;
 
 import java.util.Date;
 
@@ -6,7 +6,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
-import qa.qcri.aidr.persister.filter.ComparatorType;
 
 @SuppressWarnings("serial")
 @XmlRootElement(name="ClassifierQueryJsonObject")
@@ -70,24 +69,32 @@ public class ClassifierQueryJsonObject extends QueryJsonObject {
 
 
 	@Override
-	public long getTimestamp() {
+	public long getTime() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public void setTimestamp(long timestamp) {
+	public void setTime(long time) {
 		// TODO Auto-generated method stub
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder object = new StringBuilder();
-		object.append("{query_type: ").append(queryType).append(", ");
-		object.append("classifier_code: ").append(classifier_code).append(", ");
-		object.append("label_code: ").append(label_code).append(", ");
-		object.append("comparator: ").append(comparator).append(", ");
-		object.append("min_confidence: ").append(min_confidence).append("}");
+		object.append("{\"query_type\": \"").append(queryType).append("\", ");
+		if (classifier_code != null) {
+			object.append("\"classifier_code\": \"").append(classifier_code).append("\", ");
+		} else {
+			object.append("\"classifier_code\": null, ");
+		}
+		object.append("\"comparator\": \"").append(comparator).append("\", ");
+		if (label_code != null) {
+			object.append("\"label_code\": \"").append(label_code).append("\", ");
+		} else {
+			object.append("\"label_code\": null, ");
+		}
+		object.append("\"min_confidence\": ").append(min_confidence).append("}");
 		return object.toString();
 	}
 
