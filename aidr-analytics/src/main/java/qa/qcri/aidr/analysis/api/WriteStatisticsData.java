@@ -30,10 +30,9 @@ import qa.qcri.aidr.analysis.stat.*;
 import qa.qcri.aidr.analysis.utils.GranularityData;
 import qa.qcri.aidr.analysis.facade.ConfidenceStatisticsResourceFacade;
 import qa.qcri.aidr.analysis.facade.TagDataStatisticsResourceFacade;
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.ReturnCode;
-import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
-import qa.qcri.aidr.output.filter.NominalLabel;
+import qa.qcri.aidr.common.filter.ClassifiedFilteredTweet;
+import qa.qcri.aidr.common.filter.NominalLabel;
 import qa.qcri.aidr.output.getdata.ChannelBufferManager;
 
 @Path("/save/")
@@ -41,7 +40,6 @@ public class WriteStatisticsData extends ChannelBufferManager implements Servlet
 
 	// Debugging
 	private static Logger logger = Logger.getLogger(WriteStatisticsData.class.getSuperclass());
-	private static ErrorLog elog = new ErrorLog();
 
 	private volatile boolean runFlag = false;
 
@@ -302,7 +300,7 @@ public class WriteStatisticsData extends ChannelBufferManager implements Servlet
 					} catch (InterruptedException e) {}
 				}
 			}
-			System.out.println("Done work - exiting thread: " + t.getName());
+			//System.out.println("Done work - exiting thread: " + t.getName());
 		}
 	}
 

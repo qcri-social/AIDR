@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.analysis.facade.ConfidenceStatisticsResourceFacade;
 import qa.qcri.aidr.common.code.DateFormatConfig;
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.output.getdata.ChannelBufferManager;
 
 @Path("/confData/")
@@ -27,7 +26,6 @@ public class GetConfidenceStatistics extends GetStatistics implements ServletCon
 	
 	// Debugging
 	private static Logger logger = Logger.getLogger(GetConfidenceStatistics.class);
-	private static ErrorLog elog = new ErrorLog();
 	
 	@EJB
     private ConfidenceStatisticsResourceFacade confDataEJB;
