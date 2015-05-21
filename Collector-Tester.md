@@ -49,3 +49,7 @@ The collector tester should perform the following steps:
 FAIL means printing a clear and informative message describing the condition and exiting with code 1 (non success).
 
 On interrupt by the user, the collector tester should attempt to call the collector's `/stop` method and exit with non-success code.
+
+Command to execute collector tester
+`mvn test -Dtest=collectorTesterTest -Dconfig=<configFilePath> -DcollectionTask=<collectionFilePath(properties,xml or json file)> -Dquiet=<true,false(default)> -Dtime=<(in seconds)(default 60)>`
+Except -Dtest all parameters are optional
