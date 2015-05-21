@@ -20,7 +20,6 @@ import org.apache.log4j.Logger;
 import qa.qcri.aidr.collector.api.TwitterCollectorAPI;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.CollectorStatus;
-import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
 import qa.qcri.aidr.collector.utils.GenericCache;
 
 /**
@@ -60,12 +59,7 @@ public class CollectorStartStopController extends HttpServlet {
 		for (CollectionTask collection: collections){
 			System.out.println("Stopping " + collection.getCollectionCode());
 			logger.info("Stopping " + collection.getCollectionCode());
-			try {
 				twitterCollector.stopTask(collection.getCollectionCode());
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
