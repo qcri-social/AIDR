@@ -68,10 +68,9 @@ public class TwitterCollectorAPI {
             response.setMessage("Missing one or more fields (toTrack, toFollow, and geoLocation). At least one field is required");
             return Response.ok(response).build();
         }
-
         String collectionCode = task.getCollectionCode();
 
-        //check if a task is already running with same configutations
+        //check if a task is already running with same configurations
         logger.info("Checking OAuth parameters for " + collectionCode);
         GenericCache cache = GenericCache.getInstance();
 		if (cache.isTwtConfigExists(task)) {
@@ -97,11 +96,16 @@ public class TwitterCollectorAPI {
 			task.setStatusMessage(null);
 			cache.setTwtConfigMap(cacheKey, task);
 			cache.setTwitterTracker(cacheKey, tracker);
-
-			if (Boolean.valueOf(getProperty("DEFAULT_PERSISTANCE_MODE"))) {
-				startPersister(collectionCode);
+			if(StringUtils.isEmpty(System.getProperty("DEFAULT_PERSISTANCE_MODE"))){
+				if (Boolean.valueOf(getProperty("DEFAULT_PERSISTANCE_MODE"))) {
+					startPersister(collectionCode);
+				}
 			}
-
+			else{
+				if (Boolean.valueOf(System.getProperty("DEFAULT_PERSISTANCE_MODE"))) {
+					startPersister(collectionCode);
+				}
+			}
 			response.setMessage(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
 			response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_INITIALIZING"));
 		} catch (Exception ex) {
@@ -115,7 +119,7 @@ public class TwitterCollectorAPI {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/stop")
-    public Response stopTask(@QueryParam("id") String collectionCode) throws InterruptedException {
+    public Response stopTask(@QueryParam("id") String collectionCode) {
         GenericCache cache = GenericCache.getInstance();
         TwitterStreamTracker tracker = cache.getTwitterTracker(collectionCode);
         CollectionTask task = cache.getConfig(collectionCode);
@@ -136,9 +140,16 @@ public class TwitterCollectorAPI {
 				return Response.ok(response).build();
 			}
 
-            if (Boolean.valueOf(getProperty("DEFAULT_PERSISTANCE_MODE"))) {
-                stopPersister(collectionCode);
-            }
+			if(StringUtils.isEmpty(System.getProperty("DEFAULT_PERSISTANCE_MODE"))){
+				if (Boolean.valueOf(getProperty("DEFAULT_PERSISTANCE_MODE"))) {
+					stopPersister(collectionCode);
+				}
+			}
+			else{
+				if (Boolean.valueOf(System.getProperty("DEFAULT_PERSISTANCE_MODE"))) {
+					stopPersister(collectionCode);
+				}
+			}
 
             logger.info(collectionCode + ": " + "Collector has been successfully stopped.");
         } else {

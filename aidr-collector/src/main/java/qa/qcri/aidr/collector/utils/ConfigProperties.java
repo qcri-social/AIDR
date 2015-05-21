@@ -1,11 +1,13 @@
 package qa.qcri.aidr.collector.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * User: yakubenkova.elena@gmail.com
@@ -23,8 +25,11 @@ public class ConfigProperties {
     }
 
     private static void initProperties() {
-        try (InputStream input = ConfigProperties.class.getClassLoader().getResourceAsStream(CONFIG_PROPERTIES);){
-            PROPERTIES.load(input);
+		try (InputStream input = StringUtils.isNotEmpty(System
+				.getProperty("config")) ? new FileInputStream(System
+				.getProperty("config").toString()) : ConfigProperties.class
+				.getClassLoader().getResourceAsStream(CONFIG_PROPERTIES);) {
+	PROPERTIES.load(input);
         } catch (IOException e) {
             LOGGER.error("Error in reading properties file: " + CONFIG_PROPERTIES, e);
         }

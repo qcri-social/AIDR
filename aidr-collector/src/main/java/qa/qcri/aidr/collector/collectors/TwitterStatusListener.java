@@ -12,6 +12,7 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
@@ -82,6 +83,13 @@ class TwitterStatusListener implements StatusListener {
 				//logger.info(originalDoc.get("text").toString() + ": failed on filter = " + filter.getFilterName());
 				return;
 			}
+		}
+		if (StringUtils.isNotEmpty(System.getProperty("quiet"))
+				&& (!Boolean.valueOf(System.getProperty("quiet")))) {
+			String tweetText = originalDoc.get("text").toString();
+			System.out.println("[" + originalDoc.get("timestamp_ms").toString()
+					+ "]"
+					+ tweetText.substring(0, Math.min(40, tweetText.length())));
 		}
 		JsonObjectBuilder builder = Json.createObjectBuilder();
 		for (Entry<String, JsonValue> entry: originalDoc.entrySet())

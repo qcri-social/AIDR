@@ -1,26 +1,14 @@
 package qa.qcri.aidr.collector.collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import java.io.StringReader;
 import java.lang.reflect.Field;
-
-import javax.json.Json;
-import javax.json.JsonObject;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import twitter4j.FilterQuery;
-import twitter4j.StallWarning;
-import twitter4j.Status;
-import twitter4j.StatusDeletionNotice;
-import twitter4j.StatusListener;
-import twitter4j.TwitterObjectFactory;
-import twitter4j.TwitterStream;
-import twitter4j.TwitterStreamFactory;
-import twitter4j.conf.ConfigurationBuilder;
 
 public class TwitterStreamTrackerTest {
 
@@ -28,58 +16,6 @@ public class TwitterStreamTrackerTest {
 	public void setUp() throws Exception {
 	}
 
-	public void twitterFlow() {
-		FilterQuery query = new FilterQuery();
-		query.track("minsk".split(","));
-		query.locations(new double[][]{new double[]{23.38,51.21}, new double[]{32.84,56.26}});
-		
-		ConfigurationBuilder configurationBuilder = new ConfigurationBuilder().setDebugEnabled(false)
-				.setJSONStoreEnabled(true)
-				.setOAuthConsumerKey("hEIRfBfxNt8HlnfmRGkwrqIGb")
-				.setOAuthConsumerSecret("swVbpPSxJsSFP0tifvQ1vVxhMDY3bpfdZT8nHOOfC8EIKMzTuD")
-				.setOAuthAccessToken("2222724937-A3TtpvkuwQoiD7PNE5XnC8Z5HbpsZDTX2dCEDDD")
-				.setOAuthAccessTokenSecret("TmwuKuXXeW0H6gmbOJSmsmL0p7yBgI2X9aYjQr15kvnUY");
-		
-		CollectionTask task = new CollectionTask();
-		task.setCollectionCode("code");
-		
-		TwitterStream twitterStream = new TwitterStreamFactory(configurationBuilder.build()).getInstance();
-		StatusListener listener = new StatusListener() {
-			public void onStatus(Status status) {
-				// System.out.println(status.getUser().getName() + " : " + status.getText());
-				// System.out.println(TwitterObjectFactory.getRawJSON(status));
-				String json = TwitterObjectFactory.getRawJSON(status);
-				JsonObject doc = Json.createReader(new StringReader(json)).readObject();
-				System.out.println(doc.get("coordinates"));
-			}
-
-			public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-			}
-
-			public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-			}
-
-			public void onException(Exception ex) {
-				ex.printStackTrace();
-			}
-
-			@Override
-			public void onScrubGeo(long userId, long upToStatusId) {
-			}
-
-			@Override
-			public void onStallWarning(StallWarning warning) {
-			}
-		};
-		twitterStream.addListener(listener);
-		twitterStream.filter(query);
-		try {
-			Thread.sleep(10000);
-		} catch (InterruptedException e) {
-			fail(e.getMessage());
-		}
-	}
-	
 	@Test
 	public void testTask2Query() throws Exception {
 		CollectionTask t1 = new CollectionTask();
