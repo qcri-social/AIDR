@@ -71,7 +71,7 @@ public class TaskAnswer implements java.io.Serializable {
 		this.timestamp = timestamp;
 	}
 
-	@Column(name = "answer", nullable = false, length = 65535)
+	@Column(name = "answer", nullable = false, length = 65535, columnDefinition="Text")
 	public String getAnswer() {
 		return this.answer;
 	}

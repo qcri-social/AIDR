@@ -94,7 +94,7 @@ public class CustomUiTemplate implements java.io.Serializable {
 		this.templateType = templateType;
 	}
 
-	@Column(name = "templateValue", nullable = false, length = 65535)
+	@Column(name = "templateValue", nullable = false, length = 65535, columnDefinition="Text")
 	public String getTemplateValue() {
 		return this.templateValue;
 	}
