@@ -42,14 +42,29 @@ public class TaggerServiceImpl implements TaggerService {
 
 	// @Autowired
 	// private Client client;
-	private static String taggerMainUrl = ManagerConfigurator.getInstance().getProperty(ManagerConfigurationProperty.TAGGER_MAIN_URL);
+	private static String taggerMainUrl;
 
-	private static String crowdsourcingAPIMainUrl = ManagerConfigurator.getInstance().getProperty(ManagerConfigurationProperty.COLLECTOR_MAIN_URL);
+	private static String crowdsourcingAPIMainUrl;
 
-	private static String persisterMainUrl = ManagerConfigurator.getInstance().getProperty(ManagerConfigurationProperty.PERSISTER_MAIN_URL);
+	private static String persisterMainUrl;
 
-	private static String outputAPIMainUrl = ManagerConfigurator.getInstance().getProperty(ManagerConfigurationProperty.OUTPUT_MAIN_URL);
+	private static String outputAPIMainUrl;
 
+	TaggerServiceImpl() {
+		taggerMainUrl = ManagerConfigurator.getInstance().getProperty(
+				ManagerConfigurationProperty.TAGGER_MAIN_URL);
+
+		crowdsourcingAPIMainUrl = ManagerConfigurator.getInstance()
+				.getProperty(ManagerConfigurationProperty.COLLECTOR_MAIN_URL);
+
+		persisterMainUrl = ManagerConfigurator.getInstance().getProperty(
+				ManagerConfigurationProperty.PERSISTER_MAIN_URL);
+
+		outputAPIMainUrl = ManagerConfigurator.getInstance().getProperty(
+				ManagerConfigurationProperty.OUTPUT_MAIN_URL);
+
+	}
+	
 	// new DTOs introduced. -Imran
 	@Override
 	public List<TaggerCrisisType> getAllCrisisTypes() throws AidrException {

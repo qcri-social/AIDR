@@ -18,6 +18,7 @@ public class ManagerConfigurator extends BaseConfigurator {
 
 	private ManagerConfigurator() {
 		LOGGER.info("Initializing Properties for aidr-manager.");
+		this.initProperties(configLoadFileName, ManagerConfigurationProperty.values());
 	}
 
 	public static ManagerConfigurator getInstance()
