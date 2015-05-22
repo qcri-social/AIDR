@@ -20,6 +20,9 @@ public class TwitterCollectorAPIRequestValidationTest {
 
 	@Before
 	public void setUp() throws Exception {
+		configProperties.initProperties(
+				CollectorConfigurator.configLoadFileName,
+				CollectorConfigurationProperty.values());
 		instance = new TwitterCollectorAPI();
 	}
 
