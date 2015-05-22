@@ -19,10 +19,6 @@ public class PersisterInitializationContextListener implements
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		// Initializing the configuration properties.
-		LOGGER.info("Intializing properties enum from the properties file.");
-		PersisterConfigurator.getInstance().initProperties(
-				PersisterConfigurator.configLoadFileName,
-				PersisterConfigurationProperty.values());
 	}
 
 	@Override

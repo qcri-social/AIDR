@@ -21,9 +21,6 @@ public class InitNDestroyTomcat implements ServletContextListener {
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		// Initializing the configuration properties.
-		CollectorConfigurator.getInstance().initProperties(
-				CollectorConfigurator.configLoadFileName,
-				CollectorConfigurationProperty.values());
 	}
 
 	@Override

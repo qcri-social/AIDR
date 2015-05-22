@@ -53,15 +53,12 @@
 package qa.qcri.aidr.output.getdata;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.ejb.Startup;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.ws.rs.Consumes;
@@ -75,18 +72,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-//import org.apache.log4j.BasicConfigurator;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-
-
-
-
-
-
-
-
 
 import org.apache.log4j.Logger;
 
@@ -597,7 +582,6 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		// Most important action - setup channel buffering thread
 		if (null == cbManager) {
 			logger.info("Initializing channel buffer manager with regEx pattern: " + CHANNEL_REG_EX);
-			OutputConfigurator.getInstance().initProperties(OutputConfigurator.configLoadFileName, OutputConfigurationProperty.values());
 			System.out.println("[contextInitialized] Initializing channel buffer manager with regEx pattern: " + CHANNEL_REG_EX);
 			//cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
 			cbManager = new ChannelBufferManager();

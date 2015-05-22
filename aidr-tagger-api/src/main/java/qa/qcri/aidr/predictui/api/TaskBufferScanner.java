@@ -73,11 +73,6 @@ public class TaskBufferScanner  {
 	 */
 	@PostConstruct
 	public void contextInitialized() {
-		
-		TaggerAPIConfigurator.getInstance().initProperties(
-				TaggerAPIConfigurator.configLoadFileName,
-				TaggerAPIConfigurationProperty.values());
-		
 		threadStatus = false;
 		executorService = Executors.newCachedThreadPool();
 		boolean isSuccess = startTaskBufferScannerThread(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.TASK_EXPIRY_AGE_LIMIT), TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.TASK_BUFFER_SCAN_INTERVAL));

@@ -73,8 +73,6 @@ public class WriteStatisticsData extends ChannelBufferManager implements
 
 		AnalyticsConfigurator configurator = AnalyticsConfigurator
 				.getInstance();
-		configurator.initProperties(AnalyticsConfigurator.configLoadFileName,
-				AnalyticsConfigurationProperty.values());
 		granularityList = configurator.getGranularities();
 
 		initiateChannelBufferManager(GetStatistics.CHANNEL_REG_EX);

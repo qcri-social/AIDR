@@ -21,6 +21,8 @@ public class OutputConfigurator extends BaseConfigurator {
 	private static final OutputConfigurator instance = new OutputConfigurator();
 
 	private OutputConfigurator() {
+		LOGGER.info("Initializing OutputConfigurator.");
+		this.initProperties(configLoadFileName, OutputConfigurationProperty.values());	
 	}
 
 	public static OutputConfigurator getInstance()

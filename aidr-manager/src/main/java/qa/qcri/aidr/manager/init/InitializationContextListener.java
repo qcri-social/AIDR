@@ -13,9 +13,6 @@ public class InitializationContextListener implements ServletContextListener {
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		// Initializing the configuration properties.
-		ManagerConfigurator.getInstance().initProperties(
-				ManagerConfigurator.configLoadFileName,
-				ManagerConfigurationProperty.values());
 	}
 
 	@Override

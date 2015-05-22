@@ -21,6 +21,10 @@ public class CollectorConfigurator extends BaseConfigurator {
 
 	private CollectorConfigurator() {
 		LOGGER.info("Creating instance.");
+		this.initProperties(
+				CollectorConfigurator.configLoadFileName,
+				CollectorConfigurationProperty.values());
+	
 	}
 
 	public static CollectorConfigurator getInstance()

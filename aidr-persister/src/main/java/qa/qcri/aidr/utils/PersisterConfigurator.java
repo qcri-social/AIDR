@@ -19,6 +19,7 @@ public class PersisterConfigurator extends BaseConfigurator {
 
 	private PersisterConfigurator() {
 		LOGGER.info("Instantiating PersisterConfigurator,");
+		this.initProperties(configLoadFileName, PersisterConfigurationProperty.values());
 	}
 
 	public static PersisterConfigurator getInstance() {

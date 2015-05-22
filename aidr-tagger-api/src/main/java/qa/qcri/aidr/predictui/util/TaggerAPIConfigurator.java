@@ -19,6 +19,7 @@ public class TaggerAPIConfigurator extends BaseConfigurator {
 
 	private TaggerAPIConfigurator() {
 		LOGGER.info("Instantiating TaggerConfigurator,");
+		this.initProperties(configLoadFileName, TaggerAPIConfigurationProperty.values());
 	}
 
 	public static Configurator getInstance() {

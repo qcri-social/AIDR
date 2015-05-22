@@ -25,6 +25,9 @@ public class AnalyticsConfigurator extends BaseConfigurator {
 	private Map<String, String> granularities;
 
 	private AnalyticsConfigurator() {
+		this.initProperties(configLoadFileName,
+				AnalyticsConfigurationProperty.values());
+
 	}
 
 	public static AnalyticsConfigurator getInstance() {
