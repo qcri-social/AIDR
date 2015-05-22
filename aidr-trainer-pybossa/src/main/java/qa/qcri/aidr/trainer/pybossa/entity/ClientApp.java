@@ -65,6 +65,9 @@ public class ClientApp implements Serializable {
     @Column (name = "groupID", nullable = true)
     private Long groupID;
 
+    @Column (name = "tcProjectId", nullable = true)
+    private Long tcProjectId;
+
 
     @ManyToOne
     @JoinColumn(name="clientID" ,nullable = false, insertable = false, updatable = false)
@@ -217,4 +220,6 @@ public class ClientApp implements Serializable {
     public void setGroupID(Long groupID) {
         this.groupID = groupID;
     }
+
+    public Long getTcProjectId() { return tcProjectId;}
 }

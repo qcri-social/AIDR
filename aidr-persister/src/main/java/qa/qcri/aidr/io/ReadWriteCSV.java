@@ -4,13 +4,8 @@
  */
 package qa.qcri.aidr.io;
 
-import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,21 +24,18 @@ import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.CsvMapWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.io.ICsvMapWriter;
-import org.supercsv.io.ICsvWriter;
 import org.supercsv.prefs.CsvPreference;
 import org.supercsv.encoder.DefaultCsvEncoder;
 import org.supercsv.exception.SuperCsvCellProcessorException;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
+//import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.SystemProperties;
-import qa.qcri.aidr.persister.filter.NominalLabel;
 import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
+import qa.qcri.aidr.common.filter.NominalLabel;
 import qa.qcri.aidr.utils.Tweet;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.utils.ClassifiedTweet;
@@ -57,7 +49,7 @@ public class ReadWriteCSV<CellProcessors> {
 
 	//private static final int BUFFER_SIZE = 10 * 1024 * 1024;
 	private static Logger logger = Logger.getLogger(ReadWriteCSV.class);
-	private static ErrorLog elog = new ErrorLog();
+	//private static ErrorLog elog = new ErrorLog();
 
 	private String collectionCode = null; 
 
@@ -70,6 +62,8 @@ public class ReadWriteCSV<CellProcessors> {
 	private static final int DEFAULT_CLASSIFIER_COUNT = 1;
 
 	private static int countWritten = 0;
+	
+	private String taggerMainUrl= "taggerMainUrl";
 
 	public ReadWriteCSV(String collectionCode) {
 		this.collectionCode = collectionCode;
@@ -167,7 +161,7 @@ public class ReadWriteCSV<CellProcessors> {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			logger.error("Error in creating CSV Bean writer!");
-			logger.error(elog.toStringException(e));
+			logger.error("Exception",e);
 		}
 		return null;
 	}
@@ -181,7 +175,7 @@ public class ReadWriteCSV<CellProcessors> {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			logger.error("Error in creating CSV Bean writer!");
-			logger.error(elog.toStringException(e));
+			logger.error("Exception",e);
 		}
 		return null;
 	}
@@ -247,7 +241,7 @@ public class ReadWriteCSV<CellProcessors> {
 			}
 		} catch (Exception ex) {
 			logger.error(collectionDIR + ": Exception occured when creating a mapWriter instance");
-			logger.error(elog.toStringException(ex));
+			logger.error("Exception",ex);
 			return null;
 		}
 
@@ -325,7 +319,7 @@ public class ReadWriteCSV<CellProcessors> {
 			}		
 		} catch (Exception ex) {
 			logger.error(collectionDIR + ": Exception occured when creating a mapWriter instance");
-			logger.error(elog.toStringException(ex));
+			logger.error("Exception",ex);
 			return null;
 		}
 
@@ -349,7 +343,7 @@ public class ReadWriteCSV<CellProcessors> {
 
 			} catch (SuperCsvCellProcessorException e) {
 				logger.error(collectionDIR + ": SuperCSV error. Offending tweet: " + tweet.getTweetID());
-				logger.error(elog.toStringException(e));
+				logger.error("Exception",e);
 			} catch (IOException e) {
 				logger.error(collectionDIR + "IOException in writing tweet: " + tweet.getTweetID());
 			}
@@ -418,7 +412,7 @@ public class ReadWriteCSV<CellProcessors> {
 			/**
 			 * Rest call to Tagger
 			 */
-			WebTarget webResource = client.target(SystemProperties.taggerMainUrl + "/crisis/attributes/count/" + collectionCode);
+			WebTarget webResource = client.target(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TAGGER_MAIN_URL) + "/crisis/attributes/count/" + collectionCode);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 			jsonResponse = clientResponse.readEntity(Map.class); 
 			logger.info("Tagger API returned: " + jsonResponse);

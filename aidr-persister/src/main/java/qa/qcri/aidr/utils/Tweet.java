@@ -2,10 +2,6 @@ package qa.qcri.aidr.utils;
 
 import java.io.Serializable;
 
-import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -188,6 +184,8 @@ public class Tweet  implements Document, Serializable{
 		return null;
 	}
 	
+	/*
+	 * HumanLabeledDocumentDTO class is not meant to be part of aidr-persister
 	public Tweet toTweetFromLabeledDoc(HumanLabeledDocumentDTO doc) {
 		if (doc != null) {
 			try {
@@ -201,4 +199,5 @@ public class Tweet  implements Document, Serializable{
 			return null;
 		}
   	}
+  	*/
 }

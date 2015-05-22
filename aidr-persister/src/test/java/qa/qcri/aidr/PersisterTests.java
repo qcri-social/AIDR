@@ -1,4 +1,4 @@
-package qa.qcri.aidr;
+/*package qa.qcri.aidr;
 
 import java.util.Map;
 
@@ -36,3 +36,4 @@ public class PersisterTests {
 		}
     }
 }
+*/

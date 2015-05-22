@@ -29,7 +29,6 @@ import org.apache.log4j.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import qa.qcri.aidr.common.code.FasterXmlWrapper;
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.analysis.dto.TagCountDTO;
 import qa.qcri.aidr.analysis.dto.TagCountSeriesDTO;
 import qa.qcri.aidr.analysis.dto.TimeWindowTagCountDTO;
@@ -47,7 +46,6 @@ public class GetTagDataStatistics extends GetStatistics implements ServletContex
 
 	// Debugging
 	private static Logger logger = Logger.getLogger(GetTagDataStatistics.class);
-	private static ErrorLog elog = new ErrorLog();
 
 	@EJB
 	private TagDataStatisticsResourceFacade tagDataEJB;
@@ -286,7 +284,7 @@ public class GetTagDataStatistics extends GetStatistics implements ServletContex
 			json.put("data", obj);
 		} catch (Exception e) {
 			logger.error("Serialization error");
-			logger.error(elog.toStringException(e));
+			logger.error("Exception:" + e);
 		}
 		return Response.ok(json.toJSONString()).build();
 	}

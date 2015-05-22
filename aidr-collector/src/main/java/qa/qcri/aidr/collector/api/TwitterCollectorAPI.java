@@ -31,9 +31,9 @@ import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
 import qa.qcri.aidr.collector.utils.GenericCache;
 
 /**
- * REST Web Service
- *
  * @author Imran
+ * RESTFul APIs to start and stop Twitter collections.
+ * TODO: remove non-API related operations such as startPersister to other appropriate classes.
  */
 @Path("/twitter")
 public class TwitterCollectorAPI {
@@ -69,10 +69,9 @@ public class TwitterCollectorAPI {
             response.setMessage("Missing one or more fields (toTrack, toFollow, and geoLocation). At least one field is required");
             return Response.ok(response).build();
         }
-
         String collectionCode = task.getCollectionCode();
 
-        //check if a task is already running with same configutations
+        //check if a task is already running with same configurations
         logger.info("Checking OAuth parameters for " + collectionCode);
         GenericCache cache = GenericCache.getInstance();
 		if (cache.isTwtConfigExists(task)) {
@@ -98,11 +97,16 @@ public class TwitterCollectorAPI {
 			task.setStatusMessage(null);
 			cache.setTwtConfigMap(cacheKey, task);
 			cache.setTwitterTracker(cacheKey, tracker);
-
-			if (Boolean.valueOf(configProperties.getProperty(CollectorConfigurationProperty.DEFAULT_PERSISTANCE_MODE))) {
-				startPersister(collectionCode);
+			if(StringUtils.isEmpty(configProperties.getProperty(CollectorConfigurationProperty.DEFAULT_PERSISTANCE_MODE))){
+				if (Boolean.valueOf(configProperties.getProperty(CollectorConfigurationProperty.DEFAULT_PERSISTANCE_MODE))) {
+					startPersister(collectionCode);
+				}
 			}
-
+			else{
+				if (Boolean.valueOf(configProperties.getProperty(CollectorConfigurationProperty.DEFAULT_PERSISTANCE_MODE))) {
+					startPersister(collectionCode);
+				}
+			}
 			response.setMessage(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_INITIALIZING));
 			response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_INITIALIZING));
 		} catch (Exception ex) {
@@ -116,7 +120,7 @@ public class TwitterCollectorAPI {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/stop")
-    public Response stopTask(@QueryParam("id") String collectionCode) throws InterruptedException {
+    public Response stopTask(@QueryParam("id") String collectionCode) {
         GenericCache cache = GenericCache.getInstance();
         TwitterStreamTracker tracker = cache.getTwitterTracker(collectionCode);
         CollectionTask task = cache.getConfig(collectionCode);
@@ -136,11 +140,16 @@ public class TwitterCollectorAPI {
 				response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_NOTFOUND));
 				return Response.ok(response).build();
 			}
-
-            if (Boolean.valueOf(configProperties.getProperty(CollectorConfigurationProperty.DEFAULT_PERSISTANCE_MODE))) {
-                stopPersister(collectionCode);
-            }
-
+			if(StringUtils.isEmpty(configProperties.getProperty(CollectorConfigurationProperty.DEFAULT_PERSISTANCE_MODE))){
+				if (Boolean.valueOf(configProperties.getProperty(CollectorConfigurationProperty.DEFAULT_PERSISTANCE_MODE))) {
+					stopPersister(collectionCode);
+				}
+			}
+			else{
+				if (Boolean.valueOf(configProperties.getProperty(CollectorConfigurationProperty.DEFAULT_PERSISTANCE_MODE))) {
+					stopPersister(collectionCode);
+				}
+			}
             logger.info(collectionCode + ": " + "Collector has been successfully stopped.");
         } else {
             logger.info("No collector instances found to be stopped with the given id:" + collectionCode);

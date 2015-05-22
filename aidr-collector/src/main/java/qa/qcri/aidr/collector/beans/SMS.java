@@ -6,6 +6,10 @@
  */
 package qa.qcri.aidr.collector.beans;
 
+/**
+ * @author Imran
+ * 
+ */
 public class SMS {
     private AIDR aidr;
     private String text;

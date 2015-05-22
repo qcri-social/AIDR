@@ -13,8 +13,8 @@ import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
- *
  * @author Imran
+ * Provides data structure to hold various collector-specific details.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "collectorStatus", propOrder = {

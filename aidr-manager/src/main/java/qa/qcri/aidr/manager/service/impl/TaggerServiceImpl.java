@@ -1091,7 +1091,7 @@ public class TaggerServiceImpl implements TaggerService {
 					Response.class);
 
 			String jsonResponse = clientResponse.readEntity(String.class);
-			System.out.println("jsonResponse: " + jsonResponse);
+			//System.out.println("jsonResponse: " + jsonResponse);
 
 			if (jsonResponse != null
 					&& (jsonResponse.startsWith("{") || jsonResponse

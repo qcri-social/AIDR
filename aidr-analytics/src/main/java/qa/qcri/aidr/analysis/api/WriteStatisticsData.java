@@ -30,10 +30,9 @@ import qa.qcri.aidr.analysis.utils.AnalyticsConfigurationProperty;
 import qa.qcri.aidr.analysis.utils.AnalyticsConfigurator;
 import qa.qcri.aidr.analysis.facade.ConfidenceStatisticsResourceFacade;
 import qa.qcri.aidr.analysis.facade.TagDataStatisticsResourceFacade;
-import qa.qcri.aidr.common.code.Configurator;
 import qa.qcri.aidr.common.values.ReturnCode;
-import qa.qcri.aidr.output.filter.ClassifiedFilteredTweet;
-import qa.qcri.aidr.output.filter.NominalLabel;
+import qa.qcri.aidr.common.filter.ClassifiedFilteredTweet;
+import qa.qcri.aidr.common.filter.NominalLabel;
 import qa.qcri.aidr.output.getdata.ChannelBufferManager;
 
 @Path("/save/")
@@ -378,7 +377,7 @@ public class WriteStatisticsData extends ChannelBufferManager implements
 					}
 				}
 			}
-			System.out.println("Done work - exiting thread: " + t.getName());
+			//System.out.println("Done work - exiting thread: " + t.getName());
 		}
 	}
 

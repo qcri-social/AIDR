@@ -19,7 +19,7 @@ public enum PersisterConfigurationProperty implements ConfigurationProperty {
 			"PERSISTER_LOAD_LIMIT"), PERSISTER_LOAD_CHECK_INTERVAL_MINUTES(
 			"PERSISTER_LOAD_CHECK_INTERVAL_MINUTES"), INPUT_PORT("INPUT_PORT"), OUTPUT_PORT(
 			"OUTPUT_PORT"), REDIS_HOST("REDIS_HOST"), REDIS_PORT("REDIS_PORT"), STATUS_CODE_ERROR(
-			"STATUS_CODE_ERROR");
+			"STATUS_CODE_ERROR"), TAGGER_MAIN_URL("taggerMainUrl");
 
 	private final String configurationProperty;
 

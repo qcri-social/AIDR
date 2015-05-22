@@ -36,13 +36,13 @@ public class SyncWorker implements Worker {
         logger.info("Scheduler is starting");
         try {
 
-            pybossaWorker.doCreateApp();
+           // pybossaWorker.doCreateApp();
             clientAppRunWorker.processTaskPublish();
             clientAppRunWorker.processTaskRunImport();
 
-            microMapperWorker.processTaskExport();
+           // microMapperWorker.processTaskExport();
 
-            Thread.sleep(600000); // simulates work
+            Thread.sleep(300000); // simulates work
 
         }
         catch (InterruptedException e) {

@@ -53,6 +53,7 @@ public class ModelFamily implements java.io.Serializable {
 	@JsonBackReference
 	private Crisis crisis;
 
+	@Column(name = "isActive", nullable = false)
 	private boolean isActive;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "modelFamily")
@@ -102,7 +103,6 @@ public class ModelFamily implements java.io.Serializable {
 		this.crisis = crisis;
 	}
 
-	@Column(name = "isActive", nullable = false)
 	public boolean isIsActive() {
 		return this.isActive;
 	}

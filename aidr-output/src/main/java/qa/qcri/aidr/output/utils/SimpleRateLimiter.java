@@ -4,6 +4,14 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * This class reproduces functionality from the LoadShedder in aidr-common, should be deprecated.
+ * 
+ * TODO: remove this class, replace by LoadShedder.
+ * 
+ * @author ksingha
+ *
+ */
 public class SimpleRateLimiter extends RateLimiter {
 		
 		public static final int DEFAULT_SIZE = 10;

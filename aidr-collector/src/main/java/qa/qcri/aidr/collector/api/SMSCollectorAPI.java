@@ -33,9 +33,9 @@ import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.redis.LoadShedder;
 
 /**
- * REST Web Service
- *
  * @author Imran
+ * Provides RESTFul APIS to start and stop SMS collections.
+ * TODO: remove non-API methods from this class.
  */
 @Path("/sms")
 public class SMSCollectorAPI  {

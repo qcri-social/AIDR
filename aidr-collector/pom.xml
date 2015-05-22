@@ -166,6 +166,31 @@
 				<version>2.17</version>
 				<configuration>
 					<skipTests>false</skipTests>
+					<includes>
+						<include>**/AllTestSuite.java</include>
+					</includes>
+					<systemProperties>
+					  <property>
+						 <name>DEFAULT_PERSISTANCE_MODE</name>
+						 <value>false</value>
+					  </property>
+					  <property>
+						 <name>config</name>
+						 <value>${config}</value>
+					  </property>
+					  <property>
+						 <name>collectionTask</name>
+						 <value>${collectionTask}</value>
+					  </property>
+					  <property>
+						 <name>time</name>
+						 <value>60</value>
+					  </property>
+					  <property>
+						 <name>quiet</name>
+						 <value>false</value>
+					  </property>
+					</systemProperties>
 				</configuration>
 			</plugin>
 			<plugin>

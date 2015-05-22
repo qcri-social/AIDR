@@ -19,8 +19,8 @@ import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.HumanLabeledDocumentListWrapper;
-import qa.qcri.aidr.persister.filter.DeserializeFilters;
-import qa.qcri.aidr.persister.filter.JsonQueryList;
+import qa.qcri.aidr.common.filter.DeserializeFilters;
+import qa.qcri.aidr.common.filter.JsonQueryList;
 import qa.qcri.aidr.utils.DownloadJsonType;
 import qa.qcri.aidr.utils.JsonDeserializer;
 import qa.qcri.aidr.utils.PersisterConfigurationProperty;

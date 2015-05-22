@@ -212,8 +212,8 @@ public class DataStore {
 				mySqlPool = new ConnectionPool("aidr-backend",
 						10, // min-pool default = 1
 						40, // max-pool default = 5
-						60, // max-size default 30
-						1, // timeout (sec)
+						200, // max-size default 30
+						500, // timeout (sec)
 						TaggerConfigurator.getInstance().getProperty(
 								TaggerConfigurationProperty.MYSQL_PATH),
 						TaggerConfigurator.getInstance().getProperty(

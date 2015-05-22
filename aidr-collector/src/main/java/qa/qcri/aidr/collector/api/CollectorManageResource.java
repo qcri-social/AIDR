@@ -32,9 +32,9 @@ import qa.qcri.aidr.collector.utils.GenericCache;
 import qa.qcri.aidr.common.logging.ErrorLog;
 
 /**
- * REST Web Service
- *
  * @author Imran
+ * Provides RESTFul APIs to various management-related services.
+ * 
  */
 @Path("/manage")
 public class CollectorManageResource {

@@ -9,8 +9,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- *
  * @author Imran
+ * A JAVA POJO class used to define a collection (i.e. Twitter collection) details.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "config", propOrder = {
