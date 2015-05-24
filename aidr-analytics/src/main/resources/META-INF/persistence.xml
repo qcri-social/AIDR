@@ -6,8 +6,8 @@
     <class>qa.qcri.aidr.analysis.entity.TagData</class>
     <class>qa.qcri.aidr.analysis.entity.ConfidenceData</class>
     <properties>
-      <property name="hibernate.show_sql" value="true"/>
-      <property name="hibernate.format_sql" value="true"/>
+      <property name="hibernate.show_sql" value="false"/>
+      <property name="hibernate.format_sql" value="false"/>
       <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
       <property name="hibernate.hbm2ddl.auto" value="${ANALYTICS_DB_HBM2DDL}"/>
     </properties>
@@ -16,7 +16,7 @@
   <persistence-unit name="qa.qcri.aidr.TaskManager-PU" transaction-type="JTA">
     <!-- provider>org.hibernate.ejb.HibernatePersistence</provider -->
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-    <jta-data-source>${TAGGER_JNDI}</jta-data-source>
+    <jta-data-source>${DB_MANAGER_JNDI}</jta-data-source>
     <properties>
       <property name="hibernate.show_sql" value="false"/>
       <property name="hibernate.format_sql" value="false"/>
