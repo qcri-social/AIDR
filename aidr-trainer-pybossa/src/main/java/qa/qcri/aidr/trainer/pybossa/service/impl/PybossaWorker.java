@@ -105,7 +105,7 @@ public class PybossaWorker implements ClientAppRunWorker {
 
         List<ClientApp> clientAppList = clientAppService.findClientAppByStatus(StatusCodeType.AIDR_ONLY);
         Iterator itr= clientAppList.iterator();
-
+        pybossaFormatter.setTranslationService(translationService);
         while(itr.hasNext()){
             ClientApp clientApp = (ClientApp)itr.next();
             setClassVariable(clientApp.getClient());
@@ -284,6 +284,7 @@ public class PybossaWorker implements ClientAppRunWorker {
                 TaskQueue taskQueue = taskQueues.get(i);
                 if(!this.isExpiredTaskQueue(taskQueue)){
                     Long taskID =  taskQueue.getTaskID();
+                    System.out.print("taskID :" + taskID);
                     String taskQueryURL = PYBOSSA_API_TASK_BASE_URL + clientApp.getPlatformAppID() + "&id=" + taskID;
                     String inputData = pybossaCommunicator.sendGet(taskQueryURL);
 

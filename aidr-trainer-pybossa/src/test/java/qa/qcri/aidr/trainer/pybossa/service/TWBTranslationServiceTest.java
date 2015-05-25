@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import qa.qcri.aidr.trainer.pybossa.entity.ClientApp;
 import qa.qcri.aidr.trainer.pybossa.entity.TaskTranslation;
 import qa.qcri.aidr.trainer.pybossa.format.impl.TranslationRequestModel;
+import qa.qcri.aidr.trainer.pybossa.service.impl.PybossaWorker;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,11 +34,16 @@ public class TWBTranslationServiceTest {
     ClientAppService clientAppService;
 
     @Autowired
-    private MicroMapperWorker microMapperWorker;
+    private ClientAppRunWorker pybossaWorker;
 
-    private static final long TEST_CLIENT_ID = 4;
+    private static final long TEST_CLIENT_ID = 3;
     private static final String NEW_CLIENT_APP_ID = "1211";
     private static final long TEST_TWB_PROJECT_ID = 5681;
+
+    @Test
+    public void testPybossaWorker() throws Exception {
+        pybossaWorker.processTaskRunImport();
+    }
 
     @Test
     public void testPullAllTranslationResponses() throws Exception {

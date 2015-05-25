@@ -128,7 +128,7 @@ public class TranslationCenterCommunicator {
                 TaskTranslation translation = iterator.next();
                 buffer.append(Long.toString(translation.getTaskId()));
                 buffer.append(",");
-                buffer.append(translation.getOriginalText());
+                buffer.append(translation.getCSVFormattedOriginalText());
                 buffer.append(",");
                 buffer.append(",");
                 buffer.append("\n");

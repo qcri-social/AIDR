@@ -107,6 +107,10 @@ public class TaskTranslation {
 		return originalText;
 	}
 
+    public String getCSVFormattedOriginalText() {
+        return originalText.replaceAll("[\r\n]", "");
+    }
+
 	public void setOriginalText(String originalText) {
 		this.originalText = originalText;
 	}
