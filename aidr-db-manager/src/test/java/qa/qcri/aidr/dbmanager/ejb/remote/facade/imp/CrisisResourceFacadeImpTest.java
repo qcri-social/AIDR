@@ -6,15 +6,14 @@
 
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.ejb.embeddable.EJBContainer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
+import javax.persistence.Persistence;
 
-import org.hibernate.Session;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -22,18 +21,19 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
-import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
-import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
+import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
+import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 
-/**
- *
- * @author Imran
- */
+
 public class CrisisResourceFacadeImpTest {
-    
-    public CrisisResourceFacadeImpTest() {
-    }
+    static CrisisResourceFacadeImp crisisResourceFacadeImp;
+    static UsersResourceFacadeImp userResourceFacadeImp;
+    static CrisisTypeResourceFacadeImp crisisTypeResourceFacadeImp;
+    static EntityManager entityManager;
+    static CrisisDTO addCrisis;
+    static CrisisDTO editCrisis;
     
     @BeforeClass
     public static void setUpClass() {
@@ -45,486 +45,287 @@ public class CrisisResourceFacadeImpTest {
     
     @Before
     public void setUp() {
+        crisisResourceFacadeImp = new CrisisResourceFacadeImp();
+        entityManager = Persistence.createEntityManagerFactory("ProjectDBManagerTest-ejbPU").createEntityManager();
+	crisisResourceFacadeImp.setEntityManager(entityManager);
+        //
+        crisisTypeResourceFacadeImp = new CrisisTypeResourceFacadeImp();
+        userResourceFacadeImp = new UsersResourceFacadeImp();
+        crisisTypeResourceFacadeImp.setEntityManager(entityManager);
+        userResourceFacadeImp.setEntityManager(entityManager);
     }
     
     @After
     public void tearDown() {
     }
-
-    /**
-     * Test of getEntityManager method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testGetEntityManager() throws Exception {
-        System.out.println("getEntityManager");
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        EntityManager expResult = null;
-        EntityManager result = instance.getEntityManager();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    
+    @AfterClass
+    public static void shutDown() throws Exception {
+        if(addCrisis != null)
+            crisisResourceFacadeImp.deleteCrisis(addCrisis);
+        if(editCrisis != null)
+            crisisResourceFacadeImp.deleteCrisis(editCrisis);
+        //
+	crisisResourceFacadeImp.getEntityManager().close();
     }
 
-    /**
-     * Test of setEntityManager method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testSetEntityManager() throws Exception {
-        System.out.println("setEntityManager");
-        EntityManager em = null;
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        int expResult = 0;
-        int result = instance.setEntityManager(em);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getCurrentSession method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testGetCurrentSession() throws Exception {
-        System.out.println("getCurrentSession");
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        Session expResult = null;
-        Session result = instance.getCurrentSession();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getById method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testGetById() throws Exception {
-        System.out.println("getById");
-        Long id = null;
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        Crisis expResult = null;
-        Crisis result = instance.getById(id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getByCriterionID method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testGetByCriterionID() throws Exception {
-        System.out.println("getByCriterionID");
-        Criterion criterion = null;
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        Crisis expResult = null;
-        Crisis result = instance.getByCriterionID(criterion);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getByCriteria method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testGetByCriteria() throws Exception {
-        System.out.println("getByCriteria");
-        Criterion criterion = null;
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        Crisis expResult = null;
-        Crisis result = instance.getByCriteria(criterion);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getAll method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testGetAll() throws Exception {
-        System.out.println("getAll");
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        List<Crisis> expResult = null;
-        List<Crisis> result = instance.getAll();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getAllByCriteria method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testGetAllByCriteria() throws Exception {
-        System.out.println("getAllByCriteria");
-        Criterion criterion = null;
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        List<Crisis> expResult = null;
-        List<Crisis> result = instance.getAllByCriteria(criterion);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getByCriteriaWithLimit method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testGetByCriteriaWithLimit() throws Exception {
-        System.out.println("getByCriteriaWithLimit");
-        Criterion criterion = null;
-        Integer count = null;
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        List<Crisis> expResult = null;
-        List<Crisis> result = instance.getByCriteriaWithLimit(criterion, count);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getByCriteriaByOrder method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testGetByCriteriaByOrder() throws Exception {
-        System.out.println("getByCriteriaByOrder");
-        Criterion criterion = null;
-        String order = "";
-        String[] orderBy = null;
-        Integer count = null;
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        List<Crisis> expResult = null;
-        List<Crisis> result = instance.getByCriteriaByOrder(criterion, order, orderBy, count);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getByCriteriaWithAliasByOrder method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testGetByCriteriaWithAliasByOrder() throws Exception {
-        System.out.println("getByCriteriaWithAliasByOrder");
-        Criterion criterion = null;
-        String order = "";
-        String[] orderBy = null;
-        Integer count = null;
-        String aliasTable = "";
-        Criterion aliasCriterion = null;
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        List<Crisis> expResult = null;
-        List<Crisis> result = instance.getByCriteriaWithAliasByOrder(criterion, order, orderBy, count, aliasTable, aliasCriterion);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of getByCriteriaWithInnerJoinByOrder method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testGetByCriteriaWithInnerJoinByOrder() throws Exception {
-        System.out.println("getByCriteriaWithInnerJoinByOrder");
-        Criterion criterion = null;
-        String order = "";
-        String[] orderBy = null;
-        Integer count = null;
-        String aliasTable = "document";
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        List<Crisis> expResult = null;
-        List<Crisis> result = instance.getByCriteriaWithInnerJoinByOrder(criterion, order, orderBy, count, aliasTable, Restrictions.isNotEmpty("crisis"));
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of update method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testUpdate_GenericType() throws Exception {
-        System.out.println("update");
-        Crisis e = null;
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        instance.update(e);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of update method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testUpdate_List() throws Exception {
-        System.out.println("update");
-        List<Crisis> entityCollection = null;
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        instance.update(entityCollection);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of save method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testSave_GenericType() throws Exception {
-        System.out.println("save");
-        Crisis e = null;
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        instance.save(e);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of merge method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testMerge_GenericType() throws Exception {
-        System.out.println("merge");
-        Crisis e = null;
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        instance.merge(e);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of merge method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testMerge_List() throws Exception {
-        System.out.println("merge");
-        List<Crisis> entityCollection = null;
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        instance.merge(entityCollection);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of save method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testSave_List() throws Exception {
-        System.out.println("save");
-        List<Crisis> entityCollection = null;
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        instance.save(entityCollection);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of delete method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testDelete_GenericType() throws Exception {
-        System.out.println("delete");
-        Crisis e = null;
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        instance.delete(e);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of delete method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testDelete_List() throws Exception {
-        System.out.println("delete");
-        List<Crisis> entityCollection = null;
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        instance.delete(entityCollection);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of deleteByCriteria method, of class CrisisResourceFacadeImp.
-     */
-    @Test
-    public void testDeleteByCriteria() throws Exception {
-        System.out.println("deleteByCriteria");
-        Criterion criterion = null;
-        CrisisResourceFacadeImp instance = new CrisisResourceFacadeImp();
-        instance.deleteByCriteria(criterion);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
+     /**
      * Test of findByCriteria method, of class CrisisResourceFacadeImp.
      */
     @Test
-    public void testFindByCriteria() throws Exception {
-        System.out.println("findByCriteria");
-        String columnName = "";
-        Long value = null;
-        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-        CrisisResourceFacade instance = (CrisisResourceFacade)container.getContext().lookup("java:global/classes/CrisisResourceFacadeImp");
-        List<CrisisDTO> expResult = null;
-        List<CrisisDTO> result = instance.findByCriteria(columnName, value);
-        assertEquals(expResult, result);
-        container.close();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testFindByCriteria() {
+        System.out.println("FindByCriteria");
+        try {
+            String columnName = "code";
+            String value = "Qatar";
+            List<CrisisDTO> result = crisisResourceFacadeImp.findByCriteria(columnName, value);
+            //
+            assertEquals("Qatar", result.get(0).getCode());
+            assertEquals(Long.valueOf(76), result.get(0).getCrisisID());
+        } catch (PropertyNotSetException ex) {
+           // Logger.getLogger(CrisisResourceFacadeImpTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-
-    /**
+    
+    @Test
+    public void testDeleteCrisis() {
+        try {
+            System.out.println("DeleteCrisis");
+            CrisisDTO crisis = new CrisisDTO();
+            crisis.setName("testDelDB");
+            crisis.setCode("testDelDB code");
+            crisis.setIsTrashed(true);
+            CrisisTypeDTO crisisTypeDTO = crisisTypeResourceFacadeImp.findCrisisTypeByID(1100L);
+            crisis.setCrisisTypeDTO(crisisTypeDTO);
+            UsersDTO user = userResourceFacadeImp.getUserById(9L);
+            crisis.setUsersDTO(user);
+            entityManager.getTransaction().begin();
+            crisisResourceFacadeImp.addCrisis(crisis);
+            entityManager.getTransaction().commit();
+            //
+            entityManager.getTransaction().begin();
+            int deleteCount = crisisResourceFacadeImp.deleteCrisis(crisis);
+            entityManager.getTransaction().commit();
+            //
+            assertEquals(1, deleteCount); 
+        } catch (PropertyNotSetException ex) {
+            //Logger.getLogger(CrisisResourceFacadeImpTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+     /**
      * Test of addCrisis method, of class CrisisResourceFacadeImp.
      */
     @Test
-    public void testAddCrisis() throws Exception {
-        System.out.println("addCrisis");
-        CrisisDTO crisis = null;
-        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-        CrisisResourceFacade instance = (CrisisResourceFacade)container.getContext().lookup("java:global/classes/CrisisResourceFacadeImp");
-        CrisisDTO expResult = null;
-        CrisisDTO result = instance.addCrisis(crisis);
-        assertEquals(expResult, result);
-        container.close();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testAddCrisis() {
+        try {
+            System.out.println("AddCrisis");
+            addCrisis = new CrisisDTO();
+            addCrisis.setName("testdb");
+            addCrisis.setCode("testdb code");
+            addCrisis.setIsTrashed(false);
+            
+            CrisisTypeDTO crisisTypeDTO = crisisTypeResourceFacadeImp.findCrisisTypeByID(1100L);
+            addCrisis.setCrisisTypeDTO(crisisTypeDTO);
+            UsersDTO user = userResourceFacadeImp.getUserById(9L);
+            addCrisis.setUsersDTO(user);
+            entityManager.getTransaction().begin();
+            CrisisDTO result = crisisResourceFacadeImp.addCrisis(addCrisis);
+            entityManager.getTransaction().commit();
+            //
+            assertEquals("testdb", result.getName());
+        } catch (PropertyNotSetException ex) {
+            Logger.getLogger(CrisisResourceFacadeImpTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-
-    /**
-     * Test of getCrisisByID method, of class CrisisResourceFacadeImp.
-     */
+    
     @Test
-    public void testGetCrisisByID() throws Exception {
-        System.out.println("getCrisisByID");
-        Long id = null;
-        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-        CrisisResourceFacade instance = (CrisisResourceFacade)container.getContext().lookup("java:global/classes/CrisisResourceFacadeImp");
-        CrisisDTO expResult = null;
-        CrisisDTO result = instance.findCrisisByID(id);
-        assertEquals(expResult, result);
-        container.close();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testFindCrisisByID() {
+        System.out.println("FindCrisisByID");
+        try {
+            CrisisDTO crisisDTO = crisisResourceFacadeImp.findCrisisByID(58L);
+            //
+            assertEquals("Cyclone-Flood Italy", crisisDTO.getName());
+        } catch (PropertyNotSetException ex) {
+           // Logger.getLogger(CrisisResourceFacadeImpTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-
-    /**
+    
+    @Test
+    public void testGetCrisisWithAllFieldsByID() {
+        System.out.println("GetCrisisWithAllFieldsByID");
+        try {
+            CrisisDTO crisisDTO = crisisResourceFacadeImp.getCrisisWithAllFieldsByID(84L);
+            //
+            assertEquals("Hurricane Sandy", crisisDTO.getName());
+        } catch (PropertyNotSetException ex) {
+           // Logger.getLogger(CrisisResourceFacadeImpTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail(ex.toString());
+        }
+    }
+    
+     /**
      * Test of getCrisisByCode method, of class CrisisResourceFacadeImp.
      */
     @Test
-    public void testGetCrisisByCode() throws Exception {
-        System.out.println("getCrisisByCode");
-        String code = "";
-        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-        CrisisResourceFacade instance = (CrisisResourceFacade)container.getContext().lookup("java:global/classes/CrisisResourceFacadeImp");
-        CrisisDTO expResult = null;
-        CrisisDTO result = instance.getCrisisByCode(code);
-        assertEquals(expResult, result);
-        container.close();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testGetCrisisByCode() {
+        System.out.println("GetCrisisByCode");
+        try {
+            String code = "yolan_0_nov-13";
+            CrisisDTO result = crisisResourceFacadeImp.getCrisisByCode(code);
+            //
+            assertNotNull(result);
+            assertEquals("yolan_0_nov-13", result.getCode());
+        } catch (PropertyNotSetException ex) {
+           // Logger.getLogger(CrisisResourceFacadeImpTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-
-    /**
+    
+     /**
      * Test of editCrisis method, of class CrisisResourceFacadeImp.
      */
     @Test
-    public void testEditCrisis() throws Exception {
-        System.out.println("editCrisis");
-        CrisisDTO crisis = null;
-        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-        CrisisResourceFacade instance = (CrisisResourceFacade)container.getContext().lookup("java:global/classes/CrisisResourceFacadeImp");
-        CrisisDTO expResult = null;
-        CrisisDTO result = instance.editCrisis(crisis);
-        assertEquals(expResult, result);
-        container.close();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testEditCrisis() {
+        System.out.println("EditCrisis");
+        try {
+            CrisisDTO crisis = new CrisisDTO();
+            crisis.setName("testEditDB");
+            crisis.setCode("testEditDB code");
+            crisis.setIsTrashed(false);
+            CrisisTypeDTO crisisTypeDTO = crisisTypeResourceFacadeImp.findCrisisTypeByID(1100L);
+            crisis.setCrisisTypeDTO(crisisTypeDTO);
+            UsersDTO user = userResourceFacadeImp.getUserById(9L);
+            crisis.setUsersDTO(user);
+            entityManager.getTransaction().begin();
+            CrisisDTO addedCrisis = crisisResourceFacadeImp.addCrisis(crisis);
+            entityManager.getTransaction().commit();
+            //
+            editCrisis = crisisResourceFacadeImp.findCrisisByID(addedCrisis.getCrisisID());
+            editCrisis.setName("testEditDB1");
+            editCrisis.setCode("testEditDB1 code");
+            //
+            entityManager.getTransaction().begin();
+            CrisisDTO result = crisisResourceFacadeImp.editCrisis(editCrisis);
+            entityManager.getTransaction().commit();
+            //
+            assertEquals("testEditDB1", result.getName());
+            assertEquals("testEditDB1 code", result.getCode());
+        } catch (PropertyNotSetException ex) {
+           // Logger.getLogger(CrisisResourceFacadeImpTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-
-    /**
+    
+    @Test
+    public void testFindActiveCrisis() {
+        System.out.println("FindActiveCrisis");
+        try {
+            List<CrisisDTO> list = crisisResourceFacadeImp.findActiveCrisis();
+            //
+            assertEquals(false, list.get(0).isIsTrashed());
+        } catch (PropertyNotSetException ex) {
+           // Logger.getLogger(CrisisResourceFacadeImpTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+     /**
      * Test of getAllCrisis method, of class CrisisResourceFacadeImp.
      */
     @Test
-    public void testGetAllCrisis() throws Exception {
-        System.out.println("getAllCrisis");
-        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-        CrisisResourceFacade instance = (CrisisResourceFacade)container.getContext().lookup("java:global/classes/CrisisResourceFacadeImp");
-        List<CrisisDTO> expResult = null;
-        List<CrisisDTO> result = instance.getAllCrisis();
-        assertEquals(expResult, result);
-        container.close();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testGetAllCrisis() {
+        System.out.println("GetAllCrisis");
+        try {
+            List<CrisisDTO> result = crisisResourceFacadeImp.getAllCrisis();
+            assertNotNull(result);
+        } catch (PropertyNotSetException ex) {
+           // Logger.getLogger(CrisisResourceFacadeImpTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
      * Test of getAllCrisisWithModelFamilies method, of class CrisisResourceFacadeImp.
      */
     @Test
-    public void testGetAllCrisisWithModelFamilies() throws Exception {
-        System.out.println("getAllCrisisWithModelFamilies");
-        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-        CrisisResourceFacade instance = (CrisisResourceFacade)container.getContext().lookup("java:global/classes/CrisisResourceFacadeImp");
-        List<CrisisDTO> expResult = null;
-        List<CrisisDTO> result = instance.getAllCrisisWithModelFamilies();
-        assertEquals(expResult, result);
-        container.close();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testGetAllCrisisWithModelFamilies() {
+        System.out.println("GetAllCrisisWithModelFamilies");
+        try {
+            List<CrisisDTO> result = crisisResourceFacadeImp.getAllCrisisWithModelFamilies();
+            assertNotNull(result.get(0).getModelFamiliesDTO());
+        } catch (PropertyNotSetException ex) {
+           // Logger.getLogger(CrisisResourceFacadeImpTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @Test
+    public void testGetAllCrisisWithModelFamilyNominalAttribute() {
+        System.out.println("GetAllCrisisWithModelFamilyNominalAttribute");
+        try {
+            List<CrisisDTO> list = crisisResourceFacadeImp.getAllCrisisWithModelFamilyNominalAttribute();
+            //
+            assertNotNull(list.get(0).getModelFamiliesDTO());
+            assertNotNull(list.get(0).getNominalAttributesDTO());
+        } catch (PropertyNotSetException ex) {
+            //Logger.getLogger(CrisisResourceFacadeImpTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
      * Test of getAllCrisisByUserID method, of class CrisisResourceFacadeImp.
      */
     @Test
-    public void testGetAllCrisisByUserID() throws Exception {
-        System.out.println("getAllCrisisByUserID");
-        Long userID = null;
-        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-        CrisisResourceFacade instance = (CrisisResourceFacade)container.getContext().lookup("java:global/classes/CrisisResourceFacadeImp");
-        List<CrisisDTO> expResult = null;
-        List<CrisisDTO> result = instance.getAllCrisisByUserID(userID);
-        assertEquals(expResult, result);
-        container.close();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testGetAllCrisisByUserID() {
+        System.out.println("GetAllCrisisByUserID");
+        try {
+            Long userID = 4L;
+            List<CrisisDTO> result = crisisResourceFacadeImp.getAllCrisisByUserID(userID);
+            //
+            assertEquals(Long.valueOf(4L), result.get(0).getUsersDTO().getUserID());
+        } catch (PropertyNotSetException ex) {
+           // Logger.getLogger(CrisisResourceFacadeImpTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
      * Test of isCrisisExists method, of class CrisisResourceFacadeImp.
      */
     @Test
-    public void testIsCrisisExists() throws Exception {
-        System.out.println("isCrisisExists");
-        String crisisCode = "";
-        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-        CrisisResourceFacade instance = (CrisisResourceFacade)container.getContext().lookup("java:global/classes/CrisisResourceFacadeImp");
-        boolean expResult = false;
-        boolean result = instance.isCrisisExists(crisisCode);
-        assertEquals(expResult, result);
-        container.close();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testIsCrisisExists() {
+        System.out.println("IsCrisisExists");
+        try {
+            String crisisCode = "prism_nsa";
+            boolean result = crisisResourceFacadeImp.isCrisisExists(crisisCode);
+            //
+            assertEquals(true, result);
+        } catch (PropertyNotSetException ex) {
+           // Logger.getLogger(CrisisResourceFacadeImpTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
      * Test of countClassifiersByCrisisCodes method, of class CrisisResourceFacadeImp.
      */
     @Test
-    public void testCountClassifiersByCrisisCodes() throws Exception {
-        System.out.println("countClassifiersByCrisisCodes");
-        List<String> codes = null;
-        EJBContainer container = javax.ejb.embeddable.EJBContainer.createEJBContainer();
-        CrisisResourceFacade instance = (CrisisResourceFacade)container.getContext().lookup("java:global/classes/CrisisResourceFacadeImp");
-        HashMap<String, Integer> expResult = null;
-        HashMap<String, Integer> result = instance.countClassifiersByCrisisCodes(codes);
-        assertEquals(expResult, result);
-        container.close();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testCountClassifiersByCrisisCodes() {
+        System.out.println("CountClassifiersByCrisisCodes");
+        // TODO
+        List<String> codes = new ArrayList<String>();
+        codes.add("stjude_oct-13");
+        codes.add("cycloneIT-nov13");
+        codes.add("2014-01-australia_heat_wave");
+        HashMap<String, Integer> result = crisisResourceFacadeImp.countClassifiersByCrisisCodes(codes);
+        //
+        assertEquals(true, result.containsKey("cycloneIT-nov13"));
     }
     
+    @Test
+    public void testGetWithModelFamilyNominalAttributeByCrisisID() {
+        System.out.println("GetWithModelFamilyNominalAttributeByCrisisID");
+        try {
+            CrisisDTO crisisDTO = crisisResourceFacadeImp.getWithModelFamilyNominalAttributeByCrisisID(71L);
+            //
+            assertEquals(Long.valueOf(71), crisisDTO.getCrisisID());
+            assertEquals("PRISM/NSA scandal - Alex", crisisDTO.getName());
+        } catch (PropertyNotSetException ex) {
+            //Logger.getLogger(CrisisResourceFacadeImpTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }
