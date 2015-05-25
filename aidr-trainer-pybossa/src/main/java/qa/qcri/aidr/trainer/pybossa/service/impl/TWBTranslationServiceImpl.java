@@ -2,6 +2,8 @@ package qa.qcri.aidr.trainer.pybossa.service.impl;
 
 import au.com.bytecode.opencsv.CSVParser;
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -34,9 +36,12 @@ public class TWBTranslationServiceImpl implements TranslationService {
     private TaskTranslationDao taskTranslationDao;
 
     @Autowired
+    private SessionFactory sessionFactory;
+
+    @Autowired
     private ReportTemplateService reportTemplateService;
-    final private static int MAX_BATCH_SIZE = 1000;
-    final private static long MAX_WAIT_TIME_MILLIS = 30000; // one hour
+    final private static int MAX_BATCH_SIZE = 1000;  //
+    final private static long MAX_WAIT_TIME_MILLIS = 0; // 5 minutes
     private static long timeOfLastTranslationProcessingMillis = System.currentTimeMillis(); //initialize at startup
 
 
@@ -44,8 +49,8 @@ public class TWBTranslationServiceImpl implements TranslationService {
 
 
     public Map processTranslations(ClientApp clientApp) {
-        //pullAllCompletedTranslations(clientApp);
         Long tcProjectId = clientApp.getTcProjectId();
+        pullAllTranslationResponses(clientApp.getClientAppID(), tcProjectId);
         return pushAllTranslations(clientApp.getClientAppID(), tcProjectId, MAX_WAIT_TIME_MILLIS, MAX_BATCH_SIZE);
     }
 
@@ -220,6 +225,8 @@ public class TWBTranslationServiceImpl implements TranslationService {
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public void createTranslation(TaskTranslation translation) {
         taskTranslationDao.save(translation);
+        Session session = sessionFactory.getCurrentSession();
+        session.flush();
 
     }
 
