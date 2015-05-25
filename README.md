@@ -10,7 +10,7 @@ If you need help, check the [Operator's Manual](https://github.com/qcri-social/A
 
 To build AIDR using maven use:
 
-** `mvn install -P <profile>`
+`mvn install -P <profile>`
 
 The `<profile>` can be either `dev` or `prod`.
 
