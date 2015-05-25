@@ -55,7 +55,7 @@ public class TaggerServiceImpl implements TaggerService {
 				ManagerConfigurationProperty.TAGGER_MAIN_URL);
 
 		crowdsourcingAPIMainUrl = ManagerConfigurator.getInstance()
-				.getProperty(ManagerConfigurationProperty.COLLECTOR_MAIN_URL);
+				.getProperty(ManagerConfigurationProperty.CROWDSOURCING_API_MAIN_URL);
 
 		persisterMainUrl = ManagerConfigurator.getInstance().getProperty(
 				ManagerConfigurationProperty.PERSISTER_MAIN_URL);
