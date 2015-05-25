@@ -6,7 +6,14 @@ If you want to see AIDR in operation, go to: http://aidr.qcri.org/
 
 If you need help, check the [Operator's Manual](https://github.com/qcri-social/AIDR/wiki/AIDR%20Operator%27s%20Manual)
 
-# Documentarion for Developers
+# Documentation for Developers
+
+To build AIDR using maven use:
+
+** `mvn install -P <profile>`
+
+The `<profile>` can be either `dev` or `prod`.
+
 
 We are always looking for great developers who are passionate about humanitarian applications. Start here: [Wiki Home](https://github.com/qcri-social/AIDR/wiki)
 
