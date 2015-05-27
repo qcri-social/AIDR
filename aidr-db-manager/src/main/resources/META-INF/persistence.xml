@@ -21,9 +21,15 @@
     <class>qa.qcri.aidr.dbmanager.entities.misc.CustomUiTemplate</class>
     <class>qa.qcri.aidr.dbmanager.entities.misc.Users</class>
     
-    <properties>
-      <property name="hibernate.show_sql" value="false"/>
-      <property name="hibernate.format_sql" value="false"/>
+     <properties>
+      <property name="javax.persistence.jdbc.driver" value="${SQL_DRIVER}"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:${SQL_SERVER_TYPE}://${SQL_SERVER_HOST}:${SQL_SERVER_PORT}/${TAGGER_DB_NAME}?useUnicode=true"/>
+      <property name="javax.persistence.jdbc.user" value="${TAGGER_DB_USERNAME}"/>
+      <property name="javax.persistence.jdbc.password" value="${TAGGER_DB_PASSWORD}"/>
+      <property name="hibernate.dialect" value="${HIBERNATE_DIALECT}"/>
+      <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.format_sql" value="true"/>
+      <property name="hibernate.hbm2ddl.auto" value="${TAGGER_DB_HBM2DDL}"/>
       <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
     </properties>
   </persistence-unit>
@@ -52,7 +58,8 @@
       <property name="javax.persistence.jdbc.user" value="${TAGGER_DB_USERNAME}"/>
       <property name="javax.persistence.jdbc.password" value="${TAGGER_DB_PASSWORD}"/>
       <property name="hibernate.dialect" value="${HIBERNATE_DIALECT}"/>
-      <property name="hibernate.show_sql" value="false"/>
+      <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.format_sql" value="true"/>
       <property name="hibernate.hbm2ddl.auto" value="${TAGGER_DB_HBM2DDL}"/>
     </properties>
   </persistence-unit>
