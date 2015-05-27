@@ -39,11 +39,6 @@ public class Controller  {
     
     public static void main(String[] args) {
     	
-		// Initializing the properties enumeration.
-		TaggerConfigurator.getInstance().initProperties(
-				TaggerConfigurator.configLoadFileName,
-				TaggerConfigurationProperty.values());
-
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
                 for (Thread t : workers)
