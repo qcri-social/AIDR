@@ -147,7 +147,7 @@ public class TWBTranslationServiceTest {
         if (loops == 0) {loops = 1;}
 
         for (int i=0; i<loops; i++) {
-            TaskTranslation translation = new TaskTranslation(id++, clientAppId, "63636", "Fred Jones", "22.22", "33.33", "http://google.com", id, "Je m'appelle Jacques", TaskTranslation.STATUS_NEW);
+            TaskTranslation translation = new TaskTranslation(id++, clientAppId, "63636", null, null, null, null, id, "Je m'appelle Jacques", TaskTranslation.STATUS_NEW);
             if (persist) {
                 translationService.createTranslation(translation);
             }
@@ -166,6 +166,12 @@ public class TWBTranslationServiceTest {
     @Test
     public void testCreateAndUpdateTranslation() throws Exception {
         int initialSize = translationService.findAllTranslations().size();
+        TaskTranslation translation2 = new TaskTranslation(100l, "1000", "63636", null, null, null, null, 100l, "Je m'appelle Jacques", TaskTranslation.STATUS_NEW);
+        translationService.createTranslation(translation2);
+        assertNotNull(translation2.getAuthor());
+        assertNotNull(translation2.getUrl());
+
+
     	TaskTranslation translation = new TaskTranslation();
     	translationService.createTranslation(translation);
     	assertNotNull(translation.getTranslationId());
