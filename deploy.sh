@@ -6,7 +6,7 @@ MODE=$1
 if [ "$MODE" == "" ]
 then
 echo "ERROR: Missing argument MODE. Please provide a value {deploy, undeploy, undeploy-deploy}."
-elif [ "$MODE" != "undeploy" ] && [ "$MODE" != "deploy" ] && [ "MODE" != "undeploy-deploy" ]
+elif [ "$MODE" != "undeploy" ] && [ "$MODE" != "deploy" ] && [ "$MODE" != "undeploy-deploy" ]
 then
 echo "ERROR: Incorrect first argument provided. Please use 'deploy', 'undeploy' or 'undeploy-deploy'."
 exit
