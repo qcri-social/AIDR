@@ -89,7 +89,7 @@ bin/asadmin deploy --contextroot=AIDRCollector --name=AIDRCollector $AIDR_HOME/a
 
 cd $AIDR_HOME/aidr-tagger/target
 java -Xmx4048m -cp $GLASSFISH_HOME/glassfish/lib/gf-client.jar:aidr-tagger-1.0-jar-with-dependencies.jar:libs/* qa.qcri.aidr.predict.Controller
-
+&
 cd $GLASSFISH_HOME
 bin/asadmin deploy --contextroot=AIDRTaggerAPI --name=AIDRTaggerAPI $AIDR_HOME/aidr-tagger-api/target/aidr-tagger-api-1.0.war
 bin/asadmin deploy --contextroot=AIDROutput --name=AIDROutput $AIDR_HOME/aidr-output/target/aidr-output-1.0.war
