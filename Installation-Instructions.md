@@ -104,7 +104,7 @@ Response:
 
 * Compile the application to a jar file.
 
- `% mvn install` (or right-click on `pom.xml`, Run as ... Maven build ... 'install')
+ `% mvn -Pdev install` (or right-click on `pom.xml`, Run as ... Maven build ... 'install')
      
 * Start/run the application
 
@@ -113,7 +113,7 @@ Response:
   3. The main method in the jar is in qa.qcri.aidr.predict.Controller
   4. You will see some incomprehensible debug output. If the numbers are not 0, input data is being processed.
 
-This module does not need a deployment in the Glassfish server.
+This module does not need a deployment in the Glassfish server. Also, create the model folder in target (with appropriate permissions).
       
 # 7. Tagger-API (aidr-tagger-api)
 
@@ -215,6 +215,36 @@ After the above steps have been executed, you can build the project:
 * Build using maven following the instructions above; this should generate a file `aidr-manager-X.war`
 * Deploy `aidr-manager-X.war` to Glassfish using the instructions above.
 
+# Building the complete AIDR suite
+
+If you want to build all the modules which are a part of the AIDR application in one go, you can do so using the instructions provided below:
+
+* Go to AIDR's root directory.
+  'cd $AIDR_HOME'
+
+* To build AIDR maven requires you to provide a profile explicitly through the -P option. You cannot build and install without specifying this option (we don't use a default profile.). Currently there are two kind of profile options available 'dev' and 'prod'. To install using the 'dev' profile configurations use the following:
+  'mvn -Pdev install'
+
+This will build all the modules keeping the dependency order intact. 
+
+**NOTE:** the directory $AIDR_HOME/profiles/<selected-profile>/configuraiton.properties contains the minimum required configurations for AIDR. Use default values wherever you can, and be careful while changing these to ensure that there is no mismatch between the remote JNDI resources. 
+
+# Deploying the complete AIDR suite
+
+If you want to deploy (or undeploy) all the modules which are a part of the AIDR application in one go, you can do so using the following instructions:
+
+* Go to AIDR's root directory.
+  'cd $AIDR_HOME'
+
+* Run the following command to deploy the app. The deploy.sh script can take three kind of arguments deploy (starts a glassfish domain, created JDBC resources and deploys the various modules on glassfish), undeploy (undeploys all the modules from the glassfish server, removes the JDBC resources and shuts down the glassfish domain) and undeploy-deploy (undeploys the app first then deploys it). Keep in mind to set the environment variables correctly in the deploy.sh script to match your installations. Also, keep in mind to use the correct application names and JDBC resource names. 
+ 'sh deploy.sh delpoy'
+
+**NOTE:** The deploy command also starts a java process for the Tagger module. But undeploy does not kill this specific process. If you want you can use 'jps' to locate the tagger process and kill it using 'kill -9'.
+
+Also, if you are using a glassfish user with an enabled password. Please use the following command in the '$GLASSFISH_HOME' directory before running the deployment script:
+ 'bin/asadmin login'
+
+This will help you login once and would execute all the commands in the script in a non-obtrusive manner. If you don't do this you will be asked to enter the asadmin username and password multiple times during the deployment process.
 
 # Miscallaneous
 
