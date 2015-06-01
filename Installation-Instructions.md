@@ -246,15 +246,13 @@ If you want to deploy (or undeploy) all the modules which are a part of the AIDR
  * Set the environment variables correctly to match your installations.
  * Set the correct application names and JDBC resource names.
 
-* Run the `deploy.sh` script.
+* Run the `deploy.sh` script:
+
     `sh deploy.sh deploy`
 
-**NOTE 1:** The `deploy.sh` script can take three arguments:
-* `deploy` - starts a glassfish domain, created JDBC resources and deploys the various modules on glassfish
-* `undeploy - undeploys all the modules from the glassfish server, removes the JDBC resources and shuts down the glassfish domain
-* `undeploy-deploy` - undeploys the app first then deploys it
+**NOTE 1:** The argument to the `deploy.sh` script can be `deploy` (starts a glassfish domain, created JDBC resources and deploys the various modules on glassfish), `undeploy` (undeploys all the modules from the glassfish server, removes the JDBC resources and shuts down the glassfish domain), or `undeploy-deploy` (undeploys the app first then deploys it).
 
-**NOTE 2:** The deploy command also starts a java process for the Tagger module. But undeploy does not kill this specific process. If you want you can use `jps` to locate the tagger process and kill it using `kill -9`.
+**NOTE 2:** The `deploy.sh` command also starts a java process for the Tagger module. However, undeploy does not kill this specific process. If you want you can use `jps` to locate the tagger process and kill it using `kill -9`.
 
 Also, if you are using a glassfish user with an enabled password. Please use the following command in the `$GLASSFISH_HOME` directory before running the deployment script:
 
