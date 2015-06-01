@@ -9,15 +9,15 @@ Before installing AIDR, you must have the following **installed** in your system
 
 Before installing AIDR, you must have the following **installed and running** in your system:
 
-1. Redis server running -- http://redis.io/ (important configurations are listed below)
+1. Glassfish server (we have tested with v4.0) -- https://glassfish.java.net/
+1. MySQL server (we have tested with v14.14) -- https://dev.mysql.com/downloads/mysql/
+ * Useful links for setting up MySql with Glassfish: [Using Connector/J with Glassfish](http://dev.mysql.com/doc/connector-j/en/connector-j-usagenotes-glassfish-config.html) and [How to setup a JDBC connection in Glassfish](http://computingat40s.wordpress.com/how-to-setup-a-jdbc-connection-in-glassfish/) 
+1. Redis server -- http://redis.io/ (important configurations are listed below)
  * maxclients: once the limit is reached Redis will close all the new connections sending an error 'max number of clients reached'.
  * timeout: for very slow running collections, setting timeout=0 will prevent server to timeout.
-1. Glassfish server running (we have tested with v4.0) -- https://glassfish.java.net/
-* MySQL server running (we have tested with v14.14) -- https://dev.mysql.com/downloads/mysql/
- * Useful links for setting up MySql with Glassfish: [Using Connector/J with Glassfish](http://dev.mysql.com/doc/connector-j/en/connector-j-usagenotes-glassfish-config.html) and [How to setup a JDBC connection in Glassfish](http://computingat40s.wordpress.com/how-to-setup-a-jdbc-connection-in-glassfish/) 
-1. Pybossa server running -- http://docs.pybossa.com/en/latest/index.html
+1. Pybossa server -- http://docs.pybossa.com/en/latest/index.html
 
-AIDR developers work use an Ubuntu 12 server for developing and testing.
+AIDR developers use an Ubuntu 12 server for developing and testing.
 
 # 0. Building and deploying (general)
 
