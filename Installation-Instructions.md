@@ -4,7 +4,7 @@ To start/stop/re-start AIDR and other system administration tasks, see [System a
 
 Before installing AIDR, you must have the following **installed** in your system:
 
-1. Java (we have tested with Java 7, and we know AIDR doesn't work with Java 8) -- http://www.oracle.com/technetwork/java/javaee/downloads/
+1. Java (we have tested with Java 7, and we know **AIDR does NOT work with Java 8**) -- http://www.oracle.com/technetwork/java/javaee/downloads/
 1. Apache Maven -- http://maven.apache.org/
 
 Before installing AIDR, you must have the following **installed and running** in your system:
