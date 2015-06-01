@@ -226,7 +226,7 @@ If you want to build all the modules which are a part of the AIDR application in
 
     `cd $AIDR_HOME`
 
-* To build AIDR maven requires you to provide a profile explicitly through the -P option. You cannot build and install without specifying this option (we don't use a default profile.). Currently there are two kind of profile options available 'dev' and 'prod'. To install using the 'dev' profile configurations use the following:
+* To build AIDR maven requires you to provide a profile explicitly through the `-P` option. You cannot build and install without specifying this option (we don't use a default profile.). Currently there are two kind of profile options available `dev` and `prod`. To install using the `dev` profile configurations, use the following:
 
     `mvn -Pdev install`
 
