@@ -222,11 +222,13 @@ After the above steps have been executed, you can build the project:
 
 If you want to build all the modules which are a part of the AIDR application in one go, you can do so using the instructions provided below:
 
-* Go to AIDR's root directory.
-  'cd $AIDR_HOME'
+* Go to AIDR's root directory:
+
+    `cd $AIDR_HOME`
 
 * To build AIDR maven requires you to provide a profile explicitly through the -P option. You cannot build and install without specifying this option (we don't use a default profile.). Currently there are two kind of profile options available 'dev' and 'prod'. To install using the 'dev' profile configurations use the following:
-  'mvn -Pdev install'
+
+    `mvn -Pdev install`
 
 This will build all the modules keeping the dependency order intact. 
 
@@ -238,17 +240,17 @@ If you want to deploy (or undeploy) all the modules which are a part of the AIDR
 
 * Go to AIDR's root directory:
 
-    cd $AIDR_HOME
+    `cd $AIDR_HOME`
 
 * Run the following command to deploy the app. The deploy.sh script can take three kind of arguments deploy (starts a glassfish domain, created JDBC resources and deploys the various modules on glassfish), undeploy (undeploys all the modules from the glassfish server, removes the JDBC resources and shuts down the glassfish domain) and undeploy-deploy (undeploys the app first then deploys it). Keep in mind to set the environment variables correctly in the deploy.sh script to match your installations. Also, keep in mind to use the correct application names and JDBC resource names. 
 
-    sh deploy.sh deploy
+    `sh deploy.sh deploy`
 
 **NOTE:** The deploy command also starts a java process for the Tagger module. But undeploy does not kill this specific process. If you want you can use 'jps' to locate the tagger process and kill it using 'kill -9'.
 
 Also, if you are using a glassfish user with an enabled password. Please use the following command in the '$GLASSFISH_HOME' directory before running the deployment script:
 
-    bin/asadmin login
+    `bin/asadmin login`
 
 This will help you login once and would execute all the commands in the script in a non-obtrusive manner. If you don't do this you will be asked to enter the asadmin username and password multiple times during the deployment process.
 
