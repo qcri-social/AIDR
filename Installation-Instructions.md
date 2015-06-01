@@ -2,16 +2,10 @@ To start/stop/re-start AIDR and other system administration tasks, see [System a
 
 # Requirements
 
-## Software to install before installing AIDR
-
-Before installing AIDR, you must have the following installed in your system:
+Before installing AIDR, you must have the following **installed** in your system:
 
 * Java (we have tested with v1.7) -- http://www.oracle.com/technetwork/java/javaee/downloads/
 * Apache Maven -- http://maven.apache.org/
-
-The development environment used by the AIDR team is Ubuntu 12.
-
-## Software to install and run before installing AIDR
 
 Before installing AIDR, you must have the following **installed and running** in your system:
 
@@ -22,6 +16,8 @@ Before installing AIDR, you must have the following **installed and running** in
 * MySQL server running (we have tested with v14.14) -- https://dev.mysql.com/downloads/mysql/
  * Useful links for setting up MySql with Glassfish: [Using Connector/J with Glassfish](http://dev.mysql.com/doc/connector-j/en/connector-j-usagenotes-glassfish-config.html) and [How to setup a JDBC connection in Glassfish](http://computingat40s.wordpress.com/how-to-setup-a-jdbc-connection-in-glassfish/) 
 * Pybossa server running -- http://docs.pybossa.com/en/latest/index.html
+
+AIDR developers work use an Ubuntu 12 server for developing and testing.
 
 # 0. Building and deploying (general)
 
