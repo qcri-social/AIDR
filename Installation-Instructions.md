@@ -242,13 +242,14 @@ If you want to deploy (or undeploy) all the modules which are a part of the AIDR
 
     `cd $AIDR_HOME`
 
-* Run the following command to deploy the app. The deploy.sh script can take three kind of arguments deploy (starts a glassfish domain, created JDBC resources and deploys the various modules on glassfish), undeploy (undeploys all the modules from the glassfish server, removes the JDBC resources and shuts down the glassfish domain) and undeploy-deploy (undeploys the app first then deploys it). Keep in mind to set the environment variables correctly in the deploy.sh script to match your installations. Also, keep in mind to use the correct application names and JDBC resource names. 
+* Run the following command to deploy the app. The `deploy.sh` script can take three kind of arguments:
+ * `deploy` (starts a glassfish domain, created JDBC resources and deploys the various modules on glassfish), `undeploy (undeploys all the modules from the glassfish server, removes the JDBC resources and shuts down the glassfish domain) and undeploy-deploy (undeploys the app first then deploys it). Keep in mind to set the environment variables correctly in the deploy.sh script to match your installations. Also, keep in mind to use the correct application names and JDBC resource names. 
 
     `sh deploy.sh deploy`
 
-**NOTE:** The deploy command also starts a java process for the Tagger module. But undeploy does not kill this specific process. If you want you can use 'jps' to locate the tagger process and kill it using 'kill -9'.
+**NOTE:** The deploy command also starts a java process for the Tagger module. But undeploy does not kill this specific process. If you want you can use `jps` to locate the tagger process and kill it using `kill -9`.
 
-Also, if you are using a glassfish user with an enabled password. Please use the following command in the '$GLASSFISH_HOME' directory before running the deployment script:
+Also, if you are using a glassfish user with an enabled password. Please use the following command in the `$GLASSFISH_HOME` directory before running the deployment script:
 
     `bin/asadmin login`
 
