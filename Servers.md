@@ -1,3 +1,3 @@
 Production server: http://aidr-prod.qcri.org/AIDRFetchManager/
 
-Staging server: http://10.5.4.10:8080/AIDRFetchManager/index.jsp
+Staging server: http://10.5.4.10:8080/AIDRFetchManager/index.jsp (must be accessed from the internal "lab" network).
