@@ -248,7 +248,7 @@ If you want to deploy (or undeploy) all the modules which are a part of the AIDR
 
 * Run the `deploy.sh` script:
 
-    `sh deploy.sh deploy`
+    sh deploy.sh deploy
 
 **NOTE 1:** The argument to the `deploy.sh` script can be `deploy` (starts a glassfish domain, created JDBC resources and deploys the various modules on glassfish), `undeploy` (undeploys all the modules from the glassfish server, removes the JDBC resources and shuts down the glassfish domain), or `undeploy-deploy` (undeploys the app first then deploys it).
 
@@ -256,7 +256,7 @@ If you want to deploy (or undeploy) all the modules which are a part of the AIDR
 
 Also, if you are using a glassfish user with an enabled password. Please use the following command in the `$GLASSFISH_HOME` directory before running the deployment script:
 
-    `bin/asadmin login`
+    bin/asadmin login
 
 This will help you login once and would execute all the commands in the script in a non-obtrusive manner. If you don't do this you will be asked to enter the asadmin username and password multiple times during the deployment process.
 
