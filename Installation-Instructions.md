@@ -2,19 +2,26 @@ To start/stop/re-start AIDR and other system administration tasks, see [System a
 
 # Requirements
 
-Before installing AIDR, you must have the following:
+## Software to install before installing AIDR
 
-* Apache Maven installed -- http://maven.apache.org/
+Before installing AIDR, you must have the following installed in your system:
+
+* Java (we have tested with v1.7) -- http://www.oracle.com/technetwork/java/javaee/downloads/
+* Apache Maven -- http://maven.apache.org/
+
+The development environment used by the AIDR team is Ubuntu 12.
+
+## Software to install and run before installing AIDR
+
+Before installing AIDR, you must have the following **installed and running** in your system:
+
 * Redis server running -- http://redis.io/ (important configurations are listed below)
  * maxclients: once the limit is reached Redis will close all the new connections sending an error 'max number of clients reached'.
  * timeout: for very slow running collections, setting timeout=0 will prevent server to timeout.
-* Glassfish server running -- https://glassfish.java.net/
-* MySQL server running -- https://dev.mysql.com/downloads/mysql/
+* Glassfish server running (we have tested with v4.0) -- https://glassfish.java.net/
+* MySQL server running (we have tested with v14.14) -- https://dev.mysql.com/downloads/mysql/
+ * Useful links for setting up MySql with Glassfish: [Using Connector/J with Glassfish](http://dev.mysql.com/doc/connector-j/en/connector-j-usagenotes-glassfish-config.html) and [How to setup a JDBC connection in Glassfish](http://computingat40s.wordpress.com/how-to-setup-a-jdbc-connection-in-glassfish/) 
 * Pybossa server running -- http://docs.pybossa.com/en/latest/index.html
-
-We have tested AIDR on Ubuntu 12, using Glassfish v4.0 and MySQL v14.14.
-
-Useful links for setting up MySql with Glassfish: [Using Connector/J with Glassfish](http://dev.mysql.com/doc/connector-j/en/connector-j-usagenotes-glassfish-config.html) and [How to setup a JDBC connection in Glassfish](http://computingat40s.wordpress.com/how-to-setup-a-jdbc-connection-in-glassfish/) 
 
 # 0. Building and deploying (general)
 
