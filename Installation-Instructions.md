@@ -248,7 +248,7 @@ If you want to deploy (or undeploy) all the modules which are a part of the AIDR
 
 * Run the `deploy.sh` script:
 
-    sh deploy.sh deploy
+    `sh deploy.sh deploy`
 
 **NOTE 1:** The argument to the `deploy.sh` script can be `deploy` (starts a glassfish domain, created JDBC resources and deploys the various modules on glassfish), `undeploy` (undeploys all the modules from the glassfish server, removes the JDBC resources and shuts down the glassfish domain), or `undeploy-deploy` (undeploys the app first then deploys it).
 
