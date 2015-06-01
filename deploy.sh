@@ -14,8 +14,8 @@ fi
 
 echo "Step 1: Setting up environment variables."
 # Setting environment variables.
-GLASSFISH_HOME=/Users/apple/glassfish4
-AIDR_HOME=/Users/apple/repository/AIDR
+GLASSFISH_HOME=/opt/glassfish4
+AIDR_HOME=/home/aidr.dev/AIDR
 AIDR_GLASSFISH_DOMAIN=domain1
 AIDR_ANALYSIS_CONNECTION_POOL=AIDR_ANALYSIS_CONNECTION_POOL
 AIDR_ANALYSIS_JNDI=JNDI/aidr_analysis
@@ -53,7 +53,6 @@ bin/asadmin undeploy AIDRTaggerAPI
 bin/asadmin undeploy AIDROutput
 bin/asadmin undeploy AIDRAnalytics
 bin/asadmin undeploy AIDRTrainerAPI
-bin/asadmin undeploy AIDRTrainerPybossa
 bin/asadmin undeploy AIDRFetchManager
 echo "Done."
 
@@ -82,20 +81,20 @@ bin/asadmin create-jdbc-connection-pool --driverclassname=com.mysql.jdbc.Driver 
 bin/asadmin create-jdbc-resource --connectionpoolid=AIDR_MANAGER_CONNECTION_POOL $AIDR_FETCH_MANAGER_JNDI
 
 # Deploying separate modules. First undeploying if already deployed and deploying again.
-bin/asadmin deploy --contextroot=AIDRDBManager --name=AIDRDBManager $AIDR_HOME/target/aidr-db-manager-ear-1.0.ear
+bin/asadmin deploy --contextroot=AIDRDBManager --name=AIDRDBManager $AIDR_HOME/aidr-db-manager/target/aidr-db-manager-ear-1.0.ear
 bin/asadmin deploy --contextroot=AIDRTaskManager --name=AIDRTaskManager $AIDR_HOME/aidr-task-manager/target/aidr-task-manager-ear-1.0.ear
 bin/asadmin deploy --contextroot=AIDRPersister --name=AIDRPersister $AIDR_HOME/aidr-persister/target/aidr-persister-1.0.war
 bin/asadmin deploy --contextroot=AIDRCollector --name=AIDRCollector $AIDR_HOME/aidr-collector/target/aidr-collector-1.0.war
 
+echo "Starting Application AIDRTagger."
 cd $AIDR_HOME/aidr-tagger/target
-java -Xmx4048m -cp $GLASSFISH_HOME/glassfish/lib/gf-client.jar:aidr-tagger-1.0-jar-with-dependencies.jar:libs/* qa.qcri.aidr.predict.Controller
-&
+nohup java -Xmx4048m -cp $GLASSFISH_HOME/glassfish/lib/gf-client.jar:aidr-tagger-1.0-jar-with-dependencies.jar:libs/* qa.qcri.aidr.predict.Controller &
+
 cd $GLASSFISH_HOME
 bin/asadmin deploy --contextroot=AIDRTaggerAPI --name=AIDRTaggerAPI $AIDR_HOME/aidr-tagger-api/target/aidr-tagger-api-1.0.war
 bin/asadmin deploy --contextroot=AIDROutput --name=AIDROutput $AIDR_HOME/aidr-output/target/aidr-output-1.0.war
 bin/asadmin deploy --contextroot=AIDRAnalytics --name=AIDRAnalytics $AIDR_HOME/aidr-analytics/target/aidr-analytics-1.0.war
 bin/asadmin deploy --contextroot=AIDRTrainerAPI --name=AIDRTrainerAPI $AIDR_HOME/aidr-trainer-api/target/aidr-trainer-api.war
-bin/asadmin deploy --contextroot=AIDRTrainerPybossa --name=AIDRTrainerPybossa $AIDR_HOME/aidr-trainer-pybossa/target/aidr-trainer-pybossa.war
 bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=false
 bin/asadmin deploy --properties implicitCdiEnabled=false --contextroot=AIDRFetchManager --name=AIDRFetchManager $AIDR_HOME/aidr-manager/target/aidr-manager.war
 bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=true
