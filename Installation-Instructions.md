@@ -4,7 +4,7 @@ To start/stop/re-start AIDR and other system administration tasks, see [System a
 
 Before installing AIDR, you must have the following **installed** in your system:
 
-1. Java (we have tested with v1.7) -- http://www.oracle.com/technetwork/java/javaee/downloads/
+1. Java (we have tested with Java 7, and we know AIDR doesn't work with Java 8) -- http://www.oracle.com/technetwork/java/javaee/downloads/
 1. Apache Maven -- http://maven.apache.org/
 
 Before installing AIDR, you must have the following **installed and running** in your system:
@@ -260,23 +260,18 @@ Also, if you are using a glassfish user with an enabled password. Please use the
 
 This will help you login once and would execute all the commands in the script in a non-obtrusive manner. If you don't do this you will be asked to enter the asadmin username and password multiple times during the deployment process.
 
-# Miscellaneous
+# Post-installation MySQL commands (mandatory)
 
-**Please execute the following in MySQL, once the databases are created**
+The following MySQL commands *must* be executed after the installation:
 
 First, check the character set currently being used in MySQL:
 
 1. SHOW VARIABLES WHERE Variable_name LIKE 'character\_set\_%' OR Variable_name LIKE 'collation%';
-
-2. ALTER DATABASE aidr_fetch_manager CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
-
-3. ALTER TABLE aidr_fetch_manager.AIDR_COLLECTION CHANGE last_document last_document LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-4. ALTER DATABASE aidr_predict CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
-
-5. ALTER TABLE aidr_predict.document CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-6. ALTER TABLE aidr_predict.document CHANGE data data TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+1. ALTER DATABASE aidr_fetch_manager CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+1. ALTER TABLE aidr_fetch_manager.AIDR_COLLECTION CHANGE last_document last_document LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+1. ALTER DATABASE aidr_predict CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+1. ALTER TABLE aidr_predict.document CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+1. ALTER TABLE aidr_predict.document CHANGE data data TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 Next, modify `/etc/mysql/my.cnf` file with the following:
 
@@ -295,9 +290,7 @@ Finally, do a sanity check:
 
 * SHOW VARIABLES WHERE Variable_name LIKE 'character\_set\_%' OR Variable_name LIKE 'collation%';
 
-
-
-# Known Issues
+# Known Issues / Troubleshooting
 
 * aidr-manager application, when deployed on Glassfish 4 application server, does not load its default homepage (index.jsp page) on startup. In this case, complete path (e.g., http://abc.org/aidr/index.jsp) must be provided to launch the default homepage.
 
