@@ -17,11 +17,12 @@ Before installing AIDR, you must have the following **installed and running** in
 
 Before installing AIDR, **configure these services** as follows:
 
-1. MySQL: modify /etc/mysql/my.cnf file with the following:
+1. MySQL: modify `/etc/mysql/my.cnf` file with the following:
  * In the [client] section add: `default-character-set = utf8mb4`
- * In the [mysqld] section add: `character-set-client-handshake = FALSE`
- * In the [mysqld] section add: `character-set-server = utf8mb4`
- * In the [mysqld] section add: `collation-server = utf8mb4_unicode_ci`
+ * In the [mysqld] section add: 
+  * `character-set-client-handshake = FALSE`
+  * `character-set-server = utf8mb4`
+  * `collation-server = utf8mb4_unicode_ci`
  * In the [mysql] section add: `default-character-set = utf8mb4`
 1. Redis: 
  * `maxclients`: once the limit is reached Redis will close all the new connections sending an error 'max number of clients reached'.
