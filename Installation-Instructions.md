@@ -43,6 +43,77 @@ Before installing AIDR, **configure these services** as follows:
 
 Remember to re-start these services to make sure the configuration options have been applied.
 
+# Building the complete AIDR suite
+
+If you want to build all the modules which are a part of the AIDR application in one go, you can do so using the instructions provided below:
+
+* Go to AIDR's root directory:
+
+    `cd $AIDR_HOME`
+
+* To build AIDR maven requires you to provide a profile explicitly through the `-P` option. You cannot build and install without specifying this option (we don't use a default profile.). Currently there are two kind of profile options available `dev` and `prod`. To install using the `dev` profile configurations, use the following:
+
+    `mvn -Pdev install`
+
+This will build all the modules keeping the dependency order intact. 
+
+**NOTE:** the directory $AIDR_HOME/profiles/<selected-profile>/configuraiton.properties contains the minimum required configurations for AIDR. Use default values wherever you can, and be careful while changing these to ensure that there is no mismatch between the remote JNDI resources. 
+
+# Deploying the complete AIDR suite
+
+If you want to deploy (or undeploy) all the modules which are a part of the AIDR application in one go, you can do so using the following instructions:
+
+* Go to AIDR's root directory:
+
+    `cd $AIDR_HOME`
+
+* Review the `deploy.sh` script:
+ * Set the environment variables correctly to match your installations.
+ * Set the correct application names and JDBC resource names.
+
+* Run the `deploy.sh` script:
+
+    `sh deploy.sh deploy`
+
+**NOTE 1:** The argument to the `deploy.sh` script can be `deploy` (starts a glassfish domain, created JDBC resources and deploys the various modules on glassfish), `undeploy` (undeploys all the modules from the glassfish server, removes the JDBC resources and shuts down the glassfish domain), or `undeploy-deploy` (undeploys the app first then deploys it).
+
+**NOTE 2:** The `deploy.sh` command also starts a java process for the Tagger module. However, undeploy does not kill this specific process. If you want you can use `jps` to locate the tagger process and kill it using `kill -9`.
+
+Also, if you are using a glassfish user with an enabled password. Please use the following command in the `$GLASSFISH_HOME` directory before running the deployment script:
+
+    bin/asadmin login
+
+This will help you login once and would execute all the commands in the script in a non-obtrusive manner. If you don't do this you will be asked to enter the asadmin username and password multiple times during the deployment process.
+
+# Post-installation MySQL commands (mandatory)
+
+The following MySQL commands *must* be executed after the installation:
+
+First, check the character set currently being used in MySQL:
+
+1. SHOW VARIABLES WHERE Variable_name LIKE 'character\_set\_%' OR Variable_name LIKE 'collation%';
+1. ALTER DATABASE aidr_fetch_manager CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+1. ALTER TABLE aidr_fetch_manager.AIDR_COLLECTION CHANGE last_document last_document LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+1. ALTER DATABASE aidr_predict CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+1. ALTER TABLE aidr_predict.document CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+1. ALTER TABLE aidr_predict.document CHANGE data data TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+Finally, do a sanity check: 
+
+* SHOW VARIABLES WHERE Variable_name LIKE 'character\_set\_%' OR Variable_name LIKE 'collation%';
+
+# Known Issues / Troubleshooting
+
+* aidr-manager application, when deployed on Glassfish 4 application server, does not load its default homepage (index.jsp page) on startup. In this case, complete path (e.g., http://abc.org/aidr/index.jsp) must be provided to launch the default homepage.
+
+* CDI deployment failure when attempting deployment of a module. The workaround is to toggle the `scope` of the glassfish 4.0 specific dependencies in the `pom.xml` file between `provided` and `compile`. 
+
+* Tagger-API throws remote EJB exception `java.lang.NoClassDefFoundError` (org.omg.CORBA.MARSHAL: WARNING: IOP00810010: Error from readValue on ValueHandler in CDRInputStream vmcid: OMG minor code: 10 completed) for `AIDRTaskManger` remote EJB method calls. `Solution`: downgrade to java version `1.7.0_51` or upgrade to `1.8.0_*` link: [https://java.net/jira/browse/GLASSFISH-21047](https://java.net/jira/browse/GLASSFISH-21047).
+
+***
+
+# Per-module deployment (possibly obsolete)
+
 # 0. Building and deploying (general)
 
 AIDR is a set of maven-based projects. Inside each project, a POM file specifies all the dependencies that are required for the building process. To build, go to the root directory of the project where pom.xml is located and run `mvn install`
@@ -241,70 +312,3 @@ After the above steps have been executed, you can build the project:
 
 * Build using maven following the instructions above; this should generate a file `aidr-manager-X.war`
 * Deploy `aidr-manager-X.war` to Glassfish using the instructions above.
-
-# Building the complete AIDR suite
-
-If you want to build all the modules which are a part of the AIDR application in one go, you can do so using the instructions provided below:
-
-* Go to AIDR's root directory:
-
-    `cd $AIDR_HOME`
-
-* To build AIDR maven requires you to provide a profile explicitly through the `-P` option. You cannot build and install without specifying this option (we don't use a default profile.). Currently there are two kind of profile options available `dev` and `prod`. To install using the `dev` profile configurations, use the following:
-
-    `mvn -Pdev install`
-
-This will build all the modules keeping the dependency order intact. 
-
-**NOTE:** the directory $AIDR_HOME/profiles/<selected-profile>/configuraiton.properties contains the minimum required configurations for AIDR. Use default values wherever you can, and be careful while changing these to ensure that there is no mismatch between the remote JNDI resources. 
-
-# Deploying the complete AIDR suite
-
-If you want to deploy (or undeploy) all the modules which are a part of the AIDR application in one go, you can do so using the following instructions:
-
-* Go to AIDR's root directory:
-
-    `cd $AIDR_HOME`
-
-* Review the `deploy.sh` script:
- * Set the environment variables correctly to match your installations.
- * Set the correct application names and JDBC resource names.
-
-* Run the `deploy.sh` script:
-
-    `sh deploy.sh deploy`
-
-**NOTE 1:** The argument to the `deploy.sh` script can be `deploy` (starts a glassfish domain, created JDBC resources and deploys the various modules on glassfish), `undeploy` (undeploys all the modules from the glassfish server, removes the JDBC resources and shuts down the glassfish domain), or `undeploy-deploy` (undeploys the app first then deploys it).
-
-**NOTE 2:** The `deploy.sh` command also starts a java process for the Tagger module. However, undeploy does not kill this specific process. If you want you can use `jps` to locate the tagger process and kill it using `kill -9`.
-
-Also, if you are using a glassfish user with an enabled password. Please use the following command in the `$GLASSFISH_HOME` directory before running the deployment script:
-
-    bin/asadmin login
-
-This will help you login once and would execute all the commands in the script in a non-obtrusive manner. If you don't do this you will be asked to enter the asadmin username and password multiple times during the deployment process.
-
-# Post-installation MySQL commands (mandatory)
-
-The following MySQL commands *must* be executed after the installation:
-
-First, check the character set currently being used in MySQL:
-
-1. SHOW VARIABLES WHERE Variable_name LIKE 'character\_set\_%' OR Variable_name LIKE 'collation%';
-1. ALTER DATABASE aidr_fetch_manager CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
-1. ALTER TABLE aidr_fetch_manager.AIDR_COLLECTION CHANGE last_document last_document LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-1. ALTER DATABASE aidr_predict CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
-1. ALTER TABLE aidr_predict.document CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-1. ALTER TABLE aidr_predict.document CHANGE data data TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-Finally, do a sanity check: 
-
-* SHOW VARIABLES WHERE Variable_name LIKE 'character\_set\_%' OR Variable_name LIKE 'collation%';
-
-# Known Issues / Troubleshooting
-
-* aidr-manager application, when deployed on Glassfish 4 application server, does not load its default homepage (index.jsp page) on startup. In this case, complete path (e.g., http://abc.org/aidr/index.jsp) must be provided to launch the default homepage.
-
-* CDI deployment failure when attempting deployment of a module. The workaround is to toggle the `scope` of the glassfish 4.0 specific dependencies in the `pom.xml` file between `provided` and `compile`. 
-
-* Tagger-API throws remote EJB exception `java.lang.NoClassDefFoundError` (org.omg.CORBA.MARSHAL: WARNING: IOP00810010: Error from readValue on ValueHandler in CDRInputStream vmcid: OMG minor code: 10 completed) for `AIDRTaskManger` remote EJB method calls. `Solution`: downgrade to java version `1.7.0_51` or upgrade to `1.8.0_*` link: [https://java.net/jira/browse/GLASSFISH-21047](https://java.net/jira/browse/GLASSFISH-21047).
