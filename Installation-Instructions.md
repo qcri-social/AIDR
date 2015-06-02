@@ -2,10 +2,14 @@ To start/stop/re-start AIDR and other system administration tasks, see [System a
 
 # Requirements
 
+## Requirements 1: install software
+
 Before installing AIDR, you must have the following **installed** in your system:
 
 1. Java (we have tested with Java 7, and we know **AIDR does NOT work with Java 8**) -- http://www.oracle.com/technetwork/java/javaee/downloads/
 1. Apache Maven -- http://maven.apache.org/
+
+## Requirements 2: install and run services
 
 Before installing AIDR, you must have the following **installed and running** in your system:
 
@@ -14,6 +18,8 @@ Before installing AIDR, you must have the following **installed and running** in
  * Useful links for setting up MySql with Glassfish: [Using Connector/J with Glassfish](http://dev.mysql.com/doc/connector-j/en/connector-j-usagenotes-glassfish-config.html) and [How to setup a JDBC connection in Glassfish](http://computingat40s.wordpress.com/how-to-setup-a-jdbc-connection-in-glassfish/) 
 1. Redis server -- http://redis.io/
 1. Pybossa server -- http://docs.pybossa.com/en/latest/index.html
+
+## Requirements 3: configure service
 
 Before installing AIDR, **configure these services** as follows:
 
