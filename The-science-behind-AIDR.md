@@ -1,8 +1,8 @@
 AIDR is based on supervised machine learning and described in the following papers and presentations:
 
-Muhammad Imran, Carlos Castillo, Ji Lucas, Patrick Meier, and Sarah Vieweg: [AIDR: Artificial Intelligence for Disaster Response](http://chato.cl/papers/demo_2014_aidr_artificial_intelligence_disaster_response.pdf). International Conference on World Wide Web (WWW), 2014. Seoul, Korea.
+1. Muhammad Imran, Carlos Castillo, Ji Lucas, Patrick Meier, and Sarah Vieweg: [AIDR: Artificial Intelligence for Disaster Response](http://chato.cl/papers/demo_2014_aidr_artificial_intelligence_disaster_response.pdf). International Conference on World Wide Web (WWW), 2014. Seoul, Korea.
 
-Muhammad Imran, Carlos Castillo, Ji Lucas, Patrick Meier, and Jakob Rogstadius: [Coordinating Human and Machine Intelligence to Classify Microblog Communications in Crises](http://chato.cl//papers/iscram_2014_coordinating_human_machine_intelligence_crises.pdf). In proceedings of the ISCRAM'14. Pennsylvania, USA.
+1. Muhammad Imran, Carlos Castillo, Ji Lucas, Patrick Meier, and Jakob Rogstadius: [Coordinating Human and Machine Intelligence to Classify Microblog Communications in Crises](http://chato.cl//papers/iscram_2014_coordinating_human_machine_intelligence_crises.pdf). In proceedings of the ISCRAM'14. Pennsylvania, USA.
 
 Muhammad Imran, Ioanna Lykourentzou, Carlos Castillo: [Engineering Crowdsourced Stream Processing Systems](http://arxiv.org/abs/1310.5463). arXiv pre-print, 2013.
 
