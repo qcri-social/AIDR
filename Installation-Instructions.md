@@ -8,17 +8,17 @@ AIDR developers use an Ubuntu 12 server for developing and testing.
 
 Before installing AIDR, you must have the following **installed** in your system:
 
-1. Java (we have tested with Java 7, and we know **AIDR does NOT work with Java 8**) -- http://www.oracle.com/technetwork/java/javaee/downloads/
-1. Apache Maven -- http://maven.apache.org/
+1. **Java** (we have tested with Java 7, and we know **AIDR does NOT work with Java 8**) -- http://www.oracle.com/technetwork/java/javaee/downloads/
+1. **Maven** -- http://maven.apache.org/
 
 ## 1.2. Required services
 
 Before installing AIDR, you must have the following **installed and running** in your system:
 
-1. Glassfish server (we have tested with v4.0) -- https://glassfish.java.net/
-1. MySQL server (we have tested with v14.14) -- https://dev.mysql.com/downloads/mysql/
-1. Redis server -- http://redis.io/
-1. Pybossa server -- http://docs.pybossa.com/en/latest/index.html
+1. **Glassfish** server (we have tested with v4.0) -- https://glassfish.java.net/
+1. **MySQL** server (we have tested with v14.14) -- https://dev.mysql.com/downloads/mysql/
+1. **Redis** server -- http://redis.io/
+1. **Pybossa** server -- http://docs.pybossa.com/en/latest/index.html
 
 To set up MySql with Glassfish, check these useful links: [Using Connector/J with Glassfish](http://dev.mysql.com/doc/connector-j/en/connector-j-usagenotes-glassfish-config.html) and [How to setup a JDBC connection in Glassfish](http://computingat40s.wordpress.com/how-to-setup-a-jdbc-connection-in-glassfish/).
 
