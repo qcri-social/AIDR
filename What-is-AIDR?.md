@@ -15,4 +15,4 @@ While the Collector is a word-filter, the Tagger is a topic-filter. The tagger c
 Once this is done, the "Tagger" automatically applies the classifier to incoming tweets collected in real-time using the Collector. All new tweets that relate to infrastructure damage (or other category) are automatically tagged and displayed on the Tagger, which you can use to power a live dashboard and/or crisis map.
 
 * **Want to see AIDR in action? Take a look at our [video walk-through](https://youtu.be/FPHPi0LYz7o) illustrating the main functionalities.**
-* Ready to try AIDR? Take a look at the [[Operator's Manual]]
+* Ready to try AIDR? Take a look at the [[Operator's manual]]
