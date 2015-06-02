@@ -6,12 +6,12 @@ The initial requirements for AIDR were collected by Patrick Meier in collaborati
 
 The system architecture of AIDR was designed by Carlos Castillo in collaboration with Muhammad Imran, Soudip Chowdhury, and Jakob Rogstadius, during their respective internships at QCRI. It also uses concepts from crowdsourcing stream processing developed with Ioanna Lykourentzou.
 
-The development of AIDR over its first two years was led by Carlos Castillo and Muhammad Imran, with contributions from Ji Lucas, Koushik Sinha, Jakob Rogstadius, and Alex Mikhashchuk.
+The development of AIDR over its first two years was led by Carlos Castillo and Muhammad Imran, with contributions from Ji Lucas, Koushik Sinha, Jakob Rogstadius, plus contractors Elena Yakubenkova and Alex Mikhashchuk.
 
 # Current team
 
 * [Patrick Meier](http://irevolution.net/) and [Carlos Castillo](http://www.chato.cl/research/) - Project co-leads.
-* [Muhammad Imran](http://mimran.me/) - Technical lead and product manager.
-* [Ji Lucas](http://www.linkedin.com/in/jilucas) - Senior Software Engineer.
+* [Muhammad Imran](http://mimran.me/) - Technical lead and product manager for AIDR.
+* [Ji Lucas](http://www.linkedin.com/in/jilucas) - Technical lead for MicroMappers.
+* Meghna Singh - Research Associate.
 * Dhruv Sharma and Kushalkant Goyal - Contractors.
-
