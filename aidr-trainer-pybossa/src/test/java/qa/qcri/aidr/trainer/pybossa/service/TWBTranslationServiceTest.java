@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import qa.qcri.aidr.trainer.pybossa.entity.ClientApp;
 import qa.qcri.aidr.trainer.pybossa.entity.TaskTranslation;
 import qa.qcri.aidr.trainer.pybossa.format.impl.TranslationRequestModel;
+import qa.qcri.aidr.trainer.pybossa.service.impl.PybossaWorker;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,11 +34,16 @@ public class TWBTranslationServiceTest {
     ClientAppService clientAppService;
 
     @Autowired
-    private MicroMapperWorker microMapperWorker;
+    private ClientAppRunWorker pybossaWorker;
 
-    private static final long TEST_CLIENT_ID = 4;
+    private static final long TEST_CLIENT_ID = 3;
     private static final String NEW_CLIENT_APP_ID = "1211";
     private static final long TEST_TWB_PROJECT_ID = 5681;
+
+    @Test
+    public void testPybossaWorker() throws Exception {
+        pybossaWorker.processTaskRunImport();
+    }
 
     @Test
     public void testPullAllTranslationResponses() throws Exception {
@@ -141,7 +147,7 @@ public class TWBTranslationServiceTest {
         if (loops == 0) {loops = 1;}
 
         for (int i=0; i<loops; i++) {
-            TaskTranslation translation = new TaskTranslation(id++, clientAppId, "63636", "Fred Jones", "22.22", "33.33", "http://google.com", id, "Je m'appelle Jacques", TaskTranslation.STATUS_NEW);
+            TaskTranslation translation = new TaskTranslation(id++, clientAppId, "63636", null, null, null, null, id, "Je m'appelle Jacques", TaskTranslation.STATUS_NEW);
             if (persist) {
                 translationService.createTranslation(translation);
             }
@@ -160,6 +166,12 @@ public class TWBTranslationServiceTest {
     @Test
     public void testCreateAndUpdateTranslation() throws Exception {
         int initialSize = translationService.findAllTranslations().size();
+        TaskTranslation translation2 = new TaskTranslation(100l, "1000", "63636", null, null, null, null, 100l, "Je m'appelle Jacques", TaskTranslation.STATUS_NEW);
+        translationService.createTranslation(translation2);
+        assertNotNull(translation2.getAuthor());
+        assertNotNull(translation2.getUrl());
+
+
     	TaskTranslation translation = new TaskTranslation();
     	translationService.createTranslation(translation);
     	assertNotNull(translation.getTranslationId());

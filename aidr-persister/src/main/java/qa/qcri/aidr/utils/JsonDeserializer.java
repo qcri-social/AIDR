@@ -1017,15 +1017,15 @@ public class JsonDeserializer {
 
 						// Added by koushik
 						NominalLabel nLabel = new NominalLabel();
-						nLabel.attribute_code = label.get("attribute_code").isJsonNull() ? "null" : label.get("attribute_code").getAsString();
-						nLabel.label_code = label.get("label_code").isJsonNull() ? "null" : label.get("label_code").getAsString();
-						nLabel.confidence = label.get("confidence").isJsonNull() ? 0 : Float.parseFloat(label.get("confidence").getAsString());
+						nLabel.attribute_code = (label.has("attribute_code") && !label.get("attribute_code").isJsonNull()) ?  label.get("attribute_code").getAsString() : "null";
+						nLabel.label_code = (label.has("label_code") && !label.get("label_code").isJsonNull()) ?   label.get("label_code").getAsString() : "null";
+						nLabel.confidence = (label.has("confidence") && !label.get("confidence").isJsonNull()) ? Float.parseFloat(label.get("confidence").getAsString()) : 0;
 
-						nLabel.attribute_name = label.get("attribute_name").isJsonNull() ? "null" : label.get("attribute_name").getAsString();
-						nLabel.label_name = label.get("label_name").isJsonNull() ? "null" : label.get("label_name").getAsString();
-						nLabel.attribute_description = label.get("attribute_description").isJsonNull() ? "null" : label.get("attribute_description").getAsString();
-						nLabel.label_description = label.get("label_description").isJsonNull() ? "null" : label.get("label_description").getAsString();
-						nLabel.from_human = label.get("from_human").isJsonNull() ? false : Boolean.parseBoolean(label.get("from_human").getAsString());
+						nLabel.attribute_name = (label.has("attribute_name") && !label.get("attribute_name").isJsonNull()) ?  label.get("attribute_name").getAsString() : "null";
+						nLabel.label_name = (label.has("label_name") && !label.get("label_name").isJsonNull()) ?  label.get("label_name").getAsString() : "null";
+						nLabel.attribute_description = (label.has("attribute_description") && !label.get("attribute_description").isJsonNull()) ?   label.get("attribute_description").getAsString() : "null";
+						nLabel.label_description = (label.has("label_description") && !label.get("label_description").isJsonNull()) ?   label.get("label_description").getAsString() : "null";
+						nLabel.from_human = (label.has("from_human") && !label.get("from_human").isJsonNull()) ?  Boolean.parseBoolean(label.get("from_human").getAsString()): false;
 
 						tweet.getNominalLabels().add(nLabel);
 

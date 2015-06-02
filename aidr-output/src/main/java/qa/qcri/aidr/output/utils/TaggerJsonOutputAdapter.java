@@ -88,7 +88,7 @@ public class TaggerJsonOutputAdapter {
 					JsonElement crisisName = null;					
 					if (aidrData.has("crisis_name"))				// should always be true
 						crisisName = aidrData.get("crisis_name");	
-					if (aidrData.has("nominal_labels")) {			// if false, then something wrong in AIDR setup
+					if (aidrData.has("nominal_labels") && !aidrData.get("nominal_labels").isJsonNull()) {			// if false, then something wrong in AIDR setup
 						nominalLabels = aidrData.get("nominal_labels").getAsJsonArray();
 					} else {
 						nominalLabels = new JsonArray();

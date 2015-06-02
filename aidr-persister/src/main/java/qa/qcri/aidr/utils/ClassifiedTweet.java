@@ -465,24 +465,24 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 						for (int i = 0; i < nominalLabels.size(); i++) {
 							//JSONObject label = (JSONObject) nominalLabels.get(i);
 							JsonObject label = nominalLabels.get(i).getAsJsonObject();
-							allAttributeNames.append(!label.get("attribute_name").isJsonNull() ? label.get("attribute_name").getAsString() : "null");
-							allAttributeCodes.append(!label.get("attribute_code").isJsonNull() ? label.get("attribute_code").getAsString() : "null");
-							allLabelNames.append(!label.get("label_name").isJsonNull() ? label.get("label_name").getAsString() : "null");
-							allLabelCodes.append(!label.get("label_code").isJsonNull() ? label.get("label_code").getAsString() : "null");
-							allLabelDescriptions.append(!label.get("label_description").isJsonNull() ? label.get("label_description").getAsString() : "null");
-							allConfidences.append(!label.get("confidence").isJsonNull() ? label.get("confidence").getAsFloat() : 0);
-							humanLabeled.append(!label.get("from_human").isJsonNull() ? label.get("from_human").getAsBoolean() : false);
+							allAttributeNames.append((label.has("attribute_name") && !label.get("attribute_name").isJsonNull()) ? label.get("attribute_name").getAsString() : "null");
+							allAttributeCodes.append((label.has("attribute_code") && !label.get("attribute_code").isJsonNull()) ? label.get("attribute_code").getAsString() : "null");
+							allLabelNames.append((label.has("label_name") && !label.get("label_name").isJsonNull()) ? label.get("label_name").getAsString() : "null");
+							allLabelCodes.append((label.has("label_code") && !label.get("label_code").isJsonNull()) ? label.get("label_code").getAsString() : "null");
+							allLabelDescriptions.append((label.has("label_description") && !label.get("label_description").isJsonNull()) ? label.get("label_description").getAsString() : "null");
+							allConfidences.append((label.has("confidence") && !label.get("confidence").isJsonNull()) ? label.get("confidence").getAsFloat() : 0);
+							humanLabeled.append((label.has("from_human") && !label.get("from_human").isJsonNull()) ? label.get("from_human").getAsBoolean() : false);
 
 							NominalLabel nLabel = new NominalLabel();
-							nLabel.attribute_code = label.get("attribute_code").isJsonNull() ? "null" : label.get("attribute_code").getAsString();
-							nLabel.label_code = label.get("label_code").isJsonNull() ? "null" : label.get("label_code").getAsString();
-							nLabel.confidence = label.get("confidence").isJsonNull() ? 0 : Float.parseFloat(label.get("confidence").getAsString());
+							nLabel.attribute_code = (label.has("attribute_code") && !label.get("attribute_code").isJsonNull()) ?  label.get("attribute_code").getAsString() : "null";
+							nLabel.label_code = (label.has("label_code") && !label.get("label_code").isJsonNull()) ?   label.get("label_code").getAsString() : "null";
+							nLabel.confidence = (label.has("confidence") && !label.get("confidence").isJsonNull()) ? Float.parseFloat(label.get("confidence").getAsString()) : 0;
 
-							nLabel.attribute_name = label.get("attribute_name").isJsonNull() ? "null" : label.get("attribute_name").getAsString();
-							nLabel.label_name = label.get("label_name").isJsonNull() ? "null" : label.get("label_name").getAsString();
-							nLabel.attribute_description = label.get("attribute_description").isJsonNull() ? "null" : label.get("attribute_description").getAsString();
-							nLabel.label_description = label.get("label_description").isJsonNull() ? "null" : label.get("label_description").getAsString();
-							nLabel.from_human = label.get("from_human").isJsonNull() ? false : Boolean.parseBoolean(label.get("from_human").getAsString());
+							nLabel.attribute_name = (label.has("attribute_name") && !label.get("attribute_name").isJsonNull()) ?  label.get("attribute_name").getAsString() : "null";
+							nLabel.label_name = (label.has("label_name") && !label.get("label_name").isJsonNull()) ?  label.get("label_name").getAsString() : "null";
+							nLabel.attribute_description = (label.has("attribute_description") && !label.get("attribute_description").isJsonNull()) ?   label.get("attribute_description").getAsString() : "null";
+							nLabel.label_description = (label.has("label_description") && !label.get("label_description").isJsonNull()) ?   label.get("label_description").getAsString() : "null";
+							nLabel.from_human = (label.has("from_human") && !label.get("from_human").isJsonNull()) ?  Boolean.parseBoolean(label.get("from_human").getAsString()): false;
 
 							this.nominal_labels.add(nLabel);
 

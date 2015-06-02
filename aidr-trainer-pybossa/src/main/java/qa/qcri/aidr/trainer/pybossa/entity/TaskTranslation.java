@@ -76,10 +76,10 @@ public class TaskTranslation {
         this.taskId = taskId;
         this.clientAppId = clientAppId;
         this.tweetID = tweetID;
-        this.author = author;
-        this.lat = lat;
-        this.lon = lon;
-        this.url = url;
+        this.author = (author==null)? "":author;
+        this.lat = (lat==null)?"":lat;
+        this.lon = (lon==null)?"":lon;
+        this.url = (url==null)?"":url;
         this.taskQueueID = taskQueueID;
         this.originalText = originalText;
         this.status = status;
@@ -106,6 +106,10 @@ public class TaskTranslation {
 	public String getOriginalText() {
 		return originalText;
 	}
+
+    public String getCSVFormattedOriginalText() {
+        return originalText.replaceAll("[\r\n]", "");
+    }
 
 	public void setOriginalText(String originalText) {
 		this.originalText = originalText;

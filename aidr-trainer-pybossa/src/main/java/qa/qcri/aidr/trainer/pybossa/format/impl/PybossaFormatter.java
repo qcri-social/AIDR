@@ -9,6 +9,7 @@ import qa.qcri.aidr.trainer.pybossa.entity.*;
 import qa.qcri.aidr.trainer.pybossa.service.ClientAppResponseService;
 import qa.qcri.aidr.trainer.pybossa.service.ReportTemplateService;
 import qa.qcri.aidr.trainer.pybossa.service.TranslationService;
+import qa.qcri.aidr.trainer.pybossa.service.impl.PybossaWorker;
 import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
 import qa.qcri.aidr.trainer.pybossa.util.DataFormatValidator;
 import qa.qcri.aidr.trainer.pybossa.util.DateTimeConverter;
@@ -143,7 +144,7 @@ public class PybossaFormatter {
 
         String[] questions = getQuestion( clientAppAnswer,  parser);
         int[] responses = new int[questions.length];
-        int[] translationResponses = new int[questions.length];
+        int translationResponses = 0;
 
         JSONArray array = (JSONArray) parser.parse(pybossaResult) ;
 
@@ -157,17 +158,22 @@ public class PybossaFormatter {
 
             answer = this.getUserAnswer(featureJsonObj, clientApp);
             System.out.print("getAnswerResponse - answer :" + answer);
+            translationResponses = 0;
             for(int i=0; i < questions.length; i++ ){
                 if(questions[i].trim().equalsIgnoreCase(answer.trim())){
                     responses[i] = responses[i] + 1;
                 }else {
                     if (answer.equalsIgnoreCase(ANSWER_NOT_ENGLISH)) {
-                        translationResponses[i]++;
-                        System.out.println("translationResponses[i]: " + translationResponses[i]);
-                        handleTranslationItem(taskQueueID, translationResponses[i], answer, info, clientAppAnswer, cutoffSize);
+                        translationResponses++;
                     }
                 }
             }
+            if (answer.equalsIgnoreCase(ANSWER_NOT_ENGLISH)) {
+                System.out.println("translationResponses: " + translationResponses);
+
+                handleTranslationItem(taskQueueID, translationResponses, answer, info, clientAppAnswer, cutoffSize);
+            }
+
         }
 
         String finalAnswer = null;
@@ -598,6 +604,10 @@ public class PybossaFormatter {
 
         }
         return isCompleted;
+    }
+
+    public void setTranslationService(TranslationService service) {
+        translationService = service;
     }
 
 }
