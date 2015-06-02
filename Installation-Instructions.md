@@ -12,10 +12,18 @@ Before installing AIDR, you must have the following **installed and running** in
 1. Glassfish server (we have tested with v4.0) -- https://glassfish.java.net/
 1. MySQL server (we have tested with v14.14) -- https://dev.mysql.com/downloads/mysql/
  * Useful links for setting up MySql with Glassfish: [Using Connector/J with Glassfish](http://dev.mysql.com/doc/connector-j/en/connector-j-usagenotes-glassfish-config.html) and [How to setup a JDBC connection in Glassfish](http://computingat40s.wordpress.com/how-to-setup-a-jdbc-connection-in-glassfish/) 
-1. Redis server -- http://redis.io/ (important configurations are listed below)
+1. Redis server -- http://redis.io/
+1. Pybossa server -- http://docs.pybossa.com/en/latest/index.html
+
+Before installing AIDR, **configure these services** as follows:
+
+1. MySQL: modify /etc/mysql/my.cnf file with the following:
+ * Under [client] section add: default-character-set = utf8mb4
+ * Under [mysqld] section add: character-set-client-handshake = FALSE character-set-server = utf8mb4 collation-server = utf8mb4_unicode_ci
+ * Under [mysql] section add: default-character-set = utf8mb4
+1. Redis: 
  * maxclients: once the limit is reached Redis will close all the new connections sending an error 'max number of clients reached'.
  * timeout: for very slow running collections, setting timeout=0 will prevent server to timeout.
-1. Pybossa server -- http://docs.pybossa.com/en/latest/index.html
 
 AIDR developers use an Ubuntu 12 server for developing and testing.
 
