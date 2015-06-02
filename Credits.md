@@ -3,7 +3,7 @@ AIDR is being developed at the [Social Computing](http://www.qcri.qa/our-researc
 # Current team
 
 * [Patrick Meier](http://irevolution.net/) and [Carlos Castillo](http://www.chato.cl/research/) - Project co-leads.
-* [Muhammad Imran](http://mimran.me/) - Researcher and Technical Lead.
+* [Muhammad Imran](http://mimran.me/) - Scientist and Technical Lead.
 * [Ji Lucas](http://www.linkedin.com/in/jilucas) - Senior Software Engineer.
 * [Koushik Sinha](http://www.linkedin.com/pub/koushik-sinha/6/676/609) - Senior Software Engineer.
 * [Sarah Vieweg](http://sarahvieweg.com/) - Scientist.
