@@ -1,6 +1,6 @@
 (In process)
 
-The AIDR project was started in 2013 by [Carlos Castillo](http://www.chato.cl/research/) and [Patrick Meier](http://irevolution.net/) working at the [Qatar Computing Research Institute](http://www.qcri.qa/) (QCRI).
+The AIDR project was started in 2013 by [Patrick Meier](http://irevolution.net/) and [Carlos Castillo](http://www.chato.cl/research/) at the [Qatar Computing Research Institute](http://www.qcri.qa/) (QCRI).
 
 The initial requirements for AIDR were collected by Patrick Meier in collaboration with Justine Mackinnon and Peter Mosur. Sarah Vieweg contributed user experience ideas and a user study.
 
