@@ -26,7 +26,7 @@ To set up MySql with Glassfish, check these useful links: [Using Connector/J wit
 
 Before installing AIDR, **configure these services** as follows:
 
-1. MySQL: modify `/etc/mysql/my.cnf`:
+1. **MySQL configuration**: modify `/etc/mysql/my.cnf`:
  * In the `[client]` section, add
     * `default-character-set = utf8mb4`
  * In the `[mysqld]` section, add:
@@ -35,7 +35,7 @@ Before installing AIDR, **configure these services** as follows:
     * `collation-server = utf8mb4_unicode_ci`
  * In the [mysql] section, add:
     * `default-character-set = utf8mb4`
-1. Redis: modify `redis.conf`:
+1. **Redis configuration**: modify `redis.conf`:
  * Increase the maximum number of clients to avoid having an error "max number of clients reached":
     * `maxclients = 1000`
  * Set the timeout to zero to allow very slow running collections:
