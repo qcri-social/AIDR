@@ -12,4 +12,4 @@ If you want to **install AIDR on your own server**, go to the [[Installation Ins
 
 If you want to **extend and develop AIDR**, go to the [High-level Overview for Developers](High-level overview).
 
-If you want to **contact us**, [create a new issue in the issue tracker](https://github.com/qcri-social/AIDR/issues)
+If you want to **contact us**, [create a new issue in the issue tracker](https://github.com/qcri-social/AIDR/issues).
