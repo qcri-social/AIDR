@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.*;
 
+import org.json.simple.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,7 +152,7 @@ public class TWBTranslationServiceTest {
             if (persist) {
                 translationService.createTranslation(translation);
             }
-            TaskTranslation translation2 = new TaskTranslation(id++, clientAppId, "63636", "Fred Jones", "22.22", "33.33", "http://google.com", id, "Me llamo es Juan", TaskTranslation.STATUS_NEW);
+            TaskTranslation translation2 = new TaskTranslation(id++, clientAppId, "63636", "Fred Jones", "22.22", "33.33", "http://google.com", id, "被害のダウンタウンの多くがあります", TaskTranslation.STATUS_NEW);
             if (persist) {
                 translationService.createTranslation(translation2);
             }
@@ -161,6 +162,17 @@ public class TWBTranslationServiceTest {
         }
         return list;
 
+    }
+
+    @Test
+    public void testCreateWithCharset() throws Exception {
+        TaskTranslation translation3 = new TaskTranslation(100l, "1000", "63636", null, null, null, null, 100l, "被害のダウンタウンの多くがあります", TaskTranslation.STATUS_NEW);
+        translationService.createTranslation(translation3);
+        TaskTranslation retrieve = translationService.findById(translation3.getTranslationId());
+        assertNotNull(retrieve);
+        assert(translation3.getOriginalText().equals(retrieve.getOriginalText()));
+        assertNotNull(retrieve.getAuthor());
+        assertNotNull(retrieve.getOriginalText());
     }
 
     @Test
@@ -204,7 +216,7 @@ public class TWBTranslationServiceTest {
         String testStatus = "TESTING324";
         List<TaskTranslation> translations = generateTestTranslationTasks(NEW_CLIENT_APP_ID, true, 4);
         TaskTranslation taskTranslation = translations.get(0);
-        taskTranslation.setStatus(testStatus);
+//        taskTranslation.setStatus(testStatus);
         translationService.updateTranslation(taskTranslation);
 
         List testList = translationService.findAllTranslationsByClientAppIdAndStatus(new Long(NEW_CLIENT_APP_ID), testStatus, 1000);
@@ -221,13 +233,21 @@ public class TWBTranslationServiceTest {
         Iterator<TaskTranslation> itr = translations.iterator();
         while (itr.hasNext()) {
             TaskTranslation translation = itr.next();
-            translationService.delete(translation);
+            //translationService.delete(translation);
         }
 
 
     }
 
 
+    @Test
+    public void testCharset() throws Exception {
+        JSONObject info = new JSONObject();
+        info.put("tweet", "à¤­à¥à¤¯à¤¾à¤•à¥à¤¤à¥‡ à¤°à¥‹à¤—");
+        String tweet = (String)info.get("tweet");// maintain encoding - new String(info.getString("tweet").getBytes("ISO-8859-1"), "UTF-8");
+        String encodedTweet = new String (tweet.getBytes("ISO-8859-1"), "UTF-8");
+        assert encodedTweet != null;
+    }
 
 
 
