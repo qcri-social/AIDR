@@ -1,6 +1,6 @@
 (In process)
 
-The AIDR project was started in 2013 at the [Social Computing](http://www.qcri.qa/our-research/social-computing) center of the [Qatar Computing Research Institute](http://www.qcri.qa/) by [Patrick Meier](http://irevolution.net/) and [Carlos Castillo](http://www.chato.cl/research/).
+The AIDR project was started in 2013 at the [Qatar Computing Research Institute](http://www.qcri.qa/) (QCRI) by [Patrick Meier](http://irevolution.net/) and [Carlos Castillo](http://www.chato.cl/research/).
 
 
 # Current team
