@@ -34,9 +34,11 @@ Before installing AIDR, **configure these services** as follows:
     * `collation-server = utf8mb4_unicode_ci`
  * In the [mysql] section, add:
     * `default-character-set = utf8mb4`
-1. Redis: 
- * `maxclients`: once the limit is reached Redis will close all the new connections sending an error 'max number of clients reached'.
- * `timeout`: for very slow running collections, setting timeout=0 will prevent server to timeout.
+1. Redis: modify `redis.conf`:
+ * Increase the maximum number of clients to avoid having an error "max number of clients reached":
+    * `maxclients = 1000`
+ * Set the timeout to zero to allow very slow running collections:
+    * `timeout = 0`
 
 Remember to re-start these services to make sure the configuration options have been applied.
 
