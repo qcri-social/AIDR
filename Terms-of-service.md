@@ -1,3 +1,5 @@
+The AIDR team fully endorses [ICRC's Data Protection Protocols](https://www.icrc.org/eng/assets/files/other/icrc-002-0999.pdf) and [UN's Guidelines on Cyber Security](https://docs.unocha.org/sites/dms/Documents/Humanitarianism%20in%20the%20Cyberwarfare%20Age%20-%20OCHA%20Policy%20Paper%2011.pdf). Users of AIDR should familiarize themselves with both documents, and respect international standards on data privacy, security, and protection.
+
 This document describes the terms of service of the AIDR and MicroMappers installations operated by QCRI. It might not apply to other installations of the AIDR software.
 
 # For administrators
