@@ -8,6 +8,6 @@ If you want to **understand what is AIDR**, see [[What is AIDR?]]
 
 If you want to **use AIDR**, go to the [Operator's Manual](http://en.flossmanuals.net/aidr/)
 
-If you need to **install AIDR on your own server**, go to the [[Installation Instructions]].
+If you want to **install AIDR on your own server**, go to the [[Installation Instructions]].
 
-If you are a **developer**, go to the [High-level Overview for Developers](High-level overview).
+If you want to **extend and develop AIDR**, go to the [High-level Overview for Developers](High-level overview).
