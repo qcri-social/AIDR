@@ -6,6 +6,8 @@ If you work in humanitarian or crisis response and are familiar with Twitter, yo
 
 ## How does it work?
 
+![](http://booki.flossmanuals.net/aidr/_edit/static/aidr_diagram_v1.png)
+
 The first step is to collect tweets related to a disaster. The Collector helps you do this by filtering tweets using keywords and/or hashtags such as "hurricane" and "#Sandy," for example. This is just like a regular search on Twitter.com, which means many of the resulting tweets will contain your keywords and/or hashtags, but will not be relevant to disaster response or to the specific information needs of humanitarian organizations. This is where the Tagger comes in.
 
 While the Collector is a word-filter, the Tagger is a topic-filter. The tagger classifies tweets by topics of interest, such as "Infrastructure Damage," and "Donations," for example. The classification is done automatically based on a set of human-tagged items which are provided through MicroMappers.org. More than one person (if desired) can contribute to classifying tweets.
