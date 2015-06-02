@@ -37,7 +37,7 @@ Before installing AIDR, **configure these services** as follows:
     * `default-character-set = utf8mb4`
 1. **Redis configuration**: modify `redis.conf`:
  * Increase the maximum number of clients to avoid having an error "max number of clients reached":
-    * `maxclients = 1000`
+    * `maxclients = 10000`
  * Set the timeout to zero to allow very slow running collections:
     * `timeout = 0`
 
