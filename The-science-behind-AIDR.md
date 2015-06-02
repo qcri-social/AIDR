@@ -15,3 +15,8 @@ AIDR is based on supervised machine learning, and described in the following pap
 1. Muhammad Imran, Shady Elbassuoni, Carlos Castillo, Fernando Diaz and Patrick Meier: [Practical Extraction of Disaster-Relevant Information from Social Media](http://chato.cl/papers/imran_elbassuoni_castillo_diaz_meier_2013_practical_extraction_disaster_crisis.pdf). In SWDM. Rio de Janeiro, Brazil, 2013.
 
 1. Muhammad Imran, Shady Elbassuoni, Carlos Castillo, Fernando Diaz and Patrick Meier: [Extracting Information Nuggets from Disaster-Related Messages in Social Media](http://chato.cl/papers/imran_elbassuoni_castillo_diaz_meier_2013_extracting_information_nuggets_disasters.pdf). In ISCRAM. Baden-Baden, Germany, 2013. Best paper award [slides](http://www.slideshare.net/mimran15/imran-iscramnuggest).
+
+
+For a detailed survey on different computational techniques developed to process and analyze social media data, see the following survey paper (accepted in ACM Computing Surveys journal):
+
+Muhammad Imran, Carlos Castillo, Fernando Diaz, Sarah Vieweg: [Processing Social Media Messages in Mass Emergency: A Survey](http://mimran.me/papers/processing_social_media_messages_in_mass_emergency_survey.pdf). ACM Computing Surveys journal, 2015.
