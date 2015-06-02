@@ -1,5 +1,3 @@
-The AIDR team fully endorses [ICRC's Data Protection Protocols](https://www.icrc.org/eng/assets/files/other/icrc-002-0999.pdf) and [UN's Guidelines on Cyber Security](https://docs.unocha.org/sites/dms/Documents/Humanitarianism%20in%20the%20Cyberwarfare%20Age%20-%20OCHA%20Policy%20Paper%2011.pdf). Users of AIDR should familiarize themselves with both documents, and respect international standards on data privacy, security, and protection.
-
 This document describes the terms of service of the AIDR and MicroMappers installations operated by QCRI. It might not apply to other installations of the AIDR software.
 
 # For administrators
@@ -10,7 +8,7 @@ You can use AIDR for humanitarian and crisis response purposes. We hope it is us
 
 By using aidr.qcri.org, you grant us permission to use all the data you collect —including all the labels you obtain— for research on humanitarian computing and crisis computing. This includes permission to re-distribute your collections to other organizations working on humanitarian response, crisis response, and/or doing research on these topics. Redistribution of collections based on data obtained through Twitter's API will be done respecting Twitter API's terms of service. If you do not want your data to be reused or redistributed, please contact us before starting your collection.
 
-The AIDR team fully endorses ICRC's Data Protection Protocols and UN's Guidelines on Cyber Security. Users of the AIDR platform should familiarize themselves with both documents, and respect international standards on data privacy, security, and protection.
+The AIDR team fully endorses [ICRC's Data Protection Protocols](https://www.icrc.org/eng/assets/files/other/icrc-002-0999.pdf) and [UN's Guidelines on Cyber Security](https://docs.unocha.org/sites/dms/Documents/Humanitarianism%20in%20the%20Cyberwarfare%20Age%20-%20OCHA%20Policy%20Paper%2011.pdf). Users of AIDR should familiarize themselves with both documents, and respect international standards on data privacy, security, and protection.
 
 # For digital volunteers
 
