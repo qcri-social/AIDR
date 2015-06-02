@@ -1,4 +1,4 @@
-AIDR (Artificial Intelligence for Disaster Response) automatically collects and classifies tweets that are posted during humanitarian crises. There are far too much data produced via social media during crisis situations for humans to manage them on their own. In addition, the data are too rich and complex for machines to successfully process them. AIDR combines the best of both worlds by combining human and machine intelligence.
+AIDR (Artificial Intelligence for Disaster Response) is a free and open source software that automatically collects and classifies tweets that are posted during humanitarian crises. There are far too much data produced via social media during crisis situations for humans to manage them on their own. In addition, the data are too rich and complex for machines to successfully process them. AIDR combines the best of both worlds by combining human and machine intelligence.
 
 ## Who can use AIDR?
 
@@ -16,3 +16,5 @@ Once this is done, the "Tagger" automatically applies the classifier to incoming
 
 * **Want to see AIDR in action? Take a look at our [video walk-through](https://youtu.be/FPHPi0LYz7o).**
 * Ready to try AIDR? Take a look at the [Operator's manual](AIDR Operator's manual)
+
+AIDR is licensed under an [AGPL-3.0](https://www.gnu.org/licenses/agpl-3.0.en.html) license.
