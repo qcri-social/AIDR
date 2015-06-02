@@ -4,6 +4,8 @@ AIDR is based on supervised machine learning, and described in the following pap
 
 1. Muhammad Imran, Carlos Castillo, Ji Lucas, Patrick Meier, and Jakob Rogstadius: [Coordinating Human and Machine Intelligence to Classify Microblog Communications in Crises](http://chato.cl//papers/iscram_2014_coordinating_human_machine_intelligence_crises.pdf). In proceedings of the ISCRAM'14. Pennsylvania, USA.
 
+1. Muhammad Imran and Carlos Castillo. [Towards a Data-driven Approach to Identify Crisis-Related Topics in Social Media Streams](http://mimran.me/papers/data-driven_crisis_topics_identification_swdm2015.pdf). Social Web for Disaster Management (SWDM) at WWW2015, Florence. Italy
+
 1. Muhammad Imran, Ioanna Lykourentzou, Carlos Castillo: [Engineering Crowdsourced Stream Processing Systems](http://arxiv.org/abs/1310.5463). arXiv pre-print, 2013.
 
 1. Carlos Castillo: [AIDR's presentation at MicroMappers](https://www.youtube.com/watch?v=EUo_yLR-1xw), Nairobi, Kenya, November 2013.
