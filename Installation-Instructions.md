@@ -2,6 +2,8 @@ To start/stop/re-start AIDR and other system administration tasks, see [System a
 
 # Requirements
 
+AIDR developers use an Ubuntu 12 server for developing and testing.
+
 ## Requirements 1: install software
 
 Before installing AIDR, you must have the following **installed** in your system:
@@ -19,7 +21,7 @@ Before installing AIDR, you must have the following **installed and running** in
 1. Redis server -- http://redis.io/
 1. Pybossa server -- http://docs.pybossa.com/en/latest/index.html
 
-## Requirements 3: configure service
+## Requirements 3: configure services
 
 Before installing AIDR, **configure these services** as follows:
 
@@ -36,7 +38,7 @@ Before installing AIDR, **configure these services** as follows:
  * `maxclients`: once the limit is reached Redis will close all the new connections sending an error 'max number of clients reached'.
  * `timeout`: for very slow running collections, setting timeout=0 will prevent server to timeout.
 
-AIDR developers use an Ubuntu 12 server for developing and testing.
+Remember to re-start these services to make sure the configuration options have been applied.
 
 # 0. Building and deploying (general)
 
