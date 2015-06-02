@@ -11,3 +11,5 @@ If you want to **use AIDR**, go to the [Operator's Manual](http://en.flossmanual
 If you want to **install AIDR on your own server**, go to the [[Installation Instructions]].
 
 If you want to **extend and develop AIDR**, go to the [High-level Overview for Developers](High-level overview).
+
+If you want to **contact us**, [create a ticket in the issue tracker](https://github.com/qcri-social/AIDR/issues)
