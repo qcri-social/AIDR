@@ -6,7 +6,7 @@ Use the **Navigation** sidebar on the right to browse through the documentation,
 
 ## Where do I start?
 
-If you want to **understand what is AIDR**, see [What is AIDR?](AIDR Overview) OR [Science behind AIDR](The-science-behind-AIDR).
+If you want to **understand what is AIDR**, see [What is AIDR?](AIDR Overview) OR [The science behind AIDR](The-science-behind-AIDR).
 
 If you want to **use AIDR**, go to the [Operator's Manual](http://booki.flossmanuals.net/aidr/_edit/).
 
