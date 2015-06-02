@@ -1,4 +1,4 @@
-AIDR is based on supervised machine learning and described in the following papers and presentations:
+AIDR is based on supervised machine learning, and described in the following papers and presentations:
 
 1. Muhammad Imran, Carlos Castillo, Ji Lucas, Patrick Meier, and Sarah Vieweg: [AIDR: Artificial Intelligence for Disaster Response](http://chato.cl/papers/demo_2014_aidr_artificial_intelligence_disaster_response.pdf). International Conference on World Wide Web (WWW), 2014. Seoul, Korea.
 
