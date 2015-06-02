@@ -2,6 +2,10 @@
 
 The AIDR project was started in 2013 at the [Qatar Computing Research Institute](http://www.qcri.qa/) (QCRI) by [Patrick Meier](http://irevolution.net/) and [Carlos Castillo](http://www.chato.cl/research/).
 
+The requirements of AIDR were collected by Patrick Meier in collaboration with Justine Mackinnon from the Stand By Task Force.
+
+The system architecture of AIDR was designed by Carlos Castillo in collaboration with Muhammad Imran, Soudip Chowdhury, and Jakob Rogstadius, during their respective internships at QCRI. It also uses concepts from crowdsourcing stream processing developed with Ioanna Lykourentzou. 
+
 
 # Current team
 
