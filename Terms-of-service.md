@@ -23,4 +23,4 @@ AIDR IS PROVIDED "AS IS" WITH NO WARRANTY, EXPRESS OR IMPLIED, OF ANY KIND AND W
 WE WILL NOT, UNDER ANY CIRCUMSTANCES, BE LIABLE TO YOU FOR ANY INDIRECT, INCIDENTAL, CONSEQUENTIAL, SPECIAL OR EXEMPLARY DAMAGES ARISING OUT OF OR IN CONNECTION WITH USE OF AIDR. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, YOU AGREE TO HOLD HARMLESS AND INDEMNIFY AIDR DEVELOPERS AND SUPPORTERS OF ANY THIRD PARTY CLAIM ARISING FROM OR IN ANY WAY RELATED TO YOUR USE OF AIDR (INCLUDING ANYTHING YOU DEVELOP USING AIDR).
 These terms may change
 
-We will notify you through our aidr-users mailing list if these terms of service change. Please contact Patrick Meier if you need clarification.
+We will notify you through the [aidr-users mailing list](https://groups.google.com/forum/#!forum/aidr-users) if these terms of service change. Please contact us if you need clarification.
