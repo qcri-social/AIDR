@@ -1,7 +1,7 @@
 # Navigation
 
 * **[[Home]]**
-* [What is AIDR?](What is AIDR)
+* [What is AIDR?](AIDR Overview)
 * [Operator's manual](AIDR Operator's Manual)
 * [Public API documentation](API documentation)
 * [[The science behind AIDR]]
