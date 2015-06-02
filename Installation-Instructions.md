@@ -1,17 +1,17 @@
 To start/stop/re-start AIDR and other system administration tasks, see [System administrator manual](https://github.com/qcri-social/AIDR/wiki/System-administrator-manual)
 
-# Requirements
+# 1. Install, run, and configure requirements
 
 AIDR developers use an Ubuntu 12 server for developing and testing.
 
-## Requirements 1: install software
+## 1.1. Software to be installed
 
 Before installing AIDR, you must have the following **installed** in your system:
 
 1. Java (we have tested with Java 7, and we know **AIDR does NOT work with Java 8**) -- http://www.oracle.com/technetwork/java/javaee/downloads/
 1. Apache Maven -- http://maven.apache.org/
 
-## Requirements 2: install and run services
+## 1.2. Services to be run
 
 Before installing AIDR, you must have the following **installed and running** in your system:
 
@@ -22,7 +22,7 @@ Before installing AIDR, you must have the following **installed and running** in
 
 To set up MySql with Glassfish, check these useful links: [Using Connector/J with Glassfish](http://dev.mysql.com/doc/connector-j/en/connector-j-usagenotes-glassfish-config.html) and [How to setup a JDBC connection in Glassfish](http://computingat40s.wordpress.com/how-to-setup-a-jdbc-connection-in-glassfish/).
 
-## Requirements 3: configure services
+## 1.3. Services to be configured
 
 Before installing AIDR, **configure these services** as follows:
 
@@ -43,7 +43,7 @@ Before installing AIDR, **configure these services** as follows:
 
 Remember to re-start these services to make sure the configuration options have been applied.
 
-# Building the complete AIDR suite
+# 2. Building the complete AIDR suite
 
 If you want to build all the modules which are a part of the AIDR application in one go, you can do so using the instructions provided below:
 
@@ -59,7 +59,7 @@ This will build all the modules keeping the dependency order intact.
 
 **NOTE:** the directory $AIDR_HOME/profiles/<selected-profile>/configuraiton.properties contains the minimum required configurations for AIDR. Use default values wherever you can, and be careful while changing these to ensure that there is no mismatch between the remote JNDI resources. 
 
-# Deploying the complete AIDR suite
+# 3. Deploying the complete AIDR suite
 
 If you want to deploy (or undeploy) all the modules which are a part of the AIDR application in one go, you can do so using the following instructions:
 
@@ -85,7 +85,7 @@ Also, if you are using a glassfish user with an enabled password. Please use the
 
 This will help you login once and would execute all the commands in the script in a non-obtrusive manner. If you don't do this you will be asked to enter the asadmin username and password multiple times during the deployment process.
 
-# Post-installation MySQL commands (mandatory)
+# 4. Post-installation MySQL commands (mandatory)
 
 The following MySQL commands *must* be executed after the installation:
 
