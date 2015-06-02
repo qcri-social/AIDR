@@ -58,6 +58,7 @@
 
 ### QCRI-specific
 
+* [[Terms of service]]
 * [[Scrum implementation]]
 * [[Branching]]
 * [[Servers]]
