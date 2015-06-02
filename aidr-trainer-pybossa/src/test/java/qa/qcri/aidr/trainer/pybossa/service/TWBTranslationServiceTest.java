@@ -183,17 +183,13 @@ public class TWBTranslationServiceTest {
         assertNotNull(translation2.getAuthor());
         assertNotNull(translation2.getUrl());
 
-
-    	TaskTranslation translation = new TaskTranslation();
-    	translationService.createTranslation(translation);
-    	assertNotNull(translation.getTranslationId());
     	String newVal = "TEST";
-    	translation.setStatus(newVal);
-    	translationService.updateTranslation(translation);
-    	translation = translationService.findById(translation.getTranslationId());
+        translation2.setStatus(newVal);
+    	translationService.updateTranslation(translation2);
+        translation2 = translationService.findById(translation2.getTranslationId());
     	// we would really need to flush and clear the hibernate session for this next validation
-    	assertEquals(newVal, translation.getStatus());
-    	translationService.delete(translation);
+    	assertEquals(newVal, translation2.getStatus());
+    	translationService.delete(translation2);
     	assertEquals(initialSize, translationService.findAllTranslations().size());
     }
 
