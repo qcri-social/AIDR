@@ -19,12 +19,9 @@ Before installing AIDR, **configure these services** as follows:
 
 1. MySQL: modify /etc/mysql/my.cnf file with the following:
  * In the [client] section add: `default-character-set = utf8mb4`
- * In the [mysqld] section add:
-
-    `character-set-client-handshake = FALSE`
-    `character-set-server = utf8mb4`
-    `collation-server = utf8mb4_unicode_ci`
-
+ * In the [mysqld] section add: `character-set-client-handshake = FALSE`
+ * In the [mysqld] section add: `character-set-server = utf8mb4`
+ * In the [mysqld] section add: `collation-server = utf8mb4_unicode_ci`
  * In the [mysql] section add: `default-character-set = utf8mb4`
 1. Redis: 
  * `maxclients`: once the limit is reached Redis will close all the new connections sending an error 'max number of clients reached'.
@@ -285,19 +282,6 @@ First, check the character set currently being used in MySQL:
 1. ALTER DATABASE aidr_predict CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 1. ALTER TABLE aidr_predict.document CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 1. ALTER TABLE aidr_predict.document CHANGE data data TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-Next, modify `/etc/mysql/my.cnf` file with the following:
-
-Under `[client]` section add:
-default-character-set = utf8mb4
-
-Under `[mysqld]` section add:
-character-set-client-handshake = FALSE
-character-set-server = utf8mb4
-collation-server = utf8mb4_unicode_ci
-
-Under `[mysql]` section add:
-default-character-set = utf8mb4
 
 Finally, do a sanity check: 
 
