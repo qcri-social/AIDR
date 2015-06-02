@@ -1,1 +1,1 @@
-[Wiki Home](Home) - [Repository Home](https://github.com/qcri-social/AIDR) - [Pivotal Tracker](https://www.pivotaltracker.com/n/projects/969960) - [AIDR.qcri.org](http://aidr.qcri.org/) - [[Credits]]
+[Wiki Home](Home) - [Repository Home](https://github.com/qcri-social/AIDR) - [Pivotal Tracker](https://www.pivotaltracker.com/n/projects/969960) - [Mailing List](https://groups.google.com/forum/#!forum/aidr-users) - [AIDR.qcri.org](http://aidr.qcri.org/) - [[Credits]]
