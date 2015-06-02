@@ -4,9 +4,9 @@ Use the **Navigation** sidebar on the right to browse through the documentation,
 
 # Where do I start?
 
-If you want to **understand what is AIDR**, see [[What is AIDR?]]
+If you want to **understand what is AIDR**, see [[What is AIDR?]].
 
-If you want to **use AIDR**, go to the [Operator's Manual](http://en.flossmanuals.net/aidr/)
+If you want to **use AIDR**, go to the [Operator's Manual](http://en.flossmanuals.net/aidr/).
 
 If you want to **install AIDR on your own server**, go to the [[Installation Instructions]].
 
