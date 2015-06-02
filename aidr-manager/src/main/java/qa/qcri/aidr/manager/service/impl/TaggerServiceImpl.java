@@ -87,7 +87,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			String jsonResponse = clientResponse.readEntity(String.class);
 
-			logger.error("URL: " + taggerMainUrl + " " + jsonResponse);
+			//logger.error("URL: " + taggerMainUrl + " " + jsonResponse);
 
 			TaggerAllCrisesTypesResponse crisesTypesResponse = objectMapper
 					.readValue(jsonResponse, TaggerAllCrisesTypesResponse.class);

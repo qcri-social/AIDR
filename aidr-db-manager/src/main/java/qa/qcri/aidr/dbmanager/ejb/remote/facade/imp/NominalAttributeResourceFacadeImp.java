@@ -2,7 +2,7 @@ package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.math.BigInteger;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
@@ -121,12 +121,12 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 			CrisisAttributesDTO attribute;
 			for (Object[] row : rows) {
 				attribute = new CrisisAttributesDTO();
-				attribute.setNominalAttributeID(((Integer) row[0]).intValue());
-				attribute.setUserID(((Integer) row[1]).intValue());
+				attribute.setNominalAttributeID(((BigInteger) row[0]).intValue());
+				attribute.setUserID(((BigInteger) row[1]).intValue());
 				attribute.setName((String) row[2]);
 				attribute.setDescription((String) row[3]);
 				attribute.setCode(((String) row[4]));
-				attribute.setLabelID(((Integer) row[5]).intValue());
+				attribute.setLabelID(((BigInteger) row[5]).intValue());
 				attribute.setLabelName(((String) row[6]));
 				attributesList.add(attribute);
 			}
