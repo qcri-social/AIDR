@@ -4,6 +4,10 @@ Use the **Navigation** sidebar on the right to browse through the documentation,
 
 # Where do I start?
 
+If you want to understand what is AIDR, see [[What is AIDR?]]
+
+If you want to use AIDR, go to the [Operator's Manual](http://en.flossmanuals.net/aidr/)
+
 If you need to install AIDR, go to the [[Installation Instructions]].
 
 If you are a developer, go to the [High-level Overview for Developers](High-level overview).
