@@ -1,6 +1,8 @@
 This document describes the terms of service of the AIDR and MicroMappers installations operated by QCRI. It might not apply to other installations of the AIDR software.
 
-# For administrators (aidr.qcri.org)
+# For administrators
+
+**This applies to the service provided at aidr.qcri.org**
 
 You can use AIDR for humanitarian and crisis response purposes. We hope it is useful to you, but we provide it without any implied or explicit warranty. While we make an effort to provide a reliable service at aidr.qcri.org, your collections may be stopped or removed at any time. We are unlikely to keep your data from collections that are inactive for more than 7 days. You are welcome to grab the source code (distributed under the AGPL 3.0 license) and run your own instance of AIDR.
 
@@ -8,7 +10,9 @@ By using aidr.qcri.org, you grant us permission to use all the data you collect 
 
 The AIDR team fully endorses ICRC's Data Protection Protocols and UN's Guidelines on Cyber Security. Users of the AIDR platform should familiarize themselves with both documents, and respect international standards on data privacy, security, and protection.
 
-# For digital volunteers (clickers.micromappers.org)
+# For digital volunteers
+
+**This apply to the service provided at clickers.micromappers.org**
 
 The content you will work with is selected automatically from user-generated content. As such, it may content profanity and/or graphic or disturbing images or descriptions.
 
