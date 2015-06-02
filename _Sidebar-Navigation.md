@@ -4,7 +4,7 @@
 * [[What is AIDR?]]
 * [Operator's manual](AIDR Operator's Manual)
 * [Public API documentation](API documentation)
-* [[The Science of AIDR]]
+* [[The science behind AIDR]]
 
 ## System administrators
 
