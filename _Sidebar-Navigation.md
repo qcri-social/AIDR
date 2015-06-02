@@ -58,7 +58,7 @@
 
 ### QCRI-specific
 
-* [[Terms of service]] (aidr.qcri.org)
+* [[Terms of service]]
 * [[Scrum implementation]]
 * [[Branching]]
 * [[Servers]]
