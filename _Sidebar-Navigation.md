@@ -5,7 +5,6 @@
 * [Operator's manual](AIDR Operator's Manual)
 * [Public API documentation](API documentation)
 * [[The science behind AIDR]]
-* [[Terms of service]]
 
 ## System administrators
 
