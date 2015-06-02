@@ -40,7 +40,7 @@ public class TWBTranslationServiceTest {
     private static final long TEST_CLIENT_ID = 3;
     private static final String NEW_CLIENT_APP_ID = "1211";
     private static final long TEST_TWB_PROJECT_ID = 5681;
-
+    private static final String LONG_CODE = "This_is_a_long_answer_code_loooooooong";
     @Test
     public void testPybossaWorker() throws Exception {
         pybossaWorker.processTaskRunImport();
@@ -185,6 +185,7 @@ public class TWBTranslationServiceTest {
 
     	String newVal = "TEST";
         translation2.setStatus(newVal);
+        translation2.setAnswerCode(LONG_CODE);
     	translationService.updateTranslation(translation2);
         translation2 = translationService.findById(translation2.getTranslationId());
     	// we would really need to flush and clear the hibernate session for this next validation

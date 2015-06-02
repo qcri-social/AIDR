@@ -202,9 +202,6 @@ public class TWBTranslationServiceImpl implements TranslationService {
             throw new RuntimeException("TWB order number does not match");
         }
         taskTranslation.setTranslatedText(finalTranslation);
-        if (code.length() > 9) {
-            code = code.substring(0, 9);
-        }
         taskTranslation.setAnswerCode(code);
         taskTranslation.setStatus(TaskTranslation.STATUS_RECEIVED);
         updateTranslation(taskTranslation);
