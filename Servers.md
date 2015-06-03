@@ -4,6 +4,6 @@ Staging server: http://10.5.4.10:8080/AIDRFetchManager/index.jsp (must be access
 
 # Commands to execute testers
 
-To run the collector tester, use this command:
+To run the collector tester in the staging server, use this command:
 
 `sudo something-something something something`
