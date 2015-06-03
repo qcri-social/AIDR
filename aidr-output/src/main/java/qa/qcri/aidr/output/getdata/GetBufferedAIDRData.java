@@ -53,15 +53,12 @@
 package qa.qcri.aidr.output.getdata;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.ejb.Startup;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.ws.rs.Consumes;
@@ -76,19 +73,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static qa.qcri.aidr.output.utils.ConfigProperties.getProperty;
-
-
-//import org.apache.log4j.BasicConfigurator;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-
-
-
-
-
-
-
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
@@ -96,6 +80,8 @@ import qa.qcri.aidr.common.filter.ClassifiedFilteredTweet;
 import qa.qcri.aidr.common.filter.FilterQueryMatcher;
 import qa.qcri.aidr.common.filter.JsonQueryList;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
+import qa.qcri.aidr.output.utils.OutputConfigurationProperty;
+import qa.qcri.aidr.output.utils.OutputConfigurator;
 import qa.qcri.aidr.output.utils.SimpleRateLimiter;
 import qa.qcri.aidr.common.filter.DeserializeFilters;
 

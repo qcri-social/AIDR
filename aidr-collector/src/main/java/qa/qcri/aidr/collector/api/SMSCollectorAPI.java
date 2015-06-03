@@ -1,7 +1,5 @@
 package qa.qcri.aidr.collector.api;
 
-import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
@@ -28,6 +26,8 @@ import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.ResponseWrapper;
 import qa.qcri.aidr.collector.beans.SMS;
 import qa.qcri.aidr.collector.collectors.JedisPublisher;
+import qa.qcri.aidr.collector.utils.CollectorConfigurator;
+import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
 import qa.qcri.aidr.collector.utils.GenericCache;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.redis.LoadShedder;
@@ -43,7 +43,9 @@ public class SMSCollectorAPI  {
     private static Logger logger = Logger.getLogger(SMSCollectorAPI.class.getName());
     private static ErrorLog elog = new ErrorLog();
     
-    public static final String CHANNEL = getProperty("FETCHER_CHANNEL") + ".%s";
+    private static CollectorConfigurator configProperties= CollectorConfigurator.getInstance();
+    
+    public static final String CHANNEL = configProperties.getProperty(CollectorConfigurationProperty.COLLECTOR_CHANNEL) + ".%s";
     private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
     
     @GET
@@ -55,8 +57,8 @@ public class SMSCollectorAPI  {
         }
         String channelName = String.format(CHANNEL, collectionCode);
         redisLoadShedder.put(channelName,
-                new LoadShedder(Integer.parseInt(getProperty("PERSISTER_LOAD_LIMIT")), Integer.parseInt(getProperty("PERSISTER_LOAD_CHECK_INTERVAL_MINUTES")), true));
-        GenericCache.getInstance().putSMSCollection(collectionCode, getProperty("STATUS_CODE_COLLECTION_RUNNING"));
+                new LoadShedder(Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_LIMIT)), Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)), true));
+        GenericCache.getInstance().putSMSCollection(collectionCode, configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_RUNNING));
         startPersister(collectionCode);
         return Response.ok().build();
     }
@@ -78,7 +80,7 @@ public class SMSCollectorAPI  {
 
         ResponseWrapper response = new ResponseWrapper();
         response.setMessage("Invalid key. No running collector found for the given id.");
-        response.setStatusCode(getProperty("STATUS_CODE_COLLECTION_NOTFOUND"));
+        response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_NOTFOUND));
         return Response.ok(response).build();
     }
     
@@ -89,7 +91,7 @@ public class SMSCollectorAPI  {
     public Response receive(@PathParam("collection_code") String code, SMS sms) {
         GenericCache cache = GenericCache.getInstance();
         String smsCollections = cache.getSMSCollection(code.trim());
-        if (getProperty("STATUS_CODE_COLLECTION_RUNNING").equals(smsCollections)) {
+        if (configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_RUNNING).equals(smsCollections)) {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 String channelName = String.format(CHANNEL, code);
@@ -127,8 +129,8 @@ public class SMSCollectorAPI  {
     public void startPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
-            WebTarget webResource = client.target(getProperty("PERSISTER_REST_URI") + "collectionPersister/start?channel_provider="
-                    + URLEncoder.encode(getProperty("TAGGER_CHANNEL"), "UTF-8")
+            WebTarget webResource = client.target(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_REST_URI) + "collectionPersister/start?channel_provider="
+                    + URLEncoder.encode(configProperties.getProperty(CollectorConfigurationProperty.TAGGER_CHANNEL), "UTF-8")
                     + "&collection_code=" + URLEncoder.encode(collectionCode, "UTF-8"));
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             String jsonResponse = clientResponse.readEntity(String.class);
@@ -146,7 +148,7 @@ public class SMSCollectorAPI  {
     public void stopPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
-            WebTarget webResource = client.target(getProperty("PERSISTER_REST_URI")
+            WebTarget webResource = client.target(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_REST_URI)
                     + "collectionPersister/stop?collection_code=" + URLEncoder.encode(collectionCode, "UTF-8"));
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             String jsonResponse = clientResponse.readEntity(String.class);

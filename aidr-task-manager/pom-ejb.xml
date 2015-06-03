@@ -2,7 +2,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>qa.qcri.aidr.task</groupId>
-	<artifactId>aidr-task-manager</artifactId>
+	<artifactId>aidr-task-manager-ejb</artifactId>
+	<name>AIDR Task Manager EJB</name>
 	<version>1.0</version>
 	<packaging>ejb</packaging>
 
@@ -13,7 +14,7 @@
 
 	<parent>
 		<groupId>qa.qcri.aidr.task</groupId>
-		<artifactId>aidr-task-manager-pom</artifactId>
+		<artifactId>aidr-task-manager</artifactId>
 		<version>1.0</version>
 		<relativePath>pom.xml</relativePath>
 	</parent>
@@ -36,13 +37,13 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>qa.qcri.aidr.predictdb</groupId>
-			<artifactId>aidr-db-manager</artifactId>
+			<groupId>qa.qcri.aidr.dbmanager</groupId>
+			<artifactId>aidr-db-manager-ejb</artifactId>
 			<version>1.0</version>
 			<scope>compile</scope>
 			<type>ejb-client</type>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>

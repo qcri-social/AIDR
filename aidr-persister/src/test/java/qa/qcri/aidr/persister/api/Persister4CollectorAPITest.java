@@ -2,7 +2,6 @@ package qa.qcri.aidr.persister.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +14,10 @@ import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import qa.qcri.aidr.common.code.Configurator;
+import qa.qcri.aidr.utils.PersisterConfigurationProperty;
+import qa.qcri.aidr.utils.PersisterConfigurator;
+
 public class Persister4CollectorAPITest {
 	//
 	static Persister4CollectorAPI persister4CollectorAPI;
@@ -22,12 +25,17 @@ public class Persister4CollectorAPITest {
 	static String sampleCollectionCode = "sample_collection_ode";
 	private static Logger logger = Logger.getLogger(Persister4CollectorAPITest.class.getName());
 	
+	private static Configurator configurator = PersisterConfigurator
+			.getInstance();
+
 	@BeforeClass
 	public static void setUpBeforeClass() {
+		configurator.initProperties(PersisterConfigurator.configLoadFileName,
+				PersisterConfigurationProperty.values());
 		persister4CollectorAPI = new Persister4CollectorAPI();
 		logger.info("Executing setUpBeforeClass In Persister4CollectorAPITest");
 		//Creating a sample persister directory
-		File folderLocation = new File(getProperty("DEFAULT_PERSISTER_FILE_PATH") + existedCollectionCode);
+		File folderLocation = new File(configurator.getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + existedCollectionCode);
 		if(!folderLocation.exists()){
 			assertTrue("Unable to create sample directory",folderLocation.mkdirs());
 		}

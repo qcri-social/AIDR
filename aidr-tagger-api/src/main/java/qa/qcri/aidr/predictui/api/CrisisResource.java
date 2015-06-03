@@ -16,6 +16,8 @@ import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -30,8 +32,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 
 /**
  * REST Web Service
@@ -63,7 +63,7 @@ public class CrisisResource {
 			crisis = crisisLocalEJB.getCrisisByID(id);
 			System.out.println("fetched crisis for id " + id + ": " + (crisis != null ? crisis.getCode() : "null"));
 		} catch (RuntimeException e) {
-			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
+			return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
 		}
 		ObjectMapper mapper = new ObjectMapper();
 		try {
@@ -71,7 +71,7 @@ public class CrisisResource {
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
+			return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
 		}
 	}
 
@@ -87,18 +87,18 @@ public class CrisisResource {
 			if (crisis != null) {
 				response.setDataObject(crisis);
 				response.setTotal(1);
-				response.setStatusCode(getProperty("STATUS_CODE_SUCCESS"));
+				response.setStatusCode(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
 				return Response.ok(response).build();
 			} else {
 				response.setDataObject(null);
 				response.setTotal(0);
-				response.setStatusCode(getProperty("STATUS_CODE_SUCCESS"));
+				response.setStatusCode(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
 				return Response.ok(response).build();
 			}
 		} catch (RuntimeException e) {
 			response.setDataObject(null);
 			response.setTotal(0);
-			response.setStatusCode(getProperty("STATUS_CODE_FAILED"));
+			response.setStatusCode(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED));
 			response.setMessage(e.getCause().getCause().getMessage());
 			return Response.ok(response).build();
 		}
@@ -155,7 +155,7 @@ public class CrisisResource {
 
 		List<CrisisDTO> crisisList = crisisLocalEJB.getAllCrisis();
 		ResponseWrapper response = new ResponseWrapper();
-		response.setMessage(getProperty("STATUS_CODE_SUCCESS"));
+		response.setMessage(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
 		response.setCrisises(crisisList);
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -166,7 +166,7 @@ public class CrisisResource {
 			return Response.ok(mapper.writeValueAsString(response)).build();
 		} catch (Exception e) {
 			e.printStackTrace();
-			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
+			return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
 		}
 	}
 
@@ -192,13 +192,13 @@ public class CrisisResource {
 			System.out.println("Received request to add crisis: " + crisis.getCode());
 			if (crisisLocalEJB.isCrisisExists(crisis.getCode())) {
 				logger.warn("Crisis with code = " + crisis.getCode() + " already has at least one classifier attached!");
-				return Response.ok(getProperty("STATUS_CODE_SUCCESS")).build();
+				return Response.ok(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS)).build();
 			}
 			// Otherwise, add the new crisis to aidr_predict database
 			crisis.setIsTrashed(false);
 			CrisisDTO newCrisis = crisisLocalEJB.addCrisis(crisis);
 			System.out.println("Added crisis successfully: id = " + newCrisis.getCrisisID() + ", " + newCrisis.getCode());
-			return Response.ok(getProperty("STATUS_CODE_SUCCESS")).build();
+			return Response.ok(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS)).build();
 		} catch (RuntimeException e) {
 			e.printStackTrace();
 			logger.error("Error while adding Crisis. Possible causes could be duplication of primary key, incomplete data, incompatible data format. For crisis: " + crisis.getCode());
@@ -216,7 +216,7 @@ public class CrisisResource {
 			CrisisDTO updatedCrisis = crisisLocalEJB.editCrisis(crisis);
 			return Response.ok(updatedCrisis).build();
 		} catch (RuntimeException e) {
-			return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
+			return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
 		}
 		
 	}

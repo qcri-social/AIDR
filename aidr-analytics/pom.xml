@@ -1,12 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>qa.qcri.aidr.analysis</groupId>
 	<artifactId>aidr-analytics</artifactId>
+	<name>AIDR Analytics</name>
 	<version>1.0</version>
 	<packaging>war</packaging>
-	<name>aidr-analytics</name>
-	<description>Analytics module for AIDR classifier data</description>
+	<description>Maintains various statistics of the tagged items</description>
+	<url>http://aidr.qcri.org/</url>
 
 	<dependencies>
 		<!-- AIDR dependencies -->
@@ -15,7 +17,6 @@
 			<artifactId>aidr-common</artifactId>
 			<version>1.0</version>
 		</dependency>
-
 		<dependency>
 			<groupId>qa.qcri.aidr.output</groupId>
 			<artifactId>aidr-output</artifactId>
@@ -83,7 +84,6 @@
 			<version>4.0.6.RELEASE</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>commons-pool</groupId>
 			<artifactId>commons-pool</artifactId>
@@ -135,9 +135,6 @@
 			<artifactId>hibernate-validator</artifactId>
 			<version>4.2.0.Final</version>
 		</dependency>
-
-
-
 
 		<!-- Jackson Dependencies -->
 		<dependency>
@@ -198,6 +195,7 @@
 			<version>7.0</version>
 		</dependency>
 	</dependencies>
+
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -228,5 +226,34 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+
+		<filters>
+			<filter>${basedir}/../profiles/${build.profile.id}/config.properties</filter>
+		</filters>
+
 	</build>
+
+	<!-- Profile configuration this should match the one in the master POM -->
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<build.profile.id>dev</build.profile.id>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<build.profile.id>prod</build.profile.id>
+			</properties>
+		</profile>
+	</profiles>
+
 </project>

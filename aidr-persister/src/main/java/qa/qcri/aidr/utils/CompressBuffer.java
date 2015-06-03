@@ -1,7 +1,5 @@
 package qa.qcri.aidr.utils;
 
-import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -203,7 +201,7 @@ public class CompressBuffer extends FileCompressor {
 		CompressBuffer zipper = new CompressBuffer();
 
 		String collectionCode = "20150104-0348-SinhaKoushik-abcdertgh";
-		String folderLocation = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode;
+		String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode;
 
 		String unzippedFileName = "testData2.txt";
 		BufferedReader br = null;

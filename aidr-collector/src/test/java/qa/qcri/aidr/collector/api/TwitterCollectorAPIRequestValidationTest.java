@@ -9,14 +9,20 @@ import org.junit.Test;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.ResponseWrapper;
-import qa.qcri.aidr.collector.utils.ConfigProperties;
+import qa.qcri.aidr.collector.utils.CollectorConfigurator;
+import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
 
 public class TwitterCollectorAPIRequestValidationTest {
 	
 	private TwitterCollectorAPI instance;
+	
+	CollectorConfigurator configProperties=CollectorConfigurator.getInstance();
 
 	@Before
 	public void setUp() throws Exception {
+		configProperties.initProperties(
+				CollectorConfigurator.configLoadFileName,
+				CollectorConfigurationProperty.values());
 		instance = new TwitterCollectorAPI();
 	}
 
@@ -27,7 +33,7 @@ public class TwitterCollectorAPIRequestValidationTest {
 		CollectionTask collectionTask = new CollectionTask();
 		Response response = instance.startTask(collectionTask);
 		ResponseWrapper responseWrapper = (ResponseWrapper) response.getEntity();
-		assertEquals(ConfigProperties.getProperty("STATUS_CODE_COLLECTION_ERROR"), responseWrapper.getStatusCode());
+		assertEquals(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR), responseWrapper.getStatusCode());
 
 		//Default task with all values null except toTrack 
 		//Will fail because of twitterConfiguration not available
@@ -35,7 +41,7 @@ public class TwitterCollectorAPIRequestValidationTest {
 		collectionTask.setToTrack("earthquake");
 		response = instance.startTask(collectionTask);
 		responseWrapper = (ResponseWrapper) response.getEntity();
-		assertEquals(ConfigProperties.getProperty("STATUS_CODE_COLLECTION_ERROR"), responseWrapper.getStatusCode());
+		assertEquals(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR), responseWrapper.getStatusCode());
 		
 		//Default task with all values null except toTrack & toFollow
 		//Will fail because of twitterConfiguration not available
@@ -44,7 +50,7 @@ public class TwitterCollectorAPIRequestValidationTest {
 		collectionTask.setToFollow("2589756661");
 		response = instance.startTask(collectionTask);
 		responseWrapper = (ResponseWrapper) response.getEntity();
-		assertEquals(ConfigProperties.getProperty("STATUS_CODE_COLLECTION_ERROR"), responseWrapper.getStatusCode());
+		assertEquals(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR), responseWrapper.getStatusCode());
 		
 		//Default task with all values null except toTrack, toFollow & geoLocation
 		//Will fail because of twitterConfiguration not available
@@ -54,7 +60,7 @@ public class TwitterCollectorAPIRequestValidationTest {
 		collectionTask.setGeoLocation("-74,40,-73,41");
 		response = instance.startTask(collectionTask);
 		responseWrapper = (ResponseWrapper) response.getEntity();
-		assertEquals(ConfigProperties.getProperty("STATUS_CODE_COLLECTION_ERROR"), responseWrapper.getStatusCode());
+		assertEquals(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR), responseWrapper.getStatusCode());
 		
 		//Default task with all values null except consumerKey and accessToken
 		//Will fail because of twitter's ConsumerSecret and AccessTokenSecret not available
@@ -63,7 +69,7 @@ public class TwitterCollectorAPIRequestValidationTest {
 		collectionTask.setAccessToken("eJSZ34XesdfsdfDBboduYzOFikHDJ9zXVXR0g");
 		response = instance.startTask(collectionTask);
 		responseWrapper = (ResponseWrapper) response.getEntity();
-		assertEquals(ConfigProperties.getProperty("STATUS_CODE_COLLECTION_ERROR"), responseWrapper.getStatusCode());
+		assertEquals(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR), responseWrapper.getStatusCode());
 		
 		//Default task with all values null except twitterConfig
 		//Will fail because of task details not available
@@ -74,7 +80,7 @@ public class TwitterCollectorAPIRequestValidationTest {
 		collectionTask.setAccessTokenSecret("fkEXx1z68oks4hm8JCUGeRDw");
 		response = instance.startTask(collectionTask);
 		responseWrapper = (ResponseWrapper) response.getEntity();
-		assertEquals(ConfigProperties.getProperty("STATUS_CODE_COLLECTION_ERROR"), responseWrapper.getStatusCode());
+		assertEquals(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR), responseWrapper.getStatusCode());
 		
 		//Default task with all values null except twitterConfig & toTrack
 		//Will fail because of collectionCode and collectionName not present
@@ -86,7 +92,7 @@ public class TwitterCollectorAPIRequestValidationTest {
 		collectionTask.setToTrack("earthquake");
 		response = instance.startTask(collectionTask);
 		responseWrapper = (ResponseWrapper) response.getEntity();
-		assertEquals(ConfigProperties.getProperty("STATUS_CODE_COLLECTION_ERROR"), responseWrapper.getStatusCode());
+		assertEquals(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR), responseWrapper.getStatusCode());
 		
 		/*TODO 1)Write positive test cases whenever task is in initializing or running state. 
 		 *     2) Write test cases for the persister whenever default persister mode is true.
@@ -101,7 +107,7 @@ public class TwitterCollectorAPIRequestValidationTest {
 		//Will fail because of collection code does not exist
 		Response response = instance.stopTask("collectionCode");
 		ResponseWrapper responseWrapper = (ResponseWrapper) response.getEntity();
-		assertEquals(ConfigProperties.getProperty("STATUS_CODE_COLLECTION_NOTFOUND"), responseWrapper.getStatusCode());
+		assertEquals(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_NOTFOUND), responseWrapper.getStatusCode());
 	}
 
 }

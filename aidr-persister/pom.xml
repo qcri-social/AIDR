@@ -1,13 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
 
+	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.qcri.aidr.persister</groupId>
 	<artifactId>aidr-persister</artifactId>
-	<packaging>war</packaging>
-	<name>AIDRPersister</name>
+	<name>AIDR Persister</name>
 	<version>1.0</version>
-	<url>http://maven.apache.org</url>
+	<packaging>war</packaging>
+	<description>Persists the items that have been collected and/or tagged into files</description>
+	<url>http://aidr.qcri.org/</url>
 
 	<properties>
 		<resource.dir>${basedir}/src/main/resources</resource.dir>
@@ -22,8 +23,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>qa.qcri.aidr.predictdb</groupId>
-			<artifactId>aidr-db-manager</artifactId>
+			<groupId>qa.qcri.aidr.dbmanager</groupId>
+			<artifactId>aidr-db-manager-ejb</artifactId>
 			<version>1.0</version>
 			<scope>compile</scope>
 			<type>ejb-client</type>
@@ -213,7 +214,25 @@
 			</resource>
 		</resources>
 		<filters>
-			<filter>${basedir}/../aidr-common/src/main/resources/common_config.properties</filter>
+			<filter>${basedir}/../profiles/${build.profile.id}/config.properties</filter>
 		</filters>
 	</build>
+	
+	 
+    <!-- Profile configuration this should match the one in the master POM-->
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <build.profile.id>dev</build.profile.id>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <build.profile.id>prod</build.profile.id>
+            </properties>
+        </profile>
+    </profiles>
+	
 </project>

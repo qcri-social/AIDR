@@ -1,10 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>qa.qcri.aidr.common</groupId>
 	<artifactId>aidr-common</artifactId>
+	<name>AIDR Common</name>
 	<version>1.0</version>
 	<packaging>jar</packaging>
+	<description>Contains common code used in various modules of the application such as logging</description>
+	<url>http://aidr.qcri.org/</url>
 
 	<properties>
 		<java-version>1.7</java-version>
@@ -23,7 +27,6 @@
 			<version>4.10</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
@@ -64,11 +67,12 @@
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
-				<excludes>
-					<exclude>log4j.properties</exclude>
-				</excludes>
+				<filtering>true</filtering>
 			</resource>
 		</resources>
+		<filters>
+			<filter>${basedir}/../profiles/${build.profile.id}/config.properties</filter>
+		</filters>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -86,16 +90,27 @@
 					<configuration>
 						<source>1.7</source>
 						<target>1.7</target>
-
-						<excludes>
-							<exclude>**/log4j.properties</exclude>
-						</excludes>
-
 					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
+
+	<!-- Profile configuration this should match the one in the master POM -->
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<build.profile.id>dev</build.profile.id>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<build.profile.id>prod</build.profile.id>
+			</properties>
+		</profile>
+	</profiles>
 
 
 

@@ -5,15 +5,18 @@
 package qa.qcri.aidr.io;
 
 import java.io.File;
+
 import org.apache.commons.lang.StringUtils;
+
+import qa.qcri.aidr.utils.PersisterConfigurationProperty;
+import qa.qcri.aidr.utils.PersisterConfigurator;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.io.InputStream;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-
-import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
 
 /**
  *
@@ -22,7 +25,7 @@ import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
 public class FileSystemOperations {
     
     public static ArrayList<String> get100KFilesList(String collectionCode){
-        String filesPath = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/";
+        String filesPath = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/";
         File folder = new File(filesPath);
         File[] listOfFiles = folder.listFiles();
         Integer volNum = 1;
@@ -49,7 +52,7 @@ public class FileSystemOperations {
 
     public static String getLatestFileVolume(String collectionCode) {
 
-        String filesPath = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/";
+        String filesPath = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/";
         File folder = new File(filesPath);
         File[] listOfFiles = folder.listFiles();
         Integer volNum = 1;
@@ -74,7 +77,7 @@ public class FileSystemOperations {
 
     public static int getLatestFileVolumeNumber(String collectionCode) {
 
-        String filesPath = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/";
+        String filesPath = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/";
         File folder = new File(filesPath);
         File[] listOfFiles = folder.listFiles();
         Integer volNum = 1;
@@ -101,7 +104,7 @@ public class FileSystemOperations {
     @Deprecated
     public static int getLatestFileVolumeNumber4Tagger(String collectionCode) {
 
-        String filesPath = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/output/";
+        String filesPath = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/output/";
     	//String filesPath = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/";
         File folder = new File(filesPath);
         File[] listOfFiles = folder.listFiles();
@@ -128,7 +131,7 @@ public class FileSystemOperations {
 
     public static List<String> getAllJSONFileVolumes(String collectionCode) {
 
-        String filesPath = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/";
+        String filesPath = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/";
         List<String> fileNames = new ArrayList();
         File folder = new File(filesPath);
         File[] listOfFiles = folder.listFiles();
@@ -149,7 +152,7 @@ public class FileSystemOperations {
     @Deprecated
     public static List<String> getClassifiedFileVolumes(String collectionCode) {
 
-        String filesPath = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/output/";
+        String filesPath = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/output/";
     	//String filesPath = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/";
         List<String> fileNames = new ArrayList();
         File folder = new File(filesPath);

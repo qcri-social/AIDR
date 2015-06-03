@@ -26,10 +26,10 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.CollectorStatus;
+import qa.qcri.aidr.collector.utils.CollectorConfigurator;
+import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
 import qa.qcri.aidr.collector.utils.GenericCache;
 import qa.qcri.aidr.common.logging.ErrorLog;
-
-import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
 
 /**
  * @author Imran
@@ -41,6 +41,7 @@ public class CollectorManageResource {
 
 	private static Logger logger = Logger.getLogger(CollectorManageResource.class.getName());
 	private static ErrorLog elog = new ErrorLog();
+	private static CollectorConfigurator configProperties = CollectorConfigurator.getInstance();
 	
     @Context
     private UriInfo context;
@@ -125,7 +126,7 @@ public class CollectorManageResource {
     	Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
             
-        	WebTarget webResource = client.target(getProperty("FETCHER_REST_URI") + "/twitter/start");
+        	WebTarget webResource = client.target(configProperties.getProperty(CollectorConfigurationProperty.COLLECTOR_REST_URI) + "/twitter/start");
             Gson gson = new Gson();
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
             							.post(Entity.json(gson.toJson(collection)), Response.class);

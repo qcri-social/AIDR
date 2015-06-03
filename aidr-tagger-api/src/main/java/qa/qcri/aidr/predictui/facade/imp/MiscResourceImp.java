@@ -4,7 +4,6 @@
  */
 package qa.qcri.aidr.predictui.facade.imp;
 
-
 import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
@@ -14,6 +13,8 @@ import qa.qcri.aidr.dbmanager.dto.taggerapi.HumanLabeledDocumentListWrapper;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.ItemToLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
 import qa.qcri.aidr.predictui.facade.MiscResourceFacade;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 import javax.ejb.EJB;
@@ -32,8 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
-
 /**
  *
  * @author Imran
@@ -41,7 +40,7 @@ import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 @Stateless
 public class MiscResourceImp implements MiscResourceFacade {
 
-	private final String persisterMainUrl = getProperty("AIDR_PERSISTER_URL");
+	private final String persisterMainUrl = TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.AIDR_PERSISTER_URL);
 
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.MiscResourceFacade remoteMiscEJB;

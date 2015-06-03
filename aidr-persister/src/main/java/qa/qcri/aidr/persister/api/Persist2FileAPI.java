@@ -1,8 +1,5 @@
 package qa.qcri.aidr.persister.api;
 
-import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
-
-import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Map;
 
@@ -20,17 +17,14 @@ import net.minidev.json.JSONObject;
 
 import org.apache.log4j.Logger;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.HumanLabeledDocumentListWrapper;
 import qa.qcri.aidr.common.filter.DeserializeFilters;
 import qa.qcri.aidr.common.filter.JsonQueryList;
 import qa.qcri.aidr.utils.DownloadJsonType;
 import qa.qcri.aidr.utils.JsonDeserializer;
+import qa.qcri.aidr.utils.PersisterConfigurationProperty;
+import qa.qcri.aidr.utils.PersisterConfigurator;
 import qa.qcri.aidr.utils.ResultStatus;
 
 @Path("/listPersister")
@@ -66,15 +60,15 @@ public class Persist2FileAPI {
 				logger.info(collectionCode + ": received constraints = " + queryList);
 			}
 
-			if (null == exportLimit) exportLimit = Integer.parseInt(getProperty("TWEETS_EXPORT_LIMIT_100K"));
+			if (null == exportLimit) exportLimit = Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K));
 			JSONObject obj = new JSONObject();
 			String fileName = jsonD.generateClassifiedList2CSV_100K_BasedOnTweetCountFiltered(collectionCode, exportLimit, queryList, postBody.getDtoList(), userName);
 			logger.info("Generated fileName = " + fileName);
 
-			obj.putAll(ResultStatus.getUIWrapper(collectionCode, getProperty("PERSISTER_CHANGE_NOTIFY_MSG"), fileName, true));
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), fileName, true));
 			logger.info("done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
 
-			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, getProperty("PERSISTER_CHANGE_NOTIFY_MSG"), fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), fileName, true));
 			return Response.ok(obj.toJSONString())
 					.allow("POST", "OPTIONS", "HEAD")
 					.header("Access-Control-Allow-Origin", "*")
@@ -84,7 +78,7 @@ public class Persist2FileAPI {
 					.build();
 		} catch (Exception e) {
 			e.printStackTrace();
-			return Response.ok(getProperty("STATUS_CODE_ERROR")).build();
+			return Response.ok(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.STATUS_CODE_ERROR)).build();
 		} 
 	}  
 
@@ -119,9 +113,9 @@ public class Persist2FileAPI {
 			JSONObject obj = new JSONObject();
 			Map<String, Object> result = jsonD.generateClassifiedList2TweetIdsCSVFiltered(collectionCode, queryList, downloadLimited, postBody.getDtoList(), userName);
 			String fileName = result.get("fileName") != null ? result.get("fileName").toString() : null;
-			if ((Integer) result.get("count") < Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT"))) {
-				obj.putAll(ResultStatus.getUIWrapper(collectionCode, getProperty("PERSISTER_CHANGE_NOTIFY_MSG"), fileName, true));
-				logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, getProperty("PERSISTER_CHANGE_NOTIFY_MSG"), fileName, true));
+			if ((Integer) result.get("count") < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT))) {
+				obj.putAll(ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), fileName, true));
+				logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), fileName, true));
 				return Response.ok(obj.toJSONString())
 						.allow("POST", "OPTIONS", "HEAD")
 						.header("Access-Control-Allow-Origin", "*")
@@ -130,8 +124,47 @@ public class Persist2FileAPI {
 						.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 						.build();
 			} else {
-				obj.putAll(ResultStatus.getUIWrapper(collectionCode,  getProperty("TWEET_DOWNLOAD_LIMIT_MSG_PREFIX") + getProperty("DEFAULT_TWEETID_VOLUME_LIMIT") + getProperty("TWEET_DOWNLOAD_LIMIT_MSG_SUFFIX") + getProperty("PERSISTER_CHANGE_NOTIFY_MSG"), fileName, true));
-				logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode,  getProperty("TWEET_DOWNLOAD_LIMIT_MSG_PREFIX") + getProperty("DEFAULT_TWEETID_VOLUME_LIMIT") + getProperty("TWEET_DOWNLOAD_LIMIT_MSG_SUFFIX") + getProperty("PERSISTER_CHANGE_NOTIFY_MSG"), fileName, true));
+				obj.putAll(ResultStatus
+						.getUIWrapper(
+								collectionCode,
+								PersisterConfigurator
+										.getInstance()
+										.getProperty(
+												PersisterConfigurationProperty.TWEET_DOWNLOAD_LIMIT_MSG_PREFIX)
+										+ PersisterConfigurator
+												.getInstance()
+												.getProperty(
+														PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT)
+										+ PersisterConfigurator
+												.getInstance()
+												.getProperty(
+														PersisterConfigurationProperty.TWEET_DOWNLOAD_LIMIT_MSG_SUFFIX)
+										+ PersisterConfigurator
+												.getInstance()
+												.getProperty(
+														PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG),
+								fileName, true));
+				logger.info("Returning JSON object: "
+						+ ResultStatus
+								.getUIWrapper(
+										collectionCode,
+										PersisterConfigurator
+												.getInstance()
+												.getProperty(
+														PersisterConfigurationProperty.TWEET_DOWNLOAD_LIMIT_MSG_PREFIX)
+												+ PersisterConfigurator
+														.getInstance()
+														.getProperty(
+																PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT)
+												+ PersisterConfigurator
+														.getInstance()
+														.getProperty(
+																PersisterConfigurationProperty.TWEET_DOWNLOAD_LIMIT_MSG_SUFFIX)
+												+ PersisterConfigurator
+														.getInstance()
+														.getProperty(
+																PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG),
+										fileName, true));
 				return Response.ok(obj.toJSONString())
 						.allow("POST", "OPTIONS", "HEAD")
 						.header("Access-Control-Allow-Origin", "*")
@@ -142,8 +175,11 @@ public class Persist2FileAPI {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return Response.ok(getProperty("STATUS_CODE_ERROR")).build();
-		} 
+			return Response.ok(
+					PersisterConfigurator.getInstance().getProperty(
+							PersisterConfigurationProperty.STATUS_CODE_ERROR))
+					.build();
+	} 
 	}
 
 	@POST
@@ -167,7 +203,7 @@ public class Persist2FileAPI {
 			}
 
 			JsonDeserializer jsonD = new JsonDeserializer();
-			if (null == exportLimit) exportLimit = Integer.parseInt(getProperty("TWEETS_EXPORT_LIMIT_100K"));		// Koushik: added to override user specs
+			if (null == exportLimit) exportLimit = Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K));		// Koushik: added to override user specs
 
 			String fileName = jsonD.generateClassifiedList2JSON_100K_BasedOnTweetCountFiltered(collectionCode, exportLimit, queryList, 
 					DownloadJsonType.getDownloadJsonTypeFromString(jsonType), postBody.getDtoList(), userName);
@@ -175,12 +211,12 @@ public class Persist2FileAPI {
 			logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
 
 			JSONObject obj = new JSONObject();
-			obj.putAll(ResultStatus.getUIWrapper(collectionCode, getProperty("PERSISTER_CHANGE_NOTIFY_MSG"), fileName, true));
-			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, getProperty("PERSISTER_CHANGE_NOTIFY_MSG"), fileName, true));
+			obj.putAll(ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), fileName, true));
+			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), fileName, true));
 			return Response.ok(obj.toJSONString()).build();
 		} catch (Exception e) {
 			e.printStackTrace();
-			return Response.ok(getProperty("STATUS_CODE_ERROR")).build();
+			return Response.ok(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.STATUS_CODE_ERROR)).build();
 		} 
 	}
 
@@ -209,9 +245,9 @@ public class Persist2FileAPI {
 			String fileName = result.get("fileName") != null ? result.get("fileName").toString() : null;
 
 			JSONObject obj = new JSONObject();
-			if ((Integer) result.get("count") < Integer.parseInt(getProperty("DEFAULT_TWEETID_VOLUME_LIMIT"))) {
-				obj.putAll(ResultStatus.getUIWrapper(collectionCode, getProperty("PERSISTER_CHANGE_NOTIFY_MSG"), fileName, true));
-				logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, getProperty("PERSISTER_CHANGE_NOTIFY_MSG"), fileName, true));
+			if ((Integer) result.get("count") < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT))) {
+				obj.putAll(ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), fileName, true));
+				logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), fileName, true));
 				return Response.ok(obj.toJSONString())
 						.allow("POST", "OPTIONS", "HEAD")
 						.header("Access-Control-Allow-Origin", "*")
@@ -220,8 +256,47 @@ public class Persist2FileAPI {
 						.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 						.build();
 			} else {
-				obj.putAll(ResultStatus.getUIWrapper(collectionCode,  getProperty("TWEET_DOWNLOAD_LIMIT_MSG_PREFIX") + getProperty("DEFAULT_TWEETID_VOLUME_LIMIT") + getProperty("TWEET_DOWNLOAD_LIMIT_MSG_SUFFIX") + getProperty("PERSISTER_CHANGE_NOTIFY_MSG"), fileName, true));
-				logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode,  getProperty("TWEET_DOWNLOAD_LIMIT_MSG_PREFIX") + getProperty("DEFAULT_TWEETID_VOLUME_LIMIT") + getProperty("TWEET_DOWNLOAD_LIMIT_MSG_SUFFIX") + getProperty("PERSISTER_CHANGE_NOTIFY_MSG"), fileName, true));
+				obj.putAll(ResultStatus
+						.getUIWrapper(
+								collectionCode,
+								PersisterConfigurator
+										.getInstance()
+										.getProperty(
+												PersisterConfigurationProperty.TWEET_DOWNLOAD_LIMIT_MSG_PREFIX)
+										+ PersisterConfigurator
+												.getInstance()
+												.getProperty(
+														PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT)
+										+ PersisterConfigurator
+												.getInstance()
+												.getProperty(
+														PersisterConfigurationProperty.TWEET_DOWNLOAD_LIMIT_MSG_SUFFIX)
+										+ PersisterConfigurator
+												.getInstance()
+												.getProperty(
+														PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG),
+								fileName, true));
+				logger.info("Returning JSON object: "
+						+ ResultStatus
+								.getUIWrapper(
+										collectionCode,
+										PersisterConfigurator
+												.getInstance()
+												.getProperty(
+														PersisterConfigurationProperty.TWEET_DOWNLOAD_LIMIT_MSG_PREFIX)
+												+ PersisterConfigurator
+														.getInstance()
+														.getProperty(
+																PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT)
+												+ PersisterConfigurator
+														.getInstance()
+														.getProperty(
+																PersisterConfigurationProperty.TWEET_DOWNLOAD_LIMIT_MSG_SUFFIX)
+												+ PersisterConfigurator
+														.getInstance()
+														.getProperty(
+																PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG),
+										fileName, true));
 				return Response.ok(obj.toJSONString())
 						.allow("POST", "OPTIONS", "HEAD")
 						.header("Access-Control-Allow-Origin", "*")
@@ -232,7 +307,7 @@ public class Persist2FileAPI {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return Response.ok(getProperty("STATUS_CODE_ERROR")).build();
+			return Response.ok(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.STATUS_CODE_ERROR)).build();
 		} 
 	}
 

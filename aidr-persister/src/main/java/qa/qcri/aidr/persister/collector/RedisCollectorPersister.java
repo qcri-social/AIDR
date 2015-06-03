@@ -4,16 +4,14 @@
  */
 package qa.qcri.aidr.persister.collector;
 
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
-
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.redis.JedisConnectionPool;
 import qa.qcri.aidr.utils.GenericCache;
+import qa.qcri.aidr.utils.PersisterConfigurationProperty;
+import qa.qcri.aidr.utils.PersisterConfigurator;
 import redis.clients.jedis.Jedis;
-import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
 
 /**
  *
@@ -69,13 +67,13 @@ public class RedisCollectorPersister implements Runnable {
 				// koushik: Added a finally block to gracefully unsubscribe
 				try {
 					logger.info(collectionCode + ": started collecting data to -> " + fileName);
-					logger.info("Channel to Listen  to: " + getProperty("FETCHER_CHANNEL") + collectionCode);
-                            subscriberJedis.psubscribe(subscriber, getProperty("FETCHER_CHANNEL") + collectionCode);
+					logger.info("Channel to Listen  to: " +PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.FETCHER_CHANNEL) + collectionCode);
+                            subscriberJedis.psubscribe(subscriber, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.FETCHER_CHANNEL) + collectionCode);
 					logger.info(collectionCode + ": Stopped collecting data -> " + fileName);
 					Thread.sleep(200);
 				} finally {
 					if (subscriber != null && subscriber.isSubscribed()) {
-						subscriber.punsubscribe(getProperty("TAGGER_CHANNEL") + collectionCode);
+						subscriber.punsubscribe(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TAGGER_CHANNEL) + collectionCode);
 						try {
 							connObject.close(subscriberJedis);		// return jedis resource to JedisPool
 							Thread.sleep(200);
@@ -100,7 +98,7 @@ public class RedisCollectorPersister implements Runnable {
 		if (subscriber != null && subscriber.isSubscribed()) {
 			// Bug fix: redundant "." in fully qualified channel name
 			//subscriber.punsubscribe(Config.FETCHER_CHANNEL+ "."+collectionCode);
-			subscriber.punsubscribe(getProperty("FETCHER_CHANNEL") + collectionCode);
+			subscriber.punsubscribe(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.FETCHER_CHANNEL)+ collectionCode);
 		}
 		/*
 		try {

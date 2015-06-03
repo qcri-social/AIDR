@@ -15,7 +15,6 @@ import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.common.*;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.dbentities.ModelFamilyEC;
-import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 /**
  * ModelController handles classification of DocumentSet objects, with the
@@ -219,7 +218,7 @@ public class ModelController extends PipelineProcess {
             String path = getModelPath(eventID, attributeID, modelID);
             o = weka.core.SerializationHelper.readAll(path);
         } catch (Exception e) {
-            logger.error("Could not load model from disk (crisis " + eventID
+        	System.out.println("Could not load model from disk (crisis " + eventID
                     + ", attribute " + attributeID + ", model " + modelID
                     + "). Delete model reference in DB and retrain? [y/n]");
             try {
@@ -230,7 +229,7 @@ public class ModelController extends PipelineProcess {
             } catch (IOException ex) {
                 //do nothing
             }
-            System.out.println();
+            //System.out.println();
             return false;
         }
         Classifier classifier = (Classifier) o[0];
@@ -247,8 +246,9 @@ public class ModelController extends PipelineProcess {
     }
 
     private static String getModelPath(int eventID, int attributeID, int modelID) {
-        String modelsPath = getProperty("model_store_path");
-        if (!modelsPath.endsWith(File.separator)) {
+		String modelsPath = TaggerConfigurator.getInstance().getProperty(
+				TaggerConfigurationProperty.MODEL_STORE_PATH);
+		if (!modelsPath.endsWith(File.separator)) {
             modelsPath += File.separator;
         }
         return modelsPath + eventID + "_" + attributeID + "_"

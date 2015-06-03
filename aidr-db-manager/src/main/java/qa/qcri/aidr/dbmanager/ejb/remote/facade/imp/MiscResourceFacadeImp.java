@@ -114,10 +114,10 @@ public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long
 				for (Object[] row : rows) {
 					trainingDataRow = new TrainingDataDTO();
 					//                    Removed .intValue() as we already cast to Integer
-					trainingDataRow.setLabelID((Integer) row[0]);
+					trainingDataRow.setLabelID(((BigInteger) row[0]).intValue());
 					trainingDataRow.setLabelName((String) row[1]);
 					trainingDataRow.setTweetJSON((String) row[2]);
-					trainingDataRow.setLabelerID((Integer) row[3]);
+					trainingDataRow.setLabelerID(((BigInteger) row[3]).intValue());
 					trainingDataRow.setLabelerName((String) row[4]);
 					trainingDataRow.setLabeledTime(((Date) row[5]));
 					trainingDataRow.setDocumentID(((BigInteger) row[6]).longValue());
