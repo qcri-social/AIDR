@@ -11,6 +11,8 @@ import qa.qcri.aidr.dbmanager.dto.ModelDTO;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelHistoryWrapper;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelWrapper;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -21,7 +23,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import qa.qcri.aidr.predictui.facade.ModelFacade;
-import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 
 /**
  * REST Web Service
@@ -46,7 +47,7 @@ public class ModelResource {
     public Response getAllModels() {
         List<ModelDTO> modelList = modelLocalEJB.getAllModels();
         ResponseWrapper response = new ResponseWrapper();
-        response.setMessage(getProperty("STATUS_CODE_SUCCESS"));
+        response.setMessage(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
         response.setModels(modelList);
         return Response.ok(response).build();
     }

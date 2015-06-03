@@ -1,7 +1,5 @@
 package qa.qcri.aidr.collector.collectors;
 
-import static qa.qcri.aidr.collector.utils.ConfigProperties.getProperty;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Arrays;
@@ -10,6 +8,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
+import qa.qcri.aidr.collector.utils.CollectorConfigurator;
+import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
 import qa.qcri.aidr.common.redis.LoadShedder;
 import twitter4j.FilterQuery;
 import twitter4j.TwitterStream;
@@ -26,6 +26,9 @@ import twitter4j.conf.ConfigurationBuilder;
 public class TwitterStreamTracker implements Closeable {
 
 	private static Logger logger = Logger.getLogger(TwitterStreamTracker.class.getName());
+	
+	private static CollectorConfigurator configProperties = CollectorConfigurator.getInstance();
+	
 	private TwitterStream twitterStream;
 	private FilterQuery query;
 	private JedisPublisher publisherJedis;
@@ -39,9 +42,9 @@ public class TwitterStreamTracker implements Closeable {
 		logger.info("Jedis connection acquired for collection " + task.getCollectionCode());
 
 		LoadShedder shedder = new LoadShedder(
-				Integer.parseInt(getProperty("PERSISTER_LOAD_LIMIT")),
-				Integer.parseInt(getProperty("PERSISTER_LOAD_CHECK_INTERVAL_MINUTES")), true);
-		String channelName = getProperty("FETCHER_CHANNEL") + "." + task.getCollectionCode();
+				Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_LIMIT)),
+				Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)), true);
+		String channelName = configProperties.getProperty(CollectorConfigurationProperty.COLLECTOR_CHANNEL) + "." + task.getCollectionCode();
 		TwitterStatusListener listener = new TwitterStatusListener(task, channelName);
 		listener.addFilter(new ShedderFilter(channelName, shedder));
 		if ("strict".equals(task.getGeoR())) {
@@ -62,7 +65,7 @@ public class TwitterStreamTracker implements Closeable {
 			logger.info("Added TrackFilter for collection = " + task.getCollectionCode() + ", toTrack: " + task.getToTrack());
 		}
 		listener.addPublisher(publisherJedis);
-		long threhold = Long.parseLong(getProperty("FETCHER_REDIS_COUNTER_UPDATE_THRESHOLD"));
+		long threhold = Long.parseLong(configProperties.getProperty(CollectorConfigurationProperty.COLLECTOR_REDIS_COUNTER_UPDATE_THRESHOLD));
 		String cacheKey = task.getCollectionCode();
 		listener.addPublisher(new StatusPublisher(cacheKey, threhold));
 

@@ -2,7 +2,6 @@ package qa.qcri.aidr.persister.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +15,10 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import qa.qcri.aidr.common.code.Configurator;
+import qa.qcri.aidr.utils.PersisterConfigurationProperty;
+import qa.qcri.aidr.utils.PersisterConfigurator;
+
 public class Persister4TaggerAPITest {
 	//
 	static Persister4TaggerAPI persister4TaggerAPI;
@@ -23,13 +26,16 @@ public class Persister4TaggerAPITest {
 	static String sampleCollectionCode = "sample_collection_ode";
 	static String userName = "SinhaKoushik";
 	private static Logger logger = Logger.getLogger(Persister4TaggerAPITest.class.getName());	
-	
+	private static Configurator configurator = PersisterConfigurator
+			.getInstance();
+
 	@BeforeClass
 	public static void setUpBeforeClass() {
-		persister4TaggerAPI = new Persister4TaggerAPI();
+		configurator.initProperties(PersisterConfigurator.configLoadFileName,
+				PersisterConfigurationProperty.values());	persister4TaggerAPI = new Persister4TaggerAPI();
 		logger.info("Executing setUpBeforeClass In Persister4TaggerAPITest");
 		//Creating a sample persister output directory
-		File folderLocation = new File(getProperty("DEFAULT_PERSISTER_FILE_PATH") + existedCollectionCode +"/output");
+		File folderLocation = new File(configurator.getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + existedCollectionCode +"/output");
 		if(!folderLocation.exists()){
 			assertTrue("Unable to create sample directory",folderLocation.mkdirs());
 		}
@@ -49,7 +55,7 @@ public class Persister4TaggerAPITest {
 	public static void tearDownAfterClass() {
 		//Deleting the sample persister output directory
 		logger.info("Executing setUpBeforeClass In Persister4TaggerAPITest");
-		File folderLocation = new File(getProperty("DEFAULT_PERSISTER_FILE_PATH") + existedCollectionCode);
+		File folderLocation = new File(configurator.getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + existedCollectionCode);
 		
 		try {
 			FileUtils.deleteDirectory(folderLocation);

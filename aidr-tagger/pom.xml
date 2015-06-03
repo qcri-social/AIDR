@@ -1,10 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>qa.qcri.aidr.tagger</groupId>
+	<groupId>qa.qcri.aidr.predict</groupId>
 	<artifactId>aidr-tagger</artifactId>
+	<name>AIDR Tagger</name>
 	<version>1.0</version>
-	<name>aidr-tagger</name>
+	<description>Reads collected items from a Redis queue, annotates them using an automatic classifier, and writes them to another Redis queue</description>
+	<url>http://aidr.qcri.org/</url>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -17,6 +21,7 @@
 					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -58,7 +63,7 @@
 			</resource>
 		</resources>
 		<filters>
-			<filter>${basedir}/../aidr-common/src/main/resources/common_config.properties</filter>
+			<filter>${basedir}/../profiles/${build.profile.id}/config.properties</filter>
 		</filters>
 	</build>
 	<dependencies>
@@ -68,6 +73,13 @@
 			<groupId>qa.qcri.aidr.common</groupId>
 			<artifactId>aidr-common</artifactId>
 			<version>1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>qa.qcri.aidr.task</groupId>
+			<artifactId>aidr-task-manager-ejb</artifactId>
+			<version>1.0</version>
+			<type>ejb-client</type>
 		</dependency>
 
 		<dependency>
@@ -187,6 +199,7 @@
 			<artifactId>dbpool</artifactId>
 			<version>6.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.json.local</groupId>
 			<artifactId>myjsonorg</artifactId>
@@ -206,13 +219,6 @@
 		</dependency>
 
 
-		<dependency>
-			<groupId>qa.qcri.aidr.task</groupId>
-			<artifactId>aidr-task-manager</artifactId>
-			<version>1.0</version>
-			<type>ejb-client</type>
-		</dependency>
-
 	</dependencies>
 
 	<repositories>
@@ -228,4 +234,21 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<resource.dir>${basedir}/src/main/resources</resource.dir>
 	</properties>
+
+	<!-- Profile configuration this should match the one in the master POM -->
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<build.profile.id>dev</build.profile.id>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<build.profile.id>prod</build.profile.id>
+			</properties>
+		</profile>
+	</profiles>
+
 </project>

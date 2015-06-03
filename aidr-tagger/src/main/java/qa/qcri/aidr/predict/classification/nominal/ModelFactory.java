@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.predict.DataStore;
-
+import qa.qcri.aidr.predict.common.TaggerConfigurationProperty;
+import qa.qcri.aidr.predict.common.TaggerConfigurator;
 import weka.attributeSelection.AttributeSelection;
 import weka.attributeSelection.InfoGainAttributeEval;
 import weka.attributeSelection.Ranker;
@@ -13,8 +14,6 @@ import weka.classifiers.Classifier;
 import weka.classifiers.trees.RandomForest;
 import weka.core.Attribute;
 import weka.core.Instances;
-
-import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 /**
  * ModelFactory performs delegated encapsulated training of new classifiers.
@@ -39,10 +38,18 @@ public class ModelFactory {
 	private static Logger logger = Logger.getLogger(ModelFactory.class);
 
 	//private static final double EPSILON = 0.05;		// Tolerance for comparing two models: added by koushik
-	private static final double PERFORMANCE_IMPROVEMENT_MARGIN = Double.parseDouble(getProperty("PERFORMANCE_IMPROVEMENT_MARGIN"));		
-	private static final int TRAINING_EXAMPLES_FORCE_RETRAIN = Integer.parseInt(getProperty("TRAINING_EXAMPLES_FORCE_RETRAIN"));
-	private static final int sampleCountThreshold = Integer.parseInt(getProperty("sampleCountThreshold"));
-	
+	private static final double PERFORMANCE_IMPROVEMENT_MARGIN = Double
+			.parseDouble(TaggerConfigurator.getInstance().getProperty(
+					TaggerConfigurationProperty.PERFORMANCE_IMPROVEMENT_MARGIN));
+	private static final int TRAINING_EXAMPLES_FORCE_RETRAIN = Integer
+			.parseInt(TaggerConfigurator
+					.getInstance()
+					.getProperty(
+							TaggerConfigurationProperty.TRAINING_EXAMPLES_FORCE_RETRAIN));
+	private static final int sampleCountThreshold = Integer
+			.parseInt(TaggerConfigurator.getInstance().getProperty(
+					TaggerConfigurationProperty.SAMPLE_COUNT_THRESHOLD));
+
 	public static Model buildModel(int crisisID, int attributeID, Model oldModel)
 			throws Exception {
 

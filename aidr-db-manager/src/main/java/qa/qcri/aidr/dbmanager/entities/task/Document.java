@@ -74,7 +74,7 @@ public class Document implements java.io.Serializable {
 	@Column(name = "wordFeatures", nullable = false, length = 65535, columnDefinition="mediumText")
 	private String wordFeatures;
 	
-	@Column(name = "geoFeatures", nullable = false, length = 65535, columnDefinition="mediumText")
+	@Column(name = "geoFeatures", nullable = true, length = 65535, columnDefinition="mediumText")
 	private String geoFeatures;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "document")

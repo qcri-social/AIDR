@@ -20,12 +20,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-//import org.apache.log4j.Logger;
-
-
-
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +30,6 @@ import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.predictui.entities.Users;
 import qa.qcri.aidr.predictui.facade.UserResourceFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
-import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 
 /**
  * REST Web Service

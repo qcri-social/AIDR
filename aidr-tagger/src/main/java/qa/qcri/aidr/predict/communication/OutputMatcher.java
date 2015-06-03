@@ -13,7 +13,6 @@ import java.util.*;
 import org.apache.log4j.Logger;
 
 import redis.clients.jedis.Jedis;
-import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 /**
  * OutputMatcher listens to a Redis queue for Documents that are ready for
@@ -53,9 +52,14 @@ public class OutputMatcher extends PipelineProcess  {
 
     private Document getItem() {
         Jedis jedis = DataStore.getJedisConnection();
-        List<byte[]> byteDoc = jedis.blpop(60,
-                getProperty("redis_for_output_queue").getBytes());
-        DataStore.close(jedis);
+		List<byte[]> byteDoc = jedis
+				.blpop(60,
+						TaggerConfigurator
+								.getInstance()
+								.getProperty(
+										TaggerConfigurationProperty.REDIS_FOR_OUTPUT_QUEUE)
+								.getBytes());
+		DataStore.close(jedis);
 
         if (byteDoc == null) // This is null if the blpop timed out
             return null;
@@ -71,14 +75,18 @@ public class OutputMatcher extends PipelineProcess  {
 
     private void pushToTaskWriteQueue(Document doc) {
         Jedis jedis = DataStore.getJedisConnection();
-        try {
-            jedis.rpush(getProperty("redis_label_task_write_queue").getBytes(),
-                    Serializer.serialize(doc));
-        } catch (IOException e) {
-            logger.error("Exception while serializing DocumentSet");
-            logger.error(elog.toStringException(e));
-        }
-        DataStore.close(jedis);
+		try {
+			jedis.rpush(
+					TaggerConfigurator
+							.getInstance()
+							.getProperty(
+									TaggerConfigurationProperty.REDIS_LABEL_TASK_WRITE_QUEUE)
+							.getBytes(), Serializer.serialize(doc));
+		} catch (IOException e) {
+			logger.error("Exception while serializing DocumentSet");
+			logger.error(elog.toStringException(e));
+		}
+		DataStore.close(jedis);
     }
 
     private void pushToClients(Document doc, String docJson) {
@@ -100,13 +108,16 @@ public class OutputMatcher extends PipelineProcess  {
         }
     }
 
-    public static void PushToRedisStream(String crisisCode, String docJson) {
-        Jedis redis = DataStore.getJedisConnection();
-        redis.publish(
-                getProperty("redis_output_channel_prefix") + "." + crisisCode,
-                docJson);
-        DataStore.close(redis);
-    }
+	public static void PushToRedisStream(String crisisCode, String docJson) {
+		Jedis redis = DataStore.getJedisConnection();
+		redis.publish(
+				TaggerConfigurator
+						.getInstance()
+						.getProperty(
+								TaggerConfigurationProperty.REDIS_OUTPUT_CHANNEL_PREFIX)
+						+ "." + crisisCode, docJson);
+		DataStore.close(redis);
+	}
 
     @Override
     protected void processItem(Document item) {

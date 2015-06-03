@@ -20,11 +20,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-
-
-
-
-
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -39,6 +34,8 @@ import qa.qcri.aidr.predict.classification.nominal.Model;
 import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
 import qa.qcri.aidr.predict.classification.nominal.ModelNominalLabelPerformance;
 import qa.qcri.aidr.predict.common.Helpers;
+import qa.qcri.aidr.predict.common.TaggerConfigurationProperty;
+import qa.qcri.aidr.predict.common.TaggerConfigurator;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.dbentities.ModelFamilyEC;
 import qa.qcri.aidr.predict.dbentities.NominalAttributeEC;
@@ -54,8 +51,6 @@ import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SparseInstance;
-import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
-
 
 /**
  * Wrapper class for database communication (both MySQL and Redis).
@@ -70,9 +65,13 @@ public class DataStore {
 	private static Logger logger = Logger.getLogger(DataStore.class);
 	private static ErrorLog elog = new ErrorLog();
 
-	private static final String remoteEJBJNDIName = getProperty("REMOTE_TASK_MANAGER_JNDI_NAME");
+	private static final String remoteEJBJNDIName = TaggerConfigurator
+			.getInstance().getProperty(
+					TaggerConfigurationProperty.REMOTE_TASK_MANAGER_JNDI_NAME);
 
-	private static final long LOG_INTERVAL = Integer.parseInt(getProperty("LOG_INTERVAL_MINUTES")) * 60 * 1000;
+	private static final long LOG_INTERVAL = Integer
+			.parseInt(TaggerConfigurator.getInstance().getProperty(
+					TaggerConfigurationProperty.LOG_INTERVAL_MINUTES)) * 60 * 1000;
 	private static int saveNewDocumentsCount = 0;
 	private static long lastSaveTime = 0;
 
@@ -84,9 +83,10 @@ public class DataStore {
 
 	public static synchronized void initializeJedisPool() throws Exception {
 		if (null == jedisPool) {
-			jedisPool = new JedisPool(new JedisPoolConfig(),
-					getProperty("redis_host"));
-			logger.info("Initialized jedisPool = " + jedisPool);
+			jedisPool = new JedisPool(new JedisPoolConfig(), TaggerConfigurator
+					.getInstance().getProperty(
+							TaggerConfigurationProperty.REDIS_HOST));
+	logger.info("Initialized jedisPool = " + jedisPool);
 		} else {
 			logger.warn("Attempting to initialize an active JedisPool!");
 		}
@@ -187,12 +187,17 @@ public class DataStore {
 
 	public static void clearRedisPipeline() {
 		Jedis redis = getJedisConnection();
-		redis.del(getProperty("redis_for_classification_queue"));
-		redis.del(getProperty("redis_for_extraction_queue"));
-		redis.del(getProperty("redis_for_output_queue"));
-		redis.del(getProperty("redis_label_task_write_queue"));
-		redis.del(getProperty("redis_training_sample_info_queue"));
-		close(redis);
+		redis.del(TaggerConfigurator.getInstance().getProperty(
+				TaggerConfigurationProperty.REDIS_FOR_CLASSIFICATION_QUEUE));
+		redis.del(TaggerConfigurator.getInstance().getProperty(
+				TaggerConfigurationProperty.REDIS_FOR_EXTRACTION_QUEUE));
+		redis.del(TaggerConfigurator.getInstance().getProperty(
+				TaggerConfigurationProperty.REDIS_FOR_OUTPUT_QUEUE));
+		redis.del(TaggerConfigurator.getInstance().getProperty(
+				TaggerConfigurationProperty.REDIS_LABEL_TASK_WRITE_QUEUE));
+		redis.del(TaggerConfigurator.getInstance().getProperty(
+				TaggerConfigurationProperty.REDIS_TRAINING_SAMPLE_INFO_QUEUE));
+	close(redis);
 	}
 	public static final int MODEL_ID_ERROR = -1;
 
@@ -209,8 +214,12 @@ public class DataStore {
 						40, // max-pool default = 5
 						200, // max-size default 30
 						500, // timeout (sec)
-						getProperty("mysql_path"), getProperty("mysql_username"),
-						getProperty("mysql_password"));
+						TaggerConfigurator.getInstance().getProperty(
+								TaggerConfigurationProperty.MYSQL_PATH),
+						TaggerConfigurator.getInstance().getProperty(
+								TaggerConfigurationProperty.MYSQL_USERNAME),
+						TaggerConfigurator.getInstance().getProperty(
+								TaggerConfigurationProperty.MYSQL_PASSWORD));
 				logger.info("Initialized mySQLPool = " + mySqlPool);
 				attempts = 0;
 			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
@@ -629,8 +638,13 @@ public class DataStore {
 			String message = "{ \"crisis_id\": " + n.crisisID
 					+ ", \"attributes\": [" + Helpers.join(n.attributeIDs, ",")
 					+ "] }";
-			redis.rpush(getProperty("redis_training_sample_info_queue"), message);
-		}
+			redis.rpush(
+					TaggerConfigurator
+							.getInstance()
+							.getProperty(
+									TaggerConfigurationProperty.REDIS_TRAINING_SAMPLE_INFO_QUEUE),
+					message);
+	}
 
 		DataStore.close(redis);
 	}

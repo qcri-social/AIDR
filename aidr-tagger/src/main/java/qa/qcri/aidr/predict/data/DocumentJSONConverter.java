@@ -172,7 +172,7 @@ public class DocumentJSONConverter {
 						}
 					}
 				} else {
-					logger.warn("Empty nominal_labels field! Inserting a dummy nominal label.");
+					//logger.warn("Empty nominal_labels field! Inserting a dummy nominal label.");
 					labelArray.put(createEmptyLabelJson());
 				}
 				aidr.put("nominal_labels", labelArray);

@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predict.common.*;
-import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 /**
  * OutputManager listens for new connections on a specified port. New
@@ -24,9 +23,15 @@ public class HttpOutputManager  implements Runnable {
     @Override
     public void run() {
         try {
-            server = new ServerSocket(Integer.parseInt(getProperty("http_output_port")));
-            logger.info("Listening for consumer connections on port "
-                    + Integer.parseInt(getProperty("http_output_port")));
+			server = new ServerSocket(Integer.parseInt(TaggerConfigurator
+					.getInstance().getProperty(
+							TaggerConfigurationProperty.HTTP_OUTPUT_PORT)));
+			logger.info("Listening for consumer connections on port "
+					+ Integer
+							.parseInt(TaggerConfigurator
+									.getInstance()
+									.getProperty(
+											TaggerConfigurationProperty.HTTP_OUTPUT_PORT)));
 
             while (true) {
                 if (Thread.interrupted()) {
@@ -39,14 +44,22 @@ public class HttpOutputManager  implements Runnable {
                     Thread t = new Thread(factory);
                     t.start();
                 } catch (IOException e) {
-                    logger.warn("Failed to establish connection with client on port "
-                                    + Integer.parseInt(getProperty("http_output_port")));
+					logger.warn("Failed to establish connection with client on port "
+							+ Integer
+									.parseInt(TaggerConfigurator
+											.getInstance()
+											.getProperty(
+													TaggerConfigurationProperty.HTTP_OUTPUT_PORT)));
                 }
             }
         } catch (IOException e) {
-            logger.error("Could not listen on port "
-                    + Integer.parseInt(getProperty("http_output_port")));
-            logger.error(elog.toStringException(e));
+			logger.error("Could not listen on port "
+					+ Integer
+							.parseInt(TaggerConfigurator
+									.getInstance()
+									.getProperty(
+											TaggerConfigurationProperty.HTTP_OUTPUT_PORT)));
+			logger.error(elog.toStringException(e));
         } finally {
 
             finalize();

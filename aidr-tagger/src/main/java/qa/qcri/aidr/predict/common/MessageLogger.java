@@ -8,14 +8,14 @@
 
 package qa.qcri.aidr.predict.common;
 
-import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
-
 import org.apache.log4j.Logger;
 
 public class MessageLogger {
 	private long lastSaveTime = 0;
 	private int saveNewDocumentsCount;
-	private static final long LOG_INTERVAL = Integer.parseInt(getProperty("LOG_INTERVAL_MINUTES")) * 60 * 1000;
+	private static final long LOG_INTERVAL = Integer
+			.parseInt(TaggerConfigurator.getInstance().getProperty(
+					TaggerConfigurationProperty.LOG_INTERVAL_MINUTES)) * 60 * 1000;
 
 	private static Logger logger = Logger.getLogger(MessageLogger.class);
 	

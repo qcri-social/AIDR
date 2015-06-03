@@ -32,10 +32,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static qa.qcri.aidr.output.utils.ConfigProperties.getProperty;
-
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.common.code.Configurator;
 import qa.qcri.aidr.common.code.ResponseWrapperNEW;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisConnectionException;
@@ -67,8 +66,9 @@ public class AIDROutputPing {
 
 		//		AIDROutputConfig configuration = new AIDROutputConfig();
 		//		HashMap<String, String> configParams = configuration.getConfigProperties();
-		AIDROutputPing.host = getProperty("host");
-		AIDROutputPing.port = Integer.parseInt(getProperty("port"));
+		Configurator configurator = OutputConfigurator.getInstance();
+		AIDROutputPing.host = configurator.getProperty(OutputConfigurationProperty.REDIS_HOST);
+		AIDROutputPing.port = Integer.parseInt(configurator.getProperty(OutputConfigurationProperty.REDIS_PORT));
 		/*
 		if (configParams.get("logger").equalsIgnoreCase("log4j")) {
 			// For now: set up a simple configuration that logs on the console

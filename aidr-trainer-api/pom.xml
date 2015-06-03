@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
+	<groupId>qa.qcri.trainer.api</groupId>
 	<artifactId>aidr-trainer-api</artifactId>
-	<groupId>qa.qcri</groupId>
+	<name>AIDR Trainer API</name>
 	<version>1.0</version>
 	<packaging>war</packaging>
-	<name>AIDRTrainerAPI</name>
-	<url>http://maven.apache.org</url>
+	<description>Contains API for trainer module</description>
+	<url>http://aidr.qcri.org/</url>
 
 	<properties>
 		<org.springframework.version>3.2.1.RELEASE</org.springframework.version>
@@ -28,7 +30,7 @@
 
 		<dependency>
 			<groupId>qa.qcri.aidr.task</groupId>
-			<artifactId>aidr-task-manager</artifactId>
+			<artifactId>aidr-task-manager-ejb</artifactId>
 			<version>1.0</version>
 			<scope>compile</scope>
 			<type>ejb-client</type>
@@ -133,26 +135,13 @@
 			<version>2.5.1</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- dependency>
-			<groupId>com.fasterxml.jackson.jaxrs</groupId>
-			<artifactId>jackson-jaxrs-json-provider</artifactId>
-			<version>2.4.0</version>
-		</dependency -->
-		<!-- dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-			<version>2.4.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.4.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-			<version>2.4.2</version>
-		</dependency -->
+		<!-- dependency> <groupId>com.fasterxml.jackson.jaxrs</groupId> <artifactId>jackson-jaxrs-json-provider</artifactId> 
+			<version>2.4.0</version> </dependency -->
+		<!-- dependency> <groupId>com.fasterxml.jackson.core</groupId> <artifactId>jackson-core</artifactId> 
+			<version>2.4.2</version> </dependency> <dependency> <groupId>com.fasterxml.jackson.core</groupId> 
+			<artifactId>jackson-databind</artifactId> <version>2.4.2</version> </dependency> 
+			<dependency> <groupId>com.fasterxml.jackson.core</groupId> <artifactId>jackson-annotations</artifactId> 
+			<version>2.4.2</version> </dependency -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
@@ -225,7 +214,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>AIDRTrainerAPI</finalName>
+		<finalName>aidr-trainer-api</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -281,5 +270,31 @@
 				</executions>
 			</plugin>
 		</plugins>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<filters>
+			<filter>${basedir}/../profiles/${build.profile.id}/config.properties</filter>
+		</filters>
 	</build>
+
+	<!-- Profile configuration this should match the one in the master POM -->
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<build.profile.id>dev</build.profile.id>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<build.profile.id>prod</build.profile.id>
+			</properties>
+		</profile>
+	</profiles>
+
 </project>

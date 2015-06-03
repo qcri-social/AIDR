@@ -13,9 +13,9 @@ import redis.clients.jedis.Jedis;
 import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.classification.nominal.CrisisAttributePair;
 import qa.qcri.aidr.predict.common.Event;
-
+import qa.qcri.aidr.predict.common.TaggerConfigurationProperty;
+import qa.qcri.aidr.predict.common.TaggerConfigurator;
 import qa.qcri.aidr.predict.dbentities.ModelFamilyEC;
-import static qa.qcri.aidr.predict.common.ConfigProperties.getProperty;
 
 /**
  * ModelRetrainTrigger gets notified of new training samples through a Redis
@@ -50,12 +50,19 @@ class ModelRetrainTrigger implements Runnable {
         }
     }
 
-    public void initialize(ArrayList<ModelFamilyEC> modelStates) {
-        for (ModelFamilyEC m : modelStates) {
-            increment(m.getCrisisID(), new int[] { m.getNominalAttribute().getNominalAttributeID()},
-                    m.getTrainingExampleCount() % Integer.parseInt(getProperty("sampleCountThreshold")));
-        }
-    }
+	public void initialize(ArrayList<ModelFamilyEC> modelStates) {
+		for (ModelFamilyEC m : modelStates) {
+			increment(
+					m.getCrisisID(),
+					new int[] { m.getNominalAttribute().getNominalAttributeID() },
+					m.getTrainingExampleCount()
+							% Integer
+									.parseInt(TaggerConfigurator
+											.getInstance()
+											.getProperty(
+													TaggerConfigurationProperty.SAMPLE_COUNT_THRESHOLD)));
+		}
+	}
 
     private int parseTrainingSamples() {
         Jedis redis = DataStore.getJedisConnection();
@@ -99,14 +106,18 @@ class ModelRetrainTrigger implements Runnable {
         return newSampleCount;
     }
 
-    private String getInfoMessage(Jedis redis) {
-        List<String> result = redis.blpop(5,
-                getProperty("redis_training_sample_info_queue"));
-        if (result == null || result.size() != 2) {
-            return null; // Result is null on timeout, size should always be 2
-        }
-        return result.get(1);
-    }
+	private String getInfoMessage(Jedis redis) {
+		List<String> result = redis
+				.blpop(5,
+						TaggerConfigurator
+								.getInstance()
+								.getProperty(
+										TaggerConfigurationProperty.REDIS_TRAINING_SAMPLE_INFO_QUEUE));
+		if (result == null || result.size() != 2) {
+			return null; // Result is null on timeout, size should always be 2
+		}
+		return result.get(1);
+	}
 
     private void increment(int crisisID, int[] attributeIDs, int incrementValue) {
         for (int id : attributeIDs) {
@@ -133,18 +144,22 @@ class ModelRetrainTrigger implements Runnable {
             HashMap<Integer, Integer> eventMap = newSampleCounts.get(crisisID);
             for (int attributeID : eventMap.keySet()) {
                 long now = new Date().getTime();
-                if (eventMap.get(attributeID) >= Integer.parseInt(getProperty("sampleCountThreshold"))
-                        && (now - rebuildTimestamps.get(crisisID).get(
-                                attributeID)) >= timeThreshold) {
+				if (eventMap.get(attributeID) >= Integer
+						.parseInt(TaggerConfigurator
+								.getInstance()
+								.getProperty(
+										TaggerConfigurationProperty.SAMPLE_COUNT_THRESHOLD))
+						&& (now - rebuildTimestamps.get(crisisID).get(
+								attributeID)) >= timeThreshold) {
 
-                    retrain(crisisID, attributeID);
-                } else {
-                    if (forceRetrains.containsKey(crisisID)
-                            && forceRetrains.get(crisisID)
-                                    .contains(attributeID)) {
-                        retrain(crisisID, attributeID);
-                    }
-                }
+					retrain(crisisID, attributeID);
+				} else {
+					if (forceRetrains.containsKey(crisisID)
+							&& forceRetrains.get(crisisID)
+									.contains(attributeID)) {
+						retrain(crisisID, attributeID);
+					}
+				}
             }
         }
     }

@@ -3,7 +3,7 @@
   <persistence-unit name="qa.qcri.aidr.predictui-EJBS" transaction-type="JTA">
     <!-- provider>org.hibernate.ejb.HibernatePersistence</provider -->
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-    <jta-data-source>JNDI/aidr_predict</jta-data-source>
+    <jta-data-source>${DB_MANAGER_JNDI}</jta-data-source>
     <!--class>qa.qcri.aidr.predictui.entities.NominalLabel</class>
     <class>qa.qcri.aidr.predictui.entities.CrisisType</class>
     <class>qa.qcri.aidr.predictui.entities.Users</class>
@@ -22,7 +22,7 @@
   <persistence-unit name="qa.qcri.aidr.collectorManager-PU" transaction-type="JTA">
     <!-- provider>org.hibernate.ejb.HibernatePersistence</provider -->
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-    <jta-data-source>JNDI/aidr_fetch_manager</jta-data-source>
+    <jta-data-source>${MANAGER_JNDI}</jta-data-source>
     <properties>
       <property name="hibernate.show_sql" value="false"/>
       <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>

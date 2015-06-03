@@ -1,14 +1,14 @@
 package qa.qcri.aidr.redis;
 
-
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.utils.PersisterConfigurationProperty;
+import qa.qcri.aidr.utils.PersisterConfigurator;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
-import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
 
 /**
  *
@@ -37,7 +37,7 @@ public class JedisConnectionPool  {
 				config.setMinIdle(1);
 				config.setMaxWaitMillis(30000);
 				
-                jedisPool = new JedisPool(config, getProperty("REDIS_HOST"), Integer.parseInt(getProperty("REDIS_PORT")));
+                jedisPool = new JedisPool(config, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.REDIS_HOST), Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.REDIS_PORT)));
                 
             }
             return jedisPool.getResource();

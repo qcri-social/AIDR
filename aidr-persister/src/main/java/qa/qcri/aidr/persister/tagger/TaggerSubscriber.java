@@ -11,17 +11,6 @@ package qa.qcri.aidr.persister.tagger;
 import qa.qcri.aidr.persister.collector.*;
 
 import java.io.File;
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
-
-
-
-
-
-
-
-import redis.clients.jedis.JedisPubSub;
-
 import java.io.OutputStreamWriter;
 import java.io.FileOutputStream;
 import java.io.BufferedWriter;
@@ -29,6 +18,8 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import qa.qcri.aidr.utils.ClassifiedTweet;
+import qa.qcri.aidr.utils.PersisterConfigurationProperty;
+import qa.qcri.aidr.utils.PersisterConfigurator;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -41,7 +32,8 @@ import qa.qcri.aidr.utils.JsonDeserializer;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.redis.LoadShedder;
 import qa.qcri.aidr.io.FileSystemOperations;
-import static qa.qcri.aidr.utils.ConfigProperties.getProperty;
+import redis.clients.jedis.JedisPubSub;
+
 
 public class TaggerSubscriber extends JedisPubSub {
 	
@@ -73,8 +65,21 @@ public class TaggerSubscriber extends JedisPubSub {
         if (null == redisLoadShedder) {
         	redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
         }
-        redisLoadShedder.put(getProperty("TAGGER_CHANNEL")+collectionCode, new LoadShedder(Integer.parseInt(getProperty("PERSISTER_LOAD_LIMIT")), Integer.parseInt(getProperty("PERSISTER_LOAD_CHECK_INTERVAL_MINUTES")), true));
-        logger.info("Created loadshedder for channel: " + (getProperty("TAGGER_CHANNEL")+collectionCode));
+		redisLoadShedder
+				.put(PersisterConfigurator.getInstance().getProperty(
+						PersisterConfigurationProperty.TAGGER_CHANNEL)
+						+ collectionCode,
+						new LoadShedder(
+								Integer.parseInt(PersisterConfigurator
+										.getInstance()
+										.getProperty(
+												PersisterConfigurationProperty.PERSISTER_LOAD_LIMIT)),
+								Integer.parseInt(PersisterConfigurator
+										.getInstance()
+										.getProperty(
+												PersisterConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)),
+								true));
+		logger.info("Created loadshedder for channel: " + (PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TAGGER_CHANNEL)+collectionCode));
     }
 
     @Override
@@ -141,7 +146,7 @@ public class TaggerSubscriber extends JedisPubSub {
     private void createBufferWriter() {
         try {
             //out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file, true), Charset.forName("UTF-8")), Integer.parseInt(getProperty("DEFAULT_FILE_WRITER_BUFFER_SIZE")));
-        	out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file, true)), Integer.parseInt(getProperty("DEFAULT_FILE_WRITER_BUFFER_SIZE")));
+        	out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file, true)), Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_FILE_WRITER_BUFFER_SIZE)));
         	
         } catch (IOException ex) {
             //Logger.getLogger(TaggerSubscriber.class.getName()).log(Level.SEVERE, null, ex);
@@ -175,7 +180,7 @@ public class TaggerSubscriber extends JedisPubSub {
     }
 
     private void isTimeToCreateNewFile() {
-        if (itemsWrittenToFile >= Integer.parseInt(getProperty("DEFAULT_FILE_VOLUMN_LIMIT"))) {
+        if (itemsWrittenToFile >= Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_FILE_VOLUMN_LIMIT))) {
             closeFileWriting();
             itemsWrittenToFile = 0;
             fileVolumnNumber++;

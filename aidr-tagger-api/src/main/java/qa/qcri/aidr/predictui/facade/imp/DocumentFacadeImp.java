@@ -1,7 +1,5 @@
 package qa.qcri.aidr.predictui.facade.imp;
 
-
-import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 
 import java.util.HashMap;
@@ -17,6 +15,8 @@ import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.predictui.facade.DocumentFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 /**
@@ -77,21 +77,21 @@ public class DocumentFacadeImp implements DocumentFacade {
 				remoteDocumentNominalLabel.deleteByCriteria(criterion);
 				if (!remoteDocumentNominalLabel.isDocumentExists(documentID)) {
 					logger.info("Removed training example: " + newDoc.getDocumentID() + ", for crisisID = " + newDoc.getCrisisDTO().getCrisisID());
-					return new ResponseWrapper(getProperty("STATUS_CODE_SUCCESS"),
+					return new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS),
 							"Deleted training example id " + documentID);
 				} else {
 					logger.error("Could NOT remove document from document nominal label table! id = " + documentID + "hasHumanLabels = " + remoteDocument.findDocumentByID(documentID).getHasHumanLabels());
-					return new ResponseWrapper(getProperty("STATUS_CODE_FAILED"),
+					return new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED),
 							"Error while deleting training example id " + documentID);
 				}
 			} else {
 				logger.error("Could NOT remove document from document nominal label table! id = " + documentID + "hasHumanLabels = " + remoteDocument.findDocumentByID(documentID).getHasHumanLabels());
-				return new ResponseWrapper(getProperty("STATUS_CODE_FAILED"),
+				return new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED),
 						"Error while deleting training example id " + documentID);
 			}
 		} catch (Exception e) {
 			logger.error("exception", e);
-			return new ResponseWrapper(getProperty("STATUS_CODE_FAILED"),
+			return new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED),
 					"Error while deleting training example id " + documentID);
 		}
 	}

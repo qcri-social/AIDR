@@ -1,6 +1,42 @@
+<<<<<<< HEAD
+# Built Files
+*/target/
+
+# Java class files
+*.class
+
+# JAR files
+*.jar
+
+# Generated files
+bin/
+gen/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Log Files
+*.log
+
+# OS X Generated Files
+.DS_Store
+
+#################
+## Eclipse
+#################
+
+*.project
+*.classpath
+*.settings
+
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+=======
 aidr-trainer-pybossa/target
 
 
 *.class
 
 *.class
+>>>>>>> b4492f3d7ba52efe2b441358d3dbd61dda649429

@@ -3,7 +3,7 @@
   <persistence-unit name="qa.qcri.aidr.dbmanager-EJBS" transaction-type="JTA">
     <!-- provider>org.hibernate.ejb.HibernatePersistence</provider -->
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-    <jta-data-source>JNDI/aidr_db_manager</jta-data-source>
+    <jta-data-source>${DB_MANAGER_JNDI}</jta-data-source>
     <class>qa.qcri.aidr.dbmanager.entities.task.Document</class>
     <class>qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel</class>
     <class>qa.qcri.aidr.dbmanager.entities.task.TaskAnswer</class>
@@ -21,9 +21,15 @@
     <class>qa.qcri.aidr.dbmanager.entities.misc.CustomUiTemplate</class>
     <class>qa.qcri.aidr.dbmanager.entities.misc.Users</class>
     
-    <properties>
-      <property name="hibernate.show_sql" value="false"/>
-      <property name="hibernate.format_sql" value="false"/>
+     <properties>
+      <property name="javax.persistence.jdbc.driver" value="${SQL_DRIVER}"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:${SQL_SERVER_TYPE}://${SQL_SERVER_HOST}:${SQL_SERVER_PORT}/${TAGGER_DB_NAME}?useUnicode=true"/>
+      <property name="javax.persistence.jdbc.user" value="${TAGGER_DB_USERNAME}"/>
+      <property name="javax.persistence.jdbc.password" value="${TAGGER_DB_PASSWORD}"/>
+      <property name="hibernate.dialect" value="${HIBERNATE_DIALECT}"/>
+      <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.format_sql" value="true"/>
+      <property name="hibernate.hbm2ddl.auto" value="${TAGGER_DB_HBM2DDL}"/>
       <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
     </properties>
   </persistence-unit>
@@ -47,13 +53,14 @@
     <class>qa.qcri.aidr.dbmanager.entities.misc.CustomUiTemplate</class>
     <class>qa.qcri.aidr.dbmanager.entities.misc.Users</class>
     <properties>
-      <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/aidr_predict?useUnicode=true"/>
-      <property name="javax.persistence.jdbc.user" value="root"/>
-      <property name="javax.persistence.jdbc.password" value="admin"/>
-      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
-      <property name="hibernate.show_sql" value="false"/>
-      <property name="hibernate.hbm2ddl.auto" value="update"/>
+      <property name="javax.persistence.jdbc.driver" value="${SQL_DRIVER}"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:${SQL_SERVER_TYPE}://${SQL_SERVER_HOST}:${SQL_SERVER_PORT}/${TAGGER_DB_NAME}?useUnicode=true"/>
+      <property name="javax.persistence.jdbc.user" value="${TAGGER_DB_USERNAME}"/>
+      <property name="javax.persistence.jdbc.password" value="${TAGGER_DB_PASSWORD}"/>
+      <property name="hibernate.dialect" value="${HIBERNATE_DIALECT}"/>
+      <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.format_sql" value="true"/>
+      <property name="hibernate.hbm2ddl.auto" value="${TAGGER_DB_HBM2DDL}"/>
     </properties>
   </persistence-unit>
 </persistence>

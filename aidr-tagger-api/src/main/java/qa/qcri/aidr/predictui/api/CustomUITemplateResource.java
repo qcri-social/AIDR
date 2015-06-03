@@ -4,6 +4,8 @@ import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.CustomUiTemplateDTO;
 import qa.qcri.aidr.predictui.facade.CustomUITemplateFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -16,8 +18,6 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.log4j.Logger;
 
 import java.util.List;
-
-import static qa.qcri.aidr.predictui.util.ConfigProperties.getProperty;
 
 /**
  * Created with IntelliJ IDEA.
@@ -94,7 +94,7 @@ public class CustomUITemplateResource {
         try {
             customUITemplate = customUITemplateFacade.getAllCustomUITemplateByCrisisID((long) crisisID);
         } catch (RuntimeException e) {
-            return Response.ok(new ResponseWrapper(getProperty("STATUS_CODE_FAILED"), e.getCause().getCause().getMessage())).build();
+            return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
         }
 
         return Response.ok(customUITemplate).build();
@@ -114,17 +114,17 @@ public class CustomUITemplateResource {
     private boolean isAttributeInfoRequired(int type){
         boolean returnValue = false;
 
-        if(type == Integer.parseInt(getProperty("CLASSIFIER_DESCRIPTION_PAGE"))){
+        if(type == Integer.parseInt(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.CLASSIFIER_DESCRIPTION_PAGE))){
             returnValue = true;
         }
 
-        if(type == Integer.parseInt(getProperty("CLASSIFIER_TUTORIAL_ONE"))){
+        if(type == Integer.parseInt(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.CLASSIFIER_TUTORIAL_ONE))){
             returnValue = true;
         }
 
-        if(type == Integer.parseInt(getProperty("CLASSIFIER_TUTORIAL_TWO"))){
+        if(type == Integer.parseInt(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.CLASSIFIER_TUTORIAL_TWO))){
             returnValue = true;
-        }
+        } 
 
         return returnValue;
     }

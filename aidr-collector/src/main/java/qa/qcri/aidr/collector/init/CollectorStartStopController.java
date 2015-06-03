@@ -29,34 +29,39 @@ import qa.qcri.aidr.collector.utils.GenericCache;
 @Singleton
 @Startup
 public class CollectorStartStopController extends HttpServlet {
-	
-	private static Logger logger = Logger.getLogger(CollectorStartStopController.class);
-	
+
+	private static Logger logger = Logger
+			.getLogger(CollectorStartStopController.class);
+
 	public CollectorStartStopController() {
 	}
 
 	@PostConstruct
-	private void startup() { 
-		//Startup tasks go here
+	private void startup() {
+		// Startup tasks go here
 		System.out.println("AIDR-Collector: Starting up...");
 		logger.info("AIDR-Collector: Starting up...");
-		//task todo
+		// task todo
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Calendar cal = Calendar.getInstance();
 		String startDate = dateFormat.format(cal.getTime());
-		GenericCache.getInstance().setCollectorStatus(new CollectorStatus(startDate, "RUNNING", 0));
-		System.out.println("AIDR-Collector: Startup procedure completed @ " + startDate);
-		logger.info("AIDR-Collector: Startup procedure completed @ " + startDate);
+		GenericCache.getInstance().setCollectorStatus(
+				new CollectorStatus(startDate, "RUNNING", 0));
+		System.out.println("AIDR-Collector: Startup procedure completed @ "
+				+ startDate);
+		logger.info("AIDR-Collector: Startup procedure completed @ "
+				+ startDate);
 	}
 
 	@PreDestroy
-	private void shutdown() { 
-		//Shutdown tasks go here
+	private void shutdown() {
+		// Shutdown tasks go here
 		System.out.println("AIDR-Collector: Shutting Down...");
 		logger.info("AIDR-Collector: Shutting Down...");
-		List<CollectionTask> collections = GenericCache.getInstance().getAllRunningCollectionTasks();
+		List<CollectionTask> collections = GenericCache.getInstance()
+				.getAllRunningCollectionTasks();
 		TwitterCollectorAPI twitterCollector = new TwitterCollectorAPI();
-		for (CollectionTask collection: collections){
+		for (CollectionTask collection : collections) {
 			System.out.println("Stopping " + collection.getCollectionCode());
 			logger.info("Stopping " + collection.getCollectionCode());
 				twitterCollector.stopTask(collection.getCollectionCode());
@@ -81,4 +86,5 @@ public class CollectorStartStopController extends HttpServlet {
 
 		private static final CollectorStartStopController INSTANCE = new CollectorStartStopController();
 	}
+
 }
