@@ -1,6 +1,8 @@
-<<<<<<< HEAD
 # Built Files
 */target/
+
+#console out files
+*.out
 
 # Java class files
 *.class
@@ -32,11 +34,3 @@ local.properties
 
 # Locally stored "Eclipse launch configurations"
 *.launch
-=======
-aidr-trainer-pybossa/target
-
-
-*.class
-
-*.class
->>>>>>> b4492f3d7ba52efe2b441358d3dbd61dda649429
