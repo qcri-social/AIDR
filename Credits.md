@@ -8,6 +8,8 @@ The development of AIDR over its first two years was led by Carlos Castillo and 
 
 # Current team
 
+As of June 2015, the team that is actively contributing to AIDR includes:
+
 * [Patrick Meier](http://irevolution.net/) and [Carlos Castillo](http://www.chato.cl/research/) - Project co-leads.
 * [Muhammad Imran](http://mimran.me/) - Technical lead for AIDR.
 * [Ji Lucas](http://www.linkedin.com/in/jilucas) - Technical lead for MicroMappers.
