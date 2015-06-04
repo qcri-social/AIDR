@@ -18,7 +18,7 @@ public class PersisterConfigurator extends BaseConfigurator {
 	private static final PersisterConfigurator instance = new PersisterConfigurator();
 
 	private PersisterConfigurator() {
-		LOGGER.info("Instantiating PersisterConfigurator,");
+		LOGGER.info("Instantiating PersisterConfigurator.");
 		this.initProperties(configLoadFileName, PersisterConfigurationProperty.values());
 	}
 
