@@ -16,7 +16,7 @@ QCRI side:
 
 # Release 1.6: robustness of collector, output, and persister
 
-**Target: end-May.**
+**Target: end-May (real: end-June).**
 
 The objective of this release is to make the collector, output, and persister modules more robust. This includes introducing a basic level of testing and fixing any bugs found during the testing.
 
