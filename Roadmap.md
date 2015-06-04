@@ -2,7 +2,7 @@ Release numbering: [major.minor](https://www.gnu.org/prep/standards/html_node/Re
 
 # Release 1.5: streamlined installer and documentation
 
-**Target: mid-May.**
+**Target: mid-May (real: mid-June).**
 
 The objective of this release is to streamline the installation of AIDR, and to improve the quality of the AIDR documentation to enable better collaboration among development partners.
 
