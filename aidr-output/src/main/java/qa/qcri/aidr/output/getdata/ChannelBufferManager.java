@@ -325,7 +325,7 @@ public class ChannelBufferManager {
 	 */
 	public Set<String> getActiveChannelsList() {
 		try {
-			Set<String> channelSet = (subscribedChannels != null || !subscribedChannels.isEmpty()) ? subscribedChannels.keySet() : null;
+			Set<String> channelSet = (subscribedChannels != null && !subscribedChannels.isEmpty()) ? subscribedChannels.keySet() : null;
 			return channelSet;
 		} catch (Exception e) {
 			logger.error("Unable to fetch list of active channels");
@@ -487,9 +487,9 @@ public class ChannelBufferManager {
 	}
 
 	private void stopSubscription() {
-		logger.info("Stopsubscription attempt for channel: " + aidrSubscriber.getChannelName());
 		try {
 			if (aidrSubscriber != null && aidrSubscriber.getSubscribedChannels() > 0) {
+				logger.info("Stopsubscription attempt for channel: " + aidrSubscriber.getChannelName());
 				aidrSubscriber.punsubscribe();	
 				logger.info("Unsubscribed from channel pattern: " + CHANNEL_PREFIX_STRING);
 			}
