@@ -124,6 +124,8 @@ If the maven process creates a .war file, that file must be deployed to Glassfis
 
 Compilation and deployment of the modules must follow the below-specified sequence i.e., #1 (aidr-common) should be complied/deployed first before #2 (aidr-db-manager).
 
+**NOTE:** The configuration property files of specific modules may refer to the central configuration file present in $AIDR_HOME/profiles/${PROFILE}/config.properties. You might have to edit some properties there.
+
 # 1. Common (aidr-common)
 
 `aidr-common` contains code that is reused across multiple modules: e.g., logging and REDIS load shedding. This module **must** be built before any other module. 
@@ -135,7 +137,7 @@ other modules can thereafter automatically find the dependency.
 This module does not need a deployment in the Glassfish server.
 
 # 2. DB-manager (aidr-db-manager)
-* Create `aidr_predict` schema in the MySQL database, as shown below. This assumes database=aidr_predict, username=aidr_admin, password=aidr_admin:
+* Create `aidr_predict` schema if not present already in the MySQL database, as shown below. This assumes database=aidr_predict, username=aidr_admin, password=aidr_admin, which has also been taken as the default setting in the central config.properties file:
 
         % mysql -u root -p
         Enter password: [your mysql root user password]
@@ -144,14 +146,14 @@ This module does not need a deployment in the Glassfish server.
         mysql> GRANT TRIGGER ON aidr_predict.* TO aidr_admin@localhost IDENTIFIED BY 'aidr_admin'; 
         mysql> QUIT;
 
-* Edit [persistence.xml](../tree/master/aidr-db-manager/src/main/resources/META-INF/persistence.xml):
-  1. Set hibernate.hbm2ddl.auto property to "create". This means upon deployment aidr-predict schema will be created from scratch. If there exist already a populated schema, it will be re-written and all data will be lost. Make sure to set the value of this property to "update" for the subsequent deployments of this module to prevent schema refresh each time. 
+* Edit $AIDR_HOME/profiles/${PROFILE}/config.properties:
+  1. Set the TAGGER_DB_HBM2DDL property to "create". This means upon deployment aidr-predict schema will be created from scratch. If there already exist a populated schema, it will be re-written and all data will be lost. Make sure to set the value of this property to "update" for the subsequent deployments of this module to prevent schema refresh each time. 
   2. Set jdbc resource in the glassfish server for aidr_predict database (connection pool URL jdbc:mysql://localhost:3306/aidr_predict) and specify its name at `jta-data-source`
-* Build using maven following the instructions above; this should generate a file `db-managerEAR-X.ear`
-* Deploy the `db-managerEAR-X.ear` to Glassfish
+* Build using maven following the instructions above; this should generate a file `db-manager-ear-X.ear`
+* Deploy the `db-manager-ear-X.ear` to Glassfish
 * Populate `crisis_types` table in the database
 
-        % mysql aidr_predict -u aidr_admin -p < populate_db_crisistype.sql
+        % mysql aidr_predict -u aidr_admin -p < populate_db_crisistypes.sql
 
 * Populate `nominal_attributes` and `nominal_label` tables in the database
 
@@ -162,13 +164,14 @@ This module does not need a deployment in the Glassfish server.
 **Modules dependent**: `aidr-tagger`, `aidr-tagger-api`
 
 The `aidr-task-manager` module is meant to provide a unified view of the `aidr_predict` database tables that are related to 'aidr tasks' - namely, `document`, `task_assignment`, `document_nominal_labels` and `crisis` tables. The various modules of AIDR such as `aidr-tagger-api`, `aidr-tagger` and `aidr-trainer-api` that access these tables will use the aidr-task-manager as the single access point (in phases). To enable this, `aidr-task-manager` uses remote EJBs. The instructions for enabling access through `aidr-task-manager` are outlined below:
-* Build using maven following the instructions above; this should generate a file `aidr-task-managerEAR.ear` file.
-* Deploy the `aidr-task-managerEAR.ear` file to Glassfish.
+* Build using maven following the instructions above; this should generate a file `aidr-task-manager-ear-X.ear` file.
+* Deploy the `aidr-task-manager-ear-X.ear` file to Glassfish.
 
 # 4. Persister (aidr-persister)
 
-* Edit [config.properties](../tree/master/aidr-persister/src/main/resources/config.properties):
+* Edit  $AIDR_HOME/profiles/${PROFILE}/config.properties:
   1. DEFAULT_PERSISTER_FILE_PATH : This is where the persister will store all tweets on the file system. This path should be accessible from the server, so a link to the location must be created on the web server.
+  2. Also, ensure that the PERSISTER_HOST, PERSISTER_PORT and PERSISTER_WEB_APP_CONTEXT properties are correctly set.
 
 * Build using maven following the instructions above; this should generate a file `aidr-persister-X.war`
 * Deploy `aidr-persister-X.war` to Glassfish using the instructions above.
@@ -181,9 +184,9 @@ The `aidr-task-manager` module is meant to provide a unified view of the `aidr_p
 
 # 5. Collector (aidr-collector)
 
-* In [config.properties](../tree/master/aidr-collector/src/main/resources/config.properties), appropriately set the configuration parameters:
-  1. FETCHER_REST_URI: Rest URI of the collector. For example, if the collector is deployed as AIDRCollector on the server, then the REST URI would be: http://localhost:8080/AIDRCollector/webresources/
-  2. PERSISTER_REST_URI: Rest URI of the persiser module, e.g. http://localhost:8080/AIDRPersister/webresources/
+* In $AIDR_HOME/profiles/${PROFILE}/config.properties, appropriately set the configuration parameters. So that collector's property file has the following set appropriately:
+  1. FETCHER_REST_URI: Rest URI of the collector. For example, if the collector is deployed as AIDRCollector on the server, then the REST URI would be: 'http://localhost:8080/AIDRCollector/webresources/'. This is made out of COLLECTOR_HOST, COLLECTOR_PORT and COLLECTOR_WEB_APP_CONTEXT in the central configuration property file.
+  2. PERSISTER_REST_URI: Rest URI of the persiser module, e.g. 'http://localhost:8080/AIDRPersister/webresources/'.This is made out of PERSISTER_HOST, PERSISTER_PORT and PERSISTER_WEB_APP_CONTEXT in the central configuration property file.
 
 * Build using maven following the instructions above; this should generate a file `aidr-collector-X.war`
 * Deploy `aidr-collector-X.war` to Glassfish following the instructions above.
@@ -198,7 +201,7 @@ Response:
 
 **NOTE**: A re-deployment of the `aidr-task-manager` module may require a re-compilation and restart of the `aidr-tagger` module.
 
-* Edit [config.properties](../tree/master/aidr-tagger/src/main/resources/config.properties), to match the database login info.
+* Edit the central configuration properties file $AIDR_HOME/profiles/${PROFILE}/config.properties, to match the appropriate database login info. The properties which need to be verified are TAGGER_DB_NAME, TAGGER_DB_USERNAME and TAGGER_DB_PASSWORD.
 
 * Compile the application to a jar file.
 
@@ -217,7 +220,7 @@ This module does not need a deployment in the Glassfish server. Also, create the
 
 **NOTE**: A re-deployment of the `aidr-task-manager` module may require a re-deployment of the `aidr-tagger-api` module.
 
-* Create JDBC resources in server (e.g., Glassfish) to match the JNDI names (JNDI/aidr_predict and JNDI/aidr_fetch_manager) used in [persistence.xml](../tree/master/aidr-tagger-api/src/main/resources/META-INF/persistence.xml)
+* Create JDBC resources in server (e.g., Glassfish) to match the JNDI names (JNDI/aidr_predict and JNDI/aidr_fetch_manager) used in [central configurations file $AIDR_HOME/profiles/${PROFILE}/config.properties to match the properties TAGGER_JNDI and MANAGER_JNDI)
 * Build using maven following the instructions above; this should generate a file `aidr-tagger-api-X.war`
 * Deploy `aidr-tagger-api-X.war` to Glassfish using the instructions above.
 * Test the deployment (optional). You can check if `aidr-tagger-api` was installed correctly:
@@ -232,7 +235,7 @@ Response:
 
 **Modules dependent**: `aidr-analysis`
 
-* Set the Redis host and port number appropriately in [config.properties](../tree/master/aidr-output/src/main/resources/config.properties) file. 
+* Set the Redis host and port number appropriately in the central configurations property file ($AIDR_HOME/profiles/${PROFILE}/config.properties). 
 * Build using maven following the instructions above; this should generate a file `aidr-output-X.war`.
 * Deploy `aidr-output-X.war` to Glassfish using the instructions above.
 
@@ -242,12 +245,12 @@ Response:
 The `aidr-analytics` module is meant to provide data for various analytics and visualization of categorized tweet data. 
 
 * Create a new database called `aidr_analysis`. Grant appropriate table and trigger permissions (similar to the instructions for setting up the `aidr_predict` database). 
-* For first time build, set the property `hibernate.hbm2ddl.auto` to `create` in [persistence.xml](../tree/master/aidr-analytics/src/main/resources/META-INF/persistence.xml). For subsequent deployments, change the value to `update`.
+* For first time build, set the property ANALYTICS_DB_HBM2DDL to `create` in the central configurations properties file ($AIDR_HOME/profiles/${PROFILE}/config.properties). For subsequent deployments, change the value to `update`.
 
 **WARNING**: Setting "hibernate.hbm2ddl.auto" to `create` drops and creates the aidr_analysis database!
 
 * Create a new JDBC resource in server (e.g., Glassfish) 'aidr_analysis` database. Attach it with connection pool set to that of the `aidr_analysis` database.
-* Specify the JDBC resource name at `jta-data-source` in [persistence.xml](../tree/master/aidr-analytics/src/main/resources/META-INF/persistence.xml)
+* Specify the JDBC resource name in the ANALYTICS_JNDI property of the central configurations property file ($AIDR_HOME/profiles/${PROFILE}/config.properties).
 
 * Appropriately set the parameters in [granularity.properties](../tree/master/aidr-analytics/src/main/resources/granularity.properties) file. Use the suffix `s`, `m`, `h` and `d` to indicate seconds, minutes, hours and days respectively. 
 * Build using maven and deploy the WAR file. 
@@ -260,9 +263,9 @@ The `aidr-analytics` module is meant to provide data for various analytics and v
 
         % mysql aidr_scheduler -u aidr_admin -p < aidr_scheduler.sql
 
-* Appropriately set the properties in the [database.properties](../tree/master/aidr-trainer-api/src/main/resources/database.properties) and [databaseTemp.properties](../tree/master/aidr-trainer-api/src/main/resources/databaseTemp.properties) files under src/main/resources.
+* Appropriately set the properties TAGGER_DB_USERNAME and TAGGER_DB_PASSWORD in the central configurations property file ($AIDR_HOME/profiles/${PROFILE}/config.properties).
 * Build using maven following the instructions above; this should generate a file `aidr-trainer-api-X.war`
-* Deploy `aidr-trainer-api-X.war` to Glassfish using the instructions above. 
+* Deploy `aidr-trainer-api.war` to Glassfish using the instructions above. 
 
 # 11. Trainer Pybossa (aidr-trainer-pybossa)
 
@@ -277,8 +280,8 @@ The `aidr-analytics` module is meant to provide data for various analytics and v
     * queueSize: task pending size
     * aidrHostURL : train API rest service url
     * defaultTaskRunsPerTask : the numbers of user vote for a task
-* Build using maven following the instructions above; this should generate a file `aidr-trainer-pybossa-X.war`
-* Deploy `aidr-trainer-pybossa-X.war` to Glassfish using the instructions above. 
+* Build using maven following the instructions above; this should generate a file `aidr-trainer-pybossa.war`
+* Deploy `aidr-trainer-pybossa.war` to Glassfish using the instructions above. 
 
 
 # 12. Manager (aidr-manager)
@@ -286,19 +289,18 @@ The `aidr-analytics` module is meant to provide data for various analytics and v
 Prior to start the project building process make sure you have completed the following steps (a-d):
 
 (a) Create a database schema `aidr_fetch_manager`.
-(b) In case of first time deployment, make sure you add the following line in [spring-servlet.xml](../tree/master/aidr-manager/src/main/webapp/WEB-INF/spring-servlet-xml)
 
-`<prop key="hibernate.hbm2ddl.auto">create</prop>`
+(b) Apply the following changes to the central configurations property file($AIDR_HOME/profiles/${PROFILE}/config.properties):
 
-**NOTE**:- If the application has previously been deployed and you have the MySql schema with tables in place then just remove the above line. The above line is used to create MySQL schema during the first deployment. After the first deployment, you can instead use: 
+   * In case of first time deployment, make sure you set the MANAGER_HBM2DDL property to 'create'.
 
-`<prop key="hibernate.hbm2ddl.auto">update</prop>`
+**NOTE**:- If the application has previously been deployed and you have the MySql schema with tables in place then just remove the above line. The above line is used to create MySQL schema during the first deployment. After the first deployment, you can instead use 'update'.
 
-(c) In the same file `spring-servlet.xml` the database credentials can be specified/changed according to your installation.
-
-(d) Apply the following changes to [system.properties](../tree/master/aidr-manager/src/main/resources/system.properties)
+   * You should also enter valid values for MANAGER_DB_USERNAME and MANAGER_DB_PASSWORD
    * twitter.consumerKey=<put here your Twitter's application consumer key>
    * twitter.consumerSecret=<put here your Twitter's application consumer key secret>
+   
+(e) Apply the following changes to [system.properties](../tree/master/aidr-manager/src/main/resources/system.properties)
    * twitter.callBackURL=<here goes the URL where the aidr-manager application is accessible>. e.g., http://localhost:8080/AIDRFetchManager
    * application.secureUrl=<here goes the URL where the application is accessible>. e.g., http://localhost:8080/AIDRFetchManager
    * fetchMainUrl=Put here aidr-collector webresources path (e.g., http://localhost:8084/aidr-collector/webresources)
@@ -310,5 +312,5 @@ Prior to start the project building process make sure you have completed the fol
 
 After the above steps have been executed, you can build the project:
 
-* Build using maven following the instructions above; this should generate a file `aidr-manager-X.war`
-* Deploy `aidr-manager-X.war` to Glassfish using the instructions above.
+* Build using maven following the instructions above; this should generate a file `aidr-manager.war`
+* Deploy `aidr-manager.war` to Glassfish using the instructions above.
