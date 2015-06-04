@@ -58,7 +58,8 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 	@Override 
 	public Integer deleteCrisis(CrisisDTO crisis) throws PropertyNotSetException {
 		try {
-			em.remove(crisis.toEntity()); 
+			Crisis managed = em.merge(crisis.toEntity());
+			em.remove(managed); 
 		} catch (Exception e) {
 			return 0;
 		}

@@ -117,7 +117,8 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 	@Override
 	public Integer deleteDocument(DocumentNominalLabelDTO doc) {
 		try {
-			em.remove(doc.toEntity()); 
+			DocumentNominalLabel managed = em.merge(doc.toEntity());
+			em.remove(managed); 
 		} catch (Exception e) {
 			return 0;
 		}

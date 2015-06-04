@@ -88,7 +88,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 		if (!document.getHasHumanLabels()) {
 			try {
 				//delete(document);
-				String hql = "DELETE FROM document d WHERE d.documentID = :documentID AND !d.hasHumanLabels";
+				String hql = "DELETE FROM document WHERE document.documentID = :documentID AND !document.hasHumanLabels";
 				Session session = getCurrentSession();
 				Query collectionDeleteQuery = session.createSQLQuery(hql);
 				try {
@@ -343,7 +343,8 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	@Override
 	public Integer deleteDocument(DocumentDTO doc) {
 		try {
-			em.remove(doc.toEntity()); 
+			Document managed = em.merge(doc.toEntity());
+			em.remove(managed);
 		} catch (Exception e) {
 			return 0;
 		}
