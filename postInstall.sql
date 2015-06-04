@@ -1,30 +1,30 @@
 use aidr_predict;
 
--- Final view structure for view `nominal_label_evaluation_data`
-----------------------------------------------------------------
+# Final view structure for view `nominal_label_evaluation_data`
 
-CREATE VIEW IF NOT EXISTS `nominal_label_evaluation_data` AS 
+DROP TABLE IF EXISTS `nominal_label_evaluation_data`;
+DROP VIEW IF EXISTS `nominal_label_evaluation_data`;
+CREATE VIEW nominal_label_evaluation_data AS 
 select `d`.`documentID` AS `documentID`,`d`.`crisisID` AS `crisisID`,`dnl`.`nominalLabelID` AS `nominalLabelID`,`nl`.`nominalAttributeID` AS `nominalAttributeID`,`d`.`wordFeatures` AS `wordFeatures` from ((`document` `d` join `document_nominal_label` `dnl` on((`d`.`documentID` = `dnl`.`documentID`))) join `nominal_label` `nl` on((`nl`.`nominalLabelID` = `dnl`.`nominalLabelID`))) where (`d`.`isEvaluationSet` and (`d`.`wordFeatures` is not null) and (`nl`.`nominalLabelCode` <> 'null'));
 
 
--- Final view structure for view `nominal_label_training_data`
-----------------------------------------------------------------
+# Final view structure for view `nominal_label_training_data`
 
-CREATE VIEW IF NOT EXISTS `nominal_label_training_data` AS 
+DROP TABLE IF EXISTS `nominal_label_training_data`;
+DROP VIEW IF EXISTS `nominal_label_training_data`;
+CREATE VIEW nominal_label_training_data AS 
 select `d`.`documentID` AS `documentID`,`d`.`crisisID` AS `crisisID`,`dnl`.`nominalLabelID` AS `nominalLabelID`,`nl`.`nominalAttributeID` AS `nominalAttributeID`,`d`.`wordFeatures` AS `wordFeatures` from ((`document` `d` join `document_nominal_label` `dnl` on((`d`.`documentID` = `dnl`.`documentID`))) join `nominal_label` `nl` on((`nl`.`nominalLabelID` = `dnl`.`nominalLabelID`))) where ((not(`d`.`isEvaluationSet`)) and (`d`.`wordFeatures` is not null) and (`nl`.`nominalLabelCode` <> 'null'));
 
 
--- trigger on document to enable inserting data to nominal_label_evaluation_data
-----------------------------------------------------------------
+# Trigger on document to enable inserting data to nominal_label_evaluation_data
 
-CREATE TRIGGER IF NOT EXISTS `document_BINS`
+DROP TRIGGER IF EXISTS `document_BINS`;
+CREATE TRIGGER `document_BINS`
 BEFORE INSERT ON `document`
-FOR EACH ROW
-set new.isEvaluationSet = mod((SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='document'), 5)=0;
+FOR EACH ROW set new.isEvaluationSet = mod((SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='document'), 5)=0;
 
 
--- populate table crisis_type
-----------------------------------------------------------------
+# Populate table crisis_type
 
 DELETE FROM `crisis_type`;
 INSERT INTO `crisis_type` (`crisisTypeID`, `name`) values (10, '(Not defined)');
@@ -48,15 +48,12 @@ INSERT INTO `crisis_type` (`crisisTypeID`, `name`) values (1260, 'Human Induced:
 INSERT INTO `crisis_type` (`crisisTypeID`, `name`) values (1270, 'Human Induced: Other');
 
 
--- create system user
-----------------------------------------------------------------
+# create system user
 
 INSERT INTO `users` (`userID`, `name`, `role`) VALUES ('1', 'System', 'admin');
 
 
--- populate table nominal_attribute
-----------------------------------------------------------------
-
+# populate table nominal_attribute
 
 INSERT INTO `nominal_attribute` (`nominalAttributeID`, `userID`, `name`, `description`, `code`)
 VALUES
@@ -67,8 +64,7 @@ VALUES
 	(5,1,'Information source','Indicate what the is the apparent source of this information. Click on links when necessary to identify the source','information_source');
 	
 
--- populate table nominal_label
-------------------------------------------------------------------
+# populate table nominal_label
 
 INSERT INTO `nominal_label` (`nominalLabelCode`, `nominalAttributeID`, `name`, `description`, `sequence`)
 VALUES
@@ -119,8 +115,7 @@ VALUES
 	('null',5,'N/A','Not applicable, cannot judge, not readable, not sure',100);
 
 
--- Update DB character set
-------------------------------------------------------------------
+# Update DB character set
 
 ALTER DATABASE aidr_fetch_manager CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 ALTER TABLE aidr_fetch_manager.AIDR_COLLECTION CHANGE last_document last_document LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
