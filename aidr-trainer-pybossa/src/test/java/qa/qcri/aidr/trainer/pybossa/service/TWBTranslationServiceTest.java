@@ -3,15 +3,21 @@ package qa.qcri.aidr.trainer.pybossa.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import org.json.simple.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import qa.qcri.aidr.trainer.pybossa.entity.ClientApp;
 import qa.qcri.aidr.trainer.pybossa.entity.TaskTranslation;
 import qa.qcri.aidr.trainer.pybossa.format.impl.TranslationRequestModel;
@@ -45,6 +51,8 @@ public class TWBTranslationServiceTest {
     public void testPybossaWorker() throws Exception {
         pybossaWorker.processTaskRunImport();
     }
+    final private static String BASE_URL = "https://twb.translationcenter.org/api/v1";
+    final private static String API_KEY = "jk26fh2yzwo4";
 
     @Test
     public void testPullAllTranslationResponses() throws Exception {
@@ -96,7 +104,7 @@ public class TWBTranslationServiceTest {
         model.setContactEmail("test@test.com");
         model.setTitle("Request from Unit Test");
         model.setSourceLanguage("eng");
-        String[] targets = {"fra","esl"};
+        String[] targets = {"und","esl"};
         model.setTargetLanguages(targets);
         model.setSourceWordCount(100); //random test
         model.setInstructions("Unit test instructions");
@@ -148,11 +156,11 @@ public class TWBTranslationServiceTest {
         if (loops == 0) {loops = 1;}
 
         for (int i=0; i<loops; i++) {
-            TaskTranslation translation = new TaskTranslation(id++, clientAppId, "63636", null, null, null, null, id, "Je m'appelle Jacques", TaskTranslation.STATUS_NEW);
+            TaskTranslation translation = new TaskTranslation(id++, clientAppId, "63636", null, null, null, null, id,"\n" + "क्षति शहर धेरै छ", TaskTranslation.STATUS_NEW);
             if (persist) {
                 translationService.createTranslation(translation);
             }
-            TaskTranslation translation2 = new TaskTranslation(id++, clientAppId, "63636", "Fred Jones", "22.22", "33.33", "http://google.com", id, "被害のダウンタウンの多くがあります", TaskTranslation.STATUS_NEW);
+            TaskTranslation translation2 = new TaskTranslation(id++, clientAppId, "63636", "Fred Jones", "22.22", "33.33", "http://google.com", id, "被害のダウン,タウンの多くがあります", TaskTranslation.STATUS_NEW);
             if (persist) {
                 translationService.createTranslation(translation2);
             }
@@ -173,6 +181,15 @@ public class TWBTranslationServiceTest {
         assert(translation3.getOriginalText().equals(retrieve.getOriginalText()));
         assertNotNull(retrieve.getAuthor());
         assertNotNull(retrieve.getOriginalText());
+
+        String newVal = "TEST";
+        retrieve.setStatus(newVal);
+        retrieve.setAnswerCode(LONG_CODE);
+        translationService.updateTranslation(retrieve);
+
+        TaskTranslation retrieve2 = translationService.findById(translation3.getTranslationId());
+        assert(retrieve2.getOriginalText().equals(retrieve.getOriginalText()));
+
     }
 
     @Test
@@ -182,6 +199,7 @@ public class TWBTranslationServiceTest {
         translationService.createTranslation(translation2);
         assertNotNull(translation2.getAuthor());
         assertNotNull(translation2.getUrl());
+        translation2 = translationService.findById(translation2.getTranslationId());
 
     	String newVal = "TEST";
         translation2.setStatus(newVal);
@@ -244,6 +262,49 @@ public class TWBTranslationServiceTest {
         String tweet = (String)info.get("tweet");// maintain encoding - new String(info.getString("tweet").getBytes("ISO-8859-1"), "UTF-8");
         String encodedTweet = new String (tweet.getBytes("ISO-8859-1"), "UTF-8");
         assert encodedTweet != null;
+    }
+
+    @Test
+    public void testSendEncodedDocument() throws Exception {
+        String filename = "TWB_Source_"+System.currentTimeMillis()+".csv";
+
+        //decide whether its better to send file or content
+        String content = "被害のダウ";
+        byte[] bytes = content.getBytes(StandardCharsets.UTF_8);
+
+        final String url=BASE_URL+"/documents";
+        HttpHeaders requestHeaders=new HttpHeaders();
+        requestHeaders.add("X-Proz-API-Key", API_KEY);
+        requestHeaders.setContentType(new MediaType("multipart","form-data"));
+        RestTemplate restTemplate=new RestTemplate();
+        restTemplate.getMessageConverters()
+                .add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
+        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+
+        LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+        map.add("document", bytes);
+        map.add("name", "translation_source.csv");
+
+        HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new    HttpEntity<LinkedMultiValueMap<String, Object>>(
+                map, requestHeaders);
+
+        ResponseEntity<Map> result = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
+        Map resultMap = result.getBody();
+        String download_Link = (String)resultMap.get("download_link");
+        String returnedDocumentContent = getTranslationDocumentContent(download_Link) ;
+        assert (returnedDocumentContent.equals(content));
+
+    }
+
+    public String getTranslationDocumentContent(String download_link) throws Exception {
+        final String url=download_link;
+        HttpHeaders requestHeaders=new HttpHeaders();
+        requestHeaders.add("X-Proz-API-Key", API_KEY);
+        requestHeaders.setAccept(Collections.singletonList(new MediaType("application", "json")));
+        RestTemplate restTemplate=new RestTemplate();
+        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<String>(requestHeaders), String.class);
+        return response.getBody();
     }
 
 
