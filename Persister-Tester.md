@@ -19,7 +19,7 @@ The _nitems_ is the number of items that should be written to the persister.
 
 ## Execution
 
-The persister test should generate a collection name as `YYYYMMDDhhssmm-persister-test`. It should also generate synthetic Twitter messages with fixed texts but random tweetids.
+The persister test should generate a collection name as `YYYYMMDDhhssmm-persister-test`. It should also generate synthetic Twitter messages with random texts and random tweetids.
 
 **Phase A**: test the collector persister.
 
