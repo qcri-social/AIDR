@@ -4,13 +4,19 @@ It only requires the aidr-collector module to be deployed.
 
 ## Command line
 
-The collector tester has the following command-line options:
+The collector tester is run through the following command:
+
+```
+mvn test -DcollectorTesterTest PARAMETERS
+```
+
+All parameters are optional:
 
 ```
 --config=FILE
 --collection-task=FILE
 --time=SECONDS (default 60)
---quiet
+--quiet=TRUE/FALSE (default false)
 ```
 
 The _config_ is the name of the collector configuration (or of a centralized configuration) to read properties that the tester needs to know to perform the testing: the URL of the collector's API, the name of the REDIS queue where the collector will write.
@@ -48,8 +54,3 @@ FAIL means printing a clear and informative message describing the condition and
 
 On interrupt by the user, the collector tester should attempt to call the collector's `/stop` method and exit with non-success code.
 
-**Command to execute collector tester**
-
-`mvn test -Dtest=collectorTesterTest -Dconfig=<configFilePath> -DcollectionTask=<collectionFilePath(properties,xml or json file)> -Dquiet=<true,false(default)> -Dtime=<(in seconds)(default 60)>`
-
-Except -Dtest all parameters are optional
