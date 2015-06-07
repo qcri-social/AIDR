@@ -1,4 +1,4 @@
-_(In development as of May 2015)_
+_(In development as of June 2015)_
 
 The output tester is a program that can be used after deploying aidr-output, to test this module independently of the other modules.
 
