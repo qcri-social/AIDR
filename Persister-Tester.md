@@ -1,4 +1,4 @@
-_(In development as of May 2015)_
+_(In development as of June 2015)_
 
 The persister tester is a program that can be used after deploying the persister, to test the persister independently of the other modules.
 
