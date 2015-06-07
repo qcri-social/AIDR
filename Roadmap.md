@@ -34,7 +34,7 @@ QCRI side:
 
 # Release 1.7: robustness of tagger, trainer
 
-**Target: mid-June.**
+**Target: mid-July.**
 
 The objective of this release is to make the tagger and trainer modules more robust. This includes introducing a basic level of testing and fixing any bugs found during the testing.
 
@@ -51,7 +51,7 @@ QCRI side:
 
 # Release 2.0: aidr-tagger is a Java EE application.
 
-**Target: end-June.**
+**Target: end-July.**
 
 The objective of this release is to transform aidr-tagger into a Java EE application, instead of a stand-alone application.
 
@@ -67,7 +67,7 @@ QCRI side:
 
 # Release 3.0: view/download complete
 
-**Target: mid-July.**
+**Target: mid-Aug.**
 
 The objective of this release is to ensure users are able to view and download their collections correctly. This means completing all features necessary for people to download their collections, even the ones that are very large, and even the ones where there is no tagger.
 
@@ -80,7 +80,7 @@ QCRI side:
 
 # Release 4.0: basic analytics
 
-**Target: end-July.**
+**Target: end-Aug.**
 
 The objective of this release is to produce the first version of aidr-analytics module, which is a dashboard showing the percentage of tweets in different categories and some graphs.
 
@@ -96,13 +96,13 @@ QCRI side:
 
 # Release 4.1: UI improvements
 
-**Target: mid-August.**
+**Target: mid-Sep.**
 
 The objective of this release is to implement usability fixes from our user testing and feedback. This release might be accelerated if the usability fixes are done in parallel to the tasks needed for the previous releases.
 
 # Release 5.0: Cold-start collections
 
-**Target: end-August.**
+**Target: end-Sep.**
 
 The objective create a collection without having to tag data, by re-using existing data.
 
