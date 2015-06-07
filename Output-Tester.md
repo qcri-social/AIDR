@@ -19,7 +19,7 @@ The _nitems_ is the number of items that should be written to the persister. It 
 
 ## Execution
 
-The output test should generate a collection name as `YYYYMMDDhhssmm-output-test`. It should also generate synthetic Twitter messages with fixed texts but random tweetids. It should keep those messages in memory for the duration of the text.
+The output test should generate a collection name as `YYYYMMDDhhssmm-output-test`. It should also generate synthetic Twitter messages with fixed random texts and random tweetids. It should keep those messages in memory for the duration of the text.
 
 1. Write to REDIS _nitems_ items in the channel expected by output, if it fails, FAIL.
 1. Call the `/crisis/fetch/channel/{crisisCode}` API, if it fails, FAIL.
