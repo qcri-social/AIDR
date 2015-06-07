@@ -10,11 +10,16 @@ The collector tester is run through the following command:
 mvn test -DcollectorTesterTest PARAMETERS
 ```
 
-All parameters are optional:
+This parameter is mandatory:
+
+```
+-Dcollection-task=FILE
+```
+
+These parameters are optional:
 
 ```
 -Dconfig=FILE
--Dcollection-task=FILE
 -Dtime=SECONDS (default 60)
 -Dquiet=TRUE/FALSE (default false)
 ```
