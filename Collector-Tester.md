@@ -13,10 +13,10 @@ mvn test -DcollectorTesterTest PARAMETERS
 All parameters are optional:
 
 ```
---config=FILE
---collection-task=FILE
---time=SECONDS (default 60)
---quiet=TRUE/FALSE (default false)
+--Dconfig=FILE
+--Dcollection-task=FILE
+--Dtime=SECONDS (default 60)
+--Dquiet=TRUE/FALSE (default false)
 ```
 
 The _config_ is the name of the collector configuration (or of a centralized configuration) to read properties that the tester needs to know to perform the testing: the URL of the collector's API, the name of the REDIS queue where the collector will write.
