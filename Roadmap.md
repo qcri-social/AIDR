@@ -29,8 +29,10 @@ Metacube side:
 
 QCRI side:
 * urgent bugfixes
+* crowdsourcing should be enabled manually, not automatically.
 * fix bugs found during testing
 * small UI enhancements
+
 
 # Release 1.7: robustness of tagger, trainer
 
