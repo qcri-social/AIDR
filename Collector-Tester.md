@@ -1,5 +1,3 @@
-_(In development as of May 2015)_
-
 The collector tester is a program that can be used after deploying the collector, to test the collector independently of the other modules.
 
 It only requires the aidr-collector module to be deployed.
