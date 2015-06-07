@@ -15,7 +15,7 @@ These parameters are optional:
 ```
 -Dconfig=FILE
 -Dnitems-train=NUMBER (default 200)
--Dnitems-test=NUMBER (default 800)
+-Dnitems-test=NUMBER (default 1000)
 -Dquiet=TRUE/FALSE (default false)
 ```
 
@@ -23,7 +23,7 @@ The _config_ is the name of the tagger configuration (or of a centralized config
 
 The _nitems-train_ is the number of training (labelled) items to give to the tagger. It must be strictly larger than `sampleCountThreshold` which is the minimum number of items required to create a model.
 
-The _nitems-test_ is the number of testing (unlabelled) items to give to the tagger. It can be any number greater than zero.
+The _nitems-test_ is the number of testing (unlabelled) items to give to the tagger. It can be any number greater than 1000. The reason why this cannot be a small number is to be able to have good statistics about the number of cases classified correctly and incorrectly.
 
 The _quiet_ option suppresses the print of the tweets. All other messages are printed even in _quiet_ mode.
 
