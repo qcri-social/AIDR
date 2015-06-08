@@ -7,6 +7,7 @@
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -92,7 +93,6 @@ public class TestTaskAnswerResourceFacadeImp {
 		taskAnswer.setFromTrustedUser(true);
 		Date date = new Date();
 		taskAnswer.setTimestamp(date);
-		System.out.println(taskAnswer.toString());
 	}
 
 	@AfterClass
@@ -120,15 +120,23 @@ public class TestTaskAnswerResourceFacadeImp {
 				entityManager.getTransaction().begin();
 				crisisResourceFacadeImp.deleteCrisis(crisis);
 				entityManager.getTransaction().commit();
+				CrisisDTO result = crisisResourceFacadeImp.getCrisisByCode(crisis.getCode());
+				assertNull(result);
 			} catch (PropertyNotSetException e) {
 				logger.error("PropertyNotSetException while deleting crisis "+e.getMessage());
 			}
 			
 		}
-		if (user != null) {
-			entityManager.getTransaction().begin();
-			userResourceFacadeImp.deleteUser(user.getUserID());
-			entityManager.getTransaction().commit();
+		try {
+			if (user != null) {
+				entityManager.getTransaction().begin();
+				userResourceFacadeImp.deleteUser(user.getUserID());
+				entityManager.getTransaction().commit();
+				UsersDTO result = userResourceFacadeImp.getUserByName(user.getName());
+				assertNull(result);
+			}
+		} catch (PropertyNotSetException ex) {
+			logger.error("PropertyNotSetException while deleting user "+ex.getMessage());
 		}
 	}
 	
@@ -167,7 +175,6 @@ public class TestTaskAnswerResourceFacadeImp {
 	 */
 	@Test
 	public void testInsertTaskAnswer() {
-		System.out.println("insertTaskAnswer");
 		taskAnswer.setAnswer("test_sample_answer1");
 		entityManager.getTransaction().begin();
 		taskAnswer = taskAnswerResourceFacadeImp.insertTaskAnswer(taskAnswer);
@@ -180,7 +187,6 @@ public class TestTaskAnswerResourceFacadeImp {
 	 */
 	@Test
 	public void testGetTaskAnswerByDocumentId() {
-		System.out.println("getTaskAnswerByDocumentId");
 		taskAnswer.setAnswer("test_sample_answer2");
 		entityManager.getTransaction().begin();
 		taskAnswer = taskAnswerResourceFacadeImp.insertTaskAnswer(taskAnswer);
@@ -194,7 +200,6 @@ public class TestTaskAnswerResourceFacadeImp {
 	 */
 	@Test
 	public void testinsertTaskAnswerByDocumentIdAndUserId() {
-		System.out.println("getTaskAnswerByDocumentIdAndUserId");
 		taskAnswer.setAnswer("test_sample_answer3");
 		entityManager.getTransaction().begin();
 		taskAnswer = taskAnswerResourceFacadeImp.insertTaskAnswer(taskAnswer);

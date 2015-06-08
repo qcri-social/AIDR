@@ -181,7 +181,7 @@ public class TestDocumentNominalLabelResourceFacadeImp {
 	 */
 	/*
 	 * @Test public void testSaveDocumentNominalLabel() throws Exception {
-	 * System.out.println("saveDocumentNominalLabel"); DocumentNominalLabelDTO
+	 * DocumentNominalLabelDTO
 	 * documentNominalLabel = new DocumentNominalLabelDTO();
 	 * documentNominalLabel.setDocumentDTO(document);
 	 * 
@@ -201,7 +201,7 @@ public class TestDocumentNominalLabelResourceFacadeImp {
 	 */
 	/*
 	 * @Test public void testFoundDuplicate() { try {
-	 * System.out.println("foundDuplicate"); DocumentNominalLabelDTO
+	 * DocumentNominalLabelDTO
 	 * documentNominalLabel =
 	 * documentNominalLabelResourceFacadeImp.getAllDocuments().get(0); boolean
 	 * result =
@@ -218,7 +218,6 @@ public class TestDocumentNominalLabelResourceFacadeImp {
 	 */
 	@Test
 	public void testAddDocument() throws Exception {
-		System.out.println("addDocument");
 		assertEquals(document.getDocumentID(), documentNominalLabel.getIdDTO()
 				.getDocumentId());
 	}
@@ -229,7 +228,7 @@ public class TestDocumentNominalLabelResourceFacadeImp {
 	 */
 	/*
 	 * @Test public void testEditDocument() throws Exception {
-	 * System.out.println("editDocument"); documentNominalLabel =
+	 * documentNominalLabel =
 	 * getDocumentNominalLabel(); entityManager.getTransaction().begin();
 	 * documentNominalLabel =
 	 * documentNominalLabelResourceFacadeImp.addDocument(documentNominalLabel);
@@ -247,7 +246,6 @@ public class TestDocumentNominalLabelResourceFacadeImp {
 	 */
 	@Test
 	public void testDeleteDocument() throws Exception {
-		System.out.println("deleteDocument");
 		Integer result = documentNominalLabelResourceFacadeImp
 				.deleteDocument(documentNominalLabel);
 		assertEquals(Integer.valueOf(1), result);
@@ -261,10 +259,8 @@ public class TestDocumentNominalLabelResourceFacadeImp {
 	@Test
 	public void testFindByCriteria() {
 		try {
-			System.out.println("findByCriteria");
 			String columnName = "id.documentId";
 			Long value = documentNominalLabel.getIdDTO().getDocumentId();
-			System.out.println("\n\n\nvalue = " + value);
 			List<DocumentNominalLabelDTO> result = documentNominalLabelResourceFacadeImp
 					.findByCriteria(columnName, value);
 			assertNotNull(result);
@@ -282,7 +278,6 @@ public class TestDocumentNominalLabelResourceFacadeImp {
 	@Test
 	public void testFindDocumentByPrimaryKey() {
 		try {
-			System.out.println("findDocumentByPrimaryKey");
 			DocumentNominalLabelDTO result = documentNominalLabelResourceFacadeImp
 					.findDocumentByPrimaryKey(documentNominalLabel.getIdDTO());
 			assertEquals(documentNominalLabel.getIdDTO().getDocumentId(),
@@ -300,7 +295,6 @@ public class TestDocumentNominalLabelResourceFacadeImp {
 	@Test
 	public void testIsDocumentExists_DocumentNominalLabelIdDTO()
 			throws Exception {
-		System.out.println("isDocumentExists");
 		boolean result = documentNominalLabelResourceFacadeImp
 				.isDocumentExists(documentNominalLabel.getIdDTO());
 		assertEquals(true, result);
@@ -312,7 +306,6 @@ public class TestDocumentNominalLabelResourceFacadeImp {
 	 */
 	@Test
 	public void testIsDocumentExists_Long() throws Exception {
-		System.out.println("isDocumentExists");
 		boolean result = documentNominalLabelResourceFacadeImp
 				.isDocumentExists(documentNominalLabel.getIdDTO());
 		assertEquals(true, result);
@@ -330,7 +323,6 @@ public class TestDocumentNominalLabelResourceFacadeImp {
 	@Test
 	public void testGetAllDocuments() {
 		try {
-			System.out.println("getAllDocuments");
 			List<DocumentNominalLabelDTO> result = documentNominalLabelResourceFacadeImp
 					.getAllDocuments();
 			assertNotNull(result);
@@ -348,7 +340,6 @@ public class TestDocumentNominalLabelResourceFacadeImp {
 	@Test
 	public void testFindLabeledDocumentByID() {
 		try {
-			System.out.println("findLabeledDocumentByID");
 			DocumentNominalLabelDTO result = documentNominalLabelResourceFacadeImp
 					.findLabeledDocumentByID(documentNominalLabel.getIdDTO()
 							.getDocumentId());
@@ -367,7 +358,6 @@ public class TestDocumentNominalLabelResourceFacadeImp {
 	@Test
 	public void testGetLabeledDocumentCollectionForNominalLabel()
 			throws Exception {
-		System.out.println("getLabeledDocumentCollectionForNominalLabel");
 		List<DocumentNominalLabelDTO> result = documentNominalLabelResourceFacadeImp
 				.getLabeledDocumentCollectionForNominalLabel(documentNominalLabel
 						.getIdDTO().getNominalLabelId().intValue());

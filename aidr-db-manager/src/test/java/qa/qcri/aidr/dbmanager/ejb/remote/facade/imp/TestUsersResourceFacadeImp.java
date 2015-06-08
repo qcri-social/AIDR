@@ -7,6 +7,7 @@ package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -33,7 +34,7 @@ import qa.qcri.aidr.dbmanager.dto.UsersDTO;
  * @author nalemadi
  */
 public class TestUsersResourceFacadeImp {
-	static UsersResourceFacadeImp usersResourceFacadeImp;
+	static UsersResourceFacadeImp userResourceFacadeImp;
 	static EntityManager entityManager;
 	static UsersDTO user;
 	static String userName = "userDBTest"+new Date();
@@ -45,10 +46,10 @@ public class TestUsersResourceFacadeImp {
 
 	@BeforeClass
 	public static void setUpClass() {
-		usersResourceFacadeImp = new UsersResourceFacadeImp();
+		userResourceFacadeImp = new UsersResourceFacadeImp();
 		entityManager = Persistence.createEntityManagerFactory(
 				"ProjectDBManagerTest-ejbPU").createEntityManager();
-		usersResourceFacadeImp.setEntityManager(entityManager);
+		userResourceFacadeImp.setEntityManager(entityManager);
 		crisisResourceFacadeImp = new CrisisResourceFacadeImp();
 		crisisTypeResourceFacadeImp = new CrisisTypeResourceFacadeImp();
 		crisisResourceFacadeImp.setEntityManager(entityManager);
@@ -59,13 +60,13 @@ public class TestUsersResourceFacadeImp {
 	public void setUp() {
 		user = new UsersDTO(userName, userRole);
 		entityManager.getTransaction().begin();
-		user = usersResourceFacadeImp.addUser(user);
+		user = userResourceFacadeImp.addUser(user);
 		entityManager.getTransaction().commit();
 	}
 
 	@AfterClass
 	public static void shutDown() throws Exception {
-		usersResourceFacadeImp.getEntityManager().close();
+		userResourceFacadeImp.getEntityManager().close();
 	}
 
 	@After
@@ -75,13 +76,17 @@ public class TestUsersResourceFacadeImp {
 				entityManager.getTransaction().begin();
 				crisisResourceFacadeImp.deleteCrisis(crisis);
 				entityManager.getTransaction().commit();
+				CrisisDTO result = crisisResourceFacadeImp.getCrisisByCode(crisis.getCode());
+				assertNull(result);
 				crisis=null;
 			}
 			if (user != null) {
 				entityManager.getTransaction().begin();
-				user = usersResourceFacadeImp.getUserByName(user.getName());
-				usersResourceFacadeImp.deleteUser(user.getUserID());
+				user = userResourceFacadeImp.getUserByName(user.getName());
+				userResourceFacadeImp.deleteUser(user.getUserID());
 				entityManager.getTransaction().commit();
+				UsersDTO result = userResourceFacadeImp.getUserByName(user.getName());
+				assertNull(result);
 			}
 		} catch (PropertyNotSetException e) {
 			logger.error("PropertyNotSetException while deleting user by id "+e.getMessage());
@@ -95,8 +100,7 @@ public class TestUsersResourceFacadeImp {
 	@Test
 	public void testGetUserByName() {
 		try {
-			System.out.println("getUserByName");
-			UsersDTO result = usersResourceFacadeImp.getUserByName(user
+			UsersDTO result = userResourceFacadeImp.getUserByName(user
 					.getName());
 			assertEquals(user.getUserID(), result.getUserID());
 		} catch (PropertyNotSetException ex) {
@@ -111,8 +115,7 @@ public class TestUsersResourceFacadeImp {
 	@Test
 	public void testGetUserById() {
 		try {
-			System.out.println("getUserById");
-			UsersDTO result = usersResourceFacadeImp.getUserById(user
+			UsersDTO result = userResourceFacadeImp.getUserById(user
 					.getUserID());
 			assertEquals(user.getName(), result.getName());
 		} catch (PropertyNotSetException ex) {
@@ -127,8 +130,7 @@ public class TestUsersResourceFacadeImp {
 	@Test
 	public void testGetAllUsersByName() {
 		try {
-			System.out.println("getAllUsersByName");
-			List<UsersDTO> result = usersResourceFacadeImp
+			List<UsersDTO> result = userResourceFacadeImp
 					.getAllUsersByName(user.getName());
 			assertEquals(user.getName(), result.get(0).getName());
 		} catch (PropertyNotSetException ex) {
@@ -143,14 +145,13 @@ public class TestUsersResourceFacadeImp {
 	@Test
 	public void testFindAllCrisisByUserId() {
 		try {
-			System.out.println("findAllCrisisByUserID");
 			CrisisTypeDTO crisisTypeDTO = crisisTypeResourceFacadeImp.findCrisisTypeByID(1100L);
 			CrisisDTO crisisDTO = new CrisisDTO("testCrisisName", "testCrisisCode", false, crisisTypeDTO, user);
 			entityManager.getTransaction().begin();
 			crisis = crisisResourceFacadeImp.addCrisis(crisisDTO);
 			entityManager.getTransaction().commit();
 
-			List<CrisisDTO> result = usersResourceFacadeImp
+			List<CrisisDTO> result = userResourceFacadeImp
 					.findAllCrisisByUserID(user.getUserID());
 			assertEquals(user.getUserID(), result.get(0).getUsersDTO()
 					.getUserID());
@@ -165,7 +166,6 @@ public class TestUsersResourceFacadeImp {
 	 */
 	@Test
 	public void testAddUser() {
-		System.out.println("addUser");
 		assertEquals(userName, user.getName());
 	}
 
@@ -174,9 +174,8 @@ public class TestUsersResourceFacadeImp {
 	 */
 	@Test
 	public void testDeleteUser() {
-		System.out.println("deleteUser");
 		entityManager.getTransaction().begin();
-		int result = usersResourceFacadeImp.deleteUser(user.getUserID());
+		int result = userResourceFacadeImp.deleteUser(user.getUserID());
 		entityManager.getTransaction().commit();
 		assertEquals(1, result);
 		user = null;
@@ -188,10 +187,9 @@ public class TestUsersResourceFacadeImp {
 	@Test
 	public void testFindByCriteria() {
 		try {
-			System.out.println("findByCriteria");
 			String columnName = "role";
 			String value = userRole;
-			List<UsersDTO> result = usersResourceFacadeImp.findByCriteria(
+			List<UsersDTO> result = userResourceFacadeImp.findByCriteria(
 					columnName, value);
 			assertNotNull(result);
 			assertEquals(userRole, result.get(0).getRole());
@@ -207,8 +205,7 @@ public class TestUsersResourceFacadeImp {
 	@Test
 	public void testGetAllUsers() {
 		try {
-			System.out.println("getAllUsers");
-			List<UsersDTO> result = usersResourceFacadeImp.getAllUsers();
+			List<UsersDTO> result = userResourceFacadeImp.getAllUsers();
 			assertNotNull(result);
 			assertTrue(result.size() >= 1);
 		} catch (PropertyNotSetException ex) {

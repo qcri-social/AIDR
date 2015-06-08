@@ -6,8 +6,7 @@
 
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
 import org.apache.log4j.Logger;
+import org.dom4j.util.UserDataAttribute;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -27,20 +27,23 @@ import org.junit.Test;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
+import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
+import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 
 public class TestCrisisResourceFacadeImp {
-	static CrisisResourceFacadeImp crisisResourceFacadeImp;
-	static UsersResourceFacadeImp userResourceFacadeImp;
-	static CrisisTypeResourceFacadeImp crisisTypeResourceFacadeImp;
-	static EntityManager entityManager;
-	static CrisisDTO addCrisis;
-	static CrisisDTO editCrisis;
-	static Long crisisId;
-	static CrisisDTO crisisDTO;
-	static String crisisCode = "testCrisisCode"+new Date();
-	static String crisisName = "testCrisisName"+new Date();
-	static UsersDTO user;
+	private static CrisisResourceFacadeImp crisisResourceFacadeImp;
+	private static UsersResourceFacadeImp userResourceFacadeImp;
+	private static CrisisTypeResourceFacadeImp crisisTypeResourceFacadeImp;
+	private static NominalAttributeResourceFacadeImp nominalAttributeResourceFacadeImp;
+	private static ModelFamilyResourceFacadeImp modelFamilyResourceFacadeImp;
+	private static EntityManager entityManager;
+	private static CrisisDTO editCrisis;
+	private static Long crisisId;
+	private static CrisisDTO crisisDTO;
+	private static String crisisCode = "testCrisisCode"+new Date();
+	private static String crisisName = "testCrisisName"+new Date();
+	private static UsersDTO user;
 	private static Logger logger = Logger.getLogger("db-manager-log");
 	
 	@BeforeClass
@@ -51,6 +54,10 @@ public class TestCrisisResourceFacadeImp {
 		crisisResourceFacadeImp.setEntityManager(entityManager);
 		crisisTypeResourceFacadeImp = new CrisisTypeResourceFacadeImp();
 		userResourceFacadeImp = new UsersResourceFacadeImp();
+		nominalAttributeResourceFacadeImp = new NominalAttributeResourceFacadeImp();
+		modelFamilyResourceFacadeImp = new ModelFamilyResourceFacadeImp();
+		modelFamilyResourceFacadeImp.setEntityManager(entityManager);
+		nominalAttributeResourceFacadeImp.setEntityManager(entityManager);
 		crisisTypeResourceFacadeImp.setEntityManager(entityManager);
 		userResourceFacadeImp.setEntityManager(entityManager);
 	}
@@ -82,6 +89,9 @@ public class TestCrisisResourceFacadeImp {
 				entityManager.getTransaction().begin();
 				crisisResourceFacadeImp.deleteCrisis(crisisDTO);
 				entityManager.getTransaction().commit();
+				CrisisDTO result = crisisResourceFacadeImp.getCrisisByCode(crisisCode);
+				assertNull(result);
+				
 			}
 		} catch (PropertyNotSetException ex) {
 			logger.error("PropertyNotSetException while deleting crisis "+ex.getMessage());
@@ -93,6 +103,8 @@ public class TestCrisisResourceFacadeImp {
 				user = userResourceFacadeImp.getUserByName(user.getName());
 				userResourceFacadeImp.deleteUser(user.getUserID());
 				entityManager.getTransaction().commit();
+				UsersDTO result = userResourceFacadeImp.getUserByName(user.getName());
+				assertNull(result);
 			}
 		} catch (PropertyNotSetException ex) {
 			logger.error("PropertyNotSetException while deleting user "+ex.getMessage());
@@ -114,13 +126,11 @@ public class TestCrisisResourceFacadeImp {
 	 */
 	@Test
 	public void testAddCrisis() {
-		System.out.println("AddCrisis");
 		assertEquals(crisisName, crisisDTO.getName());
 	}
 
 	@Test
 	public void testFindCrisisByID() {
-		System.out.println("FindCrisisByID " + crisisId);
 		try {
 			CrisisDTO crisisDTO = crisisResourceFacadeImp
 					.findCrisisByID(crisisId);
@@ -135,7 +145,6 @@ public class TestCrisisResourceFacadeImp {
 	 */
 	@Test
 	public void testFindByCriteria() {
-		System.out.println("FindByCriteria");
 		try {
 			String columnName = "code";
 			String value = crisisCode;
@@ -149,7 +158,6 @@ public class TestCrisisResourceFacadeImp {
 
 	@Test
 	public void testGetCrisisWithAllFieldsByID() {
-		System.out.println("GetCrisisWithAllFieldsByID");
 		try {
 			CrisisDTO crisis = crisisResourceFacadeImp
 					.getCrisisWithAllFieldsByID(crisisId);
@@ -164,7 +172,6 @@ public class TestCrisisResourceFacadeImp {
 	 */
 	@Test
 	public void testGetCrisisByCode() {
-		System.out.println("GetCrisisByCode");
 		try {
 			CrisisDTO result = crisisResourceFacadeImp
 					.getCrisisByCode(crisisCode);
@@ -180,7 +187,6 @@ public class TestCrisisResourceFacadeImp {
 	 */
 	@Test
 	public void testEditCrisis() {
-		System.out.println("EditCrisis");
 		try {
 			editCrisis = crisisResourceFacadeImp.findCrisisByID(crisisId);
 			editCrisis.setName(crisisName + "2");
@@ -208,7 +214,6 @@ public class TestCrisisResourceFacadeImp {
 
 	@Test
 	public void testFindActiveCrisis() {
-		System.out.println("FindActiveCrisis");
 		try {
 			List<CrisisDTO> list = crisisResourceFacadeImp.findActiveCrisis();
 			assertEquals(false, list.get(0).isIsTrashed());
@@ -222,7 +227,6 @@ public class TestCrisisResourceFacadeImp {
 	 */
 	@Test
 	public void testGetAllCrisis() {
-		System.out.println("GetAllCrisis");
 		try {
 			List<CrisisDTO> result = crisisResourceFacadeImp.getAllCrisis();
 			assertNotNull(result);
@@ -237,7 +241,6 @@ public class TestCrisisResourceFacadeImp {
 	 */
 	@Test
 	public void testGetAllCrisisWithModelFamilies() {
-		System.out.println("GetAllCrisisWithModelFamilies");
 		try {
 			List<CrisisDTO> result = crisisResourceFacadeImp
 					.getAllCrisisWithModelFamilies();
@@ -249,7 +252,6 @@ public class TestCrisisResourceFacadeImp {
 
 	@Test
 	public void testGetAllCrisisWithModelFamilyNominalAttribute() {
-		System.out.println("GetAllCrisisWithModelFamilyNominalAttribute");
 		try {
 			List<CrisisDTO> list = crisisResourceFacadeImp
 					.getAllCrisisWithModelFamilyNominalAttribute();
@@ -265,7 +267,7 @@ public class TestCrisisResourceFacadeImp {
 	 */
 	/*
 	 * @Test public void testGetAllCrisisByUserID() {
-	 * System.out.println("GetAllCrisisByUserID"); try { List<CrisisDTO> result
+	 *  try { List<CrisisDTO> result
 	 * = crisisResourceFacadeImp.getAllCrisisByUserID(userId);
 	 * assertEquals(Long.valueOf(userId),
 	 * result.get(0).getUsersDTO().getUserID()); } catch
@@ -280,7 +282,6 @@ public class TestCrisisResourceFacadeImp {
 	 */
 	@Test
 	public void testIsCrisisExists() {
-		System.out.println("IsCrisisExists");
 		try {
 			boolean result = crisisResourceFacadeImp.isCrisisExists(crisisCode);
 			assertEquals(true, result);
@@ -295,19 +296,55 @@ public class TestCrisisResourceFacadeImp {
 	 */
 	@Test
 	public void testCountClassifiersByCrisisCodes() {
-		System.out.println("CountClassifiersByCrisisCodes");
-		List<String> codes = new ArrayList<String>();
-		codes.add(crisisCode);
-		codes.add("cycloneIT-nov13");
-		codes.add("2014-01-australia_heat_wave");
-		HashMap<String, Integer> result = crisisResourceFacadeImp
-				.countClassifiersByCrisisCodes(codes);
-		assertEquals(true, result.containsKey(crisisCode));
+		try{
+			List<String> codes = new ArrayList<String>();
+			codes.add(crisisCode);
+			codes.add("cycloneIT-nov13");
+			codes.add("2014-01-australia_heat_wave");
+		
+			NominalAttributeDTO nominalAttributeDTO1 = nominalAttributeResourceFacadeImp.getAttributeByID(1L);
+			NominalAttributeDTO nominalAttributeDTO2 = nominalAttributeResourceFacadeImp.getAttributeByID(2L);
+	
+			ModelFamilyDTO modelFamilyDTO1 = new ModelFamilyDTO();
+			modelFamilyDTO1.setCrisisDTO(crisisDTO);
+			modelFamilyDTO1.setIsActive(true);
+			modelFamilyDTO1.setNominalAttributeDTO(nominalAttributeDTO1);
+			
+			ModelFamilyDTO modelFamilyDTO2 = new ModelFamilyDTO();
+			modelFamilyDTO2.setCrisisDTO(crisisDTO);
+			modelFamilyDTO2.setIsActive(false);
+			modelFamilyDTO2.setNominalAttributeDTO(nominalAttributeDTO2);
+	
+			// inserting model families
+			entityManager.getTransaction().begin();
+			modelFamilyResourceFacadeImp.addCrisisAttribute(modelFamilyDTO1);
+			modelFamilyResourceFacadeImp.addCrisisAttribute(modelFamilyDTO2);
+			entityManager.getTransaction().commit();
+			
+			//count classifiers by crisis
+			HashMap<String, Integer> result = crisisResourceFacadeImp
+					.countClassifiersByCrisisCodes(codes);
+			assertEquals(true, result.containsKey(crisisCode));
+			assertTrue(result.get(crisisCode)>=Integer.valueOf(2));
+			
+			// deleting model families
+			List<ModelFamilyDTO> modelFamilyDTOs = modelFamilyResourceFacadeImp.getAllModelFamiliesByCrisis(crisisDTO.getCrisisID());
+			entityManager.getTransaction().begin();
+			for (ModelFamilyDTO modelFamilyDTO : modelFamilyDTOs) {
+				modelFamilyResourceFacadeImp.deleteModelFamily(modelFamilyDTO.getModelFamilyId());
+			}
+			entityManager.getTransaction().commit();
+		} catch (PropertyNotSetException ex) {
+				logger.error("Property not set exception while accessing/inserting data "+ex.getMessage());
+		}
+			
+		
+		
+		
 	}
 
 	@Test
 	public void testGetWithModelFamilyNominalAttributeByCrisisID() {
-		System.out.println("GetWithModelFamilyNominalAttributeByCrisisID");
 		try {
 			CrisisDTO crisis = crisisResourceFacadeImp
 					.getWithModelFamilyNominalAttributeByCrisisID(crisisId);
@@ -321,7 +358,6 @@ public class TestCrisisResourceFacadeImp {
 	@Test
 	public void testDeleteCrisis() {
 		try {
-			System.out.println("DeleteCrisis");
 			entityManager.getTransaction().begin();
 			int deleteCount = crisisResourceFacadeImp.deleteCrisis(crisisDTO);
 			entityManager.getTransaction().commit();

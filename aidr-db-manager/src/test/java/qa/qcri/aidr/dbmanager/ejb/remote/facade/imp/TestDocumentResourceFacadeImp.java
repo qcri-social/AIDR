@@ -7,6 +7,7 @@ package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -86,12 +87,16 @@ public class TestDocumentResourceFacadeImp {
 			entityManager.getTransaction().begin();
 			crisisResourceFacadeImp.deleteCrisis(crisis);
 			entityManager.getTransaction().commit();
+			CrisisDTO result = crisisResourceFacadeImp.getCrisisByCode(crisis.getCode());
+			assertNull(result);
 		}
 		if (user != null) {
 			entityManager.getTransaction().begin();
 			user = userResourceFacadeImp.getUserByName(user.getName());
 			userResourceFacadeImp.deleteUser(user.getUserID());
 			entityManager.getTransaction().commit();
+			UsersDTO result = userResourceFacadeImp.getUserByName(user.getName());
+			assertNull(result);
 		}
 		documentResourceFacadeImp.getEntityManager().close();
 
@@ -141,7 +146,6 @@ public class TestDocumentResourceFacadeImp {
 	 */
 	@Test
 	public void testAddDocument() {
-		System.out.println("addDocument");
 		entityManager.getTransaction().begin();
 		documentDTO = documentResourceFacadeImp.addDocument(documentDTO);
 		entityManager.getTransaction().commit();
@@ -154,7 +158,6 @@ public class TestDocumentResourceFacadeImp {
 	 */
 	@Test
 	public void testDeleteNoLabelDocument_DocumentDTO() {
-		System.out.println("deleteNoLabelDocument");
 		documentDTO.setHasHumanLabels(false);
 		entityManager.getTransaction().begin();
 		documentDTO = documentResourceFacadeImp.addDocument(documentDTO);
@@ -174,7 +177,6 @@ public class TestDocumentResourceFacadeImp {
 	 */
 	@Test
 	public void testDeleteNoLabelDocument_List() {
-		System.out.println("deleteNoLabelDocument");
 		List<DocumentDTO> collection = new ArrayList<DocumentDTO>();
 		entityManager.getTransaction().begin();
 		documentDTO = documentResourceFacadeImp.addDocument(documentDTO);
@@ -193,7 +195,6 @@ public class TestDocumentResourceFacadeImp {
 	 */
 	@Test
 	public void testDeleteUnassignedDocument() {
-		System.out.println("deleteUnassignedDocument");
 		documentDTO.setHasHumanLabels(false);
 		entityManager.getTransaction().begin();
 		documentDTO = documentResourceFacadeImp.addDocument(documentDTO);
@@ -213,7 +214,6 @@ public class TestDocumentResourceFacadeImp {
 	 */
 	@Test
 	public void testDeleteUnassignedDocumentCollection() {
-		System.out.println("deleteUnassignedDocumentCollection");
 		List<Long> collection = new ArrayList<Long>();
 		entityManager.getTransaction().begin();
 		documentDTO = documentResourceFacadeImp.addDocument(documentDTO);
@@ -231,7 +231,7 @@ public class TestDocumentResourceFacadeImp {
 	 */
 	/*
 	 * @Test public void testDeleteStaleDocuments() {
-	 * System.out.println("deleteStaleDocuments"); String joinType = ""; String
+	 *  String joinType = ""; String
 	 * joinTable = ""; String joinColumn = ""; String sortOrder = ""; String[]
 	 * orderBy = null; String maxTaskAge = ""; String scanInterval = ""; int
 	 * result = documentResourceFacadeImp.deleteStaleDocuments(joinType,
@@ -244,7 +244,6 @@ public class TestDocumentResourceFacadeImp {
 	@Test
 	public void testEditDocument() {
 		try {
-			System.out.println("editDocument");
 			entityManager.getTransaction().begin();
 			documentDTO = documentResourceFacadeImp.addDocument(documentDTO);
 			entityManager.getTransaction().commit();
@@ -266,7 +265,6 @@ public class TestDocumentResourceFacadeImp {
 	 */
 	@Test
 	public void testDeleteDocument() {
-		System.out.println("deleteDocument");
 		entityManager.getTransaction().begin();
 		documentDTO = documentResourceFacadeImp.addDocument(documentDTO);
 		entityManager.getTransaction().commit();
@@ -285,7 +283,6 @@ public class TestDocumentResourceFacadeImp {
 	@Test
 	public void testFindByCriteria() {
 		try {
-			System.out.println("findByCriteria");
 			documentDTO.setHasHumanLabels(true);
 			entityManager.getTransaction().begin();
 			documentDTO = documentResourceFacadeImp.addDocument(documentDTO);
@@ -309,7 +306,6 @@ public class TestDocumentResourceFacadeImp {
 	@Test
 	public void testFindDocumentByID() {
 		try {
-			System.out.println("findDocumentByID");
 			documentDTO.setIsEvaluationSet(true);
 			entityManager.getTransaction().begin();
 			documentDTO = documentResourceFacadeImp.addDocument(documentDTO);
@@ -331,7 +327,6 @@ public class TestDocumentResourceFacadeImp {
 	@Test
 	public void testFindDocumentsByCrisisID() {
 		try {
-			System.out.println("findDocumentsByCrisisID");
 			documentDTO.setIsEvaluationSet(true);
 			entityManager.getTransaction().begin();
 			documentDTO = documentResourceFacadeImp.addDocument(documentDTO);
@@ -353,7 +348,6 @@ public class TestDocumentResourceFacadeImp {
 	@Test
 	public void testGetAllDocuments() {
 		try {
-			System.out.println("getAllDocuments");
 			entityManager.getTransaction().begin();
 			documentDTO = documentResourceFacadeImp.addDocument(documentDTO);
 			entityManager.getTransaction().commit();
@@ -375,7 +369,6 @@ public class TestDocumentResourceFacadeImp {
 	@Test
 	public void testFindLabeledDocumentsByCrisisID() {
 		try {
-			System.out.println("findLabeledDocumentsByCrisisID");
 			documentDTO.setHasHumanLabels(true);
 			entityManager.getTransaction().begin();
 			documentDTO = documentResourceFacadeImp.addDocument(documentDTO);
@@ -400,7 +393,6 @@ public class TestDocumentResourceFacadeImp {
 	@Test
 	public void testFindUnLabeledDocumentsByCrisisID() {
 		try {
-			System.out.println("findUnLabeledDocumentsByCrisisID");
 			documentDTO.setHasHumanLabels(false);
 			entityManager.getTransaction().begin();
 			documentDTO = documentResourceFacadeImp.addDocument(documentDTO);
@@ -424,7 +416,7 @@ public class TestDocumentResourceFacadeImp {
 	 */
 	/*
 	 * @Test public void testGetDocumentCollectionForNominalLabel() { try {
-	 * System.out.println("getDocumentCollectionForNominalLabel"); DocumentDTO
+	 *  DocumentDTO
 	 * doc = getDoc(); doc.setHasHumanLabels(true);
 	 * entityManager.getTransaction().begin(); doc =
 	 * documentResourceFacadeImp.addDocument(doc);
@@ -453,7 +445,7 @@ public class TestDocumentResourceFacadeImp {
 	 */
 	/*
 	 * @Test public void testGetDocumentCollectionWithNominalLabelData() { try {
-	 * System.out.println("getDocumentCollectionWithNominalLabelData"); Long
+	 *  Long
 	 * nominalLabelID = 320L; List<DocumentDTO> result =
 	 * documentResourceFacadeImp
 	 * .getDocumentCollectionWithNominalLabelData(nominalLabelID); //
@@ -471,7 +463,6 @@ public class TestDocumentResourceFacadeImp {
 	@Test
 	public void testGetDocumentWithAllFieldsByID() {
 		try {
-			System.out.println("getDocumentWithAllFieldsByID");
 			entityManager.getTransaction().begin();
 			documentDTO = documentResourceFacadeImp.addDocument(documentDTO);
 			entityManager.getTransaction().commit();
@@ -492,7 +483,6 @@ public class TestDocumentResourceFacadeImp {
 	@Test
 	public void testIsDocumentExists() {
 		try {
-			System.out.println("isDocumentExists");
 			entityManager.getTransaction().begin();
 			documentDTO = documentResourceFacadeImp.addDocument(documentDTO);
 			entityManager.getTransaction().commit();
@@ -518,7 +508,6 @@ public class TestDocumentResourceFacadeImp {
 	@Test
 	public void testUpdateHasHumanLabel() {
 		try {
-			System.out.println("updateHasHumanLabel");
 			documentDTO.setHasHumanLabels(false);
 			entityManager.getTransaction().begin();
 			documentDTO = documentResourceFacadeImp.addDocument(documentDTO);

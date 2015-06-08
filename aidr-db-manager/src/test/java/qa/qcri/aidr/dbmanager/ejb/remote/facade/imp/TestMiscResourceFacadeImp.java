@@ -1,6 +1,7 @@
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -38,7 +39,7 @@ public class TestMiscResourceFacadeImp {
 	private static CrisisResourceFacadeImp crisisResourceFacadeImp;
 	private static CrisisTypeResourceFacadeImp crisisTypeResourceFacadeImp;
 	private static NominalAttributeResourceFacadeImp nominalAttributeResourceFacadeImp;
-	private static UsersResourceFacadeImp usersResourceFacadeImp;
+	private static UsersResourceFacadeImp userResourceFacadeImp;
 	private static EntityManager entityManager;
 	private static DocumentNominalLabelResourceFacadeImp documentNominalLabelResourceFacadeImp;
 	private static DocumentResourceFacadeImp documentResourceFacadeImp;
@@ -62,7 +63,7 @@ public class TestMiscResourceFacadeImp {
 		crisisResourceFacadeImp = new CrisisResourceFacadeImp();
 		crisisTypeResourceFacadeImp = new CrisisTypeResourceFacadeImp();
 		nominalAttributeResourceFacadeImp = new NominalAttributeResourceFacadeImp();
-		usersResourceFacadeImp = new UsersResourceFacadeImp();
+		userResourceFacadeImp = new UsersResourceFacadeImp();
 		nominalLabelResourceFacadeImp = new NominalLabelResourceFacadeImp();
 		entityManager = Persistence.createEntityManagerFactory(
 				"ProjectDBManagerTest-ejbPU").createEntityManager();
@@ -71,7 +72,7 @@ public class TestMiscResourceFacadeImp {
 		modelFamilyResourceFacadeImp.setEntityManager(entityManager);
 		crisisResourceFacadeImp.setEntityManager(entityManager);
 		crisisTypeResourceFacadeImp.setEntityManager(entityManager);
-		usersResourceFacadeImp.setEntityManager(entityManager);
+		userResourceFacadeImp.setEntityManager(entityManager);
 		nominalAttributeResourceFacadeImp.setEntityManager(entityManager);
 		documentResourceFacadeImp.setEntityManager(entityManager);
 		documentNominalLabelResourceFacadeImp.setEntityManager(entityManager);
@@ -88,7 +89,7 @@ public class TestMiscResourceFacadeImp {
 			// add test user
 			userDTO = new UsersDTO("testUser"+new Date(), "testRole"+new Date());
 			entityManager.getTransaction().begin();
-			userDTO = usersResourceFacadeImp.addUser(userDTO);
+			userDTO = userResourceFacadeImp.addUser(userDTO);
 			entityManager.getTransaction().commit();
 			
 			// insert crisis type
@@ -163,15 +164,22 @@ public class TestMiscResourceFacadeImp {
 				entityManager.getTransaction().begin();
 				crisisResourceFacadeImp.deleteCrisis(crisisDTO);
 				entityManager.getTransaction().commit();
+				CrisisDTO result = crisisResourceFacadeImp.getCrisisByCode(crisisDTO.getCode());
+				assertNull(result);
 			}
 		} catch (PropertyNotSetException ex) {
 			logger.error("PropertyNotSetException while deleting crisis "+ex.getMessage());
 		}
-		
-		if (userDTO != null) {
-			entityManager.getTransaction().begin();
-			usersResourceFacadeImp.deleteUser(userDTO.getUserID());
-			entityManager.getTransaction().commit();
+		try {
+			if (userDTO != null) {
+				entityManager.getTransaction().begin();
+				userResourceFacadeImp.deleteUser(userDTO.getUserID());
+				entityManager.getTransaction().commit();
+				UsersDTO result = userResourceFacadeImp.getUserByName(userDTO.getName());
+				assertNull(result);
+			}
+		} catch (PropertyNotSetException ex) {
+			logger.error("PropertyNotSetException while deleting user "+ex.getMessage());
 		}
 		
 	}

@@ -6,6 +6,7 @@
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -33,7 +34,7 @@ import qa.qcri.aidr.dbmanager.dto.UsersDTO;
  */
 public class TestNominalAttributeResourceFacadeImp {
 	//
-	static UsersResourceFacadeImp usersResourceFacadeImp;
+	static UsersResourceFacadeImp userResourceFacadeImp;
 	static EntityManager entityManager;
 	static UsersDTO user;
 	static CrisisDTO crisis;
@@ -47,10 +48,10 @@ public class TestNominalAttributeResourceFacadeImp {
 	public static void setUpClass() {
 		entityManager = Persistence.createEntityManagerFactory(
 				"ProjectDBManagerTest-ejbPU").createEntityManager();
-		usersResourceFacadeImp = new UsersResourceFacadeImp();
+		userResourceFacadeImp = new UsersResourceFacadeImp();
 		crisisResourceFacadeImp = new CrisisResourceFacadeImp();
 		crisisTypeResourceFacadeImp = new CrisisTypeResourceFacadeImp();
-		usersResourceFacadeImp.setEntityManager(entityManager);
+		userResourceFacadeImp.setEntityManager(entityManager);
 		nominalAttributeResourceFacadeImp = new NominalAttributeResourceFacadeImp();
 		crisisResourceFacadeImp.setEntityManager(entityManager);
 		crisisTypeResourceFacadeImp.setEntityManager(entityManager);
@@ -58,7 +59,7 @@ public class TestNominalAttributeResourceFacadeImp {
 
 		user = new UsersDTO("userDBTest"+new Date(), "normal"+new Date());
 		entityManager.getTransaction().begin();
-		user = usersResourceFacadeImp.addUser(user);
+		user = userResourceFacadeImp.addUser(user);
 		entityManager.getTransaction().commit();
 	}
 
@@ -80,9 +81,11 @@ public class TestNominalAttributeResourceFacadeImp {
 	public static void shutDown() throws Exception {
 		if (user != null) {
 			entityManager.getTransaction().begin();
-			user = usersResourceFacadeImp.getUserByName(user.getName());
-			usersResourceFacadeImp.deleteUser(user.getUserID());
+			user = userResourceFacadeImp.getUserByName(user.getName());
+			userResourceFacadeImp.deleteUser(user.getUserID());
 			entityManager.getTransaction().commit();
+			UsersDTO result = userResourceFacadeImp.getUserByName(user.getName());
+			assertNull(result);
 		}
 		
 		nominalAttributeResourceFacadeImp.getEntityManager().close();
@@ -95,6 +98,8 @@ public class TestNominalAttributeResourceFacadeImp {
 				entityManager.getTransaction().begin();
 				crisisResourceFacadeImp.deleteCrisis(crisis);
 				entityManager.getTransaction().commit();
+				CrisisDTO result = crisisResourceFacadeImp.getCrisisByCode(crisis.getCode());
+				assertNull(result);
 				crisis=null;
 			}
 			if (nominalAttribute != null) {
@@ -115,7 +120,6 @@ public class TestNominalAttributeResourceFacadeImp {
 	 */
 	@Test
 	public void testAddAttribute() {
-		System.out.println("addAttribute");
 		assertEquals(user.getUserID(), nominalAttribute.getUsersDTO().getUserID());
 	}
 
@@ -125,7 +129,6 @@ public class TestNominalAttributeResourceFacadeImp {
 	@Test
 	public void testDeleteAttribute() {
 		try {
-			System.out.println("deleteAttribute");
 			entityManager.getTransaction().begin();
 			boolean result = nominalAttributeResourceFacadeImp.deleteAttribute(nominalAttribute.getNominalAttributeId());
 			entityManager.getTransaction().commit();
@@ -143,7 +146,6 @@ public class TestNominalAttributeResourceFacadeImp {
 	@Test
 	public void testEditAttribute() {
 		try {
-			System.out.println("editAttribute");
 			nominalAttribute.setName("testNameNominal");
 			entityManager.getTransaction().begin();
 			nominalAttribute = nominalAttributeResourceFacadeImp.editAttribute(nominalAttribute);
@@ -161,7 +163,6 @@ public class TestNominalAttributeResourceFacadeImp {
 	@Test
 	public void testGetAllAttributes() {
 		try {
-			System.out.println("getAllAttributes");
 			List<NominalAttributeDTO> result = nominalAttributeResourceFacadeImp.getAllAttributes();
 			assertTrue(result.size()>=1);
 		} catch (PropertyNotSetException e) {
@@ -176,7 +177,6 @@ public class TestNominalAttributeResourceFacadeImp {
 	@Test
 	public void testGetAttributeByID() {
 		try {
-			System.out.println("getAttributeByID");
 			NominalAttributeDTO result = nominalAttributeResourceFacadeImp.getAttributeByID(nominalAttribute.getNominalAttributeId());
 			assertEquals(nominalAttribute.getNominalAttributeId(), result.getNominalAttributeId());
 		} catch (PropertyNotSetException e) {
@@ -191,7 +191,6 @@ public class TestNominalAttributeResourceFacadeImp {
 	@Test
 	public void testIsAttributeExists() {
 		try {
-			System.out.println("isAttributeExists");
 			Long result = nominalAttributeResourceFacadeImp.isAttributeExists(nominalAttribute.getCode());
 			assertEquals(nominalAttribute.getNominalAttributeId(), result);
 		} catch (PropertyNotSetException e) {
@@ -206,7 +205,6 @@ public class TestNominalAttributeResourceFacadeImp {
 	@Test
 	public void testGetAllAttributesExceptCrisis() {
 		try {
-			System.out.println("getAllAttributesExceptCrisis");
 			CrisisTypeDTO crisisTypeDTO = crisisTypeResourceFacadeImp.findCrisisTypeByID(1100L);
 			CrisisDTO crisisDTO = new CrisisDTO("testCrisisName", "testCrisisCode", false, crisisTypeDTO, user);
 			entityManager.getTransaction().begin();

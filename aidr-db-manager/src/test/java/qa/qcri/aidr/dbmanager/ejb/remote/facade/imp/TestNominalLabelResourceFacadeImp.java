@@ -7,6 +7,7 @@
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -39,7 +40,7 @@ public class TestNominalLabelResourceFacadeImp {
 	static UsersDTO user;
 	static NominalLabelResourceFacadeImp nominalLabelResourceFacadeImp;
 	static NominalAttributeResourceFacadeImp nominalAttributeResourceFacadeImp;
-	static UsersResourceFacadeImp usersResourceFacadeImp;
+	static UsersResourceFacadeImp userResourceFacadeImp;
 	private static Logger logger = Logger.getLogger("db-manager-log");
 	
 	@BeforeClass
@@ -50,12 +51,12 @@ public class TestNominalLabelResourceFacadeImp {
 		nominalLabelResourceFacadeImp.setEntityManager(entityManager);
 		nominalAttributeResourceFacadeImp = new NominalAttributeResourceFacadeImp();
 		nominalAttributeResourceFacadeImp.setEntityManager(entityManager);
-		usersResourceFacadeImp = new UsersResourceFacadeImp();
-		usersResourceFacadeImp.setEntityManager(entityManager);
+		userResourceFacadeImp = new UsersResourceFacadeImp();
+		userResourceFacadeImp.setEntityManager(entityManager);
 
 		user = new UsersDTO("userDBTest"+new Date(), "normal"+new Date());
 		entityManager.getTransaction().begin();
-		user = usersResourceFacadeImp.addUser(user);
+		user = userResourceFacadeImp.addUser(user);
 		entityManager.getTransaction().commit();
 		try {
 			nominalAttribute = new NominalAttributeDTO("test_nominal_attribute_name"+new Date(), "test_nominal_attribute_desc"+new Date(), "test_nominal_attribute_code"+new Date());
@@ -90,9 +91,11 @@ public class TestNominalLabelResourceFacadeImp {
 		}
 		if (user != null) {
 			entityManager.getTransaction().begin();
-			user = usersResourceFacadeImp.getUserByName(user.getName());
-			usersResourceFacadeImp.deleteUser(user.getUserID());
+			user = userResourceFacadeImp.getUserByName(user.getName());
+			userResourceFacadeImp.deleteUser(user.getUserID());
 			entityManager.getTransaction().commit();
+			UsersDTO result = userResourceFacadeImp.getUserByName(user.getName());
+			assertNull(result);
 		}
 		nominalLabelResourceFacadeImp.getEntityManager().close();
 	}
@@ -117,7 +120,6 @@ public class TestNominalLabelResourceFacadeImp {
 	 */
 	@Test
 	public void testAddNominalLabel() {
-		System.out.println("addNominalLabel");
 		assertEquals(nominalAttribute.getNominalAttributeId(), nominalLabel.getNominalAttributeDTO().getNominalAttributeId());
 	}
 
@@ -127,7 +129,6 @@ public class TestNominalLabelResourceFacadeImp {
 	@Test
 	public void testDeleteNominalLabel() {
 		try {
-			System.out.println("deleteNominalLabel");
 			entityManager.getTransaction().begin();
 			Integer result = nominalLabelResourceFacadeImp.deleteNominalLabel(nominalLabel);
 			entityManager.getTransaction().commit();
@@ -144,7 +145,6 @@ public class TestNominalLabelResourceFacadeImp {
 	 */
 	@Test
 	public void testDeleteNominalLabelByID() {
-			System.out.println("deleteNominalLabelByID");
 			entityManager.getTransaction().begin();
 			Integer result = nominalLabelResourceFacadeImp.deleteNominalLabelByID(nominalLabel.getNominalLabelId());
 			entityManager.getTransaction().commit();
@@ -158,7 +158,6 @@ public class TestNominalLabelResourceFacadeImp {
 	@Test
 	public void testEditNominalLabel() {
 		try {
-			System.out.println("editNominalLabel");
 			nominalLabel.setName("sample_Name_on_edit");
 			entityManager.getTransaction().begin();
 			nominalLabel = nominalLabelResourceFacadeImp.editNominalLabel(nominalLabel);
@@ -176,7 +175,6 @@ public class TestNominalLabelResourceFacadeImp {
 	@Test
 	public void testGetAllNominalLabels() {
 		try {
-			System.out.println("getAllNominalLabels");
 			entityManager.getTransaction().begin();
 			List<NominalLabelDTO> result = nominalLabelResourceFacadeImp.getAllNominalLabels();
 			entityManager.getTransaction().commit();
@@ -193,7 +191,6 @@ public class TestNominalLabelResourceFacadeImp {
 	@Test
 	public void testGetNominalLabelByCode() {
 		try {
-			System.out.println("getNominalLabelByCode");
 			entityManager.getTransaction().begin();
 			NominalLabelDTO result = nominalLabelResourceFacadeImp.getNominalLabelByCode(nominalLabel.getNominalLabelCode());
 			entityManager.getTransaction().commit();
@@ -211,7 +208,6 @@ public class TestNominalLabelResourceFacadeImp {
 	@Test
 	public void testGetNominalLabelByID() {
 		try {
-			System.out.println("getNominalLabelByID");
 			entityManager.getTransaction().begin();
 			NominalLabelDTO result = nominalLabelResourceFacadeImp.getNominalLabelByID(nominalLabel.getNominalLabelId());
 			entityManager.getTransaction().commit();
@@ -228,7 +224,6 @@ public class TestNominalLabelResourceFacadeImp {
 	@Test
 	public void testGetNominalLabelWithAllFieldsByCode() {
 		try {
-			System.out.println("getNominalLabelWithAllFieldsByCode");
 			entityManager.getTransaction().begin();
 			NominalLabelDTO result = nominalLabelResourceFacadeImp.getNominalLabelWithAllFieldsByCode(nominalLabel.getNominalLabelCode());
 			entityManager.getTransaction().commit();
@@ -245,7 +240,6 @@ public class TestNominalLabelResourceFacadeImp {
 	@Test
 	public void testGetNominalLabelWithAllFieldsByID() {
 		try {
-			System.out.println("getNominalLabelWithAllFieldsByID");
 			entityManager.getTransaction().begin();
 			NominalLabelDTO result = nominalLabelResourceFacadeImp.getNominalLabelWithAllFieldsByID(nominalLabel.getNominalLabelId());
 			entityManager.getTransaction().commit();
@@ -261,7 +255,6 @@ public class TestNominalLabelResourceFacadeImp {
 	 */
 	@Test
 	public void testIsNominalLabelExistsById() {
-		System.out.println("isNominalLabelExists");
 		entityManager.getTransaction().begin();
 		Boolean result = nominalLabelResourceFacadeImp.isNominalLabelExists(nominalLabel.getNominalLabelId());
 		entityManager.getTransaction().commit();
@@ -273,7 +266,6 @@ public class TestNominalLabelResourceFacadeImp {
 	 */
 	@Test
 	public void testIsNominalLabelExistsByCode() {
-		System.out.println("isNominalLabelExists");
 		entityManager.getTransaction().begin();
 		Boolean result = nominalLabelResourceFacadeImp.isNominalLabelExists(nominalLabel.getNominalLabelCode());
 		entityManager.getTransaction().commit();

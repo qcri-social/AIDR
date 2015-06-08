@@ -7,6 +7,7 @@
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -95,6 +96,8 @@ public class TestCustomUiTemplateResourceFacadeImp {
 				entityManager.getTransaction().begin();
 				crisisResourceFacadeImp.deleteCrisis(crisis);
 				entityManager.getTransaction().commit();
+				CrisisDTO result = crisisResourceFacadeImp.getCrisisByCode(crisis.getCode());
+				assertNull(result);
 			}
 		}catch (PropertyNotSetException e) {
 				logger.error("PropertyNotSetException while deleting crisis "+e.getMessage());
@@ -105,6 +108,8 @@ public class TestCustomUiTemplateResourceFacadeImp {
 				user = userResourceFacadeImp.getUserByName(user.getName());
 				userResourceFacadeImp.deleteUser(user.getUserID());
 				entityManager.getTransaction().commit();
+				UsersDTO result = userResourceFacadeImp.getUserByName(user.getName());
+				assertNull(result);
 			}
 		}catch (PropertyNotSetException e) {
 			logger.error("PropertyNotSetException while deleting user "+e.getMessage());
@@ -126,7 +131,6 @@ public class TestCustomUiTemplateResourceFacadeImp {
 	 */
 	@Test
 	public void testAddCustomUITemplate() {
-		System.out.println("addCustomUITemplate");
 		assertEquals(nominalAttribute.getNominalAttributeId(), customUiTemplate.getNominalAttributeID());
 	}
 	
@@ -135,7 +139,6 @@ public class TestCustomUiTemplateResourceFacadeImp {
 	 */
 	@Test
 	public void testGetAllCustomUITemplateByCrisisID() {
-		System.out.println("getAllCustomUITemplateByCrisisID");
 		entityManager.getTransaction().begin();
 		List<CustomUiTemplateDTO> result = customUiTemplateResourceFacadeImp.getAllCustomUITemplateByCrisisID(crisis.getCrisisID());
 		entityManager.getTransaction().commit();
@@ -147,7 +150,6 @@ public class TestCustomUiTemplateResourceFacadeImp {
 	 */
 	@Test
 	public void testGetCustomUITemplateBasedOnTypeByCrisisID() {
-		System.out.println("getCustomUITemplateBasedOnTypeByCrisisID");
 		entityManager.getTransaction().begin();
 		List<CustomUiTemplateDTO> result = customUiTemplateResourceFacadeImp.getCustomUITemplateBasedOnTypeByCrisisID(crisis.getCrisisID(), 1);
 		entityManager.getTransaction().commit();
@@ -159,7 +161,6 @@ public class TestCustomUiTemplateResourceFacadeImp {
 	 */
 	@Test
 	public void testGetCustomUITemplateByCrisisIDAndAttributeID() {
-		System.out.println("getCustomUITemplateByCrisisIDAndAttributeID");
 		entityManager.getTransaction().begin();
 		List<CustomUiTemplateDTO> result = customUiTemplateResourceFacadeImp.getCustomUITemplateByCrisisIDAndAttributeID(crisis.getCrisisID(), nominalAttribute.getNominalAttributeId());
 		entityManager.getTransaction().commit();
@@ -171,7 +172,6 @@ public class TestCustomUiTemplateResourceFacadeImp {
 	 */
 	@Test
 	public void testUpdateCustomUITemplate() {
-		System.out.println("updateCustomUITemplate");
 		CustomUiTemplateDTO customUiTemplateUpdated = customUiTemplate;
 		customUiTemplateUpdated.setTemplateValue("template_value_updated");
 		entityManager.getTransaction().begin();
@@ -185,7 +185,6 @@ public class TestCustomUiTemplateResourceFacadeImp {
 	 */
 	@Test
 	public void testUpdateCustomUITemplateStatus() {
-		System.out.println("updateCustomUITemplateStatus");
 		CustomUiTemplateDTO customUiTemplateUpdated = customUiTemplate;
 		customUiTemplateUpdated.setIsActive(false);
 		entityManager.getTransaction().begin();

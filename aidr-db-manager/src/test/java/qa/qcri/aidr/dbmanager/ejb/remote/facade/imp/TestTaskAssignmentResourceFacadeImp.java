@@ -7,6 +7,7 @@
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -110,12 +111,16 @@ public class TestTaskAssignmentResourceFacadeImp {
 			entityManager.getTransaction().begin();
 			crisisResourceFacadeImp.deleteCrisis(crisis);
 			entityManager.getTransaction().commit();
+			CrisisDTO result = crisisResourceFacadeImp.getCrisisByCode(crisis.getCode());
+			assertNull(result);
 		}
 		if (user != null) {
 			entityManager.getTransaction().begin();
 			user = userResourceFacadeImp.getUserByName(user.getName());
 			userResourceFacadeImp.deleteUser(user.getUserID());
 			entityManager.getTransaction().commit();
+			UsersDTO result = userResourceFacadeImp.getUserByName(user.getName());
+			assertNull(result);
 		}
 		taskAssignmentResourceFacadeImp.getEntityManager().close();
 	}
@@ -165,7 +170,6 @@ public class TestTaskAssignmentResourceFacadeImp {
 	 */
 	@Test
 	public void testInsertOneTaskAssignment() {
-		System.out.println("insertOneTaskAssignment");
 		assertEquals(documentDTO.getDocumentID(),taskAssignment.getDocumentID());
 	}
 	
@@ -174,7 +178,6 @@ public class TestTaskAssignmentResourceFacadeImp {
 	 */
 	@Test
 	public void testInsertTaskAssignment() {
-		System.out.println("insertTaskAssignment");
 		if(taskAssignment!=null){
 			entityManager.getTransaction().begin();
 			taskAssignmentResourceFacadeImp.undoTaskAssignment(documentDTO.getDocumentID(), user.getUserID());
@@ -197,7 +200,6 @@ public class TestTaskAssignmentResourceFacadeImp {
 	 */
 	@Test
 	public void testFindTaskAssignment() {
-		System.out.println("findTaskAssignment");
 		taskAssignment = taskAssignmentResourceFacadeImp.findTaskAssignment(documentDTO.getDocumentID(), user.getUserID());
 		assertEquals(documentDTO.getDocumentID(), taskAssignment.getDocumentID());
 	}
@@ -207,7 +209,6 @@ public class TestTaskAssignmentResourceFacadeImp {
 	 */
 	@Test
 	public void testFindTaskAssignmentByID() {
-		System.out.println("findTaskAssignmentByID");
 		List<TaskAssignmentDTO> result = taskAssignmentResourceFacadeImp.findTaskAssignmentByID(documentDTO.getDocumentID());
 		assertTrue(result.size()>=1);
 	}
@@ -217,7 +218,6 @@ public class TestTaskAssignmentResourceFacadeImp {
 	 */
 	@Test
 	public void testGetPendingTaskCount() {
-		System.out.println("getPendingTaskCount");
 		Integer result = taskAssignmentResourceFacadeImp.getPendingTaskCount(user.getUserID());
 		assertEquals(Integer.valueOf(1),result);
 	}
@@ -228,7 +228,6 @@ public class TestTaskAssignmentResourceFacadeImp {
 	 */
 	@Test
 	public void testUndoTaskAssignmentByDocumentIdAndUserId() {
-		System.out.println("undoTaskAssignmentByDocumentIdAndUserId");
 		entityManager.getTransaction().begin();
 		int result = taskAssignmentResourceFacadeImp.undoTaskAssignment(documentDTO.getDocumentID(), user.getUserID());
 		entityManager.getTransaction().commit();
@@ -241,7 +240,6 @@ public class TestTaskAssignmentResourceFacadeImp {
 	 */
 	@Test
 	public void testUndoTaskAssignmentByTaskMap() {
-		System.out.println("undoTaskAssignmentByTaskMap");
 		Map<Long, Long> taskMap = new HashMap<Long, Long>();
 		taskMap.put(documentDTO.getDocumentID(), user.getUserID());
 		entityManager.getTransaction().begin();
@@ -256,7 +254,6 @@ public class TestTaskAssignmentResourceFacadeImp {
 	 */
 	@Test
 	public void testUndoTaskAssignmentByDocumentListAndUserId() {
-		System.out.println("undoTaskAssignmentByDocumentListAndUserId");
 		List<DocumentDTO> documentDTOs = new ArrayList<DocumentDTO>();
 		documentDTOs.add(documentDTO);
 		entityManager.getTransaction().begin();

@@ -74,7 +74,6 @@ public class TestCrisisTypeResourceFacadeImp {
 	@Test
 	public void testGetAllCrisisTypes() {
 		try {
-			System.out.println("GetAllCrisisTypes");
 			List<CrisisTypeDTO> result = crisisTypeResourceFacadeImp
 					.getAllCrisisTypes();
 			assertNotNull(result);
@@ -89,7 +88,6 @@ public class TestCrisisTypeResourceFacadeImp {
 	 */
 	@Test
 	public void testAddCrisisType() {
-		System.out.println("AddCrisisType");
 		CrisisTypeDTO addCrisisType = new CrisisTypeDTO();
 		addCrisisType.setName(sampleCrisisTypeName);
 		entityManager.getTransaction().begin();
@@ -108,8 +106,6 @@ public class TestCrisisTypeResourceFacadeImp {
 	@Test
 	public void testEditCrisisType() {
 		try {
-			System.out.println("EditCrisisType");
-
 			CrisisTypeDTO addCrisisType = new CrisisTypeDTO();
 			addCrisisType.setName(sampleCrisisTypeName);
 			entityManager.getTransaction().begin();
@@ -136,8 +132,6 @@ public class TestCrisisTypeResourceFacadeImp {
 	 */
 	@Test
 	public void testDeleteCrisisType() {
-		System.out.println("DeleteCrisisType");
-
 		CrisisTypeDTO addCrisisType = new CrisisTypeDTO();
 		addCrisisType.setName(sampleCrisisTypeName);
 		entityManager.getTransaction().begin();
@@ -157,7 +151,6 @@ public class TestCrisisTypeResourceFacadeImp {
 	@Test
 	public void testFindCrisisTypeByID() {
 		try {
-			System.out.println("FindCrisisTypeByID");
 			CrisisTypeDTO result = crisisTypeResourceFacadeImp
 					.findCrisisTypeByID(crisisTypeId);
 			assertEquals(crisisTypeName, result.getName());
@@ -172,7 +165,6 @@ public class TestCrisisTypeResourceFacadeImp {
 	@Test
 	public void testIsCrisisTypeExists() {
 		try {
-			System.out.println("IsCrisisTypeExists");
 			boolean result = crisisTypeResourceFacadeImp
 					.isCrisisTypeExists(crisisTypeId);
 			assertEquals(true, result);
@@ -187,7 +179,7 @@ public class TestCrisisTypeResourceFacadeImp {
 	 */
 	/*
 	 * @Test public void testGetAllCrisisForCrisisTypeID() { try {
-	 * System.out.println("GetAllCrisisForCrisisTypeID"); CrisisDTO crisisDTO =
+	 * CrisisDTO crisisDTO =
 	 * new CrisisDTO(); crisisDTO.setName("testCrisisName");
 	 * crisisDTO.setCode("testCrisisCode"); crisisDTO.setIsTrashed(false);
 	 * CrisisTypeDTO crisisTypeDTO =

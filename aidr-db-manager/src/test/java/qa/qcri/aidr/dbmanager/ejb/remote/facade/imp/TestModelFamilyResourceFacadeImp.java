@@ -1,6 +1,7 @@
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class TestModelFamilyResourceFacadeImp {
 	private static CrisisResourceFacadeImp crisisResourceFacadeImp;
 	private static CrisisTypeResourceFacadeImp crisisTypeResourceFacadeImp;
 	private static NominalAttributeResourceFacadeImp nominalAttributeResourceFacadeImp;
-	private static UsersResourceFacadeImp usersResourceFacadeImp;
+	private static UsersResourceFacadeImp userResourceFacadeImp;
 	private static EntityManager entityManager;
 	
 	private UsersDTO user;
@@ -46,14 +47,14 @@ public class TestModelFamilyResourceFacadeImp {
 		crisisResourceFacadeImp = new CrisisResourceFacadeImp();
 		crisisTypeResourceFacadeImp = new CrisisTypeResourceFacadeImp();
 		nominalAttributeResourceFacadeImp = new NominalAttributeResourceFacadeImp();
-		usersResourceFacadeImp = new UsersResourceFacadeImp();
+		userResourceFacadeImp = new UsersResourceFacadeImp();
 		entityManager = Persistence.createEntityManagerFactory(
 				"ProjectDBManagerTest-ejbPU").createEntityManager();
 		
 		modelFamilyResourceFacadeImp.setEntityManager(entityManager);
 		crisisResourceFacadeImp.setEntityManager(entityManager);
 		crisisTypeResourceFacadeImp.setEntityManager(entityManager);
-		usersResourceFacadeImp.setEntityManager(entityManager);
+		userResourceFacadeImp.setEntityManager(entityManager);
 		nominalAttributeResourceFacadeImp.setEntityManager(entityManager);
 		
 	}
@@ -67,10 +68,10 @@ public class TestModelFamilyResourceFacadeImp {
 			
 			user = new UsersDTO("userDBTest"+new Date(), "normal" + new Date());
 			entityManager.getTransaction().begin();
-			user = usersResourceFacadeImp.addUser(user);
+			user = userResourceFacadeImp.addUser(user);
 			entityManager.getTransaction().commit();
 			
-			// insert crisis type
+			// insert crisis
 			crisisDTO = new CrisisDTO("tesName"+new Date(), "testCode"+new Date(), false, crisisTypeDTO, user);
 			entityManager.getTransaction().begin();
 			crisisDTO = crisisResourceFacadeImp.addCrisis(crisisDTO);
@@ -84,7 +85,7 @@ public class TestModelFamilyResourceFacadeImp {
 			modelFamilyDTO.setIsActive(true);
 			modelFamilyDTO.setNominalAttributeDTO(nominalAttributeDTO);
 
-			// insert nominal attribute
+			// insert model family
 			entityManager.getTransaction().begin();
 			boolean success = modelFamilyResourceFacadeImp.addCrisisAttribute(modelFamilyDTO);
 			entityManager.getTransaction().commit();
@@ -124,6 +125,8 @@ public class TestModelFamilyResourceFacadeImp {
 				entityManager.getTransaction().begin();
 				crisisResourceFacadeImp.deleteCrisis(crisisDTO);
 				entityManager.getTransaction().commit();
+				CrisisDTO result = crisisResourceFacadeImp.getCrisisByCode(crisisDTO.getCode());
+				assertNull(result);
 			}
 		} catch (PropertyNotSetException ex) {
 			logger.error("PropertyNotSetException while deleting crisis "+ex.getMessage());
@@ -132,9 +135,11 @@ public class TestModelFamilyResourceFacadeImp {
 		try {
 			if (user != null) {
 				entityManager.getTransaction().begin();
-				user = usersResourceFacadeImp.getUserByName(user.getName());
-				usersResourceFacadeImp.deleteUser(user.getUserID());
+				user = userResourceFacadeImp.getUserByName(user.getName());
+				userResourceFacadeImp.deleteUser(user.getUserID());
 				entityManager.getTransaction().commit();
+				UsersDTO result = userResourceFacadeImp.getUserByName(user.getName());
+				assertNull(result);
 			}
 		} catch (PropertyNotSetException ex) {
 			logger.error("PropertyNotSetException while deleting user "+ex.getMessage());
@@ -155,7 +160,6 @@ public class TestModelFamilyResourceFacadeImp {
 		try {
 			List<ModelFamilyDTO> modelFamilyDTOs = modelFamilyResourceFacadeImp.getAllModelFamilies();
 			assertNotNull(modelFamilyDTOs);
-			
 		} catch (PropertyNotSetException e) {
 			logger.error("PropertyNotSetException while executing testGetAllModelFamilies "+e.getMessage());
 		}
@@ -171,7 +175,6 @@ public class TestModelFamilyResourceFacadeImp {
 		try {
 			List<ModelFamilyDTO> modelFamilyDTOs = modelFamilyResourceFacadeImp.getAllModelFamiliesByCrisis(crisisDTO.getCrisisID());
 			assertNotNull(modelFamilyDTOs);
-			
 		} catch (PropertyNotSetException e) {
 			logger.error("PropertyNotSetException while executing testGetAllModelFamiliesByCrisis "+e.getMessage());
 		}
@@ -186,7 +189,6 @@ public class TestModelFamilyResourceFacadeImp {
 		try {
 			ModelFamilyDTO modelFamily = modelFamilyResourceFacadeImp.getModelFamilyByID(modelFamilyDTO.getModelFamilyId());
 			assertNotNull(modelFamily);
-			
 		} catch (PropertyNotSetException e) {
 			logger.error("PropertyNotSetException while executing testGetModelFamilyByID "+e.getMessage());
 		}
@@ -211,7 +213,6 @@ public class TestModelFamilyResourceFacadeImp {
 			boolean success = modelFamilyResourceFacadeImp.addCrisisAttribute(modelFamily);
 			entityManager.getTransaction().commit();
 			assertTrue(success);
-			
 		} catch (PropertyNotSetException e){
 			logger.log(Level.SEVERE, "PropertyNotSetException while executing testAddCrisisAttribute", e);
 		}
@@ -226,8 +227,9 @@ public class TestModelFamilyResourceFacadeImp {
 		try {
 			List<ModelFamilyDTO> modelFamilyDTOs = modelFamilyResourceFacadeImp.getAllModelFamiliesByCrisis(crisisDTO.getCrisisID());
 			assertNotNull(modelFamilyDTOs);
-			
+			entityManager.getTransaction().begin();
 			boolean success = modelFamilyResourceFacadeImp.deleteModelFamily(modelFamilyDTOs.get(0).getModelFamilyId());
+			entityManager.getTransaction().commit();
 			assertTrue(success);
 		} catch (PropertyNotSetException e) {
 			logger.error("PropertyNotSetException while executing testDeleteModelFamily "+e.getMessage());
@@ -239,7 +241,6 @@ public class TestModelFamilyResourceFacadeImp {
 	 */
 	@Test
 	public void testGetTaggersByCodes() {
-	
 		List<String> codeList = new ArrayList<String>();
 		codeList.add(crisisDTO.getCode());
 		List<TaggersForCodes> taggersForCodes = modelFamilyResourceFacadeImp.getTaggersByCodes(codeList);
