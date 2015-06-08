@@ -26,7 +26,7 @@ These parameters are optional:
 
 The _config_ is the name of the collector configuration (or of a centralized configuration) to read properties that the tester needs to know to perform the testing: the URL of the collector's API, the name of the REDIS queue where the collector will write.
 
-The _collection-task_ is a file containing a CollectionTask object serialized in .properties, XML, or JSON format. A simple collection-task.properties file is included which describes the following test (listen for tweets in English containing the keyword "uk", which are many):
+The _collection-task_ is a file containing a CollectionTask object serialized in .properties format. A simple collection-task.properties file is included which describes the following test (listen for tweets in English containing the keyword "uk", which are many):
 
 ```
 collectionCode = collector_tester
