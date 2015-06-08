@@ -14,6 +14,7 @@ import qa.qcri.aidr.trainer.pybossa.format.impl.GeoJsonOutputModel;
 import qa.qcri.aidr.trainer.pybossa.service.*;
 import qa.qcri.aidr.trainer.pybossa.store.PybossaConf;
 import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
+import qa.qcri.aidr.trainer.pybossa.store.URLPrefixCode;
 import qa.qcri.aidr.trainer.pybossa.store.UserAccount;
 import qa.qcri.aidr.trainer.pybossa.util.DateTimeConverter;
 
@@ -74,20 +75,18 @@ public class ReportProductServiceImpl implements ReportProductService {
             ClientApp clientApp = (ClientApp)itr.next();
             List<ReportTemplate> templateList =  reportTemplateService.getReportTemplateByClientApp(clientApp.getClientAppID(), StatusCodeType.TEMPLATE_IS_READY_FOR_EXPORT);
 
-            if(templateList.size() > 0){
+            if(templateList.size() > StatusCodeType.MIN_REPORT_TEMPLATE_EXPORT_SIZE){
                 CVSRemoteFileFormatter formatter = new CVSRemoteFileFormatter();
                 String sTemp = DateTimeConverter.reformattedCurrentDateForFileName() + clientApp.getShortName() + "export.csv";
                 String fileName = PybossaConf.DEFAULT_TRAINER_FILE_PATH + sTemp;
-                String mmFetchFileName = "http://aidr-prod.qcri.org/data/trainer/" +sTemp;
+                String mmFetchFileName = URLPrefixCode.MM_GEO_SOURCE_PATH +sTemp;
                 CSVWriter writer = formatter.instanceToOutput(fileName);
 
                 for(int i=0; i < templateList.size(); i++){
                     ReportTemplate rpt = templateList.get(i);
                     String answer = rpt.getAnswer().trim().toLowerCase();
 
-                   // if(!answer.equals("05_not_relevant") && !answer.equals("null") ) {
-                        formatter.addToCVSOuputFile(generateOutputData(rpt),writer);
-                    //}
+                    formatter.addToCVSOuputFile(generateOutputData(rpt),writer);
 
                     rpt.setStatus(StatusCodeType.TEMPLATE_EXPORTED);
                     reportTemplateService.updateReportItem(rpt);
@@ -100,13 +99,13 @@ public class ReportProductServiceImpl implements ReportProductService {
                 JSONArray jsonArray = new JSONArray();
                 JSONObject obj= new JSONObject();
                 obj.put("fileURL",mmFetchFileName);
-                obj.put("appID",260);
+                obj.put("appID",clientApp.getClientAppID());
 
                 jsonArray.add(obj);
 
-                String returnValue = pybossaCommunicator.sendPostGet(jsonArray.toJSONString(), "http://gis.micromappers.org/MMAPI/rest/source/save");
+                String returnValue = pybossaCommunicator.sendPostGet(jsonArray.toJSONString(), URLPrefixCode.MICROMAPPER_API_SOURCE_SAVE_URL);
 
-                System.out.println("generateCVSReportForGeoClicker returnValue :" + returnValue);
+                //System.out.println("generateCVSReportForGeoClicker returnValue :" + returnValue);
 
             }
             // insert into source for file
@@ -117,8 +116,8 @@ public class ReportProductServiceImpl implements ReportProductService {
     private String[] generateOutputData(ReportTemplate rpt){
 
         String[] data = new String[8];
-        data[0] =   rpt.getTweetID().toString();
-        data[1] =  rpt.getTweet();
+        data[0] = rpt.getTweetID().toString();
+        data[1] = rpt.getTweet();
         data[2] = rpt.getAuthor();
         data[3] = rpt.getLat();
         data[4] = rpt.getLon();
