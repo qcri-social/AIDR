@@ -22,7 +22,7 @@ public class AnalyticsConfigurator extends BaseConfigurator {
 
 	private static final AnalyticsConfigurator instance = new AnalyticsConfigurator();
 
-	private Map<String, String> granularities;
+	//private Map<String, String> granularities;
 
 	private AnalyticsConfigurator() {
 		this.initProperties(configLoadFileName,
@@ -39,11 +39,11 @@ public class AnalyticsConfigurator extends BaseConfigurator {
 			ConfigurationPropertyNotRecognizedException,
 			ConfigurationPropertyFileException {
 		List<Long> granularityList = new ArrayList<Long>();
-		logger.info("Reading granularities from file: " + configLoadFileName);
-		if (granularities != null) {
-			String[] values = granularities.get(
-					AnalyticsConfigurationProperty.GRANULARITY.getName())
-					.split(",");
+		String granularities = this.getProperty(
+				AnalyticsConfigurationProperty.GRANULARITY);
+		if(granularities != null)
+		{
+			String values[] = granularities.split(",");
 			for (int i = 0; i < values.length; i++) {
 				granularityList.add(DateFormatConfig.parseTime(values[i]));
 			}

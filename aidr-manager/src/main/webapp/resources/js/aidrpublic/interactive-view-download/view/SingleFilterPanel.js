@@ -16,7 +16,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
 
         this.mainComboData = [{
             val: 'date_query',
-            label: 'Date'
+            label: 'Date/Time'
         }];
 
         this.dataByNominalAttribute =[];
@@ -107,7 +107,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
 
         this.dateFieldHint = Ext.create('Ext.form.Label', {
             padding: '3 0 0 15',
-            html: 'Date as YYYY-MM-DD',
+            html: '(Year-Month-Day)',
             hidden: true
         });
         
@@ -125,6 +125,12 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
                     me.onTimeFieldSelect(cmp, value);
                 }
             }
+        });
+        
+        this.timeFieldHint = Ext.create('Ext.form.Label', {
+            padding: '3 0 0 15',
+            html: 'GMT',
+            hidden: true
         });
 
         this.confidenceStore = Ext.create('Ext.data.Store', {
@@ -238,6 +244,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
             this.dateField,
             this.dateFieldHint,
             this.timeField,
+            this.timeFieldHint,
             this.classifierTypeCombo,
             this.labelCombo,
             this.confidenceCombo,
@@ -267,6 +274,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
                 this.dateField.show();
                 this.dateFieldHint.show();
                 this.timeField.show();
+                this.timeFieldHint.show();
             }
             this.classifierTypeCombo.hide();
             this.confidenceCombo.hide();
@@ -276,6 +284,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
             this.dateField.hide();
             this.dateFieldHint.hide();
             this.timeField.hide();
+            this.timeFieldHint.hide();
             this.classifierTypeCombo.setValue();
             this.classifierTypeCombo.show();
             this.confidenceCombo.hide();
@@ -298,6 +307,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
             this.dateField.hide();
             this.dateFieldHint.hide();
             this.timeField.hide();
+            this.timeFieldHint.hide();
             this.markNotValid();
             return false;
         }
@@ -307,10 +317,12 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
         this.dateField.show();
         this.dateFieldHint.show();
         this.timeField.show();
-	if(val == 'is_after')
-            this.timeField.setValue('11:59 PM');
-	else
-            this.timeField.setValue('12:01 AM');
+        this.timeFieldHint.show();
+        
+        if(val == 'is_after')
+        	this.timeField.setValue('11:59 PM');
+        else
+        	this.timeField.setValue('12:01 AM');
 
         this.suspendLayout = false;
         this.forceComponentLayout();

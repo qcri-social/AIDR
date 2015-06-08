@@ -3,20 +3,29 @@
 
 echo "Starting deployment of AIDR."
 MODE=$1
+RUN_DDL=$2
 if [ "$MODE" == "" ]
 then
 echo "ERROR: Missing argument MODE. Please provide a value {deploy, undeploy, undeploy-deploy}."
+exit
 elif [ "$MODE" != "undeploy" ] && [ "$MODE" != "deploy" ] && [ "$MODE" != "undeploy-deploy" ]
 then
 echo "ERROR: Incorrect first argument provided. Please use 'deploy', 'undeploy' or 'undeploy-deploy'."
 exit
 fi
 
+if [ "$RUN_DDL" != "" ] && [ "$RUN_DDL" != "deploy_db" ]
+then
+echo "ERROR: Argument RUN_DDL provided is incorrect. It can only take the value deploy_db."
+exit
+fi
+
 echo "Step 1: Setting up environment variables."
 # Setting environment variables.
 GLASSFISH_HOME=/opt/glassfish4
-AIDR_HOME=/home/aidr.dev/AIDR
+AIDR_HOME=/Users/apple/repo/AIDR
 AIDR_GLASSFISH_DOMAIN=domain1
+MY_SQL_USERNAME=root
 AIDR_ANALYSIS_CONNECTION_POOL=AIDR_ANALYSIS_CONNECTION_POOL
 AIDR_ANALYSIS_JNDI=JNDI/aidr_analysis
 AIDR_PREDICT_CONNECTION_POOL=AIDR_PREDICT_CONNECTION_POOL
@@ -100,3 +109,11 @@ bin/asadmin deploy --properties implicitCdiEnabled=false --contextroot=AIDRFetch
 bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=true
 
 fi
+
+if [ "$RUN_DDL" == "deploy_db" ]
+then
+echo "Deploying the database script."
+mysql -u "$MY_SQL_USERNAME" -p < $AIDR_HOME/postInstall.sql
+fi
+
+echo "End of deployment script..."
