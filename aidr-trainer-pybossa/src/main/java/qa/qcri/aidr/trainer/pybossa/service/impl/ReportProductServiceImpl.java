@@ -99,18 +99,16 @@ public class ReportProductServiceImpl implements ReportProductService {
                 JSONArray jsonArray = new JSONArray();
                 JSONObject obj= new JSONObject();
                 obj.put("fileURL",mmFetchFileName);
-                obj.put("appID",clientApp.getClientAppID());
+                obj.put("appID",targetClinetApp.getClientAppID());
 
                 jsonArray.add(obj);
 
                 String returnValue = pybossaCommunicator.sendPostGet(jsonArray.toJSONString(), URLPrefixCode.MICROMAPPER_API_SOURCE_SAVE_URL);
 
-                //System.out.println("generateCVSReportForGeoClicker returnValue :" + returnValue);
-
             }
-            // insert into source for file
+
         }
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     private String[] generateOutputData(ReportTemplate rpt){
