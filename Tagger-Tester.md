@@ -52,7 +52,7 @@ The purpose of the "neutral" word is to have overlap, i.e. a word that appears i
 
 The tagger tester should perform the following steps:
 
-1. Make sure there is no data with `code="tagger_tester"` in case the tagger tester died abnormally in a previous run. If there is data, write a warning message, delete all data associated to `tagger_tester`, and FAIL (forcing the user to run the tagger tester again).
+1. Make sure there is no data with `code="tagger_tester"` in case the tagger tester died abnormally in a previous run. If there is data, write a warning message, run the CLEANUP routine, and FAIL (forcing the user to run the tagger tester again).
 1. Create a crisis (`name="Test Crisis", code="tagger_tester"`) using the `addCrisis` service in the `CrisisResource` of the Tagger-API module.
 1. Create a classifier using the following steps:
  1. Create an attribute (name="tagger_tester_classifier") using the `NominalAttributeResource` in the Tagger-API module.
@@ -67,9 +67,11 @@ The tagger tester should perform the following steps:
 1. Verify that at least 80% of them are tagged WHITE, otherwise FAIL
 1. Generate BLACK testing items and push them to the tagger **HOW?**
 1. Verify that at least 80% of them are tagged BLACK, otherwise FAIL
-1. Remove all data having `code="test_crisis"`
+1. Run a CLEANUP routine 
 1. If this point is reached, exit with a successful return code
 
 FAIL means printing a clear and informative message describing the condition and exiting with code 1 (non success).
+
+CLEANUP means removing all data associated to `code="test_crisis"`
 
 On interrupt by the user, the classifier tester should attempt to cleanup any state created in the classifier (**HOW?**).
