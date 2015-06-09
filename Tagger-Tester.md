@@ -52,8 +52,8 @@ The purpose of the "neutral" word is to have overlap, i.e. a word that appears i
 
 The tagger tester should perform the following steps:
 
-1. Make sure there is no data with `code="test_crisis"`
-1. Create a crisis (`name="Test Crisis", code="test_crisis"`) using the `addCrisis` service in the `CrisisResource` of the Tagger-API module.
+1. Make sure there is no data with `code="tagger_tester"` in case the tagger tester died abnormally in a previous run.
+1. Create a crisis (`name="Test Crisis", code="tagger_tester"`) using the `addCrisis` service in the `CrisisResource` of the Tagger-API module.
 1. Create a classifier using the following steps:
  1. Create an attribute (name="Black-White-Classifier") using the `NominalAttributeResource` in the Tagger-API module.
  1. Create three labels using the `NominalLabelResource` in the Tagger-API module (use `attribute_id` generated during the previous step)
