@@ -52,7 +52,7 @@ The purpose of the "neutral" word is to have overlap, i.e. a word that appears i
 
 The tagger tester should perform the following steps:
 
-1. Make sure there is no data with `code="tagger_tester"` in case the tagger tester died abnormally in a previous run. If there is data, write a warning message, and delete all data associated to `tagger_tester`
+1. Make sure there is no data with `code="tagger_tester"` in case the tagger tester died abnormally in a previous run. If there is data, write a warning message, delete all data associated to `tagger_tester`, and FAIL (forcing the user to run the tagger tester again).
 1. Create a crisis (`name="Test Crisis", code="tagger_tester"`) using the `addCrisis` service in the `CrisisResource` of the Tagger-API module.
 1. Create a classifier using the following steps:
  1. Create an attribute (name="tagger_tester_classifier") using the `NominalAttributeResource` in the Tagger-API module.
