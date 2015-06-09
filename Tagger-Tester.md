@@ -1,6 +1,6 @@
 The tagger tester is a program that can be used after deploying the tagger, to test it independently of the other modules.
 
-It only requires the aidr-tagger module to be deployed.
+It requires both the tagger stand-alone application to be running, and the aidr-tagger-api EE application to be deployed (in the future, these will be a single EE application).
 
 ## Command line
 
