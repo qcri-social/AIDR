@@ -52,7 +52,10 @@ The purpose of the "neutral" word is to have overlap, i.e. a word that appears i
 
 The tagger tester should perform the following steps:
 
-1. Create a classifier **HOW?**
+1. Create a crisis using the `addCrisis` service in the `CrisisResource` of the Tagger-API module.
+1. Create a classifier using the following steps:
+..1. Create an attribute (name="White-Black") using the `NominalAttributeResource` in the Tagger-API module.
+..1. Create three labels as L1) name="White", code="white" L2) name="Black", code="black" L3) name="Does not apply" code="null" using the `NominalLabelResource` in the Tagger-API module.  
 1. Subscribe to the REDIS queue where the tagger writes its output, otherwise FAIL.
 1. Generate training items and push them to the tagger **HOW?**
 1. Generate WHITE testing items and push them to the tagger **HOW?**
