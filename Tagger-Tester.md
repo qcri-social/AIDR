@@ -55,7 +55,7 @@ The tagger tester should perform the following steps:
 1. Make sure there is no data with `code="tagger_tester"` in case the tagger tester died abnormally in a previous run.
 1. Create a crisis (`name="Test Crisis", code="tagger_tester"`) using the `addCrisis` service in the `CrisisResource` of the Tagger-API module.
 1. Create a classifier using the following steps:
- 1. Create an attribute (name="Black-White-Classifier") using the `NominalAttributeResource` in the Tagger-API module.
+ 1. Create an attribute (name="tagger_tester_classifier") using the `NominalAttributeResource` in the Tagger-API module.
  1. Create three labels using the `NominalLabelResource` in the Tagger-API module (use `attribute_id` generated during the previous step)
    1. `name="White", code="white"`
     1. `name="Black", code="black"`
