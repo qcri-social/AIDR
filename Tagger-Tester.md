@@ -52,15 +52,16 @@ The purpose of the "neutral" word is to have overlap, i.e. a word that appears i
 
 The tagger tester should perform the following steps:
 
-1. Create a crisis using the `addCrisis` service in the `CrisisResource` of the Tagger-API module.
+1. Create a crisis (`name="Test Crisis", code="test_crisis"`) using the `addCrisis` service in the `CrisisResource` of the Tagger-API module.
 1. Create a classifier using the following steps:
- 1. Create an attribute (name="White-Black") using the `NominalAttributeResource` in the Tagger-API module.
+ 1. Create an attribute (name="Black-White-Classifier") using the `NominalAttributeResource` in the Tagger-API module.
  1. Create three labels using the `NominalLabelResource` in the Tagger-API module (use `attribute_id` generated during the previous step)
    1. `name="White", code="white"`
-   1. `name="Black", code="black"`
-   1. `name="Does not apply" code="null"` 
+    1. `name="Black", code="black"`
+    1. `name="Does not apply" code="null"`
+1. Create a `ModelFamily' using the `addCrisisAttribute` service of the `ModelFamilyResource` in the Tagger-API module (use crisis_id, nominal_attribute_id and nominal_label_id generated in the previous steps).
 1. Subscribe to the REDIS queue where the tagger writes its output, otherwise FAIL.
-1. Generate training items and push them to the tagger **HOW?**
+1. Generate training/test items and push them to Redis on channel `FetcherChannel.test_crisis`. Crisis code is the code of your crisis created in the first step. 
 1. Generate WHITE testing items and push them to the tagger **HOW?**
 1. Verify that at least 80% of them are tagged WHITE, otherwise FAIL
 1. Generate BLACK testing items and push them to the tagger **HOW?**
