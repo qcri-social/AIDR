@@ -26,7 +26,7 @@
  * [[Manager API]]
 * [[Collector]]
  * [[Collector API]]
- * [[Re-connect strategy]]
+ * [[Reconnect strategy]]
  * [[Collector Tester]]
 * [[Output]]
  * [[Output API]]
