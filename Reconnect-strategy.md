@@ -1,4 +1,4 @@
-In case of a disconnection, the collector follows a strategy derived from the one Twitter recommends (https://dev.twitter.com/streaming/overview/connecting) but with a longer waiting time and randomization.
+In case of a disconnection, the collector follows a strategy derived from the one Twitter recommends (https://dev.twitter.com/streaming/overview/connecting) but with a longer, configurable waiting time, and with randomization. Our back-off strategy is even more conservative than what Twitter recommends.
 
 # TCP/IP level errors
 
