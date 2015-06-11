@@ -53,20 +53,20 @@ The purpose of the "neutral" word is to have overlap, i.e. a word that appears i
 The tagger tester should perform the following steps:
 
 1. Make sure there is no data with `code="tagger_tester"` in `aidr-pridict` database in case the tagger tester died abnormally in a previous run. If there is data, write a warning message, run the CLEANUP routine, and FAIL (forcing the user to run the tagger tester again)
-1. Create a test user using `addUser` service of the `UserResource` in the `Tagger-API` module.
-1. Create a crisis (`name="Test Crisis", code="tagger_tester"`) using the `addCrisis` service in the `CrisisResource` of the Tagger-API module
+1. Create a test user `Tagger Tester User` using the `addUser` service of the `UserResource` in the `Tagger-API` module. Check that the user exists after creating it. FAIL if this does not succeed.
+1. Create a collection (`name="Tagger Tester Crisis", code="tagger_tester"`) using the `addCrisis` service in the `CrisisResource` of the Tagger-API module. Check that the collection exists after creating it. FAIL if this does not succeed.
 1. Create a classifier using the following steps:
- 1. Create an attribute (name="tagger_tester_classifier") using the `NominalAttributeResource` in the Tagger-API module
- 1. Create three labels using the `NominalLabelResource` in the Tagger-API module (use `attribute_id` generated during the previous step)
+ 1. Create an attribute (name="tagger_tester_classifier") using the `NominalAttributeResource` in the Tagger-API module. Check that the attribute exists after creating it. FAIL if this does not succeed.
+ 1. Create three labels using the `NominalLabelResource` in the Tagger-API module (use `attribute_id` generated during the previous step). Check that all labels exist after creating them. FAIL if this does not succeed.
    1. `name="White", code="white"`
-    1. `name="Black", code="black"`
-    1. `name="Does not apply" code="null"`
-1. Create a ModelFamily using the `addCrisisAttribute` service of the `ModelFamilyResource` in the Tagger-API module (use `crisis_id`, `nominal_attribute_id` and `nominal_label_id` generated in the previous steps)
-1. Subscribe to the REDIS queue where the tagger writes its output, otherwise FAIL
-1. Generate items using the 20 random words (defined above) and Push them to Redis on channel `FetcherChannel.tagger_tester` at the rate of 5 items/second. A valid AIDR item is a JSON document with minimum required fields as defined [here](https://gist.github.com/imran15/4e4ce1948c2b82905c3e). You can add an additional JSON elements such as `item_id`, for example, to keep track of which item belongs to which label (i.e. White, Black)d. Keep pushing items until the document table in the `aidr-predict` database receives at least 200 items waiting to be labeled. (TODO: need an API to check the total number of unlabeled items for a crisis)
+   1. `name="Black", code="black"`
+   1. `name="Does not apply" code="null"`
+1. Create a ModelFamily using the `addCrisisAttribute` service of the `ModelFamilyResource` in the Tagger-API module (use `crisis_id`, `nominal_attribute_id` and `nominal_label_id` generated in the previous steps). Check that the model family exists after creating it. FAIL if this does not succeed.
+1. Subscribe to the Redis queue where the tagger writes its output, otherwise FAIL
+1. Generate 20-words random items (defined above) and Push them to Redis on channel `FetcherChannel.tagger_tester` at the rate of 5 items/second. A valid AIDR item is a JSON document with minimum required fields as defined [here](https://gist.github.com/imran15/4e4ce1948c2b82905c3e). You can add use the `tweetid` field, for example, to keep track of which item belongs to which label (i.e. White, Black). Keep pushing items until the document table in the `aidr-predict` database receives at least 200 items waiting to be labeled. (TO-DO: need an API to check the total number of unlabeled items for a crisis)
 1. Get a task to label by using the `getOneTaskBufferToAssign` service of the `DocumentController` of the `Trainer-API` module 
-1. Assign a label to the item and save it using the `save` service of the `TaskAnswerContoller` of the `Trainer-API` module
-1. After about at least 100 tagged items (i.e. 50 white and 50 black labels), check if the Tagger module has created a model. If not, keep pushing more tagged items.
+1. Assign the correct label to that item (using its tweetid) and save it using the `save` service of the `TaskAnswerContoller` of the `Trainer-API` module
+1. After about 50 white items and 50 black items have been tagged, check if the Tagger module has created a model. If not, keep tagging more items, 50 at a time.
 1. For testing, generate WHITE testing items and push them to the tagger
 1. Verify that at least 80% of them are tagged WHITE, otherwise FAIL
 1. Generate BLACK testing items and push them to the tagger
@@ -74,7 +74,7 @@ The tagger tester should perform the following steps:
 1. Run a CLEANUP routine 
 1. If this point is reached, exit with a successful return code
 
-FAIL means printing a clear and informative message describing the condition and exiting with code 1 (non success).
+FAIL means executing the CLEANUP routine, printing a clear and informative message describing the condition, and exiting with code 1 (non success).
 
 CLEANUP means removing all data associated to `code="tagger_tester"`
 
