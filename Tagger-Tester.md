@@ -58,9 +58,9 @@ The tagger tester should perform the following steps:
 1. Create a classifier using the following steps:
  1. Create an attribute (name="tagger_tester_classifier") using the `NominalAttributeResource` in the Tagger-API module. Check that the attribute exists after creating it. FAIL if this does not succeed.
  1. Create three labels using the `NominalLabelResource` in the Tagger-API module (use `attribute_id` generated during the previous step). Check that all labels exist after creating them. FAIL if this does not succeed.
-   1. `name="White", code="white"`
-   1. `name="Black", code="black"`
-   1. `name="Does not apply" code="null"`
+    1. `name="White", code="white"`
+    1. `name="Black", code="black"`
+    1. `name="Does not apply" code="null"`
 1. Create a ModelFamily using the `addCrisisAttribute` service of the `ModelFamilyResource` in the Tagger-API module (use `crisis_id`, `nominal_attribute_id` and `nominal_label_id` generated in the previous steps). Check that the model family exists after creating it. FAIL if this does not succeed.
 1. Subscribe to the Redis queue where the tagger writes its output, otherwise FAIL
 1. Generate 20-words random items (defined above) and Push them to Redis on channel `FetcherChannel.tagger_tester` at the rate of 5 items/second. A valid AIDR item is a JSON document with minimum required fields as defined [here](https://gist.github.com/imran15/4e4ce1948c2b82905c3e). You can add use the `tweetid` field, for example, to keep track of which item belongs to which label (i.e. White, Black). Keep pushing items until the document table in the `aidr-predict` database receives at least 200 items waiting to be labeled. (TO-DO: need an API to check the total number of unlabeled items for a crisis)
