@@ -63,9 +63,9 @@ The tagger tester should perform the following steps:
 1. Create a ModelFamily using the `addCrisisAttribute` service of the `ModelFamilyResource` in the Tagger-API module (use `crisis_id`, `nominal_attribute_id` and `nominal_label_id` generated in the previous steps).
 1. Subscribe to the REDIS queue where the tagger writes its output, otherwise FAIL.
 1. Generate items using the 20 random words (defined above) and Push them to Redis on channel `FetcherChannel.tagger_tester` at the rate of 5 items/second. A valid AIDR item is a JSON document with minimum required field as [this](https://gist.github.com/imran15/4e4ce1948c2b82905c3e). You can add an additional JSON elements such as `item_id`, for example, to keep track of which item belongs to which label (i.e. White, Black). Keep pushing items until the document table in the `aidr-predict` database receives at least 200 items waiting to be labeled. (TODO: need an API to check the total number of unlabeled items for a crisis)
-1. Get a task to label (to be described)
-1. Send push notification to the tagger on each tagged item
-1. Check if tagger has created a model (to be described)
+1. Get a task to label by using the `getOneTaskBufferToAssign` service of the `DocumentController' of the Trainer-API module. 
+1. Assign a label to the item and save it using the `save` service of the `TaskAnswerContoller` of the `Trainer-API` module.
+1. After about 50 tagged items (i.e. 25 white and 25 black labels), check if the Tagger module has created a model.
 1. Generate WHITE testing items and push them to the tagger **HOW?**
 1. Verify that at least 80% of them are tagged WHITE, otherwise FAIL
 1. Generate BLACK testing items and push them to the tagger **HOW?**
@@ -75,6 +75,6 @@ The tagger tester should perform the following steps:
 
 FAIL means printing a clear and informative message describing the condition and exiting with code 1 (non success).
 
-CLEANUP means removing all data associated to `code="test_crisis"`
+CLEANUP means removing all data associated to `code="tagger_tester"`
 
 On interrupt by the user, the classifier tester should attempt to cleanup any state created in the classifier (**HOW?**).
