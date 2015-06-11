@@ -41,7 +41,7 @@ public class TWBTranslationServiceImpl implements TranslationService {
     @Autowired
     private ReportTemplateService reportTemplateService;
     final private static int MAX_BATCH_SIZE = 1000;  //
-    final private static long MAX_WAIT_TIME_MILLIS = 0; // 5 minutes
+    final private static long MAX_WAIT_TIME_MILLIS = 300000; // 5 minutes
     private static long timeOfLastTranslationProcessingMillis = System.currentTimeMillis(); //initialize at startup
 
 
