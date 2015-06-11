@@ -62,6 +62,7 @@
 
 * [[Terms of service]]
 * [[Scrum implementation]]
+* [[Development Environment Design]]
 * [[Branching]]
 * [[Servers]]
 
