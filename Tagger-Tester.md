@@ -78,4 +78,4 @@ FAIL means printing a clear and informative message describing the condition and
 
 CLEANUP means removing all data associated to `code="tagger_tester"`
 
-On interrupt by the user, the classifier tester should attempt to cleanup any state created in the classifier (**HOW?**).
+On interrupt by the user, the classifier tester should attempt to cleanup any state created in the classifier.
