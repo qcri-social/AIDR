@@ -97,8 +97,8 @@ public class TwitterCollectorAPI {
 			task.setStatusMessage(null);
 			cache.setTwtConfigMap(cacheKey, task);
 			cache.setTwitterTracker(cacheKey, tracker);
-			if(StringUtils.isEmpty(configProperties.getProperty(CollectorConfigurationProperty.DEFAULT_PERSISTANCE_MODE))){
-				if (Boolean.valueOf(configProperties.getProperty(CollectorConfigurationProperty.DEFAULT_PERSISTANCE_MODE))) {
+			if(task.getToPersist()!=null){
+				if(task.getToPersist()){
 					startPersister(collectionCode);
 				}
 			}
@@ -140,8 +140,8 @@ public class TwitterCollectorAPI {
 				response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_NOTFOUND));
 				return Response.ok(response).build();
 			}
-			if(StringUtils.isEmpty(configProperties.getProperty(CollectorConfigurationProperty.DEFAULT_PERSISTANCE_MODE))){
-				if (Boolean.valueOf(configProperties.getProperty(CollectorConfigurationProperty.DEFAULT_PERSISTANCE_MODE))) {
+			if(task.getToPersist()!=null){
+				if(task.getToPersist()){
 					stopPersister(collectionCode);
 				}
 			}
@@ -156,6 +156,7 @@ public class TwitterCollectorAPI {
         }
 
         if (task != null) {
+        	task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_STOPPED));
             return Response.ok(task).build();
         }
 

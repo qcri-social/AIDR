@@ -1,5 +1,7 @@
 package qa.qcri.aidr.collector.beans;
 
+import java.util.Properties;
+
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
@@ -23,7 +25,8 @@ import javax.xml.bind.annotation.XmlType;
     "languageFilter",
     "collectionCount",
     "statusCode",
-    "statusMessage"
+    "statusMessage",
+    "toPersist"
 })
 @XmlRootElement(name = "config")
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_DEFAULT)
@@ -38,6 +41,7 @@ public class CollectionTask {
     private String lastDocument;
     private String statusCode;
     private String statusMessage;
+    private Boolean toPersist;
     /**
      *
      */
@@ -321,7 +325,7 @@ public class CollectionTask {
         newTask.setToTrack(toTrack);
         newTask.setCollectionCount(collectionCount);
         newTask.setLanguageFilter(languageFilter);
-
+        newTask.setToPersist(toPersist);
         return newTask;
     }
 
@@ -339,9 +343,42 @@ public class CollectionTask {
         this.languageFilter = languageFilter;
     }
 
-    @Override
-    public String toString() {
-        return "CollectionTask{" + "collectionCode=" + collectionCode + ", collectionName=" + collectionName + ", toTrack=" + toTrack + ", toFollow=" + toFollow + ", geoLocation=" + geoLocation + ", languageFilter=" + languageFilter + ", lastDocument=" + lastDocument + ", statusCode=" + statusCode + ", statusMessage=" + statusMessage + ", consumerKey=" + consumerKey + ", consumerSecret=" + consumerSecret + ", accessToken=" + accessToken + ", accessTokenSecret=" + accessTokenSecret + ", collectionCount=" + collectionCount + '}';
-    }
+    public CollectionTask(Properties properties){
+		this.setConsumerKey(properties.getProperty("consumerKey"));
+		this.setConsumerSecret(properties.getProperty("consumerSecret"));
+		this.setAccessToken(properties.getProperty("accessToken"));
+		this.setAccessTokenSecret(properties.getProperty("accessTokenSecret"));
+		this.setToTrack(properties.getProperty("toTrack"));
+		this.setCollectionCode(properties.getProperty("collectionCode"));
+		this.setCollectionName(properties.getProperty("collectionName"));
+		this.setToFollow(properties.getProperty("toFollow"));
+		this.setGeoLocation(properties.getProperty("geoLocation"));
+		this.setGeoR(properties.getProperty("geoR"));
+		this.setLanguageFilter(properties.getProperty("languageFilter"));
+		if(properties.getProperty("toPersist")!=null){
+			this.setToPersist(Boolean.valueOf(properties.getProperty("toPersist")));
+		}
+	}
 
+    @Override
+	public String toString() {
+		return "CollectionTask{" + "collectionCode=" + collectionCode
+				+ ", collectionName=" + collectionName + ", toTrack=" + toTrack
+				+ ", toFollow=" + toFollow + ", geoLocation=" + geoLocation
+				+ ", geoR=" + geoR + ", languageFilter=" + languageFilter
+				+ ", lastDocument=" + lastDocument + ", statusCode="
+				+ statusCode + ", statusMessage=" + statusMessage
+				+ ", toPersist=" + toPersist + ", consumerKey=" + consumerKey
+				+ ", consumerSecret=" + consumerSecret + ", accessToken="
+				+ accessToken + ", accessTokenSecret=" + accessTokenSecret
+				+ ", collectionCount=" + collectionCount + '}';
+	}
+    
+    public Boolean getToPersist() {
+		return toPersist;
+	}
+
+	public void setToPersist(Boolean toPersist) {
+		this.toPersist = toPersist;
+	}
 }

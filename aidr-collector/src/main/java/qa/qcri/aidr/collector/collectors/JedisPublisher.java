@@ -29,7 +29,7 @@ public class JedisPublisher implements Closeable, Publisher {
 		poolConfig.setTestOnReturn(true);
 		poolConfig.setTestWhileIdle(true);
 		poolConfig.setTimeBetweenEvictionRunsMillis(30000);
-		jedisPool = new JedisPool(poolConfig, configProperties.getProperty(CollectorConfigurationProperty.REDIS_HOST), 6379, 0);
+		jedisPool = new JedisPool(poolConfig, configProperties.getProperty(CollectorConfigurationProperty.REDIS_HOST), Integer.valueOf(configProperties.getProperty(CollectorConfigurationProperty.REDIS_PORT)), 0);
 	}
 
 	public static JedisPublisher newInstance() {
@@ -45,6 +45,10 @@ public class JedisPublisher implements Closeable, Publisher {
 	
 	private Jedis delegate;
 	
+	public Jedis getDelegate() {
+		return delegate;
+	}
+
 	protected JedisPublisher(Jedis instance) {
 		this.delegate = instance;
 	}
