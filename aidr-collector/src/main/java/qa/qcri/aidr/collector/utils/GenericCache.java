@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
- * @author Imran
+ * This class is responsible of keeping complex data structures in the main-memory for a fast access. 
  */
 public class GenericCache {
 
