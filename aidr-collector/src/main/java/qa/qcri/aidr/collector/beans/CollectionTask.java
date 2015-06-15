@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlType;
     "collectionCount",
     "statusCode",
     "statusMessage",
-    "toPersist"
+    "persist"
 })
 @XmlRootElement(name = "config")
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_DEFAULT)
@@ -41,7 +41,7 @@ public class CollectionTask {
     private String lastDocument;
     private String statusCode;
     private String statusMessage;
-    private Boolean toPersist;
+    private Boolean persist;
     /**
      *
      */
@@ -325,7 +325,7 @@ public class CollectionTask {
         newTask.setToTrack(toTrack);
         newTask.setCollectionCount(collectionCount);
         newTask.setLanguageFilter(languageFilter);
-        newTask.setToPersist(toPersist);
+        newTask.setPersist(persist);
         return newTask;
     }
 
@@ -355,8 +355,8 @@ public class CollectionTask {
 		this.setGeoLocation(properties.getProperty("geoLocation"));
 		this.setGeoR(properties.getProperty("geoR"));
 		this.setLanguageFilter(properties.getProperty("languageFilter"));
-		if(properties.getProperty("toPersist")!=null){
-			this.setToPersist(Boolean.valueOf(properties.getProperty("toPersist")));
+		if(properties.getProperty("persist")!=null){
+			this.setPersist(Boolean.valueOf(properties.getProperty("persist")));
 		}
 	}
 
@@ -368,17 +368,17 @@ public class CollectionTask {
 				+ ", geoR=" + geoR + ", languageFilter=" + languageFilter
 				+ ", lastDocument=" + lastDocument + ", statusCode="
 				+ statusCode + ", statusMessage=" + statusMessage
-				+ ", toPersist=" + toPersist + ", consumerKey=" + consumerKey
+				+ ", persist=" + persist + ", consumerKey=" + consumerKey
 				+ ", consumerSecret=" + consumerSecret + ", accessToken="
 				+ accessToken + ", accessTokenSecret=" + accessTokenSecret
 				+ ", collectionCount=" + collectionCount + '}';
 	}
     
-    public Boolean getToPersist() {
-		return toPersist;
+    public Boolean getPersist() {
+		return persist;
 	}
 
-	public void setToPersist(Boolean toPersist) {
-		this.toPersist = toPersist;
+	public void setPersist(Boolean persist) {
+		this.persist = persist;
 	}
 }

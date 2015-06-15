@@ -97,8 +97,8 @@ public class TwitterCollectorAPI {
 			task.setStatusMessage(null);
 			cache.setTwtConfigMap(cacheKey, task);
 			cache.setTwitterTracker(cacheKey, tracker);
-			if(task.getToPersist()!=null){
-				if(task.getToPersist()){
+			if(task.getPersist()!=null){
+				if(task.getPersist()){
 					startPersister(collectionCode);
 				}
 			}
@@ -140,8 +140,8 @@ public class TwitterCollectorAPI {
 				response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_NOTFOUND));
 				return Response.ok(response).build();
 			}
-			if(task.getToPersist()!=null){
-				if(task.getToPersist()){
+			if(task.getPersist()!=null){
+				if(task.getPersist()){
 					stopPersister(collectionCode);
 				}
 			}
