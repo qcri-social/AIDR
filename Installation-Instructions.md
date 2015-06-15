@@ -112,7 +112,9 @@ Finally, do a sanity check:
 
 ***
 
-# Per-module deployment (possibly obsolete)
+# Per-module deployment
+
+The preferred method for deployment is the one presented above, deploying all the modules. The instructions below explain how to deploy specific modules one by one, but it is not recommended unless you are already familiar with AIDR.
 
 # 0. Building and deploying (general)
 
