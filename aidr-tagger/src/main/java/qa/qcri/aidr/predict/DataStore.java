@@ -821,14 +821,14 @@ public class DataStore {
 			System.out.println("AUC: " + model.getMeanAuc());
 			System.out.println("AUC formatted: " + format.format(model.getMeanAuc()));
 			String modelInsertSql =
-					"INSERT INTO model (modelFamilyID, avgPrecision, avgRecall, avgAuc, trainingCount, trainingTime) VALUES "
+					"INSERT INTO model (modelFamilyID, avgPrecision, avgRecall, avgAuc, isCurrentModel, trainingCount, trainingTime) VALUES "
 							+ "(" + selectModelFamilyID + ", "
 							+ format.format(model.getMeanPrecision())
 							+ ", "
 							+ format.format(model.getMeanRecall())
 							+ ", "
 							+ format.format(model.getMeanAuc())
-							+ ", "
+							+ ",false,"
 							+ model.getTrainingSampleCount()
 							+ ", UTC_TIMESTAMP())";
 			modelInsert = conn.prepareStatement(modelInsertSql, Statement.RETURN_GENERATED_KEYS);
