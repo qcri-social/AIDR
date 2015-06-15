@@ -13,6 +13,10 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
+/**
+ * Jedis factory class to generate new Jedis instances.
+ * Pulished JSON objects or text messages on Redis channels.
+ */
 public class JedisPublisher implements Closeable, Publisher {
 
 	private static Logger logger = Logger.getLogger(JedisPublisher.class.getName());

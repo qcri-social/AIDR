@@ -5,6 +5,10 @@ import javax.json.JsonObject;
 import qa.qcri.aidr.collector.java7.Predicate;
 import qa.qcri.aidr.common.redis.LoadShedder;
 
+/**
+ * Controls tweets stream filtering based on load shedder.
+ * 
+ */
 public class ShedderFilter implements Predicate<JsonObject> {
 	
 	private String channel;
