@@ -314,6 +314,12 @@
 			</properties>
 		</profile>
 		<profile>
+			<id>staging</id>
+			<properties>
+				<build.profile.id>staging</build.profile.id>
+			</properties>
+		</profile>
+		<profile>
 			<id>prod</id>
 			<properties>
 				<build.profile.id>prod</build.profile.id>

@@ -24,6 +24,20 @@
                 <build.profile.id>dev</build.profile.id>
             </properties>
         </profile>
+		<!-- The configuration of the staging profile -->
+        <profile>
+            <id>staging</id>
+            <properties>
+                <!--
+                 Specifies the build.profile.id property that must be equal than the name of
+                 the directory that contains the profile specific configuration file.
+                 Because the name of the directory that contains the configuration file of the
+                 production profile is staging, we must set the value of the build.profile.id
+                 property to staging.
+                 -->
+                <build.profile.id>staging</build.profile.id>
+            </properties>
+        </profile>
         <!-- The configuration of the production profile -->
         <profile>
             <id>prod</id>
