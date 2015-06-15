@@ -11,14 +11,11 @@ import javax.json.JsonValue.ValueType;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.java7.Predicate;
 
-class ParseException extends Exception {
-	public ParseException(String message) {
-		super(message);
-	}
-	public ParseException(String message, Throwable cause) {
-		super(message, cause);
-	}
-}
+/**
+ * Validates use-defined geo-coordinates.
+ * Validates geo-coordinates strictness with the user-defined locations for each collected tweet, if geo-strict is ON.
+ * 
+ */
 
 public class StrictLocationFilter implements Predicate<JsonObject> {
 		
@@ -84,5 +81,14 @@ public class StrictLocationFilter implements Predicate<JsonObject> {
 	@Override
 	public String getFilterName() {
 		return this.getClass().getSimpleName();
+	}
+}
+
+class ParseException extends Exception {
+	public ParseException(String message) {
+		super(message);
+	}
+	public ParseException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

@@ -1,14 +1,8 @@
-/**
- * Created with IntelliJ IDEA.
- * User: mjr
- * Date: 26.07.14
- * Time: 18:19
- */
 package qa.qcri.aidr.collector.beans;
 
 /**
  * @author Imran
- * 
+ * Specifies the AIDR-SMS document structure.
  */
 public class SMS {
     private AIDR aidr;

@@ -35,7 +35,6 @@ import twitter4j.TwitterObjectFactory;
  * This approach allows to create unit tests for every single
  * filter and for every single publisher.
  * 
- * @author Anthony Ananich <anton.ananich@inpun.com>
  */
 class TwitterStatusListener implements StatusListener {
 
