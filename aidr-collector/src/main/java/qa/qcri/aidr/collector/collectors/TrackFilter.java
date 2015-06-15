@@ -17,7 +17,10 @@ import org.apache.log4j.Logger;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.java7.Predicate;
 
-
+/**
+ * Main class to implement everything related to keywords filtering and validations.
+ * 
+ */
 public class TrackFilter implements Predicate<JsonObject> {
 
 	private static Logger logger = Logger.getLogger(TrackFilter.class.getName());
