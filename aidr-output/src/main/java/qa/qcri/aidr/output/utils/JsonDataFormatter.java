@@ -9,9 +9,6 @@ import org.apache.log4j.Logger;
 
 import com.google.gson.JsonObject;
 
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-
 public class JsonDataFormatter {
 
 	private static Logger logger = Logger.getLogger(JsonDataFormatter.class);

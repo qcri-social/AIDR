@@ -10,13 +10,11 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.predictui.facade.UserResourceFacade;
-
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -28,7 +26,7 @@ public class UserResourceImp implements UserResourceFacade {
     //@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
     //private EntityManager em;
 
-    private static Logger logger = LoggerFactory.getLogger(UserResourceImp.class);
+    private static Logger logger = Logger.getLogger(UserResourceImp.class);
 	private static ErrorLog elog = new ErrorLog();
 	
 	@EJB

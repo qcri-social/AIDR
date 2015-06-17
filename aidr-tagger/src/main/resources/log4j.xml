@@ -2,7 +2,7 @@
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
     <appender name="file" class="org.apache.log4j.RollingFileAppender">
-        <param name="File" value="/var/log/aidr/aidr-tagger.log"/>
+        <param name="File" value="${LOG_LOCATION}/aidr-tagger.log"/>
         <param name="MaxBackupIndex" value="100"/>
         <param name="MaxFileSize" value="30MB"/>
         <layout class="org.apache.log4j.PatternLayout">

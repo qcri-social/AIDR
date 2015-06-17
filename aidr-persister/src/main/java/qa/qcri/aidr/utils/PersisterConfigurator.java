@@ -1,7 +1,6 @@
 package qa.qcri.aidr.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.code.impl.BaseConfigurator;
 
@@ -10,8 +9,7 @@ import qa.qcri.aidr.common.code.impl.BaseConfigurator;
  */
 public class PersisterConfigurator extends BaseConfigurator {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(PersisterConfigurator.class);
+	private static final Logger LOGGER = Logger.getLogger(PersisterConfigurator.class);
 
 	public static final String configLoadFileName = "config.properties";
 
