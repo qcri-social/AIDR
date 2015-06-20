@@ -1,8 +1,6 @@
 package qa.qcri.aidr.trainer.api.controller;
 
-//import org.apache.log4j.Logger;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +24,7 @@ import java.util.Date;
 @Component
 public class TaskAnswerController {
 
-    protected static Logger logger = LoggerFactory.getLogger(TaskAnswerController.class);
+    protected static Logger logger = Logger.getLogger(TaskAnswerController.class);
     private static ErrorLog elog = new ErrorLog();
     
     @Autowired

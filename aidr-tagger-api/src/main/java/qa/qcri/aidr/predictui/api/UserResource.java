@@ -20,16 +20,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
-import qa.qcri.aidr.predictui.entities.Users;
 import qa.qcri.aidr.predictui.facade.UserResourceFacade;
-import qa.qcri.aidr.predictui.util.ResponseWrapper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * REST Web Service
@@ -46,7 +43,7 @@ public class UserResource {
 	private UserResourceFacade userLocalEJB;
 
 	//private Logger logger = Logger.getLogger(UserResource.class.getName());
-	private Logger logger = LoggerFactory.getLogger(UserResource.class);
+	private Logger logger = Logger.getLogger(UserResource.class);
 	private ErrorLog elog = new ErrorLog();
 
 	public UserResource() {

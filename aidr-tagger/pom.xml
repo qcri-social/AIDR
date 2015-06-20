@@ -66,6 +66,7 @@
 				<directory>${resource.dir}</directory>
 				<includes>
 					<include>**/*.properties</include>
+					<include>**/*.xml</include>
 				</includes>
 				<filtering>true</filtering>
 			</resource>
@@ -186,9 +187,6 @@
 		</dependency>
 
 		<!-- logging dependencies -->
-		<!-- dependency> <groupId>org.slf4j</groupId> <artifactId>slf4j-api</artifactId> 
-			<version>1.7.5</version> </dependency> <dependency> <groupId>org.slf4j</groupId> 
-			<artifactId>slf4j-simple</artifactId> <version>1.7.5</version> </dependency -->
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -256,6 +254,12 @@
 			<id>dev</id>
 			<properties>
 				<build.profile.id>dev</build.profile.id>
+			</properties>
+		</profile>
+		<profile>
+			<id>staging</id>
+			<properties>
+				<build.profile.id>staging</build.profile.id>
 			</properties>
 		</profile>
 		<profile>

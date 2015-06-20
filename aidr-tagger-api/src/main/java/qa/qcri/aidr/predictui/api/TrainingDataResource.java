@@ -12,14 +12,20 @@ import java.util.Properties;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
@@ -46,7 +52,7 @@ public class TrainingDataResource {
     }
     
     //private static Logger logger = Logger.getLogger(TrainingDataResource.class);
-    private static Logger logger = LoggerFactory.getLogger(TrainingDataResource.class);
+    private static Logger logger = Logger.getLogger(TrainingDataResource.class);
     private static ErrorLog elog = new ErrorLog();
     
     @GET

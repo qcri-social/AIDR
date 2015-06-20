@@ -8,17 +8,12 @@ package qa.qcri.aidr.output.utils;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-
-
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 @Deprecated
@@ -32,8 +27,7 @@ public class WriteResponse {
 	private static Logger logger = Logger.getLogger(WriteResponse.class);
 
 	public WriteResponse(HttpServletResponse response, boolean keepAlive) {
-		//BasicConfigurator.configure();		// configuration for log4j logging
-		System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
+		BasicConfigurator.configure();		// configuration for log4j logging
 		this.response = response;
 		this.keepAlive = keepAlive;	
 	}

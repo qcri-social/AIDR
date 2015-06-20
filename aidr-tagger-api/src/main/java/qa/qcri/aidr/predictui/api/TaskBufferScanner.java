@@ -34,8 +34,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.exception.ConfigurationPropertyFileException;
 import qa.qcri.aidr.common.exception.ConfigurationPropertyNotRecognizedException;
@@ -59,7 +58,7 @@ public class TaskBufferScanner  {
 	}
 
 	//private static Logger logger = Logger.getLogger(TaskBufferScanner.class);
-	private static Logger logger = LoggerFactory.getLogger(TaskBufferScanner.class);
+	private static Logger logger = Logger.getLogger(TaskBufferScanner.class);
 	private static ErrorLog elog = new ErrorLog();
 
 	private static ExecutorService executorService = null;

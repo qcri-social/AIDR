@@ -10,10 +10,6 @@ import javax.servlet.AsyncListener;
 
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.server.ChunkedOutput;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-
-
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.output.stream.SubscriptionDataObject;
