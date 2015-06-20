@@ -70,6 +70,7 @@ public class TwitterStreamTracker implements Closeable {
 
 		twitterStream = new TwitterStreamFactory(config).getInstance();
 		twitterStream.addListener(listener);
+		twitterStream.addConnectionLifeCycleListener(listener);
 	}
 	
 	/**

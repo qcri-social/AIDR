@@ -374,7 +374,7 @@ public class JsonDeserializer {
 		//beanWriter = csv.writeClassifiedTweetIDsCSV(beanWriter, tweetsList, collectionCode, fileNameforCSVGen);
 		tweetsList.clear();
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileName);
-		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL)
+		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + collectionCode + "/" + compressor.zip();
 		logger.info(collectionCode + ": Deleteing file : " + fileToDelete);
 		FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
@@ -742,7 +742,7 @@ public class JsonDeserializer {
 			}
 		}
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileName);
-		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL)
+		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + collectionCode + "/" + compressor.zip();
 		FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforCSVGen + ".csv");
 		logger.info("Deleted raw created file: " + folderLocation + "/" + fileNameforCSVGen + ".csv");
@@ -1616,7 +1616,7 @@ public class JsonDeserializer {
 			}
 		}
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileName);
-		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL)
+		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + collectionCode + "/" + compressor.zip();
 		FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforJsonGen + extension);
 		logger.info("Deleted created raw file: " + folderLocation + "/" + fileNameforJsonGen + extension);
@@ -1744,7 +1744,7 @@ public class JsonDeserializer {
 			}
 		}
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileName);
-		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL)
+		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + collectionCode + "/" + compressor.zip();
 		String fileToDelete = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + fileName;
 		System.out.println("Deleteing file : " + fileToDelete);
@@ -1798,7 +1798,7 @@ public class JsonDeserializer {
 
 		try {
 			fileNameforCSVGen = collectionCode + FILE_NAME_PREFIX + MD5Hash.getMD5Hash(userName) + CSV_FILE_EXTENSION;
-			fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL)
+			fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + "/" + collectionCode + "/" + fileNameforCSVGen;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1879,7 +1879,7 @@ public class JsonDeserializer {
 		}
 		// Compress generated file and send the compressed file link
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileNameforCSVGen);
-		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL)
+		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + "/" + collectionCode + "/" + compressor.zip();
 		FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforCSVGen);
 		logger.info("Deleted raw file post compression: " + fileNameforCSVGen);
@@ -1895,7 +1895,7 @@ public class JsonDeserializer {
 
 		try {
 			fileNameforCSVGen = collectionCode + FILE_NAME_PREFIX + "tweetIds-" +  MD5Hash.getMD5Hash(userName) + CSV_FILE_EXTENSION;
-			fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL)
+			fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + "/" + collectionCode + "/" + fileNameforCSVGen;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1977,7 +1977,7 @@ public class JsonDeserializer {
 		//beanWriter = csv.writeClassifiedTweetIDsCSV(beanWriter, tweetsList, collectionCode, fileNameforCSVGen);
 		tweetsList.clear();
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileNameforCSVGen);
-		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL)
+		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + collectionCode + "/" + compressor.zip();
 		FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforCSVGen);
 		System.out.println("Deleted raw file post compression: " + fileNameforCSVGen);
@@ -1997,7 +1997,7 @@ public class JsonDeserializer {
 		// If everything ok, then finally generate the fileName 
 		try {
 			fileNameforGen = collectionCode + FILE_NAME_PREFIX + MD5Hash.getMD5Hash(userName) + extension;
-			fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL)
+			fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + "/" + collectionCode + "/" + fileNameforGen;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2078,7 +2078,7 @@ public class JsonDeserializer {
 			}
 		}
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileNameforGen);
-		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL)
+		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + collectionCode + "/" + compressor.zip();
 		FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforGen);
 		System.out.println("Deleted raw file post compression: " + fileNameforGen);
@@ -2103,7 +2103,7 @@ public class JsonDeserializer {
 		// If everything ok, then finally generate the fileName 
 		try {
 			fileNameforGen = collectionCode + FILE_NAME_PREFIX + "tweetIds-" + MD5Hash.getMD5Hash(userName) + extension;
-			fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL)
+			fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + "/" + collectionCode + "/" + fileNameforGen;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -2170,7 +2170,7 @@ public class JsonDeserializer {
 			}
 		}
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileNameforGen);
-		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL)
+		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + collectionCode + "/" + compressor.zip();
 		FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a file with same name
 		System.out.println("Deleted raw file post compression: " + fileToDelete);

@@ -130,6 +130,7 @@ public class TwitterCollectorAPI {
         cache.delTwtConfigMap(collectionCode);
         cache.delLastDownloadedDoc(collectionCode);
         cache.delTwitterTracker(collectionCode);
+        cache.delReconnectAttempts(collectionCode);
 
 		if (tracker != null) {
 			try {
