@@ -18,10 +18,10 @@ select `d`.`documentID` AS `documentID`,`d`.`crisisID` AS `crisisID`,`dnl`.`nomi
 
 # Trigger on document to enable inserting data to nominal_label_evaluation_data
 
-DROP TRIGGER IF EXISTS `document_BINS`;
-CREATE TRIGGER `document_BINS`
-BEFORE INSERT ON `document`
-FOR EACH ROW set new.isEvaluationSet = mod((SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='document'), 5)=0;
+# DROP TRIGGER IF EXISTS `document_BINS`;
+# CREATE TRIGGER `document_BINS`
+# BEFORE INSERT ON `document`
+# FOR EACH ROW set new.isEvaluationSet = mod((SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='document'), 5)=0;
 
 
 # Populate table crisis_type
