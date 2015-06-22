@@ -33,7 +33,7 @@ public class Persister4TaggerAPITest {
 		configurator.initProperties(PersisterConfigurator.configLoadFileName,PersisterConfigurationProperty.values());	
 		persister4TaggerAPI = new Persister4TaggerAPI();
 		//Creating a sample persister output directory
-		File folderLocation = new File(configurator.getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + existedCollectionCode +"/output");
+		File folderLocation = new File(configurator.getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + existedCollectionCode);
 		if(!folderLocation.exists()){
 			assertTrue("Unable to create sample directory",folderLocation.mkdirs());
 		}
@@ -381,7 +381,7 @@ public class Persister4TaggerAPITest {
 		assertEquals(false, response.bufferEntity());
 	}
 
-	@Test
+	@Test(expected = NullPointerException.class)
 	public void testNullPointerExceptionOnInvalidDownloadLimitedInGenerateTweetsIDSJSONFromAllJSONFiltered() throws UnknownHostException {
 		Boolean downloadLimited = null;
 		String jsonType = "TEXT_JSON";

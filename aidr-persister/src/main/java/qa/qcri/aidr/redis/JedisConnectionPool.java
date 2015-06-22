@@ -25,7 +25,7 @@ public class JedisConnectionPool  {
     	jedisPool = null;
     }
 
-    public synchronized Jedis getJedisConnection() throws Exception {		// koushik: removed static
+    public synchronized Jedis getJedisConnection() {		// koushik: removed static
         try {
             if (jedisPool == null) {
                 JedisPoolConfig config = new JedisPoolConfig();
@@ -41,7 +41,7 @@ public class JedisConnectionPool  {
                 
             }
             return jedisPool.getResource();
-        } catch (Exception e) {
+        } catch (JedisConnectionException e) {
             logger.error("Could not establish Redis connection. Is the Redis running?");
             logger.error(elog.toStringException(e));
             throw e;

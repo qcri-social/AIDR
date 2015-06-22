@@ -64,10 +64,10 @@ public class RedisTaggerPersister implements Runnable {
 			while (suspendFlag) {
 				// koushik: Added a finally block to gracefully unsubscribe
 				try {
-					logger.info(collectionCode + ": Started collecting Tagger data to -> " + fileName + "/output");
+					logger.info(collectionCode + ": Started collecting Tagger data to -> " + fileName);
 					logger.info("Channel to Listen  to: " + PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TAGGER_CHANNEL) + collectionCode);
 					subscriberJedis.psubscribe(subscriber, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TAGGER_CHANNEL) + collectionCode);
-					logger.info(collectionCode + ": Stopped collecting data -> " + fileName + "/output");
+					logger.info(collectionCode + ": Stopped collecting data -> " + fileName);
 					Thread.sleep(200);
 				} finally {
 					if (subscriber != null && subscriber.isSubscribed()) {

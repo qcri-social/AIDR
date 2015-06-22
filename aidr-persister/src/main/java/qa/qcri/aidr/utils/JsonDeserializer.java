@@ -5,42 +5,51 @@
 package qa.qcri.aidr.utils;
 
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import net.minidev.json.JSONObject;
 
+import org.apache.commons.io.input.ReversedLinesFileReader;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.io.ICsvMapWriter;
 
-import qa.qcri.aidr.common.filter.JsonQueryList;
 import qa.qcri.aidr.common.filter.FilterQueryMatcher;
+import qa.qcri.aidr.common.filter.JsonQueryList;
 import qa.qcri.aidr.common.filter.NominalLabel;
-
-import java.io.*;
-
-import org.apache.commons.io.Charsets;
-import org.apache.commons.io.input.ReversedLinesFileReader;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import qa.qcri.aidr.utils.Tweet;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentList;
 import qa.qcri.aidr.io.FileSystemOperations;
 import qa.qcri.aidr.io.ReadWriteCSV;
 
-import java.nio.charset.Charset;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonNull;
 import com.google.gson.stream.JsonReader;
 
 /**
@@ -163,7 +172,7 @@ public class JsonDeserializer {
 			ReadWriteCSV<CellProcessor> csv = new ReadWriteCSV<CellProcessor>();
 			String[] runningHeader = null;
 			BufferedReader br = null;
-			String fileToDelete = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds.csv";
+			String fileToDelete = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + "Classified_" + collectionCode + "_tweetIds.csv";
 			logger.info(collectionCode + ": Deleteing file : " + fileToDelete);
 			FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
 			//logger.info(fileNames);
@@ -171,7 +180,7 @@ public class JsonDeserializer {
 			long lastCount = 0;
 			long currentCount = 0;
 			for (String file : fileNames) {
-				String fileLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/output/" + file;
+				String fileLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + file;
 				logger.info(collectionCode + ": Reading file " + fileLocation);
 				if (downloadLimited && totalCount > Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT))) {
 					break;
@@ -298,7 +307,6 @@ public class JsonDeserializer {
 				if (downloadLimited && totalCount >= Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT))) {
 					break;
 				}
-				//String fileLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/output/" + file;
 				String fileLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + file;
 				logger.info(collectionCode + ": Reading file " + fileLocation);
 				try {
@@ -498,7 +506,7 @@ public class JsonDeserializer {
 
 		try {
 
-			String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/output";
+			String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode;
 			String fileNameforCSVGen = "Classified_" + collectionCode + "_last_100k_tweets";
 			fileName = fileNameforCSVGen + ".csv";
 			FileSystemOperations.deleteFile(folderLocation + "/" + fileName);
@@ -523,7 +531,7 @@ public class JsonDeserializer {
 			});
 
 			List<ClassifiedTweet> tweetsList = new ArrayList<ClassifiedTweet>(LIST_BUFFER_SIZE);
-			ReadWriteCSV<CellProcessor> csv = new ReadWriteCSV<CellProcessor>();
+			ReadWriteCSV<CellProcessor> csv = new ReadWriteCSV<CellProcessor>(collectionCode);
 			String[] runningHeader = null;
 			int currentSize = 0;
 
@@ -1275,7 +1283,7 @@ public class JsonDeserializer {
 		boolean jsonObjectClosed = false;
 		try {
 
-			String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/output";
+			String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode;
 			logger.info("For collection: " + collectionCode + ", will create file from folder: " + folderLocation);
 			String fileNameforJsonGen = "Classified_" + collectionCode + "_last_100k_tweets";
 			fileName = fileNameforJsonGen + extension;
@@ -1389,7 +1397,7 @@ public class JsonDeserializer {
 		boolean jsonObjectClosed = false;
 
 		BufferedWriter beanWriter = null;
-		String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/output";
+		String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode;
 		String fileNameforJsonGen = "Classified_" + collectionCode + "_tweetIds";
 		String fileName = fileNameforJsonGen + extension;
 		int totalCount = 0;
@@ -1398,7 +1406,7 @@ public class JsonDeserializer {
 			List<String> fileNames = FileSystemOperations.getClassifiedFileVolumes(collectionCode);
 
 			BufferedReader br = null;
-			String fileToDelete = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/output/" + "Classified_" + collectionCode + "_tweetIds" + extension;
+			String fileToDelete = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + "Classified_" + collectionCode + "_tweetIds" + extension;
 			System.out.println("Deleteing file : " + fileToDelete);
 			FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
 			//System.out.println(fileNames);
@@ -1414,7 +1422,7 @@ public class JsonDeserializer {
 				if (downloadLimited && totalCount > Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT))) {
 					break;
 				}
-				String fileLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/output/" + file;
+				String fileLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + file;
 				logger.info("Reading file " + fileLocation);
 				try {
 					br = new BufferedReader(new FileReader(fileLocation)); 
@@ -1636,7 +1644,6 @@ public class JsonDeserializer {
 		boolean jsonObjectClosed = false;
 
 		BufferedWriter beanWriter = null;
-		//String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/output";
 		//String fileNameforJsonGen = "Classified_" + collectionCode + "_tweetIds_filtered";
 		String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/";
 		String fileNameforJsonGen = null;
@@ -1677,7 +1684,6 @@ public class JsonDeserializer {
 				if (downloadLimited && totalCount > Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT))) {
 					break;
 				}
-				//String fileLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/output/" + file;
 				String fileLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + file;
 				logger.info("Reading file " + fileLocation);
 				try {

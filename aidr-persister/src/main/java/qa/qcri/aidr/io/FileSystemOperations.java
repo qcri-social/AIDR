@@ -104,7 +104,7 @@ public class FileSystemOperations {
     @Deprecated
     public static int getLatestFileVolumeNumber4Tagger(String collectionCode) {
 
-        String filesPath = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/output/";
+        String filesPath = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/";
     	//String filesPath = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/";
         File folder = new File(filesPath);
         File[] listOfFiles = folder.listFiles();
@@ -152,7 +152,7 @@ public class FileSystemOperations {
     @Deprecated
     public static List<String> getClassifiedFileVolumes(String collectionCode) {
 
-        String filesPath = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/output/";
+        String filesPath = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/";
     	//String filesPath = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/";
         List<String> fileNames = new ArrayList();
         File folder = new File(filesPath);
