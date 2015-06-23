@@ -174,7 +174,7 @@ public class PersisterTesterTest {
 			}
 		}
 		if(count!=nItems){
-			fail("No. of items="+count+" in files doesn't match with total no. of items in the redis.");
+			fail("No. of lines in JSON file ="+count+" doesn't match with total no. of lines in the redis.");
 		}
 	}
 	
@@ -258,7 +258,7 @@ public class PersisterTesterTest {
 			}
 		}
 		if(count!=nItems){
-			fail("No. of items="+count+" in files doesn't match with total no. of items in the redis.");
+			fail("No. of lines in JSON file ="+count+" doesn't match with total no. of lines in the redis.");
 		}
 	}
 	
@@ -299,12 +299,11 @@ public class PersisterTesterTest {
 			fail("Download link for csv file does not exist");
 		}
 		
-		if(count!=0){
-			count--;  //Since first line in csv file contain column names
-		}
+		count--;  //Since first line in csv file contain column names
+		
 		Long exportLimit = Long.valueOf(configProperties.getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K));
 		if(count!=Math.min(nItems, exportLimit)){
-			fail("No. of items="+count+" in csv file doesn't match with total no. of items.");
+			fail("No. of lines in CSV file ="+count+" doesn't match with total no. of lines.");
 		}
 	}
 }
