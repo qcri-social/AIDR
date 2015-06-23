@@ -6,7 +6,8 @@ public enum OutputConfigurationProperty implements ConfigurationProperty {
 
 	REDIS_HOST("host"), REDIS_PORT("port"), LOGGER("logger"), MANAGER_URL(
 			"managerUrl"), PERSISTER_LOAD_LIMIT("PERSISTER_LOAD_LIMIT"), PERSISTER_LOAD_CHECK_INTERVAL_MINUTES(
-			"PERSISTER_LOAD_CHECK_INTERVAL_MINUTES");
+			"PERSISTER_LOAD_CHECK_INTERVAL_MINUTES"), OUTPUT_REST_URI(
+			"OUTPUT_REST_URI");
 
 	private final String configurationProperty;
 
