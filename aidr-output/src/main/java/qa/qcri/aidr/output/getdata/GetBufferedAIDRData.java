@@ -91,11 +91,11 @@ public class GetBufferedAIDRData implements ServletContextListener {
 	// Debugging
 	private static Logger logger = Logger.getLogger(GetBufferedAIDRData.class);
 	private static ErrorLog elog = new ErrorLog();
-
 	// Related to channel buffer management
-	private static final String CHANNEL_REG_EX = "aidr_predict.*";
-	private static final String CHANNEL_PREFIX_STRING = "aidr_predict.";
-	private static final int MAX_MESSAGES_COUNT = 1000;
+	private static OutputConfigurator configProperties = OutputConfigurator.getInstance();
+	private static final String CHANNEL_REG_EX = configProperties.getProperty(OutputConfigurationProperty.TAGGER_CHANNEL_BASENAME)+".*";
+	private static final String CHANNEL_PREFIX_STRING = configProperties.getProperty(OutputConfigurationProperty.TAGGER_CHANNEL_BASENAME)+".";
+	private static final int MAX_MESSAGES_COUNT = Integer.valueOf(configProperties.getProperty(OutputConfigurationProperty.MAX_MESSAGES_COUNT));
 	private static final int DEFAULT_COUNT = 50;		// default number of messages to fetch
 	private static final String DEFAULT_COUNT_STR = "50";
 

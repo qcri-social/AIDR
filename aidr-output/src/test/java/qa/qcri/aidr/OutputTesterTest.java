@@ -44,8 +44,8 @@ public class OutputTesterTest {
 	private static String BASE_URI;
 	public static String collectionCode;
 	public static Long nItems;
-	private static final String CHANNEL_PREFIX_STRING = "aidr_predict.";
-	private static final int MAX_MESSAGES_COUNT = 1000;
+	private static final String CHANNEL_PREFIX_STRING = configProperties.getProperty(OutputConfigurationProperty.TAGGER_CHANNEL_BASENAME)+".";
+	private static final int MAX_MESSAGES_COUNT = Integer.valueOf(configProperties.getProperty(OutputConfigurationProperty.MAX_MESSAGES_COUNT));
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {

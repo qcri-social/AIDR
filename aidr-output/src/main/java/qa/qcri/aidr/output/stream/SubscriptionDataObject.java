@@ -1,12 +1,14 @@
 package qa.qcri.aidr.output.stream;
 
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
+import qa.qcri.aidr.output.utils.OutputConfigurationProperty;
+import qa.qcri.aidr.output.utils.OutputConfigurator;
 import redis.clients.jedis.Jedis;
 
 public class SubscriptionDataObject {
-	
+	private static OutputConfigurator configProperties = OutputConfigurator.getInstance();
 	public boolean patternSubscriptionFlag;
-	public String redisChannel = "aidr_predict.*";       			// channel to subscribe to
+	public String redisChannel = configProperties.getProperty(OutputConfigurationProperty.TAGGER_CHANNEL_BASENAME)+".*";       			
 	
 	public JedisConnectionObject jedisConn;
 	public Jedis subscriberJedis;

@@ -1,17 +1,16 @@
 package qa.qcri.aidr.output.getdata;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
-import java.io.IOException;
 import java.util.Date;
 
 import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import javax.ws.rs.core.Response;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.mock.web.MockServletContext;
 
 public class TestGetBufferedAIDRData {
