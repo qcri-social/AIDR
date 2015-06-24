@@ -98,13 +98,4 @@ public class TestGetBufferedAIDRData {
 		//
 		assertFalse(result);
 	}
-	//
-	@Test
-	public void restartFetchServiceTest() {
-		String passcode = "sysadmin2013";
-		Response clientResponse = getBufferedAIDRData.restartFetchService(passcode);
-		String statusString = (String)clientResponse.getEntity();
-		assertNotNull(statusString);
-		assertEquals("{\"aidr-output fetch service\":\"RESTARTED\"}", statusString);
-	}
 }
