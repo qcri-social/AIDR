@@ -85,6 +85,8 @@ Also, if you are using a glassfish user with an enabled password. Please use the
 
 This will help you login once and would execute all the commands in the script in a non-obtrusive manner. If you don't do this you will be asked to enter the asadmin username and password multiple times during the deployment process.
 
+**NOTE:** The default minimum http-thread-pool size for Glassfish is 5, and this may not be sufficient for the application. This value can be increased via the admin console: Configurations -> server-config -> Thread Pools
+
 # 4. Post-installation MySQL commands (mandatory)
 
 The following MySQL commands *must* be executed after the installation:
@@ -101,6 +103,8 @@ First, check the character set currently being used in MySQL:
 Finally, do a sanity check: 
 
 * SHOW VARIABLES WHERE Variable_name LIKE 'character\_set\_%' OR Variable_name LIKE 'collation%';
+
+**NOTE:** Running the deployment script `deploy.sh` with an additional argument `deploy_db` will run the above commands if the appropriate MySQL environment variables are set in the script
 
 # Known Issues / Troubleshooting
 
