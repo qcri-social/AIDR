@@ -15,3 +15,7 @@ As of June 2015, the team that is actively contributing to AIDR includes:
 * [Ji Lucas](http://www.linkedin.com/in/jilucas) - Technical lead for MicroMappers.
 * Meghna Singh - Research Associate.
 * Dhruv Sharma and Kushalkant Goyal - Contractors.
+
+# Contact
+
+* If you want to **contact us**, [create a new issue in the issue tracker](https://github.com/qcri-social/AIDR/issues).
