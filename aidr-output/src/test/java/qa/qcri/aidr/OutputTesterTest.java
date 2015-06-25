@@ -1,6 +1,6 @@
 package qa.qcri.aidr;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -62,12 +62,17 @@ public class OutputTesterTest {
 				logger.error("Error in reading config properties file: " + config, e);
 			}
 		}
-		nItems = Long.valueOf(System.getProperty("nItems"));
+		
+		nItems = Long.valueOf(System.getProperty("nItems")); //default value of nItems=2000 specified in pom.xml
+		if(nItems<=MAX_MESSAGES_COUNT){
+			fail("The value of nItems should be strictly greater than MAX_MESSAGES_COUNT="+MAX_MESSAGES_COUNT);
+		}
+		
 		BASE_URI = configProperties.getProperty(OutputConfigurationProperty.OUTPUT_REST_URI);
 		
 		SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
 		String timestamp = df.format(new Date());
-		collectionCode = timestamp+"-output-test";
+		collectionCode = timestamp+"-output-test";   //collectionCode = YYYYMMDDhhssmm-output-test
 	}
 
 	@AfterClass
