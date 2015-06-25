@@ -1,3 +1,6 @@
+/*
+ * Implements a JEDIS subscription object and the data types to pass to the Async subscriber thread.
+ */
 package qa.qcri.aidr.output.stream;
 
 import qa.qcri.aidr.output.utils.JedisConnectionObject;

@@ -1,3 +1,7 @@
+/* 
+ * Used by AIDROutputPing for twitter user name/ID lookup
+ * 
+ */
 package qa.qcri.aidr.output.utils;
 
 import java.util.ArrayList;
