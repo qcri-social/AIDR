@@ -46,7 +46,7 @@ w850 coffee night coal w211 ... ink night coffee neutral w712 -> BLACK
 
 The testing tweets are generated in the same way, half of them correspond to "WHITE" tweets, half of them to "BLACK" tweets. Note that the testing items have no label associated to them, i.e. they are unlabelled.
 
-The purpose of the "neutral" word is to have overlap, i.e. a word that appears in both the WHITE and BLACK sets, which avoids generating a trivial classification problem.
+The purpose of the "neutral" word is to have overlap, i.e. a word that appears in both the WHITE and BLACK sets, which avoids generating a trivial classification problem. The purpose of the "wNNN" random words is to bypass the de-duplication check done by the tagger, ensuring every tweet is different enough from others.
 
 ## Execution
 
