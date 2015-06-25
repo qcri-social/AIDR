@@ -16,9 +16,6 @@ package qa.qcri.aidr.output.getdata;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,14 +25,17 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.apache.log4j.Logger;
+import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.common.code.Configurator;
 import qa.qcri.aidr.common.logging.ErrorLog;
@@ -48,11 +48,8 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.apache.log4j.Logger;
-
 public class ChannelBufferManager {
-
+	private static OutputConfigurator configProperties = OutputConfigurator.getInstance();
 	public static final int NO_DATA_TIMEOUT = 48 * 60 * 60 * 1000;		// when to delete a channel buffer
 	public static final int CHECK_INTERVAL = NO_DATA_TIMEOUT;
 	public static final int CHECK_CHANNEL_PUBLIC_INTERVAL = 5 * 60 * 1000;
@@ -68,8 +65,8 @@ public class ChannelBufferManager {
 	private volatile static boolean shutdownFlag = false;
 
 	// Redis connection related
-	public static String redisHost = "localhost";	// Current assumption: REDIS running on same m/c
-	public static int redisPort = 6379;	
+	public static String redisHost = configProperties.getProperty(OutputConfigurationProperty.REDIS_HOST);
+	public static int redisPort = Integer.valueOf(configProperties.getProperty(OutputConfigurationProperty.REDIS_PORT));
 
 	// Jedis related
 	public static JedisConnectionObject jedisConn = null;		// we need only a single instance of JedisConnectionObject running in background
@@ -84,7 +81,7 @@ public class ChannelBufferManager {
 	private static int bufferSize = -1;
 
 	// Channel Buffering Algorithm related
-	public static final String CHANNEL_PREFIX_STRING = "aidr_predict.";
+	public static final String CHANNEL_PREFIX_STRING = configProperties.getProperty(OutputConfigurationProperty.TAGGER_CHANNEL_BASENAME)+".";
 	public static ConcurrentHashMap<String, ChannelBuffer> subscribedChannels;
 
 	// DB access related

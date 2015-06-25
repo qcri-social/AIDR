@@ -193,7 +193,20 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.17</version>
 					<configuration>
-						<skipTests>true</skipTests>
+						<skipTests>false</skipTests>
+						<includes>
+							<include>**/AllTestSuite.java</include>
+						</includes>
+						<systemProperties>
+							<property>
+								<name>nItems</name>
+								<value>2000</value>
+							</property>
+							<property>
+								<name>config</name>
+								<value>${config}</value>
+							</property>
+						</systemProperties>
 					</configuration>
 				</plugin>
 				<plugin>

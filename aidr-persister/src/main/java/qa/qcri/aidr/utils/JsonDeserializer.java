@@ -975,6 +975,7 @@ public class JsonDeserializer {
 
 			if (!jsonObj.get("created_at").isJsonNull()) {
 				tweet.setCreatedAtString(jsonObj.get("created_at").getAsString());
+				tweet.setCreateAt(new Date(tweet.getTimestamp()));
 			}
 
 			JsonObject jsonUserObj = null;

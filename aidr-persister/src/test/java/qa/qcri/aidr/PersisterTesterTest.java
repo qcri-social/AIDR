@@ -64,6 +64,7 @@ public class PersisterTesterTest {
 				}
 			} catch (IOException e) {
 				logger.error("Error in reading config properties file: " + config, e);
+				fail("Error in reading config properties file: " + config);
 			}
 		}
 		BASE_URI = configProperties.getProperty(PersisterConfigurationProperty.PERSISTER_REST_URI);
@@ -168,8 +169,10 @@ public class PersisterTesterTest {
 					}	
 				} catch (FileNotFoundException e) {
 					logger.error("Persister file doesn't exist in testCollectorPersisterFileItems");
+					fail("Persister file doesn't exist in testCollectorPersisterFileItems");
 				} catch (IOException e) {
 					logger.error("IOException in persister file in testCollectorPersisterFileItems");
+					fail("IOException in persister file in testCollectorPersisterFileItems");
 				}
 			}
 		}
@@ -252,8 +255,10 @@ public class PersisterTesterTest {
 					}	
 				} catch (FileNotFoundException e) {
 					logger.error("Persister file doesn't exist in testCollectorPersisterFileItems");
+					fail("Persister file doesn't exist in testCollectorPersisterFileItems");
 				} catch (IOException e) {
 					logger.error("IOException in persister file in testCollectorPersisterFileItems");
+					fail("IOException in persister file in testCollectorPersisterFileItems");
 				}
 			}
 		}
@@ -289,9 +294,11 @@ public class PersisterTesterTest {
 				}
 				catch (IOException e) {
 					logger.error("IOException while reading the csv file");
+					fail("IOException while reading the csv file");
 				}
 			} catch (MalformedURLException e) {
 				logger.error("Error in the downloadable link for csv file");
+				fail("Error in the downloadable link for csv file");
 			}
 		}
 		else{
