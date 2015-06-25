@@ -18,4 +18,4 @@ As of June 2015, the team that is actively contributing to AIDR includes:
 
 # Contact
 
-To contact us, [create a new issue in the issue tracker](https://github.com/qcri-social/AIDR/issues).
+To contact us, [click on "new issue" in the issue tracker](https://github.com/qcri-social/AIDR/issues).
