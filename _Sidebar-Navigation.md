@@ -57,7 +57,7 @@
  * [[Coding standards]]
  * [[Naming conventions]]
 * [[Testing]]
-* [[Upgrade checklist]]
+* [[Release checklist]]
 
 ### QCRI-specific
 
