@@ -14,7 +14,7 @@ These parameters are optional:
 
 ```
 -Dconfig=FILE
--DnItems=NUMBER (default 2000)(strictly greater than MAX_MESSAGES_COUNT)
+-DnItems=NUMBER (default 2000)
 ```
 
 The _config_ is the name of the output configuration (or of a centralized configuration) to read properties that the tester needs to know to perform the testing: the URL of the output's API, and the name of the REDIS queue from which output reads.
