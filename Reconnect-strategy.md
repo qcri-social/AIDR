@@ -5,7 +5,7 @@ In case of a disconnection, the collector follows a strategy derived from the on
 If the error has `statusCode=-1`, i.e., it is a TCP/IP level error:
 
 1. Put the collection in the `WARNING` state.
-2. Wait for `RECONNECT_NET_FAILURE_WAIT_SECONDS * RANDOM(1..3) * ATTEMPT_NUMBER` seconds. `RANDOM(1...3)` is a floating point number between 1 and 3 (not an integer!). `RECONNECT_NET_FAILURE_WAIT_SECONDS` is by default 60 seconds, the configuration file must say linear back-off will be used.
+2. Wait for `RECONNECT_NET_FAILURE_WAIT_SECONDS * RANDOM(1..3) * ATTEMPT_NUMBER` seconds. `RANDOM(1...3)` is a floating point number between 1 and 3 (not an integer!). `RECONNECT_NET_FAILURE_WAIT_SECONDS` is by default 60 seconds, the configuration must contain a comment near the point where this variable is defined, indicating that linear back-off will be used.
 3. Try to re-connect.
 4. If `ATTEMPT_NUMBER++ > RECONNECT_NET_FAILURE_RETRY_ATTEMPTS` (configurable, default 5) times in a row, without receiving any tweet in between attempts, set the collection to the `ERROR` state.
 
