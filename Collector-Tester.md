@@ -7,13 +7,13 @@ It only requires the aidr-collector module to be deployed.
 The collector tester is run through the following command:
 
 ```
-mvn test -DcollectorTesterTest PARAMETERS
+mvn test -Dtest=CollectorTesterTest PARAMETERS
 ```
 
 This parameter is mandatory:
 
 ```
--Dcollection-task=FILE
+-DcollectionTask=FILE
 ```
 
 These parameters are optional:
