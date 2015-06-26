@@ -6,6 +6,8 @@ import java.util.logging.Logger;
 
 import javax.json.JsonObject;
 
+import org.apache.commons.lang3.text.translate.UnicodeEscaper;
+
 import qa.qcri.aidr.collector.utils.CollectorConfigurator;
 import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
 import redis.clients.jedis.Jedis;
@@ -22,6 +24,7 @@ public class JedisPublisher implements Closeable, Publisher {
 	private static Logger logger = Logger.getLogger(JedisPublisher.class.getName());
 	
 	private static CollectorConfigurator configProperties=CollectorConfigurator.getInstance();
+	private static UnicodeEscaper unicodeEscaper = UnicodeEscaper.above(127); 
 	
 	private static JedisPool jedisPool;
 	static {
@@ -65,11 +68,12 @@ public class JedisPublisher implements Closeable, Publisher {
 
 	@Override
 	public void publish(String channel, JsonObject doc) {
-		publish(channel, doc.toString());
+		
+		publish(channel, unicodeEscaper.translate(doc.toString()));
 	}
 
 	@Override
 	public void publish(String channel, String message) {
-		delegate.publish(channel, message);
+		delegate.publish(channel, unicodeEscaper.translate(message));
 	}
 }
