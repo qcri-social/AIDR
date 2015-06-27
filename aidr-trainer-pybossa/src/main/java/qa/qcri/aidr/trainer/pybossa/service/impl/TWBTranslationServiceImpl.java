@@ -4,18 +4,23 @@ import au.com.bytecode.opencsv.CSVParser;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.trainer.pybossa.dao.TaskTranslationDao;
-import qa.qcri.aidr.trainer.pybossa.entity.ClientApp;
-import qa.qcri.aidr.trainer.pybossa.entity.ReportTemplate;
-import qa.qcri.aidr.trainer.pybossa.entity.TaskTranslation;
+import qa.qcri.aidr.trainer.pybossa.entity.*;
 import qa.qcri.aidr.trainer.pybossa.format.impl.TranslationRequestModel;
+import qa.qcri.aidr.trainer.pybossa.service.ClientAppResponseService;
+import qa.qcri.aidr.trainer.pybossa.service.ClientAppService;
 import qa.qcri.aidr.trainer.pybossa.service.ReportTemplateService;
 import qa.qcri.aidr.trainer.pybossa.service.TranslationService;
 import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
+import qa.qcri.aidr.trainer.pybossa.store.URLPrefixCode;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
@@ -40,10 +45,18 @@ public class TWBTranslationServiceImpl implements TranslationService {
 
     @Autowired
     private ReportTemplateService reportTemplateService;
+
+    @Autowired
+    private ClientAppResponseService clientAppResponseService;
+
+    @Autowired
+    private ClientAppService clientAppService;
+
     final private static int MAX_BATCH_SIZE = 1000;  //
     final private static long MAX_WAIT_TIME_MILLIS = 300000; // 5 minutes
     private static long timeOfLastTranslationProcessingMillis = System.currentTimeMillis(); //initialize at startup
 
+    private PybossaCommunicator pybossaCommunicator = new PybossaCommunicator();
 
     protected static Logger logger = Logger.getLogger("service.translationService");
 
@@ -65,7 +78,7 @@ public class TWBTranslationServiceImpl implements TranslationService {
         }
         if ((forceProcessingByTime || translations.size() >= maxBatchSize) && (translations.size() > 0)) {
             while (true) {
-
+                logger.info("pushAllTranslations start at : " + new Date());
                 TranslationRequestModel model = new TranslationRequestModel();
                 model.setContactEmail("test@test.com");
                 model.setTitle("Translation Request from Micromappers");
@@ -192,7 +205,7 @@ public class TWBTranslationServiceImpl implements TranslationService {
         }
     }
 
-    private void updateTranslation(Integer orderId, Long taskId, String sourceTranslation, String finalTranslation, String code) throws Exception {
+    public void updateTranslation(Integer orderId, Long taskId, String sourceTranslation, String finalTranslation, String code) throws Exception {
         TaskTranslation taskTranslation = findByTaskId(taskId);
         if (taskTranslation == null) {
             throw new RuntimeException("No translation task found for id:" + taskId);
@@ -202,24 +215,86 @@ public class TWBTranslationServiceImpl implements TranslationService {
             throw new RuntimeException("TWB order number does not match");
         }
         taskTranslation.setTranslatedText(finalTranslation);
-        if (code.length() > 9) {
-            code = code.substring(0, 9);
-        }
+
         taskTranslation.setAnswerCode(code);
         taskTranslation.setStatus(TaskTranslation.STATUS_RECEIVED);
         updateTranslation(taskTranslation);
 
-        //
+        List<TaskQueueResponse> taskResp = clientAppResponseService.getTaskQueueResponse(taskTranslation.getTaskQueueID());
 
-        ReportTemplate template = new ReportTemplate(taskTranslation.getTaskQueueID(),
-                taskTranslation.getTaskId(), taskTranslation.getTweetID(), taskTranslation.getTranslatedText(),
-                taskTranslation.getAuthor(), taskTranslation.getLat(), taskTranslation.getLon(),
-                taskTranslation.getUrl(), taskTranslation.getCreated(), taskTranslation.getAnswerCode(), StatusCodeType.TEMPLATE_IS_READY_FOR_EXPORT, Long.parseLong(taskTranslation.getClientAppId()));
-        reportTemplateService.saveReportItem(template);
+        if(taskResp.size() > 0){
+           String taskInfo = taskResp.get(0).getTaskInfo();
+            JSONParser parser = new JSONParser();
+            JSONArray jsonObject = (JSONArray) parser.parse(taskInfo);
+            Iterator itr= jsonObject.iterator();
+            JSONArray jsonObjectCopy = new JSONArray();
 
+            while(itr.hasNext()){
+                JSONObject featureJsonObj = (JSONObject)itr.next();
+                JSONObject info = (JSONObject)featureJsonObj.get("info");
+                info.put("category", code);
+
+                jsonObjectCopy.add(featureJsonObj)  ;
+            }
+
+            this.processAIDRPushing(taskTranslation, jsonObjectCopy);
+            this.processReportTemplatePushing(taskTranslation, parser, code);
+
+        }
 
     }
 
+
+    private void processReportTemplatePushing(TaskTranslation taskTranslation, JSONParser parser, String userAnswer){
+        try{
+            ClientAppAnswer clientAppAnswer = clientAppResponseService.getClientAppAnswer(Long.parseLong(taskTranslation.getClientAppId()));
+
+            String[] activeAnswers = this.getActiveAnswerKey(clientAppAnswer, parser) ;
+
+            for(int a=0; a < activeAnswers.length; a++){
+                if(activeAnswers[a].equalsIgnoreCase(userAnswer)){
+                    ReportTemplate template = new ReportTemplate(taskTranslation.getTaskQueueID(),
+                            taskTranslation.getTaskId(), taskTranslation.getTweetID(), taskTranslation.getTranslatedText(),
+                            taskTranslation.getAuthor(), taskTranslation.getLat(), taskTranslation.getLon(),
+                            taskTranslation.getUrl(), taskTranslation.getCreated(), taskTranslation.getAnswerCode(), StatusCodeType.TEMPLATE_IS_READY_FOR_EXPORT, Long.parseLong(taskTranslation.getClientAppId()));
+                    reportTemplateService.saveReportItem(template);
+                }
+            }
+        }
+        catch(Exception e){
+            throw new RuntimeException("TWB processReportTemplatePushing");
+        }
+
+    }
+
+    private void processAIDRPushing(TaskTranslation taskTranslation, JSONArray jsonObjectCopy)
+    {
+        long appID = Long.parseLong(taskTranslation.getClientAppId());
+        ClientApp app =  clientAppService.findClientAppByID("clientAppID", appID);
+        String AIDR_TASK_ANSWER_URL = app.getClient().getAidrHostURL() + URLPrefixCode.TASK_ANSWER_SAVE;
+
+        pybossaCommunicator.sendPost(jsonObjectCopy.toJSONString(), AIDR_TASK_ANSWER_URL);
+
+    }
+    private String[] getActiveAnswerKey(ClientAppAnswer clientAppAnswer, JSONParser parser) throws ParseException {
+
+        String answerKey =   clientAppAnswer.getActiveAnswerKey();
+
+        if(answerKey== null){
+            answerKey =   clientAppAnswer.getAnswer();
+        }
+
+        JSONArray questionArrary =   (JSONArray) parser.parse(answerKey) ;
+        int questionSize =  questionArrary.size();
+        String[] questions = new String[questionSize];
+
+        for(int i=0; i< questionSize; i++){
+            JSONObject obj = (JSONObject)questionArrary.get(i);
+            questions[i] =   (String)obj.get("qa");
+        }
+
+        return questions;
+    }
 
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
