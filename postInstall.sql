@@ -16,6 +16,12 @@ CREATE VIEW nominal_label_training_data AS
 select `d`.`documentID` AS `documentID`,`d`.`crisisID` AS `crisisID`,`dnl`.`nominalLabelID` AS `nominalLabelID`,`nl`.`nominalAttributeID` AS `nominalAttributeID`,`d`.`wordFeatures` AS `wordFeatures` from ((`document` `d` join `document_nominal_label` `dnl` on((`d`.`documentID` = `dnl`.`documentID`))) join `nominal_label` `nl` on((`nl`.`nominalLabelID` = `dnl`.`nominalLabelID`))) where ((not(`d`.`isEvaluationSet`)) and (`d`.`wordFeatures` is not null) and (`nl`.`nominalLabelCode` <> 'null'));
 
 
+# Add missing column defaults to task_answer
+
+ALTER table task_answer
+MODIFY COLUMN taskid bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+MODIFY COLUMN fromTrustedUser bit(1) NOT NULL DEFAULT b'0';
+
 # Trigger on document to enable inserting data to nominal_label_evaluation_data
 
 # DROP TRIGGER IF EXISTS `document_BINS`;

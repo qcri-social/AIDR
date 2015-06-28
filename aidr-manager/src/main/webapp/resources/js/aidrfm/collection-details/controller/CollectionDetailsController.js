@@ -608,7 +608,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         } 
         
         if(raw == 'WARNING')
-        	this.DetailsComponent.statusMsgL.setText("Collection stopped due to Twitter error. Attempting to reconnect", false);
+        	this.DetailsComponent.statusMsgL.setText("Disconnected from Twitter a moment ago, trying to re-connect", false);
         else
         	this.DetailsComponent.statusMsgL.setText("", false);
         

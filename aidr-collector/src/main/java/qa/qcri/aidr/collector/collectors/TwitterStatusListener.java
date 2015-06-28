@@ -118,9 +118,9 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 		if(ex instanceof TwitterException)
 		{
 			GenericCache cache = GenericCache.getInstance();
-			logger.error("network issue? " + ((TwitterException) ex).isCausedByNetworkIssue() 
-					+ " resource not found" + ((TwitterException) ex).resourceNotFound()
-					+ " cause: " + ((TwitterException) ex).getCause().getMessage());			
+			//logger.error("network issue? " + ((TwitterException) ex).isCausedByNetworkIssue() 
+				//	+ " resource not found" + ((TwitterException) ex).resourceNotFound()
+					//+ " cause: " + ((TwitterException) ex).getCause().getMessage());			
 			
 			int attempt = cache.incrAttempt(task.getCollectionCode());
 			task.setStatusMessage(ex.getMessage());
@@ -130,9 +130,9 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
 				else
 				{
-					//timeToSleep = (long) (getRandom()*attempt)*
-						//	Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_NET_FAILURE_WAIT_SECONDS));
-					//logger.info("Waiting for ms:" + timeToSleep);
+					timeToSleep = (long) (getRandom()*attempt*
+							Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_NET_FAILURE_WAIT_SECONDS)));
+					logger.info("Error -1, Waiting for " + timeToSleep + " seconds");
 					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_WARNING));
 					task.setStatusMessage("Collection Stopped due to Twitter Error. Reconnect Attempt: " + attempt);
 				}
@@ -143,6 +143,9 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
 				else
 				{
+					timeToSleep = (long) (getRandom()*(2^(attempt-1))*
+							Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_RATE_LIMIT_WAIT_SECONDS)));
+					logger.info("Error 420, Waiting for " + timeToSleep + " seconds");					
 					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_WARNING));
 					task.setStatusMessage("Collection Stopped due to Twitter Error. Reconnect Attempt: " + attempt);
 				}
@@ -153,6 +156,9 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
 				else
 				{
+					timeToSleep = (long) (getRandom()*attempt*
+							Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_SERVICE_UNAVAILABLE_WAIT_SECONDS)));
+					logger.info("Error 503, Waiting for " + timeToSleep + " seconds");					
 					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_WARNING));
 					task.setStatusMessage("Collection Stopped due to Twitter Error. Reconnect Attempt: " + attempt);
 				}
@@ -162,16 +168,13 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 				task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
 			}
 			
-			/*try {
-                Thread.sleep(timeToSleep);
+			try {
+                Thread.sleep(timeToSleep*1000);
             } catch (InterruptedException ignore) {
             }
-			timeToSleep=0;*/
+			timeToSleep=0;
 		}
 		// TODO: thread safety
-		//task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
-		//task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_WARNING));
-		//task.setStatusMessage(ex.getMessage());
 	}
 
 	@Override
@@ -185,7 +188,9 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 	
 	private static double getRandom()
 	{
-		return Math.random() * (max - min) + min; 
+		double d = Math.random() * (max - min) + min;
+		logger.info("random value:" + d);
+		return d;
 	}
 
 	@Override
