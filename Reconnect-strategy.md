@@ -6,7 +6,7 @@ If the error has `statusCode=-1`, i.e., it is a TCP/IP level error:
 
 1. Put the collection in the `WARNING` state.
 2. Wait for `RECONNECT_NET_FAILURE_WAIT_SECONDS * RANDOM(1..3) * ATTEMPT_NUMBER` seconds. `RANDOM(1...3)` is a floating point number between 1 and 3 (not an integer!). `RECONNECT_NET_FAILURE_WAIT_SECONDS` is by default 60 seconds in the configuration file, the configuration must contain a comment near the point where this variable is defined, indicating that linear back-off will be used.
-3. Try to re-connect.
+3. Try to re-connect. If re-connect is successful, set the collection to `RUNNING` state.
 4. If `ATTEMPT_NUMBER++ > RECONNECT_NET_FAILURE_RETRY_ATTEMPTS` (configurable, default 5) times in a row, without receiving any tweet in between attempts, set the collection to the `ERROR` state.
 
 # Rate limit errors
@@ -15,8 +15,8 @@ If the error has `statusCode == 420`, i.e. rate limit,
 
 1. Put the collection in the `WARNING` state.
 2. Wait for `RECONNECT_RATE_LIMIT_WAIT_SECONDS * RANDOM(1..3) * (2^ATTEMPT_NUMBER)`, where `ATTEMPT_NUMBER` is 0 initially. This generates exponentially increasing times. `RECONNECT_RATE_LIMIT_WAIT_SECONDS` is 60 by default; the configuration file must include a comment near the point where that variable is defined, stating that this is the number recommended by Twitter and that exponential back-off will be used.
-3. Try to re-connect
-4. IF `ATTEMPT_NUMBER++ > RECONNECT_RATE_LIMIT_RETRY_ATTEMPTS`, set the collection to the ERROR state.
+3. Try to re-connect. If re-connect is successful, set the collection to `RUNNING` state.
+4. IF unsuccessful `ATTEMPT_NUMBER++ > RECONNECT_RATE_LIMIT_RETRY_ATTEMPTS`, set the collection to the ERROR state.
 
 # Service unavailable errors
 
