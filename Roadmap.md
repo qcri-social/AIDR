@@ -14,6 +14,13 @@ QCRI side:
 * per-module and basic per-package documentation is available
 * urgent bugfixes
 
+# Release 1.5: streamlined installer and documentation
+
+**Target: early July**
+
+The objective of this release is to fix bugs, complete logging from all aspects including adopting uniform logging standards,fix existing logging issues, logging where applicable, and integration with MicroMappers.
+ 
+
 # Release 2.0: view/download complete
 
 **Target: mid-July.**
