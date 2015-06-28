@@ -33,12 +33,12 @@ The implementation is delegated to software developers, but the product owner ma
 
 ## Contents
 
-Stories should be small and specific. They have the following contents:
+Stories should be concrete and testable. They have the following contents:
 
-* Clear and informative **headline** indicating what the story is about
-* Story **description** of what the story means from the perspective of its target users, e.g.: "As an operator, I want to ..." or "As a system administrator, I want to ..." or "As a developer, I want to ..."
+* Clear and informative **headline** indicating what users can do after the story is written, e.g. "Download tweets filtered by date"
+* Story **description** of what the feature means from the perspective of its target users, e.g.: "As an operator, I want to ..." or "As a system administrator, I want to ..." or "As a developer, I want to ..."
 * **Detailed acceptance criteria** indicating each of the elements that will be evaluated when reviewing the story
-* More details will be provided **on demand**. It is responsibility of the developers to ask for clarification.
+* More details will be provided **on demand**. It is responsibility of the developers to ask for clarification when details are missing.
 
 ## Points
 
