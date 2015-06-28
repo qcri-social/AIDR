@@ -62,9 +62,7 @@
 ### QCRI-specific
 
 * [[Terms of service]]
-* Management
- * [[Ownership and management]]
- * [[Scrum implementation]]
+* [[Scrum implementation]]
 * [[Development environment]]
 * [[Branching]]
 * [[Servers]]
