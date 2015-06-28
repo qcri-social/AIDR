@@ -40,13 +40,17 @@ Stories should be concrete and testable. They have the following contents:
 * **Detailed acceptance criteria** indicating each of the elements that will be evaluated when reviewing the story
 * More details will be provided **on demand**. It is responsibility of the developers to ask for clarification when details are missing.
 
-## Points
+## Points (one point is one hour)
 
 The effort is inclusive of both DEV and QA efforts. We use this scheme:
 
-1. Small  - 1 point - Can be delivered within half a day
-2. Medium - 2 point - Can be delivered with a day
-3. Large - 4 points - Can be delivered within 2-3 days
-4. Very Large - 8 points - Can be delivered within a week
+* 1 point is 1 hour.
+* 2 points is 2 hours.
+* 4 points is 4 hours = half day.
+* 8 points is 8 hours = one day.
+* 16 points is 2 days.
+* 24 points is 3 days.
+* 32 points is 4 days.
+* 40 points is 5 days.
 
 The objective should be have to as small or specific stories as possible.
