@@ -1,4 +1,4 @@
-QCRI ownership includes:
+QCRI is responsible for:
 
 1. Product definition and scope
 2. Product roadmap
@@ -11,4 +11,4 @@ Specific project roles are as follows:
 1. Jaideep is the product owner for AIDR/MM
 2. Jaideep delegates this role in Ji for day-to-day activities.
 3. Ji is the product manager for AIDR/MM.
-4. Imran is the scientific lead for AIDR/MM.
+4. Imran is the scientific lead for AIDR/MM and provides input regarding system architecture.
