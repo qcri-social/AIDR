@@ -14,7 +14,7 @@ QCRI side:
 * per-module and basic per-package documentation is available
 * urgent bugfixes
 
-# Release 1.5: Bugfixes, logging and MicroMappers integration
+# Release 1.6: Bugfixes, logging and MicroMappers integration
 
 **Target: early July**
 
