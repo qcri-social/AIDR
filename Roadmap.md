@@ -19,7 +19,14 @@ QCRI side:
 **Target: early July**
 
 The objective of this release is to fix bugs, complete logging from all aspects including adopting uniform logging standards,fix existing logging issues, logging where applicable, and integration with MicroMappers.
- 
+
+Metacube side:
+* Bugfixes
+* Logging changes
+* MicroMappers integration
+
+QCRI side:
+* Urgent bugfixes
 
 # Release 2.0: view/download complete
 
