@@ -1,3 +1,13 @@
+# Product owner responsibilities
+
+The implementation is delegated to software developers, but the product owner maintains these responsibilities:
+
+1. Product definition and scope
+2. Product architecture and design
+3. Product roadmap
+4. System architecture and database schemas
+5. User experience and interface design
+
 # Meetings & Status Updates
 
 1. We will create a channel on slack for Daily Scrum. The team will provide updates on what they did today, what they are going to do tomorrow, any blockers everyday on this channel.
