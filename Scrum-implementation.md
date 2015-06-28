@@ -1,6 +1,6 @@
 # Responsibilities
 
-The product owner maintains:
+The product ownership implies the following responsibilities, which are not delegated to the engineering team:
 
 1. Product definition and scope
 2. Product architecture and design
