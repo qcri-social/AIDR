@@ -1,6 +1,6 @@
 # Responsibilities
 
-The implementation is delegated to software developers, but the product owner maintains these responsibilities:
+The product owner maintains:
 
 1. Product definition and scope
 2. Product architecture and design
