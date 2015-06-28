@@ -1,8 +1,19 @@
 # Roles
 
-1. Carlos will be Product Owner / Product Manager for AIDR. Imran would help him out. Product Owner would be owner of Backlog and be responsible for creation / prioritization of backlog. They would also accept the delivered stories.
-2. Imran would play the role of Scrum Master and facilitate scrum processes & activities. Manish would help Imran in setting up processes wherever required.
-3. Noora will be the QA Resource in the team. Mukesh from metacube will help out in setting up QA processes & tools.
+QCRI ownership includes:
+
+1. Product definition and scope
+1. Product roadmap
+1. System architecture
+1. Database schemata
+1. User experience and interface design
+
+Specific roles are as follows:
+
+1. Jaideep is the product owner for AIDR/MM and delegates this role in Ji for day-to-day activities.
+1. Ji is the product manager for AIDR/MM.
+1. Imran is the scientific lead for AIDR/MM.
+1. Ji is the Scrum Master and facilitate scrum processes & activities. Manish would help Ji in setting up processes wherever required.
 
 # Meetings & Status Updates
 
