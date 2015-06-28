@@ -8,13 +8,13 @@ The implementation is delegated to software developers, but the product owner ma
 4. System architecture and database schemas
 5. User experience and interface design
 
-# Meetings & Status Updates
+# Meetings and status updates
 
 1. We will create a channel on slack for Daily Scrum. The team will provide updates on what they did today, what they are going to do tomorrow, any blockers everyday on this channel.
 2. There will be daily scrum calls at 10:00 AST.
 3. There will be status calls every Monday & Thursday. Sprint Planning, Demo & Retrospectives will also be incorporated in these meeting besides regular status updates.
 
-# Scrum Workflow
+# Scrum workflow
 
 1. Product Owner creates & prioritizes stories in Backlog.
 2. Team clarifies, asks questions and then estimates the stories. Initially while new team members are learning, the experienced team members might help out with sizing of stories.
@@ -27,7 +27,9 @@ The implementation is delegated to software developers, but the product owner ma
 9. Story owner Accepts when satisfied, marking the story as ACCEPTED.
 10. Stories that are accepted can be 
 
-# Story Contents
+# Stories
+
+## Contents
 
 Stories should be small and specific. They have the following contents:
 
@@ -36,7 +38,7 @@ Stories should be small and specific. They have the following contents:
 * **Detailed acceptance criteria** indicating each of the elements that will be evaluated when reviewing the story
 * More details will be provided **on demand**. It is responsibility of the developers to ask for clarification.
 
-# Story Points
+## Points
 
 The effort is inclusive of both DEV and QA efforts. We use this scheme:
 
