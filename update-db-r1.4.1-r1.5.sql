@@ -11,7 +11,7 @@ update nominal_label set name='Cannot judge',description='Not readable or not su
 # -- adding new classifiers
 INSERT INTO nominal_attribute (`nominalAttributeID`,`userID`, `name`, `description`, `code`)
 VALUES
-	(630.1,'Information provided (simple)','What does this tweet refers to?','information_provided_short'),
+	(630,1,'Information provided (simple)','What does this tweet refers to?','information_provided_short'),
 	(631,1,'Actionable Information','Classify messages containing actionable information on these categories.','actionable_information'),
 	(632,1,'Humanitarian Information','Indicate what information relevant to humanitarian relief is contained on this tweet.','humanitarian_information');
 
