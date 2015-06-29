@@ -49,8 +49,8 @@ The effort is inclusive of both DEV and QA efforts. We use this scheme:
 * 4 points is 4 hours = half day.
 * 8 points is 8 hours = one day.
 * 16 points is 2 days.
-* 24 points is 3 days.
-* 32 points is 4 days.
-* 40 points is 5 days.
+* 24 points is 3 days (not recommended: these stories could be divided into smaller stories).
+* 32 points is 4 days (discouraged: these stories should be divided into smaller stories).
+* 40 points is 5 days (strongly discouraged: these stories must be divided into smaller stories).
 
 The objective should be have to as small or specific stories as possible.
