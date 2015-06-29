@@ -110,7 +110,7 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 			long trainingExamples = 0;
 
 			// if size 0 we will get NaN for aucAverage
-			if (modelList.size() > 0) {
+			if (modelList!=null && modelList.size() > 0) {
 				for (Model model : modelList) {
 					if (model.isIsCurrentModel()) {
 						auc = model.getAvgAuc();
@@ -137,10 +137,12 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 					//Collection<Document> dc = label.getDocumentCollection();
 					Hibernate.initialize(label.getDocumentNominalLabels());
 					List<DocumentNominalLabel> documentNominalList = label.getDocumentNominalLabels();
-					for (DocumentNominalLabel docNominalLabel : documentNominalList) {
-						Document doc = docNominalLabel.getDocument();
-						if (!doc.isIsEvaluationSet() && doc.isHasHumanLabels()) {
-							trainingExamples++;
+					if(documentNominalList!=null){
+						for (DocumentNominalLabel docNominalLabel : documentNominalList) {
+							Document doc = docNominalLabel.getDocument();
+							if (!doc.isIsEvaluationSet() && doc.isHasHumanLabels()) {
+								trainingExamples++;
+							}
 						}
 					}
 				}

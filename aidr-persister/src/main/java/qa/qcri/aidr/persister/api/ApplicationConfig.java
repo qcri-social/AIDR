@@ -43,7 +43,7 @@ public class ApplicationConfig extends Application {
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
     	resources.add(MoxyJsonFeature.class);
-    	resources.add(JacksonFeature.class);
+    	//resources.add(JacksonFeature.class);
     	resources.add(qa.qcri.aidr.persister.api.Persister4CollectionAPI.class);
         resources.add(qa.qcri.aidr.persister.api.Persister4CollectorAPI.class);
         resources.add(qa.qcri.aidr.persister.api.Persister4TaggerAPI.class);

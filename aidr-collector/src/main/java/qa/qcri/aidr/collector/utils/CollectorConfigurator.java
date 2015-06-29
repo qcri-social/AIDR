@@ -8,7 +8,7 @@ import qa.qcri.aidr.common.exception.ConfigurationPropertyNotRecognizedException
 import qa.qcri.aidr.common.exception.ConfigurationPropertyNotSetException;
 
 /**
- * User: yakubenkova.elena@gmail.com Date: 29.09.14
+ * Access to collector configurations is through this class.
  */
 public class CollectorConfigurator extends BaseConfigurator {
 

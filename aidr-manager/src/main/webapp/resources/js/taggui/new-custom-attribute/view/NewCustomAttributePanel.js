@@ -114,7 +114,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
         this.labelsStore = Ext.create('Ext.data.JsonStore', {
             pageSize: 100,
             storeId: 'labelsStore',
-            fields: ['code', 'description', 'name'],
+            fields: ['code', 'description', 'name','sequence'],
             proxy: {
                 type: 'ajax',
                 url: '',

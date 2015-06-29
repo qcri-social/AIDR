@@ -56,18 +56,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.5</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.5</version>
-			<scope>compile</scope>
-		</dependency>
 		<!-- if you are using Jersey client specific features -->
 
 		<!-- MySQL database driver -->
@@ -227,7 +215,7 @@
 					<ejbVersion>3.2</ejbVersion>
 					<generateClient>true</generateClient>
 					<clientExcludes>
-						<clientExclude>**/log4j.properties</clientExclude>
+						<clientExclude>**/log4j.xml</clientExclude>
 						<clientExclude>**/*Bean.class</clientExclude>
 						<clientExclude>**/*Imp.class</clientExclude>
 						<clientExclude>**/*Session.class</clientExclude>

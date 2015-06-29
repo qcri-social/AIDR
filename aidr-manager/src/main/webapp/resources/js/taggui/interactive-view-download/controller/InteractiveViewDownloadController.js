@@ -215,7 +215,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
     updateStatusInfo: function(status, endDate){
         var statusText = '';
 
-        if (status == 'RUNNING-WARNNING' || status == 'RUNNING' || status == 'INITIALIZING'){
+        if (status == 'RUNNING_WARNING' || status == 'RUNNING' || status == 'INITIALIZING'){
             statusText = '<div class="styled-text">Status: running</div>';
         } else {
             if (endDate) {

@@ -21,7 +21,6 @@ import twitter4j.conf.ConfigurationBuilder;
  * This class is responsible for managing all the resources associated with the
  * thread which pulls tweets for the given collection task.
  * 
- * @author Anthony Ananich <anton.ananich@inpun.com>
  */
 public class TwitterStreamTracker implements Closeable {
 
@@ -71,6 +70,7 @@ public class TwitterStreamTracker implements Closeable {
 
 		twitterStream = new TwitterStreamFactory(config).getInstance();
 		twitterStream.addListener(listener);
+		twitterStream.addConnectionLifeCycleListener(listener);
 	}
 	
 	/**

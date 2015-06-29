@@ -10,7 +10,9 @@ import qa.qcri.aidr.collector.api.TwitterCollectorAPIRequestValidationTest;
 @SuiteClasses({
 	TrackFilterTest.class,
 	TwitterStreamTrackerTest.class,
-	TwitterCollectorAPIRequestValidationTest.class
+	TwitterCollectorAPIRequestValidationTest.class,
+	StrictLocationFilterTest.class,
+	FollowFilterTest.class
 	
 })
 

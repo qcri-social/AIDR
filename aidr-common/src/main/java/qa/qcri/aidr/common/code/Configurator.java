@@ -13,4 +13,6 @@ public interface Configurator {
 			ConfigurationPropertyFileException;
 
 	public String getProperty(ConfigurationProperty property);
+	
+	public void setProperty(String property, String newValue);
 }

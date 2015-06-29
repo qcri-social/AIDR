@@ -38,8 +38,8 @@ Ext.define('TAGGUI.training-examples.view.LabelPanel', {
             var labels = attr.nominalLabelJsonModelSet;
 
             labels.sort(function(a, b){
-                if(a.norminalLabelCode < b.norminalLabelCode) return -1;
-                if(a.norminalLabelCode > b.norminalLabelCode) return 1;
+                if(a.sequence < b.sequence) return -1;
+                if(a.sequence > b.sequence) return 1;
                 return 0;
             });
 

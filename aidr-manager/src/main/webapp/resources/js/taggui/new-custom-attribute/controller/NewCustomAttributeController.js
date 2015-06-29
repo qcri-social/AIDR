@@ -136,6 +136,7 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
         r.name = NA_CATEGORY_NAME;
         r.description = 'If these categories do not apply to this message, or you cannot be sure about which is the correct category';
         r.code = 'null';
+        r.sequence = 999;
         labels.push(r);
         me.mainComponent.labelsStore.loadData(labels, true);
     },
@@ -190,10 +191,14 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
         if (error){
             return false;
         }
+        
+        var l =  me.mainComponent.labelsStore.getCount();
+        log.console(l);
 
         r.name = name;
         r.description = description;
         r.code = code;
+        r.sequence = 100+l;
 
         me.clearAttributeFields();
 
@@ -299,7 +304,7 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
                     } else {
                         me.labelsCount = labels.length;
                         Ext.Array.each(labels, function(r, index) {
-                            me.saveLabel(r.data.name, r.data.code, r.data.description, resp.data.nominalAttributeID, mask);
+                            me.saveLabel(r.data.name, r.data.code, r.data.description, resp.data.nominalAttributeID, r.data.sequence, mask);
                         });
                     }
                 } else {
@@ -310,7 +315,7 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
         });
     },
 
-    saveLabel: function (name, code, description, attributeID, mask) {
+    saveLabel: function (name, code, description, attributeID, sequence, mask) {
         var me = this;
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/createLabel.action',
@@ -319,7 +324,8 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
                 name: name,
                 nominalLabelCode: Ext.String.trim( code ),
                 description: Ext.String.trim( description ),
-                nominalAttributeID: attributeID
+                nominalAttributeID: attributeID,
+                sequence: sequence
             },
             headers: {
                 'Accept': 'application/json'

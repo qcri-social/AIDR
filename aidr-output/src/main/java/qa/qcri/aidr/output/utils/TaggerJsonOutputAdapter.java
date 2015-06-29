@@ -24,8 +24,6 @@ import qa.qcri.aidr.common.logging.ErrorLog;
 public class TaggerJsonOutputAdapter {
 	// Logger setup
 	private static Logger logger = Logger.getLogger(TaggerJsonOutputAdapter.class);
-	private static ErrorLog elog = new ErrorLog();
-
 	private String crisisCode = null;
 
 	public TaggerJsonOutputAdapter() {}
@@ -113,7 +111,9 @@ public class TaggerJsonOutputAdapter {
 				}
 			}
 		} catch (Exception e) {
-			//logger.error("Exception in json parsing for string: " + rawJsonString);
+			logger.error("Exception in json parsing for string: " + rawJsonString);
+			logger.error("exception", e);
+			e.printStackTrace();
 		}
 
 		// no group label called "aidr" or "text" present

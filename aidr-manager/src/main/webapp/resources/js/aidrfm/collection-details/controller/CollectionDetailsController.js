@@ -317,15 +317,15 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                         console.log('crisis exists', true);
                         cmp.gotoTaggerButton.show();
                         cmp.enableTaggerButton.hide();
-                        cmp.downloadExportTaggerDisabledPanel.hide();
-                        cmp.downloadExportTaggerEnabledPanel.show();
+                        //cmp.downloadExportTaggerDisabledPanel.hide();
+                        //cmp.downloadExportTaggerEnabledPanel.show();
                     }
                 } else {
                     console.log('crisis exists', false);
                     cmp.gotoTaggerButton.hide();
                     cmp.enableTaggerButton.hide();
-                    cmp.downloadExportTaggerDisabledPanel.hide();
-                    cmp.downloadExportTaggerEnabledPanel.hide();
+                    //cmp.downloadExportTaggerDisabledPanel.hide();
+                    //cmp.downloadExportTaggerEnabledPanel.hide();
                 }
             }
         });
@@ -580,7 +580,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
     setStatus: function (raw, collectionType) {
         var statusText = AIDRFMFunctions.getStatusWithStyle(raw, collectionType);
 
-        if (raw == 'RUNNING-WARNNING' || raw == 'RUNNING' || raw == 'INITIALIZING'){
+        if (raw == 'RUNNING_WARNING' || raw == 'RUNNING' || raw == 'INITIALIZING' || raw == 'WARNING'){
             console.log('Set status ', raw);
             this.DetailsComponent.startButton.hide();
 //            this.DetailsComponent.enableTaggerButton.show(); TODO: Fix for https://www.pivotaltracker.com/s/projects/969960/stories/74910442
@@ -607,6 +607,11 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             this.DetailsComponent.untrashButton.hide();
         } 
         
+        if(raw == 'WARNING')
+        	this.DetailsComponent.statusMsgL.setText("Disconnected from Twitter a moment ago, trying to re-connect", false);
+        else
+        	this.DetailsComponent.statusMsgL.setText("", false);
+        
         this.DetailsComponent.statusL.setText(statusText, false);
     },
 
@@ -618,7 +623,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
     
     setEndDate: function (raw, status) {
         var me = this;
-        if (status == "RUNNING" || status == "RUNNING-WARNNING" || status == "INITIALIZING") {
+        if (status == "RUNNING" || status == "RUNNING_WARNING" || status == "INITIALIZING" || status == 'WARNING') {
         	//this.DetailsComponent.lastStoppedL.setText(raw ? moment(raw).calendar() : 'Still running', false);
         	this.DetailsComponent.lastStoppedL.setText('Still running', false);
         }
@@ -630,7 +635,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
     setWillStoppedDate: function (status, startDate, duration) {
         var me = this;
 
-        if (status == "RUNNING" || status == "RUNNING-WARNNING" || status == "INITIALIZING"){
+        if (status == "RUNNING" || status == "RUNNING_WARNING" || status == "INITIALIZING" || status == 'WARNING'){
             var willEndDate = moment(startDate);
             willEndDate.add('h', duration);
 
@@ -889,7 +894,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             },
 
             failure: function(response, opts) {
-                AIDRFMFunctions.setAlert("Error", ["Some error was occurred during updating the collection."]);
+                AIDRFMFunctions.setAlert("Error", ["An error occurred while updating the collection."]);
                 editPanelEl.unmask();
             }
         });
@@ -975,7 +980,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
     beforeUpdateCollection: function() {
         var status = this.DetailsComponent.currentCollection.status;
-        if (status == 'RUNNING-WARNNING' || status == 'RUNNING') {
+        if (status == 'RUNNING_WARNING' || status == 'RUNNING') {
             this.updateCollection(true);
         } else {
             this.updateCollection(false);

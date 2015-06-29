@@ -137,11 +137,11 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
             '{[this.getSharedBy(values.user)]}</div>',
 
             '<div class="styled-text-14" id="statusField_{id}">{[this.getStatus(values.status, values.collectionType)]}' +
-                '<tpl if="values.status == \'RUNNING\'">'+
+                '<tpl if="values.status == \'RUNNING\' || values.status == \'RUNNING_WARNING\'">'+
                 '&nbsp;&#45;&nbsp; {[this.getDocNumber(values.count)]} {[COLLECTION_TYPES[values.collectionType]["plural"]]} collected (since last restart)' +
                 '</tpl>',
             '</div>',
-            '<tpl if="values.status == \'RUNNING\'">',
+            '<tpl if="values.status == \'RUNNING\' || values.status == \'RUNNING_WARNING\'">',
                 '<div class="styled-text-14" id="lastDocField_{id}">Last downloaded:&nbsp;&nbsp;&nbsp;{[this.getLastDoc(values.lastDocument)]}</div>',
             '</tpl>',
             '</div>',
@@ -153,7 +153,7 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
             '</div>',
             {
                 isEnableClassifierButtonDisabled: function(r){
-                    if (r == 'RUNNING-WARNNING' || r == 'RUNNING' || r == 'INITIALIZING'){
+                    if (r == 'RUNNING_WARNING' || r == 'RUNNING' || r == 'INITIALIZING' || r == 'WARNING'){
                         return "";
                     } else {
                         return "disabled";
@@ -169,14 +169,14 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
                     return r ? Ext.util.Format.number(r,'0,000') : 0;
                 },
                 isButtonStartHidden: function (r) {
-                    if (r == 'RUNNING-WARNNING' || r == 'RUNNING' || r == 'INITIALIZING'){
+                    if (r == 'RUNNING_WARNING' || r == 'RUNNING' || r == 'INITIALIZING' || r == 'WARNING'){
                         return 'hidden';
                     } else {
                         return '';
                     }
                 },
                 isButtonStopHidden: function (r) {
-                    if (r == 'RUNNING-WARNNING' || r == 'RUNNING' || r == 'INITIALIZING'){
+                    if (r == 'RUNNING_WARNING' || r == 'RUNNING' || r == 'INITIALIZING' || r == 'WARNING'){
                         return '';
                     } else {
                         return 'hidden';

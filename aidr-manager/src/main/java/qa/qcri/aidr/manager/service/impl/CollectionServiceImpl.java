@@ -256,11 +256,12 @@ public class CollectionServiceImpl implements CollectionService {
 	//updateStatusCollection() method
 	public AidrCollection stopFatalError(Integer collectionId) throws Exception {
 		AidrCollection collection = collectionRepository.findById(collectionId);
+		collection = collectionRepository.stop(collection.getId());
 		
 		AidrCollection updateCollection = stopAidrFetcher(collection);
 
 		AidrCollectionLog collectionLog = new AidrCollectionLog(collection);
-		collectionLogRepository.save(collectionLog);
+		collectionLogRepository.save(collectionLog);		
 
 		return updateCollection;
 	}
@@ -378,9 +379,33 @@ public class CollectionServiceImpl implements CollectionService {
 			}
 			
 			if (!CollectionStatus.getByStatus(response.getStatusCode()).equals(collection.getStatus())) {
+				
+				collection.setStatus(CollectionStatus.getByStatus(response.getStatusCode()));
+				
 				logger.debug("Collection Status: " + CollectionStatus.getByStatus(response.getStatusCode()));
 				
+				switch(CollectionStatus.getByStatus(response.getStatusCode()))
+				{				
+				case NOT_FOUND:
+				case STOPPED:
+					collection.setStatus(CollectionStatus.NOT_RUNNING);					
+				case RUNNING_WARNING:
+				case WARNING:
+					collectionRepository.update(collection);
+					break;
+				case RUNNING:
+					collection = collectionRepository.start(collection.getId());
+					break;
+				case FATAL_ERROR:					
+					//collection = collectionRepository.stop(collection.getId());						
+					this.stopFatalError(collection.getId());
+					break;
+				default:
+					break;
+				}
+				
 				//if local=running and fetcher=NOT-FOUND then put local as NOT-RUNNING
+				/*
 				if (CollectionStatus.NOT_FOUND.equals(CollectionStatus.getByStatus(response.getStatusCode()))) {
 					//collection.setCount(response.getCollectionCount());
 					collection.setStatus(CollectionStatus.NOT_RUNNING);
@@ -403,6 +428,7 @@ public class CollectionServiceImpl implements CollectionService {
 					collection = collectionRepository.stop(collection.getId());						
 					this.stopFatalError(collection.getId());
 					}
+					*/
 			}
 		}
 		return collection;

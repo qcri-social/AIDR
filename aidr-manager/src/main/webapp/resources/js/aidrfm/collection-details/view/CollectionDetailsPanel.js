@@ -54,6 +54,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
 
         this.statusL = Ext.create('Ext.form.Label', {padding: '0 10 0 0'});
+        this.statusMsgL = Ext.create('Ext.form.Label', {flex: 1, cls:'bold-text'});
         this.lastStartedL = Ext.create('Ext.form.Label', {flex: 1});
         this.lastStoppedL = Ext.create('Ext.form.Label', {flex: 1});
         this.willStoppedL = Ext.create('Ext.form.Label', {flex: 1});
@@ -813,6 +814,14 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                             layout: 'hbox',
                                             items: [
                                                 this.statusL
+                                            ]
+                                        },
+                                        {
+                                            xtype: 'container',
+                                            defaultType: 'label',
+                                            layout: 'hbox',
+                                            items: [
+                                                this.statusMsgL
                                             ]
                                         }
                                     ]

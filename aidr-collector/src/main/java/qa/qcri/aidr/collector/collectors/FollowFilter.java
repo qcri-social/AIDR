@@ -7,7 +7,10 @@ import org.apache.log4j.Logger;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.java7.Predicate;
 
-
+/**
+ * Defines follow-filter i.e. collecting tweets from one or more Twitter users.
+ * If a follow-filter is defined, this class also validates correct followers for each incoming tweet.
+ */
 public class FollowFilter implements Predicate<JsonObject> {
 	private static Logger logger = Logger.getLogger(FollowFilter.class.getName());
 

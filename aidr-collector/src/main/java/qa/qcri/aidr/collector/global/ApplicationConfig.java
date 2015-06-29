@@ -12,7 +12,7 @@ import javax.ws.rs.core.Application;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 /**
- *
+ * This class responsible of registering various REST resources.
  * @author Imran
  */
 @ApplicationPath("/webresources")

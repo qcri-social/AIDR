@@ -1,7 +1,6 @@
 package qa.qcri.aidr.trainer.api.service.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -29,7 +28,7 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
     
     @Autowired TaskManagerRemote<DocumentDTO, Long> taskManager;
     
-	protected static Logger logger = LoggerFactory.getLogger(TaskAnswerServiceImpl.class);
+	protected static Logger logger = Logger.getLogger(TaskAnswerServiceImpl.class);
 
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)

@@ -3,11 +3,9 @@ package qa.qcri.aidr.collector.collectors;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,7 +17,10 @@ import org.apache.log4j.Logger;
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.java7.Predicate;
 
-
+/**
+ * Main class to implement everything related to keywords filtering and validations.
+ * 
+ */
 public class TrackFilter implements Predicate<JsonObject> {
 
 	private static Logger logger = Logger.getLogger(TrackFilter.class.getName());

@@ -1,8 +1,6 @@
 package qa.qcri.aidr.trainer.api.service.impl;
 
-//import org.apache.log4j.Logger;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -36,7 +34,7 @@ import qa.qcri.aidr.trainer.api.template.TaskAnswerResponse;
 @Transactional(readOnly = true)
 public class TaskAnswerServiceImpl implements TaskAnswerService{
 
-	protected static Logger logger = LoggerFactory.getLogger(TaskAnswerServiceImpl.class);
+	protected static Logger logger = Logger.getLogger(TaskAnswerServiceImpl.class);
 	private static ErrorLog elog = new ErrorLog();
 
 	private JedisNotifier jedisNotifier ;
