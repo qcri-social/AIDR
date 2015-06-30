@@ -21,4 +21,4 @@ The development of AIDR over its first two years was led by Muhammad Imran and C
 
 # Contact
 
-To contact us, [click on "new issue" in the issue tracker](https://github.com/qcri-social/AIDR/issues).
+To contact us, [click here](https://github.com/qcri-social/AIDR/issues/new?title=Contact&body=Hi%20AIDR%20Team,%0A%0A--%20Your%20Name).
