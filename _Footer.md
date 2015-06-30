@@ -1,1 +1,1 @@
-[Wiki Home](Home) - [Repository Home](https://github.com/qcri-social/AIDR) - [Mailing List](https://groups.google.com/forum/#!forum/aidr-users) - [Issue Tracker & Contact](https://github.com/qcri-social/AIDR/issues) - [[Credits]]
+[Wiki Home](Home) - [Repository Home](https://github.com/qcri-social/AIDR) - [Mailing List](https://groups.google.com/forum/#!forum/aidr-users) - [Issue Tracker](https://github.com/qcri-social/AIDR/issues) - [[Credits]] - [Contact](https://github.com/qcri-social/AIDR/issues/new?title=Contact&body=Hi%20AIDR%20Team,%0A%0A--%20Your%20Name)
