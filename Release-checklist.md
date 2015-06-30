@@ -21,5 +21,4 @@ Use the "release" functionality of GitHub to tag a release and add the release n
 * Have all the post-deployment "smoke" tests been passed?
 * Have the users been notified of the successful upgrade?
 * If action is required from the users, have they been instructed what to do?
-* Have the users been notified of the upcoming downtime?
 * Is there a release in GitHub with release notes?
