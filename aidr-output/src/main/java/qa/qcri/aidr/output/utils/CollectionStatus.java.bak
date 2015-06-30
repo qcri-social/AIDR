@@ -1,5 +1,11 @@
+/*
+ * Not sure if anoyone is using this or why is this class here. Marking as deprecated
+ * 
+ *
+ */
 package qa.qcri.aidr.output.utils;
 
+@Deprecated
 public enum CollectionStatus {
 	RUNNING("RUNNING"), STOPPED("STOPPED"), INITIALIZING("INITIALIZING"), FATAL_ERROR(
 			"FATAL-ERROR"), NOT_FOUND("NOT-FOUND"), RUNNING_WARNING("RUNNING-WARNNING"), NOT_RUNNING(

@@ -191,11 +191,14 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
         if (error){
             return false;
         }
+        
+        var l =  me.mainComponent.labelsStore.getCount();
+        log.console(l);
 
         r.name = name;
         r.description = description;
         r.code = code;
-        r.sequence = 100;
+        r.sequence = 100+l;
 
         me.clearAttributeFields();
 

@@ -5,25 +5,25 @@ import java.util.TreeMap;
 
 
 /**
- * This class reproduces functionality from the LoadShedder in aidr-common, should be deprecated.
+ * This class provides a fairness scheduler for the getLatestBufferedAIDRData method to get the 
+ * latest classified document across all channels. 
  * 
- * TODO: remove this class, replace by LoadShedder.
- * 
- * @author ksingha
+ * @author ksinha
  *
  */
-public class RateLimiter {
+
+public class FairScheduler{
 
 	public static final double MAX_INTERVAL_VAL = 0.8;		// [0,1]
 	public static final double MIN_INTERVAL_VAL = 0.01;		// [0,1]
 	private double[] interval = null;		
 	private TreeMap<String, Double> channelLambdaList = null;	// values must be all +ve
 	
-	public RateLimiter() {
+	public FairScheduler() {
 		this.channelLambdaList = new TreeMap<String, Double>();
 	}
 	
-	public RateLimiter(TreeMap<String, Double> channelLambdaList) {
+	public FairScheduler(TreeMap<String, Double> channelLambdaList) {
 		interval = new double[channelLambdaList.size() + 1];
 		this.channelLambdaList = new TreeMap<String, Double>();
 

@@ -1,18 +1,19 @@
+/**
+ * This class provides a simple fairness scheduler for the getLatestBufferedAIDRData method to get the 
+ * latest classified document across all channels. 
+ * 
+ * @author ksinha
+ *
+ */
+
 package qa.qcri.aidr.output.utils;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
-/**
- * This class reproduces functionality from the LoadShedder in aidr-common, should be deprecated.
- * 
- * TODO: remove this class, replace by LoadShedder.
- * 
- * @author ksingha
- *
- */
-public class SimpleRateLimiter extends RateLimiter {
+
+public class SimpleFairScheduler extends FairScheduler {
 		
 		public static final int DEFAULT_SIZE = 10;
 		public int size = DEFAULT_SIZE;
@@ -22,7 +23,7 @@ public class SimpleRateLimiter extends RateLimiter {
 		
 		private Map<String, Integer>freq = new TreeMap<String, Integer>();
 		
-		public SimpleRateLimiter() {}
+		public SimpleFairScheduler() {}
 		
 		/**
 		 * 

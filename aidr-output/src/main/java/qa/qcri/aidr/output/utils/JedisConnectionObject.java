@@ -1,3 +1,6 @@
+/* This class provides the connection pool and methods to request and return
+ * JEDIS resources/connections to and from a JEDIS pool.
+ */
 package qa.qcri.aidr.output.utils;
 
 import java.util.Iterator;

@@ -1,3 +1,6 @@
+/* 
+ * Deserialize a tweet to extract the required fields for the REST APIs
+ */
 package qa.qcri.aidr.output.utils;
 
 import java.io.Serializable;
