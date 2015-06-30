@@ -8,8 +8,8 @@ public enum CollectionStatus {
 	NOT_FOUND("NOT_FOUND"),
 	RUNNING_WARNING("RUNNING_WARNING"),
 	NOT_RUNNING("NOT_RUNNING"),
-	WARNING("WARNING"),
-	TRASHED("TRASHED");
+	TRASHED("TRASHED"),
+	WARNING("WARNING");
 
 	private CollectionStatus(String status) {
 		this.status = status;
