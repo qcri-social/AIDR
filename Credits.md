@@ -19,6 +19,4 @@ The system architecture of AIDR was designed by Carlos Castillo in collaboration
 
 The development of AIDR over its first two years was led by Muhammad Imran and Carlos Castillo, with contributions from Ji Lucas, Koushik Sinha, Jakob Rogstadius, plus contractors Elena Yakubenkova and Alex Mikhashchuk.
 
-# Contact
-
-To contact us, [click here](https://github.com/qcri-social/AIDR/issues/new?title=Contact&body=Hi%20AIDR%20Team,%0A%0A--%20Your%20Name).
+# [Contact](https://github.com/qcri-social/AIDR/issues/new?title=Contact&body=Hi%20AIDR%20Team,%0A%0A--%20Your%20Name)
