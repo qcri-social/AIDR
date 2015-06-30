@@ -8,6 +8,6 @@ The [[Tagger]] also samples a small number of items in the [[task buffer]] to ge
 
 Additionally, the [[DB Manager]] provides a layer of abstraction of the database, and the [[Task Manager]] provides a layer of abstraction over the elements belonging to the [[task buffer]].
 
-# An illustrated guide to data flows in AIDR
+# An illustrated guide
 
-See [An illustrated guide to data flows in AIDR](https://docs.google.com/presentation/d/1rdArb279kbXOBna6DRMTjJlhHyFRTi6_wu3IPh-qdRo/present#)
+[An illustrated guide to data flows in AIDR](https://docs.google.com/presentation/d/1rdArb279kbXOBna6DRMTjJlhHyFRTi6_wu3IPh-qdRo/present#) is a non-technical presentation of data flows in AIDR through a visual metaphor including gnus, Maasai, and robots.
