@@ -37,9 +37,23 @@ The model controller reads from the `REDIS_FOR_CLASSIFICATION_QUEUE` and passing
 
 Additionally, it maintains statistics about how many items have been classified into different categories.
 
-Finally, it writes the output to `REDIS_FOR_OUTPUT_QUEUE`
+Finally, it writes the output twice: first to `REDIS_FOR_OUTPUT_QUEUE`, and also to `REDIS_LABEL_TASK_WRITE_QUEUE`.
 
-# 2. 
+# 2. Model building and re-building
+
+The aidr-tagger takes human-annotated examples and calls Weka to build a model. Most of the functionality is done by Weka, but aidr-tagger needs to (i) partition the human-annotated examples into training and evaluation, (ii) decide when to re-train, and (iii) maintain data about which is the most current model for each classifier.
+
+The human-tagged examples are divided into two sets: 80% of them are actually used for training the new classifier, while 20% of them are kept for evaluation purposes, i.e. to compute AUC. The evaluation set is not picked randomly every time to ensure some degree of stability in the evaluation (there are other choices).
+
+To decide when to re-train, aidr-tagger listens for events in a control queue named `REDIS_TRAINING_SAMPLE_INFO_QUEUE`. Two types of events are available in the queue: (i) "new training example" and (ii) "force retrain". The first type of event informs aidr-tagger that new human-labelled examples are available in the database. The aidr-tagger waits for a sufficient number of non-null training examples (multiples of 50), and re-trains the model whenever this happens. The aidr-tagger also re-trains when it receives a "force retrain" event.
+
+The aidr-tagger also maintains, for each model family, the latest and most recent classification model is marked as active and is the one used for tagging items.
+
+# 3. Sampling for human annotators
+
+The `LabelingTaskWriter` thread ensures there are always enough elements in the task buffer, i.e. items that are waiting for a human label. Remember that the task buffer is a sub-set of rows in the `document` table in the database.
+
+It reads from the `REDIS_LABEL_TASK_WRITE_QUEUE`, and writes to the task buffer. It favors items that have a high value as training examples, i.e. low classification confidence. It also attempts to do some de-duplication on a small in-memory buffer, keeping track of the last 50 items pushed to the task buffer, and making sure no item is selected as training example if it is too similar to them. This is done naively via exhaustive comparisons, which limits the size of this de-duplication buffer (in the future, this will be done using min-hash comparisons, which are faster).
 
 # Technologies
 
