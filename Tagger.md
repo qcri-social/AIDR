@@ -4,7 +4,16 @@ Code: https://github.com/qcri-social/AIDR/tree/master/aidr-tagger and https://gi
 
 # Overview
 
-The aidr-tagger module reads collected items from a Redis queue, annotates them using an automatic classifier, and writes them to another Redis queue. The input to this module is two-fold: elements to be automatically classified, and elements already classified by a human.
+The aidr-tagger module has three main functions: to tag new items, to update the tagging model, and to sample for the human annotators.
+
+The main function of aidr-tagger is *tagging:* to read collected items and automatically assign a label to them. This is done using a classification model built using [Weka](http://www.cs.waikato.ac.nz/ml/weka/). 
+
+Additionally, aidr-tagger updates 
+
+* It reads collected items and automatically assigns a label to them (tagging)
+
+
+reads collected items, annotates them using an automatic classifier, and writes them to another Redis queue. The input to this module is two-fold: elements to be automatically classified, and elements already classified by a human.
 
 When elements to be automatically classified are received, they are classified using the current classification model. Additionally, some items are sampled from the input and placed into the [[task buffer]], which is a set of items waiting to be classified by a human. The selection of these items is done using an [active learning](https://en.wikipedia.org/wiki/Active_learning) criterion by which the items for which the classifier's confidence is minimum are selected first.
 
