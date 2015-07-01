@@ -2,9 +2,9 @@ Name: aidr-tagger
 
 Code: https://github.com/qcri-social/AIDR/tree/master/aidr-tagger and https://github.com/qcri-social/AIDR/tree/master/aidr-tagger-api
 
-See [[Tagger Concepts]] if you are unfamiliar with machine learning.
-
 # Overview of aidr-tagger
+
+The tagger module is the core of AIDR as a classification system. It is not the most complex part of AIDR, but it requires some understanding of how machine learning works. If you haven't done it yet, see [[Tagger Concepts]] for some preliminary concepts on machine learning.
 
 The aidr-tagger module has three main functions: to tag (classify) new items, to build and re-build the classification model, and to sample for the human annotators.
 
