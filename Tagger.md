@@ -24,7 +24,7 @@ As an initial step `AidrFetcherJsonInputProcessor` reads from the Redis queue to
 
 The feature extractor reads from the queue `REDIS_FOR_EXTRACTION_QUEUE` and perform the following processing for each item:
 
-1. Tokenization - this converts a single string into a list of strings, using spaces and other separators.
+1. Tokenization - this converts a single string into a list of words, using spaces and other separators.
 2. Stopword removal - this removes words that have no meaning on their own, such as determinants and prepositions. Currently, this is a no-operation. In the future, this should look at the language of the tweet (as returned by Twitter, no need to analyze it here), and use a language-specific [stopword list](https://code.google.com/p/stop-words/).
 3. Stemming - this converts words to a normalized form, e.g. by removing plural suffixes or -ing endings. Currently, there is a naive stemmer based on 3-4 patterns. In the future, this should use a language-sensitive stemming package such as Snowball. Weka code also includes the [Snowball Stemmer](http://weka.sourceforge.net/doc.dev/weka/core/stemmers/SnowballStemmer.html), so this should be simple.
 4. Construction of bigrams - in addition to all words, features include all two-word sequences in the input string.
