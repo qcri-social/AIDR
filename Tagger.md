@@ -4,22 +4,15 @@ Code: https://github.com/qcri-social/AIDR/tree/master/aidr-tagger and https://gi
 
 # Overview
 
-The aidr-tagger module has three main functions: to tag new items, to update the tagging model, and to sample for the human annotators.
+The aidr-tagger module has three main functions: to tag (classify) new items, to build and re-build the classification model, and to sample for the human annotators.
 
-The main function of aidr-tagger is *tagging:* to read collected items and automatically assign a label to them. This is done using a classification model built using [Weka](http://www.cs.waikato.ac.nz/ml/weka/). 
+The main function of aidr-tagger is to **classify items.** It reads collected items and automatically assign a label to them. This is done using a classification model built using [Weka](http://www.cs.waikato.ac.nz/ml/weka/). 
 
-Additionally, aidr-tagger updates 
+The second function of aidr-tagger is to **build a classification model.** This is done by receiving human-tagged items and feeding them as _training examples_ to Weka. Every 50 new human-tagged items, a new model is built using all human-tagged items available up to that point in time.
 
-* It reads collected items and automatically assigns a label to them (tagging)
+The third function of aidr-tagger is to *sample data for human annotators.* It selects a varied and recent subset of tagged elements that were not trivial to tag (i.e. for which its confidence was low), and places them in the [[task buffer]]. The selection of these items is done using an [active learning](https://en.wikipedia.org/wiki/Active_learning) criterion by which the items for which the classifier's confidence is minimum are selected first.
 
-
-reads collected items, annotates them using an automatic classifier, and writes them to another Redis queue. The input to this module is two-fold: elements to be automatically classified, and elements already classified by a human.
-
-When elements to be automatically classified are received, they are classified using the current classification model. Additionally, some items are sampled from the input and placed into the [[task buffer]], which is a set of items waiting to be classified by a human. The selection of these items is done using an [active learning](https://en.wikipedia.org/wiki/Active_learning) criterion by which the items for which the classifier's confidence is minimum are selected first.
-
-When elements already classified by a human are received, they are considered as _training data_. Whenever a pre-defined number of new training data items are received (e.g. 50 new items), the current classification model is re-trained using all the available training items to date.
-
-# Important Entities
+# Concepts
 
 A **nominal attribute** is an attribute that takes a number of values, such as "color".
 
