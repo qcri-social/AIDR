@@ -37,6 +37,7 @@
  * [[Persister API]]
  * [[Persister Tester]]
 * [[Tagger]]
+ * [[Tagger Concepts]]
  * [[Tagger API]]
  * [[Tagger Tester]]
 * [[Trainer]]
