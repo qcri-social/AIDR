@@ -66,7 +66,7 @@ The tagger tester should perform the following steps:
 1. Generate random items (defined above) and Push them to Redis on channel `FetcherChannel.tagger_tester` at the rate of 5 items/second. A valid AIDR item is a JSON document with minimum required fields as defined [here](https://gist.github.com/imran15/4e4ce1948c2b82905c3e). You can add use the `tweetid` field, for example, to keep track of which item belongs to which label (i.e. White, Black). Keep pushing items until the document table in the `aidr-predict` database receives at least 200 items waiting to be labeled. (TO-DO: need an API to check the total number of unlabeled items for a crisis)
 1. Get a task to label by using the `getOneTaskBufferToAssign` service of the `DocumentController` of the `Trainer-API` module 
 1. Assign the correct label to that item (using its tweetid) and save it using the `save` service of the `TaskAnswerContoller` of the `Trainer-API` module
-1. After about 50 white items and 50 black items have been tagged, check if the Tagger module has created a model using `(Latika: please enter API here)`. If not, wait 30 seconds and keep tagging more items, 50 at a time.
+1. After about 100 white items and 100 black items have been tagged, check if the Tagger module has created a model using `(Latika: please enter API here)`. If not, wait 10 seconds and keep tagging more items, 50 at a time.
 1. For testing, generate WHITE testing items and push them to the tagger
 1. Verify that at least 80% of them are tagged WHITE, otherwise FAIL
 1. Generate BLACK testing items and push them to the tagger
