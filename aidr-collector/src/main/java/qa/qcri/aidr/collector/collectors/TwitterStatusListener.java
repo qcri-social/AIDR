@@ -131,7 +131,7 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 				{
 					timeToSleep = (long) (getRandom()*attempt*
 							Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_NET_FAILURE_WAIT_SECONDS)));
-					logger.info("Error -1, Waiting for " + timeToSleep + " seconds, attempt: " + attempt);
+					logger.warn("Error -1, Waiting for " + timeToSleep + " seconds, attempt: " + attempt);
 					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_WARNING));
 					task.setStatusMessage("Collection Stopped due to Twitter Error. Reconnect Attempt: " + attempt);
 				}
@@ -144,7 +144,7 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 				{
 					timeToSleep = (long) (getRandom()*(2^(attempt-1))*
 							Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_RATE_LIMIT_WAIT_SECONDS)));
-					logger.info("Error 420, Waiting for " + timeToSleep + " seconds, attempt: " + attempt);					
+					logger.warn("Error 420, Waiting for " + timeToSleep + " seconds, attempt: " + attempt);					
 					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_WARNING));
 					task.setStatusMessage("Collection Stopped due to Twitter Error. Reconnect Attempt: " + attempt);
 				}
@@ -157,7 +157,7 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 				{
 					timeToSleep = (long) (getRandom()*attempt*
 							Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_SERVICE_UNAVAILABLE_WAIT_SECONDS)));
-					logger.info("Error 503, Waiting for " + timeToSleep + " seconds, attempt: " + attempt);					
+					logger.warn("Error 503, Waiting for " + timeToSleep + " seconds, attempt: " + attempt);					
 					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_WARNING));
 					task.setStatusMessage("Collection Stopped due to Twitter Error. Reconnect Attempt: " + attempt);
 				}
@@ -166,7 +166,7 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 				task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
 			
 			if(task.getStatusCode().equals(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR)))
-				EmailClient.sendErrorMail(task.getCollectionCode(),((TwitterException) ex).getCause().getMessage());
+				EmailClient.sendErrorMail(task.getCollectionCode(),ex.toString());
 			
 			try {
                 Thread.sleep(timeToSleep*1000);
@@ -188,8 +188,7 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 	
 	private static double getRandom()
 	{
-		double d = Math.random() * (max - min) + min;
-		logger.info("random num" + d);
+		double d = Math.random() * (max - min) + min;		
 		return d;
 	}
 
