@@ -68,7 +68,7 @@ If you want to deploy (or undeploy) all the modules which are a part of the AIDR
     `cd $AIDR_HOME`
 
 * Review the `deploy.sh` script:
- * Set the environment variables correctly to match your installations.
+ * Set the environment variables correctly to match your installation.
  * Set the correct application names and JDBC resource names.
 
 * Run the `deploy.sh` script:
@@ -89,9 +89,9 @@ This will help you login once and would execute all the commands in the script i
 
 # 4. Post-installation MySQL commands (mandatory)
 
-Run the deployment script `deploy.sh` with the second argument as `deploy_db` to update your database (The first argument needs to be for deploying the system as mentioned in Step #3).
+Run the deployment script `deploy.sh` with the second argument as `deploy_db` to update your database (The first argument needs to be for deploying the system as mentioned in Step #3):
 
-    `sh deploy.sh deploy deploy_db`
+    sh deploy.sh deploy deploy_db
 
 Please set the MY_SQL_USERNAME variable in the `deploy.sh` script before running it.
 
