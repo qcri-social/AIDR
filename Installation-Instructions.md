@@ -89,22 +89,9 @@ This will help you login once and would execute all the commands in the script i
 
 # 4. Post-installation MySQL commands (mandatory)
 
-The following MySQL commands *must* be executed after the installation:
+Run the deployment script `deploy.sh` with argument `deploy_db` to update your database.
 
-First, check the character set currently being used in MySQL:
-
-1. SHOW VARIABLES WHERE Variable_name LIKE 'character\_set\_%' OR Variable_name LIKE 'collation%';
-1. ALTER DATABASE aidr_fetch_manager CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
-1. ALTER TABLE aidr_fetch_manager.AIDR_COLLECTION CHANGE last_document last_document LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-1. ALTER DATABASE aidr_predict CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
-1. ALTER TABLE aidr_predict.document CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-1. ALTER TABLE aidr_predict.document CHANGE data data TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-Finally, do a sanity check: 
-
-* SHOW VARIABLES WHERE Variable_name LIKE 'character\_set\_%' OR Variable_name LIKE 'collation%';
-
-**NOTE:** Running the deployment script `deploy.sh` with an additional argument `deploy_db` will run the above commands if the appropriate MySQL environment variables are set in the script
+Please set the appropriate MySQL environment variables in the `deploy.sh` script before running it.
 
 # Known Issues / Troubleshooting
 
