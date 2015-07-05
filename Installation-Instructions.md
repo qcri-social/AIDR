@@ -77,7 +77,7 @@ If you want to deploy (or undeploy) all the modules which are a part of the AIDR
 
 **NOTE 1:** The argument to the `deploy.sh` script can be `deploy` (starts a glassfish domain, created JDBC resources and deploys the various modules on glassfish), `undeploy` (undeploys all the modules from the glassfish server, removes the JDBC resources and shuts down the glassfish domain), or `undeploy-deploy` (undeploys the app first then deploys it).
 
-**NOTE 2:** The `deploy.sh` command also starts a java process for the Tagger module. However, undeploy does not kill this specific process. If you want you can use `jps` to locate the tagger process and kill it using `kill -9`.
+**NOTE 2:** The `deploy.sh` command also starts a java process for the Tagger module.
 
 Also, if you are using a glassfish user with an enabled password. Please use the following command in the `$GLASSFISH_HOME` directory before running the deployment script:
 
@@ -89,9 +89,11 @@ This will help you login once and would execute all the commands in the script i
 
 # 4. Post-installation MySQL commands (mandatory)
 
-Run the deployment script `deploy.sh` with argument `deploy_db` to update your database.
+Run the deployment script `deploy.sh` with the second argument as `deploy_db` to update your database (The first argument needs to be for deploying the system as mentioned in Step #3).
 
-Please set the appropriate MySQL environment variables in the `deploy.sh` script before running it.
+    `sh deploy.sh deploy deploy_db`
+
+Please set the MY_SQL_USERNAME variable in the `deploy.sh` script before running it.
 
 # Known Issues / Troubleshooting
 
