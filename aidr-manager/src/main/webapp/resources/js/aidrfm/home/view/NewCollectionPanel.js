@@ -267,6 +267,7 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
                 '<tpl else>'+
                 '<img alt="Collection image" height="70" src="resources/img/sms_icon.png" width="70">' +
                 '</tpl>'+
+                '</a>',
             '</div>',
 
             '<div class="info" style="width: 600px !important;">',
@@ -292,7 +293,7 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
                     return r ? Ext.util.Format.number(r,'0,000') : 0;
                 },
                 getEncodedCode: function(code) {
-                    URIString = BAS_URL + '/protected/' + code;
+                    URIString = BASE_URL + '/protected/' + code;
                 	return encodeURI(URIString);
                 },
                 isTwitter: function (r) {

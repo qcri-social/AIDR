@@ -73,9 +73,13 @@ public class WordSet implements DocumentFeature, Serializable {
     public double getSimilarity(WordSet other) {
         int l1 = words.size();
         int l2 = other.words.size();
-        HashSet<String> union = new HashSet<String>(words);
-        union.addAll(other.words);
-        int l3 = union.size();
-        return Math.min(l1, l2) / (double) l3;
+        
+        // intersection of two sets
+        HashSet<String> intersection = new HashSet<String>(words);
+        intersection.retainAll(other.words);
+        int l3 = intersection.size();
+        
+        // similarity using Jaccard coefficient
+        return l3 / (double) (l1 + l2 -l3);
     }
 }
