@@ -1,3 +1,6 @@
+/**
+ * This class is not used at the moment.
+ */
 package qa.qcri.aidr.analysis.facade.imp;
 
 import java.util.List;

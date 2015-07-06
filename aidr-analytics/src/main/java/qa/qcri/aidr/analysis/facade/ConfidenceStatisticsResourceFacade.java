@@ -1,3 +1,6 @@
+/**
+ * This facade is not used at the moment.
+ */
 package qa.qcri.aidr.analysis.facade;
 
 import java.util.List;

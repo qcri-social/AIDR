@@ -1,3 +1,7 @@
+/**
+ * This class provides an interface to automatically start/stop/manage the analytics DB writer service at deployment time
+ * to monitor REDIS channels for data to store into the aidr analytics DB.
+ */
 package qa.qcri.aidr.analysis.api;
 
 import java.util.Date;
