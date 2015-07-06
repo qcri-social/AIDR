@@ -8,16 +8,12 @@ import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.hibernate.Hibernate;
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelIdDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
@@ -25,7 +21,6 @@ import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentNominalLabelResourceFaca
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
-import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabelId;
 
 /**
  * @author Koushik
@@ -35,7 +30,7 @@ import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabelId;
 public class DocumentNominalLabelResourceFacadeImp 
 extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNominalLabelResourceFacade {
 
-	private Logger logger = LoggerFactory.getLogger("db-manager-log");
+	private Logger logger = Logger.getLogger("db-manager-log");
 
 	@EJB
 	DocumentResourceFacade documentEJB;
@@ -117,7 +112,8 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 	@Override
 	public Integer deleteDocument(DocumentNominalLabelDTO doc) {
 		try {
-			em.remove(doc.toEntity()); 
+			DocumentNominalLabel managed = em.merge(doc.toEntity());
+			em.remove(managed); 
 		} catch (Exception e) {
 			return 0;
 		}

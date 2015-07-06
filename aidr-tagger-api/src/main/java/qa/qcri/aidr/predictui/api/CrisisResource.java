@@ -8,9 +8,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
@@ -26,6 +23,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ import java.util.Map;
 public class CrisisResource {
 
 	//private Logger logger = Logger.getLogger(CrisisResource.class.getName());
-	private Logger logger = LoggerFactory.getLogger(CrisisResource.class);
+	private Logger logger = Logger.getLogger(CrisisResource.class);
 	private ErrorLog elog = new ErrorLog();
 
 	@Context

@@ -70,7 +70,8 @@ public class NominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<Nomina
 	@Override
 	public Integer deleteNominalLabel(NominalLabelDTO nominalLabel) throws PropertyNotSetException {
 		if (nominalLabel != null) {
-			em.remove(nominalLabel.toEntity());
+			NominalLabel managed = em.merge(nominalLabel.toEntity());
+			em.remove(managed);
 			return 1;
 		}
 		return 0;

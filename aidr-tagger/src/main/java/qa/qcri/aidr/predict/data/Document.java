@@ -205,6 +205,8 @@ public abstract class Document implements java.io.Serializable {
 			}
 			document.setGeoFeatures(null);
 			document.setValueAsTrainingSample(doc.getValueAsTrainingSample());
+			boolean val  = Math.random() < (1.0/5.0) ? true : false;
+			document.setIsEvaluationSet(val);
 			
 			/*
 			List<NominalLabelBC> labels = doc.getHumanLabels(NominalLabelBC.class);

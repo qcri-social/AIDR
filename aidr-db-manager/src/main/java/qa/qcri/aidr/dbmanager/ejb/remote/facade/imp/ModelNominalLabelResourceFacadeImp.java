@@ -159,7 +159,8 @@ public class ModelNominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<M
 	@Override
 	public Integer deleteModelNominalLabel(ModelNominalLabelDTO modelNominalLabel) throws PropertyNotSetException {
 		if (modelNominalLabel != null) {
-			em.remove(modelNominalLabel.toEntity());
+			ModelNominalLabel managed = em.merge(modelNominalLabel.toEntity());
+			em.remove(managed);
 			return 1;
 		}
 		return 0;

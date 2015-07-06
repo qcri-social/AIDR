@@ -10,18 +10,20 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.java7.Predicate;
-import qa.qcri.aidr.collector.utils.CollectorConfigurator;
 import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
+import qa.qcri.aidr.collector.utils.CollectorConfigurator;
+import qa.qcri.aidr.collector.utils.GenericCache;
+import twitter4j.ConnectionLifeCycleListener;
 import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusListener;
 import twitter4j.TwitterObjectFactory;
+import twitter4j.TwitterException;
 
 /**
  * This class is responsible for dispatching incoming tweets.
@@ -36,9 +38,8 @@ import twitter4j.TwitterObjectFactory;
  * This approach allows to create unit tests for every single
  * filter and for every single publisher.
  * 
- * @author Anthony Ananich <anton.ananich@inpun.com>
  */
-class TwitterStatusListener implements StatusListener {
+class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListener{
 
 	private static Logger logger = Logger.getLogger(TwitterStatusListener.class.getName());
 
@@ -50,7 +51,10 @@ class TwitterStatusListener implements StatusListener {
 	private List<Publisher> publishers = new ArrayList<>();
 	private JsonObject aidr;
 	private String channelName;
-
+	private long timeToSleep = 0;
+	private static int max  = 3;
+	private static int min = 1;
+	
 	public TwitterStatusListener(CollectionTask task, String channelName) {
 		this.task = task;
 		this.channelName = channelName;
@@ -86,13 +90,6 @@ class TwitterStatusListener implements StatusListener {
 				return;
 			}
 		}
-		if (StringUtils.isNotEmpty(System.getProperty("quiet"))
-				&& (!Boolean.valueOf(System.getProperty("quiet")))) {
-			String tweetText = originalDoc.get("text").toString();
-			System.out.println("[" + originalDoc.get("timestamp_ms").toString()
-					+ "]"
-					+ tweetText.substring(0, Math.min(40, tweetText.length())));
-		}
 		JsonObjectBuilder builder = Json.createObjectBuilder();
 		for (Entry<String, JsonValue> entry: originalDoc.entrySet())
 			builder.add(entry.getKey(), entry.getValue());
@@ -117,9 +114,67 @@ class TwitterStatusListener implements StatusListener {
 	@Override
 	public void onException(Exception ex) {
 		logger.error("Twitter Exception for collection " + task.getCollectionCode(), ex);
+		//TwitterException t;
+		if(ex instanceof TwitterException)
+		{
+			GenericCache cache = GenericCache.getInstance();
+			//logger.error("network issue? " + ((TwitterException) ex).isCausedByNetworkIssue() 
+				//	+ " resource not found" + ((TwitterException) ex).resourceNotFound()
+					//+ " cause: " + ((TwitterException) ex).getCause().getMessage());			
+			
+			int attempt = cache.incrAttempt(task.getCollectionCode());
+			task.setStatusMessage(ex.getMessage());
+			if(((TwitterException) ex).getStatusCode() == -1)
+			{
+				if(attempt > Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_NET_FAILURE_RETRY_ATTEMPTS)))
+					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
+				else
+				{
+					timeToSleep = (long) (getRandom()*attempt*
+							Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_NET_FAILURE_WAIT_SECONDS)));
+					logger.info("Error -1, Waiting for " + timeToSleep + " seconds");
+					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_WARNING));
+					task.setStatusMessage("Collection Stopped due to Twitter Error. Reconnect Attempt: " + attempt);
+				}
+			}
+			else if(((TwitterException) ex).getStatusCode() == 420)
+			{
+				if(attempt > Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_RATE_LIMIT_RETRY_ATTEMPTS)))
+					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
+				else
+				{
+					timeToSleep = (long) (getRandom()*(2^(attempt-1))*
+							Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_RATE_LIMIT_WAIT_SECONDS)));
+					logger.info("Error 420, Waiting for " + timeToSleep + " seconds");					
+					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_WARNING));
+					task.setStatusMessage("Collection Stopped due to Twitter Error. Reconnect Attempt: " + attempt);
+				}
+			}
+			else if(((TwitterException) ex).getStatusCode() == 503)
+			{
+				if(attempt > Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_SERVICE_UNAVAILABLE_RETRY_ATTEMPTS)))
+					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
+				else
+				{
+					timeToSleep = (long) (getRandom()*attempt*
+							Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_SERVICE_UNAVAILABLE_WAIT_SECONDS)));
+					logger.info("Error 503, Waiting for " + timeToSleep + " seconds");					
+					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_WARNING));
+					task.setStatusMessage("Collection Stopped due to Twitter Error. Reconnect Attempt: " + attempt);
+				}
+			}
+			else
+			{
+				task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
+			}
+			
+			try {
+                Thread.sleep(timeToSleep*1000);
+            } catch (InterruptedException ignore) {
+            }
+			timeToSleep=0;
+		}
 		// TODO: thread safety
-		task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
-		task.setStatusMessage(ex.getMessage());
 	}
 
 	@Override
@@ -129,5 +184,33 @@ class TwitterStatusListener implements StatusListener {
 	@Override
 	public void onStallWarning(StallWarning msg) {
 		logger.error(task.getCollectionCode() + " Stall Warning: " + msg.getMessage());
+	}
+	
+	private static double getRandom()
+	{
+		double d = Math.random() * (max - min) + min;
+		logger.info("random value:" + d);
+		return d;
+	}
+
+	@Override
+	public void onConnect() {
+		if(task.getStatusCode() == configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_WARNING))
+			task.setStatusMessage("was disconnected due to network failure, reconnected OK");
+		else
+			task.setStatusMessage(null);
+		task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_RUNNING));
+		
+	}
+
+	@Override
+	public void onDisconnect() {
+		// TODO Auto-generated method stub		
+	}
+
+	@Override
+	public void onCleanUp() {
+		// TODO Auto-generated method stub
+		
 	}
 }

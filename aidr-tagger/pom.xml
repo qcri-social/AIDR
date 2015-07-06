@@ -11,6 +11,14 @@
 
 	<build>
 		<plugins>
+		<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.17</version>
+				<configuration>
+					<skipTests>True</skipTests>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -58,6 +66,7 @@
 				<directory>${resource.dir}</directory>
 				<includes>
 					<include>**/*.properties</include>
+					<include>**/*.xml</include>
 				</includes>
 				<filtering>true</filtering>
 			</resource>
@@ -178,9 +187,6 @@
 		</dependency>
 
 		<!-- logging dependencies -->
-		<!-- dependency> <groupId>org.slf4j</groupId> <artifactId>slf4j-api</artifactId> 
-			<version>1.7.5</version> </dependency> <dependency> <groupId>org.slf4j</groupId> 
-			<artifactId>slf4j-simple</artifactId> <version>1.7.5</version> </dependency -->
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -217,6 +223,13 @@
 			<artifactId>guava</artifactId>
 			<version>17.0</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
 
 
 	</dependencies>
@@ -241,6 +254,12 @@
 			<id>dev</id>
 			<properties>
 				<build.profile.id>dev</build.profile.id>
+			</properties>
+		</profile>
+		<profile>
+			<id>staging</id>
+			<properties>
+				<build.profile.id>staging</build.profile.id>
 			</properties>
 		</profile>
 		<profile>

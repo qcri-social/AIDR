@@ -182,9 +182,25 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 	@Override
 	public AidrCollection getRunningCollectionStatusByUser(Integer userId) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
-		criteria.add(Restrictions.eq("user.id", userId));
-		criteria.add(Restrictions.eq("status", CollectionStatus.RUNNING));
-		criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
+		//criteria.add(Restrictions.eq("user.id", userId));
+		//criteria.add(Restrictions.eq("status", CollectionStatus.RUNNING));
+		
+		LogicalExpression or = Restrictions.or(
+				Restrictions.eq("status", CollectionStatus.RUNNING),
+				Restrictions.eq("status", CollectionStatus.RUNNING_WARNING)
+				);
+		
+		LogicalExpression and = Restrictions.and(
+				or,
+				Restrictions.ne("status", CollectionStatus.TRASHED)				
+				);
+		LogicalExpression andAll = Restrictions.and(
+				and,
+				Restrictions.eq("user.id", userId)
+				);
+		
+		criteria.add(andAll);
+		//criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
 		return (AidrCollection) criteria.uniqueResult();
 	}
 

@@ -1,3 +1,7 @@
+/*
+ * Provides methods to create formatted JSON output data for the REST APIs  
+ */
+
 package qa.qcri.aidr.output.utils;
 
 import java.util.HashMap;
@@ -8,9 +12,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.google.gson.JsonObject;
-
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
 
 public class JsonDataFormatter {
 
@@ -82,7 +83,7 @@ public class JsonDataFormatter {
 		return jsonDataList;
 	}
 
-	public StringBuilder createRateLimitedList(List<String> bufferedMessages, final SimpleRateLimiter channelSelector, int messageCount, boolean rejectNullFlag) {
+	public StringBuilder createRateLimitedList(List<String> bufferedMessages, final SimpleFairScheduler channelSelector, int messageCount, boolean rejectNullFlag) {
 		// Now, build the jsonp object to be sent - data in reverse chronological order.
 		// The entire collection of json objects are wrapped with a single callback function.
 		StringBuilder jsonDataList = null; 

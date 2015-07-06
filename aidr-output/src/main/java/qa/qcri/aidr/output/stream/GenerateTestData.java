@@ -1,5 +1,10 @@
+/*
+ * Test data generator - deprecated
+ */
+
 package qa.qcri.aidr.output.stream;
 
+@Deprecated
 public class GenerateTestData {
 	private int sendCount;
 	private static int MAX_COUNT = 100;

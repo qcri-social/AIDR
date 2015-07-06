@@ -17,10 +17,9 @@ import java.util.TreeSet;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import org.apache.log4j.Logger;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -95,7 +94,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade remoteNominalLabelEJB;
 
-	protected static Logger logger = LoggerFactory.getLogger(TaskManagerBean.class);
+	protected static Logger logger = Logger.getLogger(TaskManagerBean.class);
 	private ErrorLog elog = new ErrorLog();
 
 	private static Object lockObject = new Object();

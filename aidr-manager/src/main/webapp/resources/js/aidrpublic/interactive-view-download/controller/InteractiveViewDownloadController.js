@@ -311,7 +311,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
     updateStatusInfo: function(status, endDate, collectionType){
         var statusText = '';
 
-        if (status == 'RUNNING-WARNNING' || status == 'RUNNING' || status == 'INITIALIZING'){
+        if (status == 'RUNNING_WARNING' || status == 'RUNNING' || status == 'INITIALIZING'){
             var status = AIDRFMFunctions.getStatusWithStyle(status, collectionType);
             statusText = '<div class="styled-text">Status: <small>' + status +'</small></div>';
         } else {

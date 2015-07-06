@@ -79,9 +79,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.glassfish.jersey.server.ChunkedOutput;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-
 import org.apache.log4j.Logger;
 
 import com.google.gson.JsonNull;
@@ -89,6 +86,8 @@ import com.google.gson.JsonObject;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
+import qa.qcri.aidr.output.utils.OutputConfigurationProperty;
+import qa.qcri.aidr.output.utils.OutputConfigurator;
 import qa.qcri.aidr.output.stream.AsyncStreamRedisSubscriber;
 import redis.clients.jedis.Jedis;
 
@@ -96,13 +95,14 @@ import redis.clients.jedis.Jedis;
 public class AsyncStream implements ServletContextListener {
 
 	// Related to channel buffer management
-	private static final String CHANNEL_REG_EX = "aidr_predict.*";
-	private static final String CHANNEL_PREFIX_CODE = "aidr_predict.";
+	private static OutputConfigurator configProperties = OutputConfigurator.getInstance();
+	private static final String CHANNEL_REG_EX = configProperties.getProperty(OutputConfigurationProperty.TAGGER_CHANNEL_BASENAME)+".*";
+	private static final String CHANNEL_PREFIX_CODE = configProperties.getProperty(OutputConfigurationProperty.TAGGER_CHANNEL_BASENAME)+".";
 
 	private static final boolean rejectNullFlag = true;		
 
-	private static final String redisHost = "localhost";		// Current assumption: REDIS running on same m/c
-	private static final int redisPort = 6379;					
+	public static String redisHost = configProperties.getProperty(OutputConfigurationProperty.REDIS_HOST);
+	public static int redisPort = Integer.valueOf(configProperties.getProperty(OutputConfigurationProperty.REDIS_PORT));
 
 	// Jedis related
 	private volatile static JedisConnectionObject jedisConn;

@@ -1,20 +1,24 @@
 package qa.qcri.aidr.output.getdata;
 
 import static org.junit.Assert.*;
+
 import java.util.List;
 import java.util.Set;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import qa.qcri.aidr.output.utils.OutputConfigurationProperty;
+import qa.qcri.aidr.output.utils.OutputConfigurator;
+
 public class ChannelBufferManagerTest {
-	//
+	private static OutputConfigurator configProperties = OutputConfigurator.getInstance();
 	static ChannelBufferManager channelBufferManager;
 	//
 	@BeforeClass
 	public static void setUp() throws Exception {
 		channelBufferManager = new ChannelBufferManager();
-		String channelRegEx = "aidr_predict.*";
+		String channelRegEx = configProperties.getProperty(OutputConfigurationProperty.TAGGER_CHANNEL_BASENAME)+".*";
 		channelBufferManager.initiateChannelBufferManager(channelRegEx);
 	}
 	//

@@ -149,4 +149,21 @@ public class CustomUiTemplateResourceFacadeImp extends CoreDBServiceFacadeImp<Cu
 	public void deleteCustomUITemplateByCrisisID(long crisisID) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
+	
+	public int deleteCustomUiTemplateById(long customUiTemplateId){
+		try {
+			CustomUiTemplateDTO customUiTemplateDTO = getCustomUITemplateByID(customUiTemplateId);
+			Object managed = em.merge(customUiTemplateDTO.toEntity());
+			em.remove(managed); 
+			return 1;
+			} catch (Exception e) {
+				return 0;
+		}
+	}
+	
+	public CustomUiTemplateDTO getCustomUITemplateByID(long customUiTemplateId) {
+		Criterion criterion =Restrictions.eq("customUitemplateId",customUiTemplateId);
+		CustomUiTemplate customUiTemplate = this.getByCriteria(criterion);
+		return (new CustomUiTemplateDTO(customUiTemplate));
+	}
 }

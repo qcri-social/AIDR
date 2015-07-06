@@ -6,8 +6,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
@@ -34,7 +33,7 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 	@EJB
 	private TaskManagerRemote<qa.qcri.aidr.dbmanager.dto.DocumentDTO, Long> taskManager;
 
-	private static Logger logger = LoggerFactory.getLogger(CrisisManagementResource.class);
+	private static Logger logger = Logger.getLogger(CrisisManagementResource.class);
 	private static ErrorLog elog = new ErrorLog();
 
 	@Override

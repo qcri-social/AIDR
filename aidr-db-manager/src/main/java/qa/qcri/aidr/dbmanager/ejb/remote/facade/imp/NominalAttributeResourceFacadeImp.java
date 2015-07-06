@@ -72,7 +72,8 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 		NominalAttribute attribute = getEntityManager().find(NominalAttribute.class, attributeID);
 		if (attribute != null) {
 			try {
-				getEntityManager().remove(attribute);
+				NominalAttribute managed = getEntityManager().merge(attribute);
+				getEntityManager().remove(managed);
 			} catch (HibernateException he) {
 				logger.error("Error occured while removing Attribute with ID = " + attributeID + "\n" + he.getStackTrace());
 				return false; // exception occured

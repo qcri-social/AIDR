@@ -12,8 +12,7 @@ import java.util.*;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
@@ -29,7 +28,7 @@ import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
 @Stateless
 public class ModelFamilyFacadeImp implements ModelFamilyFacade {
 
-    private static Logger logger = LoggerFactory.getLogger(ModelFamilyFacadeImp.class);
+    private static Logger logger = Logger.getLogger(ModelFamilyFacadeImp.class);
     private static ErrorLog elog = new ErrorLog();
 
     @EJB

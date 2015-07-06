@@ -3,12 +3,7 @@ package qa.qcri.aidr.predictui.facade.imp;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-//import org.apache.log4j.Logger;
-
-
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.facade.TaskBufferScannerFacade;
@@ -23,7 +18,7 @@ import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 public class TaskBufferScannerImp implements TaskBufferScannerFacade {
 
 	//private static Logger logger = Logger.getLogger(TaskBufferScannerImp.class);
-	private static Logger logger = LoggerFactory.getLogger(TaskBufferScannerImp.class);
+	private static Logger logger = Logger.getLogger(TaskBufferScannerImp.class);
 	private static ErrorLog elog = new ErrorLog();
 	
 	//@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
