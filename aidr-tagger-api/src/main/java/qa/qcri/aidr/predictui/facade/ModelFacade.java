@@ -28,5 +28,7 @@ public interface ModelFacade {
     public List<ModelHistoryWrapper> getModelByModelFamilyID(Long modelFamilyID, Integer start, Integer limit);
 
     public List<ModelWrapper> getModelByCrisisID(Long crisisID);
+    
+    public void deleteModelDataByModelFamily(Long modelFamilyID);
 
 }

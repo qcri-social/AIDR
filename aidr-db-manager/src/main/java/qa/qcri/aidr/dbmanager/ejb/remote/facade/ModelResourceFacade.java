@@ -37,4 +37,7 @@ public interface ModelResourceFacade extends CoreDBServiceFacade<Model, Long>{
     //Client to fix: response changed from ModelWrapper -> ModelDTOWrapper. Only Class name is changed, all attributes are same.
     public List<ModelWrapper> getModelByCrisisID(Long crisisID) throws PropertyNotSetException;
     
+    public boolean deleteModel(Long modelID);
+    
+    
 }

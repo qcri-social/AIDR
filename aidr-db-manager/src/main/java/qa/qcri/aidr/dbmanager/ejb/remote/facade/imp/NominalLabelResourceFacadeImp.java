@@ -148,4 +148,17 @@ public class NominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<Nomina
 		NominalLabel nb = this.getByCriteria(Restrictions.eq("nominalLabelCode", code));
 		return nb != null ? true : false;
 	}
+	
+	@Override
+	public List<NominalLabelDTO> getNominalLabelByAttributeID(Long attributeID) throws PropertyNotSetException {
+		List<NominalLabel> nominalLabels = this.getAllByCriteria(Restrictions.eq("nominalAttribute.nominalAttributeId", attributeID));
+		List<NominalLabelDTO> dtoList = new ArrayList<NominalLabelDTO>();
+		if (nominalLabels != null && !nominalLabels.isEmpty()) {
+			for (NominalLabel nb: nominalLabels) {
+				dtoList.add(new NominalLabelDTO(nb));
+			}
+		}
+		
+		return dtoList;
+	}
 }

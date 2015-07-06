@@ -1,25 +1,31 @@
 package qa.qcri.aidr.predictui.api;
 
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
-
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
-import qa.qcri.aidr.predictui.util.ResponseWrapper;
-import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
-import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
+import java.util.Map;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.*;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.predictui.facade.DocumentFacade;
+import qa.qcri.aidr.predictui.util.ResponseWrapper;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
+import qa.qcri.aidr.task.ejb.TaskManagerRemote;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * REST Web Service
@@ -36,6 +42,9 @@ public class DocumentResource {
 	@EJB
 	private DocumentFacade documentLocalEJB;
 
+	@EJB
+	private TaskManagerRemote<DocumentDTO, Long> taskManager;
+	
 	private static Logger logger = Logger.getLogger("aidr-tagger-api");
 
 	public DocumentResource() {
@@ -107,5 +116,34 @@ public class DocumentResource {
 		}
 	}
 
+	@GET
+	@Produces("application/json")
+	@Path("/unlabeled/count/{crisisId}")
+	public Response getNominalAttributesCountForCrisis(@PathParam("crisisId") Long crisisId) {
+		Map<String, Integer> result = new HashMap<String, Integer>(1);
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+				Integer unlabeledCount = documentLocalEJB.getUnlabeledDocumentsCountByCrisisID(crisisId);
+				if(unlabeledCount == null) {
+					unlabeledCount = 0;
+				}
+				return Response.ok(mapper.writeValueAsString(unlabeledCount)).build();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.ok(-1).build();
+		}
+	}
 
+	@DELETE
+	@Path("/delete/{crisisId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteDocumentByCrisisId(@PathParam("crisisId") Long crisisId) {
+		try {
+			taskManager.deleteTaskForCrisis(crisisId);
+		} catch (RuntimeException e) {
+			return Response.ok(
+					new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "Error while deleting Document.")).build();
+		}
+		return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS))).build();
+	}
 }

@@ -27,5 +27,7 @@ public interface ModelNominalLabelResourceFacade extends CoreDBServiceFacade<Mod
 	public Boolean isModelNominalLabelExists(Long nominalLabelID) throws PropertyNotSetException;
 
 	public ModelNominalLabelDTO addModelNominalLabel(ModelNominalLabelDTO modelNominalLabel);
+	
+	public void deleteModelNominalLabelByModelID(Long modelID);
 
 }

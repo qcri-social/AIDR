@@ -7,6 +7,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
@@ -25,6 +26,7 @@ import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
+import qa.qcri.aidr.dbmanager.entities.model.Model;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 
@@ -483,4 +485,18 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 		return dtoList;
 	}
 
+	@Override
+	public Integer getUnlabeledDocumentsCountByCrisisID(Long crisisId) throws PropertyNotSetException {
+		Criterion criterion = Restrictions.conjunction()
+				.add(Restrictions.eq("crisis.crisisId",crisisId))
+				.add(Restrictions.eq("hasHumanLabels", false));
+		List<Document> documentList = this.getAllByCriteria(criterion);
+		return documentList != null ? Integer.valueOf(documentList.size()) : 0;
+	}
+
+	@Override
+	public void deleteDocumentByCrisisID(Long crisisID) {
+		List<Document> list = getAllByCriteria(Restrictions.eq("crisis.crisisId", crisisID));
+		delete(list);
+	}
 }

@@ -122,12 +122,12 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 			CrisisAttributesDTO attribute;
 			for (Object[] row : rows) {
 				attribute = new CrisisAttributesDTO();
-				attribute.setNominalAttributeID(((BigInteger) row[0]).intValue());
-				attribute.setUserID(((BigInteger) row[1]).intValue());
+				attribute.setNominalAttributeID(((Integer) row[0]).intValue());
+				attribute.setUserID(((Integer) row[1]).intValue());
 				attribute.setName((String) row[2]);
 				attribute.setDescription((String) row[3]);
 				attribute.setCode(((String) row[4]));
-				attribute.setLabelID(((BigInteger) row[5]).intValue());
+				attribute.setLabelID(((Integer) row[5]).intValue());
 				attribute.setLabelName(((String) row[6]));
 				attributesList.add(attribute);
 			}

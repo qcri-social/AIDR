@@ -24,5 +24,7 @@ public interface UserResourceFacade {
 	public UsersDTO getUserByID(Long userID);
 
 	public List<UsersDTO> getAllUsers();
+	
+	public Integer deleteUser(Long userID);
 
 }

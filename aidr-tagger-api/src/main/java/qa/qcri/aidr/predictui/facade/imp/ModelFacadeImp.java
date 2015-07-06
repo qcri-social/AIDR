@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelDTO;
-
 import qa.qcri.aidr.predictui.facade.*;
 
 import java.util.List;
@@ -32,6 +31,9 @@ public class ModelFacadeImp implements ModelFacade {
     @EJB
     private qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelResourceFacade remoteModelEJB;
 
+    @EJB
+    private ModelNominalLabelFacade modelLabelFacade;
+    
     @Override
     public List<ModelDTO> getAllModels() {
         try {
@@ -83,6 +85,20 @@ public class ModelFacadeImp implements ModelFacade {
             pe.printStackTrace();
         }
         return null;
+    }
+    
+    @Override
+    public void deleteModelDataByModelFamily(Long modelFamilyID) {
+    	try {
+			List<ModelHistoryWrapper> historyWrappers = remoteModelEJB.getModelByModelFamilyID(modelFamilyID, 0, 10);
+			for (ModelHistoryWrapper modelHistoryWrapper : historyWrappers) {
+				modelLabelFacade.deleteByModel(modelHistoryWrapper.getModelID());
+				remoteModelEJB.deleteModel(modelHistoryWrapper.getModelID());
+			}
+			
+		} catch (PropertyNotSetException e) {
+			logger.error("Error in deleting Model Data with modelFamilyID : " + modelFamilyID);
+		}
     }
 
 }

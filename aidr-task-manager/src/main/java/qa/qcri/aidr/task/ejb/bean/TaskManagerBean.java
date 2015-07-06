@@ -1269,6 +1269,10 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		return this.getHumanLabeledDocumentsByCrisisIDUserID(crisisID, user.getUserID(), count);
 	}
 
+	@Override
+	public void deleteTaskForCrisis(Long crisisID) {
+		remoteDocumentEJB.deleteDocumentByCrisisID(crisisID);
+	}
 	/*
 	public static void main(String args[]) {
 		TaskManagerRemote<Document, Serializable> tm = new TaskManagerBean<Document, Long>();

@@ -4,15 +4,15 @@
  */
 package qa.qcri.aidr.predictui.facade.imp;
 
-import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
-import qa.qcri.aidr.dbmanager.dto.ModelNominalLabelDTO;
-import qa.qcri.aidr.predictui.facade.ModelNominalLabelFacade;
-import qa.qcri.aidr.task.ejb.TaskManagerRemote;
-
 import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.ModelNominalLabelDTO;
+import qa.qcri.aidr.predictui.facade.ModelNominalLabelFacade;
+import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 //import qa.qcri.aidr.predictui.dto.ModelNominalLabelDTO;
 
@@ -115,5 +115,10 @@ public class ModelNominalLabelImp implements ModelNominalLabelFacade {
 		}
 		return modelNominalLabelDTOList;
 		*/
+	}
+
+	@Override
+	public void deleteByModel(Long modelID) {
+		remoteModelNominalLabelEJB.deleteModelNominalLabelByModelID(modelID);
 	}
 }

@@ -108,4 +108,9 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 	public HashMap<String, Integer> countClassifiersByCrisisCodes(List<String> codes) {
 		return remoteCrisisEJB.countClassifiersByCrisisCodes(codes);
 	}
+	
+	@Override
+	public int deleteCrisis(Long crisisID) {
+		return remoteCrisisEJB.deleteCrisis(crisisID);
+	}
 }

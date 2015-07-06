@@ -177,4 +177,11 @@ public class ModelNominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<M
 		return (getModelNominalLabelByID(nominalLabelID) != null) ? true : false;
 	}
 
+	@Override
+	public void deleteModelNominalLabelByModelID(Long modelID) {
+		List<ModelNominalLabel> modelNominalLabelList = this.getAllByCriteria(Restrictions.eq("id.modelId", modelID));
+		for (ModelNominalLabel modelNominalLabel : modelNominalLabelList) {
+			delete(modelNominalLabel);
+		}
+	}
 }

@@ -13,6 +13,7 @@ import javax.ejb.Stateless;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
@@ -166,4 +167,19 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 		return modelWrapperList;
 	}
 
+	@Override
+	public boolean deleteModel(Long modelID) {
+		Model model = getEntityManager().find(Model.class, modelID);
+		if (model != null) {
+			try {
+				getEntityManager().remove(model);
+			} catch (HibernateException he) {
+				logger.error("Hibernate exception on deleting Model using ID=" + model + he.getStackTrace());
+				return false; // hibernate delete operation failed. Details in the logs.
+			}
+			return true; // successfully deleted.
+		} else {
+			return false; // delete operation failed becuase no modelfamily is found against given ID.
+		}
+	}
 }

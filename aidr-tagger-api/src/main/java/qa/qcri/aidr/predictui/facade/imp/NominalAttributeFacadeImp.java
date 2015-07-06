@@ -4,12 +4,15 @@
  */
 package qa.qcri.aidr.predictui.facade.imp;
 
-import qa.qcri.aidr.predictui.facade.*;
 import java.util.List;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
+import qa.qcri.aidr.predictui.facade.NominalAttributeFacade;
+import qa.qcri.aidr.predictui.facade.NominalLabelResourceFacade;
 
 /**
  *
@@ -20,6 +23,9 @@ public class NominalAttributeFacadeImp implements NominalAttributeFacade {
 
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalAttributeResourceFacade nominalAttributeRemoteEJB;
+	
+	@EJB
+	private NominalLabelResourceFacade nominalLabelResourceFacade;
 	
     public List<NominalAttributeDTO> getAllAttributes() throws PropertyNotSetException {
         return nominalAttributeRemoteEJB.getAllAttributes();
@@ -50,4 +56,13 @@ public class NominalAttributeFacadeImp implements NominalAttributeFacade {
         return nominalAttributeRemoteEJB.isAttributeExists(attributeCode);
 
     }
+	@Override
+	public void deleteNominalAttributeData(Long attributeID)
+			throws PropertyNotSetException {
+		
+		// delete nominal label data
+		nominalLabelResourceFacade.deleteNominalLabelDataByAttribute(attributeID);
+		// delete attribute
+		deleteAttribute(attributeID);
+	}
 }

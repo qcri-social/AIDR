@@ -184,5 +184,14 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 		List<DocumentNominalLabelDTO> fetchedList = findByCriteria("id.nominalLabelId", new Long(nominalLabelID).longValue());
 		return fetchedList;
 	}
+
+	@Override
+	public void deleteDocumentNominalLabelByNominalLabel(Long nominalLabelID) throws PropertyNotSetException {
+		
+		List<DocumentNominalLabelDTO> fetchedList = findByCriteria("id.nominalLabelId", new Long(nominalLabelID).longValue());
+		for (DocumentNominalLabelDTO documentNominalLabelDTO : fetchedList) {
+			deleteDocument(documentNominalLabelDTO);
+		}
+	}
 }
 

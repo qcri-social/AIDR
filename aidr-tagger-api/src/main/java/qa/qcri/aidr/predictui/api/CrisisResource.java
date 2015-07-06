@@ -247,4 +247,12 @@ public class CrisisResource {
 			return Response.ok(result).build();
 		}
 	}
+	
+	@DELETE
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteCrisis(@PathParam("id") Long id) throws PropertyNotSetException {
+		int crisisDeleted = crisisLocalEJB.deleteCrisis(id);
+		return crisisDeleted == 1 ? Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS))).build() : Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED))).build();
+	}
 }

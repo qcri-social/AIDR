@@ -158,7 +158,7 @@ public class ModelFamilyResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteAttribute(@PathParam("id") Long modelFamilyID) {
         try {
-            modelFamilyLocalEJB.deleteModelFamily(modelFamilyID);
+        	modelFamilyLocalEJB.deleteModelFamilyData(modelFamilyID);
         } catch (RuntimeException e) {
             logger.error("Error while deleting Classifier for modelFamily: " + modelFamilyID);
             logger.error(elog.toStringException(e));
@@ -169,5 +169,4 @@ public class ModelFamilyResource {
         }
         return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS))).build();
     }
-
 }

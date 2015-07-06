@@ -26,6 +26,7 @@ import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.UsersResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
+import qa.qcri.aidr.dbmanager.entities.misc.Users;
 
 /**
  *
@@ -256,5 +257,16 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 			}
 		}
 		return dtoList;
+	}
+	
+	@Override 
+	public int deleteCrisis(Long id) {
+		Crisis crisis = getById(id);
+		if (crisis != null) {
+			delete(crisis);
+			em.flush();
+			return 1;
+		} 
+		return 0;
 	}
 }
