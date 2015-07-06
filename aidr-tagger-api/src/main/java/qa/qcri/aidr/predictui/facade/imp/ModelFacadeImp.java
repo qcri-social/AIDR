@@ -15,6 +15,8 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelWrapper;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelHistoryWrapper;
 
@@ -28,6 +30,7 @@ import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelHistoryWrapper;
 @Stateless
 public class ModelFacadeImp implements ModelFacade {
 
+	private static Logger logger = Logger.getLogger(ModelFacadeImp.class);
     @EJB
     private qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelResourceFacade remoteModelEJB;
 

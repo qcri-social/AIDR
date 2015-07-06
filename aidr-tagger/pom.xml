@@ -17,6 +17,31 @@
 				<version>2.17</version>
 				<configuration>
 					<skipTests>True</skipTests>
+					<excludes>
+						<exclude>**/TaggerTesterTest.java</exclude>
+					</excludes>
+					<systemProperties>
+					  <property>
+						 <name>DEFAULT_PERSISTANCE_MODE</name>
+						 <value>false</value>
+					  </property>
+					  <property>
+						 <name>config</name>
+						 <value>${config}</value>
+					  </property>
+					  <property>
+						 <name>nitems-train</name>
+						 <value>200</value>
+					  </property>
+					  <property>
+						 <name>nitems-test</name>
+						 <value>1000</value>
+					  </property>
+					  <property>
+						 <name>quiet</name>
+						 <value>false</value>
+					  </property>
+					</systemProperties>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -171,6 +196,11 @@
 			<artifactId>jersey-media-json-processing</artifactId>
 			<version>2.5.1</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>2.5.1</version>
 		</dependency>
 		<!-- Jersey -->
 		<dependency>
