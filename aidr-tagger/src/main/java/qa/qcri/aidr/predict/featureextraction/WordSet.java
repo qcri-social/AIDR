@@ -75,8 +75,8 @@ public class WordSet implements DocumentFeature, Serializable {
         int l2 = other.words.size();
         
         // intersection of two sets
-        HashSet<String> intersection = new HashSet<String>(words);
-        intersection.retainAll(other.words);
+        HashSet<String> intersection = (HashSet<String>) (l1 < l2 ? words.clone() : other.words.clone());
+        intersection.retainAll(l1 < l2 ? other.words : words);
         int l3 = intersection.size();
         
         // similarity using Jaccard coefficient

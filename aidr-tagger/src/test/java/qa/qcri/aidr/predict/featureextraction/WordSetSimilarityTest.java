@@ -39,4 +39,34 @@ public class WordSetSimilarityTest {
 		
 		Assert.assertEquals("testWordSetNoSimilarity", 0.0, wordSet.getSimilarity(wordSet1), 0.0);
 	}
+	
+	@Test
+	public void testWordSetSimilarity() {
+		WordSet wordSet = new WordSet();
+		String text = "neutral night coal coffee ink";
+		wordSet.addAll(FeatureExtractor.getWordsInStringWithBigrams(text, false));
+	
+		WordSet wordSet1 = new WordSet();
+		String text1 = "neutral hello coal name";
+		wordSet1.addAll(FeatureExtractor.getWordsInStringWithBigrams(text1, false));
+		
+		wordSet.getSimilarity(wordSet1);
+		
+		Assert.assertTrue("testWordSetSimilarity", wordSet.getSimilarity(wordSet1) > 0.0);
+	}
+	
+	@Test
+	public void testWordSetSimilarity1() {
+		WordSet wordSet = new WordSet();
+		String text = "neutral night coal ";
+		wordSet.addAll(FeatureExtractor.getWordsInStringWithBigrams(text, false));
+	
+		WordSet wordSet1 = new WordSet();
+		String text1 = "neutral neutral night coal";
+		wordSet1.addAll(FeatureExtractor.getWordsInStringWithBigrams(text1, false));
+		
+		wordSet.getSimilarity(wordSet1);
+		
+		Assert.assertTrue("testWordSetSimilarity", wordSet.getSimilarity(wordSet1) > 0.5 );
+	}
 }
