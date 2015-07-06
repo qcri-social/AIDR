@@ -6,8 +6,9 @@ As of June 2015, the team that is actively contributing to AIDR includes:
 * [Patrick Meier](http://irevolution.net/) and [Carlos Castillo](http://www.chato.cl/research/) - Project co-leads.
 * [Muhammad Imran](http://mimran.me/) - Scientist and Technical lead for AIDR.
 * [Ji Lucas](http://www.linkedin.com/in/jilucas) - Technical lead for MicroMappers.
+* Noora Mohamed Al Emadi - Software Developer.
 * Meghna Singh - Research Associate.
-* Dhruv Sharma and Kushalkant Goyal - Contractors.
+* Dhruv Sharma, Kushalkant Goyal and Latika Bhurani - Contractors.
 
 # Project history
 
