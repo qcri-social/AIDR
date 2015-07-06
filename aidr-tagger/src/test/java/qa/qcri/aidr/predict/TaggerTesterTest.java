@@ -371,7 +371,7 @@ public class TaggerTesterTest {
 	    // 7. tag training data set : human tagging
 	    helper.tagDocuments();
 	    
-	    new OutputMatcherProcess().run();
+	    new Thread(new OutputMatcherProcess()).start();
 	    
 	   //8.  push white items - unlabeled
 		helper.setNItems(itemsToTest);
