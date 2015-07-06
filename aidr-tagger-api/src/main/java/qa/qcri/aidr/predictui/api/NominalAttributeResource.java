@@ -124,8 +124,8 @@ public class NominalAttributeResource {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteAttribute(@PathParam("id") Long id) throws PropertyNotSetException {
-		boolean response;
-		response = attributeLocalEJB.deleteNominalAttributeData(id);
+		
+		boolean response = attributeLocalEJB.deleteNominalAttributeData(id);
 		return response == true ? Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED))).build() : Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS))).build();
 	}
 

@@ -57,12 +57,13 @@ public class NominalAttributeFacadeImp implements NominalAttributeFacade {
 
     }
 	@Override
-	public void deleteNominalAttributeData(Long attributeID)
+	public boolean deleteNominalAttributeData(Long attributeID)
 			throws PropertyNotSetException {
 		
 		// delete nominal label data
 		nominalLabelResourceFacade.deleteNominalLabelDataByAttribute(attributeID);
 		// delete attribute
-		deleteAttribute(attributeID);
+		boolean isDeleted = deleteAttribute(attributeID);
+		return isDeleted;
 	}
 }
