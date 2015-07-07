@@ -7,7 +7,7 @@ It requires both the **tagger stand-alone application** to be running, and the *
 The tagger tester is run through the following command:
 
 ```
-mvn test -DtaggerTesterTest PARAMETERS
+mvn test -DTaggerTesterTest PARAMETERS
 ```
 
 These parameters are optional:
