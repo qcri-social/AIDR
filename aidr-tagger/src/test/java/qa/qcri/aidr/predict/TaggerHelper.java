@@ -64,17 +64,16 @@ public class TaggerHelper {
 	}
     
     // publish to redis queue
-    public void startPublishing(boolean training, boolean isBlack) throws JsonParseException, JsonMappingException, IOException {
+    public void startPublishing(boolean training, LabelCode labelCode) throws JsonParseException, JsonMappingException, IOException {
     	int tempItemCount;
     	Jedis redis = DataStore.getJedisConnection();
     	
         while (true) {
-        	
         	tempItemCount = nItems;
 			while(tempItemCount > 0) {
 				
 				tempItemCount--;
-				String tweetText = generateTweet(training, isBlack);
+				String tweetText = generateTweet(training, labelCode);
 				
 				redis.publish(
 						TaggerConfigurator
@@ -93,7 +92,7 @@ public class TaggerHelper {
 					logger.error("Thread sleep interrupted"+Thread.currentThread().getName());
 				}
 		        
-		        if(training && tempItemCount == 1) {
+		        if(training && tempItemCount == 0) {
 		        	webResource = client.target(TaggerConfigurator.getInstance().getProperty(TaggerConfigurationProperty.TAGGER_API) 
 		    				+ "/document/unlabeled/count/" + crisisID);
 					response =  webResource.request(MediaType.APPLICATION_JSON).get();
@@ -181,7 +180,7 @@ public class TaggerHelper {
 		}
 	}
     
-    private String generateTweet(boolean isTrainingTweet, boolean isBlack) {
+    private String generateTweet(boolean isTrainingTweet, LabelCode labelCode) {
     	String tweetText = "";
     	String tweeid;
 		Random random = new Random();
@@ -189,17 +188,13 @@ public class TaggerHelper {
 		String tweetWordSelected = "";
 		StringBuffer stringBuffer = new StringBuffer();
 		
-		if(!isTrainingTweet) {
-			if(isBlack) {
-				tweetTextChoice = 0;
-			} else {
-				tweetTextChoice = 1;
-			}
+		if(labelCode == null) {
+			labelCode = LabelCode.values()[tweetTextChoice];
 		}
 		
 		for(int i = 0; i < 30; i++) {
 			int wordChoice = random.nextInt(6);
-			tweetWordSelected = tweetWords[tweetTextChoice][wordChoice];
+			tweetWordSelected = tweetWords[labelCode.ordinal()][wordChoice];
 			if("w".equals(tweetWordSelected)) {
 				tweetWordSelected = "w" +  String.format ("%04d", random.nextInt(10000));
 			}
@@ -207,12 +202,7 @@ public class TaggerHelper {
 		}
 		
 		if(isTrainingTweet) {
-			if(tweetTextChoice == 0) {
-				tweeid = LabelCode.BLACK.name;
-			} else {
-				tweeid = LabelCode.WHITE.name;
-			}
-			tweetText = "{\"user\" : {\"id\" : \"" + userID + "\"}, \"tweetid\":\"" + tweeid + "\", \"text\":\"" + stringBuffer.toString() + "\","
+			tweetText = "{\"user\" : {\"id\" : \"" + userID + "\"}, \"tweetid\":\"" + labelCode.name + "\", \"text\":\"" + stringBuffer.toString() + "\","
 			+ " \"aidr\" : {\"crisis_code\":\"" + TaggerTesterTest.TAGGER_TESTER_CRISIS_CODE + "\", \"doctype\":\"twitter\", \"crisis_name\":\"" + TaggerTesterTest.TAGGER_TESTER_CRISIS_NAME + "\"}}";
 		} else {
 			tweetText = "{\"user\" : {\"id\" : \"" + userID + "\"}, \"text\":\"" + stringBuffer.toString() + "\","
@@ -222,17 +212,25 @@ public class TaggerHelper {
     }
     
     enum LabelCode {
-        WHITE("white"),
-        BLACK("black");
+        BLACK("black", "Black"),
+        WHITE("white", "White"),
+        DOES_NOT_APPLY("null", "Does Not Apply");
 
         private String name;
+        private String code;
+			
 
-        private LabelCode(String name) {
+        private LabelCode(String code, String name) {
             this.name = name;
+            this.code = code;
         }
 
         public String getName() {
             return name;
+        }
+        
+        public String getCode() {
+            return code;
         }
 
     }
