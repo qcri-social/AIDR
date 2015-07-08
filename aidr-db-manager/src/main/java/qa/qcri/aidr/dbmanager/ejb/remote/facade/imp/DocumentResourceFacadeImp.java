@@ -497,9 +497,4 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 		return documentList != null ? Integer.valueOf(documentList.size()) : 0;
 	}
 
-	@Override
-	public void deleteDocumentByCrisisID(Long crisisID) {
-		List<Document> list = getAllByCriteria(Restrictions.eq("crisis.crisisId", crisisID));
-		delete(list);
-	}
 }

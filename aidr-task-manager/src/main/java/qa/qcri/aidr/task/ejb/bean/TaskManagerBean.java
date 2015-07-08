@@ -1274,9 +1274,27 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	}
 
 	@Override
-	public void deleteTaskForCrisis(Long crisisID) {
-		remoteDocumentEJB.deleteDocumentByCrisisID(crisisID);
+	public boolean deleteTask(Long crisisID, Long userID) {
+
+		boolean success;
+		try {
+			List<DocumentDTO> documentDTOs = remoteDocumentEJB.findDocumentsByCrisisID(crisisID);
+		
+			for(DocumentDTO documentDTO : documentDTOs) {
+				remoteTaskAssignmentEJB.undoTaskAssignment(documentDTO.getDocumentID(), userID);
+			}
+			remoteDocumentEJB.deleteNoLabelDocument(documentDTOs);
+			success = true;
+			
+			logger.info("Successful deletion for task data.");
+		} catch (Exception e) {
+			logger.error("Unable to delete task for crisidID : " + crisisID + " and userID : " + userID);
+			success = false;
+		}
+		
+		return success;
 	}
+	
 	/*
 	public static void main(String args[]) {
 		TaskManagerRemote<Document, Serializable> tm = new TaskManagerBean<Document, Long>();

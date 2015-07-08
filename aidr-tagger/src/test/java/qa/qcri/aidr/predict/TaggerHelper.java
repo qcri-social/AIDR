@@ -18,6 +18,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Assert;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
 import qa.qcri.aidr.predict.common.TaggerConfigurationProperty;
@@ -42,11 +43,6 @@ public class TaggerHelper {
 	private Client client;
 	private boolean quiet;
 	
-    private static String[][] tweetWords = {
-    							{"neutral", "night", "coal", "ink", "coffee", "w"},
-    							{"clouds", "snow", "clear", "light", "neutral", "w"}
-							};
-    
     public TaggerHelper(Long crisisID, Long userID, Long attributeID, Long modelFamilyID, int nItems, boolean quiet) {
         this.crisisID = crisisID;
         this.userID = userID;
@@ -67,24 +63,18 @@ public class TaggerHelper {
     public void startPublishing(boolean training, LabelCode labelCode) throws JsonParseException, JsonMappingException, IOException {
     	int tempItemCount;
     	Jedis redis = DataStore.getJedisConnection();
-    	
         while (true) {
         	tempItemCount = nItems;
 			while(tempItemCount > 0) {
 				
-				tempItemCount--;
-				String tweetText = generateTweet(training, labelCode);
-				
+				String tweetText = generateTweet(training, labelCode, tempItemCount);
 				redis.publish(
 						TaggerConfigurator
 								.getInstance()
 								.getProperty(
 										TaggerConfigurationProperty.REDIS_INPUT_CHANNEL), tweetText);
 				
-				if(quiet) {
-					System.out.println("[" + System.currentTimeMillis() + "]" 
-							+ tweetText.substring(0, Math.min(40, tweetText.length())));
-				}
+				tempItemCount--;
 				
 		        try {
 					Thread.sleep(sleepDuration);
@@ -96,7 +86,7 @@ public class TaggerHelper {
 		        	webResource = client.target(TaggerConfigurator.getInstance().getProperty(TaggerConfigurationProperty.TAGGER_API) 
 		    				+ "/document/unlabeled/count/" + crisisID);
 					response =  webResource.request(MediaType.APPLICATION_JSON).get();
-					
+					assertEquals(200, response.getStatus());
 					jsonResponse = response.readEntity(String.class);
 					
 					Integer count = objectMapper.readValue(jsonResponse, Integer.class);
@@ -124,10 +114,14 @@ public class TaggerHelper {
 			    		+ TaggerTesterTest.TAGGER_TESTER_USER + "/" + crisisID + "/1");
 				
 				response =  webResource.request(MediaType.APPLICATION_JSON).get();
-				
+				assertEquals(200, response.getStatus());
 				jsonResponse = response.readEntity(String.class);
 				
 				JSONArray jsonArray = new JSONArray(jsonResponse);
+				if(jsonArray.length() == 0) {
+					Assert.fail("No document to tag for crisis : " + crisisID);
+				}
+				
 				JSONObject jsonObject = jsonArray.getJSONObject(0);
 				Integer documentID = (Integer) jsonObject.get("documentID");
 				String data = jsonObject.getString("data");
@@ -139,7 +133,7 @@ public class TaggerHelper {
 				infoJson.put("documentID", documentID);
 				infoJson.put("aidrID", userID);
 				infoJson.put("attributeID", attributeID);
-				infoJson.put("category", tweetid);
+				infoJson.put("category", tweetid.substring(0, tweetid.indexOf("-")));
 				jsonObject.put("info", infoJson);
 		        jsonArray.put(jsonObject);
 		
@@ -150,6 +144,11 @@ public class TaggerHelper {
 				response = webResource.request(MediaType.APPLICATION_JSON)
 						.post(Entity.json(jsonArray.toString()), Response.class);
 				
+				assertEquals(204, response.getStatus());
+				
+				if(!quiet) {
+					System.out.println("Labelled tweet : "+ tweetid + " with label : " + tweetid.substring(0, tweetid.indexOf("-")));
+				}
 				tagCount--;
 				
 				if(tagCount == checkPoint) {
@@ -180,9 +179,7 @@ public class TaggerHelper {
 		}
 	}
     
-    private String generateTweet(boolean isTrainingTweet, LabelCode labelCode) {
-    	String tweetText = "";
-    	String tweeid;
+    private String generateTweet(boolean isTrainingTweet, LabelCode labelCode, int tweetIndex) {
 		Random random = new Random();
 		int tweetTextChoice = random.nextInt(2);
 		String tweetWordSelected = "";
@@ -192,40 +189,60 @@ public class TaggerHelper {
 			labelCode = LabelCode.values()[tweetTextChoice];
 		}
 		
+		if(!quiet && isTrainingTweet) {
+			System.out.println("Sent tweet : " + labelCode.getCode() + "-" + tweetIndex);
+		}
+		
 		for(int i = 0; i < 30; i++) {
-			int wordChoice = random.nextInt(6);
-			tweetWordSelected = tweetWords[labelCode.ordinal()][wordChoice];
+			int wordChoice = random.nextInt(labelCode.getTweetWords().length);
+			tweetWordSelected = labelCode.getTweetWords()[wordChoice];
+
 			if("w".equals(tweetWordSelected)) {
-				tweetWordSelected = "w" +  String.format ("%04d", random.nextInt(10000));
+				tweetWordSelected = "w" +  String.format ("%02d", random.nextInt(100));
 			}
 			stringBuffer.append(tweetWordSelected + " ");	
 		}
 		
-		if(isTrainingTweet) {
-			tweetText = "{\"user\" : {\"id\" : \"" + userID + "\"}, \"tweetid\":\"" + labelCode.name + "\", \"text\":\"" + stringBuffer.toString() + "\","
-			+ " \"aidr\" : {\"crisis_code\":\"" + TaggerTesterTest.TAGGER_TESTER_CRISIS_CODE + "\", \"doctype\":\"twitter\", \"crisis_name\":\"" + TaggerTesterTest.TAGGER_TESTER_CRISIS_NAME + "\"}}";
-		} else {
-			tweetText = "{\"user\" : {\"id\" : \"" + userID + "\"}, \"text\":\"" + stringBuffer.toString() + "\","
-					+ " \"aidr\" : {\"crisis_code\":\"" + TaggerTesterTest.TAGGER_TESTER_CRISIS_CODE + "\", \"doctype\":\"twitter\", \"crisis_name\":\"" + TaggerTesterTest.TAGGER_TESTER_CRISIS_NAME + "\"}}";
-		}
-    	return tweetText;
+		// preapare tweet
+		JSONObject tweetObject = new JSONObject();
+		
+		JSONObject user = new JSONObject();
+		user.put("id", userID);
+		
+		JSONObject aidr = new JSONObject();
+		aidr.put("crisis_code", TaggerTesterTest.TAGGER_TESTER_CRISIS_CODE);
+		aidr.put("doctype", "twitter");
+		aidr.put("crisis_name", TaggerTesterTest.TAGGER_TESTER_CRISIS_NAME);
+		
+		tweetObject.put("user", user);
+		tweetObject.put("tweetid", labelCode.getCode() + "-" + tweetIndex);
+		tweetObject.put("text", stringBuffer.toString());
+		tweetObject.put("aidr", aidr);
+		
+    	return tweetObject.toString();
     }
     
     enum LabelCode {
-        BLACK("black", "Black"),
-        WHITE("white", "White"),
-        DOES_NOT_APPLY("null", "Does Not Apply");
+    	
+        BLACK("black", "Black", new String[] {"neutral", "night", "coal", "ink", "coffee", "w"}),
+        WHITE("white", "White", new String[] {"clouds", "snow", "clear", "light", "neutral", "w"}),
+        DOES_NOT_APPLY("null", "Does Not Apply", new String[] {"none"});
 
         private String name;
         private String code;
-			
+        private String[] tweetWords;
 
-        private LabelCode(String code, String name) {
+        private LabelCode(String code, String name, String[] tweetWords) {
             this.name = name;
             this.code = code;
+            this.tweetWords = tweetWords;
         }
 
-        public String getName() {
+        public String[] getTweetWords() {
+			return tweetWords;
+		}
+
+		public String getName() {
             return name;
         }
         

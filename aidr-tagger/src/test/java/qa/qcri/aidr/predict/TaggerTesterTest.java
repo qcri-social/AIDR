@@ -8,11 +8,8 @@ import static org.junit.Assert.assertEquals;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
 
 import javax.ejb.EJB;
 import javax.ws.rs.client.Client;
@@ -27,6 +24,8 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,13 +40,11 @@ import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
 import qa.qcri.aidr.predict.TaggerHelper.LabelCode;
-import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
-import qa.qcri.aidr.predict.common.Serializer;
 import qa.qcri.aidr.predict.common.TaggerConfigurationProperty;
 import qa.qcri.aidr.predict.common.TaggerConfigurator;
-import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.util.ResponseWrapper;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPubSub;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -81,12 +78,11 @@ public class TaggerTesterTest {
 	private Integer crisisID;
 	private Long userID;
 	private Long modelFamilyID;
-	private Long nominalLabelWhiteID, nominalLabelBlackID, nominalLabelNullID;
-	CountDownLatch countDownLatch;
 	private int whiteClassifiedCount, blackClassifiedCount;
 	private Boolean quiet;
 	private int itemsToTrain;
 	private int itemsToTest;
+	private TaggerSubscriber taggerSubscriber;
 	
 	@EJB
 	private CrisisResourceFacade crisisResourceFacade;
@@ -112,6 +108,8 @@ public class TaggerTesterTest {
 				logger.error("Error in reading config properties file: " + config, e);
 			}
 		}
+		
+		taggerSubscriber = new TaggerSubscriber();
 	}
 	
 	@Test
@@ -267,9 +265,9 @@ public class TaggerTesterTest {
 		
 		//b. Create three labels white, black, null
 		
-		nominalLabelWhiteID = createNominalLabel(LabelCode.WHITE, attributeDTO);
-		nominalLabelBlackID = createNominalLabel(LabelCode.BLACK, attributeDTO);
-		nominalLabelNullID = createNominalLabel(LabelCode.DOES_NOT_APPLY, attributeDTO);
+		createNominalLabel(LabelCode.WHITE, attributeDTO);
+		createNominalLabel(LabelCode.BLACK, attributeDTO);
+		createNominalLabel(LabelCode.DOES_NOT_APPLY, attributeDTO);
 			
 		
 	   //5. Create a ModelFamily 
@@ -297,17 +295,31 @@ public class TaggerTesterTest {
 		 
 		crisisDTO.setCode(TAGGER_TESTER_CRISIS_CODE);
 		crisisDTO.setName(TAGGER_TESTER_CRISIS_NAME);
-	    TaggerHelper helper = new TaggerHelper(new Long(crisisID), userID, attributeDTO.getNominalAttributeId(), modelFamilyID, itemsToTrain, quiet);
+	    final TaggerHelper helper = new TaggerHelper(new Long(crisisID), userID, attributeDTO.getNominalAttributeId(), modelFamilyID, itemsToTrain, quiet);
 	    helper.startPublishing(true, null); // NULL IS THERE FOR Labelcode as we need to push both white and black docs
 	    
 	    // 7. tag training data set : human tagging
 	    helper.tagDocuments();
 	    
-	    new Thread(new OutputMatcherProcess()).start();
+		final Jedis subscriberJedis = DataStore.getJedisConnection();
+		final String outputChannel = TaggerConfigurator.getInstance().getProperty(TaggerConfigurationProperty.REDIS_OUTPUT_CHANNEL_PREFIX) + "." + TAGGER_TESTER_CRISIS_CODE;
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					logger.info("Subscribing to Redis channel "+ outputChannel);
+					subscriberJedis.subscribe(taggerSubscriber, outputChannel);
+				} catch (Exception e) {
+					logger.error("Subscribing to Redis channel "+outputChannel+" failed.", e);
+				}
+			}
+		}).start();
 	    
-	   //8.  push white items - unlabeled
+	    //8.  push white items - unlabeled
 		helper.setNItems(itemsToTest);
+		
 		helper.startPublishing(false, LabelCode.WHITE);
+		
 	    if(whiteClassifiedCount < (int)(itemsToTest*(80/100.0f))) {
 			Assert.fail("Failed to tagged documents with label : white : " + whiteClassifiedCount);
 		}	
@@ -316,7 +328,6 @@ public class TaggerTesterTest {
 	    helper.setNItems(itemsToTest);
 		helper.startPublishing(false, LabelCode.BLACK);
 
-	    
 	    if(blackClassifiedCount < (int)(itemsToTest*(80/100.0f))) {
 			Assert.fail("Failed to tagged documents with label : black : " + blackClassifiedCount);
 		}	    
@@ -338,8 +349,8 @@ public class TaggerTesterTest {
 			response =  webResource.request(MediaType.APPLICATION_JSON).delete();
 		}
 		
-		if(crisisID != null) {
-			webResource = client.target(taggerConfig.getProperty(TaggerConfigurationProperty.TAGGER_API)+"/document/delete/" + crisisID);
+		if(crisisID != null && userID != null) {
+			webResource = client.target(taggerConfig.getProperty(TaggerConfigurationProperty.TAGGER_API)+"/document/delete/" + crisisID + "/" + userID);
 			response =  webResource.request(MediaType.APPLICATION_JSON).delete();
 		}
 		
@@ -355,7 +366,7 @@ public class TaggerTesterTest {
 		
 	}
 	
-	private Long createNominalLabel(LabelCode labelCode, NominalAttributeDTO attributeDTO) {
+	private void createNominalLabel(LabelCode labelCode, NominalAttributeDTO attributeDTO) {
 		
 		Long nominalLabelID = 0L;
 		try {
@@ -384,43 +395,59 @@ public class TaggerTesterTest {
 			logger.error(e.getMessage());
 			Assert.fail("Failed to create NominalLabel :" + e.getMessage());
 		}
-		return nominalLabelID;
 	}
 	
-	
-	class OutputMatcherProcess implements Runnable {
+	class TaggerSubscriber extends JedisPubSub {
 
 		@Override
-		public void run() {
-			while (true) {
-				Jedis jedis = DataStore.getJedisConnection();
-				List<byte[]> byteDoc = jedis
-						.blpop(60,
-								TaggerConfigurator
-										.getInstance()
-										.getProperty(
-												TaggerConfigurationProperty.REDIS_FOR_OUTPUT_QUEUE)
-										.getBytes());
-				DataStore.close(jedis);
-		        try {
-		        	if(byteDoc != null) {
-		            	Document document = Serializer.deserialize(byteDoc.get(1));
-		            	ArrayList<NominalLabelBC> nominalLabels = document.getLabels(NominalLabelBC.class);
-		            	for (NominalLabelBC nominalLabelBC : nominalLabels) {
-							if(nominalLabelBC.getNominalLabelID() == nominalLabelWhiteID.intValue()){
-								whiteClassifiedCount++;
-							} else if(nominalLabelBC.getNominalLabelID() == nominalLabelBlackID.intValue()) {
-								blackClassifiedCount++;
-							} else {
-								logger.error("Invalid nominal Label : " + nominalLabelBC.getNominalLabelID());
-							}
-		            	}
-		        	}	
-		        } catch (ClassNotFoundException | IOException e) {
-		            logger.error("Exception when parsing document set from stream.");
-		           // logger.error(elog.toStringException(e));
-		        }
+		public void onMessage(String channel, String message) {
+			// TODO Auto-generated method stub
+			JSONObject jsonObject = new JSONObject(message);
+			String tweetid = jsonObject.getString("tweetid");
+			JSONObject aidrJson = jsonObject.getJSONObject("aidr");
+			JSONArray jsonArray = aidrJson.getJSONArray("nominal_labels");
+			JSONObject jsonObject2 = jsonArray.getJSONObject(0);
+			String code = jsonObject2.getString("label_code");
+			
+			if(!quiet) {
+				System.out.println("Received tweet : "+ tweetid + " with label : " +  code);
 			}
+			if(LabelCode.WHITE.getCode().equals(code)) {
+				whiteClassifiedCount++;
+			} else if(LabelCode.BLACK.getCode().equals(code)) {
+				blackClassifiedCount++;
+			}
+			
+		}
+
+		@Override
+		public void onPMessage(String pattern, String channel, String message) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onSubscribe(String channel, int subscribedChannels) {
+			System.out.println("subscribe");
+			
+		}
+
+		@Override
+		public void onUnsubscribe(String channel, int subscribedChannels) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onPUnsubscribe(String pattern, int subscribedChannels) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onPSubscribe(String pattern, int subscribedChannels) {
+			// TODO Auto-generated method stub
+			
 		}
 		
 	}

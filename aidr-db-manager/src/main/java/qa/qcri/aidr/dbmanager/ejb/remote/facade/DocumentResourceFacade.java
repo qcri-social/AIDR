@@ -58,7 +58,5 @@ public interface DocumentResourceFacade extends CoreDBServiceFacade<Document, Lo
 	public List<DocumentDTO> getDocumentCollectionWithNominalLabelData(Long nominalLabelID) throws Exception;
 
 	public Integer getUnlabeledDocumentsCountByCrisisID(Long crisisId)	throws PropertyNotSetException;
-	
-	public void deleteDocumentByCrisisID(Long crisisID);
 
 }

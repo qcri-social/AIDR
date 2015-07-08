@@ -112,5 +112,5 @@ public interface TaskManagerRemote<T, Serializable> {
 	// for testing purpose
 	public String pingRemoteEJB();
 
-	public void deleteTaskForCrisis(Long crisisID);
+	public boolean deleteTask(Long crisisID, Long userID);
 }
