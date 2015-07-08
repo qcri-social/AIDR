@@ -1,3 +1,6 @@
+/*
+ * Managing JEDIS pool and allocating/deallocating JEDIS resources for connection to REDIS. 
+ */
 package qa.qcri.aidr.redis;
 
 import org.apache.log4j.Logger;
@@ -12,7 +15,7 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 
 /**
  *
- * @author Imran
+ * @author Imran, Koushik
  */
 public class JedisConnectionPool  {
 	

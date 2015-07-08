@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * This class provides an implementation to create a CSV file containing tweets with variable number of classifiers.  
  */
 package qa.qcri.aidr.io;
 

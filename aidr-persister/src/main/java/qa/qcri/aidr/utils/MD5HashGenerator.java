@@ -1,3 +1,6 @@
+/*
+ * Generates a MD5 digest for generating unique downloadable filenames. 
+ */
 package qa.qcri.aidr.utils;
 
 

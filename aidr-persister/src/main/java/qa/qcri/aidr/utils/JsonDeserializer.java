@@ -1,6 +1,6 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * The main class of the persister related to downloading of data from persisted collections - all REST APIs call this class methods
+ * to generate CSV, JSON, TXT-JSON files with or without user specified filters. 
  */
 package qa.qcri.aidr.utils;
 

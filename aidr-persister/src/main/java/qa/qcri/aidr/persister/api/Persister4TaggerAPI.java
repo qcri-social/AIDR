@@ -1,10 +1,8 @@
 package qa.qcri.aidr.persister.api;
 
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * This class provides the REST APIs to manage the persister for a collection - start/stop and download based on various filters and requested file types. 
  */
-//import com.sun.jersey.api.json.JSONWithPadding;
 
 
 import java.net.UnknownHostException;
