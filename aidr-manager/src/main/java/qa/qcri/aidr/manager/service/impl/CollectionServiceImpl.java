@@ -256,7 +256,7 @@ public class CollectionServiceImpl implements CollectionService {
 	//updateStatusCollection() method
 	public AidrCollection stopFatalError(Integer collectionId) throws Exception {
 		AidrCollection collection = collectionRepository.findById(collectionId);
-		collection = collectionRepository.stop(collection.getId());
+		//collection = collectionRepository.stop(collection.getId());
 		
 		AidrCollection updateCollection = stopAidrFetcher(collection);
 
@@ -369,9 +369,7 @@ public class CollectionServiceImpl implements CollectionService {
 			//MEGHNA: moved setting collection count to top of the method
 			//to avoid individual status blocks setting collection count below
 			if (response.getCollectionCount() != null && !response.getCollectionCount().equals(collection.getCount())) {
-				collection.setCount(response.getCollectionCount());		// Commented by koushik for downloadCount bug
-				//MEGHNA: uncommented - setting count at the beginning always makes this condition false 
-				//so lastdocument never set 
+				collection.setCount(response.getCollectionCount());
 				String lastDocument = response.getLastDocument();
 				if (lastDocument != null)
 					collection.setLastDocument(lastDocument);
@@ -380,14 +378,14 @@ public class CollectionServiceImpl implements CollectionService {
 			
 			if (!CollectionStatus.getByStatus(response.getStatusCode()).equals(collection.getStatus())) {
 				
+				logger.info("Collection Status: " + CollectionStatus.getByStatus(response.getStatusCode()));
+				CollectionStatus prevStatus =  collection.getStatus();
 				collection.setStatus(CollectionStatus.getByStatus(response.getStatusCode()));
-				
-				logger.debug("Collection Status: " + CollectionStatus.getByStatus(response.getStatusCode()));
 				
 				switch(CollectionStatus.getByStatus(response.getStatusCode()))
 				{				
 				case NOT_FOUND:
-				case STOPPED:
+				//case STOPPED:
 					collection.setStatus(CollectionStatus.NOT_RUNNING);					
 				case RUNNING_WARNING:
 				case WARNING:
@@ -397,8 +395,10 @@ public class CollectionServiceImpl implements CollectionService {
 					collection = collectionRepository.start(collection.getId());
 					break;
 				case FATAL_ERROR:					
-					//collection = collectionRepository.stop(collection.getId());						
-					this.stopFatalError(collection.getId());
+					//collection = collectionRepository.stop(collection.getId());
+					logger.warn("Fatal error, stopping collection " + collection.getId()); 
+					if(prevStatus != CollectionStatus.FATAL_ERROR || prevStatus != CollectionStatus.NOT_RUNNING || prevStatus != CollectionStatus.STOPPED)
+						this.stopFatalError(collection.getId());
 					break;
 				default:
 					break;

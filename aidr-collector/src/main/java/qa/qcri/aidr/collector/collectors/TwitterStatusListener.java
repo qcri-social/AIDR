@@ -9,15 +9,22 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.java7.Predicate;
 import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
 import qa.qcri.aidr.collector.utils.CollectorConfigurator;
 import qa.qcri.aidr.collector.utils.GenericCache;
-import qa.qcri.aidr.common.util.EmailClient;
 import twitter4j.ConnectionLifeCycleListener;
 import twitter4j.StallWarning;
 import twitter4j.Status;
@@ -166,7 +173,8 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 				task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
 			
 			if(task.getStatusCode().equals(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR)))
-				EmailClient.sendErrorMail(task.getCollectionCode(),ex.toString());
+				sendErrorMail(task.getCollectionCode(),ex.toString());
+				//EmailClient.sendErrorMail(task.getCollectionCode(),ex.toString());
 			
 			try {
                 Thread.sleep(timeToSleep*1000);
@@ -213,5 +221,26 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 	public void onCleanUp() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void sendErrorMail(String code, String errorMsg) {
+		Response clientResponse = null;
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		try {
+			WebTarget webResource = client.target(configProperties.getProperty(CollectorConfigurationProperty.TAGGER_REST_URI) 
+					+ "/misc/sendErrorEmail");
+			
+			Form form = new Form();
+			form.param("code", code);
+			form.param("description", errorMsg);
+
+			clientResponse = webResource.request().post(
+					Entity.entity(form,MediaType.APPLICATION_FORM_URLENCODED),Response.class);
+			if (clientResponse.getStatus() != 200) {
+				logger.warn("Couldn't contact AIDRTaggerAPI for sending error message");
+			}
+		} catch (Exception e) {
+			logger.error("Error in contacting AIDRTaggerAPI: " + clientResponse);
+		}
 	}
 }
