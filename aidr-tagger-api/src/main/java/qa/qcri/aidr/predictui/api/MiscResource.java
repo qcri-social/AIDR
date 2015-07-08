@@ -201,6 +201,10 @@ public class MiscResource {
 		}
 	}
 	
+	/*
+	 * Note: userName in the path parameter refers to the username who is trying to access the data.
+	 * It is not used for filtering the labeled items - but for generating the downloadable fileName in the persister.
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/humanLabeled/download/crisis/{crisisCode}/userName/{userName}")
