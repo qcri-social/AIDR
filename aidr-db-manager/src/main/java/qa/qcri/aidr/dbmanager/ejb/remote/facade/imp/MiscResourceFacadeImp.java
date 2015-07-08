@@ -1,3 +1,6 @@
+/*
+ * Implements operations for managing the operations that span multiple tables of the aidr_predict DB
+ */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.math.BigInteger;

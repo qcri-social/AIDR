@@ -1,3 +1,6 @@
+/*
+ * Implements the operations for the interface TagDataStatisticsResourceFacade
+ */
 package qa.qcri.aidr.analysis.facade.imp;
 
 import java.util.List;

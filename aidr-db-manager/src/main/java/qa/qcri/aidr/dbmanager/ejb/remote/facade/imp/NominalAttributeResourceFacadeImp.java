@@ -1,3 +1,6 @@
+/*
+ * Implements operations for managing the nominal_attribute table of the aidr_predict DB
+ */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.ArrayList;

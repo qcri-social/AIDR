@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Implements operations for managing the crisis table of the aidr_predict DB
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 

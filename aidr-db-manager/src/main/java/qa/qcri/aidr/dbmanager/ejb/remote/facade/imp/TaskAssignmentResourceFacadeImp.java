@@ -1,3 +1,6 @@
+/*
+ * Implements operations for managing the task_assignment table of the aidr_predict DB
+ */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.text.DateFormat;

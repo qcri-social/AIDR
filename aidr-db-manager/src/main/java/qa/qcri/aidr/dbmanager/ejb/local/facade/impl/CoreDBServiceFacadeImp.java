@@ -19,6 +19,9 @@ import javax.persistence.PersistenceContext;
 /**
  * 
  * @author Koushik
+ * 
+ * This class implements the core functionalities of save, delete, find and update operations on tables of
+ * the aidr_predict DB. 
  *
  */
 @Stateless(name = "CoreDBServiceFacadeImp")

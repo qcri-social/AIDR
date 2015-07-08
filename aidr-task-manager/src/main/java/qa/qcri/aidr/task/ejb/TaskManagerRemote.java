@@ -1,3 +1,7 @@
+/*
+ * Interface for the task manager that covers the following tables: document, document_nominal_label, task_assignment and task_answer
+ * of the aidr_predict table. 
+ */
 package qa.qcri.aidr.task.ejb;
 
 import java.util.List;

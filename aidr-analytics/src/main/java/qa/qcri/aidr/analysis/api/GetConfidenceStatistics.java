@@ -1,4 +1,7 @@
-/**
+/*
+ * 
+ * This is the REST API interface for accessing the aidr_analytics DB's confidence_data entity. 
+ *
  * This class is not used at the moment.
  */
 package qa.qcri.aidr.analysis.api;

@@ -1,3 +1,6 @@
+/*
+ * primary key entity for the conf_data table
+ */
 package qa.qcri.aidr.analysis.entity;
 
 import java.io.Serializable;

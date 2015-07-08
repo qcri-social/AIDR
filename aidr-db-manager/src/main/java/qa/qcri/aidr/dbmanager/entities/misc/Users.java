@@ -1,6 +1,8 @@
 // default package
 // Generated Nov 24, 2014 4:55:08 PM by Hibernate Tools 4.0.0
-
+/*
+ * Implements the entity corresponding to the users table in the aidr_predict DB
+ */
 package qa.qcri.aidr.dbmanager.entities.misc;
 
 import java.util.List;

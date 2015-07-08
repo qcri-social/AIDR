@@ -1,3 +1,6 @@
+/* 
+ * This is the REST API interface for accessing the aidr_analytics DB's tag_data entity. 
+ */
 package qa.qcri.aidr.analysis.api;
 
 import javax.json.Json;

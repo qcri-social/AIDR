@@ -46,6 +46,10 @@ import qa.qcri.aidr.task.ejb.TaskManagerRemote;
  * @author Koushik
  *
  */
+/*
+ * This class implements the TaskManagerRemote interface, providing the business logic for operations 
+ * on the document, document_nominal_label, task_answer and task_assignment table - logically grouped as the the 'task related operations'.
+ */
 
 @Stateless
 public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable> {
