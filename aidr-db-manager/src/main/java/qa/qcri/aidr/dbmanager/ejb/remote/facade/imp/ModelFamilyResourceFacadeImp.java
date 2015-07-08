@@ -42,6 +42,7 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 		super(ModelFamily.class);
 	}
 
+	@Override
 	public List<ModelFamilyDTO> getAllModelFamilies() throws PropertyNotSetException {
 		List<ModelFamilyDTO> modelFamilyDTOList = new ArrayList<ModelFamilyDTO>();
 		List<ModelFamily> modelFamilyList = getAll();
@@ -54,9 +55,11 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 		return modelFamilyDTOList; //returns empty list if no data is found in the database
 	}
 
+	@Override
 	public List<ModelFamilyDTO> getAllModelFamiliesByCrisis(Long crisisID) throws PropertyNotSetException {
 		List<ModelFamilyDTO> modelFamilyDTOList = new ArrayList<ModelFamilyDTO>();
 		Crisis crisis = getEntityManager().find(Crisis.class, crisisID);
+		Hibernate.initialize(crisis.getModelFamilies());
 		List<ModelFamily> modelFamilyList = crisis.getModelFamilies();
 		if (modelFamilyList != null && !modelFamilyList.isEmpty()) {
 			for (ModelFamily modelFamily : modelFamilyList) {
@@ -69,6 +72,7 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 		return modelFamilyDTOList; //returns empty list if no data is found in the database
 	}
 
+	@Override
 	public ModelFamilyDTO getModelFamilyByID(Long id) throws PropertyNotSetException {
 		ModelFamily mf = this.getById(id);
 		Hibernate.initialize(mf.getModels());
@@ -76,6 +80,7 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 		return mf != null ? new ModelFamilyDTO(mf) : null;
 	}
 
+	@Override
 	public boolean addCrisisAttribute(ModelFamilyDTO modelFamily) throws PropertyNotSetException {
 		try {
 			Crisis crisis = getEntityManager().find(Crisis.class, modelFamily.getCrisisDTO().getCrisisID());
@@ -90,6 +95,7 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 		return true;
 	}
 
+	@Override
 	public boolean deleteModelFamily(Long modelFamilyID) throws PropertyNotSetException {
 		ModelFamily modelFamily = getEntityManager().find(ModelFamily.class, modelFamilyID);
 		if (modelFamily != null) {
@@ -105,6 +111,7 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 		}
 	}
 
+	@Override
 	public List<TaggersForCodes> getTaggersByCodes(final List<String> codes) {
 		List<qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes> result = new ArrayList<TaggersForCodes>();
 

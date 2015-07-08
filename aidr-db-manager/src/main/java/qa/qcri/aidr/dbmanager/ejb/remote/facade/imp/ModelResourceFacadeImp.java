@@ -45,6 +45,7 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 		super(Model.class);
 	}
 
+	@Override
 	public List<ModelDTO> getAllModels() throws PropertyNotSetException {
 		List<ModelDTO> modelDTOList = new ArrayList<ModelDTO>();
 		List<Model> modelList = getAll();
@@ -56,6 +57,7 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 		return modelDTOList;
 	}
 
+	@Override
 	public ModelDTO getModelByID(Long id) throws PropertyNotSetException {
 		return new ModelDTO(getById(id));
 	}
@@ -63,6 +65,7 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 	/*
      Use this method to get number of models associated with a model family.
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public Integer getModelCountByModelFamilyID(Long modelFamilyID) throws PropertyNotSetException {
 		Criteria criteria = getCurrentSession().createCriteria(Model.class);
@@ -71,6 +74,7 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 		return modelList != null ? Integer.valueOf(modelList.size()) : 0;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<ModelHistoryWrapper> getModelByModelFamilyID(Long modelFamilyID, Integer start, Integer limit) throws PropertyNotSetException {
 		List<ModelDTO> modelDTOList = new ArrayList<ModelDTO>();
@@ -92,6 +96,7 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 		return wrapperList;
 	}
 
+	@Override
 	public List<ModelWrapper> getModelByCrisisID(Long crisisID) throws PropertyNotSetException{
 		List<ModelWrapper> modelWrapperList = new ArrayList<ModelWrapper>();
 

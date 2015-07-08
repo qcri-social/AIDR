@@ -33,6 +33,7 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 		super(NominalAttribute.class);
 	}
 
+	@Override
 	public NominalAttributeDTO addAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException {
 		try {
 			NominalAttribute e = attribute.toEntity();
@@ -50,6 +51,7 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 		}
 	}
 
+	@Override
 	public NominalAttributeDTO editAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException {
 		try {
 			if (attribute == null) {
@@ -68,6 +70,7 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 		}
 	}
 
+	@Override
 	public boolean deleteAttribute(Long attributeID) throws PropertyNotSetException {
 		NominalAttribute attribute = getEntityManager().find(NominalAttribute.class, attributeID);
 		if (attribute != null) {
@@ -84,12 +87,14 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 		}
 	}
 
+	@Override
 	public NominalAttributeDTO getAttributeByID(Long attributeID) throws PropertyNotSetException {
 		NominalAttribute nominalAttribute = getById(attributeID);
 		Hibernate.initialize(nominalAttribute.getNominalLabels()); //loading labels too
 		return new NominalAttributeDTO(nominalAttribute);
 	}
 
+	@Override
 	public List<NominalAttributeDTO> getAllAttributes() throws PropertyNotSetException {
 		List<NominalAttributeDTO> nominalAttributeDTOList = new ArrayList<NominalAttributeDTO>();
 		List<NominalAttribute> nominalAttributeList = getAll();
@@ -99,6 +104,7 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 		return nominalAttributeDTOList;
 	}
 
+	@Override
 	public Long isAttributeExists(String attributeCode) throws PropertyNotSetException {
 		Criteria criteria = getCurrentSession().createCriteria(NominalAttribute.class);
 		criteria.add(Restrictions.eq("code", attributeCode));
@@ -107,6 +113,7 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 	}
 
 	//TODO: Native query used in this method should be translated into a criteria query.
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<CrisisAttributesDTO> getAllAttributesExceptCrisis(Long crisisID) throws PropertyNotSetException {
 		List<CrisisAttributesDTO> attributesList = new ArrayList<>();
@@ -122,12 +129,12 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 			CrisisAttributesDTO attribute;
 			for (Object[] row : rows) {
 				attribute = new CrisisAttributesDTO();
-				attribute.setNominalAttributeID(((Integer) row[0]).intValue());
-				attribute.setUserID(((Integer) row[1]).intValue());
+				attribute.setNominalAttributeID(((BigInteger) row[0]).intValue());
+				attribute.setUserID(((BigInteger) row[1]).intValue());
 				attribute.setName((String) row[2]);
 				attribute.setDescription((String) row[3]);
 				attribute.setCode(((String) row[4]));
-				attribute.setLabelID(((Integer) row[5]).intValue());
+				attribute.setLabelID(((BigInteger) row[5]).intValue());
 				attribute.setLabelName(((String) row[6]));
 				attributesList.add(attribute);
 			}
