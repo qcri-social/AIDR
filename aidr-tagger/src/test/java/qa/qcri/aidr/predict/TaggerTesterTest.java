@@ -22,6 +22,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -32,7 +33,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
-import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
@@ -40,6 +40,7 @@ import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
+import qa.qcri.aidr.predict.TaggerHelper.LabelCode;
 import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
 import qa.qcri.aidr.predict.common.Serializer;
 import qa.qcri.aidr.predict.common.TaggerConfigurationProperty;
@@ -80,10 +81,9 @@ public class TaggerTesterTest {
 	private Integer crisisID;
 	private Long userID;
 	private Long modelFamilyID;
-	private int tweetID;
-	private Long nominalLabelID, nominalLabelID1, nominalLabelID2;
+	private Long nominalLabelWhiteID, nominalLabelBlackID, nominalLabelNullID;
 	CountDownLatch countDownLatch;
-	private int whiteCount, blackCount;
+	private int whiteClassifiedCount, blackClassifiedCount;
 	private Boolean quiet;
 	private int itemsToTrain;
 	private int itemsToTest;
@@ -101,7 +101,7 @@ public class TaggerTesterTest {
 		quiet = Boolean.parseBoolean(System.getProperty("quiet"));
 		String config = System.getProperty("config");
 		
-		if(org.apache.commons.lang3.StringUtils.isNotEmpty(config)){
+		if(StringUtils.isNotEmpty(config)){
 			try (InputStream input = new FileInputStream(config);){
 				Properties properties = new Properties();
 				properties.load(input);
@@ -267,78 +267,10 @@ public class TaggerTesterTest {
 		
 		//b. Create three labels white, black, null
 		
-		try {
-			// white
-			NominalLabelDTO nominalLabelDTO = new NominalLabelDTO();
-			nominalLabelDTO.setNominalAttributeDTO(attributeDTO);
-			nominalLabelDTO.setName("White");
-			nominalLabelDTO.setNominalLabelCode("white");
-			nominalLabelDTO.setDescription("White test desc");
-			nominalLabelDTO.setSequence(101);
+		nominalLabelWhiteID = createNominalLabel(LabelCode.WHITE, attributeDTO);
+		nominalLabelBlackID = createNominalLabel(LabelCode.BLACK, attributeDTO);
+		nominalLabelNullID = createNominalLabel(LabelCode.DOES_NOT_APPLY, attributeDTO);
 			
-			webResource = client.target(taggerConfig.getProperty(TaggerConfigurationProperty.TAGGER_API)+"/label");
-			response = webResource.request(
-					MediaType.APPLICATION_JSON).post(Entity.json(nominalLabelDTO), Response.class);
-			assertEquals(200, response.getStatus());
-			jsonResponse = response.readEntity(String.class);
-			nominalLabelDTO = objectMapper.readValue(jsonResponse, NominalLabelDTO.class);
-			
-			if(nominalLabelDTO == null || nominalLabelDTO.getNominalLabelId() == null) {
-				Assert.fail("NominalLabel not created with code : white");
-			} else {
-				nominalLabelID = nominalLabelDTO.getNominalLabelId();
-			}
-			
-			// black
-			NominalLabelDTO nominalLabelDTO1 = new NominalLabelDTO();
-			nominalLabelDTO1.setNominalAttributeDTO(attributeDTO);
-			nominalLabelDTO1.setName("Black");
-			nominalLabelDTO1.setNominalLabelCode("black");
-			nominalLabelDTO1.setDescription("Black test desc");
-			nominalLabelDTO1.setSequence(101);
-			
-			webResource = client.target(taggerConfig.getProperty(TaggerConfigurationProperty.TAGGER_API)+"/label");
-			response = webResource.request(
-					MediaType.APPLICATION_JSON).post(Entity.json(nominalLabelDTO1), Response.class);
-			assertEquals(200, response.getStatus());
-			jsonResponse = response.readEntity(String.class);
-			nominalLabelDTO1 = objectMapper.readValue(jsonResponse, NominalLabelDTO.class);
-			
-			if(nominalLabelDTO1 == null || nominalLabelDTO.getNominalLabelId() == null) {
-				Assert.fail("NominalLabel not created with code : black");
-			} else {
-				nominalLabelID1 = nominalLabelDTO1.getNominalLabelId();
-			}
-			
-			
-			// does not apply
-			NominalLabelDTO nominalLabelDTO2 = new NominalLabelDTO();
-			nominalLabelDTO2.setNominalAttributeDTO(attributeDTO);
-			nominalLabelDTO2.setName("Does not apply");
-			nominalLabelDTO2.setNominalLabelCode("null");
-			nominalLabelDTO2.setDescription("Does not apply test desc");
-			nominalLabelDTO2.setSequence(101);
-			
-			webResource = client.target(taggerConfig.getProperty(TaggerConfigurationProperty.TAGGER_API)+"/label");
-			response = webResource.request(
-					MediaType.APPLICATION_JSON).post(Entity.json(nominalLabelDTO2), Response.class);
-			assertEquals(200, response.getStatus());
-			jsonResponse = response.readEntity(String.class);
-			nominalLabelDTO2 = objectMapper.readValue(jsonResponse, NominalLabelDTO.class);
-		
-			if(nominalLabelDTO2 == null || nominalLabelDTO.getNominalLabelId() == null) {
-				Assert.fail("NominalLabel not created with code : Does not apply");
-			} else {
-				nominalLabelID2 = nominalLabelDTO2.getNominalLabelId();
-			}
-			
-			
-		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			Assert.fail("Failed to create NominalLabel :" + e.getMessage());
-		}
-		
 		
 	   //5. Create a ModelFamily 
 		ModelFamilyDTO modelFamilyDTO = new ModelFamilyDTO();
@@ -365,8 +297,8 @@ public class TaggerTesterTest {
 		 
 		crisisDTO.setCode(TAGGER_TESTER_CRISIS_CODE);
 		crisisDTO.setName(TAGGER_TESTER_CRISIS_NAME);
-	    final TaggerHelper helper = new TaggerHelper(new Long(crisisID), userID, attributeDTO.getNominalAttributeId(), modelFamilyID, itemsToTrain, quiet);
-	    helper.startPublishing(true, false); // isBlack is false as it won't have any impact since the training tweets are being generated
+	    TaggerHelper helper = new TaggerHelper(new Long(crisisID), userID, attributeDTO.getNominalAttributeId(), modelFamilyID, itemsToTrain, quiet);
+	    helper.startPublishing(true, null); // NULL IS THERE FOR Labelcode as we need to push both white and black docs
 	    
 	    // 7. tag training data set : human tagging
 	    helper.tagDocuments();
@@ -375,31 +307,18 @@ public class TaggerTesterTest {
 	    
 	   //8.  push white items - unlabeled
 		helper.setNItems(itemsToTest);
-		helper.startPublishing(false, false);
-
-	  
-	   try {
-			Thread.sleep(30000);
-		} catch (InterruptedException e) {
-			logger.error("Thread sleep interrupted"+Thread.currentThread().getName());
-		}
-	   
-	   if(whiteCount < (int)(itemsToTest*(80/100.0f))) {
-			Assert.fail("Failed to tagged documents with label : white : " + whiteCount);
+		helper.startPublishing(false, LabelCode.WHITE);
+	    if(whiteClassifiedCount < (int)(itemsToTest*(80/100.0f))) {
+			Assert.fail("Failed to tagged documents with label : white : " + whiteClassifiedCount);
 		}	
 	   
 	    // push black items -unlabeled
 	    helper.setNItems(itemsToTest);
-		helper.startPublishing(false, true);
+		helper.startPublishing(false, LabelCode.BLACK);
 
-	    try {
-			Thread.sleep(30000);
-		} catch (InterruptedException e) {
-			logger.error("Thread sleep interrupted"+Thread.currentThread().getName());
-		}
 	    
-	    if(blackCount < (int)(itemsToTest*(80/100.0f))) {
-			Assert.fail("Failed to tagged documents with label : black : " + blackCount);
+	    if(blackClassifiedCount < (int)(itemsToTest*(80/100.0f))) {
+			Assert.fail("Failed to tagged documents with label : black : " + blackClassifiedCount);
 		}	    
 	    
 	}
@@ -436,6 +355,38 @@ public class TaggerTesterTest {
 		
 	}
 	
+	private Long createNominalLabel(LabelCode labelCode, NominalAttributeDTO attributeDTO) {
+		
+		Long nominalLabelID = 0L;
+		try {
+			NominalLabelDTO nominalLabelDTO = new NominalLabelDTO();
+			nominalLabelDTO.setNominalAttributeDTO(attributeDTO);
+			nominalLabelDTO.setName(labelCode.getName());
+			nominalLabelDTO.setNominalLabelCode(labelCode.getCode());
+			nominalLabelDTO.setDescription(labelCode.getName());
+			nominalLabelDTO.setSequence(101);
+			
+			webResource = client.target(taggerConfig.getProperty(TaggerConfigurationProperty.TAGGER_API)+"/label");
+			response = webResource.request(
+					MediaType.APPLICATION_JSON).post(Entity.json(nominalLabelDTO), Response.class);
+			assertEquals(200, response.getStatus());
+			jsonResponse = response.readEntity(String.class);
+			nominalLabelDTO = objectMapper.readValue(jsonResponse, NominalLabelDTO.class);
+			
+			if(nominalLabelDTO == null || nominalLabelDTO.getNominalLabelId() == null) {
+				Assert.fail("NominalLabel not created with code : " + labelCode.getCode());
+			} else {
+				nominalLabelID = nominalLabelDTO.getNominalLabelId();
+			}
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			Assert.fail("Failed to create NominalLabel :" + e.getMessage());
+		}
+		return nominalLabelID;
+	}
+	
 	
 	class OutputMatcherProcess implements Runnable {
 
@@ -456,10 +407,12 @@ public class TaggerTesterTest {
 		            	Document document = Serializer.deserialize(byteDoc.get(1));
 		            	ArrayList<NominalLabelBC> nominalLabels = document.getLabels(NominalLabelBC.class);
 		            	for (NominalLabelBC nominalLabelBC : nominalLabels) {
-							if(nominalLabelBC.getNominalLabelID() == nominalLabelID.intValue()){
-								whiteCount++;
-							} else if(nominalLabelBC.getNominalLabelID() == nominalLabelID.intValue()) {
-								blackCount++;
+							if(nominalLabelBC.getNominalLabelID() == nominalLabelWhiteID.intValue()){
+								whiteClassifiedCount++;
+							} else if(nominalLabelBC.getNominalLabelID() == nominalLabelBlackID.intValue()) {
+								blackClassifiedCount++;
+							} else {
+								logger.error("Invalid nominal Label : " + nominalLabelBC.getNominalLabelID());
 							}
 		            	}
 		        	}	

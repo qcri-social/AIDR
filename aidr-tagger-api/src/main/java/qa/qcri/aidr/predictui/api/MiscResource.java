@@ -6,12 +6,14 @@ package qa.qcri.aidr.predictui.api;
 
 import java.util.List;
 
+import qa.qcri.aidr.common.util.EmailClient;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentList;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.HumanLabeledDocumentListWrapper;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.ItemToLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
 import qa.qcri.aidr.predictui.facade.MiscResourceFacade;
+import qa.qcri.aidr.predictui.facade.SystemEventFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
 import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
@@ -39,6 +41,8 @@ public class MiscResource {
 	private UriInfo context;
 	@EJB
 	private MiscResourceFacade miscEJB;
+	@EJB
+	private SystemEventFacade systemEventEJB;
 
 	public MiscResource() {
 	}
@@ -235,5 +239,28 @@ public class MiscResource {
 			return Response.ok(
 					new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "Exception in fetching human labeled documents")).build();
 		}
+	}
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/sendErrorEmail")
+	public Response sendErrorEmail(@FormParam("code") String code, @FormParam("description") String description) throws Exception {
+		Boolean emailSent = true;
+		try {
+			EmailClient.sendErrorMail(code,description);
+		} catch (Exception e) {
+			logger.error("Unable to send email");
+			logger.error(e.getMessage());
+			emailSent = false;
+		}
+		try
+		{
+			systemEventEJB.insertSystemEvent("ERROR", "Collector", code, description, emailSent);
+		}
+		catch (Exception e) {
+			return Response.serverError().build();
+		}
+		return Response.ok().build();
 	}
 }

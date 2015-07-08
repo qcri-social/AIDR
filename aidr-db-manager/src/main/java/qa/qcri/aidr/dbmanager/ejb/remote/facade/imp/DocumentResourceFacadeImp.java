@@ -120,13 +120,13 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	public int deleteNoLabelDocument(List<DocumentDTO> collection) {
 		int deleteCount = 0;
 		if (collection != null && !collection.isEmpty()) {
-			Session session = getCurrentSession();
+			//Session session = getCurrentSession();
 			try {
-				Transaction tx = session.beginTransaction();
+				//Transaction tx = session.beginTransaction();
 				for (DocumentDTO d: collection) {
 					deleteCount += deleteNoLabelDocument(d);
 				}
-				tx.commit();
+				//tx.commit();
 				logger.info("deleted count = " + deleteCount);
 			} catch (Exception e) {
 				logger.error("Collection deletion query failed");
