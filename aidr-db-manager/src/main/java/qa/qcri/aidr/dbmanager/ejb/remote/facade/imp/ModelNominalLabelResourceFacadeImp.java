@@ -1,5 +1,7 @@
-/*
+/**
  * Implements operations for managing the model_nominal_label table of the aidr_predict DB
+ * 
+ * @author Koushik
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 

@@ -1,4 +1,4 @@
-/* 
+/** 
  * entity definition for the tag_data table
  */
 package qa.qcri.aidr.analysis.entity;

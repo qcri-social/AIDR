@@ -1,6 +1,8 @@
-/*
- * /*
+/**
+ *
  * Implements operations for managing the crisis_type table of the aidr_predict DB
+ * 
+ * @author Koushik
  */
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;

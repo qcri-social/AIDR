@@ -1,6 +1,10 @@
-/*
+/**
  * POJO for (de)serialization of tweets coming on the REDIS aidr_predict.* channels
+ * 
+ * @author Koushik
  */
+
+
 package qa.qcri.aidr.utils;
 
 import java.io.Serializable;
@@ -32,16 +36,9 @@ import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.common.filter.ClassifiedFilteredTweet;
 import qa.qcri.aidr.common.filter.NominalLabel;
 
-/**
- *
- * @author Koushik
- */
 
 public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Document, Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 3780215910578547404L;
 
 	private static Logger logger = Logger.getLogger(ClassifiedTweet.class);

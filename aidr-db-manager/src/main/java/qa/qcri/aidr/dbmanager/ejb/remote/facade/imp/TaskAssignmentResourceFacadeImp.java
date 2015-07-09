@@ -1,4 +1,4 @@
-/*
+/**
  * Implements operations for managing the task_assignment table of the aidr_predict DB
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
@@ -25,11 +25,6 @@ import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskAssignmentResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.task.TaskAssignment;
 
-/**
- * 
- * @author Koushik
- *
- */
 @Stateless(name="TaskAssignmentResourceFacadeImp")
 public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<TaskAssignment, Long> implements TaskAssignmentResourceFacade {
 

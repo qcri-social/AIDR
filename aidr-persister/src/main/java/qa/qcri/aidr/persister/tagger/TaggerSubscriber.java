@@ -1,13 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Creates a subscription object for REDIS to listen for streaming tweets
+ * 
+ * @author Imran
  */
 package qa.qcri.aidr.persister.tagger;
 
-/**
- *
- * @author Imran
- */
+
 import qa.qcri.aidr.persister.collector.*;
 
 import java.io.File;

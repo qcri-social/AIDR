@@ -1,5 +1,7 @@
-/*
+/**
  * Implements operations for managing the model table of the aidr_predict DB
+ * 
+ * @author Koushik
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
@@ -30,10 +32,7 @@ import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 
-/**
- *
- * @author Imran, koushik
- */
+
 @Stateless(name="ModelResourceFacadeImp")
 public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> implements ModelResourceFacade {
 

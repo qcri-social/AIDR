@@ -1,5 +1,7 @@
-/*
+/**
  * Implements operations for managing the crisis table of the aidr_predict DB
+ * 
+ * @author Koushik
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
@@ -27,10 +29,6 @@ import qa.qcri.aidr.dbmanager.ejb.remote.facade.UsersResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
 
-/**
- *
- * @author Koushik
- */
 @Stateless(name="CrisisResourceFacadeImp")
 public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long> implements CrisisResourceFacade {
 

@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package qa.qcri.aidr.persister.collction;
 
 import org.apache.log4j.Logger;
@@ -11,7 +8,7 @@ import qa.qcri.aidr.redis.JedisConnectionPool;
 import redis.clients.jedis.Jedis;
 
 /**
- *
+ * Creates a new thread per collection to listen to REDIS and persis twetes being streamed from REDIS by collector. 
  * @author Imran
  */
 public class RedisCollectionPersister implements Runnable {

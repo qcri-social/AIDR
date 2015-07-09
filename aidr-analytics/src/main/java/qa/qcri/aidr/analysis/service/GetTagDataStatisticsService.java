@@ -1,4 +1,4 @@
-/*
+/**
  * Implements the business logic for providing the REST API functionalities on tag_data table.
  */
 package qa.qcri.aidr.analysis.service;

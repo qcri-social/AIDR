@@ -1,5 +1,7 @@
-/*
+/**
  * Implements operations for managing the nominal_attribute table of the aidr_predict DB
+ * 
+ * @author Koushik
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
@@ -23,10 +25,7 @@ import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalAttributeResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 
-/**
- *
- * @author Imran
- */
+
 @Stateless(name = "NominalAttributeResourceFacadeImp")
 public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<NominalAttribute, Long> implements NominalAttributeResourceFacade {
 

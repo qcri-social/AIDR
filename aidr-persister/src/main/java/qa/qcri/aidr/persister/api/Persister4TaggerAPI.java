@@ -1,7 +1,10 @@
 package qa.qcri.aidr.persister.api;
 
-/*
+/**
  * This class provides the REST APIs to manage the persister for a collection - start/stop and download based on various filters and requested file types. 
+ 
+ * @author Imran, Koushik
+ *
  */
 
 
@@ -41,11 +44,7 @@ import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
 import qa.qcri.aidr.utils.ResultStatus;
 
-/**
- * REST Web Service
- *
- * @author Imran
- */
+
 @Path("taggerPersister")
 public class Persister4TaggerAPI {
 

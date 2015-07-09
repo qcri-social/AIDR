@@ -1,4 +1,4 @@
-/*
+/**
  * This class provides REST APIs for creating and returning a file containing the human labeled items retrieved from
  * the aidr_predict DB by tagger-api. 
  */

@@ -1,6 +1,6 @@
-/*
+/**
  * Interface for accessing the low level primitive operations of save, delete, find and update operations
- * on the aidr_predict DB
+ * on the aidr_predict DB from within DBManager module only. 
  */
 package qa.qcri.aidr.dbmanager.ejb.local.facade;
 

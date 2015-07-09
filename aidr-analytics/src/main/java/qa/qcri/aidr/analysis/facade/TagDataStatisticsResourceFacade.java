@@ -1,4 +1,4 @@
-/*
+/**
  * Interface for operations on the tag_data table
  */
 package qa.qcri.aidr.analysis.facade;

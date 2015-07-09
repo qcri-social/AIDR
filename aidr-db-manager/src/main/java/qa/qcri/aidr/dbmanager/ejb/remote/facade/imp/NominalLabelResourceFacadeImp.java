@@ -1,5 +1,7 @@
 /*
  * Implements operations for managing the nominal_label table of the aidr_predict DB
+ * 
+ * @author Koushik
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
@@ -18,10 +20,6 @@ import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 
-
-/**
- * @author Koushik
- */
 
 @Stateless(name="NominalLabelResourceFacadeImp")
 public class NominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<NominalLabel, Long> implements NominalLabelResourceFacade {

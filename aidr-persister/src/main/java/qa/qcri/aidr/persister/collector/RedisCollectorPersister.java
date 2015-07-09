@@ -1,6 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Creates a persister thread for a given collection
+ * 
+ * @author Imran
  */
 package qa.qcri.aidr.persister.collector;
 
@@ -13,10 +14,7 @@ import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
 import redis.clients.jedis.Jedis;
 
-/**
- *
- * @author Imran
- */
+
 public class RedisCollectorPersister implements Runnable {
 
 	private static Logger logger = Logger.getLogger(RedisCollectorPersister.class.getName());

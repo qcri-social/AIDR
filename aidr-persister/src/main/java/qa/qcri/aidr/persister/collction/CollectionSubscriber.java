@@ -1,13 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Creates a REDIS subscriber object for a collection
+ * 
+ * @author Imran
  */
 package qa.qcri.aidr.persister.collction;
 
-/**
- *
- * @author Imran
- */
+
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.logging.ErrorLog;

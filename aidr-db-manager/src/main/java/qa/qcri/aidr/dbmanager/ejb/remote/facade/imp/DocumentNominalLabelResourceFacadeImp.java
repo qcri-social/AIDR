@@ -1,5 +1,7 @@
-/*
+/**
  * Implements operations for managing the document_nominal_label table of the aidr_predict DB
+ * 
+ *  @author Koushik
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
@@ -25,9 +27,6 @@ import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 
-/**
- * @author Koushik
- */
 
 @Stateless(name="DocumentNominalLabelResourceFacadeImp")
 public class DocumentNominalLabelResourceFacadeImp 

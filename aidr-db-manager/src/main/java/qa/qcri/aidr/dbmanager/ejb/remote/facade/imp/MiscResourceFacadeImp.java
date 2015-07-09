@@ -1,5 +1,7 @@
-/*
+/**
  * Implements operations for managing the operations that span multiple tables of the aidr_predict DB
+ * 
+ * @author Koushik
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
@@ -28,11 +30,6 @@ import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.MiscResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 
-/**
- * 
- * @author Koushik
- *
- */
 @Stateless(name="MiscResourceFacadeImp")
 public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long> implements MiscResourceFacade {
 	private static Logger logger = Logger.getLogger("aidr-db-manager");

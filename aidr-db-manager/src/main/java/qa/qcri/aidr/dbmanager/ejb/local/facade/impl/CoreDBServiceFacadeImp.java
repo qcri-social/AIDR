@@ -1,3 +1,12 @@
+/**
+ * 
+ * 
+ * This class implements the core functionalities of save, delete, find and update operations on tables of
+ * the aidr_predict DB for local EJB access only. 
+ *
+ * @author Koushik
+ */
+
 package qa.qcri.aidr.dbmanager.ejb.local.facade.impl;
 
 import org.apache.log4j.Logger;
@@ -16,14 +25,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 
-/**
- * 
- * @author Koushik
- * 
- * This class implements the core functionalities of save, delete, find and update operations on tables of
- * the aidr_predict DB. 
- *
- */
+
 @Stateless(name = "CoreDBServiceFacadeImp")
 public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializable> implements CoreDBServiceFacade<E,I> {
 

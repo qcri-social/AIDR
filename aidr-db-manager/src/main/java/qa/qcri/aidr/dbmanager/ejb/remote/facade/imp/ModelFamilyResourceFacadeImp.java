@@ -1,5 +1,7 @@
-/*
+/**
  * Implements operations for managing the model_family table of the aidr_predict DB
+ * 
+ * @author Koushik
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
@@ -27,10 +29,6 @@ import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 
 
-/**
- *
- * @author Imran
- */
 @Stateless(name="ModelFamilyResourceFacadeImp")
 public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFamily, Long> implements ModelFamilyResourceFacade {
 

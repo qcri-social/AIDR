@@ -1,6 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Creates a thread to persist streaming tweets coming from collector
+ * 
+ * @author Imran
  */
 package qa.qcri.aidr.persister.tagger;
 
@@ -14,10 +15,7 @@ import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
 import redis.clients.jedis.Jedis;
 
-/**
- *
- * @author Imran
- */
+
 public class RedisTaggerPersister implements Runnable {
 
 	private static Logger logger = Logger.getLogger(RedisTaggerPersister.class.getName());

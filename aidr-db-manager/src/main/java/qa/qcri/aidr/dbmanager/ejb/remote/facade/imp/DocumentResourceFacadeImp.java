@@ -1,5 +1,7 @@
-/*
+/**
  * Implements operations for managing the document table of the aidr_predict DB
+ * 
+ * @author Koushik
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
@@ -33,11 +35,6 @@ import qa.qcri.aidr.dbmanager.entities.model.Model;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 
-/**
- * 
- * @author Koushik
- *
- */
 @Stateless(name="DocumentResourceFacadeImp")
 public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long> implements DocumentResourceFacade  {
 
