@@ -1,6 +1,4 @@
-/**
- * Implements the business logic for providing the REST API functionalities on tag_data table.
- */
+
 package qa.qcri.aidr.analysis.service;
 
 import java.util.ArrayList;
@@ -25,7 +23,9 @@ import qa.qcri.aidr.analysis.entity.TagDataPK;
 import qa.qcri.aidr.analysis.facade.TagDataStatisticsResourceFacade;
 import qa.qcri.aidr.analysis.utils.JsonResponse;
 
-
+/**
+ * Implements the business logic for providing the REST API functionalities on tag_data table.
+ */
 public class GetTagDataStatisticsService {
 
 	// Debugging

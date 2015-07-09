@@ -1,9 +1,4 @@
-/**
- * 
- * This is the REST API interface for accessing the aidr_analytics DB's confidence_data entity. 
- *
- * This class is not used at the moment.
- */
+
 package qa.qcri.aidr.analysis.api;
 
 import javax.ejb.EJB;
@@ -26,6 +21,14 @@ import org.apache.log4j.Logger;
 import qa.qcri.aidr.analysis.facade.ConfidenceStatisticsResourceFacade;
 import qa.qcri.aidr.common.code.DateFormatConfig;
 import qa.qcri.aidr.output.getdata.ChannelBufferManager;
+
+
+/**
+ * 
+ * This is the REST API interface for accessing the aidr_analytics DB's confidence_data entity. 
+ *
+ * This class is not used at the moment.
+ */
 
 @Path("/confData/")
 public class GetConfidenceStatistics extends GetStatistics implements ServletContextListener {

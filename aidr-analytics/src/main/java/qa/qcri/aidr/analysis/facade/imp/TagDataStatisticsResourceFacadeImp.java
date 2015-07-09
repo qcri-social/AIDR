@@ -1,6 +1,4 @@
-/**
- * Implements the operations for the interface TagDataStatisticsResourceFacade
- */
+
 package qa.qcri.aidr.analysis.facade.imp;
 
 import java.util.List;
@@ -21,7 +19,9 @@ import qa.qcri.aidr.analysis.utils.CommonOperations;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.ReturnCode;
 
-
+/**
+ * Implements the operations for the interface TagDataStatisticsResourceFacade
+ */
 @Stateless
 public class TagDataStatisticsResourceFacadeImp extends CommonOperations implements TagDataStatisticsResourceFacade {
 

@@ -1,11 +1,5 @@
 package qa.qcri.aidr.analysis.api;
 
-/**
- * This class provides an interface to automatically start/stop/manage the analytics DB writer service at deployment time
- * to monitor REDIS channels for data to store statistical data into the aidr analytics DB.
- * 
- * @author: koushik
- */
 
 import java.util.Date;
 import java.util.Iterator;
@@ -45,6 +39,14 @@ import qa.qcri.aidr.common.values.ReturnCode;
 import qa.qcri.aidr.common.filter.ClassifiedFilteredTweet;
 import qa.qcri.aidr.common.filter.NominalLabel;
 import qa.qcri.aidr.output.getdata.ChannelBufferManager;
+
+
+/**
+ * This class provides an interface to automatically start/stop/manage the analytics DB writer service at deployment time
+ * to monitor REDIS channels for data to store statistical data into the aidr analytics DB.
+ * 
+ * @author: koushik
+ */
 
 @Path("/save/")
 public class WriteStatisticsData extends ChannelBufferManager implements

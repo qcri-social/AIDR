@@ -2,11 +2,15 @@ package qa.qcri.aidr.analysis.utils;
 
 import java.io.Serializable;
 
+/**
+ * Key for storing classifier tag/label related data
+ * 
+ * @author koushik
+ *
+ */
 public class CounterKey implements Serializable {
 
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 9168204241878331959L;
 	
 	private String crisisCode = null;

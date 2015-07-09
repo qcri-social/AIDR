@@ -1,11 +1,13 @@
 package qa.qcri.aidr.analysis.utils;
 
+/**
+ * Key for storing classifier confidence related data
+ * 
+ * @author koushik
+ *
+ */
 public class ConfCounterKey extends CounterKey {
 
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -5215949450260629342L;
 	
 	private String binNumber;

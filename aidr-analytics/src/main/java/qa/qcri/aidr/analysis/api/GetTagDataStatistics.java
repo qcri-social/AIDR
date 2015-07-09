@@ -1,7 +1,6 @@
-/** 
- * This is the REST API interface for accessing the aidr_analytics DB's tag_data entity. 
- */
+
 package qa.qcri.aidr.analysis.api;
+
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -22,6 +21,10 @@ import org.apache.log4j.Logger;
 
 
 import qa.qcri.aidr.analysis.service.GetTagDataStatisticsService;
+
+/** 
+ * This is the REST API interface for accessing the aidr_analytics DB's tag_data entity. 
+ */
 
 @Path("/tagData/")
 public class GetTagDataStatistics extends GetStatistics implements ServletContextListener {
