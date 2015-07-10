@@ -59,7 +59,7 @@ public class ModelFamilyDTO implements Serializable {
 			}
 			if (model.hasCrisis()) {
 				Crisis c = new Crisis(model.getCrisis().getUsers(), model.getCrisis().getCrisisType(), model.getCrisis().getName(), model.getCrisis().getCode(),
-						model.getCrisis().isIsTrashed());
+						model.getCrisis().isIsTrashed(), model.getCrisis().isIsMicromapperEnabled());
 				c.setCrisisId(model.getCrisis().getCrisisId());
 				this.setCrisisDTO(new CrisisDTO(c));
 			}

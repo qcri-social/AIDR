@@ -255,4 +255,26 @@ public class CrisisResource {
 		int crisisDeleted = crisisLocalEJB.deleteCrisis(id);
 		return crisisDeleted == 1 ? Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS))).build() : Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED))).build();
 	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/update/micromapperEnabled/{crisisCode}/{isMicromapperEnabled}")
+	public Response updateMicromapperEnabledByCrisisCode(@PathParam("crisisCode") String crisisCode, 
+			@PathParam("isMicromapperEnabled") Boolean isMicromapperEnabled ) {
+		Map<String, Boolean> result = new HashMap<String, Boolean>(1);
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			CrisisDTO crisisDTO = crisisLocalEJB.getCrisisByCode(crisisCode);
+			crisisDTO.setIsMicromapperEnabled(isMicromapperEnabled);
+			
+			crisisDTO = crisisLocalEJB.editCrisis(crisisDTO);
+			if(crisisDTO.isIsMicromapperEnabled()==isMicromapperEnabled){
+				result.put("isMicromapperEnabled", isMicromapperEnabled);
+			}
+			return Response.ok(mapper.writeValueAsString(result)).build();
+		} catch (Exception e) {
+			logger.error("Exception while updating isMicromapperEnabled " + e.getMessage());
+			return Response.ok("{\"status\": \"false\"}").build();
+		}
+	}
 }

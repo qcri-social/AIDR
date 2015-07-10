@@ -2143,4 +2143,21 @@ public class TaggerServiceImpl implements TaggerService {
 		}
 	}
 
+	@Override
+	public Map<String, Object> updateMicromapperEnabled(String code, Boolean isMicromapperEnabled) throws AidrException {
+		Client client = ClientBuilder.newBuilder()
+				.register(JacksonFeature.class).build();
+		try {
+			WebTarget webResource = client.target(taggerMainUrl
+					+ "/crisis/update/micromapperEnabled/" + code +"/"+isMicromapperEnabled);
+			Response clientResponse = webResource.request(
+					MediaType.APPLICATION_JSON).get();
+			Map<String, Object> jsonResponse = clientResponse.readEntity(Map.class);
+			return jsonResponse;
+		} catch (Exception e) {
+			logger.info("Exception while updating isMicromapperEnabled ", e);
+			throw new AidrException("Exception while updating isMicromapperEnabled ",
+					e);
+		}
+	}
 }

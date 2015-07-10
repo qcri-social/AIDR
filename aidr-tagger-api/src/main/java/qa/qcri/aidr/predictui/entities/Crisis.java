@@ -64,6 +64,9 @@ public class Crisis implements Serializable {
     @XmlElement 
     private Boolean isTrashed;
     
+    @XmlElement 
+    private Boolean isMicromapperEnabled;
+    
     public Crisis(){}
 
     public Long getCrisisID() {
@@ -119,6 +122,14 @@ public class Crisis implements Serializable {
 	}
 	public void setIsTrashed(Boolean isTrashed) {
 		this.isTrashed = isTrashed;
+	}
+	
+	public Boolean getIsMicromapperEnabled() {
+		return isMicromapperEnabled;
+	}
+
+	public void setIsMicromapperEnabled(Boolean isMicromapperEnabled) {
+		this.isMicromapperEnabled = isMicromapperEnabled;
 	}
 	
 	@Override

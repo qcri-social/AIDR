@@ -5,15 +5,14 @@
  */
 package qa.qcri.aidr.dbmanager.entities.misc;
 
+import static javax.persistence.GenerationType.IDENTITY;
+
 import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-
-import static javax.persistence.GenerationType.IDENTITY;
-
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -22,16 +21,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.Hibernate;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "crisis", catalog = "aidr_predict", uniqueConstraints = @UniqueConstraint(columnNames = "code"))
@@ -66,6 +64,9 @@ public class Crisis implements java.io.Serializable {
 	@Column(name = "isTrashed", nullable = false)
 	private boolean isTrashed;
 	
+	@Column(name = "isMicromapperEnabled", nullable = false)
+	private boolean isMicromapperEnabled;
+	
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "crisis_nominal_attribute", catalog = "aidr_predict", joinColumns = { @JoinColumn(name = "crisisID", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "nominalAttributeID", nullable = false, updatable = false) })
 	@JsonManagedReference
@@ -82,23 +83,34 @@ public class Crisis implements java.io.Serializable {
 	public Crisis() {
 	}
 
-	public Crisis(Users users, CrisisType crisisType, String name, String code,
+	/*public Crisis(Users users, CrisisType crisisType, String name, String code,
 			boolean isTrashed) {
 		this.users = users;
 		this.crisisType = crisisType;
 		this.name = name;
 		this.code = code;
 		this.isTrashed = isTrashed;
+	}*/
+	
+	public Crisis(Users users, CrisisType crisisType, String name, String code,
+			boolean isTrashed, boolean isMicromapperEnabled) {
+		this.users = users;
+		this.crisisType = crisisType;
+		this.name = name;
+		this.code = code;
+		this.isTrashed = isTrashed;
+		this.isMicromapperEnabled = isMicromapperEnabled;
 	}
 
 	public Crisis(Users users, CrisisType crisisType, String name, String code,
-			boolean isTrashed, List<NominalAttribute> nominalAttributes, List<Document> documents,
+			boolean isTrashed, boolean isMicromapperEnabled, List<NominalAttribute> nominalAttributes, List<Document> documents,
 			List<ModelFamily> modelFamilies) {
 		this.users = users;
 		this.crisisType = crisisType;
 		this.name = name;
 		this.code = code;
 		this.isTrashed = isTrashed;
+		this.isMicromapperEnabled = isMicromapperEnabled;
 		this.nominalAttributes = nominalAttributes;
 		this.documents = documents;
 		this.modelFamilies = modelFamilies;
@@ -152,6 +164,14 @@ public class Crisis implements java.io.Serializable {
 
 	public void setIsTrashed(boolean isTrashed) {
 		this.isTrashed = isTrashed;
+	}
+	
+	public boolean isIsMicromapperEnabled() {
+		return isMicromapperEnabled;
+	}
+
+	public void setIsMicromapperEnabled(boolean isMicromapperEnabled) {
+		this.isMicromapperEnabled = isMicromapperEnabled;
 	}
 	
 	public List<NominalAttribute> getNominalAttributes() {

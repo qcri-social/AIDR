@@ -343,7 +343,7 @@ public class TestDBManagerResource {
 		try {
 			CrisisTypeDTO crisisType = remoteCrisisTypeEJB.getAllCrisisTypes().get(0);
 			UsersDTO user = remoteUsersEJB.getUserById(9L);
-			CrisisDTO newCrisis = new CrisisDTO("testDBManagerCrisis", "test_db-manager_crisis", false, crisisType, user);
+			CrisisDTO newCrisis = new CrisisDTO("testDBManagerCrisis", "test_db-manager_crisis", false, false, crisisType, user);
 			CrisisDTO dto = remoteCrisisEJB.addCrisis(newCrisis);
 			if (dto != null) 
 			{

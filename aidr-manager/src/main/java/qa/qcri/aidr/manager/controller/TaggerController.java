@@ -15,6 +15,7 @@ import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
+import qa.qcri.aidr.manager.util.CollectionStatus;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -929,6 +930,24 @@ public class TaggerController extends BaseController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return getUIWrapper(false, "Error in getting dlownload link for human labeled documents");
+		}
+	}
+	
+	@RequestMapping(value = "/updateMicromapperEnabled.action", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> updateMicromapperEnabled(@RequestParam Boolean isMicromapperEnabled, @RequestParam String code ) throws Exception {
+		logger.info("In update micromapperEnabled for collection, code = " + code);
+		Map<String, Object> result = null;
+		try {
+			result = taggerService.updateMicromapperEnabled(code, isMicromapperEnabled);
+			if (result != null && result.get("isMicromapperEnabled") != null) {
+				return getUIWrapper(null,true);
+			} else {
+				return getUIWrapper(false, "Something wrong while updating isMicromapperEnabled");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getUIWrapper(false, "Unable to update micromapperEnabled for collection, code = " + code);
 		}
 	}
 

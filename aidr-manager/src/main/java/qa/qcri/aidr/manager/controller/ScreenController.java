@@ -135,12 +135,15 @@ public class ScreenController extends BaseController{
         Integer crisisId = 0;
         String crisisName = "";
         Integer crisisTypeId = 0;
+        Boolean isMicromapperEnabled = false;
         if (crisis != null && crisis.getCrisisID() != null && crisis.getName() != null){
             crisisId = crisis.getCrisisID();
             crisisName = crisis.getName();
             if (crisis.getCrisisType() != null && crisis.getCrisisType().getCrisisTypeID() != null){
                 crisisTypeId = crisis.getCrisisType().getCrisisTypeID();
             }
+            
+        	isMicromapperEnabled = crisis.getIsMicromapperEnabled();
         }
         logger.info("Fetched tagger crisis: " + crisis.getCode() + ", aidr collection: " + collection.getCode());
         
@@ -149,6 +152,7 @@ public class ScreenController extends BaseController{
         model.addObject("name", crisisName);
         model.addObject("crisisTypeId", crisisTypeId);
         model.addObject("code", code);
+        model.addObject("isMicromapperEnabled", isMicromapperEnabled);
         model.addObject("collectionType", collection.getCollectionType());
         model.addObject("collectionTypes", CollectionType.JSON());
         

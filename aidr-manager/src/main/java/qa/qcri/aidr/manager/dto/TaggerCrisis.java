@@ -19,6 +19,9 @@ public class TaggerCrisis {
 	private Integer crisisID;
 
 	private Boolean isTrashed;
+	
+	private Boolean isMicromapperEnabled;
+	
 
 	private List<TaggerModelFamilyCollection> modelFamilyCollection;
 
@@ -31,12 +34,13 @@ public class TaggerCrisis {
 		this.isTrashed = false;
 	}
 
-	public TaggerCrisis(String code, String name, TaggerCrisisType crisisType, TaggerUser users, Boolean isTrashed) {
+	public TaggerCrisis(String code, String name, TaggerCrisisType crisisType, TaggerUser users, Boolean isTrashed, Boolean isMicromapperEnabled) {
 		this.code = code;
 		this.name = name;
 		this.crisisType = crisisType;
 		this.users = users;
 		this.isTrashed = isTrashed;
+		this.isMicromapperEnabled = isMicromapperEnabled;
 	}
 
 	public TaggerCrisis(CrisisDTO dto) throws Exception {
@@ -51,6 +55,7 @@ public class TaggerCrisis {
 				this.setUsers(new TaggerUser(dto.getUsersDTO()));
 			}
 			this.setIsTrashed(dto.isIsTrashed());
+			this.setIsMicromapperEnabled(dto.isIsMicromapperEnabled());
 
 			List<TaggerModelFamilyCollection> mfList = new ArrayList<TaggerModelFamilyCollection>();
 			if (dto.getModelFamiliesDTO() != null) {
@@ -70,6 +75,9 @@ public class TaggerCrisis {
 		dto.setCode(this.getCode());
 		dto.setName(this.getName());
 		dto.setIsTrashed(this.getIsTrashed());
+		if(this.getIsMicromapperEnabled()!=null){
+			dto.setIsMicromapperEnabled(this.getIsMicromapperEnabled());
+		}
 		if (this.getUsers() != null) {
 			dto.setUsersDTO(this.getUsers().toDTO());
 		}
@@ -141,6 +149,14 @@ public class TaggerCrisis {
 
 	public void setIsTrashed(Boolean isTrashed) {
 		this.isTrashed = (isTrashed == null) ? false : isTrashed; 
+	}
+
+	public Boolean getIsMicromapperEnabled() {
+		return isMicromapperEnabled;
+	}
+
+	public void setIsMicromapperEnabled(Boolean isMicromapperEnabled) {
+		this.isMicromapperEnabled =isMicromapperEnabled;
 	}
 
 }

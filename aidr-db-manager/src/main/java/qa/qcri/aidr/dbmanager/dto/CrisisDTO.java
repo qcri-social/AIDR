@@ -53,6 +53,9 @@ public class CrisisDTO implements Serializable  {
 
 	@XmlElement
 	private boolean isTrashed;
+	
+	@XmlElement
+	private boolean isMicromapperEnabled;
 
 	@XmlElement
 	private List<NominalAttributeDTO> nominalAttributesDTO = null;
@@ -66,7 +69,7 @@ public class CrisisDTO implements Serializable  {
 
 	public CrisisDTO(){}
 
-	public CrisisDTO(String name, String code, boolean isTrashed, 
+/*	public CrisisDTO(String name, String code, boolean isTrashed,
 			CrisisTypeDTO crisisTypeDTO, UsersDTO usersDTO) {
 
 		this.setName(name);
@@ -74,15 +77,28 @@ public class CrisisDTO implements Serializable  {
 		this.setIsTrashed(isTrashed);
 		this.setCrisisTypeDTO(crisisTypeDTO);
 		this.setUsersDTO(usersDTO);
-	}
+	}*/
+	
+	public CrisisDTO(String name, String code, boolean isTrashed, boolean isMicromapperEnabled,
+			CrisisTypeDTO crisisTypeDTO, UsersDTO usersDTO) {
 
-	public CrisisDTO(Long crisisID, String name, String code, boolean isTrashed, 
+		this.setName(name);
+		this.setCode(code);
+		this.setIsTrashed(isTrashed);
+		this.setIsMicromapperEnabled(isMicromapperEnabled);
+		this.setCrisisTypeDTO(crisisTypeDTO);
+		this.setUsersDTO(usersDTO);
+	}
+	
+
+	public CrisisDTO(Long crisisID, String name, String code, boolean isTrashed, boolean isMicromapperEnabled,
 			CrisisTypeDTO crisisTypeDTO, UsersDTO usersDTO) {
 
 		this.setCrisisID(crisisID);
 		this.setName(name);
 		this.setCode(code);
 		this.setIsTrashed(isTrashed);
+		this.setIsMicromapperEnabled(isMicromapperEnabled);
 		this.setCrisisTypeDTO(crisisTypeDTO);
 		this.setUsersDTO(usersDTO);
 	}
@@ -95,6 +111,7 @@ public class CrisisDTO implements Serializable  {
 			this.setName(crisis.getName());
 			this.setCode(crisis.getCode());
 			this.setIsTrashed(crisis.isIsTrashed());
+			this.setIsMicromapperEnabled(crisis.isIsMicromapperEnabled());
 			if (crisis.hasCrisisType()) {
 				CrisisType cType = new CrisisType(crisis.getCrisisType().getName());
 				cType.setCrisisTypeId(crisis.getCrisisType().getCrisisTypeId());
@@ -170,6 +187,14 @@ public class CrisisDTO implements Serializable  {
 		this.isTrashed = isTrashed;
 	}
 
+	public boolean isIsMicromapperEnabled() {
+		return isMicromapperEnabled;
+	}
+
+	public void setIsMicromapperEnabled(boolean isMicromapperEnabled) {
+		this.isMicromapperEnabled = isMicromapperEnabled;
+	}
+	
 	public UsersDTO getUsersDTO() {
 		return this.usersDTO;
 	}
@@ -294,6 +319,7 @@ public class CrisisDTO implements Serializable  {
 		crisis.setName(getName());
 		crisis.setCode(this.getCode());
 		crisis.setIsTrashed(this.isTrashed);
+		crisis.setIsMicromapperEnabled(this.isMicromapperEnabled);
 		if (this.getUsersDTO() != null) {
 			crisis.setUsers(this.getUsersDTO().toEntity());
 		}
