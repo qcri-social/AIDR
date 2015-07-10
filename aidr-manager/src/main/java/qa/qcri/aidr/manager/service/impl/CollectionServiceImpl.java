@@ -295,7 +295,7 @@ public class CollectionServiceImpl implements CollectionService {
 				WebTarget webResource = client.target(fetchMainUrl + "/sms/start?collection_code=" + URLEncoder.encode(aidrCollection.getCode(), "UTF-8"));
 				Response response = webResource.request(MediaType.APPLICATION_JSON).get();
 				if (response.getStatus() == 200)
-					aidrCollection.setStatus(CollectionStatus.RUNNING);
+					aidrCollection.setStatus(CollectionStatus.INITIALIZING);
 			}
 			/**
 			 * Update Status To database

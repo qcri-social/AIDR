@@ -1278,11 +1278,14 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		boolean success;
 		try {
 			List<DocumentDTO> documentDTOs = remoteDocumentEJB.findDocumentsByCrisisID(crisisID);
-		
-			for(DocumentDTO documentDTO : documentDTOs) {
-				remoteTaskAssignmentEJB.undoTaskAssignment(documentDTO.getDocumentID(), userID);
+			
+			if(documentDTOs != null && userID != null) {
+				for(DocumentDTO documentDTO : documentDTOs) {
+					remoteTaskAssignmentEJB.undoTaskAssignment(documentDTO.getDocumentID(), userID);
+					remoteTaskAnswerEJB.deleteTaskAnswer(documentDTO.getDocumentID());
+				}
 			}
-			remoteDocumentEJB.deleteNoLabelDocument(documentDTOs);
+			remoteDocumentEJB.deleteDocuments(documentDTOs);
 			success = true;
 			
 			logger.info("Successful deletion for task data.");

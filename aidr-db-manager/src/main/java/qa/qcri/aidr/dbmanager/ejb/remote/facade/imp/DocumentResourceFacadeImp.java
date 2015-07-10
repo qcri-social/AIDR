@@ -493,5 +493,20 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 		List<Document> documentList = this.getAllByCriteria(criterion);
 		return documentList != null ? Integer.valueOf(documentList.size()) : 0;
 	}
+	
+	@Override
+	public boolean deleteDocuments(List<DocumentDTO> documents){
+		try {
+			for (DocumentDTO documentDTO : documents) {
+				deleteDocument(documentDTO);
+			}
+			return true;
+		} catch (Exception e) {
+			logger.error("Error in deleting document.");
+			return false;
+		}
+		
+		
+	}
 
 }

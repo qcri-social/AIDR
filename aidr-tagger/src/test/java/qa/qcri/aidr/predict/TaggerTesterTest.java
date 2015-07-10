@@ -39,7 +39,7 @@ import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
-import qa.qcri.aidr.predict.TaggerHelper.LabelCode;
+import qa.qcri.aidr.predict.TaggerTesterHelper.LabelCode;
 import qa.qcri.aidr.predict.common.TaggerConfigurationProperty;
 import qa.qcri.aidr.predict.common.TaggerConfigurator;
 import qa.qcri.aidr.predict.util.ResponseWrapper;
@@ -134,49 +134,53 @@ public class TaggerTesterTest {
 			userID = usersDTO.getUserID();
 		}
 		
-		if(userID != null) {
-			// fetch crisis
-			webResource = client.target(taggerConfig.getProperty(TaggerConfigurationProperty.TAGGER_API) + "/crisis/code/"
-					+ TAGGER_TESTER_CODE);
-			
-			response =  webResource.request(MediaType.APPLICATION_JSON).get();
-			assertEquals(200, response.getStatus());
-			jsonResponse = response.readEntity(String.class);
-			HashMap<String,Object> result =
-			        new ObjectMapper().readValue(jsonResponse, HashMap.class);
-			
-			
-			if(result != null && result.get("crisisId") != null && result.get("crisisId") != new Integer(0)) {
-				crisisID = (Integer) result.get("crisisId");
-			}
-			
-			// get attribute id
-			webResource = client.target(taggerConfig.getProperty(TaggerConfigurationProperty.TAGGER_API)+"/attribute/code/" + TAGGER_TESTER_NOMINAL_ATTRIBUTE_CODE);
+		// fetch crisis
+		webResource = client.target(taggerConfig.getProperty(TaggerConfigurationProperty.TAGGER_API) + "/crisis/code/"
+				+ TAGGER_TESTER_CODE);
+		
+		response =  webResource.request(MediaType.APPLICATION_JSON).get();
+		assertEquals(200, response.getStatus());
+		jsonResponse = response.readEntity(String.class);
+		HashMap<String,Object> result =
+		        new ObjectMapper().readValue(jsonResponse, HashMap.class);
+		
+		
+		if(result != null && result.get("crisisId") != null && result.get("crisisId") != new Integer(0)) {
+			crisisID = (Integer) result.get("crisisId");
+		}
+		
+		// get attribute id
+		webResource = client.target(taggerConfig.getProperty(TaggerConfigurationProperty.TAGGER_API)+"/attribute/code/" + TAGGER_TESTER_NOMINAL_ATTRIBUTE_CODE);
 
+		response = webResource.request(MediaType.APPLICATION_JSON).get();
+		assertEquals(200, response.getStatus());
+		
+		jsonResponse = response.readEntity(String.class);
+		JsonParser jsonParser = new JsonParser();
+		JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonResponse);
+		
+		if( jsonObject != null && jsonObject.get("nominalAttributeId") != null ) {
+             nominalAttributeId = jsonObject.get("nominalAttributeID").getAsLong();
+        }
+
+		// fetch model family
+		if(crisisID != null && crisisID != 0) {
+			webResource = client.target(taggerConfig.getProperty(TaggerConfigurationProperty.TAGGER_API)+"/modelfamily/crisis/" + crisisID);
 			response = webResource.request(MediaType.APPLICATION_JSON).get();
 			assertEquals(200, response.getStatus());
-			
 			jsonResponse = response.readEntity(String.class);
-			JsonParser jsonParser = new JsonParser();
-			JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonResponse);
-			nominalAttributeId = jsonObject.get("nominalAttributeID").getAsLong();
 			
-			// fetch model family
-			if(crisisID != null) {
-				webResource = client.target(taggerConfig.getProperty(TaggerConfigurationProperty.TAGGER_API)+"/modelfamily/crisis/" + crisisID);
-				response = webResource.request(MediaType.APPLICATION_JSON).get();
-				assertEquals(200, response.getStatus());
-				jsonResponse = response.readEntity(String.class);
-				
-				ResponseWrapper responseWrapper = objectMapper.readValue(jsonResponse, ResponseWrapper.class);
-				
-				if(responseWrapper != null && responseWrapper.getModelFamilies() != null  && responseWrapper.getModelFamilies().length > 0) {
-					modelFamilyID = responseWrapper.getModelFamilies()[0].getModelFamilyId();
-				}
+			ResponseWrapper responseWrapper = objectMapper.readValue(jsonResponse, ResponseWrapper.class);
+			
+			if(responseWrapper != null && responseWrapper.getModelFamilies() != null  && responseWrapper.getModelFamilies().length > 0) {
+				modelFamilyID = responseWrapper.getModelFamilies()[0].getModelFamilyId();
 			}
-			
-			Assert.fail("Setup data is already in database. Clean up required");
 		}
+		  // If any data was found, run the cleanup code
+        if( userID != null || crisisID != null && crisisID != 0 || nominalAttributeId != null && nominalAttributeId != 0 || modelFamilyID != null ) {
+        	Assert.fail("Tester data found in database. Clean up required");
+        }
+		
 		
 		//2. Create a test user Tagger Tester User
 		UsersDTO user = new UsersDTO();
@@ -221,6 +225,8 @@ public class TaggerTesterTest {
 		assertEquals(200, response.getStatus());
 		jsonResponse = response.readEntity(String.class);
 		
+		assertEquals("SUCCESS", jsonResponse);
+		
 		// check for crisis created 
 		webResource = client.target(taggerConfig.getProperty(TaggerConfigurationProperty.TAGGER_API) + "/crisis/code/"
 				+ TAGGER_TESTER_CODE);
@@ -229,8 +235,7 @@ public class TaggerTesterTest {
 		assertEquals(200, response.getStatus());
 		jsonResponse = response.readEntity(String.class);
 		HashMap<String,Object> map =
-		        new ObjectMapper().readValue(jsonResponse, HashMap.class);
-		
+		        objectMapper.readValue(jsonResponse, HashMap.class);
 		
 		if(map == null || map.get("crisisId") == null || map.get("crisisId") == new Integer(0)) {
 			Assert.fail("Crisis not created with code : " + TAGGER_TESTER_CRISIS_CODE);
@@ -295,7 +300,7 @@ public class TaggerTesterTest {
 		 
 		crisisDTO.setCode(TAGGER_TESTER_CRISIS_CODE);
 		crisisDTO.setName(TAGGER_TESTER_CRISIS_NAME);
-	    final TaggerHelper helper = new TaggerHelper(new Long(crisisID), userID, attributeDTO.getNominalAttributeId(), modelFamilyID, itemsToTrain, quiet);
+	    final TaggerTesterHelper helper = new TaggerTesterHelper(new Long(crisisID), userID, attributeDTO.getNominalAttributeId(), modelFamilyID, itemsToTrain, quiet);
 	    helper.startPublishing(true, null); // NULL IS THERE FOR Labelcode as we need to push both white and black docs
 	    
 	    // 7. tag training data set : human tagging
@@ -310,7 +315,8 @@ public class TaggerTesterTest {
 					logger.info("Subscribing to Redis channel "+ outputChannel);
 					subscriberJedis.subscribe(taggerSubscriber, outputChannel);
 				} catch (Exception e) {
-					logger.error("Subscribing to Redis channel "+outputChannel+" failed.", e);
+					logger.error("Subscribing to Redis channel " + outputChannel + " failed.", e);
+					Assert.fail("Failed to subscribe to channel : " + outputChannel);
 				}
 			}
 		}).start();
@@ -416,6 +422,8 @@ public class TaggerTesterTest {
 				whiteClassifiedCount++;
 			} else if(LabelCode.BLACK.getCode().equals(code)) {
 				blackClassifiedCount++;
+			} else {
+				logger.equals("Irrelevant lable code for tester : " +  code);
 			}
 			
 		}
@@ -428,7 +436,7 @@ public class TaggerTesterTest {
 
 		@Override
 		public void onSubscribe(String channel, int subscribedChannels) {
-			System.out.println("subscribe");
+			// TODO Auto-generated method stub
 			
 		}
 
