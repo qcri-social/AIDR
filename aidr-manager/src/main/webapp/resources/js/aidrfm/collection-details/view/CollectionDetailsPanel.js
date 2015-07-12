@@ -349,7 +349,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.configurationsEditTabL = Ext.create('Ext.form.Label', {
             flex: 1,
-            text: 'Optional settings',
+            text: 'Advanced configuration',
             padding: '15 0 0 0',
             cls: 'header-h2'
         });
@@ -891,7 +891,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 {
                                     id:'lastDownloadLabel',
                                     width: 220,
-                                    text: 'Last collected ' + COLLECTION_TYPES[TYPE]['plural'] + ':'
+                                    text: 'Last collected ' + COLLECTION_TYPES[TYPE]['singular'] + ':'
                                 },
                                 this.lastDocL
                             ]
