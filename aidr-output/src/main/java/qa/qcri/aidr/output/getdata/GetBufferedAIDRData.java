@@ -63,7 +63,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 
 	// Debugging
 	private static Logger logger = Logger.getLogger(GetBufferedAIDRData.class);
-	private static ErrorLog elog = new ErrorLog();
+	
 	// Related to channel buffer management
 	private static OutputConfigurator configProperties = OutputConfigurator.getInstance();
 	private static final String CHANNEL_REG_EX = configProperties.getProperty(OutputConfigurationProperty.TAGGER_CHANNEL_BASENAME)+".*";
@@ -503,7 +503,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
-		cbManager.close();
+		//cbManager.close();
 		logger.info("Context destroyed");
 	}
 
