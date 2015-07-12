@@ -214,9 +214,12 @@ public class MiscResource {
 	@Path("/humanLabeled/download/crisis/{crisisCode}/userName/{userName}")
 	public Response downloadHumanLabeledDocumentsByCrisisIDUserName(String queryString,
 			@PathParam("crisisCode") String crisisCode, @PathParam("userName") String userName, 
-			@QueryParam("count") Integer count,
+			@DefaultValue("-1") @QueryParam("count") Integer count,
 			@DefaultValue("CSV") @QueryParam("fileType") String fileType,
 			@DefaultValue("full") @QueryParam("contentType") String contentType) {
+		
+		System.out.println("Received request: crisisCode = " + crisisCode + ", userName = " + userName + ", count = " + count + ", fileType = " + fileType
+						+ ", contentType = " + contentType + "\nquery String = " + queryString);
 		if (null == crisisCode || null == userName) {
 			return Response.ok(
 					new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "crisisID or user name can't be null")).build();
@@ -236,6 +239,7 @@ public class MiscResource {
 			}
 		} catch (Exception e) {
 			logger.error("Exception", e);
+			e.printStackTrace();
 			return Response.ok(
 					new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "Exception in fetching human labeled documents")).build();
 		}

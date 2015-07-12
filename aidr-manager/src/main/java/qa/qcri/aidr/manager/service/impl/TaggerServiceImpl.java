@@ -1622,8 +1622,7 @@ public class TaggerServiceImpl implements TaggerService {
 					MediaType.APPLICATION_JSON).post(Entity.json(queryString),
 					Response.class);
 			// String jsonResponse = clientResponse.readEntity(String.class);
-			Map<String, Object> jsonResponse = clientResponse
-					.readEntity(Map.class);
+			Map<String, Object> jsonResponse = clientResponse.readEntity(Map.class);
 			return jsonResponse;
 			/*
 			 * if (jsonResponse != null &&
@@ -2107,6 +2106,13 @@ public class TaggerServiceImpl implements TaggerService {
 			throws AidrException {
 		Client client = ClientBuilder.newBuilder()
 				.register(JacksonFeature.class).build();
+		
+		String targetURL = taggerMainUrl
+				+ "/misc/humanLabeled/download/crisis/" + crisisCode
+				+ "/userName/" + userName + "?count=" + count
+				+ "&fileType=" + fileType + "&contentType=" + contentType;
+		logger.info("Going to invoke REST API: " + targetURL);
+		logger.info("Invocation POST body: " + queryString);
 		try {
 			// Rest call to Tagger
 			WebTarget webResource = client.target(taggerMainUrl
@@ -2122,11 +2128,11 @@ public class TaggerServiceImpl implements TaggerService {
 					MediaType.APPLICATION_JSON).post(Entity.json(queryString),
 					Response.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
-
+			logger.info("Response = " + jsonResponse);
 			TaggerResponseWrapper response = objectMapper.readValue(
 					jsonResponse, TaggerResponseWrapper.class);
 			logger.info("Number of human labeled documents returned by Tagger: "
-					+ response.getHumanLabeledItems().size());
+					+ response.getTotal());
 
 			Map<String, Object> retVal = new HashMap<String, Object>();
 			retVal.put("fileName", response.getMessage());
