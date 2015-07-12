@@ -20,8 +20,11 @@ import qa.qcri.aidr.manager.util.CollectionStatus;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
 
 @Controller
@@ -912,18 +915,24 @@ public class TaggerController extends BaseController {
 	}
 
 	@RequestMapping(value = "/downloadHumanLabeledDocuments.action", method = RequestMethod.POST)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	@ResponseBody
-	public Map<String,Object> downloadHumanLabeledDocuments(String queryString, 
-			@QueryParam("crisisCode") String crisisCode, @DefaultValue("-1") @QueryParam("count") Integer count,
-			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("fileType") String fileType, 
-			@DefaultValue(DownloadType.FULL_TWEETS) @QueryParam("contentType") String contentType) throws Exception {
+	public Map<String,Object> downloadHumanLabeledDocuments(@RequestBody String queryString, 
+			@RequestParam(value = "crisisCode", required = true) String crisisCode, 
+			@RequestParam(value = "count", defaultValue = "-1") Integer count,
+			@RequestParam(value = "fileType", defaultValue = DownloadType.TEXT_JSON) String fileType, 
+			@RequestParam(value = "contentType", defaultValue = DownloadType.FULL_TWEETS) String contentType) throws Exception {
+		logger.info("Received request: crisisCode = " + crisisCode + ", count = " + count + ", fileType = " + fileType
+				+ ", contentType = " + contentType + "\nquery String = " + queryString);
 		try {
-			String userName = getAuthenticatedUserName();
-			if (null == userName) userName = "System";			// a hard-coded placeholder, TODO: change to something more meaningful
-			
+			String userName = "SinhaKoushik";			// a hard-coded placeholder, TODO: change to something more meaningful
+			if (null == count) {
+				count = -1;
+			}
 			Map<String, Object> downloadLink = taggerService.downloadHumanLabeledDocumentsByCrisisUserName(queryString, crisisCode, userName, count, fileType, contentType);
-			if (downloadLink.get("fileName") != null) {
-				return getUIWrapper(downloadLink, true);
+			if (downloadLink.get("fileName") != null && downloadLink.get("total") != null) {
+				return getUIWrapper(downloadLink, true, new Long((Integer)downloadLink.get("total")), null);
 			} else {
 				return getUIWrapper(downloadLink, false);
 			}
