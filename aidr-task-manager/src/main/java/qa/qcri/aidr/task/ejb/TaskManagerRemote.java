@@ -1,3 +1,7 @@
+/**
+ * Interface for the task manager that covers the following tables: document, document_nominal_label, task_assignment and task_answer
+ * of the aidr_predict table. 
+ */
 package qa.qcri.aidr.task.ejb;
 
 import java.util.List;
@@ -5,9 +9,8 @@ import java.util.Map;
 
 import javax.ejb.Remote;
 
+import org.apache.log4j.Logger;
 import org.hibernate.criterion.Criterion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
@@ -22,7 +25,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 @Remote
 public interface TaskManagerRemote<T, Serializable> {
 	
-	static Logger logger = LoggerFactory.getLogger(TaskManagerRemote.class);
+	static Logger logger = Logger.getLogger(TaskManagerRemote.class);
 	
 	public Class<T> getClassType();
 	
@@ -109,4 +112,5 @@ public interface TaskManagerRemote<T, Serializable> {
 	// for testing purpose
 	public String pingRemoteEJB();
 
+	public boolean deleteTask(Long crisisID, Long userID);
 }

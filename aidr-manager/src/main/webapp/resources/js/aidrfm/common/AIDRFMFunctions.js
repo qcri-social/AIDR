@@ -170,19 +170,20 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
 
     getStatusWithStyle: function(raw, collectionType) {
         var statusText = '';
-
+        var status = collectionType === 'Twitter' ? 'Collecting Live Tweets' : 'Collecting Live SMS';
+        
         if (raw == 'RUNNING') {
-
-            var status = collectionType === 'Twitter' ? 'Collecting Live Tweets' : 'Collecting Live SMS';
-
             statusText = "<b class='greenInfo'> " + status + " </b>";
         } else if (raw == 'INITIALIZING') {
             statusText = "<b class='blueInfo'> INITIALIZING </b>";
-        } else if (raw == 'STOPPED' || raw == 'FATAL-ERROR') {
+        } else if (raw == 'STOPPED' || raw == 'FATAL_ERROR') {
             statusText = "<b class='redInfo'>" + raw + " </b>";
         }  else if (raw == 'NOT_RUNNING') {
             statusText = "<b class='warningFont'>" + raw + " </b>";
-        } else {
+        }  else if (raw == 'RUNNING_WARNING') {
+            statusText = "<b class='warningFont'>" + status + ", with warnings </b>";
+        }
+        else {
             statusText = "<b class='warningFont'>" + raw + " </b>";
         }
         return statusText;

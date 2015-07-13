@@ -1,6 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Creates a thread to persist streaming tweets coming from collector
+ * 
+ * @author Imran
  */
 package qa.qcri.aidr.persister.tagger;
 
@@ -14,10 +15,7 @@ import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
 import redis.clients.jedis.Jedis;
 
-/**
- *
- * @author Imran
- */
+
 public class RedisTaggerPersister implements Runnable {
 
 	private static Logger logger = Logger.getLogger(RedisTaggerPersister.class.getName());
@@ -64,10 +62,10 @@ public class RedisTaggerPersister implements Runnable {
 			while (suspendFlag) {
 				// koushik: Added a finally block to gracefully unsubscribe
 				try {
-					logger.info(collectionCode + ": Started collecting Tagger data to -> " + fileName + "/output");
+					logger.info(collectionCode + ": Started collecting Tagger data to -> " + fileName);
 					logger.info("Channel to Listen  to: " + PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TAGGER_CHANNEL) + collectionCode);
 					subscriberJedis.psubscribe(subscriber, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TAGGER_CHANNEL) + collectionCode);
-					logger.info(collectionCode + ": Stopped collecting data -> " + fileName + "/output");
+					logger.info(collectionCode + ": Stopped collecting data -> " + fileName);
 					Thread.sleep(200);
 				} finally {
 					if (subscriber != null && subscriber.isSubscribed()) {

@@ -4,32 +4,41 @@
 package qa.qcri.aidr.collector.collectors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Properties;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import qa.qcri.aidr.collector.api.TwitterCollectorAPI;
 import qa.qcri.aidr.collector.beans.CollectionTask;
-import qa.qcri.aidr.collector.beans.ResponseWrapper;
-import redis.clients.jedis.exceptions.JedisConnectionException;
+import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
+import qa.qcri.aidr.collector.utils.CollectorConfigurator;
+import qa.qcri.aidr.collector.utils.CollectorSubscriber;
+import qa.qcri.aidr.common.code.JacksonWrapper;
+import redis.clients.jedis.Jedis;
 
 import com.google.common.io.Files;
-import com.google.gson.Gson;
-
 
 /**
  * @author Kushal
@@ -37,148 +46,157 @@ import com.google.gson.Gson;
  */
 public class CollectorTesterTest {
 	private static Logger logger = Logger.getLogger(CollectorTesterTest.class.getName());
-	private TwitterCollectorAPI instance;
 	private CollectionTask collectionTask;
 	private Long time;
-	private Properties properties = new Properties();
+	private Boolean quiet;
+	private static CollectorConfigurator configProperties = CollectorConfigurator.getInstance();
+	private static String BASE_URI =null;
 
 	@Before
 	public void setUp() throws Exception {
-		instance = new TwitterCollectorAPI();
 		time = Long.parseLong(System.getProperty("time"));
+		quiet = Boolean.parseBoolean(System.getProperty("quiet"));
+		String config = System.getProperty("config");
+		Properties properties;
+		if(StringUtils.isNotEmpty(config)){
+			try (InputStream input = new FileInputStream(config);){
+				properties = new Properties();
+				properties.load(input);
+				for (Object property : properties.keySet()) {
+					configProperties.setProperty(property.toString(), properties.get(property).toString());
+				}
+			} catch (IOException e) {
+				logger.error("Error in reading config properties file: " + config, e);
+			}
+		}
+		BASE_URI = configProperties.getProperty(CollectorConfigurationProperty.COLLECTOR_REST_URI);
 		String collectionTaskPath = System.getProperty("collectionTask");
-		collectionTask = new CollectionTask();
 		if(StringUtils.isNotEmpty(collectionTaskPath)){
-			collectionTask = getCollectionTask(collectionTaskPath);
+			String fileExtension = Files.getFileExtension(collectionTaskPath);
+			if(fileExtension.equals("properties")){
+				try (InputStream input = new FileInputStream(collectionTaskPath);){
+					properties = new Properties();
+					properties.load(input);
+					collectionTask = new CollectionTask(properties);
+				} catch (IOException e) {
+					logger.error("Error in reading Collection Task properties file: " + collectionTaskPath, e);
+				}
+			}
+			else{
+				fail("Extension of collectionTask file does not match. It should be .properties.");
+			}
 		}
 		else{
-			collectionTask.setConsumerKey("wehsfsdfaaQ");
-			collectionTask.setConsumerSecret("wsdfasdfuQS3w5YpR0naYyHSYCY");
-			collectionTask.setAccessToken("fsdfDBboduYzOFikHDJ9zXVXR0g");
-			collectionTask.setAccessTokenSecret("sszkEXx1z68oks4hm8JCUGeRDw");
-			collectionTask.setToTrack("earthquake");
-			collectionTask.setCollectionCode("collectionCode");
-			collectionTask.setCollectionName("collectionName");
+			fail("Collection task file is not present");
 		}
 	}
-	
-//	@After
-//	public void tearDown(){
-//		instance.stopTask(collectionTask.getCollectionCode());
-//	}
+
 	@Test
-	public void testCollector(){
-		
+	public void testCollector() throws JsonParseException, JsonMappingException, IOException{
 		Response response;
-		String collectionCode = collectionTask.getCollectionCode();
-		
-	//Redis Connection
-		logger.info("Checking Redis connection");
+		final String collectionCode = collectionTask.getCollectionCode();
+		final String CHANNEL_NAME = configProperties.getProperty(CollectorConfigurationProperty.COLLECTOR_CHANNEL)+"."+collectionCode;
+
+		final CollectorSubscriber collectorSubscriber;
+		CollectionTask result;
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+		WebTarget webResource;	
+		String jsonResponse;
+
+		//Subscribing to Redis
+		JedisPublisher jedisPublisher = JedisPublisher.newInstance();
+		final Jedis subscriberJedis = jedisPublisher.getDelegate();
+		collectorSubscriber = new CollectorSubscriber(quiet);
 		try{
-			JedisPublisher.newInstance();
-		}
-		catch(JedisConnectionException e){
-			fail("Couldn't establish a Redis connection. Check whether redis is running or not");
-		}
-		
-	//start
-		logger.info("Starting task for the collection : "+collectionCode);
-		response = instance.startTask(collectionTask);
-		ResponseWrapper responseWrapper;
-		responseWrapper = (ResponseWrapper) response.getEntity();
-		assertEquals("Unable to initialize the task "+collectionCode,"OutboundJaxrsResponse{status=200, reason=OK, hasEntity=true, closed=false, buffered=false}", response.toString());
-		//assertEquals("Unable to initialize the task "+collectionCode,ConfigProperties.getProperty("STATUS_CODE_COLLECTION_INITIALIZING"), responseWrapper.getStatusCode());
-	//Wait for half of the time
-		try {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						logger.info("Subscribing to Redis channel "+CHANNEL_NAME);
+						subscriberJedis.subscribe(collectorSubscriber, CHANNEL_NAME);
+					} catch (Exception e) {
+						logger.error("Subscribing to Redis channel "+CHANNEL_NAME+" failed.", e);
+					}
+				}
+			}).start();
+
+			//Attempting to stop the task if it is already exists with the current collection code
+			webResource = client.target(BASE_URI+"twitter/stop?id="+URLEncoder.encode(collectionTask.getCollectionCode(), "UTF-8"));
+			response =  webResource.request(MediaType.APPLICATION_JSON).get();
+			jsonResponse = response.readEntity(String.class);
+			result= objectMapper.readValue(jsonResponse, CollectionTask.class);
+			assertEquals(200, response.getStatus());
+
+			//Starting the task
+			logger.info("Starting task for the collection : "+collectionCode);
+			webResource = client.target(BASE_URI+"twitter/start");
+			response =  webResource.request(MediaType.APPLICATION_JSON).post(Entity.json(collectionTask), Response.class);
+			jsonResponse = response.readEntity(String.class);
+			result= objectMapper.readValue(jsonResponse, CollectionTask.class);
+			assertEquals(200, response.getStatus());
+			assertEquals("Unable to initialize the task "+collectionCode, configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_INITIALIZING), result.getStatusCode());
+
+			//Waiting for half of the time
 			logger.info("Waiting for : "+(time/2)+" seconds");
 			Thread.sleep(time*1000/2);
-		} catch (InterruptedException e) {
-			logger.error("Interrupted in the mid "+e.getMessage());
-			instance.stopTask(collectionTask.getCollectionCode());
-		}
-	//status
-		logger.info("Fetching status of the task after starting the collection : "+collectionCode);
-		response = instance.getStatus(collectionCode);
-		CollectionTask status = (CollectionTask) response.getEntity();
-		assertEquals("Unable to fetch the status of the task after initializing the task"+collectionCode,"OutboundJaxrsResponse{status=200, reason=OK, hasEntity=true, closed=false, buffered=false}", response.toString());
-		//assertEquals("Unable to fetch the status of the task after initializing the task"+collectionCode,ConfigProperties.getProperty("STATUS_CODE_COLLECTION_RUNNING"), status.getStatusCode());
-	//Wait for half of the time
-		try {
+
+			//Getting status of the task
+			logger.info("Fetching status of the task after starting the collection : "+collectionCode);
+			webResource = client.target(BASE_URI+"twitter/status?id="+URLEncoder.encode(collectionCode, "UTF-8"));
+			response =  webResource.request(MediaType.APPLICATION_JSON).get();
+			jsonResponse = response.readEntity(String.class);
+			result= objectMapper.readValue(jsonResponse, CollectionTask.class);
+			assertEquals(200, response.getStatus());
+			assertEquals("Unable to fetch the status of the task after initializing the task "+collectionCode + result.getStatusMessage(), configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_RUNNING), result.getStatusCode());
+
+			//Waiting for half of the time
 			logger.info("Waiting for : "+(time/2)+" seconds");
 			Thread.sleep(time*1000/2);
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			logger.error("Interrupted in the mid "+e.getMessage());
-			instance.stopTask(collectionTask.getCollectionCode());
+			webResource = client.target(BASE_URI+"twitter/stop?id="+URLEncoder.encode(collectionCode, "UTF-8"));
+			webResource.request(MediaType.APPLICATION_JSON).get();
+			collectorSubscriber.unsubscribe(CHANNEL_NAME);
 		}
-	//stop
-		logger.info("Stopping task for the collection : "+collectionCode);
-		response = instance.stopTask(collectionCode);
-		status = (CollectionTask) response.getEntity();
-		Long collectionCount = status.getCollectionCount();
-		assertEquals("Unable to stop the task "+collectionCode,"OutboundJaxrsResponse{status=200, reason=OK, hasEntity=true, closed=false, buffered=false}", response.toString());
-		//assertEquals("Unable to stop the task "+collectionCode,ConfigProperties.getProperty("STATUS_CODE_COLLECTION_RUNNING"), status.getStatusCode());
-	//status
-		logger.info("Fetching status of the task after stopping the collection : "+collectionCode);
-		response = instance.getStatus(collectionCode);
-		responseWrapper = (ResponseWrapper) response.getEntity();
-		assertEquals("Unable to fetch the status of the task after stopping the task "+collectionCode,"OutboundJaxrsResponse{status=200, reason=OK, hasEntity=true, closed=false, buffered=false}", response.toString());
-		//assertEquals("Unable to fetch the status of the task after stopping the task "+collectionCode,ConfigProperties.getProperty("STATUS_CODE_COLLECTION_NOTFOUND"), responseWrapper.getStatusCode());
-		
-		assertNotSame("No. Of tweets reeived so  far is 0 , that's why it fails",0L, collectionCount);
-		logger.info("No. of tweets received = "+collectionCount);
-	}
-	
-	private CollectionTask getCollectionTask(String collectionTaskPath){
-		String fileType = Files.getFileExtension(collectionTaskPath);
-		switch(fileType){
-		case "json" : 		Gson gson = new Gson();
-							BufferedReader br;
-							try {
-								br = new BufferedReader(new FileReader(collectionTaskPath));
-								String currentLine = br.readLine();
-								if (currentLine!=null){
-									collectionTask = gson.fromJson(currentLine, CollectionTask.class);
-								}
-							} catch (FileNotFoundException e) {
-								logger.error("File not found in CollectorTester.getCollectionTask "+collectionTaskPath, e);
-							} catch (IOException e) {
-								logger.error("Error while reading the file "+collectionTaskPath);
-							}	
-							break;
-							
-		case "properties" : try (InputStream input = new FileInputStream(collectionTaskPath);){
-								properties.load(input);
-								collectionTask = propertiesToCollectionTask(properties);
-								
-							} catch (IOException e) {
-					            logger.error("Error in reading config properties file: " + collectionTaskPath, e);
-							}
-							break;
-		case "xml" :		 try (InputStream input = new FileInputStream(collectionTaskPath);){
-								properties.loadFromXML(input);
-								collectionTask = propertiesToCollectionTask(properties);
-							} catch (IOException e) {
-					            logger.error("Error in reading config xml file: " + collectionTaskPath, e);
-							}			
-							break;
+
+		//Stopping the task
+		try{
+			logger.info("Stopping task for the collection : "+collectionCode);
+			webResource = client.target(BASE_URI+"twitter/stop?id="+URLEncoder.encode(collectionCode, "UTF-8"));
+			response =  webResource.request(MediaType.APPLICATION_JSON).get();
+			jsonResponse = response.readEntity(String.class);
+			result= objectMapper.readValue(jsonResponse, CollectionTask.class);
+
+			assertEquals(200, response.getStatus());
+			assertEquals("Unable to stop the task "+collectionCode + result.getStatusMessage(), configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_STOPPED), result.getStatusCode());
+
+			//Getting status of the task
+			logger.info("Fetching status of the task after stopping the collection : "+collectionCode);
+			webResource = client.target(BASE_URI+"twitter/status?id="+URLEncoder.encode(collectionCode, "UTF-8"));
+			response =  webResource.request(MediaType.APPLICATION_JSON).get();
+			jsonResponse = response.readEntity(String.class);
+			result= objectMapper.readValue(jsonResponse, CollectionTask.class);		
+
+			assertEquals(200, response.getStatus());
+			assertEquals("Unable to fetch the status of the task after stopping the task "+collectionCode , configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_NOTFOUND), result.getStatusCode());
+
+			Long collectionCount = collectorSubscriber.getTweetCount();
+			assertTrue("No. Of tweets reeived is 0 , that's why fails", Long.valueOf(0L) < collectionCount);
+			logger.info("No. of tweets received = "+collectionCount);
+
+			//Unsubscribing to Redis channel	
+			collectorSubscriber.unsubscribe(CHANNEL_NAME);
+		}catch(Exception e){
+			logger.error("Interrupted in the mid "+e.getMessage());
+			collectorSubscriber.unsubscribe(CHANNEL_NAME);
 		}
-		return collectionTask;
 	}
-	
-	private CollectionTask propertiesToCollectionTask(Properties properties){
-		collectionTask.setConsumerKey(properties.getProperty("consumerKey"));
-		collectionTask.setConsumerSecret(properties.getProperty("consumerSecret"));
-		collectionTask.setAccessToken(properties.getProperty("accessToken"));
-		collectionTask.setAccessTokenSecret(properties.getProperty("accessTokenSecret"));
-		
-		collectionTask.setToTrack(properties.getProperty("toTrack"));
-		collectionTask.setCollectionCode(properties.getProperty("collectionCode"));
-		collectionTask.setCollectionName(properties.getProperty("collectionName"));
-		collectionTask.setToFollow(properties.getProperty("toFollow"));
-		collectionTask.setGeoLocation(properties.getProperty("geoLocation"));
-		collectionTask.setGeoR(properties.getProperty("geoR"));
-		collectionTask.setLanguageFilter(properties.getProperty("languageFilter"));
-		return collectionTask;
+
+	@After
+	public void tearDown() throws UnsupportedEncodingException{
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		WebTarget webResource = client.target(BASE_URI+"twitter/stop?id="+URLEncoder.encode(collectionTask.getCollectionCode(), "UTF-8"));
+		webResource.request(MediaType.APPLICATION_JSON).get();
 	}
-	
 }

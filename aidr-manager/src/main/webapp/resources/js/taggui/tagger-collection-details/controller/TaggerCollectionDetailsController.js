@@ -11,6 +11,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
 
             'tagger-collection-details-view': {
                 beforerender: this.beforeRenderView
+                
             },
 
             "#crisisDelete": {
@@ -188,6 +189,16 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     var templateContent = me.mainComponent.tutorial2UI.getValue();
                     this.templateUIUpdateSave(attID, type, templateContent, 'Saving Tutorial Page 2 ...');
                 }
+            },
+            "#enableMicroMappersBtn":{
+                click: function (btn, e, eOpts) {
+                     this.enableMicroMappers(btn);
+                }
+            },
+            "#disableMicroMappersBtn":{
+                click: function (btn, e, eOpts) {
+                	 this.disableMicroMappers();
+                }
             }
 
         });
@@ -209,8 +220,8 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         this.getTemplateStatus();
 
         this.loadUITemplate();
-
         var me = this;
+        this.changeMicroMappersUI();
     },
 
     crisisDelete: function () {
@@ -410,6 +421,82 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
         document.location.href = BASE_URL + '/protected/' + CRISIS_CODE +'/collection-details';
     },
 
+    enableMicroMappers:function(btn) {
+    	 var me = this;
+
+         Ext.Ajax.request({
+             url: BASE_URL + '/protected/tagger/updateMicromapperEnabled.action',
+             method: 'POST',
+             params: {
+                 code: CRISIS_CODE,
+                 isMicromapperEnabled: true
+             },
+             headers: {
+                 'Accept': 'application/json'
+             },
+             success: function (resp) {
+                 var response = Ext.decode(resp.responseText);
+                 if (response.success) {
+                     IS_MICROMAPPER_ENABLED = true;
+                     me.changeMicroMappersUI();
+                     btn.hide();
+                 } else {
+                	 btn.show();
+                     AIDRFMFunctions.setAlert("Error", 'Error while enabling MicroMappers');
+                 }
+             }
+         });
+    },
+    
+    disableMicroMappers: function(btn) {
+    	 var me = this;
+
+         Ext.Ajax.request({
+             url: BASE_URL + '/protected/tagger/updateMicromapperEnabled.action',
+             method: 'POST',
+             params: {
+                 code: CRISIS_CODE,
+                 isMicromapperEnabled: false
+             },
+             headers: {
+                 'Accept': 'application/json'
+             },
+             success: function (resp) {
+                 var response = Ext.decode(resp.responseText);
+                 if (response.success) {
+                	 IS_MICROMAPPER_ENABLED = false;
+                	 me.changeMicroMappersUI();
+                	 btn.hide();
+                 } else {
+                	 btn.show();
+                     AIDRFMFunctions.setAlert("Error", 'Error while disabling MicroMappers');
+                 }
+             }
+         });
+    },
+
+    changeMicroMappersUI:function() {
+  	 	var me = this;
+  	 	if(IS_MICROMAPPER_ENABLED == true){
+	   	 	me.mainComponent.microMappersUI.hide();
+	        me.mainComponent.disableMicroMappersButton.show();
+	        me.mainComponent.enableMicroMappersButton.hide();
+	        me.mainComponent.socialPublicLinkContainer.show();
+	        me.mainComponent.pyBossaLink.show();
+	        me.mainComponent.horizontalLineContainer.show();
+	        me.mainComponent.UIBlock.show();
+  	 	}
+  	 	else{
+			me.mainComponent.disableMicroMappersButton.hide();
+			me.mainComponent.socialPublicLinkContainer.hide();
+			me.mainComponent.pyBossaLink.hide();
+			me.mainComponent.horizontalLineContainer.hide();
+			me.mainComponent.UIBlock.hide();
+			me.mainComponent.enableMicroMappersButton.show();
+			me.mainComponent.microMappersUI.show();
+  	 	}
+    },
+      
     addNewClassifier: function() {
         document.location.href = BASE_URL + "/protected/" + CRISIS_CODE + '/predict-new-attribute';
     },

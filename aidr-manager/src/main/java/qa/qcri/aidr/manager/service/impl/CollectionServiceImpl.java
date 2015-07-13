@@ -256,11 +256,12 @@ public class CollectionServiceImpl implements CollectionService {
 	//updateStatusCollection() method
 	public AidrCollection stopFatalError(Integer collectionId) throws Exception {
 		AidrCollection collection = collectionRepository.findById(collectionId);
+		//collection = collectionRepository.stop(collection.getId());
 		
 		AidrCollection updateCollection = stopAidrFetcher(collection);
 
 		AidrCollectionLog collectionLog = new AidrCollectionLog(collection);
-		collectionLogRepository.save(collectionLog);
+		collectionLogRepository.save(collectionLog);		
 
 		return updateCollection;
 	}
@@ -294,7 +295,7 @@ public class CollectionServiceImpl implements CollectionService {
 				WebTarget webResource = client.target(fetchMainUrl + "/sms/start?collection_code=" + URLEncoder.encode(aidrCollection.getCode(), "UTF-8"));
 				Response response = webResource.request(MediaType.APPLICATION_JSON).get();
 				if (response.getStatus() == 200)
-					aidrCollection.setStatus(CollectionStatus.RUNNING);
+					aidrCollection.setStatus(CollectionStatus.INITIALIZING);
 			}
 			/**
 			 * Update Status To database
@@ -368,9 +369,7 @@ public class CollectionServiceImpl implements CollectionService {
 			//MEGHNA: moved setting collection count to top of the method
 			//to avoid individual status blocks setting collection count below
 			if (response.getCollectionCount() != null && !response.getCollectionCount().equals(collection.getCount())) {
-				collection.setCount(response.getCollectionCount());		// Commented by koushik for downloadCount bug
-				//MEGHNA: uncommented - setting count at the beginning always makes this condition false 
-				//so lastdocument never set 
+				collection.setCount(response.getCollectionCount());
 				String lastDocument = response.getLastDocument();
 				if (lastDocument != null)
 					collection.setLastDocument(lastDocument);
@@ -378,9 +377,35 @@ public class CollectionServiceImpl implements CollectionService {
 			}
 			
 			if (!CollectionStatus.getByStatus(response.getStatusCode()).equals(collection.getStatus())) {
-				logger.debug("Collection Status: " + CollectionStatus.getByStatus(response.getStatusCode()));
+				
+				logger.info("Collection Status: " + CollectionStatus.getByStatus(response.getStatusCode()));
+				CollectionStatus prevStatus =  collection.getStatus();
+				collection.setStatus(CollectionStatus.getByStatus(response.getStatusCode()));
+				
+				switch(CollectionStatus.getByStatus(response.getStatusCode()))
+				{				
+				case NOT_FOUND:
+				//case STOPPED:
+					collection.setStatus(CollectionStatus.NOT_RUNNING);					
+				case RUNNING_WARNING:
+				case WARNING:
+					collectionRepository.update(collection);
+					break;
+				case RUNNING:
+					collection = collectionRepository.start(collection.getId());
+					break;
+				case FATAL_ERROR:					
+					//collection = collectionRepository.stop(collection.getId());
+					logger.warn("Fatal error, stopping collection " + collection.getId()); 
+					if(prevStatus != CollectionStatus.FATAL_ERROR || prevStatus != CollectionStatus.NOT_RUNNING || prevStatus != CollectionStatus.STOPPED)
+						this.stopFatalError(collection.getId());
+					break;
+				default:
+					break;
+				}
 				
 				//if local=running and fetcher=NOT-FOUND then put local as NOT-RUNNING
+				/*
 				if (CollectionStatus.NOT_FOUND.equals(CollectionStatus.getByStatus(response.getStatusCode()))) {
 					//collection.setCount(response.getCollectionCount());
 					collection.setStatus(CollectionStatus.NOT_RUNNING);
@@ -403,6 +428,7 @@ public class CollectionServiceImpl implements CollectionService {
 					collection = collectionRepository.stop(collection.getId());						
 					this.stopFatalError(collection.getId());
 					}
+					*/
 			}
 		}
 		return collection;

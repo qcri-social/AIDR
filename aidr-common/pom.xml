@@ -13,6 +13,9 @@
 	<properties>
 		<java-version>1.7</java-version>
 		<jackson-asl.version>1.9.13</jackson-asl.version>
+		<gf.version>2.5.1</gf.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<resource.dir>${basedir}/src/main/resources</resource.dir>
 	</properties>
 
 	<dependencies>
@@ -50,23 +53,40 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>2.4.2</version>
+			<version>${gf.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.4.2</version>
+			<version>${gf.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
-			<version>2.4.2</version>
+			<version>${gf.version}</version>
 		</dependency>
+		
+		<!-- Email API Dependencies -->
+		<dependency>
+    		<groupId>javax.mail</groupId>
+    		<artifactId>javax.mail-api</artifactId>
+    		<version>1.5.3</version>
+		</dependency>		
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<version>1.5.3</version>
+		</dependency>
+		
 	</dependencies>
 	<build>
 		<resources>
 			<resource>
-				<directory>src/main/resources</directory>
+				<directory>${resource.dir}</directory>
+				<includes>
+					<include>**/*.properties</include>
+					<include>**/*.xml</include>
+				</includes>
 				<filtering>true</filtering>
 			</resource>
 		</resources>
@@ -90,18 +110,32 @@
 					<configuration>
 						<source>1.7</source>
 						<target>1.7</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.4.3</version>
+					<configuration>
+						<encoding>${project.build.sourceEncoding}</encoding>
 					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
-
 	<!-- Profile configuration this should match the one in the master POM -->
 	<profiles>
 		<profile>
 			<id>dev</id>
 			<properties>
 				<build.profile.id>dev</build.profile.id>
+			</properties>
+		</profile>
+		<profile>
+			<id>staging</id>
+			<properties>
+				<build.profile.id>staging</build.profile.id>
 			</properties>
 		</profile>
 		<profile>

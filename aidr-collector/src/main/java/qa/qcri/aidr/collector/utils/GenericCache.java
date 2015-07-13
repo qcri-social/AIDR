@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
- * @author Imran
+ * This class is responsible of keeping complex data structures in the main-memory for a fast access. 
  */
 public class GenericCache {
 
@@ -24,6 +24,7 @@ public class GenericCache {
     private Map<String, CollectionTask> failedCollections = null; // keeps failed collections
     private CollectorStatus collectorStatus; // keeps collector status inforamtion
     private Map<String, String> SMSCollections;
+    private Map<String, Integer> reconnectAttempts;
     private static CollectorConfigurator configProperties = CollectorConfigurator.getInstance();
 
     private GenericCache() {
@@ -34,6 +35,7 @@ public class GenericCache {
         failedCollections = new HashMap<String, CollectionTask>();
         SMSCollections = new HashMap<String, String>();
         collectorStatus = new CollectorStatus();
+        reconnectAttempts = new HashMap<String,Integer>();
     }
 
     public static GenericCache getInstance() {
@@ -304,5 +306,30 @@ public class GenericCache {
         }
 
         return trackersList;
+    }
+    
+    //keep track to number of reconnect attempts for for various running collections
+    public int incrAttempt(String key) {
+        if (reconnectAttempts.containsKey(key)) {
+        	reconnectAttempts.put(key, reconnectAttempts.get(key) + 1);
+        } else {
+        	reconnectAttempts.put(key, 1);
+        }
+        return reconnectAttempts.get(key);
+    }
+    
+    //reset number of reconnect attempts when collection is able to establish connection
+    public void resetAttempt(String key) {
+        if (reconnectAttempts.containsKey(key)) {
+        	reconnectAttempts.put(key, 0);
+        }
+    }
+
+    public int getReconnectAttempts(String key) {
+        return reconnectAttempts.get(key);
+    }
+
+    public void delReconnectAttempts(String key) {
+    	reconnectAttempts.remove(key);
     }
 }

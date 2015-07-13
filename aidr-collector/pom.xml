@@ -76,11 +76,18 @@
 		<!-- <dependency> <groupId>org.twitter4j</groupId> <artifactId>twitter4j-core</artifactId> 
 			<version>4.0.2</version> </dependency> -->
 
-		<dependency>
+		<!-- <dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.6</version>
+		</dependency> -->
+		
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.1</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.twitter4j</groupId>
 			<artifactId>twitter4j-stream</artifactId>
@@ -330,6 +337,12 @@
                 <build.profile.id>dev</build.profile.id>
             </properties>
         </profile>
+        <profile>
+			<id>staging</id>
+			<properties>
+				<build.profile.id>staging</build.profile.id>
+			</properties>
+		</profile>
         <profile>
             <id>prod</id>
             <properties>

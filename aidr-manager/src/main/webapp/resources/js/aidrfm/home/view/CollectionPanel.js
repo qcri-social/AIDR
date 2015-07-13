@@ -138,7 +138,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                     return r ? Ext.util.Format.number(r,'0,000') : 0;
                 },
                 isButtonStartHidden: function (r) {
-                    if (r == 'RUNNING-WARNNING' || r == 'RUNNING' || r == 'INITIALIZING'){
+                    if (r == 'RUNNING_WARNING' || r == 'RUNNING' || r == 'INITIALIZING' || r == 'WARNING'){
                         return 'hidden';
                     } else {
                         return '';
@@ -151,7 +151,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                         return r == 'Twitter' ? "tweet" : "sms";
                 },
                 isButtonStopHidden: function (r) {
-                    if (r == 'RUNNING-WARNNING' || r == 'RUNNING' || r == 'INITIALIZING'){
+                    if (r == 'RUNNING_WARNING' || r == 'RUNNING' || r == 'INITIALIZING' || r == 'WARNING'){
                         return '';
                     } else {
                         return 'hidden';

@@ -1,3 +1,8 @@
+/**
+ * Implements operations for managing the operations that span multiple tables of the aidr_predict DB
+ * 
+ * @author Koushik
+ */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.math.BigInteger;
@@ -9,12 +14,11 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
@@ -26,14 +30,9 @@ import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.MiscResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 
-/**
- * 
- * @author Koushik
- *
- */
 @Stateless(name="MiscResourceFacadeImp")
 public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long> implements MiscResourceFacade {
-	private static Logger logger = LoggerFactory.getLogger("aidr-db-manager");
+	private static Logger logger = Logger.getLogger("aidr-db-manager");
 
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade documentEJB;

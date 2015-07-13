@@ -1,5 +1,6 @@
 package qa.qcri.aidr.predictui.facade.imp;
 
+import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 
 import java.util.HashMap;
@@ -94,6 +95,18 @@ public class DocumentFacadeImp implements DocumentFacade {
 			return new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED),
 					"Error while deleting training example id " + documentID);
 		}
+	}
+	
+	@Override
+	public Integer getUnlabeledDocumentsCountByCrisisID(Long crisisID) {
+		Integer count = 0;
+		try {
+			count = remoteDocument.getUnlabeledDocumentsCountByCrisisID(crisisID);
+		} catch (PropertyNotSetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return count;
 	}
 
 	@Override

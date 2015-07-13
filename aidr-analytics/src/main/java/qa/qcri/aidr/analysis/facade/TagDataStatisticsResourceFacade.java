@@ -1,3 +1,4 @@
+
 package qa.qcri.aidr.analysis.facade;
 
 import java.util.List;
@@ -7,7 +8,9 @@ import javax.ejb.Local;
 import qa.qcri.aidr.analysis.entity.TagData;
 import qa.qcri.aidr.analysis.entity.TagDataPK;
 import qa.qcri.aidr.common.values.ReturnCode;
-
+/**
+ * Interface for operations on the tag_data table
+ */
 
 @Local
 public interface TagDataStatisticsResourceFacade {

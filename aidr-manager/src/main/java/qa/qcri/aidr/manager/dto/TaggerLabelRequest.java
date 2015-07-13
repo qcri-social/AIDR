@@ -15,6 +15,8 @@ public class TaggerLabelRequest {
 	private String nominalLabelCode;
 
 	private String description;
+	
+	private Integer sequence;
 
 	public Integer getNominalLabelID() {
 		return nominalLabelID;
@@ -55,6 +57,14 @@ public class TaggerLabelRequest {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
+	public Integer getSequence() {
+		return sequence;
+	}
+
+	public void setSequence(Integer sequence) {
+		this.sequence = sequence;
+	}
 
 	public NominalLabelDTO toDTO() throws Exception {
 		NominalLabelDTO dto = new NominalLabelDTO();
@@ -66,7 +76,7 @@ public class TaggerLabelRequest {
 		dto.setDescription(this.getDescription());
 		
 		// TODO: UI should send sequence number
-		dto.setSequence(100);
+		dto.setSequence(this.getSequence());
 		NominalAttributeDTO na = new NominalAttributeDTO();
 		if (this.getNominalAttributeID() != null) {
 			na.setNominalAttributeId(new Long(this.getNominalAttributeID()));

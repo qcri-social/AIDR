@@ -1,6 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * This class provides methods to access the FS for read write of persisted JSON files for a given collection
+ * 
+ * @author Imran
  */
 package qa.qcri.aidr.io;
 
@@ -18,10 +19,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-/**
- *
- * @author Imran
- */
+
 public class FileSystemOperations {
     
     public static ArrayList<String> get100KFilesList(String collectionCode){
@@ -104,7 +102,7 @@ public class FileSystemOperations {
     @Deprecated
     public static int getLatestFileVolumeNumber4Tagger(String collectionCode) {
 
-        String filesPath = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/output/";
+        String filesPath = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/";
     	//String filesPath = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/";
         File folder = new File(filesPath);
         File[] listOfFiles = folder.listFiles();
@@ -152,7 +150,7 @@ public class FileSystemOperations {
     @Deprecated
     public static List<String> getClassifiedFileVolumes(String collectionCode) {
 
-        String filesPath = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/output/";
+        String filesPath = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/";
     	//String filesPath = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/";
         List<String> fileNames = new ArrayList();
         File folder = new File(filesPath);

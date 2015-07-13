@@ -1,29 +1,30 @@
 package qa.qcri.aidr.persister.api;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * This class provides the REST APIs to manage the persister for a collection - start/stop and download based on various filters and requested file types. 
+ 
+ * @author Imran, Koushik
+ *
  */
-//import com.sun.jersey.api.json.JSONWithPadding;
 
 
-import java.net.UnknownHostException;   
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import net.minidev.json.JSONObject;
 
@@ -32,6 +33,8 @@ import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.filter.DeserializeFilters;
 import qa.qcri.aidr.common.filter.JsonQueryList;
+import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.persister.tagger.RedisTaggerPersister;
 import qa.qcri.aidr.utils.ClassifiedTweet;
 import qa.qcri.aidr.utils.DownloadJsonType;
@@ -40,14 +43,8 @@ import qa.qcri.aidr.utils.JsonDeserializer;
 import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
 import qa.qcri.aidr.utils.ResultStatus;
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.common.values.DownloadType;
 
-/**
- * REST Web Service
- *
- * @author Imran
- */
+
 @Path("taggerPersister")
 public class Persister4TaggerAPI {
 
@@ -78,7 +75,7 @@ public class Persister4TaggerAPI {
 				RedisTaggerPersister p = new RedisTaggerPersister(fileLocation, collectionCode);
 				p.startMe();
 				GenericCache.getInstance().setTaggerPersisterMap(collectionCode, p);
-				response = "Started tagger persisting to " + fileLocation + "/output";
+				response = "Started tagger persisting to " + fileLocation;
 				return Response.ok(response).build();
 			}
 		} catch (Exception ex) {
@@ -132,7 +129,7 @@ public class Persister4TaggerAPI {
 		JsonDeserializer jsonD = new JsonDeserializer();
 		exportLimit = Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K));		// Koushik: added to override user specs
 		String fileName = jsonD.taggerGenerateJSON2CSV_100K_BasedOnTweetCount(collectionCode, exportLimit);
-		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL) + collectionCode + "/output/" + fileName;
+		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode + "/" + fileName;
 
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
 		//return Response.ok(fileName).build();
@@ -202,7 +199,7 @@ public class Persister4TaggerAPI {
 
 		JsonDeserializer jsonD = new JsonDeserializer();
 		Map<String, Object> result = jsonD.generateClassifiedJson2TweetIdsCSV(collectionCode, downloadLimited);
-		String fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL) + collectionCode + "/output/" + (String) result.get("fileName");
+		String fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode + "/" + (String) result.get("fileName");
 
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
 		//return Response.ok(fileName).build();
@@ -335,7 +332,7 @@ public class Persister4TaggerAPI {
 		if (0 == exportLimit) exportLimit = Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K));
 		
 		String fileName = jsonD.taggerGenerateJSON2JSON_100K_BasedOnTweetCount(collectionCode, exportLimit, DownloadJsonType.getDownloadJsonTypeFromString(jsonType));
-		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL) + collectionCode + "/output/" + fileName;
+		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode + "/" + fileName;
 
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
 		//return Response.ok(fileName).build();
@@ -357,7 +354,7 @@ public class Persister4TaggerAPI {
 
 		JsonDeserializer jsonD = new JsonDeserializer();
 		Map<String, Object> result = jsonD.generateClassifiedJson2TweetIdsJSON(collectionCode, downloadLimited, DownloadJsonType.getDownloadJsonTypeFromString(jsonType));
-		String fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL) + collectionCode + "/output/" + result.get("fileName");
+		String fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode + "/" + result.get("fileName");
 
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
 		//return Response.ok(fileName).build();

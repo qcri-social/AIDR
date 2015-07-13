@@ -10,13 +10,14 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+
+import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
+import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 import qa.qcri.aidr.predictui.facade.UserResourceFacade;
-
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -28,7 +29,7 @@ public class UserResourceImp implements UserResourceFacade {
     //@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
     //private EntityManager em;
 
-    private static Logger logger = LoggerFactory.getLogger(UserResourceImp.class);
+    private static Logger logger = Logger.getLogger(UserResourceImp.class);
 	private static ErrorLog elog = new ErrorLog();
 	
 	@EJB
@@ -81,5 +82,9 @@ public class UserResourceImp implements UserResourceFacade {
         	logger.error("exception:", e);
             return null;
         }
+    }
+    
+    public Integer deleteUser(Long userID) {
+        return remoteUsersEJB.deleteUser(userID);
     }
 }

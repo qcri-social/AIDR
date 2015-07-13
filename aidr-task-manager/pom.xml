@@ -56,18 +56,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.5</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.5</version>
-			<scope>compile</scope>
-		</dependency>
 		<!-- if you are using Jersey client specific features -->
 
 		<!-- MySQL database driver -->
@@ -137,7 +125,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>2.4.2</version>
+			<version>${gf.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -147,14 +135,14 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
-			<version>2.4.2</version>
+			<version>${gf.version}</version>
 		</dependency>
 
 		<!-- Jersey -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-json-provider</artifactId>
-			<version>2.4.0</version>
+			<version>${gf.version}</version>
 		</dependency>
 		<!-- Jersey -->
 		<dependency>
@@ -240,6 +228,12 @@
 			<id>dev</id>
 			<properties>
 				<build.profile.id>dev</build.profile.id>
+			</properties>
+		</profile>
+		<profile>
+			<id>staging</id>
+			<properties>
+				<build.profile.id>staging</build.profile.id>
 			</properties>
 		</profile>
 		<profile>

@@ -12,36 +12,8 @@
  * @author Koushik Sinha
  * Last modified: 04/02/2014
  *
- * Dependencies:  jersey 2.5.1, jax-rs 2.0, jedis-2.2.1, gson-2.2.4, commons-pool-1.6, slf4j-1.7.5
- * 	
- * Hints for testing:
- * 	1. You can increase the test duration by adjusting the SUBSCRIPTION_MAX_DURATION. 
- *  	2. Tune REDIS_CALLBACK_TIMEOUT, in case the rate of publication is very slow
- *  	3. Tune the number of threads in ExecutorService
- *
- * Deployment steps: 
- * 	1. [Required] Set redisHost and redisPort in code, as per your REDIS setup/location
- * 	2. [Optional] Tune time-out and other parameters, if necessary
- * 	3. [Required]Compile and package as WAR file
- * 	4. [Required] Deploy as WAR file in glassfish 3.1.2
- * 	5. [Optional] Setup ssh tunneling (e.g. command: ssh tunneling:: ssh -f -L 1978:localhost:6379 <remotehost> -N)
- * 	6. Issue stream request from client
- *
- *
- * URL: host:port/context-path/channel/{crisisCode}?callback={callback}&rate={rate}&duration={duration}  
- * ============
- * Channel Name based examples:
- *  1. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/clex_20131201?callback=print&rate=10  
- *  2. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/clex_20131201?duration=1h&callback=print&rate=10
- *  
- * Wildcard based examples:
- *  1. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/*?callback=print&rate=10 
+ *  1. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/clex_20131201?duration=1h&callback=print&rate=10
  *  2. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/*?duration=1h&callback=print&rate=10
- *  
- * Fully qualified channel name examples:
- *  1. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/aidr_predict.clex_20131201?callback=print&rate=10 
- *  2. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/aidr_predict.clex_20131201?duration=1h&callback=print&rate=10
- * 
  *  
  *  Parameter explanations:
  *  	1. crisisCode [mandatory]: the REDIS channel to which to subscribe
@@ -79,9 +51,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.glassfish.jersey.server.ChunkedOutput;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-
 import org.apache.log4j.Logger;
 
 import com.google.gson.JsonNull;
@@ -89,6 +58,8 @@ import com.google.gson.JsonObject;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
+import qa.qcri.aidr.output.utils.OutputConfigurationProperty;
+import qa.qcri.aidr.output.utils.OutputConfigurator;
 import qa.qcri.aidr.output.stream.AsyncStreamRedisSubscriber;
 import redis.clients.jedis.Jedis;
 
@@ -96,13 +67,14 @@ import redis.clients.jedis.Jedis;
 public class AsyncStream implements ServletContextListener {
 
 	// Related to channel buffer management
-	private static final String CHANNEL_REG_EX = "aidr_predict.*";
-	private static final String CHANNEL_PREFIX_CODE = "aidr_predict.";
+	private static OutputConfigurator configProperties = OutputConfigurator.getInstance();
+	private static final String CHANNEL_REG_EX = configProperties.getProperty(OutputConfigurationProperty.TAGGER_CHANNEL_BASENAME)+".*";
+	private static final String CHANNEL_PREFIX_CODE = configProperties.getProperty(OutputConfigurationProperty.TAGGER_CHANNEL_BASENAME)+".";
 
 	private static final boolean rejectNullFlag = true;		
 
-	private static final String redisHost = "localhost";		// Current assumption: REDIS running on same m/c
-	private static final int redisPort = 6379;					
+	public static String redisHost = configProperties.getProperty(OutputConfigurationProperty.REDIS_HOST);
+	public static int redisPort = Integer.valueOf(configProperties.getProperty(OutputConfigurationProperty.REDIS_PORT));
 
 	// Jedis related
 	private volatile static JedisConnectionObject jedisConn;

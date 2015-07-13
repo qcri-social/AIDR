@@ -12,8 +12,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
@@ -26,7 +25,7 @@ import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 @Path("/test")
 @Stateless
 public class TestDBManagerResource {
-	private Logger logger = LoggerFactory.getLogger("db-manager-log");
+	private Logger logger = Logger.getLogger("db-manager-log");
 
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade remoteCrisisEJB;
@@ -344,7 +343,7 @@ public class TestDBManagerResource {
 		try {
 			CrisisTypeDTO crisisType = remoteCrisisTypeEJB.getAllCrisisTypes().get(0);
 			UsersDTO user = remoteUsersEJB.getUserById(9L);
-			CrisisDTO newCrisis = new CrisisDTO("testDBManagerCrisis", "test_db-manager_crisis", false, crisisType, user);
+			CrisisDTO newCrisis = new CrisisDTO("testDBManagerCrisis", "test_db-manager_crisis", false, false, crisisType, user);
 			CrisisDTO dto = remoteCrisisEJB.addCrisis(newCrisis);
 			if (dto != null) 
 			{

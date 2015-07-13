@@ -6,12 +6,14 @@ package qa.qcri.aidr.predictui.api;
 
 import java.util.List;
 
+import qa.qcri.aidr.common.util.EmailClient;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentList;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.HumanLabeledDocumentListWrapper;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.ItemToLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
 import qa.qcri.aidr.predictui.facade.MiscResourceFacade;
+import qa.qcri.aidr.predictui.facade.SystemEventFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
 import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
@@ -39,6 +41,8 @@ public class MiscResource {
 	private UriInfo context;
 	@EJB
 	private MiscResourceFacade miscEJB;
+	@EJB
+	private SystemEventFacade systemEventEJB;
 
 	public MiscResource() {
 	}
@@ -201,14 +205,21 @@ public class MiscResource {
 		}
 	}
 	
+	/*
+	 * Note: userName in the path parameter refers to the username who is trying to access the data.
+	 * It is not used for filtering the labeled items - but for generating the downloadable fileName in the persister.
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/humanLabeled/download/crisis/{crisisCode}/userName/{userName}")
 	public Response downloadHumanLabeledDocumentsByCrisisIDUserName(String queryString,
 			@PathParam("crisisCode") String crisisCode, @PathParam("userName") String userName, 
-			@QueryParam("count") Integer count,
+			@DefaultValue("-1") @QueryParam("count") Integer count,
 			@DefaultValue("CSV") @QueryParam("fileType") String fileType,
 			@DefaultValue("full") @QueryParam("contentType") String contentType) {
+		
+		System.out.println("Received request: crisisCode = " + crisisCode + ", userName = " + userName + ", count = " + count + ", fileType = " + fileType
+						+ ", contentType = " + contentType + "\nquery String = " + queryString);
 		if (null == crisisCode || null == userName) {
 			return Response.ok(
 					new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "crisisID or user name can't be null")).build();
@@ -228,8 +239,32 @@ public class MiscResource {
 			}
 		} catch (Exception e) {
 			logger.error("Exception", e);
+			e.printStackTrace();
 			return Response.ok(
 					new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "Exception in fetching human labeled documents")).build();
 		}
+	}
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/sendErrorEmail")
+	public Response sendErrorEmail(@FormParam("code") String code, @FormParam("description") String description) throws Exception {
+		Boolean emailSent = true;
+		try {
+			EmailClient.sendErrorMail(code,description);
+		} catch (Exception e) {
+			logger.error("Unable to send email");
+			logger.error(e.getMessage());
+			emailSent = false;
+		}
+		try
+		{
+			systemEventEJB.insertSystemEvent("ERROR", "Collector", code, description, emailSent);
+		}
+		catch (Exception e) {
+			return Response.serverError().build();
+		}
+		return Response.ok().build();
 	}
 }

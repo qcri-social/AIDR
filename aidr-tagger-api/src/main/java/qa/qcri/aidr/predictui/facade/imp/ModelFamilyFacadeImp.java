@@ -12,8 +12,7 @@ import java.util.*;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
@@ -29,11 +28,14 @@ import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
 @Stateless
 public class ModelFamilyFacadeImp implements ModelFamilyFacade {
 
-    private static Logger logger = LoggerFactory.getLogger(ModelFamilyFacadeImp.class);
+    private static Logger logger = Logger.getLogger(ModelFamilyFacadeImp.class);
     private static ErrorLog elog = new ErrorLog();
 
     @EJB
     private qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelFamilyResourceFacade remoteModelFamilyEJB;
+    
+    @EJB 
+    private ModelFacade modelFacade;
 
     @Override
     public List<ModelFamilyDTO> getAllModelFamilies() {
@@ -92,6 +94,20 @@ public class ModelFamilyFacadeImp implements ModelFamilyFacade {
     public List<TaggersForCodes> getTaggersByCodes(final List<String> codes) {
         List<TaggersForCodes> result = remoteModelFamilyEJB.getTaggersByCodes(codes);
         return result;
+    }
+    
+    @Override
+    public boolean deleteModelFamilyData(Long modelFamilyID) {
+    	
+    	// delete model
+    	
+    	modelFacade.deleteModelDataByModelFamily(modelFamilyID);
+        try {
+            return remoteModelFamilyEJB.deleteModelFamily(modelFamilyID);
+        } catch (PropertyNotSetException pe) {
+        	logger.error("Error in deleting modelFamilyData with modelFamilyID : " + modelFamilyID);
+        }
+        return false;
     }
 
 }

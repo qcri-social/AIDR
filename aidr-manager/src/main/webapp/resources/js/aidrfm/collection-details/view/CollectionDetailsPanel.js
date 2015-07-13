@@ -54,6 +54,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
 
         this.statusL = Ext.create('Ext.form.Label', {padding: '0 10 0 0'});
+        this.statusMsgL = Ext.create('Ext.form.Label', {flex: 1, cls:'bold-text'});
         this.lastStartedL = Ext.create('Ext.form.Label', {flex: 1});
         this.lastStoppedL = Ext.create('Ext.form.Label', {flex: 1});
         this.willStoppedL = Ext.create('Ext.form.Label', {flex: 1});
@@ -348,7 +349,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.configurationsEditTabL = Ext.create('Ext.form.Label', {
             flex: 1,
-            text: 'Optional settings',
+            text: 'Advanced configuration',
             padding: '15 0 0 0',
             cls: 'header-h2'
         });
@@ -814,6 +815,14 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                             items: [
                                                 this.statusL
                                             ]
+                                        },
+                                        {
+                                            xtype: 'container',
+                                            defaultType: 'label',
+                                            layout: 'hbox',
+                                            items: [
+                                                this.statusMsgL
+                                            ]
                                         }
                                     ]
                                 },
@@ -882,7 +891,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 {
                                     id:'lastDownloadLabel',
                                     width: 220,
-                                    text: 'Last collected ' + COLLECTION_TYPES[TYPE]['plural'] + ':'
+                                    text: 'Last collected ' + COLLECTION_TYPES[TYPE]['singular'] + ':'
                                 },
                                 this.lastDocL
                             ]

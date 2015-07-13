@@ -19,7 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
@@ -97,8 +97,8 @@ public class TwitterCollectorAPI {
 			task.setStatusMessage(null);
 			cache.setTwtConfigMap(cacheKey, task);
 			cache.setTwitterTracker(cacheKey, tracker);
-			if(StringUtils.isEmpty(configProperties.getProperty(CollectorConfigurationProperty.DEFAULT_PERSISTANCE_MODE))){
-				if (Boolean.valueOf(configProperties.getProperty(CollectorConfigurationProperty.DEFAULT_PERSISTANCE_MODE))) {
+			if(task.getPersist()!=null){
+				if(task.getPersist()){
 					startPersister(collectionCode);
 				}
 			}
@@ -130,6 +130,7 @@ public class TwitterCollectorAPI {
         cache.delTwtConfigMap(collectionCode);
         cache.delLastDownloadedDoc(collectionCode);
         cache.delTwitterTracker(collectionCode);
+        cache.delReconnectAttempts(collectionCode);
 
 		if (tracker != null) {
 			try {
@@ -140,8 +141,8 @@ public class TwitterCollectorAPI {
 				response.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_NOTFOUND));
 				return Response.ok(response).build();
 			}
-			if(StringUtils.isEmpty(configProperties.getProperty(CollectorConfigurationProperty.DEFAULT_PERSISTANCE_MODE))){
-				if (Boolean.valueOf(configProperties.getProperty(CollectorConfigurationProperty.DEFAULT_PERSISTANCE_MODE))) {
+			if(task.getPersist()!=null){
+				if(task.getPersist()){
 					stopPersister(collectionCode);
 				}
 			}
@@ -156,6 +157,7 @@ public class TwitterCollectorAPI {
         }
 
         if (task != null) {
+        	task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_STOPPED));
             return Response.ok(task).build();
         }
 

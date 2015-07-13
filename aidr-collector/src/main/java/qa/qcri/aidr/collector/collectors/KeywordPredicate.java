@@ -7,6 +7,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Helper class to split user-defined keywords to generate phrase set or unordered words to apply strict keyword match filter for incoming Tweets.
+ * 
+ */
 public class KeywordPredicate {
 
 	private String patternString = "([^\"]\\S*|\".+?\")\\s*";

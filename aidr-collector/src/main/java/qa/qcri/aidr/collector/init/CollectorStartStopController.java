@@ -23,7 +23,7 @@ import qa.qcri.aidr.collector.beans.CollectorStatus;
 import qa.qcri.aidr.collector.utils.GenericCache;
 
 /**
- *
+ * Class responsible of executing tasks at the startup of the application as well as at the shutdown of the application.
  * @author Imran
  */
 @Singleton

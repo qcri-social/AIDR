@@ -34,4 +34,6 @@ public interface CrisisResourceFacade {
    public List<CrisisDTO> getAllCrisisByUserID(Long userID); 
 
    HashMap<String, Integer> countClassifiersByCrisisCodes(List<String> codes);
+   
+   public int deleteCrisis(Long crisisID);
 }

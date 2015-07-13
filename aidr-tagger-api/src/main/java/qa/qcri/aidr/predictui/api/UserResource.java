@@ -10,6 +10,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -20,16 +21,17 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
-import qa.qcri.aidr.predictui.entities.Users;
 import qa.qcri.aidr.predictui.facade.UserResourceFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * REST Web Service
@@ -46,7 +48,7 @@ public class UserResource {
 	private UserResourceFacade userLocalEJB;
 
 	//private Logger logger = Logger.getLogger(UserResource.class.getName());
-	private Logger logger = LoggerFactory.getLogger(UserResource.class);
+	private Logger logger = Logger.getLogger(UserResource.class);
 	private ErrorLog elog = new ErrorLog();
 
 	public UserResource() {
@@ -112,5 +114,13 @@ public class UserResource {
 			logger.error(elog.toStringException(e));
 			return Response.ok(new ArrayList<UsersDTO>()).build();
 		}
+	}
+	
+	@DELETE
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteUser(@PathParam("id") Long id) throws PropertyNotSetException {
+		Integer userDeleted = userLocalEJB.deleteUser(id);
+		return userDeleted != null && userDeleted == 1 ? Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS))).build() : Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED))).build();
 	}
 }

@@ -1,3 +1,6 @@
+/**
+ * primary key implementation for the tag_data table
+ */
 package qa.qcri.aidr.analysis.entity;
 
 import java.io.Serializable;

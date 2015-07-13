@@ -1,3 +1,4 @@
+
 package qa.qcri.aidr.analysis.facade.imp;
 
 import java.util.List;
@@ -19,7 +20,9 @@ import qa.qcri.aidr.analysis.facade.ConfidenceStatisticsResourceFacade;
 import qa.qcri.aidr.analysis.utils.CommonOperations;
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.ReturnCode;
-
+/**
+ * This class is not used at the moment.
+ */
 
 @Stateless
 public class ConfidenceStatisticsResourceFacadeImp extends CommonOperations implements ConfidenceStatisticsResourceFacade {

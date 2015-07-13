@@ -1,6 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Implements operations for managing the crisis table of the aidr_predict DB
+ * 
+ * @author Koushik
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
@@ -26,11 +27,8 @@ import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.UsersResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
+import qa.qcri.aidr.dbmanager.entities.misc.Users;
 
-/**
- *
- * @author Koushik
- */
 @Stateless(name="CrisisResourceFacadeImp")
 public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long> implements CrisisResourceFacade {
 
@@ -58,7 +56,8 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 	@Override 
 	public Integer deleteCrisis(CrisisDTO crisis) throws PropertyNotSetException {
 		try {
-			em.remove(crisis.toEntity()); 
+			Crisis managed = em.merge(crisis.toEntity());
+			em.remove(managed); 
 		} catch (Exception e) {
 			return 0;
 		}
@@ -255,5 +254,16 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 			}
 		}
 		return dtoList;
+	}
+	
+	@Override 
+	public int deleteCrisis(Long id) {
+		Crisis crisis = getById(id);
+		if (crisis != null) {
+			delete(crisis);
+			em.flush();
+			return 1;
+		} 
+		return 0;
 	}
 }

@@ -1,7 +1,11 @@
+/**
+ * REST Web Service
+ *
+ * @author Imran, Koushik
+ */
 package qa.qcri.aidr.persister.api;
 
 /*
- * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
 
@@ -35,11 +39,7 @@ import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
 import qa.qcri.aidr.utils.ResultStatus;
 
-/**
- * REST Web Service
- *
- * @author Imran
- */
+
 @Path("persister")
 public class Persister4CollectorAPI {
 	
@@ -113,7 +113,7 @@ public class Persister4CollectorAPI {
     	logger.info("Received request for collection: " + collectionCode);
     	JsonDeserializer jsonD = new JsonDeserializer();
         String fileName = jsonD.generateJSON2CSV_100K_BasedOnTweetCount(collectionCode, exportLimit);
-        fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL) + collectionCode+"/"+fileName;
+        fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode+"/"+fileName;
         
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
         //return Response.ok(fileName).build();
@@ -132,7 +132,7 @@ public class Persister4CollectorAPI {
         logger.info("Received request for collection: " + collectionCode);
     	JsonDeserializer jsonD = new JsonDeserializer();
     	Map<String, Object> result = jsonD.generateJson2TweetIdsCSV(collectionCode, downloadLimited);
-        String fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL) + collectionCode+"/" + (String) result.get("fileName");
+        String fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode+"/" + (String) result.get("fileName");
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
         
         JSONObject obj = new JSONObject();
@@ -163,7 +163,7 @@ public class Persister4CollectorAPI {
     	logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType);
     	JsonDeserializer jsonD = new JsonDeserializer();
         String fileName = jsonD.generateJSON2JSON_100K_BasedOnTweetCount(collectionCode, DownloadJsonType.getDownloadJsonTypeFromString(jsonType));
-        fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL) + collectionCode+"/"+fileName;
+        fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode+"/"+fileName;
         
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
         //return Response.ok(fileName).build();
@@ -183,7 +183,7 @@ public class Persister4CollectorAPI {
         logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType);
     	JsonDeserializer jsonD = new JsonDeserializer();
     	Map<String, Object> result = jsonD.generateJson2TweetIdsJson(collectionCode, downloadLimited, DownloadJsonType.getDownloadJsonTypeFromString(jsonType));
-        String fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.SCD1_URL) + collectionCode+"/" + (String)result.get("fileName");
+        String fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode+"/" + (String)result.get("fileName");
         logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
         //return Response.ok(fileName).build();
         JSONObject obj = new JSONObject();

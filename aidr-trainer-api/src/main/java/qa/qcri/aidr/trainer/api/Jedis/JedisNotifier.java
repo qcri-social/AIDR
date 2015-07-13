@@ -1,9 +1,6 @@
 package qa.qcri.aidr.trainer.api.Jedis;
 
-//import org.apache.log4j.Logger;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import redis.clients.jedis.Jedis;
@@ -16,7 +13,7 @@ import redis.clients.jedis.Jedis;
  * To change this template use File | Settings | File Templates.
  */
 public class JedisNotifier {
-    protected static Logger logger = LoggerFactory.getLogger(JedisNotifier.class);
+    protected static Logger logger = Logger.getLogger(JedisNotifier.class);
    
     Jedis jedis;
 

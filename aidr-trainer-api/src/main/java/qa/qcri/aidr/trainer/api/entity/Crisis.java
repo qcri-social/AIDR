@@ -33,6 +33,14 @@ public class Crisis implements Serializable {
         this.code = code;
         this.isTrashed = isTrashed;
     }
+    
+    public Crisis(Long crisisID, String name, String code, boolean isTrashed, boolean isMicromapperEnabled){
+        this.crisisID = crisisID;
+        this.name = name;
+        this.code = code;
+        this.isTrashed = isTrashed;
+        this.isMicromapperEnabled = isMicromapperEnabled;
+    }
 
     public Long getCrisisID() {
         return crisisID;
@@ -90,7 +98,15 @@ public class Crisis implements Serializable {
         this.modelFamilySet = modelFamilySet;
     }
     
-    @XmlElement
+    public Boolean getMicromapperEnabled() {
+		return isMicromapperEnabled;
+	}
+
+	public void setMicromapperEnabled(Boolean isMicromapperEnabled) {
+		this.isMicromapperEnabled = isMicromapperEnabled;
+	}
+
+	@XmlElement
     @Id
     @Column(name = "crisisID")
     private Long crisisID;
@@ -114,7 +130,10 @@ public class Crisis implements Serializable {
     @XmlElement
     @Column (name = "isTrashed", nullable = false)
     private Boolean isTrashed;
-    //isTrashed
+    
+    @XmlElement
+    @Column (name = "isMicromapperEnabled", nullable = false)
+    private Boolean isMicromapperEnabled;
     
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     @JoinColumn(name="crisisID")

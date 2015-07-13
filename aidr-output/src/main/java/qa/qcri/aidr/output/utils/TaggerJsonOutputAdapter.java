@@ -24,8 +24,6 @@ import qa.qcri.aidr.common.logging.ErrorLog;
 public class TaggerJsonOutputAdapter {
 	// Logger setup
 	private static Logger logger = Logger.getLogger(TaggerJsonOutputAdapter.class);
-	private static ErrorLog elog = new ErrorLog();
-
 	private String crisisCode = null;
 
 	public TaggerJsonOutputAdapter() {}
@@ -75,6 +73,18 @@ public class TaggerJsonOutputAdapter {
 					userData = (JsonObject) obj.get("user");
 					screen_name = userData.get("screen_name");
 				}
+				
+				// Added as per pivotal story #90581110
+				JsonObject geo = null;
+				JsonArray coordinates = null;
+				if (obj.has("geo")) {
+					if (!obj.get("geo").isJsonNull()) {
+						geo = (JsonObject) obj.get("geo"); 
+						if (!geo.get("coordinates").isJsonNull()) {
+							coordinates = geo.get("coordinates").getAsJsonArray();
+						}
+					}
+				}
 
 				if (obj.has("aidr")) {								// should always be true
 					aidrData = (JsonObject) obj.get("aidr");		// get the aidr JSON object
@@ -93,15 +103,23 @@ public class TaggerJsonOutputAdapter {
 					} else {
 						nominalLabels = new JsonArray();
 					}
+					
+					// Now populate the return object
 					JsonReturnClass jsonObj = new JsonReturnClass();
-					jsonObj.text = tweetData;
+					jsonObj.setText(tweetData);
 					jsonObj.created_at = timestamp;
-					jsonObj.crisis_code = crisisCode;
-					jsonObj.crisis_name = crisisName;
+					jsonObj.setCrisis_code(crisisCode);
+					jsonObj.setCrisis_name(crisisName);
 					jsonObj.nominal_labels.addAll(nominalLabels);
-
-					jsonObj.id = id;
-					jsonObj.screen_name = screen_name;
+					
+					jsonObj.setGeo(geo);
+					if (coordinates != null) {
+						jsonObj.setLatitude(coordinates.get(0).getAsDouble());
+						jsonObj.setLongitude(coordinates.get(1).getAsDouble());
+					}
+					
+					jsonObj.setId(id);
+					jsonObj.setScreen_name(screen_name);
 
 					if (!isemptyNominalLabels(nominalLabels)) 
 						return jsonObject.toJson(jsonObj);
@@ -113,7 +131,9 @@ public class TaggerJsonOutputAdapter {
 				}
 			}
 		} catch (Exception e) {
-			//logger.error("Exception in json parsing for string: " + rawJsonString);
+			logger.error("Exception in json parsing for string: " + rawJsonString);
+			logger.error("exception", e);
+			e.printStackTrace();
 		}
 
 		// no group label called "aidr" or "text" present
@@ -136,11 +156,46 @@ public class TaggerJsonOutputAdapter {
 		private JsonElement text = null;
 		private JsonElement crisis_code = null;
 		private JsonElement crisis_name = null;
-
+		private JsonObject geo = null;
+		
+		private Double latitude = null;
+		private Double longitude = null;
+		
 		private String id = null;
 		private JsonElement screen_name = null;
-
 		private JsonArray nominal_labels;
+		
+		public JsonElement getText() {
+			return text;
+		}
+
+		public void setText(JsonElement text) {
+			this.text = text;
+		}
+		
+		public JsonElement getCrisis_code() {
+			return crisis_code;
+		}
+
+		public void setCrisis_code(JsonElement crisis_code) {
+			this.crisis_code = crisis_code;
+		}
+		
+		public JsonElement getCrisis_name() {
+			return crisis_name;
+		}
+
+		public void setCrisis_name(JsonElement crisis_name) {
+			this.crisis_name = crisis_name;
+		}
+		
+		public JsonElement getScreen_name() {
+			return screen_name;
+		}
+
+		public void setScreen_name(JsonElement screen_name) {
+			this.screen_name = screen_name;
+		}
 
 		public JsonReturnClass() {
 			nominal_labels = new JsonArray();
@@ -148,10 +203,6 @@ public class TaggerJsonOutputAdapter {
 
 		public JsonElement getDate() {
 			return created_at;
-		}
-
-		public JsonElement getText() {
-			return text;
 		}
 
 		public JsonElement getCrisisCode() {
@@ -168,13 +219,46 @@ public class TaggerJsonOutputAdapter {
 				arr.addAll(nominal_labels);
 			return arr;
 		}
+		
+		public void setNominal_labels(JsonArray nominal_labels) {
+			this.nominal_labels = nominal_labels;
+		}
 
 		public String getId() {
 			return id;
 		}
 
+		public void setId(String id) {
+			this.id = id;
+		}
+
 		public JsonElement getScreenName() {
 			return screen_name;
+		}
+		
+		public JsonObject getGeo() {
+			return geo;
+		}
+
+		public void setGeo(JsonObject geo) {
+			this.geo = geo;
+		}
+		
+		public Double getLatitude() {
+			return latitude;
+		}
+
+		public void setLatitude(Double latitude) {
+			this.latitude = latitude;
+		}
+
+
+		public Double getLongitude() {
+			return longitude;
+		}
+
+		public void setLongitude(Double longitude) {
+			this.longitude = longitude;
 		}
 	}
 }

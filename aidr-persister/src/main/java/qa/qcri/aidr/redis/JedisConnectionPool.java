@@ -1,3 +1,8 @@
+/**
+ * Managing JEDIS pool and allocating/deallocating JEDIS resources for connection to REDIS. 
+ * 
+ * @author Imran, Koushik
+ */
 package qa.qcri.aidr.redis;
 
 import org.apache.log4j.Logger;
@@ -10,10 +15,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
-/**
- *
- * @author Imran
- */
+
 public class JedisConnectionPool  {
 	
 	private static Logger logger = Logger.getLogger(JedisConnectionPool.class.getName());
@@ -25,7 +27,7 @@ public class JedisConnectionPool  {
     	jedisPool = null;
     }
 
-    public synchronized Jedis getJedisConnection() throws Exception {		// koushik: removed static
+    public synchronized Jedis getJedisConnection() {		// koushik: removed static
         try {
             if (jedisPool == null) {
                 JedisPoolConfig config = new JedisPoolConfig();
@@ -41,7 +43,7 @@ public class JedisConnectionPool  {
                 
             }
             return jedisPool.getResource();
-        } catch (Exception e) {
+        } catch (JedisConnectionException e) {
             logger.error("Could not establish Redis connection. Is the Redis running?");
             logger.error(elog.toStringException(e));
             throw e;

@@ -1,3 +1,8 @@
+/**
+ * Implements operations for managing the task_answer table of the aidr_predict DB
+ * 
+ * @author Koushik
+ */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 
@@ -16,11 +21,6 @@ import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskAnswerResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.task.TaskAnswer;
 
 
-/**
- * 
- * @author Koushik
- *
- */
 @Stateless(name="TaskAnswerResourceFacadeImp")
 public class TaskAnswerResourceFacadeImp extends CoreDBServiceFacadeImp<TaskAnswer, Long> implements TaskAnswerResourceFacade {
 
@@ -55,7 +55,7 @@ public class TaskAnswerResourceFacadeImp extends CoreDBServiceFacadeImp<TaskAnsw
 	public List<TaskAnswerDTO> getTaskAnswer(Long documentID) {
 		Criterion criterion = Restrictions.eq("id.documentId", documentID);
 		List<TaskAnswer> list = getAllByCriteria(criterion);
-		if (list != null && list.isEmpty()) {
+		if (list != null && !list.isEmpty()) {
 			List<TaskAnswerDTO> dtoList = new ArrayList<TaskAnswerDTO>();
 			for (TaskAnswer t: list) {
 				dtoList.add(new TaskAnswerDTO(t));
@@ -74,4 +74,40 @@ public class TaskAnswerResourceFacadeImp extends CoreDBServiceFacadeImp<TaskAnsw
 		return t != null ? new TaskAnswerDTO(t) : null;
 	}
 
+	@Override
+	public int undoTaskAnswer(Long documentID, Long userID) {
+		try {
+			TaskAnswerDTO taskAnswerDTO = (TaskAnswerDTO) getTaskAnswer(documentID, userID);
+			if(taskAnswerDTO!=null){
+				Object managed = em.merge(taskAnswerDTO.toEntity());
+				em.remove(managed);
+				em.flush();
+				return 1;
+			}
+		} catch (Exception e) {
+			logger.error("Error in undo operation!");
+		}
+		return 0;
+	}
+	
+	@Override
+	public boolean deleteTaskAnswer(Long documentID) {
+		
+		try {
+			Criterion criterion = Restrictions.eq("id.documentId", documentID);
+			List<TaskAnswer> answers = getAllByCriteria(criterion);
+			if(answers != null) {
+				
+				// delete task
+				for (TaskAnswer taskAnswer : answers) {
+					delete(taskAnswer);
+				}
+			}
+			return true;
+		} catch (Exception e) {
+			logger.error("Error in deleting taskAnswer give documentID : " + documentID);
+			return false;
+		}
+	}
+	
 }

@@ -4,6 +4,10 @@ import javax.json.JsonObject;
 
 import qa.qcri.aidr.collector.utils.GenericCache;
 
+/**
+ * Text messages publisher on the provided channel.
+ * 
+ */
 public class StatusPublisher implements Publisher {
 
 	private long counter = 0, threhold;

@@ -14,7 +14,6 @@
 	<properties>
 		<org.springframework.version>3.2.1.RELEASE</org.springframework.version>
 		<org.spring.security.version>3.1.2.RELEASE</org.spring.security.version>
-		<org.slf4j.version>1.6.1</org.slf4j.version>
 		<jersey>2.0</jersey>
 		<endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
 	</properties>
@@ -56,7 +55,7 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.14</version>
+			<version>1.2.17</version>
 			<type>jar</type>
 		</dependency>
 
@@ -287,6 +286,12 @@
 			<id>dev</id>
 			<properties>
 				<build.profile.id>dev</build.profile.id>
+			</properties>
+		</profile>
+		<profile>
+			<id>staging</id>
+			<properties>
+				<build.profile.id>staging</build.profile.id>
 			</properties>
 		</profile>
 		<profile>

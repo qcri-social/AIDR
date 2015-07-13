@@ -34,5 +34,18 @@ public abstract class BaseConfigurator implements Configurator {
 	public String getProperty(ConfigurationProperty property) {
 		return propertyMap.get(property.getName());
 	}
-
+	
+	@Override
+	public void setProperty(String property, String newValue) {
+		if(propertyMap.containsKey(property)){
+			propertyMap.put(property,newValue);
+		}
+		else{
+			LOGGER.error("Encountered an unexpected property:'"
+					+ property + "' with the value: "
+					+ newValue);
+			throw new ConfigurationPropertyNotRecognizedException(
+					property, null);
+		}
+	}
 }

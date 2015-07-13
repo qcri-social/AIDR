@@ -1,3 +1,7 @@
+/**
+ * Compress a file to zip format.
+ * 
+ */
 package qa.qcri.aidr.utils;
 
 import java.io.BufferedInputStream;

@@ -27,8 +27,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.CrisisAttributesDTO;
@@ -52,7 +51,7 @@ public class NominalAttributeResource {
 	public NominalAttributeResource() {
 	}
 
-	private static Logger logger = LoggerFactory.getLogger(NominalAttributeResource.class);
+	private static Logger logger = Logger.getLogger(NominalAttributeResource.class);
 
 	@GET
 	@Produces("application/json")
@@ -125,8 +124,8 @@ public class NominalAttributeResource {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteAttribute(@PathParam("id") Long id) throws PropertyNotSetException {
-		boolean response;
-		response = attributeLocalEJB.deleteAttribute(id);
+		
+		boolean response = attributeLocalEJB.deleteNominalAttributeData(id);
 		return response == true ? Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED))).build() : Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS))).build();
 	}
 

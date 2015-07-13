@@ -1,3 +1,8 @@
+ /**
+ * Implements operations for managing the custom UI table of the aidr_predict DB
+ *
+ * @author Koushik
+ */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.ArrayList;
@@ -14,10 +19,6 @@ import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CustomUiTemplateResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.CustomUiTemplate;
 
-/**
-*
-* @author Koushik
-*/
 @Stateless(name="CustomUiTemplateResourceFacadeImp")
 public class CustomUiTemplateResourceFacadeImp extends CoreDBServiceFacadeImp<CustomUiTemplate, Long> implements CustomUiTemplateResourceFacade {
 	private static Logger logger = Logger.getLogger("aidr-db-manager");
@@ -148,5 +149,22 @@ public class CustomUiTemplateResourceFacadeImp extends CoreDBServiceFacadeImp<Cu
 	@Override
 	public void deleteCustomUITemplateByCrisisID(long crisisID) {
 		//To change body of implemented methods use File | Settings | File Templates.
+	}
+	
+	public int deleteCustomUiTemplateById(long customUiTemplateId){
+		try {
+			CustomUiTemplateDTO customUiTemplateDTO = getCustomUITemplateByID(customUiTemplateId);
+			Object managed = em.merge(customUiTemplateDTO.toEntity());
+			em.remove(managed); 
+			return 1;
+			} catch (Exception e) {
+				return 0;
+		}
+	}
+	
+	public CustomUiTemplateDTO getCustomUITemplateByID(long customUiTemplateId) {
+		Criterion criterion =Restrictions.eq("customUitemplateId",customUiTemplateId);
+		CustomUiTemplate customUiTemplate = this.getByCriteria(criterion);
+		return (new CustomUiTemplateDTO(customUiTemplate));
 	}
 }

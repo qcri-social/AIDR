@@ -1,7 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * This class provides an implementation to create a CSV file containing tweets with variable number of classifiers. 
+ * 
+ * @author Imran
+ * @param <CellProcessors>
  */
+
 package qa.qcri.aidr.io;
 
 import java.io.FileWriter;
@@ -40,11 +43,7 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.utils.ClassifiedTweet;
 
-/**
- *
- * @author Imran
- * @param <CellProcessors>
- */
+
 public class ReadWriteCSV<CellProcessors> {
 
 	//private static final int BUFFER_SIZE = 10 * 1024 * 1024;
@@ -230,7 +229,6 @@ public class ReadWriteCSV<CellProcessors> {
 		try {
 			if (null == mapWriter) {
 				String persisterDIR = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH);
-				//String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName;
 				String fileToWrite = persisterDIR + collectionDIR + "/" + fileName;
 				logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
 				mapWriter = getCSVMapWriter(fileToWrite);
@@ -308,7 +306,6 @@ public class ReadWriteCSV<CellProcessors> {
 		try {
 			if (null == mapWriter) {
 				String persisterDIR = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH);
-				//String fileToWrite = persisterDIR + collectionDIR + "/output/" + fileName;
 				String fileToWrite = persisterDIR + collectionDIR + "/" + fileName;
 				logger.info(collectionDIR + ": Writing CSV file : " + fileToWrite);
 				mapWriter = getCSVMapWriter(fileToWrite);

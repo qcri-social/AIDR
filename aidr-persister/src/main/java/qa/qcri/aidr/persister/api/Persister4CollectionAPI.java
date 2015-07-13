@@ -1,3 +1,9 @@
+/**
+ * REST Web Service
+ *
+ * @author Imran
+ */
+
 package qa.qcri.aidr.persister.api;
 
 import org.apache.commons.lang.StringUtils;
@@ -16,11 +22,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-/**
- * REST Web Service
- *
- * @author Imran
- */
+
 @Path("collectionPersister")
 public class Persister4CollectionAPI {
 

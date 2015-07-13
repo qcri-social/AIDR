@@ -10,16 +10,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-//import org.apache.log4j.Logger;
-
-
-
-
-
-
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.common.logging.ErrorLog;
@@ -33,7 +24,7 @@ import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 @Stateless
 public class CrisisResourceImp implements CrisisResourceFacade {
 	//private static Logger logger = Logger.getLogger(CrisisResourceImp.class);
-	private static Logger logger = LoggerFactory.getLogger(CrisisResourceImp.class);
+	private static Logger logger = Logger.getLogger(CrisisResourceImp.class);
 	private static ErrorLog elog = new ErrorLog();
 
 	//@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
@@ -116,5 +107,10 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 	@Override
 	public HashMap<String, Integer> countClassifiersByCrisisCodes(List<String> codes) {
 		return remoteCrisisEJB.countClassifiersByCrisisCodes(codes);
+	}
+	
+	@Override
+	public int deleteCrisis(Long crisisID) {
+		return remoteCrisisEJB.deleteCrisis(crisisID);
 	}
 }

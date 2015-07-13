@@ -1,18 +1,5 @@
 package qa.qcri.aidr.manager.repository.impl;
 
-import org.apache.commons.collections.ListUtils;
-import org.apache.log4j.Logger;
-import org.hibernate.*;
-import org.hibernate.criterion.*;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
-
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
-import qa.qcri.aidr.manager.repository.CollectionRepository;
-import qa.qcri.aidr.manager.util.CollectionStatus;
-
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.URLDecoder;
@@ -22,9 +9,30 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+//import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.SQLQuery;
+import org.hibernate.ScrollableResults;
+import org.hibernate.Session;
+import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.LogicalExpression;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+
+import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
+import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.repository.CollectionRepository;
+import qa.qcri.aidr.manager.util.CollectionStatus;
+
 @Repository("collectionRepository")
 public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollection, Serializable> implements CollectionRepository{
-	private Logger logger = Logger.getLogger(getClass());
+	//private Logger logger = Logger.getLogger(getClass());
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -43,9 +51,6 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
-				//  logger.info("start: " + start);
-				//  logger.info("limit: " + limit);
-				// logger.info("statusValue: " + statusValue.ordinal());
 				String sql = " SELECT DISTINCT c.id FROM AIDR_COLLECTION c" +
 						" WHERE (c.publiclyListed = 1 and c.status = :statusValue) " +
 						" order by c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
@@ -57,14 +62,12 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 				sqlQuery.setParameter("statusValue", statusValue.ordinal());
 				List<Integer> ids = (List<Integer>) sqlQuery.list();
 
-				//logger.info("ids count: " + ids.size());
 				return ids != null ? ids : Collections.emptyList();
 			}
 		});
 
 		List<AidrCollection> a = new ArrayList<AidrCollection>();
 
-		//logger.info("collectionIds: " + collectionIds.size());
 		for(int i =0; i < collectionIds.size(); i++){
 			AidrCollection collection =	this.findById(collectionIds.get(i));
 			a.add(collection) ;
@@ -73,7 +76,6 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Integer getPublicCollectionsCount(final Enum statusValue) {
 		return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
@@ -132,7 +134,6 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Integer getCollectionsCount(final UserEntity user, final boolean onlyTrashed) {
 		return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
@@ -182,12 +183,36 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 	@Override
 	public AidrCollection getRunningCollectionStatusByUser(Integer userId) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
-		criteria.add(Restrictions.eq("user.id", userId));
-		criteria.add(Restrictions.eq("status", CollectionStatus.RUNNING));
-		criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
+		//criteria.add(Restrictions.eq("user.id", userId));
+		//criteria.add(Restrictions.eq("status", CollectionStatus.RUNNING));
+		
+		LogicalExpression or = Restrictions.or(
+				Restrictions.eq("status", CollectionStatus.RUNNING),
+				Restrictions.eq("status", CollectionStatus.RUNNING_WARNING)				
+				);
+		
+		LogicalExpression orAll = Restrictions.or(
+				or,
+				Restrictions.eq("status", CollectionStatus.WARNING)
+				);
+		
+		/*Is this check needed?
+		 * 
+		 * LogicalExpression and = Restrictions.and(
+				orAll,
+				Restrictions.ne("status", CollectionStatus.TRASHED)				
+				);*/
+		LogicalExpression andAll = Restrictions.and(
+				orAll,
+				Restrictions.eq("user.id", userId)
+				);
+		
+		criteria.add(andAll);
+		//criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
 		return (AidrCollection) criteria.uniqueResult();
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<AidrCollection> getAllCollectionByUser(Integer userId) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
@@ -196,7 +221,6 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 		return (List<AidrCollection>) criteria.list();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<AidrCollection> getRunningCollections() {
 		return getRunningCollections(null, null, null, null, null);
@@ -214,10 +238,16 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 				Restrictions.eq("status", CollectionStatus.RUNNING_WARNING)
 				);
 
-		LogicalExpression orAll = Restrictions.or(
+		LogicalExpression or2 = Restrictions.or(
 				or,
 				Restrictions.eq("status", CollectionStatus.INITIALIZING)
 				);
+		
+		LogicalExpression orAll = Restrictions.or(
+				or2,
+				Restrictions.eq("status", CollectionStatus.WARNING)
+				);
+		
 		LogicalExpression andAll = Restrictions.and(
 				orAll,
 				Restrictions.ne("status", CollectionStatus.TRASHED)
@@ -249,7 +279,6 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 		return (List<AidrCollection>) criteria.list();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Long getRunningCollectionsCount(String terms) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
@@ -261,9 +290,14 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 				Restrictions.eq("status", CollectionStatus.RUNNING_WARNING)
 				);
 
-		LogicalExpression orAll = Restrictions.or(
+		LogicalExpression or2 = Restrictions.or(
 				or,
 				Restrictions.eq("status", CollectionStatus.INITIALIZING)
+				);
+		
+		LogicalExpression orAll = Restrictions.or(
+				or2,
+				Restrictions.eq("status", CollectionStatus.WARNING)
 				);
 
 		LogicalExpression andAll = Restrictions.and(
@@ -286,10 +320,17 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 		criteriaIds.setProjection(Projections.projectionList()
 				.add(Projections.property("id"), "id"));
 
-		criteriaIds.add(Restrictions.ne("status", CollectionStatus.RUNNING));
-		criteriaIds.add(Restrictions.ne("status", CollectionStatus.RUNNING_WARNING));
-		criteriaIds.add(Restrictions.ne("status", CollectionStatus.INITIALIZING));
-		criteriaIds.add(Restrictions.ne("status", CollectionStatus.TRASHED));
+		LogicalExpression or = Restrictions.or(
+				Restrictions.eq("status", CollectionStatus.STOPPED),
+				Restrictions.eq("status", CollectionStatus.NOT_RUNNING)
+				);
+		
+		LogicalExpression orAll = Restrictions.or(
+				or,
+				Restrictions.eq("status", CollectionStatus.FATAL_ERROR)
+				);
+		
+		criteriaIds.add(orAll);
 		addCollectionSearchCriteria(terms, criteriaIds);
 		searchCollectionsAddOrder(sortColumn, sortDirection, criteriaIds);
 
@@ -315,17 +356,23 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 		return (List<AidrCollection>) criteria.list();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Long getStoppedCollectionsCount(String terms) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
 		criteria.setProjection(Projections.projectionList()
 				.add(Projections.property("id"), "id"));
-
-		criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING));
-		criteria.add(Restrictions.ne("status", CollectionStatus.RUNNING_WARNING));
-		criteria.add(Restrictions.ne("status", CollectionStatus.INITIALIZING));
-		criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
+		
+		LogicalExpression or = Restrictions.or(
+				Restrictions.eq("status", CollectionStatus.STOPPED),
+				Restrictions.eq("status", CollectionStatus.NOT_RUNNING)
+				);
+		
+		LogicalExpression orAll = Restrictions.or(
+				or,
+				Restrictions.eq("status", CollectionStatus.FATAL_ERROR)
+				);
+		
+		criteria.add(orAll);
 		addCollectionSearchCriteria(terms, criteria);
 
 		ScrollableResults scroll = criteria.scroll();
@@ -396,7 +443,6 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 		return collection;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public AidrCollection findByCode(String code) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);

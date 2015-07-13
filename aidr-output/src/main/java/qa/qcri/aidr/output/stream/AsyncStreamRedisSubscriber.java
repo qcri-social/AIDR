@@ -1,3 +1,13 @@
+/*
+ * Class for implementing the REDIS subscriber for an Asynchronous REST service. 
+ * The Async subscriber subscribes to REDIS for a given collection code and spawns a new thread that 
+ * opens an async REST channel and continues to push data to it from REDIS until the client is closed. 
+ * 
+ *   It uses Glassfish specific jersey Async data type "ChunkedOutput" - useful for 
+ *   sending messages in "typed" chunks. Useful for long running processes,that need to generate
+ *   partial responses at a time.
+ */
+
 package qa.qcri.aidr.output.stream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,10 +20,6 @@ import javax.servlet.AsyncListener;
 
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.server.ChunkedOutput;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-
-
 
 import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.output.stream.SubscriptionDataObject;

@@ -1,13 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Creates a subscription object for REDIS to listen for streaming tweets
+ * 
+ * @author Imran
  */
 package qa.qcri.aidr.persister.tagger;
 
-/**
- *
- * @author Imran
- */
+
 import qa.qcri.aidr.persister.collector.*;
 
 import java.io.File;
@@ -129,18 +127,18 @@ public class TaggerSubscriber extends JedisPubSub {
     }
 
     private String createNewDirectory() {
-        File theDir = new File(persisterDir + collectionCode + "/output");
+        File theDir = new File(persisterDir + collectionCode);
         if (!theDir.exists()) {
-            System.out.println("creating directory: " + persisterDir + collectionCode + "/output");
+            System.out.println("creating directory: " + persisterDir + collectionCode);
             boolean result = theDir.mkdir();
             
             if (result) {
             	logger.info("DIR created for collection: " + collectionCode);
-                return persisterDir + collectionCode + "/output/";
+                return persisterDir + collectionCode + "/";
             } 
             
         }
-        return persisterDir + collectionCode + "/output/";
+        return persisterDir + collectionCode + "/";
     }
 
     private void createBufferWriter() {

@@ -46,7 +46,9 @@
                 <img align="middle" src="${pageContext.request.contextPath}/resources/img/qcri-gray-horiz.png"/></a>
         </div>
         <div class="left">
-            <a href="http://aidr.qcri.org/tos/">Terms of Service</a>
+            <a href="http://aidr.qcri.org/r/tos/">Terms of Service</a> - 
+            <a href="http://aidr.qcri.org/r/manual">Help</a> - 
+            <a href="http://aidr.qcri.org/r/credits">Credits</a>
         </div>
     </div>
 </div>
