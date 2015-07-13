@@ -1,10 +1,3 @@
-/**
- *
- * Implements operations for managing the crisis_type table of the aidr_predict DB
- * 
- * @author Koushik
- *
- */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.ArrayList;
@@ -23,6 +16,14 @@ import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisTypeResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
+
+/**
+*
+* Implements operations for managing the crisis_type table of the aidr_predict DB
+* 
+* @author Koushik
+*
+*/
 
 @Stateless(name = "CrisisTypeResourceFacadeImp")
 public class CrisisTypeResourceFacadeImp extends CoreDBServiceFacadeImp<CrisisType, Long> implements CrisisTypeResourceFacade {

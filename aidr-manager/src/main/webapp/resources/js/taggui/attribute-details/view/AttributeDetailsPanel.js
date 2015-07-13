@@ -15,14 +15,14 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsPanel', {
     initComponent: function () {
         this.breadcrumbs = Ext.create('Ext.container.Container', {
             html: '<div class="bread-crumbs">' +
-                '<a href="' + BASE_URL + '/protected/home">My Collections</a><span>&nbsp;>&nbsp;Category details</span></div>',
+                '<a href="' + BASE_URL + '/protected/home">My Collections</a><span>&nbsp;>&nbsp;Classifier details</span></div>',
             margin: 0,
             padding: 0
         });
 
         this.taggerTitle = Ext.create('Ext.form.Label', {
             cls: 'header-h1 bold-text',
-            text: 'Details for category',
+            text: 'Details for classifier',
             flex: 1
         });
 

@@ -101,6 +101,7 @@ public class MiscResourceImp implements MiscResourceFacade {
 			return remoteTaskManager.getHumanLabeledDocumentsByCrisisCode(crisisCode, count);
 		} catch (Exception e) {
 			logger.error("exception for crisis code = " + crisisCode);
+			System.out.println("exception for crisis code = " + crisisCode);
 			e.printStackTrace();
 			return null;  
 		}

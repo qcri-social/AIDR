@@ -37,7 +37,7 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
         });
 
         this.newCollectionButton = Ext.create('Ext.Button', {
-            text: 'Create and Start Collection',
+            text: 'Create New Collection',
             margin: '6 0 0 15',
             cls:'btn btn-green',
             id: 'newCollection'
@@ -142,7 +142,7 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
                 '</tpl>',
             '</div>',
             '<tpl if="values.status == \'RUNNING\' || values.status == \'RUNNING_WARNING\'">',
-                '<div class="styled-text-14" id="lastDocField_{id}">Last downloaded:&nbsp;&nbsp;&nbsp;{[this.getLastDoc(values.lastDocument)]}</div>',
+                '<div class="styled-text-14" id="lastDocField_{id}">Last collected:&nbsp;&nbsp;&nbsp;{[this.getLastDoc(values.lastDocument)]}</div>',
             '</tpl>',
             '</div>',
 
