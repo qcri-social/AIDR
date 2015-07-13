@@ -59,7 +59,6 @@ public class ModelFamilyDaoImpl extends AbstractDaoImpl<ModelFamily,String> impl
 
         return findByCriteria(Restrictions.conjunction()
                 .add(Restrictions.eq("crisisID",crisisID))
-                .add(Restrictions.eq("enableMicroMappers",true))
                 .add(Restrictions.eq("isActive", true)));
 
 
