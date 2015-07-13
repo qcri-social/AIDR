@@ -33,6 +33,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        beforeRenderView: function (component, eOpts) {
 	        	AIDRFMFunctions.initMessageContainer();
 	        	this.mainComponent = component;
+	        	this.mainComponent.constraintsString = '{"constraints":[]}';
 	        	taggerCollectionDetailsController = this;
 
 	        	this.loadModelData();
@@ -189,17 +190,17 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 
                     var url = '';
                     var params = {
-                        //code: CRISIS_CODE,
+                        crisisCode: CRISIS_CODE,
                         //count: 1000,
                         //queryString: me.mainComponent.constraintsString
-                        queryString: '{"constraints":[]}'
+                        queryString: me.mainComponent.constraintsString
                     };
 
                     if(format == 'csv'){
-                       url = '/protected/tagger/downloadHumanLabeledDocuments.action?crisisCode='+CRISIS_CODE;
+                       url = '/protected/tagger/downloadHumanLabeledDocuments.action';
                     } else {
                         params.jsonType = format;
-                        url = '/protected/tagger/downloadHumanLabeledDocuments.action?crisisCode='+CRISIS_CODE;
+                        url = '/protected/tagger/downloadHumanLabeledDocuments.action';
                     }
 
                     btn.setDisabled(true);
