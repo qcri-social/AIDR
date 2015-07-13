@@ -442,7 +442,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                      btn.hide();
                  } else {
                 	 btn.show();
-                     AIDRFMFunctions.setAlert("Error", 'Error while enabling the micromapper.');
+                     AIDRFMFunctions.setAlert("Error", 'Error while enabling MicroMappers');
                  }
              }
          });
@@ -469,7 +469,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 	 btn.hide();
                  } else {
                 	 btn.show();
-                     AIDRFMFunctions.setAlert("Error", 'Error while enabling the micromapper.');
+                     AIDRFMFunctions.setAlert("Error", 'Error while disabling MicroMappers');
                  }
              }
          });
