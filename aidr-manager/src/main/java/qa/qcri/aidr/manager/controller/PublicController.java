@@ -417,45 +417,6 @@ public class PublicController extends BaseController{
 	}
 
 	
-	/**
-	 * This method is a duplicate of the actual one in TaggerController.java and has been placed here ONLY for testing purpose.
-	 * Please remove once testing is successful!
-	 * @param queryString
-	 * @param crisisCode
-	 * @param count
-	 * @param fileType
-	 * @param contentType
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value = "/downloadHumanLabeledDocuments.action", method = RequestMethod.POST)
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@ResponseBody
-	public Map<String,Object> downloadHumanLabeledDocuments(@RequestBody String queryString, 
-			@RequestParam(value = "crisisCode", required = true) String crisisCode, 
-			@RequestParam(value = "count", defaultValue = "-1") Integer count,
-			@RequestParam(value = "fileType", defaultValue = DownloadType.TEXT_JSON) String fileType, 
-			@RequestParam(value = "contentType", defaultValue = DownloadType.FULL_TWEETS) String contentType) throws Exception {
-		logger.info("Received request: crisisCode = " + crisisCode + ", count = " + count + ", fileType = " + fileType
-				+ ", contentType = " + contentType + "\nquery String = " + queryString);
-		try {
-			String userName = "SinhaKoushik";			// a hard-coded placeholder, TODO: change to something more meaningful
-			if (null == count) {
-				count = -1;
-			}
-			Map<String, Object> downloadLink = taggerService.downloadHumanLabeledDocumentsByCrisisUserName(queryString, crisisCode, userName, count, fileType, contentType);
-			if (downloadLink.get("fileName") != null && downloadLink.get("total") != null) {
-				return getUIWrapper(downloadLink, true, new Long((Integer)downloadLink.get("total")), null);
-			} else {
-				return getUIWrapper(downloadLink, false);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return getUIWrapper(false, "Error in getting dlownload link for human labeled documents");
-		}
-	}
-	
 	private AidrCollectionTotalDTO convertAidrCollectionToDTO(AidrCollection collection, boolean hasTaggerOutput){
 		if (collection == null){
 			return null;

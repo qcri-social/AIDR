@@ -187,6 +187,7 @@ public class Persist2FileAPI {
 	}
 
 	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/filter/genJson")
 	public Response generateJSONFromListFiltered(HumanLabeledDocumentListWrapper postBody,
@@ -194,9 +195,9 @@ public class Persist2FileAPI {
 			@QueryParam("exportLimit") Integer exportLimit,
 			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType,
 			@QueryParam("userName") String userName)  throws UnknownHostException {
-		logger.debug("In list-persister genJson");
-		logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType);
 		
+		logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType + ", post body = " + postBody);
+		logger.info("Received query string: " + postBody.toJsonString());
 		try {
 			DeserializeFilters des = new DeserializeFilters();
 			JsonQueryList queryList = des.deserializeConstraints(postBody.getQueryString());
