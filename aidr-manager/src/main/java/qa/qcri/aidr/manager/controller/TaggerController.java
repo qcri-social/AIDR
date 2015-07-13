@@ -926,7 +926,9 @@ public class TaggerController extends BaseController {
 		logger.info("Received request: crisisCode = " + crisisCode + ", count = " + count + ", fileType = " + fileType
 				+ ", contentType = " + contentType + "\nquery String = " + queryString);
 		try {
-			String userName = "SinhaKoushik";			// a hard-coded placeholder, TODO: change to something more meaningful
+			String userName = getAuthenticatedUserName();
+			if (null == userName) userName = "System";
+			
 			if (null == count) {
 				count = -1;
 			}
