@@ -138,12 +138,21 @@ public class DocumentResource {
 	@Path("/delete/{crisisId}/{userId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteDocumentByCrisisId(@PathParam("crisisId") Long crisisId, @PathParam("userId") Long userId) {
+		boolean success = Boolean.FALSE;
+		ResponseWrapper responseWrapper;
 		try {
-			boolean success = taskManager.deleteTask(crisisId, userId);
+			success = taskManager.deleteTask(crisisId, userId);
 		} catch (RuntimeException e) {
-			return Response.ok(
-					new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "Error while deleting Document.")).build();
+			logger.error("Error while deleting document with crisisID : " + crisisId + "userID : " + userId);
 		}
-		return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS))).build();
+		
+		if(success) {
+			responseWrapper = new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));	
+		} else {
+			responseWrapper = new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "Error while deleting Document.");
+		}
+		
+		return Response.ok(responseWrapper).build();
+		
 	}
 }
