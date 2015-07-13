@@ -218,7 +218,7 @@ public class MiscResource {
 			@DefaultValue("CSV") @QueryParam("fileType") String fileType,
 			@DefaultValue("full") @QueryParam("contentType") String contentType) {
 		
-		System.out.println("Received request: crisisCode = " + crisisCode + ", userName = " + userName + ", count = " + count + ", fileType = " + fileType
+		logger.info("Received request: crisisCode = " + crisisCode + ", userName = " + userName + ", count = " + count + ", fileType = " + fileType
 						+ ", contentType = " + contentType + "\nquery String = " + queryString);
 		if (null == crisisCode || null == userName) {
 			return Response.ok(
@@ -226,7 +226,7 @@ public class MiscResource {
 		}
 		try {
 			List<HumanLabeledDocumentDTO> dtoList = miscEJB.getHumanLabeledDocumentsByCrisisCode(crisisCode, count);
-			System.out.println("REST call will return dto List size = " + (dtoList != null ? dtoList.size() : "null"));
+			logger.info("REST call will return dto List size = " + (dtoList != null ? dtoList.size() : "null"));
 			if (dtoList != null) {
 				ResponseWrapper response = new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
 				response.setTotal(dtoList.size());

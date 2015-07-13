@@ -940,7 +940,7 @@ public class TaggerController extends BaseController {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return getUIWrapper(false, "Error in getting dlownload link for human labeled documents");
+			return getUIWrapper(false, "Error in getting download link for human labeled documents");
 		}
 	}
 	
