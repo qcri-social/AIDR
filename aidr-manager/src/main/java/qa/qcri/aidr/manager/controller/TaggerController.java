@@ -918,7 +918,7 @@ public class TaggerController extends BaseController {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@ResponseBody
-	public Map<String,Object> downloadHumanLabeledDocuments(@RequestBody String queryString, 
+	public Map<String,Object> downloadHumanLabeledDocuments(String queryString, 
 			@RequestParam(value = "crisisCode", required = true) String crisisCode, 
 			@RequestParam(value = "count", defaultValue = "-1") Integer count,
 			@RequestParam(value = "fileType", defaultValue = DownloadType.TEXT_JSON) String fileType, 
@@ -940,7 +940,7 @@ public class TaggerController extends BaseController {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return getUIWrapper(false, "Error in getting dlownload link for human labeled documents");
+			return getUIWrapper(false, "Error in getting download link for human labeled documents");
 		}
 	}
 	

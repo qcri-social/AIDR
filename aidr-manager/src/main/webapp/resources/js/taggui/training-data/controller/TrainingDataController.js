@@ -20,8 +20,12 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        		},
 	        		'button[action=deleteTrainingExample]': {
 	        			click: this.deleteTrainingExample
-	        		}
-
+	        		},
+	        		"#downloadButton": {
+                    	click: function (btn, e, eOpts) {
+                        this.downloadButtonHandler(btn);
+                        }
+                    }
 	        	});
 
 	        },
@@ -29,6 +33,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        beforeRenderView: function (component, eOpts) {
 	        	AIDRFMFunctions.initMessageContainer();
 	        	this.mainComponent = component;
+	        	this.mainComponent.constraintsString = '{"constraints":[]}';
 	        	taggerCollectionDetailsController = this;
 
 	        	this.loadModelData();
@@ -177,6 +182,61 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        			}
 	        		}
 	        	});
-	        }
+	        },
+	        downloadButtonHandler: function(btn){
+                    var me = this;
+                    var format = me.mainComponent.downloadFormat.getValue().format;
+                   // var contents = 'full';
+
+                    var url = '';
+                    var params = {
+                        crisisCode: CRISIS_CODE,
+                        //count: 1000,
+                        //queryString: me.mainComponent.constraintsString
+                        queryString: me.mainComponent.constraintsString
+                    };
+
+                    if(format == 'csv'){
+                       url = '/protected/tagger/downloadHumanLabeledDocuments.action';
+                    } else {
+                        params.jsonType = format;
+                        url = '/protected/tagger/downloadHumanLabeledDocuments.action';
+                    }
+
+                    btn.setDisabled(true);
+                    me.mainComponent.downloadLink.setText('<div class="loading-block"></div>', false);
+
+                    Ext.Ajax.timeout = 900000;
+                    Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
+                    Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
+                    Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
+                    Ext.Ajax.request({
+                        url: BASE_URL + url,
+                        timeout: 900000,
+                        method: 'POST',
+                        params: params,
+                        headers: {
+                            'Accept': 'application/json'
+                        },
+                        success: function (response) {
+                            btn.setDisabled(false);
+                            var resp = Ext.decode(response.responseText);
+                            if (resp.success) {
+                                if (resp.data && resp.data != '') {
+                                    me.mainComponent.downloadLink.setText('<div class="styled-text download-link"><a target="_blank" href="' + resp.data.fileName + '">' + resp.data.fileName + '</a></div>', false);
+                                } else {
+                                    me.mainComponent.downloadLink.setText('', false);
+                                    AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
+                                }
+                            } else {
+                                me.mainComponent.downloadLink.setText('', false);
+                                AIDRFMFunctions.setAlert("Error", resp.message);
+                            }
+                        },
+                        failure: function () {
+                            btn.setDisabled(false);
+                        }
+                    });
+                }
 
 });
