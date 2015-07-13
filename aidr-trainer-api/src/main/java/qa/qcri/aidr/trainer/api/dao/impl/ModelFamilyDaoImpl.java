@@ -2,7 +2,9 @@ package qa.qcri.aidr.trainer.api.dao.impl;
 
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+
 import qa.qcri.aidr.trainer.api.dao.ModelFamilyDao;
+import qa.qcri.aidr.trainer.api.entity.Crisis;
 import qa.qcri.aidr.trainer.api.entity.ModelFamily;
 import qa.qcri.aidr.trainer.api.template.CrisisNominalAttributeModel;
 
@@ -37,10 +39,14 @@ public class ModelFamilyDaoImpl extends AbstractDaoImpl<ModelFamily,String> impl
             ModelFamily modelFamily = (ModelFamily)iterator.next();
             Long crisisID = modelFamily.getCrisisID();
             Long attributeID = modelFamily.getNominalAttributeID();
-            CrisisNominalAttributeModel temp = new CrisisNominalAttributeModel(crisisID, attributeID);
+            Crisis crisis = modelFamily.getCrisis();
+            if(crisis.getMicromapperEnabled() != null && crisis.getMicromapperEnabled())
+            {
+            	CrisisNominalAttributeModel temp = new CrisisNominalAttributeModel(crisisID, attributeID);
 
-            if(!findDuplicate(crisisNominalAttributeModelList, temp)) {
-                crisisNominalAttributeModelList.add(temp);
+            	if(!findDuplicate(crisisNominalAttributeModelList, temp)) {
+            		crisisNominalAttributeModelList.add(temp);
+            	}
             }
 
         }
@@ -53,6 +59,7 @@ public class ModelFamilyDaoImpl extends AbstractDaoImpl<ModelFamily,String> impl
 
         return findByCriteria(Restrictions.conjunction()
                 .add(Restrictions.eq("crisisID",crisisID))
+                .add(Restrictions.eq("enableMicroMappers",true))
                 .add(Restrictions.eq("isActive", true)));
 
 
