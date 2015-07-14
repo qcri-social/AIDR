@@ -1,13 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * REDIS subscriber
+ * 
+ * @author Imran
  */
 package qa.qcri.aidr.persister.collector;
 
-/**
- *
- * @author Imran
- */
+
 import java.io.File;
 import java.io.OutputStreamWriter;
 import java.io.FileOutputStream;

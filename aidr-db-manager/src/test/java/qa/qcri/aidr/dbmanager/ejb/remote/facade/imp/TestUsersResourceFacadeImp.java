@@ -146,7 +146,7 @@ public class TestUsersResourceFacadeImp {
 	public void testFindAllCrisisByUserId() {
 		try {
 			CrisisTypeDTO crisisTypeDTO = crisisTypeResourceFacadeImp.findCrisisTypeByID(1100L);
-			CrisisDTO crisisDTO = new CrisisDTO("testCrisisName", "testCrisisCode", false, crisisTypeDTO, user);
+			CrisisDTO crisisDTO = new CrisisDTO("testCrisisName", "testCrisisCode", false, false, crisisTypeDTO, user);
 			entityManager.getTransaction().begin();
 			crisis = crisisResourceFacadeImp.addCrisis(crisisDTO);
 			entityManager.getTransaction().commit();

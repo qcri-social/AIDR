@@ -8,7 +8,9 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+
 import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.manager.dto.AidrCollectionTotalDTO;
 import qa.qcri.aidr.manager.dto.TaggerCrisisType;
 import qa.qcri.aidr.manager.exception.AidrException;
@@ -23,8 +25,10 @@ import qa.qcri.aidr.manager.util.JsonDataValidator;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -412,6 +416,7 @@ public class PublicController extends BaseController{
 		return null;
 	}
 
+	
 	private AidrCollectionTotalDTO convertAidrCollectionToDTO(AidrCollection collection, boolean hasTaggerOutput){
 		if (collection == null){
 			return null;

@@ -77,7 +77,7 @@ public class TestTaskAnswerResourceFacadeImp {
 		
 		try {
 			CrisisTypeDTO crisisTypeDTO = crisisTypeResourceFacadeImp.findCrisisTypeByID(1100L);
-			CrisisDTO crisisDTO = new CrisisDTO("testCrisisName"+new Date(), "testCrisisCode" + new Date(), false, crisisTypeDTO, user);
+			CrisisDTO crisisDTO = new CrisisDTO("testCrisisName"+new Date(), "testCrisisCode" + new Date(), false, false, crisisTypeDTO, user);
 			entityManager.getTransaction().begin();
 			crisis = crisisResourceFacadeImp.addCrisis(crisisDTO);
 			entityManager.getTransaction().commit();

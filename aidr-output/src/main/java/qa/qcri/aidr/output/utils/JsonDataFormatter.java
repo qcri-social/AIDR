@@ -1,4 +1,4 @@
-/*
+/**
  * Provides methods to create formatted JSON output data for the REST APIs  
  */
 

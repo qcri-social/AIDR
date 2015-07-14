@@ -10,6 +10,7 @@
       CRISIS_TYPE_ID = ${crisisTypeId};
       CRISIS_CODE = "${code}";
       TYPE = "${collectionType}";
+      IS_MICROMAPPER_ENABLED = ${isMicromapperEnabled};
       COLLECTION_TYPES = ${collectionTypes};
   </script>
 

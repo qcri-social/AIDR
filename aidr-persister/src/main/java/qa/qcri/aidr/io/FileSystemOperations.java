@@ -1,6 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * This class provides methods to access the FS for read write of persisted JSON files for a given collection
+ * 
+ * @author Imran
  */
 package qa.qcri.aidr.io;
 
@@ -18,10 +19,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-/**
- *
- * @author Imran
- */
+
 public class FileSystemOperations {
     
     public static ArrayList<String> get100KFilesList(String collectionCode){

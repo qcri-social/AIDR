@@ -130,6 +130,74 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
             displayMsg:'Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ' {0} - {1} of {2}',
             emptyMsg:'No human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ' to display'
         });
+        //
+        this.downloadTweetsL = Ext.create('Ext.form.Label', {
+                			text: 'Download',
+                			padding: '15 0 0 0',
+                			cls: 'header-h2'
+                		});
+
+                this.downloadTweetsDescription = Ext.create('Ext.form.Label', {
+                			text: 'Download Human-tagged tweets',
+                			padding: '0 0 10 0'
+                		});
+
+                this.downloadFormat = Ext.create('Ext.form.RadioGroup', {
+                			fieldLabel: 'Format',
+                			labelWidth: 55,
+                			columns: [150, 210, 240],
+                			items: [
+                			        {
+                			        	boxLabel: 'Spreadsheet (.csv)',
+                			        	name: 'format',
+                			        	inputValue: 'csv',
+                			        	checked: true
+                			        },
+                			        {
+                			        	boxLabel: 'Single JSON object (.json)',
+                			        	name: 'format',
+                			        	inputValue: 'JSON'
+                			        },
+                			        {
+                			        	boxLabel: 'One JSON per line (.txt-json)',
+                			        	name: 'format',
+                			        	inputValue: 'TEXT_JSON'
+                			        }
+                			        ]
+                		});
+
+                this.downloadButton = Ext.create('Ext.Button', {
+                			text: 'Generate Downloadable File',
+                			cls:'btn btn-blue',
+                			id: 'downloadButton',
+                			margin: '10 0 0 0'
+                		});
+
+                this.downloadLink = Ext.create('Ext.form.Label', {
+                			flex: 1,
+                			margin: '10 5 5 5',
+                			html: ''
+                		});
+
+                this.downloadPanel = Ext.create('Ext.container.Container', {
+                			layout: {
+                				type: 'vbox'
+                			},
+                			items: [
+                			        this.downloadTweetsL,
+                			        this.downloadTweetsDescription,
+                			        this.downloadFormat,
+                			        {
+                			        	xtype: 'container',
+                			        	layout: 'hbox',
+                			        	items: [
+                			        	    this.downloadButton,
+                			        	    this.downloadLink
+                			        	]
+                			        }
+                			        ]
+                		});
+        //
 
         this.items = [
             this.breadcrumbs,
@@ -158,8 +226,11 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
             },
             this.taggerDescription2line,
             this.trainingDataGrid,
-            this.trainingDataPaging
+            this.trainingDataPaging,
+            this.downloadPanel
         ];
+
+
 
         this.callParent(arguments);
     },

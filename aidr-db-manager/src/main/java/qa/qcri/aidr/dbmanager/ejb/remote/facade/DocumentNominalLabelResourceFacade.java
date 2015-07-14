@@ -39,4 +39,5 @@ public interface DocumentNominalLabelResourceFacade extends CoreDBServiceFacade<
 
 	public List<DocumentNominalLabelDTO> getLabeledDocumentCollectionForNominalLabel(Integer nominalLabelID) throws PropertyNotSetException;
 
+	void deleteDocumentNominalLabelByNominalLabel(Long nominalLabelID) throws PropertyNotSetException;
 }

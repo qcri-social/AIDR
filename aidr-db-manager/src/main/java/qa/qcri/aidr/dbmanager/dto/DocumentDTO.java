@@ -124,7 +124,7 @@ public class DocumentDTO implements Serializable {
 			this.setHasHumanLabels(doc.isHasHumanLabels());
 			if (doc.hasCrisis()) {
 				Crisis c = new Crisis(doc.getCrisis().getUsers(), doc.getCrisis().getCrisisType(), doc.getCrisis().getName(), doc.getCrisis().getCode(),
-										doc.getCrisis().isIsTrashed());
+										doc.getCrisis().isIsTrashed(), doc.getCrisis().isIsMicromapperEnabled());
 				c.setCrisisId(doc.getCrisis().getCrisisId());
 				this.setCrisisDTO(new CrisisDTO(c));
 			} 

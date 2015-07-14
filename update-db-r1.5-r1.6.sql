@@ -1,0 +1,1 @@
+ALTER TABLE `aidr_predict`.`crisis` ADD COLUMN `isMicromapperEnabled` BIT(1) NOT NULL AFTER `userID`;

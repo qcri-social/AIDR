@@ -1,3 +1,8 @@
+/**
+ * Implements operations for managing the document_nominal_label table of the aidr_predict DB
+ * 
+ *  @author Koushik
+ */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.ArrayList;
@@ -22,9 +27,6 @@ import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 
-/**
- * @author Koushik
- */
 
 @Stateless(name="DocumentNominalLabelResourceFacadeImp")
 public class DocumentNominalLabelResourceFacadeImp 
@@ -183,6 +185,15 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 
 		List<DocumentNominalLabelDTO> fetchedList = findByCriteria("id.nominalLabelId", new Long(nominalLabelID).longValue());
 		return fetchedList;
+	}
+
+	@Override
+	public void deleteDocumentNominalLabelByNominalLabel(Long nominalLabelID) throws PropertyNotSetException {
+		
+		List<DocumentNominalLabelDTO> fetchedList = findByCriteria("id.nominalLabelId", new Long(nominalLabelID).longValue());
+		for (DocumentNominalLabelDTO documentNominalLabelDTO : fetchedList) {
+			deleteDocument(documentNominalLabelDTO);
+		}
 	}
 }
 

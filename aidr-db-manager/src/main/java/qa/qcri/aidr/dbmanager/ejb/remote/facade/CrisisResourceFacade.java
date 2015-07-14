@@ -42,4 +42,6 @@ public interface CrisisResourceFacade extends CoreDBServiceFacade<Crisis, Long> 
 	public List<CrisisDTO> getAllCrisisWithModelFamilyNominalAttribute() throws PropertyNotSetException;
 	public CrisisDTO getWithModelFamilyNominalAttributeByCrisisID(Long crisisID) throws PropertyNotSetException;
 	public List<CrisisDTO> findActiveCrisis() throws PropertyNotSetException;
+	
+	public int deleteCrisis(Long id);
 }

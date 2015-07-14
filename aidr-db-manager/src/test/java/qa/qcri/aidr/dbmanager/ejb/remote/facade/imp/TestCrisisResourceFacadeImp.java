@@ -72,7 +72,7 @@ public class TestCrisisResourceFacadeImp {
 			user = userResourceFacadeImp.addUser(user);
 			
 			entityManager.getTransaction().commit();
-			crisisDTO = new CrisisDTO(crisisName, crisisCode, false, crisisTypeDTO, user);
+			crisisDTO = new CrisisDTO(crisisName, crisisCode, false, false, crisisTypeDTO, user);
 			entityManager.getTransaction().begin();
 			crisisDTO = crisisResourceFacadeImp.addCrisis(crisisDTO);
 			entityManager.getTransaction().commit();

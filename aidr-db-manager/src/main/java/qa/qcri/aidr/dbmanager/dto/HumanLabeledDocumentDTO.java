@@ -1,3 +1,6 @@
+/*
+ * This DTO is used for transferring out humanlabeled documents 
+ */
 package qa.qcri.aidr.dbmanager.dto;
 
 import java.io.Serializable;

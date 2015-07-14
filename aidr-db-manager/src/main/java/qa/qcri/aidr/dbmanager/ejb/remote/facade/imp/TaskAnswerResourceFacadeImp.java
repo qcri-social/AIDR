@@ -1,3 +1,8 @@
+/**
+ * Implements operations for managing the task_answer table of the aidr_predict DB
+ * 
+ * @author Koushik
+ */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 
@@ -14,14 +19,8 @@ import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskAnswerResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.task.TaskAnswer;
-import qa.qcri.aidr.dbmanager.entities.task.TaskAssignment;
 
 
-/**
- * 
- * @author Koushik
- *
- */
 @Stateless(name="TaskAnswerResourceFacadeImp")
 public class TaskAnswerResourceFacadeImp extends CoreDBServiceFacadeImp<TaskAnswer, Long> implements TaskAnswerResourceFacade {
 
@@ -90,4 +89,25 @@ public class TaskAnswerResourceFacadeImp extends CoreDBServiceFacadeImp<TaskAnsw
 		}
 		return 0;
 	}
+	
+	@Override
+	public boolean deleteTaskAnswer(Long documentID) {
+		
+		try {
+			Criterion criterion = Restrictions.eq("id.documentId", documentID);
+			List<TaskAnswer> answers = getAllByCriteria(criterion);
+			if(answers != null) {
+				
+				// delete task
+				for (TaskAnswer taskAnswer : answers) {
+					delete(taskAnswer);
+				}
+			}
+			return true;
+		} catch (Exception e) {
+			logger.error("Error in deleting taskAnswer give documentID : " + documentID);
+			return false;
+		}
+	}
+	
 }

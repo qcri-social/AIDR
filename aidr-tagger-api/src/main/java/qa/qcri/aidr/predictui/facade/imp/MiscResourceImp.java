@@ -100,8 +100,10 @@ public class MiscResourceImp implements MiscResourceFacade {
 		try {
 			return remoteTaskManager.getHumanLabeledDocumentsByCrisisCode(crisisCode, count);
 		} catch (Exception e) {
-			logger.error("exception for crisis code = " + crisisCode);
-			e.printStackTrace();
+			logger.error("Exception for crisis code = " + crisisCode);
+			logger.error("Exception", e);
+			//System.out.println("exception for crisis code = " + crisisCode);
+			//e.printStackTrace();
 			return null;  
 		}
 	}
@@ -152,17 +154,17 @@ public class MiscResourceImp implements MiscResourceFacade {
 			HumanLabeledDocumentListWrapper postBody = new HumanLabeledDocumentListWrapper(dtoList, queryString);
 			//System.out.println("Request POST body: " + postBody.toJsonString());
 
-			System.out.println("Received request to create file for: " + dtoList.getTotal() + "items for crisis = " + crisisCode + "userName = " + userName);
+			logger.info("Received request to create file for: " + dtoList.getTotal() + "items for crisis = " + crisisCode + "userName = " + userName);
 			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 
 			String targetAPI = getPersisterTargetAPI(fileType, contentType, count);
 			WebTarget webResource = client.target(persisterMainUrl + targetAPI + "collectionCode=" + crisisCode + "&userName=" + userName);
-			System.out.println("Invoking REST call: " + persisterMainUrl + targetAPI + "collectionCode=" + crisisCode + "&userName=" + userName);
+			logger.info("Invoking REST call: " + persisterMainUrl + targetAPI + "collectionCode=" + crisisCode + "&userName=" + userName);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(postBody), Response.class);
 			//System.out.println("received raw response from persister: " + clientResponse);
 			Map<String, Object> jsonResponse = clientResponse.readEntity(Map.class);
-			System.out.println("Received response from persister: " + jsonResponse);
+			logger.info("Received response from persister: " + jsonResponse);
 			if (jsonResponse.get("url") != null) {
 				return jsonResponse.get("url").toString();
 			} else {

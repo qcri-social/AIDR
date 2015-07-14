@@ -1,3 +1,8 @@
+/**
+ * Implements operations for managing the users table of the aidr_predict DB
+ * 
+ * @author Koushik
+ */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 
@@ -21,10 +26,6 @@ import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 
-
-/**
- * @author Koushik
- */
 
 @Stateless(name="UsersResourceFacadeImp")
 public class UsersResourceFacadeImp extends CoreDBServiceFacadeImp<Users, Long> implements UsersResourceFacade {

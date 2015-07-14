@@ -1,7 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * This class provides an implementation to create a CSV file containing tweets with variable number of classifiers. 
+ * 
+ * @author Imran
+ * @param <CellProcessors>
  */
+
 package qa.qcri.aidr.io;
 
 import java.io.FileWriter;
@@ -40,11 +43,7 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.utils.ClassifiedTweet;
 
-/**
- *
- * @author Imran
- * @param <CellProcessors>
- */
+
 public class ReadWriteCSV<CellProcessors> {
 
 	//private static final int BUFFER_SIZE = 10 * 1024 * 1024;

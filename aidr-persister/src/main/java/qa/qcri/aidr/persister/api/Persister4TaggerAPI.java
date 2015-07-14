@@ -1,10 +1,11 @@
 package qa.qcri.aidr.persister.api;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * This class provides the REST APIs to manage the persister for a collection - start/stop and download based on various filters and requested file types. 
+ 
+ * @author Imran, Koushik
+ *
  */
-//import com.sun.jersey.api.json.JSONWithPadding;
 
 
 import java.net.UnknownHostException;
@@ -43,11 +44,7 @@ import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
 import qa.qcri.aidr.utils.ResultStatus;
 
-/**
- * REST Web Service
- *
- * @author Imran
- */
+
 @Path("taggerPersister")
 public class Persister4TaggerAPI {
 

@@ -15,12 +15,16 @@ import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
+import qa.qcri.aidr.manager.util.CollectionStatus;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
 
 @Controller
@@ -911,24 +915,50 @@ public class TaggerController extends BaseController {
 	}
 
 	@RequestMapping(value = "/downloadHumanLabeledDocuments.action", method = RequestMethod.POST)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	@ResponseBody
 	public Map<String,Object> downloadHumanLabeledDocuments(String queryString, 
-			@RequestParam String crisisCode, @RequestParam Integer count,
-			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("fileType") String fileType, 
-			@DefaultValue(DownloadType.FULL_TWEETS) @QueryParam("contentType") String contentType) throws Exception {
+			@RequestParam(value = "crisisCode", required = true) String crisisCode, 
+			@RequestParam(value = "count", defaultValue = "-1") Integer count,
+			@RequestParam(value = "fileType", defaultValue = DownloadType.TEXT_JSON) String fileType, 
+			@RequestParam(value = "contentType", defaultValue = DownloadType.FULL_TWEETS) String contentType) throws Exception {
+		logger.info("Received request: crisisCode = " + crisisCode + ", count = " + count + ", fileType = " + fileType
+				+ ", contentType = " + contentType + "\nquery String = " + queryString);
 		try {
 			String userName = getAuthenticatedUserName();
-			if (null == userName) userName = "System";			// a hard-coded placeholder, TODO: change to something more meaningful
+			if (null == userName) userName = "System";
 			
+			if (null == count) {
+				count = -1;
+			}
 			Map<String, Object> downloadLink = taggerService.downloadHumanLabeledDocumentsByCrisisUserName(queryString, crisisCode, userName, count, fileType, contentType);
-			if (downloadLink.get("fileName") != null) {
-				return getUIWrapper(downloadLink, true);
+			if (downloadLink.get("fileName") != null && downloadLink.get("total") != null) {
+				return getUIWrapper(downloadLink, true, new Long((Integer)downloadLink.get("total")), null);
 			} else {
 				return getUIWrapper(downloadLink, false);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return getUIWrapper(false, "Error in getting dlownload link for human labeled documents");
+			return getUIWrapper(false, "Error in getting download link for human labeled documents");
+		}
+	}
+	
+	@RequestMapping(value = "/updateMicromapperEnabled.action", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> updateMicromapperEnabled(@RequestParam Boolean isMicromapperEnabled, @RequestParam String code ) throws Exception {
+		logger.info("In update micromapperEnabled for collection, code = " + code);
+		Map<String, Object> result = null;
+		try {
+			result = taggerService.updateMicromapperEnabled(code, isMicromapperEnabled);
+			if (result != null && result.get("isMicromapperEnabled") != null) {
+				return getUIWrapper(null,true);
+			} else {
+				return getUIWrapper(false, "Something wrong while updating isMicromapperEnabled");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getUIWrapper(false, "Unable to update micromapperEnabled for collection, code = " + code);
 		}
 	}
 

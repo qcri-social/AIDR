@@ -1,3 +1,8 @@
+/**
+ * Implements operations for managing the document table of the aidr_predict DB
+ * 
+ * @author Koushik
+ */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.ArrayList;
@@ -7,6 +12,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Transaction;
@@ -25,14 +31,10 @@ import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
+import qa.qcri.aidr.dbmanager.entities.model.Model;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 
-/**
- * 
- * @author Koushik
- *
- */
 @Stateless(name="DocumentResourceFacadeImp")
 public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long> implements DocumentResourceFacade  {
 
@@ -118,13 +120,13 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	public int deleteNoLabelDocument(List<DocumentDTO> collection) {
 		int deleteCount = 0;
 		if (collection != null && !collection.isEmpty()) {
-			Session session = getCurrentSession();
+			//Session session = getCurrentSession();
 			try {
-				Transaction tx = session.beginTransaction();
+				//Transaction tx = session.beginTransaction();
 				for (DocumentDTO d: collection) {
 					deleteCount += deleteNoLabelDocument(d);
 				}
-				tx.commit();
+				//tx.commit();
 				logger.info("deleted count = " + deleteCount);
 			} catch (Exception e) {
 				logger.error("Collection deletion query failed");
@@ -481,6 +483,30 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 			}
 		}
 		return dtoList;
+	}
+
+	@Override
+	public Integer getUnlabeledDocumentsCountByCrisisID(Long crisisId) throws PropertyNotSetException {
+		Criterion criterion = Restrictions.conjunction()
+				.add(Restrictions.eq("crisis.crisisId",crisisId))
+				.add(Restrictions.eq("hasHumanLabels", false));
+		List<Document> documentList = this.getAllByCriteria(criterion);
+		return documentList != null ? Integer.valueOf(documentList.size()) : 0;
+	}
+	
+	@Override
+	public boolean deleteDocuments(List<DocumentDTO> documents){
+		try {
+			for (DocumentDTO documentDTO : documents) {
+				deleteDocument(documentDTO);
+			}
+			return true;
+		} catch (Exception e) {
+			logger.error("Error in deleting document.");
+			return false;
+		}
+		
+		
 	}
 
 }

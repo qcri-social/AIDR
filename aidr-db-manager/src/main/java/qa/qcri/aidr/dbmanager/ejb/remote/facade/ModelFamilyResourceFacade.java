@@ -1,7 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ *
+ * @author Imran
  */
 
 package qa.qcri.aidr.dbmanager.ejb.remote.facade;
@@ -16,10 +15,7 @@ import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.CoreDBServiceFacade;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 
-/**
- *
- * @author Imran
- */
+
 @Remote
 public interface ModelFamilyResourceFacade extends CoreDBServiceFacade<ModelFamily, Long>{
     public List<ModelFamilyDTO> getAllModelFamilies() throws PropertyNotSetException;;

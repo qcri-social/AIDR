@@ -317,6 +317,13 @@ public class GenericCache {
         }
         return reconnectAttempts.get(key);
     }
+    
+    //reset number of reconnect attempts when collection is able to establish connection
+    public void resetAttempt(String key) {
+        if (reconnectAttempts.containsKey(key)) {
+        	reconnectAttempts.put(key, 0);
+        }
+    }
 
     public int getReconnectAttempts(String key) {
         return reconnectAttempts.get(key);

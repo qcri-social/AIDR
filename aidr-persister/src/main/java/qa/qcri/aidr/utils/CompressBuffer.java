@@ -1,3 +1,6 @@
+/**
+ * methods for (un)compressing tweets 
+ */
 package qa.qcri.aidr.utils;
 
 import java.io.BufferedReader;

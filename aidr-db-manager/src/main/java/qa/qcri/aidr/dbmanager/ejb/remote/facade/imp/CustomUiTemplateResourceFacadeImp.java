@@ -1,3 +1,8 @@
+ /**
+ * Implements operations for managing the custom UI table of the aidr_predict DB
+ *
+ * @author Koushik
+ */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.ArrayList;
@@ -14,10 +19,6 @@ import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CustomUiTemplateResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.CustomUiTemplate;
 
-/**
-*
-* @author Koushik
-*/
 @Stateless(name="CustomUiTemplateResourceFacadeImp")
 public class CustomUiTemplateResourceFacadeImp extends CoreDBServiceFacadeImp<CustomUiTemplate, Long> implements CustomUiTemplateResourceFacade {
 	private static Logger logger = Logger.getLogger("aidr-db-manager");

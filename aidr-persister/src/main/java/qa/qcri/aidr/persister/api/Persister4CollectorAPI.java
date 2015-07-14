@@ -1,7 +1,11 @@
+/**
+ * REST Web Service
+ *
+ * @author Imran, Koushik
+ */
 package qa.qcri.aidr.persister.api;
 
 /*
- * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
 
@@ -35,11 +39,7 @@ import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
 import qa.qcri.aidr.utils.ResultStatus;
 
-/**
- * REST Web Service
- *
- * @author Imran
- */
+
 @Path("persister")
 public class Persister4CollectorAPI {
 	

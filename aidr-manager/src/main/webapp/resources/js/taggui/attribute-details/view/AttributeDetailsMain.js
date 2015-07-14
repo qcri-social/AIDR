@@ -23,7 +23,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
 
         this.codeValue = Ext.create('Ext.form.Label', {flex: 1});
         this.nameValue = Ext.create('Ext.form.Label', {flex: 1});
-        this.typeValue = Ext.create('Ext.form.Label', {flex: 1});
+        //this.typeValue = Ext.create('Ext.form.Label', {flex: 1});
 
         this.nameTextBox = Ext.create('Ext.form.field.Text', {
             flex: 1,
@@ -49,7 +49,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
             items: [
                 {
                     width: 150,
-                    html: '<b>Short name:</b>'
+                    html: '<b>code:</b>'
                 },
                 this.codeValue
             ]
@@ -71,7 +71,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
             ]
         });
 
-        this.typeBlock = Ext.create('Ext.container.Container', {
+       /* this.typeBlock = Ext.create('Ext.container.Container', {
             defaultType: 'label',
             layout: 'hbox',
             height: 22,
@@ -84,7 +84,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
                 },
                 this.typeValue
             ]
-        });
+        });*/
 
         this.saveButton = Ext.create('Ext.Button', {
             text: 'Save',
@@ -299,7 +299,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
                 me.noButtonsBlock.show();
             }
         }
-        me.typeValue.setText(type, false);
+       // me.typeValue.setText(type, false);
 
         if (r.nominalLabelCollection && Ext.isArray(r.nominalLabelCollection)) {
             me.valuesLable.show();

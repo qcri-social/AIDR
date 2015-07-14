@@ -133,4 +133,5 @@ public interface TaggerService {
 
 	public Map<String, Object> downloadHumanLabeledDocumentsByCrisisUserName(String queryString, String crisisCode, String userName, Integer count, String fileType, String contentType) throws AidrException;
 	
+	public Map<String, Object> updateMicromapperEnabled(String code, Boolean isMicromapperEnabled) throws AidrException;
 }

@@ -9,8 +9,16 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.java7.Predicate;
@@ -54,6 +62,7 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 	private long timeToSleep = 0;
 	private static int max  = 3;
 	private static int min = 1;
+	private GenericCache cache;
 	
 	public TwitterStatusListener(CollectionTask task, String channelName) {
 		this.task = task;
@@ -63,6 +72,8 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 			.add("crisis_code", task.getCollectionCode())
 			.add("crisis_name", task.getCollectionName())
 			.build();
+		
+		cache = GenericCache.getInstance();
 	}
 
 	/**
@@ -117,11 +128,6 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 		//TwitterException t;
 		if(ex instanceof TwitterException)
 		{
-			GenericCache cache = GenericCache.getInstance();
-			//logger.error("network issue? " + ((TwitterException) ex).isCausedByNetworkIssue() 
-				//	+ " resource not found" + ((TwitterException) ex).resourceNotFound()
-					//+ " cause: " + ((TwitterException) ex).getCause().getMessage());			
-			
 			int attempt = cache.incrAttempt(task.getCollectionCode());
 			task.setStatusMessage(ex.getMessage());
 			if(((TwitterException) ex).getStatusCode() == -1)
@@ -132,7 +138,7 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 				{
 					timeToSleep = (long) (getRandom()*attempt*
 							Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_NET_FAILURE_WAIT_SECONDS)));
-					logger.info("Error -1, Waiting for " + timeToSleep + " seconds");
+					logger.warn("Error -1, Waiting for " + timeToSleep + " seconds, attempt: " + attempt);
 					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_WARNING));
 					task.setStatusMessage("Collection Stopped due to Twitter Error. Reconnect Attempt: " + attempt);
 				}
@@ -145,7 +151,7 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 				{
 					timeToSleep = (long) (getRandom()*(2^(attempt-1))*
 							Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_RATE_LIMIT_WAIT_SECONDS)));
-					logger.info("Error 420, Waiting for " + timeToSleep + " seconds");					
+					logger.warn("Error 420, Waiting for " + timeToSleep + " seconds, attempt: " + attempt);					
 					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_WARNING));
 					task.setStatusMessage("Collection Stopped due to Twitter Error. Reconnect Attempt: " + attempt);
 				}
@@ -158,15 +164,17 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 				{
 					timeToSleep = (long) (getRandom()*attempt*
 							Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_SERVICE_UNAVAILABLE_WAIT_SECONDS)));
-					logger.info("Error 503, Waiting for " + timeToSleep + " seconds");					
+					logger.warn("Error 503, Waiting for " + timeToSleep + " seconds, attempt: " + attempt);					
 					task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_WARNING));
 					task.setStatusMessage("Collection Stopped due to Twitter Error. Reconnect Attempt: " + attempt);
 				}
 			}
 			else
-			{
 				task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
-			}
+			
+			if(task.getStatusCode().equals(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR)))
+				sendErrorMail(task.getCollectionCode(),ex.toString());
+				//EmailClient.sendErrorMail(task.getCollectionCode(),ex.toString());
 			
 			try {
                 Thread.sleep(timeToSleep*1000);
@@ -188,19 +196,20 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 	
 	private static double getRandom()
 	{
-		double d = Math.random() * (max - min) + min;
-		logger.info("random value:" + d);
+		double d = Math.random() * (max - min) + min;		
 		return d;
 	}
 
 	@Override
 	public void onConnect() {
 		if(task.getStatusCode() == configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_WARNING))
+		{
 			task.setStatusMessage("was disconnected due to network failure, reconnected OK");
+			cache.resetAttempt(task.getCollectionCode());
+		}
 		else
 			task.setStatusMessage(null);
 		task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_RUNNING));
-		
 	}
 
 	@Override
@@ -212,5 +221,26 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 	public void onCleanUp() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void sendErrorMail(String code, String errorMsg) {
+		Response clientResponse = null;
+		Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+		try {
+			WebTarget webResource = client.target(configProperties.getProperty(CollectorConfigurationProperty.TAGGER_REST_URI) 
+					+ "/misc/sendErrorEmail");
+			
+			Form form = new Form();
+			form.param("code", code);
+			form.param("description", errorMsg);
+
+			clientResponse = webResource.request().post(
+					Entity.entity(form,MediaType.APPLICATION_FORM_URLENCODED),Response.class);
+			if (clientResponse.getStatus() != 200) {
+				logger.warn("Couldn't contact AIDRTaggerAPI for sending error message");
+			}
+		} catch (Exception e) {
+			logger.error("Error in contacting AIDRTaggerAPI: " + clientResponse);
+		}
 	}
 }

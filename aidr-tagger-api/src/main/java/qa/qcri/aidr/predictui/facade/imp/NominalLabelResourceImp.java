@@ -9,8 +9,11 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import org.hibernate.Hibernate;
+
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentNominalLabelResourceFacade;
 import qa.qcri.aidr.predictui.facade.NominalLabelResourceFacade;
 
 /**
@@ -24,6 +27,9 @@ public class NominalLabelResourceImp implements NominalLabelResourceFacade {
 
     @EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade remoteNominalLabelEJB;
+    
+    @EJB
+    private DocumentNominalLabelResourceFacade remoteDocumentNominalLabelEJB;
 
     @Override
     public NominalLabelDTO addNominalLabel(NominalLabelDTO label) {
@@ -78,4 +84,22 @@ public class NominalLabelResourceImp implements NominalLabelResourceFacade {
 			e.printStackTrace();
 		}
     }
+
+	@Override
+	public void deleteNominalLabelDataByAttribute(Long attributeID) {
+		// TODO Auto-generated method stub
+		
+		 try {
+			List<NominalLabelDTO> labelDTOs = remoteNominalLabelEJB.getNominalLabelByAttributeID(attributeID);
+			for (NominalLabelDTO nominalLabelDTO : labelDTOs) {
+				remoteDocumentNominalLabelEJB.deleteDocumentNominalLabelByNominalLabel(nominalLabelDTO.getNominalLabelId());
+				deleteNominalLabel(nominalLabelDTO.getNominalLabelId());
+			}
+		 }catch (Exception e) {
+			 e.printStackTrace();
+		 }
+		
+	}
+    
+    
 }

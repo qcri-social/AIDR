@@ -157,17 +157,21 @@ public class ModelFamilyResource {
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteAttribute(@PathParam("id") Long modelFamilyID) {
+    	
+    	boolean success = Boolean.FALSE;
+		ResponseWrapper responseWrapper;
         try {
-            modelFamilyLocalEJB.deleteModelFamily(modelFamilyID);
+        	success = modelFamilyLocalEJB.deleteModelFamilyData(modelFamilyID);
         } catch (RuntimeException e) {
             logger.error("Error while deleting Classifier for modelFamily: " + modelFamilyID);
-            logger.error(elog.toStringException(e));
-
-            return Response.ok(
-                    new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED),
-                            "Error while deleting Classifier.")).build();
         }
-        return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS))).build();
+        
+        if(success) {
+			responseWrapper = new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));	
+		} else {
+			responseWrapper = new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "Error while deleting Classifier.");
+		}
+        
+		return Response.ok(responseWrapper).build();
     }
-
 }

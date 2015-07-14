@@ -39,5 +39,7 @@ public interface NominalAttributeFacade {
 
     //client to fix: return type is changed from Integer to Long
     public Long isAttributeExists(String attributeCode) throws PropertyNotSetException;
+    
+    public boolean deleteNominalAttributeData(Long attributeID) throws PropertyNotSetException;
 
 }

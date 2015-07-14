@@ -2,21 +2,16 @@ package qa.qcri.aidr.predict.classification;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.common.PipelineProcess;
 import qa.qcri.aidr.predict.common.RateLimiter;
 import qa.qcri.aidr.predict.common.TaggerConfigurationProperty;
 import qa.qcri.aidr.predict.common.TaggerConfigurator;
 import qa.qcri.aidr.predict.data.Document;
-import qa.qcri.aidr.predict.featureextraction.WordSet;
 
 /**
  * LabelingTaskWriter consumes fully classified items and writes them to the
@@ -28,32 +23,6 @@ import qa.qcri.aidr.predict.featureextraction.WordSet;
  */
 public class LabelingTaskWriter extends PipelineProcess {
 	private static Logger logger = Logger.getLogger(LabelingTaskWriter.class);
-
-	class DocumentHistory {
-		LinkedList<WordSet> recentWordVectors = new LinkedList<WordSet>();
-		int bufferSize = 50;
-
-		public boolean addItemIfNovel(Document doc) {
-			WordSet w1 = doc.getFeatures(WordSet.class).get(0);
-
-			double maxSim = 0;
-			for (WordSet w2 : recentWordVectors) {
-				double sim = w2.getSimilarity(w1);
-				if (sim > maxSim) {
-					if (sim > 0.5) // TODO: This threshold needs some tuning,
-						// probably
-						return false;
-					maxSim = sim;
-				}
-			}
-
-			recentWordVectors.add(w1);
-			if (recentWordVectors.size() > bufferSize)
-				recentWordVectors.remove();
-
-			return true;
-		}
-	}
 
 	private long lastDBWrite = 0;
 	private long lastTruncateTime = 0;
@@ -70,7 +39,10 @@ public class LabelingTaskWriter extends PipelineProcess {
 	RateLimiter taskRateLimiter = new RateLimiter(
 			Integer.parseInt(TaggerConfigurator.getInstance().getProperty(
 					TaggerConfigurationProperty.MAX_NEW_TASKS_PER_MINUTE)));
-	DocumentHistory history = new DocumentHistory();
+	
+	DocumentHistory history = new DocumentHistory(
+			Integer.parseInt(TaggerConfigurator.getInstance().getProperty(TaggerConfigurationProperty.TAGGER_TASK_BUFFER_SIMILARITY_BUFFER)),
+			Double.parseDouble(TaggerConfigurator.getInstance().getProperty(TaggerConfigurationProperty.TAGGER_TASK_BUFFER_MAX_SIMILARITY)));
 
 	protected void processItem(Document item) {
 		// Write novel DocumentSets to the database at a maximum rate of up to N

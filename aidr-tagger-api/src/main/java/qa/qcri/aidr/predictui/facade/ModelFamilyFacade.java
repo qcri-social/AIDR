@@ -24,5 +24,6 @@ public interface ModelFamilyFacade {
     public boolean addCrisisAttribute(ModelFamilyDTO modelFamily);
     public boolean deleteModelFamily(Long modelFamilyID);
     public List<TaggersForCodes> getTaggersByCodes(List<String> codes);
+    public boolean deleteModelFamilyData(Long modelFamilyID);
 
 }

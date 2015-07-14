@@ -109,7 +109,7 @@ bin/asadmin deploy --properties implicitCdiEnabled=false --contextroot=AIDRFetch
 bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=true
 
 echo "Starting Application AIDRTagger."
-cd $AIDR_HOME/aidr-tagger
+cd $AIDR_HOME/aidr-tagger/target
 nohup java -Xmx2048m -cp $GLASSFISH_HOME/glassfish/lib/gf-client.jar:aidr-tagger-1.0-jar-with-dependencies.jar:libs/* qa.qcri.aidr.predict.Controller &
 fi
 

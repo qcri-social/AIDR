@@ -33,6 +33,9 @@ public class ModelFamilyFacadeImp implements ModelFamilyFacade {
 
     @EJB
     private qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelFamilyResourceFacade remoteModelFamilyEJB;
+    
+    @EJB 
+    private ModelFacade modelFacade;
 
     @Override
     public List<ModelFamilyDTO> getAllModelFamilies() {
@@ -91,6 +94,20 @@ public class ModelFamilyFacadeImp implements ModelFamilyFacade {
     public List<TaggersForCodes> getTaggersByCodes(final List<String> codes) {
         List<TaggersForCodes> result = remoteModelFamilyEJB.getTaggersByCodes(codes);
         return result;
+    }
+    
+    @Override
+    public boolean deleteModelFamilyData(Long modelFamilyID) {
+    	
+    	// delete model
+    	
+    	modelFacade.deleteModelDataByModelFamily(modelFamilyID);
+        try {
+            return remoteModelFamilyEJB.deleteModelFamily(modelFamilyID);
+        } catch (PropertyNotSetException pe) {
+        	logger.error("Error in deleting modelFamilyData with modelFamilyID : " + modelFamilyID);
+        }
+        return false;
     }
 
 }

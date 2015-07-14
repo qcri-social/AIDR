@@ -784,6 +784,10 @@ End of the tab panel styles
     width: 130px;
 }
 
+.collection-item .btn.btn-green {  
+    width: 165px;
+}
+
 .pdng-r-0{
     padding-right: 0px !important;
 }

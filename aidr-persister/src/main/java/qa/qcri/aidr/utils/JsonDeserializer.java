@@ -1,6 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * The main class of the persister related to downloading of data from persisted collections - all REST APIs call this class methods
+ * to generate CSV, JSON, TXT-JSON files with or without user specified filters.
+ * 
+ *  @author Imran, Koushik
  */
 package qa.qcri.aidr.utils;
 
@@ -52,10 +54,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
-/**
- *
- * @author Imran
- */
 public class JsonDeserializer {
 
 	private static Logger logger = Logger.getLogger(JsonDeserializer.class.getName());

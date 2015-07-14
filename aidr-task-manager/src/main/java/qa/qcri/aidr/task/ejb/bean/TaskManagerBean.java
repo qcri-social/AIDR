@@ -42,10 +42,13 @@ import qa.qcri.aidr.task.common.TrainingDataFetchType;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 /**
+ * This class implements the TaskManagerRemote interface, providing the business logic for operations 
+ * on the document, document_nominal_label, task_answer and task_assignment table - logically grouped as the the 'task related operations'.
  * 
  * @author Koushik
  *
  */
+
 
 @Stateless
 public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable> {
@@ -1269,6 +1272,31 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		return this.getHumanLabeledDocumentsByCrisisIDUserID(crisisID, user.getUserID(), count);
 	}
 
+	@Override
+	public boolean deleteTask(Long crisisID, Long userID) {
+
+		boolean success;
+		try {
+			List<DocumentDTO> documentDTOs = remoteDocumentEJB.findDocumentsByCrisisID(crisisID);
+			
+			if(documentDTOs != null && userID != null) {
+				for(DocumentDTO documentDTO : documentDTOs) {
+					remoteTaskAssignmentEJB.undoTaskAssignment(documentDTO.getDocumentID(), userID);
+					remoteTaskAnswerEJB.deleteTaskAnswer(documentDTO.getDocumentID());
+				}
+			}
+			remoteDocumentEJB.deleteDocuments(documentDTOs);
+			success = true;
+			
+			logger.info("Successful deletion for task data.");
+		} catch (Exception e) {
+			logger.error("Unable to delete task for crisidID : " + crisisID + " and userID : " + userID);
+			success = false;
+		}
+		
+		return success;
+	}
+	
 	/*
 	public static void main(String args[]) {
 		TaskManagerRemote<Document, Serializable> tm = new TaskManagerBean<Document, Long>();

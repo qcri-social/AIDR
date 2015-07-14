@@ -16,4 +16,5 @@ public interface TaskAnswerResourceFacade extends CoreDBServiceFacade<TaskAnswer
     List<TaskAnswerDTO> getTaskAnswer(Long documentID);
     TaskAnswerDTO getTaskAnswer(Long documentID, Long userID);
 	int undoTaskAnswer(Long documentID, Long userID);
+	boolean deleteTaskAnswer(Long documentID);
 }

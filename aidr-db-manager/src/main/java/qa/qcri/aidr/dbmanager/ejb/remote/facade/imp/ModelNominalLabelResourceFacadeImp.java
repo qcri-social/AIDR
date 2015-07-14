@@ -1,3 +1,8 @@
+/**
+ * Implements operations for managing the model_nominal_label table of the aidr_predict DB
+ * 
+ * @author Koushik
+ */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.ArrayList;
@@ -177,4 +182,11 @@ public class ModelNominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<M
 		return (getModelNominalLabelByID(nominalLabelID) != null) ? true : false;
 	}
 
+	@Override
+	public void deleteModelNominalLabelByModelID(Long modelID) {
+		List<ModelNominalLabel> modelNominalLabelList = this.getAllByCriteria(Restrictions.eq("id.modelId", modelID));
+		for (ModelNominalLabel modelNominalLabel : modelNominalLabelList) {
+			delete(modelNominalLabel);
+		}
+	}
 }
