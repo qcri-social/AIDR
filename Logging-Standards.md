@@ -1,25 +1,45 @@
 ## Log message standards
 
-### What information to include
+## What information to include
 
 With the above configuration, log4j will automatically include the thread-id, class, and method name in the log file. Additionally, your log message must specify:
 
 * **Collection code** (if available), or collection-id (if available)
 * Classifier code/id, Document id, or whatever information in case the collection code is not available.
 
-### When to log
+## When to log
 
-1. **Before throwing an exception, always create a log entry.**
+### Panic messages: panic() = error() + event in DB + e-mail
 
-2. Use warning() for any anomalous condition that _does not interrupt the current operation_, i.e. that still allow users to do what they wanted to do. For instance, if you are writing lines to a file, but had to skip one line because of some formatting error, log a warning. If you received an exception but were able to handle and recover from it, and will continue with the current operation, throw a warning. If you noticed anything strange, but still can proceed, log a warning.
+A panic message signals any anomalous condition in the system that _interrupt this and future operations_, i.e. that will prevent this user and future users from doing what they wanted to do. If disk is full, and you need to write to disk, you need a panic message, because it means the next users won't be able to do their operations if this continue like this. 
 
-3. Use error() for any anomalous condition in the system that _interrupts the current operation_, i.e. that prevents users from doing what they wanted to do. For instance, if you are writing to a file, but couldn't open the file, log an error. If you had any problem that means you couldn't do what the user asked for, log an error. Please note that errors arising from incorrect user input (e.g. the user tried to create a collection with a name that already exists) do not constitute a system error and don't need to be logged as such, instead can be optionally logged as info.
+A panic message does three actions:
 
-4. Use fatal() for any anomalous condition in the system that _interrupt this and future operations_, i.e. that will prevent this user and future users from doing what they wanted to do. If disk is full, and you need to write to disk, do a fatal log, because it means the next users won't be able to do their operations if this continue like this. 
+* Log an error
+* Place an event in the database
+* Send an e-mail
 
-4. Use info() for everything else that is part of the normal operation, e.g. startup messages, but remember to log _only once per operation_. Don't say info("Opening file ..."), info("Writing to file ..."), info("Closed file ..."). Instead, do info("Wrote to file ...")
+### Severe errors: severe_error() = error() + event in DB
 
+If you have an error that absolutely needs to be seen by a system administrator, mark it as a severe_error(). This should create both an error and an entry in the database.
 
+### Errors and severe errors: error()
+
+Use error() for any anomalous condition in the system that _interrupts the current operation_, i.e. that prevents users from doing what they wanted to do. For instance, if you are writing to a file, but couldn't open the file, log an error. If you had any problem that means you couldn't do what the user asked for, log an error.
+
+Please note that errors arising from incorrect user input (e.g. the user tried to create a collection with a name that already exists) do not constitute a system error and don't need to be logged as such, instead can be optionally logged as warning if needed.
+
+Before throwing an exception, always create a log entry.
+
+### Warnings: warn()
+
+Use warning for any anomalous condition that _does not interrupt the current operation_, i.e. that still allow users to do what they wanted to do. For instance, if you are writing lines to a file, but had to skip one line because of some formatting error, log a warning. If there was a small problem but you were able to easily deal with it, and will continue with the current operation, throw a warning. If you noticed anything strange, but still can proceed, log a warning.
+
+### Normal actions: info()
+
+Use info() for everything else that is part of the normal operation, e.g. startup messages, but remember to log _only once per operation_. Don't say info("Opening file ..."), info("Writing to file ..."), info("Closed file ..."). Instead, do info("Wrote to file ...")
+
+# Using Apache Log4J in AIDR
 
 For uniform logging of messages in AIDR modules, we will be using the `Apache log4j` logger:
 
