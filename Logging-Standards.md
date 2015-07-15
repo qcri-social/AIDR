@@ -19,11 +19,11 @@ A panic message does three actions:
 * Place an event in the database
 * Send an e-mail
 
-### Severe errors: severe_error() = error() + event in DB
+### Severe errors: fatal() = error() + event in DB
 
 If you have an error that absolutely needs to be seen by a system administrator, mark it as a severe_error(). This should create both an error and an entry in the database.
 
-### Errors and severe errors: error()
+### Errors: error()
 
 Use error() for any anomalous condition in the system that _interrupts the current operation_, i.e. that prevents users from doing what they wanted to do. For instance, if you are writing to a file, but couldn't open the file, log an error. If you had any problem that means you couldn't do what the user asked for, log an error.
 
