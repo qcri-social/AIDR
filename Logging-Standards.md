@@ -16,12 +16,17 @@ A panic message signals any anomalous condition in the system that _interrupt th
 A panic message does three actions:
 
 * Log an error
-* Place an event in the database
+* Record an event in the database
 * Send an e-mail
 
 ### Severe errors: fatal() = error() + event in DB
 
-If you have an error that absolutely needs to be seen by a system administrator, mark it as a severe_error(). This should create both an error and an entry in the database.
+If you have an error that absolutely needs to be seen by a system administrator, mark it as a fatal().
+
+A fatal message does two actions:
+
+* Log an error
+* Record an event in the database
 
 ### Errors: error()
 
