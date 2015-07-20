@@ -68,10 +68,10 @@ The tagger tester should perform the following steps:
 1. Assign the correct label to that item (using its tweetid) and save it using the `save` service of the `TaskAnswerContoller` of the `Trainer-API` module
 1. After about 100 white items and 100 black items have been tagged, check if the Tagger module has created a model using `getModelsByModelFamilyID` service of `ModelResource` of `Tagger-API` module. If not, wait 10 seconds and keep tagging more items, 50 at a time.
 1. For testing, generate WHITE testing items and push them to the tagger
-1. Subscribe to `REDIS_FOR_OUTPUT_QUEUE` 
-1. Verify (reading from the `REDIS_FOR_OUTPUT_QUEUE`) that at least 80% of them are tagged WHITE, otherwise FAIL
+1. Subscribe to `aidr_predict.tagger_tester` 
+1. Verify (reading from the `aidr_predict.tagger_tester`) that at least 80% of them are tagged WHITE, otherwise FAIL
 1. Generate BLACK testing items and push them to the tagger
-1. Verify  (reading from the `REDIS_FOR_OUTPUT_QUEUE`) that at least 80% of them are tagged BLACK, otherwise FAIL
+1. Verify  (reading from the `aidr_predict.tagger_tester`) that at least 80% of them are tagged BLACK, otherwise FAIL
 1. Run a CLEANUP routine 
 1. If this point is reached, exit with a successful return code
 
