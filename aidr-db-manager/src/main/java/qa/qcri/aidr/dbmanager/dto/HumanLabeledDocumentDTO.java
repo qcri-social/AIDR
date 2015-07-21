@@ -21,12 +21,12 @@ import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
 @JsonIgnoreProperties(ignoreUnknown=true)
 @XmlRootElement
 public class HumanLabeledDocumentDTO implements Serializable {
-
+	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = -8284975892012345464L;
+
 	@XmlElement private DocumentDTO doc;
 	
 	@XmlElement private List<DocumentNominalLabelDTO> labelData;

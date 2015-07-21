@@ -227,6 +227,10 @@ public class MiscResource {
 		try {
 			List<HumanLabeledDocumentDTO> dtoList = miscEJB.getHumanLabeledDocumentsByCrisisCode(crisisCode, count);
 			logger.info("REST call will return dto List size = " + (dtoList != null ? dtoList.size() : "null"));
+			if(count==-1){
+				count=null;
+			}
+			
 			if (dtoList != null) {
 				ResponseWrapper response = new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
 				response.setTotal(dtoList.size());

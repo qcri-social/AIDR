@@ -1829,7 +1829,7 @@ public class JsonDeserializer {
 
 			for (HumanLabeledDocumentDTO dto: labeledItems.getItems()) {
 				ClassifiedTweet tweet = new ClassifiedTweet();
-				tweet.toClassifiedTweetFromLabeledDoc(dto);
+				tweet.toClassifiedTweetFromLabeledDoc(dto, collectionCode);
 				if (0 == currentSize && runningHeader == null && writer == null) {
 					runningHeader  = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet);
 					writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList, collectionCode, fileNameforCSVGen, writer);
@@ -1926,7 +1926,7 @@ public class JsonDeserializer {
 
 			for (HumanLabeledDocumentDTO dto: labeledItems.getItems()) {
 				ClassifiedTweet tweet = new ClassifiedTweet();
-				tweet.toClassifiedTweetFromLabeledDoc(dto);
+				tweet.toClassifiedTweetFromLabeledDoc(dto, collectionCode);
 				if (0 == totalCount && runningHeader == null && writer == null) {
 					runningHeader  = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet);
 					writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList, collectionCode, fileNameforCSVGen, writer);
@@ -2032,7 +2032,7 @@ public class JsonDeserializer {
 			boolean isDone = false;
 			for (HumanLabeledDocumentDTO dto: labeledItems.getItems()) {
 				ClassifiedTweet tweet = new ClassifiedTweet();
-				tweet.toClassifiedTweetFromLabeledDoc(dto); 
+				tweet.toClassifiedTweetFromLabeledDoc(dto, collectionCode); 
 				if (currentSize < exportLimit && currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K)
 )) {
 					// Apply filter on tweet
@@ -2135,7 +2135,7 @@ public class JsonDeserializer {
 					break;
 				}
 				ClassifiedTweet tweet = new ClassifiedTweet();
-				tweet.toClassifiedTweetFromLabeledDoc(dto); 
+				tweet.toClassifiedTweetFromLabeledDoc(dto, collectionCode); 
 
 				// Apply filter on tweet
 				if (satisfiesFilter(queryList, tweetFilter, tweet)) {								

@@ -18,7 +18,7 @@ public class HumanLabeledDocumentList implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 4864042221879747333L;
 
 	@XmlElement private List<HumanLabeledDocumentDTO> items;
 

@@ -30,7 +30,7 @@ public class ClassifiedFilteredTweet implements Serializable {
 	private String text = null;
 	private String crisis_code = null;
 	private String crisis_name = null;
-	private List<NominalLabel> nominal_labels;
+	public List<NominalLabel> nominal_labels;
 
 	private String id = null;
 	private String screen_name = null;
@@ -210,16 +210,14 @@ public class ClassifiedFilteredTweet implements Serializable {
 	}
 
 	public List<NominalLabel> getNominalLabels() {
-		List<NominalLabel> arr = new ArrayList<NominalLabel>();
-		if (nominal_labels != null) 
-			arr.addAll(nominal_labels);
-		return arr;
+		return nominal_labels!=null ? nominal_labels : new ArrayList<NominalLabel>();
 	}
 
 	public void setNominalLabels(List<NominalLabel> nLabels) {
-		if (nominal_labels != null) {
-			nominal_labels.addAll(nLabels);
+		if (nominal_labels == null) {
+			nominal_labels = new ArrayList<NominalLabel>();
 		}
+		nominal_labels.addAll(nLabels);
 	}
 
 	public String getId() {

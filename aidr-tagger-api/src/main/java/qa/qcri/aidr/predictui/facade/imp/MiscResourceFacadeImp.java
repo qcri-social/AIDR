@@ -29,6 +29,8 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +40,7 @@ import java.util.Map;
  * @author Imran
  */
 @Stateless
-public class MiscResourceImp implements MiscResourceFacade {
+public class MiscResourceFacadeImp implements MiscResourceFacade {
 
 	private final String persisterMainUrl = TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.AIDR_PERSISTER_URL);
 
@@ -51,7 +53,7 @@ public class MiscResourceImp implements MiscResourceFacade {
 	@EJB
 	private TaskManagerRemote<DocumentDTO, Long> remoteTaskManager;
 
-	private static Logger logger = Logger.getLogger(MiscResourceImp.class);
+	private static Logger logger = Logger.getLogger(MiscResourceFacadeImp.class);
 
 	@Override
 	public List<TrainingDataDTO> getTraningDataByCrisisAndAttribute(long crisisID,

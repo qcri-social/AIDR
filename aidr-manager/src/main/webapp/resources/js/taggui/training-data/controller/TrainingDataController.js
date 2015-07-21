@@ -196,12 +196,8 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                         queryString: me.mainComponent.constraintsString
                     };
 
-                    if(format == 'csv'){
-                       url = '/protected/tagger/downloadHumanLabeledDocuments.action';
-                    } else {
-                        params.jsonType = format;
-                        url = '/protected/tagger/downloadHumanLabeledDocuments.action';
-                    }
+                    params.fileType = format;
+                    url = '/protected/tagger/downloadHumanLabeledDocuments.action';
 
                     btn.setDisabled(true);
                     me.mainComponent.downloadLink.setText('<div class="loading-block"></div>', false);

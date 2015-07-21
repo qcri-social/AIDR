@@ -32,7 +32,11 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class CrisisDTO implements Serializable  {
 
-	private static final long serialVersionUID = -4168326869582663472L;
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7825767671101319130L;
 
 	static final Logger logger = Logger.getLogger("db-manager-log");
 
