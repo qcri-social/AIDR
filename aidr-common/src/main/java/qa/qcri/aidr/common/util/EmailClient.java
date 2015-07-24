@@ -56,7 +56,7 @@ public class EmailClient {
 			String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
 			
 			// Now set the actual message
-			message.setText(time+ module + code +"\n"+ errorMsg);
+			message.setText(time+" "+module +" "+ code +"\n"+ errorMsg);
 
 			// Set From: header field of the header.
 			message.setFrom(new InternetAddress(sender,"AIDR Admin"));
