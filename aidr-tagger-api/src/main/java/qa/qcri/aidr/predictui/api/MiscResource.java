@@ -253,10 +253,10 @@ public class MiscResource {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/sendErrorEmail")
-	public Response sendErrorEmail(@FormParam("code") String code, @FormParam("description") String description) throws Exception {
+	public Response sendErrorEmail(@FormParam("code") String code, @FormParam("module") String module, @FormParam("description") String description) throws Exception {
 		Boolean emailSent = true;
 		try {
-			EmailClient.sendErrorMail(code,description);
+			EmailClient.sendErrorMail(module, code, description);
 		} catch (Exception e) {
 			logger.error("Unable to send email");
 			logger.error(e.getMessage());
@@ -264,7 +264,7 @@ public class MiscResource {
 		}
 		try
 		{
-			systemEventEJB.insertSystemEvent("ERROR", "Collector", code, description, emailSent);
+			systemEventEJB.insertSystemEvent("ERROR", module, code, description, emailSent);
 		}
 		catch (Exception e) {
 			return Response.serverError().build();

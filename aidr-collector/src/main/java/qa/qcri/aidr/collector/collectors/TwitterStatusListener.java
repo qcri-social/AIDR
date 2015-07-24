@@ -231,9 +231,10 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 					+ "/misc/sendErrorEmail");
 			
 			Form form = new Form();
+			form.param("module", "AIDRCollector");
 			form.param("code", code);
 			form.param("description", errorMsg);
-
+			
 			clientResponse = webResource.request().post(
 					Entity.entity(form,MediaType.APPLICATION_FORM_URLENCODED),Response.class);
 			if (clientResponse.getStatus() != 200) {
