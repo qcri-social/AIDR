@@ -4,10 +4,12 @@ package qa.qcri.aidr.analysis.facade;
 import java.util.List;
 
 import javax.ejb.Local;
+import javax.persistence.EntityManager;
+
+import org.hibernate.Session;
 
 import qa.qcri.aidr.analysis.entity.ConfidenceData;
 import qa.qcri.aidr.analysis.entity.ConfidenceDataPK;
-import qa.qcri.aidr.analysis.entity.TagData;
 import qa.qcri.aidr.common.values.ReturnCode;
 /**
  * This facade is not used at the moment.
@@ -15,6 +17,10 @@ import qa.qcri.aidr.common.values.ReturnCode;
 
 @Local
 public interface ConfidenceStatisticsResourceFacade {
+	public EntityManager getEntityManager();
+	public int setEntityManager(EntityManager em);
+	public Session getCurrentSession();
+	
 	public ReturnCode writeData(ConfidenceData freqData);
 	
 	public ConfidenceData getSingleDataByPK(ConfidenceDataPK freqDataPK);

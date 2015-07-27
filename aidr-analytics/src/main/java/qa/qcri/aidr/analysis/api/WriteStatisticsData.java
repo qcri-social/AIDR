@@ -49,8 +49,7 @@ import qa.qcri.aidr.output.getdata.ChannelBufferManager;
  */
 
 @Path("/save/")
-public class WriteStatisticsData extends ChannelBufferManager implements
-ServletContextListener {
+public class WriteStatisticsData extends ChannelBufferManager implements ServletContextListener {
 
 	// Debugging
 	private static Logger logger = Logger.getLogger(WriteStatisticsData.class.getSuperclass());
@@ -74,6 +73,8 @@ ServletContextListener {
 	private long lastTagDataCheckedTime = 0;
 	private long lastConfDataCheckedTime = 0;
 
+	private static ChannelBufferManager cbManager = null; 			// managing buffers for each publishing channel
+	
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		logger.info("Initializing channel buffer manager");
@@ -85,7 +86,16 @@ ServletContextListener {
 		AnalyticsConfigurator configurator = AnalyticsConfigurator.getInstance();
 		granularityList = configurator.getGranularities();
 
-		initiateChannelBufferManager(GetStatistics.CHANNEL_REG_EX);
+		if (null == cbManager) {
+			logger.info("Initializing channel buffer manager with regEx pattern: " + GetStatistics.CHANNEL_REG_EX);
+			System.out.println("[contextInitialized] Initializing channel buffer manager with regEx pattern: " + GetStatistics.CHANNEL_REG_EX);
+			//cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
+			cbManager = new ChannelBufferManager();
+			cbManager.initiateChannelBufferManager(GetStatistics.CHANNEL_REG_EX);
+			logger.info("Done initializing channel buffer manager with regEx pattern: " + GetStatistics.CHANNEL_REG_EX);
+			System.out.println("[contextInitialized] Done initializing channel buffer manager with regEx pattern: " + GetStatistics.CHANNEL_REG_EX);
+		}
+		cbManager.initiateChannelBufferManager(GetStatistics.CHANNEL_REG_EX);
 
 		runFlag = true;
 		t = new Thread(new WriterThread());
@@ -95,6 +105,11 @@ ServletContextListener {
 			executorServicePool.submit(t);
 		}
 		logger.info("Done initializing channel buffer manager");
+		System.out.println("Done initializing channel buffer manager");
+		System.out.print("Initialized with granularities: ");
+		for (Long g: granularityList) {
+			System.out.print(g + "\t");
+		}
 
 	}
 
@@ -103,7 +118,7 @@ ServletContextListener {
 		tagDataMap.clear();
 		confDataMap.clear();
 		runFlag = false;
-		close();
+		//close();
 		logger.info("Context destroyed");
 	}
 
@@ -139,6 +154,8 @@ ServletContextListener {
 				TagData t = new TagData(key.getCrisisCode(), timestamp, granularity, key.getAttributeCode(), key.getLabelCode(), tCount.getCount(granularity));
 				logger.info("Will attempt to persist data for: " + t.getCrisisCode() + ", " + t.getAttributeCode() 
 								+ ", " + t.getLabelCode() + ", " + t.getTimestamp() + ", " + t.getGranularity() + ": " + t.getCount());
+				System.out.println("Will attempt to persist data for: " + t.getCrisisCode() + ", " + t.getAttributeCode() 
+						+ ", " + t.getLabelCode() + ", " + t.getTimestamp() + ", " + t.getGranularity() + ": " + t.getCount());
 				tagDataEJB.writeData(t);
 				tCount.resetCount(granularity);
 				// TagDataMapRecord temp = (TagDataMapRecord) tagDataMap.get(key);
@@ -201,13 +218,13 @@ ServletContextListener {
 	@Override
 	public void manageChannelBuffersWrapper(final String subscriptionPattern, final String channelName, final String receivedMessage) {
 		// logger.info("Firing manageChannelBuffer on message from channel: " + channelName);
-		manageChannelBuffers(subscriptionPattern, channelName, receivedMessage);
+		cbManager.manageChannelBuffers(subscriptionPattern, channelName, receivedMessage);
 		if (null == channelName) {
 			logger.error("Something terribly wrong! Fatal error in: " + channelName);
 		} else {
 			try {
 				ClassifiedFilteredTweet classifiedTweet = new ClassifiedFilteredTweet().deserialize(receivedMessage);
-				if (classifiedTweet != null && classifiedTweet.getNominalLabels() != null) {
+				if (classifiedTweet != null && classifiedTweet.getNominalLabels() != null && !classifiedTweet.getNominalLabels().isEmpty()) {
 					channelMap.putIfAbsent(classifiedTweet.getCrisisCode(), System.currentTimeMillis());
 
 					for (NominalLabel nb : classifiedTweet.getNominalLabels()) {
@@ -231,6 +248,7 @@ ServletContextListener {
 							TagDataMapRecord t = new TagDataMapRecord(granularityList);
 							tagDataMap.put(tagDataKey, t);
 							logger.info("New Tag map entry with key: " + tagDataKey + " value = " + tagDataMap.get(tagDataKey));
+							System.out.println("New Tag map entry with key: " + tagDataKey + " value = " + tagDataMap.get(tagDataKey));
 						}
 						if (confDataMap.containsKey(confDataKey)) {
 							ConfDataMapRecord f = (ConfDataMapRecord) confDataMap.get(confDataKey);
