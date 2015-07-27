@@ -7,8 +7,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TagDataMapRecord extends MapRecord {
 	
+
+
 	public TagDataMapRecord(List<Long> granularityList) {
 		this.count = new ConcurrentHashMap<Long, Integer>();
+		System.out.println("Tag data granulairtyList: " + granularityList);
 		for (Long g: granularityList) {
 			this.count.put(g, 0);
 		}
@@ -58,5 +61,10 @@ public class TagDataMapRecord extends MapRecord {
 			flag &= isCountZeroForGranularity(g);
 		}
 		return flag;
+	}
+	
+	@Override
+	public String toString() {
+		return "TagDataMapRecord [count=" + count + "]";
 	}
 }

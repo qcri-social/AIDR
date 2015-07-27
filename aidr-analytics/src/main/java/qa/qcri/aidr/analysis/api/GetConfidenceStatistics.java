@@ -20,7 +20,6 @@ import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.analysis.facade.ConfidenceStatisticsResourceFacade;
 import qa.qcri.aidr.common.code.DateFormatConfig;
-import qa.qcri.aidr.output.getdata.ChannelBufferManager;
 
 
 /**
@@ -31,7 +30,7 @@ import qa.qcri.aidr.output.getdata.ChannelBufferManager;
  */
 
 @Path("/confData/")
-public class GetConfidenceStatistics extends GetStatistics implements ServletContextListener {
+public class GetConfidenceStatistics implements ServletContextListener {
 	
 	// Debugging
 	private static Logger logger = Logger.getLogger(GetConfidenceStatistics.class);
@@ -62,25 +61,6 @@ public class GetConfidenceStatistics extends GetStatistics implements ServletCon
 							.build();
 		
 		return Response.ok(obj).build();
-	}
-
-
-	@GET
-	@Path("/manage/restart/{passcode}")
-	@Produces("application/json")
-	public Response restartAnalyticsService(@PathParam("passcode") String passcode) {
-		logger.info("Request received");
-		if (passcode.equals("sysadmin2013")) {
-			if (masterCBManager != null) {
-				masterCBManager.close();
-			}
-			masterCBManager = new ChannelBufferManager();
-			masterCBManager.initiateChannelBufferManager(CHANNEL_REG_EX);
-			logger.info("aidr-output analytics service restarted...");
-			final String statusStr = "{\"aidr-output analytics ConfidenceStats service\":\"RESTARTED\"}";
-			return Response.ok(statusStr).build();
-		}
-		return Response.ok(new String("{\"password\":\"invalid\"}")).build();
 	}
 
 	@Override

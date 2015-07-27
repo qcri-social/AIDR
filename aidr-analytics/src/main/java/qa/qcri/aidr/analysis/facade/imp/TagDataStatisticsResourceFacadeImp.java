@@ -73,14 +73,14 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 	public ReturnCode writeData(TagData tagData) {
 		try {
 			em.persist(tagData);
-			System.out.println("Success in persisting data for: " + tagData.getCrisisCode() + ", " + tagData.getAttributeCode() 
+			System.out.println("Success in persisting tag data for: " + tagData.getCrisisCode() + ", " + tagData.getAttributeCode() 
 					+ ", " + tagData.getLabelCode() + ", " + tagData.getTimestamp() + ", " + tagData.getGranularity() + ": " + tagData.getCount());
 			return ReturnCode.SUCCESS;
 		} catch (Exception e) {
-			System.err.println("Failure in persisting data for: " + tagData.getCrisisCode() + ", " + tagData.getAttributeCode() 
+			System.out.println("Failure in persisting tag data for: " + tagData.getCrisisCode() + ", " + tagData.getAttributeCode() 
 					+ ", " + tagData.getLabelCode() + ", " + tagData.getTimestamp() + ", " + tagData.getGranularity() + ": " + tagData.getCount());
 			e.printStackTrace();
-			//logger.error(elog.toStringException(e));
+			logger.error("exception: ", e);
 			return ReturnCode.ERROR;
 		}
 	}
