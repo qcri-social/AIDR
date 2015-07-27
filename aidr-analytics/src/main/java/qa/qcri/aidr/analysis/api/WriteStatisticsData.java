@@ -136,15 +136,13 @@ public class WriteStatisticsData implements ServletContextListener {
 		// tagDataMap.size() : "null"));
 		try {
 			for (CounterKey key : cbManager.getTagDataMap().keySet()) {
-				System.out.println("Will attempt persistence of tag key: " + key.toString());
 				TagDataMapRecord tCount = (TagDataMapRecord) ChannelBufferManager.getTagDataMap().get(key);
 				TagData t = new TagData(key.getCrisisCode(), timestamp, granularity, key.getAttributeCode(), key.getLabelCode(), tCount.getCount(granularity));
-				tagDataEJB.writeData(t);
+				if (tCount.getCount(granularity) > 0) {
+					System.out.println("Will attempt persistence of tag key: " + key.toString());
+					tagDataEJB.writeData(t);
+				}
 				tCount.resetCount(granularity);
-				// TagDataMapRecord temp = (TagDataMapRecord) tagDataMap.get(key);
-				// logger.info("[writeOutputDataToTagDataDB] After reset, count for key = "
-				// + key + " is = " + temp.getCount(granularity));
-
 			}
 		} catch (Exception e) {
 			logger.error("Error in writing to TagDataDB table!", e);
@@ -156,11 +154,13 @@ public class WriteStatisticsData implements ServletContextListener {
 	private ReturnCode writeOutputDataToConfDataDB(Long granularity, Long timestamp) {
 		try {
 			for (CounterKey key : cbManager.getConfDataMap().keySet()) {
-				System.out.println("Will attempt persistence of conf key: " + key.toString());
 				ConfDataMapRecord fCount = (ConfDataMapRecord) ChannelBufferManager.getConfDataMap().get(key);
 				ConfidenceData f = new ConfidenceData(key.getCrisisCode(), timestamp, granularity, key.getAttributeCode(), key.getLabelCode(),
 														Integer.parseInt(((ConfCounterKey) key).getBinNumber()), fCount.getCount(granularity));
-				confDataEJB.writeData(f);
+				if (fCount.getCount(granularity) > 0) {
+					System.out.println("Will attempt persistence of conf key: " + key.toString());
+					confDataEJB.writeData(f);
+				}
 				fCount.resetCount(granularity);
 			}
 		} catch (Exception e) {
@@ -195,19 +195,19 @@ public class WriteStatisticsData implements ServletContextListener {
 							// Write to DB table
 							ReturnCode retVal = writeOutputDataToTagDataDB(granularity, currentTime);
 							lastTagDataWriteTime.put(granularity, currentTime);
-							logger.info("retVal = " + retVal);
+							//logger.info("retVal = " + retVal);
 							if (ReturnCode.SUCCESS.equals(retVal)) {
-								logger.info("Successfully wrote for granularity: " + granularity + " at time = " + new Date(currentTime));
-								System.out.println("Successfully wrote for granularity: " + granularity + " at time = " + new Date(currentTime));
+								//logger.info("Successfully wrote for granularity: " + granularity + " at time = " + new Date(currentTime));
+								//System.out.println("Successfully wrote for granularity: " + granularity + " at time = " + new Date(currentTime));
 							}
 						}
 						if (0 == lastConfDataWriteTime.get(granularity) || (currentTime - lastConfDataWriteTime.get(granularity)) >= granularity) {
 							// Write to DB table
 							ReturnCode retVal = writeOutputDataToConfDataDB(granularity, currentTime);
-							logger.info("retVal = " + retVal);
+							//logger.info("retVal = " + retVal);
 							lastConfDataWriteTime.put(granularity, currentTime);
 							if (ReturnCode.SUCCESS.equals(retVal)) {
-								logger.info("Successfully wrote for granularity: " + granularity + " at time = " + new Date(currentTime));
+								//logger.info("Successfully wrote for granularity: " + granularity + " at time = " + new Date(currentTime));
 							}
 						}
 					}
