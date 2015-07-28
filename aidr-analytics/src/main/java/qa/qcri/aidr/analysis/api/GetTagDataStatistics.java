@@ -27,6 +27,10 @@ import qa.qcri.aidr.analysis.service.GetTagDataStatisticsService;
  * This is the REST API interface for accessing the aidr_analytics DB's tag_data entity. 
  */
 
+/**
+ * @author koushik
+ *
+ */
 @Path("/tagdata/")
 public class GetTagDataStatistics implements ServletContextListener {
 
@@ -37,6 +41,12 @@ public class GetTagDataStatistics implements ServletContextListener {
 	private GetTagDataStatisticsService tagDataService;
 	
 	
+	/**
+	 * @param crisisCode
+	 * @param granularity
+	 * @param startTime
+	 * @return Tag counts for individual attributes of a crisis, only for the specified granularity and since 'startTime'
+	 */
 	@GET
 	@Path("/getlabelsum/{crisisCode}/{granularity}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -50,6 +60,12 @@ public class GetTagDataStatistics implements ServletContextListener {
 	}
 
 	
+	
+	/**
+	 * @param crisisCode
+	 * @param startTime
+	 * @return Tag counts over all attributes for a crisis, sorted by granularity levels
+	 */
 	@GET
 	@Path("/getlabelsum/{crisisCode}")
 	@Produces(MediaType.APPLICATION_JSON)
