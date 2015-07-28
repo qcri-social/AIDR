@@ -9,7 +9,7 @@ public class JsonResponse {
 	JSONObject json = new JSONObject();
 	
 	public JsonResponse() {
-		json.put("errorMsg", ReturnCode.SUCCESS);
+		json.put("status", ReturnCode.SUCCESS);
 	}
 	public JSONObject getNewJsonResponseObject(String crisisCode, String attributeCode, Long granularity, Long startTime, Long endTime) {
 		
@@ -32,7 +32,7 @@ public class JsonResponse {
 	}
 	
 	public static JSONObject addError(JSONObject json) {
-		json.put("errorMsg", ReturnCode.ERROR);
+		json.put("status", ReturnCode.ERROR);
 		return json;
 	}
 }
