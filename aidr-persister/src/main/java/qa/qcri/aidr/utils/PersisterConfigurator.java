@@ -1,7 +1,5 @@
 package qa.qcri.aidr.utils;
 
-import java.io.File;
-
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.code.impl.BaseConfigurator;
@@ -22,20 +20,10 @@ public class PersisterConfigurator extends BaseConfigurator {
 		LOGGER.info("Instantiating PersisterConfigurator.");
 		this.initProperties(configLoadFileName, PersisterConfigurationProperty.values());
 		
-		this.directoryIsWritable(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH);
+		this.directoryIsWritable(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH.getName());
 	}
 
 	public static PersisterConfigurator getInstance() {
 		return instance;
 	}
-
-	private void directoryIsWritable(PersisterConfigurationProperty propertyName) throws DirectoryNotWritableException{
-		String directoryLocation = this.getProperty(propertyName);
-		File f = new File(directoryLocation);
-		if(!f.canWrite()) {
-			LOGGER.info(propertyName.getName()+ " = " +directoryLocation+ " is not writable. Please verify if this is a valid writable directory.");
-			throw new DirectoryNotWritableException(propertyName.getName(), directoryLocation);
-		}
-	}
-
 }

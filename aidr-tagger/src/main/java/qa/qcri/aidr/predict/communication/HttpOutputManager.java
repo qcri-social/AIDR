@@ -5,8 +5,8 @@ import java.net.ServerSocket;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.predict.common.*;
+import qa.qcri.aidr.predict.common.TaggerConfigurationProperty;
+import qa.qcri.aidr.predict.common.TaggerConfigurator;
 
 /**
  * OutputManager listens for new connections on a specified port. New
@@ -18,7 +18,6 @@ public class HttpOutputManager  implements Runnable {
 
     static ServerSocket server;
     private static Logger logger = Logger.getLogger(HttpOutputManager.class);
-    private static ErrorLog elog = new ErrorLog();
     
     @Override
     public void run() {
@@ -59,9 +58,7 @@ public class HttpOutputManager  implements Runnable {
 									.getInstance()
 									.getProperty(
 											TaggerConfigurationProperty.HTTP_OUTPUT_PORT)));
-			logger.error(elog.toStringException(e));
         } finally {
-
             finalize();
         }
     }
@@ -73,8 +70,7 @@ public class HttpOutputManager  implements Runnable {
         try {
             server.close();
         } catch (IOException e) {
-            logger.error("Could not close socket");
-            logger.error(elog.toStringException(e));
+            logger.error("Could not close socket", e);
         }
     }
 }

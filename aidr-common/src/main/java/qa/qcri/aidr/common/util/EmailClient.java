@@ -22,7 +22,7 @@ public class EmailClient {
 	private static CommonConfigurator configProperties = CommonConfigurator.getInstance();
 	private static Logger logger = Logger.getLogger(EmailClient.class.getName());
 
-	public static void sendErrorMail(String module, String code, String errorMsg )
+	public static void sendErrorMail(String subject, String body )
 	{    
 		// Recipient's email IDs.
 		String recipients = configProperties.getProperty(CommonConfigurationProperty.RECIPIENT_EMAIL);
@@ -50,13 +50,13 @@ public class EmailClient {
 			MimeMessage message = new MimeMessage(session);
 
 			// Set Subject: header field
-			message.setSubject(module);
+			message.setSubject(subject);
 			
 			Date d = new Date(System.currentTimeMillis());
 			String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
 			
 			// Now set the actual message
-			message.setText(time+" "+module +" "+ code +"\n"+ errorMsg);
+			message.setText(body);
 
 			// Set From: header field of the header.
 			message.setFrom(new InternetAddress(sender,"AIDR Admin"));

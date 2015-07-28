@@ -4,6 +4,9 @@
  */
 package qa.qcri.aidr.predictui.api;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import qa.qcri.aidr.common.util.EmailClient;
@@ -256,7 +259,11 @@ public class MiscResource {
 	public Response sendErrorEmail(@FormParam("code") String code, @FormParam("module") String module, @FormParam("description") String description) throws Exception {
 		Boolean emailSent = true;
 		try {
-			EmailClient.sendErrorMail(module, code, description);
+			Date d = new Date(System.currentTimeMillis());
+			String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+			
+			String body = time+" "+module +" "+ code +"\n"+ description;
+			EmailClient.sendErrorMail(module, body);
 		} catch (Exception e) {
 			logger.error("Unable to send email");
 			logger.error(e.getMessage());

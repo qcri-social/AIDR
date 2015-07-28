@@ -9,8 +9,7 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.predict.common.*;
+import qa.qcri.aidr.predict.common.Event;
 
 /**
  * OutputWorker maintains a persistent connection to a consumer of classified
@@ -27,7 +26,6 @@ public class HttpOutputWorker {
      * in a separate thread.
      */
 	private static Logger logger = Logger.getLogger(HttpOutputWorker.class);
-	private static ErrorLog elog = new ErrorLog();
 	
     public static class WorkerFactory  implements Runnable {
 
@@ -87,7 +85,6 @@ public class HttpOutputWorker {
 
             } catch (IOException e) {
                 logger.error("IOException while trying to open input stream");
-                logger.error(elog.toStringException(e));
                 return null;
             }
 
@@ -127,7 +124,6 @@ public class HttpOutputWorker {
                 }
             } catch (IOException e) {
                 logger.error("IOException while waiting for POST data");
-                logger.error(elog.toStringException(e));
             }
 
             logger.warn("Bad POST data.");
@@ -159,7 +155,6 @@ public class HttpOutputWorker {
         } catch (IOException e) {
             logger.error("Could not get output stream for worker "
                     + connectionInstanceID);
-            logger.error(elog.toStringException(e));
         }
     }
 
@@ -183,7 +178,6 @@ public class HttpOutputWorker {
                 client.close();
             } catch (IOException e) {
                 logger.error("IOException while closing client connection");
-                logger.error(elog.toStringException(e));
             }
         if (!isClosed)
             onConnectionClosed.fire(this, null);
@@ -214,7 +208,7 @@ public class HttpOutputWorker {
     private static boolean isNumericValue(String value){
         try
         {
-            int pos = Integer.parseInt(value);
+            Integer.parseInt(value);
         }
         catch(NumberFormatException nfe)
         {

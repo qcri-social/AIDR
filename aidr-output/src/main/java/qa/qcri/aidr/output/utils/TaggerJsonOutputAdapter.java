@@ -19,8 +19,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
-
 public class TaggerJsonOutputAdapter {
 	// Logger setup
 	private static Logger logger = Logger.getLogger(TaggerJsonOutputAdapter.class);
@@ -131,9 +129,7 @@ public class TaggerJsonOutputAdapter {
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Exception in json parsing for string: " + rawJsonString);
-			logger.error("exception", e);
-			e.printStackTrace();
+			logger.error("Exception in json parsing for string: " + rawJsonString, e);
 		}
 
 		// no group label called "aidr" or "text" present
