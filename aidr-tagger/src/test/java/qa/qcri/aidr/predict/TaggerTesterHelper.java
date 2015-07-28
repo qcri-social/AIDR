@@ -104,6 +104,8 @@ public class TaggerTesterHelper {
 
 					Integer count = objectMapper.readValue(jsonResponse,
 							Integer.class);
+					System.out.println("Unlabeled count:" + count);
+					Assert.assertFalse("Unable to insert documents." , count == 0);
 					if (count < nItems) {
 						tempItemCount = ADDITIONAL_TWEET_COUNT_TO_PUBLISH;
 					} else {
