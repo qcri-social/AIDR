@@ -150,8 +150,7 @@ public class AIDROutputPing {
 				jedisConn.returnJedis(jedis);
 			}
 		} catch (JedisConnectionException e) {
-			logger.error("Error! Couldn't establish connection to REDIS!");
-			logger.error(e);
+			logger.error("Error! Couldn't establish connection to REDIS!", e);
 		}
 		StringBuilder jsonpRes = new StringBuilder();
 		if (callbackName != null) jsonpRes.append(callbackName).append("(");

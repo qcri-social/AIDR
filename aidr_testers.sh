@@ -38,7 +38,7 @@ fi
 #Tagger Tester
 cd $AIDR_HOME
 cd aidr-tagger
-mvn -P$PROFILE test -Dtest=TaggerTesterTest -Dnitems-test=100 
+mvn -P$PROFILE test -Dtest=TaggerTesterTest -DskipTests=false -Dnitems-test=100 
 result=$?
 #result=0(success), 1(fail)
 if [[ $result != 0 ]] ; then
