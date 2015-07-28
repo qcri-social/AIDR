@@ -10,7 +10,6 @@ import java.io.Serializable;
  */
 public class CounterKey implements Serializable {
 
-
 	private static final long serialVersionUID = 9168204241878331959L;
 	
 	private String crisisCode = null;
@@ -65,7 +64,6 @@ public class CounterKey implements Serializable {
 		return result;
 	}
 
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -92,4 +90,11 @@ public class CounterKey implements Serializable {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public String toString() {
+		return "CounterKey [crisisCode=" + crisisCode + ", attributeCode="
+				+ attributeCode + ", labelCode=" + labelCode + "]";
+	}
+		
 }

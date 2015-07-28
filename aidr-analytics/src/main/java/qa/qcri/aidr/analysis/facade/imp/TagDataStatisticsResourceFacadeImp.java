@@ -7,48 +7,87 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.analysis.entity.TagData;
 import qa.qcri.aidr.analysis.entity.TagDataPK;
 import qa.qcri.aidr.analysis.facade.TagDataStatisticsResourceFacade;
-import qa.qcri.aidr.analysis.utils.CommonOperations;
-import qa.qcri.aidr.common.logging.ErrorLog;
+
 import qa.qcri.aidr.common.values.ReturnCode;
 
 /**
  * Implements the operations for the interface TagDataStatisticsResourceFacade
  */
-@Stateless
-public class TagDataStatisticsResourceFacadeImp extends CommonOperations implements TagDataStatisticsResourceFacade {
+@Stateless(name = "TagDataStatisticsResourceFacadeImp")
+public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsResourceFacade {
 
-	//private static Logger logger = LoggerFactory.getLogger(TagDataStatisticsResourceFacadeImp.class);
-	//private static ErrorLog elog = new ErrorLog();
+	private static Logger logger = Logger.getLogger(TagDataStatisticsResourceFacadeImp.class);
+	
 	@PersistenceContext(unitName = "qa.qcri.aidr.analysis-EJBS")
 	private EntityManager em;
 
 	@Override
+	public EntityManager getEntityManager() {
+		try {
+			return em; 
+		} catch (Exception e) {
+			throw new HibernateException("getEntityManager failed");
+		}
+	}
+
+	@Override
+	public int setEntityManager(EntityManager em) {
+		try {
+			if (null == this.em) { 
+				this.em = em;
+				logger.info("EntityManager set to new value: " + this.em);
+				return 1;
+			} else 
+				logger.info("Skipping setter, since EntityManager already initialized to :" + this.em);
+			return 0;
+		} catch (Exception e) {
+			logger.error("EntityManager setting exception : " + em);
+			logger.error("exception", e);
+			throw new HibernateException("setEntityManager failed");
+		}
+	}
+
+	@Override
+	public Session getCurrentSession() {
+		try { 
+			return em.unwrap(Session.class);
+		} catch (Exception e) {
+			logger.error("exception: ", e);
+			e.printStackTrace();
+			throw new HibernateException("getCurrentSession failed");
+		}
+	}
+	
+	
+	@Override
 	public ReturnCode writeData(TagData tagData) {
 		try {
 			em.persist(tagData);
-			//System.out.println("Success in persisting data for: " + tagData.getCrisisCode() + ", " + tagData.getAttributeCode() 
-			//		+ ", " + tagData.getLabelCode() + ", " + tagData.getTimestamp() + ", " + tagData.getGranularity() + ": " + tagData.getCount());
+			System.out.println("Success in persisting tag data for: " + tagData.getCrisisCode() + ", " + tagData.getAttributeCode() 
+					+ ", " + tagData.getLabelCode() + ", " + tagData.getTimestamp() + ", " + tagData.getGranularity() + ": " + tagData.getCount());
 			return ReturnCode.SUCCESS;
 		} catch (Exception e) {
-			System.err.println("Failure in persisting data for: " + tagData.getCrisisCode() + ", " + tagData.getAttributeCode() 
+			System.out.println("Failure in persisting tag data for: " + tagData.getCrisisCode() + ", " + tagData.getAttributeCode() 
 					+ ", " + tagData.getLabelCode() + ", " + tagData.getTimestamp() + ", " + tagData.getGranularity() + ": " + tagData.getCount());
 			e.printStackTrace();
-			//logger.error(elog.toStringException(e));
+			logger.error("exception: ", e);
 			return ReturnCode.ERROR;
 		}
 	}
 
 	@Override
 	public TagData getSingleDataByPK(TagDataPK tagDataPK) {
-		Criteria criteria = getCurrentSession(em).createCriteria(TagData.class);
+		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
 		Criterion criterion = Restrictions.conjunction()
 				.add(Restrictions.eq("crisisCode", tagDataPK.getCrisisCode()))
 				.add(Restrictions.eq("timestamp", tagDataPK.getTimestamp()))
@@ -67,9 +106,10 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 		return null;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<TagData> getDataByCrisis(String crisisCode) {
-		Criteria criteria = getCurrentSession(em).createCriteria(TagData.class);
+		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
 		criteria.add(Restrictions.eq("crisisCode", crisisCode)); 		
 		System.out.println("Formed criteria: " + criteria.toString());
 		try {
@@ -83,9 +123,10 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 		return null;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<TagData> getDataByCrisisAttributeLabel(String crisisCode, String attributeCode, String labelCode) {
-		Criteria criteria = getCurrentSession(em).createCriteria(TagData.class);
+		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
 		Criterion criterion = Restrictions.conjunction()
 				.add(Restrictions.eq("crisisCode", crisisCode))
 				.add(Restrictions.eq("attributeCode", attributeCode));
@@ -109,7 +150,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 	
 	@Override
 	public List<TagData> getDataByCrisisAttributeLabelGranularity(String crisisCode, String attributeCode, String labelCode, Long granularity) {
-		Criteria criteria = getCurrentSession(em).createCriteria(TagData.class);
+		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
 		Criterion criterion = Restrictions.conjunction()
 				.add(Restrictions.eq("crisisCode", crisisCode))
 				.add(Restrictions.eq("attributeCode", attributeCode))
@@ -130,7 +171,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 	
 	public List<TagData> getDataByGranularityInTimeWindow(String crisisCode, String attributeCode, String labelCode, 
 															Long timestamp, Long granularity) {
-		Criteria criteria = getCurrentSession(em).createCriteria(TagData.class);
+		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
 		Criterion criterion = Restrictions.conjunction()
 				.add(Restrictions.eq("crisisCode", crisisCode))
 				.add(Restrictions.eq("attributeCode", attributeCode))
@@ -157,7 +198,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 	
 	@Override
 	public List<TagData> getDataAfterTimestamp(String crisisCode, String attributeCode, String labelCode, Long timestamp) {
-		Criteria criteria = getCurrentSession(em).createCriteria(TagData.class);
+		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
 		Criterion criterion = Restrictions.conjunction()
 				.add(Restrictions.eq("crisisCode", crisisCode))
 				.add(Restrictions.eq("attributeCode", attributeCode))
@@ -184,7 +225,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 	@Override
 	public List<TagData> getDataAfterTimestampGranularity(String crisisCode, String attributeCode, String labelCode, 
 															Long timestamp, Long granularity) {
-		Criteria criteria = getCurrentSession(em).createCriteria(TagData.class);
+		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
 		Criterion criterion = Restrictions.conjunction()
 				.add(Restrictions.eq("crisisCode", crisisCode))
 				.add(Restrictions.eq("attributeCode", attributeCode))
@@ -210,7 +251,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 
 	@Override
 	public List<TagData> getDataBeforeTimestamp(String crisisCode, String attributeCode, String labelCode, Long timestamp) {
-		Criteria criteria = getCurrentSession(em).createCriteria(TagData.class);
+		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
 		Criterion criterion = Restrictions.conjunction()
 				.add(Restrictions.eq("crisisCode", crisisCode))
 				.add(Restrictions.eq("attributeCode", attributeCode))
@@ -237,7 +278,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 	@Override
 	public List<TagData> getDataBeforeTimestampGranularity(String crisisCode, String attributeCode, String labelCode, 
 															Long timestamp, Long granularity) {
-		Criteria criteria = getCurrentSession(em).createCriteria(TagData.class);
+		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
 		Criterion criterion = Restrictions.conjunction()
 				.add(Restrictions.eq("crisisCode", crisisCode))
 				.add(Restrictions.eq("attributeCode", attributeCode))
@@ -265,7 +306,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 	
 	@Override
 	public List<TagData> getDataInInterval(String crisisCode, String attributeCode, String labelCode, Long timestamp1, Long timestamp2) {
-		Criteria criteria = getCurrentSession(em).createCriteria(TagData.class);
+		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
 		Criterion criterion = Restrictions.conjunction()
 				.add(Restrictions.eq("crisisCode", crisisCode))
 				.add(Restrictions.eq("attributeCode", attributeCode))
@@ -292,7 +333,7 @@ public class TagDataStatisticsResourceFacadeImp extends CommonOperations impleme
 	@Override
 	public List<TagData> getDataInIntervalWithGranularity(String crisisCode, String attributeCode, String labelCode, 
 														  Long timestamp1, Long timestamp2, Long granularity) {
-		Criteria criteria = getCurrentSession(em).createCriteria(TagData.class);
+		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
 		Criterion criterion = Restrictions.eq("crisisCode", crisisCode);
 				
 		// Now add the optional non-null criteria

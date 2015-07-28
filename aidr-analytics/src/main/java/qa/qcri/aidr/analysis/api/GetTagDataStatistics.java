@@ -27,7 +27,7 @@ import qa.qcri.aidr.analysis.service.GetTagDataStatisticsService;
  */
 
 @Path("/tagData/")
-public class GetTagDataStatistics extends GetStatistics implements ServletContextListener {
+public class GetTagDataStatistics implements ServletContextListener {
 
 	// Debugging
 	private static Logger logger = Logger.getLogger(GetTagDataStatistics.class);
