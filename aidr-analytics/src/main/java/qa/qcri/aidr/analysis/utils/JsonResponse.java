@@ -18,15 +18,15 @@ public class JsonResponse {
 		json.put("granularity", granularity);
 
 		if (startTime != null) {
-			json.put("startTime", new Date(startTime));
+			json.put("startTime", startTime);
 		} else {
 			json.put("startTime", null);
 		}
 
 		if (endTime != null) {
-			json.put("endTime", new Date(endTime));
+			json.put("endTime", endTime);
 		} else {
-			json.put("endTime", null);
+			json.put("endTime", startTime+granularity);
 		}
 		return json;
 	}
