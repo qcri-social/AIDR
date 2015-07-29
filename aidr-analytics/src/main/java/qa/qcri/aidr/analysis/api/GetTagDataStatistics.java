@@ -2,6 +2,7 @@
 package qa.qcri.aidr.analysis.api;
 
 
+import javax.ejb.EJB;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.servlet.ServletContextEvent;
@@ -19,19 +20,64 @@ import net.minidev.json.JSONObject;
 
 import org.apache.log4j.Logger;
 
-
+import qa.qcri.aidr.analysis.facade.TagDataStatisticsResourceFacade;
 import qa.qcri.aidr.analysis.service.GetTagDataStatisticsService;
 
 /** 
  * This is the REST API interface for accessing the aidr_analytics DB's tag_data entity. 
  */
 
-@Path("/tagData/")
+/**
+ * @author koushik
+ *
+ */
+@Path("/tagdata/")
 public class GetTagDataStatistics implements ServletContextListener {
 
 	// Debugging
 	private static Logger logger = Logger.getLogger(GetTagDataStatistics.class);
 
+	@EJB
+	private GetTagDataStatisticsService tagDataService;
+	
+	
+	/**
+	 * @param crisisCode
+	 * @param granularity
+	 * @param startTime
+	 * @return Tag counts for individual attributes of a crisis, only for the specified granularity and since 'startTime'
+	 */
+	@GET
+	@Path("/getlabelsum/{crisisCode}/{granularity}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getTagCountSumForAllAttributesFromTime(@PathParam("crisisCode") String crisisCode,
+			@PathParam("granularity") Long granularity,
+			@DefaultValue("0") @QueryParam("startTime") Long startTime) {
+		
+		System.out.println("local EJB in REST API = " + tagDataService);
+		JSONObject json = tagDataService.getTagCountSumForAllAttributesFromTime(crisisCode, granularity, startTime);
+		return Response.ok(json.toJSONString()).build();
+	}
+
+	
+	
+	/**
+	 * @param crisisCode
+	 * @param startTime
+	 * @return Tag counts over all attributes for a crisis, sorted by granularity levels
+	 */
+	@GET
+	@Path("/getlabelsum/{crisisCode}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getTagCountSumForAllGranularitiesFromTime(@PathParam("crisisCode") String crisisCode,
+			@DefaultValue("0") @QueryParam("startTime") Long startTime) {
+		
+		System.out.println("local EJB in REST API = " + tagDataService);
+		JSONObject json = tagDataService.getTagCountSumByGranularity(crisisCode, startTime);
+		return Response.ok(json.toJSONString()).build();
+	}
+
+	
 	/**
 	 * 
 	 * @param crisisCode
@@ -41,14 +87,15 @@ public class GetTagDataStatistics implements ServletContextListener {
 	 * @return Count sum per label from startTime to current time at the given granularity, for crisisCode and attributeCode
 	 */
 	@GET
-	@Path("/getLabelSum/{crisisCode}/{classifierCode}/{granularity}")
+	@Path("/getlabelsum/{crisisCode}/{attributeCode}/{granularity}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getTagCountSumFromTime(@PathParam("crisisCode") String crisisCode,
 			@PathParam("attributeCode") String attributeCode,
 			@PathParam("granularity") Long granularity,
 			@DefaultValue("0") @QueryParam("startTime") Long startTime) {
 		
-		JSONObject json = new GetTagDataStatisticsService().getTagCountSumFromTime(crisisCode, attributeCode, granularity, startTime);
+		System.out.println("local EJB in REST API = " + tagDataService);
+		JSONObject json = tagDataService.getTagCountSumFromTime(crisisCode, attributeCode, granularity, startTime);
 		return Response.ok(json.toJSONString()).build();
 	}
 
@@ -61,14 +108,14 @@ public class GetTagDataStatistics implements ServletContextListener {
 	 * @return Count per label in the specified time window at the given granularity, for crisisCode and attributeCode
 	 */
 	@GET
-	@Path("/getLabelCount/{crisisCode}/{attributeCode}/{granularity}")
+	@Path("/getlabelcount/{crisisCode}/{attributeCode}/{granularity}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getTagCountInTimeWindow(@PathParam("crisisCode") String crisisCode,
 			@PathParam("attributeCode") String attributeCode,
 			@PathParam("granularity") Long granularity,
 			@DefaultValue("0") @QueryParam("startTime") Long startTime) {
 
-		JSONObject json = new GetTagDataStatisticsService().getTagCountInTimeWindow(crisisCode, attributeCode, granularity, startTime);
+		JSONObject json = tagDataService.getTagCountInTimeWindow(crisisCode, attributeCode, granularity, startTime);
 		return Response.ok(json.toJSONString()).build();
 	}
 
@@ -82,7 +129,7 @@ public class GetTagDataStatistics implements ServletContextListener {
 	 * @return Time series data for each label in the interval [startTime, endTime] at the given granularity, for crisisCode and attributeCode
 	 */
 	@GET
-	@Path("/getLabelTimeSeries/{crisisCode}/{attributeCode}/{granularity}")
+	@Path("/getlabeltimeseries/{crisisCode}/{attributeCode}/{granularity}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getTagCountTimeSeries(@PathParam("crisisCode") String crisisCode,
 			@PathParam("attributeCode") String attributeCode,
@@ -93,7 +140,7 @@ public class GetTagDataStatistics implements ServletContextListener {
 		if (null == endTime || endTime < startTime) {
 			endTime = System.currentTimeMillis();
 		}
-		JSONObject json = new GetTagDataStatisticsService().getTagCountTimeSeries(crisisCode, attributeCode, granularity, startTime, endTime);
+		JSONObject json = tagDataService.getTagCountTimeSeries(crisisCode, attributeCode, granularity, startTime, endTime);
 		return Response.ok(json.toJSONString()).build();
 	}
 
@@ -107,7 +154,7 @@ public class GetTagDataStatistics implements ServletContextListener {
 	 * @return Count sum for each label in the interval [startTime, endTime] at the given granularity, for crisisCode and attributeCode
 	 */
 	@GET
-	@Path("/getIntervalLabelSum/{crisisCode}/{attributeCode}/{granularity}")
+	@Path("/getintervallabelsum/{crisisCode}/{attributeCode}/{granularity}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getTagCountSumInInterval(@PathParam("crisisCode") String crisisCode,
 			@PathParam("attributeCode") String attributeCode,
@@ -115,7 +162,7 @@ public class GetTagDataStatistics implements ServletContextListener {
 			@DefaultValue("0") @QueryParam("startTime") Long startTime,
 			@QueryParam("endTime") Long endTime) {
 
-		JSONObject json = new GetTagDataStatisticsService().getTagCountSumInInterval(crisisCode, attributeCode, granularity, startTime, endTime);
+		JSONObject json = tagDataService.getTagCountSumInInterval(crisisCode, attributeCode, granularity, startTime, endTime);
 		return Response.ok(json.toJSONString()).build();
 	}
 
@@ -130,14 +177,14 @@ public class GetTagDataStatistics implements ServletContextListener {
 	 * @return The count for a label in the specified time window at the given granularity, for crisisCode and attributeCode
 	 */
 	@GET
-	@Path("/getOneLabelData/{crisisCode}/{attributeCode}/{labelCode}/{granularity}/{startTime}")
+	@Path("/getonelabeldata/{crisisCode}/{attributeCode}/{labelCode}/{granularity}/{startTime}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getSingleItem(@PathParam("crisisCode") String crisisCode,
 			@PathParam("attributeCode") String attributeCode,
 			@PathParam("labelCode") String labelCode, 
 			@PathParam("granularity") Long granularity,
 			@PathParam("startTime") Long startTime) {
-		JSONObject json = new GetTagDataStatisticsService().getSingleItem(crisisCode, attributeCode, labelCode, granularity, startTime);
+		JSONObject json = tagDataService.getSingleItem(crisisCode, attributeCode, labelCode, granularity, startTime);
 		return Response.ok(json.toJSONString()).build();
 	}
 

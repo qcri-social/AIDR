@@ -3,7 +3,6 @@ package qa.qcri.aidr.predict.communication;
 import java.util.ArrayList;
 import java.util.List;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predict.classification.DocumentLabel;
 import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
 
@@ -21,7 +20,6 @@ public class OutputFilter {
     public static final String ATTRIBUTE_FILTER = "attribute";
 
     private static Logger logger = Logger.getLogger(OutputFilter.class);
-    private static ErrorLog elog = new ErrorLog();
 
     private static final String STR_CRISIS_ID = "crisis_id",
             STR_FILTERS = "filters", STR_TYPE = "type",
@@ -88,7 +86,6 @@ public class OutputFilter {
             return filter;
         } catch (JSONException e) {
         	logger.error("Error in parsing received json: " + json);
-        	logger.error(elog.toStringException(e));
             throw new RuntimeException(e);
         }
     }

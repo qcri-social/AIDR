@@ -2,6 +2,7 @@
 package qa.qcri.aidr.analysis.facade;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Local;
 import javax.persistence.EntityManager;
@@ -49,4 +50,10 @@ public interface TagDataStatisticsResourceFacade {
 	
 	public List<TagData> getDataInIntervalWithGranularity(String crisisCode, String attributeCode, String labelCode, 
 			  											Long timestamp1, Long timestamp2, Long granularity);
+	
+	public List<String> getAttributesForCrisis(String crisisCode);
+	
+	public List<TagData> getDataByCrisisGranularity(String crisisCode, Long timestamp, Long granularity);
+	public Map<String, Long> getTagCountByCrisisGranularity(String crisisCode, Long timestamp);
+	public List<Long> getGranularitiesForCrisis(String crisisCode);
 }

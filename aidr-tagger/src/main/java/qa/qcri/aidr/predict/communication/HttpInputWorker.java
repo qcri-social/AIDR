@@ -7,12 +7,13 @@ import java.net.Socket;
 
 import org.apache.log4j.Logger;
 
-import redis.clients.jedis.Jedis;
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.predict.common.*;
-import qa.qcri.aidr.predict.data.DocumentJSONConverter;
-import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.DataStore;
+import qa.qcri.aidr.predict.common.Serializer;
+import qa.qcri.aidr.predict.common.TaggerConfigurationProperty;
+import qa.qcri.aidr.predict.common.TaggerConfigurator;
+import qa.qcri.aidr.predict.data.Document;
+import qa.qcri.aidr.predict.data.DocumentJSONConverter;
+import redis.clients.jedis.Jedis;
 
 /**
  * InputWorker maintains a persistent HTTP connection to clients who provide
@@ -29,7 +30,6 @@ public class HttpInputWorker implements Runnable {
     private Socket client;
     
     private static Logger logger = Logger.getLogger(HttpInputWorker.class);
-    private static ErrorLog elog = new ErrorLog();
     
     HttpInputWorker(Socket client) {
         this.client = client;
@@ -42,8 +42,7 @@ public class HttpInputWorker implements Runnable {
             in = new BufferedReader(new InputStreamReader(
                     client.getInputStream()));
         } catch (IOException e) {
-            logger.error("Could not create input stream reader");
-            logger.error(elog.toStringException(e));
+            logger.error("Could not create input stream reader. " + e.getMessage());
             return;
         }
         logger.info("Created new InputWorker (" + connectionInstanceID
@@ -73,7 +72,6 @@ public class HttpInputWorker implements Runnable {
             client.close();
         } catch (IOException e) {
             logger.error("Error when closing connection " + connectionInstanceID);
-            logger.error(elog.toStringException(e));
         }
     }
 
@@ -83,8 +81,7 @@ public class HttpInputWorker implements Runnable {
             doc = DocumentJSONConverter.parseDocument(json);
             //doc.setSourceIP(client.getInetAddress());
         } catch (Exception e) {
-            logger.error("Error when parsing input JSON");
-            logger.error(elog.toStringException(e));
+            logger.error("Error when parsing input JSON : " + json);
         }
         return doc;
     }
@@ -100,8 +97,7 @@ public class HttpInputWorker implements Runnable {
 									TaggerConfigurationProperty.REDIS_FOR_EXTRACTION_QUEUE)
 							.getBytes(), Serializer.serialize(doc));
 		} catch (IOException e) {
-			logger.error("Error when serializing input document.");
-			logger.error(elog.toStringException(e));
+			logger.error("Error when serializing input document : " + doc != null ? doc.toString() : "no doc");
 		} finally {
 			DataStore.close(jedis);
 		}

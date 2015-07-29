@@ -5,9 +5,11 @@ import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.predict.common.*;
-import qa.qcri.aidr.predict.data.*;
+import qa.qcri.aidr.predict.common.DocumentType;
+import qa.qcri.aidr.predict.common.PipelineProcess;
+import qa.qcri.aidr.predict.data.Document;
+import qa.qcri.aidr.predict.data.SMS;
+import qa.qcri.aidr.predict.data.Tweet;
 
 /**
  * FeatureExtractor consumes DocumentSet objects from a Redis queue, performs
@@ -20,7 +22,6 @@ import qa.qcri.aidr.predict.data.*;
 public class FeatureExtractor extends PipelineProcess {
 
 	private static Logger logger = Logger.getLogger(FeatureExtractor.class);
-	private static ErrorLog elog = new ErrorLog();
 
 	protected void processItem(Document doc) {
 

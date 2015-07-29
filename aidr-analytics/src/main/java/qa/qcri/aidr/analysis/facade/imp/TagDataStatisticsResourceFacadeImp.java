@@ -1,7 +1,9 @@
 
 package qa.qcri.aidr.analysis.facade.imp;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -12,12 +14,12 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.analysis.entity.TagData;
 import qa.qcri.aidr.analysis.entity.TagDataPK;
 import qa.qcri.aidr.analysis.facade.TagDataStatisticsResourceFacade;
-
 import qa.qcri.aidr.common.values.ReturnCode;
 
 /**
@@ -27,7 +29,7 @@ import qa.qcri.aidr.common.values.ReturnCode;
 public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsResourceFacade {
 
 	private static Logger logger = Logger.getLogger(TagDataStatisticsResourceFacadeImp.class);
-	
+
 	@PersistenceContext(unitName = "qa.qcri.aidr.analysis-EJBS")
 	private EntityManager em;
 
@@ -67,8 +69,8 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 			throw new HibernateException("getCurrentSession failed");
 		}
 	}
-	
-	
+
+
 	@Override
 	public ReturnCode writeData(TagData tagData) {
 		try {
@@ -105,7 +107,7 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 		}
 		return null;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<TagData> getDataByCrisis(String crisisCode) {
@@ -114,7 +116,7 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 		System.out.println("Formed criteria: " + criteria.toString());
 		try {
 			List<TagData> objList = (List<TagData>) criteria.list();
-			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
+			//System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
 			//logger.error(elog.toStringException(e));
@@ -123,17 +125,86 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 		return null;
 	}
 	
+	// TODO
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<TagData> getDataByCrisisAttributeLabel(String crisisCode, String attributeCode, String labelCode) {
+	public Map<String, Long> getTagCountByCrisisGranularity(String crisisCode, Long timestamp) {
+		try {
+			Criterion criterion = Restrictions.conjunction()
+									.add(Restrictions.eq("crisisCode", crisisCode))
+									.add(Restrictions.ge("timestamp", timestamp));
+			
+			List<Object> countList = getCurrentSession().createCriteria(TagData.class)
+									.add(criterion)
+									.setProjection(Projections.distinct(Projections.projectionList()
+											.add(Projections.groupProperty("granularity").as("granularity"))
+											.add(Projections.sum("count").as("count")))
+									).list();
+		
+			//System.out.println("fetched list size = " + (countList != null ? countList.size() : "null"));
+			Map<String, Long> data = new HashMap<String, Long>();
+			for (int i = 0; i < countList.size();i++)  {
+				Object[] temp = (Object[]) countList.get(i);
+				Long g = ((Number) temp[0]).longValue();
+				Long count = ((Number) temp[1]).longValue();
+				data.put(g.toString(), count);
+				//System.out.println("Fetched {" + temp[0] + ", " + temp[1] + "}");
+				//System.out.println("1 --> " + g.getClass() + ", 2 --> " + temp[1].getClass());
+				
+			}
+			return data;
+		} catch (HibernateException e) {
+			//logger.error("exception: ", e);
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<String> getAttributesForCrisis(String crisisCode) {
+		try {
+			List<String> attributesList = (List<String>) getCurrentSession().createCriteria(TagData.class)
+					.add(Restrictions.eq("crisisCode", crisisCode))
+					.setProjection(Projections.distinct(Projections.property("attributeCode"))).list();
+			//System.out.println("fetched attributes list size = " + (attributesList != null ? attributesList.size() : "null"));
+			return attributesList;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("exception: ", e);
+			return null;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Long> getGranularitiesForCrisis(String crisisCode) {
+		try {
+			List<Long> gList = (List<Long>) getCurrentSession().createCriteria(TagData.class)
+					.add(Restrictions.eq("crisisCode", crisisCode))
+					.setProjection(Projections.distinct(Projections.property("granularity"))).list();
+			System.out.println("fetched attributes list size = " + (gList != null ? gList.size() : "null"));
+			return gList;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("exception: ", e);
+			return null;
+		}
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<TagData> getDataByCrisisGranularity(String crisisCode, Long timestamp, Long granularity) {
 		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
 		Criterion criterion = Restrictions.conjunction()
-				.add(Restrictions.eq("crisisCode", crisisCode))
-				.add(Restrictions.eq("attributeCode", attributeCode));
-		if (labelCode != null) {
+								.add(Restrictions.eq("crisisCode", crisisCode))
+								.add(Restrictions.ge("timestamp", timestamp));
+		if (granularity != null) {
 			criterion = Restrictions.conjunction()
-						.add(criterion)
-						.add(Restrictions.eq("labelCode", labelCode));
+					.add(criterion)
+					.add(Restrictions.eq("granularity", granularity));
 		}
 		criteria.add(criterion); 		
 		System.out.println("Formed criteria: " + criteria.toString());
@@ -147,7 +218,34 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 		}
 		return null;
 	}
+
+
 	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<TagData> getDataByCrisisAttributeLabel(String crisisCode, String attributeCode, String labelCode) {
+		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
+		Criterion criterion = Restrictions.conjunction()
+				.add(Restrictions.eq("crisisCode", crisisCode))
+				.add(Restrictions.eq("attributeCode", attributeCode));
+		if (labelCode != null) {
+			criterion = Restrictions.conjunction()
+					.add(criterion)
+					.add(Restrictions.eq("labelCode", labelCode));
+		}
+		criteria.add(criterion); 		
+		System.out.println("Formed criteria: " + criteria.toString());
+		try {
+			List<TagData> objList = (List<TagData>) criteria.list();
+			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
+			return objList;
+		} catch (HibernateException e) {
+			//logger.error(elog.toStringException(e));
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	@Override
 	public List<TagData> getDataByCrisisAttributeLabelGranularity(String crisisCode, String attributeCode, String labelCode, Long granularity) {
 		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
@@ -168,9 +266,8 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 		}
 		return null;
 	}
-	
-	public List<TagData> getDataByGranularityInTimeWindow(String crisisCode, String attributeCode, String labelCode, 
-															Long timestamp, Long granularity) {
+
+	public List<TagData> getDataByGranularityInTimeWindow(String crisisCode, String attributeCode, String labelCode, Long timestamp, Long granularity) {
 		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
 		Criterion criterion = Restrictions.conjunction()
 				.add(Restrictions.eq("crisisCode", crisisCode))
@@ -179,10 +276,10 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 				.add(Restrictions.eq("timestamp", timestamp));
 		if (labelCode != null) {
 			criterion = Restrictions.conjunction()
-						.add(criterion)
-						.add(Restrictions.eq("labelCode", labelCode));
+					.add(criterion)
+					.add(Restrictions.eq("labelCode", labelCode));
 		}
-				
+
 		criteria.add(criterion); 		
 		System.out.println("Formed criteria: " + criteria.toString());
 		try {
@@ -195,7 +292,7 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 		}
 		return null;
 	}
-	
+
 	@Override
 	public List<TagData> getDataAfterTimestamp(String crisisCode, String attributeCode, String labelCode, Long timestamp) {
 		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
@@ -205,10 +302,10 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 				.add(Restrictions.ge("timestamp", timestamp));
 		if (labelCode != null) {
 			criterion = Restrictions.conjunction()
-						.add(criterion)
-						.add(Restrictions.eq("labelCode", labelCode));
+					.add(criterion)
+					.add(Restrictions.eq("labelCode", labelCode));
 		}
-				
+
 		criteria.add(criterion); 
 		System.out.println("Formed criteria: " + criteria.toString());
 		try {
@@ -221,10 +318,9 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 		}
 		return null;
 	}
-	
+
 	@Override
-	public List<TagData> getDataAfterTimestampGranularity(String crisisCode, String attributeCode, String labelCode, 
-															Long timestamp, Long granularity) {
+	public List<TagData> getDataAfterTimestampGranularity(String crisisCode, String attributeCode, String labelCode, Long timestamp, Long granularity) {
 		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
 		Criterion criterion = Restrictions.conjunction()
 				.add(Restrictions.eq("crisisCode", crisisCode))
@@ -233,8 +329,8 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 				.add(Restrictions.eq("granularity", granularity));
 		if (labelCode != null) {
 			criterion = Restrictions.conjunction()
-						.add(criterion)
-						.add(Restrictions.eq("labelCode", labelCode));
+					.add(criterion)
+					.add(Restrictions.eq("labelCode", labelCode));
 		}
 		criteria.add(criterion); 
 		System.out.println("Formed criteria: " + criteria.toString());
@@ -258,10 +354,10 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 				.add(Restrictions.le("timestamp", timestamp));
 		if (labelCode != null) {
 			criterion = Restrictions.conjunction()
-						.add(criterion)
-						.add(Restrictions.eq("labelCode", labelCode));
+					.add(criterion)
+					.add(Restrictions.eq("labelCode", labelCode));
 		}
-				
+
 		criteria.add(criterion); 		
 		System.out.println("Formed criteria: " + criteria.toString());
 		try {
@@ -274,10 +370,10 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 		}
 		return null;
 	}
-	
+
 	@Override
 	public List<TagData> getDataBeforeTimestampGranularity(String crisisCode, String attributeCode, String labelCode, 
-															Long timestamp, Long granularity) {
+			Long timestamp, Long granularity) {
 		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
 		Criterion criterion = Restrictions.conjunction()
 				.add(Restrictions.eq("crisisCode", crisisCode))
@@ -286,10 +382,10 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 				.add(Restrictions.eq("granularity", granularity));
 		if (labelCode != null) {
 			criterion = Restrictions.conjunction()
-						.add(criterion)
-						.add(Restrictions.eq("labelCode", labelCode));
+					.add(criterion)
+					.add(Restrictions.eq("labelCode", labelCode));
 		}
-				
+
 		criteria.add(criterion);
 		System.out.println("Formed criteria: " + criteria.toString());
 		try {
@@ -303,7 +399,7 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 		return null;
 	}
 
-	
+
 	@Override
 	public List<TagData> getDataInInterval(String crisisCode, String attributeCode, String labelCode, Long timestamp1, Long timestamp2) {
 		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
@@ -314,8 +410,8 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 				.add(Restrictions.le("timestamp", timestamp2));
 		if (labelCode != null) {
 			criterion = Restrictions.conjunction()
-						.add(criterion)
-						.add(Restrictions.eq("labelCode", labelCode));
+					.add(criterion)
+					.add(Restrictions.eq("labelCode", labelCode));
 		}
 		criteria.add(criterion); 
 		System.out.println("Formed criteria: " + criteria.toString());
@@ -329,38 +425,38 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 		}
 		return null;
 	}
-	
+
 	@Override
 	public List<TagData> getDataInIntervalWithGranularity(String crisisCode, String attributeCode, String labelCode, 
-														  Long timestamp1, Long timestamp2, Long granularity) {
+			Long timestamp1, Long timestamp2, Long granularity) {
 		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
 		Criterion criterion = Restrictions.eq("crisisCode", crisisCode);
-				
+
 		// Now add the optional non-null criteria
 		if (attributeCode != null) {
 			criterion = Restrictions.conjunction()
-						.add(criterion)
-						.add(Restrictions.eq("attributeCode", attributeCode));
+					.add(criterion)
+					.add(Restrictions.eq("attributeCode", attributeCode));
 		}
 		if (labelCode != null) {
 			criterion = Restrictions.conjunction()
-						.add(criterion)
-						.add(Restrictions.eq("labelCode", labelCode));
+					.add(criterion)
+					.add(Restrictions.eq("labelCode", labelCode));
 		}
 		if (granularity != null) {
 			criterion = Restrictions.conjunction()
-						.add(criterion)
-						.add(Restrictions.eq("granularity", granularity));
+					.add(criterion)
+					.add(Restrictions.eq("granularity", granularity));
 		}
 		if (timestamp1 != null) {
 			criterion = Restrictions.conjunction()
-						.add(criterion)
-						.add(Restrictions.ge("timestamp", timestamp1));
+					.add(criterion)
+					.add(Restrictions.ge("timestamp", timestamp1));
 		}
 		if (timestamp2 != null) {
 			criterion = Restrictions.conjunction()
-						.add(criterion)
-						.add(Restrictions.le("timestamp", timestamp2));
+					.add(criterion)
+					.add(Restrictions.le("timestamp", timestamp2));
 		}	
 		criteria.add(criterion); 
 		System.out.println("Formed criteria: " + criteria.toString());

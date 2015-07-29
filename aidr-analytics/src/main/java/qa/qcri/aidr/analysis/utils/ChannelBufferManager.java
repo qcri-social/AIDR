@@ -84,10 +84,6 @@ public class ChannelBufferManager {
 	public static String CHANNEL_PREFIX_STRING; //= configProperties.getProperty(OutputConfigurationProperty.TAGGER_CHANNEL_BASENAME)+".";
 	public static Set<String> subscribedChannels;
 
-	// DB access related
-	//private static DatabaseInterface dbController = null;
-	private static String managerMainUrl = null;
-
 	private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
 
 	private static ConcurrentHashMap<CounterKey, Object> tagDataMap = null;
@@ -119,10 +115,9 @@ public class ChannelBufferManager {
 		confDataMap = new ConcurrentHashMap<CounterKey, Object>();
 		channelMap = new ConcurrentHashMap<String, Long>();
 
-		managerMainUrl = configurator.getProperty(OutputConfigurationProperty.MANAGER_URL);
 		logger.info("Initializing channel buffer manager.");
 		System.out.println("[ChannelBufferManager] Initializing channel buffer manager with values: <" + redisHost + ", " + redisPort 
-				+ ", " + PERSISTER_LOAD_CHECK_INTERVAL_MINUTES + ", " + PERSISTER_LOAD_LIMIT + ", " + managerMainUrl + ">");
+				+ ", " + PERSISTER_LOAD_CHECK_INTERVAL_MINUTES + ", " + PERSISTER_LOAD_LIMIT + ">");
 
 		bufferSize = -1;
 		executorServicePool = Executors.newCachedThreadPool();	//Executors.newFixedThreadPool(10);		// max number of threads
@@ -219,7 +214,7 @@ public class ChannelBufferManager {
 				ClassifiedFilteredTweet classifiedTweet = new ClassifiedFilteredTweet().deserialize(receivedMessage);
 				if (classifiedTweet != null && classifiedTweet.getNominalLabels() != null && !classifiedTweet.getNominalLabels().isEmpty()) {
 					channelMap.putIfAbsent(classifiedTweet.getCrisisCode(), System.currentTimeMillis());
-					System.out.println("Found a valid classified tweet for collection: " + classifiedTweet.getCrisisCode() + ", tweet = " + receivedMessage);
+					//System.out.println("Found a valid classified tweet for collection: " + classifiedTweet.getCrisisCode() + ", tweet = " + receivedMessage);
 					for (NominalLabel nb : classifiedTweet.getNominalLabels()) {
 						if (nb.attribute_code != null && nb.label_code != null) {
 							CounterKey tagDataKey = new CounterKey(classifiedTweet.getCrisisCode(), nb.attribute_code, nb.label_code);
@@ -229,23 +224,24 @@ public class ChannelBufferManager {
 								TagDataMapRecord t = (TagDataMapRecord) tagDataMap.get(tagDataKey);
 								t.incrementAllCounts();
 								tagDataMap.put(tagDataKey, t);
-								System.out.println("Updated Tag map entry with key: " + tagDataKey.toString() + " value = " + tagDataMap.get(tagDataKey).toString());
+								//System.out.println("Updated Tag map entry with key: " + tagDataKey.toString() + " value = " + tagDataMap.get(tagDataKey).toString());
 							} else {
 								TagDataMapRecord t = new TagDataMapRecord(granularityList);
 								tagDataMap.put(tagDataKey, t);
-								logger.info("New Tag map entry with key: " + tagDataKey.toString() + " value = " + tagDataMap.get(tagDataKey).toString());
-								System.out.println("New Tag map entry with key: " + tagDataKey.toString() + " value = " + tagDataMap.get(tagDataKey).toString());
+								
+								//logger.info("New Tag map entry with key: " + tagDataKey.toString() + " value = " + tagDataMap.get(tagDataKey).toString());
+								//System.out.println("New Tag map entry with key: " + tagDataKey.toString() + " value = " + tagDataMap.get(tagDataKey).toString());
 							}
 							if (confDataMap.containsKey(confDataKey)) {
 								ConfDataMapRecord f = (ConfDataMapRecord) confDataMap.get(confDataKey);
 								f.incrementAllCounts();
 								confDataMap.put(confDataKey, f);
-								System.out.println("Updated Conf map entry with key: " + confDataKey.toString() + " value = " + confDataMap.get(confDataKey).toString());
+								//System.out.println("Updated Conf map entry with key: " + confDataKey.toString() + " value = " + confDataMap.get(confDataKey).toString());
 							} else {
 								ConfDataMapRecord t = new ConfDataMapRecord(granularityList);
 								confDataMap.put(confDataKey, t);
-								logger.info("[manageChannelBuffersWrapper] New Conf map entry with key: " + confDataKey + " value = " + confDataMap.get(confDataKey));
-								System.out.println("New Conf map entry with key: " + confDataKey.toString() + " value = " + confDataMap.get(confDataKey).toString());
+								//logger.info("[manageChannelBuffersWrapper] New Conf map entry with key: " + confDataKey + " value = " + confDataMap.get(confDataKey));
+								//System.out.println("New Conf map entry with key: " + confDataKey.toString() + " value = " + confDataMap.get(confDataKey).toString());
 							}
 						}
 					}
@@ -266,7 +262,7 @@ public class ChannelBufferManager {
 		if (currentTime - lastCheckedTime > ChannelBufferManager.CHECK_INTERVAL) {
 			for (String key : channelMap.keySet()) {
 				if ((currentTime - channelMap.get(key)) > ChannelBufferManager.NO_DATA_TIMEOUT) {
-					logger.info("Deleting data for inactive channel = " + key);
+					logger.info("Attempt deleting data for inactive channel = " + key);
 					int deleteCount = deleteMapRecordsForCollection(key, dataMap);
 					logger.info("Deleted records count for inactive channel <" + key + "> is = " + deleteCount);
 				}
@@ -509,6 +505,7 @@ public class ChannelBufferManager {
 				}
 				if (redisLoadShedder.get(channel).canProcess(channel)) {
 					manageChannelBuffers(pattern, channel, message);
+					System.out.println("Done putting message");
 				} 			
 			} catch (Exception e) {
 				logger.error("Exception occurred, redisLoadShedder = " + redisLoadShedder + ", channel status: " + redisLoadShedder.containsKey(channel));

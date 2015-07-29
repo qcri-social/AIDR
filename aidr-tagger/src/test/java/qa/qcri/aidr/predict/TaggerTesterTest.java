@@ -142,7 +142,7 @@ public class TaggerTesterTest {
 		assertEquals(200, response.getStatus());
 		jsonResponse = response.readEntity(String.class);
 		HashMap<String,Object> result =
-		        new ObjectMapper().readValue(jsonResponse, HashMap.class);
+		        objectMapper.readValue(jsonResponse, HashMap.class);
 		
 		
 		if(result != null && result.get("crisisId") != null && result.get("crisisId") != new Integer(0)) {
@@ -159,7 +159,7 @@ public class TaggerTesterTest {
 		JsonParser jsonParser = new JsonParser();
 		JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonResponse);
 		
-		if( jsonObject != null && jsonObject.get("nominalAttributeId") != null ) {
+		if( jsonObject != null && jsonObject.get("nominalAttributeID") != null ) {
              nominalAttributeId = jsonObject.get("nominalAttributeID").getAsLong();
         }
 
