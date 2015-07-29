@@ -358,6 +358,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
                     });
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                     me.saveButton.enable();
                 }
             },
@@ -397,6 +398,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
                     me.removeClassifierButton.enable();
+					AIDRFMFunctions.reportIssue(response);
                 }
             },
             failure: function () {
@@ -471,6 +473,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
                     me.editButton.show();
                 } else {
                     AIDRFMFunctions.setAlert("Error", 'Error while updating tag in Classifier.');
+                    AIDRFMFunctions.reportIssue(resp);
                 }
                 me.cancelButton.enable();
                 me.deleteButton.enable();

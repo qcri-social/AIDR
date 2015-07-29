@@ -96,6 +96,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        					}
 	        				} else {
 	        					AIDRFMFunctions.setAlert("Error", resp.message);
+	        					AIDRFMFunctions.reportIssue(response);
 	        				}
 	        			}
 	        		});
@@ -179,6 +180,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        				me.mainComponent.trainingDataStore.load();
 	        			} else {
 	        				AIDRFMFunctions.setAlert("Error", resp.message);
+	        				AIDRFMFunctions.reportIssue(response);
 	        			}
 	        		}
 	        	});
@@ -223,10 +225,12 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                                 } else {
                                     me.mainComponent.downloadLink.setText('', false);
                                     AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
+                                    AIDRFMFunctions.reportIssue(response);
                                 }
                             } else {
                                 me.mainComponent.downloadLink.setText('', false);
                                 AIDRFMFunctions.setAlert("Error", resp.message);
+                                AIDRFMFunctions.reportIssue(response);
                             }
                         },
                         failure: function () {

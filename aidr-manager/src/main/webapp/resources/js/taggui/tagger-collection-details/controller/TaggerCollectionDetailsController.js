@@ -258,6 +258,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     CRISIS_TYPE_ID = crisisTypeId;
                 } else {
                     AIDRFMFunctions.setAlert("Error", 'Error while saving crisis.');
+                    AIDRFMFunctions.reportIssue(resp);
                 }
             }
         });
@@ -303,6 +304,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                             me.mainComponent.templateSaveButton.setText('Edit',false);
                         } else {
                             AIDRFMFunctions.setAlert("Error", 'Error while updating templateSave.');
+                            AIDRFMFunctions.reportIssue(resp);
                         }
                         mask.hide();
                     }
@@ -342,6 +344,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
 
                 } else {
                     AIDRFMFunctions.setAlert("Error", 'Error while updating templateSave.');
+                    AIDRFMFunctions.reportIssue(resp);
                 }
 
                 var run = function (delay) {
@@ -392,6 +395,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 } else {
                     mask.hide();
                     AIDRFMFunctions.setAlert("Error",  'Requst failed : ' + maskText );
+                    AIDRFMFunctions.reportIssue(resp);
                 }
                 //mask.hide();
                // AIDRFMFunctions.setAlert("Info", mask);
@@ -407,10 +411,11 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
 
 
             },
-            failure: function () {
+            failure: function (resp) {
                 mask.hide();
                 maskText = " Requst failed : " + maskText ;
                 AIDRFMFunctions.setAlert("Error", maskText);
+                AIDRFMFunctions.reportIssue(resp);
             }
         });
 
@@ -443,6 +448,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                  } else {
                 	 btn.show();
                      AIDRFMFunctions.setAlert("Error", 'Error while enabling MicroMappers');
+                     AIDRFMFunctions.reportIssue(resp);
                  }
              }
          });
@@ -470,6 +476,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                  } else {
                 	 btn.show();
                      AIDRFMFunctions.setAlert("Error", 'Error while disabling MicroMappers');
+                     AIDRFMFunctions.reportIssue(resp);
                  }
              }
          });
@@ -537,6 +544,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     AIDRFMFunctions.setAlert("Error", resp.message);
                     removeClassifierButton.disabled = false;
                     removeClassifierButton.classList.remove("disabled");
+                    AIDRFMFunctions.reportIssue(response);
                 }
             },
             failure: function () {
@@ -586,6 +594,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     }
                 } else {
                     me.mainComponent.pyBossaLink.setText('<div class="gray-backgrpund"><i>Initializing crowdsourcing task. Please come back in a few minutes.</i></div>', false);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             },
             failure: function () {
@@ -1112,6 +1121,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 } else {
                     me.mainComponent.CSVLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
                 //Ext.Ajax.timeout = 30000;
                 //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
@@ -1152,7 +1162,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     if (resp.data && resp.data != '') {
                         me.mainComponent.tweetsIdsLink.setText('<div class="styled-text download-link">&#8226;&nbsp;<a href="' + resp.data + '">Download all tweets (tweet-ids only)</a></div>', false);
                         if (resp.message) {
-                     	   AIDRFMFunctions.setAlert("Error", resp.message); 
+                     	   AIDRFMFunctions.setAlert("Error", resp.message);
                         } 
                     } else {
                         me.mainComponent.tweetsIdsLink.setText('<div class="styled-text download-link">&#8226;&nbsp;Download all tweets (tweet-ids only) - Not yet available for this crisis.</div>', false);
@@ -1160,6 +1170,8 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 } else {
                     me.mainComponent.tweetsIdsLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
+                 
                 }
                 //Ext.Ajax.timeout = 30000;
                 //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
@@ -1204,10 +1216,13 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     } else {
                         me.mainComponent.CSVLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate CSV service returned empty url. For further inquiries please contact admin.");
+                        AIDRFMFunctions.reportIssue(response);
                     }
                 } else {
                     me.mainComponent.CSVLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
+             
                 }
                 //Ext.Ajax.timeout = 30000;
                 //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
@@ -1255,10 +1270,12 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     } else {
                         me.mainComponent.tweetsIdsLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
+                        AIDRFMFunctions.reportIssue(response);
                     }
                 } else {
                     me.mainComponent.tweetsIdsLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
                 //Ext.Ajax.timeout = 30000;
                 //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
@@ -1304,6 +1321,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 } else {
                     me.mainComponent.JSONLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
                 //Ext.Ajax.timeout = 30000;
                 //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
@@ -1352,6 +1370,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                 } else {
                     me.mainComponent.JsonTweetsIdsLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
                 //Ext.Ajax.timeout = 30000;
                 //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
@@ -1396,10 +1415,12 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     } else {
                         me.mainComponent.JSONLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate JSON service returned empty url. For further inquiries please contact admin.");
+                        AIDRFMFunctions.reportIssue(response);
                     }
                 } else {
                     me.mainComponent.JSONLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
                 //Ext.Ajax.timeout = 30000;
                 //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
@@ -1447,10 +1468,12 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     } else {
                         me.mainComponent.JsonTweetsIdsLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
+                        AIDRFMFunctions.reportIssue(response);
                     }
                 } else {
                     me.mainComponent.JsonTweetsIdsLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
                 //Ext.Ajax.timeout = 30000;
                 //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});

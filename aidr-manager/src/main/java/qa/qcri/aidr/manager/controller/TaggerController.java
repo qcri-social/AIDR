@@ -1,30 +1,57 @@
 package qa.qcri.aidr.manager.controller;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
-
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.common.values.DownloadType;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
-import qa.qcri.aidr.manager.dto.*;
-import qa.qcri.aidr.manager.exception.AidrException;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.service.CollectionService;
-import qa.qcri.aidr.manager.service.TaggerService;
-import qa.qcri.aidr.manager.util.CollectionStatus;
-
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.common.values.DownloadType;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
+import qa.qcri.aidr.manager.dto.CrisisRequest;
+import qa.qcri.aidr.manager.dto.DateHistory;
+import qa.qcri.aidr.manager.dto.ModelHistoryWrapper;
+import qa.qcri.aidr.manager.dto.TaggerAttribute;
+import qa.qcri.aidr.manager.dto.TaggerCrisis;
+import qa.qcri.aidr.manager.dto.TaggerCrisisExist;
+import qa.qcri.aidr.manager.dto.TaggerCrisisRequest;
+import qa.qcri.aidr.manager.dto.TaggerCrisisType;
+import qa.qcri.aidr.manager.dto.TaggerLabel;
+import qa.qcri.aidr.manager.dto.TaggerLabelRequest;
+import qa.qcri.aidr.manager.dto.TaggerModel;
+import qa.qcri.aidr.manager.dto.TaggerModelFamily;
+import qa.qcri.aidr.manager.dto.TaggerModelFamilyCollection;
+import qa.qcri.aidr.manager.dto.TaggerResponseWrapper;
+import qa.qcri.aidr.manager.dto.TaggerUser;
+import qa.qcri.aidr.manager.dto.TaggerUserRequest;
+import qa.qcri.aidr.manager.dto.TaskAnswer;
+import qa.qcri.aidr.manager.dto.TaskAnswerRequest;
+import qa.qcri.aidr.manager.dto.TaskInfo;
+import qa.qcri.aidr.manager.dto.UpdateCrisisDTO;
+import qa.qcri.aidr.manager.exception.AidrException;
+import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
+import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.service.CollectionService;
+import qa.qcri.aidr.manager.service.TaggerService;
 
 
 @Controller
@@ -962,4 +989,31 @@ public class TaggerController extends BaseController {
 		}
 	}
 
+	/**
+	 * @param url
+	 * @param mailType Type of mail (issues/suggestions)
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/sendEmailService.action", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> sendEmail(@RequestParam String url, @RequestParam String mailType, @RequestParam String description) throws Exception {
+		logger.info("In sending email");
+		UserEntity userEntity = getAuthenticatedUser();
+		userEntity.getUserName();
+		String body = "User:-"+userEntity.getUserName() + "\\nURL:-"+url +"\\nRequestHeader:-"+description;
+		String subject = mailType;
+		Boolean result = false;
+		try{
+			result = taggerService.sendMailService(subject,body);
+			if (result) {
+				return getUIWrapper(null,true);
+			} else {
+				return getUIWrapper(false, "Sending Email Failed");
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			return getUIWrapper(false, "Sending Email Failed");
+		}
+	}
 }

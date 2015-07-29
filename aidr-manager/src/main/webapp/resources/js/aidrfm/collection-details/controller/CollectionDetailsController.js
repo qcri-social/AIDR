@@ -158,6 +158,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                                     ['Error while starting Collection .',
                                     'Please try again later or contact Support']
                                 );
+                                AIDRFMFunctions.reportIssue(resp);
                             }
                         },
                         failure: function () {
@@ -699,6 +700,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     });
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             },
             failure: function () {
@@ -733,6 +735,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     }
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             },
             failure: function () {
@@ -778,6 +781,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     }
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             },
             failure: function () {
@@ -811,6 +815,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     me.refreshStatus(id);
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             },
             failure: function () {
@@ -888,6 +893,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
                 } else {
                     AIDRFMFunctions.setAlert("Error", [respObj.message]);
+                    AIDRFMFunctions.reportIssue(response);
                 }
 
                 editPanelEl.unmask();
@@ -895,6 +901,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
             failure: function(response, opts) {
                 AIDRFMFunctions.setAlert("Error", ["An error occurred while updating the collection."]);
+                AIDRFMFunctions.reportIssue(response);
                 editPanelEl.unmask();
             }
         });
@@ -935,6 +942,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     }
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             }
         });
@@ -969,6 +977,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     document.location.href = BASE_URL + '/protected/' + code + '/tagger-collection-details';
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             }
         });
@@ -1014,10 +1023,12 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     } else {
                         me.DetailsComponent.CSVLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate CSV service returned empty url. For further inquiries please contact admin.");
+                        AIDRFMFunctions.reportIssue(response);
                     }
                 } else {
                     me.DetailsComponent.CSVLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
                 //Ext.Ajax.timeout = 30000;
                 //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
@@ -1030,6 +1041,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
                 Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
                 Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
+                
             }
         });
     },
@@ -1065,10 +1077,12 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     } else {
                         me.DetailsComponent.tweetsIdsLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
+                        AIDRFMFunctions.reportIssue(response);
                     }
                 } else {
                     me.DetailsComponent.tweetsIdsLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
                 //Ext.Ajax.timeout = 30000;
                 //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
@@ -1112,10 +1126,12 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     } else {
                         me.DetailsComponent.JSONLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate JSON service returned empty url. For further inquiries please contact admin.");
+                        AIDRFMFunctions.reportIssue(response);
                     }
                 } else {
                     me.DetailsComponent.JSONLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
                 //Ext.Ajax.timeout = 30000;
                 //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
@@ -1163,10 +1179,12 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     } else {
                         me.DetailsComponent.JsonTweetsIdsLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate JSON Tweet Ids service returned empty url. For further inquiries please contact admin.");
+                        AIDRFMFunctions.reportIssue(response);
                     }
                 } else {
                     me.DetailsComponent.JsonTweetsIdsLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
                 //Ext.Ajax.timeout = 30000;
                 //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
@@ -1206,6 +1224,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                         me.DetailsComponent.managersStore.add(resp.data);
                     } else {
                         AIDRFMFunctions.setAlert("Error", resp.message);
+                        AIDRFMFunctions.reportIssue(response);
                     }
                 },
                 failure: function () {
@@ -1241,6 +1260,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     me.DetailsComponent.managersStore.loadData(resp.data);
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             },
             failure: function () {

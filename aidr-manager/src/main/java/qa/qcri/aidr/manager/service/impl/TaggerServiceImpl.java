@@ -27,6 +27,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -2165,5 +2166,30 @@ public class TaggerServiceImpl implements TaggerService {
 			throw new AidrException("Exception while updating isMicromapperEnabled ",
 					e);
 		}
+	}
+	
+	@Override
+	public Boolean sendMailService(String subject, String body){
+		Client client = ClientBuilder.newBuilder()
+				.register(JacksonFeature.class).build();
+		Response clientResponse = null;
+		try {
+			WebTarget webResource = client.target(taggerMainUrl
+					+ "/misc/sendEmail");
+			Form form = new Form();
+			form.param("subject", subject);
+			form.param("body", body);
+			
+			clientResponse = webResource.request().post(
+					Entity.entity(form,MediaType.APPLICATION_FORM_URLENCODED),Response.class);
+			if (clientResponse.getStatus() != 200) {
+				logger.warn("Couldn't contact AIDRTaggerAPI for sending error message");
+				return false;
+			}
+		} catch (Exception e) {
+			logger.error("Error in contacting AIDRTaggerAPI: " + clientResponse);
+			return false;
+		}
+		return true;
 	}
 }

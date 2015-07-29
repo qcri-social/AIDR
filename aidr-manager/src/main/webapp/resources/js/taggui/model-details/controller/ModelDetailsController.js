@@ -126,6 +126,7 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
                     }
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             }
         });
@@ -151,6 +152,7 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
                     }
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             }
         });

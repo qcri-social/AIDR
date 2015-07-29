@@ -70,6 +70,7 @@ Ext.define('TAGGUI.predict-new-attribute.controller.PredictNewAttributeControlle
                     }
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             }
         });
@@ -100,6 +101,7 @@ Ext.define('TAGGUI.predict-new-attribute.controller.PredictNewAttributeControlle
                     }
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             }
         });
