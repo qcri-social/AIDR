@@ -6,13 +6,29 @@ package qa.qcri.aidr.predictui.api;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.util.EmailClient;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentList;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.HumanLabeledDocumentListWrapper;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.ItemToLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
 import qa.qcri.aidr.predictui.facade.MiscResourceFacade;
@@ -20,16 +36,6 @@ import qa.qcri.aidr.predictui.facade.SystemEventFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
 import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
-import org.apache.log4j.Logger;
 
 /**
  * REST Web Service
@@ -252,6 +258,7 @@ public class MiscResource {
 		}
 	}
 	
+	//Logs error in system events table also
 	@POST
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.TEXT_PLAIN)
@@ -259,9 +266,7 @@ public class MiscResource {
 	public Response sendErrorEmail(@FormParam("code") String code, @FormParam("module") String module, @FormParam("description") String description) throws Exception {
 		Boolean emailSent = true;
 		try {
-			Date d = new Date(System.currentTimeMillis());
 			String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
-			
 			String body = time+" "+module +" "+ code +"\n"+ description;
 			EmailClient.sendErrorMail(module, body);
 		} catch (Exception e) {
@@ -274,6 +279,22 @@ public class MiscResource {
 			systemEventEJB.insertSystemEvent("ERROR", module, code, description, emailSent);
 		}
 		catch (Exception e) {
+			return Response.serverError().build();
+		}
+		return Response.ok().build();
+	}
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/sendEmail")
+	public Response sendEmail(@FormParam("subject") String subject, @FormParam("body") String body) throws Exception {
+		try {
+			String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+			EmailClient.sendErrorMail(subject, time + "/n"+body);
+		} catch (Exception e) {
+			logger.error("Unable to send email");
+			logger.error(e.getMessage());
 			return Response.serverError().build();
 		}
 		return Response.ok().build();
