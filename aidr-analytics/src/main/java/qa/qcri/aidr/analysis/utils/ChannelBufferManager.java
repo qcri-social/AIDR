@@ -84,10 +84,6 @@ public class ChannelBufferManager {
 	public static String CHANNEL_PREFIX_STRING; //= configProperties.getProperty(OutputConfigurationProperty.TAGGER_CHANNEL_BASENAME)+".";
 	public static Set<String> subscribedChannels;
 
-	// DB access related
-	//private static DatabaseInterface dbController = null;
-	private static String managerMainUrl = null;
-
 	private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
 
 	private static ConcurrentHashMap<CounterKey, Object> tagDataMap = null;
@@ -119,10 +115,9 @@ public class ChannelBufferManager {
 		confDataMap = new ConcurrentHashMap<CounterKey, Object>();
 		channelMap = new ConcurrentHashMap<String, Long>();
 
-		managerMainUrl = configurator.getProperty(OutputConfigurationProperty.MANAGER_URL);
 		logger.info("Initializing channel buffer manager.");
 		System.out.println("[ChannelBufferManager] Initializing channel buffer manager with values: <" + redisHost + ", " + redisPort 
-				+ ", " + PERSISTER_LOAD_CHECK_INTERVAL_MINUTES + ", " + PERSISTER_LOAD_LIMIT + ", " + managerMainUrl + ">");
+				+ ", " + PERSISTER_LOAD_CHECK_INTERVAL_MINUTES + ", " + PERSISTER_LOAD_LIMIT + ">");
 
 		bufferSize = -1;
 		executorServicePool = Executors.newCachedThreadPool();	//Executors.newFixedThreadPool(10);		// max number of threads
