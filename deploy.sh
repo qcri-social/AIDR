@@ -8,7 +8,7 @@ if [ "$MODE" == "" ]
 then
 echo "ERROR: Missing argument MODE. Please provide a value {deploy, undeploy, undeploy-deploy}."
 exit
-elif [ "$MODE" != "undeploy" ] && [ "$MODE" != "deploy" ] && [ "$MODE" != "undeploy-deploy" ]
+elif [ "$MODE" != "undeploy" ] && [ "$MODE" != "deploy" ] && [ "$MODE" != "undeploy-deploy" ] && [ "$MODE" != "redeploy" ]
 then
 echo "ERROR: Incorrect first argument provided. Please use 'deploy', 'undeploy' or 'undeploy-deploy'."
 exit
@@ -22,8 +22,8 @@ fi
 
 echo "Step 1: Setting up environment variables."
 # Setting environment variables.
-GLASSFISH_HOME=C:/Users/Latika/Desktop/Metacube/Installed/glassfish4
-AIDR_HOME=C:/Users/Latika/Desktop/Metacube/QCRI/AIDR/dev_new
+GLASSFISH_HOME=/opt/glassfish4
+AIDR_HOME=/home/meghna/Documents/GitHub/DEV
 AIDR_GLASSFISH_DOMAIN=domain1
 MY_SQL_USERNAME=root
 AIDR_ANALYSIS_CONNECTION_POOL=AIDR_ANALYSIS_CONNECTION_POOL
@@ -63,6 +63,11 @@ bin/asadmin undeploy AIDROutput
 bin/asadmin undeploy AIDRAnalytics
 bin/asadmin undeploy AIDRTrainerAPI
 bin/asadmin undeploy AIDRFetchManager
+
+echo "Stopping Application AIDRTagger."
+PID=$(ps -eo pid,cmd | grep [q]a.qcri.aidr.predict.Controller | awk '{print $1}')
+kill -9 $PID
+
 echo "Done."
 
 # stop the glass fish domain.
@@ -94,20 +99,43 @@ bin/asadmin deploy --contextroot=AIDRDBManager --name=AIDRDBManager $AIDR_HOME/a
 bin/asadmin deploy --contextroot=AIDRTaskManager --name=AIDRTaskManager $AIDR_HOME/aidr-task-manager/target/aidr-task-manager-ear-1.0.ear
 bin/asadmin deploy --contextroot=AIDRPersister --name=AIDRPersister $AIDR_HOME/aidr-persister/target/aidr-persister-1.0.war
 bin/asadmin deploy --contextroot=AIDRCollector --name=AIDRCollector $AIDR_HOME/aidr-collector/target/aidr-collector-1.0.war
-
-echo "Starting Application AIDRTagger."
-#cd $AIDR_HOME/aidr-tagger/target
-#java -Xmx4048m -cp "$GLASSFISH_HOME/glassfish/lib/gf-client.jar;aidr-tagger-1.0-jar-with-dependencies.jar;libs/*" qa.qcri.aidr.predict.Controller
-
-cd $GLASSFISH_HOME
 bin/asadmin deploy --contextroot=AIDRTaggerAPI --name=AIDRTaggerAPI $AIDR_HOME/aidr-tagger-api/target/aidr-tagger-api-1.0.war
 bin/asadmin deploy --contextroot=AIDROutput --name=AIDROutput $AIDR_HOME/aidr-output/target/aidr-output-1.0.war
 bin/asadmin deploy --contextroot=AIDRAnalytics --name=AIDRAnalytics $AIDR_HOME/aidr-analytics/target/aidr-analytics-1.0.war
 bin/asadmin deploy --contextroot=AIDRTrainerAPI --name=AIDRTrainerAPI $AIDR_HOME/aidr-trainer-api/target/aidr-trainer-api.war
+
 bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=false
 bin/asadmin deploy --properties implicitCdiEnabled=false --contextroot=AIDRFetchManager --name=AIDRFetchManager $AIDR_HOME/aidr-manager/target/aidr-manager.war
 bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=true
 
+echo "Starting Application AIDRTagger."
+cd $AIDR_HOME/aidr-tagger/target
+nohup java -Xmx2048m -cp $GLASSFISH_HOME/glassfish/lib/gf-client.jar:aidr-tagger-1.0-jar-with-dependencies.jar:libs/* qa.qcri.aidr.predict.Controller &
+fi
+
+if [ "$MODE" == "redeploy" ]
+then
+
+# Deploying separate modules. First undeploying if already deployed and deploying again.
+bin/asadmin redeploy --keepstate=true --contextroot=AIDRDBManager --name=AIDRDBManager $AIDR_HOME/aidr-db-manager/target/aidr-db-manager-ear-1.0.ear
+bin/asadmin redeploy --keepstate=true --contextroot=AIDRTaskManager --name=AIDRTaskManager $AIDR_HOME/aidr-task-manager/target/aidr-task-manager-ear-1.0.ear
+bin/asadmin redeploy --keepstate=true --contextroot=AIDRPersister --name=AIDRPersister $AIDR_HOME/aidr-persister/target/aidr-persister-1.0.war
+bin/asadmin redeploy --keepstate=true --contextroot=AIDRCollector --name=AIDRCollector $AIDR_HOME/aidr-collector/target/aidr-collector-1.0.war
+bin/asadmin redeploy --keepstate=true --contextroot=AIDRTaggerAPI --name=AIDRTaggerAPI $AIDR_HOME/aidr-tagger-api/target/aidr-tagger-api-1.0.war
+bin/asadmin redeploy --keepstate=true --contextroot=AIDROutput --name=AIDROutput $AIDR_HOME/aidr-output/target/aidr-output-1.0.war
+bin/asadmin redeploy --keepstate=true --contextroot=AIDRAnalytics --name=AIDRAnalytics $AIDR_HOME/aidr-analytics/target/aidr-analytics-1.0.war
+bin/asadmin redeploy --keepstate=true --contextroot=AIDRTrainerAPI --name=AIDRTrainerAPI $AIDR_HOME/aidr-trainer-api/target/aidr-trainer-api.war
+bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=false
+bin/asadmin redeploy --properties implicitCdiEnabled=false --contextroot=AIDRFetchManager --name=AIDRFetchManager $AIDR_HOME/aidr-manager/target/aidr-manager.war
+bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=true
+
+echo "Stopping Application AIDRTagger."
+PID=$(ps -eo pid,cmd | grep [q]cri.aidr.predict.Controller | awk '{print $1}')
+kill -9 $PID
+
+echo "Starting Application AIDRTagger."
+cd $AIDR_HOME/aidr-tagger
+nohup java -Xmx2048m -cp $GLASSFISH_HOME/glassfish/lib/gf-client.jar:target/aidr-tagger-1.0-jar-with-dependencies.jar:lib-non-maven/* qa.qcri.aidr.predict.Controller &
 fi
 
 if [ "$RUN_DDL" == "deploy_db" ]
