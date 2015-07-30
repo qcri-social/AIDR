@@ -1,5 +1,7 @@
 package qa.qcri.aidr.trainer.api.service.impl;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -7,19 +9,15 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
-
-import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
-import qa.qcri.aidr.trainer.api.entity.DocumentNominalLabel;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 import qa.qcri.aidr.trainer.api.Jedis.JedisNotifier;
-
+import qa.qcri.aidr.trainer.api.entity.DocumentNominalLabel;
 import qa.qcri.aidr.trainer.api.entity.TaskAnswer;
-import qa.qcri.aidr.trainer.api.service.*;
-
-import java.util.List;
-
+import qa.qcri.aidr.trainer.api.service.CrisisService;
+import qa.qcri.aidr.trainer.api.service.DocumentNominalLabelService;
+import qa.qcri.aidr.trainer.api.service.DocumentService;
+import qa.qcri.aidr.trainer.api.service.TaskAnswerService;
+import qa.qcri.aidr.trainer.api.service.TaskAssignmentService;
 import qa.qcri.aidr.trainer.api.template.PybossaTemplate;
 import qa.qcri.aidr.trainer.api.template.TaskAnswerResponse;
 
@@ -35,7 +33,6 @@ import qa.qcri.aidr.trainer.api.template.TaskAnswerResponse;
 public class TaskAnswerServiceImpl implements TaskAnswerService{
 
 	protected static Logger logger = Logger.getLogger(TaskAnswerServiceImpl.class);
-	private static ErrorLog elog = new ErrorLog();
 
 	private JedisNotifier jedisNotifier ;
 

@@ -1,26 +1,15 @@
 package qa.qcri.aidr.trainer.api.util;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
-import org.codehaus.jackson.map.DeserializationConfig;
-
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.trainer.api.entity.Document;
-import qa.qcri.aidr.trainer.api.entity.TaskAssignment;
-import qa.qcri.aidr.trainer.api.entity.DocumentNominalLabel;
-import qa.qcri.aidr.trainer.api.entity.TaskAnswer;
-import qa.qcri.aidr.trainer.api.entity.NominalLabel;
 
 public class TaskManagerEntityMapper {
 
 	private static Logger logger = Logger.getLogger(TaskManagerEntityMapper.class);
-	private static ErrorLog elog = new ErrorLog();
 			
 	public TaskManagerEntityMapper() {}
 
@@ -35,7 +24,6 @@ public class TaskManagerEntityMapper {
 			}	
 		} catch (Exception e) {
 			logger.error("JSON deserialization exception");
-			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -53,7 +41,6 @@ public class TaskManagerEntityMapper {
 			}	
 		} catch (Exception e) {
 			logger.error("JSON deserialization exception");
-			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -67,7 +54,6 @@ public class TaskManagerEntityMapper {
 			if (task != null) jsonString = mapper.writeValueAsString(task);
 		} catch (IOException e) {
 			logger.error("JSON serialization exception");
-			logger.error(elog.toStringException(e));
 		}
 		return jsonString;
 	}

@@ -1,15 +1,6 @@
 package qa.qcri.aidr.trainer.api.controller;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.trainer.api.entity.ClientApp;
-import qa.qcri.aidr.trainer.api.service.ClientAppService;
-import qa.qcri.aidr.trainer.api.store.CodeLookUp;
-import qa.qcri.aidr.trainer.api.store.StatusCodeType;
-import qa.qcri.aidr.trainer.api.template.ClientAppModel;
+import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -18,7 +9,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import java.util.List;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import qa.qcri.aidr.trainer.api.entity.ClientApp;
+import qa.qcri.aidr.trainer.api.service.ClientAppService;
+import qa.qcri.aidr.trainer.api.store.CodeLookUp;
+import qa.qcri.aidr.trainer.api.store.StatusCodeType;
+import qa.qcri.aidr.trainer.api.template.ClientAppModel;
 
 /**
  * Created with IntelliJ IDEA.
@@ -34,7 +33,6 @@ public class ClientAppController {
     private ClientAppService clientAppService;
 
     private static Logger logger = Logger.getLogger(ClientAppController.class);
-    private static ErrorLog elog = new ErrorLog();
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -59,7 +57,6 @@ public class ClientAppController {
         }
         catch(Exception e){
             logger.error("disableClientApps exception for crisisID: " + crisisID);
-            logger.error(elog.toStringException(e));
         }
 
 
@@ -76,7 +73,6 @@ public class ClientAppController {
         }
         catch(Exception e){
             logger.error("disableClientApps exception in deleting for crisisId:" + crisisID + ", attributeID: " + attributeID);
-            logger.error(elog.toStringException(e));
         }
 
 

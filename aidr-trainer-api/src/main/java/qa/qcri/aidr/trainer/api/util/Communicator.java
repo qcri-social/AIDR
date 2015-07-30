@@ -1,20 +1,18 @@
 package qa.qcri.aidr.trainer.api.util;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import qa.qcri.aidr.common.logging.ErrorLog;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,7 +25,6 @@ public class Communicator {
 
     // will be placed on config.
     protected static Logger logger = Logger.getLogger(Communicator.class);
-    private static ErrorLog elog = new ErrorLog();
 
     public Communicator(){
 
@@ -67,7 +64,7 @@ public class Communicator {
             }
 
         }catch (Exception ex) {
-            logger.error(elog.toStringException(ex));
+            logger.warn("Error in processing request for data : " + data + " and url : " + url);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -107,7 +104,6 @@ public class Communicator {
 
         }catch (Exception ex) {
         	logger.error("ex Code deleteGet2: " + url);
-            logger.error(elog.toStringException(ex));
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -157,7 +153,6 @@ public class Communicator {
         }catch (Exception ex) {            
             logger.error("ex Code sendPost2: " + data);
             logger.error("ex Code sendPost3: " + url);
-            logger.error(elog.toStringException(ex));
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -200,7 +195,7 @@ public class Communicator {
 
 
         }catch (Exception ex) {
-            logger.error(elog.toStringException(ex));
+            logger.error("Error in processing request for data : " + data + " and url :" + url);
             responseOutput.append("Exception Code : " + ex);
 
         } finally {
@@ -237,7 +232,6 @@ public class Communicator {
 
         }catch (Exception ex) {
             logger.error("sendGet url = " + url);
-            logger.error(elog.toStringException(ex));
         }
 
         return response.toString();

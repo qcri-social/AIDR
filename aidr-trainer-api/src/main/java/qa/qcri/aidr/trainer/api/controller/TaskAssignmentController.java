@@ -1,17 +1,20 @@
 package qa.qcri.aidr.trainer.api.controller;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.trainer.api.service.TaskAssignmentService;
 import qa.qcri.aidr.trainer.api.store.CodeLookUp;
 import qa.qcri.aidr.trainer.api.store.StatusCodeType;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,7 +28,6 @@ import javax.ws.rs.core.Response;
 public class TaskAssignmentController {
 
     protected static Logger logger = Logger.getLogger(TaskAssignmentController.class);
-    private static ErrorLog elog = new ErrorLog();
     
     @Autowired
     private TaskAssignmentService taskAssignmentService;

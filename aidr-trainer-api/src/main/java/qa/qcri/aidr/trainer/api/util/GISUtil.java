@@ -7,8 +7,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
-
 /**
  * Utility class for handling GIS.
  * 
@@ -28,7 +26,6 @@ public class GISUtil {
     Communicator communicator;
     
     private static Logger logger = Logger.getLogger(GISUtil.class);
-    private static ErrorLog elog = new ErrorLog();
     
     public GISUtil(){
        this.parser = new JSONParser();
@@ -86,9 +83,7 @@ public class GISUtil {
             }
             catch(Exception e){
                 logger.error("getDisplayNameWithReverseLookUp exception for key: " + key);
-                logger.error(elog.toStringException(e));
             }
-
         }
         return  info;
     }
