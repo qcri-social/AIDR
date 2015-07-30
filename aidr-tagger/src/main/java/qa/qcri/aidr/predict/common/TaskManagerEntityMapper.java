@@ -1,9 +1,6 @@
 package qa.qcri.aidr.predict.common;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -11,21 +8,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
-import qa.qcri.aidr.predict.dbentities.TaggerDocument;
-import qa.qcri.aidr.predict.dbentities.NominalLabel;
-import qa.qcri.aidr.predict.dbentities.TaskAssignment;
-import qa.qcri.aidr.predict.data.Document;
-import qa.qcri.aidr.predict.data.DocumentJSONConverter;
-import qa.qcri.aidr.predict.data.Tweet;
-import qa.qcri.aidr.predict.featureextraction.FeatureExtractor;
-import qa.qcri.aidr.predict.featureextraction.WordSet;
-
 public class TaskManagerEntityMapper {
 
 	private static Logger logger = Logger.getLogger(TaskManagerEntityMapper.class);
-	private static ErrorLog elog = new ErrorLog();
 	
 	public TaskManagerEntityMapper() {}
 
@@ -40,7 +25,6 @@ public class TaskManagerEntityMapper {
 			}	
 		} catch (IOException e) {
 			logger.error("JSON deserialization exception");
-			logger.error(elog.toStringException(e));
 			System.err.println("JSON deserialization exception");
 			e.printStackTrace();
 			
@@ -58,10 +42,7 @@ public class TaskManagerEntityMapper {
 				return entity;
 			}	
 		} catch (IOException e) {
-			logger.error("JSON deserialization exception");
-			logger.error(elog.toStringException(e));
-			System.err.println("JSON deserialization exception");
-			e.printStackTrace();
+			logger.error("JSON deserialization exception", e);
 		}
 		return null;
 	}
@@ -74,10 +55,7 @@ public class TaskManagerEntityMapper {
 		try {
 			if (task != null) jsonString = mapper.writeValueAsString(task);
 		} catch (IOException e) {
-			logger.error("JSON deserialization exception");
-			logger.error(elog.toStringException(e));
-			System.err.println("JSON serialization exception");
-			e.printStackTrace();
+			logger.error("JSON deserialization exception", e);
 		}
 		return jsonString;
 	}

@@ -7,10 +7,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import redis.clients.jedis.Jedis;
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.data.Document;
+import redis.clients.jedis.Jedis;
 
 /**
  * Abstract class for simplifying handling of pipeline processes that consume
@@ -23,7 +22,6 @@ import qa.qcri.aidr.predict.data.Document;
 public abstract class PipelineProcess implements Runnable {
 	
 	private static Logger logger = Logger.getLogger(PipelineProcess.class);
-	private static ErrorLog elog = new ErrorLog();
     
 	static class ExecutionTime {
         public double dT;
@@ -71,7 +69,6 @@ public abstract class PipelineProcess implements Runnable {
                     item = Serializer.deserialize(byteDoc.get(1));
                 } catch (ClassNotFoundException | IOException e) {
                     logger.error("Error when deserializing input document.");
-                    logger.error(elog.toStringException(e));
                     continue;
                 }
 
@@ -89,7 +86,6 @@ public abstract class PipelineProcess implements Runnable {
                         outputCount++;
                     } catch (IOException e) {
                         logger.error("Error when serializing output document.");
-                        logger.error(elog.toStringException(e));
                     }
                 }
 
