@@ -45,7 +45,7 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
     	var link=window.location.href;
     	var description=JSON.stringify(resp.request.options);
     	 Ext.Ajax.request({
-    		 url: '/protected/tagger/sendEmailService.action',
+    		 url: BASE_URL + '/protected/tagger/sendEmailService.action',
     		 params: {
     		                 url: link, 
     		                 mailType: mailType,

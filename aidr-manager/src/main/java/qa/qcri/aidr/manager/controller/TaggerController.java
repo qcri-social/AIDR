@@ -1001,7 +1001,7 @@ public class TaggerController extends BaseController {
 		logger.info("In sending email");
 		UserEntity userEntity = getAuthenticatedUser();
 		userEntity.getUserName();
-		String body = "User:-"+userEntity.getUserName() + "\\nURL:-"+url +"\\nRequestHeader:-"+description;
+		String body = "User:-"+userEntity.getUserName() + "\nURL:-"+url +"\nRequestHeader:-"+description;
 		String subject = mailType;
 		Boolean result = false;
 		try{

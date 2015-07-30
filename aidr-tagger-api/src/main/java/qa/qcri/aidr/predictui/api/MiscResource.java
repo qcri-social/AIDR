@@ -291,7 +291,7 @@ public class MiscResource {
 	public Response sendEmail(@FormParam("subject") String subject, @FormParam("body") String body) throws Exception {
 		try {
 			String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
-			EmailClient.sendErrorMail(subject, time + "/n"+body);
+			EmailClient.sendErrorMail(subject, time + "\n"+body);
 		} catch (Exception e) {
 			logger.error("Unable to send email");
 			logger.error(e.getMessage());
