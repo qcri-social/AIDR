@@ -1,5 +1,18 @@
 package qa.qcri.aidr.manager.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -7,10 +20,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.manager.dto.AidrCollectionTotalDTO;
 import qa.qcri.aidr.manager.dto.TaggerCrisisType;
 import qa.qcri.aidr.manager.exception.AidrException;
@@ -23,20 +39,10 @@ import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.JsonDataValidator;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 @Controller
 @RequestMapping("public/collection")
 public class PublicController extends BaseController{
 	private static Logger logger = Logger.getLogger(PublicController.class);
-	private static ErrorLog elog = new ErrorLog();
 	
 	@Autowired
 	private CollectionService collectionService;
@@ -158,7 +164,6 @@ public class PublicController extends BaseController{
             return getUIWrapper(data, true);
 
         } catch (Exception e) {
-            logger.error(elog.toStringException(e));
             return getUIWrapper(false);
         }
 
@@ -178,7 +183,7 @@ public class PublicController extends BaseController{
 			return getUIWrapper(data, true);
 
 		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
+			logger.error("Error in findAll.");
 			return getUIWrapper(false);
 		}
 
@@ -213,7 +218,7 @@ public class PublicController extends BaseController{
 			return getUIWrapper(dtoList, count.longValue());
 
 		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
+			logger.error("Error in findAllRunning.");
 			return getUIWrapper(false);
 		}
 
@@ -243,7 +248,7 @@ public class PublicController extends BaseController{
 			return getUIWrapper(dtoList, count.longValue());
 
 		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
+			logger.error("Error in findAllRunningWithNoOutput.");
 			return getUIWrapper(false);
 		}
 
@@ -278,7 +283,7 @@ public class PublicController extends BaseController{
 			return getUIWrapper(dtoList, count.longValue());
 
 		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
+			logger.error("Error in ");
 			return getUIWrapper(false);
 		}
 	}
@@ -312,7 +317,7 @@ public class PublicController extends BaseController{
 				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 			}
 		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
+			logger.error("Error in generateTweetIdsLink for codd : " + code);
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 	}
@@ -338,7 +343,7 @@ public class PublicController extends BaseController{
 		try {
 			result = taggerService.loadLatestTweets(code, constraints);
 		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
+			logger.error("Error in loadLatestTweets for code : " + code + " and constraints : " + constraints);
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 		return getUIWrapper(result,true);
@@ -364,7 +369,6 @@ public class PublicController extends BaseController{
 			}
 		} catch (Exception e) {
 			logger.error("Unable to fetch list of running collections from DB");
-			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -387,7 +391,6 @@ public class PublicController extends BaseController{
 			}
 		} catch (Exception e) {
 			logger.error("Unable to fetch list of running collections from DB");
-			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -411,7 +414,6 @@ public class PublicController extends BaseController{
 			return result;
 		} catch (Exception e) {
 			logger.error("Unable to fetch total count of downloaded documents for collection = " + collectionCode);
-			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}

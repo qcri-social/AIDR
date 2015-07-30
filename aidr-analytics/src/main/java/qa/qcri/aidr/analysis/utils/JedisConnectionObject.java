@@ -7,12 +7,8 @@ package qa.qcri.aidr.analysis.utils;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
-
-
-
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -36,7 +32,6 @@ public class JedisConnectionObject {
 
 	// Logger setup
 	private static Logger logger = Logger.getLogger(JedisConnectionObject.class);
-	private static ErrorLog elog = new ErrorLog();
 	/**
 	 * 
 	 * @param host hostname on which REDIS resides
@@ -78,7 +73,6 @@ public class JedisConnectionObject {
 					logger.info("New Jedis pool: " + pool);
 				} catch (Exception e) {
 					logger.error("Fatal error! Could not initialize Jedis Pool!");
-					logger.error(elog.toStringException(e));
 					JedisConnectionObject.poolConfig = null;
 					JedisConnectionObject.pool = null;
 					JedisConnectionObject.poolSetup = false;
@@ -120,7 +114,6 @@ public class JedisConnectionObject {
 				subscriberJedis = null;
 				connectionSetup = false;
 				logger.error("Fatal error! Could not get a resource from the pool.");
-				logger.error(elog.toStringException(e));
 			}
 			if (subscriberJedis != null) {
 				allotedJedis.put(subscriberJedis, false);		// initially nothing assigned
@@ -171,7 +164,6 @@ public class JedisConnectionObject {
 				}
 			} catch (JedisConnectionException e) {
 				logger.error("JedisConnectionException occurred...");
-				logger.error(elog.toStringException(e));
 				if (jedisInstance != null && jedisInstance.isConnected()) jedisInstance.close();
 				jedisInstance = null;
 				//JedisConnectionObject.pool.returnBrokenResource(jedisInstance);

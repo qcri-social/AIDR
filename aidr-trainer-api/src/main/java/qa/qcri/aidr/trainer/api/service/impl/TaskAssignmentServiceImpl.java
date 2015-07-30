@@ -1,5 +1,7 @@
 package qa.qcri.aidr.trainer.api.service.impl;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -7,14 +9,11 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 import qa.qcri.aidr.trainer.api.dao.UsersDao;
 import qa.qcri.aidr.trainer.api.entity.Users;
 import qa.qcri.aidr.trainer.api.service.TaskAssignmentService;
-
-import java.util.List;
-
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 
 @Service("taskAssignmentService")
 @Transactional(readOnly = true)

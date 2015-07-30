@@ -10,8 +10,6 @@ import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
-
 /**
  * Several operations related to parsing and formatting dates.
  * 
@@ -20,7 +18,6 @@ import qa.qcri.aidr.common.logging.ErrorLog;
  */
 public class DateFormatConfig {
 	private static Logger logger = Logger.getLogger(DateFormatConfig.class);
-	private static ErrorLog elog = new ErrorLog();
 
 	public static final String ISODateFormat = "yyyy-MM-dd'T'HH:mm'Z'";
 	public static final String StandardDateFormat = "EEE MMM dd HH:mm:ss ZZZ yyyy";

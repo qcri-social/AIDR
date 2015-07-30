@@ -41,7 +41,6 @@ import org.supercsv.io.ICsvMapWriter;
 import qa.qcri.aidr.common.filter.FilterQueryMatcher;
 import qa.qcri.aidr.common.filter.JsonQueryList;
 import qa.qcri.aidr.common.filter.NominalLabel;
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentList;
 import qa.qcri.aidr.io.FileSystemOperations;
@@ -57,7 +56,6 @@ import com.google.gson.stream.JsonReader;
 public class JsonDeserializer {
 
 	private static Logger logger = Logger.getLogger(JsonDeserializer.class.getName());
-	private static ErrorLog elog = new ErrorLog();
 
 	private static final int BUFFER_SIZE = 10 * 1024 * 1024;	// buffer size to use for buffered r/w
 	private static final int LIST_BUFFER_SIZE = 50000; 
@@ -127,10 +125,8 @@ public class JsonDeserializer {
 					br.close();
 				} catch (FileNotFoundException ex) {
 					logger.error(collectionCode + ": couldn't find file = " + fileLocation);
-					logger.error(elog.toStringException(ex));
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IO Exception for file = " + fileLocation);
-					logger.error(elog.toStringException(ex));
 				}
 			}	// end for
 			int countToWrite = tweetsList.size();
@@ -148,7 +144,6 @@ public class JsonDeserializer {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for csv file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -222,10 +217,8 @@ public class JsonDeserializer {
 
 				} catch (FileNotFoundException ex) {
 					logger.error(collectionCode + ": couldn't find file = " + fileLocation);
-					logger.error(elog.toStringException(ex));
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IO Exception for file = " + fileLocation);
-					logger.error(elog.toStringException(ex));
 				}
 			}	// end for
 			int countToWrite = tweetsList.size();
@@ -247,7 +240,6 @@ public class JsonDeserializer {
 					writer.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for csv file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -348,10 +340,8 @@ public class JsonDeserializer {
 
 				} catch (FileNotFoundException ex) {
 					logger.error(collectionCode + ": couldn't find file = " + fileLocation);
-					logger.error(elog.toStringException(ex));
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IO Exception for file = " + fileLocation);
-					logger.error(elog.toStringException(ex));
 				}
 			}	// end for
 			int countToWrite = tweetsList.size();
@@ -372,7 +362,6 @@ public class JsonDeserializer {
 					writer.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for csv file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -479,18 +468,15 @@ public class JsonDeserializer {
 			}
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 			isCSVGenerated = false;
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file");
-			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for csv file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -588,17 +574,14 @@ public class JsonDeserializer {
 			}
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": File not found.");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} finally {
 			if (writer != null) {
 				try {
 					writer.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for csv file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -733,17 +716,14 @@ public class JsonDeserializer {
 			}
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} finally {
 			if (writer != null) {
 				try {
 					writer.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for csv file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -802,10 +782,8 @@ public class JsonDeserializer {
 
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} 
 		return tweetsList;
 	}
@@ -874,10 +852,8 @@ public class JsonDeserializer {
 
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} 
 		return tweetsList;
 	}
@@ -1147,10 +1123,8 @@ public class JsonDeserializer {
 
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -1161,7 +1135,6 @@ public class JsonDeserializer {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for JSON file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -1248,10 +1221,8 @@ public class JsonDeserializer {
 
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -1262,7 +1233,6 @@ public class JsonDeserializer {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for JSON file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -1363,13 +1333,10 @@ public class JsonDeserializer {
 			}	// end for	
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} catch (NullPointerException ex) {
 			logger.error(collectionCode + ": empty list of files to read");
-			logger.info(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -1380,7 +1347,6 @@ public class JsonDeserializer {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for JSON file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -1449,10 +1415,8 @@ public class JsonDeserializer {
 
 				} catch (FileNotFoundException ex) {
 					logger.error(collectionCode + ": couldn't find file");
-					logger.error(elog.toStringException(ex));
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IO Exception for file read");
-					logger.error(elog.toStringException(ex));
 				} 
 			}	// end for 
 			if (DownloadJsonType.JSON_OBJECT.equals(jsonType) && !jsonObjectClosed) {
@@ -1464,10 +1428,8 @@ public class JsonDeserializer {
 
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -1478,7 +1440,6 @@ public class JsonDeserializer {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for JSON file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -1600,13 +1561,10 @@ public class JsonDeserializer {
 			}	// end for	
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} catch (NullPointerException ex) {
 			logger.error(collectionCode + ": empty list of files to read");
-			logger.info(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -1618,7 +1576,6 @@ public class JsonDeserializer {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for JSON file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -1715,10 +1672,8 @@ public class JsonDeserializer {
 
 				} catch (FileNotFoundException ex) {
 					logger.error(collectionCode + ": couldn't find file");
-					logger.error(elog.toStringException(ex));
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IO Exception for file read");
-					logger.error(elog.toStringException(ex));
 				} 
 			}	// end for 
 			if (DownloadJsonType.JSON_OBJECT.equals(jsonType) && !jsonObjectClosed) {
@@ -1730,10 +1685,8 @@ public class JsonDeserializer {
 
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -1744,7 +1697,6 @@ public class JsonDeserializer {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for JSON file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -1974,7 +1926,6 @@ public class JsonDeserializer {
 					writer.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for csv file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -2066,7 +2017,6 @@ public class JsonDeserializer {
 			}	// end for	
 		} catch (Exception ex) {
 			logger.error(collectionCode + ": empty list of files to read");
-			logger.info(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -2078,7 +2028,6 @@ public class JsonDeserializer {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for JSON file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -2159,7 +2108,6 @@ public class JsonDeserializer {
 			beanWriter.close();
 		} catch (Exception ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -2170,7 +2118,6 @@ public class JsonDeserializer {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for JSON file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}

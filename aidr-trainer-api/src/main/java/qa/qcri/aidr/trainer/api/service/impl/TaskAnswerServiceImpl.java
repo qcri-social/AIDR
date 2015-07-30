@@ -21,6 +21,9 @@ import qa.qcri.aidr.trainer.api.service.TaskAssignmentService;
 import qa.qcri.aidr.trainer.api.template.PybossaTemplate;
 import qa.qcri.aidr.trainer.api.template.TaskAnswerResponse;
 
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jilucas, koushik

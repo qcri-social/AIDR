@@ -2,7 +2,6 @@ package qa.qcri.aidr.trainer.api.Jedis;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import redis.clients.jedis.Jedis;
 
 /**

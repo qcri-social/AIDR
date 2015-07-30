@@ -7,7 +7,6 @@ package qa.qcri.aidr.redis;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
 import redis.clients.jedis.Jedis;
@@ -19,7 +18,6 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 public class JedisConnectionPool  {
 	
 	private static Logger logger = Logger.getLogger(JedisConnectionPool.class.getName());
-	private static ErrorLog elog = new ErrorLog();
 	
     static JedisPool jedisPool;
     
@@ -45,7 +43,6 @@ public class JedisConnectionPool  {
             return jedisPool.getResource();
         } catch (JedisConnectionException e) {
             logger.error("Could not establish Redis connection. Is the Redis running?");
-            logger.error(elog.toStringException(e));
             throw e;
         }
     }

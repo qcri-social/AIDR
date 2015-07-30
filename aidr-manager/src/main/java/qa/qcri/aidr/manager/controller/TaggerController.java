@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
 import qa.qcri.aidr.manager.dto.CrisisRequest;
@@ -59,7 +58,6 @@ import qa.qcri.aidr.manager.service.TaggerService;
 public class TaggerController extends BaseController {
 
 	private Logger logger = Logger.getLogger(TaggerController.class);
-	private ErrorLog elog = new ErrorLog();
 
 	@Autowired
 	private TaggerService taggerService;
@@ -216,7 +214,7 @@ public class TaggerController extends BaseController {
 							logger.info("cast long value: " + value);
 							result.get(i).setTrainingExamples(value.longValue());
 						} catch (Exception e) {
-							logger.error(elog.toStringException(e));
+							logger.error("Error in getModelsForCrisis for id : " + id);
 						}
 					}
 					logger.info("For model family id: " + result.get(i).getModelFamilyID() + ", set human labeled count = " + result.get(i).getTrainingExamples());
@@ -225,7 +223,7 @@ public class TaggerController extends BaseController {
 			//return getUIWrapper(taggerService.getModelsForCrisis(id), true);
 			return getUIWrapper(result, true);
 		} catch (AidrException e) {
-			logger.error(elog.toStringException(e));
+			logger.error("Error in getModelsForCrisis for id : " + id, e);
 			return getUIWrapper(false, e.getMessage());
 		}
 	}
@@ -448,16 +446,12 @@ public class TaggerController extends BaseController {
 			response = taggerService.getTrainingDataByModelIdAndCrisisId(modelFamilyId, crisisId, start, limit, "", "");
 			logger.info("received response back: " + response);
 		} catch (AidrException e) {
-			logger.error(elog.toStringException(e));
+			logger.error("Error in getTrainingDataCountByModelIdAndCrisisId for crisisId : " + crisisId  + " and modelFamilyId : " + modelFamilyId, e);
 			return getUIWrapper(new Integer(0), false);
 		}
 		Integer total = 0;
 		if (response != null && !response.isEmpty()) {
-			try {
-				total = response.get(0).getTotalRows();
-			} catch (Exception e) {
-				logger.error(elog.toStringException(e));
-			}
+			total = response.get(0).getTotalRows();
 		}
 		logger.info("Returning for crisis ID " + crisisId + ", model family ID " + modelFamilyId + ", human labeled count = " + total);
 		return getUIWrapper(total, true);

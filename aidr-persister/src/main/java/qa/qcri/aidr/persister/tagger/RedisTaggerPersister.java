@@ -7,10 +7,7 @@ package qa.qcri.aidr.persister.tagger;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.persister.collector.*;
 import qa.qcri.aidr.redis.JedisConnectionPool;
-import qa.qcri.aidr.utils.GenericCache;
 import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
 import redis.clients.jedis.Jedis;
@@ -19,7 +16,6 @@ import redis.clients.jedis.Jedis;
 public class RedisTaggerPersister implements Runnable {
 
 	private static Logger logger = Logger.getLogger(RedisTaggerPersister.class.getName());
-	private static ErrorLog elog = new ErrorLog();
 	
 	String fileName;
 	Thread t;
@@ -44,8 +40,6 @@ public class RedisTaggerPersister implements Runnable {
 			subscriber = new TaggerSubscriber(fileName, collectionCode);
 		} catch (Exception e) {
 			logger.error(collectionCode + " error in subscribing to Redis");
-        	logger.error(elog.toStringException(e));
-        	
 			connObject.close(subscriberJedis);
 			subscriberJedis = null;
 			subscriber = null;
@@ -75,7 +69,6 @@ public class RedisTaggerPersister implements Runnable {
 							Thread.sleep(200);
 						} catch (InterruptedException ex) {
 							logger.warn(collectionCode + ": Error in closing Redis connection");
-							logger.warn(elog.toStringException(ex));
 						}
 					}
 				}

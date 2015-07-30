@@ -13,23 +13,22 @@ package qa.qcri.aidr.persister.api;
 import java.net.UnknownHostException;
 import java.util.Map;
 
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.Path;
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import net.minidev.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.persister.collector.RedisCollectorPersister;
 import qa.qcri.aidr.utils.DownloadJsonType;
@@ -44,7 +43,6 @@ import qa.qcri.aidr.utils.ResultStatus;
 public class Persister4CollectorAPI {
 	
 	private static Logger logger = Logger.getLogger(Persister4CollectorAPI.class.getName());
-	private static ErrorLog elog = new ErrorLog();
 	
     @Context
     private UriInfo context;
@@ -75,7 +73,6 @@ public class Persister4CollectorAPI {
         }catch (Exception ex) {
             //Logger.getLogger(Persister4CollectorAPI.class.getName()).log(Level.SEVERE, null, ex);
         	logger.error(collectionCode +  ": Failed to start persister");
-        	logger.error(elog.toStringException(ex));
         }
         return Response.ok(response).build();
     }
@@ -98,7 +95,6 @@ public class Persister4CollectorAPI {
             } catch (InterruptedException ex) {
                 //Logger.getLogger(Persister4CollectorAPI.class.getName()).log(Level.SEVERE, null, ex);
             	logger.error(collectionCode + ": Failed to stop persister");
-            	logger.error(elog.toStringException(ex));
             }
         }
         response = "Unable to locate a running persister with the given collection code:[" + collectionCode + "]";

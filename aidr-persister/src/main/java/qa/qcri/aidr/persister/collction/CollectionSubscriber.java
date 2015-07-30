@@ -6,26 +6,27 @@
 package qa.qcri.aidr.persister.collction;
 
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.redis.LoadShedder;
 import qa.qcri.aidr.io.FileSystemOperations;
 import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
 import redis.clients.jedis.JedisPubSub;
 
-import java.io.*;
-import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.ConcurrentHashMap;
-
 public class CollectionSubscriber extends JedisPubSub {
 
     private static Logger logger = Logger.getLogger(CollectionSubscriber.class.getName());
-    private static ErrorLog elog = new ErrorLog();
 
     private String persisterDir;
     private String collectionDir;
@@ -95,7 +96,6 @@ public class CollectionSubscriber extends JedisPubSub {
             }
         } catch (IOException ex) {
             logger.error(collectionCode + " error in creating new file at location " + collectionDir);
-            logger.error(elog.toStringException(ex));
         }
     }
 
@@ -120,7 +120,6 @@ public class CollectionSubscriber extends JedisPubSub {
         	out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file, true)), Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_FILE_WRITER_BUFFER_SIZE)));
         } catch (IOException ex) {
             logger.error(collectionCode + "Error in creating Buffered writer");
-            logger.error(elog.toStringException(ex));
         }
 
     }
@@ -132,7 +131,6 @@ public class CollectionSubscriber extends JedisPubSub {
             isTimeToCreateNewFile();
         } catch (IOException ex) {
             logger.error(collectionCode + "Error in writing to file");
-            logger.error(elog.toStringException(ex));
         }
     }
 
@@ -154,7 +152,6 @@ public class CollectionSubscriber extends JedisPubSub {
             }
         } catch (IOException ex) {
             logger.error(collectionCode + "Error in closing file writer");
-            logger.error(elog.toStringException(ex));
         }
     }
 

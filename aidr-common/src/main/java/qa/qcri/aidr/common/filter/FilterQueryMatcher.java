@@ -16,9 +16,6 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 import com.google.gson.Gson;
 
 import qa.qcri.aidr.common.code.DateFormatConfig;
-import qa.qcri.aidr.common.logging.ErrorLog;
-
-
 
 public class FilterQueryMatcher {
 
