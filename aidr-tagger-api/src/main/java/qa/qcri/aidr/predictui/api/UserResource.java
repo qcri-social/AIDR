@@ -24,7 +24,6 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.predictui.facade.UserResourceFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
@@ -49,7 +48,6 @@ public class UserResource {
 
 	//private Logger logger = Logger.getLogger(UserResource.class.getName());
 	private Logger logger = Logger.getLogger(UserResource.class);
-	private ErrorLog elog = new ErrorLog();
 
 	public UserResource() {
 	}
@@ -111,7 +109,6 @@ public class UserResource {
 			return Response.ok(mapper.writeValueAsString(users)).build();
 		} catch (Exception e) {
 			logger.error("Error in getting all users");
-			logger.error(elog.toStringException(e));
 			return Response.ok(new ArrayList<UsersDTO>()).build();
 		}
 	}

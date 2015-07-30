@@ -18,7 +18,6 @@ import javax.ejb.Stateless;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAssignmentDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
@@ -29,7 +28,6 @@ import qa.qcri.aidr.dbmanager.entities.task.TaskAssignment;
 public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<TaskAssignment, Long> implements TaskAssignmentResourceFacade {
 
 	private Logger logger = Logger.getLogger("db-manager-log");
-	private ErrorLog elog = new ErrorLog();
 
 	public TaskAssignmentResourceFacadeImp() {
 		super(TaskAssignment.class);
@@ -53,9 +51,7 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 			}
 			return 1;
 		} catch (Exception e) {
-			logger.error("Error in insert operation!");
-			logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("Error in insert operation!", e);
 			return 0;
 		}
 	}
@@ -73,7 +69,6 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 			}
 		} catch (Exception e) {
 			logger.error("Error in insert operation!", e);
-			e.printStackTrace();
 		}
 		return 0;
 	}
@@ -93,7 +88,6 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 				return deleteCount;
 			} catch (Exception e) {
 				logger.error("Error in undo operation!");
-				logger.error(elog.toStringException(e));
 			}
 		}
 		return 0;
@@ -117,7 +111,6 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 				return deleteCount;
 			} catch (Exception e) {
 				logger.error("Error in undo operation!");
-				logger.error(elog.toStringException(e));
 			}
 		}
 		return 0;
@@ -134,7 +127,6 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 			}
 		} catch (Exception e) {
 			logger.error("Error in undo operation!");
-			logger.error(elog.toStringException(e));
 		}
 		return 0;
 	}
@@ -156,7 +148,7 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 				}
 			}
 		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
+			logger.error("Error in undoTaskAssignmentByTimer.");
 		}
 
 	}
@@ -170,7 +162,6 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 			return t;
 		} catch (Exception e) {
 			logger.error("Error in find operation: documentID = " + documentID + ", userID = " + userID);
-			logger.error(elog.toStringException(e));
 			return null;
 		}
 	}
@@ -185,7 +176,6 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 			return t != null ? new TaskAssignmentDTO(t) : null;
 		} catch (Exception e) {
 			logger.error("Error in find operation: documentID = " + documentID + ", userID = " + userID);
-			logger.error(elog.toStringException(e));
 			return null;
 		}
 	}
@@ -202,10 +192,7 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 			}
 			return dtoList;
 		} catch (Exception e) {
-			logger.error("Error in find operation: documentID = " + documentID);
-			logger.error(elog.toStringException(e));
-			System.out.println("Error in find operation: documentID = " + documentID);
-			e.printStackTrace();
+			logger.error("Error in find operation: documentID = " + documentID, e);
 			return null;
 		}
 	}
@@ -218,7 +205,6 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 			return (taskAssignments != null ? taskAssignments.size() : 0);
 		} catch (Exception e) {
 			logger.error("Error in find operation: userID = " + userID);
-			logger.error(elog.toStringException(e));
 		}
 		return -1;
 	}

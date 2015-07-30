@@ -12,34 +12,26 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
-import org.hibernate.Transaction;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
-import qa.qcri.aidr.common.exception.AidrException;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade;
-import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
-import qa.qcri.aidr.dbmanager.entities.model.Model;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
-import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 
 @Stateless(name="DocumentResourceFacadeImp")
 public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long> implements DocumentResourceFacade  {
 
 	private Logger logger = Logger.getLogger("db-manager-log");
-	private ErrorLog elog = new ErrorLog();
 
 	@EJB
 	CrisisResourceFacade crisisEJB;
@@ -99,7 +91,6 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 					logger.info("deleted count = " + deleteCount);
 				} catch (Exception e) {
 					logger.error("deletion query failed, document: " + document.getDocumentID());
-					logger.error(elog.toStringException(e));
 					return 0;
 				}
 				logger.info("deletion success, deleted count = " + deleteCount);
@@ -108,7 +99,6 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 
 			} catch (Exception e) {
 				logger.error("Deletion query failed");
-				logger.error(elog.toStringException(e));
 				return 0;
 			}
 		}
@@ -130,7 +120,6 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 				logger.info("deleted count = " + deleteCount);
 			} catch (Exception e) {
 				logger.error("Collection deletion query failed");
-				logger.error(elog.toStringException(e));
 			}
 		}
 		return deleteCount;
@@ -149,7 +138,6 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 				return result;
 			} catch (Exception e) {
 				logger.error("Deletion query failed");
-				logger.error(elog.toStringException(e));
 				return 0;
 			}
 		}
@@ -168,7 +156,6 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 			return result;
 		} catch (Exception e) {
 			logger.error("Deletion query failed");
-			logger.error(elog.toStringException(e));
 			return 0;
 		}
 	}
@@ -190,7 +177,6 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 			} catch (Exception e) {
 				logger.error("[deleteUnassignedDocumentCollection] Collection deletion query failed");
 				logger.error("Exception", e);
-				e.printStackTrace();
 			}
 		}
 		return deleteCount;
@@ -246,11 +232,9 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 		logger.info("Constructed query: " + deleteQuery.getQueryString());
 		try {
 			deleteCount = deleteQuery.executeUpdate();
-			System.out.println("[deleteStaleDocuments] number of deleted records = " + deleteCount);
 			logger.info("[deleteStaleDocuments] number of deleted records = " + deleteCount);
 		} catch (Exception e) {
 			logger.error("Exception in executing SQL delete stale docs query");
-			logger.error(elog.toStringException(e));
 		}
 		return deleteCount;
 	}

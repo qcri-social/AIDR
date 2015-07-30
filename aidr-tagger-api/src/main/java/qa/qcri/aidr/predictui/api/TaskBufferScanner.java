@@ -24,8 +24,6 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -36,10 +34,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.exception.ConfigurationPropertyFileException;
-import qa.qcri.aidr.common.exception.ConfigurationPropertyNotRecognizedException;
-import qa.qcri.aidr.common.exception.ConfigurationPropertyNotSetException;
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.facade.TaskBufferScannerFacade;
 import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
 import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
@@ -59,7 +53,6 @@ public class TaskBufferScanner  {
 
 	//private static Logger logger = Logger.getLogger(TaskBufferScanner.class);
 	private static Logger logger = Logger.getLogger(TaskBufferScanner.class);
-	private static ErrorLog elog = new ErrorLog();
 
 	private static ExecutorService executorService = null;
 	private static boolean threadStatus;
@@ -120,12 +113,10 @@ public class TaskBufferScanner  {
 			});
 		} catch (RejectedExecutionException e) {
 			logger.error("Fatal error executing thread! Terminating.");
-			logger.error(elog.toStringException(e));
 			threadStatus = false;
 			return false;
 		} catch (NullPointerException e) {
 			logger.error("Fatal error executing thread! Terminating.");
-			logger.error(elog.toStringException(e));
 			threadStatus = false;
 			return false;
 		} 

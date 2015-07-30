@@ -5,7 +5,6 @@ import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.facade.TaskBufferScannerFacade;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
@@ -19,7 +18,6 @@ public class TaskBufferScannerImp implements TaskBufferScannerFacade {
 
 	//private static Logger logger = Logger.getLogger(TaskBufferScannerImp.class);
 	private static Logger logger = Logger.getLogger(TaskBufferScannerImp.class);
-	private static ErrorLog elog = new ErrorLog();
 	
 	//@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
 	//private EntityManager em;
@@ -35,7 +33,6 @@ public class TaskBufferScannerImp implements TaskBufferScannerFacade {
 			logger.info("number of deleted stale records = " + result);
 		} catch (Exception e) {
 			logger.error("Exception in executing SQL delete stale docs query");
-			logger.error(elog.toStringException(e));
 		}
 		try {
 			int result = taskManager.deleteStaleTasks("JOIN", 
@@ -44,7 +41,6 @@ public class TaskBufferScannerImp implements TaskBufferScannerFacade {
 			logger.info("number of deleted no answer records = " + result);
 		} catch (Exception e) {
 			logger.error("Exception in executing SQL delete no answer docs query");
-			logger.error(elog.toStringException(e));
 		}
 	}
 

@@ -8,7 +8,6 @@ import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
@@ -35,7 +34,6 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 	private TaskManagerRemote<Document, Long> taskManager;
 
 	private static Logger logger = Logger.getLogger(CrisisManagementResource.class);
-	private static ErrorLog elog = new ErrorLog();
 
 	@Override
 	public String trashByCrisisCode(String crisisCode) {
@@ -92,7 +90,6 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 				taskManager.deleteTask(associatedDocuments);
 			} catch (Exception e) {
 				logger.error("Error in deleting document set");
-				logger.error(elog.toStringException(e));
 			}
 			List<DocumentDTO> temp = remoteDocumentEJB.findUnLabeledDocumentsByCrisisID(crisis.getCrisisID());
 			logger.info("Post Trashing: found for " + crisisCode + ", unlabeled docs after delete = " + temp.size());		
@@ -106,7 +103,6 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 			}
 		} catch (Exception e) {
 			logger.error("Something went wrong in trashing attempt!");
-			logger.error(elog.toStringException(e));
 			StringBuilder sb = new StringBuilder().append("{\"status\": \"FAILED\"}");
 			return sb.toString();
 		}
@@ -131,8 +127,6 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 			}
 		} catch (Exception e) {
 			logger.error("Could not retrieve crisis to untrash: " + crisisCode);
-			logger.error(elog.toStringException(e));
-
 			return sb.append("{\"status\": \"FAILED\"}").toString();
 		}
 		try {
@@ -156,7 +150,6 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 			return sb.append("{\"status\": \"UNTRASHED\"}").toString();
 		} catch (Exception e) {
 			logger.error("Something went wrong in untrashing attempt!");
-			logger.error(elog.toStringException(e));
 			return sb.append("{\"status\": \"FAILED\"}").toString();
 		}
 	}

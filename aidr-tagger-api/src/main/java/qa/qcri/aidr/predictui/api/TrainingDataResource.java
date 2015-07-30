@@ -27,7 +27,6 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
@@ -53,7 +52,6 @@ public class TrainingDataResource {
     
     //private static Logger logger = Logger.getLogger(TrainingDataResource.class);
     private static Logger logger = Logger.getLogger(TrainingDataResource.class);
-    private static ErrorLog elog = new ErrorLog();
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -65,7 +63,6 @@ public class TrainingDataResource {
             return Response.ok(crisis).build();
         } catch (RuntimeException e) {
             logger.error("Error in getting tweet to tag for crisis: " + crisisId);
-            logger.error(elog.toStringException(e));
         	return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
         }
       
@@ -81,7 +78,6 @@ public class TrainingDataResource {
             return Response.ok(crisis).build();
         } catch (RuntimeException e) {
             logger.error("Error in getting crisis by code: " + crisisCode);
-            logger.error(elog.toStringException(e));
         	return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
         }
   
@@ -133,7 +129,6 @@ public class TrainingDataResource {
             CrisisDTO newCrisis = crisisLocalEJB.addCrisis(crisis);
         } catch (RuntimeException e) {
         	logger.error("Error while adding crisis: " + crisis.getCode() + ". Possible causes could be duplication of primary key, incomplete data, incompatible data format.");
-        	logger.error(elog.toStringException(e));
             return Response.ok("Error while adding Crisis. Possible causes could be duplication of primary key, incomplete data, incompatible data format.").build();
         }
 
@@ -150,7 +145,6 @@ public class TrainingDataResource {
             return Response.ok(dto).build();
         } catch (RuntimeException e) {
             logger.error("Error in editing crisis: " + crisis.getCode());
-            logger.error(elog.toStringException(e));
         	return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
         }
     }
@@ -188,11 +182,9 @@ public class TrainingDataResource {
 
         } catch (FileNotFoundException ex1) {
             logger.error("Couldn't create input stream for file" + TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.AIDR_TAGGER_CONFIG_URL));
-            logger.error(elog.toStringException(ex1));
             throw new RuntimeException(ex1);
         } catch (IOException ex2) {
         	logger.error("Couldn't load file" + TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.AIDR_TAGGER_CONFIG_URL));
-            logger.error(elog.toStringException(ex2));
             throw new RuntimeException(ex2);
 		} catch (NumberFormatException ex3) {
 			logger.error("Error in parsing sampleCountThreshold from: " + prop

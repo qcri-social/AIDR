@@ -1,15 +1,15 @@
 package qa.qcri.aidr.predictui.api;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.dbmanager.dto.CustomUiTemplateDTO;
-import qa.qcri.aidr.predictui.facade.CustomUITemplateFacade;
-import qa.qcri.aidr.predictui.util.ResponseWrapper;
-import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
-import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -17,7 +17,11 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 
-import java.util.List;
+import qa.qcri.aidr.dbmanager.dto.CustomUiTemplateDTO;
+import qa.qcri.aidr.predictui.facade.CustomUITemplateFacade;
+import qa.qcri.aidr.predictui.util.ResponseWrapper;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,7 +40,6 @@ public class CustomUITemplateResource {
     private CustomUITemplateFacade customUITemplateFacade;
 
     private static Logger logger = Logger.getLogger(CustomUITemplateResource.class);
-    private static ErrorLog elog = new ErrorLog();
     
     public CustomUITemplateResource(){
 

@@ -9,13 +9,6 @@
 
 package qa.qcri.aidr.dbmanager.ejb.local.facade.impl;
 
-import org.apache.log4j.Logger;
-import org.hibernate.*;
-import org.hibernate.criterion.*;
-
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.dbmanager.ejb.local.facade.CoreDBServiceFacade;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +16,17 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.LockOptions;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Order;
+
+import qa.qcri.aidr.dbmanager.ejb.local.facade.CoreDBServiceFacade;
 
 
 
@@ -33,7 +37,6 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 	protected EntityManager em;
 
 	private Logger logger = Logger.getLogger("db-manager-log");
-	private ErrorLog elog = new ErrorLog();
 
 	private Class<E> entityClass;
 
@@ -64,7 +67,6 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			return 0;
 		} catch (Exception e) {
 			logger.error("EntityManager setting exception : " + em);
-			logger.error(elog.toStringException(e));
 			throw new HibernateException("setEntityManager failed");
 		}
 	}
@@ -74,8 +76,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 		try { 
 			return em.unwrap(Session.class);
 		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("getCurrentSession failed", e);
 			throw new HibernateException("getCurrentSession failed");
 		}
 	}
@@ -86,8 +87,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 		try {
 			return (E) getCurrentSession().get(entityClass, id);
 		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("getById failed, id = " + id, e);
 			throw new HibernateException("getById failed, id = " + id);
 		}
 	}
@@ -100,8 +100,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			criteria.add(criterion);
 			return (E) criteria.uniqueResult();
 		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("getByCriterionID failed, criteria = " + criterion.toString(), e);
 			throw new HibernateException("getByCriterionID failed, criteria = " + criterion.toString());
 		}
 	}
@@ -115,8 +114,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			List<E> fetchedList = criteria.list();
 			return (fetchedList != null && !fetchedList.isEmpty()) ? (E) fetchedList.get(0) : null;
 		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("getByCriteria failed, criteria = " + criterion.toString(), e);
 			throw new HibernateException("getByCriteria failed, criteria = " + criterion.toString());
 		}
 	}
@@ -131,8 +129,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			//System.out.println("CoreDBServiceFacade: getAll fetched list size: " + fetchedList.size());
 			return fetchedList;
 		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("getAll failed", e);
 			throw new HibernateException("getAll failed");
 		}
 	}
@@ -149,8 +146,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			fetchedList = criteria.list();
 			return fetchedList;
 		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("getAllByCriteria failed, criteria = " + criterion.toString(), e);
 			throw new HibernateException("getAllByCriteria failed, criteria = " + criterion.toString());
 		}
 	}
@@ -169,8 +165,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			fetchedList = criteria.list();
 			return fetchedList;
 		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("getByCriteriaWithLimit failed, criteria = " + criterion.toString(), e);
 			throw new HibernateException("getByCriteriaWithLimit failed, criteria = " + criterion.toString());
 		}
 	}
@@ -196,8 +191,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			fetchedList = criteria.list();
 			return fetchedList;
 		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("getByCriteriaWithLimit failed, criteria = " + criterion.toString(), e);
 			throw new HibernateException("getByCriteriaByOrder failed, criteria = " + criterion.toString());
 		}
 	}
@@ -228,8 +222,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			fetchedList = criteria.list();
 			return fetchedList;
 		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("getByCriteriaWithAliasByOrder failed, criteria = " + criterion.toString(), e);
 			throw new HibernateException("getByCriteriaWithAliasByOrder failed, criteria = " + criterion.toString());
 		}
 	}
@@ -260,24 +253,20 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			fetchedList = criteria.list();
 			return fetchedList;
 		} catch (Exception e) {
-			logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("getByCriteriaWithInnerJoinByOrder failed, criteria = " + criterion.toString(), e);
 			throw new HibernateException("getByCriteriaWithInnerJoinByOrder failed, criteria = " + criterion.toString());
 		}
 	}
 
 	@Override
 	public void update(E e) {
-		Transaction tx = null;
 		try {
 			Session session = getCurrentSession();
 			session.saveOrUpdate(e);
 			session.flush();
 			session.evict(e);
 		} catch (Exception ex) {
-			System.out.println("Unable to update entity: " + e);
-			logger.error(elog.toStringException(ex));
-			ex.printStackTrace();
+			logger.error("Update failed", ex);
 			throw new HibernateException("Update failed");
 		}
 	}
@@ -295,7 +284,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			}
 			if (!tx.wasCommitted()) tx.commit();
 		} catch (Exception ex) {
-			logger.error(elog.toStringException(ex));
+			logger.error("Update list failed", ex);
 			tx.rollback();
 			throw new HibernateException("Update list failed");
 		}
@@ -312,9 +301,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			return id;
 
 		} catch (Exception ex) {
-			System.out.println("Unable to save entity: " + e);
-			logger.error(elog.toStringException(ex));
-			ex.printStackTrace();
+			logger.error("Save failed", ex);
 			throw new HibernateException("Save failed");
 		}
 
@@ -329,8 +316,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			session.evict(e);
 			return o;
 		} catch (Exception ex) {
-			logger.error(elog.toStringException(ex));
-			ex.printStackTrace();
+			logger.error("Merge failed", ex);
 			throw new HibernateException("Merge failed");
 		}
 
@@ -349,7 +335,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			}
 			if (!tx.wasCommitted()) tx.commit();
 		} catch (Exception ex) {
-			logger.error(elog.toStringException(ex));
+			logger.error("Merge list failed", ex);
 			tx.rollback();
 			throw new HibernateException("Merge list failed");
 		}
@@ -369,7 +355,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			}
 			if (!tx.wasCommitted()) tx.commit();
 		} catch (Exception ex) {
-			logger.error(elog.toStringException(ex));
+			logger.error("Save list failed", ex);
 			tx.rollback();
 			throw new HibernateException("Save list failed");
 		}
@@ -384,8 +370,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			session.flush();
 			session.evict(e);
 		} catch (Exception ex) {
-			logger.error(elog.toStringException(ex));
-			ex.printStackTrace();
+			logger.error("Delete failed", ex);
 			throw new HibernateException("Delete failed");
 		}
 	}
@@ -404,7 +389,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			}
 			if (!tx.wasCommitted()) tx.commit();
 		} catch (Exception ex) {
-			logger.error(elog.toStringException(ex));
+			logger.error("Delete list failed", ex);
 			tx.rollback();
 			throw new HibernateException("Delete list failed");
 		}
@@ -416,8 +401,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			List<E> entityCollection = getAllByCriteria(criterion);
 			delete(entityCollection);
 		} catch (Exception ex) {
-			logger.error(elog.toStringException(ex));
-			ex.printStackTrace();
+			logger.error("Delete by criteria failed", ex);
 			throw new HibernateException("Delete by criteria failed");
 		}
 	}

@@ -53,6 +53,7 @@ import org.glassfish.jersey.server.ChunkedOutput;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
 import qa.qcri.aidr.output.utils.OutputConfigurationProperty;
 import qa.qcri.aidr.output.utils.OutputConfigurator;
+import qa.qcri.aidr.output.utils.OutputErrorHandler;
 import redis.clients.jedis.Jedis;
 
 import com.google.gson.JsonObject;
@@ -217,6 +218,7 @@ public class AsyncStream implements ServletContextListener {
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					logger.error(channelCode + ": Fatal exception occurred attempting subscription: " + e.toString());
+					OutputErrorHandler.sendErrorMail(e.getLocalizedMessage(), channelCode + ": Fatal exception occurred attempting subscription: " + e.toString());
 					//System.exit(1);
 				}
 				logger.info(channelCode + ": Spawning async response thread");
