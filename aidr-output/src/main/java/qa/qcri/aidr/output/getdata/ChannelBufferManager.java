@@ -43,6 +43,7 @@ import qa.qcri.aidr.common.redis.LoadShedder;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
 import qa.qcri.aidr.output.utils.OutputConfigurationProperty;
 import qa.qcri.aidr.output.utils.OutputConfigurator;
+import qa.qcri.aidr.output.utils.OutputErrorHandler;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
@@ -120,6 +121,7 @@ public class ChannelBufferManager {
 			subscriberJedis = null;
 			isConnected = false;
 			logger.error("Fatal error! Couldn't establish connection to REDIS!", e);
+			OutputErrorHandler.sendErrorMail(e.getLocalizedMessage(), "Fatal error! Couldn't establish connection to REDIS!");
 		}
 		if (isConnected) {
 			aidrSubscriber = new RedisSubscriber();
@@ -133,6 +135,7 @@ public class ChannelBufferManager {
 			} catch (Exception e) {
 				isSubscribed = false;
 				logger.error("Fatal exception occurred attempting subscription: " + e.toString());
+				OutputErrorHandler.sendErrorMail(e.getLocalizedMessage(), "Fatal error! Couldn't establish connection to REDIS!");
 			}
 			if (isSubscribed) {
 				subscribedChannels = new ConcurrentHashMap<String,ChannelBuffer>();
@@ -531,6 +534,7 @@ public class ChannelBufferManager {
 			subscriberJedis = null;
 			isConnected = false;
 			logger.error("Fatal error! Couldn't establish connection to REDIS!");
+			OutputErrorHandler.sendErrorMail(e.getLocalizedMessage(), "Fatal error! Couldn't establish connection to REDIS!");
 		}
 		if (isConnected) {
 			aidrSubscriber = new RedisSubscriber();
@@ -545,6 +549,7 @@ public class ChannelBufferManager {
 			} catch (Exception e) {
 				isSubscribed = false;
 				logger.error("Fatal exception occurred attempting subscription: " + e.toString());
+				OutputErrorHandler.sendErrorMail(e.getLocalizedMessage(), "Fatal error! Couldn't establish connection to REDIS!");
 			}
 		}
 		return false;
