@@ -71,7 +71,6 @@ public class Persister4CollectorAPI {
             return Response.ok(response).build();
         }
         }catch (Exception ex) {
-            //Logger.getLogger(Persister4CollectorAPI.class.getName()).log(Level.SEVERE, null, ex);
         	logger.error(collectionCode +  ": Failed to start persister");
         }
         return Response.ok(response).build();
@@ -93,7 +92,6 @@ public class Persister4CollectorAPI {
                 response = "Persistance of [" + collectionCode + "] has been stopped.";
                 return Response.ok(response).build();
             } catch (InterruptedException ex) {
-                //Logger.getLogger(Persister4CollectorAPI.class.getName()).log(Level.SEVERE, null, ex);
             	logger.error(collectionCode + ": Failed to stop persister");
             }
         }

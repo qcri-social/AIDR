@@ -4,6 +4,7 @@ package qa.qcri.aidr.persister.collction;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.redis.JedisConnectionPool;
+import qa.qcri.aidr.utils.PersisterErrorHandler;
 import redis.clients.jedis.Jedis;
 
 /**
@@ -34,9 +35,8 @@ public class RedisCollectionPersister implements Runnable {
             subscriberJedis = connObject.getJedisConnection();
             subscriber = new CollectionSubscriber(fileName, channel, collectionCode);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             logger.error(collectionCode + ": Error in subscribing to Redis");
-
+            PersisterErrorHandler.sendErrorMail(e.getLocalizedMessage(), "Error in subscribing to Redis for collection: "+collectionCode);
             connObject.close(subscriberJedis);
             subscriberJedis = null;
             subscriber = null;

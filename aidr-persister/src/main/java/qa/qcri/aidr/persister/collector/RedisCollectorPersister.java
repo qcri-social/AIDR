@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import qa.qcri.aidr.redis.JedisConnectionPool;
 import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
+import qa.qcri.aidr.utils.PersisterErrorHandler;
 import redis.clients.jedis.Jedis;
 
 
@@ -40,9 +41,8 @@ public class RedisCollectorPersister implements Runnable {
 			subscriberJedis = connObject.getJedisConnection();
 			subscriber = new CollectorSubscriber(fileName, collectionCode);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			logger.error(collectionCode + ": Error in subscribing to Redis");
-        	
+			PersisterErrorHandler.sendErrorMail(e.getLocalizedMessage(), "Error in subscribing to Redis for collection: "+collectionCode);
 			connObject.close(subscriberJedis);
 			subscriberJedis = null;
 			subscriber = null;
@@ -72,7 +72,6 @@ public class RedisCollectorPersister implements Runnable {
 							connObject.close(subscriberJedis);		// return jedis resource to JedisPool
 							Thread.sleep(200);
 						} catch (InterruptedException ex) {
-							//Logger.getLogger(RedisCollectorPersister.class.getName()).log(Level.SEVERE, null, ex);
 							logger.warn(collectionCode + " error in closing Redis connection");
 						}
 					}
@@ -105,7 +104,6 @@ public class RedisCollectorPersister implements Runnable {
 		try {
 			t.join();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			logger.warn(collectionCode + ": Collector Persister Thread join interrupted");
 		}
 	}

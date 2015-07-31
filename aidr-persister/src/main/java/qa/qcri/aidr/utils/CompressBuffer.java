@@ -3,18 +3,18 @@
  */
 package qa.qcri.aidr.utils;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-public class CompressBuffer extends FileCompressor {
+import org.apache.log4j.Logger;
 
+public class CompressBuffer extends FileCompressor {
+	
+	private static Logger logger = Logger.getLogger(CompressBuffer.class.getName());
 	//ByteArrayOutputStream out = null;
 	FileOutputStream out = null;
 	ZipOutputStream outZip = null;
@@ -44,7 +44,7 @@ public class CompressBuffer extends FileCompressor {
 			ze = new ZipEntry(zippedFile);
 			outZip.putNextEntry(ze);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("IOException while compressing the buffer"+e);
 		}
 	}
 	
@@ -67,7 +67,7 @@ public class CompressBuffer extends FileCompressor {
 			ze = new ZipEntry(zippedFile);
 			outZip.putNextEntry(ze);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("IOException while initializing the compress buffer"+e);
 		}
 	}
 
@@ -76,7 +76,7 @@ public class CompressBuffer extends FileCompressor {
 			outZip.closeEntry();
 			outZip.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("IOException while closing the compressed file");
 		}
 	}
 
@@ -89,7 +89,7 @@ public class CompressBuffer extends FileCompressor {
 		try {
 			outZip.write(data, 0, data.length);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("IOException while compressing the file ");
 		}
 	}
 
@@ -103,7 +103,7 @@ public class CompressBuffer extends FileCompressor {
 			byte[] buffer = str.trim().getBytes();
 			zip(buffer); 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("IOException while compressing the file ");
 		}
 	}
 
@@ -150,7 +150,7 @@ public class CompressBuffer extends FileCompressor {
 			return returnBuf;
 
 		} catch(Exception e) {
-			e.printStackTrace(); 
+			logger.error("IOException while unzipping the directory ");
 			return null;
 		}
 	}
@@ -180,7 +180,7 @@ public class CompressBuffer extends FileCompressor {
 				return null;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception in unzipping the directory"+e);
 			return null;
 		}
 	}
@@ -195,12 +195,12 @@ public class CompressBuffer extends FileCompressor {
 			String unzippedString = unzipAsString(zipFile, null);
 			return unzippedString;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception in unzipping the directory"+e);
 			return null;
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
+	/*public static void main(String[] args) throws Exception {
 		CompressBuffer zipper = new CompressBuffer();
 
 		String collectionCode = "20150104-0348-SinhaKoushik-abcdertgh";
@@ -234,5 +234,5 @@ public class CompressBuffer extends FileCompressor {
 		String unzippedString = zipper.unzipAsString(folderLocation + File.separator + "testZip.zip");
 		System.out.println("Done creating UNZIP file! unzipped string size = " + unzippedString.length());
 		System.out.println((unzippedBuffer != null ? unzippedString : "Error in unzip!"));		
-	}
+	}*/
 }

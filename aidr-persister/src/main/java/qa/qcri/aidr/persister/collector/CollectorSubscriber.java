@@ -96,7 +96,7 @@ public class CollectorSubscriber extends JedisPubSub {
                 file.createNewFile();
             }
         } catch (IOException ex) {
-            logger.error(collectionCode + " error in creating new file at location " + collectionDir);
+            logger.error(collectionCode + " Error in creating new file at location " + collectionDir);
         }
     }
 
@@ -117,10 +117,8 @@ public class CollectorSubscriber extends JedisPubSub {
 
     private void createBufferWriter() {
         try {
-        	//out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file, true), Charset.forName("UTF-8")), Integer.parseInt(getProperty("DEFAULT_FILE_WRITER_BUFFER_SIZE")));
         	out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file, true)), Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_FILE_WRITER_BUFFER_SIZE)));
         } catch (IOException ex) {
-            //Logger.getLogger(CollectorSubscriber.class.getName()).log(Level.SEVERE, null, ex);
         	logger.error(collectionCode + "Error in creating Buffered writer");
         }
 
@@ -132,7 +130,6 @@ public class CollectorSubscriber extends JedisPubSub {
             itemsWrittenToFile++;
             isTimeToCreateNewFile();
         } catch (IOException ex) {
-            //Logger.getLogger(CollectorSubscriber.class.getName()).log(Level.SEVERE, null, ex);
         	logger.error(collectionCode + "Error in writing to file");
         }
     }
@@ -152,7 +149,6 @@ public class CollectorSubscriber extends JedisPubSub {
             out.flush();
             out.close();
         } catch (IOException ex) {
-            //Logger.getLogger(CollectorSubscriber.class.getName()).log(Level.SEVERE, null, ex);
         	logger.error(collectionCode + "Error in closing file writer");
         }
     }

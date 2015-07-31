@@ -16,9 +16,12 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 public class FileCompressor {
 
+	private static Logger logger = Logger.getLogger(FileCompressor.class.getName());
+	
 	public static int BUFFER_SIZE = 1 << 16;
 
 	private String fileName;
@@ -75,7 +78,7 @@ public class FileCompressor {
 			return this.getOutFile();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("IOException while compressing the file: "+fileName);
 			return null;
 		}
 	}
@@ -106,10 +109,10 @@ public class FileCompressor {
 			zis.closeEntry();
 			zis.close();
 
-			System.out.println("Done unzipping file: " + this.getInputFileName() + ", created file = " + this.getUnzippedOutputFileName());
+			//System.out.println("Done unzipping file: " + this.getInputFileName() + ", created file = " + this.getUnzippedOutputFileName());
 			return this.getOutUnzippedFile();
 		} catch(Exception ex) {
-			ex.printStackTrace(); 
+			logger.error("IOException while unzipping the file"+ex);
 			return null;
 		}
 	}

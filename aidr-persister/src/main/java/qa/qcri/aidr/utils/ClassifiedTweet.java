@@ -307,7 +307,6 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 	} 
 
 	public String setDateString(String timeString) {
-		//System.out.println("[setDateString] Received time string: " + timeString);
 
 		DateFormat dateFormatISO = new SimpleDateFormat(DateFormatConfig.ISODateFormat);
 		dateFormatISO.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -316,7 +315,6 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 				SimpleDateFormat formatter = new SimpleDateFormat(DateFormatConfig.StandardDateFormat);
 				Date newDate = formatter.parse(timeString);
 				if (newDate != null) setTimestamp(newDate.getTime());
-				//System.out.println("[setDateString] Converted date: " + newDate.toString());
 				return dateFormatISO.format(newDate);
 			} catch (ParseException e) {
 				logger.error("Error in setting createdAt field = " + timeString);
