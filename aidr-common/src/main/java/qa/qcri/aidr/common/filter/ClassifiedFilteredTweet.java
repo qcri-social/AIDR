@@ -154,7 +154,7 @@ public class ClassifiedFilteredTweet implements Serializable {
 			}
 			return null;
 		} catch (Exception e) {
-			//logger.error("Exception in json parsing for string: " + rawJsonString);
+			logger.error("Exception in json parsing for string: " + rawJsonString, e);
 			return null;
 		}
 	}

@@ -1,9 +1,6 @@
 package qa.qcri.aidr.common.util;
 
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -52,9 +49,6 @@ public class EmailClient {
 			// Set Subject: header field
 			message.setSubject(subject);
 			
-			Date d = new Date(System.currentTimeMillis());
-			String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
-			
 			// Now set the actual message
 			message.setText(body);
 
@@ -67,13 +61,13 @@ public class EmailClient {
 			Transport.send(message);
 			logger.info("Sent message successfully to: " + recipients);
 		} catch (AddressException e) {
-			e.printStackTrace();
+			logger.error("Recipients address format exception"+e);
 		}
 		catch (MessagingException mex) {
 			logger.error("Unable to send email to " + recipients + " due to " + mex.getCause());
 			mex.printStackTrace();
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.error("Unsupported encoding scheme used");
 		}
 	}
 }

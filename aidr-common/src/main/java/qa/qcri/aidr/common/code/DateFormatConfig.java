@@ -30,6 +30,7 @@ public class DateFormatConfig {
 	 * @param timeString date as a string, conforming to oldFormat
 	 * @return a Hashmap containing <key="date", value = Date() object> and,
 	 *         <key="dateString", value = date as a string, conforming to newFormat>
+	 * @throws ParseException 
 	 */
 	public static Map<String, Object> convertBetweenDateFormats(final String oldFormat, final String newFormat, final String timeString) throws ParseException {
 		Map<String, Object> convertedDate = new HashMap<String, Object>(2);
@@ -38,7 +39,13 @@ public class DateFormatConfig {
 		newDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 		if (timeString != null) {
 			SimpleDateFormat oldDateFormat = new SimpleDateFormat(oldFormat);
-			Date newDate = oldDateFormat.parse(timeString);
+			Date newDate = null;
+			try {
+				newDate = oldDateFormat.parse(timeString);
+			} catch (ParseException e) {
+				logger.error("Exception while parsing the date:"+timeString);
+				throw e;
+			}
 			if (newDate != null) {
 				convertedDate.put("date", newDate);
 				convertedDate.put("dateString", newDateFormat.format(newDate));
@@ -63,10 +70,15 @@ public class DateFormatConfig {
 	 * @return a Date object containing the date
 	 * @throws ParseException
 	 */
-	public static Date getDateFromString(final String dateFormat, final String timeString) throws ParseException {
+	public static Date getDateFromString(final String dateFormat, final String timeString) throws ParseException  {
 		if (timeString != null) {
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
-			return simpleDateFormat.parse(timeString);
+			try {
+				return simpleDateFormat.parse(timeString);
+			} catch (ParseException e) {
+				logger.error("Exception while parsing the date: "+timeString);
+				throw e;
+			}
 		}
 		return null;
 	}
