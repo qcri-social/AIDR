@@ -164,7 +164,7 @@ public class ModelController extends PipelineProcess {
     }
 
     private void replaceModel(int eventID, int attributeID, Model newModel) {
-        logger.error("Replacing model for event " + eventID
+        logger.info("Replacing model for event " + eventID
                 + " and attribute " + attributeID);
 
         // Insert the new model into the database and update the currentModelID
@@ -172,6 +172,7 @@ public class ModelController extends PipelineProcess {
         int modelID = DataStore.saveModelToDatabase(eventID, attributeID,
                 newModel);
         if (modelID == DataStore.MODEL_ID_ERROR) {
+        	logger.error("Model was not correctly written to the database. Aborting write to disk.");
             throw new RuntimeException("Model was not correctly written to the database. Aborting write to disk.");
         }
 
@@ -218,7 +219,7 @@ public class ModelController extends PipelineProcess {
             String path = getModelPath(eventID, attributeID, modelID);
             o = weka.core.SerializationHelper.readAll(path);
         } catch (Exception e) {
-        	System.out.println("Could not load model from disk (crisis " + eventID
+        	logger.error("Could not load model from disk (crisis " + eventID
                     + ", attribute " + attributeID + ", model " + modelID
                     + "). Delete model reference in DB and retrain? [y/n]");
             try {
@@ -227,9 +228,8 @@ public class ModelController extends PipelineProcess {
                     onRetrainModel(new CrisisAttributePair(eventID, attributeID));
                 }
             } catch (IOException ex) {
-                //do nothing
+                logger.warn("Unable to read input.");
             }
-            //System.out.println();
             return false;
         }
         Classifier classifier = (Classifier) o[0];

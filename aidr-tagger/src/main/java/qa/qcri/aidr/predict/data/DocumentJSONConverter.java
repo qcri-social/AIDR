@@ -306,9 +306,12 @@ public class DocumentJSONConverter {
 		}
 
 		if (!activeModelFamiliesByCode.containsKey(crisisID)
-				|| !activeModelFamiliesByCode.get(crisisID).containsKey(attributeCode))
+				|| !activeModelFamiliesByCode.get(crisisID).containsKey(attributeCode)) {
+		
+			logger.error("ModelInfo is missing for crisis " + crisisID + " and attribute " + attributeCode);
 			throw new RuntimeException(
 					"ModelInfo is missing for crisis " + crisisID + " and attribute " + attributeCode);
+		}
 
 		return activeModelFamiliesByCode.get(crisisID).get(attributeCode);
 	}

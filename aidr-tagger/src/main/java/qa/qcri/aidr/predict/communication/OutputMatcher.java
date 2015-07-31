@@ -81,7 +81,7 @@ public class OutputMatcher extends PipelineProcess  {
 									TaggerConfigurationProperty.REDIS_LABEL_TASK_WRITE_QUEUE)
 							.getBytes(), Serializer.serialize(doc));
 		} catch (IOException e) {
-			logger.error("Exception while serializing DocumentSet.");
+			logger.warn("Exception while serializing DocumentSet.");
 		}
 		DataStore.close(jedis);
     }

@@ -34,6 +34,7 @@ import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
 import qa.qcri.aidr.predict.common.Helpers;
 import qa.qcri.aidr.predict.common.TaggerConfigurationProperty;
 import qa.qcri.aidr.predict.common.TaggerConfigurator;
+import qa.qcri.aidr.predict.common.TaggerErrorLog;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.dbentities.ModelFamilyEC;
 import qa.qcri.aidr.predict.dbentities.NominalAttributeEC;
@@ -83,7 +84,7 @@ public class DataStore {
 			jedisPool = new JedisPool(new JedisPoolConfig(), TaggerConfigurator
 					.getInstance().getProperty(
 							TaggerConfigurationProperty.REDIS_HOST));
-	logger.info("Initialized jedisPool = " + jedisPool);
+			logger.info("Initialized jedisPool = " + jedisPool);
 		} else {
 			logger.warn("Attempting to initialize an active JedisPool!");
 		}
@@ -95,12 +96,14 @@ public class DataStore {
 		} catch (Exception e1) {
 			logger.error("Unable to allocate JEDIS Pool!");
 			logger.error("Exception", e1);
+			TaggerErrorLog.sendErrorMail("Redis", "Could not establish Redis connection. " + e1.getMessage());
 		}
 		try {
 			initializeMySqlPool();
 		} catch (Exception e) {
 			logger.error("Unable to allocate MySQL Pool!");
 			logger.error("Exception", e);
+			TaggerErrorLog.sendErrorMail("Mysql connection", "Could not initialize mysql connection. " + e.getMessage());
 		}
 	}
 
@@ -127,7 +130,6 @@ public class DataStore {
 			InitialContext ctx = new InitialContext();
 
 			taskManager = (TaskManagerRemote<DocumentDTO, Long>) ctx.lookup(DataStore.remoteEJBJNDIName);
-			System.out.println("taskManager: " + taskManager + ", time taken to initialize = " + (System.currentTimeMillis() - startTime));
 			logger.info("taskManager: " + taskManager + ", time taken to initialize = " + (System.currentTimeMillis() - startTime));
 			if (taskManager != null) {
 				logger.info("Success in connecting to remote EJB to initialize taskManager");
@@ -168,10 +170,9 @@ public class DataStore {
 				return jedisPool.getResource();
 			}
 		} catch (Exception e) {
-			System.out
-			.println("Could not establish Redis connection. Is the Redis server running?");
 			logger.error("Could not establish Redis connection. Is the Redis server running?");
 			logger.error("Exception", e);
+			TaggerErrorLog.sendErrorMail("Redis", "Could not establish Redis connection. " + e.getMessage());
 		}
 		return null;
 	}

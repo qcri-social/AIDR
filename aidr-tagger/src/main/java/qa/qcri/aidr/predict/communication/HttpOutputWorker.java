@@ -123,10 +123,9 @@ public class HttpOutputWorker {
                     return OutputFilter.fromJson(input);
                 }
             } catch (IOException e) {
-                logger.error("IOException while waiting for POST data");
+                logger.warn("IOException while waiting for POST data");
             }
 
-            logger.warn("Bad POST data.");
             return null;
         }
     }
@@ -153,7 +152,7 @@ public class HttpOutputWorker {
         try {
             clientStream = new PrintWriter(client.getOutputStream(), true);
         } catch (IOException e) {
-            logger.error("Could not get output stream for worker "
+            logger.warn("Could not get output stream for worker "
                     + connectionInstanceID);
         }
     }
@@ -165,7 +164,7 @@ public class HttpOutputWorker {
         }
         if (clientStream.checkError()) {
             // Inform subscribers that the connection has closed
-            logger.info("Could not write to client, closing connection");
+            logger.warn("Could not write to client, closing connection");
             close();
         }
     }
@@ -177,7 +176,7 @@ public class HttpOutputWorker {
             try {
                 client.close();
             } catch (IOException e) {
-                logger.error("IOException while closing client connection");
+                logger.warn("IOException while closing client connection");
             }
         if (!isClosed)
             onConnectionClosed.fire(this, null);

@@ -52,7 +52,7 @@ public class HttpOutputManager  implements Runnable {
                 }
             }
         } catch (IOException e) {
-			logger.error("Could not listen on port "
+			logger.warn("Could not listen on port "
 					+ Integer
 							.parseInt(TaggerConfigurator
 									.getInstance()
@@ -70,7 +70,7 @@ public class HttpOutputManager  implements Runnable {
         try {
             server.close();
         } catch (IOException e) {
-            logger.error("Could not close socket", e);
+            logger.warn("Could not close socket", e);
         }
     }
 }

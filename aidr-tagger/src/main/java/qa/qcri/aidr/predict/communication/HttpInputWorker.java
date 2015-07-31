@@ -42,7 +42,7 @@ public class HttpInputWorker implements Runnable {
             in = new BufferedReader(new InputStreamReader(
                     client.getInputStream()));
         } catch (IOException e) {
-            logger.error("Could not create input stream reader. " + e.getMessage());
+            logger.warn("Could not create input stream reader. " + e.getMessage());
             return;
         }
         logger.info("Created new InputWorker (" + connectionInstanceID
@@ -67,7 +67,6 @@ public class HttpInputWorker implements Runnable {
                     + connectionInstanceID);
         }
 
-        logger.info("Closing connection " + connectionInstanceID);
         try {
             client.close();
         } catch (IOException e) {
@@ -97,7 +96,7 @@ public class HttpInputWorker implements Runnable {
 									TaggerConfigurationProperty.REDIS_FOR_EXTRACTION_QUEUE)
 							.getBytes(), Serializer.serialize(doc));
 		} catch (IOException e) {
-			logger.error("Error when serializing input document : " + doc != null ? doc.toString() : "no doc");
+			logger.warn("Error when serializing input document : " + doc != null ? doc.toString() : "no doc");
 		} finally {
 			DataStore.close(jedis);
 		}
