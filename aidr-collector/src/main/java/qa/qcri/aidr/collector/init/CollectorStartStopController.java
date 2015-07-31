@@ -47,8 +47,6 @@ public class CollectorStartStopController extends HttpServlet {
 		String startDate = dateFormat.format(cal.getTime());
 		GenericCache.getInstance().setCollectorStatus(
 				new CollectorStatus(startDate, "RUNNING", 0));
-		System.out.println("AIDR-Collector: Startup procedure completed @ "
-				+ startDate);
 		logger.info("AIDR-Collector: Startup procedure completed @ "
 				+ startDate);
 	}
@@ -68,8 +66,7 @@ public class CollectorStartStopController extends HttpServlet {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warn("Error : " + e.getMessage());
 			}
 
 		}
