@@ -28,6 +28,7 @@ import qa.qcri.aidr.collector.beans.SMS;
 import qa.qcri.aidr.collector.collectors.JedisPublisher;
 import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
 import qa.qcri.aidr.collector.utils.CollectorConfigurator;
+import qa.qcri.aidr.collector.utils.CollectorErrorLog;
 import qa.qcri.aidr.collector.utils.GenericCache;
 import qa.qcri.aidr.common.redis.LoadShedder;
 
@@ -135,8 +136,8 @@ public class SMSCollectorAPI  {
             logger.info(collectionCode + ": Collector persister response = " + jsonResponse);
         } catch (RuntimeException e) {
             logger.error(collectionCode + ": Could not start persister. Is persister running?");
+            CollectorErrorLog.sendErrorMail(collectionCode, "Unable to start persister.");
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }
@@ -152,7 +153,6 @@ public class SMSCollectorAPI  {
         } catch (RuntimeException e) {
             logger.error(collectionCode + ": Could not stop persister. Is persister running?");
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }

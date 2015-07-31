@@ -132,7 +132,7 @@ public class CollectorManageResource {
             logger.info("Fetcher Response: " + jsonResponse);
             return jsonResponse;
         } catch (Exception e) {
-        	logger.error("Could not start collection");
+        	logger.error("Could not start collection"+collection.getCollectionCode());
         	return "Could not start collection";
         }
     }

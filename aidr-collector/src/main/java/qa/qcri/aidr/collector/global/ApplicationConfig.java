@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 /**
@@ -17,10 +18,11 @@ import org.glassfish.jersey.jackson.JacksonFeature;
  */
 @ApplicationPath("/webresources")
 public class ApplicationConfig extends Application {
-
+	private static Logger logger = Logger
+			.getLogger(ApplicationConfig.class);
     @Override
     public Set<Class<?>> getClasses() {
-        System.out.println("In ApplicationConfig: registering REST APIs");
+    	logger.info("In ApplicationConfig: registering REST APIs");
     	Set<Class<?>> resources = new java.util.HashSet<Class<?>>();
     	resources.add(JacksonFeature.class);
         addRestResourceClasses(resources);
