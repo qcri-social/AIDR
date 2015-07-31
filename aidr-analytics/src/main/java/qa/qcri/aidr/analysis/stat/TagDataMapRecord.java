@@ -19,7 +19,6 @@ public class TagDataMapRecord extends MapRecord {
 
 	public TagDataMapRecord(List<Long> granularityList) {
 		this.count = new ConcurrentHashMap<Long, Integer>();
-		System.out.println("Tag data granulairtyList: " + granularityList);
 		for (Long g: granularityList) {
 			this.count.put(g, 0);
 		}

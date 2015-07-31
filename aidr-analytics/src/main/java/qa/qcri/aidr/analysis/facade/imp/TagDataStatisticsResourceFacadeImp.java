@@ -95,7 +95,6 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 				.add(Restrictions.eq("attributeCode", tagDataPK.getAttributeCode()))
 				.add(Restrictions.eq("labelCode", tagDataPK.getLabelCode()));
 		criteria.add(criterion); 		
-		System.out.println("Formed criteria: " + criteria.toString());
 		try {
 			TagData obj = (TagData) criteria.uniqueResult();
 			return obj;
@@ -112,10 +111,8 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 	public List<TagData> getDataByCrisis(String crisisCode) {
 		Criteria criteria = getCurrentSession().createCriteria(TagData.class);
 		criteria.add(Restrictions.eq("crisisCode", crisisCode)); 		
-		System.out.println("Formed criteria: " + criteria.toString());
 		try {
 			List<TagData> objList = (List<TagData>) criteria.list();
-			//System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
 			logger.error("Error in getDataByCrisis for crisis : " + crisisCode);
@@ -139,15 +136,12 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 											.add(Projections.sum("count").as("count")))
 									).list();
 		
-			//System.out.println("fetched list size = " + (countList != null ? countList.size() : "null"));
 			Map<String, Long> data = new HashMap<String, Long>();
 			for (int i = 0; i < countList.size();i++)  {
 				Object[] temp = (Object[]) countList.get(i);
 				Long g = ((Number) temp[0]).longValue();
 				Long count = ((Number) temp[1]).longValue();
 				data.put(g.toString(), count);
-				//System.out.println("Fetched {" + temp[0] + ", " + temp[1] + "}");
-				//System.out.println("1 --> " + g.getClass() + ", 2 --> " + temp[1].getClass());
 				
 			}
 			return data;
@@ -166,7 +160,6 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 			List<String> attributesList = (List<String>) getCurrentSession().createCriteria(TagData.class)
 					.add(Restrictions.eq("crisisCode", crisisCode))
 					.setProjection(Projections.distinct(Projections.property("attributeCode"))).list();
-			//System.out.println("fetched attributes list size = " + (attributesList != null ? attributesList.size() : "null"));
 			return attributesList;
 		} catch (Exception e) {
 			logger.error("exception in getAttributesForCrisis for crisisCode : " + crisisCode, e);
@@ -181,7 +174,6 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 			List<Long> gList = (List<Long>) getCurrentSession().createCriteria(TagData.class)
 					.add(Restrictions.eq("crisisCode", crisisCode))
 					.setProjection(Projections.distinct(Projections.property("granularity"))).list();
-			System.out.println("fetched attributes list size = " + (gList != null ? gList.size() : "null"));
 			return gList;
 		} catch (Exception e) {
 			logger.error("exception in getGranularitiesForCrisis for crisisCode : " + crisisCode, e);
@@ -203,10 +195,8 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 					.add(Restrictions.eq("granularity", granularity));
 		}
 		criteria.add(criterion); 		
-		System.out.println("Formed criteria: " + criteria.toString());
 		try {
 			List<TagData> objList = (List<TagData>) criteria.list();
-			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
 			logger.error("exception in getDataByCrisisGranularity for crisisCode : " + crisisCode
@@ -232,7 +222,6 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 		criteria.add(criterion); 		
 		try {
 			List<TagData> objList = (List<TagData>) criteria.list();
-			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
 			logger.error("exception in getDataByCrisisAttributeLabel for crisisCode : " + crisisCode
@@ -250,10 +239,8 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 				.add(Restrictions.eq("labelCode", labelCode))
 				.add(Restrictions.eq("granularity", granularity));
 		criteria.add(criterion); 		
-		System.out.println("Formed criteria: " + criteria.toString());
 		try {
 			List<TagData> objList = (List<TagData>) criteria.list();
-			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
 			logger.error("exception in getDataByCrisisAttributeLabelGranularity for crisisCode : " + crisisCode
@@ -277,10 +264,8 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 		}
 
 		criteria.add(criterion); 		
-		System.out.println("Formed criteria: " + criteria.toString());
 		try {
 			List<TagData> objList = (List<TagData>) criteria.list();
-			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
 			logger.error("exception in getDataByGranularityInTimeWindow for crisisCode : " + crisisCode
@@ -304,10 +289,8 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 		}
 
 		criteria.add(criterion); 
-		System.out.println("Formed criteria: " + criteria.toString());
 		try {
 			List<TagData> objList = (List<TagData>) criteria.list();
-			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
 			logger.error("exception in getDataAfterTimestampGranularity for crisisCode : " + crisisCode
@@ -330,10 +313,8 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 					.add(Restrictions.eq("labelCode", labelCode));
 		}
 		criteria.add(criterion); 
-		System.out.println("Formed criteria: " + criteria.toString());
 		try {
 			List<TagData> objList = (List<TagData>) criteria.list();
-			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
 			logger.error("exception in getDataAfterTimestampGranularity for crisisCode : " + crisisCode
@@ -357,10 +338,8 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 		}
 
 		criteria.add(criterion); 		
-		System.out.println("Formed criteria: " + criteria.toString());
 		try {
 			List<TagData> objList = (List<TagData>) criteria.list();
-			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
 			logger.error("exception in getDataBeforeTimestamp for crisisCode : " + crisisCode
@@ -385,10 +364,8 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 		}
 
 		criteria.add(criterion);
-		System.out.println("Formed criteria: " + criteria.toString());
 		try {
 			List<TagData> objList = (List<TagData>) criteria.list();
-			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
 			logger.error("exception in getDataBeforeTimestampGranularity for crisisCode : " + crisisCode
@@ -413,10 +390,8 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 					.add(Restrictions.eq("labelCode", labelCode));
 		}
 		criteria.add(criterion); 
-		System.out.println("Formed criteria: " + criteria.toString());
 		try {
 			List<TagData> objList = (List<TagData>) criteria.list();
-			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
 			logger.error("exception in getDataInInterval for crisisCode : " + crisisCode
@@ -459,10 +434,8 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 					.add(Restrictions.le("timestamp", timestamp2));
 		}	
 		criteria.add(criterion); 
-		System.out.println("Formed criteria: " + criteria.toString());
 		try {
 			List<TagData> objList = (List<TagData>) criteria.list();
-			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
 			logger.error("exception in getDataInIntervalWithGranularity for crisisCode : " + crisisCode

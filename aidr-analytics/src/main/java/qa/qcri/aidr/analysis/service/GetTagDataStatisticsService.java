@@ -52,7 +52,6 @@ public class GetTagDataStatisticsService {
 			jsonList.put("attributesList", attributesList);
 			Map<String, Object> dataSet = new HashMap<String, Object>();
 			for (String attribute: attributesList) {
-				System.out.println("For attribute: " + attribute);
 				tagDataList.addAll(tagDataEJB.getDataAfterTimestampGranularity(crisisCode, attribute, null, startTime, granularity));
 				// Now the real work - count and send response
 				JSONObject json = new JsonResponse().getNewJsonResponseObject(crisisCode, attribute, granularity, startTime, null);
@@ -90,7 +89,6 @@ public class GetTagDataStatisticsService {
 			json.put("granularities", gList);
 			json.put("data", countList);
 		}
-		//System.out.println("Returned json: " + json.toJSONString());
 		return json;
 	}
 
@@ -104,8 +102,6 @@ public class GetTagDataStatisticsService {
 	 */
 
 	public JSONObject getTagCountSumFromTime(String crisisCode, String attributeCode, Long granularity, Long startTime) {
-		System.out.println("Received parameters: crisisCode = " + crisisCode + ", attributeCode = " + attributeCode + ", granularity = " + granularity
-				+ ", startTime = " + startTime + ", local EJB = " + tagDataEJB);
 		// First get the list of data points from DB
 		List<TagData> tagDataList = tagDataEJB.getDataAfterTimestampGranularity(crisisCode, attributeCode, null, startTime, granularity);
 
@@ -204,7 +200,6 @@ public class GetTagDataStatisticsService {
 					tagsList.add(TagCountDTOHelper.convertTagDataToDTO(t));
 				}
 			}
-			//System.out.println("Finished creating Map of timestamp versus TagCountDTO list");
 			// Now convert the above time series data Map to DTO object for response
 			List<TimeWindowTagCountDTO> timeWindowDTOList = new ArrayList<TimeWindowTagCountDTO>();
 			try {
@@ -212,10 +207,8 @@ public class GetTagDataStatisticsService {
 					TimeWindowTagCountDTO timeWindowDTO = TimeWindowTagCountDTOHelper.convertTagCountDTOListToDTO(key, tagCountMap.get(key));
 					timeWindowDTOList.add(timeWindowDTO);
 				}
-				//System.out.println("Finished creating TimeWindowTagCountDTO list");
 				TagCountSeriesDTO dto = TagCountSeriesDTOHelper.convertTimeWindowTagCountDTOListToDTO(crisisCode, attributeCode, granularity, timeWindowDTOList);
 				json.put("data", dto);
-				//System.out.println("Finished creating json object: " + json);
 				return json;
 			} catch (Exception e) {
 				json = JsonResponse.addError(json);

@@ -74,16 +74,11 @@ public class ConfidenceStatisticsResourceFacadeImp implements ConfidenceStatisti
 	public ReturnCode writeData(ConfidenceData confData) {
 		try {
 			em.persist(confData);
-			System.out.println("Success in persisting conf data for: " + confData.getCrisisCode() + ", " + confData.getAttributeCode() 
-						+ ", " + confData.getLabelCode() + ", " + confData.getTimestamp() + ", " + confData.getGranularity() 
-						+ ", " + confData.getBin() + ": " + confData.getCount());
 			return ReturnCode.SUCCESS;
 		} catch (Exception e) {
-			System.out.println("Failure in persisting conf data for: " + confData.getCrisisCode() + ", " + confData.getAttributeCode() 
+			logger.error("Failure in persisting conf data for: " + confData.getCrisisCode() + ", " + confData.getAttributeCode() 
 					+ ", " + confData.getLabelCode() + ", " + confData.getTimestamp() + ", " + confData.getGranularity() 
-					+ ", " + confData.getBin() + ": " + confData.getCount());
-			logger.error("exception", e);
-			e.printStackTrace();
+					+ ", " + confData.getBin() + ": " + confData.getCount(), e);
 			return ReturnCode.ERROR;
 		}
 	}

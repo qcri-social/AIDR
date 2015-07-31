@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConfDataMapRecord extends MapRecord {
 	
 	public ConfDataMapRecord(List<Long> granularityList) {
-		System.out.println("Conf data granularityList: " + granularityList);
 		this.count = new ConcurrentHashMap<Long, Integer>();
 		for (Long g: granularityList) {
 			this.count.put(g, 0);

@@ -156,7 +156,6 @@ public class WriteStatisticsData implements ServletContextListener {
 				ConfidenceData f = new ConfidenceData(key.getCrisisCode(), timestamp, granularity, key.getAttributeCode(), key.getLabelCode(),
 														Integer.parseInt(((ConfCounterKey) key).getBinNumber()), fCount.getCount(granularity));
 				if (fCount.getCount(granularity) > 0) {
-					System.out.println("Will attempt persistence of conf key: " + key.toString());
 					confDataEJB.writeData(f);
 				}
 				fCount.resetCount(granularity);
@@ -178,7 +177,6 @@ public class WriteStatisticsData implements ServletContextListener {
 		@Override
 		public void run() {
 			logger.info("Started aidr-analytics writer thread: " + t.getName());
-			System.out.println("Started aidr-analytics writer thread: " + t.getName());
 			Map<Long, Long> lastTagDataWriteTime = new TreeMap<Long, Long>();
 			Map<Long, Long> lastConfDataWriteTime = new TreeMap<Long, Long>();
 			for (Long g : granularityList) {
@@ -196,7 +194,6 @@ public class WriteStatisticsData implements ServletContextListener {
 							//logger.info("retVal = " + retVal);
 							if (ReturnCode.SUCCESS.equals(retVal)) {
 								//logger.info("Successfully wrote for granularity: " + granularity + " at time = " + new Date(currentTime));
-								//System.out.println("Successfully wrote for granularity: " + granularity + " at time = " + new Date(currentTime));
 							}
 						}
 						if (0 == lastConfDataWriteTime.get(granularity) || (currentTime - lastConfDataWriteTime.get(granularity)) >= granularity) {

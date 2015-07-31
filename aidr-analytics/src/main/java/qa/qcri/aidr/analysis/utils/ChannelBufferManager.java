@@ -105,8 +105,6 @@ public class ChannelBufferManager {
 		channelMap = new ConcurrentHashMap<String, Long>();
 
 		logger.info("Initializing channel buffer manager.");
-		System.out.println("[ChannelBufferManager] Initializing channel buffer manager with values: <" + redisHost + ", " + redisPort 
-				+ ", " + PERSISTER_LOAD_CHECK_INTERVAL_MINUTES + ", " + PERSISTER_LOAD_LIMIT + ">");
 
 		bufferSize = -1;
 		executorServicePool = Executors.newCachedThreadPool();	//Executors.newFixedThreadPool(10);		// max number of threads
@@ -194,14 +192,13 @@ public class ChannelBufferManager {
 			logger.error("Something terribly wrong! Fatal error in: " + channelName);
 		} else {
 			if (!isChannelPresent(channelName)) {
-				System.out.println("New collection/channel found: " + channelName);
+				logger.info("New collection/channel found: " + channelName);
 				subscribedChannels.add(channelName);
 			}
 			try {
 				ClassifiedFilteredTweet classifiedTweet = new ClassifiedFilteredTweet().deserialize(receivedMessage);
 				if (classifiedTweet != null && classifiedTweet.getNominalLabels() != null && !classifiedTweet.getNominalLabels().isEmpty()) {
 					channelMap.putIfAbsent(classifiedTweet.getCrisisCode(), System.currentTimeMillis());
-					//System.out.println("Found a valid classified tweet for collection: " + classifiedTweet.getCrisisCode() + ", tweet = " + receivedMessage);
 					for (NominalLabel nb : classifiedTweet.getNominalLabels()) {
 						if (nb.attribute_code != null && nb.label_code != null) {
 							CounterKey tagDataKey = new CounterKey(classifiedTweet.getCrisisCode(), nb.attribute_code, nb.label_code);
@@ -211,24 +208,17 @@ public class ChannelBufferManager {
 								TagDataMapRecord t = (TagDataMapRecord) tagDataMap.get(tagDataKey);
 								t.incrementAllCounts();
 								tagDataMap.put(tagDataKey, t);
-								//System.out.println("Updated Tag map entry with key: " + tagDataKey.toString() + " value = " + tagDataMap.get(tagDataKey).toString());
 							} else {
 								TagDataMapRecord t = new TagDataMapRecord(granularityList);
 								tagDataMap.put(tagDataKey, t);
-								
-								//logger.info("New Tag map entry with key: " + tagDataKey.toString() + " value = " + tagDataMap.get(tagDataKey).toString());
-								//System.out.println("New Tag map entry with key: " + tagDataKey.toString() + " value = " + tagDataMap.get(tagDataKey).toString());
 							}
 							if (confDataMap.containsKey(confDataKey)) {
 								ConfDataMapRecord f = (ConfDataMapRecord) confDataMap.get(confDataKey);
 								f.incrementAllCounts();
 								confDataMap.put(confDataKey, f);
-								//System.out.println("Updated Conf map entry with key: " + confDataKey.toString() + " value = " + confDataMap.get(confDataKey).toString());
 							} else {
 								ConfDataMapRecord t = new ConfDataMapRecord(granularityList);
 								confDataMap.put(confDataKey, t);
-								//logger.info("[manageChannelBuffersWrapper] New Conf map entry with key: " + confDataKey + " value = " + confDataMap.get(confDataKey));
-								//System.out.println("New Conf map entry with key: " + confDataKey.toString() + " value = " + confDataMap.get(confDataKey).toString());
 							}
 						}
 					}
@@ -307,7 +297,6 @@ public class ChannelBufferManager {
 			public void run() {
 				Thread.currentThread().setName("ChannelBufferManager Redis subscription Thread");
 				logger.info("New thread <" +  Thread.currentThread().getName() + "> created for subscribing to redis channel: " + channelRegEx);
-				System.out.println("New thread <" +  Thread.currentThread().getName() + "> created for subscribing to redis channel: " + channelRegEx);
 				try {
 					// Execute the blocking REDIS subscription call
 					subscriberJedis.psubscribe(aidrSubscriber, channelRegEx);
@@ -337,7 +326,6 @@ public class ChannelBufferManager {
 				jedisConn.returnJedis(subscriberJedis);
 				subscriberJedis = null;
 				logger.info("Stopsubscription completed...");
-				System.out.println("[stopSubscription] Stopsubscription completed...");
 			}
 		} catch (Exception e) {
 			logger.error("Failed to return Jedis resource", e);
@@ -408,7 +396,6 @@ public class ChannelBufferManager {
 		stopSubscription();
 		shutdownAndAwaitTermination();
 		logger.info("All done, fetch service has been shutdown...");
-		System.out.println("[close] All done, fetch service has been shutdown...");
 	}
 
 
@@ -482,7 +469,6 @@ public class ChannelBufferManager {
 				}
 				if (redisLoadShedder.get(channel).canProcess(channel)) {
 					manageChannelBuffers(pattern, channel, message);
-					System.out.println("Done putting message");
 				} 			
 			} catch (Exception e) {
 				logger.error("Exception occurred, redisLoadShedder = " + redisLoadShedder + ", channel status: " + redisLoadShedder.containsKey(channel), e);
