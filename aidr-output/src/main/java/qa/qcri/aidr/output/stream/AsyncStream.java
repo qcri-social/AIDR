@@ -84,9 +84,6 @@ public class AsyncStream implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-//		AIDROutputConfig configuration = new AIDROutputConfig();
-//		HashMap<String, String> configParams = configuration.getConfigProperties();
-		
 		// Now initialize shared jedis connection object and thread pool object
 		jedisConn = new JedisConnectionObject(redisHost, redisPort);
 		executorService = Executors.newCachedThreadPool();

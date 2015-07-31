@@ -21,8 +21,6 @@ public class JedisConnectionObject {
 	// Jedis related
 	private static JedisPoolConfig poolConfig = null;	// only one JedisPoolConfig per servlet instance
 	private static JedisPool pool = null;				// only one JedisPool per servlet instance
-	private Jedis subscriberJedis = null;				// one for each GET request
-
 	private static OutputConfigurator configProperties = OutputConfigurator.getInstance();
 	public static String redisHost = configProperties.getProperty(OutputConfigurationProperty.REDIS_HOST);
 	public static int redisPort = Integer.valueOf(configProperties.getProperty(OutputConfigurationProperty.REDIS_PORT));
@@ -38,10 +36,6 @@ public class JedisConnectionObject {
 	 * @param port port number to use for establishing connection
 	 */
 	public JedisConnectionObject(final String host, final int port) {
-		// For now: set up a simple configuration that logs on the console
-		//PropertyConfigurator.configure("log4j.properties");		// where to place the properties file?
-		//BasicConfigurator.configure();							// initialize log4j logging
-		//System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
 
 		allotedJedis = new ConcurrentHashMap<Jedis, Boolean>();
 		redisHost = host;

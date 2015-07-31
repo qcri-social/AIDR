@@ -134,7 +134,7 @@ public class ChannelBufferManager {
 				logger.info("Created pattern subscription for pattern: " + channelRegEx);
 			} catch (Exception e) {
 				isSubscribed = false;
-				logger.error("Fatal exception occurred attempting subscription: " + e.toString());
+				logger.error("Fatal exception occurred while attempting redis subscription: " + e.toString());
 				OutputErrorHandler.sendErrorMail(e.getLocalizedMessage(), "Fatal error! Couldn't establish connection to REDIS!");
 			}
 			if (isSubscribed) {
@@ -187,7 +187,7 @@ public class ChannelBufferManager {
 			createChannelQueue(channelName);
 			addMessageToChannelBuffer(channelName, receivedMessage);
 			logger.info("Created new channel: " + channelName);
-			System.out.println("[manageChannelBuffers] Created new channel: " + channelName);
+			//System.out.println("[manageChannelBuffers] Created new channel: " + channelName);
 		}
 		long currentTime = new Date().getTime();
 
@@ -207,7 +207,7 @@ public class ChannelBufferManager {
 					}
 					statusFlags.clear();
 				} catch (Exception e) {
-					logger.error(e.getMessage());
+					logger.error("Error while checking publiclyListedFlag for running collections "+e.getMessage());
 				}
 			}
 			lastPublicFlagCheckedTime = new Date().getTime();
@@ -458,7 +458,7 @@ public class ChannelBufferManager {
 					subscriberJedis.psubscribe(aidrSubscriber, channelRegEx);
 				} catch (JedisConnectionException e) {
 					logger.error("AIDR Predict Channel pSubscribing failed for channel = " + channelRegEx, e);
-					System.out.println("[subscribeToChannel] AIDR Predict Channel pSubscribing failed for channel = " + channelRegEx);
+					//System.out.println("[subscribeToChannel] AIDR Predict Channel pSubscribing failed for channel = " + channelRegEx);
 					stopSubscription();
 					Thread.currentThread().interrupt();
 				} /*finally {
@@ -490,7 +490,7 @@ public class ChannelBufferManager {
 				jedisConn.returnJedis(subscriberJedis);
 				subscriberJedis = null;
 				logger.info("Stopsubscription completed...");
-				System.out.println("[stopSubscription] Stopsubscription completed...");
+				//System.out.println("[stopSubscription] Stopsubscription completed...");
 			}
 		} catch (Exception e) {
 			logger.error("Failed to return Jedis resource");
@@ -563,7 +563,6 @@ public class ChannelBufferManager {
 		deleteAllChannelBuffers();
 		shutdownAndAwaitTermination();
 		logger.info("All done, fetch service has been shutdown...");
-		System.out.println("[close] All done, fetch service has been shutdown...");
 	}
 
 	/**

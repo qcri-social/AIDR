@@ -182,7 +182,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		}
 		//inRequests.decrementAndGet();
 		logger.error("Error in jedis connection. Bailing out...");
-		System.err.println("[getLatestBufferedAIDRData] Error in jedis connection. Bailing out...");
+		//System.err.println("[getLatestBufferedAIDRData] Error in jedis connection. Bailing out...");
 		return returnEmptyJson(callbackName);
 	}
 
@@ -511,12 +511,9 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		// Most important action - setup channel buffering thread
 		if (null == cbManager) {
 			logger.info("Initializing channel buffer manager with regEx pattern: " + CHANNEL_REG_EX);
-			System.out.println("[contextInitialized] Initializing channel buffer manager with regEx pattern: " + CHANNEL_REG_EX);
-			//cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
 			cbManager = new ChannelBufferManager();
 			cbManager.initiateChannelBufferManager(CHANNEL_REG_EX);
 			logger.info("Done initializing channel buffer manager with regEx pattern: " + CHANNEL_REG_EX);
-			System.out.println("[contextInitialized] Done initializing channel buffer manager with regEx pattern: " + CHANNEL_REG_EX);
 		}
 		channelSelector = new SimpleFairScheduler();
 		logger.info("Context Initialized");
