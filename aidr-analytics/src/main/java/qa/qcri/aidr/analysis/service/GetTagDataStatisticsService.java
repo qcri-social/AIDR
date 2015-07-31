@@ -2,15 +2,12 @@
 package qa.qcri.aidr.analysis.service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.ejb.Local;
 import javax.ejb.Stateless;
 
 import net.minidev.json.JSONObject;
@@ -72,7 +69,6 @@ public class GetTagDataStatisticsService {
 					try {
 						json.put("data", tagCountMap);
 						dataSet.put(attribute, json);
-						System.out.println("Added json: " + json.toJSONString());
 					} catch (Exception e) {
 						json = JsonResponse.addError(json);
 						logger.error("Error in serializing fetched tag count data", e);

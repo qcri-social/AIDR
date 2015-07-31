@@ -38,6 +38,7 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 		try {
 			return em; 
 		} catch (Exception e) {
+			logger.error("getEntityManager failed");
 			throw new HibernateException("getEntityManager failed");
 		}
 	}
@@ -53,8 +54,7 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 				logger.info("Skipping setter, since EntityManager already initialized to :" + this.em);
 			return 0;
 		} catch (Exception e) {
-			logger.error("EntityManager setting exception : " + em);
-			logger.error("exception", e);
+			logger.error("EntityManager setting exception : " + em, e);
 			throw new HibernateException("setEntityManager failed");
 		}
 	}
@@ -65,7 +65,6 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 			return em.unwrap(Session.class);
 		} catch (Exception e) {
 			logger.error("exception: ", e);
-			e.printStackTrace();
 			throw new HibernateException("getCurrentSession failed");
 		}
 	}
@@ -75,13 +74,12 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 	public ReturnCode writeData(TagData tagData) {
 		try {
 			em.persist(tagData);
-			System.out.println("Success in persisting tag data for: " + tagData.getCrisisCode() + ", " + tagData.getAttributeCode() 
+			logger.info("Success in persisting tag data for: " + tagData.getCrisisCode() + ", " + tagData.getAttributeCode() 
 					+ ", " + tagData.getLabelCode() + ", " + tagData.getTimestamp() + ", " + tagData.getGranularity() + ": " + tagData.getCount());
 			return ReturnCode.SUCCESS;
 		} catch (Exception e) {
-			System.out.println("Failure in persisting tag data for: " + tagData.getCrisisCode() + ", " + tagData.getAttributeCode() 
+			logger.error("Failure in persisting tag data for: " + tagData.getCrisisCode() + ", " + tagData.getAttributeCode() 
 					+ ", " + tagData.getLabelCode() + ", " + tagData.getTimestamp() + ", " + tagData.getGranularity() + ": " + tagData.getCount());
-			e.printStackTrace();
 			logger.error("exception: ", e);
 			return ReturnCode.ERROR;
 		}
@@ -102,8 +100,9 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 			TagData obj = (TagData) criteria.uniqueResult();
 			return obj;
 		} catch (HibernateException e) {
-			//logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("error in getSingleDataByPK for crisisCode : " + tagDataPK.getCrisisCode()
+					+ " attributeCode : " + tagDataPK.getAttributeCode() 
+					+ " labelCode : " +tagDataPK.getLabelCode() + "timestamp : " + tagDataPK.getTimestamp());
 		}
 		return null;
 	}
@@ -119,8 +118,7 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 			//System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
-			//logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("Error in getDataByCrisis for crisis : " + crisisCode);
 		}
 		return null;
 	}
@@ -154,8 +152,8 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 			}
 			return data;
 		} catch (HibernateException e) {
-			//logger.error("exception: ", e);
-			e.printStackTrace();
+			logger.error("Error in getTagCountByCrisisGranularity for crisisCode : " + crisisCode
+					+ " and timestamp : " + timestamp, e);
 		}
 		return null;
 	}
@@ -171,8 +169,7 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 			//System.out.println("fetched attributes list size = " + (attributesList != null ? attributesList.size() : "null"));
 			return attributesList;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("exception: ", e);
+			logger.error("exception in getAttributesForCrisis for crisisCode : " + crisisCode, e);
 			return null;
 		}
 	}
@@ -187,8 +184,7 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 			System.out.println("fetched attributes list size = " + (gList != null ? gList.size() : "null"));
 			return gList;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("exception: ", e);
+			logger.error("exception in getGranularitiesForCrisis for crisisCode : " + crisisCode, e);
 			return null;
 		}
 
@@ -213,8 +209,8 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
-			//logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("exception in getDataByCrisisGranularity for crisisCode : " + crisisCode
+					+ " granularity : " + granularity, e);
 		}
 		return null;
 	}
@@ -234,14 +230,13 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 					.add(Restrictions.eq("labelCode", labelCode));
 		}
 		criteria.add(criterion); 		
-		System.out.println("Formed criteria: " + criteria.toString());
 		try {
 			List<TagData> objList = (List<TagData>) criteria.list();
 			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
-			//logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("exception in getDataByCrisisAttributeLabel for crisisCode : " + crisisCode
+					+ " attributeCode : " + attributeCode + " labelCode : " + labelCode, e);
 		}
 		return null;
 	}
@@ -261,8 +256,9 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
-			//logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("exception in getDataByCrisisAttributeLabelGranularity for crisisCode : " + crisisCode
+					+ " attributeCode : " + attributeCode + " labelCode : " + labelCode
+					+ " granularity : " + granularity, e);
 		}
 		return null;
 	}
@@ -287,8 +283,9 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
-			//logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("exception in getDataByGranularityInTimeWindow for crisisCode : " + crisisCode
+					+ " attributeCode : " + attributeCode + " timestamp : " + timestamp
+					+ " granularity : " + granularity, e);
 		}
 		return null;
 	}
@@ -313,8 +310,8 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
-			//logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("exception in getDataAfterTimestampGranularity for crisisCode : " + crisisCode
+					+ " attributeCode : " + attributeCode + " timestamp : " + timestamp, e);
 		}
 		return null;
 	}
@@ -339,8 +336,9 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
-			//logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("exception in getDataAfterTimestampGranularity for crisisCode : " + crisisCode
+					+ " attributeCode : " + attributeCode + " timestamp : " + timestamp
+					+ " granularity : " + granularity, e);
 		}
 		return null;
 	}
@@ -365,8 +363,8 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
-			//logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("exception in getDataBeforeTimestamp for crisisCode : " + crisisCode
+					+ " attributeCode : " + attributeCode + " timestamp : " + timestamp, e);
 		}
 		return null;
 	}
@@ -393,8 +391,9 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
-			//logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("exception in getDataBeforeTimestampGranularity for crisisCode : " + crisisCode
+					+ " attributeCode : " + attributeCode + " timestamp : " + timestamp
+					+ " granularity : " + granularity, e);
 		}
 		return null;
 	}
@@ -420,8 +419,9 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
-			//logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("exception in getDataInInterval for crisisCode : " + crisisCode
+					+ " attributeCode : " + attributeCode + " timestamp1 : " + timestamp1
+					+ " timestamp2 : " + timestamp2, e);
 		}
 		return null;
 	}
@@ -465,8 +465,9 @@ public class TagDataStatisticsResourceFacadeImp implements TagDataStatisticsReso
 			System.out.println("fetched list size = " + (objList != null ? objList.size() : "null"));
 			return objList;
 		} catch (HibernateException e) {
-			//logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("exception in getDataInIntervalWithGranularity for crisisCode : " + crisisCode
+					+ " attributeCode : " + attributeCode + " timestamp1 : " + timestamp1
+					+ " timestamp2 : " + timestamp2 + " granularity : " + granularity, e);
 		}
 		return null;
 	}

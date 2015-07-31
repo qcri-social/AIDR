@@ -26,17 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-
-
-
-
-
 import org.apache.log4j.Logger;
-
-
-
-
-
 
 import qa.qcri.aidr.analysis.stat.ConfDataMapRecord;
 import qa.qcri.aidr.analysis.stat.MapRecord;
@@ -45,7 +35,6 @@ import qa.qcri.aidr.common.code.Configurator;
 import qa.qcri.aidr.common.filter.ClassifiedFilteredTweet;
 import qa.qcri.aidr.common.filter.NominalLabel;
 import qa.qcri.aidr.common.redis.LoadShedder;
-import qa.qcri.aidr.analysis.utils.OutputConfigurator;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisConnectionException;
@@ -130,9 +119,8 @@ public class ChannelBufferManager {
 		} catch (JedisConnectionException e) {
 			subscriberJedis = null;
 			isConnected = false;
-			logger.error("Fatal error! Couldn't establish connection to REDIS!");
-			logger.error("exception", e);
-			e.printStackTrace();
+			logger.error("Fatal error! Couldn't establish connection to REDIS!", e);
+			AnalyticsErrorLog.sendErrorMail("Redis", e.getMessage());
 		}
 		if (isConnected) {
 			aidrSubscriber = new RedisSubscriber();
@@ -143,11 +131,10 @@ public class ChannelBufferManager {
 				isSubscribed = true;
 				aidrSubscriber.setChannelName(channelRegEx);
 				logger.info("Created pattern subscription for pattern: " + channelRegEx);
-				System.out.println("Created pattern subscription for pattern: " + channelRegEx);
 			} catch (Exception e) {
 				isSubscribed = false;
-				logger.error("Fatal exception occurred attempting subscription: " + e.toString());
-				logger.error("exception", e);
+				logger.error("Fatal exception occurred attempting subscription: " + e.toString(), e);
+				AnalyticsErrorLog.sendErrorMail("Redis", e.getMessage());
 			}
 			if (isSubscribed) {
 				subscribedChannels = new HashSet<String>();
@@ -248,7 +235,6 @@ public class ChannelBufferManager {
 				}
 			} catch (Exception e) {
 				logger.error("Exception", e);
-				e.printStackTrace();
 			}
 		}
 		// Periodically check if any channel is down - if so, delete all
@@ -294,8 +280,7 @@ public class ChannelBufferManager {
 			//logger.info("Checking channelName: " + channelName + ", result = " + subscribedChannels.containsKey(channelName) + ", with message count = " + subscribedChannels.get(channelName).getCurrentMsgCount());
 			return (subscribedChannels != null) ? subscribedChannels.contains(channelName) : false;
 		} catch (Exception e) {
-			logger.error(Thread.currentThread().getName() + ":: Unable to check if channel present: " + channelName);
-			e.printStackTrace();
+			logger.error(Thread.currentThread().getName() + ":: Unable to check if channel present: " + channelName, e);
 			return false;
 		}
 	}
@@ -310,8 +295,7 @@ public class ChannelBufferManager {
 			Set<String> channelSet = (subscribedChannels != null && !subscribedChannels.isEmpty()) ? subscribedChannels : null;
 			return channelSet;
 		} catch (Exception e) {
-			logger.error("Unable to fetch list of active channels");
-			e.printStackTrace();
+			logger.error("Unable to fetch list of active channels", e);
 			return null;
 		}
 	}
@@ -328,9 +312,7 @@ public class ChannelBufferManager {
 					// Execute the blocking REDIS subscription call
 					subscriberJedis.psubscribe(aidrSubscriber, channelRegEx);
 				} catch (JedisConnectionException e) {
-					logger.error("AIDR Predict Channel pSubscribing failed for channel = " + channelRegEx);
-					System.out.println("[subscribeToChannel] AIDR Predict Channel pSubscribing failed for channel = " + channelRegEx);
-					e.printStackTrace();
+					logger.error("AIDR Predict Channel pSubscribing failed for channel = " + channelRegEx, e);
 					stopSubscription();
 					Thread.currentThread().interrupt();
 				} 
@@ -348,8 +330,7 @@ public class ChannelBufferManager {
 				logger.info("Unsubscribed from channel pattern: " + CHANNEL_PREFIX_STRING);
 			}
 		} catch (JedisConnectionException e) {
-			logger.error("Connection to REDIS seems to be lost!");
-			logger.error("exception", e);
+			logger.error("Connection to REDIS seems to be lost!", e);
 		}
 		try {
 			if (jedisConn != null && aidrSubscriber != null && subscriberJedis != null) { 
@@ -359,8 +340,7 @@ public class ChannelBufferManager {
 				System.out.println("[stopSubscription] Stopsubscription completed...");
 			}
 		} catch (Exception e) {
-			logger.error("Failed to return Jedis resource");
-			logger.error("exception", e);
+			logger.error("Failed to return Jedis resource", e);
 		}
 		logger.info("isShutDown initiated = " + shutdownFlag);
 		if (!shutdownFlag) {
@@ -387,7 +367,6 @@ public class ChannelBufferManager {
 				isSubscribed = false;
 				isSetup = false;
 				logger.error("Fatal exception occurred attempting subscription: " + e.toString());
-				logger.error("exception", e);
 				++attempts;
 			}
 		}
@@ -401,9 +380,8 @@ public class ChannelBufferManager {
 		} catch (JedisConnectionException e) {
 			subscriberJedis = null;
 			isConnected = false;
-			logger.error("Fatal error! Couldn't establish connection to REDIS!");
-			System.out.println("Fatal error! Couldn't establish connection to REDIS!");
-			logger.error("exception", e);
+			logger.error("Fatal error! Couldn't establish connection to REDIS!", e);
+			AnalyticsErrorLog.sendErrorMail("Redis", e.getMessage());
 		}
 		if (isConnected) {
 			aidrSubscriber = new RedisSubscriber();
@@ -418,8 +396,7 @@ public class ChannelBufferManager {
 			} catch (Exception e) {
 				isSubscribed = false;
 				logger.error("Fatal exception occurred attempting subscription: " + e.toString());
-				System.out.println("Fatal exception occurred attempting subscription ");
-				logger.error("exception", e);
+				AnalyticsErrorLog.sendErrorMail("Redis", e.getMessage());
 			}
 		}
 		return false;
@@ -447,7 +424,7 @@ public class ChannelBufferManager {
 					executorServicePool.shutdownNow();                         // Cancel currently executing tasks
 					// Wait a while for tasks to respond to being cancelled
 					if (!executorServicePool.awaitTermination(5, TimeUnit.SECONDS))
-						logger.error("Executor Thread Pool did not terminate");
+						logger.warn("Executor Thread Pool did not terminate");
 				} else {
 					logger.info("All tasks completed post service shutdown");
 				}
@@ -508,9 +485,7 @@ public class ChannelBufferManager {
 					System.out.println("Done putting message");
 				} 			
 			} catch (Exception e) {
-				logger.error("Exception occurred, redisLoadShedder = " + redisLoadShedder + ", channel status: " + redisLoadShedder.containsKey(channel));
-				System.out.println("Exception occurred, redisLoadShedder = " + redisLoadShedder + ", channel status: " + redisLoadShedder.containsKey(channel));
-				logger.error("exception", e);
+				logger.error("Exception occurred, redisLoadShedder = " + redisLoadShedder + ", channel status: " + redisLoadShedder.containsKey(channel), e);
 			}
 		}
 

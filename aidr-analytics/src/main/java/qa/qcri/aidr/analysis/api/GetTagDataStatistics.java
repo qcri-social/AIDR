@@ -54,7 +54,6 @@ public class GetTagDataStatistics implements ServletContextListener {
 			@PathParam("granularity") Long granularity,
 			@DefaultValue("0") @QueryParam("startTime") Long startTime) {
 		
-		System.out.println("local EJB in REST API = " + tagDataService);
 		JSONObject json = tagDataService.getTagCountSumForAllAttributesFromTime(crisisCode, granularity, startTime);
 		return Response.ok(json.toJSONString()).build();
 	}
@@ -72,7 +71,6 @@ public class GetTagDataStatistics implements ServletContextListener {
 	public Response getTagCountSumForAllGranularitiesFromTime(@PathParam("crisisCode") String crisisCode,
 			@DefaultValue("0") @QueryParam("startTime") Long startTime) {
 		
-		System.out.println("local EJB in REST API = " + tagDataService);
 		JSONObject json = tagDataService.getTagCountSumByGranularity(crisisCode, startTime);
 		return Response.ok(json.toJSONString()).build();
 	}
@@ -94,7 +92,6 @@ public class GetTagDataStatistics implements ServletContextListener {
 			@PathParam("granularity") Long granularity,
 			@DefaultValue("0") @QueryParam("startTime") Long startTime) {
 		
-		System.out.println("local EJB in REST API = " + tagDataService);
 		JSONObject json = tagDataService.getTagCountSumFromTime(crisisCode, attributeCode, granularity, startTime);
 		return Response.ok(json.toJSONString()).build();
 	}

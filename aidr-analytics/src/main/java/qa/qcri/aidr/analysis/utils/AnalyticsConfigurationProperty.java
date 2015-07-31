@@ -14,7 +14,7 @@ import qa.qcri.aidr.common.code.ConfigurationProperty;
  */
 public enum AnalyticsConfigurationProperty implements ConfigurationProperty {
 
-	GRANULARITY("granularity");
+	GRANULARITY("granularity"), TAGGER_REST_URI("TAGGER_REST_URI");
 
 	private final String configurationProperty;
 

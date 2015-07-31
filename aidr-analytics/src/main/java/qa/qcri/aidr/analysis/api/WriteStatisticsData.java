@@ -82,7 +82,6 @@ public class WriteStatisticsData implements ServletContextListener {
 			cbManager = new ChannelBufferManager();
 			cbManager.initiateChannelBufferManager(GetStatistics.CHANNEL_REG_EX);
 			logger.info("Done initializing channel buffer manager with regEx pattern: " + GetStatistics.CHANNEL_REG_EX);
-			System.out.println("[contextInitialized] Done initializing channel buffer manager with regEx pattern: " + GetStatistics.CHANNEL_REG_EX);
 		}
 		//tagDataMap = ChannelBufferManager.getTagDataMap();
 		//confDataMap = ChannelBufferManager.getConfDataMap();
@@ -94,11 +93,8 @@ public class WriteStatisticsData implements ServletContextListener {
 		executorServicePool = cbManager.getExecutorServicePool();
 		if (executorServicePool != null) {
 			executorServicePool.submit(t);
-			System.out.println("Executor thread pool initialized, submitted thread: " + t.getName() + " to pool = " + executorServicePool);
+			logger.info("Executor thread pool initialized, submitted thread: " + t.getName() + " to pool = " + executorServicePool);
 		}
-		logger.info("Done initializing channel buffer manager");
-		System.out.println("Done initializing channel buffer manager");
-		System.out.print("Initialized with granularities: ");
 		for (Long g: granularityList) {
 			System.out.print(g + "\t");
 		}
@@ -139,7 +135,7 @@ public class WriteStatisticsData implements ServletContextListener {
 				TagDataMapRecord tCount = (TagDataMapRecord) ChannelBufferManager.getTagDataMap().get(key);
 				TagData t = new TagData(key.getCrisisCode(), timestamp, granularity, key.getAttributeCode(), key.getLabelCode(), tCount.getCount(granularity));
 				if (tCount.getCount(granularity) > 0) {
-					System.out.println("Will attempt persistence of tag key: " + key.toString());
+					logger.error("Will attempt persistence of tag key: " + key.toString());
 					t.setMaxCreatedAt(tCount.getLastUpdateTime());
 					t.setMinCreatedAt(tCount.getFirstEntryTime());
 					tagDataEJB.writeData(t);
@@ -216,6 +212,7 @@ public class WriteStatisticsData implements ServletContextListener {
 					try {
 						Thread.sleep(granularityList.get(0) - 1000); // sleep for the minimum granularity period
 					} catch (InterruptedException e) {
+						logger.warn("Sleep thread interrupted.");
 					}
 				}
 			}
