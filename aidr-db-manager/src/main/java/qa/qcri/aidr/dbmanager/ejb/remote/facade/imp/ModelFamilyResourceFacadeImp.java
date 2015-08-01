@@ -124,6 +124,7 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 		try {
 			rows = query.getResultList();
 		} catch (NoResultException e) {
+			logger.warn("No result for codes : " + codes);
 			return null;
 		}
 		for (Object[] row : rows) {

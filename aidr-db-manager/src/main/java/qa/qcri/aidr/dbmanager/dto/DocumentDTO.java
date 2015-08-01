@@ -9,6 +9,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
@@ -30,6 +32,7 @@ public class DocumentDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 6833511192868020105L;
+	private Logger logger = Logger.getLogger(DocumentDTO.class);
 
 	@XmlElement
 	private Long documentID;
@@ -117,7 +120,6 @@ public class DocumentDTO implements Serializable {
 	
 	public DocumentDTO(Document doc) throws PropertyNotSetException {
 		if (doc != null) {
-			//System.out.println("Document Hash code: " + doc.hashCode());
 			if (doc.getDocumentId() != null) {
 				this.setDocumentID(doc.getDocumentId());
 			}
@@ -128,7 +130,6 @@ public class DocumentDTO implements Serializable {
 				c.setCrisisId(doc.getCrisis().getCrisisId());
 				this.setCrisisDTO(new CrisisDTO(c));
 			} 
-			//System.out.println("Done setting crisis DTO");
 			this.setDoctype(doc.getDoctype());
 			this.setGeoFeatures(doc.getGeoFeatures());
 			this.setIsEvaluationSet(doc.isIsEvaluationSet());
@@ -142,13 +143,11 @@ public class DocumentDTO implements Serializable {
 			if (doc.hasDocumentNominalLabels()) {
 				this.setDocumentNominalLabelsDTO(this.toDocumentNominalLabelDTOList(doc.getDocumentNominalLabels()));
 			}
-			//System.out.println("Done setting DocumentNominalLabels DTO");
 			if (doc.hasTaskAssignments()) {
 				this.setTaskAssignmentDTO(this.toTaskAssignmentDTOList(doc.getTaskAssignments()));
 			}
-			//System.out.println("Done setting TaskAssignments DTO");
 		} else {
-			System.out.println("Entity = null in constructor");
+			logger.error("Entity = null in constructor");
 		}
 	}
 

@@ -2,8 +2,6 @@
 // Generated Nov 24, 2014 4:55:08 PM by Hibernate Tools 4.0.0
 package qa.qcri.aidr.dbmanager.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,12 +10,14 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.model.Model;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabel;
-import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -27,6 +27,7 @@ public class ModelDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 436159208494993271L;
+	private Logger logger = Logger.getLogger(ModelDTO.class);
 
 	@XmlElement
 	private Long modelId;
@@ -122,8 +123,10 @@ public class ModelDTO implements Serializable {
 
 	public void setModelId(Long modelId) {
 		if (modelId == null) {
+			logger.error("modelID cannot be null");
 			throw new IllegalArgumentException("modelID cannot be null");
 		} else if (modelId.longValue() <= 0) {
+			logger.error("modelID cannot be zero or a negative number");
 			throw new IllegalArgumentException("modelID cannot be zero or a negative number");
 		} else {
 			this.modelId = modelId;
@@ -144,8 +147,10 @@ public class ModelDTO implements Serializable {
 
 	public void setAvgPrecision(Double avgPrecision) {
 		if (avgPrecision == null) {
+			logger.error("Average percision cannot be null");
 			throw new IllegalArgumentException("Average percision cannot be null");
 		} else if (avgPrecision.doubleValue() < 0) {
+			logger.error("Average percision cannot be a negative number");
 			throw new IllegalArgumentException("Average percision cannot be a negative number");
 		} else {
 			this.avgPrecision = avgPrecision;
@@ -159,8 +164,10 @@ public class ModelDTO implements Serializable {
 
 	public void setAvgRecall(Double avgRecall) {
 		if (avgRecall == null) {
+			logger.error("Average recall cannot be null");
 			throw new IllegalArgumentException("Average recall cannot be null");
 		} else if (avgRecall.doubleValue() < 0) {
+			logger.error("Average recall cannot be a negative number");
 			throw new IllegalArgumentException("Average recall cannot be a negative number");
 		} else {
 			this.avgRecall = avgRecall;
@@ -173,8 +180,10 @@ public class ModelDTO implements Serializable {
 
 	public void setAvgAuc(Double avgAuc) {
 		if (avgAuc == null) {
+			logger.error("Average AUC cannot be null");
 			throw new IllegalArgumentException("Average AUC cannot be null");
 		} else if (avgAuc.doubleValue() < 0) {
+			logger.error("Average AUC cannot be a negative number");
 			throw new IllegalArgumentException("Average AUC cannot be a negative number");
 		} else {
 			this.avgAuc = avgAuc;
@@ -188,8 +197,10 @@ public class ModelDTO implements Serializable {
 
 	public void setTrainingCount(Integer trainingCount) {
 		if (trainingCount == null) {
+			logger.error("Average training cannot be null");
 			throw new IllegalArgumentException("Average training cannot be null");
 		} else if (trainingCount < 0) {
+			logger.error("Average training cannot be a negative number");
 			throw new IllegalArgumentException("Average training cannot be a negative number");
 		} else {
 			this.trainingCount = trainingCount;
@@ -202,6 +213,7 @@ public class ModelDTO implements Serializable {
 
 	public void setTrainingTime(Date trainingTime) {
 		if (trainingTime == null) {
+			logger.error("Training time cannot be null");
 			throw new IllegalArgumentException("Training time cannot be null");
 		} else {
 			this.trainingTime = trainingTime;

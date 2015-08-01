@@ -40,7 +40,6 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 		try {
 			NominalAttribute e = attribute.toEntity();
 			Long id  = save(e);
-			System.out.println("Saved entity ID = " + id);
 			if (id != null) {
 				NominalAttributeDTO savedEntity = this.getAttributeByID(id);
 				return savedEntity;
@@ -140,10 +139,11 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 				attribute.setLabelName(((String) row[6]));
 				attributesList.add(attribute);
 			}
-			return attributesList;
 		} catch (NoResultException e) {
-			return attributesList;
+			logger.warn("No result for crisisID : " + crisisID);
 		}
+		
+		return attributesList;
 	}
 
 }

@@ -8,7 +8,10 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.log4j.Logger;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import qa.qcri.aidr.dbmanager.entities.task.TaskAnswer;
 
 @XmlRootElement
@@ -20,6 +23,7 @@ public class TaskAnswerDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 5525860415454423643L;
+	private Logger logger = Logger.getLogger(TaskAnswerDTO.class);
 
 	@XmlElement
 	private Long taskID;
@@ -99,9 +103,10 @@ public class TaskAnswerDTO implements Serializable {
 	}
 
 	public void setDocumentID(Long documentID) {
-		if(documentID == null)
+		if(documentID == null) {
+			logger.error("documentID cannot be null");
 			throw new IllegalArgumentException("documentID cannot be null");
-
+		}
 		this.documentID = documentID;
 	}
 
@@ -110,9 +115,10 @@ public class TaskAnswerDTO implements Serializable {
 	}
 
 	public void setUserID(Long userID) {
-		if(userID == null)
+		if(userID == null) {
+			logger.error("userID cannot be null");
 			throw new IllegalArgumentException("userID cannot be null");
-
+		}
 		this.userID = userID;
 	}
 

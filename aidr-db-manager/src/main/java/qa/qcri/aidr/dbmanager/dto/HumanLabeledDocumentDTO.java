@@ -10,6 +10,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.log4j.Logger;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -26,6 +28,7 @@ public class HumanLabeledDocumentDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -8284975892012345464L;
+	private Logger logger = Logger.getLogger(HumanLabeledDocumentDTO.class);
 
 	@XmlElement private DocumentDTO doc;
 	
@@ -92,7 +95,7 @@ public class HumanLabeledDocumentDTO implements Serializable {
 			String jsonString = jsonObject.toJson(this, HumanLabeledDocumentDTO.class);
 			return jsonString;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warn("Error in parsing json to human labeled doc.");
 			return null;
 		}
 	}

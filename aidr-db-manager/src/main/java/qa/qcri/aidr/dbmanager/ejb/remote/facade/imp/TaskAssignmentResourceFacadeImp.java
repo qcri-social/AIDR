@@ -37,7 +37,7 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 	@Override
 	public int insertTaskAssignment(List<DocumentDTO> taskList, Long userID) {
 		// hard code, will create user service
-		System.out.println("[insertTaskAssignment] Going to insert/create task list of size = " + taskList.size() + ", for userID: " + userID);
+		logger.info("[insertTaskAssignment] Going to insert/create task list of size = " + taskList.size() + ", for userID: " + userID);
 		try {
 			for (Iterator<DocumentDTO> it = taskList.iterator(); it.hasNext();){
 				DocumentDTO tb = (DocumentDTO) it.next();
@@ -61,7 +61,6 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 		try {
 			List<TaskAssignment> taskAssignments = getAllByCriteria(Restrictions.eq("id.documentId", documentID));
 			if(null == taskAssignments || taskAssignments.size()== 0){
-				System.out.println("[insertOneTaskAssignment] Going to insert/create task list of size = " + taskAssignments.size() + ", for userID: " + userID);
 				TaskAssignment taskAssignment = new TaskAssignment(documentID, userID, new Date());
 				save(taskAssignment);
 				em.flush();
@@ -134,13 +133,11 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 	@Override
 	public void undoTaskAssignmentByTimer() {
 		try {
-			// System.out.println("undoTaskAssignmentByTimer is called");
 			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.HOUR, -12);
 			String calDate = dateFormat.format(cal.getTime());
 			List<TaskAssignment> taskAssignments = getAllByCriteria(Restrictions.le("assignedAt",dateFormat.parse(calDate)));
-			// System.out.println("undoTaskAssignmentByTimer size : " + taskAssignments);
 			if (taskAssignments != null) {
 				for (Iterator it =taskAssignments.iterator(); it.hasNext();){
 					TaskAssignment taskAssignment = (TaskAssignment) it.next();

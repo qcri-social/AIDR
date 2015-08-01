@@ -109,7 +109,6 @@ public class CrisisDTO implements Serializable  {
 
 	public CrisisDTO(Crisis crisis) throws PropertyNotSetException {
 		if (crisis != null) {
-			//System.out.println("Crisis Hash code: " + crisis.hashCode());
 			
 			this.setCrisisID(crisis.getCrisisId());
 			this.setName(crisis.getName());
@@ -126,22 +125,18 @@ public class CrisisDTO implements Serializable  {
 				user.setUserId(crisis.getUsers().getUserId());
 				this.setUsersDTO(new UsersDTO(user));
 			}
-			//System.out.println("Done setting user DTO");
 			// Setting optional fields that were lazily initialized
 			if (crisis.hasNominalAttributes()) {
 				this.setNominalAttributesDTO(toNominalAttributeDTOList(crisis.getNominalAttributes()));
 			}
-			//System.out.println("Done setting nominalAttributes DTO");
 			if (crisis.hasModelFamilies()) {
 				this.setModelFamiliesDTO(toModelFamilyDTOList(crisis.getModelFamilies()));
 			}
-			//System.out.println("Done setting modelfamily DTO");
 			if (crisis.hasDocuments()) {
 				this.setDocumentsDTO(toDocumentDTOList(crisis.getDocuments()));
 			}
-			//System.out.println("Done setting document DTO");
 		} else {
-			System.out.println("Entity = null in constructor");
+			logger.error("Entity = null in constructor");
 		}
 
 	}
@@ -232,7 +227,6 @@ public class CrisisDTO implements Serializable  {
 	}
 
 	private List<DocumentDTO> toDocumentDTOList(List<Document> list) {
-		try {
 		if (list != null) {
 			try {
 				List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
@@ -247,11 +241,8 @@ public class CrisisDTO implements Serializable  {
 				}
 				return dtoList;
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.warn("Unable to wrap Document to DocumentDTO.");
 			}
-		}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		return null;
 	}

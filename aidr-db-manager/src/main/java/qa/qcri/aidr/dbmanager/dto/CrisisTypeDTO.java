@@ -6,6 +6,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
@@ -17,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class CrisisTypeDTO implements java.io.Serializable {
 
     private static final long serialVersionUID = 8074463052776843105L;
+    private Logger logger = Logger.getLogger(CrisisTypeDTO.class);
 
     @XmlElement
     private Long crisisTypeId;
@@ -57,7 +60,7 @@ public class CrisisTypeDTO implements java.io.Serializable {
                 this.numberOfCrisisAssociated = crisisType.getCrisises() != null ? crisisType.getCrisises().size() : 0;
             }
         } else {
-            System.out.println("Entity = null in constructor");
+            logger.error("Entity = null in constructor");
         }
     }
     

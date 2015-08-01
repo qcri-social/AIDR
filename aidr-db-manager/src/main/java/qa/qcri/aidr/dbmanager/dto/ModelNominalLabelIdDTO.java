@@ -5,6 +5,8 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabelId;
 
@@ -18,6 +20,7 @@ public class ModelNominalLabelIdDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -7966215874963999322L;
+	private Logger logger = Logger.getLogger(ModelNominalLabelIdDTO.class);
 
 	@XmlElement
 	private Long modelId;
@@ -56,6 +59,7 @@ public class ModelNominalLabelIdDTO implements Serializable {
 	
 	public ModelNominalLabelId toEntity() throws PropertyNotSetException {
 		if (this.modelId == null || this.nominalLabelId == null) {
+			logger.error("Primary key not set!");
 			throw new PropertyNotSetException("Primary key not set!");
 		}
 		

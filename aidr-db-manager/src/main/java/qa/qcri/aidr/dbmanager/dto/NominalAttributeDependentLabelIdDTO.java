@@ -5,6 +5,8 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttributeDependentLabelId;
 
@@ -17,7 +19,7 @@ public class NominalAttributeDependentLabelIdDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 5910754106878087122L;
-
+	private Logger logger = Logger.getLogger(NominalAttributeDependentLabelIdDTO.class);
 
 	@XmlElement
 	private Long nominalAttributeId;
@@ -39,6 +41,7 @@ public class NominalAttributeDependentLabelIdDTO implements Serializable {
 			this.nominalAttributeId = id.getNominalAttributeId();
 			this.nominalLabelId = id.getNominalLabelId();
 		} else {
+			logger.error("Primary key not set!");
 			throw new PropertyNotSetException("Primary key not set!");
 		}
 	}
@@ -61,6 +64,7 @@ public class NominalAttributeDependentLabelIdDTO implements Serializable {
 	
 	public NominalAttributeDependentLabelId toEntity() throws PropertyNotSetException {
 		if (this.nominalAttributeId == null || this.nominalLabelId == null) {
+			logger.error("Primary key not set!");
 			throw new PropertyNotSetException("Primary key not set!");
 		}
 		NominalAttributeDependentLabelId id = new NominalAttributeDependentLabelId(this.nominalAttributeId, this.nominalLabelId);

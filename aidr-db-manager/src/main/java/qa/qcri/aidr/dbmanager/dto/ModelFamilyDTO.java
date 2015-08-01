@@ -49,7 +49,6 @@ public class ModelFamilyDTO implements Serializable {
 
 	public ModelFamilyDTO(ModelFamily model) throws PropertyNotSetException {
 		if (model != null) {
-			//System.out.println("ModelFamily Hash code: " + model.hashCode());
 			this.setModelFamilyId(model.getModelFamilyId());
 			if (model.hasNominalAttribute()) {
 				NominalAttribute na = new NominalAttribute(model.getNominalAttribute().getUsers(), 

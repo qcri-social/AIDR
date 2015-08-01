@@ -41,8 +41,7 @@ public class TaskAnswerResourceFacadeImp extends CoreDBServiceFacadeImp<TaskAnsw
 				
 				return getTaskAnswer(taskAnswer.getDocumentID(), taskAnswer.getUserID());
 			} catch (Exception e) {
-				System.out.println("Unable to save taskAnswer: " + taskAnswer.getDocumentID() + ", " + taskAnswer.getUserID() + ", " + taskAnswer.getAnswer());
-				e.printStackTrace();
+				logger.error("Unable to save taskAnswer: " + taskAnswer.getDocumentID() + ", " + taskAnswer.getUserID() + ", " + taskAnswer.getAnswer(), e);
 				return null;
 			}
 		} else {

@@ -51,6 +51,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 		try {
 			return em; 
 		} catch (Exception e) {
+			logger.error("getEntityManager failed", e);
 			throw new HibernateException("getEntityManager failed");
 		}
 	}
@@ -66,7 +67,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 				logger.info("Skipping setter, since EntityManager already initialized to :" + this.em);
 			return 0;
 		} catch (Exception e) {
-			logger.error("EntityManager setting exception : " + em);
+			logger.error("EntityManager setting exception : " + em, e);
 			throw new HibernateException("setEntityManager failed");
 		}
 	}
@@ -126,7 +127,6 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 		List<E> fetchedList = new ArrayList<E>();
 		try {	
 			fetchedList  = criteria.list();
-			//System.out.println("CoreDBServiceFacade: getAll fetched list size: " + fetchedList.size());
 			return fetchedList;
 		} catch (Exception e) {
 			logger.error("getAll failed", e);
@@ -217,7 +217,6 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 		if(count != null && count > 0){
 			criteria.setMaxResults(count);
 		}
-		//System.out.println("fetched List count = " + (fetchedList != null ? fetchedList.size() : null));
 		try {	
 			fetchedList = criteria.list();
 			return fetchedList;
@@ -248,7 +247,6 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 		if(count != null && count > 0){
 			criteria.setMaxResults(count);
 		}
-		//System.out.println("fetched List count = " + (fetchedList != null ? fetchedList.size() : null));
 		try {	
 			fetchedList = criteria.list();
 			return fetchedList;

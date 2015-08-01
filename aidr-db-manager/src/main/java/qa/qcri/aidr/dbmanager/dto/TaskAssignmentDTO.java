@@ -6,12 +6,13 @@ import java.util.Date;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.TaskAssignment;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
@@ -20,6 +21,7 @@ public class TaskAssignmentDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 6766433678441426060L;
+	private Logger logger = Logger.getLogger(TaskAssignmentDTO.class);
 
 	@XmlElement
 	private DocumentDTO document;
@@ -92,6 +94,7 @@ public class TaskAssignmentDTO implements Serializable {
 		if (idDTO != null) {
 			this.idDTO = idDTO;
 		} else {
+			logger.error("Primary key cannot be null");
 			throw new IllegalArgumentException("Primary key cannot be null");
 		}
 	}
@@ -102,6 +105,7 @@ public class TaskAssignmentDTO implements Serializable {
 
 	public void setDocumentID(Long documentID) throws PropertyNotSetException {
 		if (documentID == null) {
+			logger.error("documentID cannot be null");
 			throw new IllegalArgumentException("documentID cannot be null");
 		}
 		else{
@@ -116,6 +120,7 @@ public class TaskAssignmentDTO implements Serializable {
 
 	public void setUserID(Long userID) {
 		if (userID == null) {
+			logger.error("userID cannot be null");
 			throw new IllegalArgumentException("userID cannot be null");
 		}
 		else{
