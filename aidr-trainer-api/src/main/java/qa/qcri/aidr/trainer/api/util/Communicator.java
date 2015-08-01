@@ -64,7 +64,7 @@ public class Communicator {
             }
 
         }catch (Exception ex) {
-            logger.warn("Error in processing request for data : " + data + " and url : " + url);
+            logger.warn("Error in processing request for data : " + data + " and url : " + url,ex);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -103,7 +103,7 @@ public class Communicator {
 
 
         }catch (Exception ex) {
-        	logger.error("ex Code deleteGet2: " + url);
+        	logger.error("Exception in deleteGet2: " + url,ex);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -151,8 +151,8 @@ public class Communicator {
 
 
         }catch (Exception ex) {            
-            logger.error("ex Code sendPost2: " + data);
-            logger.error("ex Code sendPost3: " + url);
+            logger.error("Exception in sendPost2: " + data,ex);
+            logger.error("Exception in sendPost3: " + url,ex);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -195,7 +195,7 @@ public class Communicator {
 
 
         }catch (Exception ex) {
-            logger.error("Error in processing request for data : " + data + " and url :" + url);
+            logger.error("Error in processing request for data : " + data + " and url :" + url,ex);
             responseOutput.append("Exception Code : " + ex);
 
         } finally {
@@ -231,7 +231,7 @@ public class Communicator {
             in.close();
 
         }catch (Exception ex) {
-            logger.error("sendGet url = " + url);
+            logger.error("sendGet url = " + url,ex);
         }
 
         return response.toString();

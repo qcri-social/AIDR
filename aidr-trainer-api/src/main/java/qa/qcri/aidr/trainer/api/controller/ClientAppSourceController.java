@@ -57,7 +57,7 @@ public class ClientAppSourceController {
         }
         catch(Exception e){
             returnValue = StatusCodeType.RETURN_FAIL;
-            logger.error("saveAppSource got exception : ");
+            logger.error("Exception while saving app source",e);
         }
 
         return Response.status(CodeLookUp.APP_REQUEST_SUCCESS).entity(returnValue).build();

@@ -1,19 +1,26 @@
 package qa.qcri.aidr.trainer.api.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
 import qa.qcri.aidr.trainer.api.entity.Client;
 import qa.qcri.aidr.trainer.api.entity.ClientApp;
 //import qa.qcri.aidr.trainer.api.entity.Crisis;
 import qa.qcri.aidr.trainer.api.entity.CustomUITemplate;
-import qa.qcri.aidr.trainer.api.service.*;
+import qa.qcri.aidr.trainer.api.service.ClientAppService;
+import qa.qcri.aidr.trainer.api.service.ClientService;
+import qa.qcri.aidr.trainer.api.service.CustomUITemplateService;
+import qa.qcri.aidr.trainer.api.service.TaskQueueService;
+import qa.qcri.aidr.trainer.api.service.TemplateService;
 import qa.qcri.aidr.trainer.api.store.CodeLookUp;
 import qa.qcri.aidr.trainer.api.store.StatusCodeType;
 import qa.qcri.aidr.trainer.api.store.URLReference;
@@ -21,9 +28,6 @@ import qa.qcri.aidr.trainer.api.template.CrisisApplicationListFormatter;
 import qa.qcri.aidr.trainer.api.template.CrisisApplicationListModel;
 import qa.qcri.aidr.trainer.api.template.CrisisLandingHtmlModel;
 import qa.qcri.aidr.trainer.api.template.CrisisLandingStatusModel;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -36,6 +40,8 @@ import java.util.List;
 @Service("templateService")
 @Transactional(readOnly = false)
 public class TemplateServiceImpl implements TemplateService {
+	
+	private static Logger logger=Logger.getLogger(TemplateServiceImpl.class);
 
 	@Autowired
 	private ClientService clientService;
@@ -110,7 +116,7 @@ public class TemplateServiceImpl implements TemplateService {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception in getApplicationListHtmlByCrisisCode, crisisCode="+crisisCode+"\t"+e.getStackTrace());
 			return null;
 		}
 		return crisisApplicationListModelList;  //To change body of implemented methods use File | Settings | File Templates.
@@ -123,8 +129,7 @@ public class TemplateServiceImpl implements TemplateService {
 		try {
 			crisisList = crisisService.findByCriteria("code", crisisCode);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Exception in CrisisLandingHtmlModel for crisis="+crisisCode+"\t"+e.getStackTrace());
 		}
 		if(crisisList != null){
 			if(crisisList.size() > 0){
@@ -154,7 +159,7 @@ public class TemplateServiceImpl implements TemplateService {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception in getCrisisLandingHtmlByCrisisID for crisisID="+crisisID+"\t"+e.getStackTrace());
 		}
 		return crisisLandingHtmlModel;
 	}
@@ -168,7 +173,7 @@ public class TemplateServiceImpl implements TemplateService {
 			//Crisis crisis =  crisisService.findByCrisisID(crisisID);
 			crisis =  crisisService.findCrisisByID(crisisID);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception while finding crisis by id:"+crisisID ,e);
 		}
 		List<ClientApp> clientAppList = clientAppService.getAllClientAppByCrisisID(crisisID);
 		// customUITemplateService
@@ -236,7 +241,7 @@ public class TemplateServiceImpl implements TemplateService {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception in getCrisisLandingJSONPByCrisisCode for crisis="+crisisCode+"\t"+e.getStackTrace());
 		}
 		return returnValue;  //To change body of implemented methods use File | Settings | File Templates.
 	}
@@ -247,16 +252,17 @@ public class TemplateServiceImpl implements TemplateService {
 		List<CrisisDTO> crisisList = null;
 		try {
 			crisisList = crisisService.findByCriteria("code", crisisCode);
-			System.out.println("crisisList size = " + (crisisList != null ? crisisList.size() : "null"));
+			logger.info("crisisList size = " + (crisisList != null ? crisisList.size() : "null"));
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception in getCrisisLandingStatusByCrisisCode for crisis: "+crisisCode+"\t"+e.getStackTrace());
 		}
 		boolean isReadyToShow = false;
 		if(crisisList != null){
 			if(crisisList.size() > 0){
 				CrisisDTO crisis = crisisList.get(0);
 				List<ClientApp> clientAppList = clientAppService.getAllClientAppByCrisisID(crisis.getCrisisID());
-				System.out.println("clientAppList size = " + (clientAppList != null ? clientAppList.size() : "null"));
+				//System.out.println("clientAppList size = " + (clientAppList != null ? clientAppList.size() : "null"));
+				logger.info("clientAppList size = " + (clientAppList != null ? clientAppList.size() : "null"));
 				if(clientAppList != null ){
 					if(clientAppList.size() > 0){
 						isReadyToShow = true;
@@ -264,7 +270,7 @@ public class TemplateServiceImpl implements TemplateService {
 				}
 			}
 		}
-		System.out.println("isReadyToShow = " + isReadyToShow);
+		logger.info("isReadyToShow = " + isReadyToShow);
 		if(isReadyToShow){
 			String url = URLReference.PUBLIC_LINK + crisisCode;
 			crisisLandingStatusModel = new CrisisLandingStatusModel(url, StatusCodeType.CRISIS_PYBOSSA_SERVICE_READY, "ready" );

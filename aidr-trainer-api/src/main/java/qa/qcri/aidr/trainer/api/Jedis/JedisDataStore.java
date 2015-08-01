@@ -29,7 +29,7 @@ public class JedisDataStore {
             }
             return jedisPool.getResource();
         } catch (Exception e) {
-            logger.error("Could not establish Redis connection. Is the Redis server running?");
+            logger.error("Could not establish Redis connection. Is the Redis server running?",e);
             throw e;
         }
     }

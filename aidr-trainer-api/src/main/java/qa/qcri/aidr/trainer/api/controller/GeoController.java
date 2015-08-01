@@ -50,6 +50,7 @@ public class GeoController {
                         queryDate = sdf.parse(lastupdated);
                     }
                     catch(Exception e){
+                    	logger.error("Exception while parsing date in getMapGeoJSONBasedOnDate",e);
                         queryDate = null;
                     }
                 }
@@ -58,8 +59,7 @@ public class GeoController {
             returnValue =  geoService.getGeoJsonOuputJSON(queryDate);
 
         } catch (Exception e) {
-            logger.error("Exception getMapGeoJSONBasedOnDate");
-           // e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            logger.error("Exception while gettting MapGeoJSON Based On Date \t"+e.getStackTrace());
         }
         return returnValue;
     }
@@ -75,8 +75,7 @@ public class GeoController {
             returnValue =  geoService.getGeoJsonOuputJSON(null);
 
         } catch (Exception e) {
-            logger.error("Exception getMapGeoJSON");
-            // e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            logger.error("Exception while getting MapGeoJSON \t"+e.getStackTrace());
         }
         return returnValue;
     }
@@ -99,8 +98,7 @@ public class GeoController {
             returnValue =  geoService.getGeoJsonOuputJSONP(queryDate);
 
         } catch (Exception e) {
-            logger.error("Exception getMapGeoJSONPBasedOnDate");
-            //e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            logger.error("Exception while getting MapGeoJSONP BasedOnDate \t"+e.getStackTrace());
         }
 
         return returnValue;
@@ -117,8 +115,7 @@ public class GeoController {
             returnValue =  geoService.getGeoJsonOuputJSONP(null);
 
         } catch (Exception e) {
-            logger.error("Exception getMapGeoJSONP");
-           // e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            logger.error("Exception while getting MapGeoJSONP \t"+e.getStackTrace());
         }
 
         return returnValue;

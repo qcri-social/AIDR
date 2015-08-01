@@ -23,7 +23,7 @@ public class TaskManagerEntityMapper {
 				return docList;
 			}	
 		} catch (Exception e) {
-			logger.error("JSON deserialization exception");
+			logger.error("JSON deserialization exception",e);
 		}
 		return null;
 	}
@@ -40,7 +40,7 @@ public class TaskManagerEntityMapper {
 				return entity;
 			}	
 		} catch (Exception e) {
-			logger.error("JSON deserialization exception");
+			logger.error("JSON deserialization exception",e);
 		}
 		return null;
 	}
@@ -53,7 +53,7 @@ public class TaskManagerEntityMapper {
 		try {
 			if (task != null) jsonString = mapper.writeValueAsString(task);
 		} catch (IOException e) {
-			logger.error("JSON serialization exception");
+			logger.error("JSON serialization exception",e);
 		}
 		return jsonString;
 	}

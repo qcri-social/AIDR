@@ -3,6 +3,7 @@ package qa.qcri.aidr.trainer.api.entity;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import java.io.Serializable;
@@ -19,6 +20,8 @@ import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelIdDTO;
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class DocumentNominalLabel implements Serializable {
+	
+	private static Logger logger=Logger.getLogger(DocumentNominalLabel.class);
 
     private static final long serialVersionUID = -5527566248002296042L;
 
@@ -68,7 +71,7 @@ public class DocumentNominalLabel implements Serializable {
 				DocumentNominalLabel nominalDoc = new DocumentNominalLabel(doc.getIdDTO().getDocumentId(), doc.getIdDTO().getNominalLabelId(), doc.getIdDTO().getUserId());
 				return nominalDoc;
 			} catch (PropertyNotSetException e) {
-				e.printStackTrace();
+				logger.error("Exception while parsing DocumentNominalLabelDTO to LocalDocumentNominalLabel",e);
 			}
 		}
 		return null;

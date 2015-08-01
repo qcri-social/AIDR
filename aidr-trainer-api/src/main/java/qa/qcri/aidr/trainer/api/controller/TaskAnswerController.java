@@ -40,7 +40,7 @@ public class TaskAnswerController {
             taskAnswerService.processTaskAnswer(data);
         }
         catch(Exception e){
-            logger.error("saveTaskAnswer got exception on: " + data);
+            logger.error("Error while saving Task Answer",e);
         }
 
         // below is non transaction block

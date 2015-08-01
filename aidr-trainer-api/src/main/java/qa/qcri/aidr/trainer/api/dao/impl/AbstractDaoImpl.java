@@ -67,7 +67,7 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 			//System.out.println("result = " + result);
 			return result;
 		} catch (HibernateException e) {
-			logger.error("Error in findAll().");
+			logger.error("Error in findAll().",e);
 			return null;
 		}
 
@@ -88,7 +88,7 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 		try {
 			return criteria.list();
 		} catch (HibernateException e) {
-			logger.error("Error in findByCriteria for criteria : " + criteria.toString());
+			logger.error("Error in findByCriteria for criteria : " + criteria.toString(),e);
 			return null;
 		}
 	}
@@ -103,7 +103,7 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 		try {
 			return criteria.list();
 		} catch (HibernateException e) {
-			logger.error("Error in getMaxOrderByCriteria for criteria : " + criteria.toString());
+			logger.error("Error in getMaxOrderByCriteria for criteria : " + criteria.toString(),e);
 			return null;
 		}
 	}
@@ -122,7 +122,7 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 		try {
 			return criteria.list();
 		} catch (HibernateException e) {
-			logger.error("Error in findbyCriteriaByOrder for criteria : " + criteria.toString());
+			logger.error("Error in findbyCriteriaByOrder for criteria : " + criteria.toString(),e);
 			return null;
 		}
 	}
@@ -143,7 +143,7 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 		try {
 			return criteria.list();
 		} catch (HibernateException e) {
-			logger.error("Error in findByCriteriaWithAliasByOrder for criteria : " + criteria.toString());
+			logger.error("Error in findByCriteriaWithAliasByOrder for criteria : " + criteria.toString(),e);
 			return null;
 		}
 	}
@@ -160,7 +160,7 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 		try {
 			return criteria.list();
 		} catch (HibernateException e) {
-			logger.error("Error in findByCriteria for criteria : " + criteria.toString());
+			logger.error("Error in findByCriteria for criteria : " + criteria.toString(),e);
 			return null;
 		}
 	}
@@ -173,7 +173,7 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 		try {
 			return (E) criteria.uniqueResult();
 		} catch (HibernateException e) {
-			logger.error("Error in findByCriterionID for criteria : " + criteria.toString());
+			logger.error("Error in findByCriterionID for criteria : " + criteria.toString(),e);
 			return null;
 		}
 	}

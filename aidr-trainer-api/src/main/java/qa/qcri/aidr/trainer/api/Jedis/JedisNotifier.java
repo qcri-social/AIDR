@@ -19,11 +19,10 @@ public class JedisNotifier {
     public JedisNotifier() {
         try {
             jedis = JedisDataStore.getJedisConnection();
-            System.out.println("Obtained jedis connection: " + jedis);
+            //System.out.println("Obtained jedis connection: " + jedis);
+            logger.info("Redis connection established");
         } catch (Exception e) {
-        	logger.error("failed to create jedis connection");
-            logger.error("exception", e);
-            e.printStackTrace();
+        	logger.error("failed to create jedis connection", e);
         }
     }
 
@@ -33,14 +32,12 @@ public class JedisNotifier {
         try {
             //  jedis.r
             logger.info("input data : " + itemJosn);
-            System.out.println("input data : " + itemJosn);
+            //System.out.println("input data : " + itemJosn);
             jedis.rpush("training_sample_info_stream", itemJosn);
             JedisDataStore.close(jedis);
             //outputCount++;
         } catch (Exception e) {
-            logger.error("Error when serializing output document.");
-            logger.error("exception", e);
-            e.printStackTrace();
+            logger.error("Error when serializing output document.", e);
         }
     }
 

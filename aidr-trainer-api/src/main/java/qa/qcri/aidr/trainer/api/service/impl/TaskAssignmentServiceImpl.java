@@ -48,8 +48,7 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
             try {
 				taskManager.undoTaskAssignment(documentID, userID);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(" Error in revertTaskAssignmentByUserName for User: "+userName+"\t"+e.getStackTrace());
 			}
         }
     }
@@ -63,8 +62,7 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
 			taskManager.undoTaskAssignment(documentID, userID);
 			//logger.info("Removed from taskAssignment table: documentID = " + documentID + ", userID = " + userID);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(" Error while reverting Task Assignment for userID: "+userID+"\t"+e.getStackTrace());
 		}
     }
 
@@ -86,7 +84,7 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
     		//System.out.println("[addToTaskAssignment] Going to insert task list of size = " + documents.size() + ", for userID: " + userID);
     		taskManager.assignNewTaskToUser(documents, userID);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while adding Task Assignment for userID="+userID+"\t"+e.getStackTrace());
 		}
     }
 
@@ -99,7 +97,7 @@ public class TaskAssignmentServiceImpl implements TaskAssignmentService {
     		taskManager.assignNewTaskToUser(documentID, userID);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error while adding To OneTaskAssignment for user ID="+userID+"\t"+e.getStackTrace());
 		}
     }
 

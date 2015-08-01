@@ -8,6 +8,8 @@ import qa.qcri.aidr.trainer.api.entity.NominalLabel;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jilucas
@@ -16,13 +18,15 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public class CrisisJsonOutput {
+	
+	private static Logger logger=Logger.getLogger(CrisisJsonOutput.class);
 
     public CrisisJsonModel crisisJsonModelGenerator(Crisis crisis){
         CrisisJsonModel crisisJsonModel = new CrisisJsonModel();
         if (crisis != null) { 
-        	System.out.println("received crisis = " + crisis.getCode() + ", id = " + crisis.getCrisisID());
+        	logger.info("received crisis = " + crisis.getCode() + ", id = " + crisis.getCrisisID());
         } else {
-        	System.out.println("received crisis = " + crisis);
+        	logger.info("received crisis = " + crisis);
         }
         crisisJsonModel.setCrisisID(crisis.getCrisisID());
         crisisJsonModel.setCode(crisis.getCode());

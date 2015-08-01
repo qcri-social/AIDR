@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 import qa.qcri.aidr.trainer.api.Jedis.JedisNotifier;
 import qa.qcri.aidr.trainer.api.entity.DocumentNominalLabel;
@@ -20,9 +22,6 @@ import qa.qcri.aidr.trainer.api.service.TaskAnswerService;
 import qa.qcri.aidr.trainer.api.service.TaskAssignmentService;
 import qa.qcri.aidr.trainer.api.template.PybossaTemplate;
 import qa.qcri.aidr.trainer.api.template.TaskAnswerResponse;
-
-import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
-import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 
 /**
  * Created with IntelliJ IDEA.
@@ -78,9 +77,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 					//logger.info("jedisNotifier created : " + jedisNotifier);
 				}
 				catch (Exception e){
-					logger.error("jedisNotifier creation error for :" + taskAnswerResponse.getDocumentID());
-					logger.error("exception", e);
-					e.printStackTrace();
+					logger.error("jedisNotifier creation error for :" + taskAnswerResponse.getDocumentID() + e.getStackTrace());
 				}
 			}
 
@@ -115,8 +112,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 			try {
 				taskManager.insertTaskAnswer(t);
 			} catch (Exception e) {
-				logger.error("[addToTaskAnswer] Error in saving task answer : " + taskAnswer);
-				e.printStackTrace();
+				logger.error("[addToTaskAnswer] Error in saving task answer : " + taskAnswer+"\t"+e.getStackTrace());
 			}
 		}
 
@@ -165,9 +161,8 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 					try {
 						taskManager.insertTaskAnswer(t);
 					} catch (Exception e) {
-						logger.error("exception", e);
+						logger.error("Error in processing task answer:"+e.getStackTrace());
 						//System.err.println("[processTaskAnswer] Error in saving task answer : " + taskAnswer);
-						e.printStackTrace();
 					}
 				}
 
@@ -190,9 +185,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 						logger.info("jedisNotifier created : " + jedisNotifier);
 					}
 					catch (Exception e){
-						logger.error("jedisNotifier creation error for: " + data);
-						logger.error("exception", e);
-						e.printStackTrace();
+						logger.error("jedisNotifier creation error for: " + data+"\t"+e.getStackTrace());
 					}
 				}
 				//System.out.println("Attempting to push to JEDIS now: " + taskAnswerResponse.getDocumentID());
@@ -208,9 +201,7 @@ public class TaskAnswerServiceImpl implements TaskAnswerService{
 			}
 		}
 		catch(Exception e){
-			logger.error("Exception for saving task answer data : " + data);
-			logger.error("exception", e);
-			e.printStackTrace();
+			logger.error("Exception for saving task answer data : " + data+"\t"+e.getStackTrace());
 		}
 
 	}

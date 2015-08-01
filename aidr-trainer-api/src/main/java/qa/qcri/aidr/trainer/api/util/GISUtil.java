@@ -82,7 +82,7 @@ public class GISUtil {
                 }
             }
             catch(Exception e){
-                logger.error("getDisplayNameWithReverseLookUp exception for key: " + key);
+                logger.error("getDisplayNameWithReverseLookUp exception for key: " + key,e);
             }
         }
         return  info;

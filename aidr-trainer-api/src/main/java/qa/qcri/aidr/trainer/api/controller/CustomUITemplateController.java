@@ -47,7 +47,7 @@ public class CustomUITemplateController {
     @Produces( MediaType.APPLICATION_JSON )
     @Path("/get/customUI/{crisisID}")
     public List<CustomUITemplate> getCustomUIByID(@PathParam("crisisID") Long crisisID){
-        System.out.println("[getCustomUIByID] Received request for crisisID = " + crisisID);
+        logger.info("[getCustomUIByID] Received request for crisisID = " + crisisID);
     	return  customUITemplateService.getCustomTemplateForLandingPage(crisisID);
     }
 
@@ -82,7 +82,7 @@ public class CustomUITemplateController {
 
         }
         catch(Exception e){
-            logger.debug("updateWelcomePage. Exception: " + data);
+            logger.debug("Exception while updating welcome page " + data,e);
         }
     }
 
@@ -115,7 +115,7 @@ public class CustomUITemplateController {
 
         }
         catch(Exception e){
-            logger.debug("updateTutorial. Exception: " + data);
+            logger.debug("Exception while updating tutorial " + data,e);
         }
 
         //updateCustomTemplateByAttribute(Long crisisID, Long attributeID, int customUIType, int skinType)
@@ -150,7 +150,7 @@ public class CustomUITemplateController {
 
         }
         catch(Exception e){
-            logger.debug("updateTutorial. Exception: " + data);
+            logger.debug("Exception while updating skin " + data,e);
         }
 
         //updateCustomTemplateByAttribute(Long crisisID, Long attributeID, int customUIType, int skinType)
