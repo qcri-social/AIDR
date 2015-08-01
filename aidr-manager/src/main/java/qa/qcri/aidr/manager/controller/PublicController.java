@@ -74,11 +74,8 @@ public class PublicController extends BaseController{
             return getUIWrapper(false);
         }
 
-
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(jsonCollection);
-
-
 
         JSONObject jsonObject = (JSONObject) obj;
 
@@ -130,7 +127,7 @@ public class PublicController extends BaseController{
                 }
             }
 
-            //              save current state of the collection to collectionLog
+            // save current state of the collection to collectionLog
             AidrCollectionLog collectionLog = new AidrCollectionLog(dbCollection);
             collectionLog.setEndDate(collectionLogEndData);
             collectionLogService.create(collectionLog);
@@ -151,7 +148,7 @@ public class PublicController extends BaseController{
             return getUIWrapper(true);
 
         }catch(Exception e){
-            logger.error(String.format("Exception while Updating AidrCollection :  %s", e));
+            logger.error(String.format("Exception while Updating AidrCollection : "+jsonCollection, e));
             return getUIWrapper(false);
         }
     }
@@ -160,10 +157,12 @@ public class PublicController extends BaseController{
     @ResponseBody
     public Map<String,Object>  findByRequestCode(@QueryParam("code") String code) throws Exception {
         try {
+        	logger.info("Finding collection by code: "+code);
             AidrCollection data = collectionService.findByCode(code);
             return getUIWrapper(data, true);
 
         } catch (Exception e) {
+        	logger.error("Exception while finding collection by code: "+code, e);
             return getUIWrapper(false);
         }
 
@@ -183,7 +182,7 @@ public class PublicController extends BaseController{
 			return getUIWrapper(data, true);
 
 		} catch (Exception e) {
-			logger.error("Error in findAll.");
+			logger.error("Error in find All collection for public",e);
 			return getUIWrapper(false);
 		}
 
@@ -218,7 +217,7 @@ public class PublicController extends BaseController{
 			return getUIWrapper(dtoList, count.longValue());
 
 		} catch (Exception e) {
-			logger.error("Error in findAllRunning.");
+			logger.error("Error in find All Running collection for public",e);
 			return getUIWrapper(false);
 		}
 
@@ -248,7 +247,7 @@ public class PublicController extends BaseController{
 			return getUIWrapper(dtoList, count.longValue());
 
 		} catch (Exception e) {
-			logger.error("Error in findAllRunningWithNoOutput.");
+			logger.error("Error in find All Running collection With No Output for public",e);
 			return getUIWrapper(false);
 		}
 
@@ -317,7 +316,7 @@ public class PublicController extends BaseController{
 				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 			}
 		} catch (Exception e) {
-			logger.error("Error in generateTweetIdsLink for codd : " + code);
+			logger.error("Error in generateTweetIdsLink for collection : " + code, e);
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 	}
@@ -329,7 +328,7 @@ public class PublicController extends BaseController{
 		try {
 			result = taggerService.getAttributesAndLabelsByCrisisId(id);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while getting attributes and labels for crisis: " + id, e);
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 		return getUIWrapper(result,true);
@@ -343,7 +342,7 @@ public class PublicController extends BaseController{
 		try {
 			result = taggerService.loadLatestTweets(code, constraints);
 		} catch (Exception e) {
-			logger.error("Error in loadLatestTweets for code : " + code + " and constraints : " + constraints);
+			logger.error("Error while loading latest tweets for collection : " + code + " and constraints : " + constraints, e);
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 		return getUIWrapper(result,true);
@@ -368,7 +367,7 @@ public class PublicController extends BaseController{
 				return runningCollections;
 			}
 		} catch (Exception e) {
-			logger.error("Unable to fetch list of running collections from DB");
+			logger.error("Unable to fetch list of running collections from DB for public", e);
 		}
 		return null;
 	}
@@ -390,7 +389,7 @@ public class PublicController extends BaseController{
 				return result;
 			}
 		} catch (Exception e) {
-			logger.error("Unable to fetch list of running collections from DB");
+			logger.error("Unable to fetch running status for collection: "+channelCode,e);
 		}
 		return null;
 	}
@@ -413,7 +412,7 @@ public class PublicController extends BaseController{
 			result.put(collectionCode, dto.getTotalCount());
 			return result;
 		} catch (Exception e) {
-			logger.error("Unable to fetch total count of downloaded documents for collection = " + collectionCode);
+			logger.error("Unable to fetch total count of downloaded documents for collection = " + collectionCode, e);
 		}
 		return null;
 	}
@@ -481,7 +480,7 @@ public class PublicController extends BaseController{
 			}
 
 		} catch (AidrException e) {
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			logger.error("Error while fetching all crisisTypes for public",e);
 		}
 
 		return name;

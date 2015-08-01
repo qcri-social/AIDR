@@ -31,8 +31,7 @@ public class ScheduledTask {
 		try {
 			collections = collectionService.getRunningCollections();
 		} catch (Exception e) {
-			logger.error("Error while executing update collections scheduled task");
-			logger.error("exception: ", e);
+			logger.error("Error while executing update collections scheduled task", e);
 			taggerService.sendMailService("Error in ScheduledTask","Error while executing update collections scheduled task in ScheduledTask.scheduledTaskUpdateCollections");
 			return;
 		}
@@ -43,8 +42,7 @@ public class ScheduledTask {
 				try {
 					collectionService.statusByCollection(item);
 				} catch (Exception e) {
-					logger.error("Error while updating collection with ID: " + item.getId());
-					logger.error("exception: ", e);
+					logger.error("Error while updating collection with ID: " + item.getId(), e);
 					taggerService.sendMailService("Error in ScheduledTask","Error while executing  updating collection with ID: " + item.getId() +" in ScheduledTask.scheduledTaskUpdateCollections");
 				}
 			}
@@ -58,8 +56,7 @@ public class ScheduledTask {
 		try {
 			collections = collectionService.getRunningCollections();
 		} catch (Exception e) {
-			logger.error("Error while executing checking for collections running duration");
-			logger.error("exception: ", e);
+			logger.error("Error while executing checking for collections running duration",e);
 			taggerService.sendMailService("Error in ScheduledTask","Error while executing checking for collections running duration in ScheduledTask.scheduledTaskStopCollections");
 			return;
 		}
@@ -74,8 +71,7 @@ public class ScheduledTask {
 						collectionService.stop(item.getId());
 						logger.info("Collection with ID: " + item.getId() + " was automatically stopped as it reached duration interval.");
 					} catch (Exception e) {
-						logger.info("Error while stopping collection with ID: " + item.getId());
-						logger.error("exception: ", e);
+						logger.info("Error while stopping collection with ID: " + item.getId(),e);
 						taggerService.sendMailService("Error in ScheduledTask","Error while stopping collection with ID: " + item.getId() +" in ScheduledTask.scheduledTaskStopCollections");
 					}
 				}

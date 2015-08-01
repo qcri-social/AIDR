@@ -9,6 +9,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+
+import org.apache.log4j.Logger;
 //import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -32,7 +34,7 @@ import qa.qcri.aidr.manager.util.CollectionStatus;
 
 @Repository("collectionRepository")
 public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollection, Serializable> implements CollectionRepository{
-	//private Logger logger = Logger.getLogger(getClass());
+	private Logger logger = Logger.getLogger(CollectionRepositoryImpl.class);
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -450,7 +452,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 		try {
 			return (AidrCollection) criteria.uniqueResult();
 		} catch (HibernateException e) {
-			e.printStackTrace();
+			logger.error("Hibernate exception while finding a collection by code: "+code + "/t"+e.getStackTrace());
 			return null;
 		}
 	}

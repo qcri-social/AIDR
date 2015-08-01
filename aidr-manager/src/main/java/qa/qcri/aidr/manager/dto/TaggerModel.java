@@ -1,6 +1,5 @@
 package qa.qcri.aidr.manager.dto;
 
-import qa.qcri.aidr.dbmanager.dto.ModelDTO;
 
 public class TaggerModel {
 
