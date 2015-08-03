@@ -89,13 +89,13 @@ public class ChannelBufferManager {
 	public ChannelBufferManager() {}
 
 	public void initiateChannelBufferManager(final String channelRegEx) {
-		Configurator configurator = OutputConfigurator.getInstance();
+		Configurator configurator = AnalyticsConfigurator.getInstance();
 		redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>();
-		redisHost = configurator.getProperty(OutputConfigurationProperty.REDIS_HOST);
-		redisPort = Integer.parseInt(configurator.getProperty(OutputConfigurationProperty.REDIS_PORT));
-		CHANNEL_PREFIX_STRING = configurator.getProperty(OutputConfigurationProperty.TAGGER_CHANNEL_BASENAME)+".";
-		PERSISTER_LOAD_CHECK_INTERVAL_MINUTES = Integer.parseInt(configurator.getProperty(OutputConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES));
-		PERSISTER_LOAD_LIMIT = Integer.parseInt(configurator.getProperty(OutputConfigurationProperty.PERSISTER_LOAD_LIMIT));
+		redisHost = configurator.getProperty(AnalyticsConfigurationProperty.REDIS_HOST);
+		redisPort = Integer.parseInt(configurator.getProperty(AnalyticsConfigurationProperty.REDIS_PORT));
+		CHANNEL_PREFIX_STRING = configurator.getProperty(AnalyticsConfigurationProperty.TAGGER_CHANNEL_BASENAME)+".";
+		PERSISTER_LOAD_CHECK_INTERVAL_MINUTES = Integer.parseInt(configurator.getProperty(AnalyticsConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES));
+		PERSISTER_LOAD_LIMIT = Integer.parseInt(configurator.getProperty(AnalyticsConfigurationProperty.PERSISTER_LOAD_LIMIT));
 
 		AnalyticsConfigurator analyticsConfigurator = AnalyticsConfigurator.getInstance();
 		granularityList = analyticsConfigurator .getGranularities();

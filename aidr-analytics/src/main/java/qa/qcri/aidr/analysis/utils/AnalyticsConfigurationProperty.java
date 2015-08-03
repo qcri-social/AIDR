@@ -14,7 +14,9 @@ import qa.qcri.aidr.common.code.ConfigurationProperty;
  */
 public enum AnalyticsConfigurationProperty implements ConfigurationProperty {
 
-	GRANULARITY("granularity"), TAGGER_REST_URI("TAGGER_REST_URI");
+	GRANULARITY("granularity"), TAGGER_REST_URI("TAGGER_REST_URI"), REDIS_HOST("REDIS_HOST"), REDIS_PORT("REDIS_PORT"), LOGGER("logger"), 
+	PERSISTER_LOAD_LIMIT("PERSISTER_LOAD_LIMIT"), PERSISTER_LOAD_CHECK_INTERVAL_MINUTES("PERSISTER_LOAD_CHECK_INTERVAL_MINUTES"), 
+	MAX_MESSAGES_COUNT("MAX_MESSAGES_COUNT"), TAGGER_CHANNEL_BASENAME("TAGGER_CHANNEL_BASENAME");
 
 	private final String configurationProperty;
 

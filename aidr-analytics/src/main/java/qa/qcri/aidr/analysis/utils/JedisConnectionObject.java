@@ -23,9 +23,9 @@ public class JedisConnectionObject {
 	private static JedisPool pool = null;				// only one JedisPool per servlet instance
 	private Jedis subscriberJedis = null;				// one for each GET request
 
-	private static OutputConfigurator configProperties = OutputConfigurator.getInstance();
-	public static String redisHost = configProperties.getProperty(OutputConfigurationProperty.REDIS_HOST);
-	public static int redisPort = Integer.valueOf(configProperties.getProperty(OutputConfigurationProperty.REDIS_PORT));
+	private static AnalyticsConfigurator configProperties = AnalyticsConfigurator.getInstance();
+	public static String redisHost = configProperties.getProperty(AnalyticsConfigurationProperty.REDIS_HOST);
+	public static int redisPort = Integer.valueOf(configProperties.getProperty(AnalyticsConfigurationProperty.REDIS_PORT));
 
 	private static boolean poolSetup = false;
 	private boolean connectionSetup = false;

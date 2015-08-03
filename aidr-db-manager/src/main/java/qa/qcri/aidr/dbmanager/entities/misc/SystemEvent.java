@@ -12,8 +12,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.apache.log4j.Logger;
-
 @Entity
 @Table(name = "system_event", catalog = "aidr_predict")
 public class SystemEvent implements java.io.Serializable{
@@ -22,7 +20,6 @@ public class SystemEvent implements java.io.Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 6475156575527664114L;
-	private Logger logger = Logger.getLogger(SystemEvent.class);
 
 	public SystemEvent(String severity, String module, String description) {
 		this(severity,module,null,description);	
@@ -54,7 +51,6 @@ public class SystemEvent implements java.io.Serializable{
 	public SystemEvent(Date receivedAt, String severity, String module, String code,
 			String description, Boolean emailSent) {
 		super();
-		logger.info("date:" + receivedAt + " modeule:" + module +" emailSent?" + emailSent);
 		this.receivedAt = receivedAt;
 		this.severity = severity;
 		this.module = module;

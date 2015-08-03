@@ -1,7 +1,6 @@
 package qa.qcri.aidr.analysis.api;
 
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,15 +24,14 @@ import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.analysis.entity.ConfidenceData;
 import qa.qcri.aidr.analysis.entity.TagData;
+import qa.qcri.aidr.analysis.facade.ConfidenceStatisticsResourceFacade;
+import qa.qcri.aidr.analysis.facade.TagDataStatisticsResourceFacade;
 import qa.qcri.aidr.analysis.stat.ConfDataMapRecord;
 import qa.qcri.aidr.analysis.stat.TagDataMapRecord;
 import qa.qcri.aidr.analysis.utils.AnalyticsConfigurator;
 import qa.qcri.aidr.analysis.utils.ChannelBufferManager;
 import qa.qcri.aidr.analysis.utils.ConfCounterKey;
 import qa.qcri.aidr.analysis.utils.CounterKey;
-import qa.qcri.aidr.analysis.utils.OutputConfigurator;
-import qa.qcri.aidr.analysis.facade.ConfidenceStatisticsResourceFacade;
-import qa.qcri.aidr.analysis.facade.TagDataStatisticsResourceFacade;
 import qa.qcri.aidr.common.values.ReturnCode;
 
 
