@@ -68,6 +68,7 @@ public class CrisisResource {
 			crisis = crisisLocalEJB.getCrisisByID(id);
 			System.out.println("fetched crisis for id " + id + ": " + (crisis != null ? crisis.getCode() : "null"));
 		} catch (RuntimeException e) {
+			logger.error("Error in getCrisisById for crisis id : " + id);
 			return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
 		}
 		ObjectMapper mapper = new ObjectMapper();
@@ -75,7 +76,7 @@ public class CrisisResource {
 			return Response.ok(mapper.writeValueAsString(crisis)).build();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in Json processing.");
 			return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
 		}
 	}
@@ -88,7 +89,7 @@ public class CrisisResource {
 		ResponseWrapper response = new ResponseWrapper();
 		try {
 			crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
-			System.out.println("For code = " + crisisCode + ", Returning crisis: " + (crisis != null ? crisis.getCode() : "null"));
+			logger.info("For code = " + crisisCode + ", Returning crisis: " + (crisis != null ? crisis.getCode() : "null"));
 			if (crisis != null) {
 				response.setDataObject(crisis);
 				response.setTotal(1);
@@ -105,6 +106,7 @@ public class CrisisResource {
 			response.setTotal(0);
 			response.setStatusCode(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED));
 			response.setMessage(e.getCause().getCause().getMessage());
+			logger.error("Error in getCrisisByCode for code : " + crisisCode);
 			return Response.ok(response).build();
 		}
 		
@@ -155,7 +157,6 @@ public class CrisisResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/all")
 	public Response getAllCrisis() {
-		System.out.println("Received request");
 
 		List<CrisisDTO> crisisList = crisisLocalEJB.getAllCrisis();
 		ResponseWrapper response = new ResponseWrapper();
@@ -163,13 +164,11 @@ public class CrisisResource {
 		response.setCrisises(crisisList);
 		
 		ObjectMapper mapper = new ObjectMapper();
-		System.out.println("retreived crisis list: " + crisisList);
+		logger.info("retreived crisis list: " + crisisList);
 		try {
-			System.out.println("Serialized response: " + mapper.writeValueAsString(response));
-			//return Response.ok(response).build();
 			return Response.ok(mapper.writeValueAsString(response)).build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error in getAllCrisis.");
 			return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
 		}
 	}
@@ -178,7 +177,7 @@ public class CrisisResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseWrapper getAllCrisisByUserID(@QueryParam("userID") Long userID) throws Exception {
 		List<CrisisDTO> crisisList = crisisLocalEJB.getAllCrisisByUserID(userID);
-		System.out.println("list of crisis for userID " + userID + ": " + (crisisList != null ? crisisList.size() : 0));
+		logger.info("list of crisis for userID " + userID + ": " + (crisisList != null ? crisisList.size() : 0));
 		ResponseWrapper response = new ResponseWrapper();
 		if (crisisList == null) {
 			response.setMessage("No crisis found associated with the given user id.");
@@ -193,7 +192,7 @@ public class CrisisResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addCrisis(CrisisDTO crisis) {
 		try {
-			System.out.println("Received request to add crisis: " + crisis.getCode());
+			logger.info("Received request to add crisis: " + crisis.getCode());
 			if (crisisLocalEJB.isCrisisExists(crisis.getCode())) {
 				logger.warn("Crisis with code = " + crisis.getCode() + " already has at least one classifier attached!");
 				return Response.ok(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS)).build();
@@ -201,7 +200,7 @@ public class CrisisResource {
 			// Otherwise, add the new crisis to aidr_predict database
 			crisis.setIsTrashed(false);
 			CrisisDTO newCrisis = crisisLocalEJB.addCrisis(crisis);
-			System.out.println("Added crisis successfully: id = " + newCrisis.getCrisisID() + ", " + newCrisis.getCode());
+			logger.info("Added crisis successfully: id = " + newCrisis.getCrisisID() + ", " + newCrisis.getCode());
 			return Response.ok(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS)).build();
 		} catch (RuntimeException e) {
 			logger.error("Error while adding Crisis. Possible causes could be duplication of primary key, incomplete data, incompatible data format. For crisis: " + crisis.getCode(), e);
@@ -214,10 +213,11 @@ public class CrisisResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response editCrisis(CrisisDTO crisis) {
 		try {
-			System.out.println("Received request to edit crisis: " + crisis.getCode());
+			logger.info("Received request to edit crisis: " + crisis.getCode());
 			CrisisDTO updatedCrisis = crisisLocalEJB.editCrisis(crisis);
 			return Response.ok(updatedCrisis).build();
 		} catch (RuntimeException e) {
+			logger.error("Error in editCrisis for crisis code : " + crisis.getCode());
 			return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
 		}
 		
@@ -234,18 +234,16 @@ public class CrisisResource {
 				List<String> crisisList = new ArrayList<String>();
 				crisisList.add(crisisCode);
 				Map<String, Integer> retVal = crisisLocalEJB.countClassifiersByCrisisCodes(crisisList);
-				System.out.println("retrieved result: " + retVal);
 				if (retVal != null) {
 					result.put("count", retVal.get(crisisCode) != null ? retVal.get(crisisCode) : 0);
-					System.out.println("Generated response: " + result);
+					logger.info("Generated response: " + result);
 					return Response.ok(mapper.writeValueAsString(result)).build();
 				}
 			}
 			result.put("count", 0);
-			System.out.println("Response string from tagger-api on classifier count: " + mapper.writeValueAsString(result));
 			return Response.ok(mapper.writeValueAsString(result)).build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error in getNominalAttributesCountForCrisis for crisis code : " + crisisCode);
 			result.put("count", -1);
 			return Response.ok(result).build();
 		}

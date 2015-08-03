@@ -71,7 +71,6 @@ public class UserResourceImp implements UserResourceFacade {
         List<UsersDTO> dbUsers = new ArrayList<UsersDTO>();
         try {
             dbUsers = remoteUsersEJB.getAllUsers();
-            System.out.println("Fetched users list: " + dbUsers.size());
             return dbUsers;
         } catch (Exception e) {
         	logger.error("exception:", e);

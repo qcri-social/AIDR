@@ -89,7 +89,7 @@ public class TaskBufferScanner  {
 	}
 
 	public boolean startTaskBufferScannerThread(final String taskMaxAge, final String taskScanInterval) {
-		System.out.println("[startTaskBufferScannerThread] Attempting to start new thread");
+		logger.info("[startTaskBufferScannerThread] Attempting to start new thread");
 		scan = true;
 		try {
 			executorService.execute(new Runnable() {
@@ -191,7 +191,6 @@ public class TaskBufferScanner  {
 	@Path("/ping")
 	@Produces("application/json")
 	public Response pingTaskBufferScanner() {
-		//System.out.println("[pingTaskBufferScanner] Received PING request");
 		String responseStr = null;
 		if (isThreadRunning()) {
 			responseStr = "{\"application\":\"TaskBufferScanner\", \"status\":\"RUNNING\"}";
@@ -214,12 +213,16 @@ public class TaskBufferScanner  {
 					logger.error("[shutdownAndAwaitTermination] Pool did not terminate");
 			}
 		} catch (InterruptedException ie) {
+			
+			logger.warn("Warning! unable to clean up.");
 			// (Re-)Cancel if current thread also interrupted
 			executorService.shutdownNow();
 			// Preserve interrupt status
 			try {
 				Thread.currentThread().interrupt();
-			} catch (Exception e) {}
+			} catch (Exception e) {
+				logger.warn("Warning! interrupt.");
+			}
 		}
 		executorService = null;
 	}

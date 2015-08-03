@@ -91,21 +91,15 @@ public class ModelFamilyResource {
     public Response addCrisisAttribute(ModelFamilyDTO modelFamilyDTO) {
         //      because ModelFamily has @XmlTransient annotation for crises and crisis was always null
         ResponseWrapper response = new ResponseWrapper();
-        System.out.println("Received request to add attribute = " + modelFamilyDTO.getNominalAttributeDTO().getNominalAttributeId() + " for crisis = " + modelFamilyDTO.getCrisisDTO().getCrisisID());
+        logger.info("Received request to add attribute = " + modelFamilyDTO.getNominalAttributeDTO().getNominalAttributeId() + " for crisis = " + modelFamilyDTO.getCrisisDTO().getCrisisID());
         try {
             boolean retval = modelFamilyLocalEJB.addCrisisAttribute(modelFamilyDTO);
-            System.out.println("addedCrisisAttribute = " + retval);
             if (retval) {
                 // TODO: move the following code to db-manager and return modelFamilyID directly from db-manager
             	List<ModelFamilyDTO> dtoList = modelFamilyLocalEJB.getAllModelFamiliesByCrisis(modelFamilyDTO.getCrisisDTO().getCrisisID());
-                if (dtoList != null) {
-                    System.out.println("fetched list size for crisisID " + modelFamilyDTO.getCrisisDTO().getCrisisID() + " = " + dtoList.size());
-                }
                 for (ModelFamilyDTO mf : dtoList) {
-                    System.out.println("Looking at: crisisID = " + mf.getCrisisDTO().getCrisisID() + ", " + mf.getNominalAttributeDTO().getNominalAttributeId());
                     if (mf.getCrisisDTO().getCrisisID().equals(modelFamilyDTO.getCrisisDTO().getCrisisID())
                             && mf.getNominalAttributeDTO().getNominalAttributeId().equals(modelFamilyDTO.getNominalAttributeDTO().getNominalAttributeId())) {
-                        System.out.println("Found added modelFamily = " + mf.getModelFamilyId() + " for crisis = " + modelFamilyDTO.getCrisisDTO().getCrisisID());
                         response.setStatusCode(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
                         response.setMessage("Adding Attribute to crisis " + modelFamilyDTO.getCrisisDTO().getCrisisID() + " succeeded");
                         response.setEntityID(mf.getModelFamilyId());
@@ -118,8 +112,7 @@ public class ModelFamilyResource {
             response.setEntityID(new Long(-1));
             return Response.ok(response).build();
         } catch (RuntimeException e) {
-            System.out.println("Error while adding Crisis attribute. Possible causes could be duplication of primary key, incomplete data, incompatible data format: " + modelFamilyDTO.getCrisisDTO().getCode() + "," + modelFamilyDTO.getNominalAttributeDTO().getCode());
-            logger.error("Exception", e);
+            logger.error("Error while adding Crisis attribute. Possible causes could be duplication of primary key, incomplete data, incompatible data format: " + modelFamilyDTO.getCrisisDTO().getCode() + "," + modelFamilyDTO.getNominalAttributeDTO().getCode(), e);
             response.setStatusCode(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED));
             response.setMessage("Adding Attribute to crisis " + modelFamilyDTO.getCrisisDTO().getCrisisID() + " failed due to exception" + e);
             response.setEntityID(new Long(-1));

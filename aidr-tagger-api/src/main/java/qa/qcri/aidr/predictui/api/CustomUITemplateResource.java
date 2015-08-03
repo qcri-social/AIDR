@@ -49,7 +49,6 @@ public class CustomUITemplateResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response addNewTemplate(CustomUiTemplateDTO customUITemplate) {
-        System.out.println("*************************************************************");
         boolean isUpdate = false;
         CustomUiTemplateDTO dbTemplate = null;
         int type = customUITemplate.getTemplateType();

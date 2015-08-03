@@ -44,7 +44,6 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 		// 3. remove tasks for this crisisID from document table -->
 		//    this will trigger deletion of documents for this crisisID from 
 		//    the task_assignment table through DELETE CASCADE
-		System.out.println("[trashByCrisisCode] Received request to trash collection from aidr_predict DB: " + crisisCode);
 		logger.info("Received request to trash collection from aidr_predict DB: " + crisisCode);
 
 		try {
@@ -78,7 +77,6 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 			List<DocumentDTO> associatedDocumentsDTO = remoteDocumentEJB.findUnLabeledDocumentsByCrisisID(crisis.getCrisisID());
 			if (associatedDocumentsDTO.isEmpty()) {
 				StringBuilder sb = new StringBuilder().append("{\"TRASHED\":").append(crisis.getCrisisID()).append("}");
-				logger.info("Success in deleting crisis: " + crisisCode);
 				return sb.toString();
 			}			
 			logger.info("Found for " + crisisCode + ", unlabeled docs to delete  = " + associatedDocumentsDTO.size());
@@ -114,7 +112,6 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 		//TODO: 
 		// 1. set aidr_predict.crisis.isTrashed = false
 		// 2. set model_family.isActive = 1
-		System.out.println("Received request to untrash collection from aidr_predict DB: " + crisisCode);
 		logger.info("Received request to untrash collection from aidr_predict DB: " + crisisCode);
 		CrisisDTO crisis = null;
 

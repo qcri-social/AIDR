@@ -91,7 +91,7 @@ public class DocumentFacadeImp implements DocumentFacade {
 						"Error while deleting training example id " + documentID);
 			}
 		} catch (Exception e) {
-			logger.error("exception", e);
+			logger.error("Error while deleting training example id " + documentID, e);
 			return new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED),
 					"Error while deleting training example id " + documentID);
 		}
@@ -103,8 +103,7 @@ public class DocumentFacadeImp implements DocumentFacade {
 		try {
 			count = remoteDocument.getUnlabeledDocumentsCountByCrisisID(crisisID);
 		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in getUnlabeledDocumentsCountByCrisisID for crisis : " + crisisID, e);
 		}
 		return count;
 	}

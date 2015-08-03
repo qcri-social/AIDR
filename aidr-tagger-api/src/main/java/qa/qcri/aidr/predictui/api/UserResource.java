@@ -46,7 +46,6 @@ public class UserResource {
 	@EJB
 	private UserResourceFacade userLocalEJB;
 
-	//private Logger logger = Logger.getLogger(UserResource.class.getName());
 	private Logger logger = Logger.getLogger(UserResource.class);
 
 	public UserResource() {
@@ -64,7 +63,7 @@ public class UserResource {
 			UsersDTO newUser = new UsersDTO(null, null, null);
 			return Response.ok(newUser).build();
 		} else {
-			System.out.println("Created new user with id = " + createdUser.getUserID() + ", name = " + createdUser.getName());
+			logger.info("Created new user with id = " + createdUser.getUserID() + ", name = " + createdUser.getName());
 			return Response.ok(createdUser).build();
 		}
 	}

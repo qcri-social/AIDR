@@ -50,9 +50,6 @@ public class CollectionResource {
         }
         response.setCollections(collections);
         return Response.ok(response).build();
-        
-        
-        
     }
     
 }

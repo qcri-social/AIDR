@@ -116,7 +116,6 @@ public class MiscResource {
 		}
 		try {
 			List<HumanLabeledDocumentDTO> dtoList = miscEJB.getHumanLabeledDocumentsByCrisisID(crisisID, count);
-			System.out.println("REST call will return dto List size = " + (dtoList != null ? dtoList.size() : "null"));
 			if (dtoList != null) {
 				ResponseWrapper response = new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
 				response.setItems(dtoList);
@@ -126,7 +125,7 @@ public class MiscResource {
 				return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS), "Found 0 human labeled documents")).build();
 			}
 		} catch (Exception e) {
-			logger.error("Exception", e);
+			logger.error("Error in getHumanLabeledDocumentsByCrisisID for crisisId : " + crisisID, e);
 			return Response.ok(
 					new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "Exception in fetching human labeled documents")).build();
 		}
@@ -152,7 +151,7 @@ public class MiscResource {
 				return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS), "Found 0 human labeled documents")).build();
 			}
 		} catch (Exception e) {
-			logger.error("Exception", e);
+			logger.error("Error in getHumanLabeledDocumentsByCrisisCode for code : " + crisisCode, e);
 			return Response.ok(
 					new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "Exception in fetching human labeled documents")).build();
 		}
@@ -169,7 +168,6 @@ public class MiscResource {
 		}
 		try {
 			List<HumanLabeledDocumentDTO> dtoList = miscEJB.getHumanLabeledDocumentsByCrisisIDUserID(crisisID, userID, count);
-			System.out.println("REST call will return dto List size = " + (dtoList != null ? dtoList.size() : "null"));
 			if (dtoList != null) {
 				ResponseWrapper response = new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
 				response.setItems(dtoList);
@@ -179,7 +177,8 @@ public class MiscResource {
 				return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS), "Found 0 human labeled documents")).build();
 			}
 		} catch (Exception e) {
-			logger.error("Exception", e);
+			logger.error("Error in getHumanLabeledDocumentsByCrisisIDUserID for crisisID :"
+					+ userID + " and userID : " + userID, e);
 			return Response.ok(
 					new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "Exception in fetching human labeled documents")).build();
 		}
@@ -198,7 +197,6 @@ public class MiscResource {
 		}
 		try {
 			List<HumanLabeledDocumentDTO> dtoList = miscEJB.getHumanLabeledDocumentsByCrisisIDUserName(crisisID, userName, count);
-			System.out.println("REST call will return dto List size = " + (dtoList != null ? dtoList.size() : "null"));
 			if (dtoList != null) {
 				ResponseWrapper response = new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
 				response.setItems(dtoList);
@@ -208,7 +206,8 @@ public class MiscResource {
 				return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS), "Found 0 human labeled documents")).build();
 			}
 		} catch (Exception e) {
-			logger.error("Exception", e);
+			logger.error("Error in getHumanLabeledDocumentsByCrisisIDUserName for crisisID : "
+					+ crisisID + " and userName : " + userName, e);
 			return Response.ok(
 					new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "Exception in fetching human labeled documents")).build();
 		}
@@ -235,7 +234,6 @@ public class MiscResource {
 		}
 		try {
 			List<HumanLabeledDocumentDTO> dtoList = miscEJB.getHumanLabeledDocumentsByCrisisCode(crisisCode, count);
-			logger.info("REST call will return dto List size = " + (dtoList != null ? dtoList.size() : "null"));
 			if(count==-1){
 				count=null;
 			}
@@ -251,8 +249,7 @@ public class MiscResource {
 				return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS), "Found 0 human labeled documents")).build();
 			}
 		} catch (Exception e) {
-			logger.error("Exception", e);
-			e.printStackTrace();
+			logger.error("Error in downloadHumanLabeledDocumentsByCrisisIDUserName.", e);
 			return Response.ok(
 					new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "Exception in fetching human labeled documents")).build();
 		}
@@ -279,6 +276,7 @@ public class MiscResource {
 			systemEventEJB.insertSystemEvent("ERROR", module, code, description, emailSent);
 		}
 		catch (Exception e) {
+			logger.warn("Error in inserting system event.");
 			return Response.serverError().build();
 		}
 		return Response.ok().build();

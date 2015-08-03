@@ -4,18 +4,9 @@
  */
 package qa.qcri.aidr.predictui.facade.imp;
 
-import qa.qcri.aidr.common.values.DownloadType;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
-import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
-import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
-import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentList;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.HumanLabeledDocumentListWrapper;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.ItemToLabelDTO;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
-import qa.qcri.aidr.predictui.facade.MiscResourceFacade;
-import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
-import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
-import qa.qcri.aidr.task.ejb.TaskManagerRemote;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -29,11 +20,18 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import qa.qcri.aidr.common.values.DownloadType;
+import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentList;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.HumanLabeledDocumentListWrapper;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ItemToLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
+import qa.qcri.aidr.predictui.facade.MiscResourceFacade;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
+import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 /**
  *
@@ -91,8 +89,7 @@ public class MiscResourceFacadeImp implements MiscResourceFacade {
 		try {
 			return remoteTaskManager.getHumanLabeledDocumentsByCrisisID(crisisID, count);
 		} catch (Exception e) {
-			logger.error("exception for crisisID = " + crisisID);
-			e.printStackTrace();
+			logger.error("exception for crisisID = " + crisisID, e);
 			return null;  
 		}
 	}
@@ -104,8 +101,6 @@ public class MiscResourceFacadeImp implements MiscResourceFacade {
 		} catch (Exception e) {
 			logger.error("Exception for crisis code = " + crisisCode);
 			logger.error("Exception", e);
-			//System.out.println("exception for crisis code = " + crisisCode);
-			//e.printStackTrace();
 			return null;  
 		}
 	}
@@ -115,8 +110,7 @@ public class MiscResourceFacadeImp implements MiscResourceFacade {
 		try {
 			return remoteTaskManager.getHumanLabeledDocumentsByCrisisIDUserID(crisisID, userID, count);
 		} catch (Exception e) {
-			logger.error("exception for crisisID = " + crisisID + ", userID = " + userID);
-			e.printStackTrace();
+			logger.error("exception for crisisID = " + crisisID + ", userID = " + userID, e);
 			return null;  
 		}
 	}
@@ -126,8 +120,7 @@ public class MiscResourceFacadeImp implements MiscResourceFacade {
 		try {
 			return remoteTaskManager.getHumanLabeledDocumentsByCrisisIDUserName(crisisID, userName, count);
 		} catch (Exception e) {
-			logger.error("exception for crisisID = " + crisisID + ", userName = " + userName);
-			e.printStackTrace();
+			logger.error("exception for crisisID = " + crisisID + ", userName = " + userName, e);
 			return null;  
 		}
 	}
@@ -142,8 +135,7 @@ public class MiscResourceFacadeImp implements MiscResourceFacade {
 				return null;
 			}
 		} catch (Exception e) {
-			logger.error("exception for crisis = " + crisisCode + ", userName = " + userName);
-			e.printStackTrace();
+			logger.error("exception for crisis = " + crisisCode + ", userName = " + userName, e);
 			return null;  
 		}
 	}
@@ -152,9 +144,9 @@ public class MiscResourceFacadeImp implements MiscResourceFacade {
 	public String downloadItems(HumanLabeledDocumentList dtoList, String queryString, String crisisCode, String userName, 
 								Integer count, String fileType, String contentType) {
 
+		String errorMsg = "Exception in generating file from human labeled items";
 		try {
 			HumanLabeledDocumentListWrapper postBody = new HumanLabeledDocumentListWrapper(dtoList, queryString);
-			//System.out.println("Request POST body: " + postBody.toJsonString());
 
 			logger.info("Received request to create file for: " + dtoList.getTotal() + "items for crisis = " + crisisCode + "userName = " + userName);
 			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
@@ -164,17 +156,16 @@ public class MiscResourceFacadeImp implements MiscResourceFacade {
 			logger.info("Invoking REST call: " + persisterMainUrl + targetAPI + "collectionCode=" + crisisCode + "&userName=" + userName);
 			Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
 					.post(Entity.json(postBody), Response.class);
-			//System.out.println("received raw response from persister: " + clientResponse);
 			Map<String, Object> jsonResponse = clientResponse.readEntity(Map.class);
 			logger.info("Received response from persister: " + jsonResponse);
 			if (jsonResponse.get("url") != null) {
 				return jsonResponse.get("url").toString();
 			} else {
-				return new String("Exception in generating file from human labeled items");
+				return errorMsg;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			return new String("Exception in generating file from human labeled items");
+			logger.error(errorMsg + " for queryString : " + queryString);
+			return errorMsg;
 		}
 	}
 
