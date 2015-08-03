@@ -21,7 +21,7 @@ public class HumanLabeledDocumentListWrapper implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -7413555749237029785L;
-	private Logger logger = Logger.getLogger(HumanLabeledDocumentListWrapper.class);
+	private static final Logger logger = Logger.getLogger(HumanLabeledDocumentListWrapper.class);
 	
 	@XmlElement HumanLabeledDocumentList dtoList;
 	

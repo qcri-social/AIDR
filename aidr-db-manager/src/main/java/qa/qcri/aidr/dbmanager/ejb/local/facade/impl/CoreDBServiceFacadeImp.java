@@ -36,7 +36,7 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 	@PersistenceContext(unitName = "qa.qcri.aidr.dbmanager-EJBS") 
 	protected EntityManager em;
 
-	private Logger logger = Logger.getLogger("db-manager-log");
+	private static final Logger logger = Logger.getLogger("db-manager-log");
 
 	private Class<E> entityClass;
 

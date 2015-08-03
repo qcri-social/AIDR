@@ -238,7 +238,7 @@ public class MiscResource {
 				count=null;
 			}
 			
-			if (dtoList != null) {
+			if (dtoList != null && dtoList.size()!=0) {
 				ResponseWrapper response = new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
 				response.setTotal(dtoList.size());
 				HumanLabeledDocumentList list = new HumanLabeledDocumentList(dtoList);
