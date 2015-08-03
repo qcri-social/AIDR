@@ -23,7 +23,7 @@ public class TaskAnswerDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 5525860415454423643L;
-	private Logger logger = Logger.getLogger(TaskAnswerDTO.class);
+	private static final Logger logger = Logger.getLogger("db-manager-log");
 
 	@XmlElement
 	private Long taskID;

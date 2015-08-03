@@ -20,7 +20,7 @@ public class ModelNominalLabelIdDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -7966215874963999322L;
-	private Logger logger = Logger.getLogger(ModelNominalLabelIdDTO.class);
+	private static final Logger logger = Logger.getLogger("db-manager-log");
 
 	@XmlElement
 	private Long modelId;

@@ -21,7 +21,7 @@ public class HumanLabeledDocumentList implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 4864042221879747333L;
-	private Logger logger = Logger.getLogger(HumanLabeledDocumentList.class);
+	private static final Logger logger = Logger.getLogger("db-manager-log");
 	
 	@XmlElement private List<HumanLabeledDocumentDTO> items;
 

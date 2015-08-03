@@ -27,7 +27,7 @@ public class ModelDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 436159208494993271L;
-	private Logger logger = Logger.getLogger(ModelDTO.class);
+	private static final Logger logger = Logger.getLogger("db-manager-log");
 
 	@XmlElement
 	private Long modelId;

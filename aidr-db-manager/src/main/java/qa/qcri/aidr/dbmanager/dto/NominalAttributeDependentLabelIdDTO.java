@@ -19,7 +19,7 @@ public class NominalAttributeDependentLabelIdDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 5910754106878087122L;
-	private Logger logger = Logger.getLogger(NominalAttributeDependentLabelIdDTO.class);
+	private static final Logger logger = Logger.getLogger("db-manager-log");
 
 	@XmlElement
 	private Long nominalAttributeId;

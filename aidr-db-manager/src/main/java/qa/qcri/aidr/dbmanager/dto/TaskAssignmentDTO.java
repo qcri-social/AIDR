@@ -21,7 +21,7 @@ public class TaskAssignmentDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 6766433678441426060L;
-	private Logger logger = Logger.getLogger(TaskAssignmentDTO.class);
+	private static final Logger logger = Logger.getLogger("db-manager-log");
 
 	@XmlElement
 	private DocumentDTO document;

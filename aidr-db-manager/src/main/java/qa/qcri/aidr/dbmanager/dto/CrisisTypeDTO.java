@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class CrisisTypeDTO implements java.io.Serializable {
 
     private static final long serialVersionUID = 8074463052776843105L;
-    private Logger logger = Logger.getLogger(CrisisTypeDTO.class);
+    private static final Logger logger = Logger.getLogger("db-manager-log");
 
     @XmlElement
     private Long crisisTypeId;

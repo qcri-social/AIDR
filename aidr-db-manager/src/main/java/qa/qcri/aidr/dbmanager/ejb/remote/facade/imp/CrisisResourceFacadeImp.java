@@ -30,7 +30,7 @@ import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 @Stateless(name="CrisisResourceFacadeImp")
 public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long> implements CrisisResourceFacade {
 
-	private static Logger logger = Logger.getLogger("db-manager-log");
+	private static final Logger logger = Logger.getLogger("db-manager-log");
 
 	@EJB
 	private UsersResourceFacade userLocalEJB;

@@ -20,7 +20,7 @@ public class NominalLabelTrainingDataDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -6001563823600724945L;
-	private Logger logger = Logger.getLogger(NominalLabelTrainingDataDTO.class);
+	private static final Logger logger = Logger.getLogger("db-manager-log");
 	
 	@XmlElement
 	private NominalLabelTrainingDataIdDTO idDTO;

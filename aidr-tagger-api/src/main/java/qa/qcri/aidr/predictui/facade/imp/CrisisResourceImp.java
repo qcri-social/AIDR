@@ -23,7 +23,7 @@ import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 @Stateless
 public class CrisisResourceImp implements CrisisResourceFacade {
 	//private static Logger logger = Logger.getLogger(CrisisResourceImp.class);
-	private static Logger logger = Logger.getLogger(CrisisResourceImp.class);
+	private Logger logger = Logger.getLogger(CrisisResourceImp.class);
 
 	//@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
 	//private EntityManager em;

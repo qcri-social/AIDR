@@ -32,7 +32,7 @@ public class DocumentDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 6833511192868020105L;
-	private Logger logger = Logger.getLogger(DocumentDTO.class);
+	private static final Logger logger = Logger.getLogger("db-manager-log");
 
 	@XmlElement
 	private Long documentID;

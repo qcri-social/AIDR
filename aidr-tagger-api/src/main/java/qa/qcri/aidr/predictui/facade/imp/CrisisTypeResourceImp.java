@@ -25,7 +25,7 @@ public class CrisisTypeResourceImp implements CrisisTypeResourceFacade {
 	//@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
 	//private EntityManager em;
 	
-	private Logger logger = Logger.getLogger(CrisisTypeResourceImp.class);
+	private static Logger logger = Logger.getLogger(CrisisTypeResourceImp.class);
 	
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisTypeResourceFacade remoteCrisisTypeEJB;

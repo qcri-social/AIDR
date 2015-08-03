@@ -28,7 +28,7 @@ import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
 @Stateless(name = "CrisisTypeResourceFacadeImp")
 public class CrisisTypeResourceFacadeImp extends CoreDBServiceFacadeImp<CrisisType, Long> implements CrisisTypeResourceFacade {
 
-	private Logger logger = Logger.getLogger("db-manager-log");
+	private static final Logger logger = Logger.getLogger("db-manager-log");
 
 	public CrisisTypeResourceFacadeImp() {
 		super(CrisisType.class);
