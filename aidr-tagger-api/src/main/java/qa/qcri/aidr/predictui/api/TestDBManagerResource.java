@@ -358,7 +358,7 @@ public class TestDBManagerResource {
 				if (ret != null && ret.intValue() == 1) return Response.ok("Document Add-Delete test successful" + dto).build();
 			} 
 		} catch (Exception e) {
-			logger.error("Error in /document/adddel." e);
+			logger.error("Error in /document/adddel.",e);
 			return Response.ok("Exception: " + e).build();
 		}
 		return Response.ok("Document add-Delete test failed").build();
