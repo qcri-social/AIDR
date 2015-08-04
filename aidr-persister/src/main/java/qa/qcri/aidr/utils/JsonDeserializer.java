@@ -353,6 +353,11 @@ public class JsonDeserializer {
 				totalCount += countToWrite;
 				tweetsList.clear();
 			}
+			//In case if there wasn't any tweet. Just create an empty csv file.
+			if(countToWrite == 0 && tweetsList.isEmpty() && 0 == totalCount && runningHeader == null && writer == null){
+				runningHeader  = csv.resetClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetIDCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_ID_HEADER_SIZE, 0);
+				writer = csv.writeClassifiedTweetIDsCSV(runningHeader, writer, tweetsList, collectionCode, fileName);
+			}
 		} finally {
 			if (writer != null) {
 				try {
