@@ -762,7 +762,7 @@ public class JsonDeserializer {
 				String currentFileName = f.getName();
 				if (currentFileName.endsWith(".json")) {
 					String line;
-					System.out.println("Reading file : " + f.getAbsolutePath());
+					//System.out.println("Reading file : " + f.getAbsolutePath());
 					InputStream is = new FileInputStream(f.getAbsolutePath());
 					br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 					while ((line = br.readLine()) != null) {
@@ -828,7 +828,7 @@ public class JsonDeserializer {
 				String currentFileName = f.getName();
 				if (currentFileName.endsWith(".json")) {
 					String line;
-					System.out.println("Reading file : " + f.getAbsolutePath());
+					//System.out.println("Reading file : " + f.getAbsolutePath());
 					InputStream is = new FileInputStream(f.getAbsolutePath());
 					br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 					while ((line = br.readLine()) != null) {
@@ -1365,7 +1365,8 @@ public class JsonDeserializer {
 
 			BufferedReader br = null;
 			String fileToDelete = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + "Classified_" + collectionCode + "_tweetIds" + extension;
-			System.out.println("Deleteing file : " + fileToDelete);
+			//System.out.println("Deleteing file : " + fileToDelete);
+			logger.info("Deleteing file : " + fileToDelete);
 			FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
 			//System.out.println(fileNames);
 
@@ -1613,7 +1614,8 @@ public class JsonDeserializer {
 			ReversedLinesFileReader br = null;
 
 			String fileToDelete = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + fileName;
-			System.out.println("Deleteing file : " + fileToDelete + ".zip");
+			//System.out.println("Deleteing file : " + fileToDelete + ".zip");
+			logger.info("Deleteing file : " + fileToDelete + ".zip");
 			FileSystemOperations.deleteFile(fileToDelete + ".zip"); // delete if there exist a csv file with same name
 			//System.out.println(fileNames);
 
@@ -1692,10 +1694,11 @@ public class JsonDeserializer {
 			}
 		}
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileName);
+		String fileToDelete = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + fileName;
 		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + collectionCode + "/" + compressor.zip();
-		String fileToDelete = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + fileName;
-		System.out.println("Deleteing file : " + fileToDelete);
+		//System.out.println("Deleteing file : " + fileToDelete);
+		logger.info("Deleteing file : " + fileToDelete);
 		FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
 
 		return ResultStatus.getUIWrapper("fileName", fileName, "count", totalCount);
@@ -1928,7 +1931,8 @@ public class JsonDeserializer {
 		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + collectionCode + "/" + compressor.zip();
 		FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforCSVGen);
-		System.out.println("Deleted raw file post compression: " + fileNameforCSVGen);
+		//System.out.println("Deleted raw file post compression: " + fileNameforCSVGen);
+		logger.info("Deleted raw file post compression: " + fileNameforCSVGen);
 		return ResultStatus.getUIWrapper("fileName", fileName, "count", totalCount);
 	}
 
@@ -2027,7 +2031,8 @@ public class JsonDeserializer {
 		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + collectionCode + "/" + compressor.zip();
 		FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforGen);
-		System.out.println("Deleted raw file post compression: " + fileNameforGen);
+		//System.out.println("Deleted raw file post compression: " + fileNameforGen);
+		logger.info("Deleted raw file post compression: " + fileNameforGen);
 		return fileName;
 
 	}
@@ -2058,7 +2063,8 @@ public class JsonDeserializer {
 		String fileToDelete = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + fileNameforGen;
 		int totalCount = 0;
 		try {		
-			System.out.println("Deleteing file : " + fileToDelete + ".zip");
+			//System.out.println("Deleteing file : " + fileToDelete + ".zip");
+			logger.info("Deleteing file : " + fileToDelete + ".zip");
 			FileSystemOperations.deleteFile(fileToDelete + ".zip"); // delete if there exist a file with same name
 
 			StringBuffer outputFile = new StringBuffer().append(folderLocation).append("/").append(fileNameforGen);
@@ -2117,7 +2123,8 @@ public class JsonDeserializer {
 		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + collectionCode + "/" + compressor.zip();
 		FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a file with same name
-		System.out.println("Deleted raw file post compression: " + fileToDelete);
+		//System.out.println("Deleted raw file post compression: " + fileToDelete);
+		logger.info("Deleted raw file post compression: " + fileToDelete);
 		return ResultStatus.getUIWrapper("fileName", fileName, "count", totalCount);
 	}
 

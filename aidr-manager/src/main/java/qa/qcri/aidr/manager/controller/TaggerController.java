@@ -555,7 +555,7 @@ public class TaggerController extends BaseController {
 		try {
 			result = taggerService.loadLatestTweets(code, constraints);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception while loading latest tweets for collection: "+code,e);
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 		return getUIWrapper(result,true);

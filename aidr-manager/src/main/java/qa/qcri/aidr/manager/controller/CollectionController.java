@@ -523,7 +523,7 @@ public class CollectionController extends BaseController{
 			try {
 				return getUIWrapper(collectionService.updateAndGetRunningCollectionStatusByUser(userEntity.getId()),true);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Exception while updating and getting running collection by user");
 				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 			}
 		}

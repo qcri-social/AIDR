@@ -74,7 +74,7 @@ public class FileCompressor {
 			in.close();
 			zos.closeEntry();
 			zos.close();
-			System.out.println("Done zipping file: " + this.inputFileName + ", created file = " + this.outputFileName);
+			//System.out.println("Done zipping file: " + this.inputFileName + ", created file = " + this.outputFileName);
 			return this.getOutFile();
 
 		} catch (Exception e) {
