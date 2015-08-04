@@ -709,6 +709,11 @@ public class JsonDeserializer {
 					writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList.subList(0, countToWrite), collectionCode, fileName, writer);
 					tweetsList.clear();
 				}
+				//In case there wasn't any tweet. Just create an empty csv file.
+				if(countToWrite==0 && tweetsList.size()==0 && 0 == currentSize && runningHeader == null && writer == null ){
+					runningHeader  = csv.resetClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, 0);
+					writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList.subList(0, countToWrite), collectionCode, fileName, writer);
+				}
 			}
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
