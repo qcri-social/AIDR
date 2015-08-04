@@ -1831,7 +1831,7 @@ public class JsonDeserializer {
 		// Compress generated file and send the compressed file link
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileNameforCSVGen);
 		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
- + "/" + collectionCode + "/" + compressor.zip();
+  + collectionCode + "/" + compressor.zip();
 		FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforCSVGen);
 		logger.info("Deleted raw file post compression: " + fileNameforCSVGen);
 		return fileName;
