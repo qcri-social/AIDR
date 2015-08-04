@@ -238,12 +238,17 @@ public class MiscResource {
 				count=null;
 			}
 			
-			if (dtoList != null && dtoList.size()!=0) {
+			if (dtoList != null) {
 				ResponseWrapper response = new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
 				response.setTotal(dtoList.size());
 				HumanLabeledDocumentList list = new HumanLabeledDocumentList(dtoList);
-				response.setMessage(miscEJB.downloadItems(list, queryString, dtoList.get(0).getDoc().getCrisisDTO().getCode(), 
-															userName, count, fileType, contentType));
+				if(dtoList.size()!=0){
+					response.setMessage(miscEJB.downloadItems(list, queryString, dtoList.get(0).getDoc().getCrisisDTO().getCode(), 
+							userName, count, fileType, contentType));
+				}
+				else{
+					response.setMessage("Found 0 human labeled documents");
+				}
 				return Response.ok(response).build();
 			} else {
 				return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS), "Found 0 human labeled documents")).build();

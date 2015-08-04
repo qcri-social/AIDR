@@ -221,7 +221,14 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                             var resp = Ext.decode(response.responseText);
                             if (resp.success) {
                                 if (resp.data && resp.data != '') {
-                                    me.mainComponent.downloadLink.setText('<div class="styled-text download-link"><a target="_blank" href="' + resp.data.fileName + '">' + resp.data.fileName + '</a></div>', false);
+                                	if(resp.data.total){
+                                		me.mainComponent.downloadLink.setText('<div class="styled-text download-link"><a target="_blank" href="' + resp.data.fileName + '">' + resp.data.fileName + '</a></div>', false);
+                                	}
+                                	else{
+                                		me.mainComponent.downloadLink.setText('', false);
+                                		AIDRFMFunctions.setAlert("Info", "No human tagged "+ COLLECTION_TYPES[TYPE]["plural"] + " available to download");
+                                	}
+                                    
                                 } else {
                                     me.mainComponent.downloadLink.setText('', false);
                                     AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");

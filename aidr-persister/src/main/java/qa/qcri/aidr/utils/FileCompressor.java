@@ -60,13 +60,12 @@ public class FileCompressor {
 
 		byte[] buffer = new byte[BUFFER_SIZE];
 
-		try {
-			OutputStream fos = new BufferedOutputStream(new FileOutputStream(this.getOutputFileName()), BUFFER_SIZE);
-			ZipOutputStream zos = new ZipOutputStream(fos);
+		try(OutputStream fos = new BufferedOutputStream(new FileOutputStream(this.getOutputFileName()), BUFFER_SIZE);
+				ZipOutputStream zos = new ZipOutputStream(fos);
+				InputStream in = new BufferedInputStream(new FileInputStream(this.getInputFileName()), BUFFER_SIZE);) {
+			
 			ZipEntry ze = new ZipEntry(this.getFileName());
 			zos.putNextEntry(ze);
-
-			InputStream in = new BufferedInputStream(new FileInputStream(this.getInputFileName()), BUFFER_SIZE);
 			int len;
 			while ((len = in.read(buffer)) > 0) {
 				zos.write(buffer, 0, len);
@@ -89,10 +88,8 @@ public class FileCompressor {
 	 */
 	public String unzip() {
 		byte[] buffer = new byte[BUFFER_SIZE];
-		try {
+		try(ZipInputStream zis = new ZipInputStream(new FileInputStream(this.getInputFileName()));) {
 			// get the zip file content
-			ZipInputStream zis = new ZipInputStream(new FileInputStream(this.getInputFileName()));
-
 			// get the zipped file list entry
 			ZipEntry ze = zis.getNextEntry();
 			if (ze != null) {
