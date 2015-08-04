@@ -219,7 +219,7 @@ public class ModelController extends PipelineProcess {
             String path = getModelPath(eventID, attributeID, modelID);
             o = weka.core.SerializationHelper.readAll(path);
         } catch (Exception e) {
-        	logger.error("Could not load model from disk (crisis " + eventID
+        	System.out.println("Could not load model from disk (crisis " + eventID
                     + ", attribute " + attributeID + ", model " + modelID
                     + "). Delete model reference in DB and retrain? [y/n]");
             try {
