@@ -1,6 +1,5 @@
 package qa.qcri.aidr.predict;
 
-import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -26,16 +25,16 @@ import javax.naming.NamingException;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelIdDTO;
 import qa.qcri.aidr.predict.classification.nominal.Model;
-import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
 import qa.qcri.aidr.predict.classification.nominal.ModelNominalLabelPerformance;
+import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
 import qa.qcri.aidr.predict.common.Helpers;
 import qa.qcri.aidr.predict.common.TaggerConfigurationProperty;
 import qa.qcri.aidr.predict.common.TaggerConfigurator;
+import qa.qcri.aidr.predict.common.TaggerErrorLog;
 import qa.qcri.aidr.predict.data.Document;
 import qa.qcri.aidr.predict.dbentities.ModelFamilyEC;
 import qa.qcri.aidr.predict.dbentities.NominalAttributeEC;
@@ -63,7 +62,6 @@ public class DataStore {
 	public static TaskManagerRemote<DocumentDTO, Long> taskManager = null;
 
 	private static Logger logger = Logger.getLogger(DataStore.class);
-	private static ErrorLog elog = new ErrorLog();
 
 	private static final String remoteEJBJNDIName = TaggerConfigurator
 			.getInstance().getProperty(
@@ -86,7 +84,7 @@ public class DataStore {
 			jedisPool = new JedisPool(new JedisPoolConfig(), TaggerConfigurator
 					.getInstance().getProperty(
 							TaggerConfigurationProperty.REDIS_HOST));
-	logger.info("Initialized jedisPool = " + jedisPool);
+			logger.info("Initialized jedisPool = " + jedisPool);
 		} else {
 			logger.warn("Attempting to initialize an active JedisPool!");
 		}
@@ -98,12 +96,14 @@ public class DataStore {
 		} catch (Exception e1) {
 			logger.error("Unable to allocate JEDIS Pool!");
 			logger.error("Exception", e1);
+			TaggerErrorLog.sendErrorMail("Redis", "Could not establish Redis connection. " + e1.getMessage());
 		}
 		try {
 			initializeMySqlPool();
 		} catch (Exception e) {
 			logger.error("Unable to allocate MySQL Pool!");
 			logger.error("Exception", e);
+			TaggerErrorLog.sendErrorMail("Mysql connection", "Could not initialize mysql connection. " + e.getMessage());
 		}
 	}
 
@@ -130,15 +130,12 @@ public class DataStore {
 			InitialContext ctx = new InitialContext();
 
 			taskManager = (TaskManagerRemote<DocumentDTO, Long>) ctx.lookup(DataStore.remoteEJBJNDIName);
-			System.out.println("taskManager: " + taskManager + ", time taken to initialize = " + (System.currentTimeMillis() - startTime));
 			logger.info("taskManager: " + taskManager + ", time taken to initialize = " + (System.currentTimeMillis() - startTime));
 			if (taskManager != null) {
 				logger.info("Success in connecting to remote EJB to initialize taskManager");
 			}
 		} catch (NamingException e) {
-			logger.error("Error in JNDI lookup for initializing remote EJB");
-			logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("Error in JNDI lookup for initializing remote EJB", e);
 		}
 	}
 
@@ -173,10 +170,9 @@ public class DataStore {
 				return jedisPool.getResource();
 			}
 		} catch (Exception e) {
-			System.out
-			.println("Could not establish Redis connection. Is the Redis server running?");
 			logger.error("Could not establish Redis connection. Is the Redis server running?");
 			logger.error("Exception", e);
+			TaggerErrorLog.sendErrorMail("Redis", "Could not establish Redis connection. " + e.getMessage());
 		}
 		return null;
 	}
@@ -292,8 +288,7 @@ public class DataStore {
 		try {
 			con.close();
 		} catch (SQLException e) {
-			logger.error("Exception when returning MySQL connection");
-			logger.error(elog.toStringException(e));
+			logger.error("Exception when returning MySQL connection", e);
 		}
 	}
 
@@ -304,8 +299,7 @@ public class DataStore {
 		try {
 			statement.close();
 		} catch (SQLException e) {
-			logger.error("Could not close statement");
-			logger.error(elog.toStringException(e));
+			logger.error("Could not close statement", e);
 		}
 	}
 
@@ -316,8 +310,7 @@ public class DataStore {
 		try {
 			resultset.close();
 		} catch (SQLException e) {
-			logger.error("Could not close statement");
-			logger.error(elog.toStringException(e));
+			logger.error("Could not close statement", e);
 		}
 	}
 
@@ -335,8 +328,7 @@ public class DataStore {
 				return result.getInt(1);
 			}
 		} catch (SQLException ex) {
-			logger.error("Error in executing SQL statement: " + sql);
-			logger.error(elog.toStringException(ex));
+			logger.error("Error in executing SQL statement: " + sql, ex);
 		} finally {
 			close(result);
 			close(query);
@@ -389,11 +381,9 @@ public class DataStore {
 						.getJSONArray("words")));
 			}
 		} catch (SQLException e) {
-			logger.error("Exception while fetching dataset");
-			logger.error(elog.toStringException(e));
+			logger.error("Exception while fetching dataset. ", e);
 		} catch (Exception e) {
-			logger.error("Exception while fetching dataset");
-			logger.error(elog.toStringException(e));
+			logger.error("Exception while fetching dataset", e);
 		} finally {
 			close(result);
 			close(statement);
@@ -559,9 +549,7 @@ public class DataStore {
 				saveNewDocumentsCount = 0;
 			}
 		} catch (Exception e) {
-			logger.error("Exception when attempting to write Document to database");
-			e.printStackTrace();
-			logger.error(elog.toStringException(e));
+			logger.error("Exception when attempting to write Document to database", e);
 		} 
 		saveHumanLabels(items);
 	}
@@ -617,8 +605,7 @@ public class DataStore {
 			sendNewLabeledDocumentNotification(notifications);
 
 		} catch (Exception e) {
-			logger.error("Exception when attempting to insert new document labels");
-			logger.error(elog.toStringException(e));
+			logger.error("Exception when attempting to insert new document labels", e);
 		} 
 	}
 
@@ -738,8 +725,7 @@ public class DataStore {
 			}
 
 		} catch (SQLException e) {
-			logger.error("Exception when getting model state");
-			logger.error(elog.toStringException(e));
+			logger.error("Exception when getting model state", e);
 		} finally {
 			close(result);
 			close(sql);
@@ -759,7 +745,6 @@ public class DataStore {
 			sql.executeUpdate();
 		} catch (SQLException e) {
 			logger.error("Exception while deleting model");
-			logger.error(elog.toStringException(e));
 		} finally {
 			close(sql);
 			close(conn);
@@ -781,7 +766,6 @@ public class DataStore {
 			}
 		} catch (SQLException e) {
 			logger.error("Exception when getting crisis IDs", e);
-			logger.error(elog.toStringException(e));
 		} finally {
 			close(result);
 			close(sql);
@@ -871,8 +855,7 @@ public class DataStore {
 							+ selectModelFamilyID + ")");
 			mfUpdate.executeUpdate();
 		} catch (SQLException e) {
-			logger.error("Exception while saving model to database");
-			logger.error(elog.toStringException(e));
+			logger.error("Exception while saving model to database", e);
 		} finally {
 			close(result);
 			close(modelInsert);
@@ -916,7 +899,6 @@ public class DataStore {
 			}
 		} catch (SQLException e) {
 			logger.error("Exception when getting nominal label training values", e);
-			logger.error(elog.toStringException(e));
 		} finally {
 			close(result);
 			close(sql);
@@ -949,8 +931,7 @@ public class DataStore {
 				}
 			}
 		} catch (SQLException e) {
-			logger.error("Exception when attempting to write ClassifiedDocumentCount to database");
-			logger.error(elog.toStringException(e));
+			logger.error("Exception when attempting to write ClassifiedDocumentCount to database : " + data);
 		} finally {
 			close(statement);
 			close(conn);

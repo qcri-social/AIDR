@@ -96,6 +96,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        					}
 	        				} else {
 	        					AIDRFMFunctions.setAlert("Error", resp.message);
+	        					AIDRFMFunctions.reportIssue(response);
 	        				}
 	        			}
 	        		});
@@ -179,6 +180,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        				me.mainComponent.trainingDataStore.load();
 	        			} else {
 	        				AIDRFMFunctions.setAlert("Error", resp.message);
+	        				AIDRFMFunctions.reportIssue(response);
 	        			}
 	        		}
 	        	});
@@ -196,12 +198,8 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                         queryString: me.mainComponent.constraintsString
                     };
 
-                    if(format == 'csv'){
-                       url = '/protected/tagger/downloadHumanLabeledDocuments.action';
-                    } else {
-                        params.jsonType = format;
-                        url = '/protected/tagger/downloadHumanLabeledDocuments.action';
-                    }
+                    params.fileType = format;
+                    url = '/protected/tagger/downloadHumanLabeledDocuments.action';
 
                     btn.setDisabled(true);
                     me.mainComponent.downloadLink.setText('<div class="loading-block"></div>', false);
@@ -223,14 +221,23 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                             var resp = Ext.decode(response.responseText);
                             if (resp.success) {
                                 if (resp.data && resp.data != '') {
-                                    me.mainComponent.downloadLink.setText('<div class="styled-text download-link"><a target="_blank" href="' + resp.data.fileName + '">' + resp.data.fileName + '</a></div>', false);
+                                	if(resp.data.total){
+                                		me.mainComponent.downloadLink.setText('<div class="styled-text download-link"><a target="_blank" href="' + resp.data.fileName + '">' + resp.data.fileName + '</a></div>', false);
+                                	}
+                                	else{
+                                		me.mainComponent.downloadLink.setText('', false);
+                                		AIDRFMFunctions.setAlert("Info", "No human tagged "+ COLLECTION_TYPES[TYPE]["plural"] + " available to download");
+                                	}
+                                    
                                 } else {
                                     me.mainComponent.downloadLink.setText('', false);
                                     AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
+                                    AIDRFMFunctions.reportIssue(response);
                                 }
                             } else {
                                 me.mainComponent.downloadLink.setText('', false);
                                 AIDRFMFunctions.setAlert("Error", resp.message);
+                                AIDRFMFunctions.reportIssue(response);
                             }
                         },
                         failure: function () {

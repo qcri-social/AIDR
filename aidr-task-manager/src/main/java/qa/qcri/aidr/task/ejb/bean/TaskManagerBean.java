@@ -21,12 +21,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
@@ -35,11 +30,18 @@ import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAssignmentDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
-import qa.qcri.aidr.dbmanager.entities.task.*;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
+import qa.qcri.aidr.dbmanager.entities.task.Document;
+import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
+import qa.qcri.aidr.dbmanager.entities.task.TaskAnswer;
+import qa.qcri.aidr.dbmanager.entities.task.TaskAssignment;
 import qa.qcri.aidr.task.common.TrainingDataFetchType;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class implements the TaskManagerRemote interface, providing the business logic for operations 
@@ -98,7 +100,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade remoteNominalLabelEJB;
 
 	protected static Logger logger = Logger.getLogger(TaskManagerBean.class);
-	private ErrorLog elog = new ErrorLog();
 
 	private static Object lockObject = new Object();
 	private static Integer inCS = 0;
@@ -128,7 +129,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	@Override
 	public long insertNewTask(T task) {
 		if (task == null) {
-			logger.error("Attempting to insert NULL");
+			logger.warn("Attempting to insert NULL");
 			return -1;
 		}
 		DocumentDTO doc = (DocumentDTO) task;
@@ -138,8 +139,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			DocumentDTO savedDoc = remoteDocumentEJB.addDocument(doc);
 			return savedDoc.getDocumentID();
 		} catch (Exception e) {
-			logger.error("Error in insertion");
-			logger.error(elog.toStringException(e));
+			logger.error("Error in insertion : " + doc.getData());
 		}
 		return -1;
 	}
@@ -156,13 +156,10 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			doc.setCrisisDTO(crisisDTO);
 			doc.setHasHumanLabels(false);
 			DocumentDTO savedDoc = remoteDocumentEJB.addDocument(doc);
-			//System.out.println("Saved to DB document: " + savedDoc.getDocumentID() + ", for crisis = " + savedDoc.getCrisisDTO().getCode());
 			//logger.info("Saved to DB document: " + savedDoc.getDocumentID() + ", for crisis = " + savedDoc.getCrisisDTO().getCode());
 			return savedDoc.getDocumentID();
 		} catch (Exception e) {
-			logger.error("Error in insertion");
-			logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("Error in insertion for crisisID : " + crisisID + " and doc : " + task.toString(), e);
 		}
 		return -1L;
 	}
@@ -179,7 +176,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				}
 			} catch (Exception e) {
 				logger.error("Error in collection insertion");
-				logger.error(elog.toStringException(e));
 			}
 		} else {
 			logger.warn("Attempting to insert NULL");
@@ -201,8 +197,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 					}
 				}
 			} catch (Exception e) {
-				logger.error("Error in collection insertion");
-				logger.error(elog.toStringException(e));
+				logger.error("Error in collection insertion for crisisID : " + crisisID);
 			}
 		} else {
 			logger.warn("Attempting to insert NULL");
@@ -216,11 +211,9 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		try {
 			DocumentDTO doc = remoteDocumentEJB.findDocumentByID(id);
 			Integer result = remoteDocumentEJB.deleteNoLabelDocument(doc);
-			//System.out.println("[deleteTaskById] gotById document: " + document);
 			return result;
 		} catch(Exception e) {			
 			logger.error("Error in deletion");
-			logger.error(elog.toStringException(e));
 		}
 		return 0;
 	}
@@ -229,12 +222,9 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public int deleteTask(T task) {
 		if (task != null) {
 			try {
-				//System.out.println("[deleteTask] Going for deletion of fetched doc = " + ((Document) task).getDocumentID());
 				return remoteDocumentEJB.deleteNoLabelDocument((DocumentDTO) task);
-				//documentLocalEJB.delete((Document) task);
 			} catch (Exception e) {
 				logger.error("Error in deletion of task");
-				logger.error(elog.toStringException(e));
 				return 0;
 			}
 		} else {
@@ -273,14 +263,12 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				dtoList = createDocumentDTOList((List<Document>) collection);
 			} catch (PropertyNotSetException e) {
 				logger.error("Unable to create DTO list.", e);
-				e.printStackTrace();
 			}
 
 			try {
 				return remoteDocumentEJB.deleteNoLabelDocument(dtoList);
 			} catch (Exception e) {
 				logger.error("Error in collection deletion of size: " + collection.size());
-				logger.error(elog.toStringException(e));
 				return 0;
 			}
 		} else {
@@ -296,7 +284,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				return remoteDocumentEJB.deleteUnassignedDocument((DocumentDTO) task);
 			} catch (Exception e) {
 				logger.error("Error in deletion");
-				logger.error(elog.toStringException(e));
 				return 0;
 			}
 		} else {
@@ -318,7 +305,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				return remoteDocumentEJB.deleteUnassignedDocumentCollection(idList);
 			} catch (Exception e) {
 				logger.error("Error in collection deletion");
-				logger.error(elog.toStringException(e));
 				return 0;
 			}
 		} else {
@@ -339,8 +325,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 					sortOrder, orderBy, maxTaskAge, scanInterval);
 			return docDeleteCount;
 		} catch (Exception e) {
-			logger.error("Error in deletion");
-			logger.error(elog.toStringException(e));
+			logger.warn("Error in deletion");
 			return 0;
 		}
 	}
@@ -359,14 +344,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 			Criterion aliasCriterion =  (Restrictions.isNull(aliasTableKey));
 			docList = remoteDocumentEJB.getByCriteriaWithAliasByOrder(criterion, order, orderBy, null, aliasTable, aliasCriterion);
-			/*
-			System.out.println("Fetched docList = " + docList);
-			if (docList != null) {
-				System.out.println("Fetched size = " + docList.size());
-			}*/
 		} catch (Exception e) {
 			logger.error("Exception in fetching unassigned documents with hasHumaLabels=false");
-			logger.error(elog.toStringException(e));
 			return 0;
 		}
 
@@ -388,7 +367,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 					return deleteCount;
 				} catch (Exception e) {
 					logger.error("Exception when attempting to batch delete for trimming the document table");
-					logger.error(elog.toStringException(e));
 				} 
 			} else {
 				logger.info("No need for truncation: docListSize = " + docList.size() + ", max buffer size = " + maxLength);
@@ -408,7 +386,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			remoteDocumentEJB.merge(((DocumentDTO) task).toEntity()); 
 		} catch (Exception e) {
 			logger.error("failed update");
-			logger.error(elog.toStringException(e));
 		}
 	}
 
@@ -424,7 +401,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			remoteDocumentEJB.merge(createDocumentEntityList((List<DocumentDTO>)collection));
 		} catch (Exception e) {
 			logger.error("failed collection update");
-			logger.error(elog.toStringException(e));
 		}
 	}
 
@@ -437,7 +413,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			remoteDocumentEJB.merge(dto.toEntity()); 
 		} catch (Exception e) {
 			logger.error("failed update");
-			logger.error(elog.toStringException(e));
 		}
 	}
 
@@ -451,7 +426,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		try {
 			return getNewTask(crisisID, null);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error in fetching new task.", e);
 		}
 		return null;
 	}
@@ -485,7 +460,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			}
 		} catch (Exception e) {
 			logger.error("Error in getting new Task for crisisID: " + crisisID);
-			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -511,16 +485,14 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		Criterion aliasCriterion =  (Restrictions.isNull(aliasTableKey));
 		try {
 			List<Document> docList = remoteDocumentEJB.getByCriteriaWithAliasByOrder(newCriterion, order, orderBy, count, aliasTable, aliasCriterion);
-			//System.out.println("[getNewTaskCollection] docList = " + docList);
 			if (docList != null) {
-				System.out.println("[getNewTaskCollection] Fetched size = " + docList.size());
+				logger.info("[getNewTaskCollection] Fetched size = " + docList.size());
 				return createDocumentDTOList(docList);
 			} else {
 				return null;
 			}
 		} catch (Exception e) {
 			logger.error("Error in getting new Task collection for crisisID: " + crisisID);
-			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -535,7 +507,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				fetchedList= remoteTaskAssignmentEJB.findTaskAssignmentByID(document.getDocumentID());
 			} catch (Exception e) {
 				logger.error("Error in finding Task");
-				logger.error(elog.toStringException(e));
 				return false;
 			}
 		}
@@ -566,7 +537,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				}
 			} catch (Exception e) {
 				logger.error("Error in finding document");
-				logger.error(elog.toStringException(e));
 				return false;
 			}
 		}
@@ -584,7 +554,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				}
 			} catch (Exception e) {
 				logger.error("Error in finding document");
-				logger.error(elog.toStringException(e));
 			}
 		}
 		return false;
@@ -603,7 +572,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			}
 		} catch (Exception e) {
 			logger.error("Error in finding task");
-			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -620,7 +588,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			}
 		} catch (Exception e) {
 			logger.error("Error in finding task");
-			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -637,7 +604,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			} 
 		} catch (Exception e) {
 			logger.error("Error in getting new document collection for nominal Label ID: " + nominalLabelID);
-			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -657,7 +623,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			return document;
 		} catch (Exception e) {
 			logger.error("Error in finding task");
-			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -671,7 +636,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			return createDocumentDTOList(docList);
 		} catch (Exception e) {
 			logger.error("Error in finding task");
-			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -685,7 +649,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			if (task != null) jsonString = mapper.writeValueAsString(task);
 		} catch (IOException e) {
 			logger.error("JSON serialization exception");
-			logger.error(elog.toStringException(e));
 		}
 		return jsonString;
 	}
@@ -704,7 +667,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			}	
 		} catch (IOException e) {
 			logger.error("JSON deserialization exception");
-			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -723,7 +685,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			}	
 		} catch (IOException e) {
 			logger.error("JSON deserialization exception");
-			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -737,9 +698,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		try {
 			users = remoteUsersEJB.getUserByName(userName);
 		} catch (Exception e) {
-			System.err.println("[getDocumentsForTagging] Exception in finding user userName = " + userName + ". Aborting...");
+			logger.error("[getDocumentsForTagging] Exception in finding user userName = " + userName + ". Aborting...");
 			logger.error("Exception", e);
-			e.printStackTrace();
 			return null;
 		}
 		if (users != null) {
@@ -753,17 +713,13 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				++inCS;
 				try {
 					List<DocumentDTO> dtoList = getNewTaskCollection(crisisID, fetchCount, "DESC", null);
-					System.out.println("[getDocumentsForTagging] inCS = " + inCS + ". For crisisID = " + crisisID + ", user = " + userName 
-							+ ", documents available: " + (dtoList != null ? dtoList.size() : "empty list"));
 					if (dtoList != null) {
 						fetchedSize = dtoList.size();
 					}
 					int availableRequestSize = fetchedSize - remainingCount;
-					System.out.println("available = " + availableRequestSize + ", total = " + fetchedSize + ", remainingCount = " + remainingCount);
 					if (availableRequestSize > 0) {
 						count = Math.min(count, availableRequestSize);
 						if (!dtoList.isEmpty() && count > 0) {
-							System.out.println("[getDocumentsForTagging] Going to insert task list of size = " + count + ", for userID: " + users.getUserID());
 							List<DocumentDTO> assignList = new ArrayList<DocumentDTO>();
 							assignList.addAll(dtoList.subList(0, count));
 							assignNewTaskToUser(assignList, users.getUserID());
@@ -778,13 +734,11 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 					}
 				} catch (Exception e) {
 					logger.error("Exception", e);
-					e.printStackTrace();
-					//lock.unlock();
 					return null;
 				}
 			}
 		} else {
-			System.err.println("[getDocumentsForTagging] No user found with userName = " + userName + ". Aborting...");
+			logger.warn("[getDocumentsForTagging] No user found with userName = " + userName + ". Aborting...");
 		}
 		return null;
 	}
@@ -800,7 +754,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				throw new Exception("[assignNewTaskToUser] Couldn't do task assignment");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error in assignNewTaskToUser for id : " + id + " and userID : " + userId);
 		}
 	}
 
@@ -809,6 +763,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public void assignNewTaskToUser(List<DocumentDTO> collection, Long userId) throws Exception {
 		int retVal = remoteTaskAssignmentEJB.insertTaskAssignment(collection, userId);
 		if (retVal <= 0) {
+			logger.warn("Unable to undo task assignment");
 			throw new Exception("[assignNewTaskToUser] Couldn't do task assignment");
 		}
 	}
@@ -817,7 +772,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public void undoTaskAssignment(Map<Long, Long> taskMap) throws Exception {
 		int retVal = remoteTaskAssignmentEJB.undoTaskAssignment(taskMap);
 		if (retVal <= 0) {
-			logger.error("Unable to undo task assignment");
+			logger.warn("Unable to undo task assignment");
 			throw new Exception("[undoTaskAssignment] Couldn't undo task assignment");
 		}
 	}
@@ -826,7 +781,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public void undoTaskAssignment(Long id, Long userId) throws Exception {
 		int retVal = remoteTaskAssignmentEJB.undoTaskAssignment(id, userId);
 		if (retVal <= 0) {
-			logger.error("Unable to undo task assignment");
+			logger.warn("Unable to undo task assignment");
 			throw new Exception("[undoTaskAssignment] Couldn't undo task assignment");
 		}
 	}
@@ -844,7 +799,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				return docList;
 			} catch (Exception e) {
 				logger.error("Error in serializing collection");
-				logger.error(elog.toStringException(e));
 			}
 		}
 		return null;
@@ -858,7 +812,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				return assignedUserTask;
 			} catch (Exception e) {
 				logger.error("Error in serializing collection");
-				logger.error(elog.toStringException(e));
 			}
 		}
 		return null;
@@ -903,7 +856,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			//logger.info("received map: " + paramMap);
 		} catch (Exception e) {
 			logger.error("Error in detecting Class Type");
-			logger.error(elog.toStringException(e));
 			return null;
 		}
 
@@ -922,7 +874,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				}
 			} catch (Exception e) {
 				logger.error("Error in instantiating method class");
-				logger.error(elog.toStringException(e));
 				return null;
 			}
 
@@ -956,13 +907,9 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 					}
 					if (paramTypes[0].getName().equals("String")) {
 						methods[pointer].invoke(doc, paramMap.get(name));
-						//logger.info("Invoking with String parameter type");
 					}
-					//logger.info("[setTaskParameter] Invoked method: " + methods[pointer].getName() + " with parameter: " + paramMap.get(name));
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					logger.error("Error in invoking method via reflection: ");
-					logger.error(elog.toStringException(e));
 					return null;
 				} 
 			}	
@@ -1014,7 +961,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			}
 		} catch (Exception e) {
 			logger.error("Error in updating entity on DB");
-			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -1024,11 +970,10 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		try {
 			TaskAnswerDTO t = remoteTaskAnswerEJB.insertTaskAnswer(taskAnswer);
 			if (t != null) {
-				System.out.println("Successfully inserted taskAnswer: taskID = " + t.getTaskID() + ", documentID = " + t.getDocumentID() + "answer = " + t.getAnswer() + ", from user = " + t.getUserID());
+				logger.info("Successfully inserted taskAnswer: taskID = " + t.getTaskID() + ", documentID = " + t.getDocumentID() + "answer = " + t.getAnswer() + ", from user = " + t.getUserID());
 			}
 		} catch (Exception e) {
 			logger.error("Error in saving task answer : " + taskAnswer.getDocumentID() + ", " + taskAnswer.getAnswer() + ", " + taskAnswer.getUserID());
-			logger.error(elog.toStringException(e));
 		}
 	}
 
@@ -1044,8 +989,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		try {
 			user = remoteUsersEJB.getUserByName(name);
 		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in getUserByName for name : " + name, e);
 		}
 		return user;
 	}
@@ -1056,8 +1000,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		try {
 			user = remoteUsersEJB.getUserById(id);
 		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in getUserById for id : " + id, e);
 		}
 		//return serializeTask(user);
 		return user;
@@ -1069,8 +1012,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		try {
 			userList = remoteUsersEJB.getAllUsersByName(name);
 		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in getAllUserByName for name : " + name, e);
 		}
 		return userList;
 	}
@@ -1084,12 +1026,9 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public void saveDocumentNominalLabel(DocumentNominalLabelDTO documentNominalLabel) {
 		try {
 			DocumentNominalLabelDTO dto = remoteDocumentNominalLabelEJB.addDocument(documentNominalLabel);
-			System.out.println("Saved to DB document nominal label: " + dto.getIdDTO().getDocumentId() + ", with nominal label = " + dto.getIdDTO().getNominalLabelId());
 			logger.info("Saved to DB document nominal label: " + dto.getIdDTO().getDocumentId() + ", with nominal label = " + dto.getIdDTO().getNominalLabelId());
 		} catch (Exception e) {
-			logger.error("Error in saving document nominal label : " + documentNominalLabel);
-			logger.error(elog.toStringException(e));
-			e.printStackTrace();
+			logger.error("Error in saving document nominal label : " + documentNominalLabel, e);
 		}
 	}
 
@@ -1100,8 +1039,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			attMap.put("id.documentId", documentNominalLabel.getIdDTO().getDocumentId());
 			attMap.put("id.nominalLabelId", documentNominalLabel.getIdDTO().getNominalLabelId());
 		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.warn("Warning! duplication nominal label");
 		}
 		DocumentNominalLabel obj =  remoteDocumentNominalLabelEJB.getByCriterionID(Restrictions.allEq(attMap));
 
@@ -1121,7 +1059,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			return new DocumentDTO(document);
 		} catch (Exception e) {
 			logger.error("Error in finding task");
-			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}
@@ -1152,10 +1089,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		try {
 			List<Document> docList = remoteDocumentEJB.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, count, aliasTable, aliasCriterion);
 			if (docList != null) {
-				System.out.println("Fetched size = " + docList.size());
 				Set<Document> docSet = new TreeSet<Document>(new DocumentComparator());
 				docSet.addAll(docList);
-				System.out.println("Sizeof document collection set = " + docSet.size());
 
 				// First get all labels for the fetched documents
 				labeledDocList = new ArrayList<HumanLabeledDocumentDTO>();
@@ -1221,12 +1156,9 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				.add(Restrictions.eq("documentNominalLabels.id.userId", userID));
 		try {
 			List<Document> docList = remoteDocumentEJB.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, count, aliasTable, aliasCriterion);
-			System.out.println("[getHumanLabeledDocumentsByCrisisIDUserID] docList = " + docList);
 			if (docList != null) {
-				System.out.println("Fetched size = " + docList.size());
 				Set<Document> docSet = new TreeSet<Document>(new DocumentComparator());
 				docSet.addAll(docList);
-				System.out.println("Sizeof document collection set = " + docSet.size());
 
 				// First get all labels for the fetched documents
 				labeledDocList = new ArrayList<HumanLabeledDocumentDTO>();
@@ -1297,17 +1229,6 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		return success;
 	}
 	
-	/*
-	public static void main(String args[]) {
-		TaskManagerRemote<Document, Serializable> tm = new TaskManagerBean<Document, Long>();
-		Map<String, String> paramMap = new HashMap<String, String>();
-		paramMap.put("setHasHumanLabels", new Boolean(false).toString());
-		paramMap.put("setCrisisID", new Long(117L).toString());
-		qa.qcri.aidr.task.entities.Document newDoc = tm.setTaskParameter(qa.qcri.aidr.task.entities.Document.class, 4579275L, paramMap);
-		System.out.println("newDoc = " + newDoc.getDocumentID() + ": " + newDoc.isHasHumanLabels());
-	}
-	 */
-
 	private class DocumentComparator implements Comparator<Document> {
 
 		@Override

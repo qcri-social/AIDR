@@ -12,17 +12,12 @@ package qa.qcri.aidr.output.getdata;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.collections.Buffer;
 import org.apache.commons.collections.BufferUtils;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
-
-
 import org.apache.log4j.Logger;
-
-import qa.qcri.aidr.common.logging.ErrorLog;
 
 
 public class ChannelBuffer {
@@ -36,7 +31,6 @@ public class ChannelBuffer {
 	private Boolean publiclyListed = true;
 
 	private static Logger logger = Logger.getLogger(ChannelBuffer.class);
-	private static ErrorLog elog = new ErrorLog();
 
 	public ChannelBuffer(final String name, final int bufferSize) {
 		this.channelName = name;
@@ -76,7 +70,6 @@ public class ChannelBuffer {
 			}
 		} catch (Exception e) {
 			logger.error("Couldn't add message to buffer for channel: " + this.channelName);
-			logger.error(elog.toStringException(e));
 		}
 	}
 
@@ -90,7 +83,6 @@ public class ChannelBuffer {
 			}
 		} catch (Exception e) {
 			logger.error("Couldn't add message to buffer for channel: " + this.channelName);
-			logger.error(elog.toStringException(e));
 		}
 	}
 
@@ -124,7 +116,6 @@ public class ChannelBuffer {
 			return returnList;
 		} catch (Exception e) {
 			logger.error("Error in creating list out of buffered messages");
-			logger.error(elog.toStringException(e));
 			return null;
 		}
 	}

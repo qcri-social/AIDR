@@ -51,7 +51,6 @@ public class SystemEvent implements java.io.Serializable{
 	public SystemEvent(Date receivedAt, String severity, String module, String code,
 			String description, Boolean emailSent) {
 		super();
-		System.out.println("date:" + receivedAt + " modeule:" + module +" emailSent?" + emailSent);
 		this.receivedAt = receivedAt;
 		this.severity = severity;
 		this.module = module;

@@ -75,7 +75,6 @@ class ModelRetrainTrigger implements Runnable {
                     && new Date().getTime() - consumptionStart < timeThreshold) {
 
                 logger.info("A training sample has arrived");
-                System.out.println("A training sample has arrived");
 
                 // Parse notification containing event id and attribute ids
                 JSONObject obj = new JSONObject(line);

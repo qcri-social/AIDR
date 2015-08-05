@@ -30,7 +30,7 @@ public class ClassifiedFilteredTweet implements Serializable {
 	private String text = null;
 	private String crisis_code = null;
 	private String crisis_name = null;
-	private List<NominalLabel> nominal_labels;
+	public List<NominalLabel> nominal_labels;
 
 	private String id = null;
 	private String screen_name = null;
@@ -62,7 +62,7 @@ public class ClassifiedFilteredTweet implements Serializable {
 		if (null == rawJsonString) {
 			return null;
 		}
-		
+
 		if (rawJsonString.startsWith("["))		// should never happen 
 			rawJsonString = rawJsonString.substring(1, rawJsonString.length()-1);	
 
@@ -133,34 +133,36 @@ public class ClassifiedFilteredTweet implements Serializable {
 					for (int i = 0;i < nominalLabels.size();i++) {
 						NominalLabel nLabel = new NominalLabel();
 						JsonObject temp = (JsonObject) nominalLabels.get(i);
-						
-						nLabel.attribute_code = (temp.has("attribute_code") &&  !temp.get("attribute_code").isJsonNull()) ? temp.get("attribute_code").getAsString() : null;
-						nLabel.label_code = (temp.has("label_code") && !temp.get("label_code").isJsonNull()) ? temp.get("label_code").getAsString() : null;
-						nLabel.confidence = (temp.has("confidence") && !temp.get("confidence").isJsonNull()) ? temp.get("confidence").getAsFloat() : 0;
 
-						nLabel.attribute_name = (temp.has("attribute_name") && !temp.get("attribute_name").isJsonNull()) ? temp.get("attribute_name").getAsString() : null;
-						nLabel.label_name = (temp.has("label_name") && !temp.get("label_name").isJsonNull()) ? temp.get("label_name").getAsString() : null;
-						nLabel.attribute_description = (temp.has("attribute_description") && !temp.get("attribute_description").isJsonNull()) ? temp.get("attribute_description").getAsString() : null;
-						nLabel.label_description = (temp.has("label_description") && !temp.get("label_description").isJsonNull())? temp.get("label_description").getAsString() : null;
-						nLabel.from_human = (temp.has("from_human") && !temp.get("from_human").isJsonNull()) ? temp.get("from_human").getAsBoolean() : false;
+						if (!temp.get("attribute_code").isJsonNull() && !temp.get("label_code").isJsonNull()) {
+							nLabel.attribute_code = (temp.has("attribute_code") &&  !temp.get("attribute_code").isJsonNull()) ? temp.get("attribute_code").getAsString() : null;
+							nLabel.label_code = (temp.has("label_code") && !temp.get("label_code").isJsonNull()) ? temp.get("label_code").getAsString() : null;
+							nLabel.confidence = (temp.has("confidence") && !temp.get("confidence").isJsonNull()) ? temp.get("confidence").getAsFloat() : 0;
 
-						jsonObj.nominal_labels.add(nLabel); 
-						nominal_labels.add(nLabel);
+							nLabel.attribute_name = (temp.has("attribute_name") && !temp.get("attribute_name").isJsonNull()) ? temp.get("attribute_name").getAsString() : null;
+							nLabel.label_name = (temp.has("label_name") && !temp.get("label_name").isJsonNull()) ? temp.get("label_name").getAsString() : null;
+							nLabel.attribute_description = (temp.has("attribute_description") && !temp.get("attribute_description").isJsonNull()) ? temp.get("attribute_description").getAsString() : null;
+							nLabel.label_description = (temp.has("label_description") && !temp.get("label_description").isJsonNull())? temp.get("label_description").getAsString() : null;
+							nLabel.from_human = (temp.has("from_human") && !temp.get("from_human").isJsonNull()) ? temp.get("from_human").getAsBoolean() : false;
+
+							jsonObj.nominal_labels.add(nLabel); 
+							nominal_labels.add(nLabel);
+						}
 					}
 					return jsonObj;
 				}
 			}
 			return null;
 		} catch (Exception e) {
-			//logger.error("Exception in json parsing for string: " + rawJsonString);
+			logger.error("Exception in json parsing for string: " + rawJsonString, e);
 			return null;
 		}
 	}
-	
+
 	public void setCreateAt(final Date created_at) {
 		this.created_at = created_at;
 	}
-	
+
 	public Date getCreatedAt() {
 		return created_at;
 	}
@@ -210,16 +212,14 @@ public class ClassifiedFilteredTweet implements Serializable {
 	}
 
 	public List<NominalLabel> getNominalLabels() {
-		List<NominalLabel> arr = new ArrayList<NominalLabel>();
-		if (nominal_labels != null) 
-			arr.addAll(nominal_labels);
-		return arr;
+		return nominal_labels!=null ? nominal_labels : new ArrayList<NominalLabel>();
 	}
 
 	public void setNominalLabels(List<NominalLabel> nLabels) {
-		if (nominal_labels != null) {
-			nominal_labels.addAll(nLabels);
+		if (nominal_labels == null) {
+			nominal_labels = new ArrayList<NominalLabel>();
 		}
+		nominal_labels.addAll(nLabels);
 	}
 
 	public String getId() {

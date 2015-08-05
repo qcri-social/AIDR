@@ -272,6 +272,7 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
                 } else {
                     mask.hide();
                     AIDRFMFunctions.setAlert('Error', 'Error in Tagger while validating attribute code');
+                    AIDRFMFunctions.reportIssue(response);
                 }
             }
         });
@@ -310,6 +311,7 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
                 } else {
                     mask.hide();
                     AIDRFMFunctions.setAlert('Error', 'Error while saving attribute in Tagger');
+                    AIDRFMFunctions.reportIssue(response);
                 }
             }
         });
@@ -340,6 +342,7 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
                 } else {
                     mask.hide();
                     AIDRFMFunctions.setAlert('Error', 'Error while saving labels for attribute in Tagger');
+                    AIDRFMFunctions.reportIssue(response);
                 }
             }
         });
@@ -363,6 +366,7 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
                     AIDRFMFunctions.setAlert("Ok", '"' + name + '" has been added to "' + CRISIS_NAME + '" crisis.');
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             }
         });

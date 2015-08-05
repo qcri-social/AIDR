@@ -1,6 +1,12 @@
 package qa.qcri.aidr.trainer.api.service.impl;
 
 //import org.apache.log4j.Logger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,14 +14,11 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.task.common.TrainingDataFetchType;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 import qa.qcri.aidr.trainer.api.entity.Crisis;
-
-
 //import qa.qcri.aidr.trainer.api.entity.Document;
 import qa.qcri.aidr.trainer.api.entity.Users;
 import qa.qcri.aidr.trainer.api.service.CrisisService;
@@ -27,12 +30,6 @@ import qa.qcri.aidr.trainer.api.template.CrisisJsonModel;
 import qa.qcri.aidr.trainer.api.template.CrisisJsonOutput;
 import qa.qcri.aidr.trainer.api.template.NominalAttributeJsonModel;
 import qa.qcri.aidr.trainer.api.template.TaskBufferJsonModel;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -71,8 +68,7 @@ public class DocumentServiceImpl implements DocumentService {
 			DocumentDTO dto = (DocumentDTO) taskManager.setTaskParameter(Document.class, documentID, paramMap);
 			//logger.info("Update of hasHumanLabels successful for document " + dto.getDocumentID() + ", crisisId = " + dto.getCrisisDTO().getCrisisID());
 		} catch (Exception e) {
-			logger.error("Update unsuccessful for documentID = " + documentID);
-			logger.error("Exception", e);
+			logger.error("Update unsuccessful for documentID = " + documentID, e);
 		}
 	}
 
@@ -171,7 +167,7 @@ public class DocumentServiceImpl implements DocumentService {
 	public  List<DocumentDTO> getAvailableDocument(Long crisisID, Integer maxresult){
 		//return documentDao.findDocumentForTask(crisisID, maxresult);
 		List<DocumentDTO> dtoList = taskManager.getNewTaskCollection(crisisID, maxresult, "DESC", null);
-		System.out.println("Fetched from DB manager, documents list size = " + dtoList.size());
+		logger.info("Fetched from DB manager, documents list size = " + dtoList.size());
 		return dtoList;
 	}
 

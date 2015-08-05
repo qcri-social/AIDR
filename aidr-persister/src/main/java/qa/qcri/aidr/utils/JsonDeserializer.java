@@ -41,7 +41,6 @@ import org.supercsv.io.ICsvMapWriter;
 import qa.qcri.aidr.common.filter.FilterQueryMatcher;
 import qa.qcri.aidr.common.filter.JsonQueryList;
 import qa.qcri.aidr.common.filter.NominalLabel;
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentList;
 import qa.qcri.aidr.io.FileSystemOperations;
@@ -57,7 +56,6 @@ import com.google.gson.stream.JsonReader;
 public class JsonDeserializer {
 
 	private static Logger logger = Logger.getLogger(JsonDeserializer.class.getName());
-	private static ErrorLog elog = new ErrorLog();
 
 	private static final int BUFFER_SIZE = 10 * 1024 * 1024;	// buffer size to use for buffered r/w
 	private static final int LIST_BUFFER_SIZE = 50000; 
@@ -127,10 +125,8 @@ public class JsonDeserializer {
 					br.close();
 				} catch (FileNotFoundException ex) {
 					logger.error(collectionCode + ": couldn't find file = " + fileLocation);
-					logger.error(elog.toStringException(ex));
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IO Exception for file = " + fileLocation);
-					logger.error(elog.toStringException(ex));
 				}
 			}	// end for
 			int countToWrite = tweetsList.size();
@@ -148,7 +144,6 @@ public class JsonDeserializer {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for csv file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -173,7 +168,6 @@ public class JsonDeserializer {
 			String fileToDelete = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + "Classified_" + collectionCode + "_tweetIds.csv";
 			logger.info(collectionCode + ": Deleteing file : " + fileToDelete);
 			FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
-			//logger.info(fileNames);
 
 			long lastCount = 0;
 			long currentCount = 0;
@@ -222,10 +216,8 @@ public class JsonDeserializer {
 
 				} catch (FileNotFoundException ex) {
 					logger.error(collectionCode + ": couldn't find file = " + fileLocation);
-					logger.error(elog.toStringException(ex));
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IO Exception for file = " + fileLocation);
-					logger.error(elog.toStringException(ex));
 				}
 			}	// end for
 			int countToWrite = tweetsList.size();
@@ -247,7 +239,6 @@ public class JsonDeserializer {
 					writer.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for csv file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -300,7 +291,6 @@ public class JsonDeserializer {
 			if (queryList != null) tweetFilter.queryList.setConstraints(queryList);
 			tweetFilter.buildMatcherArray();
 
-			String lastLine = null;
 			for (String file : fileNames) {
 				if (downloadLimited && totalCount >= Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT))) {
 					break;
@@ -313,7 +303,6 @@ public class JsonDeserializer {
 					br = new ReversedLinesFileReader(f);
 					String line;
 					while ((line = br.readLine()) != null) {
-						lastLine = line;
 						if (downloadLimited && totalCount >= Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_TWEETID_VOLUME_LIMIT))) {
 							tweetsList.clear();
 							break;
@@ -348,10 +337,8 @@ public class JsonDeserializer {
 
 				} catch (FileNotFoundException ex) {
 					logger.error(collectionCode + ": couldn't find file = " + fileLocation);
-					logger.error(elog.toStringException(ex));
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IO Exception for file = " + fileLocation);
-					logger.error(elog.toStringException(ex));
 				}
 			}	// end for
 			int countToWrite = tweetsList.size();
@@ -366,13 +353,17 @@ public class JsonDeserializer {
 				totalCount += countToWrite;
 				tweetsList.clear();
 			}
+			//In case if there wasn't any tweet. Just create an empty csv file.
+			if(countToWrite == 0 && tweetsList.isEmpty() && 0 == totalCount && runningHeader == null && writer == null){
+				runningHeader  = csv.resetClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetIDCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_ID_HEADER_SIZE, 0);
+				writer = csv.writeClassifiedTweetIDsCSV(runningHeader, writer, tweetsList, collectionCode, fileName);
+			}
 		} finally {
 			if (writer != null) {
 				try {
 					writer.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for csv file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -460,7 +451,7 @@ public class JsonDeserializer {
 									}
 								}
 							} catch (Exception ex) {
-								//Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, "JSON file parsing exception at line {0}", lineNumber);
+								logger.error("Error while parsing the json"+ex);
 							}
 						}
 						if (!tweetsList.isEmpty()) {
@@ -479,18 +470,15 @@ public class JsonDeserializer {
 			}
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 			isCSVGenerated = false;
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file");
-			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for csv file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -503,7 +491,6 @@ public class JsonDeserializer {
 		ICsvMapWriter writer = null;
 
 		try {
-
 			String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode;
 			String fileNameforCSVGen = "Classified_" + collectionCode + "_last_100k_tweets";
 			fileName = fileNameforCSVGen + ".csv";
@@ -588,17 +575,14 @@ public class JsonDeserializer {
 			}
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": File not found.");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} finally {
 			if (writer != null) {
 				try {
 					writer.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for csv file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -730,20 +714,22 @@ public class JsonDeserializer {
 					writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList.subList(0, countToWrite), collectionCode, fileName, writer);
 					tweetsList.clear();
 				}
+				//In case there wasn't any tweet. Just create an empty csv file.
+				if(countToWrite==0 && tweetsList.size()==0 && 0 == currentSize && runningHeader == null && writer == null ){
+					runningHeader  = csv.resetClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, 0);
+					writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList.subList(0, countToWrite), collectionCode, fileName, writer);
+				}
 			}
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} finally {
 			if (writer != null) {
 				try {
 					writer.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for csv file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -786,7 +772,7 @@ public class JsonDeserializer {
 				String currentFileName = f.getName();
 				if (currentFileName.endsWith(".json")) {
 					String line;
-					System.out.println("Reading file : " + f.getAbsolutePath());
+					//System.out.println("Reading file : " + f.getAbsolutePath());
 					InputStream is = new FileInputStream(f.getAbsolutePath());
 					br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 					while ((line = br.readLine()) != null) {
@@ -802,10 +788,8 @@ public class JsonDeserializer {
 
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} 
 		return tweetsList;
 	}
@@ -854,7 +838,7 @@ public class JsonDeserializer {
 				String currentFileName = f.getName();
 				if (currentFileName.endsWith(".json")) {
 					String line;
-					System.out.println("Reading file : " + f.getAbsolutePath());
+					//System.out.println("Reading file : " + f.getAbsolutePath());
 					InputStream is = new FileInputStream(f.getAbsolutePath());
 					br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 					while ((line = br.readLine()) != null) {
@@ -874,10 +858,8 @@ public class JsonDeserializer {
 
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} 
 		return tweetsList;
 	}
@@ -935,8 +917,7 @@ public class JsonDeserializer {
 				}
 			}
 		} catch (Exception ex) {
-			//Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, null, ex);
-			//System.out.println("[getTweet] Offending tweet: " + line);
+			logger.error("Exception while parsing the json to tweet"+ex);
 			return null;
 		}
 		return tweet;
@@ -946,9 +927,7 @@ public class JsonDeserializer {
 		return getClassifiedTweet(line, null);
 	}
 
-	// getClassifiedTweet method using Gson library for parsing JSON string
 	public ClassifiedTweet getClassifiedTweet(String line, String collectionCode) {
-		//System.out.println("Tweet to PARSE: " + line);
 
 		ClassifiedTweet tweet = new ClassifiedTweet();
 		try {
@@ -1061,7 +1040,7 @@ public class JsonDeserializer {
 			}
 			return tweet;
 		} catch (Exception ex) {
-			//logger.error("exception", ex);
+			logger.error("Exception while parsing the json to classiffied tweet for the collection: "+collectionCode +"\t"+ ex);
 			return null;
 		}
 	}
@@ -1134,7 +1113,7 @@ public class JsonDeserializer {
 								break;
 							}
 						} catch (Exception ex) {
-							//Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, "JSON file parsing exception at line {0}", lineNumber);
+							logger.error("JSON file parsing exception"+ex);
 						}
 					}	// end while
 					br.close();
@@ -1147,10 +1126,8 @@ public class JsonDeserializer {
 
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -1161,7 +1138,6 @@ public class JsonDeserializer {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for JSON file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -1233,7 +1209,7 @@ public class JsonDeserializer {
 								++totalCount;
 							}
 						} catch (Exception ex) {
-							//Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, "JSON file parsing exception at line {0}", lineNumber);
+							logger.error("JSON file parsing exception"+ex);
 						}
 					}	// end while
 					br.close();
@@ -1248,10 +1224,8 @@ public class JsonDeserializer {
 
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -1262,7 +1236,6 @@ public class JsonDeserializer {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for JSON file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -1351,7 +1324,7 @@ public class JsonDeserializer {
 								break;
 							}
 						} catch (Exception ex) {
-							//Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, "JSON file parsing exception at line {0}", lineNumber);
+							logger.error("JSON file parsing exception"+ex);
 						}
 					}	// end while						
 					br.close();
@@ -1363,13 +1336,10 @@ public class JsonDeserializer {
 			}	// end for	
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} catch (NullPointerException ex) {
 			logger.error(collectionCode + ": empty list of files to read");
-			logger.info(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -1380,7 +1350,6 @@ public class JsonDeserializer {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for JSON file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -1406,7 +1375,8 @@ public class JsonDeserializer {
 
 			BufferedReader br = null;
 			String fileToDelete = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + "Classified_" + collectionCode + "_tweetIds" + extension;
-			System.out.println("Deleteing file : " + fileToDelete);
+			//System.out.println("Deleteing file : " + fileToDelete);
+			logger.info("Deleteing file : " + fileToDelete);
 			FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
 			//System.out.println(fileNames);
 
@@ -1449,10 +1419,8 @@ public class JsonDeserializer {
 
 				} catch (FileNotFoundException ex) {
 					logger.error(collectionCode + ": couldn't find file");
-					logger.error(elog.toStringException(ex));
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IO Exception for file read");
-					logger.error(elog.toStringException(ex));
 				} 
 			}	// end for 
 			if (DownloadJsonType.JSON_OBJECT.equals(jsonType) && !jsonObjectClosed) {
@@ -1464,10 +1432,8 @@ public class JsonDeserializer {
 
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -1478,7 +1444,6 @@ public class JsonDeserializer {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for JSON file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -1517,7 +1482,7 @@ public class JsonDeserializer {
 			File folder = new File(folderLocation);
 			File[] listOfFiles = folder.listFiles();
 			// to get only Tagger's files
-			ArrayList<File> taggerFilesList = new ArrayList();
+			ArrayList<File> taggerFilesList = new ArrayList<File>();
 			for (int i = 0; i < listOfFiles.length; i++) {
 				if (StringUtils.startsWith(listOfFiles[i].getName(), (collectionCode + "_"))
 						&& StringUtils.containsIgnoreCase(listOfFiles[i].getName(), "vol")) {
@@ -1533,7 +1498,6 @@ public class JsonDeserializer {
 					return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());	// koushik: changed sort order to create list in ascending order of modified time
 				}
 			});
-
 
 			StringBuffer outputFile = new StringBuffer().append(folderLocation).append(fileName);
 			beanWriter = new BufferedWriter(new FileWriter(outputFile.toString()), BUFFER_SIZE);
@@ -1587,7 +1551,7 @@ public class JsonDeserializer {
 								break;
 							}
 						} catch (Exception ex) {
-							//Logger.getLogger(JsonDeserializer.class.getName()).log(Level.SEVERE, "JSON file parsing exception at line {0}", lineNumber);
+							logger.error("JSON file parsing exception" + ex);
 						}
 					}	// end while						
 					br.close();
@@ -1600,13 +1564,10 @@ public class JsonDeserializer {
 			}	// end for	
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} catch (NullPointerException ex) {
 			logger.error(collectionCode + ": empty list of files to read");
-			logger.info(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -1618,7 +1579,6 @@ public class JsonDeserializer {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for JSON file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -1656,7 +1616,6 @@ public class JsonDeserializer {
 		int totalCount = 0;
 
 		try {
-			//List<String> fileNames = FileSystemOperations.getClassifiedFileVolumes(collectionCode);
 			List<String> fileNames = FileSystemOperations.getAllJSONFileVolumes(collectionCode);
 			Collections.sort(fileNames);
 			Collections.reverse(fileNames);
@@ -1665,7 +1624,8 @@ public class JsonDeserializer {
 			ReversedLinesFileReader br = null;
 
 			String fileToDelete = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + fileName;
-			System.out.println("Deleteing file : " + fileToDelete + ".zip");
+			//System.out.println("Deleteing file : " + fileToDelete + ".zip");
+			logger.info("Deleteing file : " + fileToDelete + ".zip");
 			FileSystemOperations.deleteFile(fileToDelete + ".zip"); // delete if there exist a csv file with same name
 			//System.out.println(fileNames);
 
@@ -1715,10 +1675,8 @@ public class JsonDeserializer {
 
 				} catch (FileNotFoundException ex) {
 					logger.error(collectionCode + ": couldn't find file");
-					logger.error(elog.toStringException(ex));
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IO Exception for file read");
-					logger.error(elog.toStringException(ex));
 				} 
 			}	// end for 
 			if (DownloadJsonType.JSON_OBJECT.equals(jsonType) && !jsonObjectClosed) {
@@ -1730,10 +1688,8 @@ public class JsonDeserializer {
 
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
-			logger.error(elog.toStringException(ex));
 		} catch (IOException ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -1744,15 +1700,15 @@ public class JsonDeserializer {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for JSON file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileName);
+		String fileToDelete = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + fileName;
 		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + collectionCode + "/" + compressor.zip();
-		String fileToDelete = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + fileName;
-		System.out.println("Deleteing file : " + fileToDelete);
+		//System.out.println("Deleteing file : " + fileToDelete);
+		logger.info("Deleteing file : " + fileToDelete);
 		FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a csv file with same name
 
 		return ResultStatus.getUIWrapper("fileName", fileName, "count", totalCount);
@@ -1806,7 +1762,7 @@ public class JsonDeserializer {
 			fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + "/" + collectionCode + "/" + fileNameforCSVGen;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception while generating MD5Hash for user: "+userName);
 			return null;
 		}
 
@@ -1829,7 +1785,7 @@ public class JsonDeserializer {
 
 			for (HumanLabeledDocumentDTO dto: labeledItems.getItems()) {
 				ClassifiedTweet tweet = new ClassifiedTweet();
-				tweet.toClassifiedTweetFromLabeledDoc(dto);
+				tweet.toClassifiedTweetFromLabeledDoc(dto, collectionCode);
 				if (0 == currentSize && runningHeader == null && writer == null) {
 					runningHeader  = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet);
 					writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList, collectionCode, fileNameforCSVGen, writer);
@@ -1870,14 +1826,14 @@ public class JsonDeserializer {
 				tweetsList.clear();
 			}
 		} catch (Exception e) {
-			logger.error("Exception", e);
+			logger.error("Exception in generateClassifiedList2CSV_100K_BasedOnTweetCountFiltered", e);
 			return null;
 		} finally {
 			if (writer != null) {
 				try {
 					writer.close();
 				} catch (IOException e) {
-					logger.error("Exception", e);
+					logger.error("Exception in generateClassifiedList2CSV_100K_BasedOnTweetCountFiltered", e);
 					return null;
 				}
 			}
@@ -1885,7 +1841,7 @@ public class JsonDeserializer {
 		// Compress generated file and send the compressed file link
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileNameforCSVGen);
 		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
- + "/" + collectionCode + "/" + compressor.zip();
+  + collectionCode + "/" + compressor.zip();
 		FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforCSVGen);
 		logger.info("Deleted raw file post compression: " + fileNameforCSVGen);
 		return fileName;
@@ -1903,7 +1859,7 @@ public class JsonDeserializer {
 			fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + "/" + collectionCode + "/" + fileNameforCSVGen;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception while generating MD5Hash for user: "+userName);
 			return null;
 		}
 		String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode;
@@ -1926,7 +1882,7 @@ public class JsonDeserializer {
 
 			for (HumanLabeledDocumentDTO dto: labeledItems.getItems()) {
 				ClassifiedTweet tweet = new ClassifiedTweet();
-				tweet.toClassifiedTweetFromLabeledDoc(dto);
+				tweet.toClassifiedTweetFromLabeledDoc(dto, collectionCode);
 				if (0 == totalCount && runningHeader == null && writer == null) {
 					runningHeader  = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader, ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet);
 					writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList, collectionCode, fileNameforCSVGen, writer);
@@ -1953,8 +1909,6 @@ public class JsonDeserializer {
 						tweetsList.add(tweet);
 					}
 				}
-
-
 			}	// end for
 			int countToWrite = tweetsList.size();
 			if (downloadLimited) {
@@ -1968,13 +1922,15 @@ public class JsonDeserializer {
 				totalCount += countToWrite;
 				tweetsList.clear();
 			}
-		} finally {
+		} catch(Exception e){
+			logger.error("Exception in generateClassifiedList2TweetIdsCSVFiltered");
+		}
+		finally {
 			if (writer != null) {
 				try {
 					writer.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for csv file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -1985,7 +1941,8 @@ public class JsonDeserializer {
 		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + collectionCode + "/" + compressor.zip();
 		FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforCSVGen);
-		System.out.println("Deleted raw file post compression: " + fileNameforCSVGen);
+		//System.out.println("Deleted raw file post compression: " + fileNameforCSVGen);
+		logger.info("Deleted raw file post compression: " + fileNameforCSVGen);
 		return ResultStatus.getUIWrapper("fileName", fileName, "count", totalCount);
 	}
 
@@ -2005,7 +1962,7 @@ public class JsonDeserializer {
 			fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + "/" + collectionCode + "/" + fileNameforGen;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception while generating MD5Hash for user: "+userName);
 			return null;
 		}
 
@@ -2032,7 +1989,7 @@ public class JsonDeserializer {
 			boolean isDone = false;
 			for (HumanLabeledDocumentDTO dto: labeledItems.getItems()) {
 				ClassifiedTweet tweet = new ClassifiedTweet();
-				tweet.toClassifiedTweetFromLabeledDoc(dto); 
+				tweet.toClassifiedTweetFromLabeledDoc(dto, collectionCode); 
 				if (currentSize < exportLimit && currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K)
 )) {
 					// Apply filter on tweet
@@ -2066,7 +2023,6 @@ public class JsonDeserializer {
 			}	// end for	
 		} catch (Exception ex) {
 			logger.error(collectionCode + ": empty list of files to read");
-			logger.info(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -2078,7 +2034,6 @@ public class JsonDeserializer {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for JSON file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -2086,7 +2041,8 @@ public class JsonDeserializer {
 		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + collectionCode + "/" + compressor.zip();
 		FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforGen);
-		System.out.println("Deleted raw file post compression: " + fileNameforGen);
+		//System.out.println("Deleted raw file post compression: " + fileNameforGen);
+		logger.info("Deleted raw file post compression: " + fileNameforGen);
 		return fileName;
 
 	}
@@ -2111,13 +2067,14 @@ public class JsonDeserializer {
 			fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + "/" + collectionCode + "/" + fileNameforGen;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while generating MD5Hash for the user: "+userName);
 			return null;
 		}
 		String fileToDelete = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + fileNameforGen;
 		int totalCount = 0;
 		try {		
-			System.out.println("Deleteing file : " + fileToDelete + ".zip");
+			//System.out.println("Deleteing file : " + fileToDelete + ".zip");
+			logger.info("Deleteing file : " + fileToDelete + ".zip");
 			FileSystemOperations.deleteFile(fileToDelete + ".zip"); // delete if there exist a file with same name
 
 			StringBuffer outputFile = new StringBuffer().append(folderLocation).append("/").append(fileNameforGen);
@@ -2135,7 +2092,7 @@ public class JsonDeserializer {
 					break;
 				}
 				ClassifiedTweet tweet = new ClassifiedTweet();
-				tweet.toClassifiedTweetFromLabeledDoc(dto); 
+				tweet.toClassifiedTweetFromLabeledDoc(dto, collectionCode); 
 
 				// Apply filter on tweet
 				if (satisfiesFilter(queryList, tweetFilter, tweet)) {								
@@ -2159,7 +2116,6 @@ public class JsonDeserializer {
 			beanWriter.close();
 		} catch (Exception ex) {
 			logger.error(collectionCode + ": IO Exception for file read");
-			logger.error(elog.toStringException(ex));
 		} finally {
 			if (beanWriter != null) {
 				try {
@@ -2170,7 +2126,6 @@ public class JsonDeserializer {
 					beanWriter.close();
 				} catch (IOException ex) {
 					logger.error(collectionCode + ": IOException for JSON file write ");
-					logger.error(elog.toStringException(ex));
 				}
 			}
 		}
@@ -2178,7 +2133,8 @@ public class JsonDeserializer {
 		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + collectionCode + "/" + compressor.zip();
 		FileSystemOperations.deleteFile(fileToDelete); // delete if there exist a file with same name
-		System.out.println("Deleted raw file post compression: " + fileToDelete);
+		//System.out.println("Deleted raw file post compression: " + fileToDelete);
+		logger.info("Deleted raw file post compression: " + fileToDelete);
 		return ResultStatus.getUIWrapper("fileName", fileName, "count", totalCount);
 	}
 

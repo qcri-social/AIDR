@@ -1,21 +1,13 @@
 package qa.qcri.aidr.predict.data;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.List;
 
-import javax.xml.bind.annotation.XmlTransient;
-
-import org.json.*;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.json.JSONObject;
 
 import qa.qcri.aidr.predict.classification.DocumentLabel;
 import qa.qcri.aidr.predict.classification.DocumentLabelFilter;
-import qa.qcri.aidr.predict.classification.nominal.NominalLabelBC;
 import qa.qcri.aidr.predict.common.DocumentType;
 import qa.qcri.aidr.predict.common.Helpers;
-import qa.qcri.aidr.predict.dbentities.NominalLabel;
 import qa.qcri.aidr.predict.dbentities.TaggerDocument;
 import qa.qcri.aidr.predict.featureextraction.DocumentFeature;
 import qa.qcri.aidr.predict.featureextraction.FeatureExtractor;

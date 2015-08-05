@@ -81,7 +81,4 @@ public class CollectorStatus {
     public void setRunningCollectionsCount(int runningCollectionsCount) {
         this.runningCollectionsCount = runningCollectionsCount;
     }
-    
-    
-    
 }

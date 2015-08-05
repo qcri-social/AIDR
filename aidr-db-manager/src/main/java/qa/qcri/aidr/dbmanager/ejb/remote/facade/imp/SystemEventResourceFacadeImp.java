@@ -2,6 +2,8 @@ package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import javax.ejb.Stateless;
 
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.SystemEventDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
@@ -12,6 +14,7 @@ import qa.qcri.aidr.dbmanager.entities.misc.SystemEvent;
 public class SystemEventResourceFacadeImp extends CoreDBServiceFacadeImp<SystemEvent, Long>
 		implements SystemEventResourceFacade {
 
+	private Logger logger = Logger.getLogger(SystemEventResourceFacadeImp.class);
 	public SystemEventResourceFacadeImp() {
 		super(SystemEvent.class);
 	}
@@ -24,12 +27,10 @@ public class SystemEventResourceFacadeImp extends CoreDBServiceFacadeImp<SystemE
 			em.flush();
 			em.refresh(sysevent);
 		} catch (PropertyNotSetException e1) {
-			e1.printStackTrace();
+			logger.error("Error in insertSystemEvent.");
 		}
-		catch (Exception e)
-		{
-			System.out.println("Unable to save event to database");
-			e.printStackTrace();
+		catch (Exception e) {
+			logger.error("Unable to save event to database", e);
 		}
 	}
 
@@ -52,10 +53,8 @@ public class SystemEventResourceFacadeImp extends CoreDBServiceFacadeImp<SystemE
 			em.flush();
 			em.refresh(sysevent);
 		}
-		catch (Exception e)
-		{
-			System.out.println("Unable to save event to database");
-			e.printStackTrace();
+		catch (Exception e){
+			logger.error("Unable to save event to database", e);
 		}
 
 	}

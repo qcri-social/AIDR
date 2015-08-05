@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.log4j.Logger;
 import org.socialsignin.springsocial.security.api.SpringSocialProfile;
 import org.socialsignin.springsocial.security.signin.SpringSocialSecurityAuthenticationFactory;
 import org.socialsignin.springsocial.security.signup.SignUpService;
@@ -33,6 +34,7 @@ import qa.qcri.aidr.manager.service.UserService;
 @Qualifier("springSocialUserDetailsService")
 public class SpringSocialUserDetailService implements UserDetailsService {
 
+	private static Logger logger = Logger.getLogger(SpringSocialUserDetailService.class);
 	@Autowired
 	private UsersConnectionRepository usersConnectionRepository;
 
@@ -65,6 +67,7 @@ public class SpringSocialUserDetailService implements UserDetailsService {
 				return new User(userName, authentication.getCredentials().toString(), true, true, true, true,authorities);
 		
 		} else {
+			logger.info("UsernameNotFoundException for user: "+userName);
 			throw new UsernameNotFoundException(userName);
 		}
 	}

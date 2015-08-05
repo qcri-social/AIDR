@@ -35,12 +35,12 @@ import java.util.TreeMap;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -48,15 +48,14 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.filter.ClassifiedFilteredTweet;
+import qa.qcri.aidr.common.filter.DeserializeFilters;
 import qa.qcri.aidr.common.filter.FilterQueryMatcher;
 import qa.qcri.aidr.common.filter.JsonQueryList;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
 import qa.qcri.aidr.output.utils.OutputConfigurationProperty;
 import qa.qcri.aidr.output.utils.OutputConfigurator;
 import qa.qcri.aidr.output.utils.SimpleFairScheduler;
-import qa.qcri.aidr.common.filter.DeserializeFilters;
 
 @Path("/crisis/fetch/")
 public class GetBufferedAIDRData implements ServletContextListener {
@@ -183,7 +182,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		}
 		//inRequests.decrementAndGet();
 		logger.error("Error in jedis connection. Bailing out...");
-		System.err.println("[getLatestBufferedAIDRData] Error in jedis connection. Bailing out...");
+		//System.err.println("[getLatestBufferedAIDRData] Error in jedis connection. Bailing out...");
 		return returnEmptyJson(callbackName);
 	}
 
@@ -220,7 +219,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			}
 			if (error)
 			{	
-				logger.warn("Error in requested channel name: " + channelCode);
+				logger.error("Error in requested channel name: " + channelCode);
 				return Response.ok(new String("[{}]")).build();
 			}
 			else {
@@ -512,12 +511,9 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		// Most important action - setup channel buffering thread
 		if (null == cbManager) {
 			logger.info("Initializing channel buffer manager with regEx pattern: " + CHANNEL_REG_EX);
-			System.out.println("[contextInitialized] Initializing channel buffer manager with regEx pattern: " + CHANNEL_REG_EX);
-			//cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
 			cbManager = new ChannelBufferManager();
 			cbManager.initiateChannelBufferManager(CHANNEL_REG_EX);
 			logger.info("Done initializing channel buffer manager with regEx pattern: " + CHANNEL_REG_EX);
-			System.out.println("[contextInitialized] Done initializing channel buffer manager with regEx pattern: " + CHANNEL_REG_EX);
 		}
 		channelSelector = new SimpleFairScheduler();
 		logger.info("Context Initialized");

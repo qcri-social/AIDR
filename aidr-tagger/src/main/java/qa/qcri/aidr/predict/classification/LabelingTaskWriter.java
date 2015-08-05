@@ -117,6 +117,7 @@ public class LabelingTaskWriter extends PipelineProcess {
 					try {
 						Thread.sleep(200);
 					} catch (InterruptedException e) {
+						logger.warn("Sleep thread interrupted.");
 					}
 				}
 			}

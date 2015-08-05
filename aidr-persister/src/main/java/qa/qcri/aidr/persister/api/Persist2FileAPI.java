@@ -53,7 +53,6 @@ public class Persist2FileAPI {
 
 		try {
 			DeserializeFilters des = new DeserializeFilters();
-			System.out.println("constraints string received = " + postBody.getQueryString());
 			JsonQueryList queryList = des.deserializeConstraints(postBody.getQueryString());
 			JsonDeserializer jsonD = new JsonDeserializer();
 
@@ -81,7 +80,7 @@ public class Persist2FileAPI {
 					.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
 					.build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception while genrating filtered csv for collection: "+ collectionCode +"\t"+e.getStackTrace());
 			return Response.ok(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.STATUS_CODE_ERROR)).build();
 		} 
 	}  
@@ -178,7 +177,7 @@ public class Persist2FileAPI {
 						.build();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception while genrating filtered tweetIds csv for collection: "+ collectionCode +"\t"+e.getStackTrace());
 			return Response.ok(
 					PersisterConfigurator.getInstance().getProperty(
 							PersisterConfigurationProperty.STATUS_CODE_ERROR))
@@ -220,7 +219,7 @@ public class Persist2FileAPI {
 			logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), fileName, true));
 			return Response.ok(obj.toJSONString()).build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception while genrating filtered json for collection: "+ collectionCode +"\t"+e.getStackTrace());
 			return Response.ok(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.STATUS_CODE_ERROR)).build();
 		} 
 	}
@@ -311,7 +310,7 @@ public class Persist2FileAPI {
 						.build();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception while genrating filtered tweetIds Json for collection: "+ collectionCode +"\t"+e.getStackTrace());
 			return Response.ok(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.STATUS_CODE_ERROR)).build();
 		} 
 	}

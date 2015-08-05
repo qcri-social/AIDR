@@ -31,6 +31,7 @@ public class CustomUITemplateFacadeImp implements CustomUITemplateFacade{
 			List<CustomUiTemplateDTO> customUITemplates = remoteCustomUiTemplateEJB.getAllCustomUITemplateByCrisisID(crisisID);
 			return customUITemplates;
 		} catch (Exception e) {
+			logger.error("Error in getAllCustomUITemplateByCrisisID for crisis : " + crisisID);
 			return null;
 		}
 	}
@@ -43,6 +44,8 @@ public class CustomUITemplateFacadeImp implements CustomUITemplateFacade{
 			List<CustomUiTemplateDTO> customUITemplates = remoteCustomUiTemplateEJB.getCustomUITemplateBasedOnTypeByCrisisID(crisisID, templateType);
 			return customUITemplates;
 		} catch (Exception e) {
+			logger.error("Error in getCustomUITemplateBasedOnTypeByCrisisID for crisis id : " + crisisID
+					+ " and templateType : " + templateType);
 			return null;
 		}
 	}
@@ -53,6 +56,8 @@ public class CustomUITemplateFacadeImp implements CustomUITemplateFacade{
 			List<CustomUiTemplateDTO> customUITemplates = remoteCustomUiTemplateEJB.getCustomUITemplateBasedOnTypeByCrisisIDAndAttributeID(crisisID, attributeID, templateType);
 			return customUITemplates;
 		} catch (Exception e) {
+			logger.error("Error in getCustomUITemplateBasedOnTypeByCrisisIDAndAttributeID "
+					+ "for crisisId : " + " attributeId : " + attributeID + " and templateType : " + templateType);
 			return null;
 		}
 	}
@@ -63,6 +68,8 @@ public class CustomUITemplateFacadeImp implements CustomUITemplateFacade{
 			List<CustomUiTemplateDTO> customUITemplates = remoteCustomUiTemplateEJB.getCustomUITemplateByCrisisIDAndAttributeID(crisisID, attributeID);
 			return customUITemplates;
 		} catch (Exception e) {
+			logger.error("Error in getCustomUITemplateByCrisisIDAndAttributeID for crisisID : " + crisisID
+					+ " and attributeID : " + attributeID);
 			return null;
 		}
 	}
@@ -73,6 +80,7 @@ public class CustomUITemplateFacadeImp implements CustomUITemplateFacade{
 			CustomUiTemplateDTO dto = remoteCustomUiTemplateEJB.addCustomUITemplate(customUITemplate);
 			return  dto;
 		} catch (Exception e) {
+			logger.error("Error in addCustomUITemplate.");
 			return null;
 		}
 	}
@@ -83,6 +91,7 @@ public class CustomUITemplateFacadeImp implements CustomUITemplateFacade{
 		CustomUiTemplateDTO dto = remoteCustomUiTemplateEJB.updateCustomUITemplate(currentTemplate, updatedTemplate);
 		return  dto;
 		} catch (Exception e) {
+			logger.error("Error in updateCustomUITemplate.");
 			return null;
 		}
 	}
@@ -93,6 +102,7 @@ public class CustomUITemplateFacadeImp implements CustomUITemplateFacade{
 			CustomUiTemplateDTO dto = remoteCustomUiTemplateEJB.updateCustomUITemplateStatus(currentTemplate, updatedTemplate);
 			return  dto;
 			} catch (Exception e) {
+				logger.error("Error in updateCustomUITemplateStatus.");
 				return null;
 			}
 	}
@@ -102,7 +112,8 @@ public class CustomUITemplateFacadeImp implements CustomUITemplateFacade{
 		try {
 			remoteCustomUiTemplateEJB.deleteCustomUITemplateBasedOnTypeByCrisisID(crisisID, type);
 		} catch (Exception e) {
-			logger.error("exception", e);
+			logger.error("Error in deleteCustomUITemplateBasedOnTypeByCrisisID for crisisID "
+					+ " : " + crisisID + " and type : " + type, e);
 		}
 	}
 
@@ -111,7 +122,7 @@ public class CustomUITemplateFacadeImp implements CustomUITemplateFacade{
 		try {
 			remoteCustomUiTemplateEJB.deleteCustomUITemplateByCrisisID(crisisID);
 		} catch (Exception e) {
-			logger.error("exception", e);
+			logger.error("Error in deleteCustomUITemplateByCrisisID for crisisID : " + crisisID, e);
 		}
 	}
 }

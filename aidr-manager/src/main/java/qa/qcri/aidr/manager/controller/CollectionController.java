@@ -28,6 +28,7 @@ import javax.ws.rs.QueryParam;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -126,7 +127,8 @@ public class CollectionController extends BaseController{
 		logger.info("[updatePubliclyListed] Save AidrCollection to Database having code : "+collection.getCode());
 		try{
 			AidrCollection dbCollection = collectionService.findById(collection.getId());
-			System.out.println("[updatePubliclyListed] old status: " + dbCollection.getPubliclyListed() + ", new status: " + collection.getPubliclyListed());
+			//System.out.println("[updatePubliclyListed] old status: " + dbCollection.getPubliclyListed() + ", new status: " + collection.getPubliclyListed());
+			logger.info("[updatePubliclyListed] old status: " + dbCollection.getPubliclyListed() + ", new status: " + collection.getPubliclyListed());
 			dbCollection.setPubliclyListed(collection.getPubliclyListed()); 
 			collectionService.update(dbCollection);
 			return getUIWrapper(true);
@@ -171,7 +173,7 @@ public class CollectionController extends BaseController{
 					collection.getStatus().equals(CollectionStatus.RUNNING) || 
 					collection.getStatus().equals(CollectionStatus.RUNNING_WARNING)) {
 				String msg = "Attempting to trash a running collection. Collection must be in stopped state!";
-				logger.error(msg);
+				logger.warn(msg);
 				return getUIWrapper(false, msg);
 			} else {
 				// Trash collection
@@ -238,7 +240,7 @@ public class CollectionController extends BaseController{
 				}
 			}catch(Exception e){
 				String msg = "Error while untrashing AIDR Collection " + trashedCollection.getCode();
-				logger.error(msg);
+				logger.error(msg,e);
 				return getUIWrapper(false, msg);
 			}
 		} else {
@@ -328,8 +330,7 @@ public class CollectionController extends BaseController{
 							logger.error("Error in updating the crisis name from " + crisis.getName() + " to new name: " + collection.getName());
 						}
 					} catch (AidrException e) {
-						logger.error("Error in updating the crisis name from " + dbCollection.getName() + " to new name: " + collection.getName());
-						logger.error("exception", e);
+						logger.error("Error in updating the crisis name from " + dbCollection.getName() + " to new name: " + collection.getName(), e);
 					}
 				}
 				// if collection type was changed and if crisis for this collection exists so we need to update crisis type
@@ -345,15 +346,14 @@ public class CollectionController extends BaseController{
 							logger.error("Error in updating the crisis type from " + crisis.getCrisisType().getCrisisTypeID() + " to new name: " + collection.getCrisisType());
 						}
 					} catch (AidrException e) {
-						logger.error("Error in updating the crisis type from " + dbCollection.getCrisisType() + " to new type: " + collection.getCrisisType());
-						logger.error("exception", e);
+						logger.error("Error in updating the crisis type from " + dbCollection.getCrisisType() + " to new type: " + collection.getCrisisType(), e);
 					}
 				}
 			}
 
 			return getUIWrapper(true);
 		}catch(Exception e){
-			logger.error("Error while Updating AidrCollection  Info into database", e);
+			logger.error("Error while Updating AidrCollection  Info into database for collection: "+collection.getCode(), e);
 			return getUIWrapper(false); 
 		}
 	}
@@ -383,8 +383,10 @@ public class CollectionController extends BaseController{
 			@DefaultValue("no") @QueryParam("trashed") String trashed) throws Exception {
 		start = (start != null) ? start : 0;
 		limit = (limit != null) ? limit : 50;
+		String userName="";
 		UserEntity userEntity = getAuthenticatedUser();
 		if (userEntity != null) {
+			userName = userEntity.getUserName();
 			List<AidrCollectionTotalDTO> dtoList = new ArrayList<AidrCollectionTotalDTO>();
 			Integer count = 0;
 			boolean onlyTrashed = false;
@@ -410,7 +412,7 @@ public class CollectionController extends BaseController{
 					}
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Error while finding all collections for current user: "+userName, e);
 			}
 			return getUIWrapper(dtoList, count.longValue());
 		}
@@ -466,7 +468,7 @@ public class CollectionController extends BaseController{
 				return getUIWrapper(dto, true);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while starting the collection by Id: "+id); 
 		}
 		return getUIWrapper(false);
 	}
@@ -507,7 +509,7 @@ public class CollectionController extends BaseController{
 				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while refreshing the count for collectionId: "+id); 
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 		return getUIWrapper(dto,true);
@@ -521,7 +523,7 @@ public class CollectionController extends BaseController{
 			try {
 				return getUIWrapper(collectionService.updateAndGetRunningCollectionStatusByUser(userEntity.getId()),true);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Exception while updating and getting running collection by user");
 				return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 			}
 		}
@@ -540,8 +542,7 @@ public class CollectionController extends BaseController{
 				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
-			logger.error("Exception in generating CSV download link for collection: " + code);
-			logger.error("exception", e);
+			logger.error("Exception in generating CSV download link for collection: " + code, e);
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 	}
@@ -558,7 +559,7 @@ public class CollectionController extends BaseController{
 				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
-			logger.error("Exception in generating CSV TweetIDs download link for collection: " + code);
+			logger.error("Exception in generating CSV TweetIDs download link for collection: " + code, e);
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 	}
@@ -592,14 +593,14 @@ public class CollectionController extends BaseController{
 				try {
 					taggersForCollections = taggerService.getTaggersForCollections(collectionCodes);
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("[getAllRunning.action] Error while getting taggers for collections: "+Arrays.toString(collectionCodes.toArray()), e);
 				}
 
 				Map<Integer, Integer> totalCountsFromLogForCollections = Collections.emptyMap();
 				try {
 					totalCountsFromLogForCollections = collectionLogService.countTotalDownloadedItemsForCollectionIds(collectionIds);
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("[getAllRunning.action] Error while getting total counts from log for collectionIds: "+Arrays.toString(collectionIds.toArray()), e);
 				}
 
 				for (AidrCollection collection : collections) {
@@ -658,14 +659,14 @@ public class CollectionController extends BaseController{
 				try {
 					taggersForCollections = taggerService.getTaggersForCollections(collectionCodes);
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("[getAllStopped.action] Error while getting taggers for collections: "+Arrays.toString(collectionCodes.toArray()), e);
 				}
 
 				Map<Integer, Integer> totalCountsFromLogForCollections = Collections.emptyMap();
 				try {
 					totalCountsFromLogForCollections = collectionLogService.countTotalDownloadedItemsForCollectionIds(collectionIds);
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("[getAllStopped.action] Error while getting total counts from log for collectionIds: "+Arrays.toString(collectionIds.toArray()), e);
 				}
 
 				for (AidrCollection collection : collections) {
@@ -754,7 +755,7 @@ public class CollectionController extends BaseController{
 				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while generating JSON Link for collection: "+code +"and jsonType: "+jsonType, e);
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 	}
@@ -772,7 +773,7 @@ public class CollectionController extends BaseController{
 				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while generating JSON Tweet Ids Link for collection: "+code +"and jsonType: "+jsonType, e);
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 	}
@@ -798,7 +799,7 @@ public class CollectionController extends BaseController{
 				return getUIWrapper(null, false, 0L, "User ID provided is incorrect or doesn't exist");
 			}
 		} catch (Exception e) {
-			logger.error("exception", e);
+			logger.error("Error while getting twitter userIds", e);
 			return getUIWrapper(false, "Exception in twitter user data lookup.");
 		}
 	}

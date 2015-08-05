@@ -221,10 +221,12 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                             ['Error while starting Collection .',
                                 'Please try again later or contact Support']
                         );
+                        AIDRFMFunctions.reportIssue(resp);
                     }
                 },
                 failure: function () {
                     mask.hide();
+                   
                 }
             });
 
@@ -294,10 +296,10 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
             headers: {
                 'Accept': 'application/json'
             },
-            success: function (response) {
+            success: function (resp) {
                 me.checkCount--;
 
-                var response = Ext.decode(response.responseText);
+                var response = Ext.decode(resp.responseText);
                 if (response.data) {
                     AIDRFMFunctions.setAlert('Error', 'Collection Code already exist. Please select another code');
                     code.markInvalid("Collection Code already exist. Please select another code");
@@ -324,10 +326,10 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
             headers: {
                 'Accept': 'application/json'
             },
-            success: function (response) {
+            success: function (resp) {
                 me.checkCount--;
 
-                var response = Ext.decode(response.responseText);
+                var response = Ext.decode(resp.responseText);
                 if (response.data) {
                     AIDRFMFunctions.setAlert('Error', [
                         'The name of the collection you have selected is already taken. Please enter a more specific name for your collection indicating a more specific time, location, and/or purpose.',
@@ -337,6 +339,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                         '&quot;Earthquake in Concepcion, Chile in 2014&quot;',
                         '&quot;Consequences of earthquake in Concepcion, Chile in 2014&quot;'
                     ]);
+                    
                     name.markInvalid("Collection Name already exist. Please select another name");
                 } else {
                     if (me.checkCount == 0) {

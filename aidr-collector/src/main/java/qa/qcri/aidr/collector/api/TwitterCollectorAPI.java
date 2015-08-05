@@ -28,6 +28,7 @@ import qa.qcri.aidr.collector.beans.ResponseWrapper;
 import qa.qcri.aidr.collector.collectors.TwitterStreamTracker;
 import qa.qcri.aidr.collector.utils.CollectorConfigurator;
 import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
+import qa.qcri.aidr.collector.utils.CollectorErrorLog;
 import qa.qcri.aidr.collector.utils.GenericCache;
 
 /**
@@ -240,8 +241,8 @@ public class TwitterCollectorAPI {
             logger.info(collectionCode + ": Collector persister response = " + jsonResponse);
         } catch (RuntimeException e) {
             logger.error(collectionCode + ": Could not start persister. Is persister running?", e);
+            CollectorErrorLog.sendErrorMail(collectionCode, "Unable to start persister. Is persister running");
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }
@@ -258,6 +259,7 @@ public class TwitterCollectorAPI {
             logger.info(collectionCode + ": Collector persister response = " + jsonResponse);
         } catch (RuntimeException e) {
             logger.error(collectionCode + ": Could not start persister. Is persister running?", e);
+            CollectorErrorLog.sendErrorMail(collectionCode, "Unable to start persister. Is persister running");
         } catch (UnsupportedEncodingException e) {
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
@@ -275,7 +277,6 @@ public class TwitterCollectorAPI {
         } catch (RuntimeException e) {
             logger.error(collectionCode + ": Could not stop persister. Is persister running?", e);
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }
@@ -291,7 +292,6 @@ public class TwitterCollectorAPI {
         } catch (RuntimeException e) {
             logger.error(collectionCode + ": Could not stop persister. Is persister running?", e);
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }
@@ -309,7 +309,6 @@ public class TwitterCollectorAPI {
         } catch (RuntimeException e) {
             logger.error(collectionCode + ": Could not start persister. Is persister running?", e);
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }
@@ -326,7 +325,6 @@ public class TwitterCollectorAPI {
         } catch (RuntimeException e) {
             logger.error(collectionCode + ": Could not stop persister. Is persister running?", e);
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }

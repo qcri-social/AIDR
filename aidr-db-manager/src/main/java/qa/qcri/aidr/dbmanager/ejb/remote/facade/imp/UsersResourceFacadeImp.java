@@ -89,7 +89,7 @@ public class UsersResourceFacadeImp extends CoreDBServiceFacadeImp<Users, Long> 
 			em.refresh(u);
 			return new UsersDTO(u);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error in addUser.", e);
 			return null;
 		}
 	}
@@ -103,6 +103,7 @@ public class UsersResourceFacadeImp extends CoreDBServiceFacadeImp<Users, Long> 
 			return 1;
 		}
 		else {
+			logger.error("User requested to be deleted does not exist! id = " + id);
 			throw new RuntimeException("User requested to be deleted does not exist! id = " + id);
 		}
 	}

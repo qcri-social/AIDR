@@ -389,10 +389,12 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                     } else {
                         me.mainComponent.downloadLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
+                        AIDRFMFunctions.reportIssue(response);
                     }
                 } else {
                     me.mainComponent.downloadLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             },
             failure: function () {

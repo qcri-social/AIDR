@@ -4,7 +4,6 @@
  */
 package qa.qcri.aidr.predictui.facade.imp;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predictui.facade.*;
 
 import java.util.*;
@@ -29,7 +28,6 @@ import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
 public class ModelFamilyFacadeImp implements ModelFamilyFacade {
 
     private static Logger logger = Logger.getLogger(ModelFamilyFacadeImp.class);
-    private static ErrorLog elog = new ErrorLog();
 
     @EJB
     private qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelFamilyResourceFacade remoteModelFamilyEJB;
@@ -43,7 +41,7 @@ public class ModelFamilyFacadeImp implements ModelFamilyFacade {
         try {
             modelFamilyDTOList = remoteModelFamilyEJB.getAllModelFamilies();
         } catch (PropertyNotSetException pe) {
-            pe.printStackTrace();
+            logger.error("Error in fetching all model families.", pe);
         }
         return modelFamilyDTOList;
     }
@@ -65,7 +63,7 @@ public class ModelFamilyFacadeImp implements ModelFamilyFacade {
         try {
             modelFamilyDTOList = remoteModelFamilyEJB.getAllModelFamiliesByCrisis(crisisID);
         } catch (PropertyNotSetException pe) {
-            pe.printStackTrace();
+            logger.error("Error in fetching model familes for crisis : " + crisisID, pe);
         }
         return modelFamilyDTOList;
 
@@ -76,7 +74,7 @@ public class ModelFamilyFacadeImp implements ModelFamilyFacade {
         try {
             return remoteModelFamilyEJB.addCrisisAttribute(modelFamily);
         } catch (PropertyNotSetException pe) {
-            pe.printStackTrace();
+            logger.error("Error in adding crisis attribute.", pe);
         }
         return false;
     }
@@ -86,7 +84,7 @@ public class ModelFamilyFacadeImp implements ModelFamilyFacade {
         try {
             return remoteModelFamilyEJB.deleteModelFamily(modelFamilyID);
         } catch (PropertyNotSetException pe) {
-            pe.printStackTrace();
+            logger.error("Error in deleting model family for modelFamilyID : "+ modelFamilyID, pe);
         }
         return false;
     }

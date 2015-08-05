@@ -1,6 +1,5 @@
 package qa.qcri.aidr.manager.dto;
 
-import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 
 public class TaskAnswer {
 

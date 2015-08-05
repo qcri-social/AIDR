@@ -13,12 +13,10 @@ import org.apache.log4j.Logger;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.common.code.ResponseWrapper;
-import qa.qcri.aidr.common.logging.ErrorLog;
 
 public class ResultStatus extends ResponseWrapper {
 
 	private static Logger logger = Logger.getLogger(ResultStatus.class);
-	private static ErrorLog elog = new ErrorLog();
 
 	@Deprecated
 	@SuppressWarnings({ "unused", "unchecked" })
@@ -44,7 +42,6 @@ public class ResultStatus extends ResponseWrapper {
 			}
 		} catch (Exception e) {
 			logger.error("Error in querying manager for running collections: " + clientResponse);
-			logger.error(elog.toStringException(e));
 		}
 		return null;
 	}

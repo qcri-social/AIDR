@@ -12,6 +12,7 @@
       <property name="javax.persistence.jdbc.password" value="${ANALYTICS_DB_PASSWORD}"/>
       <property name="hibernate.dialect" value="${HIBERNATE_DIALECT}"/>
       <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.format_sql" value="true"/>
       <property name="hibernate.hbm2ddl.auto" value="${ANALYTICS_DB_HBM2DDL}"/>
       <property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.SunOneJtaPlatform"/>
     </properties>

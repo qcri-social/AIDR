@@ -1,6 +1,5 @@
 package qa.qcri.aidr.utils;
 
-import org.apache.log4j.Logger;
 
 
 public enum DownloadJsonType {
@@ -10,7 +9,7 @@ public enum DownloadJsonType {
 	private final String value;
 	private final String suffix;
 
-	private static Logger logger = Logger.getLogger(DownloadJsonType.class.getName());
+	//private static Logger logger = Logger.getLogger(DownloadJsonType.class.getName());
 
 	public String getSuffix() {
 		return this.suffix;
@@ -69,9 +68,9 @@ public enum DownloadJsonType {
 		return DownloadJsonType.TEXT_JSON.suffix;
 	}
 
-	public static void main(String args[]) throws Exception {
+	/*public static void main(String args[]) throws Exception {
 		DownloadJsonType d = DownloadJsonType.TEXT_JSON;
 		System.out.println("suffix: " + DownloadJsonType.getSuffixString(d));
 		System.out.println("testing: " + DownloadJsonType.getDownloadJsonTypeFromString("TEXT_JSON"));
-	}
+	}*/
 }

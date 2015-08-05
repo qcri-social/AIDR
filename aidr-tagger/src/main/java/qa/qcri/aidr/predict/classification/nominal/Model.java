@@ -61,7 +61,7 @@ public class Model {
             double recTemp = evaluation.recall(i);
             double aucTemp = evaluation.areaUnderROC(i); //.areaUnderPRC(i);
             if (!(aucTemp >= 0 && aucTemp <= 1)) {
-                logger.error("AUC is not available for the trained model");
+                logger.warn("AUC is not available for the trained model");
                 aucTemp = 0;
             }
             
@@ -104,8 +104,10 @@ public class Model {
     }
 
     public NominalLabelBC classify(Document item) {
-        if (modelID == -1)
-            throw new RuntimeException("Model has not been initialized");
+        if (modelID == -1) {
+        	logger.error("Model has not been initialized");
+        	throw new RuntimeException("Model has not been initialized");
+    	}
         
         ArrayList<WordSet> wordSets = item.getFeatures(WordSet.class);
         if (wordSets.isEmpty()) {
@@ -188,6 +190,7 @@ public class Model {
 
     public int getTrainingSampleCount() {
         if (trainingSampleCount == null) {
+        	logger.error("trainingSampleCount has not been set");
             throw new RuntimeException("trainingSampleCount has not been set");
         }
 

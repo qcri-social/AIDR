@@ -13,6 +13,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.predictui.entities.AidrCollection;
 import qa.qcri.aidr.predictui.facade.CollectionResourceFacade;
 
@@ -23,6 +25,8 @@ import qa.qcri.aidr.predictui.facade.CollectionResourceFacade;
 @Stateless
 public class CollectionResourceImp implements CollectionResourceFacade {
 
+	private Logger logger = Logger.getLogger(CollectionResourceImp.class);
+	
 	@PersistenceContext(unitName = "qa.qcri.aidr.collectorManager-PU")
 	private EntityManager em;
 
@@ -46,6 +50,7 @@ public class CollectionResourceImp implements CollectionResourceFacade {
 
 			return collections;
 		} catch (NoResultException e) {
+			logger.warn("No result.");
 			return null;
 		}
 	}

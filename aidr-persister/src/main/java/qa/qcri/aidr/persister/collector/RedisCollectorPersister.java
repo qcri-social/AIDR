@@ -7,18 +7,16 @@ package qa.qcri.aidr.persister.collector;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.redis.JedisConnectionPool;
-import qa.qcri.aidr.utils.GenericCache;
 import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
+import qa.qcri.aidr.utils.PersisterErrorHandler;
 import redis.clients.jedis.Jedis;
 
 
 public class RedisCollectorPersister implements Runnable {
 
 	private static Logger logger = Logger.getLogger(RedisCollectorPersister.class.getName());
-	private static ErrorLog elog = new ErrorLog();
 	
 	String fileName;
 	Thread t;
@@ -43,10 +41,8 @@ public class RedisCollectorPersister implements Runnable {
 			subscriberJedis = connObject.getJedisConnection();
 			subscriber = new CollectorSubscriber(fileName, collectionCode);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			logger.error(collectionCode + ": Error in subscribing to Redis");
-        	logger.error(elog.toStringException(e));
-        	
+			PersisterErrorHandler.sendErrorMail(e.getLocalizedMessage(), "Error in subscribing to Redis for collection: "+collectionCode);
 			connObject.close(subscriberJedis);
 			subscriberJedis = null;
 			subscriber = null;
@@ -76,9 +72,7 @@ public class RedisCollectorPersister implements Runnable {
 							connObject.close(subscriberJedis);		// return jedis resource to JedisPool
 							Thread.sleep(200);
 						} catch (InterruptedException ex) {
-							//Logger.getLogger(RedisCollectorPersister.class.getName()).log(Level.SEVERE, null, ex);
 							logger.warn(collectionCode + " error in closing Redis connection");
-				        	logger.warn(elog.toStringException(ex));
 						}
 					}
 				}
@@ -110,7 +104,6 @@ public class RedisCollectorPersister implements Runnable {
 		try {
 			t.join();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			logger.warn(collectionCode + ": Collector Persister Thread join interrupted");
 		}
 	}

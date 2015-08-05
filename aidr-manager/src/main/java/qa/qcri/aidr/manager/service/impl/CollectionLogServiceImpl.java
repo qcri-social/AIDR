@@ -1,15 +1,7 @@
 package qa.qcri.aidr.manager.service.impl;
 
-import qa.qcri.aidr.manager.dto.CollectionLogDataResponse;
-import qa.qcri.aidr.manager.exception.AidrException;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
-import qa.qcri.aidr.manager.repository.CollectionLogRepository;
-import qa.qcri.aidr.manager.service.CollectionLogService;
-
-
-
-
-
+import java.util.List;
+import java.util.Map;
 
 //import com.sun.jersey.api.client.Client;		// gf 3 way
 //import com.sun.jersey.api.client.ClientResponse;
@@ -17,21 +9,21 @@ import qa.qcri.aidr.manager.service.CollectionLogService;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.ws.rs.core.MediaType;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.glassfish.jersey.jackson.JacksonFeature;
+import qa.qcri.aidr.manager.dto.CollectionLogDataResponse;
+import qa.qcri.aidr.manager.exception.AidrException;
+import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
+import qa.qcri.aidr.manager.repository.CollectionLogRepository;
+import qa.qcri.aidr.manager.service.CollectionLogService;
 
 @Service("collectionLogService")
 public class CollectionLogServiceImpl implements CollectionLogService {
@@ -113,6 +105,7 @@ public class CollectionLogServiceImpl implements CollectionLogService {
                 return "";
             }*/
         } catch (Exception e) {
+        	logger.error("Error while generating CSV link", e);
             throw new AidrException("[generateCSVLink] Error while generating CSV link in Persister", e);
         }
     }
@@ -134,6 +127,7 @@ public class CollectionLogServiceImpl implements CollectionLogService {
                 return "";
             }*/
         } catch (Exception e) {
+        	logger.error("Error while generating Tweet Ids link", e);
             throw new AidrException("[generateTweetIdsLink] Error while generating Tweet Ids link in Persister", e);
         }
     }
@@ -155,6 +149,7 @@ public class CollectionLogServiceImpl implements CollectionLogService {
                 return "";
             }*/
         } catch (Exception e) {
+        	logger.error("Error while generating JSON download link",e);
             throw new AidrException("[generateJSONLink] Error while generating JSON download link in Persister", e);
         }
     }
@@ -177,6 +172,7 @@ public class CollectionLogServiceImpl implements CollectionLogService {
                 return "";
             }*/
         } catch (Exception e) {
+        	logger.error("Error while generating JSON Tweet Ids download link",e);
             throw new AidrException("[generateJsonTweetIdsLink] Error while generating JSON Tweet Ids download link in Persister", e);
         }
     }

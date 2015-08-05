@@ -5,6 +5,8 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.log4j.Logger;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
@@ -18,6 +20,7 @@ public class NominalLabelTrainingDataDTO implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -6001563823600724945L;
+	private static final Logger logger = Logger.getLogger("db-manager-log");
 	
 	@XmlElement
 	private NominalLabelTrainingDataIdDTO idDTO;
@@ -46,6 +49,7 @@ public class NominalLabelTrainingDataDTO implements Serializable {
 		if (idDTO != null) {
 			this.idDTO = idDTO;
 		} else {
+			logger.error("Primary key not set!");
 			throw new PropertyNotSetException("Primary key not set!");
 		}
 	}

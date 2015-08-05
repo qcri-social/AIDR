@@ -61,6 +61,7 @@ public class AjaxTimeoutRedirectFilter extends GenericFilterBean {
                             throw ase;
                         }
                     } else {
+                    	logger.error("AuthenticationException");
                         throw ase;
                     }
                 }

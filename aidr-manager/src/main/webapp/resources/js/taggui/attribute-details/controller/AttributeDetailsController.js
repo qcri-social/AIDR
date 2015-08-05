@@ -47,6 +47,7 @@
                     }
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             }
         });

@@ -2,11 +2,13 @@
 package qa.qcri.aidr.analysis.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import javax.ejb.EJB;
+import javax.ejb.Stateless;
 
 import net.minidev.json.JSONObject;
 
@@ -26,6 +28,8 @@ import qa.qcri.aidr.analysis.utils.JsonResponse;
 /**
  * Implements the business logic for providing the REST API functionalities on tag_data table.
  */
+
+@Stateless
 public class GetTagDataStatisticsService {
 
 	// Debugging
@@ -33,6 +37,60 @@ public class GetTagDataStatisticsService {
 
 	@EJB
 	private TagDataStatisticsResourceFacade tagDataEJB;
+
+	public GetTagDataStatisticsService() {}
+
+	public JSONObject getTagCountSumForAllAttributesFromTime(String crisisCode, Long granularity, Long startTime) {
+		List<String> attributesList = tagDataEJB.getAttributesForCrisis(crisisCode);
+		List<TagData> tagDataList = new ArrayList<TagData>();
+		JSONObject jsonList = new JSONObject();
+		jsonList.put("crisisCode", crisisCode);
+		jsonList.put("granularity", granularity);
+		jsonList.put("startTime", startTime);
+				
+		if (attributesList != null) {
+			jsonList.put("attributesList", attributesList);
+			Map<String, Object> dataSet = new HashMap<String, Object>();
+			for (String attribute: attributesList) {
+				tagDataList.addAll(tagDataEJB.getDataAfterTimestampGranularity(crisisCode, attribute, null, startTime, granularity));
+				// Now the real work - count and send response
+				JSONObject json = new JsonResponse().getNewJsonResponseObject(crisisCode, attribute, granularity, startTime, null);
+
+				if (tagDataList != null) {
+					Map<String, Integer> tagCountMap = new TreeMap<String, Integer>();
+					for (TagData t: tagDataList) {
+						if (tagCountMap.containsKey(t.getLabelCode())) {
+							tagCountMap.put(t.getLabelCode(), tagCountMap.get(t.getLabelCode()) + t.getCount());
+						} else {
+							tagCountMap.put(t.getLabelCode(), t.getCount());
+						}
+					}
+					try {
+						json.put("data", tagCountMap);
+						dataSet.put(attribute, json);
+					} catch (Exception e) {
+						json = JsonResponse.addError(json);
+						logger.error("Error in serializing fetched tag count data", e);
+					}
+				}
+			}
+			jsonList.put("attribute_data", dataSet);
+		}
+		return jsonList;
+	}
+
+	public JSONObject getTagCountSumByGranularity(String crisisCode, Long startTime) {
+		List<Long> gList = tagDataEJB.getGranularitiesForCrisis(crisisCode);
+		Map<String, Long> countList = tagDataEJB.getTagCountByCrisisGranularity(crisisCode, startTime);
+		JSONObject json = new JSONObject();
+		json.put("crisisCode", crisisCode);
+		json.put("startTime", startTime);
+		if (gList != null) {
+			json.put("granularities", gList);
+			json.put("data", countList);
+		}
+		return json;
+	}
 
 	/**
 	 * 
@@ -44,7 +102,6 @@ public class GetTagDataStatisticsService {
 	 */
 
 	public JSONObject getTagCountSumFromTime(String crisisCode, String attributeCode, Long granularity, Long startTime) {
-
 		// First get the list of data points from DB
 		List<TagData> tagDataList = tagDataEJB.getDataAfterTimestampGranularity(crisisCode, attributeCode, null, startTime, granularity);
 
@@ -125,7 +182,7 @@ public class GetTagDataStatisticsService {
 
 		// Now the real work - creat time series, format and send response
 		JSONObject json = new JsonResponse().getNewJsonResponseObject(crisisCode, attributeCode, granularity, startTime, endTime);
-		
+
 		if (tagDataList != null) {
 			// Create time series Map data first
 			Map<Long, List<TagCountDTO>> tagCountMap = new TreeMap<Long, List<TagCountDTO>>();
@@ -143,7 +200,6 @@ public class GetTagDataStatisticsService {
 					tagsList.add(TagCountDTOHelper.convertTagDataToDTO(t));
 				}
 			}
-			//System.out.println("Finished creating Map of timestamp versus TagCountDTO list");
 			// Now convert the above time series data Map to DTO object for response
 			List<TimeWindowTagCountDTO> timeWindowDTOList = new ArrayList<TimeWindowTagCountDTO>();
 			try {
@@ -151,10 +207,8 @@ public class GetTagDataStatisticsService {
 					TimeWindowTagCountDTO timeWindowDTO = TimeWindowTagCountDTOHelper.convertTagCountDTOListToDTO(key, tagCountMap.get(key));
 					timeWindowDTOList.add(timeWindowDTO);
 				}
-				//System.out.println("Finished creating TimeWindowTagCountDTO list");
 				TagCountSeriesDTO dto = TagCountSeriesDTOHelper.convertTimeWindowTagCountDTOListToDTO(crisisCode, attributeCode, granularity, timeWindowDTOList);
 				json.put("data", dto);
-				//System.out.println("Finished creating json object: " + json);
 				return json;
 			} catch (Exception e) {
 				json = JsonResponse.addError(json);

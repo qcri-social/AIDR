@@ -4,13 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.commons.lang3.text.translate.UnicodeEscaper;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.apache.commons.lang3.text.translate.UnicodeEscaper;
-import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.predict.DataStore;
 import qa.qcri.aidr.predict.classification.DocumentLabel;
 import qa.qcri.aidr.predict.classification.geo.GeoLabel;
@@ -32,7 +31,6 @@ import qa.qcri.aidr.predict.featureextraction.WordSet;
 public class DocumentJSONConverter {
 
 	private static Logger logger = Logger.getLogger(DocumentJSONConverter.class);
-	private static ErrorLog elog = new ErrorLog();
 
 	private static final String name = "DocumentJsonConverter";
 	private static long lastModelInfoUpdate = 0;
@@ -102,7 +100,6 @@ public class DocumentJSONConverter {
 			return sms;
 		} catch (JSONException e) {
 			logger.error("Json exception in parsing tweet: " + input);
-			logger.error(elog.toStringException(e));
 			throw new RuntimeException(e);
 		}
 	}
@@ -133,7 +130,6 @@ public class DocumentJSONConverter {
 			return t;
 		} catch (JSONException e) {
 			logger.error("Json exception in parsing tweet: " + input);
-			logger.error(elog.toStringException(e));
 			throw new RuntimeException(e);
 		}
 	}
@@ -168,7 +164,6 @@ public class DocumentJSONConverter {
 						}
 						catch (RuntimeException e) {
 							logger.error("Exception while converting document to JSON:" + l);
-							logger.error(elog.toStringException(e));
 						}
 					}
 				} else {
@@ -182,7 +177,6 @@ public class DocumentJSONConverter {
 			return unicodeEscaper.translate(input.toString());
 		} catch (JSONException e) {
 			logger.error("Error in creating JSON from document: " + doc);
-			logger.error(elog.toStringException(e));
 			throw new RuntimeException(e);
 		}
 	}
@@ -222,7 +216,6 @@ public class DocumentJSONConverter {
 			return l;
 		} catch (JSONException e) {
 			logger.error("Error in parsing nominal label for: " + input);
-			logger.error(elog.toStringException(e));
 			throw new RuntimeException(e);
 		}
 	}
@@ -242,7 +235,6 @@ public class DocumentJSONConverter {
 			obj.put("from_human", false); 
 		} catch (JSONException e) {
 			logger.error("Error in creating empty json object");
-			logger.error(elog.toStringException(e));
 			throw new RuntimeException(e);
 		}
 		return obj;
@@ -271,7 +263,6 @@ public class DocumentJSONConverter {
 			}
 		} catch (JSONException e) {
 			logger.error("Error in creating json object from: " + label);
-			logger.error(elog.toStringException(e));
 			throw new RuntimeException(e);
 		}
 		logger.error("Unsupported label type: " + label.getClass().getSimpleName());
@@ -315,9 +306,12 @@ public class DocumentJSONConverter {
 		}
 
 		if (!activeModelFamiliesByCode.containsKey(crisisID)
-				|| !activeModelFamiliesByCode.get(crisisID).containsKey(attributeCode))
+				|| !activeModelFamiliesByCode.get(crisisID).containsKey(attributeCode)) {
+		
+			logger.error("ModelInfo is missing for crisis " + crisisID + " and attribute " + attributeCode);
 			throw new RuntimeException(
 					"ModelInfo is missing for crisis " + crisisID + " and attribute " + attributeCode);
+		}
 
 		return activeModelFamiliesByCode.get(crisisID).get(attributeCode);
 	}

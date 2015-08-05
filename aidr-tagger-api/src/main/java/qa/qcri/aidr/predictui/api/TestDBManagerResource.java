@@ -52,7 +52,7 @@ public class TestDBManagerResource {
 	public Response getCrisisTypeByID(@PathParam("id") long id) {
 		try {
 			CrisisTypeDTO dto = remoteCrisisTypeEJB.findCrisisTypeByID(id);
-			System.out.println("Returned successfully from remote EJB call!");
+			logger.info("Returned successfully from remote EJB call!");
 			if (dto != null) 
 			{
 				return Response.ok(dto).build();
@@ -61,7 +61,6 @@ public class TestDBManagerResource {
 			// TODO Auto-generated catch block
 			logger.error("Exception in fetching crisisType from remote EJB: " + id);
 			logger.error("stacktrace: ", e);
-			e.printStackTrace();
 			return Response.ok("Exception: " + e).build();
 		}
 		return Response.ok("Null object returned").build();
@@ -73,7 +72,6 @@ public class TestDBManagerResource {
 	public Response getAllCrisisTypes() {
 		try {
 			List<CrisisTypeDTO> dtoList = remoteCrisisTypeEJB.getAllCrisisTypes();
-			System.out.println("Returned successfully from remote EJB call!");
 			if (dtoList != null) 
 			{
 				return Response.ok(dtoList).build();
@@ -82,7 +80,6 @@ public class TestDBManagerResource {
 			// TODO Auto-generated catch block
 			logger.error("Exception in fetching crisisType list from remote EJB ");
 			logger.error("stacktrace: ", e);
-			e.printStackTrace();
 			return Response.ok("Exception: " + e).build();
 		}
 		return Response.ok("Null object returned").build();
@@ -94,7 +91,6 @@ public class TestDBManagerResource {
 	public Response getAllCrisisForCrisisType(@PathParam("id") long id) {
 		try {
 			List<CrisisDTO> dtoList = remoteCrisisTypeEJB.getAllCrisisForCrisisTypeID(id);
-			System.out.println("Returned successfully from remote EJB call!");
 			if (dtoList != null) 
 			{
 				return Response.ok(dtoList).build();
@@ -103,7 +99,6 @@ public class TestDBManagerResource {
 			// TODO Auto-generated catch block
 			logger.error("Exception in fetching crisis list for crisisType from remote EJB: " + id);
 			logger.error("stacktrace: ", e);
-			e.printStackTrace();
 			return Response.ok("Exception: " + e).build();
 		}
 		return Response.ok("Null object returned").build();
@@ -124,7 +119,6 @@ public class TestDBManagerResource {
 			// TODO Auto-generated catch block
 			logger.error("Exception in fetching crisis from remote EJB for id = " + id);
 			logger.error("stacktrace: ", e);
-			e.printStackTrace();
 			return Response.ok("Exception: " + e).build();
 		}
 		return Response.ok("Null object returned for crisis ID = " + id).build();
@@ -144,7 +138,6 @@ public class TestDBManagerResource {
 			// TODO Auto-generated catch block
 			logger.error("Exception in fetching crisis from remote EJB for id = " + id);
 			logger.error("stacktrace: ", e);
-			e.printStackTrace();
 			return Response.ok("Exception: " + e).build();
 		}
 		return Response.ok("Null object returned for crisis ID = " + id).build();
@@ -156,7 +149,6 @@ public class TestDBManagerResource {
 	public Response getAllCrisis() {
 		try {
 			List<CrisisDTO> dtoList = remoteCrisisEJB.getAllCrisis();
-			System.out.println("Returned successfully from remote EJB call!");
 			if (dtoList != null) 
 			{
 				return Response.ok(dtoList).build();
@@ -165,7 +157,6 @@ public class TestDBManagerResource {
 			// TODO Auto-generated catch block
 			logger.error("Exception in fetching crisis from remote EJB");
 			logger.error("stacktrace: ", e);
-			e.printStackTrace();
 			return Response.ok("Exception: " + e).build();
 		}
 		return Response.ok("Null object returned").build();
@@ -179,7 +170,7 @@ public class TestDBManagerResource {
 			CrisisDTO dto = remoteCrisisEJB.findCrisisByID(id);
 			if (dto != null) 
 			{
-				System.out.println("Fetched crisis: " + dto.getCrisisID() + ", " + dto.getCrisisID());
+				logger.info("Fetched crisis: " + dto.getCrisisID() + ", " + dto.getCrisisID());
 				dto.setIsTrashed(value);
 				CrisisDTO newDTO = remoteCrisisEJB.editCrisis(dto);
 				return Response.ok(newDTO).build();
@@ -187,7 +178,6 @@ public class TestDBManagerResource {
 		} catch (Exception e) {
 			logger.error("Exception in updating crisis from remote EJB: " + id);
 			logger.error("stacktrace: ", e);
-			e.printStackTrace();
 			return Response.ok("Exception: " + e).build();
 		}
 		return Response.ok("Null object returned for: " + id).build();
@@ -207,7 +197,6 @@ public class TestDBManagerResource {
 			// TODO Auto-generated catch block
 			logger.error("Exception in fetching document from remote EJB for id = " + id);
 			logger.error("stacktrace: ", e);
-			e.printStackTrace();
 			return Response.ok("Exception: " + e).build();
 		}
 		return Response.ok("Null object returned for document ID = " + id).build();
@@ -227,7 +216,6 @@ public class TestDBManagerResource {
 			// TODO Auto-generated catch block
 			logger.error("Exception in fetching document from remote EJB for id = " + id);
 			logger.error("stacktrace: ", e);
-			e.printStackTrace();
 			return Response.ok("Exception: " + e).build();
 		}
 		return Response.ok("Null object returned for document ID = " + id).build();
@@ -247,7 +235,6 @@ public class TestDBManagerResource {
 			// TODO Auto-generated catch block
 			logger.error("Exception in fetching document from remote EJB for id = " + id);
 			logger.error("stacktrace: ", e);
-			e.printStackTrace();
 			return Response.ok("Exception: " + e).build();
 		}
 		return Response.ok("Null object returned for document ID = " + id).build();
@@ -267,7 +254,6 @@ public class TestDBManagerResource {
 			// TODO Auto-generated catch block
 			logger.error("Exception in fetching document from remote EJB for id = " + id);
 			logger.error("stacktrace: ", e);
-			e.printStackTrace();
 			return Response.ok("Exception: " + e).build();
 		}
 		return Response.ok("Null object returned for document ID = " + id).build();
@@ -287,7 +273,6 @@ public class TestDBManagerResource {
 			// TODO Auto-generated catch block
 			logger.error("Exception in fetching user from remote EJB for id = " + id);
 			logger.error("stacktrace: ", e);
-			e.printStackTrace();
 			return Response.ok("Exception: " + e).build();
 		}
 		return Response.ok("Null object returned for document ID = " + id).build();
@@ -308,7 +293,6 @@ public class TestDBManagerResource {
 			// TODO Auto-generated catch block
 			logger.error("Exception in fetching document_nominal_label from remote EJB for id = " + id);
 			logger.error("stacktrace: ", e);
-			e.printStackTrace();
 			return Response.ok("Exception: " + e).build();
 		}
 		return Response.ok("Null object returned for document ID = " + id).build();
@@ -323,13 +307,12 @@ public class TestDBManagerResource {
 			CrisisTypeDTO dto = remoteCrisisTypeEJB.addCrisisType(crisisType);
 			if (dto != null) 
 			{
-				System.out.println("Add crisis successful: " + dto.getName() + ":" + dto.getCrisisTypeId());
+				logger.info("Add crisis successful: " + dto.getName() + ":" + dto.getCrisisTypeId());
 				Integer ret = remoteCrisisTypeEJB.deleteCrisisType(dto.getCrisisTypeId());
 				if (ret != null && ret.intValue() == 1) return Response.ok("CrisisType Add-Delete test successful" + dto).build();
 			} 
 		} catch (Exception e) {
-			logger.error("stacktrace: ", e);
-			e.printStackTrace();
+			logger.error("Error in /crisisType/addde.", e);
 			return Response.ok("Exception: " + e).build();
 		}
 		return Response.ok("CrisisType add-Delete test failed").build();
@@ -347,14 +330,13 @@ public class TestDBManagerResource {
 			CrisisDTO dto = remoteCrisisEJB.addCrisis(newCrisis);
 			if (dto != null) 
 			{
-				System.out.println("Add crisis successful: " + dto.getCrisisID() + ":" + dto.getName() + ":" + dto.getCode() 
+				logger.info("Add crisis successful: " + dto.getCrisisID() + ":" + dto.getName() + ":" + dto.getCode() 
 						+ ":" + dto.getCrisisTypeDTO().getName() + ":" + dto.getCrisisTypeDTO().getCrisisTypeId());
 				Integer ret = remoteCrisisEJB.deleteCrisis(dto);
 				if (ret != null && ret.intValue() == 1) return Response.ok("Crisis Add-Delete test successful" + dto).build();
 			} 
 		} catch (Exception e) {
-			logger.error("stacktrace: ", e);
-			e.printStackTrace();
+			logger.error("Error in /crisis/adddel.", e);
 			return Response.ok("Exception: " + e).build();
 		}
 		return Response.ok("Crisis add-Delete test failed").build();
@@ -370,14 +352,13 @@ public class TestDBManagerResource {
 			DocumentDTO dto = remoteDocumentEJB.addDocument(newDoc);
 			if (dto != null) 
 			{
-				System.out.println("Add document successful: " + dto.getDocumentID() + ":" + dto.getCrisisDTO().getCode() 
+				logger.info("Add document successful: " + dto.getDocumentID() + ":" + dto.getCrisisDTO().getCode() 
 						+ ":" + dto.getCrisisDTO().getCrisisID());
 				Integer ret = remoteDocumentEJB.deleteDocument(dto);
 				if (ret != null && ret.intValue() == 1) return Response.ok("Document Add-Delete test successful" + dto).build();
 			} 
 		} catch (Exception e) {
-			logger.error("stacktrace: ", e);
-			e.printStackTrace();
+			logger.error("Error in /document/adddel.",e);
 			return Response.ok("Exception: " + e).build();
 		}
 		return Response.ok("Document add-Delete test failed").build();
@@ -392,13 +373,12 @@ public class TestDBManagerResource {
 			UsersDTO dto = remoteUsersEJB.addUser(newUser);
 			if (dto != null) 
 			{
-				System.out.println("Add user successful: " + dto.getUserID() + ":" + dto.getName() + ":" + dto.getRole());
+				logger.info("Add user successful: " + dto.getUserID() + ":" + dto.getName() + ":" + dto.getRole());
 				Integer ret = remoteUsersEJB.deleteUser(dto.getUserID());	
 				if (ret != null && ret.intValue() == 1) return Response.ok("User Add-Delete test successful" + dto).build();
 			} 
 		} catch (Exception e) {
 			logger.error("stacktrace: ", e);
-			e.printStackTrace();
 			return Response.ok("Exception: " + e).build();
 		}
 		return Response.ok("User add-Delete test failed").build();
@@ -410,12 +390,6 @@ public class TestDBManagerResource {
 	public Response TestGetNewTask(@PathParam("crisisID") long crisisID) {
 		System.out.println("Going to fetch new task collection for crisis ID = " + crisisID);
 		try {
-			DocumentDTO dto = taskManager.getNewTask(crisisID, null);
-			if (dto != null) {
-				System.out.println("Fetched DTO: " + dto.getDocumentID() + dto.getCrisisDTO().getCrisisID());
-			} else {
-				System.out.println("Fetched DTO: null");
-			}
 			List<DocumentDTO> dtoList = taskManager.getNewTaskCollection(crisisID, 10, "DESC", null);
 			if (dtoList != null) {
 				return Response.ok(dtoList).build();
@@ -423,8 +397,7 @@ public class TestDBManagerResource {
 				return Response.ok("Null object returned for crisis ID = " + crisisID).build();
 			}
 		} catch (Exception e) {
-			logger.error("stacktrace: ", e);
-			e.printStackTrace();
+			logger.error("Error in TestGetNewTask.", e);
 			return Response.ok("Exception: " + e).build();
 		}
 	}
@@ -433,7 +406,7 @@ public class TestDBManagerResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/document/nominalLabel/{nominalLabelID}")
 	public Response TestGetLabeled(@PathParam("nominalLabelID") long nominalLabelID) {
-		System.out.println("Going to fetch labled documents for nominalLabel ID = " + nominalLabelID);
+		logger.info("Going to fetch labled documents for nominalLabel ID = " + nominalLabelID);
 		try {
 			List<DocumentDTO> dtoList = taskManager.getNominalLabelDocumentCollection(nominalLabelID);
 			if (dtoList != null) {
@@ -442,8 +415,7 @@ public class TestDBManagerResource {
 				return Response.ok("Null object returned for nominalLabelID = " + nominalLabelID).build();
 			}
 		} catch (Exception e) {
-			logger.error("stacktrace: ", e);
-			e.printStackTrace();
+			logger.error("Error in TestGetLabeled for label id : " + nominalLabelID, e);
 			return Response.ok("Exception: " + e).build();
 		}
 	}

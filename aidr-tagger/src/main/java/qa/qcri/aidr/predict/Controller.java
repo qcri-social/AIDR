@@ -11,7 +11,6 @@ import qa.qcri.aidr.predict.common.TaggerConfigurationProperty;
 import qa.qcri.aidr.predict.common.TaggerConfigurator;
 import qa.qcri.aidr.predict.communication.*;
 import qa.qcri.aidr.predict.featureextraction.FeatureExtractor;
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.redis.LoadShedder;
 
 /**
@@ -35,7 +34,6 @@ public class Controller  {
 
     // Debugging
  	private static Logger logger = Logger.getLogger(Controller.class);
- 	private static ErrorLog elog = new ErrorLog();
     
     public static void main(String[] args) {
     	
@@ -150,8 +148,7 @@ public class Controller  {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-                logger.error("Exception in starting tagger Controller!");
-                logger.error(elog.toStringException(e));
+                logger.error("Exception in starting tagger Controller!", e);
             }
         }
     }

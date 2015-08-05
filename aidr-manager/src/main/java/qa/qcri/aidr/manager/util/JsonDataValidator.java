@@ -1,14 +1,12 @@
 package qa.qcri.aidr.manager.util;
 
-import org.apache.log4j.Logger;
+import java.io.IOException;
+
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
-import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.
