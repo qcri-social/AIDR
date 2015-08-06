@@ -144,7 +144,6 @@ public class UsersDTO implements Serializable {
 
 	public UsersDTO(Users user) throws PropertyNotSetException {
 		if (user != null) {
-			//System.out.println("Users Hash code: " + user.hashCode());
 			
 			this.name = user.getName();
 			this.role = user.getRole();

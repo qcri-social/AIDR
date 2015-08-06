@@ -1,35 +1,33 @@
 package qa.qcri.aidr.collector.api;
 
-import com.google.gson.Gson;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.Path;
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.CollectorStatus;
-import qa.qcri.aidr.collector.utils.CollectorConfigurator;
 import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
+import qa.qcri.aidr.collector.utils.CollectorConfigurator;
 import qa.qcri.aidr.collector.utils.GenericCache;
-import qa.qcri.aidr.common.logging.ErrorLog;
+
+import com.google.gson.Gson;
 
 /**
  * @author Imran
@@ -40,7 +38,6 @@ import qa.qcri.aidr.common.logging.ErrorLog;
 public class CollectorManageResource {
 
 	private static Logger logger = Logger.getLogger(CollectorManageResource.class.getName());
-	private static ErrorLog elog = new ErrorLog();
 	private static CollectorConfigurator configProperties = CollectorConfigurator.getInstance();
 	
     @Context
@@ -77,7 +74,6 @@ public class CollectorManageResource {
 
         } catch (IOException e) {
             logger.error("Error in persisting running collections");
-            logger.error(elog.toStringException(e));	
         }
 
         return response;
@@ -106,14 +102,14 @@ public class CollectorManageResource {
             logger.info("Done reading.");
 
         } catch (IOException e) {
-            logger.error(elog.toStringException(e));	
+            logger.error("Error in reading file.");	
         } finally {
             try {
                 if (br != null) {
                     br.close();
                 }
             } catch (IOException ex) {
-                logger.error(elog.toStringException(ex));	
+            	logger.error("Error in reading file.");	
             }
         }
 
@@ -136,8 +132,7 @@ public class CollectorManageResource {
             logger.info("Fetcher Response: " + jsonResponse);
             return jsonResponse;
         } catch (Exception e) {
-        	logger.error("Could not start collection");
-            logger.error(elog.toStringException(e));	
+        	logger.error("Could not start collection"+collection.getCollectionCode());
         	return "Could not start collection";
         }
     }

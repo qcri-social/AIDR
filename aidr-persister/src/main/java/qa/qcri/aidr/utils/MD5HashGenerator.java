@@ -6,8 +6,12 @@ package qa.qcri.aidr.utils;
 
 import java.security.MessageDigest;
 
-public class MD5HashGenerator {
+import org.apache.log4j.Logger;
 
+public class MD5HashGenerator {
+	
+	private static Logger logger = Logger.getLogger(MD5HashGenerator.class);
+	
 	public MD5HashGenerator() {}
 	
 	public String getMD5Hash(String data) throws Exception {
@@ -35,6 +39,7 @@ public class MD5HashGenerator {
 			//System.out.println("Digest(in hex format):: " + hexString.toString());
 			return hexString.toString();
 		} else {
+			logger.warn("MD5Hash won't be generated for null data");
 			throw new Exception("Data can't be null");
 		}
 	}

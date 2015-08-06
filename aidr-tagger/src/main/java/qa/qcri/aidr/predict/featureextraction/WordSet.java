@@ -12,8 +12,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
-
 
 /**
  * A DocumentFeature implementation consisting of a set of words.
@@ -23,7 +21,6 @@ import qa.qcri.aidr.common.logging.ErrorLog;
 public class WordSet implements DocumentFeature, Serializable {
 
 	private static Logger logger = Logger.getLogger(WordSet.class);
-	private static ErrorLog elog = new ErrorLog();
 			
     private static final long serialVersionUID = 1L;
 
@@ -57,7 +54,6 @@ public class WordSet implements DocumentFeature, Serializable {
             obj.put(STR_WORDS, wordsArr);
         } catch (JSONException e) {
         	logger.error("Error in json parsing: " + words);
-        	logger.error(elog.toStringException(e));
             throw new RuntimeException(e);
         }
         return obj;

@@ -15,35 +15,21 @@
  */
 package qa.qcri.aidr.output.utils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.code.Configurator;
-import qa.qcri.aidr.common.code.ResponseWrapperNEW;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisConnectionException;
-import twitter4j.ResponseList;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
-import twitter4j.User;
-import twitter4j.auth.AccessToken;
 
 
 @Path("/manage")
@@ -51,7 +37,7 @@ public class AIDROutputPing {
 
 	public static JedisConnectionObject jedisConn;		// we need only a single instance of JedisConnectionObject running in background
 	private static String host = "localhost";
-	private static int port = 1978; 
+	private static int port = 6379; 
 
 	private static HashMap<String, Method>APIHashMap = null;
 
@@ -64,21 +50,9 @@ public class AIDROutputPing {
 
 	public AIDROutputPing(final String host, final int port) {
 
-		//		AIDROutputConfig configuration = new AIDROutputConfig();
-		//		HashMap<String, String> configParams = configuration.getConfigProperties();
 		Configurator configurator = OutputConfigurator.getInstance();
 		AIDROutputPing.host = configurator.getProperty(OutputConfigurationProperty.REDIS_HOST);
 		AIDROutputPing.port = Integer.parseInt(configurator.getProperty(OutputConfigurationProperty.REDIS_PORT));
-		/*
-		if (configParams.get("logger").equalsIgnoreCase("log4j")) {
-			// For now: set up a simple configuration that logs on the console
-			// PropertyConfigurator.configure("log4j.properties");      
-			// BasicConfigurator.configure();    // initialize log4j logging
-		}
-		if (configParams.get("logger").equalsIgnoreCase("slf4j")) {
-			System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");	// set logging level for slf4j
-		}
-		 */
 		APIHashMap = new HashMap<String, Method>();
 
 		// Register available REST APIs
@@ -150,8 +124,7 @@ public class AIDROutputPing {
 				jedisConn.returnJedis(jedis);
 			}
 		} catch (JedisConnectionException e) {
-			logger.error("Error! Couldn't establish connection to REDIS!");
-			logger.error(e);
+			logger.error("Error! Couldn't establish connection to REDIS!", e);
 		}
 		StringBuilder jsonpRes = new StringBuilder();
 		if (callbackName != null) jsonpRes.append(callbackName).append("(");

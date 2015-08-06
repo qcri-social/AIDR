@@ -14,7 +14,7 @@ import java.util.Set;
  *
  * @author Imran
  */
-@javax.ws.rs.ApplicationPath("rest")
+@javax.ws.rs.ApplicationPath("/rest/analytics/")
 public class ApplicationConfig extends Application {
 
     @Override

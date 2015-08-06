@@ -36,8 +36,7 @@ public class DeserializeFilters {
 					GenericInputQuery constraint = jsonObject.fromJson(q, GenericInputQuery.class);
 					queryList.createConstraint(constraint);
 				} catch (Exception e) {
-					logger.error("Error in deserializing received constraints");
-					logger.error(e);
+					logger.error("Error in deserializing received constraints",e);
 					return null;
 				}
 			}

@@ -26,10 +26,10 @@ import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.beans.ResponseWrapper;
 import qa.qcri.aidr.collector.beans.SMS;
 import qa.qcri.aidr.collector.collectors.JedisPublisher;
-import qa.qcri.aidr.collector.utils.CollectorConfigurator;
 import qa.qcri.aidr.collector.utils.CollectorConfigurationProperty;
+import qa.qcri.aidr.collector.utils.CollectorConfigurator;
+import qa.qcri.aidr.collector.utils.CollectorErrorLog;
 import qa.qcri.aidr.collector.utils.GenericCache;
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.redis.LoadShedder;
 
 /**
@@ -41,7 +41,6 @@ import qa.qcri.aidr.common.redis.LoadShedder;
 public class SMSCollectorAPI  {
     
     private static Logger logger = Logger.getLogger(SMSCollectorAPI.class.getName());
-    private static ErrorLog elog = new ErrorLog();
     
     private static CollectorConfigurator configProperties= CollectorConfigurator.getInstance();
     
@@ -104,7 +103,6 @@ public class SMSCollectorAPI  {
                 }
             } catch (Exception e) {
                 logger.error("Exception in receiving from SMS collection: " + code + ", data: " + sms);
-                logger.error(elog.toStringException(e));
             }
         }
         return Response.ok().build();
@@ -138,9 +136,8 @@ public class SMSCollectorAPI  {
             logger.info(collectionCode + ": Collector persister response = " + jsonResponse);
         } catch (RuntimeException e) {
             logger.error(collectionCode + ": Could not start persister. Is persister running?");
-            logger.error(elog.toStringException(e));
+            CollectorErrorLog.sendErrorMail(collectionCode, "Unable to start persister.");
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }
@@ -155,9 +152,7 @@ public class SMSCollectorAPI  {
             logger.info(collectionCode + ": Collector persister response =  " + jsonResponse);
         } catch (RuntimeException e) {
             logger.error(collectionCode + ": Could not stop persister. Is persister running?");
-            logger.error(elog.toStringException(e));
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             logger.error(collectionCode + ": Unsupported Encoding scheme used");
         }
     }

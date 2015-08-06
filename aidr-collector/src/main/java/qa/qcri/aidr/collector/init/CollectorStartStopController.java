@@ -39,7 +39,7 @@ public class CollectorStartStopController extends HttpServlet {
 	@PostConstruct
 	private void startup() {
 		// Startup tasks go here
-		System.out.println("AIDR-Collector: Starting up...");
+		//System.out.println("AIDR-Collector: Starting up...");
 		logger.info("AIDR-Collector: Starting up...");
 		// task todo
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -47,8 +47,6 @@ public class CollectorStartStopController extends HttpServlet {
 		String startDate = dateFormat.format(cal.getTime());
 		GenericCache.getInstance().setCollectorStatus(
 				new CollectorStatus(startDate, "RUNNING", 0));
-		System.out.println("AIDR-Collector: Startup procedure completed @ "
-				+ startDate);
 		logger.info("AIDR-Collector: Startup procedure completed @ "
 				+ startDate);
 	}
@@ -56,7 +54,7 @@ public class CollectorStartStopController extends HttpServlet {
 	@PreDestroy
 	private void shutdown() {
 		// Shutdown tasks go here
-		System.out.println("AIDR-Collector: Shutting Down...");
+		//System.out.println("AIDR-Collector: Shutting Down...");
 		logger.info("AIDR-Collector: Shutting Down...");
 		List<CollectionTask> collections = GenericCache.getInstance()
 				.getAllRunningCollectionTasks();
@@ -68,12 +66,11 @@ public class CollectorStartStopController extends HttpServlet {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warn("Error while PreDestroying the collector: " + e.getMessage());
 			}
 
 		}
-		System.out.println("AIDR-Collector: Shutdown procedure completed.");
+		//System.out.println("AIDR-Collector: Shutdown procedure completed.");
 		logger.info("AIDR-Collector: Shutdown procedure completed.");
 
 	}

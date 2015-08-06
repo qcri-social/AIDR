@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
@@ -13,12 +12,9 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-import com.google.gson.Gson;
-
 import qa.qcri.aidr.common.code.DateFormatConfig;
-import qa.qcri.aidr.common.logging.ErrorLog;
 
-
+import com.google.gson.Gson;
 
 public class FilterQueryMatcher {
 
@@ -44,7 +40,7 @@ public class FilterQueryMatcher {
 				DateQueryJsonObject dateQuery = mapper.readValue(queryString, DateQueryJsonObject.class);
 				return true;
 			} catch (Exception e) {
-				logger.error("Exception", e);
+				logger.error("Exception while parsing the date query", e);
 			}
 		}
 		return false;
@@ -59,7 +55,7 @@ public class FilterQueryMatcher {
 				return true;
 			} catch (Exception e) {
 				logger.debug("Exception in deserializing using Jackson readValue()");
-				logger.error("Exception", e);
+				logger.error("Exception in deserializing using Jackson readValue()", e);
 			}
 		}
 		return false;
@@ -172,12 +168,11 @@ public class FilterQueryMatcher {
 				queryObject = mapper.readValue(queryString, DateQueryJsonObject.class);
 				logger.info("DateQueryObject: " + queryObject.toString());
 			} catch (JsonParseException e) {
-				logger.error("JsonParseException for DateQueryJsonObject attempt");
+				logger.error("JsonParseException for DateQueryJsonObject attempt",e);
 			} catch (JsonMappingException e) {
-				logger.error("JsonMappingException for DateQueryJsonObject attempt");
+				logger.error("JsonMappingException for DateQueryJsonObject attempt",e);
 			} catch (IOException e) {
-				logger.error("IOException for DateQueryJsonObject attempt");
-				logger.error("Exception", e);
+				logger.error("IOException for DateQueryJsonObject attempt",e);
 			}
 		} else if (isClassifierQuery(queryString)) {
 			queryObject = new ClassifierQueryJsonObject();
@@ -191,8 +186,7 @@ public class FilterQueryMatcher {
 			} catch (JsonMappingException e) {
 				logger.error("JsonMappingException  for ClassifierQueryJsonObject attempt");
 			} catch (IOException e) {
-				logger.error("IOException  for ClassifierQueryJsonObject attempt");
-				logger.error("Exception", e);
+				logger.error("IOException  for ClassifierQueryJsonObject attempt",e);
 			}
 		}
 		return queryObject;
@@ -230,7 +224,7 @@ public class FilterQueryMatcher {
 		}
 	}
 	
-	public static void main(String args[]) {
+	/*public static void main(String args[]) {
 		System.out.println("In main - testing code");
 
 		ArrayList<String> temp = new ArrayList<String>();
@@ -274,5 +268,5 @@ public class FilterQueryMatcher {
 			++i;
 		}
 		System.out.println("[main] Result of matching: " + test.getMatcherResult(testTweet));
-	}
+	}*/
 }

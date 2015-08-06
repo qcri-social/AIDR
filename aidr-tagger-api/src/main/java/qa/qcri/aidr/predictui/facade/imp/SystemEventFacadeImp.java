@@ -3,12 +3,16 @@ package qa.qcri.aidr.predictui.facade.imp;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.dbmanager.dto.SystemEventDTO;
 import qa.qcri.aidr.predictui.facade.SystemEventFacade;
 
 @Stateless
 public class SystemEventFacadeImp implements SystemEventFacade{
 
+	private Logger logger = Logger.getLogger(SystemEventFacadeImp.class);
+	
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.SystemEventResourceFacade remotesystemEJB;
 	
@@ -33,7 +37,7 @@ public class SystemEventFacadeImp implements SystemEventFacade{
 	@Override
 	public void insertSystemEvent(String severity, String module, String code,
 			String description, Boolean emailSent) {
-		System.out.println("inserting into sys event");
+		logger.info("inserting into sys event");
 		remotesystemEJB.insertSystemEvent(severity, module, code, description, emailSent);
 	}
 

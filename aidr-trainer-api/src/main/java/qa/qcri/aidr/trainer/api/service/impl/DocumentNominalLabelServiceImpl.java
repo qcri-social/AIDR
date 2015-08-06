@@ -1,5 +1,6 @@
 package qa.qcri.aidr.trainer.api.service.impl;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -27,6 +28,8 @@ import qa.qcri.aidr.trainer.api.service.DocumentNominalLabelService;
 @Service("documentNominalLabelService")
 @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
 public class DocumentNominalLabelServiceImpl implements DocumentNominalLabelService {
+	
+	private static Logger logger=Logger.getLogger(DocumentNominalLabelServiceImpl.class);
 
 	//@Autowired
 	//private DocumentNominalLabelDao documentNominalLabelDao;
@@ -50,7 +53,7 @@ public class DocumentNominalLabelServiceImpl implements DocumentNominalLabelServ
 			DocumentNominalLabelDTO dto = new DocumentNominalLabelDTO(id, nb, doc);
 			taskManager.saveDocumentNominalLabel(dto);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception while saving documentNominalLabel",e);
 		}
 	}
 
@@ -61,7 +64,7 @@ public class DocumentNominalLabelServiceImpl implements DocumentNominalLabelServ
 			DocumentNominalLabelIdDTO id = new DocumentNominalLabelIdDTO(documentNominalLabel.getDocumentID(), documentNominalLabel.getNominalLabelID(), documentNominalLabel.getUserID());
 			return remoteDocumentNominalLabelEJB.isDocumentExists(id);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception while finding Duplicate Entry for documentNominalLabel",e);
 			return false;
 		}
 	}

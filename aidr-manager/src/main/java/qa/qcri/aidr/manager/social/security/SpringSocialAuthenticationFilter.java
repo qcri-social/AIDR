@@ -112,6 +112,7 @@ public class SpringSocialAuthenticationFilter extends AbstractAuthenticationProc
 		} else if (allowRepeatedAuthenticationAttempts && alreadyAuthenticatedUserId != null) {
 			return SecurityContextHolder.getContext().getAuthentication();
 		} else {
+			logger.info("SpringSocialSecurity sign in details not found in session");
 			throw new InsufficientAuthenticationException(
 					"SpringSocialSecurity sign in details not found in session");
 		}

@@ -1,10 +1,6 @@
 package qa.qcri.aidr.manager.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
-import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 
 public class TaggerCrisisRequest {
 

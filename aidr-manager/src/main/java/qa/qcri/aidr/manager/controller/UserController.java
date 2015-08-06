@@ -36,7 +36,7 @@ public class UserController extends BaseController{
 			UserEntity entity = getAuthenticatedUser();
 			return getUIWrapper(entity, true);
 		}catch(Exception e){
-            String msg = "Error while getting current user";
+            String msg = "Error while getting current user ";
 			logger.error(msg, e);
 			return getUIWrapper(false, msg);
 		}

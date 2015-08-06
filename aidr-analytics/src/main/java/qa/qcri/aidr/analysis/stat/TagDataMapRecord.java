@@ -7,12 +7,23 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TagDataMapRecord extends MapRecord {
 	
+	private Long firstEntryTime;
+
+	public Long getFirstEntryTime() {
+		return firstEntryTime;
+	}
+
+	public void setFirstEntryTime(Long firstEntryTime) {
+		this.firstEntryTime = firstEntryTime;
+	}
+
 	public TagDataMapRecord(List<Long> granularityList) {
 		this.count = new ConcurrentHashMap<Long, Integer>();
 		for (Long g: granularityList) {
 			this.count.put(g, 0);
 		}
 		this.lastUpdateTime = System.currentTimeMillis();
+		this.setFirstEntryTime(System.currentTimeMillis());
 	}
 
 	public int getCount(Long g) {
@@ -58,5 +69,10 @@ public class TagDataMapRecord extends MapRecord {
 			flag &= isCountZeroForGranularity(g);
 		}
 		return flag;
+	}
+	
+	@Override
+	public String toString() {
+		return "TagDataMapRecord [count=" + count + "]";
 	}
 }

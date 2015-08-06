@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -20,35 +19,29 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.log4j.Logger;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.constraint.NotNull;
 import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.encoder.DefaultCsvEncoder;
+import org.supercsv.exception.SuperCsvCellProcessorException;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.CsvMapWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.io.ICsvMapWriter;
 import org.supercsv.prefs.CsvPreference;
-import org.supercsv.encoder.DefaultCsvEncoder;
-import org.supercsv.exception.SuperCsvCellProcessorException;
 
-//import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.common.values.SystemProperties;
+import qa.qcri.aidr.common.filter.NominalLabel;
+import qa.qcri.aidr.utils.ClassifiedTweet;
 import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
-import qa.qcri.aidr.common.filter.NominalLabel;
 import qa.qcri.aidr.utils.Tweet;
-
-import org.apache.log4j.Logger;
-import org.glassfish.jersey.jackson.JacksonFeature;
-
-import qa.qcri.aidr.utils.ClassifiedTweet;
 
 
 public class ReadWriteCSV<CellProcessors> {
 
-	//private static final int BUFFER_SIZE = 10 * 1024 * 1024;
 	private static Logger logger = Logger.getLogger(ReadWriteCSV.class);
-	//private static ErrorLog elog = new ErrorLog();
 
 	private String collectionCode = null; 
 
@@ -62,8 +55,6 @@ public class ReadWriteCSV<CellProcessors> {
 
 	private static int countWritten = 0;
 	
-	private String taggerMainUrl= "taggerMainUrl";
-
 	public ReadWriteCSV(String collectionCode) {
 		this.collectionCode = collectionCode;
 	}
@@ -172,9 +163,7 @@ public class ReadWriteCSV<CellProcessors> {
 			.useEncoder(new DefaultCsvEncoder())
 			.build() );
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.error("Error in creating CSV Bean writer!");
-			logger.error("Exception",e);
+			logger.error("Error in creating CSV Bean writer!"+e);
 		}
 		return null;
 	}
@@ -207,16 +196,12 @@ public class ReadWriteCSV<CellProcessors> {
 						beanWriter.write(tweet, header, processors);
 					}
 				} catch (SuperCsvCellProcessorException e) {
-					//Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeCollectorTweetIDSCSV] SuperCSV error");
 					logger.error(collectionDIR + ": SuperCSV error");
-					//e.printStackTrace();
 				}
 			}
 
 		} catch (IOException ex) {
-			//Logger.getLogger(ReadWriteCSV.class.getName()).log(Level.SEVERE, "[writeCollectorTweetIDSCSV] IO Exception occured");
 			logger.error(collectionDIR + ": IO Exception occured");
-			//ex.printStackTrace();
 		} 
 		//return fileName+".csv";
 		return beanWriter;
@@ -259,8 +244,7 @@ public class ReadWriteCSV<CellProcessors> {
 				mapWriter.write(tweetToWrite, runningHeader, processors);
 				++countWritten;
 			} catch (SuperCsvCellProcessorException e) {
-				//logger.error(collectionDIR + ": SuperCSV error. Offending tweet: " + tweet.getTweetID());
-				//logger.error(elog.toStringException(e));
+				logger.error(collectionDIR + ": SuperCSV error. Offending tweet: " + tweet.getTweetID());
 			} catch (IOException e) {
 				logger.error(collectionDIR + "IOException in writing tweet: " + tweet.getTweetID());
 			}
@@ -289,13 +273,11 @@ public class ReadWriteCSV<CellProcessors> {
 					beanWriter.write(tweet, header, processors);
 				} catch (SuperCsvCellProcessorException e) {
 					logger.error(collectionDIR + ": SuperCSV error");
-					//e.printStackTrace();
 				}
 			}
 
 		} catch (IOException ex) {
 			logger.error(collectionDIR + ": IO Exception occured");
-			//ex.printStackTrace();
 		}
 		return beanWriter;
 	}

@@ -16,9 +16,12 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 public class FileCompressor {
 
+	private static Logger logger = Logger.getLogger(FileCompressor.class.getName());
+	
 	public static int BUFFER_SIZE = 1 << 16;
 
 	private String fileName;
@@ -57,13 +60,12 @@ public class FileCompressor {
 
 		byte[] buffer = new byte[BUFFER_SIZE];
 
-		try {
-			OutputStream fos = new BufferedOutputStream(new FileOutputStream(this.getOutputFileName()), BUFFER_SIZE);
-			ZipOutputStream zos = new ZipOutputStream(fos);
+		try(OutputStream fos = new BufferedOutputStream(new FileOutputStream(this.getOutputFileName()), BUFFER_SIZE);
+				ZipOutputStream zos = new ZipOutputStream(fos);
+				InputStream in = new BufferedInputStream(new FileInputStream(this.getInputFileName()), BUFFER_SIZE);) {
+			
 			ZipEntry ze = new ZipEntry(this.getFileName());
 			zos.putNextEntry(ze);
-
-			InputStream in = new BufferedInputStream(new FileInputStream(this.getInputFileName()), BUFFER_SIZE);
 			int len;
 			while ((len = in.read(buffer)) > 0) {
 				zos.write(buffer, 0, len);
@@ -71,11 +73,11 @@ public class FileCompressor {
 			in.close();
 			zos.closeEntry();
 			zos.close();
-			System.out.println("Done zipping file: " + this.inputFileName + ", created file = " + this.outputFileName);
+			//System.out.println("Done zipping file: " + this.inputFileName + ", created file = " + this.outputFileName);
 			return this.getOutFile();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("IOException while compressing the file: "+fileName);
 			return null;
 		}
 	}
@@ -86,10 +88,8 @@ public class FileCompressor {
 	 */
 	public String unzip() {
 		byte[] buffer = new byte[BUFFER_SIZE];
-		try {
+		try(ZipInputStream zis = new ZipInputStream(new FileInputStream(this.getInputFileName()));) {
 			// get the zip file content
-			ZipInputStream zis = new ZipInputStream(new FileInputStream(this.getInputFileName()));
-
 			// get the zipped file list entry
 			ZipEntry ze = zis.getNextEntry();
 			if (ze != null) {
@@ -106,10 +106,10 @@ public class FileCompressor {
 			zis.closeEntry();
 			zis.close();
 
-			System.out.println("Done unzipping file: " + this.getInputFileName() + ", created file = " + this.getUnzippedOutputFileName());
+			//System.out.println("Done unzipping file: " + this.getInputFileName() + ", created file = " + this.getUnzippedOutputFileName());
 			return this.getOutUnzippedFile();
 		} catch(Exception ex) {
-			ex.printStackTrace(); 
+			logger.error("IOException while unzipping the file"+ex);
 			return null;
 		}
 	}

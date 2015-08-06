@@ -1,15 +1,21 @@
 package qa.qcri.aidr.trainer.api.dao.impl;
 
-import org.apache.log4j.Logger;
-import org.hibernate.*;
-import org.hibernate.criterion.*;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.trainer.api.dao.AbstractDao;
-
 import java.io.Serializable;
 import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.LockOptions;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import qa.qcri.aidr.trainer.api.dao.AbstractDao;
 
 public abstract class AbstractDaoImpl<E, I extends Serializable> implements AbstractDao<E,I> {
 
@@ -20,7 +26,6 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 	}
 
 	private static Logger logger = Logger.getLogger(AbstractDaoImpl.class);
-	private static ErrorLog elog = new ErrorLog();
 
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -62,7 +67,7 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 			//System.out.println("result = " + result);
 			return result;
 		} catch (HibernateException e) {
-			logger.error(elog.toStringException(e));
+			logger.error("Error in findAll().",e);
 			return null;
 		}
 
@@ -83,7 +88,7 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 		try {
 			return criteria.list();
 		} catch (HibernateException e) {
-			logger.error(elog.toStringException(e));
+			logger.error("Error in findByCriteria for criteria : " + criteria.toString(),e);
 			return null;
 		}
 	}
@@ -98,7 +103,7 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 		try {
 			return criteria.list();
 		} catch (HibernateException e) {
-			logger.error(elog.toStringException(e));
+			logger.error("Error in getMaxOrderByCriteria for criteria : " + criteria.toString(),e);
 			return null;
 		}
 	}
@@ -117,7 +122,7 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 		try {
 			return criteria.list();
 		} catch (HibernateException e) {
-			logger.error(elog.toStringException(e));
+			logger.error("Error in findbyCriteriaByOrder for criteria : " + criteria.toString(),e);
 			return null;
 		}
 	}
@@ -138,7 +143,7 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 		try {
 			return criteria.list();
 		} catch (HibernateException e) {
-			logger.error(elog.toStringException(e));
+			logger.error("Error in findByCriteriaWithAliasByOrder for criteria : " + criteria.toString(),e);
 			return null;
 		}
 	}
@@ -155,7 +160,7 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 		try {
 			return criteria.list();
 		} catch (HibernateException e) {
-			logger.error(elog.toStringException(e));
+			logger.error("Error in findByCriteria for criteria : " + criteria.toString(),e);
 			return null;
 		}
 	}
@@ -168,7 +173,7 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
 		try {
 			return (E) criteria.uniqueResult();
 		} catch (HibernateException e) {
-			logger.error(elog.toStringException(e));
+			logger.error("Error in findByCriterionID for criteria : " + criteria.toString(),e);
 			return null;
 		}
 	}

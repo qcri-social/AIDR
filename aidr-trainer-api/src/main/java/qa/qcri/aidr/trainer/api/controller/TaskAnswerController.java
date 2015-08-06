@@ -1,17 +1,15 @@
 package qa.qcri.aidr.trainer.api.controller;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.trainer.api.service.TaskAnswerService;
-import qa.qcri.aidr.trainer.api.template.TaskAnswerResponse;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-
-import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,7 +23,6 @@ import java.util.Date;
 public class TaskAnswerController {
 
     protected static Logger logger = Logger.getLogger(TaskAnswerController.class);
-    private static ErrorLog elog = new ErrorLog();
     
     @Autowired
     private TaskAnswerService taskAnswerService;
@@ -43,13 +40,10 @@ public class TaskAnswerController {
             taskAnswerService.processTaskAnswer(data);
         }
         catch(Exception e){
-            logger.error("saveTaskAnswer got exception on: " + data);
-            logger.error(elog.toStringException(e));
+            logger.error("Error while saving Task Answer",e);
         }
 
-
-
-       // below is non transaction block
+        // below is non transaction block
        /**
         try{
             TaskAnswerResponse taskAnswerResponse =  taskAnswerService.getTaskAnswerResponseData(data);

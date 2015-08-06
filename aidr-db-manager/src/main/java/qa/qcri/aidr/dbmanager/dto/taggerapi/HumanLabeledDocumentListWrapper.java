@@ -1,17 +1,17 @@
 package qa.qcri.aidr.dbmanager.dto.taggerapi;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.log4j.Logger;
+
+import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentList;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentList;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 @XmlRootElement
@@ -21,6 +21,7 @@ public class HumanLabeledDocumentListWrapper implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -7413555749237029785L;
+	private static final Logger logger = Logger.getLogger(HumanLabeledDocumentListWrapper.class);
 	
 	@XmlElement HumanLabeledDocumentList dtoList;
 	
@@ -59,7 +60,7 @@ public class HumanLabeledDocumentListWrapper implements Serializable {
 			String jsonString = jsonObject.toJson(this, HumanLabeledDocumentListWrapper.class);
 			return jsonString;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warn("Error while parsing document list.");
 			return null;
 		}
 	}

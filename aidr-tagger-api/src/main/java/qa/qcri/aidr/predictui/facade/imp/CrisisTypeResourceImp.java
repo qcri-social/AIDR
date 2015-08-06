@@ -9,6 +9,8 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import org.apache.log4j.Logger;
+
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.predictui.facade.CrisisTypeResourceFacade;
@@ -23,6 +25,8 @@ public class CrisisTypeResourceImp implements CrisisTypeResourceFacade {
 	//@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
 	//private EntityManager em;
 	
+	private static Logger logger = Logger.getLogger(CrisisTypeResourceImp.class);
+	
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisTypeResourceFacade remoteCrisisTypeEJB;
 
@@ -31,8 +35,7 @@ public class CrisisTypeResourceImp implements CrisisTypeResourceFacade {
 			List<CrisisTypeDTO> dtoList = remoteCrisisTypeEJB.getAllCrisisTypes();
 			return dtoList;
 		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in getCrisisTypes.");
 		}
 		return null;
 		
@@ -64,51 +67,30 @@ public class CrisisTypeResourceImp implements CrisisTypeResourceFacade {
 		try {
 			return remoteCrisisTypeEJB.addCrisisType(crisisType);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in addCrisisType.");
 		}
 		return null;
-		//em.persist(crisisType);
-		//return crisisType;
 	}
 
 	public CrisisTypeDTO getCrisisTypeByID(Long id) {
 		try {
 			return remoteCrisisTypeEJB.findCrisisTypeByID(id);
 		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in getCrisisTypeByID for id : " + id);
 		}
 		return null;
-		/*
-		Query query = em.createNamedQuery("CrisisType.findByCrisisTypeID", CrisisType.class);
-		query.setParameter("crisisTypeID", id);
-		return (CrisisType) query.getSingleResult();
-		*/
 	}
 
 	public CrisisTypeDTO editCrisisType(CrisisTypeDTO crisis) {
 		try {
 			return remoteCrisisTypeEJB.editCrisisType(crisis);
 		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in editCrisisType.");
 		}
 		return null;
-		//CrisisType newCrisisType = em.merge(crisis);
-		//return newCrisisType;
 	}
 
 	public void deleteCrisisType(Long id) {
 		remoteCrisisTypeEJB.deleteCrisisType(id);
-		
-		/*
-		CrisisType crisisType = em.find(CrisisType.class, id);
-		if (crisisType != null) {
-			em.remove(crisisType);
-		}
-		else{
-			throw new RuntimeException();
-		}*/
 	}
 }

@@ -48,6 +48,7 @@ Ext.define('ADMIN.health.controller.AdminHealthController', {
                     status = '<span class="greenInfo">Running OK</span>';
                 } else {
                     status = '<span class="redInfo">Problem: ' + service + ' not running</span>';
+                    AIDRFMFunctions.reportIssue(response);
                 }
                 if (service === 'tagger') {
                     me.mainComponent.taggerStatus.setText(status, false);

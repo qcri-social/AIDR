@@ -44,14 +44,13 @@ public class NominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<Nomina
 			em.refresh(nb);
 			return new NominalLabelDTO(nb);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error in addNominalLabel.", e);
 			return null;
 		}
 	}
 
 	@Override
 	public NominalLabelDTO editNominalLabel(NominalLabelDTO nominalLabel) throws PropertyNotSetException {
-		System.out.println("Received request for: " + nominalLabel.getNominalLabelId() + ":" + nominalLabel.getNominalLabelCode());
 		try {
 			NominalLabel label = nominalLabel.toEntity();
 			NominalLabel oldLabel = getById(label.getNominalLabelId()); 
@@ -62,8 +61,7 @@ public class NominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<Nomina
 				throw new RuntimeException("Not found");
 			}
 		} catch (Exception e) {
-			System.out.println("Exception in merging/updating nominalLabel: " + nominalLabel.getNominalLabelId());
-			e.printStackTrace();	
+			logger.error("Exception in merging/updating nominalLabel: " + nominalLabel.getNominalLabelId(), e);
 		}
 		return null;
 	}

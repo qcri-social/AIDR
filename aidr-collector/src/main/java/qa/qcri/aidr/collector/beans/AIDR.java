@@ -66,8 +66,4 @@ public class AIDR {
         this.doctype = doctype;
     }
     
-    
-
-    
-    
 }

@@ -9,7 +9,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.hibernate.Hibernate;
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
@@ -24,7 +24,8 @@ import qa.qcri.aidr.predictui.facade.NominalLabelResourceFacade;
 @Stateless
 public class NominalLabelResourceImp implements NominalLabelResourceFacade {
 
-
+	private Logger logger = Logger.getLogger(NominalLabelResourceImp.class);
+	
     @EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade remoteNominalLabelEJB;
     
@@ -36,8 +37,7 @@ public class NominalLabelResourceImp implements NominalLabelResourceFacade {
         try {
 			return remoteNominalLabelEJB.addNominalLabel(label);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in addNominalLabel.", e);
 			return null;
 		}
     }
@@ -47,8 +47,7 @@ public class NominalLabelResourceImp implements NominalLabelResourceFacade {
         try {
 			return remoteNominalLabelEJB.getNominalLabelByID(id);
 		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in getNominalLabelByID for id : " + id, e);
 			return null;
 		}
     }
@@ -58,8 +57,7 @@ public class NominalLabelResourceImp implements NominalLabelResourceFacade {
         try {
 			return remoteNominalLabelEJB.editNominalLabel(label);
 		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in editNominalLabel for label code : " + label.getNominalLabelCode(), e  );
 			return null;
 		}
     }
@@ -69,8 +67,7 @@ public class NominalLabelResourceImp implements NominalLabelResourceFacade {
         try {
 			return remoteNominalLabelEJB.getAllNominalLabels();
 		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in getAllNominalLabel.", e);
 			return null;
 		}
     }
@@ -80,8 +77,7 @@ public class NominalLabelResourceImp implements NominalLabelResourceFacade {
         try {
 			remoteNominalLabelEJB.deleteNominalLabelByID(labelID);
 		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in deleteNominalLabel by ID : " + labelID, e);
 		}
     }
 
@@ -96,10 +92,7 @@ public class NominalLabelResourceImp implements NominalLabelResourceFacade {
 				deleteNominalLabel(nominalLabelDTO.getNominalLabelId());
 			}
 		 }catch (Exception e) {
-			 e.printStackTrace();
+			 logger.error("Error in deleteNominalLabelDataByAttribute for attributeID : " + attributeID, e);
 		 }
-		
 	}
-    
-    
 }

@@ -1,9 +1,6 @@
 package qa.qcri.aidr.common.util;
 
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -22,7 +19,7 @@ public class EmailClient {
 	private static CommonConfigurator configProperties = CommonConfigurator.getInstance();
 	private static Logger logger = Logger.getLogger(EmailClient.class.getName());
 
-	public static void sendErrorMail(String code, String errorMsg)
+	public static void sendErrorMail(String subject, String body )
 	{    
 		// Recipient's email IDs.
 		String recipients = configProperties.getProperty(CommonConfigurationProperty.RECIPIENT_EMAIL);
@@ -50,13 +47,10 @@ public class EmailClient {
 			MimeMessage message = new MimeMessage(session);
 
 			// Set Subject: header field
-			message.setSubject(configProperties.getProperty(CommonConfigurationProperty.MAIL_SUBJECT) + code);
-			
-			Date d = new Date(System.currentTimeMillis());
-			String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+			message.setSubject(subject);
 			
 			// Now set the actual message
-			message.setText(time+configProperties.getProperty(CommonConfigurationProperty.MAIL_BODY) + errorMsg);
+			message.setText(body);
 
 			// Set From: header field of the header.
 			message.setFrom(new InternetAddress(sender,"AIDR Admin"));
@@ -67,13 +61,13 @@ public class EmailClient {
 			Transport.send(message);
 			logger.info("Sent message successfully to: " + recipients);
 		} catch (AddressException e) {
-			e.printStackTrace();
+			logger.error("Recipients address format exception"+e);
 		}
 		catch (MessagingException mex) {
 			logger.error("Unable to send email to " + recipients + " due to " + mex.getCause());
 			mex.printStackTrace();
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.error("Unsupported encoding scheme used");
 		}
 	}
 }

@@ -1,16 +1,7 @@
 package qa.qcri.aidr.trainer.api.controller;
 
-import org.apache.log4j.Logger;
-import org.json.simple.parser.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.trainer.api.service.GeoService;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -18,9 +9,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import java.net.URLDecoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import qa.qcri.aidr.trainer.api.service.GeoService;
 
 /**
  * Created with IntelliJ IDEA.
@@ -37,7 +30,6 @@ public class GeoController {
     GeoService geoService;
     
     private static Logger logger = Logger.getLogger(GeoController.class);
-    private static ErrorLog elog = new ErrorLog();
     
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.WILDCARD})
@@ -58,6 +50,7 @@ public class GeoController {
                         queryDate = sdf.parse(lastupdated);
                     }
                     catch(Exception e){
+                    	logger.error("Exception while parsing date in getMapGeoJSONBasedOnDate",e);
                         queryDate = null;
                     }
                 }
@@ -66,9 +59,7 @@ public class GeoController {
             returnValue =  geoService.getGeoJsonOuputJSON(queryDate);
 
         } catch (Exception e) {
-            logger.error("Exception getMapGeoJSONBasedOnDate");
-            logger.error(elog.toStringException(e));
-           // e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            logger.error("Exception while gettting MapGeoJSON Based On Date \t"+e.getStackTrace());
         }
         return returnValue;
     }
@@ -84,9 +75,7 @@ public class GeoController {
             returnValue =  geoService.getGeoJsonOuputJSON(null);
 
         } catch (Exception e) {
-            logger.error("Exception getMapGeoJSON");
-            logger.error(elog.toStringException(e));
-            // e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            logger.error("Exception while getting MapGeoJSON \t"+e.getStackTrace());
         }
         return returnValue;
     }
@@ -109,9 +98,7 @@ public class GeoController {
             returnValue =  geoService.getGeoJsonOuputJSONP(queryDate);
 
         } catch (Exception e) {
-            logger.error("Exception getMapGeoJSONPBasedOnDate");
-            logger.error(elog.toStringException(e));
-            //e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            logger.error("Exception while getting MapGeoJSONP BasedOnDate \t"+e.getStackTrace());
         }
 
         return returnValue;
@@ -128,9 +115,7 @@ public class GeoController {
             returnValue =  geoService.getGeoJsonOuputJSONP(null);
 
         } catch (Exception e) {
-            logger.error("Exception getMapGeoJSONP");
-            logger.error(elog.toStringException(e));
-           // e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            logger.error("Exception while getting MapGeoJSONP \t"+e.getStackTrace());
         }
 
         return returnValue;

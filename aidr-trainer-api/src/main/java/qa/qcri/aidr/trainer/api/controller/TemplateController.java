@@ -1,7 +1,9 @@
 package qa.qcri.aidr.trainer.api.controller;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import qa.qcri.aidr.trainer.api.service.TemplateService;
 import qa.qcri.aidr.trainer.api.template.CrisisApplicationListModel;
 import qa.qcri.aidr.trainer.api.template.CrisisLandingHtmlModel;
@@ -12,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
 import java.util.List;
 
 /**
@@ -24,6 +27,8 @@ import java.util.List;
 @Path("/template")
 @Component
 public class TemplateController {
+	
+	protected static Logger logger = Logger.getLogger(TemplateController.class);
 
     @Autowired
     private TemplateService templateService;
@@ -64,7 +69,7 @@ public class TemplateController {
     @Produces( MediaType.APPLICATION_JSON )
     @Path("/status/crisis/code/{code}")
     public CrisisLandingStatusModel getCrisisTemplateByID(@PathParam("code") String code){
-        System.out.println("[getCrisisTemplateByID] received request for code = " + code);
+    	logger.info("[getCrisisTemplateByID] received request for code = " + code);
     	return templateService.getCrisisLandingStatusByCrisisCode(code);
     }
 

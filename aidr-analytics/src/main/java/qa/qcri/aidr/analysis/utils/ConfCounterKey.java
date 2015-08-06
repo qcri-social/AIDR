@@ -17,7 +17,7 @@ public class ConfCounterKey extends CounterKey {
 	}
 
 	public ConfCounterKey(String crisisCode, String attributeCode, String labelCode, String binNumber) {
-		super();
+		super(crisisCode, attributeCode, labelCode);
 		if (binNumber != null) {
 			this.setBinNumber(binNumber);
 		}
@@ -57,4 +57,12 @@ public class ConfCounterKey extends CounterKey {
 		return true;
 	}
 
+
+	@Override
+	public String toString() {
+		return "ConfCounterKey [binNumber=" + binNumber + ", getCrisisCode()="
+				+ getCrisisCode() + ", getAttributeCode()="
+				+ getAttributeCode() + ", getLabelCode()=" + getLabelCode()
+				+ "]";
+	}
 }

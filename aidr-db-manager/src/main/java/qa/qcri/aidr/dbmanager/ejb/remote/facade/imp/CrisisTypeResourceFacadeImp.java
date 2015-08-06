@@ -28,7 +28,7 @@ import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
 @Stateless(name = "CrisisTypeResourceFacadeImp")
 public class CrisisTypeResourceFacadeImp extends CoreDBServiceFacadeImp<CrisisType, Long> implements CrisisTypeResourceFacade {
 
-	private Logger logger = Logger.getLogger("db-manager-log");
+	private static final Logger logger = Logger.getLogger("db-manager-log");
 
 	public CrisisTypeResourceFacadeImp() {
 		super(CrisisType.class);
@@ -61,21 +61,20 @@ public class CrisisTypeResourceFacadeImp extends CoreDBServiceFacadeImp<CrisisTy
 
 	@Override
 	public CrisisTypeDTO editCrisisType(CrisisTypeDTO crisisType) throws PropertyNotSetException {
-		System.out.println("Received edit request for: " + crisisType.getName() + ", " + crisisType.getCrisisTypeId());
 		try {
 			CrisisType cType = getById(crisisType.getCrisisTypeId());
 			if (cType != null) {
 				cType = em.merge(crisisType.toEntity());
 				em.flush();
 				em.refresh(cType);
-				System.out.println("Updated crisisType: " + cType.getName() + ", " + cType.getCrisisTypeId());
+				logger.info("Updated crisisType: " + cType.getName() + ", " + cType.getCrisisTypeId());
 				return cType != null ? new CrisisTypeDTO(cType) : null;
 			} else {
+				logger.error("Not found");
 				throw new RuntimeException("Not found");
 			}
 		} catch (Exception e) {
-			System.out.println("Exception in merging/updating crisisType: " + crisisType.getCrisisTypeId());
-			e.printStackTrace();	
+			logger.error("Exception in merging/updating crisisType: " + crisisType.getCrisisTypeId(), e);
 		}
 		return null;
 	}
@@ -87,6 +86,7 @@ public class CrisisTypeResourceFacadeImp extends CoreDBServiceFacadeImp<CrisisTy
 			this.delete(crisisType);
 			return 1;
 		} else {
+			logger.error("CrisisType requested to be deleted does not exist! id = " + id);
 			throw new RuntimeException("CrisisType requested to be deleted does not exist! id = " + id);
 		}
 	}

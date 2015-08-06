@@ -13,7 +13,6 @@ import javax.ejb.Stateless;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 
@@ -24,8 +23,7 @@ import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 @Stateless
 public class CrisisResourceImp implements CrisisResourceFacade {
 	//private static Logger logger = Logger.getLogger(CrisisResourceImp.class);
-	private static Logger logger = Logger.getLogger(CrisisResourceImp.class);
-	private static ErrorLog elog = new ErrorLog();
+	private Logger logger = Logger.getLogger(CrisisResourceImp.class);
 
 	//@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
 	//private EntityManager em;
@@ -37,8 +35,7 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 		try {
 			return remoteCrisisEJB.addCrisis(crisis);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in addCrisis.", e);
 		}
 		return null;
 	}
@@ -47,8 +44,7 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 		try {
 			return remoteCrisisEJB.findCrisisByID(id);
 		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in getCrisisByID for id : " + id, e);
 		}
 		return null;
 	}
@@ -57,8 +53,7 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 		try {
 			return remoteCrisisEJB.getCrisisByCode(code);
 		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in getCrisisByCode for code : " + code, e);
 		}
 		return null;
 	}
@@ -68,8 +63,7 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 			CrisisDTO editedDTO = remoteCrisisEJB.editCrisis(crisis);
 			return editedDTO;
 		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in editCrisis.", e);
 		}
 		return null;
 	}
@@ -78,8 +72,7 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 		try {
 			return remoteCrisisEJB.getAllCrisis();
 		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in getAllCrisis.", e);
 		}
 		return null;
 	}
@@ -88,8 +81,7 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 		try {
 			return remoteCrisisEJB.getAllCrisisByUserID(userID);
 		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in getAllCrisisByUserID for userID : " + userID, e);
 		}
 		return null;
 	}
@@ -98,8 +90,7 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 		try {
 			return remoteCrisisEJB.isCrisisExists(crisisCode);
 		} catch (PropertyNotSetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error in isCrisisExists for code : " + crisisCode, e);
 		}
 		return false;
 	}

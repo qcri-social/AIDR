@@ -3,8 +3,8 @@ package qa.qcri.aidr.persister.collction;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.redis.JedisConnectionPool;
+import qa.qcri.aidr.utils.PersisterErrorHandler;
 import redis.clients.jedis.Jedis;
 
 /**
@@ -14,7 +14,6 @@ import redis.clients.jedis.Jedis;
 public class RedisCollectionPersister implements Runnable {
 
     private static Logger logger = Logger.getLogger(RedisCollectionPersister.class.getName());
-    private static ErrorLog elog = new ErrorLog();
     String fileName;
     Thread t;
     boolean suspendFlag;
@@ -36,10 +35,8 @@ public class RedisCollectionPersister implements Runnable {
             subscriberJedis = connObject.getJedisConnection();
             subscriber = new CollectionSubscriber(fileName, channel, collectionCode);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             logger.error(collectionCode + ": Error in subscribing to Redis");
-            logger.error(elog.toStringException(e));
-
+            PersisterErrorHandler.sendErrorMail(e.getLocalizedMessage(), "Error in subscribing to Redis for collection: "+collectionCode);
             connObject.close(subscriberJedis);
             subscriberJedis = null;
             subscriber = null;
@@ -68,7 +65,6 @@ public class RedisCollectionPersister implements Runnable {
                             Thread.sleep(200);
                         } catch (InterruptedException ex) {
                             logger.warn(collectionCode + " error in closing Redis connection");
-                            logger.warn(elog.toStringException(ex));
                         }
                     }
                 }

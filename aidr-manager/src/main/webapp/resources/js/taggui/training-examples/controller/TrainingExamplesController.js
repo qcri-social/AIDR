@@ -64,7 +64,6 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
             method: 'GET',
             params: {
                 id: CRISIS_ID
-//                id: 117
             },
             headers: {
                 'Accept': 'application/json'
@@ -115,6 +114,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                     }
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
                 AIDRFMFunctions.hideMask(mask);
             },
@@ -176,7 +176,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                         me.loadData();
                     } else {
                         me.loadData();
-                        //AIDRFMFunctions.setAlert("Info", "Task has been saved.");
+                        AIDRFMFunctions.reportIssue(response);
                     }
                     AIDRFMFunctions.hideMask(mask);
                 },
@@ -223,6 +223,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                 var resp = Ext.decode(response.responseText);
                 if (!resp.success) {
                     AIDRFMFunctions.setAlert("Error", "Error while skip task.");
+                    AIDRFMFunctions.reportIssue(response);
                 }
                 AIDRFMFunctions.hideMask(mask);
             },

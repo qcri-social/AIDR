@@ -21,18 +21,16 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.UsersResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
-import qa.qcri.aidr.dbmanager.entities.misc.Users;
 
 @Stateless(name="CrisisResourceFacadeImp")
 public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long> implements CrisisResourceFacade {
 
-	private static Logger logger = Logger.getLogger("db-manager-log");
+	private static final Logger logger = Logger.getLogger("db-manager-log");
 
 	@EJB
 	private UsersResourceFacade userLocalEJB;
@@ -73,7 +71,7 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 			em.refresh(c);
 			return new CrisisDTO(c);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error in addCrisis for crisis code : " + crisis.getCode(), e);
 			return null;
 		}
 	}
@@ -113,7 +111,6 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 
 	@Override
 	public CrisisDTO editCrisis(CrisisDTO crisis) throws PropertyNotSetException {
-		System.out.println("Received edit request for: " + crisis.getCrisisID() + ", " + crisis.getCode() + ", " + crisis.getName());
 		try {
 			Crisis c = crisis.toEntity();
 			Crisis cr = getById(c.getCrisisId()); 
@@ -121,14 +118,13 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 				cr = em.merge(c);
 				em.flush();
 				em.refresh(cr);
-				System.out.println("Updated crisis: " + cr.getCode() + ", " + cr.getName() + ", " + cr.getCrisisType().getName());
 				return cr != null ? new CrisisDTO(cr) : null;
 			} else {
+				logger.error("Not found");
 				throw new RuntimeException("Not found");
 			}
 		} catch (Exception e) {
-			System.out.println("Exception in merging/updating crisis: " + crisis.getCrisisID());
-			e.printStackTrace();	
+			logger.error("Exception in merging/updating crisis: " + crisis.getCrisisID(), e);
 		}
 		return null;
 
@@ -136,19 +132,19 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 
 	@Override
 	public List<CrisisDTO> getAllCrisis() throws PropertyNotSetException {
-		System.out.println("Received request for fetching all crisis!!!");
+		logger.info("Received request for fetching all crisis!!!");
 		List<CrisisDTO> dtoList = new ArrayList<CrisisDTO>();
 		List<Crisis> crisisList = getAll();
 		if (crisisList != null && !crisisList.isEmpty()) {
 			for (Crisis crisis : crisisList) {
-				System.out.println("Converting to DTO crisis: " + crisis.getCode() + ", " + crisis.getName() + ", " + crisis.getCrisisId()
+				logger.info("Converting to DTO crisis: " + crisis.getCode() + ", " + crisis.getName() + ", " + crisis.getCrisisId()
 						+ ", " + crisis.getUsers().getUserId() + ":" + crisis.getUsers().getName());
 
 				CrisisDTO dto = new CrisisDTO(crisis);
 				dtoList.add(dto);
 			}
 		}
-		System.out.println("Done creating DTO list, size = " + dtoList.size());
+		logger.info("Done creating DTO list, size = " + dtoList.size());
 		return dtoList;
 	}
 

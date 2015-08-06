@@ -42,7 +42,7 @@ public class ModelFacadeImp implements ModelFacade {
         try {
             return remoteModelEJB.getAllModels();
         } catch (PropertyNotSetException e) {
-            e.printStackTrace();
+            logger.error("Error in getAllModels.", e);
         }
         return null;
 

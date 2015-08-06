@@ -1,5 +1,11 @@
 package qa.qcri.aidr.trainer.api.controller;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -7,16 +13,9 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.trainer.api.service.ClientAppSourceService;
 import qa.qcri.aidr.trainer.api.store.CodeLookUp;
 import qa.qcri.aidr.trainer.api.store.StatusCodeType;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,7 +29,6 @@ import java.util.Date;
 public class ClientAppSourceController {
 
     protected static Logger logger = Logger.getLogger(ClientAppSourceController.class);
-    private static ErrorLog elog = new ErrorLog();
 
     @Autowired
     private ClientAppSourceService clientAppSourceService;
@@ -59,9 +57,7 @@ public class ClientAppSourceController {
         }
         catch(Exception e){
             returnValue = StatusCodeType.RETURN_FAIL;
-            logger.error("saveAppSource got exception : ");
-            logger.error(elog.toStringException(e));
-            System.out.println("saveAppSource excpetion : " + e );
+            logger.error("Exception while saving app source",e);
         }
 
         return Response.status(CodeLookUp.APP_REQUEST_SUCCESS).entity(returnValue).build();

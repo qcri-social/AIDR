@@ -9,7 +9,7 @@ public class JsonResponse {
 	JSONObject json = new JSONObject();
 	
 	public JsonResponse() {
-		json.put("errorMsg", ReturnCode.SUCCESS);
+		json.put("status", ReturnCode.SUCCESS);
 	}
 	public JSONObject getNewJsonResponseObject(String crisisCode, String attributeCode, Long granularity, Long startTime, Long endTime) {
 		
@@ -18,21 +18,21 @@ public class JsonResponse {
 		json.put("granularity", granularity);
 
 		if (startTime != null) {
-			json.put("startTime", new Date(startTime));
+			json.put("startTime", startTime);
 		} else {
 			json.put("startTime", null);
 		}
 
 		if (endTime != null) {
-			json.put("endTime", new Date(endTime));
+			json.put("endTime", endTime);
 		} else {
-			json.put("endTime", null);
+			json.put("endTime", startTime+granularity);
 		}
 		return json;
 	}
 	
 	public static JSONObject addError(JSONObject json) {
-		json.put("errorMsg", ReturnCode.ERROR);
+		json.put("status", ReturnCode.ERROR);
 		return json;
 	}
 }

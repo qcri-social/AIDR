@@ -20,10 +20,11 @@ public class TaggerConfigurator extends BaseConfigurator {
 	private TaggerConfigurator() {
 		LOGGER.info("Instantiating TaggerConfigurator,");
 		this.initProperties(configLoadFileName, TaggerConfigurationProperty.values());
+		
+		this.directoryIsWritable(TaggerConfigurationProperty.MODEL_STORE_PATH.getName());
 	}
 
 	public static Configurator getInstance() {
 		return instance;
 	}
-
 }

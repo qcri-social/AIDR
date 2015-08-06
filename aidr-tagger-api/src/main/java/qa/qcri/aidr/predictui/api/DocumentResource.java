@@ -129,7 +129,7 @@ public class DocumentResource {
 				}
 				return Response.ok(mapper.writeValueAsString(unlabeledCount)).build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error in getNominalAttributesCountForCrisis for crisis Id : " + crisisId);
 			return Response.ok(-1).build();
 		}
 	}

@@ -7,6 +7,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.log4j.Logger;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,8 +20,9 @@ public class HumanLabeledDocumentList implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-
+	private static final long serialVersionUID = 4864042221879747333L;
+	private static final Logger logger = Logger.getLogger("db-manager-log");
+	
 	@XmlElement private List<HumanLabeledDocumentDTO> items;
 
 	@XmlElement private Integer total;
@@ -66,7 +69,7 @@ public class HumanLabeledDocumentList implements Serializable {
 			String jsonString = jsonObject.toJson(this, HumanLabeledDocumentList.class);
 			return jsonString;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warn("Error in parsing json to human labeled doc list.");
 			return null;
 		}
 	}
