@@ -60,7 +60,7 @@ public class JsonDeserializer {
 	private static final int BUFFER_SIZE = 10 * 1024 * 1024;	// buffer size to use for buffered r/w
 	private static final int LIST_BUFFER_SIZE = 50000; 
 
-	private static final String FILE_NAME_PREFIX = "-human_labeled_filtered-";
+	private static final String FILE_NAME_PREFIX = "human_labeled_filtered-";
 	private static final String CSV_FILE_EXTENSION = ".csv";
 	private MD5HashGenerator MD5Hash; 
 
@@ -492,7 +492,7 @@ public class JsonDeserializer {
 
 		try {
 			String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode;
-			String fileNameforCSVGen = "Classified_" + collectionCode + "_last_100k_tweets";
+			String fileNameforCSVGen = "Classified_last_100k_tweets";
 			fileName = fileNameforCSVGen + ".csv";
 			FileSystemOperations.deleteFile(folderLocation + "/" + fileName);
 
@@ -606,9 +606,9 @@ public class JsonDeserializer {
 		String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode;
 		String fileNameforCSVGen = null;
 		try {
-			fileNameforCSVGen = collectionCode + "_last_100k_tweets_filtered" + "-" + MD5Hash.getMD5Hash(userName);
+			fileNameforCSVGen = "last_100k_tweets_filtered" + "-" + MD5Hash.getMD5Hash(userName);
 		} catch (Exception e) {
-			fileNameforCSVGen = collectionCode + "_last_100k_tweets_filtered";
+			fileNameforCSVGen = "last_100k_tweets_filtered";
 		}
 		fileName = fileNameforCSVGen + ".csv";
 		try {
@@ -739,142 +739,6 @@ public class JsonDeserializer {
 		FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforCSVGen + ".csv");
 		logger.info("Deleted raw created file: " + folderLocation + "/" + fileNameforCSVGen + ".csv");
 		return fileName;
-	}
-
-
-	@Deprecated
-	public List<ClassifiedTweet> getNClassifiedTweetsJSON(String collectionCode, int exportLimit) {
-		List<ClassifiedTweet> tweetsList = new ArrayList();
-		BufferedReader br = null;
-		try {
-
-			String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode;
-			File folder = new File(folderLocation);
-			File[] listOfFiles = folder.listFiles();
-			// to get only Tagger's files
-			ArrayList<File> taggerFilesList = new ArrayList();
-			for (int i = 0; i < listOfFiles.length; i++) {
-				if (StringUtils.startsWith(listOfFiles[i].getName(), "Classified_")
-						&& StringUtils.containsIgnoreCase(listOfFiles[i].getName(), "vol")) {
-					taggerFilesList.add(listOfFiles[i]);
-				}
-			}
-			Object[] objectsArray = taggerFilesList.toArray();
-			File[] taggerFiles = Arrays.copyOf(objectsArray, objectsArray.length, File[].class);
-			Arrays.sort(taggerFiles, new Comparator<File>() {
-				public int compare(File f1, File f2) {
-					return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
-				}
-			});
-
-			for (int i = 0; i < taggerFiles.length; i++) {
-				File f = taggerFiles[i];
-				String currentFileName = f.getName();
-				if (currentFileName.endsWith(".json")) {
-					String line;
-					//System.out.println("Reading file : " + f.getAbsolutePath());
-					InputStream is = new FileInputStream(f.getAbsolutePath());
-					br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-					while ((line = br.readLine()) != null) {
-						ClassifiedTweet tweet = getClassifiedTweet(line);
-						if (tweetsList.size() < exportLimit) {
-							tweetsList.add(tweet);
-						} else {
-							break;
-						}
-					}
-				}
-			}
-
-		} catch (FileNotFoundException ex) {
-			logger.error(collectionCode + ": couldn't find file");
-		} catch (IOException ex) {
-			logger.error(collectionCode + ": IO Exception for file read");
-		} 
-		return tweetsList;
-	}
-
-	/**
-	 * 
-	 * @param collectionCode
-	 * @param exportLimit
-	 * @param selectedLabels list of user provided label names for filtering tweets
-	 * @return JSON format classified tweets filtered by user selected label name
-	 */
-	@Deprecated
-	public List<ClassifiedTweet> getNClassifiedTweetsJSONFiltered(String collectionCode, 
-			int exportLimit,
-			final JsonQueryList queryList) {
-		List<ClassifiedTweet> tweetsList = new ArrayList<ClassifiedTweet>();
-		BufferedReader br = null;
-		try {
-
-			String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode;
-			File folder = new File(folderLocation);
-			File[] listOfFiles = folder.listFiles();
-			// to get only Tagger's files
-			ArrayList<File> taggerFilesList = new ArrayList<File>();
-			for (int i = 0; i < listOfFiles.length; i++) {
-				if (StringUtils.startsWith(listOfFiles[i].getName(), "Classified_")
-						&& StringUtils.containsIgnoreCase(listOfFiles[i].getName(), "vol")) {
-					taggerFilesList.add(listOfFiles[i]);
-				}
-			}
-			Object[] objectsArray = taggerFilesList.toArray();
-			File[] taggerFiles = Arrays.copyOf(objectsArray, objectsArray.length, File[].class);
-			Arrays.sort(taggerFiles, new Comparator<File>() {
-				public int compare(File f1, File f2) {
-					return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
-				}
-			});
-
-			// Added by koushik - first build the FilterQueryMatcher
-			FilterQueryMatcher tweetFilter = new FilterQueryMatcher();
-			tweetFilter.queryList.setConstraints(queryList);
-			tweetFilter.buildMatcherArray();
-
-			for (int i = 0; i < taggerFiles.length; i++) {
-				File f = taggerFiles[i];
-				String currentFileName = f.getName();
-				if (currentFileName.endsWith(".json")) {
-					String line;
-					//System.out.println("Reading file : " + f.getAbsolutePath());
-					InputStream is = new FileInputStream(f.getAbsolutePath());
-					br = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-					while ((line = br.readLine()) != null) {
-						ClassifiedTweet tweet = getClassifiedTweet(line);
-						// Apply filter on tweet
-						if (tweetsList.size() < exportLimit) {
-							if (tweetFilter.getMatcherResult(tweet)) {
-								//write to arrayList
-								tweetsList.add(tweet);
-							}
-						} else {
-							break;
-						}
-					}
-				}
-			}
-
-		} catch (FileNotFoundException ex) {
-			logger.error(collectionCode + ": couldn't find file");
-		} catch (IOException ex) {
-			logger.error(collectionCode + ": IO Exception for file read");
-		} 
-		return tweetsList;
-	}
-
-
-	public static void main(String[] args) {
-		//JsonDeserializer jc = new JsonDeserializer();
-		//String fileName = jc.generateClassifiedJson2TweetIdsCSV("2014-04-chile_earthquake_2014", false);
-		//String fileName = jc.taggerGenerateJSON2CSV_100K_BasedOnTweetCount("2014-04-chile_earthquake_2014", 10);
-		//String fileName = jc.generateJson2TweetIdsCSV("prism_nsa");
-		//System.out.println("File name: " + fileName);
-
-		//testFilterAPIs();
-		//jc.generateJson2TweetIdsCSV("syria_en");
-		//FileSystemOperations.deleteFile("CandFlood2013_20130922_vol-1.json.csv");
 	}
 
 
@@ -1057,7 +921,7 @@ public class JsonDeserializer {
 		try {
 
 			String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode;
-			String fileNameforJsonGen = collectionCode + "_last_100k_tweets";
+			String fileNameforJsonGen = "last_100k_tweets";
 			fileName = fileNameforJsonGen + extension;
 			FileSystemOperations.deleteFile(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + fileNameforJsonGen + extension);
 
@@ -1157,7 +1021,7 @@ public class JsonDeserializer {
 		try {
 
 			String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode;
-			String fileNameforJsonGen = collectionCode + "_tweetIds";
+			String fileNameforJsonGen = "tweetIds";
 			fileName = fileNameforJsonGen + extension;
 			FileSystemOperations.deleteFile(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/" + fileNameforJsonGen + extension);
 
@@ -1257,7 +1121,7 @@ public class JsonDeserializer {
 
 			String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode;
 			logger.info("For collection: " + collectionCode + ", will create file from folder: " + folderLocation);
-			String fileNameforJsonGen = "Classified_" + collectionCode + "_last_100k_tweets";
+			String fileNameforJsonGen = "Classified_last_100k_tweets";
 			fileName = fileNameforJsonGen + extension;
 
 			FileSystemOperations.deleteFile(folderLocation + "/" + fileNameforJsonGen + extension);
@@ -1366,7 +1230,7 @@ public class JsonDeserializer {
 
 		BufferedWriter beanWriter = null;
 		String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode;
-		String fileNameforJsonGen = "Classified_" + collectionCode + "_tweetIds";
+		String fileNameforJsonGen = "Classified_tweetIds";
 		String fileName = fileNameforJsonGen + extension;
 		int totalCount = 0;
 
@@ -1468,9 +1332,9 @@ public class JsonDeserializer {
 		String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/";
 		String fileNameforJsonGen = null;
 		try {
-			fileNameforJsonGen = collectionCode + "_last_100k_tweets_filtered"  + "-" + MD5Hash.getMD5Hash(userName);
+			fileNameforJsonGen = "last_100k_tweets_filtered"  + "-" + MD5Hash.getMD5Hash(userName);
 		} catch (Exception e) {
-			fileNameforJsonGen = collectionCode + "_last_100k_tweets_filtered";
+			fileNameforJsonGen = "last_100k_tweets_filtered";
 		}
 		fileName = fileNameforJsonGen + extension;
 
@@ -1485,7 +1349,7 @@ public class JsonDeserializer {
 			ArrayList<File> taggerFilesList = new ArrayList<File>();
 			for (int i = 0; i < listOfFiles.length; i++) {
 				if (StringUtils.startsWith(listOfFiles[i].getName(), (collectionCode + "_"))
-						&& StringUtils.containsIgnoreCase(listOfFiles[i].getName(), "vol")) {
+					&& StringUtils.containsIgnoreCase(listOfFiles[i].getName(), "vol")) {
 					taggerFilesList.add(listOfFiles[i]);
 					logger.info("Added to list, file: " + listOfFiles[i]);
 				}
@@ -1607,9 +1471,9 @@ public class JsonDeserializer {
 		String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/";
 		String fileNameforJsonGen = null;
 		try {
-			fileNameforJsonGen = collectionCode + "_tweetIds_filtered"  + "-" + MD5Hash.getMD5Hash(userName);
+			fileNameforJsonGen = "tweetIds_filtered"  + "-" + MD5Hash.getMD5Hash(userName);
 		} catch (Exception e) {
-			fileNameforJsonGen = collectionCode + "_last_100k_tweets_filtered";
+			fileNameforJsonGen = "last_100k_tweets_filtered";
 		}
 
 		String fileName = fileNameforJsonGen + extension;
@@ -1758,7 +1622,7 @@ public class JsonDeserializer {
 		String fileNameforCSVGen = null;
 
 		try {
-			fileNameforCSVGen = collectionCode + FILE_NAME_PREFIX + MD5Hash.getMD5Hash(userName) + CSV_FILE_EXTENSION;
+			fileNameforCSVGen = FILE_NAME_PREFIX + MD5Hash.getMD5Hash(userName) + CSV_FILE_EXTENSION;
 			fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + "/" + collectionCode + "/" + fileNameforCSVGen;
 		} catch (Exception e) {
@@ -1855,7 +1719,7 @@ public class JsonDeserializer {
 		String fileNameforCSVGen = null;
 
 		try {
-			fileNameforCSVGen = collectionCode + FILE_NAME_PREFIX + "tweetIds-" +  MD5Hash.getMD5Hash(userName) + CSV_FILE_EXTENSION;
+			fileNameforCSVGen = FILE_NAME_PREFIX + "tweetIds-" +  MD5Hash.getMD5Hash(userName) + CSV_FILE_EXTENSION;
 			fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + "/" + collectionCode + "/" + fileNameforCSVGen;
 		} catch (Exception e) {
@@ -1958,7 +1822,7 @@ public class JsonDeserializer {
 
 		// If everything ok, then finally generate the fileName 
 		try {
-			fileNameforGen = collectionCode + FILE_NAME_PREFIX + MD5Hash.getMD5Hash(userName) + extension;
+			fileNameforGen = FILE_NAME_PREFIX + MD5Hash.getMD5Hash(userName) + extension;
 			fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + "/" + collectionCode + "/" + fileNameforGen;
 		} catch (Exception e) {
@@ -2063,7 +1927,7 @@ public class JsonDeserializer {
 		String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode;
 		// If everything ok, then finally generate the fileName 
 		try {
-			fileNameforGen = collectionCode + FILE_NAME_PREFIX + "tweetIds-" + MD5Hash.getMD5Hash(userName) + extension;
+			fileNameforGen = FILE_NAME_PREFIX + "tweetIds-" + MD5Hash.getMD5Hash(userName) + extension;
 			fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL)
  + "/" + collectionCode + "/" + fileNameforGen;
 		} catch (Exception e) {

@@ -46,6 +46,7 @@ public class SMSCollectorAPI  {
     
     public static final String CHANNEL = configProperties.getProperty(CollectorConfigurationProperty.COLLECTOR_CHANNEL) + ".%s";
     private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
+    private static final String LOAD_SHEDDER_NAME = "(generic)";
     
     @GET
     @Path("/start")
@@ -55,8 +56,10 @@ public class SMSCollectorAPI  {
             redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
         }
         String channelName = String.format(CHANNEL, collectionCode);
-        redisLoadShedder.put(channelName,
-                new LoadShedder(Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_LIMIT)), Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)), true));
+        redisLoadShedder.put(channelName, new LoadShedder(
+                		Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_LIMIT)), 
+                		Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)), 
+                		true,LOAD_SHEDDER_NAME));
         GenericCache.getInstance().putSMSCollection(collectionCode, configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_RUNNING));
         startPersister(collectionCode);
         return Response.ok().build();

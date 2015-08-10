@@ -31,6 +31,7 @@ public class TwitterStreamTracker implements Closeable {
 	private TwitterStream twitterStream;
 	private FilterQuery query;
 	private JedisPublisher publisherJedis;
+	private static final String LOAD_SHEDDER_NAME = "(generic)"; 
 
 	public TwitterStreamTracker(CollectionTask task) throws ParseException{
 
@@ -42,7 +43,8 @@ public class TwitterStreamTracker implements Closeable {
 
 		LoadShedder shedder = new LoadShedder(
 				Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_LIMIT)),
-				Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)), true);
+				Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)), 
+				true,LOAD_SHEDDER_NAME);
 		String channelName = configProperties.getProperty(CollectorConfigurationProperty.COLLECTOR_CHANNEL) + "." + task.getCollectionCode();
 		TwitterStatusListener listener = new TwitterStatusListener(task, channelName);
 		listener.addFilter(new ShedderFilter(channelName, shedder));

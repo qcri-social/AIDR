@@ -137,7 +137,6 @@ public class CollectionServiceImpl implements CollectionService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<AidrCollection> findAllForPublic(Integer start, Integer limit, Enum statusValue) throws Exception {
-		//logger.info("statusValue: " + statusValue);
 		return collectionRepository.getPaginatedDataForPublic(start, limit, statusValue);
 	}
 
@@ -177,10 +176,10 @@ public class CollectionServiceImpl implements CollectionService {
 	public AidrCollection updateAndGetRunningCollectionStatusByUser(Integer userId) throws Exception {
 		AidrCollection collection = collectionRepository.getRunningCollectionStatusByUser(userId);
 		if (collection != null){
-			logger.info("User with ID: '" + userId + "' has a running collection with code: '" + collection.getCode() + "'. Trying to update collection from fetcher." );
+			logger.info("User with ID: '" + userId + "' has a running collection with code: '" + collection.getCode());
 			return statusByCollection(collection);
 		} else {
-			logger.info("User with ID: '" + userId + "' don't have any running collections. Nothing to update." );
+			//logger.info("User with ID: '" + userId + "' don't have any running collections. Nothing to update." );
 			//            If there is no running collection there is still can be collection with status 'Initializing'.
 			//            This happens because we update collection information from fetcher before collection was started.
 			//            So we need to update from Fetcher this kind of collections as well.
@@ -274,18 +273,14 @@ public class CollectionServiceImpl implements CollectionService {
 			if (aidrCollection.getCollectionType() == Twitter) {
 				WebTarget webResource = client.target(fetchMainUrl + "/twitter/start");
 
-				System.out.println("In startFetcher...");
 				ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 
 				Response clientResponse = webResource.request(MediaType.APPLICATION_JSON)
 						.post(Entity.json(objectMapper.writeValueAsString(fetcherRequest)), Response.class);
 
-				System.out.println("ObjectMapper: " + objectMapper.writeValueAsString(fetcherRequest));
-				//System.out.println("Response = " + clientResponse);
-
+				//logger.info("ObjectMapper: " + objectMapper.writeValueAsString(fetcherRequest));
 				String jsonResponse = clientResponse.readEntity(String.class);
-
-				logger.info("NEW STRING: " + jsonResponse);
+				//logger.info("NEW STRING: " + jsonResponse);
 				FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);
 				logger.info("start Response from fetchMain " + objectMapper.writeValueAsString(response));
 				aidrCollection.setStatus(CollectionStatus.getByStatus(response.getStatusCode()));
@@ -376,7 +371,6 @@ public class CollectionServiceImpl implements CollectionService {
 			
 			if (!CollectionStatus.getByStatus(response.getStatusCode()).equals(collection.getStatus())) {
 				
-				logger.info("Collection Status: " + CollectionStatus.getByStatus(response.getStatusCode()));
 				CollectionStatus prevStatus =  collection.getStatus();
 				collection.setStatus(CollectionStatus.getByStatus(response.getStatusCode()));
 				
@@ -460,8 +454,6 @@ public class CollectionServiceImpl implements CollectionService {
 				Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
 				String jsonResponse = clientResponse.readEntity(String.class);
-				//System.out.println("**********Collector response : " + jsonResponse);
-
 				collection = updateStatusCollection(jsonResponse, collection);
 				return collection;
 			} catch (Exception e) {
@@ -548,23 +540,19 @@ public class CollectionServiceImpl implements CollectionService {
 					int i = 0;
 					int j = 0;
 					logger.info("Received string: " + followList + ", Split follow string: " + userList);
-					//System.out.println("Received string: " + followList + ", Split follow string: " + userList);
 					for (String user: userList) {
-						logger.info("Looking at follow data: " + user);
-						//System.out.println("Looking at follow data: " + user);
+						//logger.info("Looking at follow data: " + user);
 						if (StringUtils.isNumeric(user.trim())) {
 							try {
 								userIdList[j] = Long.parseLong(user.trim());
-								logger.info("Going to fetch twitter userData for the following twitterID: " + userIdList[j]);
-								//System.out.println("Going to fetch twitter userData for the following twitterID: " + userIdList[j]);
+								//logger.info("Going to fetch twitter userData for the following twitterID: " + userIdList[j]);
 								++j;
 							} catch (Exception ex) {
 								logger.error("Exception in parsing string to number: ", ex);
 							}		
 						} else {
 							userNameList[i] = user.trim();
-							logger.info("Going to fetch twitter userData for the following screen name: " + userNameList[i]);
-							//System.out.println("Going to fetch twitter userData for the following screen name: " + userNameList[i]);
+							//logger.info("Going to fetch twitter userData for the following screen name: " + userNameList[i]);
 							++i;
 						}
 					}
@@ -588,8 +576,7 @@ public class CollectionServiceImpl implements CollectionService {
 					followIDs.append(u.getId()).append(",");
 				}
 				followIDs.deleteCharAt(followIDs.lastIndexOf(","));
-				logger.info("Created follow twitterID list: " + followIDs.toString());
-				//System.out.println("Created follow twitterID list: " + followIDs.toString());
+				//logger.info("Created follow twitterID list: " + followIDs.toString());
 				return followIDs.toString();		
 			}
 			else {
@@ -618,15 +605,12 @@ public class CollectionServiceImpl implements CollectionService {
 					userIdList = new long[userList.size()];
 					int j = 0;
 					logger.info("Received string: " + followList + ", Split follow string: " + userList);
-					//System.out.println("Received string: " + followList + ", Split follow string: " + userList);
 					for (String user: userList) {
-						logger.info("Looking at follow data: " + user);
-						//System.out.println("Looking at follow data: " + user);
+						//logger.info("Looking at follow data: " + user);
 						if (StringUtils.isNumeric(user.trim())) {
 							try {
 								userIdList[j] = Long.parseLong(user.trim());
-								logger.info("Going to fetch twitter userData for the following twitterID: " + userIdList[j]);
-								//System.out.println("Going to fetch twitter userData for the following twitterID: " + userIdList[j]);
+								//logger.info("Going to fetch twitter userData for the following twitterID: " + userIdList[j]);
 								++j;
 							} catch (Exception ex) {
 								logger.error("Exception in parsing string to number: ", ex);
@@ -649,8 +633,7 @@ public class CollectionServiceImpl implements CollectionService {
 					followScreenNames.append(u.getScreenName()).append(",");
 				}
 				followScreenNames.deleteCharAt(followScreenNames.lastIndexOf(","));
-				logger.info("Created follow twitterID list: " + followScreenNames.toString());
-				//System.out.println("Created follow twitterID list: " + followScreenNames.toString());
+				//logger.info("Created follow twitterID list: " + followScreenNames.toString());
 				return followScreenNames.toString();		
 			}
 			else {
@@ -672,7 +655,6 @@ public class CollectionServiceImpl implements CollectionService {
 
 				ResponseList<User> list = twitter.lookupUsers(userNameList);
 				logger.info("Successfully looked up in Twitter by screen name, size of list: " + list.size());
-				//System.out.println("Successfully looked up in Twitter by screen name, size of list: " + list.size());
 				return (list != null ? list : new ArrayList<User>());
 			} catch (Exception e) {
 				logger.error("Exception while getting user Data from screen Name for user: "+userName,e);
@@ -691,7 +673,6 @@ public class CollectionServiceImpl implements CollectionService {
 
 				ResponseList<User> list = twitter.lookupUsers(userIdList);
 				logger.info("Successfully looked up in Twitter by ID, size of list: " + list.size());
-				//System.out.println("Successfully looked up in Twitter by ID, size of list: " + list.size());
 				return (list != null ? list : new ArrayList<User>());
 			} catch (Exception e) {
 				logger.error("Exception while getting user Data from TwitterId for user: "+userName,e);

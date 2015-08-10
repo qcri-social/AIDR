@@ -19,7 +19,7 @@ if [[ $result != 0 ]] ; then
 	#Sending mail
 	echo CollectorTester Failed
 	echo Sending Mail
-	curl --data "module=AIDRCollector&description=Tester for the collector is failed on $PROFILE" $SEND_MAIL_API
+	curl --data "module=AIDRCollector&description=Tester for aidr-collector failed on $PROFILE" $SEND_MAIL_API
 fi
 
 #Persister Tester
@@ -32,7 +32,7 @@ if [[ $result != 0 ]] ; then
 	#Sending mail
 	echo PersisterTester Failed
 	echo Sending Mail
-	curl --data "module=AIDRPersister&description=Tester for the persister is failed on $PROFILE" $SEND_MAIL_API
+	curl --data "module=AIDRPersister&description=Tester for aidr-persister failed on $PROFILE" $SEND_MAIL_API
 fi
 
 #Tagger Tester
@@ -45,7 +45,7 @@ if [[ $result != 0 ]] ; then
 	#Sending mail
 	echo TaggerTester Failed
 	echo Sending Mail
-	curl --data "module=AIDRTagger&description=Tester for the tagger is failed on $PROFILE" $SEND_MAIL_API
+	curl --data "module=AIDRTagger&description=Tester for aidr-tagger failed on $PROFILE" $SEND_MAIL_API
 fi
 
 #Output Tester
@@ -58,5 +58,5 @@ if [[ $result != 0 ]] ; then
 	#Sending mail
 	echo OutputTester Failed
 	echo Sending Mail
-	curl --data "module=AIDROutput&description=Tester for the output is failed on $PROFILE" $SEND_MAIL_API
+	curl --data "module=AIDROutput&description=Tester for aidr-output failed on $PROFILE" $SEND_MAIL_API
 fi

@@ -105,10 +105,8 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 			conditionTrashed = "=";
 		} else {
 			conditionTrashed = "!=";
-		}
-
-		//        Workaround as criteria query gets result for different managers and in the end we get less then limit records.
-		List<Integer> collectionIds = (List<Integer>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
+		}      
+/*		List<Integer> collectionIds = (List<Integer>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				String sql = " SELECT DISTINCT c.id FROM AIDR_COLLECTION c " +
@@ -127,12 +125,44 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 				return ids != null ? ids : Collections.emptyList();
 			}
 		});
-
-		List<AidrCollection> result = new ArrayList<AidrCollection>();
 		for(Integer id : collectionIds){
 			AidrCollection collection =	this.findById(id);
 			result.add(collection) ;
 		}
+		*/		
+		
+		//Workaround as criteria query gets result for different managers and in the end we get less than limit records.
+		List<Object[]> collections = (List<Object[]>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				String sql = " SELECT DISTINCT c.id,c.status FROM AIDR_COLLECTION c " +
+						" LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
+						" ON c.id = c_m.id_collection " +
+						" WHERE ((c.user_id =:userId OR c_m.id_manager = :userId) AND c.status " + conditionTrashed + " :statusValue) " +
+						" order by c.startDate IS NULL DESC, c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
+
+				SQLQuery sqlQuery = session.createSQLQuery(sql);
+				sqlQuery.setParameter("userId", userId);
+				sqlQuery.setParameter("start", start);
+				sqlQuery.setParameter("limit", limit);
+				sqlQuery.setParameter("statusValue", CollectionStatus.TRASHED.ordinal());
+				List<Object[]> ids = (List<Object[]>) sqlQuery.list();
+
+				return ids != null ? ids : Collections.emptyList();
+			}
+		});
+
+		//MEGHNA: To prevent multiple db calls, we get collection id and status from db and update AidrCollection status
+		List<AidrCollection> result = new ArrayList<AidrCollection>();
+		Integer id;
+		for(Object[] col : collections)
+		{			
+			id = (Integer)col[0];
+			AidrCollection collection =	this.findById(id);
+			collection.setStatus(CollectionStatus.values()[(Integer)col[1]]);
+			result.add(collection) ;
+		}
+		
 		return result;
 	}
 

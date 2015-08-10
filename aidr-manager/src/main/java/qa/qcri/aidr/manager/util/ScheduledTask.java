@@ -36,7 +36,7 @@ public class ScheduledTask {
 			return;
 		}
 		if (collections != null) {
-			logger.info("Update collections scheduled task started for " + collections.size() + " collections");
+			//logger.info("Update collections scheduled task started for " + collections.size() + " collections");
 
 			for (AidrCollection item : collections) {
 				try {
@@ -47,7 +47,7 @@ public class ScheduledTask {
 				}
 			}
 		}
-		logger.info("Update collections scheduled task completed.");
+		//logger.info("Update collections scheduled task completed.");
 	}
 
 	@Scheduled(cron="0 0 * * * *") // each hour
@@ -61,7 +61,7 @@ public class ScheduledTask {
 			return;
 		}
 		if (collections != null) {
-			logger.info("Checking for collections running duration started for " + collections.size() + " running collections");
+			//logger.info("Checking for collections running duration started for " + collections.size() + " running collections");
 
 			for (AidrCollection item : collections) {
 				Date stopAtTime = new Date(item.getStartDate().getTime() + item.getDurationHours() * HOUR);
@@ -71,13 +71,13 @@ public class ScheduledTask {
 						collectionService.stop(item.getId());
 						logger.info("Collection with ID: " + item.getId() + " was automatically stopped as it reached duration interval.");
 					} catch (Exception e) {
-						logger.info("Error while stopping collection with ID: " + item.getId(),e);
+						logger.error("Error while stopping collection with ID: " + item.getId(),e);
 						taggerService.sendMailService("Error in ScheduledTask","Error while stopping collection with ID: " + item.getId() +" in ScheduledTask.scheduledTaskStopCollections");
 					}
 				}
 			}
 		}
-		logger.info("Checking for collections running duration completed.");
+		//logger.info("Checking for collections running duration completed.");
 	}
 
 }

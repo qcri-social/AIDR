@@ -125,8 +125,7 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 
 	@Override
 	public void onException(Exception ex) {
-		logger.error("Twitter Exception for collection " + task.getCollectionCode(), ex);
-		//TwitterException t;
+		logger.error("Exception for collection " + task.getCollectionCode(), ex);
 		if(ex instanceof TwitterException)
 		{
 			int attempt = cache.incrAttempt(task.getCollectionCode());
@@ -175,13 +174,20 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 			
 			if(task.getStatusCode().equals(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR)))
 				CollectorErrorLog.sendErrorMail(task.getCollectionCode(),ex.toString());
-			try {
-                Thread.sleep(timeToSleep*1000);
-            } catch (InterruptedException ignore) {
-            }
-			timeToSleep=0;
+			else
+			{
+				try {
+					Thread.sleep(timeToSleep*1000);
+				} catch (InterruptedException ignore) {
+				}
+				timeToSleep=0;
+			}
 		}
-		// TODO: thread safety
+		else
+		{
+			task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
+			CollectorErrorLog.sendErrorMail(task.getCollectionCode(),ex.toString());			
+		}
 	}
 
 	@Override
@@ -190,13 +196,12 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 
 	@Override
 	public void onStallWarning(StallWarning msg) {
-		logger.error(task.getCollectionCode() + " Stall Warning: " + msg.getMessage());
+		logger.warn(task.getCollectionCode() + " Stall Warning: " + msg.getMessage());
 	}
 	
 	private static double getRandom()
 	{
-		double d = Math.random() * (max - min) + min;		
-		return d;
+		return (Math.random() * (max - min) + min);
 	}
 
 	@Override

@@ -269,11 +269,12 @@ public class MiscResource {
 		Boolean emailSent = true;
 		try {
 			String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
-			String body = time+" "+module +" "+ code +"\n"+ description;
-			EmailClient.sendErrorMail(module, body);
+			String space = " ";
+			StringBuffer body = new StringBuffer(time).append(space)
+					.append(module).append(space).append(code).append("\n").append(description);
+			EmailClient.sendErrorMail(module, body.toString());
 		} catch (Exception e) {
-			logger.error("Unable to send email");
-			logger.error(e.getMessage());
+			logger.error("Unable to send email: " + e.getMessage());
 			emailSent = false;
 		}
 		try
@@ -296,8 +297,7 @@ public class MiscResource {
 			String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
 			EmailClient.sendErrorMail(subject, time + "\n"+body);
 		} catch (Exception e) {
-			logger.error("Unable to send email");
-			logger.error(e.getMessage());
+			logger.error("Unable to send email: " + e.getMessage());
 			return Response.serverError().build();
 		}
 		return Response.ok().build();

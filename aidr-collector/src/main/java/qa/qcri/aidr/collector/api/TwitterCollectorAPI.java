@@ -228,29 +228,11 @@ public class TwitterCollectorAPI {
         return Response.ok(allTasks).build();
     }
 
-    @Deprecated
-    public void startCollectorPersister(String collectionCode) {
-        Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
-        try {
-            WebTarget webResource = client.target(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_REST_URI) + "persister/start?file="
-                    + URLEncoder.encode(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_REST_URI), "UTF-8")
-                    + "&collectionCode=" + URLEncoder.encode(collectionCode, "UTF-8"));
-            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-            String jsonResponse = clientResponse.readEntity(String.class);
-
-            logger.info(collectionCode + ": Collector persister response = " + jsonResponse);
-        } catch (RuntimeException e) {
-            logger.error(collectionCode + ": Could not start persister. Is persister running?", e);
-            CollectorErrorLog.sendErrorMail(collectionCode, "Unable to start persister. Is persister running");
-        } catch (UnsupportedEncodingException e) {
-            logger.error(collectionCode + ": Unsupported Encoding scheme used");
-        }
-    }
-
     private void startPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
-            WebTarget webResource = client.target(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_REST_URI) + "collectionPersister/start?channel_provider="
+            WebTarget webResource = client.target(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_REST_URI) 
+            		+ "collectionPersister/start?channel_provider="
                     + URLEncoder.encode(configProperties.getProperty(CollectorConfigurationProperty.TAGGER_CHANNEL), "UTF-8")
                     + "&collection_code=" + URLEncoder.encode(collectionCode, "UTF-8"));
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
@@ -265,22 +247,6 @@ public class TwitterCollectorAPI {
         }
     }
 
-    @Deprecated
-    public void stopCollectorPersister(String collectionCode) {
-        Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
-        try {
-            WebTarget webResource = client.target(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_REST_URI)
-                    + "persister/stop?collectionCode=" + URLEncoder.encode(collectionCode, "UTF-8"));
-            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-            String jsonResponse = clientResponse.readEntity(String.class);
-            logger.info(collectionCode + ": Collector persister response =  " + jsonResponse);
-        } catch (RuntimeException e) {
-            logger.error(collectionCode + ": Could not stop persister. Is persister running?", e);
-        } catch (UnsupportedEncodingException e) {
-            logger.error(collectionCode + ": Unsupported Encoding scheme used");
-        }
-    }
-
     public void stopPersister(String collectionCode) {
         Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
         try {
@@ -289,39 +255,6 @@ public class TwitterCollectorAPI {
             Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
             String jsonResponse = clientResponse.readEntity(String.class);
             logger.info(collectionCode + ": Collector persister response =  " + jsonResponse);
-        } catch (RuntimeException e) {
-            logger.error(collectionCode + ": Could not stop persister. Is persister running?", e);
-        } catch (UnsupportedEncodingException e) {
-            logger.error(collectionCode + ": Unsupported Encoding scheme used");
-        }
-    }
-
-    @Deprecated
-    public void startTaggerPersister(String collectionCode) {
-        Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
-        try {
-            WebTarget webResource = client.target(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_REST_URI) + "taggerPersister/start?file="
-                    + URLEncoder.encode(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_REST_URI), "UTF-8")
-                    + "&collectionCode=" + URLEncoder.encode(collectionCode, "UTF-8"));
-            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-            String jsonResponse = clientResponse.readEntity(String.class);
-            logger.info(collectionCode + ": Tagger persister response = " + jsonResponse);
-        } catch (RuntimeException e) {
-            logger.error(collectionCode + ": Could not start persister. Is persister running?", e);
-        } catch (UnsupportedEncodingException e) {
-            logger.error(collectionCode + ": Unsupported Encoding scheme used");
-        }
-    }
-
-    @Deprecated
-    public void stopTaggerPersister(String collectionCode) {
-        Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
-        try {
-            WebTarget webResource = client.target(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_REST_URI)
-                    + "taggerPersister/stop?collectionCode=" + URLEncoder.encode(collectionCode, "UTF-8"));
-            Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
-            String jsonResponse = clientResponse.readEntity(String.class);
-            logger.info(collectionCode + ": Tagger persister response: " + jsonResponse);
         } catch (RuntimeException e) {
             logger.error(collectionCode + ": Could not stop persister. Is persister running?", e);
         } catch (UnsupportedEncodingException e) {
