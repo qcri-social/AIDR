@@ -2,6 +2,7 @@ package qa.qcri.aidr.trainer.pybossa.service.impl;
 
 import org.apache.log4j.Logger;
 import org.springframework.http.*;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
@@ -10,6 +11,8 @@ import qa.qcri.aidr.trainer.pybossa.entity.TaskTranslation;
 import qa.qcri.aidr.trainer.pybossa.format.impl.TranslationProjectModel;
 import qa.qcri.aidr.trainer.pybossa.format.impl.TranslationRequestModel;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -79,16 +82,19 @@ public class TranslationCenterCommunicator {
         final String url=BASE_URL+"/documents";
         HttpHeaders requestHeaders=new HttpHeaders();
         requestHeaders.add("X-Proz-API-Key", API_KEY);
-        requestHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+        requestHeaders.setContentType(new MediaType("multipart","form-data"));
         RestTemplate restTemplate=new RestTemplate();
+        restTemplate.getMessageConverters()
+                .add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
         LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
-        map.add("document", content);
+        map.add("document", content.getBytes(StandardCharsets.UTF_8));
         map.add("name", "translation_source.csv");
 
         HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new    HttpEntity<LinkedMultiValueMap<String, Object>>(
                 map, requestHeaders);
+
         ResponseEntity<Map> result = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
         logger.debug("Result of document push:"+result.getBody());
         return result.getBody();
@@ -128,7 +134,7 @@ public class TranslationCenterCommunicator {
                 TaskTranslation translation = iterator.next();
                 buffer.append(Long.toString(translation.getTaskId()));
                 buffer.append(",");
-                buffer.append(translation.getCSVFormattedOriginalText());
+                buffer.append("\""+translation.getCSVFormattedOriginalText()+"\"");
                 buffer.append(",");
                 buffer.append(",");
                 buffer.append("\n");

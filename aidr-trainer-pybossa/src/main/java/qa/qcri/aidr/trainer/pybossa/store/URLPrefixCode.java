@@ -29,4 +29,8 @@ public class URLPrefixCode {
 
     public static String PYBOSSA_TASK_DELETE = "/task/";
 
+    public static String MM_GEO_SOURCE_PATH = "http://aidr-prod.qcri.org/data/trainer/";
+
+    public static String MICROMAPPER_API_SOURCE_SAVE_URL = "http://gis.micromappers.org/MMAPI/rest/source/save";
+
 }

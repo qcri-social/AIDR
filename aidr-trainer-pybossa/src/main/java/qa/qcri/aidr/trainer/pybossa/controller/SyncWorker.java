@@ -18,7 +18,7 @@ import qa.qcri.aidr.trainer.pybossa.service.Worker;
 @Component("syncWorker")
 public class SyncWorker implements Worker {
 
-	protected static Logger logger = Logger.getLogger(SyncWorker.class);
+//	protected static Logger logger = Logger.getLogger(SyncWorker.class);
 
 	
     @Autowired
@@ -33,14 +33,14 @@ public class SyncWorker implements Worker {
 	public void work() {
 		String threadName = Thread.currentThread().getName();
 
-        logger.info("Scheduler is starting");
+        System.out.println("Scheduler is starting");
         try {
 
-           // pybossaWorker.doCreateApp();
+            pybossaWorker.doCreateApp();
             clientAppRunWorker.processTaskPublish();
             clientAppRunWorker.processTaskRunImport();
 
-           // microMapperWorker.processTaskExport();
+            microMapperWorker.processTaskExport();
 
             Thread.sleep(300000); // simulates work
 
@@ -48,10 +48,10 @@ public class SyncWorker implements Worker {
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            System.out.println(e.getMessage());
         }
 
-        logger.info("Scheduler is going sleep");
+        System.out.println("Scheduler is going sleep");
     }
 	
 }

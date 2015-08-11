@@ -29,4 +29,5 @@ public interface TranslationService {
 	public void delete(TaskTranslation translation);
 	public List<TaskTranslation> findAllTranslations();
     public List<TaskTranslation> findAllTranslationsByClientAppIdAndStatus(Long clientAppId, String status, Integer count);
+
 }

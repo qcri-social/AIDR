@@ -319,7 +319,20 @@ public class TWBTranslationServiceImpl implements TranslationService {
 
     @Transactional
     public TaskTranslation findByTaskId(Long taskId) {
-        return taskTranslationDao.findTranslationByTaskID(taskId);
+        TaskTranslation taskTranslation = null;
+        try{
+            taskTranslation =  taskTranslationDao.findTranslationByTaskID(taskId);
+            if(taskTranslation.getTaskId() == null){
+                taskTranslation = null;
+            }
+        }
+        catch(Exception e){
+            List<TaskTranslation> translations =  taskTranslationDao.findAllTranslationsByTaskID(taskId);
+            if(translations.size() > 0)
+                taskTranslation = translations.get(0);
+        }
+        System.out.println("findByTaskId : taskTranslation " + taskTranslation);
+        return taskTranslation;
     }
 
 

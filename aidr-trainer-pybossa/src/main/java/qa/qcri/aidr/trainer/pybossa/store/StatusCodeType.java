@@ -58,4 +58,8 @@ public class StatusCodeType {
 
     public static Integer MAX_APP_HOLD_PERIOD_DAY = -7;
 
+    public static final String ANSWER_NOT_ENGLISH = "not_english";
+
+    public static final Integer MIN_REPORT_TEMPLATE_EXPORT_SIZE = 20;
+
 }

@@ -32,6 +32,7 @@ public class TaskQueueServiceImpl implements TaskQueueService {
     @Transactional(readOnly = false)
     public void updateTaskQueue(TaskQueue taskQueue) {
         TaskQueue queue;
+        System.out.println("updateTaskQueue doc : " + taskQueue.getDocumentID());
         if(taskQueue.getDocumentID()!=null){
             queue = taskQueueDao.findTaskQueue(taskQueue.getTaskID(),taskQueue.getClientAppID(), taskQueue.getDocumentID()).get(0);
         }
@@ -45,7 +46,7 @@ public class TaskQueueServiceImpl implements TaskQueueService {
             taskQueueDao.createTaskQueue(queue);
         }
         catch (Exception ex){
-            logger.error("updateTaskQueue Exception : " + taskQueue.getTaskID());
+            System.out.println("updateTaskQueue Exception : " + taskQueue.getTaskID());
             throw new RuntimeException(ex.getMessage());
         }
     }
