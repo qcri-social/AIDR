@@ -46,7 +46,6 @@ public class SMSCollectorAPI  {
     
     public static final String CHANNEL = configProperties.getProperty(CollectorConfigurationProperty.COLLECTOR_CHANNEL) + ".%s";
     private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
-    private static final String LOAD_SHEDDER_NAME = "(generic)";
     
     @GET
     @Path("/start")
@@ -59,7 +58,7 @@ public class SMSCollectorAPI  {
         redisLoadShedder.put(channelName, new LoadShedder(
                 		Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_LIMIT)), 
                 		Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)), 
-                		true,LOAD_SHEDDER_NAME));
+                		true,channelName));
         GenericCache.getInstance().putSMSCollection(collectionCode, configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_RUNNING));
         startPersister(collectionCode);
         return Response.ok().build();
@@ -97,7 +96,7 @@ public class SMSCollectorAPI  {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 String channelName = String.format(CHANNEL, code);
-                if (redisLoadShedder.get(channelName).canProcess(channelName)) {
+                if (redisLoadShedder.get(channelName).canProcess()) {
                     JedisPublisher publisherJedis = JedisPublisher.newInstance();
                     publisherJedis.publish(channelName, objectMapper.writeValueAsString(sms));
                     cache.increaseSMSCount(code);
