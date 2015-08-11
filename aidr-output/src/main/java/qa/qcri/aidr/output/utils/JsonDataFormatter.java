@@ -1,13 +1,11 @@
-/*
+/**
  * Provides methods to create formatted JSON output data for the REST APIs  
  */
 
 package qa.qcri.aidr.output.utils;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -19,8 +17,6 @@ public class JsonDataFormatter {
 	String callbackName = null;
 	int count = 0;
 	public JsonDataFormatter(String callbackName) {
-		//BasicConfigurator.configure();		// configuration for log4j logging
-		//System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
 		this.callbackName = callbackName;
 		count = 0;
 	}
@@ -35,16 +31,16 @@ public class JsonDataFormatter {
 			jsonDataList.append(callbackName).append("(");
 		if (isArray) 
 			jsonDataList.append("[");
-		
+
 		return jsonDataList;
 	}
 
 	private StringBuilder setSuffix(StringBuilder jsonDataList, boolean isArray) {
 		if (isArray) 
-				jsonDataList.append("]");
+			jsonDataList.append("]");
 		if (callbackName != null) 
-				jsonDataList.append(")");
-		
+			jsonDataList.append(")");
+
 		return jsonDataList;
 	}
 
@@ -178,6 +174,4 @@ public class JsonDataFormatter {
 
 		return jsonDataList;
 	}
-
-
 }

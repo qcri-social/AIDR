@@ -63,8 +63,6 @@ public class CollectionServiceImpl implements CollectionService {
 	private AuthenticateTokenRepository authenticateTokenRepository;
 
 	//@Autowired	// gf 3 way
-	//private Client client;
-	//private Client client = ClientBuilder.newClient();
 	@Value("${fetchMainUrl}")
 	private String fetchMainUrl;
 	@Value("${twitter.consumerKey}")
@@ -256,7 +254,7 @@ public class CollectionServiceImpl implements CollectionService {
 	//updateStatusCollection() method
 	public AidrCollection stopFatalError(Integer collectionId) throws Exception {
 		AidrCollection collection = collectionRepository.findById(collectionId);
-		collection = collectionRepository.stop(collection.getId());
+		//collection = collectionRepository.stop(collection.getId());
 		
 		AidrCollection updateCollection = stopAidrFetcher(collection);
 
@@ -295,7 +293,7 @@ public class CollectionServiceImpl implements CollectionService {
 				WebTarget webResource = client.target(fetchMainUrl + "/sms/start?collection_code=" + URLEncoder.encode(aidrCollection.getCode(), "UTF-8"));
 				Response response = webResource.request(MediaType.APPLICATION_JSON).get();
 				if (response.getStatus() == 200)
-					aidrCollection.setStatus(CollectionStatus.RUNNING);
+					aidrCollection.setStatus(CollectionStatus.INITIALIZING);
 			}
 			/**
 			 * Update Status To database
@@ -326,7 +324,7 @@ public class CollectionServiceImpl implements CollectionService {
 				return false;
 			}
 		} catch (Exception e) {
-			throw new AidrException("Error while Getting training data for Crisis and Model.", e);
+			throw new AidrException("Error while pinging the collector.", e);
 		}
 	}
 
@@ -369,9 +367,7 @@ public class CollectionServiceImpl implements CollectionService {
 			//MEGHNA: moved setting collection count to top of the method
 			//to avoid individual status blocks setting collection count below
 			if (response.getCollectionCount() != null && !response.getCollectionCount().equals(collection.getCount())) {
-				collection.setCount(response.getCollectionCount());		// Commented by koushik for downloadCount bug
-				//MEGHNA: uncommented - setting count at the beginning always makes this condition false 
-				//so lastdocument never set 
+				collection.setCount(response.getCollectionCount());
 				String lastDocument = response.getLastDocument();
 				if (lastDocument != null)
 					collection.setLastDocument(lastDocument);
@@ -380,14 +376,14 @@ public class CollectionServiceImpl implements CollectionService {
 			
 			if (!CollectionStatus.getByStatus(response.getStatusCode()).equals(collection.getStatus())) {
 				
+				logger.info("Collection Status: " + CollectionStatus.getByStatus(response.getStatusCode()));
+				CollectionStatus prevStatus =  collection.getStatus();
 				collection.setStatus(CollectionStatus.getByStatus(response.getStatusCode()));
-				
-				logger.debug("Collection Status: " + CollectionStatus.getByStatus(response.getStatusCode()));
 				
 				switch(CollectionStatus.getByStatus(response.getStatusCode()))
 				{				
 				case NOT_FOUND:
-				case STOPPED:
+				//case STOPPED:
 					collection.setStatus(CollectionStatus.NOT_RUNNING);					
 				case RUNNING_WARNING:
 				case WARNING:
@@ -397,8 +393,10 @@ public class CollectionServiceImpl implements CollectionService {
 					collection = collectionRepository.start(collection.getId());
 					break;
 				case FATAL_ERROR:					
-					//collection = collectionRepository.stop(collection.getId());						
-					this.stopFatalError(collection.getId());
+					//collection = collectionRepository.stop(collection.getId());
+					logger.warn("Fatal error, stopping collection " + collection.getId()); 
+					if(prevStatus != CollectionStatus.FATAL_ERROR || prevStatus != CollectionStatus.NOT_RUNNING || prevStatus != CollectionStatus.STOPPED)
+						this.stopFatalError(collection.getId());
 					break;
 				default:
 					break;
@@ -549,27 +547,31 @@ public class CollectionServiceImpl implements CollectionService {
 					userIdList = new long[userList.size()];
 					int i = 0;
 					int j = 0;
-					System.out.println("Received string: " + followList + ", Split follow string: " + userList);
+					logger.info("Received string: " + followList + ", Split follow string: " + userList);
+					//System.out.println("Received string: " + followList + ", Split follow string: " + userList);
 					for (String user: userList) {
-						System.out.println("Looking at follow data: " + user);
+						logger.info("Looking at follow data: " + user);
+						//System.out.println("Looking at follow data: " + user);
 						if (StringUtils.isNumeric(user.trim())) {
 							try {
 								userIdList[j] = Long.parseLong(user.trim());
-								System.out.println("Going to fetch twitter userData for the following twitterID: " + userIdList[j]);
+								logger.info("Going to fetch twitter userData for the following twitterID: " + userIdList[j]);
+								//System.out.println("Going to fetch twitter userData for the following twitterID: " + userIdList[j]);
 								++j;
 							} catch (Exception ex) {
 								logger.error("Exception in parsing string to number: ", ex);
 							}		
 						} else {
 							userNameList[i] = user.trim();
-							System.out.println("Going to fetch twitter userData for the following screen name: " + userNameList[i]);
+							logger.info("Going to fetch twitter userData for the following screen name: " + userNameList[i]);
+							//System.out.println("Going to fetch twitter userData for the following screen name: " + userNameList[i]);
 							++i;
 						}
 					}
 					userNameList = ArrayUtils.subarray(userNameList, 0, i);
 					userIdList = ArrayUtils.subarray(userIdList, 0, j);
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error("Exception while getting follow twitter Ids",e);
 				}
 			}
 			List<User> dataList = new ArrayList<User>();
@@ -586,7 +588,8 @@ public class CollectionServiceImpl implements CollectionService {
 					followIDs.append(u.getId()).append(",");
 				}
 				followIDs.deleteCharAt(followIDs.lastIndexOf(","));
-				System.out.println("Created follow twitterID list: " + followIDs.toString());
+				logger.info("Created follow twitterID list: " + followIDs.toString());
+				//System.out.println("Created follow twitterID list: " + followIDs.toString());
 				return followIDs.toString();		
 			}
 			else {
@@ -614,13 +617,16 @@ public class CollectionServiceImpl implements CollectionService {
 				try {
 					userIdList = new long[userList.size()];
 					int j = 0;
-					System.out.println("Received string: " + followList + ", Split follow string: " + userList);
+					logger.info("Received string: " + followList + ", Split follow string: " + userList);
+					//System.out.println("Received string: " + followList + ", Split follow string: " + userList);
 					for (String user: userList) {
-						System.out.println("Looking at follow data: " + user);
+						logger.info("Looking at follow data: " + user);
+						//System.out.println("Looking at follow data: " + user);
 						if (StringUtils.isNumeric(user.trim())) {
 							try {
 								userIdList[j] = Long.parseLong(user.trim());
-								System.out.println("Going to fetch twitter userData for the following twitterID: " + userIdList[j]);
+								logger.info("Going to fetch twitter userData for the following twitterID: " + userIdList[j]);
+								//System.out.println("Going to fetch twitter userData for the following twitterID: " + userIdList[j]);
 								++j;
 							} catch (Exception ex) {
 								logger.error("Exception in parsing string to number: ", ex);
@@ -643,7 +649,8 @@ public class CollectionServiceImpl implements CollectionService {
 					followScreenNames.append(u.getScreenName()).append(",");
 				}
 				followScreenNames.deleteCharAt(followScreenNames.lastIndexOf(","));
-				System.out.println("Created follow twitterID list: " + followScreenNames.toString());
+				logger.info("Created follow twitterID list: " + followScreenNames.toString());
+				//System.out.println("Created follow twitterID list: " + followScreenNames.toString());
 				return followScreenNames.toString();		
 			}
 			else {
@@ -664,10 +671,11 @@ public class CollectionServiceImpl implements CollectionService {
 				twitter.setOAuthAccessToken(accessToken);
 
 				ResponseList<User> list = twitter.lookupUsers(userNameList);
-				System.out.println("Successfully looked up in Twitter by screen name, size of list: " + list.size());
+				logger.info("Successfully looked up in Twitter by screen name, size of list: " + list.size());
+				//System.out.println("Successfully looked up in Twitter by screen name, size of list: " + list.size());
 				return (list != null ? list : new ArrayList<User>());
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Exception while getting user Data from screen Name for user: "+userName,e);
 			}
 		}
 		return new ArrayList<User>();
@@ -682,10 +690,11 @@ public class CollectionServiceImpl implements CollectionService {
 				twitter.setOAuthAccessToken(accessToken);
 
 				ResponseList<User> list = twitter.lookupUsers(userIdList);
-				System.out.println("Successfully looked up in Twitter by ID, size of list: " + list.size());
+				logger.info("Successfully looked up in Twitter by ID, size of list: " + list.size());
+				//System.out.println("Successfully looked up in Twitter by ID, size of list: " + list.size());
 				return (list != null ? list : new ArrayList<User>());
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Exception while getting user Data from TwitterId for user: "+userName,e);
 			}
 		}
 		return new ArrayList<User>();

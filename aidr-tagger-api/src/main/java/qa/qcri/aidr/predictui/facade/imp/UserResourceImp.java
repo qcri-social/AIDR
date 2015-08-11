@@ -12,7 +12,6 @@ import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.predictui.facade.UserResourceFacade;
 
@@ -27,7 +26,6 @@ public class UserResourceImp implements UserResourceFacade {
     //private EntityManager em;
 
     private static Logger logger = Logger.getLogger(UserResourceImp.class);
-	private static ErrorLog elog = new ErrorLog();
 	
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.UsersResourceFacade remoteUsersEJB;
@@ -73,11 +71,14 @@ public class UserResourceImp implements UserResourceFacade {
         List<UsersDTO> dbUsers = new ArrayList<UsersDTO>();
         try {
             dbUsers = remoteUsersEJB.getAllUsers();
-            System.out.println("Fetched users list: " + dbUsers.size());
             return dbUsers;
         } catch (Exception e) {
         	logger.error("exception:", e);
             return null;
         }
+    }
+    
+    public Integer deleteUser(Long userID) {
+        return remoteUsersEJB.deleteUser(userID);
     }
 }

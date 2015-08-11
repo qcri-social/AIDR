@@ -21,8 +21,6 @@ import javax.servlet.AsyncListener;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.server.ChunkedOutput;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.output.stream.SubscriptionDataObject;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
 import redis.clients.jedis.Jedis;
@@ -63,7 +61,6 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 
 	// Debugging
 	private static Logger logger = Logger.getLogger(AsyncStreamRedisSubscriber.class);
-	private static ErrorLog elog = new ErrorLog();
 
 	public AsyncStreamRedisSubscriber(final Jedis jedis, final ChunkedOutput<String> responseWriter,
 			ArrayList<ChunkedOutput<String>> writerList,
@@ -121,8 +118,7 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Error in onPMessage");
-			logger.error(elog.toStringException(e));
+			logger.error("Error in onPMessage channel : " + channel + " message : " + message);
 		}
 	}
 
@@ -135,8 +131,7 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Error in onPMessage");
-			logger.error(elog.toStringException(e));
+			logger.error("Error in onPMessage pattern : " + pattern + " channel : " + channel + " message : " + message);
 		}
 	}
 
@@ -237,7 +232,7 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 						}
 					} catch (Exception e) {
 						setRunFlag(false);
-						logger.warn(channel + ": Error in write attempt - possible client disconnect");
+						logger.error(channel + ": Error in write attempt - possible client disconnect");
 					} 
 					if (count != 0)	{								// we did not just send an empty JSONP message
 						lastAccessedTime = new Date().getTime();	// approx. time when message last received from REDIS
@@ -252,6 +247,7 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 					try {
 						Thread.sleep(sleepTime);
 					} catch (InterruptedException e) {
+						logger.warn("Error in sleep.");
 						// TODO Auto-generated catch block
 						//e.printStackTrace();
 					}
@@ -273,6 +269,7 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 					try {
 						Thread.sleep(10);
 					} catch (InterruptedException e) {
+						logger.warn("error in sleep.");
 						// TODO Auto-generated catch block
 					}
 				}
@@ -297,7 +294,6 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 					writerList.remove(responseWriter);
 				} catch (IOException e) {
 					logger.error(channel + ": Error attempting closing ChunkedOutput.");
-					logger.error(elog.toStringException(e));
 				}
 			}
 			try {
@@ -305,7 +301,6 @@ public class AsyncStreamRedisSubscriber extends JedisPubSub implements AsyncList
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				logger.error(channel + ": Attempting clean-up. Exception occurred attempting stopSubscription: " + e.toString());
-				logger.error(elog.toStringException(e));
 			}
 		}
 	}

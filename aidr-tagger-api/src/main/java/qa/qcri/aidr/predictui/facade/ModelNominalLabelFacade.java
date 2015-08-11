@@ -21,5 +21,6 @@ public interface ModelNominalLabelFacade {
     
     public List<ModelNominalLabelDTO> getAllModelNominalLabels();
     public List<ModelNominalLabelDTO> getAllModelNominalLabelsByModelID(Long modelID, String crisisCode);
+    public void deleteByModel(Long modelID);
     
 }

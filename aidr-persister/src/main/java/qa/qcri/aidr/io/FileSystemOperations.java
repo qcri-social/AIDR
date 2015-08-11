@@ -1,12 +1,14 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * This class provides methods to access the FS for read write of persisted JSON files for a given collection
+ * 
+ * @author Imran
  */
 package qa.qcri.aidr.io;
 
 import java.io.File;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
@@ -18,12 +20,10 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-/**
- *
- * @author Imran
- */
+
 public class FileSystemOperations {
-    
+	private static Logger logger = Logger.getLogger(FileSystemOperations.class);
+	
     public static ArrayList<String> get100KFilesList(String collectionCode){
         String filesPath = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/";
         File folder = new File(filesPath);
@@ -40,13 +40,11 @@ public class FileSystemOperations {
                         if (currentVolN >= volNum) {
                             volNum = currentVolN;
                             fileNameList.add(currentFileName);
-                            
                         }
                     }
                 }
             }
         }
-        
         return null;
     }
 
@@ -81,7 +79,6 @@ public class FileSystemOperations {
         File folder = new File(filesPath);
         File[] listOfFiles = folder.listFiles();
         Integer volNum = 1;
-        String fileName = "";
         if (!(listOfFiles == null)) {
             for (int i = 0; i < listOfFiles.length; i++) {
                 if (listOfFiles[i].isFile()) {
@@ -132,7 +129,7 @@ public class FileSystemOperations {
     public static List<String> getAllJSONFileVolumes(String collectionCode) {
 
         String filesPath = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/";
-        List<String> fileNames = new ArrayList();
+        List<String> fileNames = new ArrayList<String>();
         File folder = new File(filesPath);
         File[] listOfFiles = folder.listFiles();
         for (int i = 0; i < listOfFiles.length; i++) {
@@ -154,7 +151,7 @@ public class FileSystemOperations {
 
         String filesPath = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH) + collectionCode + "/";
     	//String filesPath = getProperty("DEFAULT_PERSISTER_FILE_PATH") + collectionCode + "/";
-        List<String> fileNames = new ArrayList();
+        List<String> fileNames = new ArrayList<String>();
         File folder = new File(filesPath);
         File[] listOfFiles = folder.listFiles();
         for (int i = 0; i < listOfFiles.length; i++) {
@@ -180,14 +177,13 @@ public class FileSystemOperations {
                 isDeleted = true;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+        	logger.error("Error while delting the file: "+fileName +"\t" +e.getMessage());
         }
         return isDeleted;
     }
 
-    public int countNumberofLines(String filename) throws IOException {
-        InputStream is = new BufferedInputStream(new FileInputStream(filename));
-        try {
+    public int countNumberofLines(String filename) throws IOException{
+        try(InputStream is = new BufferedInputStream(new FileInputStream(filename));) {
             byte[] c = new byte[1024];
             int count = 0;
             int readChars = 0;
@@ -201,8 +197,9 @@ public class FileSystemOperations {
                 }
             }
             return (count == 0 && !empty) ? 1 : count;
-        } finally {
-            is.close();
+        } catch(IOException e){
+        	logger.error("IOException in file: "+filename);
+        	throw e;
         }
     }
 }

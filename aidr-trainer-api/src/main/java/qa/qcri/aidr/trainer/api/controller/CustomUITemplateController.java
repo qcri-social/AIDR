@@ -1,23 +1,24 @@
 package qa.qcri.aidr.trainer.api.controller;
 
+import java.util.List;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
 import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.trainer.api.entity.CustomUITemplate;
 import qa.qcri.aidr.trainer.api.service.CustomUITemplateService;
 import qa.qcri.aidr.trainer.api.store.CodeLookUp;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -31,7 +32,6 @@ import java.util.List;
 public class CustomUITemplateController {
 
     protected static Logger logger = Logger.getLogger(CustomUITemplateController.class);
-    private static ErrorLog elog = new ErrorLog();
 
     @Autowired
     private CustomUITemplateService customUITemplateService;
@@ -47,7 +47,7 @@ public class CustomUITemplateController {
     @Produces( MediaType.APPLICATION_JSON )
     @Path("/get/customUI/{crisisID}")
     public List<CustomUITemplate> getCustomUIByID(@PathParam("crisisID") Long crisisID){
-        System.out.println("[getCustomUIByID] Received request for crisisID = " + crisisID);
+        logger.info("[getCustomUIByID] Received request for crisisID = " + crisisID);
     	return  customUITemplateService.getCustomTemplateForLandingPage(crisisID);
     }
 
@@ -82,8 +82,7 @@ public class CustomUITemplateController {
 
         }
         catch(Exception e){
-            logger.debug("updateWelcomePage. Exception: " + data);
-            logger.error(elog.toStringException(e));
+            logger.debug("Exception while updating welcome page " + data,e);
         }
     }
 
@@ -116,9 +115,7 @@ public class CustomUITemplateController {
 
         }
         catch(Exception e){
-            logger.debug("updateTutorial. Exception: " + data);
-            logger.error(elog.toStringException(e));
-
+            logger.debug("Exception while updating tutorial " + data,e);
         }
 
         //updateCustomTemplateByAttribute(Long crisisID, Long attributeID, int customUIType, int skinType)
@@ -153,9 +150,7 @@ public class CustomUITemplateController {
 
         }
         catch(Exception e){
-            logger.debug("updateTutorial. Exception: " + data);
-            logger.error(elog.toStringException(e));
-
+            logger.debug("Exception while updating skin " + data,e);
         }
 
         //updateCustomTemplateByAttribute(Long crisisID, Long attributeID, int customUIType, int skinType)

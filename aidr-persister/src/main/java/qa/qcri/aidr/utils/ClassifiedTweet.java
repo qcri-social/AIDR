@@ -1,7 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * POJO for (de)serialization of tweets coming on the REDIS aidr_predict.* channels
+ * 
+ * @author Koushik
  */
+
+
 package qa.qcri.aidr.utils;
 
 import java.io.Serializable;
@@ -10,14 +13,18 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
+
+import qa.qcri.aidr.common.code.DateFormatConfig;
+import qa.qcri.aidr.common.filter.ClassifiedFilteredTweet;
+import qa.qcri.aidr.common.filter.NominalLabel;
+import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -26,23 +33,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
-import qa.qcri.aidr.common.code.DateFormatConfig;
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
-import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
-import qa.qcri.aidr.common.filter.ClassifiedFilteredTweet;
-import qa.qcri.aidr.common.filter.NominalLabel;
-
-/**
- *
- * @author Koushik
- */
 
 public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Document, Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 3780215910578547404L;
 
 	private static Logger logger = Logger.getLogger(ClassifiedTweet.class);
@@ -71,7 +64,6 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 	private String confidence_1;
 	private String humanLabeled_1;
 
-	public List<qa.qcri.aidr.common.filter.NominalLabel> nominal_labels;		
 	private AidrObject aidr;
 
 	public ClassifiedTweet() {
@@ -315,7 +307,6 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 	} 
 
 	public String setDateString(String timeString) {
-		//System.out.println("[setDateString] Received time string: " + timeString);
 
 		DateFormat dateFormatISO = new SimpleDateFormat(DateFormatConfig.ISODateFormat);
 		dateFormatISO.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -324,7 +315,6 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 				SimpleDateFormat formatter = new SimpleDateFormat(DateFormatConfig.StandardDateFormat);
 				Date newDate = formatter.parse(timeString);
 				if (newDate != null) setTimestamp(newDate.getTime());
-				//System.out.println("[setDateString] Converted date: " + newDate.toString());
 				return dateFormatISO.format(newDate);
 			} catch (ParseException e) {
 				logger.error("Error in setting createdAt field = " + timeString);
@@ -333,14 +323,6 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 		}
 		setTimestamp(0);
 		return timeString;
-	}
-
-	public List<NominalLabel> getNominalLabels() {
-		return nominal_labels;
-	}
-
-	public void setNominalLabels(List<NominalLabel> nLabels) {			
-		this.nominal_labels = nLabels;
 	}
 
 	public long getTimestamp() {
@@ -527,11 +509,10 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 		this.createDummyNominalLabels(collectionCode);
 	}
 
-	public void toClassifiedTweetFromLabeledDoc(HumanLabeledDocumentDTO doc) {
+	public void toClassifiedTweetFromLabeledDoc(HumanLabeledDocumentDTO doc, String collectionCode) {
 		if (doc != null) {
 			try {
-				this.toClassifiedTweet(doc.getDoc().getData(), doc.getDoc().getCrisisDTO().getCode());
-				this.getAidr().setCrisisName(doc.getDoc().getCrisisDTO().getName());
+				this.toClassifiedTweet(doc.getDoc().getData(), collectionCode);
 
 				// Now fill up the nominal_label field
 				if (doc.getLabelData() != null && !doc.getLabelData().isEmpty()) {

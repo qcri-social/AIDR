@@ -1,3 +1,8 @@
+/**
+ * Implements operations for managing the model_nominal_label table of the aidr_predict DB
+ * 
+ * @author Koushik
+ */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.ArrayList;
@@ -43,13 +48,14 @@ public class ModelNominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<M
 		try {
 			List<ModelNominalLabel> list = this.getAll();
 			if (list != null && !list.isEmpty()) {
-				System.out.println("Fetched list size: " + list.size());
+				logger.info("Fetched list size: " + list.size());
 				for (ModelNominalLabel m : list) {
 					dtoList.add(new ModelNominalLabelDTO(m));
 				}
 			}
 			return dtoList;
 		} catch (Exception e) {
+			logger.error("Error in getAllModelNominalLabels.");
 			return null;
 		}
 	}
@@ -61,19 +67,18 @@ public class ModelNominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<M
 
 		Model model = modelEJB.getById(modelID);
 		if (model != null) {
-			System.out.println("Model is not NULL in getAllModelNominalLabelsByModelID for modelID = "  + modelID + ",crisis code = " + crisisCode);
+			logger.info("Model is not NULL in getAllModelNominalLabelsByModelID for modelID = "  + modelID + ",crisis code = " + crisisCode);
 			Hibernate.initialize(model.getModelFamily());
 
 			try {
 				Boolean modelStatus = model.getModelFamily().isIsActive(); //getting model status
 				ModelFamily modelFamily = model.getModelFamily();
-				System.out.println("*********** retrived modelFamilyID = " + modelFamily.getModelFamilyId());
 				Hibernate.initialize(modelFamily.getNominalAttribute());
 				Long nominalAttributeId = modelFamily.getNominalAttribute().getNominalAttributeId();
 				//Long nominalAttributeId = model.getModelFamily().getNominalAttribute().getNominalAttributeId();
 
 				modelNominalLabelList = this.getAllByCriteria(Restrictions.eq("id.modelId", modelID));
-				System.out.println("modelNominalLabellist size = " + (modelNominalLabelList != null ? modelNominalLabelList.size() : "null"));
+				logger.info("modelNominalLabellist size = " + (modelNominalLabelList != null ? modelNominalLabelList.size() : "null"));
 
 				for (ModelNominalLabel labelEntity : modelNominalLabelList) {
 
@@ -90,12 +95,12 @@ public class ModelNominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<M
 								if (document.getCrisisDTO().getCode().equals(crisisCode)) {
 									++trainingSet;
 								} else {
-									System.out.println("Rejecting document for crisis = " + document.getCrisisDTO().getCode() + "having isEvaluationSet = " + document.getIsEvaluationSet() + ", nominalLabel = " + nominalLabel.getName() + ", model = " + model.getModelId() + " coming from modelFamily = " + modelFamily.getModelFamilyId());
+									logger.info("Rejecting document for crisis = " + document.getCrisisDTO().getCode() + "having isEvaluationSet = " + document.getIsEvaluationSet() + ", nominalLabel = " + nominalLabel.getName() + ", model = " + model.getModelId() + " coming from modelFamily = " + modelFamily.getModelFamilyId());
 								}
 							}
-						} catch (PropertyNotSetException e) {
+						} catch (Exception e) {
 							// TODO Auto-generated catch block
-							e.printStackTrace();
+							logger.error("Error in getDocumentCollectionWithNominalLabelData.", e);
 						}
 
 					}
@@ -110,8 +115,7 @@ public class ModelNominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<M
 					dtoList.add(dto);
 				}
 			} catch (Exception e) {
-				System.out.println("Exception occured in getAllModelNominalLabelsByModelID \n\n" );
-				e.printStackTrace();
+				logger.error("Exception occured in getAllModelNominalLabelsByModelID \n\n", e);
 				return null;
 			}
 		}
@@ -132,14 +136,14 @@ public class ModelNominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<M
 			em.refresh(modelLabel);
 			return new ModelNominalLabelDTO(modelLabel); 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error in addModelNominalLabel.", e);
 			return null;
 		}
 	}
 
 	@Override
 	public ModelNominalLabelDTO editModelNominalLabel(ModelNominalLabelDTO modelNominalLabel) throws PropertyNotSetException {
-		System.out.println("Received request for: " + modelNominalLabel.getIdDTO().getNominalLabelId() + ":" + modelNominalLabel.getIdDTO().getModelId());
+		logger.info("Received request for: " + modelNominalLabel.getIdDTO().getNominalLabelId() + ":" + modelNominalLabel.getIdDTO().getModelId());
 		try {
 			ModelNominalLabel label = modelNominalLabel.toEntity();
 			ModelNominalLabel oldLabel = getByCriteria(Restrictions.eq("id", modelNominalLabel.getIdDTO().toEntity()));
@@ -150,8 +154,7 @@ public class ModelNominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<M
 				throw new RuntimeException("Not found");
 			}
 		} catch (Exception e) {
-			System.out.println("Exception in merging/updating nominalLabel: " + modelNominalLabel.getIdDTO().getNominalLabelId());
-			e.printStackTrace();
+			logger.error("Exception in merging/updating nominalLabel: " + modelNominalLabel.getIdDTO().getNominalLabelId(), e);
 		}
 		return null;
 	}
@@ -177,4 +180,11 @@ public class ModelNominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<M
 		return (getModelNominalLabelByID(nominalLabelID) != null) ? true : false;
 	}
 
+	@Override
+	public void deleteModelNominalLabelByModelID(Long modelID) {
+		List<ModelNominalLabel> modelNominalLabelList = this.getAllByCriteria(Restrictions.eq("id.modelId", modelID));
+		for (ModelNominalLabel modelNominalLabel : modelNominalLabelList) {
+			delete(modelNominalLabel);
+		}
+	}
 }

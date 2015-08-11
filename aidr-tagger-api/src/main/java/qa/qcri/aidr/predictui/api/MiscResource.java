@@ -4,27 +4,38 @@
  */
 package qa.qcri.aidr.predictui.api;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
-
-import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
-import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentList;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.HumanLabeledDocumentListWrapper;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.ItemToLabelDTO;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
-import qa.qcri.aidr.predictui.facade.MiscResourceFacade;
-import qa.qcri.aidr.predictui.util.ResponseWrapper;
-import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
-import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
+
+import qa.qcri.aidr.common.util.EmailClient;
+import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
+import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentList;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.ItemToLabelDTO;
+import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
+import qa.qcri.aidr.predictui.facade.MiscResourceFacade;
+import qa.qcri.aidr.predictui.facade.SystemEventFacade;
+import qa.qcri.aidr.predictui.util.ResponseWrapper;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
 
 /**
  * REST Web Service
@@ -39,6 +50,8 @@ public class MiscResource {
 	private UriInfo context;
 	@EJB
 	private MiscResourceFacade miscEJB;
+	@EJB
+	private SystemEventFacade systemEventEJB;
 
 	public MiscResource() {
 	}
@@ -103,7 +116,6 @@ public class MiscResource {
 		}
 		try {
 			List<HumanLabeledDocumentDTO> dtoList = miscEJB.getHumanLabeledDocumentsByCrisisID(crisisID, count);
-			System.out.println("REST call will return dto List size = " + (dtoList != null ? dtoList.size() : "null"));
 			if (dtoList != null) {
 				ResponseWrapper response = new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
 				response.setItems(dtoList);
@@ -113,7 +125,7 @@ public class MiscResource {
 				return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS), "Found 0 human labeled documents")).build();
 			}
 		} catch (Exception e) {
-			logger.error("Exception", e);
+			logger.error("Error in getHumanLabeledDocumentsByCrisisID for crisisId : " + crisisID, e);
 			return Response.ok(
 					new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "Exception in fetching human labeled documents")).build();
 		}
@@ -139,7 +151,7 @@ public class MiscResource {
 				return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS), "Found 0 human labeled documents")).build();
 			}
 		} catch (Exception e) {
-			logger.error("Exception", e);
+			logger.error("Error in getHumanLabeledDocumentsByCrisisCode for code : " + crisisCode, e);
 			return Response.ok(
 					new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "Exception in fetching human labeled documents")).build();
 		}
@@ -156,7 +168,6 @@ public class MiscResource {
 		}
 		try {
 			List<HumanLabeledDocumentDTO> dtoList = miscEJB.getHumanLabeledDocumentsByCrisisIDUserID(crisisID, userID, count);
-			System.out.println("REST call will return dto List size = " + (dtoList != null ? dtoList.size() : "null"));
 			if (dtoList != null) {
 				ResponseWrapper response = new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
 				response.setItems(dtoList);
@@ -166,7 +177,8 @@ public class MiscResource {
 				return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS), "Found 0 human labeled documents")).build();
 			}
 		} catch (Exception e) {
-			logger.error("Exception", e);
+			logger.error("Error in getHumanLabeledDocumentsByCrisisIDUserID for crisisID :"
+					+ userID + " and userID : " + userID, e);
 			return Response.ok(
 					new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "Exception in fetching human labeled documents")).build();
 		}
@@ -185,7 +197,6 @@ public class MiscResource {
 		}
 		try {
 			List<HumanLabeledDocumentDTO> dtoList = miscEJB.getHumanLabeledDocumentsByCrisisIDUserName(crisisID, userName, count);
-			System.out.println("REST call will return dto List size = " + (dtoList != null ? dtoList.size() : "null"));
 			if (dtoList != null) {
 				ResponseWrapper response = new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
 				response.setItems(dtoList);
@@ -195,41 +206,100 @@ public class MiscResource {
 				return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS), "Found 0 human labeled documents")).build();
 			}
 		} catch (Exception e) {
-			logger.error("Exception", e);
+			logger.error("Error in getHumanLabeledDocumentsByCrisisIDUserName for crisisID : "
+					+ crisisID + " and userName : " + userName, e);
 			return Response.ok(
 					new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "Exception in fetching human labeled documents")).build();
 		}
 	}
 	
+	/*
+	 * Note: userName in the path parameter refers to the username who is trying to access the data.
+	 * It is not used for filtering the labeled items - but for generating the downloadable fileName in the persister.
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/humanLabeled/download/crisis/{crisisCode}/userName/{userName}")
 	public Response downloadHumanLabeledDocumentsByCrisisIDUserName(String queryString,
 			@PathParam("crisisCode") String crisisCode, @PathParam("userName") String userName, 
-			@QueryParam("count") Integer count,
+			@DefaultValue("-1") @QueryParam("count") Integer count,
 			@DefaultValue("CSV") @QueryParam("fileType") String fileType,
 			@DefaultValue("full") @QueryParam("contentType") String contentType) {
+		
+		logger.info("Received request: crisisCode = " + crisisCode + ", userName = " + userName + ", count = " + count + ", fileType = " + fileType
+						+ ", contentType = " + contentType + "\nquery String = " + queryString);
 		if (null == crisisCode || null == userName) {
 			return Response.ok(
 					new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "crisisID or user name can't be null")).build();
 		}
 		try {
 			List<HumanLabeledDocumentDTO> dtoList = miscEJB.getHumanLabeledDocumentsByCrisisCode(crisisCode, count);
-			System.out.println("REST call will return dto List size = " + (dtoList != null ? dtoList.size() : "null"));
+			if(count==-1){
+				count=null;
+			}
+			
 			if (dtoList != null) {
 				ResponseWrapper response = new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
 				response.setTotal(dtoList.size());
 				HumanLabeledDocumentList list = new HumanLabeledDocumentList(dtoList);
-				response.setMessage(miscEJB.downloadItems(list, queryString, dtoList.get(0).getDoc().getCrisisDTO().getCode(), 
-															userName, count, fileType, contentType));
+				if(dtoList.size()!=0){
+					response.setMessage(miscEJB.downloadItems(list, queryString, dtoList.get(0).getDoc().getCrisisDTO().getCode(), 
+							userName, count, fileType, contentType));
+				}
+				else{
+					response.setMessage("Found 0 human labeled documents");
+				}
 				return Response.ok(response).build();
 			} else {
 				return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS), "Found 0 human labeled documents")).build();
 			}
 		} catch (Exception e) {
-			logger.error("Exception", e);
+			logger.error("Error in downloadHumanLabeledDocumentsByCrisisIDUserName.", e);
 			return Response.ok(
 					new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), "Exception in fetching human labeled documents")).build();
 		}
+	}
+	
+	//Logs error in system events table also
+	@POST
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/sendErrorEmail")
+	public Response sendErrorEmail(@FormParam("code") String code, @FormParam("module") String module, @FormParam("description") String description) throws Exception {
+		Boolean emailSent = true;
+		try {
+			String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+			String body = time+" "+module +" "+ code +"\n"+ description;
+			EmailClient.sendErrorMail(module, body);
+		} catch (Exception e) {
+			logger.error("Unable to send email");
+			logger.error(e.getMessage());
+			emailSent = false;
+		}
+		try
+		{
+			systemEventEJB.insertSystemEvent("ERROR", module, code, description, emailSent);
+		}
+		catch (Exception e) {
+			logger.warn("Error in inserting system event.");
+			return Response.serverError().build();
+		}
+		return Response.ok().build();
+	}
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/sendEmail")
+	public Response sendEmail(@FormParam("subject") String subject, @FormParam("body") String body) throws Exception {
+		try {
+			String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+			EmailClient.sendErrorMail(subject, time + "\n"+body);
+		} catch (Exception e) {
+			logger.error("Unable to send email");
+			logger.error(e.getMessage());
+			return Response.serverError().build();
+		}
+		return Response.ok().build();
 	}
 }

@@ -1,17 +1,17 @@
 package qa.qcri.aidr.predict.communication;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.predict.DataStore;
-import qa.qcri.aidr.predict.classification.DocumentLabel;
-import qa.qcri.aidr.predict.common.*;
-import qa.qcri.aidr.predict.data.DocumentJSONConverter;
-import qa.qcri.aidr.predict.data.Document;
-
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import qa.qcri.aidr.predict.DataStore;
+import qa.qcri.aidr.predict.common.PipelineProcess;
+import qa.qcri.aidr.predict.common.Serializer;
+import qa.qcri.aidr.predict.common.TaggerConfigurationProperty;
+import qa.qcri.aidr.predict.common.TaggerConfigurator;
+import qa.qcri.aidr.predict.data.Document;
+import qa.qcri.aidr.predict.data.DocumentJSONConverter;
 import redis.clients.jedis.Jedis;
 
 /**
@@ -27,7 +27,6 @@ public class OutputMatcher extends PipelineProcess  {
     public int outputCount = 0;
 
     private static Logger logger = Logger.getLogger(OutputMatcher.class);
-    private static ErrorLog elog = new ErrorLog();
     
     public void run() {
         while (true) {
@@ -68,7 +67,6 @@ public class OutputMatcher extends PipelineProcess  {
             return Serializer.deserialize(byteDoc.get(1));
         } catch (ClassNotFoundException | IOException e) {
             logger.error("Exception when parsing document set from stream.");
-            logger.error(elog.toStringException(e));
             return null;
         }
     }
@@ -83,8 +81,7 @@ public class OutputMatcher extends PipelineProcess  {
 									TaggerConfigurationProperty.REDIS_LABEL_TASK_WRITE_QUEUE)
 							.getBytes(), Serializer.serialize(doc));
 		} catch (IOException e) {
-			logger.error("Exception while serializing DocumentSet");
-			logger.error(elog.toStringException(e));
+			logger.warn("Exception while serializing DocumentSet.");
 		}
 		DataStore.close(jedis);
     }

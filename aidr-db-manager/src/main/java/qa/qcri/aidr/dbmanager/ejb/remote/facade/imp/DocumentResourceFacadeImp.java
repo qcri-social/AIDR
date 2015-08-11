@@ -1,3 +1,8 @@
+/**
+ * Implements operations for managing the document table of the aidr_predict DB
+ * 
+ * @author Koushik
+ */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.ArrayList;
@@ -9,35 +14,24 @@ import javax.ejb.Stateless;
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
-import org.hibernate.Transaction;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
-import qa.qcri.aidr.common.exception.AidrException;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.common.logging.ErrorLog;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade;
-import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
-import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 
-/**
- * 
- * @author Koushik
- *
- */
 @Stateless(name="DocumentResourceFacadeImp")
 public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long> implements DocumentResourceFacade  {
 
 	private Logger logger = Logger.getLogger("db-manager-log");
-	private ErrorLog elog = new ErrorLog();
 
 	@EJB
 	CrisisResourceFacade crisisEJB;
@@ -97,7 +91,6 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 					logger.info("deleted count = " + deleteCount);
 				} catch (Exception e) {
 					logger.error("deletion query failed, document: " + document.getDocumentID());
-					logger.error(elog.toStringException(e));
 					return 0;
 				}
 				logger.info("deletion success, deleted count = " + deleteCount);
@@ -106,7 +99,6 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 
 			} catch (Exception e) {
 				logger.error("Deletion query failed");
-				logger.error(elog.toStringException(e));
 				return 0;
 			}
 		}
@@ -118,17 +110,16 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	public int deleteNoLabelDocument(List<DocumentDTO> collection) {
 		int deleteCount = 0;
 		if (collection != null && !collection.isEmpty()) {
-			Session session = getCurrentSession();
+			//Session session = getCurrentSession();
 			try {
-				Transaction tx = session.beginTransaction();
+				//Transaction tx = session.beginTransaction();
 				for (DocumentDTO d: collection) {
 					deleteCount += deleteNoLabelDocument(d);
 				}
-				tx.commit();
+				//tx.commit();
 				logger.info("deleted count = " + deleteCount);
 			} catch (Exception e) {
 				logger.error("Collection deletion query failed");
-				logger.error(elog.toStringException(e));
 			}
 		}
 		return deleteCount;
@@ -147,7 +138,6 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 				return result;
 			} catch (Exception e) {
 				logger.error("Deletion query failed");
-				logger.error(elog.toStringException(e));
 				return 0;
 			}
 		}
@@ -166,7 +156,6 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 			return result;
 		} catch (Exception e) {
 			logger.error("Deletion query failed");
-			logger.error(elog.toStringException(e));
 			return 0;
 		}
 	}
@@ -176,7 +165,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	public int deleteUnassignedDocumentCollection(List<Long> documentIDList) {
 		int deleteCount = 0;
 		if (documentIDList != null && !documentIDList.isEmpty()) {
-			System.out.println("[deleteUnassignedDocumentCollection] Size of docList to delete: " + documentIDList.size());
+			logger.info("[deleteUnassignedDocumentCollection] Size of docList to delete: " + documentIDList.size());
 			Session session = getCurrentSession();
 			try {
 				Transaction tx = session.beginTransaction();
@@ -184,11 +173,9 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 					deleteCount += deleteUnassignedDocument(documentID);
 				}
 				tx.commit();
-				System.out.println("[deleteUnassignedDocumentCollection] number of deleted records = " + deleteCount);
 			} catch (Exception e) {
 				logger.error("[deleteUnassignedDocumentCollection] Collection deletion query failed");
 				logger.error("Exception", e);
-				e.printStackTrace();
 			}
 		}
 		return deleteCount;
@@ -203,8 +190,6 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 			final String maxTaskAge, final String scanInterval) {
 
 		logger.info("received request: " + joinType + ", " + joinTable + ", " 
-				+ joinColumn + ", " + maxTaskAge + ", " + scanInterval);
-		System.out.println("[deleteStaleDocuments] received request: " + joinType + ", " + joinTable + ", " 
 				+ joinColumn + ", " + maxTaskAge + ", " + scanInterval);
 
 		int deleteCount = 0;
@@ -240,15 +225,12 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 
 		Query deleteQuery = session.createSQLQuery(hql.toString());
 		deleteQuery.setParameter("task_expiry_age", Integer.parseInt(getTimeValue(maxTaskAge)));
-		System.out.println("Constructed query: " + deleteQuery.getQueryString());
 		logger.info("Constructed query: " + deleteQuery.getQueryString());
 		try {
 			deleteCount = deleteQuery.executeUpdate();
-			System.out.println("[deleteStaleDocuments] number of deleted records = " + deleteCount);
 			logger.info("[deleteStaleDocuments] number of deleted records = " + deleteCount);
 		} catch (Exception e) {
 			logger.error("Exception in executing SQL delete stale docs query");
-			logger.error(elog.toStringException(e));
 		}
 		return deleteCount;
 	}
@@ -317,13 +299,13 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 			em.refresh(d);
 			return new DocumentDTO(d);
 		} catch (Exception e) {
+			logger.error("Error in addDocument.");
 			return null;
 		}
 	}
 
 	@Override
 	public DocumentDTO editDocument(DocumentDTO doc) throws PropertyNotSetException {
-		System.out.println("Received request for: " + doc.getDocumentID() + ", " + doc.getCrisisDTO().getCode());
 		try {
 			Document d = doc.toEntity();
 			Document oldDoc = getById(d.getDocumentId()); 
@@ -334,8 +316,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 				throw new RuntimeException("Not found");
 			}
 		} catch (Exception e) {
-			System.out.println("Exception in merging/updating document: " + doc.getDocumentID());
-			e.printStackTrace();	
+			logger.error("Exception in merging/updating document: " + doc.getDocumentID(), e);
 		}
 		return null;
 	}
@@ -346,6 +327,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 			Document managed = em.merge(doc.toEntity());
 			em.remove(managed);
 		} catch (Exception e) {
+			logger.warn("Warning! Couldn't delete document with ID : " + doc.getDocumentID());
 			return 0;
 		}
 		return 1;
@@ -403,17 +385,15 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 
 	@Override
 	public List<DocumentDTO> getAllDocuments() throws PropertyNotSetException {
-		System.out.println("Received request for fetching all Documents!!!");
 		List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
 		List<Document> list = getAll();
 		if (list != null && !list.isEmpty()) {
 			for (Document doc : list) {
-				//System.out.println("Converting to DTO Document: " + doc.getDocumentId() + ", " + doc.getCrisis().getCode() + ", " + doc.isHasHumanLabels());
 				DocumentDTO dto = new DocumentDTO(doc);
 				dtoList.add(dto);
 			}
 		}
-		System.out.println("Done creating DTO list, size = " + dtoList.size());
+		logger.error("Done creating DTO list, size = " + dtoList.size());
 		return dtoList;
 	}
 
@@ -426,12 +406,11 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 		List<Document> list = this.getAllByCriteria(criterion);
 		if (list != null && !list.isEmpty()) {
 			for (Document doc : list) {
-				//System.out.println("Converting to DTO Document: " + doc.getDocumentId() + ", " + doc.getCrisis().getCode() + ", " + doc.isHasHumanLabels());
 				DocumentDTO dto = new DocumentDTO(doc);
 				dtoList.add(dto);
 			}
 		}
-		System.out.println("Done creating DTO list, size = " + dtoList.size());
+		logger.info("Done creating DTO list, size = " + dtoList.size());
 		return dtoList;
 	}
 
@@ -444,12 +423,11 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 		List<Document> list = this.getAllByCriteria(criterion);
 		if (list != null && !list.isEmpty()) {
 			for (Document doc : list) {
-				//System.out.println("Converting to DTO Document: " + doc.getDocumentId() + ", " + doc.getCrisis().getCode() + ", " + doc.isHasHumanLabels());
 				DocumentDTO dto = new DocumentDTO(doc);
 				dtoList.add(dto);
 			}
 		}
-		System.out.println("Done creating DTO list, size = " + dtoList.size());
+		logger.info("Done creating DTO list, size = " + dtoList.size());
 		return dtoList;
 	}
 
@@ -463,24 +441,43 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 
 			Criterion criterion = Restrictions.eq("hasHumanLabels", true);
 			Criterion aliasCriterion =  Restrictions.eq(aliasTableKeyField, nominalLabelID);
-			try {
-				List<Document> docList = this.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion);
-				logger.debug("docList = " + docList);
-				if (docList != null && !docList.isEmpty()) {
-					logger.info("[getDocumentCollectionWithNominalLabelData] Fetched size = " + docList.size());
-					NominalLabelDTO nominalLabel = nominalLabelEJB.getNominalLabelByID(nominalLabelID);
-					for (Document doc: docList) {
-						DocumentDTO dto = new DocumentDTO(doc);
-						dto.setNominalLabelDTO(nominalLabel);
-						dtoList.add(dto);	
-					}
-					System.out.println("[getDocumentCollectionWithNominalLabelData] Done creating DTO list, size = " + dtoList.size());
+			List<Document> docList = this.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion);
+			if (docList != null && !docList.isEmpty()) {
+				logger.info("[getDocumentCollectionWithNominalLabelData] Fetched size = " + docList.size());
+				NominalLabelDTO nominalLabel = nominalLabelEJB.getNominalLabelByID(nominalLabelID);
+				for (Document doc: docList) {
+					DocumentDTO dto = new DocumentDTO(doc);
+					dto.setNominalLabelDTO(nominalLabel);
+					dtoList.add(dto);	
 				}
-			} catch (Exception e) {
-				throw new Exception();
+				logger.info("[getDocumentCollectionWithNominalLabelData] Done creating DTO list, size = " + dtoList.size());
 			}
 		}
 		return dtoList;
+	}
+
+	@Override
+	public Integer getUnlabeledDocumentsCountByCrisisID(Long crisisId) throws PropertyNotSetException {
+		Criterion criterion = Restrictions.conjunction()
+				.add(Restrictions.eq("crisis.crisisId",crisisId))
+				.add(Restrictions.eq("hasHumanLabels", false));
+		List<Document> documentList = this.getAllByCriteria(criterion);
+		return documentList != null ? Integer.valueOf(documentList.size()) : 0;
+	}
+	
+	@Override
+	public boolean deleteDocuments(List<DocumentDTO> documents){
+		try {
+			for (DocumentDTO documentDTO : documents) {
+				deleteDocument(documentDTO);
+			}
+			return true;
+		} catch (Exception e) {
+			logger.error("Error in deleting document.");
+			return false;
+		}
+		
+		
 	}
 
 }

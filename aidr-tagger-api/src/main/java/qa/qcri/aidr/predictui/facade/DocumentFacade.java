@@ -21,5 +21,6 @@ public interface DocumentFacade {
     public List<DocumentDTO> getAllUnlabeledDocumentbyCrisisID(Long crisisID);
     public int deleteDocument(Long documentID);
     public ResponseWrapper removeTrainingExample(Long documentID);
+	public Integer getUnlabeledDocumentsCountByCrisisID(Long crisisID);
 
 }

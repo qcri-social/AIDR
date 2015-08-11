@@ -18,58 +18,49 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "responseWrapper", propOrder = {
-    "statusCode",
-    "message",
-    "dataObject",
-    
- })
+		"statusCode",
+		"message",
+		"dataObject",
+
+})
 @XmlRootElement(name = "responseWrapper")
 @JsonSerialize(include = Inclusion.NON_DEFAULT)
 public class ResponseWrapper implements Serializable{
-    
-    protected String statusCode;
-    protected String message;
-    protected Object dataObject;
-    
 
-    public ResponseWrapper() {
-    }
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6615942283542314788L;
+	protected String statusCode;
+	protected String message;
+	protected Object dataObject;
 
-    
-    
- public String getStatusCode() {
-        return statusCode;
-    }
+	public ResponseWrapper() {
+	}
 
-    /**
-     * @param statusCode the statusCode to set
-     */
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
-    }
-    public Object getDataObject() {
-        return dataObject;
-    }
+	public String getStatusCode() {
+		return statusCode;
+	}
 
-    public void setDataObject(Object dataObject) {
-        this.dataObject = dataObject;
-    }
+	/**
+	 * @param statusCode the statusCode to set
+	 */
+	public void setStatusCode(String statusCode) {
+		this.statusCode = statusCode;
+	}
+	public Object getDataObject() {
+		return dataObject;
+	}
 
-    public String getMessage() {
-        return message;
-    }
+	public void setDataObject(Object dataObject) {
+		this.dataObject = dataObject;
+	}
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+	public String getMessage() {
+		return message;
+	}
 
-    /**
-     * @return the statusCode
-     */
-   
-
-   
-
-   
-
+	public void setMessage(String message) {
+		this.message = message;
+	}
 }

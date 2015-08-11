@@ -12,8 +12,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
-
 
 /**
  * A DocumentFeature implementation consisting of a set of words.
@@ -23,7 +21,6 @@ import qa.qcri.aidr.common.logging.ErrorLog;
 public class WordSet implements DocumentFeature, Serializable {
 
 	private static Logger logger = Logger.getLogger(WordSet.class);
-	private static ErrorLog elog = new ErrorLog();
 			
     private static final long serialVersionUID = 1L;
 
@@ -57,7 +54,6 @@ public class WordSet implements DocumentFeature, Serializable {
             obj.put(STR_WORDS, wordsArr);
         } catch (JSONException e) {
         	logger.error("Error in json parsing: " + words);
-        	logger.error(elog.toStringException(e));
             throw new RuntimeException(e);
         }
         return obj;
@@ -73,9 +69,13 @@ public class WordSet implements DocumentFeature, Serializable {
     public double getSimilarity(WordSet other) {
         int l1 = words.size();
         int l2 = other.words.size();
-        HashSet<String> union = new HashSet<String>(words);
-        union.addAll(other.words);
-        int l3 = union.size();
-        return Math.min(l1, l2) / (double) l3;
+        
+        // intersection of two sets
+        HashSet<String> intersection = (HashSet<String>) (l1 < l2 ? words.clone() : other.words.clone());
+        intersection.retainAll(l1 < l2 ? other.words : words);
+        int l3 = intersection.size();
+        
+        // similarity using Jaccard coefficient
+        return l3 / (double) (l1 + l2 -l3);
     }
 }

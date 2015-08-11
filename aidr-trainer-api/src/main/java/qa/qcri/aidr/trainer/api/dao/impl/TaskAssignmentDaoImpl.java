@@ -1,18 +1,26 @@
 package qa.qcri.aidr.trainer.api.dao.impl;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+
 import qa.qcri.aidr.trainer.api.dao.TaskAssignmentDao;
 import qa.qcri.aidr.trainer.api.entity.Document;
 import qa.qcri.aidr.trainer.api.entity.TaskAssignment;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 @Repository
 public class TaskAssignmentDaoImpl extends AbstractDaoImpl<TaskAssignment, String> implements TaskAssignmentDao{
+	
+	private static Logger logger=Logger.getLogger(TaskAssignmentDaoImpl.class);
 
     protected TaskAssignmentDaoImpl(){
         super(TaskAssignment.class);
@@ -30,8 +38,6 @@ public class TaskAssignmentDaoImpl extends AbstractDaoImpl<TaskAssignment, Strin
                 save(taskAssignment);
             }
         }
-
-
     }
 
     @Override
@@ -88,7 +94,7 @@ public class TaskAssignmentDaoImpl extends AbstractDaoImpl<TaskAssignment, Strin
             }
 
         } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+           logger.error("Exception while undoTaskAssignmentByTimer \t"+e.getStackTrace());
         }
 
     }

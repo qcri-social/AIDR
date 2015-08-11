@@ -1,5 +1,6 @@
 package qa.qcri.aidr.predictui.facade.imp;
 
+import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 
 import java.util.HashMap;
@@ -90,10 +91,21 @@ public class DocumentFacadeImp implements DocumentFacade {
 						"Error while deleting training example id " + documentID);
 			}
 		} catch (Exception e) {
-			logger.error("exception", e);
+			logger.error("Error while deleting training example id " + documentID, e);
 			return new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED),
 					"Error while deleting training example id " + documentID);
 		}
+	}
+	
+	@Override
+	public Integer getUnlabeledDocumentsCountByCrisisID(Long crisisID) {
+		Integer count = 0;
+		try {
+			count = remoteDocument.getUnlabeledDocumentsCountByCrisisID(crisisID);
+		} catch (PropertyNotSetException e) {
+			logger.error("Error in getUnlabeledDocumentsCountByCrisisID for crisis : " + crisisID, e);
+		}
+		return count;
 	}
 
 	@Override

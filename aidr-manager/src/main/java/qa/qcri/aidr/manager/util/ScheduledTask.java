@@ -4,8 +4,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.service.CollectionService;
+import qa.qcri.aidr.manager.service.TaggerService;
 
 import java.util.Date;
 import java.util.List;
@@ -19,6 +21,9 @@ public class ScheduledTask {
 
 	@Autowired
 	private CollectionService collectionService;
+	
+	@Autowired
+	private TaggerService taggerService;
 
 	@Scheduled(fixedDelay = 10 * 60 * 1000) // 10 minutes - in milliseconds
 	private void scheduledTaskUpdateCollections() {
@@ -26,8 +31,8 @@ public class ScheduledTask {
 		try {
 			collections = collectionService.getRunningCollections();
 		} catch (Exception e) {
-			logger.error("Error while executing update collections scheduled task");
-			logger.error("exception: ", e);
+			logger.error("Error while executing update collections scheduled task", e);
+			taggerService.sendMailService("Error in ScheduledTask","Error while executing update collections scheduled task in ScheduledTask.scheduledTaskUpdateCollections");
 			return;
 		}
 		if (collections != null) {
@@ -37,8 +42,8 @@ public class ScheduledTask {
 				try {
 					collectionService.statusByCollection(item);
 				} catch (Exception e) {
-					logger.error("Error while updating collection with ID: " + item.getId());
-					logger.error("exception: ", e);
+					logger.error("Error while updating collection with ID: " + item.getId(), e);
+					taggerService.sendMailService("Error in ScheduledTask","Error while executing  updating collection with ID: " + item.getId() +" in ScheduledTask.scheduledTaskUpdateCollections");
 				}
 			}
 		}
@@ -51,8 +56,8 @@ public class ScheduledTask {
 		try {
 			collections = collectionService.getRunningCollections();
 		} catch (Exception e) {
-			logger.error("Error while executing checking for collections running duration");
-			logger.error("exception: ", e);
+			logger.error("Error while executing checking for collections running duration",e);
+			taggerService.sendMailService("Error in ScheduledTask","Error while executing checking for collections running duration in ScheduledTask.scheduledTaskStopCollections");
 			return;
 		}
 		if (collections != null) {
@@ -66,8 +71,8 @@ public class ScheduledTask {
 						collectionService.stop(item.getId());
 						logger.info("Collection with ID: " + item.getId() + " was automatically stopped as it reached duration interval.");
 					} catch (Exception e) {
-						logger.info("Error while stopping collection with ID: " + item.getId());
-						logger.error("exception: ", e);
+						logger.info("Error while stopping collection with ID: " + item.getId(),e);
+						taggerService.sendMailService("Error in ScheduledTask","Error while stopping collection with ID: " + item.getId() +" in ScheduledTask.scheduledTaskStopCollections");
 					}
 				}
 			}

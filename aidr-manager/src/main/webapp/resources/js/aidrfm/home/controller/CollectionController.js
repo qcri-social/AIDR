@@ -104,6 +104,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
                         ['Error while starting Collection .',
                             'Please try again later or contact Support']
                     );
+                    AIDRFMFunctions.reportIssue(resp);
                 }
             }
         });
@@ -136,6 +137,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
                     }
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             }
         });
@@ -178,6 +180,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
                     });
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             }});
     },
@@ -247,8 +250,8 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
             headers: {
                 'Accept': 'application/json'
             },
-            success: function (response) {
-                var response = Ext.decode(response.responseText);
+            success: function (resp) {
+                var response = Ext.decode(resp.responseText);
                 if (response.data && response.data.roles) {
                     var roles = response.data.roles;
                     if (Ext.isArray(roles)) {
@@ -260,6 +263,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
                     }
                 } else {
                     AIDRFMFunctions.setAlert('Error', 'Collection Code already exist. Please select another code');
+                    AIDRFMFunctions.reportIssue(resp);
                 }
             }
         });
@@ -290,6 +294,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
                     me.refreshBothCollections();
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             },
             failure: function () {
@@ -321,6 +326,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
                     document.location.href = BASE_URL + '/protected/' + code + '/tagger-collection-details';
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             }
         });

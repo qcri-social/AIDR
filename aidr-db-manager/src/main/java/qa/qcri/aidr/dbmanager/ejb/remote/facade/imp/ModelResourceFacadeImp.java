@@ -1,7 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Implements operations for managing the model table of the aidr_predict DB
+ * 
+ * @author Koushik
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
@@ -13,6 +13,7 @@ import javax.ejb.Stateless;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
@@ -31,10 +32,7 @@ import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 
-/**
- *
- * @author Imran, koushik
- */
+
 @Stateless(name="ModelResourceFacadeImp")
 public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> implements ModelResourceFacade {
 
@@ -44,17 +42,18 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 		super(Model.class);
 	}
 
+	@Override
 	public List<ModelDTO> getAllModels() throws PropertyNotSetException {
 		List<ModelDTO> modelDTOList = new ArrayList<ModelDTO>();
 		List<Model> modelList = getAll();
-		System.out.println("Fetched models list size: " + modelList.size());
+		logger.info("Fetched models list size: " + modelList.size());
 		for (Model model : modelList) {
-			System.out.println("Adding model ID = " + model.getModelId());
 			modelDTOList.add(new ModelDTO(model));
 		}
 		return modelDTOList;
 	}
 
+	@Override
 	public ModelDTO getModelByID(Long id) throws PropertyNotSetException {
 		return new ModelDTO(getById(id));
 	}
@@ -62,6 +61,7 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 	/*
      Use this method to get number of models associated with a model family.
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public Integer getModelCountByModelFamilyID(Long modelFamilyID) throws PropertyNotSetException {
 		Criteria criteria = getCurrentSession().createCriteria(Model.class);
@@ -70,6 +70,7 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 		return modelList != null ? Integer.valueOf(modelList.size()) : 0;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<ModelHistoryWrapper> getModelByModelFamilyID(Long modelFamilyID, Integer start, Integer limit) throws PropertyNotSetException {
 		List<ModelDTO> modelDTOList = new ArrayList<ModelDTO>();
@@ -91,6 +92,7 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 		return wrapperList;
 	}
 
+	@Override
 	public List<ModelWrapper> getModelByCrisisID(Long crisisID) throws PropertyNotSetException{
 		List<ModelWrapper> modelWrapperList = new ArrayList<ModelWrapper>();
 
@@ -166,4 +168,19 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 		return modelWrapperList;
 	}
 
+	@Override
+	public boolean deleteModel(Long modelID) {
+		Model model = getEntityManager().find(Model.class, modelID);
+		if (model != null) {
+			try {
+				getEntityManager().remove(model);
+			} catch (HibernateException he) {
+				logger.error("Hibernate exception on deleting Model using ID=" + model + he.getStackTrace());
+				return false; // hibernate delete operation failed. Details in the logs.
+			}
+			return true; // successfully deleted.
+		} else {
+			return false; // delete operation failed becuase no modelfamily is found against given ID.
+		}
+	}
 }

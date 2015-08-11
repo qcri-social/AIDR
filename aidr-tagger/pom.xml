@@ -8,6 +8,11 @@
 	<version>1.0</version>
 	<description>Reads collected items from a Redis queue, annotates them using an automatic classifier, and writes them to another Redis queue</description>
 	<url>http://aidr.qcri.org/</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<resource.dir>${basedir}/src/main/resources</resource.dir>
+    	<skipTests>true</skipTests>
+  	</properties>
 
 	<build>
 		<plugins>
@@ -16,7 +21,32 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.17</version>
 				<configuration>
-					<skipTests>True</skipTests>
+					<skipTests>${skipTests}</skipTests>
+					<excludes>
+						<exclude>**/TaggerTesterTest.java</exclude>
+					</excludes>
+					<systemProperties>
+					  <property>
+						 <name>DEFAULT_PERSISTANCE_MODE</name>
+						 <value>false</value>
+					  </property>
+					  <property>
+						 <name>config</name>
+						 <value>${config}</value>
+					  </property>
+					  <property>
+						 <name>nitems-train</name>
+						 <value>200</value>
+					  </property>
+					  <property>
+						 <name>nitems-test</name>
+						 <value>1000</value>
+					  </property>
+					  <property>
+						 <name>quiet</name>
+						 <value>false</value>
+					  </property>
+					</systemProperties>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -172,6 +202,11 @@
 			<version>2.5.1</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>2.5.1</version>
+		</dependency>
 		<!-- Jersey -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
@@ -243,10 +278,7 @@
 		</repository>
 	</repositories>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<resource.dir>${basedir}/src/main/resources</resource.dir>
-	</properties>
+	
 
 	<!-- Profile configuration this should match the one in the master POM -->
 	<profiles>

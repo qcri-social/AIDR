@@ -12,36 +12,8 @@
  * @author Koushik Sinha
  * Last modified: 04/02/2014
  *
- * Dependencies:  jersey 2.5.1, jax-rs 2.0, jedis-2.2.1, gson-2.2.4, commons-pool-1.6, slf4j-1.7.5
- * 	
- * Hints for testing:
- * 	1. You can increase the test duration by adjusting the SUBSCRIPTION_MAX_DURATION. 
- *  	2. Tune REDIS_CALLBACK_TIMEOUT, in case the rate of publication is very slow
- *  	3. Tune the number of threads in ExecutorService
- *
- * Deployment steps: 
- * 	1. [Required] Set redisHost and redisPort in code, as per your REDIS setup/location
- * 	2. [Optional] Tune time-out and other parameters, if necessary
- * 	3. [Required]Compile and package as WAR file
- * 	4. [Required] Deploy as WAR file in glassfish 3.1.2
- * 	5. [Optional] Setup ssh tunneling (e.g. command: ssh tunneling:: ssh -f -L 1978:localhost:6379 <remotehost> -N)
- * 	6. Issue stream request from client
- *
- *
- * URL: host:port/context-path/channel/{crisisCode}?callback={callback}&rate={rate}&duration={duration}  
- * ============
- * Channel Name based examples:
- *  1. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/clex_20131201?callback=print&rate=10  
- *  2. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/clex_20131201?duration=1h&callback=print&rate=10
- *  
- * Wildcard based examples:
- *  1. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/*?callback=print&rate=10 
+ *  1. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/clex_20131201?duration=1h&callback=print&rate=10
  *  2. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/*?duration=1h&callback=print&rate=10
- *  
- * Fully qualified channel name examples:
- *  1. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/aidr_predict.clex_20131201?callback=print&rate=10 
- *  2. http://localhost:8080/AIDROutput/rest/crisis/stream/channel/aidr_predict.clex_20131201?duration=1h&callback=print&rate=10
- * 
  *  
  *  Parameter explanations:
  *  	1. crisisCode [mandatory]: the REDIS channel to which to subscribe
@@ -60,12 +32,9 @@ package qa.qcri.aidr.output.stream;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContextEvent;
@@ -78,18 +47,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.glassfish.jersey.server.ChunkedOutput;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.server.ChunkedOutput;
 
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.output.utils.JedisConnectionObject;
 import qa.qcri.aidr.output.utils.OutputConfigurationProperty;
 import qa.qcri.aidr.output.utils.OutputConfigurator;
-import qa.qcri.aidr.output.stream.AsyncStreamRedisSubscriber;
+import qa.qcri.aidr.output.utils.OutputErrorHandler;
 import redis.clients.jedis.Jedis;
+
+import com.google.gson.JsonObject;
 
 @Path("/crisis/stream/")
 public class AsyncStream implements ServletContextListener {
@@ -113,14 +80,10 @@ public class AsyncStream implements ServletContextListener {
 
 	// Debugging
 	private static Logger logger = Logger.getLogger(AsyncStream.class.getName());
-	private static ErrorLog elog = new ErrorLog();
 	/////////////////////////////////////////////////////////////////////////////
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-//		AIDROutputConfig configuration = new AIDROutputConfig();
-//		HashMap<String, String> configParams = configuration.getConfigProperties();
-		
 		// Now initialize shared jedis connection object and thread pool object
 		jedisConn = new JedisConnectionObject(redisHost, redisPort);
 		executorService = Executors.newCachedThreadPool();
@@ -136,19 +99,16 @@ public class AsyncStream implements ServletContextListener {
 					w.close();
 				} catch (IOException e) {
 					logger.error("Error trying to close ChunkedOutput writer");
-					logger.error(elog.toStringException(e));
 				} finally {
 					try {
 						w.close();
 					} catch (IOException e) {
 						logger.error("Error trying to close ChunkedOutput writer");
-						logger.error(elog.toStringException(e));
 					}
 				}
 			}
 		}
 		writerList.clear();
-		logger.info("executorService: " + executorService);
 		if (executorService != null) shutdownAndAwaitTermination(executorService);
 		logger.info("Context destroyed");
 	}
@@ -195,13 +155,11 @@ public class AsyncStream implements ServletContextListener {
 						sub.stopSubscription(jedisConn, subData);
 						
 						logger.error(subData.redisChannel + ": AIDR Predict Channel Subscribing failed");
-						logger.error(elog.toStringException(e));
 					} finally {
 						try {
 							sub.stopSubscription(jedisConn, subData);
 						} catch (Exception e) {
 							logger.error(subData.redisChannel + ": Exception occurred attempting stopSubscription: " + e.toString());
-							logger.error(elog.toStringException(e));
 							//System.exit(1);
 						}
 					}
@@ -209,7 +167,6 @@ public class AsyncStream implements ServletContextListener {
 			});
 		} catch (RejectedExecutionException|NullPointerException e) {
 			logger.error(subData.redisChannel + ": Fatal error executing async thread! Terminating.");
-			logger.error(elog.toStringException(e));
 		}
 	}
 
@@ -258,7 +215,7 @@ public class AsyncStream implements ServletContextListener {
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					logger.error(channelCode + ": Fatal exception occurred attempting subscription: " + e.toString());
-					logger.error(elog.toStringException(e));
+					OutputErrorHandler.sendErrorMail(e.getLocalizedMessage(), channelCode + ": Fatal exception occurred attempting subscription: " + e.toString());
 					//System.exit(1);
 				}
 				logger.info(channelCode + ": Spawning async response thread");
@@ -266,7 +223,6 @@ public class AsyncStream implements ServletContextListener {
 					executorService.execute(aidrSubscriber);	
 				} catch (RejectedExecutionException|NullPointerException e) {
 					logger.error(channelCode + "Fatal error executing async thread! Terminating.");
-					logger.error(elog.toStringException(e));
 				}
 			}
 		} 
@@ -306,6 +262,8 @@ public class AsyncStream implements ServletContextListener {
 					logger.error("Executor Thread Pool did not terminate");
 			}
 		} catch (InterruptedException ie) {
+			
+			logger.error("Error in clean up of threads.", ie);
 			// (Re-)Cancel if current thread also interrupted
 			threadPool.shutdownNow();
 			// Preserve interrupt status

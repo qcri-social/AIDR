@@ -1,4 +1,5 @@
-/* This class provides the connection pool and methods to request and return
+/** 
+ * This class provides the connection pool and methods to request and return
  * JEDIS resources/connections to and from a JEDIS pool.
  */
 package qa.qcri.aidr.output.utils;
@@ -6,12 +7,8 @@ package qa.qcri.aidr.output.utils;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
-
-
-
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -24,8 +21,6 @@ public class JedisConnectionObject {
 	// Jedis related
 	private static JedisPoolConfig poolConfig = null;	// only one JedisPoolConfig per servlet instance
 	private static JedisPool pool = null;				// only one JedisPool per servlet instance
-	private Jedis subscriberJedis = null;				// one for each GET request
-
 	private static OutputConfigurator configProperties = OutputConfigurator.getInstance();
 	public static String redisHost = configProperties.getProperty(OutputConfigurationProperty.REDIS_HOST);
 	public static int redisPort = Integer.valueOf(configProperties.getProperty(OutputConfigurationProperty.REDIS_PORT));
@@ -35,17 +30,12 @@ public class JedisConnectionObject {
 
 	// Logger setup
 	private static Logger logger = Logger.getLogger(JedisConnectionObject.class);
-	private static ErrorLog elog = new ErrorLog();
 	/**
 	 * 
 	 * @param host hostname on which REDIS resides
 	 * @param port port number to use for establishing connection
 	 */
 	public JedisConnectionObject(final String host, final int port) {
-		// For now: set up a simple configuration that logs on the console
-		//PropertyConfigurator.configure("log4j.properties");		// where to place the properties file?
-		//BasicConfigurator.configure();							// initialize log4j logging
-		//System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");		// set logging level for slf4j
 
 		allotedJedis = new ConcurrentHashMap<Jedis, Boolean>();
 		redisHost = host;
@@ -77,7 +67,6 @@ public class JedisConnectionObject {
 					logger.info("New Jedis pool: " + pool);
 				} catch (Exception e) {
 					logger.error("Fatal error! Could not initialize Jedis Pool!");
-					logger.error(elog.toStringException(e));
 					JedisConnectionObject.poolConfig = null;
 					JedisConnectionObject.pool = null;
 					JedisConnectionObject.poolSetup = false;
@@ -119,7 +108,6 @@ public class JedisConnectionObject {
 				subscriberJedis = null;
 				connectionSetup = false;
 				logger.error("Fatal error! Could not get a resource from the pool.");
-				logger.error(elog.toStringException(e));
 			}
 			if (subscriberJedis != null) {
 				allotedJedis.put(subscriberJedis, false);		// initially nothing assigned
@@ -170,7 +158,6 @@ public class JedisConnectionObject {
 				}
 			} catch (JedisConnectionException e) {
 				logger.error("JedisConnectionException occurred...");
-				logger.error(elog.toStringException(e));
 				if (jedisInstance != null && jedisInstance.isConnected()) jedisInstance.close();
 				jedisInstance = null;
 				//JedisConnectionObject.pool.returnBrokenResource(jedisInstance);

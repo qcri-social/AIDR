@@ -1,21 +1,24 @@
 package qa.qcri.aidr.manager.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import qa.qcri.aidr.manager.dto.UITemplateRequest;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.service.CollectionService;
-import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.service.UITemplateService;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA.
@@ -56,7 +59,7 @@ public class UITemplateController extends BaseController {
                 return getUIWrapper(false, "Error while creating new ui template in uiTemplate");
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Error while updating UI Template", e);
             return getUIWrapper(false, e.getMessage());
         }
     }
@@ -77,7 +80,7 @@ public class UITemplateController extends BaseController {
             }
 
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Error while fetching templates by crisisID: "+crisisID, e);
             return getUIWrapper(false, e.getMessage());
         }
     }
@@ -88,14 +91,13 @@ public class UITemplateController extends BaseController {
         try {
             logger.info("Get Assignable Task is started with crisis id: " + id);
 
-            String userName = getAuthenticatedUserName();
+            getAuthenticatedUserName();
             String sVar = uiTemplateService.getCrisisChildrenElement(id);
 
-           // logger.info("sVar : " + sVar);
             return getUIWrapper(sVar, true);
         } catch (AidrException e) {
-            e.printStackTrace();
-            return getUIWrapper(e.getMessage(), false);
+        	logger.error("Error while getting crisis children elements for crisisID: "+id, e);
+        	return getUIWrapper(e.getMessage(), false);
         }
     }
 

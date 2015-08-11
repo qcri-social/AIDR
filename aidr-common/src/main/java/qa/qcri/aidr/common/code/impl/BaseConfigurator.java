@@ -1,5 +1,6 @@
 package qa.qcri.aidr.common.code.impl;
 
+import java.io.File;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -10,6 +11,7 @@ import qa.qcri.aidr.common.code.Configurator;
 import qa.qcri.aidr.common.exception.ConfigurationPropertyFileException;
 import qa.qcri.aidr.common.exception.ConfigurationPropertyNotRecognizedException;
 import qa.qcri.aidr.common.exception.ConfigurationPropertyNotSetException;
+import qa.qcri.aidr.common.exception.DirectoryNotWritableException;
 
 public abstract class BaseConfigurator implements Configurator {
 
@@ -36,6 +38,11 @@ public abstract class BaseConfigurator implements Configurator {
 	}
 	
 	@Override
+	public String getProperty(String propertyName) {
+		return propertyMap.get(propertyName);
+	}
+	
+	@Override
 	public void setProperty(String property, String newValue) {
 		if(propertyMap.containsKey(property)){
 			propertyMap.put(property,newValue);
@@ -46,6 +53,16 @@ public abstract class BaseConfigurator implements Configurator {
 					+ newValue);
 			throw new ConfigurationPropertyNotRecognizedException(
 					property, null);
+		}
+	}
+	
+	@Override
+	public void directoryIsWritable(String propertyName) throws DirectoryNotWritableException{
+		String directoryLocation = this.getProperty(propertyName);
+		File f = new File(directoryLocation);
+		if(!f.canWrite()) {
+			LOGGER.info(propertyName+ " = " +directoryLocation+ " is not writable. Please verify if this is a valid writable directory.");
+			throw new DirectoryNotWritableException(propertyName, directoryLocation);
 		}
 	}
 }

@@ -70,7 +70,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             flex: 1,
             rows: 7,
             labelWidth: 240,
-            emptyText: 'e.g., #sandy, #newyork,#joplin (max 400)',
+            emptyText: 'e.g. earthquake california, quake california, #earthquakeca, #sfearthquake, #earthquakesf',
 
             afterLabelTextTpl:
                 '<div style="line-height: 17px">' +
@@ -257,7 +257,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         });
         
         this.saveButton = Ext.create('Ext.Button', {
-            text: 'Create Collection',
+            text: 'Create and Start Collection',
             margin: '0 10 0 10',
             cls: 'btn btn-green',
             id: 'collectionCreate'

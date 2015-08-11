@@ -86,7 +86,7 @@ public class TestModelNominalLabelResourceFacadeImp {
 			entityManager.getTransaction().commit();
 			
 			// insert crisis type
-			crisisDTO = new CrisisDTO("tesName"+new Date(), "testCode"+new Date(), false, crisisTypeDTO, user);
+			crisisDTO = new CrisisDTO("tesName"+new Date(), "testCode"+new Date(), false, false, crisisTypeDTO, user);
 			entityManager.getTransaction().begin();
 			crisisDTO = crisisResourceFacadeImp.addCrisis(crisisDTO);
 			entityManager.getTransaction().commit();
@@ -223,7 +223,7 @@ public class TestModelNominalLabelResourceFacadeImp {
 		List<ModelNominalLabelDTO> modelNominalLabelDTOs = modelNominalLabelResourceFacadeImp.getAllModelNominalLabels();
 		assertNotNull(modelNominalLabelDTOs);
 		
-		assertTrue(modelNominalLabelDTOs.size() == 1);
+		assertTrue(modelNominalLabelDTOs.size() >= 1);
 	}
 	
 	/**

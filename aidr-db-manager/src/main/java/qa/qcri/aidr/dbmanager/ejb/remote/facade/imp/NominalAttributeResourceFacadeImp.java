@@ -1,3 +1,8 @@
+/**
+ * Implements operations for managing the nominal_attribute table of the aidr_predict DB
+ * 
+ * @author Koushik
+ */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.ArrayList;
@@ -20,10 +25,7 @@ import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalAttributeResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 
-/**
- *
- * @author Imran
- */
+
 @Stateless(name = "NominalAttributeResourceFacadeImp")
 public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<NominalAttribute, Long> implements NominalAttributeResourceFacade {
 
@@ -33,11 +35,11 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 		super(NominalAttribute.class);
 	}
 
+	@Override
 	public NominalAttributeDTO addAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException {
 		try {
 			NominalAttribute e = attribute.toEntity();
 			Long id  = save(e);
-			System.out.println("Saved entity ID = " + id);
 			if (id != null) {
 				NominalAttributeDTO savedEntity = this.getAttributeByID(id);
 				return savedEntity;
@@ -50,6 +52,7 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 		}
 	}
 
+	@Override
 	public NominalAttributeDTO editAttribute(NominalAttributeDTO attribute) throws PropertyNotSetException {
 		try {
 			if (attribute == null) {
@@ -68,6 +71,7 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 		}
 	}
 
+	@Override
 	public boolean deleteAttribute(Long attributeID) throws PropertyNotSetException {
 		NominalAttribute attribute = getEntityManager().find(NominalAttribute.class, attributeID);
 		if (attribute != null) {
@@ -84,12 +88,14 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 		}
 	}
 
+	@Override
 	public NominalAttributeDTO getAttributeByID(Long attributeID) throws PropertyNotSetException {
 		NominalAttribute nominalAttribute = getById(attributeID);
 		Hibernate.initialize(nominalAttribute.getNominalLabels()); //loading labels too
 		return new NominalAttributeDTO(nominalAttribute);
 	}
 
+	@Override
 	public List<NominalAttributeDTO> getAllAttributes() throws PropertyNotSetException {
 		List<NominalAttributeDTO> nominalAttributeDTOList = new ArrayList<NominalAttributeDTO>();
 		List<NominalAttribute> nominalAttributeList = getAll();
@@ -99,6 +105,7 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 		return nominalAttributeDTOList;
 	}
 
+	@Override
 	public Long isAttributeExists(String attributeCode) throws PropertyNotSetException {
 		Criteria criteria = getCurrentSession().createCriteria(NominalAttribute.class);
 		criteria.add(Restrictions.eq("code", attributeCode));
@@ -107,6 +114,7 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 	}
 
 	//TODO: Native query used in this method should be translated into a criteria query.
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<CrisisAttributesDTO> getAllAttributesExceptCrisis(Long crisisID) throws PropertyNotSetException {
 		List<CrisisAttributesDTO> attributesList = new ArrayList<>();
@@ -131,10 +139,11 @@ public class NominalAttributeResourceFacadeImp extends CoreDBServiceFacadeImp<No
 				attribute.setLabelName(((String) row[6]));
 				attributesList.add(attribute);
 			}
-			return attributesList;
 		} catch (NoResultException e) {
-			return attributesList;
+			logger.warn("No result for crisisID : " + crisisID);
 		}
+		
+		return attributesList;
 	}
 
 }

@@ -1,9 +1,11 @@
 package qa.qcri.aidr.trainer.api.controller;
 
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import qa.qcri.aidr.trainer.api.entity.Crisis;
 import qa.qcri.aidr.trainer.api.entity.NominalLabel;
 import qa.qcri.aidr.trainer.api.service.CrisisService;
@@ -12,6 +14,7 @@ import qa.qcri.aidr.trainer.api.template.CrisisNominalAttributeModel;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+
 import java.util.List;
 import java.util.Set;
 
@@ -25,6 +28,9 @@ import java.util.Set;
 @Path("/crisis")
 @Component
 public class CrisisController {
+	
+	protected static Logger logger = Logger.getLogger(CrisisController.class);
+	
 	@Autowired
 	private CrisisService crisisService;
 
@@ -32,12 +38,11 @@ public class CrisisController {
 	@Produces( MediaType.APPLICATION_JSON )
 	@Path("/id/{crisisid}")
 	public CrisisJsonModel getCrisisByID(@PathParam("crisisid") Long crisisid){
-		System.out.println("received request for crisisId = " + crisisid);
+		logger.info("received request for crisisId = " + crisisid);
 		try {
 			return  crisisService.findByOptimizedCrisisID(crisisid);
 		} catch (Exception e) {
-			System.out.println("Error in getting crisisID for crisis ID = " + crisisid);
-			e.printStackTrace();
+			logger.error("Error in getting crisisID for crisis ID = " + crisisid,e);
 		}
 		return null;
 	}

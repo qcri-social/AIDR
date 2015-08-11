@@ -42,11 +42,12 @@
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
                     if (resp.data) {
-                        me.mainComponent.taggerTitle.setText("Details for category \"" + resp.data.name + "\"");
+                        me.mainComponent.taggerTitle.setText("Details for classifier \"" + resp.data.name + "\"");
                         me.mainComponent.main.loadData(resp.data);
                     }
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
             }
         });

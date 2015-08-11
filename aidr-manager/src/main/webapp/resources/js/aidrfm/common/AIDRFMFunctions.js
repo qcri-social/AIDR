@@ -39,6 +39,31 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
         msgCt.alignTo(document, 't-t');
         Ext.DomHelper.append(msgCt, {html: this.buildMessageBox(status.toLowerCase(), message)}, true).slideIn('t').ghost("t", {delay: delay, remove: true});
     },
+    
+    reportIssue : function(resp){
+    	var mailType="Issue";
+    	var link=window.location.href;
+    	var description=JSON.stringify(resp.request.options);
+    	 Ext.Ajax.request({
+    		 url: BASE_URL + '/protected/tagger/sendEmailService.action',
+    		 params: {
+    		                 url: link, 
+    		                 mailType: mailType,
+    		                 description: description
+    		             },
+             headers: {
+                 'Accept': 'application/json'
+             },
+             success: function (response) {
+            	 //alert("success"+response.responseText);
+            	// alert(window.location.href);
+                 
+             },
+             failure: function (response) {
+            	// alert("failure"+response.responseText);
+             }
+         });
+    },
 
     buildMessageBox : function(title, msg) {
         return [

@@ -349,10 +349,12 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                     } else {
                         me.mainComponent.downloadLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
+                        AIDRFMFunctions.reportIssue(response);
                     }
                 } else {
                     me.mainComponent.downloadLink.setText('', false);
                     AIDRFMFunctions.setAlert("Error", resp.message);
+                    AIDRFMFunctions.reportIssue(response);
                 }
                 //Ext.Ajax.timeout = 30000;
                 //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});

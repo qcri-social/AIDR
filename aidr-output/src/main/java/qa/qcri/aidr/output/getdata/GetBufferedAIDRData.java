@@ -9,39 +9,12 @@
  * pattern based subscription are NOT allowed.
  * 
  * @author Koushik Sinha
- * Last modified: 14/01/2014
+ * Last modified: 08/07/2015
  *
- * Dependencies:  servlets 3+, jedis-2.2.1, gson-2.2.4, commons-pool-1.6, slf4j-1.7.5, JAX-RS 2.0, jersey 2.0+
- * 	
- * Hints for testing:
- * 		1. Tune the socket timeout parameter in JedisPool(...) call if connecting over a slow network
- *  	2. Tune REDIS_CALLBACK_TIMEOUT, in case the rate of publication is very slow
- *  	3. Tune the number of threads in ExecutorService 	 
- *
- * Deployment steps: 
- * 		1. [Required] Set redisHost and redisPort in code, as per your REDIS setup/location
- * 		2. [Optional] Tune time-out and other parameters, if necessary
- * 		3. [Required]Compile and package as WAR file
- * 		4. [Required] Deploy as WAR file in glassfish 3.1.2
- * 		5. [Optional] Setup ssh tunneling (e.g. command: ssh tunneling:: ssh -f -L 1978:localhost:6379 scd1.qcri.org -N)
- * 		6. Issue getLast request from client
- *
- *
- * Invocation:	host:port/context-root/rest/crisis/fetch/channel/{crisisCode}?callback={callback}&count={count} 
- * ============	
- * Channel name based examples: 
- *  1. http://localhost:8080/AIDROutput/rest/crisis/fetch/channel/clex_20131201?count=50
- *  2. http://localhost:8080/AIDROutput/rest/crisis/fetch/channel/clex_20131201?callback=JSONP
- *  3. http://localhost:8080/AIDROutput/rest/crisis/fetch/channel/clex_20131201?callback=JSONP&count=50
- *  
- * Fully qualified channel name based examples: 
- *  1. http://localhost:8080/AIDROutput/rest/crisis/fetch/channel/aidr_predict.clex_20131201?count=50
- *  2. http://localhost:8080/AIDROutput/rest/crisis/fetch/channel/aidr_predict.clex_20131201?callback=func
- *  3. http://localhost:8080/AIDROutput/rest/crisis/fetch/channel/aidr_predict.clex_20131201?callback=func&count=50
- * 
- * Apart from the above valid paths one can use:
- * 	1. http://localhost:8080/AIDROutput/rest/crisis/fetch/channels/list     => returns list of active channels
- * 	2. http://localhost:8080/AIDROutput/rest/crisis/fetch/channels/latest	=> returns the latest tweet data from  across all channels
+ * Invocation:
+ *  1. http://localhost:8080/AIDROutput/rest/crisis/fetch/channel/clex_20131201?callback=JSONP&count=50
+ * 	2. http://localhost:8080/AIDROutput/rest/crisis/fetch/channels/list     => returns list of active channels
+ * 	3. http://localhost:8080/AIDROutput/rest/crisis/fetch/channels/latest	=> returns the latest tweet data from  across all channels
  *  
  *  Parameter explanations:
  *  	1. crisisCode [mandatory]: the REDIS channel to which to subscribe
@@ -62,12 +35,12 @@ import java.util.TreeMap;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -75,22 +48,21 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.filter.ClassifiedFilteredTweet;
+import qa.qcri.aidr.common.filter.DeserializeFilters;
 import qa.qcri.aidr.common.filter.FilterQueryMatcher;
 import qa.qcri.aidr.common.filter.JsonQueryList;
 import qa.qcri.aidr.output.utils.JsonDataFormatter;
 import qa.qcri.aidr.output.utils.OutputConfigurationProperty;
 import qa.qcri.aidr.output.utils.OutputConfigurator;
 import qa.qcri.aidr.output.utils.SimpleFairScheduler;
-import qa.qcri.aidr.common.filter.DeserializeFilters;
 
 @Path("/crisis/fetch/")
 public class GetBufferedAIDRData implements ServletContextListener {
 
 	// Debugging
 	private static Logger logger = Logger.getLogger(GetBufferedAIDRData.class);
-	private static ErrorLog elog = new ErrorLog();
+	
 	// Related to channel buffer management
 	private static OutputConfigurator configProperties = OutputConfigurator.getInstance();
 	private static final String CHANNEL_REG_EX = configProperties.getProperty(OutputConfigurationProperty.TAGGER_CHANNEL_BASENAME)+".*";
@@ -210,7 +182,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		}
 		//inRequests.decrementAndGet();
 		logger.error("Error in jedis connection. Bailing out...");
-		System.err.println("[getLatestBufferedAIDRData] Error in jedis connection. Bailing out...");
+		//System.err.println("[getLatestBufferedAIDRData] Error in jedis connection. Bailing out...");
 		return returnEmptyJson(callbackName);
 	}
 
@@ -247,7 +219,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 			}
 			if (error)
 			{	
-				logger.warn("Error in requested channel name: " + channelCode);
+				logger.error("Error in requested channel name: " + channelCode);
 				return Response.ok(new String("[{}]")).build();
 			}
 			else {
@@ -530,7 +502,7 @@ public class GetBufferedAIDRData implements ServletContextListener {
 
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
-		cbManager.close();
+		//cbManager.close();
 		logger.info("Context destroyed");
 	}
 
@@ -539,12 +511,9 @@ public class GetBufferedAIDRData implements ServletContextListener {
 		// Most important action - setup channel buffering thread
 		if (null == cbManager) {
 			logger.info("Initializing channel buffer manager with regEx pattern: " + CHANNEL_REG_EX);
-			System.out.println("[contextInitialized] Initializing channel buffer manager with regEx pattern: " + CHANNEL_REG_EX);
-			//cbManager = new ChannelBufferManager(CHANNEL_REG_EX);
 			cbManager = new ChannelBufferManager();
 			cbManager.initiateChannelBufferManager(CHANNEL_REG_EX);
 			logger.info("Done initializing channel buffer manager with regEx pattern: " + CHANNEL_REG_EX);
-			System.out.println("[contextInitialized] Done initializing channel buffer manager with regEx pattern: " + CHANNEL_REG_EX);
 		}
 		channelSelector = new SimpleFairScheduler();
 		logger.info("Context Initialized");

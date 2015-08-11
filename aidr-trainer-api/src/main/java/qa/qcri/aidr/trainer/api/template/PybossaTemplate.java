@@ -1,9 +1,11 @@
 package qa.qcri.aidr.trainer.api.template;
 
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
 import qa.qcri.aidr.trainer.api.entity.*;
 import qa.qcri.aidr.trainer.api.service.CrisisService;
 
@@ -18,6 +20,8 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 public class PybossaTemplate {
+	
+	private static Logger logger=Logger.getLogger(PybossaTemplate.class);
 
     public TaskAnswerResponse getPybossaTaskAnswer(String data, CrisisService crisisService){
 
@@ -56,7 +60,7 @@ public class PybossaTemplate {
                         ModelFamily currentModelFamily = modelFamily;
 
                         Set<NominalLabel> nominalLabelSet = modelFamily.getNominalAttribute().getNominalLabelSet();
-                        System.out.print("attribute name : "   + modelFamily.getNominalAttribute().getName() + "\n");
+                        logger.info("attribute name : "   + modelFamily.getNominalAttribute().getName() + "\n");
                         for (NominalLabel nominalLabel : nominalLabelSet){
                             JSONObject taskAnswerElement = new JSONObject();
                             if(nominalLabel.getNominalAttributeID().equals(attributeID)) {
@@ -91,7 +95,8 @@ public class PybossaTemplate {
 
             }
         } catch (ParseException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            //e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        	logger.error("Exception while getting Pybossa task answer \t"+e.getStackTrace());
         }
         return taskAnswerResponse;
     }

@@ -3,6 +3,7 @@ package qa.qcri.aidr.trainer.api.entity;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
@@ -17,6 +18,8 @@ import java.util.Date;
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class TaskAnswer implements Serializable {
+	
+	private static Logger logger=Logger.getLogger(TaskAnswer.class);
 
 	private static final long serialVersionUID = -5527566248002296042L;
 
@@ -89,7 +92,7 @@ public class TaskAnswer implements Serializable {
 				return null;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception while parsing TaskAnswerDTO to  LocalTaskAnswer",e);
 			return null;
 		}
 	}
@@ -100,7 +103,7 @@ public class TaskAnswer implements Serializable {
 			dto.setFromTrustedUser(this.isFromTrustedUser());
 			return dto;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception while parsing TaskAnswer to TaskAnswerDTO",e);
 			return null;
 		}
 	}

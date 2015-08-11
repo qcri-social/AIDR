@@ -16,7 +16,33 @@ public class ClassifiedTweetAdapter {
 		private String text;
 		private String crisis_code;
 		private String crisis_name;
+		private String geo;
+		private String latitude;
+		public String getGeo() {
+			return geo;
+		}
 
+		public String getLatitude() {
+			return latitude;
+		}
+
+		public String getLongitude() {
+			return longitude;
+		}
+
+		public void setGeo(String geo) {
+			this.geo = geo;
+		}
+
+		public void setLatitude(String latitude) {
+			this.latitude = latitude;
+		}
+
+		public void setLongitude(String longitude) {
+			this.longitude = longitude;
+		}
+
+		private String longitude;
 		private String id;
 		private String screen_name;
 

@@ -1,3 +1,8 @@
+/**
+ * Implements operations for managing the users table of the aidr_predict DB
+ * 
+ * @author Koushik
+ */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 
@@ -21,10 +26,6 @@ import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 
-
-/**
- * @author Koushik
- */
 
 @Stateless(name="UsersResourceFacadeImp")
 public class UsersResourceFacadeImp extends CoreDBServiceFacadeImp<Users, Long> implements UsersResourceFacade {
@@ -88,7 +89,7 @@ public class UsersResourceFacadeImp extends CoreDBServiceFacadeImp<Users, Long> 
 			em.refresh(u);
 			return new UsersDTO(u);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error in addUser.", e);
 			return null;
 		}
 	}
@@ -102,6 +103,7 @@ public class UsersResourceFacadeImp extends CoreDBServiceFacadeImp<Users, Long> 
 			return 1;
 		}
 		else {
+			logger.error("User requested to be deleted does not exist! id = " + id);
 			throw new RuntimeException("User requested to be deleted does not exist! id = " + id);
 		}
 	}

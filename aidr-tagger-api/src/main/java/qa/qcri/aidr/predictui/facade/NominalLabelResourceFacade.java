@@ -5,7 +5,9 @@
 package qa.qcri.aidr.predictui.facade;
 
 import java.util.List;
+
 import javax.ejb.Local;
+
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 
 
@@ -26,5 +28,5 @@ public interface NominalLabelResourceFacade {
    
    public List<NominalLabelDTO> getAllNominalLabel(); 
    
-    
+   void deleteNominalLabelDataByAttribute(Long attributeID);
 }

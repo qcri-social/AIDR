@@ -1,10 +1,11 @@
 package qa.qcri.aidr.persister.api;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * This class provides the REST APIs to manage the persister for a collection - start/stop and download based on various filters and requested file types. 
+ 
+ * @author Imran, Koushik
+ *
  */
-//import com.sun.jersey.api.json.JSONWithPadding;
 
 
 import java.net.UnknownHostException;
@@ -32,7 +33,6 @@ import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.filter.DeserializeFilters;
 import qa.qcri.aidr.common.filter.JsonQueryList;
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.persister.tagger.RedisTaggerPersister;
 import qa.qcri.aidr.utils.ClassifiedTweet;
@@ -43,16 +43,11 @@ import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
 import qa.qcri.aidr.utils.ResultStatus;
 
-/**
- * REST Web Service
- *
- * @author Imran
- */
+
 @Path("taggerPersister")
 public class Persister4TaggerAPI {
 
 	private static Logger logger = Logger.getLogger(Persister4TaggerAPI.class.getName());
-	private static ErrorLog elog = new ErrorLog();
 
 	@Context
 	private UriInfo context;
@@ -83,7 +78,6 @@ public class Persister4TaggerAPI {
 			}
 		} catch (Exception ex) {
 			logger.error(collectionCode  + ": failed to start persister");
-			logger.error(elog.toStringException(ex));
 		}
 		return Response.ok(response).build();
 	}
@@ -107,7 +101,6 @@ public class Persister4TaggerAPI {
 			} catch (InterruptedException ex) {
 				//Logger.getLogger(Persister4TaggerAPI.class.getName()).log(Level.SEVERE, null, ex);
 				logger.error(collectionCode + ": failed to stop persister");
-				logger.error(elog.toStringException(ex));
 			}
 		}
 		response = "Unable to locate a running tagger persister with the given collection code:[" + collectionCode + "]";
@@ -143,7 +136,6 @@ public class Persister4TaggerAPI {
 			return Response.ok(obj.toJSONString()).build();
 		} catch (Exception e) {
 			logger.error("Unable to return result ");
-			logger.error(elog.toStringException(e));
 			obj.putAll(ResultStatus.getUIWrapper(collectionCode, null, fileName, false));
 			return Response.ok(obj.toJSONString()).build();
 

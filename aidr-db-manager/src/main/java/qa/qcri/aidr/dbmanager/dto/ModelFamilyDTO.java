@@ -49,7 +49,6 @@ public class ModelFamilyDTO implements Serializable {
 
 	public ModelFamilyDTO(ModelFamily model) throws PropertyNotSetException {
 		if (model != null) {
-			//System.out.println("ModelFamily Hash code: " + model.hashCode());
 			this.setModelFamilyId(model.getModelFamilyId());
 			if (model.hasNominalAttribute()) {
 				NominalAttribute na = new NominalAttribute(model.getNominalAttribute().getUsers(), 
@@ -59,7 +58,7 @@ public class ModelFamilyDTO implements Serializable {
 			}
 			if (model.hasCrisis()) {
 				Crisis c = new Crisis(model.getCrisis().getUsers(), model.getCrisis().getCrisisType(), model.getCrisis().getName(), model.getCrisis().getCode(),
-						model.getCrisis().isIsTrashed());
+						model.getCrisis().isIsTrashed(), model.getCrisis().isIsMicromapperEnabled());
 				c.setCrisisId(model.getCrisis().getCrisisId());
 				this.setCrisisDTO(new CrisisDTO(c));
 			}

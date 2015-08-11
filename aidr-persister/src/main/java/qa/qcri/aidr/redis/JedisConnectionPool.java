@@ -1,23 +1,25 @@
+/**
+ * Managing JEDIS pool and allocating/deallocating JEDIS resources for connection to REDIS. 
+ * 
+ * @author Imran, Koushik
+ */
 package qa.qcri.aidr.redis;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.common.util.EmailClient;
 import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
+import qa.qcri.aidr.utils.PersisterErrorHandler;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
-/**
- *
- * @author Imran
- */
+
 public class JedisConnectionPool  {
 	
 	private static Logger logger = Logger.getLogger(JedisConnectionPool.class.getName());
-	private static ErrorLog elog = new ErrorLog();
 	
     static JedisPool jedisPool;
     
@@ -29,9 +31,6 @@ public class JedisConnectionPool  {
         try {
             if (jedisPool == null) {
                 JedisPoolConfig config = new JedisPoolConfig();
-                //config.maxActive = 1000;
-                //config.maxIdle = 10;
-                //config.minIdle = 1;
                 config.setMaxTotal(1000);
 				config.setMaxIdle(10);
 				config.setMinIdle(1);
@@ -43,14 +42,12 @@ public class JedisConnectionPool  {
             return jedisPool.getResource();
         } catch (JedisConnectionException e) {
             logger.error("Could not establish Redis connection. Is the Redis running?");
-            logger.error(elog.toStringException(e));
+            PersisterErrorHandler.sendErrorMail(e.getLocalizedMessage(), "Could not establish Redis connection. Is the Redis running?");
             throw e;
         }
     }
 
     public synchronized void close(Jedis resource) {		// koushik: removed static, added code to increase robustness
-        //jedisPool.returnResource(resource);
-        
         if (jedisPool != null) {
 			try {
 				if (resource != null) {

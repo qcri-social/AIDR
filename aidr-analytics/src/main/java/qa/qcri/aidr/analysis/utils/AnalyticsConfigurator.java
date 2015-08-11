@@ -3,7 +3,6 @@ package qa.qcri.aidr.analysis.utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -18,7 +17,7 @@ public class AnalyticsConfigurator extends BaseConfigurator {
 	private static final Logger logger = Logger
 			.getLogger(AnalyticsConfigurator.class);
 
-	public static String configLoadFileName = "granularity.properties";
+	public static final String configLoadFileName = "config.properties";
 
 	private static final AnalyticsConfigurator instance = new AnalyticsConfigurator();
 

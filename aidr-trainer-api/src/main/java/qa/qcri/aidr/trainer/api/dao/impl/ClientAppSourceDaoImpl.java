@@ -1,12 +1,14 @@
 package qa.qcri.aidr.trainer.api.dao.impl;
 
+import java.util.List;
+
+import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+
 import qa.qcri.aidr.trainer.api.dao.ClientAppSourceDao;
 import qa.qcri.aidr.trainer.api.entity.ClientAppSource;
 import qa.qcri.aidr.trainer.api.store.StatusCodeType;
-
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,6 +19,8 @@ import java.util.List;
  */
 @Repository
 public class ClientAppSourceDaoImpl extends AbstractDaoImpl<ClientAppSource, String> implements ClientAppSourceDao {
+	
+	private static Logger logger=Logger.getLogger(ClientAppSourceDaoImpl.class);
 
     protected ClientAppSourceDaoImpl(){
         super(ClientAppSource.class);
@@ -48,12 +52,12 @@ public class ClientAppSourceDaoImpl extends AbstractDaoImpl<ClientAppSource, Str
         List<ClientAppSource>  sources = findActiveSourcePerClient( clientAppID );
 
         if(sources.size() > 0){
-            System.out.println("sources : EXTERNAL_DATA_SOURCE_UPLOADED");
+        	logger.info("sources : EXTERNAL_DATA_SOURCE_UPLOADED");
             ClientAppSource ca1 = new ClientAppSource(clientAppID, StatusCodeType.EXTERNAL_DATA_SOURCE_UPLOADED, fileURL);
             save(ca1);
         }
         else{
-            System.out.println("sources : EXTERNAL_DATA_SOURCE_ACTIVE");
+        	logger.info("sources : EXTERNAL_DATA_SOURCE_ACTIVE");
             ClientAppSource ca2 = new ClientAppSource(clientAppID, StatusCodeType.EXTERNAL_DATA_SOURCE_ACTIVE, fileURL);
             save(ca2);
         }

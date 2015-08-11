@@ -1,3 +1,8 @@
+/**
+ * Implements operations for managing the document_nominal_label table of the aidr_predict DB
+ * 
+ *  @author Koushik
+ */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.ArrayList;
@@ -22,9 +27,6 @@ import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 
-/**
- * @author Koushik
- */
 
 @Stateless(name="DocumentNominalLabelResourceFacadeImp")
 public class DocumentNominalLabelResourceFacadeImp 
@@ -67,10 +69,9 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 			em.persist(d);
 			em.flush();
 			em.refresh(d);
-			System.out.println("Success in saving to document_nominal_label table, doc = " + doc.getIdDTO().getDocumentId());
+			logger.info("Success in saving to document_nominal_label table, doc = " + doc.getIdDTO().getDocumentId());
 		} catch (Exception e) {
-			System.err.println("Error in saving document nominal label for document = " + doc.getIdDTO().getDocumentId());
-			e.printStackTrace();
+			logger.error("Error in saving document nominal label for document = " + doc.getIdDTO().getDocumentId(), e);
 			tx.rollback();
 			return null;
 		}
@@ -81,10 +82,10 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 			em.merge(labeledDoc);
 			em.flush();
 			if (!tx.wasCommitted()) tx.commit();
-			System.out.println("Success in updating hashumanLabels field in document table, doc = " + labeledDoc.getDocumentId());
+			logger.info("Success in updating hashumanLabels field in document table, doc = " + labeledDoc.getDocumentId());
 			return new DocumentNominalLabelDTO(d);
 		} catch (Exception e) {
-			System.err.println("Error in updating hasHumanLabel field of labeled document = " + labeledDoc.getDocumentId() +", rolling back transaction (delete from document_nominal_label)...");
+			logger.error("Error in updating hasHumanLabel field of labeled document = " + labeledDoc.getDocumentId() +", rolling back transaction (delete from document_nominal_label)...");
 			tx.rollback();
 			return null;
 		}
@@ -92,7 +93,6 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 
 	@Override
 	public DocumentNominalLabelDTO editDocument(DocumentNominalLabelDTO doc) throws PropertyNotSetException {
-		System.out.println("Received request for: " + doc.getDocumentDTO().getDocumentID() + ", " + doc.getDocumentDTO().getCrisisDTO().getCode());
 		try {
 			DocumentNominalLabel d = doc.toEntity();
 			DocumentNominalLabel oldDoc = getById(d.getId().getDocumentId()); 
@@ -103,8 +103,7 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 				throw new RuntimeException("Not found");
 			}
 		} catch (Exception e) {
-			System.out.println("Exception in merging/updating document: " + doc.getIdDTO().getDocumentId());
-			e.printStackTrace();	
+			logger.error("Exception in merging/updating document: " + doc.getIdDTO().getDocumentId(), e);
 		}
 		return null;
 	}
@@ -115,6 +114,7 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 			DocumentNominalLabel managed = em.merge(doc.toEntity());
 			em.remove(managed); 
 		} catch (Exception e) {
+			logger.warn("Warning! Couldn't delete document nominal label with id : " + doc.getIdDTO());
 			return 0;
 		}
 		return 1;
@@ -152,17 +152,16 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 
 	@Override
 	public List<DocumentNominalLabelDTO> getAllDocuments() throws PropertyNotSetException {
-		System.out.println("Received request for fetching all Documents!!!");
+		logger.info("Received request for fetching all Documents!!!");
 		List<DocumentNominalLabelDTO> dtoList = new ArrayList<DocumentNominalLabelDTO>();
 		List<DocumentNominalLabel> list = getAll();
 		if (list != null && !list.isEmpty()) {
 			for (DocumentNominalLabel doc : list) {
-				//System.out.println("Converting to DTO Document: " + doc.getDocumentId() + ", " + doc.getCrisis().getCode() + ", " + doc.isHasHumanLabels());
 				DocumentNominalLabelDTO dto = new DocumentNominalLabelDTO(doc);
 				dtoList.add(dto);
 			}
 		}
-		System.out.println("Done creating DTO list, size = " + dtoList.size());
+		logger.info("Done creating DTO list, size = " + dtoList.size());
 		return dtoList;
 	}
 
@@ -183,6 +182,15 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 
 		List<DocumentNominalLabelDTO> fetchedList = findByCriteria("id.nominalLabelId", new Long(nominalLabelID).longValue());
 		return fetchedList;
+	}
+
+	@Override
+	public void deleteDocumentNominalLabelByNominalLabel(Long nominalLabelID) throws PropertyNotSetException {
+		
+		List<DocumentNominalLabelDTO> fetchedList = findByCriteria("id.nominalLabelId", new Long(nominalLabelID).longValue());
+		for (DocumentNominalLabelDTO documentNominalLabelDTO : fetchedList) {
+			deleteDocument(documentNominalLabelDTO);
+		}
 	}
 }
 

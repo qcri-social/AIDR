@@ -1,21 +1,28 @@
-package qa.qcri.aidr.utils;
-
-import java.io.Serializable;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 /**
  * Represents a Tweet
  * 
  * WARNING: tagger, collector, and persister have a "Tweet" class.
  *          They should all be merged and moved to aidr-common.
  * 
- * @author Imran
+ * @author Imran, Koushik
  */
+package qa.qcri.aidr.utils;
+
+import java.io.Serializable;
+
+import org.apache.log4j.Logger;
+
+import qa.qcri.aidr.io.ReadWriteCSV;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+
 @SuppressWarnings("serial")
 public class Tweet  implements Document, Serializable{
 
+	private static Logger logger = Logger.getLogger(Tweet.class);
+	
 	private String tweetID;
 	private String message;
 	private String crisisName;
@@ -178,6 +185,7 @@ public class Tweet  implements Document, Serializable{
 				}
 				return tweet;
 			} catch (Exception ex) {
+				logger.error("Unable to deserialize the json string to tweet"+ex);
 				return null;
 			}
 		}

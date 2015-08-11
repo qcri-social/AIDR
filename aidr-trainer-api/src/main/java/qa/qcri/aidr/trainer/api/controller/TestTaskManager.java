@@ -1,16 +1,15 @@
 package qa.qcri.aidr.trainer.api.controller;
 
 
-import javax.ws.rs.core.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +20,8 @@ import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 @Path("/test")
 @Component
 public class TestTaskManager {
+	
+	protected static Logger logger = Logger.getLogger(TestTaskManager.class);
 
 	@Context
 	private UriInfo context;
@@ -52,9 +53,9 @@ public class TestTaskManager {
 
 			taskManager = (TaskManagerRemote<qa.qcri.aidr.task.entities.Document, Long>) ctx.lookup(remoteEJBJNDIName);
 			 */
-			System.out.println("taskManager: " + taskManager + ", time taken to initialize = " + (System.currentTimeMillis() - startTime));
+			//System.out.println("taskManager: " + taskManager + ", time taken to initialize = " + (System.currentTimeMillis() - startTime));
 			if (taskManager != null) {
-				System.out.println("Success in connecting to remote EJB to initialize taskManager");
+				logger.info("Success in connecting to remote EJB to initialize taskManager");
 			}
 			long elapsed = 0L;
 
@@ -67,17 +68,16 @@ public class TestTaskManager {
 			} else {
 				respString.append("null");
 			}
-			System.out.println("[main] " + respString.toString() + ", time taken = " + elapsed);
+			logger.info("[main] " + respString.toString() + ", time taken = " + elapsed);
 		} catch (Exception e) {
-			System.err.println("Error in JNDI lookup");
+			logger.error("Error in JNDI lookup",e);
 			respString.append("Error in JNDI lookup");
-			e.printStackTrace();
 		}
 		return Response.ok(respString.toString()).build();
 	}
 
 	public static void main(String[] args) throws Exception {
 		TestTaskManager tc = new TestTaskManager(); 
-		System.out.println("Result: " + tc.test().toString());
+		logger.info("Result: " + tc.test().toString());
 	}
 }

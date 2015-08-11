@@ -1,26 +1,56 @@
 package qa.qcri.aidr.manager.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
-import qa.qcri.aidr.manager.dto.*;
+import qa.qcri.aidr.manager.dto.CrisisRequest;
+import qa.qcri.aidr.manager.dto.DateHistory;
+import qa.qcri.aidr.manager.dto.ModelHistoryWrapper;
+import qa.qcri.aidr.manager.dto.TaggerAttribute;
+import qa.qcri.aidr.manager.dto.TaggerCrisis;
+import qa.qcri.aidr.manager.dto.TaggerCrisisExist;
+import qa.qcri.aidr.manager.dto.TaggerCrisisRequest;
+import qa.qcri.aidr.manager.dto.TaggerCrisisType;
+import qa.qcri.aidr.manager.dto.TaggerLabel;
+import qa.qcri.aidr.manager.dto.TaggerLabelRequest;
+import qa.qcri.aidr.manager.dto.TaggerModel;
+import qa.qcri.aidr.manager.dto.TaggerModelFamily;
+import qa.qcri.aidr.manager.dto.TaggerModelFamilyCollection;
+import qa.qcri.aidr.manager.dto.TaggerResponseWrapper;
+import qa.qcri.aidr.manager.dto.TaggerUser;
+import qa.qcri.aidr.manager.dto.TaggerUserRequest;
+import qa.qcri.aidr.manager.dto.TaskAnswer;
+import qa.qcri.aidr.manager.dto.TaskAnswerRequest;
+import qa.qcri.aidr.manager.dto.TaskInfo;
+import qa.qcri.aidr.manager.dto.UpdateCrisisDTO;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
+import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
-
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.QueryParam;
 
 
 @Controller
@@ -28,7 +58,6 @@ import javax.ws.rs.QueryParam;
 public class TaggerController extends BaseController {
 
 	private Logger logger = Logger.getLogger(TaggerController.class);
-	private ErrorLog elog = new ErrorLog();
 
 	@Autowired
 	private TaggerService taggerService;
@@ -49,7 +78,7 @@ public class TaggerController extends BaseController {
 		try {
 			return getUIWrapper(taggerService.getAllCrisisTypes(), true);
 		} catch (AidrException e) {
-			logger.error(e.getMessage(), e);
+			logger.error("Error while fetching all crisisTypes", e);
 			return getUIWrapper(false, e.getMessage());
 		}
 	}
@@ -71,7 +100,7 @@ public class TaggerController extends BaseController {
 				return getUIWrapper(false, "Error while getting all crisis for user in Tagger");
 			}
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
+			logger.error("Error while getting all crisis for current user", e);
 			return getUIWrapper(false, e.getMessage());
 		}
 	}
@@ -104,7 +133,7 @@ public class TaggerController extends BaseController {
 				return getUIWrapper(false, "Unable to create new user in predict DB");
 			}
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
+			logger.error("Error while creating new crisis", e);
 			return getUIWrapper(false, e.getMessage());
 		}
 	}
@@ -118,7 +147,7 @@ public class TaggerController extends BaseController {
 			Integer taggerUserId = taggerService.isUserExistsByUsername(userName);
 			return getUIWrapper(taggerService.getAttributesForCrises(id, taggerUserId), true);
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
+			logger.error("Error while getting attributes for crisisId:"+id, e);
 			return getUIWrapper(false, e.getMessage());
 		}
 	}
@@ -142,7 +171,7 @@ public class TaggerController extends BaseController {
 				return getUIWrapper("Error while adding attribute to crises", false);
 			}
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
+			logger.error("Error while adding attributes to crisisId: "+crisesId, e);
 			return getUIWrapper(false, e.getMessage());
 		}
 	}
@@ -162,7 +191,7 @@ public class TaggerController extends BaseController {
 
 			return getUIWrapper(updatedCrisis != null);
 		}catch(Exception e){
-			logger.error("Error while Updating Crisis in Tagger", e);
+			logger.error("Error while Updating CrisisCode: "+dto.getCode(), e);
 			return getUIWrapper(false);
 		}
 	}
@@ -185,7 +214,7 @@ public class TaggerController extends BaseController {
 							logger.info("cast long value: " + value);
 							result.get(i).setTrainingExamples(value.longValue());
 						} catch (Exception e) {
-							logger.error(elog.toStringException(e));
+							logger.error("Error in getModelsForCrisis for crisisId : " + id, e);
 						}
 					}
 					logger.info("For model family id: " + result.get(i).getModelFamilyID() + ", set human labeled count = " + result.get(i).getTrainingExamples());
@@ -194,7 +223,7 @@ public class TaggerController extends BaseController {
 			//return getUIWrapper(taggerService.getModelsForCrisis(id), true);
 			return getUIWrapper(result, true);
 		} catch (AidrException e) {
-			logger.error(elog.toStringException(e));
+			logger.error("Error in getModelsForCrisis for id : " + id, e);
 			return getUIWrapper(false, e.getMessage());
 		}
 	}
@@ -206,7 +235,7 @@ public class TaggerController extends BaseController {
 		try {
 			return getUIWrapper(taggerService.getRetainingThreshold(), true);
 		} catch (AidrException e) {
-			logger.error(e.getMessage(), e);
+			logger.error("Error while getting retrained threshold", e);
 			return getUIWrapper(false, e.getMessage());
 		}
 	}
@@ -218,7 +247,7 @@ public class TaggerController extends BaseController {
 		try {
 			return getUIWrapper(taggerService.getAllLabelsForModel(id, code), true);
 		} catch (AidrException e) {
-			logger.error(e.getMessage(), e);
+			logger.error("Error while getting All Labels For Model = " + id + ", and crisis = " + code, e);
 			return getUIWrapper(false, e.getMessage());
 		}
 	}
@@ -240,7 +269,7 @@ public class TaggerController extends BaseController {
 				return getUIWrapper(false, "Error while creating new attribute in Tagger");
 			}
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
+			logger.error("Error while creating a new attribute", e);
 			return getUIWrapper(false, e.getMessage());
 		}
 	}
@@ -257,7 +286,7 @@ public class TaggerController extends BaseController {
 				return getUIWrapper(false, "Error while getting attribute from Tagger");
 			}
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
+			logger.error("Error while getting attribute info for attributeId:"+id, e);
 			return getUIWrapper(false, e.getMessage());
 		}
 	}
@@ -274,8 +303,8 @@ public class TaggerController extends BaseController {
 				return getUIWrapper(false, "Error while deleting attribute in Tagger");
 			}
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return getUIWrapper(false, e.getMessage());
+			logger.error("Error while deleting attributeId: "+id, e);
+			return getUIWrapper(false, e.getMessage()); 
 		}
 	}
 
@@ -291,7 +320,7 @@ public class TaggerController extends BaseController {
 				return getUIWrapper(false, "Error while remove classifier from crises in Tagger");
 			}
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
+			logger.error("Error while removing classifier from crises by modelFamilyID: "+id, e);
 			return getUIWrapper(false, e.getMessage());
 		}
 	}
@@ -312,7 +341,7 @@ public class TaggerController extends BaseController {
 			}
 			return getUIWrapper(updatedAttribute != null);
 		}catch(Exception e){
-			logger.error("Error while updating attribute in Tagger", e);
+			logger.error("Updating Attribute in Tagger having id " + attributeID, e);
 			return getUIWrapper(false);
 		}
 	}
@@ -340,7 +369,7 @@ public class TaggerController extends BaseController {
 			}
 			return getUIWrapper(updatedLabel != null);
 		}catch(Exception e){
-			logger.error("Error while updating label in Tagger", e);
+			logger.error("Error while updating label having id: "+labelID, e);
 			return getUIWrapper(false);
 		}
 	}
@@ -354,10 +383,10 @@ public class TaggerController extends BaseController {
 			if (response != null){
 				return getUIWrapper(response, true);
 			} else {
-				return getUIWrapper(false, "Error while creating new label in Tagger");
+				return getUIWrapper(false, "Error while creating a new label in Tagger");
 			}
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
+			logger.error("Error while creating a new label", e);
 			return getUIWrapper(false, e.getMessage());
 		}
 	}
@@ -393,7 +422,7 @@ public class TaggerController extends BaseController {
 			response = taggerService.getTrainingDataByModelIdAndCrisisId(modelFamilyId, crisisId, start, limit, sortColumn, sortDirection);
 			logger.info("For crisis ID " + crisisId + ", model family ID " + modelFamilyId + ", Returned response: " + response);
 		} catch (AidrException e) {
-			logger.error(e.getMessage(), e);
+			logger.error("Error while Getting training data for CrisisID: "+crisisId+ " and ModelFamilyID: "+modelFamilyId, e);
 			return getUIWrapper(false, e.getMessage());
 		}
 		Integer total = 0;
@@ -417,16 +446,12 @@ public class TaggerController extends BaseController {
 			response = taggerService.getTrainingDataByModelIdAndCrisisId(modelFamilyId, crisisId, start, limit, "", "");
 			logger.info("received response back: " + response);
 		} catch (AidrException e) {
-			logger.error(elog.toStringException(e));
+			logger.error("Error in getTrainingDataCountByModelIdAndCrisisId for crisisId : " + crisisId  + " and modelFamilyId : " + modelFamilyId, e);
 			return getUIWrapper(new Integer(0), false);
 		}
 		Integer total = 0;
 		if (response != null && !response.isEmpty()) {
-			try {
-				total = response.get(0).getTotalRows();
-			} catch (Exception e) {
-				logger.error(elog.toStringException(e));
-			}
+			total = response.get(0).getTotalRows();
 		}
 		logger.info("Returning for crisis ID " + crisisId + ", model family ID " + modelFamilyId + ", human labeled count = " + total);
 		return getUIWrapper(total, true);
@@ -440,7 +465,7 @@ public class TaggerController extends BaseController {
 		try {
 			taggerCrisisExist = taggerService.isCrisesExist(code);
 		} catch (AidrException e) {
-			e.printStackTrace();
+			logger.error("Error while checking if crisis exist for the code: "+code +"\t"+e.getStackTrace());
 			return getUIWrapper(false);
 		}
 		if (taggerCrisisExist != null && taggerCrisisExist.getCrisisId() != null && taggerCrisisExist.getCrisisId() != 0){
@@ -464,7 +489,7 @@ public class TaggerController extends BaseController {
 			logger.info("sVar : " + sVar);
 			return getUIWrapper(sVar, true);
 		} catch (AidrException e) {
-			e.printStackTrace();
+			logger.error("Error while getting assignable task for crisisID: "+id +"\t"+e.getStackTrace());
 			return getUIWrapper(e.getMessage(), false);
 		}
 	}
@@ -481,7 +506,7 @@ public class TaggerController extends BaseController {
 			logger.info("sVar : " + sVar);
 			return getUIWrapper(sVar, true);
 		} catch (AidrException e) {
-			e.printStackTrace();
+			logger.error("Error ehile skipping task for documentID: "+id +"\t"+e.getStackTrace());
 			return getUIWrapper(e.getMessage(), false);
 		}
 	}
@@ -497,7 +522,7 @@ public class TaggerController extends BaseController {
 			logger.info("sVar : " + sVar);
 			return getUIWrapper(sVar, true);
 		} catch (AidrException e) {
-			e.printStackTrace();
+			logger.error("Error while getting template status for crisis with code: " + code +"\t"+e.getStackTrace());
 			return getUIWrapper(e.getMessage(), false);
 		}
 	}
@@ -518,7 +543,7 @@ public class TaggerController extends BaseController {
 			boolean result = taggerService.saveTaskAnswer(taskAnswer);
 			return getUIWrapper(result);
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
+			logger.error("Error while saving TaskAnswer in AIDRCrowdsourcing", e);
 			return getUIWrapper(false, e.getMessage());
 		}
 	}
@@ -530,7 +555,7 @@ public class TaggerController extends BaseController {
 		try {
 			result = taggerService.loadLatestTweets(code, constraints);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception while loading latest tweets for collection: "+code,e);
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 		return getUIWrapper(result,true);
@@ -556,7 +581,7 @@ public class TaggerController extends BaseController {
 				return getUIWrapper(Collections.emptyList(), 0L);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while getting history records for Model by ModelFamilyId: "+id,e);
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 	}
@@ -573,7 +598,7 @@ public class TaggerController extends BaseController {
 				return getUIWrapper(false, "Error while deleting Training Example in Tagger");
 			}
 		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
+			logger.error("Error while deleting Training Example by ID:"+id, e);
 			return getUIWrapper(false, e.getMessage());
 		}
 	}
@@ -581,6 +606,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/pingService.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> pingService(@RequestParam String service) throws Exception {
+		logger.info("In pinging service of every module");
 		boolean result = false;
 		try {
 			if ("tagger".equals(service)) {
@@ -596,7 +622,7 @@ public class TaggerController extends BaseController {
 			}
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while pinging all modules",e);
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 		return getUIWrapper(result, true);
@@ -605,11 +631,12 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/getAttributesAndLabelsByCrisisId.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> getAttributesAndLabelsByCrisisId(@RequestParam Integer id) throws Exception {
+		logger.info("Getting attributes and labels by crisisID: "+id);
 		String result = "";
 		try {
 			result = taggerService.getAttributesAndLabelsByCrisisId(id);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while getting attributes and labels by crisisID: "+id, e);
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 		return getUIWrapper(result,true);
@@ -619,6 +646,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/taggerGenerateCSVLink.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> generateCSVLink(@RequestParam String code) throws Exception {
+		logger.info("Received request for generating csv link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
 			result = taggerService.generateCSVLink(code);
@@ -628,7 +656,7 @@ public class TaggerController extends BaseController {
 				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while generating csv link for colection: "+code +"/t"+e.getStackTrace());
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 	}
@@ -637,7 +665,8 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/taggerGenerateTweetIdsLink.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> generateTweetIdsLink(@RequestParam String code) throws Exception {
-		System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
+		//System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
+		logger.info("Received request for generating tweetIds link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
 			result = taggerService.generateTweetIdsLink(code);
@@ -648,7 +677,7 @@ public class TaggerController extends BaseController {
 				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while generating tweetIds link for colection: "+code +"/t"+e.getStackTrace());
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 		//System.out.println("[Controller generateTweetIdsLink] Returning success: " + result);
@@ -708,6 +737,7 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> generateJSONLink(@RequestParam String code,
 			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws Exception {
+		logger.info("Received request for generating JSON link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
 			result = taggerService.generateJSONLink(code, jsonType);
@@ -717,7 +747,7 @@ public class TaggerController extends BaseController {
 				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while generating JSON link for colection: "+code +" & jsonType: "+jsonType+"/t"+e.getStackTrace());
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 		//return getUIWrapper(result,true);
@@ -728,7 +758,8 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> generateJsonTweetIdsLink(@RequestParam String code,
 			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws Exception {
-		System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
+		//System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
+		logger.info("Received request for generating JSON TweetIds link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
 			result = taggerService.generateJsonTweetIdsLink(code, jsonType);
@@ -739,7 +770,7 @@ public class TaggerController extends BaseController {
 				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while generating JSON TweetIds link for colection: "+code +" & jsonType: "+jsonType+"/t"+e.getStackTrace());
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 		//System.out.println("[Controller generateTweetIdsLink] Returning success: " + result);
@@ -752,6 +783,7 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> generateCSVFilteredLink(@RequestParam String code,
 			String queryString) throws Exception {
+		logger.info("Received request for generating CSV filtered link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
 			String userName = getAuthenticatedUserName();
@@ -764,7 +796,7 @@ public class TaggerController extends BaseController {
 				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while generating CSV filtered link for colection: "+code +"/t"+e.getStackTrace());
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 	}
@@ -774,7 +806,8 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> generateTweetIdsFilteredLink(@RequestParam String code,
 			String queryString) throws Exception {
-		System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
+		//System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
+		logger.info("Received request for generating tweetIDs filtered link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
 			String userName = getAuthenticatedUserName();
@@ -788,7 +821,7 @@ public class TaggerController extends BaseController {
 				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while generating tweetIDs filtered link for colection: "+code +"/t"+e.getStackTrace());
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 		//System.out.println("[Controller generateTweetIdsLink] Returning success: " + result);
@@ -801,6 +834,7 @@ public class TaggerController extends BaseController {
 	public Map<String,Object> generateJSONFilteredLink(@RequestParam String code,
 			String queryString,
 			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws Exception {
+		logger.info("Received request for generating JSON filtered link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
 			String userName = getAuthenticatedUserName();
@@ -813,7 +847,7 @@ public class TaggerController extends BaseController {
 				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while generating JSON filtered link for colection: "+code +"/t"+e.getStackTrace());
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 		//return getUIWrapper(result,true);
@@ -825,7 +859,8 @@ public class TaggerController extends BaseController {
 	public Map<String,Object> generateJsonTweetIdsFilteredLink(@RequestParam String code,
 			String queryString,
 			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws Exception {
-		System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
+		//System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
+		logger.info("Received request for generating JSON TweetIds filtered link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
 			String userName = getAuthenticatedUserName();
@@ -833,13 +868,13 @@ public class TaggerController extends BaseController {
 			
 			result = taggerService.generateJsonTweetIdsFilteredLink(code, queryString, jsonType, userName);
 			if (result != null && result.get("url") != null) {
-				System.out.println("Returning success fo collection: " +  code + ", response: " + result);
+				//System.out.println("Returning success fo collection: " +  code + ", response: " + result);
 				return getUIWrapper(result.get("url"),true, null, (String)result.get("message"));
 			} else {
 				return getUIWrapper(false, "Something wrong - no file generated!");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while generating JSON TweetIds filtered link for colection: "+code +" & jsonType: "+jsonType+"/t"+e.getStackTrace());
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 	}
@@ -847,7 +882,8 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/updateMobilePush.action", method = { RequestMethod.POST ,RequestMethod.GET })
 	@ResponseBody
 	public Map<String,Object> updateMobilePushStatus(AidrCollection collection) throws Exception {
-		System.out.println("[updateMobilePushStatus: " + collection.getCode());
+		//System.out.println("[updateMobilePushStatus: " + collection.getCode());
+		logger.info("[updateMobilePushStatus: " + collection.getCode());
 		String result = "";
 		try {
 			TaggerCrisis tagCrisis = taggerService.getCrisesByCode(collection.getCode());
@@ -855,7 +891,7 @@ public class TaggerController extends BaseController {
 			/// all clientapp based on crisisID should be enable to push to mobile app.
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while updating mobile push status for colection: "+collection.getCode() +"/t"+e.getStackTrace());
 			return getUIWrapper(false, "System is down or under maintenance. For further inquiries please contact admin.");
 		}
 
@@ -866,10 +902,11 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> getHumanLabeledDocumentsByCrisisID(Long crisisID, Integer count) throws Exception {
 		try {
+			logger.info("Getting human labelled documents by crisisID: "+crisisID);
 			TaggerResponseWrapper labeledDataList = taggerService.getHumanLabeledDocumentsByCrisisID(crisisID, count);
 			return getUIWrapper(labeledDataList, true);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while getting human labelled documents by crisisID: "+crisisID +"/t"+e.getStackTrace());
 			return getUIWrapper(false, "Error in fetching human labeled documents");
 		}
 	}
@@ -878,10 +915,11 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> getHumanLabeledDocumentsByCrisisCode(String crisisCode, Integer count) throws Exception {
 		try {
+			logger.info("Getting human labelled documents by crisisCode: "+crisisCode);
 			TaggerResponseWrapper labeledDataList = taggerService.getHumanLabeledDocumentsByCrisisCode(crisisCode, count);
 			return getUIWrapper(labeledDataList, true);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while getting human labelled documents by crisisCode: "+crisisCode +"/t"+e.getStackTrace());
 			return getUIWrapper(false, "Error in fetching human labeled documents");
 		}
 	}
@@ -890,10 +928,11 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> getHumanLabeledDocumentsByCrisisIDUserID(Long crisisID, Long userID, Integer count) throws Exception {
 		try {
+			logger.info("Getting human labelled documents by crisisID: "+crisisID +" & userID: "+userID);
 			TaggerResponseWrapper labeledDataList = taggerService.getHumanLabeledDocumentsByCrisisIDUserID(crisisID, userID, count);
 			return getUIWrapper(labeledDataList, true);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while getting human labelled documents by crisisID: "+crisisID +" & userID: "+userID+"/t"+e.getStackTrace());
 			return getUIWrapper(false, "Error in fetching human labeled documents");
 		}
 	}
@@ -902,34 +941,88 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> getHumanLabeledDocumentsByCrisisIDUserName(Long crisisID, String userName, Integer count) throws Exception {
 		try {
+			logger.info("Getting human labelled documents by crisisID: "+crisisID +" & userName: "+userName);
 			TaggerResponseWrapper labeledDataList = taggerService.getHumanLabeledDocumentsByCrisisIDUserName(crisisID, userName, count);
 			return getUIWrapper(labeledDataList, true);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while getting human labelled documents by crisisID: "+crisisID +" & userName: "+userName+"/t"+e.getStackTrace());
 			return getUIWrapper(false, "Error in fetching human labeled documents");
 		}
 	}
 
 	@RequestMapping(value = "/downloadHumanLabeledDocuments.action", method = RequestMethod.POST)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	@ResponseBody
 	public Map<String,Object> downloadHumanLabeledDocuments(String queryString, 
-			@RequestParam String crisisCode, @RequestParam Integer count,
-			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("fileType") String fileType, 
-			@DefaultValue(DownloadType.FULL_TWEETS) @QueryParam("contentType") String contentType) throws Exception {
+			@RequestParam(value = "crisisCode", required = true) String crisisCode, 
+			@RequestParam(value = "count", defaultValue = "-1") Integer count,
+			@RequestParam(value = "fileType", defaultValue = DownloadType.TEXT_JSON) String fileType, 
+			@RequestParam(value = "contentType", defaultValue = DownloadType.FULL_TWEETS) String contentType) throws Exception {
+		logger.info("Received request: crisisCode = " + crisisCode + ", count = " + count + ", fileType = " + fileType
+				+ ", contentType = " + contentType + "\nquery String = " + queryString);
 		try {
 			String userName = getAuthenticatedUserName();
-			if (null == userName) userName = "System";			// a hard-coded placeholder, TODO: change to something more meaningful
+			if (null == userName) userName = "System";
 			
+			if (null == count) {
+				count = -1;
+			}
 			Map<String, Object> downloadLink = taggerService.downloadHumanLabeledDocumentsByCrisisUserName(queryString, crisisCode, userName, count, fileType, contentType);
-			if (downloadLink.get("fileName") != null) {
-				return getUIWrapper(downloadLink, true);
+			if (downloadLink.get("fileName") != null && downloadLink.get("total") != null) {
+				return getUIWrapper(downloadLink, true, new Long((Integer)downloadLink.get("total")), null);
 			} else {
 				return getUIWrapper(downloadLink, false);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			return getUIWrapper(false, "Error in getting dlownload link for human labeled documents");
+			logger.error("Error while downloading human labelled documents for crisis: "+crisisCode + " , fileType: "+fileType + " & queryString: "+queryString +"/t"+e.getStackTrace());
+			return getUIWrapper(false, "Error in getting download link for human labeled documents");
+		}
+	}
+	
+	@RequestMapping(value = "/updateMicromapperEnabled.action", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> updateMicromapperEnabled(@RequestParam Boolean isMicromapperEnabled, @RequestParam String code ) throws Exception {
+		logger.info("In update micromapperEnabled for collection, code = " + code);
+		Map<String, Object> result = null;
+		try {
+			result = taggerService.updateMicromapperEnabled(code, isMicromapperEnabled);
+			if (result != null && result.get("isMicromapperEnabled") != null) {
+				return getUIWrapper(null,true);
+			} else {
+				return getUIWrapper(false, "Something wrong while updating isMicromapperEnabled");
+			}
+		} catch (Exception e) {
+			logger.error("Error while updating isMicromapperEnabled flag for crisis: "+code ,e);
+			return getUIWrapper(false, "Unable to update micromapperEnabled for collection, code = " + code);
 		}
 	}
 
+	/**
+	 * @param url
+	 * @param mailType Type of mail (issues/suggestions)
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/sendEmailService.action", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> sendEmail(@RequestParam String url, @RequestParam String mailType, @RequestParam String description) throws Exception {
+		logger.info("In sending email");
+		UserEntity userEntity = getAuthenticatedUser();
+		userEntity.getUserName();
+		String body = "User:-"+userEntity.getUserName() + "\nURL:-"+url +"\nRequestHeader:-"+description;
+		String subject = mailType;
+		Boolean result = false;
+		try{
+			result = taggerService.sendMailService(subject,body);
+			if (result) {
+				return getUIWrapper(null,true);
+			} else {
+				return getUIWrapper(false, "Sending Email Failed");
+			}
+		}catch (Exception e) {
+			logger.error("Error while sending emails to develoopers", e);
+			return getUIWrapper(false, "Sending Email Failed");
+		}
+	}
 }

@@ -18,7 +18,7 @@ public class PersisterInitializationContextListener implements
 
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
-		// Initializing the configuration properties.
+		PersisterConfigurator.getInstance();
 	}
 
 	@Override

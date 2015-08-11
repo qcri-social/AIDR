@@ -1,5 +1,7 @@
 // default package
 // Generated Nov 24, 2014 4:55:08 PM by Hibernate Tools 4.0.0
+
+
 package qa.qcri.aidr.dbmanager.entities.task;
 
 import java.util.Date;

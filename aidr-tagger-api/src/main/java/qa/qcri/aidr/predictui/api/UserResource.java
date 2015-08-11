@@ -10,6 +10,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -22,9 +23,12 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
+import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.predictui.facade.UserResourceFacade;
+import qa.qcri.aidr.predictui.util.ResponseWrapper;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
+import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -42,9 +46,7 @@ public class UserResource {
 	@EJB
 	private UserResourceFacade userLocalEJB;
 
-	//private Logger logger = Logger.getLogger(UserResource.class.getName());
 	private Logger logger = Logger.getLogger(UserResource.class);
-	private ErrorLog elog = new ErrorLog();
 
 	public UserResource() {
 	}
@@ -61,7 +63,7 @@ public class UserResource {
 			UsersDTO newUser = new UsersDTO(null, null, null);
 			return Response.ok(newUser).build();
 		} else {
-			System.out.println("Created new user with id = " + createdUser.getUserID() + ", name = " + createdUser.getName());
+			logger.info("Created new user with id = " + createdUser.getUserID() + ", name = " + createdUser.getName());
 			return Response.ok(createdUser).build();
 		}
 	}
@@ -106,8 +108,15 @@ public class UserResource {
 			return Response.ok(mapper.writeValueAsString(users)).build();
 		} catch (Exception e) {
 			logger.error("Error in getting all users");
-			logger.error(elog.toStringException(e));
 			return Response.ok(new ArrayList<UsersDTO>()).build();
 		}
+	}
+	
+	@DELETE
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteUser(@PathParam("id") Long id) throws PropertyNotSetException {
+		Integer userDeleted = userLocalEJB.deleteUser(id);
+		return userDeleted != null && userDeleted == 1 ? Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS))).build() : Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED))).build();
 	}
 }

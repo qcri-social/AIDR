@@ -1,3 +1,6 @@
+/*
+ * This DTO is used for transferring out humanlabeled documents 
+ */
 package qa.qcri.aidr.dbmanager.dto;
 
 import java.io.Serializable;
@@ -6,6 +9,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.gson.Gson;
@@ -18,12 +23,13 @@ import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
 @JsonIgnoreProperties(ignoreUnknown=true)
 @XmlRootElement
 public class HumanLabeledDocumentDTO implements Serializable {
-
+	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = -8284975892012345464L;
+	private static final Logger logger = Logger.getLogger("db-manager-log");
+
 	@XmlElement private DocumentDTO doc;
 	
 	@XmlElement private List<DocumentNominalLabelDTO> labelData;
@@ -89,7 +95,7 @@ public class HumanLabeledDocumentDTO implements Serializable {
 			String jsonString = jsonObject.toJson(this, HumanLabeledDocumentDTO.class);
 			return jsonString;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warn("Error in parsing json to human labeled doc.");
 			return null;
 		}
 	}

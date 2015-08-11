@@ -1,7 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Implements operations for managing the model_family table of the aidr_predict DB
+ * 
+ * @author Koushik
  */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
@@ -29,10 +29,6 @@ import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 
 
-/**
- *
- * @author Imran
- */
 @Stateless(name="ModelFamilyResourceFacadeImp")
 public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFamily, Long> implements ModelFamilyResourceFacade {
 
@@ -42,6 +38,7 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 		super(ModelFamily.class);
 	}
 
+	@Override
 	public List<ModelFamilyDTO> getAllModelFamilies() throws PropertyNotSetException {
 		List<ModelFamilyDTO> modelFamilyDTOList = new ArrayList<ModelFamilyDTO>();
 		List<ModelFamily> modelFamilyList = getAll();
@@ -54,9 +51,11 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 		return modelFamilyDTOList; //returns empty list if no data is found in the database
 	}
 
+	@Override
 	public List<ModelFamilyDTO> getAllModelFamiliesByCrisis(Long crisisID) throws PropertyNotSetException {
 		List<ModelFamilyDTO> modelFamilyDTOList = new ArrayList<ModelFamilyDTO>();
 		Crisis crisis = getEntityManager().find(Crisis.class, crisisID);
+		Hibernate.initialize(crisis.getModelFamilies());
 		List<ModelFamily> modelFamilyList = crisis.getModelFamilies();
 		if (modelFamilyList != null && !modelFamilyList.isEmpty()) {
 			for (ModelFamily modelFamily : modelFamilyList) {
@@ -69,6 +68,7 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 		return modelFamilyDTOList; //returns empty list if no data is found in the database
 	}
 
+	@Override
 	public ModelFamilyDTO getModelFamilyByID(Long id) throws PropertyNotSetException {
 		ModelFamily mf = this.getById(id);
 		Hibernate.initialize(mf.getModels());
@@ -76,6 +76,7 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 		return mf != null ? new ModelFamilyDTO(mf) : null;
 	}
 
+	@Override
 	public boolean addCrisisAttribute(ModelFamilyDTO modelFamily) throws PropertyNotSetException {
 		try {
 			Crisis crisis = getEntityManager().find(Crisis.class, modelFamily.getCrisisDTO().getCrisisID());
@@ -90,6 +91,7 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 		return true;
 	}
 
+	@Override
 	public boolean deleteModelFamily(Long modelFamilyID) throws PropertyNotSetException {
 		ModelFamily modelFamily = getEntityManager().find(ModelFamily.class, modelFamilyID);
 		if (modelFamily != null) {
@@ -105,6 +107,7 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 		}
 	}
 
+	@Override
 	public List<TaggersForCodes> getTaggersByCodes(final List<String> codes) {
 		List<qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes> result = new ArrayList<TaggersForCodes>();
 
@@ -121,6 +124,7 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 		try {
 			rows = query.getResultList();
 		} catch (NoResultException e) {
+			logger.warn("No result for codes : " + codes);
 			return null;
 		}
 		for (Object[] row : rows) {

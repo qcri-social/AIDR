@@ -28,6 +28,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 
+
+import org.apache.log4j.Logger;
+
 //import qa.qcri.aidr.predictui.dto.CrisisTypeDTO;
 //import qa.qcri.aidr.predictui.entities.CrisisType;
 import qa.qcri.aidr.predictui.facade.CrisisTypeResourceFacade;
@@ -41,6 +44,8 @@ import qa.qcri.aidr.predictui.facade.CrisisTypeResourceFacade;
 @Stateless
 public class CrisisTypeResource {
 
+	private Logger logger = Logger.getLogger(CrisisTypeResource.class);
+	
     @Context
     private UriInfo context;
     @EJB
@@ -57,6 +62,7 @@ public class CrisisTypeResource {
         try {
             crisistype = crisisTypeLocal.getCrisisTypeByID(id);
         } catch (RuntimeException e) {
+        	logger.error("Error in getCrisisTypeByID for id : " + id);
             return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
         }
         return Response.ok(crisistype).build();
@@ -79,6 +85,7 @@ public class CrisisTypeResource {
         try {
             crisis = crisisTypeLocal.addCrisisType(crisis);
         } catch (RuntimeException e) {
+        	logger.error("Error in addCrisisType.");
             return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
         }
         return Response.ok(crisis).build();
@@ -91,6 +98,7 @@ public class CrisisTypeResource {
         try {
             crisis = crisisTypeLocal.editCrisisType(crisis);
         } catch (RuntimeException e) {
+        	logger.error("Error in editCrisisType.");
             return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
         }
         return Response.ok(crisis).build();
@@ -103,6 +111,7 @@ public class CrisisTypeResource {
         try {
             crisisTypeLocal.deleteCrisisType(id);
         } catch (RuntimeException e) {
+        	logger.error("Error while deleting CrisisType. Possible cause(s): (1) Given crisis-type ID does not exist.");
             return Response.ok(
                     new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED),
                     "Error while deleting CrisisType. Possible cause(s): (1) Given crisis-type ID does not exist.")).build();

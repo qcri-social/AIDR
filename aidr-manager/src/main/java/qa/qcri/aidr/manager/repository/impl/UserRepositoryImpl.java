@@ -6,15 +6,12 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.ScrollableResults;
-import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
-
 import org.springframework.util.StringUtils;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
+
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 import qa.qcri.aidr.manager.repository.UserRepository;
-import qa.qcri.aidr.manager.util.CollectionStatus;
 
 @Repository("userRepository")
 public class UserRepositoryImpl extends GenericRepositoryImpl<UserEntity,Serializable> implements UserRepository {

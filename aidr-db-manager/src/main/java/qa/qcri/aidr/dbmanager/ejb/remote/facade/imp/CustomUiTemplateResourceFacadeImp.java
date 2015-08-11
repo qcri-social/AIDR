@@ -1,3 +1,8 @@
+ /**
+ * Implements operations for managing the custom UI table of the aidr_predict DB
+ *
+ * @author Koushik
+ */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.ArrayList;
@@ -14,10 +19,6 @@ import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.CustomUiTemplateResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.CustomUiTemplate;
 
-/**
-*
-* @author Koushik
-*/
 @Stateless(name="CustomUiTemplateResourceFacadeImp")
 public class CustomUiTemplateResourceFacadeImp extends CoreDBServiceFacadeImp<CustomUiTemplate, Long> implements CustomUiTemplateResourceFacade {
 	private static Logger logger = Logger.getLogger("aidr-db-manager");
@@ -42,6 +43,7 @@ public class CustomUiTemplateResourceFacadeImp extends CoreDBServiceFacadeImp<Cu
 			}
 			return dtoList;
 		} catch (Exception e) {
+			logger.error("Error in getAllCustomUITemplateByCrisisID for crisisID : " + crisisID, e);
 			return null;
 		}
 	}
@@ -66,6 +68,7 @@ public class CustomUiTemplateResourceFacadeImp extends CoreDBServiceFacadeImp<Cu
 			}
 			return dtoList;
 		} catch (Exception e) {
+			logger.error("Error in getCustomUITemplateBasedOnTypeByCrisisID for crisisID : " + crisisID);
 			return null;
 		}
 	}
@@ -89,6 +92,8 @@ public class CustomUiTemplateResourceFacadeImp extends CoreDBServiceFacadeImp<Cu
 			}
 			return dtoList;
 		} catch (Exception e) {
+			logger.error("Error in getCustomUITemplateBasedOnTypeByCrisisIDAndAttributeID for crisisID : " + crisisID
+				+ " and attributeID : " + attributeID);
 			return null;
 		}
 	}
@@ -111,6 +116,8 @@ public class CustomUiTemplateResourceFacadeImp extends CoreDBServiceFacadeImp<Cu
 			}
 			return dtoList;
 		} catch (Exception e) {
+			logger.error("Error in getCustomUITemplateByCrisisIDAndAttributeID "
+					+ "crisisID : " + crisisID + " and attributeID : " + attributeID);
 			return null;
 		}
 	}
@@ -156,8 +163,9 @@ public class CustomUiTemplateResourceFacadeImp extends CoreDBServiceFacadeImp<Cu
 			Object managed = em.merge(customUiTemplateDTO.toEntity());
 			em.remove(managed); 
 			return 1;
-			} catch (Exception e) {
-				return 0;
+		} catch (Exception e) {
+			logger.warn("Warning! couldn't delete template by ID : " + customUiTemplateId);
+			return 0;
 		}
 	}
 	

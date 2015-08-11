@@ -1,19 +1,5 @@
 package qa.qcri.aidr.manager.service.impl;
 
-import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import qa.qcri.aidr.common.code.JacksonWrapper;
-import qa.qcri.aidr.manager.dto.UITemplateRequest;
-import qa.qcri.aidr.manager.dto.UITemplateResponse;
-import qa.qcri.aidr.manager.exception.AidrException;
-import qa.qcri.aidr.manager.service.UITemplateService;
-import qa.qcri.aidr.manager.util.CustomUITemplateLookup;
-
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -21,7 +7,17 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import java.util.List;
+import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import qa.qcri.aidr.common.code.JacksonWrapper;
+import qa.qcri.aidr.manager.dto.UITemplateRequest;
+import qa.qcri.aidr.manager.exception.AidrException;
+import qa.qcri.aidr.manager.service.UITemplateService;
+import qa.qcri.aidr.manager.util.CustomUITemplateLookup;
 
 /**
  * Created with IntelliJ IDEA.
@@ -93,6 +89,7 @@ public class UITemplateServiceImpl implements UITemplateService {
             }
             return null;
         } catch (Exception e) {
+        	logger.error("Error while creating new template in Tagger", e);
             throw new AidrException("Error while creating new template in Tagger", e);
         }
 
@@ -118,6 +115,7 @@ public class UITemplateServiceImpl implements UITemplateService {
             }
             return null;
         } catch (Exception e) {
+        	logger.error("Error while creating new template in Tagger", e);
             throw new AidrException("Error while creating new template in Tagger", e);
         }
     }
@@ -136,6 +134,7 @@ public class UITemplateServiceImpl implements UITemplateService {
 
             return jsonResponse;
         } catch (Exception e) {
+        	logger.error("Error while getting CrisisChildrenElement in UITemplate", e);
             throw new AidrException("Error while getting CrisisChildrenElement in UITemplate", e);
         }
     }

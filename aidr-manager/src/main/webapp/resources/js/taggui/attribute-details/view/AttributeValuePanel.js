@@ -171,6 +171,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeValuePanel', {
                     var response = Ext.decode(resp.responseText);
                     if (!response.success) {
                         AIDRFMFunctions.setAlert("Error", 'Error while updating label in Tagger.');
+                        AIDRFMFunctions.reportIssue(resp);
                     }
                 }
             });

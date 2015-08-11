@@ -135,12 +135,15 @@ public class ScreenController extends BaseController{
         Integer crisisId = 0;
         String crisisName = "";
         Integer crisisTypeId = 0;
+        Boolean isMicromapperEnabled = false;
         if (crisis != null && crisis.getCrisisID() != null && crisis.getName() != null){
             crisisId = crisis.getCrisisID();
             crisisName = crisis.getName();
             if (crisis.getCrisisType() != null && crisis.getCrisisType().getCrisisTypeID() != null){
                 crisisTypeId = crisis.getCrisisType().getCrisisTypeID();
             }
+            
+        	isMicromapperEnabled = crisis.getIsMicromapperEnabled();
         }
         logger.info("Fetched tagger crisis: " + crisis.getCode() + ", aidr collection: " + collection.getCode());
         
@@ -149,6 +152,7 @@ public class ScreenController extends BaseController{
         model.addObject("name", crisisName);
         model.addObject("crisisTypeId", crisisTypeId);
         model.addObject("code", code);
+        model.addObject("isMicromapperEnabled", isMicromapperEnabled);
         model.addObject("collectionType", collection.getCollectionType());
         model.addObject("collectionTypes", CollectionType.JSON());
         
@@ -187,7 +191,7 @@ public class ScreenController extends BaseController{
             taggerUserId = taggerService.isUserExistsByUsername(userName);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Exception while getting attribute details",e);
         }
         model.addObject("id", id);
         model.addObject("userId", taggerUserId);
@@ -235,8 +239,8 @@ public class ScreenController extends BaseController{
 
 
         } catch (Exception e) {
-            System.out.println("e : " + e);
-            e.printStackTrace();
+           // System.out.println("e : " + e);
+        	logger.error("Exception while checking whether user exist by username",e);
         }
 
         AidrCollection collection = collectionService.findByCode(code);
@@ -403,7 +407,7 @@ public class ScreenController extends BaseController{
          public ModelAndView interactiveViewDownload(@PathVariable(value="code") String code) throws Exception {
 
         String userName ="";
-        System.out.println("interactiveViewDownload : ");
+       // System.out.println("interactiveViewDownload : ");
 
         if (isHasPermissionForCollection(code)){
             userName = getAuthenticatedUserName();
@@ -432,7 +436,7 @@ public class ScreenController extends BaseController{
             crisis = taggerService.getCrisesByCode(code);
             collection = collectionService.findByCode(code);
         } catch (Exception e) {
-            e.printStackTrace();
+        	logger.error("Exception while getting interactive view download", e);
         }
 
         Integer crisisId = 0;
@@ -452,7 +456,7 @@ public class ScreenController extends BaseController{
                 try {
                     collectionCount = collectionLogService.countTotalDownloadedItemsForCollection(collectionId);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                	logger.error("Exception while counting total download items for collectionID: "+collectionId, e);
                 }
             }
             if (collection.getCount() != null && (collection.getStatus() != null || RUNNING == collection.getStatus() || RUNNING_WARNING == collection.getStatus())) {

@@ -1,3 +1,8 @@
+/*
+ * Implements operations for managing the nominal_label table of the aidr_predict DB
+ * 
+ * @author Koushik
+ */
 package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.util.ArrayList;
@@ -15,10 +20,6 @@ import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 
-
-/**
- * @author Koushik
- */
 
 @Stateless(name="NominalLabelResourceFacadeImp")
 public class NominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<NominalLabel, Long> implements NominalLabelResourceFacade {
@@ -43,14 +44,13 @@ public class NominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<Nomina
 			em.refresh(nb);
 			return new NominalLabelDTO(nb);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error in addNominalLabel.", e);
 			return null;
 		}
 	}
 
 	@Override
 	public NominalLabelDTO editNominalLabel(NominalLabelDTO nominalLabel) throws PropertyNotSetException {
-		System.out.println("Received request for: " + nominalLabel.getNominalLabelId() + ":" + nominalLabel.getNominalLabelCode());
 		try {
 			NominalLabel label = nominalLabel.toEntity();
 			NominalLabel oldLabel = getById(label.getNominalLabelId()); 
@@ -61,8 +61,7 @@ public class NominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<Nomina
 				throw new RuntimeException("Not found");
 			}
 		} catch (Exception e) {
-			System.out.println("Exception in merging/updating nominalLabel: " + nominalLabel.getNominalLabelId());
-			e.printStackTrace();	
+			logger.error("Exception in merging/updating nominalLabel: " + nominalLabel.getNominalLabelId(), e);
 		}
 		return null;
 	}
@@ -147,5 +146,18 @@ public class NominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<Nomina
 	public Boolean isNominalLabelExists(String code) {
 		NominalLabel nb = this.getByCriteria(Restrictions.eq("nominalLabelCode", code));
 		return nb != null ? true : false;
+	}
+	
+	@Override
+	public List<NominalLabelDTO> getNominalLabelByAttributeID(Long attributeID) throws PropertyNotSetException {
+		List<NominalLabel> nominalLabels = this.getAllByCriteria(Restrictions.eq("nominalAttribute.nominalAttributeId", attributeID));
+		List<NominalLabelDTO> dtoList = new ArrayList<NominalLabelDTO>();
+		if (nominalLabels != null && !nominalLabels.isEmpty()) {
+			for (NominalLabel nb: nominalLabels) {
+				dtoList.add(new NominalLabelDTO(nb));
+			}
+		}
+		
+		return dtoList;
 	}
 }

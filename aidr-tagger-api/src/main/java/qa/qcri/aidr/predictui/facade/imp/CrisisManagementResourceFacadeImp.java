@@ -8,11 +8,11 @@ import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.common.logging.ErrorLog;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
+import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.predictui.api.CrisisManagementResource;
 import qa.qcri.aidr.predictui.facade.CrisisManagementResourceFacade;
 import qa.qcri.aidr.task.ejb.TaskManagerRemote;
@@ -31,10 +31,9 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelFamilyResourceFacade remoteModelFamilyEJB;
 
 	@EJB
-	private TaskManagerRemote<qa.qcri.aidr.dbmanager.dto.DocumentDTO, Long> taskManager;
+	private TaskManagerRemote<Document, Long> taskManager;
 
 	private static Logger logger = Logger.getLogger(CrisisManagementResource.class);
-	private static ErrorLog elog = new ErrorLog();
 
 	@Override
 	public String trashByCrisisCode(String crisisCode) {
@@ -45,7 +44,6 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 		// 3. remove tasks for this crisisID from document table -->
 		//    this will trigger deletion of documents for this crisisID from 
 		//    the task_assignment table through DELETE CASCADE
-		System.out.println("[trashByCrisisCode] Received request to trash collection from aidr_predict DB: " + crisisCode);
 		logger.info("Received request to trash collection from aidr_predict DB: " + crisisCode);
 
 		try {
@@ -56,11 +54,14 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 				logger.info("No crisis exists in aidr_predict DB for: " + crisisCode);
 				return sb.toString();
 			}
+		
 			//Otherwise go ahead with trashing
 			crisis.setIsTrashed(true);
-			remoteCrisisEJB.merge(crisis.toEntity());
-
+			
 			List<ModelFamilyDTO> associatedModels = remoteModelFamilyEJB.getAllModelFamiliesByCrisis(crisis.getCrisisID());
+			
+			remoteCrisisEJB.merge(crisis.toEntity());
+			
 			if (associatedModels.isEmpty()) {
 				StringBuilder sb = new StringBuilder().append("{\"TRASHED\":").append(crisis.getCrisisID()).append("}");
 				logger.info("Success in deleting crisis: " + crisisCode);
@@ -73,18 +74,20 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 			}
 			remoteModelFamilyEJB.merge(list);
 
-			List<DocumentDTO> associatedDocs = remoteDocumentEJB.findUnLabeledDocumentsByCrisisID(crisis.getCrisisID());
-			if (associatedDocs.isEmpty()) {
+			List<DocumentDTO> associatedDocumentsDTO = remoteDocumentEJB.findUnLabeledDocumentsByCrisisID(crisis.getCrisisID());
+			if (associatedDocumentsDTO.isEmpty()) {
 				StringBuilder sb = new StringBuilder().append("{\"TRASHED\":").append(crisis.getCrisisID()).append("}");
-				logger.info("Success in deleting crisis: " + crisisCode);
 				return sb.toString();
 			}			
-			logger.info("Found for " + crisisCode + ", unlabeled docs to delete  = " + associatedDocs.size());
+			logger.info("Found for " + crisisCode + ", unlabeled docs to delete  = " + associatedDocumentsDTO.size());
+			List<Document> associatedDocuments = new ArrayList<Document>();
 			try {
-				taskManager.deleteTask(associatedDocs);
+				for (DocumentDTO documentDTO : associatedDocumentsDTO) {
+					associatedDocuments.add(documentDTO.toEntity());
+				}
+				taskManager.deleteTask(associatedDocuments);
 			} catch (Exception e) {
 				logger.error("Error in deleting document set");
-				logger.error(elog.toStringException(e));
 			}
 			List<DocumentDTO> temp = remoteDocumentEJB.findUnLabeledDocumentsByCrisisID(crisis.getCrisisID());
 			logger.info("Post Trashing: found for " + crisisCode + ", unlabeled docs after delete = " + temp.size());		
@@ -98,7 +101,6 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 			}
 		} catch (Exception e) {
 			logger.error("Something went wrong in trashing attempt!");
-			logger.error(elog.toStringException(e));
 			StringBuilder sb = new StringBuilder().append("{\"status\": \"FAILED\"}");
 			return sb.toString();
 		}
@@ -110,7 +112,6 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 		//TODO: 
 		// 1. set aidr_predict.crisis.isTrashed = false
 		// 2. set model_family.isActive = 1
-		System.out.println("Received request to untrash collection from aidr_predict DB: " + crisisCode);
 		logger.info("Received request to untrash collection from aidr_predict DB: " + crisisCode);
 		CrisisDTO crisis = null;
 
@@ -123,16 +124,15 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 			}
 		} catch (Exception e) {
 			logger.error("Could not retrieve crisis to untrash: " + crisisCode);
-			logger.error(elog.toStringException(e));
-
 			return sb.append("{\"status\": \"FAILED\"}").toString();
 		}
 		try {
 			if (crisis != null) {
 				crisis.setIsTrashed(false);
-				remoteCrisisEJB.merge(crisis.toEntity());
-
+				
 				List<ModelFamilyDTO> associatedModels = remoteModelFamilyEJB.getAllModelFamiliesByCrisis(crisis.getCrisisID());
+				remoteCrisisEJB.merge(crisis.toEntity());
+				
 				if (associatedModels != null) {
 					List<ModelFamily> list = new ArrayList<ModelFamily>();
 					for (ModelFamilyDTO model: associatedModels) {
@@ -147,7 +147,6 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 			return sb.append("{\"status\": \"UNTRASHED\"}").toString();
 		} catch (Exception e) {
 			logger.error("Something went wrong in untrashing attempt!");
-			logger.error(elog.toStringException(e));
 			return sb.append("{\"status\": \"FAILED\"}").toString();
 		}
 	}
