@@ -380,6 +380,11 @@ public class CollectionServiceImpl implements CollectionService {
 				//case STOPPED:
 					collection.setStatus(CollectionStatus.NOT_RUNNING);					
 				case RUNNING_WARNING:
+					if(prevStatus == CollectionStatus.INITIALIZING)
+					{
+						collection = collectionRepository.start(collection.getId());
+						break;
+					}
 				case WARNING:
 					collectionRepository.update(collection);
 					break;
