@@ -793,6 +793,7 @@ public class DataStore {
 		int modelID = MODEL_ID_ERROR;
 		Connection conn = null;
 		PreparedStatement modelInsert = null, mfUpdate = null;
+		PreparedStatement modelLabelPerfInsert = null;
 		ResultSet result = null;
 		NumberFormat format = NumberFormat.getNumberInstance(Locale.US);
 
@@ -817,35 +818,28 @@ public class DataStore {
 							+ ", UTC_TIMESTAMP())";
 			modelInsert = conn.prepareStatement(modelInsertSql, Statement.RETURN_GENERATED_KEYS);
 			modelInsert.executeUpdate();
-
-			//Get modelID of newly inserted model
-			Statement getIDStatement = conn.createStatement();
-			ResultSet getIDResult = getIDStatement.executeQuery("SELECT LAST_INSERT_ID()");
-			getIDResult.next();
-			modelID = getIDResult.getInt(1);
-			getIDStatement.close();
-
-			//result = modelInsert.getGeneratedKeys();
-			//result.next();
-			//modelID = result.getInt(1);
+			result = modelInsert.getGeneratedKeys();
+			
+			if (result != null && result.next()) {
+			    modelID = result.getInt(1);
+			}
+			
 			System.out.println("Inserted a new model with model ID " + modelID); //TODO: remove
 			logger.info("Inserted a new model with model ID " + modelID);
 			//Insert per-label classification performance of this model 
 			List<ModelNominalLabelPerformance> labelPerformaceList = model.getLabelPerformanceList();
+			String perfInsertSql = "INSERT INTO model_nominal_label (`modelID`, `nominalLabelID`, `labelPrecision`, `labelRecall`, `labelAuc`, `classifiedDocumentCount`) "
+					+ " VALUES (?,?,?,?,?,0);";
+			modelLabelPerfInsert = conn.prepareStatement(perfInsertSql);
 			for (ModelNominalLabelPerformance perf : labelPerformaceList) {
-				String perfInsertSql =
-						"INSERT INTO model_nominal_label (`modelID`, `nominalLabelID`, `labelPrecision`, `labelRecall`, `labelAuc`, `classifiedDocumentCount`) VALUES "
-								+ "("
-								+ modelID + ","
-								+ perf.getNominalLabelID() + ","
-								+ format.format(perf.getPrecision()) + ","
-								+ format.format(perf.getRecall()) + ","
-								+ format.format(perf.getAuc()) + ","
-								+ "0)";
-				PreparedStatement modelLabelPerfInsert = conn.prepareStatement(perfInsertSql);
+				
+				modelLabelPerfInsert.setInt(1, modelID);
+				modelLabelPerfInsert.setInt(2, perf.getNominalLabelID());
+				modelLabelPerfInsert.setString(3, format.format(perf.getPrecision()));
+				modelLabelPerfInsert.setString(4, format.format(perf.getRecall()));
+				modelLabelPerfInsert.setString(5, format.format(perf.getAuc()));
 
 				modelLabelPerfInsert.executeUpdate();
-				close(modelLabelPerfInsert);
 			}
 
 			// Set the the new model as the active model of its model family
@@ -857,6 +851,7 @@ public class DataStore {
 		} catch (SQLException e) {
 			logger.error("Exception while saving model to database", e);
 		} finally {
+			close(modelLabelPerfInsert);
 			close(result);
 			close(modelInsert);
 			close(mfUpdate);
@@ -910,30 +905,54 @@ public class DataStore {
 
 	public static void saveClassifiedDocumentCounts(HashMap<Integer, HashMap<Integer, Integer>> data) {
 		Connection conn = null;
-		PreparedStatement statement = null;
-
+		PreparedStatement selectStatement = null;
+		PreparedStatement updateStatement = null;
+		ResultSet resultSet = null;
+		
+		String selectQuery = "SELECT COUNT(*) FROM model_nominal_label WHERE modelID = ? AND nominalLabelID = ?";
+		
+		String updateQuery = "UPDATE model_nominal_label SET classifiedDocumentCount = classifiedDocumentCount + ? "
+				+ "WHERE modelID = ? AND nominalLabelID = ?"; 
+		/*String insertQuery = "INSERT INTO model_nominal_label (modelID, classifiedDocumentCount, nominalLabelID) values (?,?,?)"
+				+ " ON DUPLICATE KEY UPDATE classifiedDocumentCount=classifiedDocumentCount+values(classifiedDocumentCount)";
+		*/
+		int modelNominalCount = 0;
 		try {
 			// Insert document
 			conn = getMySqlConnection();
+			selectStatement = conn.prepareStatement(selectQuery);
+			updateStatement = conn.prepareStatement(updateQuery);
+			
 			for (Map.Entry<Integer, HashMap<Integer, Integer>> modelDocCounts : data.entrySet()) {
 				int modelID = modelDocCounts.getKey();
 				for (Map.Entry<Integer, Integer> labelDocCount : modelDocCounts.getValue().entrySet()) {
 					Integer labelID = labelDocCount.getKey();
 					Integer docCount = labelDocCount.getValue();
+					
+					selectStatement.setInt(1, modelID);
+					selectStatement.setInt(2, labelID);
+					
+					resultSet = selectStatement.executeQuery();
 
-					statement = conn
-							.prepareStatement(
-									"INSERT INTO model_nominal_label (modelID, classifiedDocumentCount, nominalLabelID) values (" + modelID + "," + docCount + ",'" + labelID + "') "
-											+ "ON DUPLICATE KEY UPDATE classifiedDocumentCount=classifiedDocumentCount+values(classifiedDocumentCount)");
-					statement.executeUpdate();
-
-					statement.close();
+					if(resultSet != null && resultSet.next()) {
+						modelNominalCount = resultSet.getInt(1);
+					}
+					
+					if(modelNominalCount > 0) {
+						
+						updateStatement.setInt(1, docCount);
+						updateStatement.setInt(2, modelID);
+						updateStatement.setInt(3, labelID);
+						updateStatement.executeUpdate();
+					}
 				}
 			}
 		} catch (SQLException e) {
-			logger.error("Exception when attempting to write ClassifiedDocumentCount to database : " + data);
+			logger.error("Exception when attempting to write ClassifiedDocumentCount to database : " + data, e);
 		} finally {
-			close(statement);
+			close(resultSet);
+			close(updateStatement);
+			close(selectStatement);
 			close(conn);
 		}
 	}

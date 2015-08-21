@@ -147,8 +147,7 @@ public class Controller  {
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
-                logger.error("Exception in starting tagger Controller!", e);
+                logger.warn("Exception in starting tagger Controller!", e);
             }
         }
     }
