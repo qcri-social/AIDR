@@ -820,6 +820,7 @@ public class DataStore {
 					
 					familyLabelCount.put(family, 0);
 					modelFamilies.put(crisisID, new HashMap<Integer, ModelFamilyEC>());
+					modelFamiliesByCode.put(crisisID, new HashMap<String, ModelFamilyEC>());
 				}
 				else
 				{
@@ -849,6 +850,8 @@ public class DataStore {
 
 		} catch (SQLException e) {
 			logger.error("Exception when getting model state", e);
+		} catch (Exception e) {
+			logger.error("Exception in getActiveModelsDocCount ::", e);
 		} finally {
 			close(result);
 			close(sql);
@@ -1126,7 +1129,8 @@ public class DataStore {
 		PreparedStatement selectStatement = null;
 		ResultSet result = null;
 
-		String selectQuery = "SELECT a.nominalAttributeID,code,a.description,a.name,nominalLabelID,l.nominalLabelCode,l.name as nominalLabelName,"
+		String selectQuery = "SELECT a.nominalAttributeID, a.code as nominalAttributeCode,"
+				+ " a.description as nominalAttributeDescription, a.name as nominalAttributeName, l.nominalLabelID, l.nominalLabelCode,l.name as nominalLabelName,"
 				+ "l.description as nominLabelDescription FROM nominal_attribute a join nominal_label l on a.nominalAttributeID = l.nominalAttributeID";
 
 		try {
