@@ -138,7 +138,7 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
                 		});
 
                 this.downloadTweetsDescription = Ext.create('Ext.form.Label', {
-                			text: 'Download Human-tagged tweets',
+                			text: 'Download Human-tagged tweets for all classifiers of this collection',
                 			padding: '0 0 10 0'
                 		});
 

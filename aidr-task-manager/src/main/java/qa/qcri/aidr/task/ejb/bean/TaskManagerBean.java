@@ -348,16 +348,23 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			logger.error("Exception in fetching unassigned documents with hasHumaLabels=false");
 			return 0;
 		}
+		DocumentDTO dto;
 
 		// Next trim the document table for the given crisisID to the 
 		// Config.LABELING_TASK_BUFFER_MAX_LENGTH size
 		if (docList != null) {
 			int docsToDelete = docList.size() - maxLength;
 			if (docsToDelete > ERROR_MARGIN) {		// if less than this, then skip delete
-				List<Long> documentIDList = new ArrayList<Long>();
+				//List<Long> documentIDList = new ArrayList<Long>();
 				for (int i = 0;i < docsToDelete;i++) {
-					Document d = docList.get(i);
-					documentIDList.add(d.getDocumentId());
+					try {
+						dto = remoteDocumentEJB.findDocumentByID(docList.get(i).getDocumentId());
+						remoteDocumentEJB.deleteDocument(dto);
+					} catch (Exception e)
+					{
+						logger.error("Exception when attempting to delete document");
+					}
+					/*documentIDList.add(d.getDocumentId());
 					logger.debug("To delete document: {" + d.getCrisis().getCrisisId() + ", " + d.getDocumentId() + ", " + d.isHasHumanLabels() + "}");
 				}
 				try {
@@ -366,10 +373,11 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 					logger.info("Number of documents actually deleted = " + deleteCount);
 					return deleteCount;
 				} catch (Exception e) {
-					logger.error("Exception when attempting to batch delete for trimming the document table");
-				} 
+					logger.error("Exception when attempting to batch delete for trimming the document table");*/
+				}
+				return docsToDelete;
 			} else {
-				logger.info("No need for truncation: docListSize = " + docList.size() + ", max buffer size = " + maxLength);
+				logger.debug("No need for truncation: docListSize = " + docList.size() + ", max buffer size = " + maxLength);
 			}
 		}
 		return 0;
