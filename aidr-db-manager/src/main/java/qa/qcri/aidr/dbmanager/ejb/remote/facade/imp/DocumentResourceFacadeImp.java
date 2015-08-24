@@ -20,6 +20,7 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
@@ -155,7 +156,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 			int result = query.executeUpdate();
 			return result;
 		} catch (Exception e) {
-			logger.error("Deletion query failed");
+			logger.error("Deletion query failed: " + e);
 			return 0;
 		}
 	}
@@ -432,6 +433,28 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	}
 
 	@Override
+	public Integer getDocumentCountForNominalLabelAndCrisis(Long nominalLabelID, String crisisCode) throws Exception {
+		if (nominalLabelID != null) {
+			String aliasTable = "documentNominalLabels";
+			String aliasTableKeyField = "documentNominalLabels.id.nominalLabelId";
+			String[] orderBy = {"documentId"};
+			
+			CrisisDTO cdto = crisisEJB.getCrisisByCode(crisisCode); 
+			
+			Criterion criterion = Restrictions.conjunction()
+					.add(Restrictions.eq("crisisId",cdto.getCrisisID()))
+					.add(Restrictions.eq("hasHumanLabels", true));
+			
+			Criterion aliasCriterion =  Restrictions.eq(aliasTableKeyField, nominalLabelID);
+			List<Document> docList = this.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion);
+			if (docList != null && !docList.isEmpty()) {
+				return docList.size();
+			}
+		}
+		return 0;
+	}
+	
+	@Override
 	public List<DocumentDTO> getDocumentCollectionWithNominalLabelData(Long nominalLabelID) throws Exception {
 		List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
 		if (nominalLabelID != null) {
@@ -440,6 +463,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 			String[] orderBy = {"documentId"};
 
 			Criterion criterion = Restrictions.eq("hasHumanLabels", true);
+			
 			Criterion aliasCriterion =  Restrictions.eq(aliasTableKeyField, nominalLabelID);
 			List<Document> docList = this.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion);
 			if (docList != null && !docList.isEmpty()) {
@@ -455,6 +479,8 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 		}
 		return dtoList;
 	}
+	
+	
 
 	@Override
 	public Integer getUnlabeledDocumentsCountByCrisisID(Long crisisId) throws PropertyNotSetException {
