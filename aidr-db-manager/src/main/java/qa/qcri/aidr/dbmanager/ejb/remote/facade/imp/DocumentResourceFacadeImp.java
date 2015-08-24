@@ -12,11 +12,15 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Projection;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
@@ -300,7 +304,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 			em.refresh(d);
 			return new DocumentDTO(d);
 		} catch (Exception e) {
-			logger.error("Error in addDocument.");
+			logger.error("Error in addDocument.", e);
 			return null;
 		}
 	}
@@ -504,6 +508,33 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 		}
 		
 		
+	}
+
+	@Override
+	public List<Long> getUnassignedDocumentIDsByCrisisID(Long crisisID, Integer count) {
+		
+		List<Long> docIDList = new ArrayList<Long>();
+		Criteria criteria = null;
+		try {
+			String aliasTable = "taskAssignments";
+			String order = "ASC";
+			String aliasTableKey = "taskAssignments.id.documentId";
+			String[] orderBy = {"valueAsTrainingSample", "documentId"};
+			Criterion criterion = Restrictions.conjunction()
+					.add(Restrictions.eq("crisis.crisisId",crisisID))
+					.add(Restrictions.eq("hasHumanLabels",false));
+
+			// get just the documentIDs
+			Projection p1 = Projections.property("documentId");
+			Criterion aliasCriterion =  (Restrictions.isNull(aliasTableKey));
+			criteria = createCriteria(criterion, order, orderBy, count, aliasTable, aliasCriterion, new Projection[] {p1});
+			docIDList = criteria.list();
+			return docIDList;
+				
+		} catch (Exception e) {
+			logger.error("getByCriteriaWithAliasByOrder failed, criteria = " + criteria.toString(), e);
+			throw new HibernateException("getByCriteriaWithAliasByOrder failed, criteria = " + criteria.toString());
+		}
 	}
 
 }

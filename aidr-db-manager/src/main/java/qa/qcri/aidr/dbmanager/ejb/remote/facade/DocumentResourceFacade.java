@@ -63,4 +63,5 @@ public interface DocumentResourceFacade extends CoreDBServiceFacade<Document, Lo
 	
 	public boolean deleteDocuments(List<DocumentDTO> documents);
 
+	public List<Long> getUnassignedDocumentIDsByCrisisID(Long crisisID, Integer count);
 }

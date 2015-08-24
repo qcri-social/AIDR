@@ -19,6 +19,8 @@ import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Projection;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
@@ -332,18 +334,9 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 	@Override
 	public int truncateLabelingTaskBufferForCrisis(final long crisisID, final int maxLength, final int ERROR_MARGIN) {
-		List<Document> docList = null;
+		List<Long> docList = null;
 		try {
-			String aliasTable = "taskAssignments";
-			String order = "ASC";
-			String aliasTableKey = "taskAssignments.id.documentId";
-			String[] orderBy = {"valueAsTrainingSample", "documentId"};
-			Criterion criterion = Restrictions.conjunction()
-					.add(Restrictions.eq("crisis.crisisId",crisisID))
-					.add(Restrictions.eq("hasHumanLabels",false));
-
-			Criterion aliasCriterion =  (Restrictions.isNull(aliasTableKey));
-			docList = remoteDocumentEJB.getByCriteriaWithAliasByOrder(criterion, order, orderBy, null, aliasTable, aliasCriterion);
+			docList = remoteDocumentEJB.getUnassignedDocumentIDsByCrisisID(crisisID, null);
 		} catch (Exception e) {
 			logger.error("Exception in fetching unassigned documents with hasHumaLabels=false");
 			return 0;
@@ -358,22 +351,12 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				//List<Long> documentIDList = new ArrayList<Long>();
 				for (int i = 0;i < docsToDelete;i++) {
 					try {
-						dto = remoteDocumentEJB.findDocumentByID(docList.get(i).getDocumentId());
+						dto = remoteDocumentEJB.findDocumentByID(docList.get(i));
 						remoteDocumentEJB.deleteDocument(dto);
 					} catch (Exception e)
 					{
 						logger.error("Exception when attempting to delete document");
 					}
-					/*documentIDList.add(d.getDocumentId());
-					logger.debug("To delete document: {" + d.getCrisis().getCrisisId() + ", " + d.getDocumentId() + ", " + d.isHasHumanLabels() + "}");
-				}
-				try {
-					// Delete the lowest confidence documents from document table
-					int deleteCount = remoteDocumentEJB.deleteUnassignedDocumentCollection(documentIDList);
-					logger.info("Number of documents actually deleted = " + deleteCount);
-					return deleteCount;
-				} catch (Exception e) {
-					logger.error("Exception when attempting to batch delete for trimming the document table");*/
 				}
 				return docsToDelete;
 			} else {
