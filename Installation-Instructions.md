@@ -36,10 +36,15 @@ Before installing AIDR, **configure these services** as follows:
  * In the [mysql] section, add:
     * `default-character-set = utf8mb4`
 1. **Redis configuration**: modify `redis.conf`:
- * Increase the maximum number of clients to avoid having an error "max number of clients reached":
-    * `maxclients = 10000`
- * Set the timeout to zero to allow very slow running collections:
-    * `timeout = 0`
+   * Increase the maximum number of clients to avoid having an error "max number of clients reached":
+     * `maxclients = 10000`
+   * Set the timeout to zero to allow very slow running collections:
+     * `timeout = 0`
+   * For performance optimization(recommended):-
+     1. Cap the maxmemory limit to around 2gb or more. By default it is infinite.
+       * `maxmemory = 2gb`
+     1. Set the eviction policy to allkeys-lru. By default it is noeviction.
+       * `maxmemory-policy = allkeys-lru`
 
 Remember to re-start these services to make sure the configuration options have been applied.
 
