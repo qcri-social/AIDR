@@ -298,8 +298,7 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 				//System.out.println("[getDate] Converted date: " + newDate.toString());
 				return newDate;
 			} catch (ParseException e) {
-				logger.error("Parse Error in getting Date string = " + timeString);
-				logger.error("exception", e);
+				logger.error("Parse Error in getting Date string = " + timeString, e);
 			}
 		}
 		logger.warn("[getDate] Warning! returning Date = null for time String = " + timeString);
@@ -317,8 +316,7 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 				if (newDate != null) setTimestamp(newDate.getTime());
 				return dateFormatISO.format(newDate);
 			} catch (ParseException e) {
-				logger.error("Error in setting createdAt field = " + timeString);
-				logger.error("exception", e);
+				logger.error("Error in setting createdAt field = " + timeString, e);
 			}
 		}
 		setTimestamp(0);
@@ -496,9 +494,7 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 					this.createDummyAIDRField(collectionCode);
 				}
 			} catch (Exception ex) {
-				logger.error("Exception in deserialization, returning null");
-				logger.error("exception", ex);
-				ex.printStackTrace();
+				logger.error("Exception in deserialization, returning null",ex);
 			}
 		}
 	}
@@ -538,8 +534,7 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 				//System.out.println(this.toJsonString());
 
 			} catch (Exception e) {
-				System.out.println("Exception in parsing labeled document");
-				e.printStackTrace();
+				logger.error("Exception in parsing labeled document", e);
 			}
 		}
 	}
@@ -574,7 +569,7 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 			String jsonString = jsonObject.toJson(this, ClassifiedTweet.class);
 			return jsonString;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while parsing jsonObject to json string", e);
 			return null;
 		}
 	}

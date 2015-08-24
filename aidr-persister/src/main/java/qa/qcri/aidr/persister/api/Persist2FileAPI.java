@@ -195,8 +195,8 @@ public class Persist2FileAPI {
 			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType,
 			@QueryParam("userName") String userName)  throws UnknownHostException {
 		
-		logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType + ", post body = " + postBody);
-		logger.info("Received query string: " + postBody.toJsonString());
+		logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType);
+		//logger.info("Received query string: " + postBody.toJsonString());
 		try {
 			DeserializeFilters des = new DeserializeFilters();
 			JsonQueryList queryList = des.deserializeConstraints(postBody.getQueryString());

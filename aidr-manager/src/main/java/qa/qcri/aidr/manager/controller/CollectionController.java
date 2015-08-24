@@ -669,14 +669,18 @@ public class CollectionController extends BaseController{
 
 				Map<String, Integer> taggersForCollections = Collections.emptyMap();
 				try {
-					taggersForCollections = taggerService.getTaggersForCollections(collectionCodes);
+					if(!collectionCodes.isEmpty()){
+						taggersForCollections = taggerService.getTaggersForCollections(collectionCodes);
+					}
 				} catch (Exception e) {
 					logger.error("[getAllStopped.action] Error while getting taggers for collections: "+Arrays.toString(collectionCodes.toArray()), e);
 				}
 
 				Map<Integer, Integer> totalCountsFromLogForCollections = Collections.emptyMap();
 				try {
-					totalCountsFromLogForCollections = collectionLogService.countTotalDownloadedItemsForCollectionIds(collectionIds);
+					if(!collectionIds.isEmpty()){
+						totalCountsFromLogForCollections = collectionLogService.countTotalDownloadedItemsForCollectionIds(collectionIds);
+					}
 				} catch (Exception e) {
 					logger.error("[getAllStopped.action] Error while getting total counts from log for collectionIds: "+Arrays.toString(collectionIds.toArray()), e);
 				}
