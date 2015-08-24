@@ -270,10 +270,11 @@ public class DocumentJSONConverter {
 	}
 
 	private static int getCrisisID(String crisisCode) {
-		if ((System.currentTimeMillis() - lastModelInfoUpdate) > 300000
+		if ((System.currentTimeMillis() - lastModelInfoUpdate) > 600000
 				|| (!activeCrisisIDs.containsKey(crisisCode) && (System
 						.currentTimeMillis() - lastModelInfoUpdate) > 10000)) {
-			updateModelInfo();
+			//updateModelInfo();
+			updateModelInfoOtimized();
 		}
 
 		if (!activeCrisisIDs.containsKey(crisisCode))
@@ -283,11 +284,12 @@ public class DocumentJSONConverter {
 	}
 
 	private static ModelFamilyEC getModelFamily(int crisisID, int attributeID) {
-		if ((System.currentTimeMillis() - lastModelInfoUpdate) > 300000
+		if ((System.currentTimeMillis() - lastModelInfoUpdate) > 600000
 				|| ((!activeModelFamiliesByID.containsKey(crisisID) 
 						|| !activeModelFamiliesByID.get(crisisID).containsKey(attributeID)) 
 						&& (System.currentTimeMillis() - lastModelInfoUpdate) > 10000)) {
-			updateModelInfo();
+			//updateModelInfo();
+			updateModelInfoOtimized();
 		}
 
 		if (!activeModelFamiliesByID.containsKey(crisisID)
@@ -298,11 +300,12 @@ public class DocumentJSONConverter {
 	}
 
 	private static ModelFamilyEC getModelFamily(int crisisID, String attributeCode) {
-		if ((System.currentTimeMillis() - lastModelInfoUpdate) > 300000
+		if ((System.currentTimeMillis() - lastModelInfoUpdate) > 600000
 				|| ((!activeModelFamiliesByCode.containsKey(crisisID) 
 						|| !activeModelFamiliesByCode.get(crisisID).containsKey(attributeCode)) 
 						&& (System.currentTimeMillis() - lastModelInfoUpdate) > 10000)) {
-			updateModelInfo();
+			//updateModelInfo();
+			updateModelInfoOtimized();
 		}
 
 		if (!activeModelFamiliesByCode.containsKey(crisisID)
@@ -337,6 +340,15 @@ public class DocumentJSONConverter {
 			activeModelFamiliesByID.get(crisisID).put(attributeID, family);
 			activeModelFamiliesByCode.get(crisisID).put(attributeCode, family);
 		}
+
+		lastModelInfoUpdate = System.currentTimeMillis();
+	}
+	
+	private static void updateModelInfoOtimized() {
+		activeCrisisIDs.clear();
+		activeCrisisIDs = DataStore.getCrisisIDs();
+
+		DataStore.getActiveModelsDocCount(activeModelFamiliesByID,activeModelFamiliesByCode);		
 
 		lastModelInfoUpdate = System.currentTimeMillis();
 	}

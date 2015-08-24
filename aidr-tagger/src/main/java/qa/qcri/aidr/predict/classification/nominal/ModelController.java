@@ -199,6 +199,7 @@ public class ModelController extends PipelineProcess {
 
     public void initialize() {
         // Load models from disk into memory
+    	DataStore.getAttributesLabels();
         ArrayList<ModelFamilyEC> families = DataStore.getActiveModels();
         for (ModelFamilyEC family : families) {
 

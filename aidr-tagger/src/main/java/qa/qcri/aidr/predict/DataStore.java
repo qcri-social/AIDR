@@ -78,6 +78,10 @@ public class DataStore {
 	private static int attempts = 0;
 	private static final int MAX_RECREATE_POOL_ATTEMPTS = 3;
 	private static Object lockObject = new Object();
+	
+	private static ArrayList<Integer> attIds = new ArrayList<Integer>();
+	private static ArrayList<Integer> labelIds = new ArrayList<Integer>();
+	private static HashMap<Integer,NominalAttributeEC> attLabels = new HashMap<Integer,NominalAttributeEC>();
 
 	public static synchronized void initializeJedisPool() throws Exception {
 		if (null == jedisPool) {
@@ -734,6 +738,123 @@ public class DataStore {
 
 		return modelFamilies;
 	}
+	
+	public static void getActiveModelsDocCount(HashMap<Integer, HashMap<Integer, ModelFamilyEC>> modelFamilies, HashMap<Integer, 
+			HashMap<String, ModelFamilyEC>> modelFamiliesByCode) {
+		//ArrayList<ModelFamilyEC> modelFamilies = new ArrayList<>();
+		Connection conn = null;
+		PreparedStatement sql = null;
+		ResultSet result = null;
+
+		try {
+			conn = getMySqlConnection();
+
+			/*Statement sql2 = conn.createStatement();
+			sql2.execute("SET group_concat_max_len = 10240");
+			sql2.close();*/
+
+			sql = conn
+					.prepareStatement(
+							"SELECT \n"
+									+ " fam.modelFamilyID, \n"
+									+ "	fam.crisisID, \n"
+									+ "	fam.nominalAttributeID, \n"
+									+ " mdl.modelID, \n"
+									+ "	lbl.nominalLabelID,\n"
+									+ "	COUNT(DISTINCT dnl.documentID) AS labeledItemCount\n"
+									+ "FROM model_family fam \n"
+									+ "LEFT JOIN model mdl on mdl.modelFamilyID = fam.modelFamilyID \n"																		
+									+ "JOIN nominal_label lbl ON lbl.nominalAttributeID = fam.nominalAttributeID \n"
+									+ "LEFT JOIN document doc ON doc.crisisID=fam.crisisID \n"
+									+ "LEFT JOIN document_nominal_label dnl ON dnl.documentID=doc.documentID AND dnl.nominalLabelID=lbl.nominalLabelID \n"
+									+ "WHERE fam.isActive AND (mdl.modelID IS NULL OR mdl.isCurrentModel) \n"
+									+ "GROUP BY crisisID, nominalAttributeID, nominalLabelID ");
+			result = sql.executeQuery();
+
+			ModelFamilyEC family = null;
+			NominalAttributeEC attribute = null;
+			NominalLabelEC label = null;
+			HashMap<ModelFamilyEC, Integer> familyLabelCount = new HashMap<>();
+			
+			while (result.next()) {
+				//if (family == null || family.getModelFamilyID() != result.getInt("modelFamilyID")) {
+				Integer crisisID = result.getInt("crisisID");
+				Integer attributeID = result.getInt("nominalAttributeID");
+				Integer nominalLabelID = result.getInt("nominalLabelID");
+				if (!modelFamilies.containsKey(crisisID)) {
+					//create model family
+					family = new ModelFamilyEC();
+					family.setCrisisID(crisisID);
+					int tmpModelID = result.getInt("modelID");
+					if (!result.wasNull()) {
+						family.setCurrentModelID(tmpModelID);
+					}
+					family.setIsActive(true);
+					family.setModelFamilyID(result.getInt("modelFamilyID"));
+					
+					if(!attLabels.containsKey(attributeID))
+					{
+						synchronized(attLabels) {
+							getAttributesLabels();
+							
+							if(attLabels.containsKey(attributeID))
+							{
+								attribute = attLabels.get(attributeID);
+								family.setNominalAttribute(attribute);
+								label = attribute.getNominalLabel(nominalLabelID);
+								if(label== null)
+									logger.debug("label still missing " + nominalLabelID);
+							}
+							else
+								logger.debug("attribute still missing " + attributeID);
+						}
+					}
+					else
+					{
+						attribute = attLabels.get(attributeID);
+						family.setNominalAttribute(attribute);
+						label = attribute.getNominalLabel(nominalLabelID);
+						if(label== null)
+							logger.debug("label still missing " + nominalLabelID);
+					}
+					
+					familyLabelCount.put(family, 0);
+					modelFamilies.put(crisisID, new HashMap<Integer, ModelFamilyEC>());
+				}
+				else
+				{
+					attribute = modelFamilies.get(crisisID).get(attributeID).getNominalAttribute();
+					label = attribute.getNominalLabel(nominalLabelID);
+					if(label == null)
+					{
+						synchronized(attLabels) {
+							updateLabels(attributeID);
+							attribute.addNominalLabel(label);
+						}
+					}
+				}
+				
+				modelFamilies.get(crisisID).put(attributeID, family);
+				modelFamiliesByCode.get(crisisID).put(attribute.getCode(), family);
+
+				int count = familyLabelCount.get(family);
+				familyLabelCount.put(family, count + result.getInt("labeledItemCount"));
+
+			}
+
+			//sum training sample counts per attribute
+			for (Map.Entry<ModelFamilyEC, Integer> entry : familyLabelCount.entrySet()) {
+				entry.getKey().setTrainingExampleCount(entry.getValue());
+			}
+
+		} catch (SQLException e) {
+			logger.error("Exception when getting model state", e);
+		} finally {
+			close(result);
+			close(sql);
+			close(conn);
+		}
+	}
 
 	public static void deleteModel(int modelID) {
 		Connection conn = null;
@@ -955,6 +1076,102 @@ public class DataStore {
 			close(selectStatement);
 			close(conn);
 		}
+	}
+
+	
+	private static void updateLabels(Integer attributeID){
+
+		Connection conn = null;
+		PreparedStatement selectStatement = null;
+		ResultSet result = null;
+		String selectQuery = "SELECT nominalLabelID,l.nominalLabelCode,l.name as nominalLabelName,"
+				+ "l.description as nominLabelDescription FROM nominal_label l where l.nominalAttributeID = ?";
+		
+		try {
+			conn = getMySqlConnection();
+			selectStatement = conn.prepareStatement(selectQuery);
+			selectStatement.setInt(1, attributeID);
+			result = selectStatement.executeQuery();
+			NominalAttributeEC attribute = null;
+			NominalLabelEC label = null;
+
+			while (result.next()) {
+				int labelID = result.getInt("nominalLabelID");
+				attribute = attLabels.get(attributeID);
+				attribute.resetNominalLabels();
+				if(attribute.getNominalLabel(labelID) == null)
+				{
+					label = new NominalLabelEC();
+					label.setDescription(result.getString("nominLabelDescription"));
+					label.setName(result.getString("nominalLabelName"));
+					label.setNominalAttribute(attribute);
+					label.setNominalLabelCode(result.getString("nominalLabelCode"));
+					label.setNominalLabelID(result.getInt("nominalLabelID"));
+					attribute.addNominalLabel(label);
+				}
+			}
+
+
+		} catch (SQLException e) {
+			logger.error("Exception while updating nominal labels", e);
+		} finally {
+			close(result);
+			close(selectStatement);
+			close(conn);
+		}
+	}
+	
+	public static void getAttributesLabels() {
+		Connection conn = null;
+		PreparedStatement selectStatement = null;
+		ResultSet result = null;
+
+		String selectQuery = "SELECT a.nominalAttributeID,code,a.description,a.name,nominalLabelID,l.nominalLabelCode,l.name as nominalLabelName,"
+				+ "l.description as nominLabelDescription FROM nominal_attribute a join nominal_label l on a.nominalAttributeID = l.nominalAttributeID";
+
+		try {
+			conn = getMySqlConnection();
+			selectStatement = conn.prepareStatement(selectQuery);
+			result = selectStatement.executeQuery();
+			NominalAttributeEC attribute = null;
+			NominalLabelEC label = null;
+
+			while (result.next()) {
+				int attrID = result.getInt("nominalAttributeID");
+				int labelID = result.getInt("nominalLabelID");
+				if(!attLabels.containsKey(attrID))
+				{
+					attribute = new NominalAttributeEC();
+					attribute.setNominalAttributeID(attrID);
+					attribute.setCode(result.getString("nominalAttributeCode"));
+					attribute.setDescription(result.getString("nominalAttributeDescription"));
+					attribute.setName(result.getString("nominalAttributeName"));
+					attLabels.put(attrID, attribute);
+				}
+				else
+					attribute = attLabels.get(attrID);
+
+				if(attribute.getNominalLabel(labelID) == null)
+				{
+					label = new NominalLabelEC();
+					label.setDescription(result.getString("nominLabelDescription"));
+					label.setName(result.getString("nominalLabelName"));
+					label.setNominalAttribute(attribute);
+					label.setNominalLabelCode(result.getString("nominalLabelCode"));
+					label.setNominalLabelID(result.getInt("nominalLabelID"));
+					attribute.addNominalLabel(label);
+				}
+			}
+
+
+		} catch (SQLException e) {
+			logger.error("Exception while creating nominal attributes", e);
+		} finally {
+			close(result);
+			close(selectStatement);
+			close(conn);
+		}
+		
 	}
 
 	/*
