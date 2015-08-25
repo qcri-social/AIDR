@@ -741,7 +741,6 @@ public class DataStore {
 	
 	public static void getActiveModelsDocCount(HashMap<Integer, HashMap<Integer, ModelFamilyEC>> modelFamilies, HashMap<Integer, 
 			HashMap<String, ModelFamilyEC>> modelFamiliesByCode) {
-		//ArrayList<ModelFamilyEC> modelFamilies = new ArrayList<>();
 		Connection conn = null;
 		PreparedStatement sql = null;
 		ResultSet result = null;
@@ -775,13 +774,20 @@ public class DataStore {
 			NominalAttributeEC attribute = null;
 			NominalLabelEC label = null;
 			HashMap<ModelFamilyEC, Integer> familyLabelCount = new HashMap<>();
+			Integer crisisID = null;
+			Integer attributeID = null;
+			Integer nominalLabelID = null;
+			int count;
 			
 			while (result.next()) {
-				//if (family == null || family.getModelFamilyID() != result.getInt("modelFamilyID")) {
-				Integer crisisID = result.getInt("crisisID");
-				Integer attributeID = result.getInt("nominalAttributeID");
-				Integer nominalLabelID = result.getInt("nominalLabelID");
+				crisisID = result.getInt("crisisID");
+				attributeID = result.getInt("nominalAttributeID");
+				nominalLabelID = result.getInt("nominalLabelID");
 				if (!modelFamilies.containsKey(crisisID)) {
+					modelFamilies.put(crisisID, new HashMap<Integer, ModelFamilyEC>());
+					modelFamiliesByCode.put(crisisID, new HashMap<String, ModelFamilyEC>());
+				}
+				if(modelFamilies.get(crisisID).get(attributeID) == null) {	
 					//create model family
 					family = new ModelFamilyEC();
 					family.setCrisisID(crisisID);
@@ -791,54 +797,47 @@ public class DataStore {
 					}
 					family.setIsActive(true);
 					family.setModelFamilyID(result.getInt("modelFamilyID"));
+				}
+				else
+					family = modelFamilies.get(crisisID).get(attributeID);
 					
-					if(!attLabels.containsKey(attributeID))
+				attribute = family.getNominalAttribute();
+				if(attribute == null)
+				{
+					if(attLabels.containsKey(attributeID))
 					{
+						attribute = attLabels.get(attributeID);
+						family.setNominalAttribute(attribute);
+					}
+					else
 						synchronized(attLabels) {
 							getAttributesLabels();
-							
+
 							if(attLabels.containsKey(attributeID))
 							{
 								attribute = attLabels.get(attributeID);
 								family.setNominalAttribute(attribute);
-								label = attribute.getNominalLabel(nominalLabelID);
-								if(label== null)
-									logger.debug("label still missing " + nominalLabelID);
 							}
-							else
-								logger.debug("attribute still missing " + attributeID);
 						}
-					}
-					else
-					{
-						attribute = attLabels.get(attributeID);
-						family.setNominalAttribute(attribute);
-						label = attribute.getNominalLabel(nominalLabelID);
-						if(label== null)
-							logger.debug("label still missing " + nominalLabelID);
-					}
-					
-					familyLabelCount.put(family, 0);
-					modelFamilies.put(crisisID, new HashMap<Integer, ModelFamilyEC>());
-					modelFamiliesByCode.put(crisisID, new HashMap<String, ModelFamilyEC>());
+
 				}
-				else
+
+				label = attribute.getNominalLabel(nominalLabelID);
+				if(label == null)
 				{
-					attribute = modelFamilies.get(crisisID).get(attributeID).getNominalAttribute();
-					label = attribute.getNominalLabel(nominalLabelID);
-					if(label == null)
-					{
-						synchronized(attLabels) {
-							updateLabels(attributeID);
-							attribute.addNominalLabel(label);
-						}
+					synchronized(attLabels) {
+						updateLabels(attributeID);
+						attribute.addNominalLabel(label);
 					}
 				}
+				
+				if(familyLabelCount.get(family) == null)
+					familyLabelCount.put(family, 0);
 				
 				modelFamilies.get(crisisID).put(attributeID, family);
 				modelFamiliesByCode.get(crisisID).put(attribute.getCode(), family);
 
-				int count = familyLabelCount.get(family);
+				count = familyLabelCount.get(family);
 				familyLabelCount.put(family, count + result.getInt("labeledItemCount"));
 
 			}
@@ -846,10 +845,11 @@ public class DataStore {
 			//sum training sample counts per attribute
 			for (Map.Entry<ModelFamilyEC, Integer> entry : familyLabelCount.entrySet()) {
 				entry.getKey().setTrainingExampleCount(entry.getValue());
+				logger.info("training example count: " + entry.getValue() + " for family" + entry.getKey().getModelFamilyID());
 			}
 
 		} catch (SQLException e) {
-			logger.error("Exception when getting model state", e);
+			logger.error("Exception when getting model state ::", e);
 		} catch (Exception e) {
 			logger.error("Exception in getActiveModelsDocCount ::", e);
 		} finally {
@@ -1082,6 +1082,7 @@ public class DataStore {
 	}
 
 	
+	//update nominal labels for an attribute from db
 	private static void updateLabels(Integer attributeID){
 
 		Connection conn = null;
@@ -1116,7 +1117,7 @@ public class DataStore {
 
 
 		} catch (SQLException e) {
-			logger.error("Exception while updating nominal labels", e);
+			logger.error("Exception while updating nominal labels ::", e);
 		} finally {
 			close(result);
 			close(selectStatement);
@@ -1124,6 +1125,8 @@ public class DataStore {
 		}
 	}
 	
+	//get all attributes and labels, and store in hashmap
+	//invoke this method after a timed wait - to refresh the data structure
 	public static void getAttributesLabels() {
 		Connection conn = null;
 		PreparedStatement selectStatement = null;
@@ -1169,7 +1172,7 @@ public class DataStore {
 
 
 		} catch (SQLException e) {
-			logger.error("Exception while creating nominal attributes", e);
+			logger.error("Exception while creating nominal attributes ::", e);
 		} finally {
 			close(result);
 			close(selectStatement);

@@ -270,11 +270,11 @@ public class DocumentJSONConverter {
 	}
 
 	private static int getCrisisID(String crisisCode) {
-		if ((System.currentTimeMillis() - lastModelInfoUpdate) > 600000
+		if ((System.currentTimeMillis() - lastModelInfoUpdate) > 300000
 				|| (!activeCrisisIDs.containsKey(crisisCode) && (System
 						.currentTimeMillis() - lastModelInfoUpdate) > 10000)) {
 			//updateModelInfo();
-			updateModelInfoOtimized();
+			updateModelFamilyInfo();
 		}
 
 		if (!activeCrisisIDs.containsKey(crisisCode))
@@ -284,12 +284,12 @@ public class DocumentJSONConverter {
 	}
 
 	private static ModelFamilyEC getModelFamily(int crisisID, int attributeID) {
-		if ((System.currentTimeMillis() - lastModelInfoUpdate) > 600000
+		if ((System.currentTimeMillis() - lastModelInfoUpdate) > 300000
 				|| ((!activeModelFamiliesByID.containsKey(crisisID) 
 						|| !activeModelFamiliesByID.get(crisisID).containsKey(attributeID)) 
 						&& (System.currentTimeMillis() - lastModelInfoUpdate) > 10000)) {
 			//updateModelInfo();
-			updateModelInfoOtimized();
+			updateModelFamilyInfo();
 		}
 
 		if (!activeModelFamiliesByID.containsKey(crisisID)
@@ -300,12 +300,12 @@ public class DocumentJSONConverter {
 	}
 
 	private static ModelFamilyEC getModelFamily(int crisisID, String attributeCode) {
-		if ((System.currentTimeMillis() - lastModelInfoUpdate) > 600000
+		if ((System.currentTimeMillis() - lastModelInfoUpdate) > 300000
 				|| ((!activeModelFamiliesByCode.containsKey(crisisID) 
 						|| !activeModelFamiliesByCode.get(crisisID).containsKey(attributeCode)) 
 						&& (System.currentTimeMillis() - lastModelInfoUpdate) > 10000)) {
 			//updateModelInfo();
-			updateModelInfoOtimized();
+			updateModelFamilyInfo();
 		}
 
 		if (!activeModelFamiliesByCode.containsKey(crisisID)
@@ -319,6 +319,7 @@ public class DocumentJSONConverter {
 		return activeModelFamiliesByCode.get(crisisID).get(attributeCode);
 	}
 
+	@Deprecated
 	private static void updateModelInfo() {
 		activeModelFamiliesByID.clear();
 		activeModelFamiliesByCode.clear();
@@ -344,7 +345,7 @@ public class DocumentJSONConverter {
 		lastModelInfoUpdate = System.currentTimeMillis();
 	}
 	
-	private static void updateModelInfoOtimized() {
+	private static void updateModelFamilyInfo() {
 		activeCrisisIDs.clear();
 		activeCrisisIDs = DataStore.getCrisisIDs();
 

@@ -450,9 +450,16 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 					.add(Restrictions.eq("hasHumanLabels", true));
 			
 			Criterion aliasCriterion =  Restrictions.eq(aliasTableKeyField, nominalLabelID);
-			List<Document> docList = this.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion);
-			if (docList != null && !docList.isEmpty()) {
-				return docList.size();
+			
+			// get just the documentIDs
+			Projection p1 = Projections.property("documentId");
+			
+			//List<Document> docList = this.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion);
+			Criteria criteria = createCriteria(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion, new Projection[] {p1});
+			List<Long> docIDList = criteria.list();
+			
+			if (docIDList != null && !docIDList.isEmpty()) {
+				return docIDList.size();
 			}
 		}
 		return 0;
