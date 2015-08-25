@@ -79,8 +79,6 @@ public class DataStore {
 	private static final int MAX_RECREATE_POOL_ATTEMPTS = 3;
 	private static Object lockObject = new Object();
 	
-	private static ArrayList<Integer> attIds = new ArrayList<Integer>();
-	private static ArrayList<Integer> labelIds = new ArrayList<Integer>();
 	private static HashMap<Integer,NominalAttributeEC> attLabels = new HashMap<Integer,NominalAttributeEC>();
 
 	public static synchronized void initializeJedisPool() throws Exception {
@@ -291,6 +289,7 @@ public class DataStore {
 		}
 		try {
 			con.close();
+			con = null;
 		} catch (SQLException e) {
 			logger.error("Exception when returning MySQL connection", e);
 		}
@@ -302,6 +301,7 @@ public class DataStore {
 		}
 		try {
 			statement.close();
+			statement = null;
 		} catch (SQLException e) {
 			logger.error("Could not close statement", e);
 		}
@@ -313,8 +313,9 @@ public class DataStore {
 		}
 		try {
 			resultset.close();
+			resultset = null;
 		} catch (SQLException e) {
-			logger.error("Could not close statement", e);
+			logger.error("Could not close resultSet", e);
 		}
 	}
 
@@ -748,10 +749,6 @@ public class DataStore {
 		try {
 			conn = getMySqlConnection();
 
-			/*Statement sql2 = conn.createStatement();
-			sql2.execute("SET group_concat_max_len = 10240");
-			sql2.close();*/
-
 			sql = conn
 					.prepareStatement(
 							"SELECT \n"
@@ -810,6 +807,7 @@ public class DataStore {
 						family.setNominalAttribute(attribute);
 					}
 					else
+					{
 						synchronized(attLabels) {
 							getAttributesLabels();
 
@@ -819,6 +817,7 @@ public class DataStore {
 								family.setNominalAttribute(attribute);
 							}
 						}
+					}
 
 				}
 
@@ -827,7 +826,7 @@ public class DataStore {
 				{
 					synchronized(attLabels) {
 						updateLabels(attributeID);
-						attribute.addNominalLabel(label);
+						attribute = attLabels.get(attributeID);
 					}
 				}
 				
@@ -1002,7 +1001,7 @@ public class DataStore {
 					.prepareStatement("select nl.nominalAttributeID, nl.nominalLabelID, 1-coalesce(count(dnl.nominalLabelID)/totalCount, 0.5) as weight \n"
 							+ "from nominal_label nl \n"
 							+ "left join document_nominal_label dnl on dnl.nominalLabelID=nl.nominalLabelID \n"
-							+ "left join (select nominalAttributeID, greatest(count(*),1) as totalCount \n"
+							+ "left join (select nominalAttributeID, greatest(count(1),1) as totalCount \n"
 							+ "	from document_nominal_label natural join nominal_label group by 1) lc on lc.nominalAttributeID=nl.nominalAttributeID \n"
 							+ "group by 1,2");
 			result = sql.executeQuery();
@@ -1033,13 +1032,10 @@ public class DataStore {
 		PreparedStatement updateStatement = null;
 		ResultSet resultSet = null;
 		
-		String selectQuery = "SELECT COUNT(*) FROM model_nominal_label WHERE modelID = ? AND nominalLabelID = ?";
+		String selectQuery = "SELECT COUNT(1) FROM model_nominal_label WHERE modelID = ? AND nominalLabelID = ?";
 		
 		String updateQuery = "UPDATE model_nominal_label SET classifiedDocumentCount = classifiedDocumentCount + ? "
 				+ "WHERE modelID = ? AND nominalLabelID = ?"; 
-		/*String insertQuery = "INSERT INTO model_nominal_label (modelID, classifiedDocumentCount, nominalLabelID) values (?,?,?)"
-				+ " ON DUPLICATE KEY UPDATE classifiedDocumentCount=classifiedDocumentCount+values(classifiedDocumentCount)";
-		*/
 		int modelNominalCount = 0;
 		try {
 			// Insert document
@@ -1180,39 +1176,5 @@ public class DataStore {
 		}
 		
 	}
-
-	/*
-	public static void main(String[] args) throws Exception {
-
-		DataStore.initTaskManager();
-
-		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-		JSONObject tweet = new JSONObject();
-		tweet.put("docType", "twitter");
-		tweet.put("payload", "This is a test document to test task-manager save");
-		tweet.put("nominal_labels", new JSONArray());
-
-		Document doc = new Tweet();
-		doc.setCrisisID(117L);
-		doc.setValueAsTrainingSample(0.8);
-		doc.setInputJson(tweet);
-		doc.humanLabelCount = 0;
-		TaggerDocument DTOdoc = Document.fromDocumentToTaggerDocument(doc);
-
-		List<NominalLabel> nbList = new ArrayList<NominalLabel>();
-		nbList.add(new NominalLabel(320));
-		nbList.add(new NominalLabel(322));
-		DTOdoc.setNominalLabelCollection(nbList);
-
-		Long docID = DataStore.taskManager.saveNewTask(TaggerDocument.toDocumentDTO(DTOdoc), doc.getCrisisID());
-		System.out.println("Inserted new document with documentID = " + docID);
-		logger.info("Inserted new document with documentID = " + docID);
-
-		System.out.println("Testing truncate Labeling buffer for crisisID = " + 117);
-		logger.info("Testing truncate Labeling buffer for crisisID = " + 117);
-		//DataStore.taskManager.truncateLabelingTaskBufferForCrisis(117L, Config.LABELING_TASK_BUFFER_MAX_LENGTH, 0);
-		DataStore.taskManager.truncateLabelingTaskBufferForCrisis(117L, Integer.parseInt(getProperty("labeling_task_buffer_max_length")), 0);
-	}
-	 */
 
 }
