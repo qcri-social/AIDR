@@ -19,8 +19,6 @@ import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Projection;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
@@ -159,7 +157,9 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			doc.setHasHumanLabels(false);
 			DocumentDTO savedDoc = remoteDocumentEJB.addDocument(doc);
 			//logger.info("Saved to DB document: " + savedDoc.getDocumentID() + ", for crisis = " + savedDoc.getCrisisDTO().getCode());
-			return savedDoc.getDocumentID();
+			if(savedDoc != null) {
+				return savedDoc.getDocumentID();
+			}
 		} catch (Exception e) {
 			logger.error("Error in insertion for crisisID : " + crisisID + " and doc : " + task.toString(), e);
 		}

@@ -452,10 +452,10 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 			Criterion aliasCriterion =  Restrictions.eq(aliasTableKeyField, nominalLabelID);
 			
 			// get just the documentIDs
-			Projection p1 = Projections.property("documentId");
+			Projection projection = Projections.property("documentId");
 			
 			//List<Document> docList = this.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion);
-			Criteria criteria = createCriteria(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion, new Projection[] {p1});
+			Criteria criteria = createCriteria(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion, new Projection[] {projection});
 			List<Long> docIDList = criteria.list();
 			
 			if (docIDList != null && !docIDList.isEmpty()) {
@@ -532,9 +532,9 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 					.add(Restrictions.eq("hasHumanLabels",false));
 
 			// get just the documentIDs
-			Projection p1 = Projections.property("documentId");
+			Projection projection = Projections.property("documentId");
 			Criterion aliasCriterion =  (Restrictions.isNull(aliasTableKey));
-			criteria = createCriteria(criterion, order, orderBy, count, aliasTable, aliasCriterion, new Projection[] {p1});
+			criteria = createCriteria(criterion, order, orderBy, count, aliasTable, aliasCriterion, new Projection[] {projection});
 			docIDList = criteria.list();
 			return docIDList;
 				
