@@ -4,9 +4,8 @@
  */
 package qa.qcri.aidr.predictui.facade.imp;
 
-import qa.qcri.aidr.predictui.facade.*;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -16,6 +15,8 @@ import org.apache.log4j.Logger;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
+import qa.qcri.aidr.predictui.facade.ModelFacade;
+import qa.qcri.aidr.predictui.facade.ModelFamilyFacade;
 
 
 /**

@@ -157,7 +157,9 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			doc.setHasHumanLabels(false);
 			DocumentDTO savedDoc = remoteDocumentEJB.addDocument(doc);
 			//logger.info("Saved to DB document: " + savedDoc.getDocumentID() + ", for crisis = " + savedDoc.getCrisisDTO().getCode());
-			return savedDoc.getDocumentID();
+			if(savedDoc != null) {
+				return savedDoc.getDocumentID();
+			}
 		} catch (Exception e) {
 			logger.error("Error in insertion for crisisID : " + crisisID + " and doc : " + task.toString(), e);
 		}
@@ -332,44 +334,33 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 	@Override
 	public int truncateLabelingTaskBufferForCrisis(final long crisisID, final int maxLength, final int ERROR_MARGIN) {
-		List<Document> docList = null;
+		List<Long> docList = null;
 		try {
-			String aliasTable = "taskAssignments";
-			String order = "ASC";
-			String aliasTableKey = "taskAssignments.id.documentId";
-			String[] orderBy = {"valueAsTrainingSample", "documentId"};
-			Criterion criterion = Restrictions.conjunction()
-					.add(Restrictions.eq("crisis.crisisId",crisisID))
-					.add(Restrictions.eq("hasHumanLabels",false));
-
-			Criterion aliasCriterion =  (Restrictions.isNull(aliasTableKey));
-			docList = remoteDocumentEJB.getByCriteriaWithAliasByOrder(criterion, order, orderBy, null, aliasTable, aliasCriterion);
+			docList = remoteDocumentEJB.getUnassignedDocumentIDsByCrisisID(crisisID, null);
 		} catch (Exception e) {
 			logger.error("Exception in fetching unassigned documents with hasHumaLabels=false");
 			return 0;
 		}
+		DocumentDTO dto;
 
 		// Next trim the document table for the given crisisID to the 
 		// Config.LABELING_TASK_BUFFER_MAX_LENGTH size
 		if (docList != null) {
 			int docsToDelete = docList.size() - maxLength;
 			if (docsToDelete > ERROR_MARGIN) {		// if less than this, then skip delete
-				List<Long> documentIDList = new ArrayList<Long>();
+				//List<Long> documentIDList = new ArrayList<Long>();
 				for (int i = 0;i < docsToDelete;i++) {
-					Document d = docList.get(i);
-					documentIDList.add(d.getDocumentId());
-					logger.debug("To delete document: {" + d.getCrisis().getCrisisId() + ", " + d.getDocumentId() + ", " + d.isHasHumanLabels() + "}");
+					try {
+						dto = remoteDocumentEJB.findDocumentByID(docList.get(i));
+						remoteDocumentEJB.deleteDocument(dto);
+					} catch (Exception e)
+					{
+						logger.error("Exception when attempting to delete document");
+					}
 				}
-				try {
-					// Delete the lowest confidence documents from document table
-					int deleteCount = remoteDocumentEJB.deleteUnassignedDocumentCollection(documentIDList);
-					logger.info("Number of documents actually deleted = " + deleteCount);
-					return deleteCount;
-				} catch (Exception e) {
-					logger.error("Exception when attempting to batch delete for trimming the document table");
-				} 
+				return docsToDelete;
 			} else {
-				logger.info("No need for truncation: docListSize = " + docList.size() + ", max buffer size = " + maxLength);
+				logger.debug("No need for truncation: docListSize = " + docList.size() + ", max buffer size = " + maxLength);
 			}
 		}
 		return 0;

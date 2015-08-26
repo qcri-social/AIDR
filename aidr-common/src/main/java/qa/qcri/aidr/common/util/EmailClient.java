@@ -45,9 +45,9 @@ public class EmailClient {
 		try{
 			// Create a default MimeMessage object.
 			MimeMessage message = new MimeMessage(session);
-
+			
 			// Set Subject: header field
-			message.setSubject(subject);
+			message.setSubject(configProperties.getProperty(CommonConfigurationProperty.AIDR_PROFILE) + subject);
 			
 			// Now set the actual message
 			message.setText(body);

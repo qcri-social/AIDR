@@ -78,7 +78,7 @@ public class ModelNominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<M
 				//Long nominalAttributeId = model.getModelFamily().getNominalAttribute().getNominalAttributeId();
 
 				modelNominalLabelList = this.getAllByCriteria(Restrictions.eq("id.modelId", modelID));
-				logger.info("modelNominalLabellist size = " + (modelNominalLabelList != null ? modelNominalLabelList.size() : "null"));
+				logger.info("modelNominalLabellist size = " + (modelNominalLabelList != null ? modelNominalLabelList.size() : "null"));								
 
 				for (ModelNominalLabel labelEntity : modelNominalLabelList) {
 
@@ -88,16 +88,7 @@ public class ModelNominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<M
 
 					if (nominalLabel != null && !nominalLabel.getNominalLabelCode().equalsIgnoreCase("null")) {
 						try {
-							List<DocumentDTO> docList = documentEJB.getDocumentCollectionWithNominalLabelData(nominalLabel.getNominalLabelId());
-							for (DocumentDTO document : docList) {
-								// TODO: is checking against isEvaluationSet() necessary here? (Koushik)
-								//if (!document.getIsEvaluationSet() && document.getCrisisDTO().getCode().equals(crisisCode)) {
-								if (document.getCrisisDTO().getCode().equals(crisisCode)) {
-									++trainingSet;
-								} else {
-									logger.info("Rejecting document for crisis = " + document.getCrisisDTO().getCode() + "having isEvaluationSet = " + document.getIsEvaluationSet() + ", nominalLabel = " + nominalLabel.getName() + ", model = " + model.getModelId() + " coming from modelFamily = " + modelFamily.getModelFamilyId());
-								}
-							}
+							trainingSet = documentEJB.getDocumentCountForNominalLabelAndCrisis(nominalLabel.getNominalLabelId(),crisisCode);
 						} catch (Exception e) {
 							// TODO Auto-generated catch block
 							logger.error("Error in getDocumentCollectionWithNominalLabelData.", e);

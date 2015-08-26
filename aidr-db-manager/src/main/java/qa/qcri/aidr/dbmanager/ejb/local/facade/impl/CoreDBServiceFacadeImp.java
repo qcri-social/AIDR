@@ -25,6 +25,9 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projection;
+import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
 
 import qa.qcri.aidr.dbmanager.ejb.local.facade.CoreDBServiceFacade;
 
@@ -402,5 +405,47 @@ public class CoreDBServiceFacadeImp<E extends Serializable, I extends Serializab
 			logger.error("Delete by criteria failed", ex);
 			throw new HibernateException("Delete by criteria failed");
 		}
+	}
+	
+	public Criteria createCriteria(Criterion criterion,
+			String order, String[] orderBy, Integer count, String aliasTable,
+			Criterion aliasCriterion, Projection[] projections) {
+		
+		Session session = getCurrentSession();
+		List fetchedList = new ArrayList();
+		//logger.info("Entity: " + entityClass + ", current Session = " + session);
+		Criteria criteria = session.createCriteria(entityClass);
+		criteria.add(criterion); 
+		criteria.createAlias(aliasTable, aliasTable, org.hibernate.sql.JoinType.LEFT_OUTER_JOIN).add(aliasCriterion);
+		if (orderBy != null) {
+			for(int i = 0; i< orderBy.length; i++){
+				if (order != null && order.equalsIgnoreCase("desc")) {
+					criteria.addOrder(Order.desc(orderBy[i]));
+				} else {
+					criteria.addOrder(Order.asc(orderBy[i]));
+				}
+			}
+		}
+		if(count != null && count > 0){
+			criteria.setMaxResults(count);
+		}
+		
+		// set projections
+		setProjections(criteria, projections);
+		
+		return criteria;
+		
+	}
+	
+	private void setProjections(Criteria criteria, Projection[] projections) {
+		ProjectionList projList = Projections.projectionList();
+		if(projections != null && projections.length > 0) {
+			for(Projection projection : projections) {
+				projList.add(projection);
+			}
+			criteria.setProjection(projList);
+		}
+		
+		
 	}
 }
