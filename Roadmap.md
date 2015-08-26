@@ -43,7 +43,7 @@ QCRI side:
 
 # Release 2.1: robustness of collector, output, persister, and tagger
 
-**Original target: end-May. Current target: end-July. Actual date: TBA**
+**Original target: end-May. Current target: end-Aug. Actual date: TBA**
 
 The objective of this release is to make the collector, output, persister, and tagger modules more robust. This includes introducing a basic level of testing and fixing any bugs found during the testing.
 
@@ -65,7 +65,7 @@ QCRI side:
 
 # Release 3.0: complete AIDR analytics back end
 
-**Original target: end-Aug.**
+**Original target: end-Oct.**
 
 The objective of this release is to complete the back-end of aidr-analytics and start collecting data for it.
 
@@ -77,7 +77,7 @@ Epic: analysis-mvp, https://www.pivotaltracker.com/epic/show/1372904
 
 # Release 3.1: complete AIDR analytics front end
 
-**Original target: end-Aug. Current target: mid-October.**
+**Original target: end-Aug. Current target: mid-Dec.**
 
 The objective of this release is to produce the first version of aidr-analytics module, which is a dashboard showing the percentage of tweets in different categories and some graphs.
 
@@ -93,7 +93,7 @@ QCRI side:
 
 # Release 3.2: tagger as a Java EE application, trainer more robust
 
-**Original target: mid-July. Current target: end-October**
+**Original target: mid-July. Current target: end-Dec**
 
 The objective of this release is to make the tagger and trainer modules more robust. This includes transforming aidr-tagger into a Java EE application, instead of a stand-alone application. It also includes implementing a tester for the trainer.
 
@@ -112,13 +112,13 @@ QCRI side:
 
 # Release 5.0: UI improvements
 
-**Original target: mid-Sep. Current target: end-October.**
+**Original target: mid-Sep. Current target: end-Nov.**
 
 The objective of this release is to implement usability fixes from our user testing and feedback. This release might be accelerated if the usability fixes are done in parallel to the tasks needed for the previous releases.
 
 # Release 5.0: Cold-start collections
 
-**Original target: end-Sep. Current target: end-November**
+**Original target: end-Sep. Current target: Jan 2016**
 
 The objective create a collection without having to tag data, by re-using existing data.
 
