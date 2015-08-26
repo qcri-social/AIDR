@@ -4,6 +4,7 @@
 #Add below line in the file opened by above command
 #0 */3 * * * root sh /home/hadoop/AIDR/aidr_testers.sh
 
+export MAVEN_OPTS="-Xms256m -Xmx2048m -XX:PermSize=256m"
 PROFILE=dev
 AIDR_HOME=E:/AIDR/AIDR
 COLLECTION_TASK_FILE=E:/collectionTask.properties
