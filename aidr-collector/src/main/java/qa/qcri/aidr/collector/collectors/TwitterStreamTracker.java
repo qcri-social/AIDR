@@ -40,10 +40,11 @@ public class TwitterStreamTracker implements Closeable {
 		this.publisherJedis = JedisPublisher.newInstance();
 		logger.info("Jedis connection acquired for collection " + task.getCollectionCode());
 
+		String channelName = configProperties.getProperty(CollectorConfigurationProperty.COLLECTOR_CHANNEL) + "." + task.getCollectionCode();
 		LoadShedder shedder = new LoadShedder(
 				Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_LIMIT)),
-				Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)), true);
-		String channelName = configProperties.getProperty(CollectorConfigurationProperty.COLLECTOR_CHANNEL) + "." + task.getCollectionCode();
+				Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)), 
+				true,channelName);
 		TwitterStatusListener listener = new TwitterStatusListener(task, channelName);
 		listener.addFilter(new ShedderFilter(channelName, shedder));
 		if ("strict".equals(task.getGeoR())) {

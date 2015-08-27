@@ -74,7 +74,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/getAllCrisisTypes.action", method = {RequestMethod.GET})
 	@ResponseBody
 	public Map<String, Object> getAllCrisis() {
-		logger.info("Getting all CrisisTypes from Tagger");
+		//logger.info("Getting all CrisisTypes from Tagger");
 		try {
 			return getUIWrapper(taggerService.getAllCrisisTypes(), true);
 		} catch (AidrException e) {
@@ -86,7 +86,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/getCrisesByUserId.action", method = {RequestMethod.GET})
 	@ResponseBody
 	public Map<String, Object> getCrisesByUserId() {
-		logger.info("Getting crises from Tagger by User");
+		//logger.info("Getting crises from Tagger by User");
 		try {
 			String userName = getAuthenticatedUserName();
 			Integer taggerUserId = taggerService.isUserExistsByUsername(userName);
@@ -108,7 +108,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/createCrises.action", method = {RequestMethod.POST})
 	@ResponseBody
 	public Map<String, Object> createCrises(CrisisRequest crisisRequest) {
-		logger.info("Creating new crises in Tagger");
+		//logger.info("Creating new crises in Tagger");
 		try {
 			String userName = getAuthenticatedUserName();
 			Integer taggerUserId = taggerService.isUserExistsByUsername(userName);
@@ -116,12 +116,12 @@ public class TaggerController extends BaseController {
 				TaggerUser taggerUser = new TaggerUser(userName, "normal");
 				taggerUserId = taggerService.addNewUser(taggerUser);
 			}
-			logger.info("userID = " + taggerUserId + ", name = " + userName);
+			//logger.info("userID = " + taggerUserId + ", name = " + userName);
 			if (taggerUserId != null) {
 				TaggerCrisisRequest crisis = transformCrisesRequestToTaggerCrises(crisisRequest, taggerUserId);
 				logger.info("After transformation:, crisis = " + crisis.getCode() + ": " + crisis.getCrisisType() + ":" + crisis.getName());
 				String response = taggerService.createNewCrises(crisis);
-				logger.info("createNewCrises: " + response);
+				//logger.info("createNewCrises: " + response);
 				if ("SUCCESS".equals(response)){
 					logger.info("Returning : " + response);
 					return getUIWrapper(true);
@@ -141,7 +141,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/getAttributesForCrises.action", method = {RequestMethod.GET})
 	@ResponseBody
 	public Map<String, Object> getAttributesForCrises(Integer id) {
-		logger.info("Getting Attributes For Crises");
+		//logger.info("Getting Attributes For Crises");
 		try {
 			String userName = getAuthenticatedUserName();
 			Integer taggerUserId = taggerService.isUserExistsByUsername(userName);
@@ -155,17 +155,17 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/addAttributeToCrisis.action", method = {RequestMethod.GET})
 	@ResponseBody
 	public Map<String, Object> addAttributeToCrisis(Integer crisesId, Integer attributeId, Boolean isActive) {
-		logger.info("Add Attribute To Crises, received request for crisisID:" + crisesId + ", attributeID = " + attributeId + ", isActive = " + isActive);
+		//logger.info("Add Attribute To Crises, received request for crisisID:" + crisesId + ", attributeID = " + attributeId + ", isActive = " + isActive);
 		try {
 			TaggerModelFamily modelFamily = transformCrisesIdAndAttributeIdToTaggerModelFamily(crisesId, attributeId, isActive);
 			if (modelFamily != null) {
-				logger.info("Created modelFamily: crisis = " + modelFamily.getCrisis().getCrisisID() + ", attributeId = " + modelFamily.getNominalAttribute().getNominalAttributeID());
+				//logger.info("Created modelFamily: crisis = " + modelFamily.getCrisis().getCrisisID() + ", attributeId = " + modelFamily.getNominalAttribute().getNominalAttributeID());
 			} else {
-				logger.info("Something wrong, created modelFamily = null!!!");
+				logger.warn("Something wrong, created modelFamily = null!!!");
 			}
 			Integer modelFamilyId = taggerService.addAttributeToCrisis(modelFamily);
 			if (modelFamilyId != null) {
-				logger.info("success in adding attribute to crisis for modelFamily : " + modelFamilyId);
+				//logger.info("success in adding attribute to crisis for modelFamily : " + modelFamilyId);
 				return getUIWrapper(modelFamilyId, true);
 			} else {
 				return getUIWrapper("Error while adding attribute to crises", false);
@@ -179,7 +179,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/updateCrisis.action", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String,Object> update(UpdateCrisisDTO dto) throws Exception {
-		logger.info("Updating Crisis in Tagger having id " + dto.getCrisisID());
+		//logger.info("Updating Crisis in Tagger having id " + dto.getCrisisID());
 		TaggerCrisis crisis = transformCrisisDTOToCrisis(dto);
 		try{
 			TaggerCrisis updatedCrisis = taggerService.updateCode(crisis);
@@ -199,19 +199,19 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/getModelsForCrisis.action", method = {RequestMethod.GET})
 	@ResponseBody
 	public Map<String, Object> getModelsForCrisis(Integer id) {
-		logger.info("Getting Attributes For Crisis ID " + id);
+		//logger.info("Getting Attributes For Crisis ID " + id);
 		try {
 			List<TaggerModel> result = taggerService.getModelsForCrisis(id);
-			logger.info("Fetched result data size = " + (result != null ? result.size() : null));
+			//logger.info("Fetched result data size = " + (result != null ? result.size() : null));
 			if (result != null) {
 				for (int i = 0;i < result.size();i++) {
-					logger.info("looking at fetched model family: " + i);
+					//logger.info("looking at fetched model family: " + i);
 					Map<String, Object> countResult = getTrainingDataCountByModelIdAndCrisisId(result.get(i).getModelFamilyID(), id);
-					logger.info("fetched count: " + (countResult != null ? countResult.get("data") : null));
+					//logger.info("fetched count: " + (countResult != null ? countResult.get("data") : null));
 					if (countResult != null) {
 						try {
 							Integer value = (Integer) countResult.get("data");
-							logger.info("cast long value: " + value);
+							//logger.info("cast long value: " + value);
 							result.get(i).setTrainingExamples(value.longValue());
 						} catch (Exception e) {
 							logger.error("Error in getModelsForCrisis for crisisId : " + id, e);
@@ -231,7 +231,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/getRetrainThreshold.action", method = {RequestMethod.GET})
 	@ResponseBody
 	public Map<String, Object> getRetrainThreshold() {
-		logger.info("Getting Attributes For Crises");
+		//logger.info("Getting Attributes For Crises");
 		try {
 			return getUIWrapper(taggerService.getRetainingThreshold(), true);
 		} catch (AidrException e) {
@@ -243,7 +243,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/getAllLabelsForModel.action", method = {RequestMethod.GET})
 	@ResponseBody
 	public Map<String, Object> getAllLabelsForModel(Integer id, String code) {
-		logger.info("Getting All Labels For Model = " + id + ", and crisis = " + code);
+		//logger.info("Getting All Labels For Model = " + id + ", and crisis = " + code);
 		try {
 			return getUIWrapper(taggerService.getAllLabelsForModel(id, code), true);
 		} catch (AidrException e) {
@@ -255,7 +255,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/createAttribute.action", method = {RequestMethod.POST})
 	@ResponseBody
 	public Map<String, Object> createAttribute(TaggerAttribute attribute) {
-		logger.info("Creating new attribute in Tagger");
+		//logger.info("Creating new attribute in Tagger");
 		try {
 			String userName = getAuthenticatedUserName();
 			Integer taggerUserId = taggerService.isUserExistsByUsername(userName);
@@ -277,7 +277,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/getAttributeInfo.action", method = {RequestMethod.GET})
 	@ResponseBody
 	public Map<String, Object> getAttributeInfo(@RequestParam Integer id) {
-		logger.info("Get attribute by Id");
+		//logger.info("Get attribute by Id");
 		try {
 			TaggerAttribute response = taggerService.getAttributeInfo(id);
 			if (response != null){
@@ -294,7 +294,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/deleteAttribute.action", method = {RequestMethod.GET})
 	@ResponseBody
 	public Map<String, Object> deleteAttribute(@RequestParam Integer id) {
-		logger.info("Delete attribute by Id");
+		//logger.info("Delete attribute by Id");
 		try {
 			boolean success = taggerService.deleteAttribute(id);
 			if (success){
@@ -311,7 +311,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/removeAttributeFromCrises.action", method = {RequestMethod.GET})
 	@ResponseBody
 	public Map<String, Object> removeAttributeFromCrises(@RequestParam Integer id) {
-		logger.info("Remove classifier from crises by modelFamilyID");
+		//logger.info("Remove classifier from crises by modelFamilyID");
 		try {
 			boolean success = taggerService.removeAttributeFromCrises(id);
 			if (success){
@@ -328,7 +328,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/updateAttribute.action", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String,Object> updateAttribute(@RequestParam Integer attributeID, @RequestParam String attributeName) throws Exception {
-		logger.info("Updating Attribute in Tagger having id " + attributeID);
+		//logger.info("Updating Attribute in Tagger having id " + attributeID);
 		try{
 			TaggerAttribute response = taggerService.getAttributeInfo(attributeID);
 			TaggerAttribute updatedAttribute;
@@ -352,7 +352,7 @@ public class TaggerController extends BaseController {
 			@RequestParam String labelName,
 			@RequestParam String labelDescription,
 			@RequestParam Integer attributeID) throws Exception {
-		logger.info("Updating Label in Tagger having id " + labelID);
+		//logger.info("Updating Label in Tagger having id " + labelID);
 		try{
 			TaggerLabel response = taggerService.getLabelInfo(labelID);
 			TaggerLabel updatedLabel;
@@ -377,7 +377,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/createLabel.action", method = {RequestMethod.POST})
 	@ResponseBody
 	public Map<String, Object> createLabel(TaggerLabelRequest labelRequest) {
-		logger.info("Creating new label in Tagger");
+		//logger.info("Creating new label in Tagger");
 		try {
 			TaggerLabel response = taggerService.createNewLabel(labelRequest);
 			if (response != null){
@@ -420,7 +420,7 @@ public class TaggerController extends BaseController {
 		List<TrainingDataDTO> response;
 		try {
 			response = taggerService.getTrainingDataByModelIdAndCrisisId(modelFamilyId, crisisId, start, limit, sortColumn, sortDirection);
-			logger.info("For crisis ID " + crisisId + ", model family ID " + modelFamilyId + ", Returned response: " + response);
+			//logger.info("For crisis ID " + crisisId + ", model family ID " + modelFamilyId + ", Returned response: " + response);
 		} catch (AidrException e) {
 			logger.error("Error while Getting training data for CrisisID: "+crisisId+ " and ModelFamilyID: "+modelFamilyId, e);
 			return getUIWrapper(false, e.getMessage());
@@ -441,10 +441,10 @@ public class TaggerController extends BaseController {
 		Integer start = 0;
 		Integer limit = 20;
 		List<TrainingDataDTO> response;
-		logger.info("request received for crisis ID " + crisisId + ", model family ID " + modelFamilyId);
+		//logger.info("request received for crisis ID " + crisisId + ", model family ID " + modelFamilyId);
 		try {
 			response = taggerService.getTrainingDataByModelIdAndCrisisId(modelFamilyId, crisisId, start, limit, "", "");
-			logger.info("received response back: " + response);
+			//logger.info("received response back: " + response);
 		} catch (AidrException e) {
 			logger.error("Error in getTrainingDataCountByModelIdAndCrisisId for crisisId : " + crisisId  + " and modelFamilyId : " + modelFamilyId, e);
 			return getUIWrapper(new Integer(0), false);
@@ -461,7 +461,7 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> crisisExists(@RequestParam String code) throws Exception {
 		TaggerCrisisExist taggerCrisisExist = null;
-		logger.info("Received request for crisis code: " + code);
+		//logger.info("Received request for crisis code: " + code);
 		try {
 			taggerCrisisExist = taggerService.isCrisesExist(code);
 		} catch (AidrException e) {
@@ -481,12 +481,12 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> getAssignableTask(@RequestParam Integer id) throws Exception {
 		try {
-			logger.info("Get Assignable Task is started with crisis id: " + id);
+			//logger.info("Get Assignable Task is started with crisis id: " + id);
 
 			String userName = getAuthenticatedUserName();
 			String sVar = taggerService.getAssignableTask(id, userName);
 
-			logger.info("sVar : " + sVar);
+			//logger.info("sVar : " + sVar);
 			return getUIWrapper(sVar, true);
 		} catch (AidrException e) {
 			logger.error("Error while getting assignable task for crisisID: "+id +"\t"+e.getStackTrace());
@@ -498,12 +498,12 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> skipTask(@RequestParam Integer id) throws Exception {
 		try {
-			logger.info("Skip Task for document id: " + id);
+			//logger.info("Skip Task for document id: " + id);
 
 			String userName = getAuthenticatedUserName();
 			String sVar = taggerService.skipTask(id, userName);
 
-			logger.info("sVar : " + sVar);
+			//logger.info("sVar : " + sVar);
 			return getUIWrapper(sVar, true);
 		} catch (AidrException e) {
 			logger.error("Error ehile skipping task for documentID: "+id +"\t"+e.getStackTrace());
@@ -515,11 +515,11 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> getTemplateStatus(@RequestParam String code) throws Exception {
 		try {
-			logger.info("Get Template Status for crisis with code: " + code);
+			//logger.info("Get Template Status for crisis with code: " + code);
 
 			String sVar = taggerService.getTemplateStatus(code);
 
-			logger.info("sVar : " + sVar);
+			//logger.info("sVar : " + sVar);
 			return getUIWrapper(sVar, true);
 		} catch (AidrException e) {
 			logger.error("Error while getting template status for crisis with code: " + code +"\t"+e.getStackTrace());
@@ -530,7 +530,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/saveTaskAnswer.action", method = {RequestMethod.POST})
 	@ResponseBody
 	public Map<String, Object> saveTaskAnswer(TaskAnswerRequest taskAnswerRequest) {
-		logger.info("Saving TaskAnswer in AIDRCrowdsourcing");
+		//logger.info("Saving TaskAnswer in AIDRCrowdsourcing");
 		try {
 			String userName = getAuthenticatedUserName();
 			Integer taggerUserId = taggerService.isUserExistsByUsername(userName);
@@ -589,7 +589,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/deleteTrainingExample.action", method = {RequestMethod.GET})
 	@ResponseBody
 	public Map<String, Object> deleteTrainingExample(@RequestParam Integer id) {
-		logger.info("Delete Training Example by Id");
+		//logger.info("Delete Training Example by Id");
 		try {
 			boolean success = taggerService.deleteTrainingExample(id);
 			if (success){
@@ -606,7 +606,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/pingService.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> pingService(@RequestParam String service) throws Exception {
-		logger.info("In pinging service of every module");
+		//logger.info("In pinging service of every module");
 		boolean result = false;
 		try {
 			if ("tagger".equals(service)) {
@@ -631,7 +631,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/getAttributesAndLabelsByCrisisId.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> getAttributesAndLabelsByCrisisId(@RequestParam Integer id) throws Exception {
-		logger.info("Getting attributes and labels by crisisID: "+id);
+		//logger.info("Getting attributes and labels by crisisID: "+id);
 		String result = "";
 		try {
 			result = taggerService.getAttributesAndLabelsByCrisisId(id);
@@ -646,7 +646,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/taggerGenerateCSVLink.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> generateCSVLink(@RequestParam String code) throws Exception {
-		logger.info("Received request for generating csv link for Collection: " + code);
+		//logger.info("Received request for generating csv link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
 			result = taggerService.generateCSVLink(code);
@@ -666,7 +666,7 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> generateTweetIdsLink(@RequestParam String code) throws Exception {
 		//System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
-		logger.info("Received request for generating tweetIds link for Collection: " + code);
+		//logger.info("Received request for generating tweetIds link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
 			result = taggerService.generateTweetIdsLink(code);
@@ -693,7 +693,7 @@ public class TaggerController extends BaseController {
 	private TaggerModelFamily transformCrisesIdAndAttributeIdToTaggerModelFamily (Integer crisesId, Integer attributeId, Boolean isActive) throws Exception{
 		TaggerCrisis crisis = new TaggerCrisis(crisesId);
 		TaggerAttribute nominalAttribute = new TaggerAttribute(attributeId);
-		logger.info("crisis = " + crisis.getCrisisID() + ", attribute = " + nominalAttribute.getNominalAttributeID());
+		//logger.info("crisis = " + crisis.getCrisisID() + ", attribute = " + nominalAttribute.getNominalAttributeID());
 		return new TaggerModelFamily(crisis, nominalAttribute, isActive);
 	}
 
@@ -737,7 +737,7 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> generateJSONLink(@RequestParam String code,
 			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws Exception {
-		logger.info("Received request for generating JSON link for Collection: " + code);
+		//logger.info("Received request for generating JSON link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
 			result = taggerService.generateJSONLink(code, jsonType);
@@ -759,12 +759,12 @@ public class TaggerController extends BaseController {
 	public Map<String,Object> generateJsonTweetIdsLink(@RequestParam String code,
 			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws Exception {
 		//System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
-		logger.info("Received request for generating JSON TweetIds link for Collection: " + code);
+		//logger.info("Received request for generating JSON TweetIds link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
 			result = taggerService.generateJsonTweetIdsLink(code, jsonType);
 			if (result != null && result.get("url") != null) {
-				System.out.println("Returning success fo collection: " +  code + ", response: " + result);
+				//System.out.println("Returning success fo collection: " +  code + ", response: " + result);
 				return getUIWrapper(result.get("url"),true, null, (String)result.get("message"));
 			} else {
 				return getUIWrapper(false, "Something wrong - no file generated!");
@@ -783,12 +783,12 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> generateCSVFilteredLink(@RequestParam String code,
 			String queryString) throws Exception {
-		logger.info("Received request for generating CSV filtered link for Collection: " + code);
+		//logger.info("Received request for generating CSV filtered link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
 			String userName = getAuthenticatedUserName();
 			if (null == userName) userName = "System";
-			logger.info("Received request for download from user = " + userName);
+			//logger.info("Received request for download from user = " + userName);
 			result = taggerService.generateCSVFilteredLink(code, queryString, userName);
 			if (result != null && result.get("url") != null) {
 				return getUIWrapper(result.get("url"),true);
@@ -806,8 +806,7 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> generateTweetIdsFilteredLink(@RequestParam String code,
 			String queryString) throws Exception {
-		//System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
-		logger.info("Received request for generating tweetIDs filtered link for Collection: " + code);
+		//logger.info("Received request for generating tweetIDs filtered link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
 			String userName = getAuthenticatedUserName();
@@ -815,7 +814,7 @@ public class TaggerController extends BaseController {
 			
 			result = taggerService.generateTweetIdsFilteredLink(code, queryString, userName);
 			if (result != null && result.get("url") != null) {
-				System.out.println("Returning success fo collection: " +  code + ", response: " + result);
+				//System.out.println("Returning success fo collection: " +  code + ", response: " + result);
 				return getUIWrapper(result.get("url"),true, null, (String)result.get("message"));
 			} else {
 				return getUIWrapper(false, "Something wrong - no file generated!");
@@ -834,7 +833,7 @@ public class TaggerController extends BaseController {
 	public Map<String,Object> generateJSONFilteredLink(@RequestParam String code,
 			String queryString,
 			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws Exception {
-		logger.info("Received request for generating JSON filtered link for Collection: " + code);
+		//logger.info("Received request for generating JSON filtered link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
 			String userName = getAuthenticatedUserName();
@@ -859,8 +858,7 @@ public class TaggerController extends BaseController {
 	public Map<String,Object> generateJsonTweetIdsFilteredLink(@RequestParam String code,
 			String queryString,
 			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws Exception {
-		//System.out.println("[Controller generateTweetIdsLink] Received request for code: " + code);
-		logger.info("Received request for generating JSON TweetIds filtered link for Collection: " + code);
+		//logger.info("Received request for generating JSON TweetIds filtered link for Collection: " + code);
 		Map<String, Object> result = null;
 		try {
 			String userName = getAuthenticatedUserName();
@@ -868,7 +866,6 @@ public class TaggerController extends BaseController {
 			
 			result = taggerService.generateJsonTweetIdsFilteredLink(code, queryString, jsonType, userName);
 			if (result != null && result.get("url") != null) {
-				//System.out.println("Returning success fo collection: " +  code + ", response: " + result);
 				return getUIWrapper(result.get("url"),true, null, (String)result.get("message"));
 			} else {
 				return getUIWrapper(false, "Something wrong - no file generated!");
@@ -882,8 +879,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/updateMobilePush.action", method = { RequestMethod.POST ,RequestMethod.GET })
 	@ResponseBody
 	public Map<String,Object> updateMobilePushStatus(AidrCollection collection) throws Exception {
-		//System.out.println("[updateMobilePushStatus: " + collection.getCode());
-		logger.info("[updateMobilePushStatus: " + collection.getCode());
+		//logger.info("[updateMobilePushStatus: " + collection.getCode());
 		String result = "";
 		try {
 			TaggerCrisis tagCrisis = taggerService.getCrisesByCode(collection.getCode());
@@ -902,7 +898,7 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> getHumanLabeledDocumentsByCrisisID(Long crisisID, Integer count) throws Exception {
 		try {
-			logger.info("Getting human labelled documents by crisisID: "+crisisID);
+			//logger.info("Getting human labelled documents by crisisID: "+crisisID);
 			TaggerResponseWrapper labeledDataList = taggerService.getHumanLabeledDocumentsByCrisisID(crisisID, count);
 			return getUIWrapper(labeledDataList, true);
 		} catch (Exception e) {
@@ -915,7 +911,7 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> getHumanLabeledDocumentsByCrisisCode(String crisisCode, Integer count) throws Exception {
 		try {
-			logger.info("Getting human labelled documents by crisisCode: "+crisisCode);
+			//logger.info("Getting human labelled documents by crisisCode: "+crisisCode);
 			TaggerResponseWrapper labeledDataList = taggerService.getHumanLabeledDocumentsByCrisisCode(crisisCode, count);
 			return getUIWrapper(labeledDataList, true);
 		} catch (Exception e) {
@@ -928,7 +924,7 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> getHumanLabeledDocumentsByCrisisIDUserID(Long crisisID, Long userID, Integer count) throws Exception {
 		try {
-			logger.info("Getting human labelled documents by crisisID: "+crisisID +" & userID: "+userID);
+			//logger.info("Getting human labelled documents by crisisID: "+crisisID +" & userID: "+userID);
 			TaggerResponseWrapper labeledDataList = taggerService.getHumanLabeledDocumentsByCrisisIDUserID(crisisID, userID, count);
 			return getUIWrapper(labeledDataList, true);
 		} catch (Exception e) {
@@ -941,7 +937,7 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> getHumanLabeledDocumentsByCrisisIDUserName(Long crisisID, String userName, Integer count) throws Exception {
 		try {
-			logger.info("Getting human labelled documents by crisisID: "+crisisID +" & userName: "+userName);
+			//logger.info("Getting human labelled documents by crisisID: "+crisisID +" & userName: "+userName);
 			TaggerResponseWrapper labeledDataList = taggerService.getHumanLabeledDocumentsByCrisisIDUserName(crisisID, userName, count);
 			return getUIWrapper(labeledDataList, true);
 		} catch (Exception e) {
@@ -959,8 +955,8 @@ public class TaggerController extends BaseController {
 			@RequestParam(value = "count", defaultValue = "-1") Integer count,
 			@RequestParam(value = "fileType", defaultValue = DownloadType.TEXT_JSON) String fileType, 
 			@RequestParam(value = "contentType", defaultValue = DownloadType.FULL_TWEETS) String contentType) throws Exception {
-		logger.info("Received request: crisisCode = " + crisisCode + ", count = " + count + ", fileType = " + fileType
-				+ ", contentType = " + contentType + "\nquery String = " + queryString);
+		//logger.info("Received request: crisisCode = " + crisisCode + ", count = " + count + ", fileType = " + fileType
+			//	+ ", contentType = " + contentType + "\nquery String = " + queryString);
 		try {
 			String userName = getAuthenticatedUserName();
 			if (null == userName) userName = "System";
@@ -983,7 +979,7 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/updateMicromapperEnabled.action", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String,Object> updateMicromapperEnabled(@RequestParam Boolean isMicromapperEnabled, @RequestParam String code ) throws Exception {
-		logger.info("In update micromapperEnabled for collection, code = " + code);
+		//logger.info("In update micromapperEnabled for collection, code = " + code);
 		Map<String, Object> result = null;
 		try {
 			result = taggerService.updateMicromapperEnabled(code, isMicromapperEnabled);
@@ -1007,21 +1003,22 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/sendEmailService.action", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> sendEmail(@RequestParam String url, @RequestParam String mailType, @RequestParam String description) throws Exception {
-		logger.info("In sending email");
+		//logger.info("In sending email");
 		UserEntity userEntity = getAuthenticatedUser();
 		userEntity.getUserName();
-		String body = "User:-"+userEntity.getUserName() + "\nURL:-"+url +"\nRequestHeader:-"+description;
+		StringBuffer body = new StringBuffer("User:").append(userEntity.getUserName())
+				.append("\nURL:").append(url).append("\nRequestHeader:").append(description);
 		String subject = mailType;
 		Boolean result = false;
 		try{
-			result = taggerService.sendMailService(subject,body);
+			result = taggerService.sendMailService(subject,body.toString());
 			if (result) {
 				return getUIWrapper(null,true);
 			} else {
 				return getUIWrapper(false, "Sending Email Failed");
 			}
 		}catch (Exception e) {
-			logger.error("Error while sending emails to develoopers", e);
+			logger.error("Error while sending emails to developers", e);
 			return getUIWrapper(false, "Sending Email Failed");
 		}
 	}

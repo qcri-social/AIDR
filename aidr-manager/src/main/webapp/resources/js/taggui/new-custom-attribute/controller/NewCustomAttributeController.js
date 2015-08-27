@@ -193,7 +193,6 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
         }
         
         var l =  me.mainComponent.labelsStore.getCount();
-        log.console(l);
 
         r.name = name;
         r.description = description;

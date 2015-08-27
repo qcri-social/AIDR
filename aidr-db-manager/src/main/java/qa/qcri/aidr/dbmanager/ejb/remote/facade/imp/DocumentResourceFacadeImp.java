@@ -12,14 +12,19 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Projection;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
@@ -155,7 +160,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 			int result = query.executeUpdate();
 			return result;
 		} catch (Exception e) {
-			logger.error("Deletion query failed");
+			logger.error("Deletion query failed: " + e);
 			return 0;
 		}
 	}
@@ -299,7 +304,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 			em.refresh(d);
 			return new DocumentDTO(d);
 		} catch (Exception e) {
-			logger.error("Error in addDocument.");
+			logger.error("Error in addDocument.", e);
 			return null;
 		}
 	}
@@ -432,6 +437,41 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	}
 
 	@Override
+	public Integer getDocumentCountForNominalLabelAndCrisis(Long nominalLabelID, String crisisCode) {
+		if (nominalLabelID != null) {
+			String aliasTable = "documentNominalLabels";
+			String aliasTableKeyField = "documentNominalLabels.id.nominalLabelId";
+			String[] orderBy = {"documentId"};
+			Criteria criteria = null;
+			
+			try {
+				CrisisDTO cdto = crisisEJB.getCrisisByCode(crisisCode); 
+				
+				Criterion criterion = Restrictions.conjunction()
+						.add(Restrictions.eq("crisis.crisisId",cdto.getCrisisID()))
+						.add(Restrictions.eq("hasHumanLabels", true));
+				
+				Criterion aliasCriterion =  Restrictions.eq(aliasTableKeyField, nominalLabelID);
+				
+				// get just the documentIDs
+				Projection projection = Projections.property("documentId");
+				
+				//List<Document> docList = this.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion);
+				criteria = createCriteria(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion, new Projection[] {projection});
+				List<Long> docIDList = criteria.list();
+				
+				if (docIDList != null && !docIDList.isEmpty()) {
+					return docIDList.size();
+				}
+			} catch (Exception e) {
+				logger.error("getDocumentCountForNominalLabelAndCrisis failed, criteria = " + criteria.toString(), e);
+				return 0;
+			}
+		}
+		return 0;
+	}
+	
+	@Override
 	public List<DocumentDTO> getDocumentCollectionWithNominalLabelData(Long nominalLabelID) throws Exception {
 		List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
 		if (nominalLabelID != null) {
@@ -440,6 +480,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 			String[] orderBy = {"documentId"};
 
 			Criterion criterion = Restrictions.eq("hasHumanLabels", true);
+			
 			Criterion aliasCriterion =  Restrictions.eq(aliasTableKeyField, nominalLabelID);
 			List<Document> docList = this.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion);
 			if (docList != null && !docList.isEmpty()) {
@@ -455,6 +496,8 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 		}
 		return dtoList;
 	}
+	
+	
 
 	@Override
 	public Integer getUnlabeledDocumentsCountByCrisisID(Long crisisId) throws PropertyNotSetException {
@@ -478,6 +521,33 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 		}
 		
 		
+	}
+
+	@Override
+	public List<Long> getUnassignedDocumentIDsByCrisisID(Long crisisID, Integer count) {
+		
+		List<Long> docIDList = new ArrayList<Long>();
+		Criteria criteria = null;
+		try {
+			String aliasTable = "taskAssignments";
+			String order = "ASC";
+			String aliasTableKey = "taskAssignments.id.documentId";
+			String[] orderBy = {"valueAsTrainingSample", "documentId"};
+			Criterion criterion = Restrictions.conjunction()
+					.add(Restrictions.eq("crisis.crisisId",crisisID))
+					.add(Restrictions.eq("hasHumanLabels",false));
+
+			// get just the documentIDs
+			Projection projection = Projections.property("documentId");
+			Criterion aliasCriterion =  (Restrictions.isNull(aliasTableKey));
+			criteria = createCriteria(criterion, order, orderBy, count, aliasTable, aliasCriterion, new Projection[] {projection});
+			docIDList = criteria.list();
+			return docIDList;
+				
+		} catch (Exception e) {
+			logger.error("getByCriteriaWithAliasByOrder failed, criteria = " + criteria.toString(), e);
+			throw new HibernateException("getByCriteriaWithAliasByOrder failed, criteria = " + criteria.toString());
+		}
 	}
 
 }

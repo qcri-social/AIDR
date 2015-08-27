@@ -262,58 +262,6 @@ public class Persister4TaggerAPI {
 		}
 	}
 
-	@Deprecated
-	@GET
-	@Produces({"application/javascript"})
-	@Path("/getClassifiedTweets")
-	//public JSONWithPadding get_N_LatestClassifiedTweets(@QueryParam("collectionCode") String collectionCode, @QueryParam("exportLimit") int exportLimit, @QueryParam("callback") String callback) throws UnknownHostException {
-	public Response get_N_LatestClassifiedTweets(@QueryParam("collectionCode") String collectionCode, 
-			@QueryParam("exportLimit") int exportLimit, 
-			@QueryParam("callback") String callback) 
-					throws UnknownHostException {
-		logger.info("In tagger-persister getClassifiedTweets");
-		JsonDeserializer jsonD = new JsonDeserializer();
-		List<ClassifiedTweet> tweets = jsonD.getNClassifiedTweetsJSON(collectionCode, exportLimit);
-		//return Response.ok(tweets).build();
-		//return new JSONWithPadding(new GenericEntity<List<ClassifiedTweet>>(tweets) {}, callback);
-		return Response.ok(new GenericEntity<List<ClassifiedTweet>>(tweets) {}, callback).build();
-	}
-
-	/**
-	 * 
-	 * @param collectionCode
-	 * @param exportLimit
-	 * @param callback
-	 * @return CSV format output from JSON filtered by user provided list of label names 
-	 * @throws UnknownHostException
-	 */
-	@Deprecated
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)		// {application/json} ?
-	@Path("/filter/getClassifiedTweets")
-	public Response get_N_LatestClassifiedTweetsFiltered(String queryString, 
-			@QueryParam("collectionCode") String collectionCode, 
-			@QueryParam("exportLimit") int exportLimit, 
-			@QueryParam("callback") String callback) throws UnknownHostException {
-
-		DeserializeFilters des = new DeserializeFilters();
-		JsonQueryList queryList = des.deserializeConstraints(queryString);
-		JsonDeserializer jsonD = new JsonDeserializer();
-
-		logger.info(collectionCode + ": Received POST list: " + queryList.toString());
-
-		List<ClassifiedTweet> tweets = jsonD.getNClassifiedTweetsJSONFiltered(collectionCode, exportLimit, queryList);
-		return Response.ok(new GenericEntity<List<ClassifiedTweet>>(tweets) {}, callback)
-				.allow("POST", "OPTIONS", "HEAD")
-				.header("Access-Control-Allow-Origin", "*")
-				.header("Access-Control-Allow-Credentials", "true")
-				.header("Access-Control-Allow-Methods", "POST, OPTIONS, HEAD")
-				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
-				.build();
-	}
-
-
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/genJson")

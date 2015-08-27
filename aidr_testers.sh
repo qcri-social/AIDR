@@ -4,10 +4,13 @@
 #Add below line in the file opened by above command
 #0 */3 * * * root sh /home/hadoop/AIDR/aidr_testers.sh
 
+export MAVEN_OPTS="-Xms256m -Xmx2048m -XX:PermSize=256m"
 PROFILE=dev
 AIDR_HOME=E:/AIDR/AIDR
 COLLECTION_TASK_FILE=E:/collectionTask.properties
-SEND_MAIL_API=http://localhost:8084/AIDRTaggerAPI/rest/misc/sendErrorEmail
+HOST=http://localhost:8084
+SEND_MAIL_API=$HOST/AIDRTaggerAPI/rest/misc/sendErrorEmail
+ALL_RUNNING_COLLECTIONS_API=$HOST/AIDRCollector/webresources/twitter/status/all 
 
 #Collector Tester
 cd $AIDR_HOME
@@ -19,7 +22,10 @@ if [[ $result != 0 ]] ; then
 	#Sending mail
 	echo CollectorTester Failed
 	echo Sending Mail
-	curl --data "module=AIDRCollector&description=Tester for the collector is failed on $PROFILE" $SEND_MAIL_API
+	runningCollections="Running Collections"$'\n'$(curl -get $ALL_RUNNING_COLLECTIONS_API | jq '.[] |"CollectionName: "+ .collectionName' | sort)
+	freeMemory="Memory Statistics"$'\n'$(egrep --color 'Mem|Cache|Swap|Buffer' /proc/meminfo)
+	description="Tester for AIDRCollector failed on $PROFILE"$'\n'$runningCollections$'\n'$freeMemory
+	curl --data "module=AIDRCollector&description=$description" $SEND_MAIL_API
 fi
 
 #Persister Tester
@@ -32,7 +38,10 @@ if [[ $result != 0 ]] ; then
 	#Sending mail
 	echo PersisterTester Failed
 	echo Sending Mail
-	curl --data "module=AIDRPersister&description=Tester for the persister is failed on $PROFILE" $SEND_MAIL_API
+	runningCollections="Running Collections"$'\n'$(curl -get $ALL_RUNNING_COLLECTIONS_API | jq '.[] |"CollectionName: "+ .collectionName' | sort)
+	freeMemory="Memory Statistics"$'\n'$(egrep --color 'Mem|Cache|Swap|Buffer' /proc/meminfo)
+	description="Tester for AIDRPersister failed on $PROFILE"$'\n'$runningCollections$'\n'$freeMemory
+	curl --data "module=AIDRPersister&description=$description" $SEND_MAIL_API
 fi
 
 #Tagger Tester
@@ -45,7 +54,10 @@ if [[ $result != 0 ]] ; then
 	#Sending mail
 	echo TaggerTester Failed
 	echo Sending Mail
-	curl --data "module=AIDRTagger&description=Tester for the tagger is failed on $PROFILE" $SEND_MAIL_API
+	runningCollections="Running Collections"$'\n'$(curl -get $ALL_RUNNING_COLLECTIONS_API | jq '.[] |"CollectionName: "+ .collectionName' | sort)
+	freeMemory="Memory Statistics"$'\n'$(egrep --color 'Mem|Cache|Swap|Buffer' /proc/meminfo)
+	description="Tester for AIDRTagger failed on $PROFILE"$'\n'$runningCollections$'\n'$freeMemory
+	curl --data "module=AIDRTagger&description=$description" $SEND_MAIL_API
 fi
 
 #Output Tester
@@ -58,5 +70,8 @@ if [[ $result != 0 ]] ; then
 	#Sending mail
 	echo OutputTester Failed
 	echo Sending Mail
-	curl --data "module=AIDROutput&description=Tester for the output is failed on $PROFILE" $SEND_MAIL_API
+	runningCollections="Running Collections"$'\n'$(curl -get $ALL_RUNNING_COLLECTIONS_API | jq '.[] |"CollectionName: "+ .collectionName' | sort)
+	freeMemory="Memory Statistics"$'\n'$(egrep --color 'Mem|Cache|Swap|Buffer' /proc/meminfo)
+	description="Tester for AIDROutput failed on $PROFILE"$'\n'$runningCollections$'\n'$freeMemory
+	curl --data "module=AIDROutput&description=$description" $SEND_MAIL_API
 fi

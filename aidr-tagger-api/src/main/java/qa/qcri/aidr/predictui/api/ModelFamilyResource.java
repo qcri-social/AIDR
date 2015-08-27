@@ -125,7 +125,10 @@ public class ModelFamilyResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/taggers-by-codes")
     public Response getTaggersByCodes(TaggersForCodesRequest codesRequest) {
-        List<TaggersForCodes> taggersByCodes = modelFamilyLocalEJB.getTaggersByCodes(codesRequest.getCodes());
+        List<TaggersForCodes> taggersByCodes = null;
+        if(!codesRequest.getCodes().isEmpty()){
+        	taggersByCodes = modelFamilyLocalEJB.getTaggersByCodes(codesRequest.getCodes());
+        }
         if (taggersByCodes.isEmpty() || taggersByCodes == null) {
             taggersByCodes = Collections.emptyList();
         }

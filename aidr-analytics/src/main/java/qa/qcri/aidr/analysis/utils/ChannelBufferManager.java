@@ -464,10 +464,10 @@ public class ChannelBufferManager {
 		public void onPMessage(String pattern, String channel, String message) {
 			try {
 				if (!redisLoadShedder.containsKey(channel)) {
-					redisLoadShedder.put(channel, new LoadShedder(PERSISTER_LOAD_LIMIT, PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true));
+					redisLoadShedder.put(channel, new LoadShedder(PERSISTER_LOAD_LIMIT, PERSISTER_LOAD_CHECK_INTERVAL_MINUTES, true,channel));
 					logger.info("Created new redis load shedder for channel: " + channel);
 				}
-				if (redisLoadShedder.get(channel).canProcess(channel)) {
+				if (redisLoadShedder.get(channel).canProcess()) {
 					manageChannelBuffers(pattern, channel, message);
 				} 			
 			} catch (Exception e) {

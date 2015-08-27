@@ -273,7 +273,8 @@ public class DocumentJSONConverter {
 		if ((System.currentTimeMillis() - lastModelInfoUpdate) > 300000
 				|| (!activeCrisisIDs.containsKey(crisisCode) && (System
 						.currentTimeMillis() - lastModelInfoUpdate) > 10000)) {
-			updateModelInfo();
+			//updateModelInfo();
+			updateModelFamilyInfo();
 		}
 
 		if (!activeCrisisIDs.containsKey(crisisCode))
@@ -287,7 +288,8 @@ public class DocumentJSONConverter {
 				|| ((!activeModelFamiliesByID.containsKey(crisisID) 
 						|| !activeModelFamiliesByID.get(crisisID).containsKey(attributeID)) 
 						&& (System.currentTimeMillis() - lastModelInfoUpdate) > 10000)) {
-			updateModelInfo();
+			//updateModelInfo();
+			updateModelFamilyInfo();
 		}
 
 		if (!activeModelFamiliesByID.containsKey(crisisID)
@@ -302,7 +304,8 @@ public class DocumentJSONConverter {
 				|| ((!activeModelFamiliesByCode.containsKey(crisisID) 
 						|| !activeModelFamiliesByCode.get(crisisID).containsKey(attributeCode)) 
 						&& (System.currentTimeMillis() - lastModelInfoUpdate) > 10000)) {
-			updateModelInfo();
+			//updateModelInfo();
+			updateModelFamilyInfo();
 		}
 
 		if (!activeModelFamiliesByCode.containsKey(crisisID)
@@ -316,6 +319,7 @@ public class DocumentJSONConverter {
 		return activeModelFamiliesByCode.get(crisisID).get(attributeCode);
 	}
 
+	@Deprecated
 	private static void updateModelInfo() {
 		activeModelFamiliesByID.clear();
 		activeModelFamiliesByCode.clear();
@@ -337,6 +341,15 @@ public class DocumentJSONConverter {
 			activeModelFamiliesByID.get(crisisID).put(attributeID, family);
 			activeModelFamiliesByCode.get(crisisID).put(attributeCode, family);
 		}
+
+		lastModelInfoUpdate = System.currentTimeMillis();
+	}
+	
+	private static void updateModelFamilyInfo() {
+		activeCrisisIDs.clear();
+		activeCrisisIDs = DataStore.getCrisisIDs();
+
+		DataStore.getActiveModelsDocCount(activeModelFamiliesByID,activeModelFamiliesByCode);		
 
 		lastModelInfoUpdate = System.currentTimeMillis();
 	}
