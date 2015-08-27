@@ -35,12 +35,22 @@ Before installing AIDR, **configure these services** as follows:
     * `collation-server = utf8mb4_unicode_ci`
  * In the [mysql] section, add:
     * `default-character-set = utf8mb4`
+  * For performance optimization(recommended):
+    * max_connections = 250
+    * Set buffer pool size to 50-80% of computer memory
+        * innodb_buffer_pool_size=4G
+        * innodb_buffer_pool_instances=4
+        * innodb_file_per_table =1
+    * Set the log file size to about 25% of the buffer pool size
+        * innodb_log_file_size=500M
+        * innodb_log_buffer_size=8M
+
 1. **Redis configuration**: modify `redis.conf`:
    * Increase the maximum number of clients to avoid having an error "max number of clients reached":
      * `maxclients = 10000`
    * Set the timeout to zero to allow very slow running collections:
      * `timeout = 0`
-   * For performance optimization(recommended):-
+   * For performance optimization(recommended):
      1. Cap the maxmemory limit to around 2gb or more. By default it is infinite.
        * `maxmemory = 2gb`
      1. Set the eviction policy to allkeys-lru. By default it is noeviction.
