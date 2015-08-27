@@ -35,7 +35,8 @@ Before installing AIDR, **configure these services** as follows:
     * `collation-server = utf8mb4_unicode_ci`
  * In the [mysql] section, add:
     * `default-character-set = utf8mb4`
-  * For performance optimization(recommended):
+  * For performance optimization:
+    (Reference: https://www.percona.com/blog/2014/01/28/10-mysql-settings-to-tune-after-installation/)
     * max_connections = 250
     * Set buffer pool size to 50-80% of computer memory
         * innodb_buffer_pool_size=4G
