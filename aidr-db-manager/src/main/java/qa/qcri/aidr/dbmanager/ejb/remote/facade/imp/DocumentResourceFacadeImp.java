@@ -437,29 +437,35 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	}
 
 	@Override
-	public Integer getDocumentCountForNominalLabelAndCrisis(Long nominalLabelID, String crisisCode) throws Exception {
+	public Integer getDocumentCountForNominalLabelAndCrisis(Long nominalLabelID, String crisisCode) {
 		if (nominalLabelID != null) {
 			String aliasTable = "documentNominalLabels";
 			String aliasTableKeyField = "documentNominalLabels.id.nominalLabelId";
 			String[] orderBy = {"documentId"};
+			Criteria criteria = null;
 			
-			CrisisDTO cdto = crisisEJB.getCrisisByCode(crisisCode); 
-			
-			Criterion criterion = Restrictions.conjunction()
-					.add(Restrictions.eq("crisisId",cdto.getCrisisID()))
-					.add(Restrictions.eq("hasHumanLabels", true));
-			
-			Criterion aliasCriterion =  Restrictions.eq(aliasTableKeyField, nominalLabelID);
-			
-			// get just the documentIDs
-			Projection projection = Projections.property("documentId");
-			
-			//List<Document> docList = this.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion);
-			Criteria criteria = createCriteria(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion, new Projection[] {projection});
-			List<Long> docIDList = criteria.list();
-			
-			if (docIDList != null && !docIDList.isEmpty()) {
-				return docIDList.size();
+			try {
+				CrisisDTO cdto = crisisEJB.getCrisisByCode(crisisCode); 
+				
+				Criterion criterion = Restrictions.conjunction()
+						.add(Restrictions.eq("crisis.crisisId",cdto.getCrisisID()))
+						.add(Restrictions.eq("hasHumanLabels", true));
+				
+				Criterion aliasCriterion =  Restrictions.eq(aliasTableKeyField, nominalLabelID);
+				
+				// get just the documentIDs
+				Projection projection = Projections.property("documentId");
+				
+				//List<Document> docList = this.getByCriteriaWithInnerJoinByOrder(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion);
+				criteria = createCriteria(criterion, "DESC", orderBy, null, aliasTable, aliasCriterion, new Projection[] {projection});
+				List<Long> docIDList = criteria.list();
+				
+				if (docIDList != null && !docIDList.isEmpty()) {
+					return docIDList.size();
+				}
+			} catch (Exception e) {
+				logger.error("getDocumentCountForNominalLabelAndCrisis failed, criteria = " + criteria.toString(), e);
+				return 0;
 			}
 		}
 		return 0;
