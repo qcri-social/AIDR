@@ -84,9 +84,9 @@ public class AidrFetcherJsonInputProcessor implements Runnable {
 												.getInstance()
 												.getProperty(
 														TaggerConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)),
-										true));
+										true,channel));
 			}
-			if (redisLoadShedder.get(channel).canProcess(channel)) {
+			if (redisLoadShedder.get(channel).canProcess()) {
 				Document doc;
 				try {
 					doc = DocumentJSONConverter.parseDocument(jsonDoc);
@@ -178,7 +178,7 @@ public class AidrFetcherJsonInputProcessor implements Runnable {
 												.getInstance()
 												.getProperty(
 														TaggerConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)),
-										true));
+										true,inputQueueName));
 	Thread.sleep(60000);
 			} catch (Exception e) {
 				logger.error("RedisInputProcessor", e);

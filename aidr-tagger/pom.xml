@@ -22,6 +22,7 @@
 				<version>2.17</version>
 				<configuration>
 					<skipTests>${skipTests}</skipTests>
+					<argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
 					<excludes>
 						<exclude>**/TaggerTesterTest.java</exclude>
 					</excludes>

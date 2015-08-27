@@ -243,7 +243,10 @@ public class TestModelFamilyResourceFacadeImp {
 	public void testGetTaggersByCodes() {
 		List<String> codeList = new ArrayList<String>();
 		codeList.add(crisisDTO.getCode());
-		List<TaggersForCodes> taggersForCodes = modelFamilyResourceFacadeImp.getTaggersByCodes(codeList);
+		List<TaggersForCodes> taggersForCodes = null;
+		if(!codeList.isEmpty()){
+			taggersForCodes = modelFamilyResourceFacadeImp.getTaggersByCodes(codeList);
+		}
 		assertNotNull(taggersForCodes);
 	}
 	

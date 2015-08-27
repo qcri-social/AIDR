@@ -131,23 +131,23 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        				var sampleCountThreshold = RETRAINING_THRESHOLD;
 	        	        	var retrainingThresholdCount = 0;
 	        	        	var statusMessage='';
-	        	        	var y = TRAINING_EXAMPLE % sampleCountThreshold;
+	        	        	var y = totalHumanLabeledCount % sampleCountThreshold; //TRAINING_EXAMPLE % sampleCountThreshold;
 	        	        	if(y < 0){
 	        	        		y = y * sampleCountThreshold;
 	        	        	}
 	        	        	retrainingThresholdCount = sampleCountThreshold - y;
 
-	        	        	if( countTrainingExample > 0){
+	        	        	/*if( countTrainingExample > 0){
 	        	        		statusMessage = retrainingThresholdCount + ' more needed to re-train. Note: Value \"N/A\" doesn\'t count for training.';
 	        	        		//me.mainComponent.taggerDescription2line.setText('<b>' + TRAINING_EXAMPLE + '</b> human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '. '+ statusMessage, false);
-	        	        		me.mainComponent.taggerDescription2line.setText('<b>' + totalHumanLabeledCount + '</b> human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '. '+ statusMessage, false);
+	        	        		me.mainComponent.taggerDescription2line.setText('<b>' + totalHumanLabeledCount + '</b> human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '. ' + statusMessage, false);
 	        	        	}
-	        	        	else{
+	        	        	else{*/
 
 	        	        		statusMessage = retrainingThresholdCount + ' more needed to re-train. Note: Value \"N/A\" doesn\'t count for training.';
 	        	        		// TRAINING_EXAMPLE, this.trainingDataStore.getReader().getTotal()
-	        	        		me.mainComponent.taggerDescription2line.setText('<b>'+ totalHumanLabeledCount +'</b> human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '. ' + statusMessage, false);
-	        	        	}
+	        	        		me.mainComponent.taggerDescription2line.setText('<b>' + totalHumanLabeledCount + '</b> human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '. ' + statusMessage, false);
+	        	        	//}
 
 	        			} else {
 	        				AIDRFMFunctions.setAlert("Info", "No human tagged "+ COLLECTION_TYPES[TYPE]["plural"] + " present for this classifier.");

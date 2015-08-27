@@ -52,7 +52,7 @@ public class CollectionSubscriber extends JedisPubSub {
         if (null == redisLoadShedder) {
             redisLoadShedder = new ConcurrentHashMap<String, LoadShedder>(20);
         }
-        redisLoadShedder.put(channel, new LoadShedder(Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_LOAD_LIMIT)), Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)), true));
+        redisLoadShedder.put(channel, new LoadShedder(Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_LOAD_LIMIT)), Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)), true,channel));
         logger.info("Created loadshedder for channel: " + channel);
     }
 
@@ -62,7 +62,7 @@ public class CollectionSubscriber extends JedisPubSub {
 
     @Override
     public void onPMessage(String pattern, String channel, String message) {
-        if (redisLoadShedder.get(channel).canProcess(channel)) {
+        if (redisLoadShedder.get(channel).canProcess()) {
             writeToFile(message);
         } else {
             logger.info("loadshdder denied write for: " + channel);

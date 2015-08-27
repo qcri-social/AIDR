@@ -12,7 +12,7 @@ import qa.qcri.aidr.common.code.ConfigurationProperty;
 public enum CommonConfigurationProperty implements ConfigurationProperty {
 	
 	SENDER_EMAIL("SENDER_EMAIL"),SENDER_PASS("SENDER_PASS"),RECIPIENT_EMAIL("RECIPIENT_EMAILS"),
-	SMTP_HOST("SMTP_HOST"),SMTP_PORT("SMTP_PORT"),MAIL_SUBJECT("MAIL_SUBJECT"),MAIL_BODY("MAIL_BODY");
+	SMTP_HOST("SMTP_HOST"),SMTP_PORT("SMTP_PORT"),AIDR_PROFILE("AIDR_PROFILE");
 	
 	private final String configurationProperty;
 

@@ -78,6 +78,8 @@ public class DataStore {
 	private static int attempts = 0;
 	private static final int MAX_RECREATE_POOL_ATTEMPTS = 3;
 	private static Object lockObject = new Object();
+	
+	private static HashMap<Integer,NominalAttributeEC> attLabels = new HashMap<Integer,NominalAttributeEC>();
 
 	public static synchronized void initializeJedisPool() throws Exception {
 		if (null == jedisPool) {
@@ -287,6 +289,7 @@ public class DataStore {
 		}
 		try {
 			con.close();
+			con = null;
 		} catch (SQLException e) {
 			logger.error("Exception when returning MySQL connection", e);
 		}
@@ -298,6 +301,7 @@ public class DataStore {
 		}
 		try {
 			statement.close();
+			statement = null;
 		} catch (SQLException e) {
 			logger.error("Could not close statement", e);
 		}
@@ -309,8 +313,9 @@ public class DataStore {
 		}
 		try {
 			resultset.close();
+			resultset = null;
 		} catch (SQLException e) {
-			logger.error("Could not close statement", e);
+			logger.error("Could not close resultSet", e);
 		}
 	}
 
@@ -734,6 +739,124 @@ public class DataStore {
 
 		return modelFamilies;
 	}
+	
+	public static void getActiveModelsDocCount(HashMap<Integer, HashMap<Integer, ModelFamilyEC>> modelFamilies, HashMap<Integer, 
+			HashMap<String, ModelFamilyEC>> modelFamiliesByCode) {
+		Connection conn = null;
+		PreparedStatement sql = null;
+		ResultSet result = null;
+
+		try {
+			conn = getMySqlConnection();
+
+			sql = conn
+					.prepareStatement(
+							"SELECT \n"
+									+ " fam.modelFamilyID, \n"
+									+ "	fam.crisisID, \n"
+									+ "	fam.nominalAttributeID, \n"
+									+ " mdl.modelID, \n"
+									+ "	lbl.nominalLabelID,\n"
+									+ "	COUNT(DISTINCT dnl.documentID) AS labeledItemCount\n"
+									+ "FROM model_family fam \n"
+									+ "LEFT JOIN model mdl on mdl.modelFamilyID = fam.modelFamilyID \n"																		
+									+ "JOIN nominal_label lbl ON lbl.nominalAttributeID = fam.nominalAttributeID \n"
+									+ "LEFT JOIN document doc ON doc.crisisID=fam.crisisID \n"
+									+ "LEFT JOIN document_nominal_label dnl ON dnl.documentID=doc.documentID AND dnl.nominalLabelID=lbl.nominalLabelID \n"
+									+ "WHERE fam.isActive AND (mdl.modelID IS NULL OR mdl.isCurrentModel) \n"
+									+ "GROUP BY crisisID, nominalAttributeID, nominalLabelID ");
+			result = sql.executeQuery();
+
+			ModelFamilyEC family = null;
+			NominalAttributeEC attribute = null;
+			NominalLabelEC label = null;
+			HashMap<ModelFamilyEC, Integer> familyLabelCount = new HashMap<>();
+			Integer crisisID = null;
+			Integer attributeID = null;
+			Integer nominalLabelID = null;
+			int count;
+			
+			while (result.next()) {
+				crisisID = result.getInt("crisisID");
+				attributeID = result.getInt("nominalAttributeID");
+				nominalLabelID = result.getInt("nominalLabelID");
+				if (!modelFamilies.containsKey(crisisID)) {
+					modelFamilies.put(crisisID, new HashMap<Integer, ModelFamilyEC>());
+					modelFamiliesByCode.put(crisisID, new HashMap<String, ModelFamilyEC>());
+				}
+				if(modelFamilies.get(crisisID).get(attributeID) == null) {	
+					//create model family
+					family = new ModelFamilyEC();
+					family.setCrisisID(crisisID);
+					int tmpModelID = result.getInt("modelID");
+					if (!result.wasNull()) {
+						family.setCurrentModelID(tmpModelID);
+					}
+					family.setIsActive(true);
+					family.setModelFamilyID(result.getInt("modelFamilyID"));
+				}
+				else
+					family = modelFamilies.get(crisisID).get(attributeID);
+					
+				attribute = family.getNominalAttribute();
+				if(attribute == null)
+				{
+					if(attLabels.containsKey(attributeID))
+					{
+						attribute = attLabels.get(attributeID);
+						family.setNominalAttribute(attribute);
+					}
+					else
+					{
+						synchronized(attLabels) {
+							getAttributesLabels();
+
+							if(attLabels.containsKey(attributeID))
+							{
+								attribute = attLabels.get(attributeID);
+								family.setNominalAttribute(attribute);
+							}
+						}
+					}
+
+				}
+
+				label = attribute.getNominalLabel(nominalLabelID);
+				if(label == null)
+				{
+					synchronized(attLabels) {
+						updateLabels(attributeID);
+						attribute = attLabels.get(attributeID);
+					}
+				}
+				
+				if(familyLabelCount.get(family) == null)
+					familyLabelCount.put(family, 0);
+				
+				modelFamilies.get(crisisID).put(attributeID, family);
+				modelFamiliesByCode.get(crisisID).put(attribute.getCode(), family);
+
+				count = familyLabelCount.get(family);
+				familyLabelCount.put(family, count + result.getInt("labeledItemCount"));
+
+			}
+
+			//sum training sample counts per attribute
+			for (Map.Entry<ModelFamilyEC, Integer> entry : familyLabelCount.entrySet()) {
+				entry.getKey().setTrainingExampleCount(entry.getValue());
+				logger.info("training example count: " + entry.getValue() + " for family" + entry.getKey().getModelFamilyID());
+			}
+
+		} catch (SQLException e) {
+			logger.error("Exception when getting model state ::", e);
+		} catch (Exception e) {
+			logger.error("Exception in getActiveModelsDocCount ::", e);
+		} finally {
+			close(result);
+			close(sql);
+			close(conn);
+		}
+	}
 
 	public static void deleteModel(int modelID) {
 		Connection conn = null;
@@ -793,6 +916,7 @@ public class DataStore {
 		int modelID = MODEL_ID_ERROR;
 		Connection conn = null;
 		PreparedStatement modelInsert = null, mfUpdate = null;
+		PreparedStatement modelLabelPerfInsert = null;
 		ResultSet result = null;
 		NumberFormat format = NumberFormat.getNumberInstance(Locale.US);
 
@@ -817,35 +941,28 @@ public class DataStore {
 							+ ", UTC_TIMESTAMP())";
 			modelInsert = conn.prepareStatement(modelInsertSql, Statement.RETURN_GENERATED_KEYS);
 			modelInsert.executeUpdate();
-
-			//Get modelID of newly inserted model
-			Statement getIDStatement = conn.createStatement();
-			ResultSet getIDResult = getIDStatement.executeQuery("SELECT LAST_INSERT_ID()");
-			getIDResult.next();
-			modelID = getIDResult.getInt(1);
-			getIDStatement.close();
-
-			//result = modelInsert.getGeneratedKeys();
-			//result.next();
-			//modelID = result.getInt(1);
+			result = modelInsert.getGeneratedKeys();
+			
+			if (result != null && result.next()) {
+			    modelID = result.getInt(1);
+			}
+			
 			System.out.println("Inserted a new model with model ID " + modelID); //TODO: remove
 			logger.info("Inserted a new model with model ID " + modelID);
 			//Insert per-label classification performance of this model 
 			List<ModelNominalLabelPerformance> labelPerformaceList = model.getLabelPerformanceList();
+			String perfInsertSql = "INSERT INTO model_nominal_label (`modelID`, `nominalLabelID`, `labelPrecision`, `labelRecall`, `labelAuc`, `classifiedDocumentCount`) "
+					+ " VALUES (?,?,?,?,?,0);";
+			modelLabelPerfInsert = conn.prepareStatement(perfInsertSql);
 			for (ModelNominalLabelPerformance perf : labelPerformaceList) {
-				String perfInsertSql =
-						"INSERT INTO model_nominal_label (`modelID`, `nominalLabelID`, `labelPrecision`, `labelRecall`, `labelAuc`, `classifiedDocumentCount`) VALUES "
-								+ "("
-								+ modelID + ","
-								+ perf.getNominalLabelID() + ","
-								+ format.format(perf.getPrecision()) + ","
-								+ format.format(perf.getRecall()) + ","
-								+ format.format(perf.getAuc()) + ","
-								+ "0)";
-				PreparedStatement modelLabelPerfInsert = conn.prepareStatement(perfInsertSql);
+				
+				modelLabelPerfInsert.setInt(1, modelID);
+				modelLabelPerfInsert.setInt(2, perf.getNominalLabelID());
+				modelLabelPerfInsert.setString(3, format.format(perf.getPrecision()));
+				modelLabelPerfInsert.setString(4, format.format(perf.getRecall()));
+				modelLabelPerfInsert.setString(5, format.format(perf.getAuc()));
 
 				modelLabelPerfInsert.executeUpdate();
-				close(modelLabelPerfInsert);
 			}
 
 			// Set the the new model as the active model of its model family
@@ -857,6 +974,7 @@ public class DataStore {
 		} catch (SQLException e) {
 			logger.error("Exception while saving model to database", e);
 		} finally {
+			close(modelLabelPerfInsert);
 			close(result);
 			close(modelInsert);
 			close(mfUpdate);
@@ -883,7 +1001,7 @@ public class DataStore {
 					.prepareStatement("select nl.nominalAttributeID, nl.nominalLabelID, 1-coalesce(count(dnl.nominalLabelID)/totalCount, 0.5) as weight \n"
 							+ "from nominal_label nl \n"
 							+ "left join document_nominal_label dnl on dnl.nominalLabelID=nl.nominalLabelID \n"
-							+ "left join (select nominalAttributeID, greatest(count(*),1) as totalCount \n"
+							+ "left join (select nominalAttributeID, greatest(count(1),1) as totalCount \n"
 							+ "	from document_nominal_label natural join nominal_label group by 1) lc on lc.nominalAttributeID=nl.nominalAttributeID \n"
 							+ "group by 1,2");
 			result = sql.executeQuery();
@@ -910,66 +1028,153 @@ public class DataStore {
 
 	public static void saveClassifiedDocumentCounts(HashMap<Integer, HashMap<Integer, Integer>> data) {
 		Connection conn = null;
-		PreparedStatement statement = null;
-
+		PreparedStatement selectStatement = null;
+		PreparedStatement updateStatement = null;
+		ResultSet resultSet = null;
+		
+		String selectQuery = "SELECT COUNT(1) FROM model_nominal_label WHERE modelID = ? AND nominalLabelID = ?";
+		
+		String updateQuery = "UPDATE model_nominal_label SET classifiedDocumentCount = classifiedDocumentCount + ? "
+				+ "WHERE modelID = ? AND nominalLabelID = ?"; 
+		int modelNominalCount = 0;
 		try {
 			// Insert document
 			conn = getMySqlConnection();
+			selectStatement = conn.prepareStatement(selectQuery);
+			updateStatement = conn.prepareStatement(updateQuery);
+			
 			for (Map.Entry<Integer, HashMap<Integer, Integer>> modelDocCounts : data.entrySet()) {
 				int modelID = modelDocCounts.getKey();
 				for (Map.Entry<Integer, Integer> labelDocCount : modelDocCounts.getValue().entrySet()) {
 					Integer labelID = labelDocCount.getKey();
 					Integer docCount = labelDocCount.getValue();
+					
+					selectStatement.setInt(1, modelID);
+					selectStatement.setInt(2, labelID);
+					
+					resultSet = selectStatement.executeQuery();
 
-					statement = conn
-							.prepareStatement(
-									"INSERT INTO model_nominal_label (modelID, classifiedDocumentCount, nominalLabelID) values (" + modelID + "," + docCount + ",'" + labelID + "') "
-											+ "ON DUPLICATE KEY UPDATE classifiedDocumentCount=classifiedDocumentCount+values(classifiedDocumentCount)");
-					statement.executeUpdate();
-
-					statement.close();
+					if(resultSet != null && resultSet.next()) {
+						modelNominalCount = resultSet.getInt(1);
+					}
+					
+					if(modelNominalCount > 0) {
+						
+						updateStatement.setInt(1, docCount);
+						updateStatement.setInt(2, modelID);
+						updateStatement.setInt(3, labelID);
+						updateStatement.executeUpdate();
+					}
 				}
 			}
 		} catch (SQLException e) {
-			logger.error("Exception when attempting to write ClassifiedDocumentCount to database : " + data);
+			logger.error("Exception when attempting to write ClassifiedDocumentCount to database : " + data, e);
 		} finally {
-			close(statement);
+			close(resultSet);
+			close(updateStatement);
+			close(selectStatement);
 			close(conn);
 		}
 	}
 
-	/*
-	public static void main(String[] args) throws Exception {
+	
+	//update nominal labels for an attribute from db
+	private static void updateLabels(Integer attributeID){
 
-		DataStore.initTaskManager();
+		Connection conn = null;
+		PreparedStatement selectStatement = null;
+		ResultSet result = null;
+		String selectQuery = "SELECT nominalLabelID,l.nominalLabelCode,l.name as nominalLabelName,"
+				+ "l.description as nominLabelDescription FROM nominal_label l where l.nominalAttributeID = ?";
+		
+		try {
+			conn = getMySqlConnection();
+			selectStatement = conn.prepareStatement(selectQuery);
+			selectStatement.setInt(1, attributeID);
+			result = selectStatement.executeQuery();
+			NominalAttributeEC attribute = null;
+			NominalLabelEC label = null;
 
-		TaskManagerEntityMapper mapper = new TaskManagerEntityMapper();
-		JSONObject tweet = new JSONObject();
-		tweet.put("docType", "twitter");
-		tweet.put("payload", "This is a test document to test task-manager save");
-		tweet.put("nominal_labels", new JSONArray());
+			while (result.next()) {
+				int labelID = result.getInt("nominalLabelID");
+				attribute = attLabels.get(attributeID);
+				attribute.resetNominalLabels();
+				if(attribute.getNominalLabel(labelID) == null)
+				{
+					label = new NominalLabelEC();
+					label.setDescription(result.getString("nominLabelDescription"));
+					label.setName(result.getString("nominalLabelName"));
+					label.setNominalAttribute(attribute);
+					label.setNominalLabelCode(result.getString("nominalLabelCode"));
+					label.setNominalLabelID(result.getInt("nominalLabelID"));
+					attribute.addNominalLabel(label);
+				}
+			}
 
-		Document doc = new Tweet();
-		doc.setCrisisID(117L);
-		doc.setValueAsTrainingSample(0.8);
-		doc.setInputJson(tweet);
-		doc.humanLabelCount = 0;
-		TaggerDocument DTOdoc = Document.fromDocumentToTaggerDocument(doc);
 
-		List<NominalLabel> nbList = new ArrayList<NominalLabel>();
-		nbList.add(new NominalLabel(320));
-		nbList.add(new NominalLabel(322));
-		DTOdoc.setNominalLabelCollection(nbList);
-
-		Long docID = DataStore.taskManager.saveNewTask(TaggerDocument.toDocumentDTO(DTOdoc), doc.getCrisisID());
-		System.out.println("Inserted new document with documentID = " + docID);
-		logger.info("Inserted new document with documentID = " + docID);
-
-		System.out.println("Testing truncate Labeling buffer for crisisID = " + 117);
-		logger.info("Testing truncate Labeling buffer for crisisID = " + 117);
-		//DataStore.taskManager.truncateLabelingTaskBufferForCrisis(117L, Config.LABELING_TASK_BUFFER_MAX_LENGTH, 0);
-		DataStore.taskManager.truncateLabelingTaskBufferForCrisis(117L, Integer.parseInt(getProperty("labeling_task_buffer_max_length")), 0);
+		} catch (SQLException e) {
+			logger.error("Exception while updating nominal labels ::", e);
+		} finally {
+			close(result);
+			close(selectStatement);
+			close(conn);
+		}
 	}
-	 */
+	
+	//get all attributes and labels, and store in hashmap
+	//invoke this method after a timed wait - to refresh the data structure
+	public static void getAttributesLabels() {
+		Connection conn = null;
+		PreparedStatement selectStatement = null;
+		ResultSet result = null;
+
+		String selectQuery = "SELECT a.nominalAttributeID, a.code as nominalAttributeCode,"
+				+ " a.description as nominalAttributeDescription, a.name as nominalAttributeName, l.nominalLabelID, l.nominalLabelCode,l.name as nominalLabelName,"
+				+ "l.description as nominLabelDescription FROM nominal_attribute a join nominal_label l on a.nominalAttributeID = l.nominalAttributeID";
+
+		try {
+			conn = getMySqlConnection();
+			selectStatement = conn.prepareStatement(selectQuery);
+			result = selectStatement.executeQuery();
+			NominalAttributeEC attribute = null;
+			NominalLabelEC label = null;
+
+			while (result.next()) {
+				int attrID = result.getInt("nominalAttributeID");
+				int labelID = result.getInt("nominalLabelID");
+				if(!attLabels.containsKey(attrID))
+				{
+					attribute = new NominalAttributeEC();
+					attribute.setNominalAttributeID(attrID);
+					attribute.setCode(result.getString("nominalAttributeCode"));
+					attribute.setDescription(result.getString("nominalAttributeDescription"));
+					attribute.setName(result.getString("nominalAttributeName"));
+					attLabels.put(attrID, attribute);
+				}
+				else
+					attribute = attLabels.get(attrID);
+
+				if(attribute.getNominalLabel(labelID) == null)
+				{
+					label = new NominalLabelEC();
+					label.setDescription(result.getString("nominLabelDescription"));
+					label.setName(result.getString("nominalLabelName"));
+					label.setNominalAttribute(attribute);
+					label.setNominalLabelCode(result.getString("nominalLabelCode"));
+					label.setNominalLabelID(result.getInt("nominalLabelID"));
+					attribute.addNominalLabel(label);
+				}
+			}
+
+
+		} catch (SQLException e) {
+			logger.error("Exception while creating nominal attributes ::", e);
+		} finally {
+			close(result);
+			close(selectStatement);
+			close(conn);
+		}
+		
+	}
 
 }

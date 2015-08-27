@@ -1108,16 +1108,13 @@ public class TaggerServiceImpl implements TaggerService {
 					MediaType.APPLICATION_JSON).post(
 					Entity.json(objectMapper.writeValueAsString(taskAnswer)),
 					Response.class);
-			logger.info("saveTaskAnswer - response status : "
-					+ clientResponse.getStatus());
+			//logger.info("saveTaskAnswer - response status : "
+				//	+ clientResponse.getStatus());
 
 			return clientResponse.getStatus() == 204;
 		} catch (Exception e) {
 			logger.error("Error while saving TaskAnswer in AIDRCrowdsourcing", e);
 			return true;
-			// throw new
-			// AidrException("Error while saving TaskAnswer in AIDRCrowdsourcing",
-			// e);
 		}
 	}
 
@@ -1129,16 +1126,13 @@ public class TaggerServiceImpl implements TaggerService {
 		try {
 			WebTarget webResource = client.target(outputAPIMainUrl
 					+ "/crisis/fetch/channel/filter/" + code + "?count=1000");
-			System.out.println("Invoking: " + outputAPIMainUrl
-					+ "/crisis/fetch/channel/filter/" + code + "?count=1000");
-			System.out.println("constraints: " + constraints);
+			logger.info("Invoking: " + outputAPIMainUrl
+					+ "/crisis/fetch/channel/filter/" + code + "?count=1000 constraints:" + constraints);
 			Response clientResponse = webResource.request(
 					MediaType.APPLICATION_JSON).post(Entity.json(constraints),
 					Response.class);
 
 			String jsonResponse = clientResponse.readEntity(String.class);
-			//System.out.println("jsonResponse: " + jsonResponse);
-
 			if (jsonResponse != null
 					&& (jsonResponse.startsWith("{") || jsonResponse
 							.startsWith("["))) {
@@ -1198,7 +1192,7 @@ public class TaggerServiceImpl implements TaggerService {
 			/**
 			 * Rest call to Tagger
 			 */
-			logger.info("received request for modelID = " + modelID);
+			//logger.info("received request for modelID = " + modelID);
 			WebTarget webResource = client.target(taggerMainUrl
 					+ "/modelNominalLabel/" + modelID + "/" + crisisCode);
 
@@ -1448,7 +1442,7 @@ public class TaggerServiceImpl implements TaggerService {
 			throws AidrException {
 		Client client = ClientBuilder.newBuilder()
 				.register(JacksonFeature.class).build();
-		System.out.println("[generateTweetIdsLink] Received request for code: "
+		logger.info("[generateTweetIdsLink] Received request for code: "
 				+ code);
 		try {
 			/*System.out.println("Invoked URL: " + persisterMainUrl
@@ -1563,11 +1557,9 @@ public class TaggerServiceImpl implements TaggerService {
 			String queryString, String userName) throws AidrException {
 		Client client = ClientBuilder.newBuilder()
 				.register(JacksonFeature.class).build();
-		System.out
-				.println("[generateJsonTweetIdsLink] Received request for code: "
-						+ code);
+		//System.out.println("[generateJsonTweetIdsLink] Received request for code: "+ code);
 		try {
-			System.out.println("[generateTweetIdsLink] Invoked URL: "
+			logger.info("[generateTweetIdsLink] Invoked URL: "
 					+ persisterMainUrl
 					+ "/taggerPersister/filter/genTweetIds?collectionCode="
 					+ code + "&downloadLimited=true&userName=" + userName);
@@ -1580,7 +1572,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			Map<String, Object> jsonResponse = clientResponse
 					.readEntity(Map.class);
-			logger.info("Returning from func: " + jsonResponse);
+			//logger.info("Returning from func: " + jsonResponse);
 			return jsonResponse;
 		} catch (Exception e) {
 			logger.error("Error while generating filtererd Tweet Ids download link in Persister for collection: "+code, e);
@@ -1626,11 +1618,9 @@ public class TaggerServiceImpl implements TaggerService {
 			throws AidrException {
 		Client client = ClientBuilder.newBuilder()
 				.register(JacksonFeature.class).build();
-		System.out
-				.println("[generateJsonTweetIdsLink] Received request for code: "
-						+ code);
+		//System.out.println("[generateJsonTweetIdsLink] Received request for code: "	+ code);
 		try {
-			System.out.println("[generateJsonTweetIdsLink] Invoked URL: "
+			logger.info("[generateJsonTweetIdsLink] Invoked URL: "
 					+ persisterMainUrl
 					+ "/taggerPersister/filter/genJsonTweetIds?collectionCode="
 					+ code + "&downloadLimited=true&" + "&jsonType=" + jsonType
@@ -1645,7 +1635,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 			Map<String, Object> jsonResponse = clientResponse
 					.readEntity(Map.class);
-			logger.info("Returning from func: " + jsonResponse);
+			//logger.info("Returning from func: " + jsonResponse);
 			return jsonResponse;
 			/*
 			 * if (jsonResponse != null &&
@@ -1689,7 +1679,7 @@ public class TaggerServiceImpl implements TaggerService {
 			}
 		}
 		logger.info("Created attributes collection of size = " + result.size());
-		logger.info(result);
+		//logger.info(result);
 		return result.values();
 	}
 
@@ -1721,8 +1711,7 @@ public class TaggerServiceImpl implements TaggerService {
 				.register(JacksonFeature.class).build();
 		try {
 
-			System.out
-					.print("removeAttributeFromCrises: starting ......................................");
+			//System.out.print("removeAttributeFromCrises: starting ......................................");
 			WebTarget webResource = client.target(taggerMainUrl
 					+ "/modelfamily/" + modelFamilyID);
 
@@ -1740,8 +1729,7 @@ public class TaggerServiceImpl implements TaggerService {
 				String crisisCode = tm.getCrisis().getCode();
 				String attributeCode = tm.getNominalAttribute().getCode();
 
-				logger.info("crisisCode: " + crisisCode);
-				logger.info("attributeCode: " + attributeCode);
+				logger.info("crisisCode: " + crisisCode + " attributeCode: " + attributeCode);
 
 				WebTarget webResp = client.target(crowdsourcingAPIMainUrl
 						+ "/clientapp/delete/" + crisisCode + "/"
@@ -1749,7 +1737,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 				Response clientResp = webResource.request(
 						MediaType.APPLICATION_JSON).get();
-				logger.info("deactivated - clientResponse : " + clientResp);
+				//logger.info("deactivated - clientResponse : " + clientResp);
 			} else {
 				logger.info("No modelfamily found for id = " + modelFamilyID);
 			}
@@ -1788,8 +1776,8 @@ public class TaggerServiceImpl implements TaggerService {
 	public int trashCollection(AidrCollection collection) throws Exception {
 		int retVal = 0;
 		Long crisisID = -1L;
-		logger.info("[trashCollection] request received for collection: "
-				+ collection.getCode());
+		//logger.info("[trashCollection] request received for collection: "
+				//+ collection.getCode());
 		// First clean up the aidr-predict database of documents
 		try {
 			Client client = ClientBuilder.newBuilder()
@@ -1801,8 +1789,8 @@ public class TaggerServiceImpl implements TaggerService {
 					MediaType.APPLICATION_JSON).get();
 
 			String jsonResponse = clientResponse.readEntity(String.class);
-			logger.info("[trashCollection] response from tagger-api: "
-					+ jsonResponse);
+			//logger.info("[trashCollection] response from tagger-api: "
+					//+ jsonResponse);
 			if (jsonResponse != null && jsonResponse.contains("TRASHED")) {
 				retVal = 1;
 				crisisID = Long.parseLong(jsonResponse.substring(
@@ -1817,8 +1805,8 @@ public class TaggerServiceImpl implements TaggerService {
 					"Error while deleting a collection from aidr-predict database",
 					e);
 		}
-		logger.info("[trashCollection] result of cleaning aidr-predict: "
-				+ crisisID);
+		//logger.info("[trashCollection] result of cleaning aidr-predict: "
+				//+ crisisID);
 		if (retVal > 0 && crisisID < 0) {
 			return 1; // crisis does not exist in aidr_predict table. Reason: no
 						// classifier attached
@@ -1835,8 +1823,8 @@ public class TaggerServiceImpl implements TaggerService {
 						MediaType.APPLICATION_JSON).get();
 
 				String jsonResponse = clientResponse.readEntity(String.class);
-				logger.info("[trashCollection] response from trainer-api: "
-						+ jsonResponse);
+				//logger.info("[trashCollection] response from trainer-api: "
+						//+ jsonResponse);
 				if (jsonResponse != null
 						&& jsonResponse.equalsIgnoreCase("{\"status\":200}")) {
 					logger.info("[trashCollection] Success in trashing "
@@ -1857,9 +1845,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 	@Override
 	public int untrashCollection(String collectionCode) throws Exception {
-		System.out
-				.println("[untrashCollection] request received for collection: "
-						+ collectionCode);
+		//System.out.println("[untrashCollection] request received for collection: "+ collectionCode);
 		try {
 			Client client = ClientBuilder.newBuilder()
 					.register(JacksonFeature.class).build();
@@ -1869,12 +1855,12 @@ public class TaggerServiceImpl implements TaggerService {
 					MediaType.APPLICATION_JSON).get();
 
 			String jsonResponse = clientResponse.readEntity(String.class);
-			System.out.println("[untrashCollection] response from tagger-api: "
-					+ jsonResponse);
+			//System.out.println("[untrashCollection] response from tagger-api: "
+				//	+ jsonResponse);
 			if (jsonResponse != null
 					&& jsonResponse
 							.equalsIgnoreCase("{\"status\": \"UNTRASHED\"}")) {
-				System.out.println("[trashCollection] Success in untrashing + "
+				logger.info("[trashCollection] Success in untrashing + "
 						+ collectionCode);
 				return 1;
 			} else {
@@ -2087,8 +2073,7 @@ public class TaggerServiceImpl implements TaggerService {
 				+ "/misc/humanLabeled/download/crisis/" + crisisCode
 				+ "/userName/" + userName + "?count=" + count
 				+ "&fileType=" + fileType + "&contentType=" + contentType;
-		logger.info("Going to invoke REST API: " + targetURL);
-		logger.info("Invocation POST body: " + queryString);
+		logger.info("Going to invoke REST API: " + targetURL + " POST body: " + queryString);
 		try {
 			// Rest call to Tagger
 			WebTarget webResource = client.target(taggerMainUrl
@@ -2104,7 +2089,7 @@ public class TaggerServiceImpl implements TaggerService {
 					MediaType.APPLICATION_JSON).post(Entity.json(queryString),
 					Response.class);
 			String jsonResponse = clientResponse.readEntity(String.class);
-			logger.info("Response = " + jsonResponse);
+			//logger.info("Response = " + jsonResponse);
 			TaggerResponseWrapper response = objectMapper.readValue(
 					jsonResponse, TaggerResponseWrapper.class);
 			logger.info("Number of human labeled documents returned by Tagger: "

@@ -113,4 +113,8 @@ public class NominalAttributeEC {
         if (!labels.contains(label))
             labels.add(label);
     }
+    
+    public void resetNominalLabels() {
+       labels = new ArrayList<NominalLabelEC>();
+    }
 }

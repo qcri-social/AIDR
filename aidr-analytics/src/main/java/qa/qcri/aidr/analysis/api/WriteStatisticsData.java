@@ -133,7 +133,7 @@ public class WriteStatisticsData implements ServletContextListener {
 				TagDataMapRecord tCount = (TagDataMapRecord) ChannelBufferManager.getTagDataMap().get(key);
 				TagData t = new TagData(key.getCrisisCode(), timestamp, granularity, key.getAttributeCode(), key.getLabelCode(), tCount.getCount(granularity));
 				if (tCount.getCount(granularity) > 0) {
-					logger.error("Will attempt persistence of tag key: " + key.toString());
+					logger.info("Will attempt persistence of tag key: " + key.toString());
 					t.setMaxCreatedAt(tCount.getLastUpdateTime());
 					t.setMinCreatedAt(tCount.getFirstEntryTime());
 					tagDataEJB.writeData(t);

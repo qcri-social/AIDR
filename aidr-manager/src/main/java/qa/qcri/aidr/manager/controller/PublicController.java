@@ -87,13 +87,13 @@ public class PublicController extends BaseController{
         if(updateDuration){
             String token = (String)jsonObject.get("token");
             if(!collectionService.isValidToken(token)){
-                logger.info("authentication is failed : token - " + token);
+                logger.error("authentication failed : token - " + token);
                 return getUIWrapper(false);
             }
         }
 
         try{
-            logger.info("try:" + geoString) ;
+            //logger.info("try:" + geoString) ;
             AidrCollection dbCollection = collectionService.findById((int)collectionId);
 
 
@@ -115,7 +115,7 @@ public class PublicController extends BaseController{
                 }
             }
             else{
-                logger.info(String.format("EMSC PublicController update status :  %s.",status.getStatus()));
+                logger.info("PublicController update status :" + status.getStatus());
                 Calendar now = Calendar.getInstance();
                 collectionLogEndData = dbCollection.getEndDate();
 
@@ -157,7 +157,7 @@ public class PublicController extends BaseController{
     @ResponseBody
     public Map<String,Object>  findByRequestCode(@QueryParam("code") String code) throws Exception {
         try {
-        	logger.info("Finding collection by code: "+code);
+        	//logger.info("Finding collection by code: "+code);
             AidrCollection data = collectionService.findByCode(code);
             return getUIWrapper(data, true);
 
@@ -199,21 +199,21 @@ public class PublicController extends BaseController{
 		List<AidrCollectionTotalDTO> dtoList = new ArrayList<AidrCollectionTotalDTO>();
 
 		try {
-			logger.info("*************************************************  CollectionStatus.RUNNING ****************************");
+			//logger.info("*************************************************  CollectionStatus.RUNNING ****************************");
 			List<AidrCollection> data = collectionService.findAllForPublic(start, limit, CollectionStatus.RUNNING);
-			logger.info("data size : " + data.size());
+			//logger.info("data size : " + data.size());
 
 			for (AidrCollection collection : data) {
 				String taggingOutPut = taggerService.loadLatestTweetsWithCount(collection.getCode(), 1);
 				//String stripped = taggingOutPut.substring(1, taggingOutPut.lastIndexOf("]"));
-				logger.info("stripped taggingOutPut : " + taggingOutPut );
+				//logger.info("stripped taggingOutPut : " + taggingOutPut );
 				if(!JsonDataValidator.isEmptySON(taggingOutPut))  {
 					AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, true);
 					dtoList.add(dto);
 					count = count +1;
 				}
 			}
-			logger.info("count = " + count);
+			//logger.info("count = " + count);
 			return getUIWrapper(dtoList, count.longValue());
 
 		} catch (Exception e) {
@@ -243,7 +243,7 @@ public class PublicController extends BaseController{
 					count = count +1;
 				}
 			}
-			logger.info("count = " + count);
+			//logger.info("count = " + count);
 			return getUIWrapper(dtoList, count.longValue());
 
 		} catch (Exception e) {
@@ -278,11 +278,11 @@ public class PublicController extends BaseController{
 				AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, hasTagggerOutput);
 				dtoList.add(dto);
 			}
-			logger.info("count = " + count);
+			//logger.info("count = " + count);
 			return getUIWrapper(dtoList, count.longValue());
 
 		} catch (Exception e) {
-			logger.error("Error in ");
+			logger.error("Error in finding All stopped collections",e);
 			return getUIWrapper(false);
 		}
 	}
@@ -354,16 +354,14 @@ public class PublicController extends BaseController{
 	public Map<String, Boolean> getPublicFlagStatus() {
 		List<AidrCollection> resultList;
 		try {
-			long startTime = System.currentTimeMillis();
+			//long startTime = System.currentTimeMillis();
 			resultList = collectionService.getRunningCollections();
-			System.out.println("Time to retrieve map from DB: " + (System.currentTimeMillis() - startTime));
-
 			if (resultList != null) {
 				Map<String, Boolean> runningCollections = new HashMap<String, Boolean>(resultList.size());
 				for (AidrCollection c: resultList) {
 					runningCollections.put(c.getCode(), c.getPubliclyListed());
 				}
-				logger.debug("Fetched map to send: " + runningCollections);
+				//logger.debug("Fetched map to send: " + runningCollections);
 				return runningCollections;
 			}
 		} catch (Exception e) {
@@ -378,14 +376,14 @@ public class PublicController extends BaseController{
 	public Map<String, Boolean> getCollectionPublicFlagStatus(@QueryParam("channelCode") String channelCode) {
 		AidrCollection collection = null;
 		try {
-			long startTime = System.currentTimeMillis();
+			//long startTime = System.currentTimeMillis();
 			collection = collectionService.findByCode(channelCode);
-			System.out.println("Time to retrieve publiclyStatus from DB: " + (System.currentTimeMillis() - startTime));
+			//System.out.println("Time to retrieve publiclyStatus from DB: " + (System.currentTimeMillis() - startTime));
 
 			if (collection != null) {
 				Map<String, Boolean> result = new HashMap<String, Boolean>();
 				result.put(channelCode, collection.getPubliclyListed());
-				logger.debug("Fetched map to send: " + result);
+				//logger.debug("Fetched map to send: " + result);
 				return result;
 			}
 		} catch (Exception e) {
