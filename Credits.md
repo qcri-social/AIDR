@@ -7,7 +7,7 @@ As of August 2015, the team that is actively contributing to AIDR includes:
 * [Muhammad Imran](http://mimran.me/) - Scientist.
 * [Ji Lucas](http://www.linkedin.com/in/jilucas) - Technical lead.
 * Noora Mohamed Al Emadi - Software Developer.
-* Meghna Singh - Research Associate.
+* Meghna Singh - Software Developer.
 * Dhruv Sharma - Software Developer.
 * Kushalkant Goyal - Software Developer. 
 * Latika Bhurani - Software Developer.
