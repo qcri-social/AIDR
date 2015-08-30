@@ -144,7 +144,7 @@ public class PybossaCommunicator extends AbstractCommunicator {
                     String output;
                     logger.info("Output from Server ...." + response.getStatusLine().getStatusCode() + "\n");
                     while ((output = br.readLine()) != null) {
-                        logger.error(output);
+                        logger.info(output);
                     }
                 }
             }
@@ -158,6 +158,7 @@ public class PybossaCommunicator extends AbstractCommunicator {
             logger.error("ex Code sendPost1: " + ex);
             logger.error("ex Code sendPost2: " + data);
             logger.error("ex Code sendPost3: " + url);
+            throw new RuntimeException(" sendPost Failed :" + ex.getMessage());
         } finally {
             httpClient.getConnectionManager().shutdown();
         }

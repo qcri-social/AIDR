@@ -22,7 +22,8 @@ public class SchedulerService {
 
     //set 5 sec. for testing. update to 5min later
     //"0 0/5 * * * ?"
-	@Scheduled(cron="0/3 * * * * ?")
+
+	@Scheduled(cron="0 0/3 * * * ?")
 	public void doSchedule() {
 
         syncWorker.work();

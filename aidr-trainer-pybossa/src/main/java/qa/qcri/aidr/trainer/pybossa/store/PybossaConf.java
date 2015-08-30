@@ -17,14 +17,11 @@ public class PybossaConf {
 
     public static String GEOJSON_TYPE_POINT="point";
     public static String GEOJSON_TYPE_FEATURE_COLLECTION="FeatureCollection";
-    //http://scd1.qcri.org/aidr/data/trainer/   //  /sc/aidr/data/trainer
-    ///sc/projects/aidr/data/trainer/geo
-    public static String DEFAULT_TRAINER_FILE_PATH = "/sc/projects/aidr/data/trainer/";
-    public static String DEFAULT_TRAINER_GEO_FILE_PATH = "/sc/projects/aidr/data/trainer/geo/";
 
-   // user local setting
-    //public static String DEFAULT_TRAINER_FILE_PATH = "/Users/jlucas/Documents/pybossa/";
-    //public static String DEFAULT_TRAINER_GEO_FILE_PATH = "/Users/jlucas/Documents/pybossa/";
+
+    public static String DEFAULT_TRAINER_FILE_PATH = "/mnt/data/trainer/";
+    public static String DEFAULT_TRAINER_GEO_FILE_PATH = "/mnt/data/trainer/geo/";
+
 
     public static double ONE_MILE_RADIUS =  1609.34;
     public static double ONE_MILE_DISTANCE =  1;
@@ -35,5 +32,8 @@ public class PybossaConf {
 
     public static int DEFAULT_GEO_N_ANSWERS = 1;
 
-    public static long DEFAULT_CATEGORY_ID = 2;
+    public static long DEFAULT_CATEGORY_ID = 3;
+
+    public final static String BASE_URL = "https://twb.translationcenter.org/api/v1";
+    public final static String API_KEY = "niptz15xao0w";
 }

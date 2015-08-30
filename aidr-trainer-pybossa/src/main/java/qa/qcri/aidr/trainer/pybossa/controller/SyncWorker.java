@@ -9,7 +9,10 @@ import qa.qcri.aidr.trainer.pybossa.service.ClientAppCreateWorker;
 import qa.qcri.aidr.trainer.pybossa.service.ClientAppRunWorker;
 import qa.qcri.aidr.trainer.pybossa.service.MicroMapperWorker;
 import qa.qcri.aidr.trainer.pybossa.service.Worker;
+import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
 
+import java.util.Calendar;
+import java.util.Date;
 
 
 /**
@@ -18,7 +21,7 @@ import qa.qcri.aidr.trainer.pybossa.service.Worker;
 @Component("syncWorker")
 public class SyncWorker implements Worker {
 
-//	protected static Logger logger = Logger.getLogger(SyncWorker.class);
+	protected static Logger logger = Logger.getLogger(SyncWorker.class);
 
 	
     @Autowired
@@ -32,17 +35,22 @@ public class SyncWorker implements Worker {
 
 	public void work() {
 		String threadName = Thread.currentThread().getName();
-
-        System.out.println("Scheduler is starting");
+        Calendar cal = Calendar.getInstance();
+        System.out.println("************************************ Scheduler is starting : " + threadName + " - " + new Date());
         try {
 
-            pybossaWorker.doCreateApp();
-            clientAppRunWorker.processTaskPublish();
-            clientAppRunWorker.processTaskRunImport();
-
             microMapperWorker.processTaskExport();
+            clientAppRunWorker.processTaskRunImport();
+            clientAppRunWorker.processTaskPublish();
+            pybossaWorker.doCreateApp();
+           //
 
-            Thread.sleep(300000); // simulates work
+            int hour = cal.get(Calendar.HOUR_OF_DAY) ;
+            if(hour == StatusCodeType.CLIENT_APP_DELETION_TIME){
+                pybossaWorker.doAppDelete();
+            }
+
+            //Thread.sleep(300000); // simulates work
 
         }
         catch (InterruptedException e) {
@@ -51,7 +59,7 @@ public class SyncWorker implements Worker {
             System.out.println(e.getMessage());
         }
 
-        System.out.println("Scheduler is going sleep");
+        System.out.println("************************************ Scheduler is going sleep : "  + new Date());
     }
 	
 }

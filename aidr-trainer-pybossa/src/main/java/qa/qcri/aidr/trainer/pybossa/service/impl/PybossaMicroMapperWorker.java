@@ -22,6 +22,7 @@ import qa.qcri.aidr.trainer.pybossa.store.UserAccount;
 import qa.qcri.aidr.trainer.pybossa.util.DataFormatValidator;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,6 +45,7 @@ public class PybossaMicroMapperWorker implements MicroMapperWorker {
 
     @Override
     public void processTaskExport() throws Exception {
+        System.out.println("processTaskExport : Start : " + new Date());
         reportProductService.generateCVSReportForGeoClicker();
     }
 

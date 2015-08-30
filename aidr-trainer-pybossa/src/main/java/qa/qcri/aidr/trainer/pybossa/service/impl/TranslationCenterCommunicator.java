@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import qa.qcri.aidr.trainer.pybossa.entity.TaskTranslation;
 import qa.qcri.aidr.trainer.pybossa.format.impl.TranslationProjectModel;
 import qa.qcri.aidr.trainer.pybossa.format.impl.TranslationRequestModel;
+import qa.qcri.aidr.trainer.pybossa.store.PybossaConf;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -20,8 +21,7 @@ import java.util.*;
  * Created by kamal on 4/25/15.
  */
 public class TranslationCenterCommunicator {
-    final private static String BASE_URL = "https://twb.translationcenter.org/api/v1";
-    final private static String API_KEY = "jk26fh2yzwo4";
+
     protected static Logger logger = Logger.getLogger("service.TranslationCenterCommunicator");
 
 
@@ -35,9 +35,9 @@ public class TranslationCenterCommunicator {
         long documentIds[] = new long[1];
         documentIds[0] = ((Integer)documentResult.get("document_id")).longValue();
         request.setSourceDocumentIds(documentIds);
-        final String url=BASE_URL+"/orders";
+        final String url= PybossaConf.BASE_URL+"/orders";
         HttpHeaders requestHeaders=new HttpHeaders();
-        requestHeaders.add("X-Proz-API-Key", API_KEY);
+        requestHeaders.add("X-Proz-API-Key", PybossaConf.API_KEY);
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
         RestTemplate restTemplate=new RestTemplate();
         //restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
@@ -79,9 +79,9 @@ public class TranslationCenterCommunicator {
         String content = getCSVData(request.getTranslationList());
         //generateCsvFile(filename, request.getTranslationList());
 
-        final String url=BASE_URL+"/documents";
+        final String url=PybossaConf.BASE_URL+"/documents";
         HttpHeaders requestHeaders=new HttpHeaders();
-        requestHeaders.add("X-Proz-API-Key", API_KEY);
+        requestHeaders.add("X-Proz-API-Key", PybossaConf.API_KEY);
         requestHeaders.setContentType(new MediaType("multipart","form-data"));
         RestTemplate restTemplate=new RestTemplate();
         restTemplate.getMessageConverters()
@@ -104,7 +104,7 @@ public class TranslationCenterCommunicator {
     public static void updateTranslationOrder(String selfLink, String status, String comment) {
         final String url=selfLink;
         HttpHeaders requestHeaders=new HttpHeaders();
-        requestHeaders.add("X-Proz-API-Key", API_KEY);
+        requestHeaders.add("X-Proz-API-Key", PybossaConf.API_KEY);
         requestHeaders.add("X-HTTP-Method-Override", "PATCH");
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
         RestTemplate restTemplate=new RestTemplate();
@@ -146,9 +146,9 @@ public class TranslationCenterCommunicator {
 
 
     public static List<Map> pullAllTranslationResponses (Long clientAppId, Long twbProjectId) {
-        final String url=BASE_URL+"/orders?delivery_status=to_accept";
+        final String url=PybossaConf.BASE_URL+"/orders?delivery_status=to_accept";
         HttpHeaders requestHeaders=new HttpHeaders();
-        requestHeaders.add("X-Proz-API-Key", API_KEY);
+        requestHeaders.add("X-Proz-API-Key", PybossaConf.API_KEY);
         requestHeaders.setAccept(Collections.singletonList(new MediaType("application", "json")));
         RestTemplate restTemplate=new RestTemplate();
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
@@ -168,9 +168,9 @@ public class TranslationCenterCommunicator {
 
 
     public static List<TranslationProjectModel> pullTranslationProjects(String clientId) {
-        final String url=BASE_URL+"/projects?client="+clientId;
+        final String url=PybossaConf.BASE_URL+"/projects?client="+clientId;
         HttpHeaders requestHeaders=new HttpHeaders();
-        requestHeaders.add("X-Proz-API-Key", API_KEY);
+        requestHeaders.add("X-Proz-API-Key", PybossaConf.API_KEY);
         requestHeaders.setAccept(Collections.singletonList(new MediaType("application", "json")));
         RestTemplate restTemplate=new RestTemplate();
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
@@ -190,20 +190,22 @@ public class TranslationCenterCommunicator {
     public static String getTranslationDocumentContent(String download_link) throws Exception {
         final String url=download_link;
         HttpHeaders requestHeaders=new HttpHeaders();
-        requestHeaders.add("X-Proz-API-Key", API_KEY);
+        requestHeaders.add("X-Proz-API-Key", PybossaConf.API_KEY);
         requestHeaders.setAccept(Collections.singletonList(new MediaType("application", "json")));
         RestTemplate restTemplate=new RestTemplate();
         restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<String>(requestHeaders), String.class);
+        System.out.println("ResponseEntity : response body - " + response.getBody());
+        System.out.println("ResponseEntity : response code - " + response.getStatusCode());
         logger.debug(response.getBody());
         return response.getBody();
     }
 
     //temporary for testing
     public static String pullTranslationProjectsAsString(String clientId) {
-        final String url=BASE_URL+"/projects?client="+clientId;
+        final String url=PybossaConf.BASE_URL+"/projects?client="+clientId;
         HttpHeaders requestHeaders=new HttpHeaders();
-        requestHeaders.add("X-Proz-API-Key", API_KEY);
+        requestHeaders.add("X-Proz-API-Key", PybossaConf.API_KEY);
         RestTemplate restTemplate=new RestTemplate();
 
 
@@ -211,29 +213,6 @@ public class TranslationCenterCommunicator {
         logger.debug(response);
         return response.getBody();
     }
-
-    /*
-    private static void generateCsvFile(String sFileName, List<TaskTranslation> list)
-    {
-        String result = null;
-        try
-        {
-            File file = new File(sFileName);
-            file.createNewFile();
-            String data = getCSVData(list);
-            FileWriter writer = new FileWriter(sFileName);
-            writer.append(data);
-            writer.flush();
-            writer.close();
-
-
-        }
-        catch(IOException e)
-        {
-            logger.error("Error create translation csv file", e);
-        }
-    }
-*/
 
 
 }

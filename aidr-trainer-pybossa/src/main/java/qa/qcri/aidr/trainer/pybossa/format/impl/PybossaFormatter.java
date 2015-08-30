@@ -56,21 +56,6 @@ public class PybossaFormatter {
         return app.toJSONString();
     }
 
-    public Long getDocumentID(String jsonApp, JSONParser parser) throws Exception{
-        Long documentID = null;
-        JSONArray array = (JSONArray) parser.parse(jsonApp);
-        Iterator itr= array.iterator();
-
-        while(itr.hasNext()){
-            JSONObject featureJsonObj = (JSONObject)itr.next();
-            JSONObject info = (JSONObject)featureJsonObj.get("info");
-            documentID = (Long)info.get("documentID");
-        }
-
-        return documentID;
-
-    }
-
     public Long getAppID(String jsonApp, JSONParser parser) throws Exception{
         Long appID = null;
         JSONArray array = (JSONArray) parser.parse(jsonApp);
@@ -85,7 +70,7 @@ public class PybossaFormatter {
     }
 
     public String buildTaskOutputForAIDR(Long taskQueueId, List<TaskLog> taskLogList, String pybossaResult, JSONParser parser, ClientApp clientApp, ClientAppAnswer clientAppAnswer) throws Exception{
-        //JSONObject aModified = new JSONObject();
+
         JSONArray outJson = new JSONArray();
         JSONObject dateJSON = new JSONObject();
         translateRequired = false;
@@ -122,14 +107,10 @@ public class PybossaFormatter {
             if(finalAnswer != null) {
                 JSONObject infoJson =  this.buildInfoJson( (JSONObject)oneFeatureJsonObj.get("info"), finalAnswer, clientApp );
 
-                System.out.println("infoJson : " + infoJson);
-
                 oneFeatureJsonObj.put("info", infoJson);
 
 
                 outJson.add(oneFeatureJsonObj);
-
-                System.out.println("outJson : " + outJson.toJSONString());
 
                 return outJson.toJSONString();
             }
@@ -144,12 +125,6 @@ public class PybossaFormatter {
     ///////////////////////////////////////////////////////////////////////
 
     private JSONObject buildInfoJson(JSONObject infoJson,  String finalAnswer, ClientApp clientApp){
-        // TEMP UPDATE.
-        System.out.println("******************************************************************************");
-        System.out.println("clientApp crisisID: " + clientApp.getCrisisID());
-        System.out.println("clientApp attributeID: " + clientApp.getNominalAttributeID());
-        System.out.println("clientApp crisisID from json: " + infoJson.get("crisisID"));
-        System.out.println("******************************************************************************");
 
         JSONObject obj = new JSONObject();
         obj.put("documentID", infoJson.get("documentID"));
@@ -157,89 +132,79 @@ public class PybossaFormatter {
         obj.put("aidrID", infoJson.get("aidrID"));
         obj.put("crisisID", clientApp.getCrisisID());
         obj.put("attributeID", clientApp.getNominalAttributeID());
-        System.out.println("buildInfoJson : " + obj.toJSONString());
+
         return obj;
     }
 
     public String getAnswerResponse(ClientApp clientApp, String pybossaResult, JSONParser parser, ClientAppAnswer clientAppAnswer, Long taskQueueID) throws Exception{
-        JSONObject responseJSON = new JSONObject();
 
         String[] questions = getQuestion( clientAppAnswer,  parser);
         int[] responses = new int[questions.length];
-        int translationResponses = 0;
 
         JSONArray array = (JSONArray) parser.parse(pybossaResult) ;
 
         Iterator itr= array.iterator();
         String answer = null;
         int cutoffSize = getCutOffNumber(array.size(), clientApp.getTaskRunsPerTask(), clientAppAnswer)  ;
+        JSONObject finalInfo = null;
         System.out.print("getAnswerResponse - cutoffSize :" + cutoffSize);
         while(itr.hasNext()){
             JSONObject featureJsonObj = (JSONObject)itr.next();
             JSONObject info = (JSONObject)featureJsonObj.get("info");
-
+            finalInfo = info;
             answer = this.getUserAnswer(featureJsonObj, clientApp);
             System.out.print("getAnswerResponse - answer :" + answer);
-            translationResponses = 0;
             for(int i=0; i < questions.length; i++ ){
                 System.out.print("getAnswerResponse - questions[i] :" + questions[i]);
                 if(questions[i].trim().equalsIgnoreCase(answer.trim())){
                     responses[i] = responses[i] + 1;
-                }else {
-                    if (answer.equalsIgnoreCase(StatusCodeType.ANSWER_NOT_ENGLISH)) {
-                        translationResponses++;
-                        System.out.println("translationResponses0: " + translationResponses++);
-                    }
                 }
             }
-
-            if (answer.equalsIgnoreCase(StatusCodeType.ANSWER_NOT_ENGLISH)) {
-                System.out.println("translationResponses: " + translationResponses);
-                //translationResponses++;
-                handleTranslationItem(taskQueueID, translationResponses, answer, info, clientAppAnswer, cutoffSize);
-            }
-
         }
+
 
         String finalAnswer = null;
 
         for(int i=0; i < questions.length; i++ ){
             if(responses[i] >= cutoffSize){
                 finalAnswer =  questions[i];
+                if(finalAnswer.equalsIgnoreCase(StatusCodeType.ANSWER_NOT_ENGLISH)){
+                    handleTranslationItem(taskQueueID, answer, finalInfo, clientAppAnswer, cutoffSize);
+                }
             }
         }
 
         return  finalAnswer;
     }
 
-    private void handleTranslationItem(Long taskQueueID,int responseCount, String answer, JSONObject info, ClientAppAnswer clientAppAnswer, int cutOffSize){
-        System.out.println("handleTranslationItem- responseCount :" + responseCount);
-        System.out.println("handleTranslationItem- cutOffSize :" + cutOffSize);
+    private void handleTranslationItem(Long taskQueueID,String answer, JSONObject info, ClientAppAnswer clientAppAnswer, int cutOffSize){
+
         try{
-            if(responseCount >= cutOffSize){
-                String tweetID = String.valueOf(info.get("tweetid"));
-                String tweet = (String)info.get("tweet");
-                String author= (String)info.get("author");
-                String lat= (String)info.get("lat");
-                String lng= (String)info.get("lon");
-                String url= (String)info.get("url");
-                String created = (String)info.get("timestamp");
+            String tweetID = String.valueOf(info.get("tweetid"));
+            String tweet = (String)info.get("tweet");
+            if(tweet == null){
+                tweet = (String)info.get("text");
+            }
+            String author= (String)info.get("author");
+            String lat= (String)info.get("lat");
+            String lng= (String)info.get("lon");
+            String url= (String)info.get("url");
+            String created = (String)info.get("timestamp");
 
-                Long taskID = (Long)info.get("taskid");
+            Long taskID;
+            if(info.get("taskid") == null){
+                taskID =  taskQueueID;
+            }
+            else{
+                taskID = (Long)info.get("taskid");
+            }
 
-                System.out.println("tweetID : " + tweetID);
-                System.out.println("taskQueueID : " + taskQueueID);
-                System.out.println("tweet : " + tweet);
-                System.out.println("created : " + created);
-                System.out.println("clientAppAnswer : " + clientAppAnswer);
-                System.out.println("taskID : " + taskID);
 
-                if(taskQueueID!=null && taskID!=null && tweetID!=null && (tweet!=null && !tweet.isEmpty())){
-                    System.out.println("handleTranslationItem :" + taskQueueID);
-                    this.setTranslateRequired(true);
-                    createTaskTranslation(taskID, tweetID, tweet, author, lat, lng, url, taskQueueID, created, clientAppAnswer);
+            if(taskQueueID!=null && taskID!=null && tweetID!=null && (tweet!=null && !tweet.isEmpty())) {
+                System.out.println("handleTranslationItem :" + taskQueueID);
+                this.setTranslateRequired(true);
+                createTaskTranslation(taskID, tweetID, tweet, author, lat, lng, url, taskQueueID, created, clientAppAnswer);
 
-                }
             }
         }
         catch(Exception e){
@@ -248,7 +213,6 @@ public class PybossaFormatter {
         }
 
     }
-
 
     private void createTaskTranslation(Long taskID, String tweetID, String tweet, String author, String lat, String lon, String url, Long taskQueueID, String created, ClientAppAnswer clientAppAnswer){
 
@@ -273,21 +237,15 @@ public class PybossaFormatter {
 
         JSONObject responseJSON = new JSONObject();
 
-        System.out.println(" getTaskQueueResponse : clientAppAnswer " +  clientAppAnswer);
 
         String[] questions = getQuestion(clientAppAnswer, parser);
-        System.out.println(" getTaskQueueResponse : questions " +  questions.length);
-        String[] activeAnswers = this.getActiveAnswerKey( clientAppAnswer,  parser);
-        System.out.println(" getTaskQueueResponse : activeAnswers " +  activeAnswers.length);
-        int[] responses = new int[questions.length];
-        System.out.println(" getTaskQueueResponse : pybossaResult " +  pybossaResult);
 
+        String[] activeAnswers = this.getActiveAnswerKey( clientAppAnswer,  parser);
+        int[] responses = new int[questions.length];
         JSONArray array = (JSONArray) parser.parse(pybossaResult) ;
-        System.out.println(" getTaskQueueResponse : array " +  array.toJSONString());
 
         int cutOffSize =  getCutOffNumber(array.size(),  clientApp.getTaskRunsPerTask(), clientAppAnswer) ;
 
-        System.out.println("cutOffSize :" + cutOffSize);
         Iterator itr= array.iterator();
         String answer = null;
         boolean foundCutoffItem = false;
@@ -472,7 +430,7 @@ public class PybossaFormatter {
             tasks.put("n_answers", clientApp.getTaskRunsPerTask());
             tasks.put("quorum", clientApp.getQuorum());
             tasks.put("calibration", new Integer(0));
-            tasks.put("app_id", clientApp.getPlatformAppID());
+            tasks.put("project_id", clientApp.getPlatformAppID());
             tasks.put("priority_0", new Integer(0));
 
             outputFormatData.add(tasks.toJSONString());
@@ -502,7 +460,7 @@ public class PybossaFormatter {
             tasks.put("n_answers", clientApp.getTaskRunsPerTask());
             tasks.put("quorum", clientApp.getQuorum());
             tasks.put("calibration", new Integer(0));
-            tasks.put("app_id", clientApp.getPlatformAppID());
+            tasks.put("project_id", clientApp.getPlatformAppID());
             tasks.put("priority_0", new Integer(0));
 
             outputFormatData.add(tasks.toJSONString());
@@ -512,20 +470,7 @@ public class PybossaFormatter {
         return outputFormatData;
     }
 
-    public String updateApp(ClientApp clientApp,JSONObject attribute, JSONArray labelModel, Long categoryID) throws Exception {
-        InputStream templateIS = Thread.currentThread().getContextClassLoader().getResourceAsStream("html/template.html");
-        String templateString = StreamConverter.convertStreamToString(templateIS) ;
-
-        templateString = templateString.replace("TEMPLATE:SHORTNAME", clientApp.getShortName());
-       // templateString = templateString.replace("TEMPLATE:NAME", clientApp.getName());
-        //TEMPLATEFORATTRIBUTEAIDR
-        String attributeDisplay = (String)attribute.get("name") ;
-       // String attributeCode = (String)attribute.get("code");
-
-        attributeDisplay =  attributeDisplay +" " + (String)attribute.get("description") ;
-        templateString = templateString.replace("TEMPLATE:FORATTRIBUTEAIDR", attributeDisplay);
-
-
+    public String generateClientAppTemplateLabel(JSONArray labelModel){
         JSONArray sortedLabelModel = JsonSorter.sortJsonByKey(labelModel, "norminalLabelCode");
         StringBuffer displayLabel = new StringBuffer();
         Iterator itr= sortedLabelModel.iterator();
@@ -553,9 +498,23 @@ public class PybossaFormatter {
             displayLabel.append("</label>")  ;
         }
 
-        //logger.debug("displayLabel : " + displayLabel.toString());
+        return displayLabel.toString();
 
-        templateString = templateString.replace("TEMPLATE:FORLABELSFROMAIDR", displayLabel.toString());
+    }
+    public String updateApp(ClientApp clientApp,JSONObject attribute, JSONArray labelModel, Long categoryID) throws Exception {
+        InputStream templateIS = Thread.currentThread().getContextClassLoader().getResourceAsStream("html/template.html");
+        String templateString = StreamConverter.convertStreamToString(templateIS) ;
+
+        templateString = templateString.replace("TEMPLATE:SHORTNAME", clientApp.getShortName());
+       // templateString = templateString.replace("TEMPLATE:NAME", clientApp.getName());
+        //TEMPLATEFORATTRIBUTEAIDR
+        String attributeDisplay = (String)attribute.get("name") ;
+       // String attributeCode = (String)attribute.get("code");
+
+        attributeDisplay =  attributeDisplay +" " + (String)attribute.get("description") ;
+        templateString = templateString.replace("TEMPLATE:FORATTRIBUTEAIDR", attributeDisplay);
+
+        templateString = templateString.replace("TEMPLATE:FORLABELSFROMAIDR", this.generateClientAppTemplateLabel(labelModel) );
 
         InputStream tutorialIS = Thread.currentThread().getContextClassLoader().getResourceAsStream("html/tutorial.html");
         String tutorialString = StreamConverter.convertStreamToString(tutorialIS) ;
@@ -566,35 +525,37 @@ public class PybossaFormatter {
         InputStream longDescIS = Thread.currentThread().getContextClassLoader().getResourceAsStream("html/long_description.html");
         String longDescString = StreamConverter.convertStreamToString(longDescIS) ;
 
+        JSONObject appInfo = new JSONObject();
+
+        appInfo.put("task_presenter", templateString);
+
+        appInfo.put("tutorial", tutorialString);
+        appInfo.put("thumbnail", "http://i.imgur.com/lgZAWIc.png");
+
         JSONObject app = new JSONObject();
+        app.put("info", appInfo );
 
-        app.put("task_presenter", templateString);
+        app.put("long_description", longDescString);
+        app.put("name", clientApp.getName());
+        app.put("short_name", clientApp.getShortName());
+        app.put("description", clientApp.getShortName());
+       // app.put("id", clientApp.getPlatformAppID());
+        app.put("time_limit", 0);
+        app.put("long_tasks", 0);
+      //  app.put("created", "" + new Date().toString()+"");
+        app.put("calibration_frac", 0);
+        app.put("bolt_course_id", 0);
+        app.put("link", "<link rel='self' title='app' href='http://localhost:5000/api/app/2'/>");
+        app.put("allow_anonymous_contributors", true);
+        app.put("time_estimate", 0);
+        app.put("hidden", 0);
+        app.put("category_id", categoryID);
+        app.put("featured", false);
+      //  app.put("contacted", false);
 
-        app.put("tutorial", tutorialString);
-        app.put("thumbnail", "http://i.imgur.com/lgZAWIc.png");
-
-        JSONObject app2 = new JSONObject();
-        app2.put("info", app );
-
-        app2.put("long_description", longDescString);
-        app2.put("name", clientApp.getName());
-        app2.put("short_name", clientApp.getShortName());
-        app2.put("description", clientApp.getShortName());
-        app2.put("id", clientApp.getPlatformAppID());
-        app2.put("time_limit", 0);
-        app2.put("long_tasks", 0);
-        app2.put("created", "" + new Date().toString()+"");
-        app2.put("calibration_frac", 0);
-        app2.put("bolt_course_id", 0);
-        app2.put("link", "<link rel='self' title='app' href='http://localhost:5000/api/app/2'/>");
-        app2.put("allow_anonymous_contributors", true);
-        app2.put("time_estimate", 0);
-        app2.put("hidden", 0);
-       // app2.put("category_id", categoryID);
       //  app2.put("owner_id", 1);
 
-        //long_description
-        return  app2.toJSONString();
+        return  app.toJSONString();
 
     }
 

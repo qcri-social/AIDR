@@ -165,7 +165,7 @@
         pybossa.saveTask(taskid, localtask).done( function( data ) {
             $("#success").fadeIn();
             setTimeout(function() { $("#success").fadeOut() }, 2000);
-            window.location.pathname = "/app/TEMPLATE:SHORTNAME/newtask";
+            window.location.pathname = "/project/TEMPLATE:SHORTNAME/newtask";
         });
     }
 
@@ -196,7 +196,7 @@
         pybossa.newTask("TEMPLATE:SHORTNAME").done( function( data ) {
 
             if ( !$.isEmptyObject(data.task) ) {
-                window.location.pathname = "/app/TEMPLATE:SHORTNAME/task/" + data.task.id;
+                window.location.pathname = "/project/TEMPLATE:SHORTNAME/task/" + data.task.id;
             }
             else {
                 $(".skeleton").hide();

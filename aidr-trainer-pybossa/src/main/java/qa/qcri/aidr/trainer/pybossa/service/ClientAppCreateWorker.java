@@ -15,4 +15,5 @@ public interface ClientAppCreateWorker {
     void doCreateApp() throws Exception;
     void doAppUpdate(ClientApp clientApp, String appInfoJson,JSONObject attribute, JSONArray labelModel, String crisisCode, String crisisName) throws Exception;
     void doAppTemplateUpdate(ClientApp clientApp, Long nominalAttributeID) throws Exception;
+    void doAppDelete() throws Exception;
 }

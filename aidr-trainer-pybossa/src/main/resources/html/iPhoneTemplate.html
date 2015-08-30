@@ -207,7 +207,7 @@
 
 
     function loadUserProgress() {
-        pybossa.userProgress('MM_TextClicker').done(function(data){
+        pybossa.userProgress('TEMPLATE:SHORTNAME').done(function(data){
 
             $("#total").text(data.total);
             $("#done").text(data.done);

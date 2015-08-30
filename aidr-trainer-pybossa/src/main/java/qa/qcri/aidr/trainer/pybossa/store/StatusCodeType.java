@@ -62,4 +62,6 @@ public class StatusCodeType {
 
     public static final Integer MIN_REPORT_TEMPLATE_EXPORT_SIZE = 20;
 
+    public static Integer CLIENT_APP_DELETION_TIME = 24;
+
 }
