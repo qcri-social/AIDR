@@ -167,11 +167,11 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			        	inputValue: 'full',
 			        	checked: true
 			        },
-			        {
-			        	boxLabel: 'Ids only',
-			        	name: 'contents',
-			        	inputValue: 'ids'
-			        }
+//			        {
+//			        	boxLabel: 'Ids only',
+//			        	name: 'contents',
+//			        	inputValue: 'ids'
+//			        }
 			        ]
 		});
 
