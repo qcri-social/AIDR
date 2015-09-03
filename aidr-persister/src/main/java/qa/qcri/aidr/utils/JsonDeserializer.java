@@ -359,7 +359,7 @@ public class JsonDeserializer {
 							break;
 						}
 						// Otherwise add to write buffer
-						ClassifiedTweet tweet = getClassifiedTweet(line, collectionCode);
+						ClassifiedTweet tweet = getClassifiedTweet(line, collectionCode, Boolean.FALSE);
 						if (0 == totalCount && runningHeader == null && writer == null) {
 							runningHeader = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader,
 									ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet);
@@ -669,8 +669,8 @@ public class JsonDeserializer {
 	 * @return JSON to CSV converted 100K tweets filtered by user selected label
 	 *         name
 	 */
-	public String taggerGenerateJSON2CSV_100K_BasedOnTweetCountFiltered(String collectionCode, int exportLimit,
-			final JsonQueryList queryList, String userName) {
+	public String taggerGenerateJSON2CSVBasedOnTweetCountFiltered(String collectionCode, int exportLimit,
+			final JsonQueryList queryList, String userName, boolean removeRetweet) {
 		// BufferedReader br = null;
 		ReversedLinesFileReader br = null;
 
@@ -736,9 +736,9 @@ public class JsonDeserializer {
 
 					if (currentSize < exportLimit
 							&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-									PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K))) {
+									PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT))) {
 						while ((line = br.readLine()) != null) {
-							ClassifiedTweet tweet = getClassifiedTweet(line, collectionCode);
+							ClassifiedTweet tweet = getClassifiedTweet(line, collectionCode, removeRetweet);
 							if (0 == currentSize && runningHeader == null && writer == null) {
 								runningHeader = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader,
 										ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet);
@@ -782,7 +782,7 @@ public class JsonDeserializer {
 
 			if (currentSize < exportLimit
 					&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-							PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K))) {
+							PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT))) {
 				int countToWrite = Math.min(tweetsList.size(), exportLimit - currentSize);
 				// logger.info("Outside for loop: currentSize = " + currentSize + ", countToWrite = " + countToWrite + " tweetsList size = " + tweetsList.size());
 				if (countToWrite > 0 && tweetsList.size() >= countToWrite) {
@@ -866,10 +866,10 @@ public class JsonDeserializer {
 	}
 
 	public ClassifiedTweet getClassifiedTweet(String line) {
-		return getClassifiedTweet(line, null);
+		return getClassifiedTweet(line, null, Boolean.FALSE);
 	}
 
-	public ClassifiedTweet getClassifiedTweet(String line, String collectionCode) {
+	public ClassifiedTweet getClassifiedTweet(String line, String collectionCode, boolean removeRetweet) {
 
 		ClassifiedTweet tweet = new ClassifiedTweet();
 		try {
@@ -880,6 +880,9 @@ public class JsonDeserializer {
 			JsonParser parser = new JsonParser();
 			JsonObject jsonObj = (JsonObject) parser.parse(jsonReader);
 
+			if(removeRetweet && jsonObj.get("retweeted_status") != null) {
+				return null;
+			}
 			if (!jsonObj.get("id").isJsonNull()) {
 				tweet.setTweetID(jsonObj.get("id").getAsString());
 			}
@@ -1041,10 +1044,10 @@ public class JsonDeserializer {
 					while ((line = br.readLine()) != null) {
 						try {
 							if (currentSize <= Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-									PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K))) {
+									PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT))) {
 								if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
 										&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-												PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K)) && currentSize > 0) {
+												PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT)) && currentSize > 0) {
 									beanWriter.write(", "); // do not append for last item
 								}
 								// write to file
@@ -1256,7 +1259,7 @@ public class JsonDeserializer {
 						try {
 							if (currentSize < exportLimit
 									&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-											PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K))) {
+											PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT))) {
 								if (DownloadJsonType.JSON_OBJECT.equals(jsonType) && currentSize > 0) {
 									beanWriter.write(", ");
 								}
@@ -1407,8 +1410,8 @@ public class JsonDeserializer {
 		return ResultStatus.getUIWrapper("fileName", fileName, "count", totalCount);
 	}
 
-	public String taggerGenerateJSON2JSON_100K_BasedOnTweetCountFiltered(String collectionCode, int exportLimit, JsonQueryList queryList,
-			DownloadJsonType jsonType, String userName) {
+	public String taggerGenerateJSON2JSONBasedOnTweetCountFiltered(String collectionCode, int exportLimit, JsonQueryList queryList,
+			DownloadJsonType jsonType, String userName, boolean removeRetweet) {
 
 		// BufferedReader br = null;
 		ReversedLinesFileReader br = null;
@@ -1481,30 +1484,32 @@ public class JsonDeserializer {
 
 					while ((line = br.readLine()) != null) {
 						try {
-							ClassifiedTweet tweet = getClassifiedTweet(line);
-							if (currentSize < exportLimit
-									&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-											PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K))) {
-								// Apply filter on tweet
-								if (satisfiesFilter(queryList, tweetFilter, tweet)) {
-									if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
-											&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-													PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K)) && currentSize > 0) {
-										beanWriter.write(", ");
+							ClassifiedTweet tweet = getClassifiedTweet(line, null, removeRetweet);
+							if(tweet != null) {
+								if (currentSize < exportLimit
+										&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
+												PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT))) {
+									// Apply filter on tweet
+									if (satisfiesFilter(queryList, tweetFilter, tweet)) {
+										if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
+												&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
+														PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT)) && currentSize > 0) {
+											beanWriter.write(", ");
+										}
+										// write to file
+										beanWriter.write(line);
+										beanWriter.newLine();
+										++currentSize;
 									}
-									// write to file
-									beanWriter.write(line);
-									beanWriter.newLine();
-									++currentSize;
+								} else {
+									if (DownloadJsonType.JSON_OBJECT.equals(jsonType) && !jsonObjectClosed) {
+										beanWriter.write("]");
+										jsonObjectClosed = true;
+									}
+									beanWriter.flush();
+									isDone = true;
+									break;
 								}
-							} else {
-								if (DownloadJsonType.JSON_OBJECT.equals(jsonType) && !jsonObjectClosed) {
-									beanWriter.write("]");
-									jsonObjectClosed = true;
-								}
-								beanWriter.flush();
-								isDone = true;
-								break;
 							}
 						} catch (Exception ex) {
 							logger.error("JSON file parsing exception" + ex);
@@ -1990,12 +1995,12 @@ public class JsonDeserializer {
 				tweet.toClassifiedTweetFromLabeledDoc(dto, collectionCode);
 				if (currentSize < exportLimit
 						&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-								PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K))) {
+								PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT))) {
 					// Apply filter on tweet
 					if (satisfiesFilter(queryList, tweetFilter, tweet)) {
 						if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
 								&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-										PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K)) && currentSize > 0) {
+										PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT)) && currentSize > 0) {
 							beanWriter.write(", ");
 						}
 						// write to file

@@ -1524,13 +1524,13 @@ public class TaggerServiceImpl implements TaggerService {
 
 	@Override
 	public Map<String, Object> generateCSVFilteredLink(String code,
-			String queryString, String userName) throws AidrException {
+			String queryString, String userName, Integer count, boolean removeRetweet) throws AidrException {
 		try {
 			Client client = ClientBuilder.newBuilder()
 					.register(JacksonFeature.class).build();
 			WebTarget webResource = client.target(persisterMainUrl
 					+ "/taggerPersister/filter/genCSV?collectionCode=" + code
-					+ "&exportLimit=100000&userName=" + userName);
+					+ "&exportLimit=" + count + "&userName=" + userName + "&removeRetweet=" + removeRetweet);
 			Response clientResponse = webResource.request(
 					MediaType.APPLICATION_JSON).post(Entity.json(queryString),
 					Response.class);
@@ -1584,15 +1584,15 @@ public class TaggerServiceImpl implements TaggerService {
 
 	@Override
 	public Map<String, Object> generateJSONFilteredLink(String code,
-			String queryString, String jsonType, String userName)
+			String queryString, String jsonType, String userName, Integer count, boolean removeRetweet)
 			throws AidrException {
 		try {
 			Client client = ClientBuilder.newBuilder()
 					.register(JacksonFeature.class).build();
 			WebTarget webResource = client.target(persisterMainUrl
 					+ "/taggerPersister/filter/genJson?collectionCode=" + code
-					+ "&exportLimit=100000" + "&jsonType=" + jsonType
-					+ "&userName=" + userName);
+					+ "&exportLimit=" + count + "&jsonType=" + jsonType
+					+ "&userName=" + userName + "&removeRetweet=" + removeRetweet);
 			Response clientResponse = webResource.request(
 					MediaType.APPLICATION_JSON).post(Entity.json(queryString),
 					Response.class);

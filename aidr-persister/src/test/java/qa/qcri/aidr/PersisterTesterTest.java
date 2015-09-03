@@ -308,7 +308,7 @@ public class PersisterTesterTest {
 		
 		count--;  //Since first line in csv file contain column names
 		
-		Long exportLimit = Long.valueOf(configProperties.getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K));
+		Long exportLimit = Long.valueOf(configProperties.getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT));
 		if(count!=Math.min(nItems, exportLimit)){
 			fail("No. of lines in CSV file ="+count+" doesn't match with total no. of lines.");
 		}

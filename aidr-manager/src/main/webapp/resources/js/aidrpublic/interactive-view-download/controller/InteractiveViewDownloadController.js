@@ -342,27 +342,20 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
     downloadButtonHandler: function(btn){
         var me = this;
         var format = me.mainComponent.downloadFormat.getValue().format;
-        var contents = me.mainComponent.downloadContents.getValue().contents;
 
         var url = '';
         var params = {
             code: CRISIS_CODE,
+            count: Ext.getCmp('limit').value,
+            removeRetweet: Ext.getCmp('retweet').value,
             queryString: me.mainComponent.constraintsString
         };
 
         if(format == 'csv'){
-            if (contents == 'full') {
-                url = '/protected/tagger/taggerGenerateCSVFilteredLink.action';
-            } else {
-                url = '/protected/tagger/taggerGenerateTweetIdsFilteredLink.action';
-            }
+            url = '/protected/tagger/taggerGenerateCSVFilteredLink.action';
         } else {
             params.jsonType = format;
-            if (contents == 'full') {
-                url = '/protected/tagger/taggerGenerateJSONFilteredLink.action';
-            } else {
-                url = '/protected/tagger/taggerGenerateJsonTweetIdsFilteredLink.action';
-            }
+            url = '/protected/tagger/taggerGenerateJSONFilteredLink.action';
         }
 
         btn.setDisabled(true);
