@@ -63,7 +63,7 @@ public class Persist2FileAPI {
 				logger.info(collectionCode + ": received constraints = " + queryList);
 			}
 
-			if (null == exportLimit) exportLimit = Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K));
+			if (null == exportLimit) exportLimit = Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT));
 			JSONObject obj = new JSONObject();
 			String fileName = jsonD.generateClassifiedList2CSV_100K_BasedOnTweetCountFiltered(collectionCode, exportLimit, queryList, postBody.getDtoList(), userName);
 			logger.info("Generated fileName = " + fileName);
@@ -207,7 +207,7 @@ public class Persist2FileAPI {
 			}
 
 			JsonDeserializer jsonD = new JsonDeserializer();
-			if (null == exportLimit) exportLimit = Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K));		// Koushik: added to override user specs
+			if (null == exportLimit) exportLimit = Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT));		// Koushik: added to override user specs
 
 			String fileName = jsonD.generateClassifiedList2JSON_100K_BasedOnTweetCountFiltered(collectionCode, exportLimit, queryList, 
 					DownloadJsonType.getDownloadJsonTypeFromString(jsonType), postBody.getDtoList(), userName);

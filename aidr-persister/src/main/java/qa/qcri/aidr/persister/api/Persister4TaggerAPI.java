@@ -123,7 +123,7 @@ public class Persister4TaggerAPI {
 		logger.debug("In tagger-persister genCSV");
 		logger.info("Received request for collection: " + collectionCode);
 		JsonDeserializer jsonD = new JsonDeserializer();
-		exportLimit = Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K));		// Koushik: added to override user specs
+		exportLimit = Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT));		// Koushik: added to override user specs
 		String fileName = jsonD.taggerGenerateJSON2CSV_100K_BasedOnTweetCount(collectionCode, exportLimit);
 		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode + "/" + fileName;
 
@@ -156,6 +156,7 @@ public class Persister4TaggerAPI {
 	public Response generateCSVFromLastestJSONFiltered(String queryString, 
 			@QueryParam("collectionCode") String collectionCode, 
 			@QueryParam("exportLimit") Integer exportLimit,
+			@QueryParam("removeRetweet") boolean removeRetweet,
 			@QueryParam("userName") String userName) throws UnknownHostException {
 		DeserializeFilters des = new DeserializeFilters();
 		JsonQueryList queryList = des.deserializeConstraints(queryString);
@@ -168,8 +169,8 @@ public class Persister4TaggerAPI {
 			logger.info(collectionCode + ": received constraints = " + queryList);
 		}
 		
-		if (null == exportLimit) exportLimit = Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K));
-		String fileName = jsonD.taggerGenerateJSON2CSV_100K_BasedOnTweetCountFiltered(collectionCode, exportLimit, queryList, userName);
+		if (null == exportLimit) exportLimit = Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT));
+		String fileName = jsonD.taggerGenerateJSON2CSVBasedOnTweetCountFiltered(collectionCode, exportLimit, queryList, userName, removeRetweet);
 		logger.info("done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
 		
 		JSONObject obj = new JSONObject();
@@ -272,7 +273,7 @@ public class Persister4TaggerAPI {
 		logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType);
 		JsonDeserializer jsonD = new JsonDeserializer();
 		
-		if (0 == exportLimit) exportLimit = Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K));
+		if (0 == exportLimit) exportLimit = Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT));
 		
 		String fileName = jsonD.taggerGenerateJSON2JSON_100K_BasedOnTweetCount(collectionCode, exportLimit, DownloadJsonType.getDownloadJsonTypeFromString(jsonType));
 		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode + "/" + fileName;
@@ -334,7 +335,8 @@ public class Persister4TaggerAPI {
 			@QueryParam("collectionCode") String collectionCode, 
 			@QueryParam("exportLimit") Integer exportLimit,
 			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType,
-			@QueryParam("userName") String userName) throws UnknownHostException {
+			@QueryParam("userName") String userName,
+			@QueryParam("removeRetweet") boolean removeRetweet) throws UnknownHostException {
 		logger.debug("In tagger-persister genCSV");
 		logger.info("Received request for collection: " + collectionCode + " with jsonType = " + jsonType);
 		
@@ -347,8 +349,8 @@ public class Persister4TaggerAPI {
 		}
 		
 		JsonDeserializer jsonD = new JsonDeserializer();
-		if (null == exportLimit) exportLimit = Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K));		// Koushik: added to override user specs
-		String fileName = jsonD.taggerGenerateJSON2JSON_100K_BasedOnTweetCountFiltered(collectionCode, exportLimit, queryList, DownloadJsonType.getDownloadJsonTypeFromString(jsonType), userName);
+		if (null == exportLimit) exportLimit = Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT));		// Koushik: added to override user specs
+		String fileName = jsonD.taggerGenerateJSON2JSONBasedOnTweetCountFiltered(collectionCode, exportLimit, queryList, DownloadJsonType.getDownloadJsonTypeFromString(jsonType), userName, removeRetweet);
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
 		//return Response.ok(fileName).build();
 		
