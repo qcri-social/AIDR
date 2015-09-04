@@ -480,7 +480,7 @@ public class CollectionController extends BaseController{
 				return getUIWrapper(dto, true);
 			}
 		} catch (Exception e) {
-			logger.error("Error while starting the collection by Id: "+id); 
+			logger.error("Error while fetching the collection by Id: "+id); 
 		}
 		return getUIWrapper(false);
 	}
