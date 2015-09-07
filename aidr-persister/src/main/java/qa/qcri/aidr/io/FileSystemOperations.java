@@ -181,6 +181,18 @@ public class FileSystemOperations {
         }
         return isDeleted;
     }
+    
+    public static boolean deleteFile(File file) {
+        boolean isDeleted = false;
+        try {
+            if (file !=null && file.delete()) {
+                isDeleted = true;
+            }
+        } catch (Exception e) {
+        	logger.error("Error while delting the file: "+file.getName() +"\t" +e.getMessage());
+        }
+        return isDeleted;
+    }
 
     public int countNumberofLines(String filename) throws IOException{
         try(InputStream is = new BufferedInputStream(new FileInputStream(filename));) {
@@ -202,4 +214,22 @@ public class FileSystemOperations {
         	throw e;
         }
     }
+    
+    public static void deleteFilesNewerThanNMinutes(String folderLocation, String fileExtension, Long timeInMinutes) {
+		File directory = new File(folderLocation);
+		if(directory.exists()){
+
+			GenericExtFilter extFilter = new GenericExtFilter(fileExtension);
+		    File[] listFiles = directory.listFiles(extFilter);           
+		    long timeInMilliSecs = timeInMinutes * 60 * 1000;
+		    for(File listFile : listFiles) {
+		        if(System.currentTimeMillis() - listFile.lastModified() < timeInMilliSecs) {
+		        	FileSystemOperations.deleteFile(listFile);
+		            if(!listFile.delete()) {
+		                System.err.println("Unable to delete file: " + listFile);
+		            }
+		        }
+		    }
+		}
+	}
 }

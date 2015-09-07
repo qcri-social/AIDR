@@ -58,8 +58,8 @@ public class JsonDeserializer {
 	private static final int LIST_BUFFER_SIZE = 50000;
 
 	private static final String HUMAN_TAGGED_FILE_PREFIX = "-human_labeled_filtered-";
-	private static final String CSV_EXTENSION = ".csv";
 	private static final String ZIP_EXTENSION = ".zip";
+	private static final String CSV_EXTENSION = ".csv";
 	private static final String TWEETS_PREFIX = "_last_100k_tweets";
 	private static final String TWEETS_FILTERED_PREFIX = "_last_100k_tweets_filtered";
 	private static final String TWEET_IDS_PREFIX = "_tweetIds_filtered";
@@ -673,20 +673,22 @@ public class JsonDeserializer {
 			final JsonQueryList queryList, String userName, boolean removeRetweet) {
 		// BufferedReader br = null;
 		ReversedLinesFileReader br = null;
-
+		int currentSize = 0;
 		String fileName = "";
 		ICsvMapWriter writer = null;
 		String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH)
 				+ collectionCode;
 		String fileNameforCSVGen = null;
+		Long currentTimeStamp = System.currentTimeMillis();
 		try {
-			fileNameforCSVGen = collectionCode + TWEETS_FILTERED_PREFIX + STRING_SEPARATOR + MD5Hash.getMD5Hash(userName);
+			fileNameforCSVGen = currentTimeStamp + STRING_SEPARATOR + exportLimit + STRING_SEPARATOR + MD5Hash.getMD5Hash(userName);
 		} catch (Exception e) {
-			fileNameforCSVGen = collectionCode + TWEETS_FILTERED_PREFIX;
+			fileNameforCSVGen = currentTimeStamp + STRING_SEPARATOR + exportLimit;
 		}
 		fileName = fileNameforCSVGen + CSV_EXTENSION;
 		try {
-			FileSystemOperations.deleteFile(folderLocation + FILE_SEPARATOR + fileName + ZIP_EXTENSION);
+			String deleteTimeDurationInMinutes = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DELETE_FILE_TIME_LIMIT);
+			FileSystemOperations.deleteFilesNewerThanNMinutes(folderLocation, CSV_EXTENSION + ZIP_EXTENSION, Long.valueOf(deleteTimeDurationInMinutes));
 			logger.info("Deleting exsiting file: " + folderLocation + FILE_SEPARATOR + fileName + ZIP_EXTENSION);
 
 			File folder = new File(folderLocation);
@@ -712,7 +714,6 @@ public class JsonDeserializer {
 			List<ClassifiedTweet> tweetsList = new ArrayList<ClassifiedTweet>(LIST_BUFFER_SIZE);
 			ReadWriteCSV<CellProcessor> csv = new ReadWriteCSV<CellProcessor>(collectionCode);
 			String[] runningHeader = null;
-			int currentSize = 0;
 			// writer = csv.writeClassifiedTweetsCSV(runningHeader, null,
 			// collectionCode, fileName, writer);
 
@@ -793,6 +794,7 @@ public class JsonDeserializer {
 					}
 					writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList.subList(0, countToWrite), collectionCode, fileName,
 							writer);
+					currentSize += countToWrite;
 					tweetsList.clear();
 				}
 				// In case there wasn't any tweet. Just create an empty csv file.
@@ -802,6 +804,8 @@ public class JsonDeserializer {
 					writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList.subList(0, countToWrite), collectionCode, fileName,
 							writer);
 				}
+				
+				
 			}
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
@@ -816,11 +820,31 @@ public class JsonDeserializer {
 				}
 			}
 		}
+		
+		if(currentSize < exportLimit) {
+			File originalFile = new File(folderLocation + FILE_SEPARATOR + fileName);
+			String targetFileName = "";
+			try {
+				targetFileName = currentTimeStamp + STRING_SEPARATOR + currentSize + STRING_SEPARATOR + MD5Hash.getMD5Hash(userName);
+			} catch (Exception e) {
+				targetFileName = currentTimeStamp + STRING_SEPARATOR + currentSize;
+			}
+			targetFileName = targetFileName + CSV_EXTENSION;
+			File targetFile = new File(folderLocation + FILE_SEPARATOR + targetFileName);
+			boolean renamed = originalFile.renameTo(targetFile);
+			fileName = targetFileName;
+		}
+		
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileName);
+		String fileToDelete = fileName;
+		
 		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode
 				+ FILE_SEPARATOR + compressor.zip();
-		FileSystemOperations.deleteFile(folderLocation + FILE_SEPARATOR + fileNameforCSVGen + CSV_EXTENSION);
+		
+		FileSystemOperations.deleteFile(folderLocation + FILE_SEPARATOR + fileToDelete);
 		logger.info("Deleted raw created file: " + folderLocation + FILE_SEPARATOR + fileNameforCSVGen + CSV_EXTENSION);
+		
+		
 		return fileName;
 	}
 
@@ -1416,6 +1440,7 @@ public class JsonDeserializer {
 		// BufferedReader br = null;
 		ReversedLinesFileReader br = null;
 		String fileName = "";
+		long currentSize = 0;
 		BufferedWriter beanWriter = null;
 		String extension = DownloadJsonType.getSuffixString(jsonType);
 		if (null == extension) {
@@ -1424,16 +1449,18 @@ public class JsonDeserializer {
 		String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH)
 				+ collectionCode + FILE_SEPARATOR;
 		String fileNameforJsonGen = null;
+		Long currentTimeStamp = System.currentTimeMillis();
 		try {
-			fileNameforJsonGen = collectionCode + TWEETS_FILTERED_PREFIX + STRING_SEPARATOR + MD5Hash.getMD5Hash(userName);
+			fileNameforJsonGen = currentTimeStamp + STRING_SEPARATOR + exportLimit + STRING_SEPARATOR + MD5Hash.getMD5Hash(userName);
 		} catch (Exception e) {
-			fileNameforJsonGen = collectionCode + TWEETS_FILTERED_PREFIX;
+			fileNameforJsonGen = currentTimeStamp + STRING_SEPARATOR + exportLimit;
 		}
 		fileName = fileNameforJsonGen + extension;
 
 		boolean jsonObjectClosed = false;
 		try {
-			FileSystemOperations.deleteFile(folderLocation + FILE_SEPARATOR + fileName + ZIP_EXTENSION);
+			String deleteTimeDurationInMinutes = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DELETE_FILE_TIME_LIMIT);
+			FileSystemOperations.deleteFilesNewerThanNMinutes(folderLocation, extension + ZIP_EXTENSION, Long.valueOf(deleteTimeDurationInMinutes));
 			logger.info("Deleted existing file: " + folderLocation + FILE_SEPARATOR + fileName + ZIP_EXTENSION);
 
 			File folder = new File(folderLocation);
@@ -1468,7 +1495,6 @@ public class JsonDeserializer {
 				tweetFilter.queryList.setConstraints(queryList);
 			tweetFilter.buildMatcherArray();
 
-			long currentSize = 0;
 			boolean isDone = false;
 			for (int i = taggerFiles.length - 1; i >= 0; i--) {
 				File f = taggerFiles[i];
@@ -1543,10 +1569,27 @@ public class JsonDeserializer {
 				}
 			}
 		}
+		
+		// rename file if currentSize < exportLimit
+		if(currentSize < exportLimit) {
+			File originalFile = new File(folderLocation + FILE_SEPARATOR + fileName);
+			String targetFileName = "";
+			try {
+				targetFileName = currentTimeStamp + STRING_SEPARATOR + currentSize + STRING_SEPARATOR + MD5Hash.getMD5Hash(userName);
+			} catch (Exception e) {
+				targetFileName = currentTimeStamp + STRING_SEPARATOR + currentSize;
+			}
+			targetFileName = targetFileName + extension;
+			File targetFile = new File(folderLocation + FILE_SEPARATOR + targetFileName);
+			boolean renamed = originalFile.renameTo(targetFile);
+			fileName = targetFileName;
+		}
+		
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileName);
+		String fileToDelete = fileName;
 		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode
 				+ FILE_SEPARATOR + compressor.zip();
-		FileSystemOperations.deleteFile(folderLocation + FILE_SEPARATOR + fileNameforJsonGen + extension);
+		FileSystemOperations.deleteFile(folderLocation + FILE_SEPARATOR + fileToDelete);
 		logger.info("Deleted created raw file: " + folderLocation + FILE_SEPARATOR + fileNameforJsonGen + extension);
 		return fileName;
 	}
@@ -2156,5 +2199,4 @@ public class JsonDeserializer {
 		logger.info("Deleted raw file post compression: " + fileToDelete);
 		return ResultStatus.getUIWrapper("fileName", fileName, "count", totalCount);
 	}
-
 }
