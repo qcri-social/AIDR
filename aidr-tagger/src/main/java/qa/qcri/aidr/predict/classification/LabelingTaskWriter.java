@@ -84,7 +84,8 @@ public class LabelingTaskWriter extends PipelineProcess {
 
 		if (!isTruncateRunLimited() || 0 == lastDBWrite) {
 			for (Integer crisisID : activeCrisisIDList.keySet()) {
-				logger.info("Looking at possible truncation for crisisID = "
+				//Meghna: truncate code moved to MySQL event scheduler
+				/*logger.info("Looking at possible truncation for crisisID = "
 						+ crisisID
 						+ "last save count = "
 						+ activeCrisisIDList.get(crisisID)
@@ -94,7 +95,7 @@ public class LabelingTaskWriter extends PipelineProcess {
 										.getInstance()
 										.getProperty(
 												TaggerConfigurationProperty.MAX_NEW_TASKS_PER_MINUTE))
-						+ "]");
+						+ "]");*/
 				if (!isTruncateRateLimited(crisisID)
 						|| activeCrisisIDList.get(crisisID) > Integer
 								.parseInt(TaggerConfigurator
@@ -102,7 +103,7 @@ public class LabelingTaskWriter extends PipelineProcess {
 										.getProperty(
 												TaggerConfigurationProperty.MAX_NEW_TASKS_PER_MINUTE))) {
 
-					logger.info("Going to truncate for crisisID = " + crisisID
+					/*logger.info("Going to truncate for crisisID = " + crisisID
 							+ " [" + activeCrisisIDList.get(crisisID)
 							+ "] new docs");
 					DataStore
@@ -111,14 +112,14 @@ public class LabelingTaskWriter extends PipelineProcess {
 									Integer.parseInt(TaggerConfigurator
 											.getInstance()
 											.getProperty(
-													TaggerConfigurationProperty.LABELLING_TASK_BUFFER_MAX_LENGTH)));
+													TaggerConfigurationProperty.LABELLING_TASK_BUFFER_MAX_LENGTH)));*/
 					activeCrisisIDList.put(crisisID, 0L); // reset count for
 															// next interval
-					try {
+					/*try {
 						Thread.sleep(200);
 					} catch (InterruptedException e) {
 						logger.warn("Sleep thread interrupted.");
-					}
+					}*/
 				}
 			}
 		}

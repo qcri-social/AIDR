@@ -33,7 +33,7 @@ public class TaskAnswerResourceFacadeImp extends CoreDBServiceFacadeImp<TaskAnsw
 	@Override
 	public TaskAnswerDTO insertTaskAnswer(TaskAnswerDTO taskAnswer) {
 		if (taskAnswer != null) {
-			logger.info("Going to insert answer = " + taskAnswer.getAnswer() + " for  taskId = " + taskAnswer.getDocumentID());
+			logger.debug("Going to insert answer = " + taskAnswer.getAnswer() + " for  taskId = " + taskAnswer.getDocumentID());
 			try {
 				TaskAnswer t = taskAnswer.toEntity();
 				em.persist(t);

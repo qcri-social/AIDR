@@ -69,7 +69,7 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 			em.persist(d);
 			em.flush();
 			em.refresh(d);
-			logger.info("Success in saving to document_nominal_label table, doc = " + doc.getIdDTO().getDocumentId());
+			logger.debug("Success in saving to document_nominal_label table, doc = " + doc.getIdDTO().getDocumentId());
 		} catch (Exception e) {
 			logger.error("Error in saving document nominal label for document = " + doc.getIdDTO().getDocumentId(), e);
 			tx.rollback();
@@ -82,7 +82,7 @@ extends CoreDBServiceFacadeImp<DocumentNominalLabel, Long> implements DocumentNo
 			em.merge(labeledDoc);
 			em.flush();
 			if (!tx.wasCommitted()) tx.commit();
-			logger.info("Success in updating hashumanLabels field in document table, doc = " + labeledDoc.getDocumentId());
+			logger.debug("Success in updating hashumanLabels field in document table, doc = " + labeledDoc.getDocumentId());
 			return new DocumentNominalLabelDTO(d);
 		} catch (Exception e) {
 			logger.error("Error in updating hasHumanLabel field of labeled document = " + labeledDoc.getDocumentId() +", rolling back transaction (delete from document_nominal_label)...");

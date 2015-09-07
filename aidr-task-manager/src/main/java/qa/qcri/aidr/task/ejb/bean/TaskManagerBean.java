@@ -320,8 +320,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public int deleteStaleTasks(String joinType, String joinTable, String joinColumn,
 			String sortOrder, String[] orderBy,
 			final String maxTaskAge, final String scanInterval) {
-		logger.info("Received request: " + joinType + ", " + joinTable + ", " 
-				+ joinColumn + ", " + maxTaskAge + ", " + scanInterval);
+		//logger.info("Received request: " + joinType + ", " + joinTable + ", " 
+			//	+ joinColumn + ", " + maxTaskAge + ", " + scanInterval);
 		try {
 			int docDeleteCount = remoteDocumentEJB.deleteStaleDocuments(joinType, joinTable, joinColumn, 
 					sortOrder, orderBy, maxTaskAge, scanInterval);
@@ -442,13 +442,11 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			}
 
 			Document document = remoteDocumentEJB.getByCriteria(newCriterion);
-			logger.debug("New task: " + document);
+			//logger.debug("New task: " + document);
 			if (document != null && !isTaskAssigned(document)) {
 				logger.info("New task: " + document.getDocumentId());
 				return new DocumentDTO(document);
-			} else {
-				logger.info("[getNewTask] New task: " + document);
-			}
+			} 
 		} catch (Exception e) {
 			logger.error("Error in getting new Task for crisisID: " + crisisID);
 		}
@@ -458,7 +456,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 
 	@Override
 	public List<DocumentDTO> getNewTaskCollection(Long crisisID, Integer count, String order, Criterion criterion) {
-		logger.info("Received request for crisisID = " + crisisID + ", count = " + count);
+		logger.debug("Received request for crisisID = " + crisisID + ", count = " + count);
 		String aliasTable = "taskAssignments";
 		String aliasTableKey = "taskAssignments.id.documentId";
 		String[] orderBy = {"valueAsTrainingSample","documentId"};
@@ -477,7 +475,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		try {
 			List<Document> docList = remoteDocumentEJB.getByCriteriaWithAliasByOrder(newCriterion, order, orderBy, count, aliasTable, aliasCriterion);
 			if (docList != null) {
-				logger.info("[getNewTaskCollection] Fetched size = " + docList.size());
+				logger.debug("[getNewTaskCollection] Fetched size = " + docList.size());
 				return createDocumentDTOList(docList);
 			} else {
 				return null;
@@ -590,7 +588,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			List<DocumentDTO> docList = remoteDocumentEJB.getDocumentCollectionWithNominalLabelData(nominalLabelID);
 			logger.debug("docList = " + docList);
 			if (docList != null) {
-				logger.info("Fetched size = " + docList.size());
+				//logger.info("Fetched size = " + docList.size());
 				return docList;
 			} 
 		} catch (Exception e) {
@@ -609,7 +607,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public DocumentDTO getTaskById(Long id) {
 		try {
 			DocumentDTO document = remoteDocumentEJB.findDocumentByID(id);
-			logger.info("Fetched document: " + document);
+			logger.debug("Fetched document: " + document);
 
 			return document;
 		} catch (Exception e) {
@@ -622,7 +620,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public List<DocumentDTO> getAllTasks() {
 		try {
 			List<Document> docList =  remoteDocumentEJB.getAll();
-			logger.info("Fetched documents count: " + docList.size());
+			logger.debug("Fetched documents count: " + docList.size());
 
 			return createDocumentDTOList(docList);
 		} catch (Exception e) {
@@ -911,42 +909,42 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.task.Document.class)) {
 				//logger.info("Detected of type Document.class, id = " + id);
 				remoteDocumentEJB.merge((Document) doc); 
-				logger.info("Merge update successful for task id = " + id);
+				logger.debug("Merge update successful for task id = " + id);
 				//return serializeTask((qa.qcri.aidr.task.entities.Document) doc);
 				return new DocumentDTO((Document) doc);
 			} 
 			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.task.TaskAssignment.class)) {
 				//logger.info("Detected of type TaskAssignment.class");
 				remoteTaskAssignmentEJB.merge((TaskAssignment) doc);
-				logger.info("Merge update successful for task id = " + id);
+				logger.debug("Merge update successful for task id = " + id);
 				//return serializeTask((qa.qcri.aidr.task.entities.TaskAssignment) doc);
 				return new TaskAssignmentDTO((TaskAssignment) doc);
 			}
 			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.task.TaskAnswer.class)) {
 				//logger.info("Detected of type TaskAnswer.class");
 				remoteTaskAnswerEJB.merge((TaskAnswer) doc);
-				logger.info("Merge update successful for task id = " + id);
+				logger.debug("Merge update successful for task id = " + id);
 				//return serializeTask((qa.qcri.aidr.task.entities.TaskAnswer) doc);
 				return new TaskAnswerDTO((TaskAnswer) doc);
 			}
 			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.misc.Users.class)) {
 				//logger.info("Detected of type Users.class");
 				remoteUsersEJB.merge((Users) doc);
-				logger.info("Merge update successful for task id = " + id);
+				logger.debug("Merge update successful for task id = " + id);
 				//return serializeTask((qa.qcri.aidr.task.entities.Users) doc);
 				return new UsersDTO((Users) doc);
 			}
 			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel.class)) {
 				//logger.info("Detected of type DocumentNominalLabel.class");
 				remoteDocumentNominalLabelEJB.merge((DocumentNominalLabel) doc);
-				logger.info("Merge update successful for task id = " + id);
+				logger.debug("Merge update successful for task id = " + id);
 				//return serializeTask((qa.qcri.aidr.task.entities.DocumentNominalLabel) doc);
 				return new DocumentNominalLabelDTO((DocumentNominalLabel) doc);
 			}
 			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.misc.Crisis.class)) {
 				//logger.info("Detected of type Crisis.class");
 				remoteCrisisEJB.merge((Crisis) doc);
-				logger.info("Merge update successful for task id = " + id);
+				logger.debug("Merge update successful for task id = " + id);
 				//return serializeTask((qa.qcri.aidr.task.entities.Crisis) doc);
 				return new CrisisDTO((Crisis) doc);
 			}
@@ -960,9 +958,9 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public void insertTaskAnswer(TaskAnswerDTO taskAnswer) {
 		try {
 			TaskAnswerDTO t = remoteTaskAnswerEJB.insertTaskAnswer(taskAnswer);
-			if (t != null) {
+			/*if (t != null) {
 				logger.info("Successfully inserted taskAnswer: taskID = " + t.getTaskID() + ", documentID = " + t.getDocumentID() + "answer = " + t.getAnswer() + ", from user = " + t.getUserID());
-			}
+			}*/
 		} catch (Exception e) {
 			logger.error("Error in saving task answer : " + taskAnswer.getDocumentID() + ", " + taskAnswer.getAnswer() + ", " + taskAnswer.getUserID());
 		}
@@ -1045,7 +1043,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 	public DocumentDTO getDocumentById(Long id) {
 		try {
 			Document document = remoteDocumentEJB.getById(id);
-			logger.info("Fetched document: " + document);
+			logger.debug("Fetched document: " + document);
 
 			return new DocumentDTO(document);
 		} catch (Exception e) {
@@ -1066,7 +1064,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			logger.error("crisisID can't be null");
 			throw new PropertyNotSetException("crisisID can't be null");
 		}
-		logger.info("Received request for crisisID = " + crisisID + ", count = " + count);
+		logger.debug("Received request for crisisID = " + crisisID + ", count = " + count);
 		List <HumanLabeledDocumentDTO> labeledDocList = null;
 
 		String aliasTable = "documentNominalLabels";
@@ -1122,7 +1120,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			logger.error("crisis code is invalid");
 			throw new PropertyNotSetException("crisis code is invalid");
 		}
-		logger.info("Received request for crisis code = " + crisisCode + ", count = " + count);
+		//logger.info("Received request for crisis code = " + crisisCode + ", count = " + count);
 		return this.getHumanLabeledDocumentsByCrisisID(crisis.getCrisisID(), count);
 	}
 
@@ -1132,7 +1130,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			logger.error("crisis ID or userID can't be null");
 			throw new PropertyNotSetException("crisis ID or userID can't be null");
 		}
-		logger.info("Received request for crisisID = " + crisisID + ", userID = " + userID + ", count = " + count);
+		//logger.info("Received request for crisisID = " + crisisID + ", userID = " + userID + ", count = " + count);
 		List <HumanLabeledDocumentDTO> labeledDocList = null;
 
 		String aliasTable = "documentNominalLabels";
@@ -1191,7 +1189,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			logger.error("User name is invalid");
 			throw new PropertyNotSetException("User name is invalid");
 		}
-		logger.info("Received request for crisisID = " + crisisID + ", userName = " + userName + ", count = " + count);
+		//logger.info("Received request for crisisID = " + crisisID + ", userName = " + userName + ", count = " + count);
 		return this.getHumanLabeledDocumentsByCrisisIDUserID(crisisID, user.getUserID(), count);
 	}
 
@@ -1211,7 +1209,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			remoteDocumentEJB.deleteDocuments(documentDTOs);
 			success = true;
 			
-			logger.info("Successful deletion for task data.");
+			//logger.info("Successful deletion for task data.");
 		} catch (Exception e) {
 			logger.error("Unable to delete task for crisidID : " + crisisID + " and userID : " + userID);
 			success = false;

@@ -26,7 +26,7 @@ public class TaskBufferScannerImp implements TaskBufferScannerFacade {
 
 	@Override
 	public void ScanTaskBuffer(final String maxTaskAge, final String scanInterval) {
-		try {
+		/*try {
 			int result = taskManager.deleteStaleTasks("LEFT JOIN", 
 											"aidr_predict.task_assignment", "documentID", 
 											"ASC", null, maxTaskAge, scanInterval);
@@ -41,7 +41,8 @@ public class TaskBufferScannerImp implements TaskBufferScannerFacade {
 			logger.info("number of deleted no answer records = " + result);
 		} catch (Exception e) {
 			logger.error("Exception in executing SQL delete no answer docs query");
-		}
+		}*/
+		logger.info("deletion of StaleTasks done in MySQL Event Scheduler");
 	}
 
 
