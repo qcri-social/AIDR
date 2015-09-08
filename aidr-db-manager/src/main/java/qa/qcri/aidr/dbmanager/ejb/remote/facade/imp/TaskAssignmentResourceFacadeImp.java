@@ -37,7 +37,7 @@ public class TaskAssignmentResourceFacadeImp extends CoreDBServiceFacadeImp<Task
 	@Override
 	public int insertTaskAssignment(List<DocumentDTO> taskList, Long userID) {
 		// hard code, will create user service
-		logger.info("[insertTaskAssignment] Going to insert/create task list of size = " + taskList.size() + ", for userID: " + userID);
+		logger.debug("[insertTaskAssignment] Going to insert/create task list of size = " + taskList.size() + ", for userID: " + userID);
 		try {
 			for (Iterator<DocumentDTO> it = taskList.iterator(); it.hasNext();){
 				DocumentDTO tb = (DocumentDTO) it.next();

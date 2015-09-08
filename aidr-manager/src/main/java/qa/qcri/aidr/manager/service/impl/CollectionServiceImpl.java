@@ -1,5 +1,21 @@
 package qa.qcri.aidr.manager.service.impl;
 
+import static qa.qcri.aidr.manager.util.CollectionType.SMS;
+import static qa.qcri.aidr.manager.util.CollectionType.Twitter;
+
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -30,23 +46,6 @@ import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
-
-
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static qa.qcri.aidr.manager.util.CollectionType.SMS;
-import static qa.qcri.aidr.manager.util.CollectionType.Twitter;
 
 @Service("collectionService")
 public class CollectionServiceImpl implements CollectionService {
@@ -355,6 +354,7 @@ public class CollectionServiceImpl implements CollectionService {
 		return null;
 	}
 
+	@Transactional(readOnly = false)
 	private AidrCollection updateStatusCollection(String jsonResponse, AidrCollection collection) throws Exception {
 		ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 		FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);
@@ -378,7 +378,16 @@ public class CollectionServiceImpl implements CollectionService {
 				{				
 				case NOT_FOUND:
 				//case STOPPED:
-					collection.setStatus(CollectionStatus.NOT_RUNNING);					
+					collection.setStatus(CollectionStatus.NOT_RUNNING);
+					
+					//Add collectionCount in collectionLog if it was not recorded. 
+					if (collection.getStartDate() != null) {
+						if(collectionLogRepository.countLogsStartedInInterval(collection.getId(), collection.getStartDate(), new Date())==0){
+							AidrCollectionLog aidrCollectionLog = new AidrCollectionLog(collection);
+							aidrCollectionLog.setEndDate(new Date());
+							collectionLogRepository.save(aidrCollectionLog);
+						}
+					}
 				case RUNNING_WARNING:
 					if(prevStatus == CollectionStatus.INITIALIZING)
 					{

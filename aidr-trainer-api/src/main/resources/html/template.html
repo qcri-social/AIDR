@@ -29,7 +29,7 @@
             <br/>
             <div class="alert-actions">
                 <a class="btn small" href="/">Go back</a>
-                <a class="btn small" href="/app">or, Check other applications</a>
+                <a class="btn small" href="/project">or, Check other applications</a>
             </div>
         </div>
         <div id="error" class="alert alert-error" style="display:none;">
@@ -40,7 +40,7 @@
             <a class="close">×</a>
             <p><strong>Sorry!</strong> Your web browser does not support the application.<p>
             <div class="alert-actions">
-                <a class="btn small" href="/app">Please, try with another application</a>
+                <a class="btn small" href="/project">Please, try with another application</a>
             </div>
         </div>
     </div> <!-- End Success and Error Messages for the user -->
@@ -165,7 +165,7 @@
         pybossa.saveTask(taskid, localtask).done( function( data ) {
             $("#success").fadeIn();
             setTimeout(function() { $("#success").fadeOut() }, 2000);
-            window.location.pathname = "/app/TEMPLATE:SHORTNAME/newtask";
+            window.location.pathname = "/project/TEMPLATE:SHORTNAME/newtask";
         });
     }
 
@@ -196,7 +196,7 @@
         pybossa.newTask("TEMPLATE:SHORTNAME").done( function( data ) {
 
             if ( !$.isEmptyObject(data.task) ) {
-                window.location.pathname = "/app/TEMPLATE:SHORTNAME/task/" + data.task.id;
+                window.location.pathname = "/project/TEMPLATE:SHORTNAME/task/" + data.task.id;
             }
             else {
                 $(".skeleton").hide();

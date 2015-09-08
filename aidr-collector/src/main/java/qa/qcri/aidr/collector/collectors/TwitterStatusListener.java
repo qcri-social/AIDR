@@ -4,21 +4,14 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.RejectedExecutionException;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
-import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
 import qa.qcri.aidr.collector.java7.Predicate;
@@ -117,7 +110,7 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 
 	@Override
 	public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-		logger.info(task.getCollectionName() + ": Track limitation notice: " + numberOfLimitedStatuses);
+		logger.debug(task.getCollectionName() + ": Track limitation notice: " + numberOfLimitedStatuses);
 		// TODO: thread safety
 		task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_RUNNING_WARNING));
 		task.setStatusMessage("Track limitation notice: " + numberOfLimitedStatuses);
@@ -126,10 +119,10 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 	@Override
 	public void onException(Exception ex) {
 		logger.error("Exception for collection " + task.getCollectionCode(), ex);
+		int attempt = cache.incrAttempt(task.getCollectionCode());
+		task.setStatusMessage(ex.getMessage());
 		if(ex instanceof TwitterException)
 		{
-			int attempt = cache.incrAttempt(task.getCollectionCode());
-			task.setStatusMessage(ex.getMessage());
 			if(((TwitterException) ex).getStatusCode() == -1)
 			{
 				if(attempt > Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_NET_FAILURE_RETRY_ATTEMPTS)))
@@ -176,6 +169,28 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 				CollectorErrorLog.sendErrorMail(task.getCollectionCode(),ex.toString());
 			else
 			{
+				try {
+					Thread.sleep(timeToSleep*1000);
+				} catch (InterruptedException ignore) {
+				}
+				timeToSleep=0;
+			}
+		}
+		else if(ex instanceof RejectedExecutionException)
+		{
+			if(attempt > Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_SERVICE_UNAVAILABLE_RETRY_ATTEMPTS)))
+			{
+				CollectorErrorLog.sendErrorMail(task.getCollectionCode(),ex.toString());
+				task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
+			}
+			else
+			{
+				timeToSleep = (long) (getRandom()*attempt*
+						Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_SERVICE_UNAVAILABLE_WAIT_SECONDS)));
+				logger.warn("Error RejectedExecutionException, Waiting for " + timeToSleep + " seconds, attempt: " + attempt);					
+				task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_WARNING));
+				task.setStatusMessage("Collection Stopped due to RejectedExecutionException. Reconnect Attempt: " + attempt);
+				
 				try {
 					Thread.sleep(timeToSleep*1000);
 				} catch (InterruptedException ignore) {

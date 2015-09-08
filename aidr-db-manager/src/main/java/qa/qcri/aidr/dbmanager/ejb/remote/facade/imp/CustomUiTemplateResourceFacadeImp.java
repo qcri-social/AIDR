@@ -133,18 +133,20 @@ public class CustomUiTemplateResourceFacadeImp extends CoreDBServiceFacadeImp<Cu
 
 	@Override
 	public CustomUiTemplateDTO updateCustomUITemplate(CustomUiTemplateDTO currentTemplate, CustomUiTemplateDTO updatedTemplate) {
-		CustomUiTemplate c = em.merge(currentTemplate.toEntity());
-		currentTemplate = new CustomUiTemplateDTO(c);
 		currentTemplate.setTemplateValue(updatedTemplate.getTemplateValue());
-		return currentTemplate;
+		CustomUiTemplate c = em.merge(currentTemplate.toEntity());
+		em.flush();
+		em.refresh(c);
+		return new CustomUiTemplateDTO(c);
 	}
 
 	@Override
 	public CustomUiTemplateDTO updateCustomUITemplateStatus(CustomUiTemplateDTO currentTemplate, CustomUiTemplateDTO updatedTemplate) {
-		CustomUiTemplate c = em.merge(currentTemplate.toEntity());
-		currentTemplate = new CustomUiTemplateDTO(c);
 		currentTemplate.setIsActive(updatedTemplate.isIsActive());
-		return currentTemplate;
+		CustomUiTemplate c = em.merge(currentTemplate.toEntity());
+		em.flush();
+		em.refresh(c);
+		return new CustomUiTemplateDTO(c);
 	}
 
 	@Override

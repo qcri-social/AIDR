@@ -439,7 +439,7 @@ public class TaggerController extends BaseController {
 			@RequestParam Integer modelFamilyId,
 			@RequestParam Integer crisisId) {
 		Integer start = 0;
-		Integer limit = 20;
+		Integer limit = 1;
 		List<TrainingDataDTO> response;
 		//logger.info("request received for crisis ID " + crisisId + ", model family ID " + modelFamilyId);
 		try {
