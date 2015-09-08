@@ -381,10 +381,12 @@ public class CollectionServiceImpl implements CollectionService {
 					collection.setStatus(CollectionStatus.NOT_RUNNING);
 					
 					//Add collectionCount in collectionLog if it was not recorded. 
-					if(collectionLogRepository.countLogsStartedInInterval(collection.getId(), collection.getStartDate(), new Date())==0){
-						AidrCollectionLog aidrCollectionLog = new AidrCollectionLog(collection);
-						aidrCollectionLog.setEndDate(new Date());
-						collectionLogRepository.save(aidrCollectionLog);
+					if (collection.getStartDate() != null) {
+						if(collectionLogRepository.countLogsStartedInInterval(collection.getId(), collection.getStartDate(), new Date())==0){
+							AidrCollectionLog aidrCollectionLog = new AidrCollectionLog(collection);
+							aidrCollectionLog.setEndDate(new Date());
+							collectionLogRepository.save(aidrCollectionLog);
+						}
 					}
 				case RUNNING_WARNING:
 					if(prevStatus == CollectionStatus.INITIALIZING)
