@@ -78,6 +78,12 @@ BEGIN
 	DELETE td FROM aidr_analysis.tag_data td JOIN collection_temp ct ON ct.code = td.crisis_code; 
 	DELETE cd FROM aidr_analysis.conf_data cd JOIN collection_temp ct ON ct.code = cd.crisis_code; 
 	
+	DELETE td FROM aidr_analysis.tag_data td LEFT JOIN aidr_predict.crisis c ON c.code = td.crisis_code 
+		WHERE c.code IS NULL;
+	
+	DELETE cd FROM aidr_analysis.conf_data cd LEFT JOIN aidr_predict.crisis c ON c.code = cd.crisis_code 
+		WHERE c.code IS NULL;
+	
 --	delete collections
 	DELETE c FROM aidr_fetch_manager.aidr_collection c JOIN collection_temp ct ON ct.id = c.id;
 	
