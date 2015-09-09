@@ -394,8 +394,8 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 
 				//System.out.println("Unparsed tweet data: " + jsonObj.get("id") + ", " + jsonObj.get("created_at") + ", " + jsonObj.get("user")  + ", " + jsonObj.get("aidr"));
 
-				if (!jsonObj.get("id").isJsonNull()) {
-					this.setTweetID(jsonObj.get("id").getAsString());
+				if (!jsonObj.get("id_str").isJsonNull()) {
+					this.setTweetID(jsonObj.get("id_str").getAsString());
 				} 
 
 				if (!jsonObj.get("text").isJsonNull()) {

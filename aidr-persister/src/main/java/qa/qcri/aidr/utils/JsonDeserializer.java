@@ -857,8 +857,8 @@ public class JsonDeserializer {
 			JsonParser parser = new JsonParser();
 			JsonObject jsonObj = (JsonObject) parser.parse(line);
 
-			if (jsonObj.get("id") != null) {
-				tweet.setTweetID(jsonObj.get("id").getAsString());
+			if (jsonObj.get("id_str") != null) {
+				tweet.setTweetID(jsonObj.get("id_str").getAsString());
 			}
 
 			if (jsonObj.get("text") != null) {
@@ -909,8 +909,8 @@ public class JsonDeserializer {
 			if(removeRetweet && jsonObj.get("retweeted_status") != null) {
 				return null;
 			}
-			if (!jsonObj.get("id").isJsonNull()) {
-				tweet.setTweetID(jsonObj.get("id").getAsString());
+			if (!jsonObj.get("id_str").isJsonNull()) {
+				tweet.setTweetID(jsonObj.get("id_str").getAsString());
 			}
 
 			if (!jsonObj.get("text").isJsonNull()) {

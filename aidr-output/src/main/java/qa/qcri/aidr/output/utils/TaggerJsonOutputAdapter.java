@@ -63,8 +63,8 @@ public class TaggerJsonOutputAdapter {
 					timestamp = obj.get("created_at");
 				}
 
-				if (obj.has("id")) {
-					id = obj.get("id").getAsString();
+				if (obj.has("id_str")) {
+					id = obj.get("id_str").getAsString();
 				}
 
 				if (obj.has("user")) {
