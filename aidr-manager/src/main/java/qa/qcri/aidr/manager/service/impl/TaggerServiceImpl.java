@@ -2073,13 +2073,11 @@ public class TaggerServiceImpl implements TaggerService {
 				+ "/misc/humanLabeled/download/crisis/" + crisisCode
 				+ "/userName/" + userName + "?count=" + count
 				+ "&fileType=" + fileType + "&contentType=" + contentType;
+		
 		logger.info("Going to invoke REST API: " + targetURL + " POST body: " + queryString);
 		try {
 			// Rest call to Tagger
-			WebTarget webResource = client.target(taggerMainUrl
-					+ "/misc/humanLabeled/download/crisis/" + crisisCode
-					+ "/userName/" + userName + "?count=" + count
-					+ "&fileType=" + fileType + "&contentType=" + contentType);
+			WebTarget webResource = client.target(targetURL);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.configure(

@@ -9,7 +9,6 @@ package qa.qcri.aidr.persister.api;
 
 
 import java.net.UnknownHostException;
-import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
@@ -21,21 +20,19 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import net.minidev.json.JSONObject;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.filter.DeserializeFilters;
 import qa.qcri.aidr.common.filter.JsonQueryList;
 import qa.qcri.aidr.common.values.DownloadType;
 import qa.qcri.aidr.persister.tagger.RedisTaggerPersister;
-import qa.qcri.aidr.utils.ClassifiedTweet;
 import qa.qcri.aidr.utils.DownloadJsonType;
 import qa.qcri.aidr.utils.GenericCache;
 import qa.qcri.aidr.utils.JsonDeserializer;
