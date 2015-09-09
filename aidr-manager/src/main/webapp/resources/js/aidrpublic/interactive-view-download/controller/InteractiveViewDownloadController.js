@@ -378,7 +378,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
                     if (resp.data && resp.data != '') {
-                        me.mainComponent.downloadLink.setText('<div class="styled-text download-link"><a target="_blank" href="' + resp.data + '">' + resp.data + '</a></div>', false);
+                        me.mainComponent.downloadLink.setText('<div class="styled-text download-link"><a target="_blank" href="' + resp.data + '">Download File</a></div>', false);
                     } else {
                         me.mainComponent.downloadLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
