@@ -31,7 +31,8 @@ import java.util.Map;
 import net.minidev.json.JSONObject;
 
 import org.apache.commons.io.input.ReversedLinesFileReader;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.translate.UnicodeEscaper;
 import org.apache.log4j.Logger;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.ICsvBeanWriter;
@@ -53,7 +54,8 @@ import com.google.gson.stream.JsonReader;
 public class JsonDeserializer {
 
 	private static Logger logger = Logger.getLogger(JsonDeserializer.class.getName());
-
+	private static UnicodeEscaper unicodeEscaper = UnicodeEscaper.above(127);
+	
 	private static final int BUFFER_SIZE = 10 * 1024 * 1024; // buffer size to use for buffered r/w
 	private static final int LIST_BUFFER_SIZE = 50000;
 
@@ -855,8 +857,8 @@ public class JsonDeserializer {
 			JsonParser parser = new JsonParser();
 			JsonObject jsonObj = (JsonObject) parser.parse(line);
 
-			if (jsonObj.get("id") != null) {
-				tweet.setTweetID(jsonObj.get("id").getAsString());
+			if (jsonObj.get("id_str") != null) {
+				tweet.setTweetID(jsonObj.get("id_str").getAsString());
 			}
 
 			if (jsonObj.get("text") != null) {
@@ -907,8 +909,8 @@ public class JsonDeserializer {
 			if(removeRetweet && jsonObj.get("retweeted_status") != null) {
 				return null;
 			}
-			if (!jsonObj.get("id").isJsonNull()) {
-				tweet.setTweetID(jsonObj.get("id").getAsString());
+			if (!jsonObj.get("id_str").isJsonNull()) {
+				tweet.setTweetID(jsonObj.get("id_str").getAsString());
 			}
 
 			if (!jsonObj.get("text").isJsonNull()) {
@@ -1075,7 +1077,7 @@ public class JsonDeserializer {
 									beanWriter.write(", "); // do not append for last item
 								}
 								// write to file
-								beanWriter.write(line);
+								beanWriter.write(unicodeEscaper.translate(line));
 								beanWriter.newLine();
 								++currentSize;
 							} else {
@@ -1184,7 +1186,7 @@ public class JsonDeserializer {
 									beanWriter.write(", "); // do not append for last item
 								}
 								// write to file
-								beanWriter.write(obj.toJSONString());
+								beanWriter.write(unicodeEscaper.translate(obj.toJSONString()));
 								beanWriter.newLine();
 								++totalCount;
 							}
@@ -1288,7 +1290,7 @@ public class JsonDeserializer {
 									beanWriter.write(", ");
 								}
 								// write to file
-								beanWriter.write(line);
+								beanWriter.write(unicodeEscaper.translate(line));
 								beanWriter.newLine();
 								++currentSize;
 							} else {
@@ -1523,7 +1525,7 @@ public class JsonDeserializer {
 											beanWriter.write(", ");
 										}
 										// write to file
-										beanWriter.write(line);
+										beanWriter.write(unicodeEscaper.translate(line));
 										beanWriter.newLine();
 										++currentSize;
 									}
@@ -1801,6 +1803,7 @@ public class JsonDeserializer {
 			for (HumanLabeledDocumentDTO dto : labeledItems.getItems()) {
 				ClassifiedTweet tweet = new ClassifiedTweet();
 				tweet.toClassifiedTweetFromLabeledDoc(dto, collectionCode);
+				
 				if (0 == currentSize && runningHeader == null && writer == null) {
 					runningHeader = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader,
 							ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet);
@@ -2047,7 +2050,8 @@ public class JsonDeserializer {
 							beanWriter.write(", ");
 						}
 						// write to file
-						beanWriter.write(tweet.toJsonString());
+						String jsonString = tweet.toJsonString();
+						beanWriter.write(unicodeEscaper.translate(jsonString));
 						beanWriter.newLine();
 						++currentSize;
 					}
@@ -2162,7 +2166,7 @@ public class JsonDeserializer {
 						beanWriter.write(", ");
 					}
 					// write to file
-					beanWriter.write(createJsonClassifiedTweetIDString(tweet));
+					beanWriter.write(unicodeEscaper.translate(createJsonClassifiedTweetIDString(tweet)));
 					beanWriter.newLine();
 					++totalCount;
 				}

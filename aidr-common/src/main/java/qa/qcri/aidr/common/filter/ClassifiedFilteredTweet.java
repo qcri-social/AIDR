@@ -85,8 +85,8 @@ public class ClassifiedFilteredTweet implements Serializable {
 					timestamp = obj.get("created_at");
 				}
 
-				if (obj.has("id")) {
-					tweetId = obj.get("id");
+				if (obj.has("id_str")) {
+					tweetId = obj.get("id_str");
 				}
 
 				if (obj.has("user")) {
