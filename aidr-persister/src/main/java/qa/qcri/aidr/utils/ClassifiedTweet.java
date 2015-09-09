@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang3.text.translate.UnicodeEscaper;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.code.DateFormatConfig;
@@ -37,7 +38,7 @@ import com.google.gson.stream.JsonReader;
 public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Document, Serializable {
 
 	private static final long serialVersionUID = 3780215910578547404L;
-
+	private static UnicodeEscaper unicodeEscaper = UnicodeEscaper.above(127);
 	private static Logger logger = Logger.getLogger(ClassifiedTweet.class);
 
 	/**
@@ -103,14 +104,14 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 	 * @return the message
 	 */
 	public String getMessage() {
-		return message;
+		return unicodeEscaper.translate(message);
 	}
 
 	/**
 	 * @param message the message to set
 	 */
 	public void setMessage(String message) {
-		this.message = message;
+		this.message = unicodeEscaper.translate(message);
 	}
 
 	/**
@@ -393,8 +394,8 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 
 				//System.out.println("Unparsed tweet data: " + jsonObj.get("id") + ", " + jsonObj.get("created_at") + ", " + jsonObj.get("user")  + ", " + jsonObj.get("aidr"));
 
-				if (!jsonObj.get("id").isJsonNull()) {
-					this.setTweetID(jsonObj.get("id").getAsString());
+				if (!jsonObj.get("id_str").isJsonNull()) {
+					this.setTweetID(jsonObj.get("id_str").getAsString());
 				} 
 
 				if (!jsonObj.get("text").isJsonNull()) {
@@ -567,7 +568,8 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 		
 		try {
 			String jsonString = jsonObject.toJson(this, ClassifiedTweet.class);
-			return jsonString;
+			jsonString = jsonString.replace("\\\\u", "\\u");
+			return unicodeEscaper.translate(jsonString);
 		} catch (Exception e) {
 			logger.error("Error while parsing jsonObject to json string", e);
 			return null;
