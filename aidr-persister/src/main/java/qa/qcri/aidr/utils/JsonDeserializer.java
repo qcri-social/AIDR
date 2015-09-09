@@ -690,7 +690,16 @@ public class JsonDeserializer {
 		fileName = fileNameforCSVGen + CSV_EXTENSION;
 		try {
 			String deleteTimeDurationInMinutes = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DELETE_FILE_TIME_LIMIT);
-			FileSystemOperations.deleteFilesNewerThanNMinutes(folderLocation, CSV_EXTENSION + ZIP_EXTENSION, Long.valueOf(deleteTimeDurationInMinutes));
+			FileSystemOperations.deleteFilesOlderThanNMinutes(folderLocation, CSV_EXTENSION + ZIP_EXTENSION, Long.valueOf(deleteTimeDurationInMinutes));
+			File newestFile = FileSystemOperations.getTheNewestFile(folderLocation, CSV_EXTENSION + ZIP_EXTENSION);
+			
+			if(newestFile != null) {
+				fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode
+						+ FILE_SEPARATOR + newestFile.getName();
+				
+				return fileName;
+				
+			}
 			logger.info("Deleting exsiting file: " + folderLocation + FILE_SEPARATOR + fileName + ZIP_EXTENSION);
 
 			File folder = new File(folderLocation);
@@ -1462,9 +1471,15 @@ public class JsonDeserializer {
 		boolean jsonObjectClosed = false;
 		try {
 			String deleteTimeDurationInMinutes = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DELETE_FILE_TIME_LIMIT);
-			FileSystemOperations.deleteFilesNewerThanNMinutes(folderLocation, extension + ZIP_EXTENSION, Long.valueOf(deleteTimeDurationInMinutes));
-			logger.info("Deleted existing file: " + folderLocation + FILE_SEPARATOR + fileName + ZIP_EXTENSION);
+			FileSystemOperations.deleteFilesOlderThanNMinutes(folderLocation, extension + ZIP_EXTENSION, Long.valueOf(deleteTimeDurationInMinutes));
 
+			File newestFile = FileSystemOperations.getTheNewestFile(folderLocation, extension + ZIP_EXTENSION);
+			if(newestFile != null) {
+				fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode
+						+ FILE_SEPARATOR + newestFile.getName();
+				
+				return fileName;
+			}
 			File folder = new File(folderLocation);
 			File[] listOfFiles = folder.listFiles();
 			// to get only Tagger's files
