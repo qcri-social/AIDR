@@ -47,8 +47,6 @@ bin/asadmin delete-jdbc-resource "$AIDR_PREDICT_JNDI"
 bin/asadmin delete-jdbc-resource "$AIDR_DB_MANAGER_JNDI"
 bin/asadmin delete-jdbc-resource "$AIDR_TASK_MANAGER_JNDI"
 bin/asadmin delete-jdbc-connection-pool "$AIDR_PREDICT_CONNECTION_POOL"
-bin/asadmin delete-jdbc-resource "$AIDR_FETCH_MANAGER_JNDI"
-bin/asadmin delete-jdbc-connection-pool "$AIDR_MANAGER_CONNECTION_POOL"
 echo "Done."
 
 echo "Undeploying Glassfish Applications."
