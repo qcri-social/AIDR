@@ -3,14 +3,21 @@ package qa.qcri.aidr.trainer.pybossa.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+import org.json.simple.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import qa.qcri.aidr.trainer.pybossa.entity.ClientApp;
 import qa.qcri.aidr.trainer.pybossa.entity.TaskTranslation;
 import qa.qcri.aidr.trainer.pybossa.format.impl.TranslationRequestModel;
@@ -39,11 +46,13 @@ public class TWBTranslationServiceTest {
     private static final long TEST_CLIENT_ID = 3;
     private static final String NEW_CLIENT_APP_ID = "1211";
     private static final long TEST_TWB_PROJECT_ID = 5681;
-
+    private static final String LONG_CODE = "This_is_a_long_answer_code_loooooooong";
     @Test
     public void testPybossaWorker() throws Exception {
         pybossaWorker.processTaskRunImport();
     }
+    final private static String BASE_URL = "https://twb.translationcenter.org/api/v1";
+    final private static String API_KEY = "jk26fh2yzwo4";
 
     @Test
     public void testPullAllTranslationResponses() throws Exception {
@@ -95,11 +104,11 @@ public class TWBTranslationServiceTest {
         model.setContactEmail("test@test.com");
         model.setTitle("Request from Unit Test");
         model.setSourceLanguage("eng");
-        String[] targets = {"fra","esl"};
+        String[] targets = {"und","esl"};
         model.setTargetLanguages(targets);
         model.setSourceWordCount(100); //random test
         model.setInstructions("Unit test instructions");
-        model.setDeadline(new Date());
+        model.setDeadline(new Date(System.currentTimeMillis()+3600000l));
         model.setUrgency("high");
         model.setProjectId(TEST_TWB_PROJECT_ID);// hard coded for now
 
@@ -124,7 +133,7 @@ public class TWBTranslationServiceTest {
         model.setSourceDocumentIds(documentIds);
         model.setSourceWordCount(100); //random test
         model.setInstructions("Unit test instructions");
-        model.setDeadline(new Date());
+        model.setDeadline(new Date(System.currentTimeMillis()+3600000l));
         model.setUrgency("high");
         model.setProjectId(TEST_TWB_PROJECT_ID);// hard coded for now
 
@@ -147,11 +156,11 @@ public class TWBTranslationServiceTest {
         if (loops == 0) {loops = 1;}
 
         for (int i=0; i<loops; i++) {
-            TaskTranslation translation = new TaskTranslation(id++, clientAppId, "63636", null, null, null, null, id, "Je m'appelle Jacques", TaskTranslation.STATUS_NEW);
+            TaskTranslation translation = new TaskTranslation(id++, clientAppId, "63636", null, null, null, null, id,"\n" + "क्षति शहर धेरै छ", TaskTranslation.STATUS_NEW);
             if (persist) {
                 translationService.createTranslation(translation);
             }
-            TaskTranslation translation2 = new TaskTranslation(id++, clientAppId, "63636", "Fred Jones", "22.22", "33.33", "http://google.com", id, "Me llamo es Juan", TaskTranslation.STATUS_NEW);
+            TaskTranslation translation2 = new TaskTranslation(id++, clientAppId, "63636", "Fred Jones", "22.22", "33.33", "http://google.com", id, "被害のダウン,タウンの\"多くがあります", TaskTranslation.STATUS_NEW);
             if (persist) {
                 translationService.createTranslation(translation2);
             }
@@ -164,24 +173,42 @@ public class TWBTranslationServiceTest {
     }
 
     @Test
+    public void testCreateWithCharset() throws Exception {
+        TaskTranslation translation3 = new TaskTranslation(100l, "1000", "63636", null, null, null, null, 100l, "被害のダウンタウンの多くがあります", TaskTranslation.STATUS_NEW);
+        translationService.createTranslation(translation3);
+        TaskTranslation retrieve = translationService.findById(translation3.getTranslationId());
+        assertNotNull(retrieve);
+        assert(translation3.getOriginalText().equals(retrieve.getOriginalText()));
+        assertNotNull(retrieve.getAuthor());
+        assertNotNull(retrieve.getOriginalText());
+
+        String newVal = "TEST";
+        retrieve.setStatus(newVal);
+        retrieve.setAnswerCode(LONG_CODE);
+        translationService.updateTranslation(retrieve);
+
+        TaskTranslation retrieve2 = translationService.findById(translation3.getTranslationId());
+        assert(retrieve2.getOriginalText().equals(retrieve.getOriginalText()));
+
+    }
+
+    @Test
     public void testCreateAndUpdateTranslation() throws Exception {
         int initialSize = translationService.findAllTranslations().size();
         TaskTranslation translation2 = new TaskTranslation(100l, "1000", "63636", null, null, null, null, 100l, "Je m'appelle Jacques", TaskTranslation.STATUS_NEW);
         translationService.createTranslation(translation2);
         assertNotNull(translation2.getAuthor());
         assertNotNull(translation2.getUrl());
+        translation2 = translationService.findById(translation2.getTranslationId());
 
-
-    	TaskTranslation translation = new TaskTranslation();
-    	translationService.createTranslation(translation);
-    	assertNotNull(translation.getTranslationId());
     	String newVal = "TEST";
-    	translation.setStatus(newVal);
-    	translationService.updateTranslation(translation);
-    	translation = translationService.findById(translation.getTranslationId());
+        translation2.setStatus(newVal);
+        translation2.setAnswerCode(LONG_CODE);
+    	translationService.updateTranslation(translation2);
+        translation2 = translationService.findById(translation2.getTranslationId());
     	// we would really need to flush and clear the hibernate session for this next validation
-    	assertEquals(newVal, translation.getStatus());
-    	translationService.delete(translation);
+    	assertEquals(newVal, translation2.getStatus());
+    	translationService.delete(translation2);
     	assertEquals(initialSize, translationService.findAllTranslations().size());
     }
 
@@ -204,7 +231,7 @@ public class TWBTranslationServiceTest {
         String testStatus = "TESTING324";
         List<TaskTranslation> translations = generateTestTranslationTasks(NEW_CLIENT_APP_ID, true, 4);
         TaskTranslation taskTranslation = translations.get(0);
-        taskTranslation.setStatus(testStatus);
+//        taskTranslation.setStatus(testStatus);
         translationService.updateTranslation(taskTranslation);
 
         List testList = translationService.findAllTranslationsByClientAppIdAndStatus(new Long(NEW_CLIENT_APP_ID), testStatus, 1000);
@@ -221,13 +248,64 @@ public class TWBTranslationServiceTest {
         Iterator<TaskTranslation> itr = translations.iterator();
         while (itr.hasNext()) {
             TaskTranslation translation = itr.next();
-            translationService.delete(translation);
+            //translationService.delete(translation);
         }
 
 
     }
 
 
+    @Test
+    public void testCharset() throws Exception {
+        JSONObject info = new JSONObject();
+        info.put("tweet", "à¤­à¥à¤¯à¤¾à¤•à¥à¤¤à¥‡ à¤°à¥‹à¤—");
+        String tweet = (String)info.get("tweet");// maintain encoding - new String(info.getString("tweet").getBytes("ISO-8859-1"), "UTF-8");
+        String encodedTweet = new String (tweet.getBytes("ISO-8859-1"), "UTF-8");
+        assert encodedTweet != null;
+    }
+
+    @Test
+    public void testSendEncodedDocument() throws Exception {
+        String filename = "TWB_Source_"+System.currentTimeMillis()+".csv";
+
+        //decide whether its better to send file or content
+        String content = "被害のダウ";
+        byte[] bytes = content.getBytes(StandardCharsets.UTF_8);
+
+        final String url=BASE_URL+"/documents";
+        HttpHeaders requestHeaders=new HttpHeaders();
+        requestHeaders.add("X-Proz-API-Key", API_KEY);
+        requestHeaders.setContentType(new MediaType("multipart","form-data"));
+        RestTemplate restTemplate=new RestTemplate();
+        restTemplate.getMessageConverters()
+                .add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
+        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+
+        LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+        map.add("document", bytes);
+        map.add("name", "translation_source.csv");
+
+        HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new    HttpEntity<LinkedMultiValueMap<String, Object>>(
+                map, requestHeaders);
+
+        ResponseEntity<Map> result = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Map.class);
+        Map resultMap = result.getBody();
+        String download_Link = (String)resultMap.get("download_link");
+        String returnedDocumentContent = getTranslationDocumentContent(download_Link) ;
+        assert (returnedDocumentContent.equals(content));
+
+    }
+
+    public String getTranslationDocumentContent(String download_link) throws Exception {
+        final String url=download_link;
+        HttpHeaders requestHeaders=new HttpHeaders();
+        requestHeaders.add("X-Proz-API-Key", API_KEY);
+        requestHeaders.setAccept(Collections.singletonList(new MediaType("application", "json")));
+        RestTemplate restTemplate=new RestTemplate();
+        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<String>(requestHeaders), String.class);
+        return response.getBody();
+    }
 
 
 
