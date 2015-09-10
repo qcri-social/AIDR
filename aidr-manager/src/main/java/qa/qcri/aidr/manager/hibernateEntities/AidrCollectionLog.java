@@ -24,7 +24,7 @@ import qa.qcri.aidr.manager.util.JsonDateSerializer;
 import javax.persistence.ManyToOne;
 
 @Entity
-@Table(name = "AIDR_COLLECTION_LOG")
+@Table(name = "aidr_collection_log")
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class AidrCollectionLog implements Serializable {
 

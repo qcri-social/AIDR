@@ -32,8 +32,6 @@ AIDR_PREDICT_CONNECTION_POOL=AIDR_PREDICT_CONNECTION_POOL
 AIDR_PREDICT_JNDI=JNDI/aidr_predict
 AIDR_DB_MANAGER_JNDI=JNDI/aidr_db_manager
 AIDR_TASK_MANAGER_JNDI=JNDI/aidr_task_manager
-AIDR_MANAGER_CONNECTION_POOL=AIDR_MANAGER_CONNECTION_POOL
-AIDR_FETCH_MANAGER_JNDI=JNDI/aidr_fetch_manager
 echo "Done."
 
 # Go to $GLASSFISH_HOME
@@ -91,8 +89,6 @@ bin/asadmin create-jdbc-connection-pool --driverclassname=com.mysql.jdbc.Driver 
 bin/asadmin create-jdbc-resource --connectionpoolid=AIDR_PREDICT_CONNECTION_POOL $AIDR_PREDICT_JNDI
 bin/asadmin create-jdbc-resource --connectionpoolid=AIDR_PREDICT_CONNECTION_POOL $AIDR_DB_MANAGER_JNDI
 bin/asadmin create-jdbc-resource --connectionpoolid=AIDR_PREDICT_CONNECTION_POOL $AIDR_TASK_MANAGER_JNDI
-bin/asadmin create-jdbc-connection-pool --driverclassname=com.mysql.jdbc.Driver --restype=java.sql.Driver --steadypoolsize=8 --maxpoolsize=32 --maxwait=60000 --isisolationguaranteed=true --ping=true --property user=aidr_admin:password=aidr_admin:url="jdbc\\:mysql\\://localhost\\:3306/aidr_fetch_manager" $AIDR_MANAGER_CONNECTION_POOL
-bin/asadmin create-jdbc-resource --connectionpoolid=AIDR_MANAGER_CONNECTION_POOL $AIDR_FETCH_MANAGER_JNDI
 
 # Deploying separate modules. First undeploying if already deployed and deploying again.
 bin/asadmin deploy --contextroot=AIDRDBManager --name=AIDRDBManager $AIDR_HOME/aidr-db-manager/target/aidr-db-manager-ear-1.0.ear

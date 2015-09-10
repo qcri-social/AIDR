@@ -11,7 +11,7 @@ import javax.persistence.Table;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 @Entity
-@Table(name = "ROLE")
+@Table(name = "role")
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Role implements Serializable {
 

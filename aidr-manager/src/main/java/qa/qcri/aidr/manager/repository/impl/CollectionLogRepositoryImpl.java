@@ -72,7 +72,7 @@ public class CollectionLogRepositoryImpl extends GenericRepositoryImpl<AidrColle
         return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
             @Override
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                String sql = " select sum(c.count) from AIDR_COLLECTION_LOG c where c.collectionID = :collectionId ";
+                String sql = " select sum(c.count) from aidr_collection_log c where c.collectionID = :collectionId ";
                 SQLQuery sqlQuery = session.createSQLQuery(sql);
                 sqlQuery.setParameter("collectionId", collectionId);
                 BigDecimal total = (BigDecimal) sqlQuery.uniqueResult();
@@ -89,7 +89,7 @@ public class CollectionLogRepositoryImpl extends GenericRepositoryImpl<AidrColle
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
                 String sql = " select c.collectionID as id, " +
                         " sum(c.count) as count " +
-                        " from AIDR_COLLECTION_LOG c " +
+                        " from aidr_collection_log c " +
                         " where c.collectionID in :ids " +
                         " group by c.collectionID ";
                 SQLQuery sqlQuery = session.createSQLQuery(sql);
@@ -114,7 +114,7 @@ public class CollectionLogRepositoryImpl extends GenericRepositoryImpl<AidrColle
     	 return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
              @Override
              public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                 String sql = " select count(*) from AIDR_COLLECTION_LOG c where c.collectionID = :collectionId and startDate >= :startDate and startDate < :endDate ";
+                 String sql = " select count(*) from aidr_collection_log c where c.collectionID = :collectionId and startDate >= :startDate and startDate < :endDate ";
                  SQLQuery sqlQuery = session.createSQLQuery(sql);
                  sqlQuery.setParameter("collectionId", collectionId);
                  sqlQuery.setParameter("startDate", startDate);
