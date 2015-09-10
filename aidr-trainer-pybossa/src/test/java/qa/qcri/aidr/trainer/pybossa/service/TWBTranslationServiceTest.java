@@ -160,7 +160,7 @@ public class TWBTranslationServiceTest {
             if (persist) {
                 translationService.createTranslation(translation);
             }
-            TaskTranslation translation2 = new TaskTranslation(id++, clientAppId, "63636", "Fred Jones", "22.22", "33.33", "http://google.com", id, "被害のダウン,タウンの多くがあります", TaskTranslation.STATUS_NEW);
+            TaskTranslation translation2 = new TaskTranslation(id++, clientAppId, "63636", "Fred Jones", "22.22", "33.33", "http://google.com", id, "被害のダウン,タウンの\"多くがあります", TaskTranslation.STATUS_NEW);
             if (persist) {
                 translationService.createTranslation(translation2);
             }

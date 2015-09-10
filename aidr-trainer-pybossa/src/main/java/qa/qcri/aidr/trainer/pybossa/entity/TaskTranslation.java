@@ -4,6 +4,8 @@ package qa.qcri.aidr.trainer.pybossa.entity;
  * Created by kamal on 3/22/15.
  */
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -108,7 +110,7 @@ public class TaskTranslation {
 	}
 
     public String getCSVFormattedOriginalText() {
-        return originalText.replaceAll("[\r\n]", "");
+        return StringEscapeUtils.escapeCsv(originalText.replaceAll("[\r\n]", ""));
     }
 
 	public void setOriginalText(String originalText) {
