@@ -53,7 +53,8 @@ public class TranslationCenterCommunicator {
     //brute force but simpler to debug than using Jackson
     private static String getJsonForRequest(TranslationRequestModel request) {
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
         String formattedDate = formatter.format(request.getDeadline());
 
         String jsonString = "{            \n" +
@@ -66,8 +67,7 @@ public class TranslationCenterCommunicator {
                 "            \"instructions\": \"" + request.getInstructions() + "\",\n" +
                 "            \"deadline\": \"" + formattedDate + "\",\n" +
                 "            \"urgency\": \"" + request.getUrgency() + "\",\n" +
-                "            \"project_id\": " + request.getProjectId() + ",\n" +
-                "            \"callback_url\": \"" + request.getCallbackURL() + "\"\n" +
+                "            \"project_id\": " + request.getProjectId() + "\n" +
                 "}";
         return jsonString;
     }
@@ -82,6 +82,7 @@ public class TranslationCenterCommunicator {
         final String url=PybossaConf.BASE_URL+"/documents";
         HttpHeaders requestHeaders=new HttpHeaders();
         requestHeaders.add("X-Proz-API-Key", PybossaConf.API_KEY);
+
         requestHeaders.setContentType(new MediaType("multipart","form-data"));
         RestTemplate restTemplate=new RestTemplate();
         restTemplate.getMessageConverters()
