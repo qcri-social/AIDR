@@ -69,6 +69,9 @@ public class JsonDeserializer {
 	private static final String CLASSIFIED = "Classified_";
 	private static final String FILE_SEPARATOR = "/";
 	private static final String STRING_SEPARATOR = "-";
+	private static final String WITH_RETWEET = "with-retweet";
+	private static final String WITHOUT_RETWEET = "without-retweet";
+	
 	private MD5HashGenerator MD5Hash;
 
 	public JsonDeserializer() {
@@ -682,18 +685,23 @@ public class JsonDeserializer {
 				+ collectionCode;
 		String fileNameforCSVGen = null;
 		Long currentTimeStamp = System.currentTimeMillis();
+		String exclusionPattern = HUMAN_TAGGED_FILE_PREFIX;
+		String[] inclusionPattern = {removeRetweet ? WITHOUT_RETWEET : WITH_RETWEET, String.valueOf(exportLimit)};
+		
+		fileNameforCSVGen = currentTimeStamp + STRING_SEPARATOR + exportLimit + STRING_SEPARATOR + (removeRetweet ? WITHOUT_RETWEET : WITH_RETWEET);
 		try {
-			fileNameforCSVGen = currentTimeStamp + STRING_SEPARATOR + exportLimit + STRING_SEPARATOR + MD5Hash.getMD5Hash(userName);
+			fileNameforCSVGen = fileNameforCSVGen + STRING_SEPARATOR + MD5Hash.getMD5Hash(userName);
 		} catch (Exception e) {
-			fileNameforCSVGen = currentTimeStamp + STRING_SEPARATOR + exportLimit;
+			logger.info("Issue in generating user hash for user : " + userName);
 		}
 		fileName = fileNameforCSVGen + CSV_EXTENSION;
 		try {
 			String deleteTimeDurationInMinutes = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DELETE_FILE_TIME_LIMIT);
-			FileSystemOperations.deleteFilesOlderThanNMinutes(folderLocation, CSV_EXTENSION + ZIP_EXTENSION, HUMAN_TAGGED_FILE_PREFIX, Long.valueOf(deleteTimeDurationInMinutes));
-			File newestFile = FileSystemOperations.getTheNewestFile(folderLocation, CSV_EXTENSION + ZIP_EXTENSION, HUMAN_TAGGED_FILE_PREFIX);
 			
-			if(newestFile != null && !newestFile.getName().contains(HUMAN_TAGGED_FILE_PREFIX)) {
+			FileSystemOperations.deleteFilesOlderThanNMinutes(folderLocation, CSV_EXTENSION + ZIP_EXTENSION, exclusionPattern, inclusionPattern, Long.valueOf(deleteTimeDurationInMinutes));
+			File newestFile = FileSystemOperations.getTheNewestFile(folderLocation, CSV_EXTENSION + ZIP_EXTENSION, exclusionPattern, inclusionPattern);
+			
+			if(newestFile != null) {
 				fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode
 						+ FILE_SEPARATOR + newestFile.getName();
 				return fileName;
@@ -830,21 +838,7 @@ public class JsonDeserializer {
 				}
 			}
 		}
-		
-		if(currentSize < exportLimit) {
-			File originalFile = new File(folderLocation + FILE_SEPARATOR + fileName);
-			String targetFileName = "";
-			try {
-				targetFileName = currentTimeStamp + STRING_SEPARATOR + currentSize + STRING_SEPARATOR + MD5Hash.getMD5Hash(userName);
-			} catch (Exception e) {
-				targetFileName = currentTimeStamp + STRING_SEPARATOR + currentSize;
-			}
-			targetFileName = targetFileName + CSV_EXTENSION;
-			File targetFile = new File(folderLocation + FILE_SEPARATOR + targetFileName);
-			boolean renamed = originalFile.renameTo(targetFile);
-			fileName = targetFileName;
-		}
-		
+
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileName);
 		String fileToDelete = fileName;
 		
@@ -1460,21 +1454,25 @@ public class JsonDeserializer {
 				+ collectionCode + FILE_SEPARATOR;
 		String fileNameforJsonGen = null;
 		Long currentTimeStamp = System.currentTimeMillis();
+		
+		String exclusionPattern = HUMAN_TAGGED_FILE_PREFIX;
+		String[] inclusionPattern = {removeRetweet ? WITHOUT_RETWEET : WITH_RETWEET, String.valueOf(exportLimit)};
+		fileNameforJsonGen = currentTimeStamp + STRING_SEPARATOR + exportLimit + STRING_SEPARATOR + (removeRetweet ? WITHOUT_RETWEET : WITH_RETWEET);
 		try {
-			fileNameforJsonGen = currentTimeStamp + STRING_SEPARATOR + exportLimit + STRING_SEPARATOR + MD5Hash.getMD5Hash(userName);
+			fileNameforJsonGen = fileNameforJsonGen + STRING_SEPARATOR + MD5Hash.getMD5Hash(userName);
 		} catch (Exception e) {
-			fileNameforJsonGen = currentTimeStamp + STRING_SEPARATOR + exportLimit;
+			logger.info("Issue in generating user hash for user : " + userName);
 		}
 		fileName = fileNameforJsonGen + extension;
 
 		boolean jsonObjectClosed = false;
 		try {
 			String deleteTimeDurationInMinutes = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DELETE_FILE_TIME_LIMIT);
-			FileSystemOperations.deleteFilesOlderThanNMinutes(folderLocation, extension + ZIP_EXTENSION, HUMAN_TAGGED_FILE_PREFIX, Long.valueOf(deleteTimeDurationInMinutes));
+			FileSystemOperations.deleteFilesOlderThanNMinutes(folderLocation, extension + ZIP_EXTENSION, exclusionPattern, inclusionPattern, Long.valueOf(deleteTimeDurationInMinutes));
 
-			File newestFile = FileSystemOperations.getTheNewestFile(folderLocation, extension + ZIP_EXTENSION, HUMAN_TAGGED_FILE_PREFIX);
+			File newestFile = FileSystemOperations.getTheNewestFile(folderLocation, extension + ZIP_EXTENSION, exclusionPattern, inclusionPattern);
 
-			if(newestFile != null && !newestFile.getName().contains(HUMAN_TAGGED_FILE_PREFIX)) {
+			if(newestFile != null) {
 				fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode
 						+ FILE_SEPARATOR + newestFile.getName();
 				return fileName;
@@ -1585,21 +1583,6 @@ public class JsonDeserializer {
 					logger.error(collectionCode + ": IOException for JSON file write ");
 				}
 			}
-		}
-		
-		// rename file if currentSize < exportLimit
-		if(currentSize < exportLimit) {
-			File originalFile = new File(folderLocation + FILE_SEPARATOR + fileName);
-			String targetFileName = "";
-			try {
-				targetFileName = currentTimeStamp + STRING_SEPARATOR + currentSize + STRING_SEPARATOR + MD5Hash.getMD5Hash(userName);
-			} catch (Exception e) {
-				targetFileName = currentTimeStamp + STRING_SEPARATOR + currentSize;
-			}
-			targetFileName = targetFileName + extension;
-			File targetFile = new File(folderLocation + FILE_SEPARATOR + targetFileName);
-			boolean renamed = originalFile.renameTo(targetFile);
-			fileName = targetFileName;
 		}
 		
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileName);
