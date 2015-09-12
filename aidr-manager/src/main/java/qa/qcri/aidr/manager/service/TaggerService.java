@@ -97,7 +97,7 @@ public interface TaggerService {
 	public String loadLatestTweetsWithCount(String code, int count) throws AidrException;
 
 	//Added by koushik
-	Map<String, Integer> countCollectionsClassifiers(List<ValueModel> collectionCodes) throws AidrException;
+	Map<String, Integer> countCollectionsClassifiers(List<String> collectionCodes) throws AidrException;
 
 	// Added by koushik
 	public Map<String, Object> generateCSVLink(String code) throws AidrException;
