@@ -14,7 +14,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 
 @Entity
-@Table(name = "AIDR_AUTHENTICATETOKEN")
+@Table(name = "aidr_authenticate_token")
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class AidrAuthenticateToken implements Serializable {
 

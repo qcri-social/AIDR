@@ -53,7 +53,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
-				String sql = " SELECT DISTINCT c.id FROM AIDR_COLLECTION c" +
+				String sql = " SELECT DISTINCT c.id FROM aidr_collection c" +
 						" WHERE (c.publiclyListed = 1 and c.status = :statusValue) " +
 						" order by c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
 
@@ -84,7 +84,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
-				String sql = " SELECT count(distinct c.id) FROM AIDR_COLLECTION c" +
+				String sql = " SELECT count(distinct c.id) FROM aidr_collection c" +
 						" WHERE (c.publiclyListed = 1 and c.status = :statusValue) " ;
 
 				SQLQuery sqlQuery = session.createSQLQuery(sql);
@@ -135,8 +135,8 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 		List<Object[]> collections = (List<Object[]>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				String sql = " SELECT DISTINCT c.id,c.status FROM AIDR_COLLECTION c " +
-						" LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
+				String sql = " SELECT DISTINCT c.id,c.status FROM aidr_collection c " +
+						" LEFT OUTER JOIN aidr_collection_manager c_m " +
 						" ON c.id = c_m.id_collection " +
 						" WHERE ((c.user_id =:userId OR c_m.id_manager = :userId) AND c.status " + conditionTrashed + " :statusValue) " +
 						" order by c.startDate IS NULL DESC, c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
@@ -180,8 +180,8 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 				}
 
 				String sql = " select count(distinct c.id) " +
-						" FROM AIDR_COLLECTION c " +
-						" LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
+						" FROM aidr_collection c " +
+						" LEFT OUTER JOIN aidr_collection_manager c_m " +
 						" ON c.id = c_m.id_collection " +
 						" WHERE (c.status " + conditionTrashed + " :statusValue and (c.user_id = :userId or c_m.id_manager = :userId)) ";
 

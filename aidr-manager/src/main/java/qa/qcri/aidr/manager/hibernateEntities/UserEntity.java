@@ -17,7 +17,7 @@ import javax.persistence.Table;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 @Entity
-@Table(name = "AIDR_USER")
+@Table(name = "aidr_user")
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class UserEntity implements Serializable{
 
@@ -37,7 +37,7 @@ public class UserEntity implements Serializable{
 
 	@OneToMany(fetch=FetchType.EAGER)
     @JoinTable(
-	      name="USER_ROLE",
+	      name="user_role",
 	      joinColumns={ @JoinColumn(name="user") },
 	      inverseJoinColumns={ @JoinColumn(name="role") }
 	)
