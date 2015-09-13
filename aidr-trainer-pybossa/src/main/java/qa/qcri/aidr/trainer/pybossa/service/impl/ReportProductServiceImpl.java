@@ -67,19 +67,24 @@ public class ReportProductServiceImpl implements ReportProductService {
         if(client == null){
             return;
         }
-        List<ClientApp> appList = clientAppService.getAllClientAppByClientID(client.getClientID() );
-       // System.out.println("appList size: " + appList.size() + " - " + client.getClientID());
-        Iterator itr= appList.iterator();
+
+        List<ReportTemplate> temps =  reportTemplateService.getReportTemplateWithUniqueKey("clientAppID");
+
+        Iterator itr= temps.iterator();
 
         while(itr.hasNext()){
-            ClientApp clientApp = (ClientApp)itr.next();
-            List<ReportTemplate> templateList =  reportTemplateService.getReportTemplateByClientApp(clientApp.getClientAppID(), StatusCodeType.TEMPLATE_IS_READY_FOR_EXPORT);
+
+            Long clientAppID = (long)itr.next();
+            List<ReportTemplate> templateList =  reportTemplateService.getReportTemplateByClientApp(clientAppID, StatusCodeType.TEMPLATE_IS_READY_FOR_EXPORT);
 
             if(templateList.size() > StatusCodeType.MIN_REPORT_TEMPLATE_EXPORT_SIZE){
                 CVSRemoteFileFormatter formatter = new CVSRemoteFileFormatter();
-                String sTemp = DateTimeConverter.reformattedCurrentDateForFileName() + clientApp.getShortName() + "export.csv";
+                ClientApp clientApp = clientAppService.findClientAppByID("clientAppID", clientAppID);
+                String sTemp = reformatFileName(clientApp.getShortName()) ;
+
                 String fileName = PybossaConf.DEFAULT_TRAINER_FILE_PATH + sTemp;
                 String mmFetchFileName = URLPrefixCode.MM_GEO_SOURCE_PATH +sTemp;
+
                 CSVWriter writer = formatter.instanceToOutput(fileName);
 
                 for(int i=0; i < templateList.size(); i++){
@@ -93,17 +98,20 @@ public class ReportProductServiceImpl implements ReportProductService {
                 }
                 formatter.finalizeCVSOutputFile(writer);
                 ClientAppEvent targetClinetApp = clientAppEventService.getNextSequenceClientAppEvent(clientApp.getClientAppID());
-                ClientAppSource appSource = new ClientAppSource(targetClinetApp.getClientAppID(), StatusCodeType.EXTERNAL_DATA_SOURCE_ACTIVE, fileName);
-                clientAppSourceService.insertNewClientAppSource(appSource);
+                if(targetClinetApp != null ){
+                    ClientAppSource appSource = new ClientAppSource(targetClinetApp.getClientAppID(), StatusCodeType.EXTERNAL_DATA_SOURCE_ACTIVE, fileName);
+                    clientAppSourceService.insertNewClientAppSource(appSource);
 
-                JSONArray jsonArray = new JSONArray();
-                JSONObject obj= new JSONObject();
-                obj.put("fileURL",mmFetchFileName);
-                obj.put("appID",targetClinetApp.getClientAppID());
+                    JSONArray jsonArray = new JSONArray();
+                    JSONObject obj= new JSONObject();
+                    obj.put("fileURL",mmFetchFileName);
+                    obj.put("appID",targetClinetApp.getClientAppID());
 
-                jsonArray.add(obj);
+                    jsonArray.add(obj);
 
-                String returnValue = pybossaCommunicator.sendPostGet(jsonArray.toJSONString(), URLPrefixCode.MICROMAPPER_API_SOURCE_SAVE_URL);
+                    String returnValue = pybossaCommunicator.sendPostGet(jsonArray.toJSONString(), URLPrefixCode.MICROMAPPER_API_SOURCE_SAVE_URL);
+
+                }
 
             }
 
@@ -124,5 +132,20 @@ public class ReportProductServiceImpl implements ReportProductService {
         data[7] = rpt.getAnswer();
 
         return data;
+    }
+
+    private String reformatFileName(String shortName){
+        String sTemp = DateTimeConverter.reformattedCurrentDateForFileName() + shortName ;
+
+        if(sTemp.length() > 50){
+            int iCutCount = sTemp.length() - 50;
+            iCutCount = sTemp.length() - iCutCount;
+
+            sTemp = sTemp.substring(0, iCutCount) ;
+
+        }
+        sTemp = sTemp + "export.csv";
+
+        return sTemp;
     }
 }
