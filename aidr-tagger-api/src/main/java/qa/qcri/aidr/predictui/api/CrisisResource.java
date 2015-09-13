@@ -38,6 +38,9 @@ import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * REST Web Service
@@ -137,18 +140,18 @@ public class CrisisResource {
 	@Consumes( MediaType.APPLICATION_JSON )
 	@Produces( MediaType.APPLICATION_JSON )
 	@Path("/crises")
-	public Response getCrisesByCodes(List<String> codes) {
+	public Response getCrisesByCodes(String codes) {
 		try {
 			ObjectMapper objectMapper = new ObjectMapper();
-			HashMap<String, Integer> classifiersNumbers = crisisLocalEJB.countClassifiersByCrisisCodes(codes);
+			JsonParser jsonParser = new JsonParser();
+			JsonArray jsonArr = (JsonArray)jsonParser.parse(codes);
+            ArrayList<String> jsonObjList = new Gson().fromJson(jsonArr, ArrayList.class);
+			HashMap<String, Integer> classifiersNumbers = crisisLocalEJB.countClassifiersByCrisisCodes(jsonObjList);
 			String rv = objectMapper.writeValueAsString(classifiersNumbers);
 
-			return Response.ok(rv).build();
+			return Response.ok(classifiersNumbers).build();
 		} catch (IOException e) {
-			logger.error("Error while getting numbers of classifiers by crisis codes:");
-			for (String c: codes) {
-				logger.error("for code: " + c);
-			}
+			logger.error("Error while getting numbers of classifiers by crisis codes:", e);
 			return Response.ok("Error while getting numbers of classifiers by crisis codes.").build();
 		}
 	}

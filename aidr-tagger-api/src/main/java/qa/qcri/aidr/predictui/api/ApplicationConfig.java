@@ -46,7 +46,6 @@ public class ApplicationConfig extends Application {
         resources.add(qa.qcri.aidr.predictui.api.TestDBManagerResource.class);
         resources.add(qa.qcri.aidr.predictui.api.TrainingDataResource.class);
         resources.add(qa.qcri.aidr.predictui.api.UserResource.class);
-        resources.add(MoxyJsonFeature.class);
         resources.add(JacksonFeature.class);
     }
     

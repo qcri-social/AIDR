@@ -216,11 +216,11 @@ public class FileSystemOperations {
         }
     }
     
-    public static void deleteFilesOlderThanNMinutes(String folderLocation, String fileExtension, Long timeInMinutes) {
+    public static void deleteFilesOlderThanNMinutes(String folderLocation, String fileExtension, String skipPattern, String[] includePattern, Long timeInMinutes) {
 		File directory = new File(folderLocation);
 		if(directory.exists()){
 
-			GenericExtFilter extFilter = new GenericExtFilter(fileExtension);
+			GenericExtFilter extFilter = new GenericExtFilter(fileExtension, skipPattern, includePattern);
 		    File[] listFiles = directory.listFiles(extFilter);           
 		    long timeInMilliSecs = timeInMinutes * 60 * 1000;
 		    for(File listFile : listFiles) {
@@ -231,10 +231,10 @@ public class FileSystemOperations {
 		}
 	}
     
-    public static File getTheNewestFile(String filePath, String ext) {
+    public static File getTheNewestFile(String filePath, String ext, String excludePattern, String[] inludePattern) {
         File theNewestFile = null;
         File dir = new File(filePath);
-        GenericExtFilter fileFilter = new GenericExtFilter(ext);
+        GenericExtFilter fileFilter = new GenericExtFilter(ext, excludePattern, inludePattern);
         File[] files = dir.listFiles(fileFilter);
 
         if (files.length > 0) {

@@ -247,7 +247,7 @@ public class TaggerServiceImpl implements TaggerService {
 	}
 
 	public Map<String, Integer> countCollectionsClassifiers(
-			List<ValueModel> collectionCodes) throws AidrException {
+			List<String> collectionCodes) throws AidrException {
 
 		try {
 			Client client = ClientBuilder.newBuilder()

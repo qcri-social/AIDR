@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "AIDR_COLLECTION")
+@Table(name = "aidr_collection")
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class AidrCollection implements Serializable {
 
@@ -76,7 +76,7 @@ public class AidrCollection implements Serializable {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "AIDR_COLLECTION_TO_MANAGER",
+            name = "aidr_collection_manager",
             joinColumns = {@JoinColumn(name = "id_collection")},
             inverseJoinColumns = {@JoinColumn(name = "id_manager")}
     )

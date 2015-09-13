@@ -401,7 +401,7 @@ public class CollectionController extends BaseController{
 				List<AidrCollection> data = collectionService.findAll(start, limit, userEntity, onlyTrashed);
 				if(data.size() > 0)
 				{
-					List<ValueModel> collectionCodes = new ArrayList<ValueModel>(data.size());
+					List<String> collectionCodes = new ArrayList<String>(data.size());
 					for (AidrCollection collection : data) {
 						switch(collection.getStatus())
 						{
@@ -415,7 +415,7 @@ public class CollectionController extends BaseController{
 						}
 						AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
 						dtoList.add(dto);
-						collectionCodes.add(new ValueModel(collection.getCode()));
+						collectionCodes.add(collection.getCode());
 					}
 					
 					Map<String, Integer> collectionsClassifiers = taggerService.countCollectionsClassifiers(collectionCodes);
