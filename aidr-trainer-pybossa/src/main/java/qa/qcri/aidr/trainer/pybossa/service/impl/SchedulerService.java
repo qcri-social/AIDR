@@ -20,7 +20,7 @@ public class SchedulerService {
 	@Qualifier("syncWorker")
 	private Worker syncWorker;
 
-    //set 5 sec. for testing. update to 5min later
+    //set 5 MIN. for testing. update to 5min later
     //"0 0/5 * * * ?"
 
 	@Scheduled(cron="0 0/3 * * * ?")
