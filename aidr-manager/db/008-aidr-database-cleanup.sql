@@ -7,21 +7,21 @@ BEGIN
 	DROP TEMPORARY TABLE IF EXISTS collection_temp;
 	CREATE TEMPORARY TABLE collection_temp AS
 	
-		SELECT ac.id, ac.code, ac.createdDate, ac.startDate FROM aidr_fetch_manager.aidr_collection ac 
+		SELECT ac.id, ac.code, ac.createdDate, ac.startDate FROM aidr_predict.aidr_collection ac 
 						WHERE ac.createdDate < DATE_SUB(CURDATE(), INTERVAL 2 YEAR) 
 						OR (ac.startDate is NULL and ac.createdDate < DATE_SUB(CURDATE(), INTERVAL 1 MONTH));
 	
 --	all those collections : never stopped and have no history and were created a month ago or earlier
 	INSERT INTO collection_temp
-		SELECT ac.id, ac.code, ac.createdDate, ac.startDate FROM aidr_fetch_manager.aidr_collection ac 
-				LEFT JOIN aidr_fetch_manager.aidr_collection_log acl ON ac.id = acl.collectionID 
+		SELECT ac.id, ac.code, ac.createdDate, ac.startDate FROM aidr_predict.aidr_collection ac 
+				LEFT JOIN aidr_predict.aidr_collection_log acl ON ac.id = acl.collectionID 
 				WHERE ac.id IS NULL AND ac.createdDate < DATE_SUB(CURDATE(), INTERVAL 1 MONTH);
 				 
 --  delete collection history
-	DELETE acl FROM aidr_fetch_manager.aidr_collection_log acl JOIN collection_temp ct ON ct.id = acl.collectionID;
+	DELETE acl FROM aidr_predict.aidr_collection_log acl JOIN collection_temp ct ON ct.id = acl.collectionID;
 	
 --	delete collection to manager mapping
-	DELETE acm FROM aidr_fetch_manager.aidr_collection_to_manager acm JOIN collection_temp ct ON ct.id = acm.id_collection;
+	DELETE acm FROM aidr_predict.aidr_collection_manager acm JOIN collection_temp ct ON ct.id = acm.id_collection;
 	
 --	crisis temp table
 	DROP TEMPORARY TABLE IF EXISTS crisis_temp;
@@ -85,7 +85,7 @@ BEGIN
 		WHERE c.code IS NULL;
 	
 --	delete collections
-	DELETE c FROM aidr_fetch_manager.aidr_collection c JOIN collection_temp ct ON ct.id = c.id;
+	DELETE c FROM aidr_predict.aidr_collection c JOIN collection_temp ct ON ct.id = c.id;
 	
 --	drop all temp tables
 	DROP TEMPORARY TABLE IF EXISTS model_temp;
