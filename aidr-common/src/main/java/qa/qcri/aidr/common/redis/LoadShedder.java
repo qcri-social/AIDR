@@ -61,21 +61,6 @@ public class LoadShedder {
 	 * Creates a load shedder that will allow the processing of up to maxLimit items in a period of
 	 * intervalMinutes.
 	 * 
-	 * Deprecated: use {@link #LoadShedder(int, double, boolean, String)} to avoid the "(generic)" name in the log.
-	 * 
-	 * @param maxLimit maximum number of messages in an interval
-	 * @param intervalMinutes duration of the interval in minutes (int)
-	 * @param warnOnLimit if true, then log a warning message when rate limit is exceeded
-	 */
-	@Deprecated
-	public LoadShedder(final int maxLimit, final int intervalMinutes, final boolean warnOnLimit) {
-		this(maxLimit, (double)intervalMinutes, warnOnLimit, "(generic)");
-	}
-	
-	/**
-	 * Creates a load shedder that will allow the processing of up to maxLimit items in a period of
-	 * intervalMinutes.
-	 * 
 	 * @param maxLimit maximum number of messages in an interval
 	 * @param intervalMinutes duration of the interval in minutes (int)
 	 * @param warnOnLimit if true, then log a warning message when rate limit is exceeded
@@ -142,47 +127,6 @@ public class LoadShedder {
 	 */
 	public String getName() {
 		return name;
-	}
-
-	/**
-	 * This method is called before processing an item. If the method returns true, the item should
-	 * be processed. If the method returns false, the item should not be processed, because we have
-	 * exceeded the number of items that can be processed during a certain period.
-	 * 
-	 * Deprecated: use the {@link #LoadShedder(int, double, boolean, String)} constructor to set the
-	 * name of this load shedder, and call {@link #canProcess()} instead.
-	 * 
-	 * TODO: Remove the "debug" level logging, which is unnecessary.
-	 * 
-	 * @param channel a collection code, used currently for logging
-	 * 
-	 * @return true if the current item should be processed, false if the current item should not be
-	 *         processed
-	 */
-	@Deprecated
-	public boolean canProcess(String channel) {
-		logger.debug("For channel: " + channel + ", counter:maxLimit" + counter + ":" + maxLimit);
-		if ((System.currentTimeMillis() - lastSetTime) <= intervalMillis) {
-			if (counter < maxLimit) {
-				++counter;
-				logger.debug("For channel: " + channel + ", returning true");
-				return true; // within bounds
-			}
-
-			// Otherwise, reset and return false
-			if (warnOnLimit && !warningEmitted) {
-				warningEmitted = true; // warn only once per interval
-				logger.warn("Limit of " + maxLimit + " messages per " + intervalMinutes + " mins reached with current count = " + counter);
-			}
-			logger.debug("For channel: " + channel + ", returning false");
-			return false; // wait until end of interval before resetting
-		}
-		// Interval over - now reset for next interval
-		logger.debug("For channel: " + channel + ", returning true as interval is over");
-		counter = 0;
-		lastSetTime = System.currentTimeMillis();
-		warningEmitted = false;
-		return true;
 	}
 	
 	/**

@@ -1,3 +1,7 @@
+use aidr_predict;
+
+set global event_scheduler = 1;
+
 DELIMITER $$
 
 CREATE PROCEDURE delete_unassigned_documents()
@@ -8,6 +12,13 @@ DECLARE size INT DEFAULT 0;
 DECLARE i INT DEFAULT 0;
 DECLARE countToDelete BIGINT DEFAULT 0;
 DECLARE crisisSelect INT DEFAULT 0;
+
+DECLARE EXIT HANDLER FOR SQLEXCEPTION
+BEGIN
+   DO RELEASE_LOCK('delete_unassigned_documents');
+END;
+
+IF GET_LOCK('delete_unassigned_documents', 0) THEN	
  
 DROP TEMPORARY TABLE IF EXISTS crisis_count_temp;
 CREATE TEMPORARY TABLE crisis_count_temp AS
@@ -20,23 +31,27 @@ CREATE TEMPORARY TABLE docs(docID bigint(20));
 
 WHILE (i < size) DO
 
-SELECT crisisID FROM crisis_count_temp LIMIT 1 INTO crisisSelect;
-SELECT crisisCount FROM crisis_count_temp LIMIT 1 INTO countToDelete;
+SELECT crisisID FROM crisis_count_temp LIMIT i,1 INTO crisisSelect;
+SELECT crisisCount FROM crisis_count_temp LIMIT i,1 INTO countToDelete;
 
-DELETE FROM docs;
 INSERT INTO docs
 	SELECT d.documentID as docID FROM aidr_predict.document d LEFT JOIN aidr_predict.task_assignment t ON d.documentID = t.documentID WHERE !d.hasHumanLabels and d.crisisID = crisisSelect order by d.valueAsTrainingSample,d.documentID limit countToDelete;
 
-DELETE from aidr_predict.document where documentID in (select docID from docs);
 SET i = i + 1;
-DELETE FROM crisis_count_temp LIMIT 1;
 
 END WHILE;
+
+DELETE d from aidr_predict.document d join docs where d.documentID = docs.docID;
 
 DROP TEMPORARY TABLE IF EXISTS crisis_count_temp;
 DROP TEMPORARY TABLE IF EXISTS docs;
 
+END IF;
+
+DO RELEASE_LOCK('delete_unassigned_documents');
+
 END $$
+
 
 
 CREATE EVENT delete_stale_documents 

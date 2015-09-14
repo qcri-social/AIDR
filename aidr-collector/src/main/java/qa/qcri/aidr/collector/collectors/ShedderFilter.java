@@ -21,7 +21,7 @@ public class ShedderFilter implements Predicate<JsonObject> {
 
 	@Override
 	public boolean test(JsonObject t) {
-		return delegate.canProcess(channel);
+		return delegate.canProcess();
 	}
 
 	@Override
