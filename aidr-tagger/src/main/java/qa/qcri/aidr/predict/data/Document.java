@@ -220,13 +220,13 @@ public abstract class Document implements java.io.Serializable {
 
 	public static Document fromTaggerDocumentToDocument(TaggerDocument doc) {
 		Document document = null;
-		if (doc.getDoctype().equalsIgnoreCase(DocumentType.TWIITER_DOC)) {
-			 document = new Tweet();
-		} else if (doc.getDoctype().equalsIgnoreCase(DocumentType.SMS_DOC)) {
-			document = new SMS();
-		}
-
 		if (doc != null) {
+			if (doc.getDoctype().equalsIgnoreCase(DocumentType.TWIITER_DOC)) {
+				document = new Tweet();
+			} else if (doc.getDoctype().equalsIgnoreCase(DocumentType.SMS_DOC)) {
+				document = new SMS();
+			}
+
 			document.setDocumentID(doc.getDocumentID());
 			document.setCrisisID(doc.getCrisisID());
 			document.humanLabelCount = (doc.hasHumanLabels() == false) ? 0 : 1;
@@ -246,10 +246,7 @@ public abstract class Document implements java.io.Serializable {
 					document.addLabel(label);
 				}
 			}*/
-
-			return document;
-
-		} 
-		return null;
+		}
+		return document;
 	}
 }

@@ -392,15 +392,14 @@ public class CollectionController extends BaseController{
 			}
 			try {
 				// Call update from Fetcher and then get list with updated items
-				/*collectionService.updateAndGetRunningCollectionStatusByUser(userId);
-				count = collectionService.getCollectionsCount(userEntity, onlyTrashed);
-				if (count > 0) {
+				/*collectionService.updateAndGetRunningCollectionStatusByUser(userId);				
 				*/
 				//MEGHNA: refactored code to prevent multiple DB calls. collection status is updated
 				//from db in the findAll call itself
-				List<AidrCollection> data = collectionService.findAll(start, limit, userEntity, onlyTrashed);
-				if(data.size() > 0)
+				count = collectionService.getCollectionsCount(userEntity, onlyTrashed);								
+				if(count > 0)
 				{
+					List<AidrCollection> data = collectionService.findAll(start, limit, userEntity, onlyTrashed);
 					List<String> collectionCodes = new ArrayList<String>(data.size());
 					for (AidrCollection collection : data) {
 						switch(collection.getStatus())
