@@ -61,7 +61,7 @@ CREATE EVENT delete_stale_documents
  
 	DELETE d FROM aidr_predict.document d LEFT JOIN aidr_predict.task_assignment t ON d.documentID = t.documentID WHERE !d.hasHumanLabels AND t.documentID IS NULL AND TIMESTAMPDIFF(HOUR, d.receivedAt, now()) > 6;
 
-	DELETE d FROM aidr_predict.document d JOIN aidr_predict.task_assignment t ON d.documentID = t.documentID WHERE !d.hasHumanLabels AND TIMESTAMPDIFF(HOUR, d.receivedAt, now()) > 6;
+	DELETE d FROM aidr_predict.document d JOIN aidr_predict.task_assignment t ON d.documentID = t.documentID WHERE !d.hasHumanLabels AND TIMESTAMPDIFF(HOUR, t.assignedAt, now()) > 6;
 
 	CALL delete_unassigned_documents;
 
