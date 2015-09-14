@@ -192,7 +192,7 @@ public class TaggerServiceImpl implements TaggerService {
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			Response clientResponse = webResource.request(
 					MediaType.APPLICATION_JSON).post(
-					Entity.json(objectMapper.writeValueAsString(dto)),
+					Entity.json(dto),
 					Response.class);
 
 			return clientResponse.readEntity(String.class);
