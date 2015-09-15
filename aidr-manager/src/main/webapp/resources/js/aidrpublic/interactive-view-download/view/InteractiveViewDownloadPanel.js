@@ -204,7 +204,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			{
 		        xtype: 'checkbox',
 		        name: 'retweet',
-				boxLabel: 'Yes, remove retweet',
+				boxLabel: 'Yes, remove retweets',
 				checked: true,
 				id: 'retweet'
 		    }]
