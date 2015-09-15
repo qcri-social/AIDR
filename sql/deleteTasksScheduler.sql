@@ -22,7 +22,7 @@ IF GET_LOCK('delete_unassigned_documents', 0) THEN
  
 DROP TEMPORARY TABLE IF EXISTS crisis_count_temp;
 CREATE TEMPORARY TABLE crisis_count_temp AS
-	SELECT crisisID, count(1) as crisisCount FROM aidr_predict.document d LEFT JOIN aidr_predict.task_assignment t ON d.documentID = t.documentID WHERE !d.hasHumanLabels GROUP BY crisisID;
+	SELECT crisisID, count(1) as crisisCount FROM aidr_predict.document d LEFT JOIN aidr_predict.task_assignment t ON d.documentID = t.documentID WHERE !d.hasHumanLabels AND t.documentID IS NULL GROUP BY crisisID;
 
 DELETE FROM crisis_count_temp WHERE crisisCount <= 10000;
 UPDATE crisis_count_temp SET crisisCount = crisisCount - 10000;
@@ -35,7 +35,7 @@ SELECT crisisID FROM crisis_count_temp LIMIT i,1 INTO crisisSelect;
 SELECT crisisCount FROM crisis_count_temp LIMIT i,1 INTO countToDelete;
 
 INSERT INTO docs
-	SELECT d.documentID as docID FROM aidr_predict.document d LEFT JOIN aidr_predict.task_assignment t ON d.documentID = t.documentID WHERE !d.hasHumanLabels and d.crisisID = crisisSelect order by d.valueAsTrainingSample,d.documentID limit countToDelete;
+	SELECT d.documentID as docID FROM aidr_predict.document d LEFT JOIN aidr_predict.task_assignment t ON d.documentID = t.documentID WHERE !d.hasHumanLabels AND t.documentID IS NULL AND d.crisisID = crisisSelect order by d.valueAsTrainingSample,d.documentID limit countToDelete;
 
 SET i = i + 1;
 
@@ -59,9 +59,13 @@ CREATE EVENT delete_stale_documents
 	DO 
 	BEGIN
  
-	DELETE d FROM aidr_predict.document d LEFT JOIN aidr_predict.task_assignment t ON d.documentID = t.documentID WHERE !d.hasHumanLabels AND t.documentID IS NULL AND TIMESTAMPDIFF(HOUR, d.receivedAt, now()) > 6;
+	DELETE d FROM aidr_predict.document d LEFT JOIN aidr_predict.task_assignment t ON d.documentID = t.documentID WHERE (!d.hasHumanLabels AND t.documentID IS NULL AND TIMESTAMPDIFF(HOUR, d.receivedAt, now()) > 6);
+
+	SELECT ROW_COUNT();
 
 	DELETE d FROM aidr_predict.document d JOIN aidr_predict.task_assignment t ON d.documentID = t.documentID WHERE !d.hasHumanLabels AND TIMESTAMPDIFF(HOUR, t.assignedAt, now()) > 6;
+
+	SELECT ROW_COUNT();
 
 	CALL delete_unassigned_documents;
 
