@@ -1032,15 +1032,11 @@ public class DataStore {
 		PreparedStatement updateStatement = null;
 		ResultSet resultSet = null;
 		
-		String selectQuery = "SELECT COUNT(1) FROM model_nominal_label WHERE modelID = ? AND nominalLabelID = ?";
-		
 		String updateQuery = "UPDATE model_nominal_label SET classifiedDocumentCount = classifiedDocumentCount + ? "
 				+ "WHERE modelID = ? AND nominalLabelID = ?"; 
-		int modelNominalCount = 0;
 		try {
 			// Insert document
 			conn = getMySqlConnection();
-			selectStatement = conn.prepareStatement(selectQuery);
 			updateStatement = conn.prepareStatement(updateQuery);
 			
 			for (Map.Entry<Integer, HashMap<Integer, Integer>> modelDocCounts : data.entrySet()) {
@@ -1049,22 +1045,10 @@ public class DataStore {
 					Integer labelID = labelDocCount.getKey();
 					Integer docCount = labelDocCount.getValue();
 					
-					selectStatement.setInt(1, modelID);
-					selectStatement.setInt(2, labelID);
-					
-					resultSet = selectStatement.executeQuery();
-
-					if(resultSet != null && resultSet.next()) {
-						modelNominalCount = resultSet.getInt(1);
-					}
-					
-					if(modelNominalCount > 0) {
-						
 						updateStatement.setInt(1, docCount);
 						updateStatement.setInt(2, modelID);
 						updateStatement.setInt(3, labelID);
 						updateStatement.executeUpdate();
-					}
 				}
 			}
 		} catch (SQLException e) {
