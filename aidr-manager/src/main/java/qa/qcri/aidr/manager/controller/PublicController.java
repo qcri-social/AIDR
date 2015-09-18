@@ -432,7 +432,6 @@ public class PublicController extends BaseController{
 		dto.setTarget(collection.getTarget());
 
 		UserEntity user = collection.getUser();
-		user.setRoles(null);
 		dto.setUser(user);
 
 		if (collection.getCount() != null) {
@@ -461,9 +460,6 @@ public class PublicController extends BaseController{
 		}
 
 		List<UserEntity> managers = collection.getManagers();
-		for (UserEntity manager : managers) {
-			manager.setRoles(null);
-		}
 		dto.setManagers(managers);
 
 		return dto;

@@ -725,7 +725,6 @@ public class CollectionController extends BaseController{
                 dto.setGeoR(collection.getGeoR());
 
 		UserEntity user = collection.getUser();
-		user.setRoles(null);
 		dto.setUser(user);
 
 		if (collection.getCount() != null) {
@@ -748,9 +747,6 @@ public class CollectionController extends BaseController{
 		dto.setCollectionType(collection.getCollectionType());
 
 		List<UserEntity> managers = collection.getManagers();
-		for (UserEntity manager : managers) {
-			manager.setRoles(null);
-		}
 		dto.setManagers(managers);
 
 		return dto;

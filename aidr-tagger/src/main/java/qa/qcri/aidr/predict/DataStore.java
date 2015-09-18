@@ -1045,10 +1045,10 @@ public class DataStore {
 					Integer labelID = labelDocCount.getKey();
 					Integer docCount = labelDocCount.getValue();
 					
-						updateStatement.setInt(1, docCount);
-						updateStatement.setInt(2, modelID);
-						updateStatement.setInt(3, labelID);
-						updateStatement.executeUpdate();
+					updateStatement.setInt(1, docCount);
+					updateStatement.setInt(2, modelID);
+					updateStatement.setInt(3, labelID);
+					updateStatement.executeUpdate();
 				}
 			}
 		} catch (SQLException e) {
