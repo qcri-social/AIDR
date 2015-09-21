@@ -63,7 +63,6 @@ public class JsonDeserializer {
 	private static final String ZIP_EXTENSION = ".zip";
 	private static final String CSV_EXTENSION = ".csv";
 	private static final String TWEETS_PREFIX = "_last_100k_tweets";
-	private static final String TWEETS_FILTERED_PREFIX = "_last_100k_tweets_filtered";
 	private static final String TWEET_IDS_PREFIX = "_tweetIds_filtered";
 	private static final String TWEET_IDS = "_tweetIds";
 	private static final String CLASSIFIED = "Classified_";
@@ -71,7 +70,7 @@ public class JsonDeserializer {
 	private static final String STRING_SEPARATOR = "-";
 	private static final String WITH_RETWEET = "with-retweet";
 	private static final String WITHOUT_RETWEET = "without-retweet";
-	
+	private static final String VOLUME_STRING = "vol";
 	private MD5HashGenerator MD5Hash;
 
 	public JsonDeserializer() {
@@ -685,8 +684,7 @@ public class JsonDeserializer {
 				+ collectionCode;
 		String fileNameforCSVGen = null;
 		Long currentTimeStamp = System.currentTimeMillis();
-		String exclusionPattern = HUMAN_TAGGED_FILE_PREFIX;
-		String[] inclusionPattern = {removeRetweet ? WITHOUT_RETWEET : WITH_RETWEET, String.valueOf(exportLimit)};
+		String exclusionPattern = VOLUME_STRING;
 		
 		fileNameforCSVGen = currentTimeStamp + STRING_SEPARATOR + exportLimit + STRING_SEPARATOR + (removeRetweet ? WITHOUT_RETWEET : WITH_RETWEET);
 		try {
@@ -696,16 +694,8 @@ public class JsonDeserializer {
 		}
 		fileName = fileNameforCSVGen + CSV_EXTENSION;
 		try {
-			String deleteTimeDurationInMinutes = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DELETE_FILE_TIME_LIMIT);
 			
-			FileSystemOperations.deleteFilesOlderThanNMinutes(folderLocation, CSV_EXTENSION + ZIP_EXTENSION, exclusionPattern, inclusionPattern, Long.valueOf(deleteTimeDurationInMinutes));
-			File newestFile = FileSystemOperations.getTheNewestFile(folderLocation, CSV_EXTENSION + ZIP_EXTENSION, exclusionPattern, inclusionPattern);
-			
-			if(newestFile != null) {
-				fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode
-						+ FILE_SEPARATOR + newestFile.getName();
-				return fileName;
-			}
+			FileSystemOperations.deleteFiles(folderLocation, CSV_EXTENSION + ZIP_EXTENSION, exclusionPattern);
 
 			logger.info("Deleting exsiting file: " + folderLocation + FILE_SEPARATOR + fileName + ZIP_EXTENSION);
 
@@ -1456,7 +1446,6 @@ public class JsonDeserializer {
 		Long currentTimeStamp = System.currentTimeMillis();
 		
 		String exclusionPattern = HUMAN_TAGGED_FILE_PREFIX;
-		String[] inclusionPattern = {removeRetweet ? WITHOUT_RETWEET : WITH_RETWEET, String.valueOf(exportLimit)};
 		fileNameforJsonGen = currentTimeStamp + STRING_SEPARATOR + exportLimit + STRING_SEPARATOR + (removeRetweet ? WITHOUT_RETWEET : WITH_RETWEET);
 		try {
 			fileNameforJsonGen = fileNameforJsonGen + STRING_SEPARATOR + MD5Hash.getMD5Hash(userName);
@@ -1467,16 +1456,7 @@ public class JsonDeserializer {
 
 		boolean jsonObjectClosed = false;
 		try {
-			String deleteTimeDurationInMinutes = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DELETE_FILE_TIME_LIMIT);
-			FileSystemOperations.deleteFilesOlderThanNMinutes(folderLocation, extension + ZIP_EXTENSION, exclusionPattern, inclusionPattern, Long.valueOf(deleteTimeDurationInMinutes));
-
-			File newestFile = FileSystemOperations.getTheNewestFile(folderLocation, extension + ZIP_EXTENSION, exclusionPattern, inclusionPattern);
-
-			if(newestFile != null) {
-				fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode
-						+ FILE_SEPARATOR + newestFile.getName();
-				return fileName;
-			}
+			FileSystemOperations.deleteFiles(folderLocation, extension + ZIP_EXTENSION, exclusionPattern);
 
 			File folder = new File(folderLocation);
 			File[] listOfFiles = folder.listFiles();

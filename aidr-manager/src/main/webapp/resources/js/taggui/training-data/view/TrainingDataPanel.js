@@ -163,7 +163,12 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
                 			        	name: 'format',
                 			        	inputValue: 'TEXT_JSON'
                 			        }
-                			        ]
+                			        ],
+        			        listeners: {
+        						change: function(ctl, val) {
+        							Ext.getCmp('downloadLink').hide();
+        						}
+        					}
                 		});
 
                 this.downloadButton = Ext.create('Ext.Button', {
@@ -176,7 +181,8 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
                 this.downloadLink = Ext.create('Ext.form.Label', {
                 			flex: 1,
                 			margin: '10 5 5 5',
-                			html: ''
+                			html: '',
+                			id: 'downloadLink'
                 		});
 
                 this.downloadPanel = Ext.create('Ext.container.Container', {

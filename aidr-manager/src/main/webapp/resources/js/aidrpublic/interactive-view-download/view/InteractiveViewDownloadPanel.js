@@ -153,7 +153,13 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			        	name: 'format',
 			        	inputValue: 'TEXT_JSON'
 			        }
-			        ]
+			        ],
+			        
+			listeners: {
+				change: function(ctl, val) {
+					Ext.getCmp('downloadLink').hide();
+				}
+			}
 		});
 		
 		this.downloadContents = Ext.create('Ext.container.Container', {
@@ -206,7 +212,12 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 		        name: 'retweet',
 				boxLabel: 'Yes, remove retweets',
 				checked: true,
-				id: 'retweet'
+				id: 'retweet',
+				listeners: {
+					change: function(ctl, val) {
+						Ext.getCmp('downloadLink').hide();
+					}
+				}
 		    }]
 			}]
 		    
@@ -224,7 +235,8 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 		this.downloadLink = Ext.create('Ext.form.Label', {
 			flex: 1,
 			margin: '10 5 5 5',
-			html: ''
+			html: '',
+			id: 'downloadLink'
 		});
 
 		this.tweetsStore = Ext.create('Ext.data.Store', {
