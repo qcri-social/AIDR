@@ -1,6 +1,6 @@
 Name: aidr-persister
 
-Code: https://github.com/qcri-social/AIDR/tree/master/aidr-persister
+Code: https://github.com/Qatar-Computing-Research-Institute/CrisisComputing/tree/master/aidr-persister
 
 # Overview
 

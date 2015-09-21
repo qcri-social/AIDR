@@ -1,6 +1,6 @@
 Name: aidr-trainer
 
-Code: https://github.com/qcri-social/AIDR/tree/master/aidr-trainer-api
+Code: https://github.com/Qatar-Computing-Research-Institute/CrisisComputing/tree/master/aidr-trainer-api
 
 # Overview
 

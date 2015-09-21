@@ -1,6 +1,6 @@
 Name: aidr-tagger
 
-Code: https://github.com/qcri-social/AIDR/tree/master/aidr-tagger and https://github.com/qcri-social/AIDR/tree/master/aidr-tagger-api
+Code: https://github.com/Qatar-Computing-Research-Institute/CrisisComputing/tree/master/aidr-tagger and https://github.com/Qatar-Computing-Research-Institute/CrisisComputing/tree/master/aidr-tagger-api
 
 # Overview of aidr-tagger
 

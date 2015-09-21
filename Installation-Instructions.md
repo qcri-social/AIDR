@@ -1,4 +1,4 @@
-To start/stop/re-start AIDR and other system administration tasks, see [System administrator manual](https://github.com/qcri-social/AIDR/wiki/System-administrator-manual)
+To start/stop/re-start AIDR and other system administration tasks, see [System administrator manual](https://github.com/Qatar-Computing-Research-Institute/CrisisComputing/wiki/System-administrator-manual)
 
 # 1. Requirements
 

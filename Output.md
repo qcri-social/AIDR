@@ -1,6 +1,6 @@
 Name: aidr-output
 
-Code: https://github.com/qcri-social/AIDR/tree/master/aidr-output
+Code: https://github.com/Qatar-Computing-Research-Institute/CrisisComputing/tree/master/aidr-output
 
 # Overview
 

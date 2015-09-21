@@ -1,6 +1,6 @@
 Name: aidr-task-manager
 
-Code: https://github.com/qcri-social/AIDR/tree/master/aidr-task-manager
+Code: https://github.com/Qatar-Computing-Research-Institute/CrisisComputing/tree/master/aidr-task-manager
 
 # Overview
 

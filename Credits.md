@@ -25,4 +25,4 @@ The development of AIDR over its first two years was led by Muhammad Imran and C
 
 # Contact
 
-[Click here to send us a message](https://github.com/qcri-social/AIDR/issues/new?title=Contact&body=Hi%20AIDR%20Team,%0A%0A--%20Your%20Name)
+[Click here to send us a message](https://github.com/Qatar-Computing-Research-Institute/CrisisComputing/issues/new?title=Contact&body=Hi%20AIDR%20Team,%0A%0A--%20Your%20Name)

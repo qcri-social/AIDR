@@ -1,4 +1,4 @@
-See also [Installation Instructions](https://github.com/qcri-social/AIDR/wiki/Installation-instructions)
+See also [Installation Instructions](https://github.com/Qatar-Computing-Research-Institute/CrisisComputing/wiki/Installation-instructions)
 
 # 1. Starting AIDR
 
