@@ -192,7 +192,12 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			   displayField:'division',
 			   autoSelect:true,
 			   forceSelection:true,
-			   id: "limit"
+			   id: "limit",
+			   listeners: {
+					change: function(ctl, val) {
+						Ext.getCmp('downloadLink').hide();
+					}
+				}
 		    },
 			{ 
 				xtype: 'splitter'

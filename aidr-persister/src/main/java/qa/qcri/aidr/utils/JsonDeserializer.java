@@ -743,9 +743,7 @@ public class JsonDeserializer {
 					// Charset.forName("UTF-8")));
 					br = new ReversedLinesFileReader(f);
 
-					if (currentSize < exportLimit
-							&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-									PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT))) {
+					if (currentSize < exportLimit) {
 						while ((line = br.readLine()) != null) {
 							ClassifiedTweet tweet = getClassifiedTweet(line, collectionCode, removeRetweet);
 							if (0 == currentSize && runningHeader == null && writer == null) {
@@ -789,9 +787,7 @@ public class JsonDeserializer {
 				logger.info("Done processing file : " + f.getAbsolutePath());
 			} // end for
 
-			if (currentSize < exportLimit
-					&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-							PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT))) {
+			if (currentSize < exportLimit) {
 				int countToWrite = Math.min(tweetsList.size(), exportLimit - currentSize);
 				// logger.info("Outside for loop: currentSize = " + currentSize + ", countToWrite = " + countToWrite + " tweetsList size = " + tweetsList.size());
 				if (countToWrite > 0 && tweetsList.size() >= countToWrite) {
@@ -1507,14 +1503,10 @@ public class JsonDeserializer {
 						try {
 							ClassifiedTweet tweet = getClassifiedTweet(line, null, removeRetweet);
 							if(tweet != null) {
-								if (currentSize < exportLimit
-										&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-												PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT))) {
+								if (currentSize < exportLimit) {
 									// Apply filter on tweet
 									if (satisfiesFilter(queryList, tweetFilter, tweet)) {
-										if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
-												&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-														PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT)) && currentSize > 0) {
+										if (DownloadJsonType.JSON_OBJECT.equals(jsonType) && currentSize > 0) {
 											beanWriter.write(", ");
 										}
 										// write to file
