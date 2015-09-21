@@ -56,7 +56,6 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
     beforeRenderView: function (component, eOpts) {
         AIDRFMFunctions.initMessageContainer();
         this.mainComponent = component;
-
         this.loadCollection();
         this.mainComponent.constraintsString = '{"constraints":[]}';
         this.mainComponent.downloadTweetsDescription.setText('The entire collection has approximately ' + COLLECTION_COUNT + ' items in total.');
@@ -359,6 +358,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
         }
 
         btn.setDisabled(true);
+        me.mainComponent.downloadLink.show();
         me.mainComponent.downloadLink.setText('<div class="loading-block"></div>', false);
 
         Ext.Ajax.timeout = 900000;
@@ -397,6 +397,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
     },
 
     applyFilterButtonHandler: function(){
+    	this.mainComponent.downloadLink.hide();
         this.mainComponent.constraintsString = this.getAllFilters();
         this.mainComponent.downloadTweetsDescription.setText('The entire collection has approximately ' + COLLECTION_COUNT + ' items in total, which will be filtered using your criteria above.');
         this.loadLatestTweets();
@@ -433,6 +434,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
 
         me.mainComponent.suspendLayout = false;
         me.mainComponent.forceComponentLayout();
+        me.mainComponent.downloadLink.hide();
     },
 
     addFilterHandler: function(){

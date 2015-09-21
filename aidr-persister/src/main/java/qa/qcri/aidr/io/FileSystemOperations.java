@@ -11,10 +11,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.io.comparator.LastModifiedFileComparator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -216,33 +214,15 @@ public class FileSystemOperations {
         }
     }
     
-    public static void deleteFilesOlderThanNMinutes(String folderLocation, String fileExtension, String skipPattern, String[] includePattern, Long timeInMinutes) {
+    public static void deleteFiles(String folderLocation, String fileExtension, String skipPattern) {
 		File directory = new File(folderLocation);
 		if(directory.exists()){
 
-			GenericExtFilter extFilter = new GenericExtFilter(fileExtension, skipPattern, includePattern);
+			GenericExtFilter extFilter = new GenericExtFilter(fileExtension, skipPattern);
 		    File[] listFiles = directory.listFiles(extFilter);           
-		    long timeInMilliSecs = timeInMinutes * 60 * 1000;
 		    for(File listFile : listFiles) {
-		        if(System.currentTimeMillis() - listFile.lastModified() > timeInMilliSecs) {
-		        	FileSystemOperations.deleteFile(listFile);
-		        }
+	        	FileSystemOperations.deleteFile(listFile);
 		    }
 		}
 	}
-    
-    public static File getTheNewestFile(String filePath, String ext, String excludePattern, String[] inludePattern) {
-        File theNewestFile = null;
-        File dir = new File(filePath);
-        GenericExtFilter fileFilter = new GenericExtFilter(ext, excludePattern, inludePattern);
-        File[] files = dir.listFiles(fileFilter);
-
-        if (files.length > 0) {
-            /** The newest file comes first **/
-            Arrays.sort(files, LastModifiedFileComparator.LASTMODIFIED_REVERSE);
-            theNewestFile = files[0];
-        }
-
-        return theNewestFile;
-    }
 }
