@@ -97,7 +97,7 @@ public interface TaggerService {
 	public String loadLatestTweetsWithCount(String code, int count) throws AidrException;
 
 	//Added by koushik
-	Map<String, Integer> countCollectionsClassifiers(List<ValueModel> collectionCodes) throws AidrException;
+	Map<String, Integer> countCollectionsClassifiers(List<String> collectionCodes) throws AidrException;
 
 	// Added by koushik
 	public Map<String, Object> generateCSVLink(String code) throws AidrException;
@@ -114,14 +114,14 @@ public interface TaggerService {
 
 	//Added by koushik
 	public Map<String, Object> generateJSONFilteredLink(String code,
-			String queryString, String jsonType, String userName) throws AidrException;
+			String queryString, String jsonType, String userName, Integer count, boolean removeRetweet) throws AidrException;
 
 	//Added by koushik
 	public Map<String, Object> generateJsonTweetIdsFilteredLink(String code,
 			String queryString, String jsonType, String userName) throws AidrException;
 
 	//Added by koushik
-	public Map<String, Object> generateCSVFilteredLink(String code, String queryString, String userName) throws AidrException;
+	public Map<String, Object> generateCSVFilteredLink(String code, String queryString, String userName, Integer count, boolean removeRetweet) throws AidrException;
 
 	//Added by koushik
 	public Map<String, Object> generateTweetIdsFilteredLink(String code, String queryString, String userName) throws AidrException;

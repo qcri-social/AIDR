@@ -7,12 +7,16 @@
  */
 package qa.qcri.aidr.dbmanager.entities.misc;
 
+import static javax.persistence.GenerationType.IDENTITY;
+
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -28,15 +32,44 @@ public class CustomUiTemplate implements java.io.Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 4549440030648604692L;
+	
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "customUITemplateID", unique = true, nullable = false)
 	private Long customUitemplateId;
+	
+	@Column(name = "crisisID", nullable = false)
 	private Long crisisID;
+	
+	@Column(name = "nominalAttributeID")
 	private Long nominalAttributeID;
+	
+	@Column(name = "templateType", nullable = false)
 	private Integer templateType;
+	
+	@Column(name = "templateValue", nullable = false, length = 65535, columnDefinition="Text")
 	private String templateValue;
+	
+	@Column(name = "status")
 	private Integer status;
+	
+	@Column(name = "isActive", nullable = false)
 	private Boolean isActive;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "updated", nullable = false, length = 19)
 	private Date updated;
 
+	@PreUpdate
+    protected void onUpdate() {
+    updated = new Date();
+    }
+	
+	@PrePersist
+    protected void onCreate() {
+    updated = new Date();
+    }
+	
 	public CustomUiTemplate() {
 	}
 
@@ -61,9 +94,6 @@ public class CustomUiTemplate implements java.io.Serializable {
 		this.updated = updated;
 	}
 
-	@Id
-	@GeneratedValue(strategy = IDENTITY)
-	@Column(name = "customUITemplateID", unique = true, nullable = false)
 	public Long getCustomUitemplateId() {
 		return this.customUitemplateId;
 	}
@@ -72,7 +102,6 @@ public class CustomUiTemplate implements java.io.Serializable {
 		this.customUitemplateId = customUitemplateId;
 	}
 
-	@Column(name = "crisisID", nullable = false)
 	public Long getCrisisID() {
 		return this.crisisID;
 	}
@@ -81,7 +110,6 @@ public class CustomUiTemplate implements java.io.Serializable {
 		this.crisisID = crisisId;
 	}
 
-	@Column(name = "nominalAttributeID")
 	public Long getNominalAttributeID() {
 		return this.nominalAttributeID;
 	}
@@ -90,7 +118,6 @@ public class CustomUiTemplate implements java.io.Serializable {
 		this.nominalAttributeID = nominalAttributeId;
 	}
 
-	@Column(name = "templateType", nullable = false)
 	public Integer getTemplateType() {
 		return this.templateType;
 	}
@@ -99,7 +126,6 @@ public class CustomUiTemplate implements java.io.Serializable {
 		this.templateType = templateType;
 	}
 
-	@Column(name = "templateValue", nullable = false, length = 65535, columnDefinition="Text")
 	public String getTemplateValue() {
 		return this.templateValue;
 	}
@@ -108,7 +134,6 @@ public class CustomUiTemplate implements java.io.Serializable {
 		this.templateValue = templateValue;
 	}
 
-	@Column(name = "status")
 	public Integer getStatus() {
 		return this.status;
 	}
@@ -126,8 +151,6 @@ public class CustomUiTemplate implements java.io.Serializable {
 		this.isActive = isActive;
 	}
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "updated", nullable = false, length = 19)
 	public Date getUpdated() {
 		return this.updated;
 	}

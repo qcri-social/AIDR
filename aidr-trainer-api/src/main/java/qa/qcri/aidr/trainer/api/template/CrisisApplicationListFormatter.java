@@ -28,7 +28,7 @@ public class CrisisApplicationListFormatter {
       //  String hostApiUrl = client.getHostURL();
        // hostApiUrl = hostApiUrl.replace("/api","/app/");
         //String url = hostApiUrl + clientApp.getShortName();
-         String url = URLReference.PUBLIC_PYBOSSA_URL + "/app/" + clientApp.getShortName();
+         String url = URLReference.PUBLIC_PYBOSSA_URL + "/project/" + clientApp.getShortName();
         return url;
     }
 
@@ -52,7 +52,7 @@ public class CrisisApplicationListFormatter {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append("<div>");
         String hostApiUrl = client.getHostURL();
-        hostApiUrl = hostApiUrl.replace("/api","/app/");
+        hostApiUrl = hostApiUrl.replace("/api","/project/");
         stringBuffer.append("<table>");
 
         String url = hostApiUrl + clientApp.getShortName();

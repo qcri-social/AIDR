@@ -268,7 +268,7 @@ public class MiscResource {
 	public Response sendErrorEmail(@FormParam("code") String code, @FormParam("module") String module, @FormParam("description") String description) throws Exception {
 		Boolean emailSent = true;
 		try {
-			String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+			String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").format(Calendar.getInstance().getTime());
 			String space = " ";
 			StringBuffer body = new StringBuffer(time).append(space)
 					.append(module).append(space).append(code).append("\n").append(description);
@@ -294,7 +294,7 @@ public class MiscResource {
 	@Path("/sendEmail")
 	public Response sendEmail(@FormParam("subject") String subject, @FormParam("body") String body) throws Exception {
 		try {
-			String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+			String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").format(Calendar.getInstance().getTime());
 			EmailClient.sendErrorMail(subject, time + "\n"+body);
 		} catch (Exception e) {
 			logger.error("Unable to send email: " + e.getMessage());

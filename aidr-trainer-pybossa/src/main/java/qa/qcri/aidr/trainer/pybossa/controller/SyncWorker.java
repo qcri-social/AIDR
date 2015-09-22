@@ -34,7 +34,7 @@ public class SyncWorker implements Worker {
     private MicroMapperWorker microMapperWorker;
 
 	public void work() {
-		String threadName = Thread.currentThread().getName();
+		String threadName = "aidr_trainer_pyboss_" + Thread.currentThread().getName();
         Calendar cal = Calendar.getInstance();
         System.out.println("************************************ Scheduler is starting : " + threadName + " - " + new Date());
         try {
@@ -43,14 +43,11 @@ public class SyncWorker implements Worker {
             clientAppRunWorker.processTaskRunImport();
             clientAppRunWorker.processTaskPublish();
             pybossaWorker.doCreateApp();
-           //
 
             int hour = cal.get(Calendar.HOUR_OF_DAY) ;
             if(hour == StatusCodeType.CLIENT_APP_DELETION_TIME){
                 pybossaWorker.doAppDelete();
             }
-
-            //Thread.sleep(300000); // simulates work
 
         }
         catch (InterruptedException e) {

@@ -192,7 +192,7 @@ public class TaggerServiceImpl implements TaggerService {
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			Response clientResponse = webResource.request(
 					MediaType.APPLICATION_JSON).post(
-					Entity.json(objectMapper.writeValueAsString(dto)),
+					Entity.json(dto),
 					Response.class);
 
 			return clientResponse.readEntity(String.class);
@@ -247,7 +247,7 @@ public class TaggerServiceImpl implements TaggerService {
 	}
 
 	public Map<String, Integer> countCollectionsClassifiers(
-			List<ValueModel> collectionCodes) throws AidrException {
+			List<String> collectionCodes) throws AidrException {
 
 		try {
 			Client client = ClientBuilder.newBuilder()
@@ -1524,13 +1524,13 @@ public class TaggerServiceImpl implements TaggerService {
 
 	@Override
 	public Map<String, Object> generateCSVFilteredLink(String code,
-			String queryString, String userName) throws AidrException {
+			String queryString, String userName, Integer count, boolean removeRetweet) throws AidrException {
 		try {
 			Client client = ClientBuilder.newBuilder()
 					.register(JacksonFeature.class).build();
 			WebTarget webResource = client.target(persisterMainUrl
 					+ "/taggerPersister/filter/genCSV?collectionCode=" + code
-					+ "&exportLimit=100000&userName=" + userName);
+					+ "&exportLimit=" + count + "&userName=" + userName + "&removeRetweet=" + removeRetweet);
 			Response clientResponse = webResource.request(
 					MediaType.APPLICATION_JSON).post(Entity.json(queryString),
 					Response.class);
@@ -1584,15 +1584,15 @@ public class TaggerServiceImpl implements TaggerService {
 
 	@Override
 	public Map<String, Object> generateJSONFilteredLink(String code,
-			String queryString, String jsonType, String userName)
+			String queryString, String jsonType, String userName, Integer count, boolean removeRetweet)
 			throws AidrException {
 		try {
 			Client client = ClientBuilder.newBuilder()
 					.register(JacksonFeature.class).build();
 			WebTarget webResource = client.target(persisterMainUrl
 					+ "/taggerPersister/filter/genJson?collectionCode=" + code
-					+ "&exportLimit=100000" + "&jsonType=" + jsonType
-					+ "&userName=" + userName);
+					+ "&exportLimit=" + count + "&jsonType=" + jsonType
+					+ "&userName=" + userName + "&removeRetweet=" + removeRetweet);
 			Response clientResponse = webResource.request(
 					MediaType.APPLICATION_JSON).post(Entity.json(queryString),
 					Response.class);
@@ -2073,13 +2073,11 @@ public class TaggerServiceImpl implements TaggerService {
 				+ "/misc/humanLabeled/download/crisis/" + crisisCode
 				+ "/userName/" + userName + "?count=" + count
 				+ "&fileType=" + fileType + "&contentType=" + contentType;
+		
 		logger.info("Going to invoke REST API: " + targetURL + " POST body: " + queryString);
 		try {
 			// Rest call to Tagger
-			WebTarget webResource = client.target(taggerMainUrl
-					+ "/misc/humanLabeled/download/crisis/" + crisisCode
-					+ "/userName/" + userName + "?count=" + count
-					+ "&fileType=" + fileType + "&contentType=" + contentType);
+			WebTarget webResource = client.target(targetURL);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			objectMapper.configure(

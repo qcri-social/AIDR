@@ -392,16 +392,15 @@ public class CollectionController extends BaseController{
 			}
 			try {
 				// Call update from Fetcher and then get list with updated items
-				/*collectionService.updateAndGetRunningCollectionStatusByUser(userId);
-				count = collectionService.getCollectionsCount(userEntity, onlyTrashed);
-				if (count > 0) {
+				/*collectionService.updateAndGetRunningCollectionStatusByUser(userId);				
 				*/
 				//MEGHNA: refactored code to prevent multiple DB calls. collection status is updated
 				//from db in the findAll call itself
-				List<AidrCollection> data = collectionService.findAll(start, limit, userEntity, onlyTrashed);
-				if(data.size() > 0)
+				count = collectionService.getCollectionsCount(userEntity, onlyTrashed);								
+				if(count > 0)
 				{
-					List<ValueModel> collectionCodes = new ArrayList<ValueModel>(data.size());
+					List<AidrCollection> data = collectionService.findAll(start, limit, userEntity, onlyTrashed);
+					List<String> collectionCodes = new ArrayList<String>(data.size());
 					for (AidrCollection collection : data) {
 						switch(collection.getStatus())
 						{
@@ -415,7 +414,7 @@ public class CollectionController extends BaseController{
 						}
 						AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection);
 						dtoList.add(dto);
-						collectionCodes.add(new ValueModel(collection.getCode()));
+						collectionCodes.add(collection.getCode());
 					}
 					
 					Map<String, Integer> collectionsClassifiers = taggerService.countCollectionsClassifiers(collectionCodes);
@@ -480,7 +479,7 @@ public class CollectionController extends BaseController{
 				return getUIWrapper(dto, true);
 			}
 		} catch (Exception e) {
-			logger.error("Error while starting the collection by Id: "+id); 
+			logger.error("Error while fetching the collection by Id: "+id); 
 		}
 		return getUIWrapper(false);
 	}
@@ -726,7 +725,6 @@ public class CollectionController extends BaseController{
                 dto.setGeoR(collection.getGeoR());
 
 		UserEntity user = collection.getUser();
-		user.setRoles(null);
 		dto.setUser(user);
 
 		if (collection.getCount() != null) {
@@ -749,9 +747,6 @@ public class CollectionController extends BaseController{
 		dto.setCollectionType(collection.getCollectionType());
 
 		List<UserEntity> managers = collection.getManagers();
-		for (UserEntity manager : managers) {
-			manager.setRoles(null);
-		}
 		dto.setManagers(managers);
 
 		return dto;

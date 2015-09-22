@@ -438,7 +438,7 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
 
     private String getAppInfo(ClientApp clientApp){
         Communicator pybossaCommunicator = new Communicator();
-        String url = clientApp.getClient().getHostURL()  + "/app/" + clientApp.getPlatformAppID();
+        String url = clientApp.getClient().getHostURL()  + "/project/" + clientApp.getPlatformAppID();
 
         String response = pybossaCommunicator.sendGet(url);
 
@@ -448,7 +448,7 @@ public class CustomUITemplateServiceImpl implements CustomUITemplateService {
     private void sendToPybossa(String jsonData,ClientApp clientApp){
        // logger.info("sendToPybossa jsonData : " + jsonData);
         Communicator pybossaCommunicator = new Communicator();
-        String url = clientApp.getClient().getHostURL()  + "/app/" + clientApp.getPlatformAppID() + "?api_key=" + clientApp.getClient().getHostAPIKey();
+        String url = clientApp.getClient().getHostURL()  + "/project/" + clientApp.getPlatformAppID() + "?api_key=" + clientApp.getClient().getHostAPIKey();
        // logger.info("sendToPybossa url:" + url);
         int responseCode = pybossaCommunicator.sendPut(jsonData, url);
        // logger.info("sendToPybossa response:" + responseCode);

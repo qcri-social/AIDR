@@ -11,11 +11,6 @@ import org.socialsignin.springsocial.security.signin.SpringSocialSecurityAuthent
 import org.socialsignin.springsocial.security.signup.SignUpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.social.connect.Connection;
-import org.springframework.social.connect.ConnectionRepository;
-import org.springframework.social.connect.UsersConnectionRepository;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,9 +18,14 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionRepository;
+import org.springframework.social.connect.UsersConnectionRepository;
+import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
-import qa.qcri.aidr.manager.hibernateEntities.Role;
+import qa.qcri.aidr.manager.RoleType;
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 import qa.qcri.aidr.manager.service.UserService;
 
@@ -58,9 +58,11 @@ public class SpringSocialUserDetailService implements UserDetailsService {
 				UserEntity userEntity =  userService.fetchByUserName(userName);
 				List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 				authorities.addAll(authentication.getAuthorities());
-				if(userEntity.getRoles()!=null && !userEntity.getRoles().isEmpty() ){
-					for(Role role : userEntity.getRoles()){
-					   GrantedAuthority authority = new SimpleGrantedAuthority(role.getName());
+				
+				List<RoleType> roles = userService.getUserRoles(userEntity.getId());
+				if(roles != null && !roles.isEmpty() ){
+					for(RoleType role : roles){
+					   GrantedAuthority authority = new SimpleGrantedAuthority(role.name());
 					   authorities.add(authority);
 					}
 				}
@@ -72,8 +74,7 @@ public class SpringSocialUserDetailService implements UserDetailsService {
 		}
 	}
 	
-	private List<Connection<?>> getConnections(ConnectionRepository connectionRepository,String userName)
-	{
+	private List<Connection<?>> getConnections(ConnectionRepository connectionRepository,String userName) {
 		MultiValueMap<String, Connection<?>> connections = connectionRepository.findAllConnections();
 		List<Connection<?>> allConnections = new ArrayList<Connection<?>>();
 		if (connections.size() > 0) {

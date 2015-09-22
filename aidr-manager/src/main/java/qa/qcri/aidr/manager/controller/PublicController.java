@@ -2,6 +2,7 @@ package qa.qcri.aidr.manager.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,6 +39,8 @@ import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.JsonDataValidator;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 @RequestMapping("public/collection")
@@ -429,7 +432,6 @@ public class PublicController extends BaseController{
 		dto.setTarget(collection.getTarget());
 
 		UserEntity user = collection.getUser();
-		user.setRoles(null);
 		dto.setUser(user);
 
 		if (collection.getCount() != null) {
@@ -458,9 +460,6 @@ public class PublicController extends BaseController{
 		}
 
 		List<UserEntity> managers = collection.getManagers();
-		for (UserEntity manager : managers) {
-			manager.setRoles(null);
-		}
 		dto.setManagers(managers);
 
 		return dto;
@@ -484,6 +483,63 @@ public class PublicController extends BaseController{
 		return name;
 	}
 
+	@RequestMapping(value = "/stopAllRunningCollection", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> stopAllRunningCollections(@RequestBody final String jsonString) throws Exception {
+		if(jsonString == null){
+			return getUIWrapper(false);
+		}
+		
+		JSONParser parser = new JSONParser();
+		JSONObject jsonObject = (JSONObject)parser.parse(jsonString);
+		
+		String token = (String)jsonObject.get("token");
+		
+		if(collectionService.isValidToken(token)){
+			List<AidrCollection> runningCollections = collectionService.getRunningCollections();
+			
+			List<AidrCollection> stoppedCollections = new ArrayList<AidrCollection>();
+			
+			for (AidrCollection aidrCollection : runningCollections) {
+				stoppedCollections.add(collectionService.stop(aidrCollection.getId()));
+			}
+			return getUIWrapper(stoppedCollections, true);
+		}
+		else{
+			return getUIWrapper("Authentication Failed", false);
+		}
+	}
 
+	
+	@RequestMapping(value = "/startCollections", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String,Object> startMultipleCollections(@RequestBody String jsonString) throws Exception {
+		if(jsonString == null){
+			return getUIWrapper(false);
+		}
+		
+		JSONParser parser = new JSONParser();
+		JSONObject jsonObject = (JSONObject)parser.parse(jsonString);
+		
+		String token = (String)jsonObject.get("token");
+		List<AidrCollection> collections = new ArrayList<AidrCollection>();
+		
+		if(collectionService.isValidToken(token)){
+			ObjectMapper mapper = new ObjectMapper();
+			collections = Arrays.asList(mapper.readValue(jsonObject.get("collections").toString(), AidrCollection[].class));
+			List<String> startedCollections = new ArrayList<String>();
 
+			for (AidrCollection collection : collections) {
+				collection = collectionService.findByCode(collection.getCode());
+				if (!collection.getStatus().equals(CollectionStatus.TRASHED)) {
+					collection = collectionService.start(collection.getId());
+					startedCollections.add(collection.getCode());
+				}
+			} 
+			return getUIWrapper(startedCollections, true);
+		}
+		else{
+			return getUIWrapper("Authentication Failed", false);
+		}
+	}
 }

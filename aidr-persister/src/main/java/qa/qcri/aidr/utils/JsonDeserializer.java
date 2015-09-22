@@ -31,7 +31,8 @@ import java.util.Map;
 import net.minidev.json.JSONObject;
 
 import org.apache.commons.io.input.ReversedLinesFileReader;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.translate.UnicodeEscaper;
 import org.apache.log4j.Logger;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.ICsvBeanWriter;
@@ -53,20 +54,23 @@ import com.google.gson.stream.JsonReader;
 public class JsonDeserializer {
 
 	private static Logger logger = Logger.getLogger(JsonDeserializer.class.getName());
-
+	private static UnicodeEscaper unicodeEscaper = UnicodeEscaper.above(127);
+	
 	private static final int BUFFER_SIZE = 10 * 1024 * 1024; // buffer size to use for buffered r/w
 	private static final int LIST_BUFFER_SIZE = 50000;
 
 	private static final String HUMAN_TAGGED_FILE_PREFIX = "-human_labeled_filtered-";
-	private static final String CSV_EXTENSION = ".csv";
 	private static final String ZIP_EXTENSION = ".zip";
+	private static final String CSV_EXTENSION = ".csv";
 	private static final String TWEETS_PREFIX = "_last_100k_tweets";
-	private static final String TWEETS_FILTERED_PREFIX = "_last_100k_tweets_filtered";
 	private static final String TWEET_IDS_PREFIX = "_tweetIds_filtered";
 	private static final String TWEET_IDS = "_tweetIds";
 	private static final String CLASSIFIED = "Classified_";
 	private static final String FILE_SEPARATOR = "/";
 	private static final String STRING_SEPARATOR = "-";
+	private static final String WITH_RETWEET = "with-retweet";
+	private static final String WITHOUT_RETWEET = "without-retweet";
+	private static final String VOLUME_STRING = "vol";
 	private MD5HashGenerator MD5Hash;
 
 	public JsonDeserializer() {
@@ -359,7 +363,7 @@ public class JsonDeserializer {
 							break;
 						}
 						// Otherwise add to write buffer
-						ClassifiedTweet tweet = getClassifiedTweet(line, collectionCode);
+						ClassifiedTweet tweet = getClassifiedTweet(line, collectionCode, Boolean.FALSE);
 						if (0 == totalCount && runningHeader == null && writer == null) {
 							runningHeader = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader,
 									ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet);
@@ -669,24 +673,30 @@ public class JsonDeserializer {
 	 * @return JSON to CSV converted 100K tweets filtered by user selected label
 	 *         name
 	 */
-	public String taggerGenerateJSON2CSV_100K_BasedOnTweetCountFiltered(String collectionCode, int exportLimit,
-			final JsonQueryList queryList, String userName) {
+	public String taggerGenerateJSON2CSVBasedOnTweetCountFiltered(String collectionCode, int exportLimit,
+			final JsonQueryList queryList, String userName, boolean removeRetweet) {
 		// BufferedReader br = null;
 		ReversedLinesFileReader br = null;
-
+		int currentSize = 0;
 		String fileName = "";
 		ICsvMapWriter writer = null;
 		String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH)
 				+ collectionCode;
 		String fileNameforCSVGen = null;
+		Long currentTimeStamp = System.currentTimeMillis();
+		String exclusionPattern = VOLUME_STRING;
+		
+		fileNameforCSVGen = currentTimeStamp + STRING_SEPARATOR + exportLimit + STRING_SEPARATOR + (removeRetweet ? WITHOUT_RETWEET : WITH_RETWEET);
 		try {
-			fileNameforCSVGen = collectionCode + TWEETS_FILTERED_PREFIX + STRING_SEPARATOR + MD5Hash.getMD5Hash(userName);
+			fileNameforCSVGen = fileNameforCSVGen + STRING_SEPARATOR + MD5Hash.getMD5Hash(userName);
 		} catch (Exception e) {
-			fileNameforCSVGen = collectionCode + TWEETS_FILTERED_PREFIX;
+			logger.info("Issue in generating user hash for user : " + userName);
 		}
 		fileName = fileNameforCSVGen + CSV_EXTENSION;
 		try {
-			FileSystemOperations.deleteFile(folderLocation + FILE_SEPARATOR + fileName + ZIP_EXTENSION);
+			
+			FileSystemOperations.deleteFiles(folderLocation, CSV_EXTENSION + ZIP_EXTENSION, exclusionPattern);
+
 			logger.info("Deleting exsiting file: " + folderLocation + FILE_SEPARATOR + fileName + ZIP_EXTENSION);
 
 			File folder = new File(folderLocation);
@@ -712,7 +722,6 @@ public class JsonDeserializer {
 			List<ClassifiedTweet> tweetsList = new ArrayList<ClassifiedTweet>(LIST_BUFFER_SIZE);
 			ReadWriteCSV<CellProcessor> csv = new ReadWriteCSV<CellProcessor>(collectionCode);
 			String[] runningHeader = null;
-			int currentSize = 0;
 			// writer = csv.writeClassifiedTweetsCSV(runningHeader, null,
 			// collectionCode, fileName, writer);
 
@@ -734,11 +743,9 @@ public class JsonDeserializer {
 					// Charset.forName("UTF-8")));
 					br = new ReversedLinesFileReader(f);
 
-					if (currentSize < exportLimit
-							&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-									PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K))) {
+					if (currentSize < exportLimit) {
 						while ((line = br.readLine()) != null) {
-							ClassifiedTweet tweet = getClassifiedTweet(line, collectionCode);
+							ClassifiedTweet tweet = getClassifiedTweet(line, collectionCode, removeRetweet);
 							if (0 == currentSize && runningHeader == null && writer == null) {
 								runningHeader = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader,
 										ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet);
@@ -780,9 +787,7 @@ public class JsonDeserializer {
 				logger.info("Done processing file : " + f.getAbsolutePath());
 			} // end for
 
-			if (currentSize < exportLimit
-					&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-							PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K))) {
+			if (currentSize < exportLimit) {
 				int countToWrite = Math.min(tweetsList.size(), exportLimit - currentSize);
 				// logger.info("Outside for loop: currentSize = " + currentSize + ", countToWrite = " + countToWrite + " tweetsList size = " + tweetsList.size());
 				if (countToWrite > 0 && tweetsList.size() >= countToWrite) {
@@ -793,6 +798,7 @@ public class JsonDeserializer {
 					}
 					writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList.subList(0, countToWrite), collectionCode, fileName,
 							writer);
+					currentSize += countToWrite;
 					tweetsList.clear();
 				}
 				// In case there wasn't any tweet. Just create an empty csv file.
@@ -802,6 +808,8 @@ public class JsonDeserializer {
 					writer = csv.writeClassifiedTweetsCSV(runningHeader, tweetsList.subList(0, countToWrite), collectionCode, fileName,
 							writer);
 				}
+				
+				
 			}
 		} catch (FileNotFoundException ex) {
 			logger.error(collectionCode + ": couldn't find file");
@@ -816,11 +824,17 @@ public class JsonDeserializer {
 				}
 			}
 		}
+
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileName);
+		String fileToDelete = fileName;
+		
 		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode
 				+ FILE_SEPARATOR + compressor.zip();
-		FileSystemOperations.deleteFile(folderLocation + FILE_SEPARATOR + fileNameforCSVGen + CSV_EXTENSION);
+		
+		FileSystemOperations.deleteFile(folderLocation + FILE_SEPARATOR + fileToDelete);
 		logger.info("Deleted raw created file: " + folderLocation + FILE_SEPARATOR + fileNameforCSVGen + CSV_EXTENSION);
+		
+		
 		return fileName;
 	}
 
@@ -831,8 +845,8 @@ public class JsonDeserializer {
 			JsonParser parser = new JsonParser();
 			JsonObject jsonObj = (JsonObject) parser.parse(line);
 
-			if (jsonObj.get("id") != null) {
-				tweet.setTweetID(jsonObj.get("id").getAsString());
+			if (jsonObj.get("id_str") != null) {
+				tweet.setTweetID(jsonObj.get("id_str").getAsString());
 			}
 
 			if (jsonObj.get("text") != null) {
@@ -866,10 +880,10 @@ public class JsonDeserializer {
 	}
 
 	public ClassifiedTweet getClassifiedTweet(String line) {
-		return getClassifiedTweet(line, null);
+		return getClassifiedTweet(line, null, Boolean.FALSE);
 	}
 
-	public ClassifiedTweet getClassifiedTweet(String line, String collectionCode) {
+	public ClassifiedTweet getClassifiedTweet(String line, String collectionCode, boolean removeRetweet) {
 
 		ClassifiedTweet tweet = new ClassifiedTweet();
 		try {
@@ -880,8 +894,11 @@ public class JsonDeserializer {
 			JsonParser parser = new JsonParser();
 			JsonObject jsonObj = (JsonObject) parser.parse(jsonReader);
 
-			if (!jsonObj.get("id").isJsonNull()) {
-				tweet.setTweetID(jsonObj.get("id").getAsString());
+			if(removeRetweet && jsonObj.get("retweeted_status") != null) {
+				return null;
+			}
+			if (!jsonObj.get("id_str").isJsonNull()) {
+				tweet.setTweetID(jsonObj.get("id_str").getAsString());
 			}
 
 			if (!jsonObj.get("text").isJsonNull()) {
@@ -1041,14 +1058,14 @@ public class JsonDeserializer {
 					while ((line = br.readLine()) != null) {
 						try {
 							if (currentSize <= Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-									PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K))) {
+									PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT))) {
 								if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
 										&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-												PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K)) && currentSize > 0) {
+												PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT)) && currentSize > 0) {
 									beanWriter.write(", "); // do not append for last item
 								}
 								// write to file
-								beanWriter.write(line);
+								beanWriter.write(unicodeEscaper.translate(line));
 								beanWriter.newLine();
 								++currentSize;
 							} else {
@@ -1157,7 +1174,7 @@ public class JsonDeserializer {
 									beanWriter.write(", "); // do not append for last item
 								}
 								// write to file
-								beanWriter.write(obj.toJSONString());
+								beanWriter.write(unicodeEscaper.translate(obj.toJSONString()));
 								beanWriter.newLine();
 								++totalCount;
 							}
@@ -1256,12 +1273,12 @@ public class JsonDeserializer {
 						try {
 							if (currentSize < exportLimit
 									&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-											PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K))) {
+											PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT))) {
 								if (DownloadJsonType.JSON_OBJECT.equals(jsonType) && currentSize > 0) {
 									beanWriter.write(", ");
 								}
 								// write to file
-								beanWriter.write(line);
+								beanWriter.write(unicodeEscaper.translate(line));
 								beanWriter.newLine();
 								++currentSize;
 							} else {
@@ -1407,12 +1424,13 @@ public class JsonDeserializer {
 		return ResultStatus.getUIWrapper("fileName", fileName, "count", totalCount);
 	}
 
-	public String taggerGenerateJSON2JSON_100K_BasedOnTweetCountFiltered(String collectionCode, int exportLimit, JsonQueryList queryList,
-			DownloadJsonType jsonType, String userName) {
+	public String taggerGenerateJSON2JSONBasedOnTweetCountFiltered(String collectionCode, int exportLimit, JsonQueryList queryList,
+			DownloadJsonType jsonType, String userName, boolean removeRetweet) {
 
 		// BufferedReader br = null;
 		ReversedLinesFileReader br = null;
 		String fileName = "";
+		long currentSize = 0;
 		BufferedWriter beanWriter = null;
 		String extension = DownloadJsonType.getSuffixString(jsonType);
 		if (null == extension) {
@@ -1421,17 +1439,20 @@ public class JsonDeserializer {
 		String folderLocation = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.DEFAULT_PERSISTER_FILE_PATH)
 				+ collectionCode + FILE_SEPARATOR;
 		String fileNameforJsonGen = null;
+		Long currentTimeStamp = System.currentTimeMillis();
+		
+		String exclusionPattern = HUMAN_TAGGED_FILE_PREFIX;
+		fileNameforJsonGen = currentTimeStamp + STRING_SEPARATOR + exportLimit + STRING_SEPARATOR + (removeRetweet ? WITHOUT_RETWEET : WITH_RETWEET);
 		try {
-			fileNameforJsonGen = collectionCode + TWEETS_FILTERED_PREFIX + STRING_SEPARATOR + MD5Hash.getMD5Hash(userName);
+			fileNameforJsonGen = fileNameforJsonGen + STRING_SEPARATOR + MD5Hash.getMD5Hash(userName);
 		} catch (Exception e) {
-			fileNameforJsonGen = collectionCode + TWEETS_FILTERED_PREFIX;
+			logger.info("Issue in generating user hash for user : " + userName);
 		}
 		fileName = fileNameforJsonGen + extension;
 
 		boolean jsonObjectClosed = false;
 		try {
-			FileSystemOperations.deleteFile(folderLocation + FILE_SEPARATOR + fileName + ZIP_EXTENSION);
-			logger.info("Deleted existing file: " + folderLocation + FILE_SEPARATOR + fileName + ZIP_EXTENSION);
+			FileSystemOperations.deleteFiles(folderLocation, extension + ZIP_EXTENSION, exclusionPattern);
 
 			File folder = new File(folderLocation);
 			File[] listOfFiles = folder.listFiles();
@@ -1465,7 +1486,6 @@ public class JsonDeserializer {
 				tweetFilter.queryList.setConstraints(queryList);
 			tweetFilter.buildMatcherArray();
 
-			long currentSize = 0;
 			boolean isDone = false;
 			for (int i = taggerFiles.length - 1; i >= 0; i--) {
 				File f = taggerFiles[i];
@@ -1481,30 +1501,28 @@ public class JsonDeserializer {
 
 					while ((line = br.readLine()) != null) {
 						try {
-							ClassifiedTweet tweet = getClassifiedTweet(line);
-							if (currentSize < exportLimit
-									&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-											PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K))) {
-								// Apply filter on tweet
-								if (satisfiesFilter(queryList, tweetFilter, tweet)) {
-									if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
-											&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-													PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K)) && currentSize > 0) {
-										beanWriter.write(", ");
+							ClassifiedTweet tweet = getClassifiedTweet(line, null, removeRetweet);
+							if(tweet != null) {
+								if (currentSize < exportLimit) {
+									// Apply filter on tweet
+									if (satisfiesFilter(queryList, tweetFilter, tweet)) {
+										if (DownloadJsonType.JSON_OBJECT.equals(jsonType) && currentSize > 0) {
+											beanWriter.write(", ");
+										}
+										// write to file
+										beanWriter.write(unicodeEscaper.translate(line));
+										beanWriter.newLine();
+										++currentSize;
 									}
-									// write to file
-									beanWriter.write(line);
-									beanWriter.newLine();
-									++currentSize;
+								} else {
+									if (DownloadJsonType.JSON_OBJECT.equals(jsonType) && !jsonObjectClosed) {
+										beanWriter.write("]");
+										jsonObjectClosed = true;
+									}
+									beanWriter.flush();
+									isDone = true;
+									break;
 								}
-							} else {
-								if (DownloadJsonType.JSON_OBJECT.equals(jsonType) && !jsonObjectClosed) {
-									beanWriter.write("]");
-									jsonObjectClosed = true;
-								}
-								beanWriter.flush();
-								isDone = true;
-								break;
 							}
 						} catch (Exception ex) {
 							logger.error("JSON file parsing exception" + ex);
@@ -1538,10 +1556,12 @@ public class JsonDeserializer {
 				}
 			}
 		}
+		
 		FileCompressor compressor = new FileCompressor(folderLocation, folderLocation, fileName);
+		String fileToDelete = fileName;
 		fileName = PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_DOWNLOAD_URL) + collectionCode
 				+ FILE_SEPARATOR + compressor.zip();
-		FileSystemOperations.deleteFile(folderLocation + FILE_SEPARATOR + fileNameforJsonGen + extension);
+		FileSystemOperations.deleteFile(folderLocation + FILE_SEPARATOR + fileToDelete);
 		logger.info("Deleted created raw file: " + folderLocation + FILE_SEPARATOR + fileNameforJsonGen + extension);
 		return fileName;
 	}
@@ -1753,6 +1773,7 @@ public class JsonDeserializer {
 			for (HumanLabeledDocumentDTO dto : labeledItems.getItems()) {
 				ClassifiedTweet tweet = new ClassifiedTweet();
 				tweet.toClassifiedTweetFromLabeledDoc(dto, collectionCode);
+				
 				if (0 == currentSize && runningHeader == null && writer == null) {
 					runningHeader = csv.setClassifiedTweetHeader(ReadWriteCSV.ClassifiedTweetCSVHeader,
 							ReadWriteCSV.FIXED_CLASSIFIED_TWEET_HEADER_SIZE, tweet);
@@ -1990,16 +2011,17 @@ public class JsonDeserializer {
 				tweet.toClassifiedTweetFromLabeledDoc(dto, collectionCode);
 				if (currentSize < exportLimit
 						&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-								PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K))) {
+								PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT))) {
 					// Apply filter on tweet
 					if (satisfiesFilter(queryList, tweetFilter, tweet)) {
 						if (DownloadJsonType.JSON_OBJECT.equals(jsonType)
 								&& currentSize < Integer.parseInt(PersisterConfigurator.getInstance().getProperty(
-										PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT_100K)) && currentSize > 0) {
+										PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT)) && currentSize > 0) {
 							beanWriter.write(", ");
 						}
 						// write to file
-						beanWriter.write(tweet.toJsonString());
+						String jsonString = tweet.toJsonString();
+						beanWriter.write(unicodeEscaper.translate(jsonString));
 						beanWriter.newLine();
 						++currentSize;
 					}
@@ -2114,7 +2136,7 @@ public class JsonDeserializer {
 						beanWriter.write(", ");
 					}
 					// write to file
-					beanWriter.write(createJsonClassifiedTweetIDString(tweet));
+					beanWriter.write(unicodeEscaper.translate(createJsonClassifiedTweetIDString(tweet)));
 					beanWriter.newLine();
 					++totalCount;
 				}
@@ -2151,5 +2173,4 @@ public class JsonDeserializer {
 		logger.info("Deleted raw file post compression: " + fileToDelete);
 		return ResultStatus.getUIWrapper("fileName", fileName, "count", totalCount);
 	}
-
 }

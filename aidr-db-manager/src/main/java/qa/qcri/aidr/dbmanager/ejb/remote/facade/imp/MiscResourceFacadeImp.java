@@ -76,12 +76,11 @@ public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long
 				+ " WHERE mf.modelFamilyID = :modelFamilyID AND d.crisisID = :crisisID " + orderSQLPart
 				+ " LIMIT :fromRecord, :limit";
 
-		String sqlCount = " SELECT count(distinct lbl.nominalLabelID, lbl.name, d.data, u.userID, u.name, dnl.timestamp, d.documentID) "
+		String sqlCount = " SELECT count(1) "
 				+ " FROM document_nominal_label dnl "
 				+ " JOIN nominal_label lbl on lbl.nominalLabelID=dnl.nominalLabelID "
 				+ " JOIN model_family mf on mf.nominalAttributeID=lbl.nominalAttributeID "
-				+ " JOIN document d on d.documentID = dnl.documentID "
-				+ " JOIN users u on u.userID = dnl.userID "
+				+ " JOIN document d on d.documentID = dnl.documentID "				
 				+ " WHERE mf.modelFamilyID = :modelFamilyID AND d.crisisID = :crisisID";
 
 		try {
@@ -89,7 +88,7 @@ public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long
 			Session session = getCurrentSession();
 			//Query queryCount = em.createNativeQuery(sqlCount);
 			Query queryCount = session.createSQLQuery(sqlCount);
-			logger.info("getTraningDataByCrisisAndAttribute count query: " + sqlCount);
+			//logger.info("getTraningDataByCrisisAndAttribute count query: " + sqlCount);
 			queryCount.setParameter("modelFamilyID", modelFamilyID.intValue());
 			queryCount.setParameter("crisisID", crisisID.intValue());
 			
@@ -97,7 +96,7 @@ public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long
 			if (res != null) { 
 				totalRows = Integer.parseInt(res.toString());
 			}
-			logger.info("Native sql-count query fetched rows count = " + res);
+			logger.info("getTraningDataByCrisisAndAttribute: rows count = " + res);
 			if (totalRows != null && totalRows > 0) {
 				Query query = session.createSQLQuery(sql);
 				query.setParameter("crisisID", crisisID.intValue());
@@ -105,11 +104,10 @@ public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long
 				query.setParameter("fromRecord", fromRecord);
 				query.setParameter("limit", limit);
 				
-				logger.info("getTraningDataByCrisisAndAttribute fetch query: " + sql);
 				List<Object[]> rows = query.list();
-				logger.info("Native query fetched rows count = " + (rows != null ? rows.size() : "null"));
+				//logger.info("[getTraningDataByCrisisAndAttribute] fetched rows count = " + (rows != null ? rows.size() : "null"));
 				TrainingDataDTO trainingDataRow = null;
-				int count = 0;
+				//int count = 0;
 				for (Object[] row : rows) {
 					trainingDataRow = new TrainingDataDTO();
 					//                    Removed .intValue() as we already cast to Integer
@@ -123,7 +121,7 @@ public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long
 					trainingDataRow.setTotalRows(totalRows);
 					trainingDataList.add(trainingDataRow);
 					//logger.info("Added to DTO training data, training data #" + count);
-					++count;
+					//++count;
 				}
 			}
 			logger.info("Fetched training data list size: " + (trainingDataList != null ? trainingDataList.size() : 0));
@@ -206,7 +204,7 @@ public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long
 				.add(Restrictions.eq("hasHumanLabels",false));
 		try {
 			Document document = getByCriteria(newCriterion);
-			logger.info("[MiscResourceFacadeImp:getNewTask] New task: " + document);
+			//logger.info("[MiscResourceFacadeImp:getNewTask] New task: " + document);
 			if (document != null)  {
 				List<TaskAssignmentDTO> tList = taskAssignmentEJB.findTaskAssignmentByID(document.getDocumentId());
 				if (tList != null && !tList.isEmpty()) {

@@ -154,7 +154,7 @@ public class Persister4TaggerAPITest {
 		String queryString = "{ \"constraints\": [ { \"queryType\": \"date_query\", \"comparator\": \"is_before\", \"timestamp\": 1427375693 },"
 				+ " { \"queryType\": \"date_query\", \"comparator\": \"is_after\", \"timestamp\": 1427352427 } ] }";
 
-		Response response = persister4TaggerAPI.generateCSVFromLastestJSONFiltered(queryString, existedCollectionCode, exportLimit, userName);
+		Response response = persister4TaggerAPI.generateCSVFromLastestJSONFiltered(queryString, existedCollectionCode, exportLimit, Boolean.FALSE, userName);
 		assertEquals(200, response.getStatus());
 		assertEquals(true, response.hasEntity());
 		assertEquals(false, response.bufferEntity());
@@ -165,7 +165,7 @@ public class Persister4TaggerAPITest {
 				+ "{ \"queryType\": \"classifier_query\", \"classifier_code\": \"informative_pray_personal\", \"label_code\": \"030_info\", \"comparator\": \"is_not\" }, "
 				+ "{ \"queryType\": \"classifier_query\", \"classifier_code\": \"informative_pray_personal\", \"label_code\": null, \"comparator\": \"has_confidence\", \"min_confidence\": 0.5 } ] }";
 
-		response = persister4TaggerAPI.generateCSVFromLastestJSONFiltered(queryString, existedCollectionCode, exportLimit, userName);
+		response = persister4TaggerAPI.generateCSVFromLastestJSONFiltered(queryString, existedCollectionCode, exportLimit, Boolean.FALSE, userName);
 		assertEquals(200, response.getStatus());
 		assertEquals(true, response.hasEntity());
 		assertEquals(false, response.bufferEntity());
@@ -189,7 +189,7 @@ public class Persister4TaggerAPITest {
 				+ "{ \"queryType\": \"classifier_query\", \"classifier_code\": \"informative_pray_personal\", \"label_code\": \"030_info\", \"comparator\": \"is_not\" }, "
 				+ "{ \"queryType\": \"classifier_query\", \"classifier_code\": \"informative_pray_personal\", \"label_code\": null, \"comparator\": \"has_confidence\", \"min_confidence\": 0.5 } ] }";
 
-		Response response = persister4TaggerAPI.generateCSVFromLastestJSONFiltered(queryString, sampleCollectionCode, exportLimit, userName);
+		Response response = persister4TaggerAPI.generateCSVFromLastestJSONFiltered(queryString, sampleCollectionCode, exportLimit, Boolean.FALSE, userName);
 		assertEquals(200, response.getStatus());
 		assertEquals(true, response.hasEntity());
 		assertEquals(false, response.bufferEntity());
@@ -199,7 +199,7 @@ public class Persister4TaggerAPITest {
 	public void testNullPointerExceptionOnInvalidQueryStringInGenerateCSVFromLastestJSONFiltered() throws UnknownHostException {
 		int exportLimit = 50;
 		String queryString = null;
-		Response response = persister4TaggerAPI.generateCSVFromLastestJSONFiltered(queryString, existedCollectionCode, exportLimit, userName);
+		Response response = persister4TaggerAPI.generateCSVFromLastestJSONFiltered(queryString, existedCollectionCode, exportLimit, Boolean.FALSE, userName);
 		assertEquals(200, response.getStatus());
 		assertEquals(true, response.hasEntity());
 		assertEquals(false, response.bufferEntity());
@@ -286,7 +286,7 @@ public class Persister4TaggerAPITest {
 		String jsonType = "TEXT_JSON";
 		String queryString = "{ \"constraints\": [ { \"queryType\": \"date_query\", \"comparator\": \"is_before\", \"timestamp\": 1427375693 },"
 				+ " { \"queryType\": \"date_query\", \"comparator\": \"is_after\", \"timestamp\": 1427352427 } ] }";
-		Response response = persister4TaggerAPI.generateJSONFromLastestJSONFiltered(queryString, existedCollectionCode, exportLimit, jsonType, userName);
+		Response response = persister4TaggerAPI.generateJSONFromLastestJSONFiltered(queryString, existedCollectionCode, exportLimit, jsonType, userName, Boolean.FALSE);
 		assertEquals(200, response.getStatus());
 		assertEquals(true, response.hasEntity());
 		assertEquals(false, response.bufferEntity());
@@ -297,7 +297,7 @@ public class Persister4TaggerAPITest {
 				+ "{ \"queryType\": \"classifier_query\", \"classifier_code\": \"informative_pray_personal\", \"label_code\": \"030_info\", \"comparator\": \"is_not\" }, "
 				+ "{ \"queryType\": \"classifier_query\", \"classifier_code\": \"informative_pray_personal\", \"label_code\": null, \"comparator\": \"has_confidence\", \"min_confidence\": 0.5 } ] }";
 
-		response = persister4TaggerAPI.generateJSONFromLastestJSONFiltered(queryString, existedCollectionCode, exportLimit, jsonType, userName);
+		response = persister4TaggerAPI.generateJSONFromLastestJSONFiltered(queryString, existedCollectionCode, exportLimit, jsonType, userName, Boolean.FALSE);
 		assertEquals(200, response.getStatus());
 		assertEquals(true, response.hasEntity());
 		assertEquals(false, response.bufferEntity());
@@ -313,7 +313,7 @@ public class Persister4TaggerAPITest {
 				+ "{ \"queryType\": \"classifier_query\", \"classifier_code\": \"informative_pray_personal\", \"label_code\": \"030_info\", \"comparator\": \"is_not\" }, "
 				+ "{ \"queryType\": \"classifier_query\", \"classifier_code\": \"informative_pray_personal\", \"label_code\": null, \"comparator\": \"has_confidence\", \"min_confidence\": 0.5 } ] }";
 
-		Response response = persister4TaggerAPI.generateJSONFromLastestJSONFiltered(queryString, sampleCollectionCode, exportLimit, jsonType, userName);
+		Response response = persister4TaggerAPI.generateJSONFromLastestJSONFiltered(queryString, sampleCollectionCode, exportLimit, jsonType, userName, Boolean.FALSE);
 		assertEquals(200, response.getStatus());
 		assertEquals(true, response.hasEntity());
 		assertEquals(false, response.bufferEntity());
@@ -324,7 +324,7 @@ public class Persister4TaggerAPITest {
 		int exportLimit = 50;
 		String jsonType = "TEXT_JSON";
 		String queryString = null;
-		Response response = persister4TaggerAPI.generateJSONFromLastestJSONFiltered(queryString, existedCollectionCode, exportLimit, jsonType, userName);
+		Response response = persister4TaggerAPI.generateJSONFromLastestJSONFiltered(queryString, existedCollectionCode, exportLimit, jsonType, userName, Boolean.FALSE);
 		assertEquals(200, response.getStatus());
 		assertEquals(true, response.hasEntity());
 		assertEquals(false, response.bufferEntity());
@@ -335,7 +335,7 @@ public class Persister4TaggerAPITest {
 		int exportLimit = 50;
 		String jsonType = null;
 		String queryString = "{ \"constraints\": [] }";
-		persister4TaggerAPI.generateJSONFromLastestJSONFiltered(queryString, existedCollectionCode, exportLimit, jsonType, userName);
+		persister4TaggerAPI.generateJSONFromLastestJSONFiltered(queryString, existedCollectionCode, exportLimit, jsonType, userName, Boolean.FALSE);
 	}
 
 	@Test

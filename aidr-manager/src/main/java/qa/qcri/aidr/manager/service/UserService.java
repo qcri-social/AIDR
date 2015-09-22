@@ -1,10 +1,12 @@
 package qa.qcri.aidr.manager.service;
 
+import java.util.List;
+
 import org.json.simple.JSONArray;
+
+import qa.qcri.aidr.manager.RoleType;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
-
-import java.util.List;
 
 public interface UserService {
 
@@ -23,5 +25,7 @@ public interface UserService {
     public boolean isUserAdmin(UserEntity user);
 
     public UserEntity getAvailableUser(JSONArray users);
+    
+    public List<RoleType> getUserRoles(Integer userId);
 
 }

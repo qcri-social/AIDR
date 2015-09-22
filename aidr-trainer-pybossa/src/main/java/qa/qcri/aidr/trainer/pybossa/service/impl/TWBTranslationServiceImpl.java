@@ -19,6 +19,7 @@ import qa.qcri.aidr.trainer.pybossa.service.ClientAppResponseService;
 import qa.qcri.aidr.trainer.pybossa.service.ClientAppService;
 import qa.qcri.aidr.trainer.pybossa.service.ReportTemplateService;
 import qa.qcri.aidr.trainer.pybossa.service.TranslationService;
+import qa.qcri.aidr.trainer.pybossa.store.PybossaConf;
 import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
 import qa.qcri.aidr.trainer.pybossa.store.URLPrefixCode;
 
@@ -87,9 +88,8 @@ public class TWBTranslationServiceImpl implements TranslationService {
                 model.setTargetLanguages(targets);
                 model.setSourceWordCount(100); //random test
                 model.setInstructions("Please translate according to ...");
-                model.setDeadline(new Date());
+                model.setDeadline(new Date(System.currentTimeMillis()+ PybossaConf.TWB_TRANSLATE_DEADLINE));
                 model.setUrgency("high");
-                model.setProjectId(twbProjectId.longValue());
 
                 model.setCallbackURL("https://www.example.com/my-callback-url");
                 model.setTranslationList(translations);
@@ -215,7 +215,6 @@ public class TWBTranslationServiceImpl implements TranslationService {
             throw new RuntimeException("TWB order number does not match");
         }
         taskTranslation.setTranslatedText(finalTranslation);
-
         taskTranslation.setAnswerCode(code);
         taskTranslation.setStatus(TaskTranslation.STATUS_RECEIVED);
         updateTranslation(taskTranslation);

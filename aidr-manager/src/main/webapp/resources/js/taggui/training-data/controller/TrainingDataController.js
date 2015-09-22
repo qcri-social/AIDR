@@ -202,6 +202,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                     url = '/protected/tagger/downloadHumanLabeledDocuments.action';
 
                     btn.setDisabled(true);
+                    me.mainComponent.downloadLink.show();
                     me.mainComponent.downloadLink.setText('<div class="loading-block"></div>', false);
 
                     Ext.Ajax.timeout = 900000;
@@ -222,7 +223,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
                             if (resp.success) {
                                 if (resp.data && resp.data != '') {
                                 	if(resp.data.total){
-                                		me.mainComponent.downloadLink.setText('<div class="styled-text download-link"><a target="_blank" href="' + resp.data.fileName + '">' + resp.data.fileName + '</a></div>', false);
+                                		me.mainComponent.downloadLink.setText('<div class="styled-text download-link"><a target="_blank" href="' + resp.data.fileName + '">Download File</a></div>', false);
                                 	}
                                 	else{
                                 		me.mainComponent.downloadLink.setText('', false);

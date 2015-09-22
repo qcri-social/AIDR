@@ -26,7 +26,7 @@ import javax.ws.rs.core.UriInfo;
 
 import net.minidev.json.JSONObject;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.values.DownloadType;

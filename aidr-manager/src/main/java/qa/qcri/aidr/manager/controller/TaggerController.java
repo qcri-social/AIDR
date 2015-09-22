@@ -439,7 +439,7 @@ public class TaggerController extends BaseController {
 			@RequestParam Integer modelFamilyId,
 			@RequestParam Integer crisisId) {
 		Integer start = 0;
-		Integer limit = 20;
+		Integer limit = 1;
 		List<TrainingDataDTO> response;
 		//logger.info("request received for crisis ID " + crisisId + ", model family ID " + modelFamilyId);
 		try {
@@ -782,6 +782,8 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/taggerGenerateCSVFilteredLink.action", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String,Object> generateCSVFilteredLink(@RequestParam String code,
+			@RequestParam Integer count,
+			@RequestParam boolean removeRetweet,
 			String queryString) throws Exception {
 		//logger.info("Received request for generating CSV filtered link for Collection: " + code);
 		Map<String, Object> result = null;
@@ -789,7 +791,7 @@ public class TaggerController extends BaseController {
 			String userName = getAuthenticatedUserName();
 			if (null == userName) userName = "System";
 			//logger.info("Received request for download from user = " + userName);
-			result = taggerService.generateCSVFilteredLink(code, queryString, userName);
+			result = taggerService.generateCSVFilteredLink(code, queryString, userName, count, removeRetweet);
 			if (result != null && result.get("url") != null) {
 				return getUIWrapper(result.get("url"),true);
 			} else {
@@ -831,7 +833,9 @@ public class TaggerController extends BaseController {
 	@RequestMapping(value = "/taggerGenerateJSONFilteredLink.action", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String,Object> generateJSONFilteredLink(@RequestParam String code,
+			@RequestParam Integer count,
 			String queryString,
+			@RequestParam boolean removeRetweet,
 			@DefaultValue(DownloadType.TEXT_JSON) @QueryParam("jsonType") String jsonType) throws Exception {
 		//logger.info("Received request for generating JSON filtered link for Collection: " + code);
 		Map<String, Object> result = null;
@@ -839,7 +843,7 @@ public class TaggerController extends BaseController {
 			String userName = getAuthenticatedUserName();
 			if (null == userName) userName = "System";
 			
-			result = taggerService.generateJSONFilteredLink(code, queryString, jsonType, userName);
+			result = taggerService.generateJSONFilteredLink(code, queryString, jsonType, userName, count, removeRetweet);
 			if (result != null && result.get("url") != null) {
 				return getUIWrapper(result.get("url"),true);
 			} else {

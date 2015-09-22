@@ -153,27 +153,82 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			        	name: 'format',
 			        	inputValue: 'TEXT_JSON'
 			        }
-			        ]
+			        ],
+			        
+			listeners: {
+				change: function(ctl, val) {
+					Ext.getCmp('downloadLink').hide();
+				}
+			}
 		});
+		
+		this.downloadContents = Ext.create('Ext.container.Container', {
+			label: 'Full Tweets',
+		    layout: {
+		        type: 'hbox'
+		    },
+		    width: 600,
+		    
+			items:[
+			{
+				xtype: 'fieldcontainer',
+				fieldLabel: 'Full Tweets',
+				labelWidth: 100,
+				layout: 'hbox',
+				items: [
+			{
+				xtype: 'label',
+				text: 'Max.',
+				labelAlign: 'bottom'
+			},
+			{ 
+				xtype: 'splitter'
+			},
+			{
+		        xtype:'combo',
+				queryMode:'local',
+			   store:['1500','3000','10000', '50000', '100000'],
+			   value: '1500',
+			   displayField:'division',
+			   autoSelect:true,
+			   forceSelection:true,
+			   id: "limit",
+			   listeners: {
+					change: function(ctl, val) {
+						Ext.getCmp('downloadLink').hide();
+					}
+				}
+		    },
+			{ 
+				xtype: 'splitter'
+			},
+			{
+				xtype: 'label',
+				text: 'items'
+			},
+			{ 
+				xtype: 'splitter'
+			},
+			{ 
+				xtype: 'splitter'
+			},
+			{
+		        xtype: 'checkbox',
+		        name: 'retweet',
+				boxLabel: 'Yes, remove retweets',
+				checked: true,
+				id: 'retweet',
+				listeners: {
+					change: function(ctl, val) {
+						Ext.getCmp('downloadLink').hide();
+					}
+				}
+		    }]
+			}]
+		    
+		});
+		
 
-		this.downloadContents = Ext.create('Ext.form.RadioGroup', {
-			fieldLabel: 'Contents',
-			labelWidth: 55,
-			columns: [205, 90],
-			items: [
-			        {
-			        	boxLabel: 'Full tweets (max. 100K items)',
-			        	name: 'contents',
-			        	inputValue: 'full',
-			        	checked: true
-			        },
-			        {
-			        	boxLabel: 'Ids only',
-			        	name: 'contents',
-			        	inputValue: 'ids'
-			        }
-			        ]
-		});
 
 		this.downloadButton = Ext.create('Ext.Button', {
 			text: 'Generate Downloadable File',
@@ -185,7 +240,8 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 		this.downloadLink = Ext.create('Ext.form.Label', {
 			flex: 1,
 			margin: '10 5 5 5',
-			html: ''
+			html: '',
+			id: 'downloadLink'
 		});
 
 		this.tweetsStore = Ext.create('Ext.data.Store', {
@@ -262,6 +318,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			        this.downloadTweetsDescription,
 			        this.downloadFormat,
 			        this.downloadContents,
+			        
 			        {
 			        	xtype: 'container',
 			        	layout: 'hbox',

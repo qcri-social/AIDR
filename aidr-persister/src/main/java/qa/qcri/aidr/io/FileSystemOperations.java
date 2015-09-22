@@ -5,20 +5,19 @@
  */
 package qa.qcri.aidr.io;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.utils.PersisterConfigurationProperty;
 import qa.qcri.aidr.utils.PersisterConfigurator;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.io.InputStream;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
 
 
 public class FileSystemOperations {
@@ -181,6 +180,18 @@ public class FileSystemOperations {
         }
         return isDeleted;
     }
+    
+    public static boolean deleteFile(File file) {
+        boolean isDeleted = false;
+        try {
+            if (file !=null && file.delete()) {
+                isDeleted = true;
+            }
+        } catch (Exception e) {
+        	logger.error("Error while delting the file: "+file.getName() +"\t" +e.getMessage());
+        }
+        return isDeleted;
+    }
 
     public int countNumberofLines(String filename) throws IOException{
         try(InputStream is = new BufferedInputStream(new FileInputStream(filename));) {
@@ -202,4 +213,16 @@ public class FileSystemOperations {
         	throw e;
         }
     }
+    
+    public static void deleteFiles(String folderLocation, String fileExtension, String skipPattern) {
+		File directory = new File(folderLocation);
+		if(directory.exists()){
+
+			GenericExtFilter extFilter = new GenericExtFilter(fileExtension, skipPattern);
+		    File[] listFiles = directory.listFiles(extFilter);           
+		    for(File listFile : listFiles) {
+	        	FileSystemOperations.deleteFile(listFile);
+		    }
+		}
+	}
 }

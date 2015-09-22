@@ -6,8 +6,11 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+
+import qa.qcri.aidr.manager.RoleType;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.hibernateEntities.UserRole;
 import qa.qcri.aidr.manager.service.CollectionService;
 
 import java.text.SimpleDateFormat;
@@ -34,7 +37,11 @@ public class UserController extends BaseController{
 		logger.info("Get current user roles");
 		try{
 			UserEntity entity = getAuthenticatedUser();
-			return getUIWrapper(entity, true);
+			List<RoleType> roles = Collections.EMPTY_LIST;
+			if(entity != null) {
+				roles = userService.getUserRoles(entity.getId());
+			}
+			return getUIWrapper(roles, true);
 		}catch(Exception e){
             String msg = "Error while getting current user ";
 			logger.error(msg, e);
@@ -53,9 +60,6 @@ public class UserController extends BaseController{
             List<UserEntity> users = Collections.emptyList();
             if (total > 0) {
                 users = userService.getUsers(query, start, limit);
-                for (UserEntity user : users) {
-                    user.setRoles(null);
-                }
             }
             return getUIWrapper(users, total);
         }catch(Exception e){

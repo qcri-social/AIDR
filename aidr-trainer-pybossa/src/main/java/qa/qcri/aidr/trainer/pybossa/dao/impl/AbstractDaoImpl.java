@@ -90,6 +90,15 @@ public abstract class AbstractDaoImpl<E, I extends Serializable> implements Abst
     }
 
     @Override
+    public List<E> findUniqueByCriteria(Criterion criterion, String uniqueField) {
+        Criteria criteria = getCurrentSession().createCriteria(entityClass);
+        criteria.add(criterion);
+        criteria.setProjection(Projections.distinct(Projections.property(uniqueField)));
+        return criteria.list();
+    }
+
+
+    @Override
     public List<E> getMaxOrderByCriteria(Criterion criterion, String orderBy) {
         Criteria criteria = getCurrentSession().createCriteria(entityClass);
         criteria.add(criterion);

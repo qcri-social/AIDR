@@ -56,7 +56,6 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
     beforeRenderView: function (component, eOpts) {
         AIDRFMFunctions.initMessageContainer();
         this.mainComponent = component;
-
         this.loadCollection();
         this.mainComponent.constraintsString = '{"constraints":[]}';
         this.mainComponent.downloadTweetsDescription.setText('The entire collection has approximately ' + COLLECTION_COUNT + ' items in total.');
@@ -342,30 +341,24 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
     downloadButtonHandler: function(btn){
         var me = this;
         var format = me.mainComponent.downloadFormat.getValue().format;
-        var contents = me.mainComponent.downloadContents.getValue().contents;
 
         var url = '';
         var params = {
             code: CRISIS_CODE,
+            count: Ext.getCmp('limit').value,
+            removeRetweet: Ext.getCmp('retweet').value,
             queryString: me.mainComponent.constraintsString
         };
 
         if(format == 'csv'){
-            if (contents == 'full') {
-                url = '/protected/tagger/taggerGenerateCSVFilteredLink.action';
-            } else {
-                url = '/protected/tagger/taggerGenerateTweetIdsFilteredLink.action';
-            }
+            url = '/protected/tagger/taggerGenerateCSVFilteredLink.action';
         } else {
             params.jsonType = format;
-            if (contents == 'full') {
-                url = '/protected/tagger/taggerGenerateJSONFilteredLink.action';
-            } else {
-                url = '/protected/tagger/taggerGenerateJsonTweetIdsFilteredLink.action';
-            }
+            url = '/protected/tagger/taggerGenerateJSONFilteredLink.action';
         }
 
         btn.setDisabled(true);
+        me.mainComponent.downloadLink.show();
         me.mainComponent.downloadLink.setText('<div class="loading-block"></div>', false);
 
         Ext.Ajax.timeout = 900000;
@@ -385,7 +378,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
                     if (resp.data && resp.data != '') {
-                        me.mainComponent.downloadLink.setText('<div class="styled-text download-link"><a target="_blank" href="' + resp.data + '">' + resp.data + '</a></div>', false);
+                        me.mainComponent.downloadLink.setText('<div class="styled-text download-link"><a target="_blank" href="' + resp.data + '">Download File</a></div>', false);
                     } else {
                         me.mainComponent.downloadLink.setText('', false);
                         AIDRFMFunctions.setAlert("Error", "Generate Tweet Ids service returned empty url. For further inquiries please contact admin.");
@@ -404,6 +397,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
     },
 
     applyFilterButtonHandler: function(){
+    	this.mainComponent.downloadLink.hide();
         this.mainComponent.constraintsString = this.getAllFilters();
         this.mainComponent.downloadTweetsDescription.setText('The entire collection has approximately ' + COLLECTION_COUNT + ' items in total, which will be filtered using your criteria above.');
         this.loadLatestTweets();
@@ -440,6 +434,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
 
         me.mainComponent.suspendLayout = false;
         me.mainComponent.forceComponentLayout();
+        me.mainComponent.downloadLink.hide();
     },
 
     addFilterHandler: function(){

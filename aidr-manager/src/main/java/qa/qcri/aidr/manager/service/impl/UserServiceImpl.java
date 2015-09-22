@@ -8,12 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import qa.qcri.aidr.manager.RoleType;
 import qa.qcri.aidr.manager.controller.PublicController;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.Role;
 import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.hibernateEntities.UserRole;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
 import qa.qcri.aidr.manager.repository.UserRepository;
+import qa.qcri.aidr.manager.repository.UserRoleRepository;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
@@ -32,7 +35,9 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private CollectionRepository collectionRepository;
 
-
+    @Autowired
+    private UserRoleRepository userRoleRepository;
+    
 	@Override
 	@Transactional(readOnly=false)
 	public void save(UserEntity user) {
@@ -75,18 +80,12 @@ public class UserServiceImpl implements UserService{
         return false;
     }
 
+    @Override
+    @Transactional(readOnly=false)
     public boolean isUserAdmin(UserEntity user) {
-        List<Role> roles = user.getRoles();
-        if(roles == null){
-            return false;
-        }
-        for(Role role : roles) {
-            String roleName = role.getName().toLowerCase();
-            if("admin".equals(roleName)){
-                return true;
-            }
-        }
-        return false;
+        UserRole userRole = userRoleRepository.fetchByUserIdAndRoleType(user.getId(), RoleType.ADMIN);
+        return (userRole != null && userRole.getRoleType().equals(RoleType.ADMIN)) ? 
+        		true : false;
     }
 
     @Override
@@ -127,5 +126,12 @@ public class UserServiceImpl implements UserService{
 
         return userEntity;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+	@Override
+	@Transactional(readOnly=true)
+	public List<RoleType> getUserRoles(Integer userId) {
+		List<RoleType> roleTypes = userRoleRepository.fetchByUserId(userId);
+		return roleTypes;
+	}
 
 }

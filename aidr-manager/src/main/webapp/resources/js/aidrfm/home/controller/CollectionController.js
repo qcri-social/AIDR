@@ -252,11 +252,11 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
             },
             success: function (resp) {
                 var response = Ext.decode(resp.responseText);
-                if (response.data && response.data.roles) {
-                    var roles = response.data.roles;
+                if (response.data) {
+                    var roles = response.data;
                     if (Ext.isArray(roles)) {
                         Ext.each(roles, function (role) {
-                            if (role.name && role.name == 'ADMIN'){
+                            if (role && role == 'ADMIN'){
                                 me.mainComponent.goToAdminSection.show();
                             }
                         })
