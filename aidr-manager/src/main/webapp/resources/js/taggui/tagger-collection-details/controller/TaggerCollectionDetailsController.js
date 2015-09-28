@@ -197,7 +197,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
             },
             "#disableMicroMappersBtn":{
                 click: function (btn, e, eOpts) {
-                	 this.disableMicroMappers();
+                	 this.disableMicroMappers(btn);
                 }
             }
 
