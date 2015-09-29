@@ -9,11 +9,11 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import qa.qcri.aidr.task.ejb.TaskManagerRemote;
+import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskManagerRemote;
 import qa.qcri.aidr.trainer.api.dao.UsersDao;
 import qa.qcri.aidr.trainer.api.entity.Users;
 import qa.qcri.aidr.trainer.api.service.TaskAssignmentService;
-import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 
 @Service("taskAssignmentService")
 @Transactional(readOnly = true)

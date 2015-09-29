@@ -15,7 +15,7 @@ import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.predictui.api.CrisisManagementResource;
 import qa.qcri.aidr.predictui.facade.CrisisManagementResourceFacade;
-import qa.qcri.aidr.task.ejb.TaskManagerRemote;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskManagerRemote;
 
 
 @Stateless

@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
-import qa.qcri.aidr.task.ejb.TaskManagerRemote;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskManagerRemote;
 
 
 @Path("/test")
@@ -25,9 +25,6 @@ public class TestTaskManager {
 
 	@Context
 	private UriInfo context;
-
-	private static final String remoteEJBJNDIName = "java:global/AIDRTaskManager/aidr-task-manager-1.0/TaskManagerBean!qa.qcri.aidr.task.ejb.TaskManagerRemote";
-	//@EJB(mappedName=remoteEJBJNDIName)
 
 	@Autowired TaskManagerRemote<DocumentDTO, Long> taskManager;
 

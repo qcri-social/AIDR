@@ -19,7 +19,7 @@
 
 	<jee:remote-slsb id="TaskManagerRemote"
 		jndi-name="${REMOTE_TASK_MANAGER_REMOTE_JNDI_NAME}"
-		business-interface="qa.qcri.aidr.task.ejb.TaskManagerRemote" />
+		business-interface="qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskManagerRemote" />
 
 	<jee:remote-slsb id="DocumentNominalLabelResourceFacade"
 		jndi-name="${REMOTE_DB_MANAGER_DOCUMENT_NOMINAL_LABEL_RESOURCE_FACADE_JNDI_NAME}"

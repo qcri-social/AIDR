@@ -2,7 +2,7 @@
  * Interface for the task manager that covers the following tables: document, document_nominal_label, task_assignment and task_answer
  * of the aidr_predict table. 
  */
-package qa.qcri.aidr.task.ejb;
+package qa.qcri.aidr.dbmanager.ejb.remote.facade;
 
 import java.util.List;
 import java.util.Map;
@@ -12,13 +12,13 @@ import javax.ejb.Remote;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Criterion;
 
+import qa.qcri.aidr.common.util.TrainingDataFetchType;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAssignmentDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
-import qa.qcri.aidr.task.common.TrainingDataFetchType;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 

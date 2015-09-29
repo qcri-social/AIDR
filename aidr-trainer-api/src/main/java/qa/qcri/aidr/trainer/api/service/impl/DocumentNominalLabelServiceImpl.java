@@ -13,7 +13,7 @@ import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentNominalLabelResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade;
-import qa.qcri.aidr.task.ejb.TaskManagerRemote;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskManagerRemote;
 import qa.qcri.aidr.trainer.api.entity.DocumentNominalLabel;
 import qa.qcri.aidr.trainer.api.service.DocumentNominalLabelService;
 
