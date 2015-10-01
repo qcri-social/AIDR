@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
@@ -77,6 +78,9 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 		List<ModelHistoryWrapper> wrapperList = new ArrayList<ModelHistoryWrapper>();
 		Criteria criteria = getCurrentSession().createCriteria(Model.class);
 		criteria.add(Restrictions.eq("modelFamily.modelFamilyId", modelFamilyID));
+		criteria.addOrder(Order.desc("trainingTime"));
+		criteria.setFirstResult(start);
+		criteria.setMaxResults(limit);
 		List<Model> modelList = criteria.list();
 		for (Model model : modelList) {
 			modelDTOList.add(new ModelDTO(model));

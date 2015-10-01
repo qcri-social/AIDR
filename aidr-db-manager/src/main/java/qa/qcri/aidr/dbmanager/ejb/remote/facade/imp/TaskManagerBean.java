@@ -1,4 +1,4 @@
-package qa.qcri.aidr.task.ejb.bean;
+package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -22,6 +22,7 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.common.util.TrainingDataFetchType;
 import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
@@ -30,14 +31,13 @@ import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAssignmentDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskManagerRemote;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 import qa.qcri.aidr.dbmanager.entities.task.TaskAnswer;
 import qa.qcri.aidr.dbmanager.entities.task.TaskAssignment;
-import qa.qcri.aidr.task.common.TrainingDataFetchType;
-import qa.qcri.aidr.task.ejb.TaskManagerRemote;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -54,26 +54,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Stateless
 public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable> {
-
-	/*
-	@EJB
-	private DocumentService documentLocalEJB;
-
-	@EJB
-	private TaskAssignmentService taskAssignmentEJB;
-
-	@EJB
-	private TaskAnswerService taskAnswerEJB;
-
-	@EJB
-	private UsersService usersLocalEJB;
-
-	@EJB
-	private DocumentNominalLabelService documentNominalLabelEJB;
-
-	@EJB
-	private CrisisService crisisEJB;
-	 */
 
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade remoteCrisisEJB;
