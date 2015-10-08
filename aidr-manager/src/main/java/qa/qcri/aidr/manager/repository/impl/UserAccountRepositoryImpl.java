@@ -10,30 +10,30 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
-import qa.qcri.aidr.manager.repository.UserRepository;
+import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
+import qa.qcri.aidr.manager.repository.UserAccountRepository;
 
 @Repository("userRepository")
-public class UserRepositoryImpl extends GenericRepositoryImpl<UserEntity,Serializable> implements UserRepository {
+public class UserAccountRepositoryImpl extends GenericRepositoryImpl<UserAccount,Serializable> implements UserAccountRepository {
 
 	@Override
-	public UserEntity fetchByUsername(String username) {
+	public UserAccount fetchByUsername(String username) {
 		
-		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(UserEntity.class);
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(UserAccount.class);
 		criteria.add(Restrictions.eq("userName", username));
-		return (UserEntity) criteria.uniqueResult();
+		return (UserAccount) criteria.uniqueResult();
 	}
 
     @Override
-	public UserEntity getById(Integer id) {
-		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(UserEntity.class);
+	public UserAccount getById(Long id) {
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(UserAccount.class);
 		criteria.add(Restrictions.eq("id", id));
-		return (UserEntity) criteria.uniqueResult();
+		return (UserAccount) criteria.uniqueResult();
 	}
 
 	@Override
-    public List<UserEntity> getUsers(String query, Integer start, Integer limit) {
-		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(UserEntity.class);
+    public List<UserAccount> getUsers(String query, Integer start, Integer limit) {
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(UserAccount.class);
 
         if (StringUtils.hasText(query)){
             String wildcard ='%'+ URLDecoder.decode(query.trim())+'%';
@@ -47,12 +47,12 @@ public class UserRepositoryImpl extends GenericRepositoryImpl<UserEntity,Seriali
             criteria.setMaxResults(limit);
         }
 
-        return (List<UserEntity>) criteria.list();
+        return (List<UserAccount>) criteria.list();
 	}
 
 	@Override
     public Long getUsersCount(String query) {
-		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(UserEntity.class);
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(UserAccount.class);
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
         if (StringUtils.hasText(query)){

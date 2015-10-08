@@ -1,11 +1,11 @@
 package qa.qcri.aidr.manager.service;
 
+import java.util.List;
+
 import qa.qcri.aidr.manager.dto.FetcherRequestDTO;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
-
-import java.util.List;
+import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
 
 public interface CollectionService {
 
@@ -23,19 +23,19 @@ public interface CollectionService {
 
     public AidrCollection findByCode(String code) throws Exception;
 
-    public List<AidrCollection> findAll(Integer start, Integer limit, UserEntity user, boolean onlyTrashed) throws Exception;
+    public List<AidrCollection> findAll(Integer start, Integer limit, UserAccount user, boolean onlyTrashed) throws Exception;
 
-    public Integer getCollectionsCount(UserEntity user, boolean onlyTrashed) throws Exception;
+    public Integer getCollectionsCount(UserAccount user, boolean onlyTrashed) throws Exception;
 
-    public List<AidrCollection> searchByName(String query, Integer userId) throws Exception;
+    public List<AidrCollection> searchByName(String query, Long userId) throws Exception;
 
     public Boolean exist(String code) throws Exception;
 
     public Boolean existName(String name) throws Exception;
 
-    public AidrCollection getRunningCollectionStatusByUser(Integer userId) throws Exception;
+    public AidrCollection getRunningCollectionStatusByUser(Long userId) throws Exception;
 
-    public AidrCollection updateAndGetRunningCollectionStatusByUser(Integer userId) throws Exception;
+    public AidrCollection updateAndGetRunningCollectionStatusByUser(Long userId) throws Exception;
 
     public AidrCollection start(Integer collectionId) throws Exception;
 
@@ -65,7 +65,7 @@ public interface CollectionService {
 
     public Boolean isValidToken(String token) throws Exception;
 
-    public List<AidrCollection> geAllCollectionByUser(Integer userId) throws Exception;
+    public List<AidrCollection> geAllCollectionByUser(Long userId) throws Exception;
 
     public AidrCollection findTrashedByCode(String code) throws Exception;
 

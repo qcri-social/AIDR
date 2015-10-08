@@ -29,6 +29,7 @@ import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.stereotype.Component;
+
 import qa.qcri.aidr.manager.hibernateEntities.UserConnection;
 import qa.qcri.aidr.manager.service.UserConnectionService;
 

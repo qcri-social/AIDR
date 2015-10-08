@@ -48,7 +48,7 @@ import qa.qcri.aidr.manager.dto.TaskInfo;
 import qa.qcri.aidr.manager.dto.UpdateCrisisDTO;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 
@@ -90,10 +90,6 @@ public class TaggerController extends BaseController {
 		try {
 			String userName = getAuthenticatedUserName();
 			Integer taggerUserId = taggerService.isUserExistsByUsername(userName);
-			if (taggerUserId == null) {
-				TaggerUser taggerUser = new TaggerUser(userName, "normal");
-				taggerUserId = taggerService.addNewUser(taggerUser);
-			}
 			if (taggerUserId != null) {
 				return getUIWrapper(taggerService.getCrisesByUserId(taggerUserId), true);
 			} else {
@@ -112,10 +108,6 @@ public class TaggerController extends BaseController {
 		try {
 			String userName = getAuthenticatedUserName();
 			Integer taggerUserId = taggerService.isUserExistsByUsername(userName);
-			if (taggerUserId == null) {
-				TaggerUser taggerUser = new TaggerUser(userName, "normal");
-				taggerUserId = taggerService.addNewUser(taggerUser);
-			}
 			//logger.info("userID = " + taggerUserId + ", name = " + userName);
 			if (taggerUserId != null) {
 				TaggerCrisisRequest crisis = transformCrisesRequestToTaggerCrises(crisisRequest, taggerUserId);
@@ -1008,7 +1000,7 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String, Object> sendEmail(@RequestParam String url, @RequestParam String mailType, @RequestParam String description) throws Exception {
 		//logger.info("In sending email");
-		UserEntity userEntity = getAuthenticatedUser();
+		UserAccount userEntity = getAuthenticatedUser();
 		userEntity.getUserName();
 		StringBuffer body = new StringBuffer("User:").append(userEntity.getUserName())
 				.append("\nURL:").append(url).append("\nRequestHeader:").append(description);

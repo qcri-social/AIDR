@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.JsonDataValidator;
@@ -72,10 +72,10 @@ public class EmscController extends BaseController{
                     JSONArray adminAccount = (JSONArray) jsonObject.get("shareWithAccounts");
 
                     JSONArray account = (JSONArray) jsonObject.get("account");
-                    UserEntity userEntity= userService.getAvailableUser(account) ;
+                    UserAccount userEntity= userService.getAvailableUser(account) ;
 
                     if(userEntity != null){
-                        List<UserEntity> adminEntities =  getAdminUsers(adminAccount, userEntity);
+                        List<UserAccount> adminEntities =  getAdminUsers(adminAccount, userEntity);
                         //logger.info("userEntity CeaController  : "+userEntity.getUserName());
                         List<AidrCollection> collectionList = collectionService.geAllCollectionByUser(userEntity.getId()) ;
 
@@ -140,12 +140,12 @@ public class EmscController extends BaseController{
         }
     }
 
-    private List<UserEntity> getAdminUsers(JSONArray adminAccounts, UserEntity owneraccount){
-        List<UserEntity> adminUsers = new ArrayList<UserEntity>();
+    private List<UserAccount> getAdminUsers(JSONArray adminAccounts, UserAccount owneraccount){
+        List<UserAccount> adminUsers = new ArrayList<UserAccount>();
         adminUsers.add(owneraccount);
         for(int i = 0; i < adminAccounts.size(); i++){
             String fetchedName = (String)adminAccounts.get(i);
-            UserEntity userEntity= userService.fetchByUserName(fetchedName) ;
+            UserAccount userEntity= userService.fetchByUserName(fetchedName) ;
             if(userEntity != null){
                 if(!userEntity.getUserName().equalsIgnoreCase(owneraccount.getUserName())) {
                     adminUsers.add(userEntity);

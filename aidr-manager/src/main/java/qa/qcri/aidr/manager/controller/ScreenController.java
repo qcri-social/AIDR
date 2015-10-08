@@ -11,7 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import qa.qcri.aidr.manager.dto.TaggerCrisis;
 import qa.qcri.aidr.manager.dto.TaggerModel;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
 import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
@@ -59,7 +59,7 @@ public class ScreenController extends BaseController{
     }
 
     private boolean isHasPermissionForCollection(String code) throws Exception{
-        UserEntity user = getAuthenticatedUser();
+        UserAccount user = getAuthenticatedUser();
         if (user == null){
             return false;
         }
@@ -385,7 +385,7 @@ public class ScreenController extends BaseController{
 
     @RequestMapping("protected/administration/admin-console")
     public ModelAndView adminConsole(Map<String, String> model) throws Exception {
-        UserEntity user = getAuthenticatedUser();
+        UserAccount user = getAuthenticatedUser();
         if (!userService.isUserAdmin(user)){
             return new ModelAndView("redirect:/protected/access-error");
         }
@@ -395,7 +395,7 @@ public class ScreenController extends BaseController{
 
     @RequestMapping("protected/administration/admin-health")
     public ModelAndView adminHealth(Map<String, String> model) throws Exception {
-        UserEntity user = getAuthenticatedUser();
+        UserAccount user = getAuthenticatedUser();
         if (!userService.isUserAdmin(user)){
             return new ModelAndView("redirect:/protected/access-error");
         }

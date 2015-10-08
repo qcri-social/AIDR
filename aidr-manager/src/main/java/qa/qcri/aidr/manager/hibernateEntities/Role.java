@@ -1,47 +1,34 @@
 package qa.qcri.aidr.manager.hibernateEntities;
 
-import java.io.Serializable;
-
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import qa.qcri.aidr.manager.RoleType;
 
 @Entity
-@Table(name = "role")
-@JsonIgnoreProperties(ignoreUnknown=true)
-public class Role implements Serializable {
+@Table(name="role")
+public class Role extends BaseEntity {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
-
-	private String name;
+	@Enumerated(EnumType.ORDINAL)
+	@Column(name="level", nullable=false, unique=true)
+	private RoleType roleType;
 
 	private String description;
-
-	public Integer getId() {
-		return id;
+	
+	public RoleType getRoleType() {
+		return roleType;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+	public void setRoleType(RoleType roleType) {
+		this.roleType = roleType;
 	}
 
 	public String getDescription() {

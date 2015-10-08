@@ -138,7 +138,7 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 		if (crisisList != null && !crisisList.isEmpty()) {
 			for (Crisis crisis : crisisList) {
 				logger.info("Converting to DTO crisis: " + crisis.getCode() + ", " + crisis.getName() + ", " + crisis.getCrisisId()
-						+ ", " + crisis.getUsers().getUserId() + ":" + crisis.getUsers().getName());
+						+ ", " + crisis.getUsers().getId() + ":" + crisis.getUsers().getUserName());
 
 				CrisisDTO dto = new CrisisDTO(crisis);
 				dtoList.add(dto);

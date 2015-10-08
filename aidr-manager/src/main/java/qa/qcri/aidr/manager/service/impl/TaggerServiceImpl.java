@@ -1001,10 +1001,6 @@ public class TaggerServiceImpl implements TaggerService {
 			throws AidrException {
 
 		Integer taggerUserId = isUserExistsByUsername(userName);
-		if (taggerUserId == null) {
-			TaggerUser taggerUser = new TaggerUser(userName, "normal");
-			taggerUserId = addNewUser(taggerUser);
-		}
 
 		Client client = ClientBuilder.newBuilder()
 				.register(JacksonFeature.class).build();

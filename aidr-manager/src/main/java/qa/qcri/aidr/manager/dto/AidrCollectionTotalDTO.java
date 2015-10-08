@@ -1,6 +1,6 @@
 package qa.qcri.aidr.manager.dto;
 
-import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.CollectionType;
 import qa.qcri.aidr.manager.util.JsonDateSerializer;
@@ -20,7 +20,7 @@ public class AidrCollectionTotalDTO {
 
     private String target;
 
-    private UserEntity user;
+    private UserAccount user;
 
     private Integer count;
 
@@ -46,7 +46,7 @@ public class AidrCollectionTotalDTO {
 
     private Integer taggersCount;
 
-    private List<UserEntity> managers;
+    private List<UserAccount> managers;
 
     private Integer durationHours;
     
@@ -96,11 +96,11 @@ public class AidrCollectionTotalDTO {
         this.target = target;
     }
 
-    public UserEntity getUser() {
+    public UserAccount getUser() {
         return user;
     }
 
-    public void setUser(UserEntity user) {
+    public void setUser(UserAccount user) {
         this.user = user;
     }
 
@@ -203,11 +203,11 @@ public class AidrCollectionTotalDTO {
         this.taggersCount = taggersCount;
     }
 
-    public List<UserEntity> getManagers() {
+    public List<UserAccount> getManagers() {
         return managers;
     }
 
-    public void setManagers(List<UserEntity> managers) {
+    public void setManagers(List<UserAccount> managers) {
         this.managers = managers;
     }
 

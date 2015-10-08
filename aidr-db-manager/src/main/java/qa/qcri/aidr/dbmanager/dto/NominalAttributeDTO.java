@@ -7,11 +7,6 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
@@ -20,6 +15,8 @@ import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttributeDependentLabel;
 import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
@@ -84,9 +81,8 @@ public class NominalAttributeDTO implements java.io.Serializable {
 
 			if (nominalAttribute.hasUsers() && nominalAttribute.getUsers() != null) {
 				Users user = new Users();
-				user.setName(nominalAttribute.getUsers().getName());
-				user.setRole(nominalAttribute.getUsers().getRole());
-				user.setUserId(nominalAttribute.getUsers().getUserId());
+				user.setUserName(nominalAttribute.getUsers().getUserName());
+				user.setId(nominalAttribute.getUsers().getId());
 
 				this.setUsersDTO(new UsersDTO(user));
 			}
