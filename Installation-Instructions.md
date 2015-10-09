@@ -8,17 +8,17 @@ AIDR developers use an Ubuntu 12 server for developing and testing.
 
 Before installing AIDR, you must have the following **installed** in your system:
 
-1. **Java** (we have tested with Java 7, and we know **AIDR does NOT work with Java 8**) -- http://www.oracle.com/technetwork/java/javaee/downloads/
+1. **Java** (we have tested with Java 7 (JDK 1.7.0_80), and we know **AIDR does NOT work with Java 8**) -- http://www.oracle.com/technetwork/java/javaee/downloads/
 1. **Maven** -- http://maven.apache.org/
 
 ## 1.2. Required services
 
 Before installing AIDR, you must have the following **installed and running** in your system:
 
-1. **Glassfish** server (we have tested with v4.0) -- https://glassfish.java.net/
+1. **Glassfish** server (we have tested with v4.1) -- https://glassfish.java.net/
 1. **MySQL** server (we have tested with v14.14) -- https://dev.mysql.com/downloads/mysql/
 1. **Redis** server -- http://redis.io/
-1. **Pybossa** server -- http://docs.pybossa.com/en/latest/index.html
+1. **Pybossa** server (Not for AIDR) -- http://docs.pybossa.com/en/latest/index.html
 
 To set up MySql with Glassfish, check these useful links: [Using Connector/J with Glassfish](http://dev.mysql.com/doc/connector-j/en/connector-j-usagenotes-glassfish-config.html) and [How to setup a JDBC connection in Glassfish](http://computingat40s.wordpress.com/how-to-setup-a-jdbc-connection-in-glassfish/).
 
@@ -63,6 +63,11 @@ Remember to re-start these services to make sure the configuration options have 
 
 If you want to build all the modules which are a part of the AIDR application in one go, you can do so using the instructions provided below:
 
+**PreRequisite:**
+* You have to get your twitter consumer key and consumer key secret. You can get them by creating a sample twitter app (Read permission recommended). link: https://apps.twitter.com
+
+* The directory $AIDR_HOME/profiles/<selected-profile>/configuraiton.properties contains the minimum required configurations for AIDR. Go through every configuration and change as per your system config. Use default values wherever you can, and be careful while changing these to ensure that there is no mismatch between the remote JNDI resources. Create the directories and give appropriate permissions for 'Default Persister File Path' , 'Model', 'Log Location'.
+
 * Go to AIDR's root directory:
 
     `cd $AIDR_HOME`
@@ -72,8 +77,6 @@ If you want to build all the modules which are a part of the AIDR application in
     `mvn -Pdev install`
 
 This will build all the modules keeping the dependency order intact. 
-
-**NOTE:** the directory $AIDR_HOME/profiles/<selected-profile>/configuraiton.properties contains the minimum required configurations for AIDR. Use default values wherever you can, and be careful while changing these to ensure that there is no mismatch between the remote JNDI resources. 
 
 # 3. Deploying the complete AIDR suite
 
@@ -86,7 +89,7 @@ If you want to deploy (or undeploy) all the modules which are a part of the AIDR
 * Review the `deploy.sh` script:
  * Set the environment variables correctly to match your installation.
  * Set the correct application names and JDBC resource names.
-
+ * Set the db username and password wherever necessary. Default username: aidr_admin and password: aidr_admin
 * Run the `deploy.sh` script:
 
     `sh deploy.sh deploy`
@@ -113,11 +116,16 @@ Please set the MY_SQL_USERNAME variable in the `deploy.sh` script before running
 
 # Known Issues / Troubleshooting
 
-* aidr-manager application, when deployed on Glassfish 4 application server, does not load its default homepage (index.jsp page) on startup. In this case, complete path (e.g., http://abc.org/aidr/index.jsp) must be provided to launch the default homepage.
+* aidr-manager application, when deployed on Glassfish 4 application server, does not load its default homepage (index.jsp page) on startup. In this case, complete path (e.g., http://localhost:8080/AIDRFetchManager/index.jsp) must be provided to launch the default homepage.
 
 * CDI deployment failure when attempting deployment of a module. The workaround is to toggle the `scope` of the glassfish 4.0 specific dependencies in the `pom.xml` file between `provided` and `compile`. 
 
-* Tagger-API throws remote EJB exception `java.lang.NoClassDefFoundError` (org.omg.CORBA.MARSHAL: WARNING: IOP00810010: Error from readValue on ValueHandler in CDRInputStream vmcid: OMG minor code: 10 completed) for `AIDRTaskManger` remote EJB method calls. `Solution`: downgrade to java version `1.7.0_51` or upgrade to `1.8.0_*` link: [https://java.net/jira/browse/GLASSFISH-21047](https://java.net/jira/browse/GLASSFISH-21047).
+* Tagger-API throws remote EJB exception `java.lang.NoClassDefFoundError` (org.omg.CORBA.MARSHAL: WARNING: IOP00810010: Error from readValue on ValueHandler in CDRInputStream vmcid: OMG minor code: 10 completed) for `AIDRTaskManger` remote EJB method calls. `Solution`: upgrade to java version `1.7.0_80` link: [https://java.net/jira/browse/GLASSFISH-21047](https://java.net/jira/browse/GLASSFISH-21047).
+
+* aidr-persister throws java.lang.NoClassDefFoundError:   com/fasterxml/jackson/module/jaxb/JaxbAnnotationIntrospector
+at com.fasterxml.jackson.jaxrs.json.JsonMapperConfigurator._resolveIntrospector(JsonMapperConfigurator.java:109) 
+at org.glassfish.jersey.message.internal.WriterInterceptorExecutor$TerminalWriterInterceptor.invokeWriteTo(WriterInterceptorExecutor.java:263)
+`Solution` by the hack given on link: https://java.net/jira/browse/GLASSFISH-21141?focusedCommentId=380449&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-380449
 
 ***
 
