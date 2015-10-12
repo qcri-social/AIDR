@@ -17,7 +17,7 @@ public class Role extends BaseEntity {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Enumerated(EnumType.ORDINAL)
+	@Enumerated(EnumType.STRING)
 	@Column(name="level", nullable=false, unique=true)
 	private RoleType roleType;
 
