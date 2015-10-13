@@ -48,6 +48,8 @@ BEGIN
 
 	END WHILE; 
 
+	# update task_answer json
+	UPDATE task_answer SET answer = REPLACE(answer, SUBSTRING_INDEX(answer,':',-1), CONCAT(userID, '}]')); 
 	
 	# for aidr_collection
 	
