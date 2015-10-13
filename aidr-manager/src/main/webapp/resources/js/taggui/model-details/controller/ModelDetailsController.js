@@ -2,7 +2,7 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
     extend: 'Ext.app.Controller',
 
     views: [
-        'ModelDetailsPanel'
+        'ModelDetailsPanel', /*'ClassifierDetailsChart',*/ 'ClassifierHistoryChart'
     ],
 
     init: function () {
@@ -46,6 +46,7 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
                     var count = resp.data.length;
                     if (count > 0) {
                         var models = [],
+                        modelsWithoutPerc =[],
                             totalMessages = 0,
                             totalExamples = 0,
                             totalAUC = 0,
@@ -77,15 +78,17 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
                                 status = r.modelStatus;
                             }
                         });
-
+                        
                         Ext.Array.each(resp.data, function(r, index) {
 //                            do not show labels with code == null
                             if (!r.nominalLabel || !r.nominalLabel.nominalLabelCode || r.nominalLabel.nominalLabelCode == 'null'){
                                 return true;
                             }
                             var model = {};
+                            var modelWithoutPerc ={};
                             if (r.nominalLabel && r.nominalLabel.name) {
                                 model.value = r.nominalLabel.name;
+                                modelWithoutPerc.value = r.nominalLabel.name;
                             }
                             var classifiedMessages = '0 (0%)';
                             if (r.classifiedDocumentCount){
@@ -103,19 +106,36 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
                             model.labelPrecision = r.labelPrecision.toFixed(2);
                             model.labelRecall = r.labelRecall.toFixed(2);
                             models.push(model);
+                            
+                            modelWithoutPerc.classifiedDocumentCount = r.classifiedDocumentCount ? r.classifiedDocumentCount : 0;
+                            modelWithoutPerc.trainingDocumentsCount =  r.trainingDocuments ? r.trainingDocuments : 0;
+                            modelWithoutPerc.labelAuc = r.labelAuc.toFixed(2);
+                            modelWithoutPerc.labelPrecision = r.labelPrecision.toFixed(2);
+                            modelWithoutPerc.labelRecall = r.labelRecall.toFixed(2);
+                            modelWithoutPerc.totalDocuments = r.classifiedDocumentCount + r.trainingDocuments;
+                            modelsWithoutPerc.push(modelWithoutPerc);
                         });
-
+                        
                         var totalModel = {};
                         totalModel.value = '';
                         totalModel.classifiedDocumentCount = totalMessages.format() + ' total';
                         totalModel.trainingDocumentsCount = totalExamples.format() + ' total';
-
                         totalModel.labelAuc = MODEL_AUC;
-
                         totalModel.labelPrecision = (totalPrecision / count).toFixed(2) + ' avg';
                         totalModel.labelRecall = (totalRecall / count).toFixed(2) + ' avg';
+                        
                         models.push(totalModel);
-
+                        
+                        var totalModelWithoutPerc = {};
+                        totalModelWithoutPerc.value = 'Summary';
+                        totalModelWithoutPerc.classifiedDocumentCount = totalMessages;
+                        totalModelWithoutPerc.trainingDocumentsCount = totalExamples;
+                        totalModelWithoutPerc.totalDocuments = totalMessages + totalExamples;
+                        totalModelWithoutPerc.labelAuc = MODEL_AUC;
+                        totalModelWithoutPerc.labelPrecision = (totalPrecision / count).toFixed(2);
+                        totalModelWithoutPerc.labelRecall = (totalRecall / count).toFixed(2);
+                        modelsWithoutPerc.push(totalModelWithoutPerc);
+                        
                         me.mainComponent.modelDetails.setText('Status: <b>' + status + '</b>.&nbsp;' +
                             'Machine has tagged <b>' + totalMessages.format() + '</b> '+ COLLECTION_TYPES[TYPE]["plural"] + ' (since last change of the classifier)' +
                             '.&nbsp;' + 'Trained on <b>' + totalExamples.format() + '</b> human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '.&nbsp;' +
@@ -123,6 +143,8 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
                             + CRISIS_CODE + '/' + MODEL_ID + '/' + MODEL_FAMILY_ID + '/' + ATTRIBUTE_ID
                             + '/training-data">Go to human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ' &raquo;</a>', false);
                         me.mainComponent.modelLabelsStore.loadData(models);
+                      //  Ext.getStore('modelLabelStoreForClassifierDetailsChart').loadData(modelsWithoutPerc);
+                        
                     }
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);

@@ -32,8 +32,10 @@ public interface ModelResourceFacade extends CoreDBServiceFacade<Model, Long>{
     public Integer getModelCountByModelFamilyID(Long modelFamilyID) throws PropertyNotSetException;
 
     //Client fix needed: as this method was originally returning ModelHistoryWrapper (see this class in tagger_api) class
-    public List<ModelHistoryWrapper> getModelByModelFamilyID(Long modelFamilyID, Integer start, Integer limit) throws PropertyNotSetException;
+    public List<ModelHistoryWrapper> getModelByModelFamilyID(Long modelFamilyID, Integer start, Integer limit, String sortColumn,
+            String sortDirection) throws PropertyNotSetException;
 
+    public List<ModelHistoryWrapper> getModelByModelFamilyID(Long modelFamilyID, Integer start, Integer limit) throws PropertyNotSetException;
     //Client to fix: response changed from ModelWrapper -> ModelDTOWrapper. Only Class name is changed, all attributes are same.
     public List<ModelWrapper> getModelByCrisisID(Long crisisID) throws PropertyNotSetException;
     

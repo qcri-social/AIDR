@@ -74,11 +74,35 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<ModelHistoryWrapper> getModelByModelFamilyID(Long modelFamilyID, Integer start, Integer limit) throws PropertyNotSetException {
+		return getModelByModelFamilyID(modelFamilyID, start, limit, "trainingTime", "DESC");
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<ModelHistoryWrapper> getModelByModelFamilyID(Long modelFamilyID, Integer start, Integer limit, 
+			String sortColumn, String sortDirection) throws PropertyNotSetException {
 		List<ModelDTO> modelDTOList = new ArrayList<ModelDTO>();
 		List<ModelHistoryWrapper> wrapperList = new ArrayList<ModelHistoryWrapper>();
+		
 		Criteria criteria = getCurrentSession().createCriteria(Model.class);
 		criteria.add(Restrictions.eq("modelFamily.modelFamilyId", modelFamilyID));
-		criteria.addOrder(Order.desc("trainingTime"));
+	
+		if(sortColumn.isEmpty()){
+			sortColumn = "trainingTime";
+		}
+		if(sortDirection.isEmpty()){
+			sortDirection = "DESC";
+			criteria.addOrder(Order.desc(sortColumn));
+		}
+		else{
+			if(sortDirection.equalsIgnoreCase("ASC")){
+				criteria.addOrder(Order.asc(sortColumn));
+			}
+			else if (sortDirection.equalsIgnoreCase("DESC")){
+				criteria.addOrder(Order.desc(sortColumn));
+			}
+		}
+		
 		criteria.setFirstResult(start);
 		criteria.setMaxResults(limit);
 		List<Model> modelList = criteria.list();

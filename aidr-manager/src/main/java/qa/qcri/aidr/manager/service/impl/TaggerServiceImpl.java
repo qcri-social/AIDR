@@ -1150,7 +1150,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 	@Override
 	public ModelHistoryWrapper getModelHistoryByModelFamilyID(Integer start,
-			Integer limit, Integer id) throws AidrException {
+			Integer limit, Integer id, String sortColumn, String sortDirection) throws AidrException {
 		Client client = ClientBuilder.newBuilder()
 				.register(JacksonFeature.class).build();
 		try {
@@ -1160,7 +1160,8 @@ public class TaggerServiceImpl implements TaggerService {
 			// + "&limit=" + limit);
 			WebTarget webResource = client.target(taggerMainUrl
 					+ "/model/modelFamily/" + id + "?start=" + start
-					+ "&limit=" + limit);
+					+ "&limit=" + limit+ "&sortColumn=" + sortColumn + "&sortDirection="
+					+ sortDirection);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			// ClientResponse clientResponse =

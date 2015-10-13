@@ -563,7 +563,9 @@ public class TaggerController extends BaseController {
 
 	@RequestMapping(value = "/modelHistory.action", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, Object> getModelHistoryByModelFamilyID(@RequestParam Integer start, @RequestParam Integer limit, @RequestParam Integer id) throws Exception {
+	public Map<String, Object> getModelHistoryByModelFamilyID(@RequestParam Integer start, @RequestParam Integer limit, @RequestParam Integer id,
+			@RequestParam (value = "sortColumn", required = false, defaultValue = "") String sortColumn,
+			@RequestParam (value = "sortDirection", required = false, defaultValue = "") String sortDirection) throws Exception {
 		if (id == null) {
 			logger.error("Error while Getting history records for Model by ModelFamilyId. ModelFamilyId is empty");
 			return getUIWrapper(false);
@@ -573,7 +575,7 @@ public class TaggerController extends BaseController {
 		limit = (limit != null) ? limit : 50;
 
 		try {
-			ModelHistoryWrapper result = taggerService.getModelHistoryByModelFamilyID(start, limit, id);
+			ModelHistoryWrapper result = taggerService.getModelHistoryByModelFamilyID(start, limit, id, sortColumn, sortDirection);
 			if (result != null) {
 				logger.info("Tagger returned " + result.getTotal() + " history records for model with modelFamilyID: " + id);
 				return getUIWrapper(result.getModelHistoryWrapper(), result.getTotal());
