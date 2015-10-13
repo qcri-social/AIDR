@@ -1,41 +1,32 @@
 package qa.qcri.aidr.manager.hibernateEntities;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 @Entity
-@Table(name = "aidr_user")
-@JsonIgnoreProperties(ignoreUnknown=true)
-public class UserEntity implements Serializable{
+@Table(name="account")
+public class UserAccount extends BaseEntity {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3485170416057248803L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
-
-	@Column(name="user_name")
+	@Column(name="user_name", unique=true, nullable=false)
 	private String userName;
-
 	private String provider;
+	private String locale;
+	
+	@Column(name="api_key", nullable=false, unique=true)
+	private String apiKey;
 
-	public Integer getId() {
-		return id;
+	public String getApiKey() {
+		return apiKey;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public void setApiKey(String apiKey) {
+		this.apiKey = apiKey;
 	}
 
 	public String getUserName() {
@@ -52,6 +43,14 @@ public class UserEntity implements Serializable{
 
 	public void setProvider(String provider) {
 		this.provider = provider;
+	}
+
+	public String getLocale() {
+		return locale;
+	}
+
+	public void setLocale(String locale) {
+		this.locale = locale;
 	}
 
 }
