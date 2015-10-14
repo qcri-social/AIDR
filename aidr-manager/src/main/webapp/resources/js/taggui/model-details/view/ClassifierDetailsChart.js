@@ -52,7 +52,13 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                 fields: ['classifiedDocumentCount', 'trainingDocumentsCount', 'totalDocuments'],
                 title: 'No. of '+COLLECTION_TYPES[TYPE]["plural"],
                 grid: true,
-                minimum: 0
+                minimum: 0,
+                label:{
+                	rotate: {
+                    	degrees: -45
+                    }
+                }
+                
             },
             {
                 type: 'Category',
