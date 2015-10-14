@@ -10,7 +10,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabel;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
-import qa.qcri.aidr.dbmanager.entities.model.NominalAttributeDependentLabel;
 import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 
@@ -46,9 +45,6 @@ public class NominalLabelDTO  implements Serializable {
 	private List<ModelNominalLabelDTO> modelNominalLabelsDTO = null;
 
 	@XmlElement
-	private List<NominalAttributeDependentLabelDTO> nominalAttributeDependentLabelsDTO = null;
-
-	@XmlElement
 	private List<DocumentNominalLabelDTO> documentNominalLabelsDTO = null;
 
 	public NominalLabelDTO() {
@@ -76,10 +72,6 @@ public class NominalLabelDTO  implements Serializable {
 			if (nominalLabel.hasModelNominalLabels()) {
 				this.setModelNominalLabelsDTO(this.toModelNominalLabelDTOList(nominalLabel.getModelNominalLabels()));
 			}
-			if (nominalLabel.hasNominalAttributeDependentLabels()) {
-				this.setNominalAttributeDependentLabelsDTO(
-						this.toNominalAttributeDependentLabelDTOList(nominalLabel.getNominalAttributeDependentLabels()));
-			}
 		}
 	}
 
@@ -96,7 +88,6 @@ public class NominalLabelDTO  implements Serializable {
 	public NominalLabelDTO(NominalAttributeDTO nominalAttributeDTO,
 			String nominalLabelCode, String name, String description,
 			Integer sequence, List<ModelNominalLabelDTO> modelNominalLabelsDTO,
-			List<NominalAttributeDependentLabelDTO> nominalAttributeDependentLabelsDTO, 
 			List<DocumentNominalLabelDTO> documentNominalLabelsDTO) throws PropertyNotSetException {
 		this.setNominalAttributeDTO(nominalAttributeDTO);
 		this.setNominalLabelCode(nominalLabelCode);
@@ -104,7 +95,6 @@ public class NominalLabelDTO  implements Serializable {
 		this.setDescription(description);
 		this.setSequence(sequence);
 		this.setModelNominalLabelsDTO(modelNominalLabelsDTO);
-		this.setNominalAttributeDependentLabelsDTO(nominalAttributeDependentLabelsDTO);
 		this.setDocumentNominalLabelsDTO(documentNominalLabelsDTO);
 	}
 
@@ -164,14 +154,6 @@ public class NominalLabelDTO  implements Serializable {
 		this.modelNominalLabelsDTO = modelNominalLabelsDTO;
 	}
 
-	public List<NominalAttributeDependentLabelDTO> getNominalAttributeDependentLabelsDTO() {
-		return this.nominalAttributeDependentLabelsDTO;
-	}
-
-	public void setNominalAttributeDependentLabelsDTO(List<NominalAttributeDependentLabelDTO> nominalAttributeDependentLabelsDTO) {
-		this.nominalAttributeDependentLabelsDTO = nominalAttributeDependentLabelsDTO;
-	}
-
 	public List<DocumentNominalLabelDTO> getDocumentNominalLabelsDTO() {
 		return this.documentNominalLabelsDTO;
 	}
@@ -227,30 +209,6 @@ public class NominalLabelDTO  implements Serializable {
 		return null;
 	} 
 
-	private List<NominalAttributeDependentLabelDTO> toNominalAttributeDependentLabelDTOList(List<NominalAttributeDependentLabel> list) throws PropertyNotSetException {
-		if (list != null) {
-			List<NominalAttributeDependentLabelDTO> dtoList = new ArrayList<NominalAttributeDependentLabelDTO>();
-			for (NominalAttributeDependentLabel d: list) {
-				dtoList.add(new NominalAttributeDependentLabelDTO(d));
-			}
-			return dtoList;
-		}
-		return null;
-	}
-
-
-	private List<NominalAttributeDependentLabel> toNominalAttributeDependentLabelList(List<NominalAttributeDependentLabelDTO> list) throws PropertyNotSetException {
-		if (list != null) {
-			List<NominalAttributeDependentLabel> eList = new ArrayList<NominalAttributeDependentLabel>();
-			for (NominalAttributeDependentLabelDTO dto: list) {
-				eList.add(dto.toEntity());
-			}
-			return eList;
-		}
-		return null;
-	}
-
-
 	public NominalLabel toEntity() throws PropertyNotSetException {
 		NominalLabel entity  = new NominalLabel();
 		if (this.getNominalAttributeDTO() != null) {
@@ -269,9 +227,6 @@ public class NominalLabelDTO  implements Serializable {
 		}
 		if (this.getModelNominalLabelsDTO() != null) {
 			entity.setModelNominalLabels(this.toModelNominalLabelList(this.modelNominalLabelsDTO));
-		}
-		if (this.getNominalAttributeDependentLabelsDTO() != null) {
-			entity.setNominalAttributeDependentLabels(this.toNominalAttributeDependentLabelList(this.nominalAttributeDependentLabelsDTO));
 		}
 		return entity;
 	}

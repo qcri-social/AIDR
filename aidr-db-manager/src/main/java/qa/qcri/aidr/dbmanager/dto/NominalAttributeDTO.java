@@ -13,7 +13,6 @@ import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
-import qa.qcri.aidr.dbmanager.entities.model.NominalAttributeDependentLabel;
 import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -44,9 +43,6 @@ public class NominalAttributeDTO implements java.io.Serializable {
 
 	@XmlElement
 	private List<ModelFamilyDTO> modelFamiliesDTO = null;
-
-	@XmlElement
-	private List<NominalAttributeDependentLabelDTO> nominalAttributeDependentLabelsDTO = null;
 
 	@XmlElement
 	private List<CrisisDTO> crisisesDTO = null;
@@ -86,15 +82,8 @@ public class NominalAttributeDTO implements java.io.Serializable {
 
 				this.setUsersDTO(new UsersDTO(user));
 			}
-			if (nominalAttribute.hasCrisises()) {
-				this.setCrisisesDTO(toCrisisDTOList(nominalAttribute.getCrisises()));
-			}
 			if (nominalAttribute.hasModelFamily()) {
 				this.setModelFamiliesDTO(this.toModelFamilyDTOList(nominalAttribute.getModelFamilies()));
-			}
-			if (nominalAttribute.hasNominalAttributeDependentLabel()) {
-				this.setNominalAttributeDependentLabelsDTO(
-						this.toNominalAttributeDependentLabelDTOList(nominalAttribute.getNominalAttributeDependentLabels()));
 			}
 			if (nominalAttribute.hasNominalLabels()) {
 				this.setNominalLabelsDTO(this.toNominalLabelDTOList(nominalAttribute.getNominalLabels()));
@@ -148,15 +137,6 @@ public class NominalAttributeDTO implements java.io.Serializable {
 
 	public void setModelFamiliesDTO(List<ModelFamilyDTO> modelFamiliesDTO) {
 		this.modelFamiliesDTO = modelFamiliesDTO;
-	}
-
-	public List<NominalAttributeDependentLabelDTO> getNominalAttributeDependentLabelsDTO() {
-		return this.nominalAttributeDependentLabelsDTO;
-	}
-
-	public void setNominalAttributeDependentLabelsDTO(
-			List<NominalAttributeDependentLabelDTO> nominalAttributeDependentLabelsDTO) {
-		this.nominalAttributeDependentLabelsDTO = nominalAttributeDependentLabelsDTO;
 	}
 
 	public List<CrisisDTO> getCrisisesDTO() {
@@ -244,29 +224,6 @@ public class NominalAttributeDTO implements java.io.Serializable {
 		return null;
 	}
 
-	private List<NominalAttributeDependentLabelDTO> toNominalAttributeDependentLabelDTOList(List<NominalAttributeDependentLabel> list) throws PropertyNotSetException {
-		if (list != null) {
-			List<NominalAttributeDependentLabelDTO> dtoList = new ArrayList<NominalAttributeDependentLabelDTO>();
-			for (NominalAttributeDependentLabel d: list) {
-				dtoList.add(new NominalAttributeDependentLabelDTO(d));
-			}
-			return dtoList;
-		}
-		return null;
-	}
-
-
-	private List<NominalAttributeDependentLabel> toNominalAttributeDependentLabelList(List<NominalAttributeDependentLabelDTO> list) throws PropertyNotSetException {
-		if (list != null) {
-			List<NominalAttributeDependentLabel> eList = new ArrayList<NominalAttributeDependentLabel>();
-			for (NominalAttributeDependentLabelDTO dto: list) {
-				eList.add(dto.toEntity());
-			}
-			return eList;
-		}
-		return null;
-	}
-
 	public NominalAttribute toEntity() throws PropertyNotSetException {
 		NominalAttribute entity = new NominalAttribute();
 		if (this.getUsersDTO() != null) {
@@ -278,18 +235,11 @@ public class NominalAttributeDTO implements java.io.Serializable {
 		if (this.getNominalAttributeId() != null) {
 			entity.setNominalAttributeId(this.getNominalAttributeId());
 		}
-		if (this.crisisesDTO != null) {
-			entity.setCrisises(this.toCrisisList(this.getCrisisesDTO()));
-		}
 		if (this.nominalLabelsDTO != null) {
 			entity.setNominalLabels(this.toNominalLabelList(this.getNominalLabelsDTO()));
 		}
 		if (this.modelFamiliesDTO != null) {
 			entity.setModelFamilies(this.toModelFamilyList(this.getModelFamiliesDTO()));
-		}
-		if (this.nominalAttributeDependentLabelsDTO != null) {
-			entity.setNominalAttributeDependentLabels(
-					this.toNominalAttributeDependentLabelList(this.getNominalAttributeDependentLabelsDTO()));
 		}
 		return entity;
 	}

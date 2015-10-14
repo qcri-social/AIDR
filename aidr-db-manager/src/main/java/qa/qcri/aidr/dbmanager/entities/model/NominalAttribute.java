@@ -12,7 +12,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -63,14 +62,6 @@ public class NominalAttribute implements java.io.Serializable {
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalAttribute")
 	@JsonManagedReference
-	private List<NominalAttributeDependentLabel> nominalAttributeDependentLabels = null;
-	
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "nominalAttributes")
-	@JsonManagedReference
-	private List<Crisis> crisises = null;
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalAttribute")
-	@JsonManagedReference
 	private List<NominalLabel> nominalLabels = null;
 
 	public NominalAttribute() {
@@ -86,15 +77,12 @@ public class NominalAttribute implements java.io.Serializable {
 
 	public NominalAttribute(Users users, String name, String description,
 			String code, List<ModelFamily> modelFamilies,
-			List<NominalAttributeDependentLabel> nominalAttributeDependentLabels, 
 			List<Crisis> crisises, List<NominalLabel> nominalLabels) {
 		this.users = users;
 		this.name = name;
 		this.description = description;
 		this.code = code;
 		this.modelFamilies = modelFamilies;
-		this.nominalAttributeDependentLabels = nominalAttributeDependentLabels;
-		this.crisises = crisises;
 		this.nominalLabels = nominalLabels;
 	}
 
@@ -149,23 +137,6 @@ public class NominalAttribute implements java.io.Serializable {
 		this.modelFamilies = modelFamilies;
 	}
 
-	public List<NominalAttributeDependentLabel> getNominalAttributeDependentLabels() {
-		return this.nominalAttributeDependentLabels;
-	}
-
-	public void setNominalAttributeDependentLabels(
-			List<NominalAttributeDependentLabel> nominalAttributeDependentLabels) {
-		this.nominalAttributeDependentLabels = nominalAttributeDependentLabels;
-	}
-
-	public List<Crisis> getCrisises() {
-		return this.crisises;
-	}
-
-	public void setCrisises(List<Crisis> crisises) {
-		this.crisises = crisises;
-	}
-
 	public List<NominalLabel> getNominalLabels() {
 		return this.nominalLabels;
 	}
@@ -178,16 +149,8 @@ public class NominalAttribute implements java.io.Serializable {
 		return Hibernate.isInitialized(this.users);
 	}
 	
-	public boolean hasCrisises() {
-		return Hibernate.isInitialized(this.crisises);
-	}
-	
 	public boolean hasNominalLabels() {
 		return Hibernate.isInitialized(this.nominalLabels);
-	}
-	
-	public boolean hasNominalAttributeDependentLabel() {
-		return Hibernate.isInitialized(this.nominalAttributeDependentLabels);
 	}
 	
 	public boolean hasModelFamily() {

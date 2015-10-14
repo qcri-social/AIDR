@@ -17,7 +17,7 @@ import java.io.Serializable;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-@Table(catalog = "aidr_predict",name = "users")
+@Table(catalog = "aidr_predict",name = "account")
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Users implements Serializable {
 
@@ -31,14 +31,6 @@ public class Users implements Serializable {
         this.userID = userID;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
     public String getName() {
         return name;
     }
@@ -48,13 +40,10 @@ public class Users implements Serializable {
     }
 
     @Id
-    @Column(name = "userID")
+    @Column(name = "id")
     private Long userID;
 
-    @Column (name = "name", nullable = false)
+    @Column (name = "user_name", nullable = false)
     private String name;
-
-    @Column (name = "role", nullable = false)
-    private String role;
 
 }

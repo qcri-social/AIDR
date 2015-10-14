@@ -57,7 +57,6 @@ import qa.qcri.aidr.manager.dto.TaggersForCollectionsRequest;
 import qa.qcri.aidr.manager.dto.TaggersForCollectionsResponse;
 import qa.qcri.aidr.manager.dto.TaskAnswer;
 import qa.qcri.aidr.manager.dto.TrainingDataRequest;
-import qa.qcri.aidr.manager.dto.ValueModel;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.service.TaggerService;
