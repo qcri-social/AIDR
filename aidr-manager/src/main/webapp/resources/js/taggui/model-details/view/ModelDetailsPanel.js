@@ -4,7 +4,7 @@ Ext.require([
     'AIDRFM.common.Header',
     'AIDRFM.common.Footer',
     'TAGGUI.attribute-details.view.AttributeDetailsMain',
-    /*'TAGGUI.model-details.view.ClassifierDetailsChart',*/
+    'TAGGUI.model-details.view.ClassifierDetailsChart',
     'TAGGUI.model-details.view.ClassifierHistoryChart'
 ]);
 
@@ -32,9 +32,9 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
         this.modelDetails = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '0 0 15 0',
-            html: 'Machine has tagged <b>0</b> '+ COLLECTION_TYPES[TYPE]["singular"] + '.&nbsp;<a href="' + BASE_URL +  '/protected/'
+          /*  html: 'Machine has tagged <b>0</b> '+ COLLECTION_TYPES[TYPE]["singular"] + '.&nbsp;<a href="' + BASE_URL +  '/protected/'
                 + CRISIS_CODE + '/' + MODEL_ID + '/' + MODEL_FAMILY_ID + '/' + ATTRIBUTE_ID +
-                + '/training-data">Go to human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ' &raquo;</a>',
+                + '/training-data">Go to human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ' &raquo;</a>',*/
             flex: 1
         });
 
@@ -42,100 +42,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             html: '<span class="redInfo">*</span><span style="color: #00acee;"> If AUC is lower than 80%, or AUC is 100%, you urgently need more human tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '.</span>'
         });
 
-        this.modelLabelsStore = Ext.create('Ext.data.JsonStore', {
-            pageSize: 100,
-            storeId: 'modelLabelsStore',
-            fields: ['value', 'classifiedDocumentCount', 'labelAuc', 'labelPrecision', 'labelRecall', 'trainingDocumentsCount'],
-            proxy: {
-                type: 'ajax',
-                url: '',
-                reader: {
-                    root: 'data',
-                    totalProperty: 'total'
-                }
-            },
-            autoLoad: false
-        });
-
-        this.modelLabelsTpl = new Ext.XTemplate(
-            '<div class="collections-list">',
-            '<tpl for=".">',
-
-            '<div class="collection-item">',
-
-            '<div class="img">',
-            '<tpl if="xindex != xcount">' +
-                '<img alt="Collection History image" src="/AIDRFetchManager/resources/img/AIDR/tag.png" width="70" height="79">',
-            '</tpl>',
-            '<tpl if="xindex == xcount">' +
-                '<div class="no-image"></div>',
-            '</tpl>',
-            '</div>',
-
-            '<div class="content">',
-
-            '<div class="rightColumn">',
-            '<tpl if="xindex != xcount">' +
-                '<div class="styled-text-17">Tag:</div>',
-            '</tpl>',
-            '<tpl if="xindex == xcount">' +
-                '<div class="styled-text-17">Summary:</div>',
-            '</tpl>',
-
-            '<div>Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ':</div>',
-            '<div>Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ':</div>',
-            '<div>Precision:</div>',
-            '<div>Recall:</div>',
-            '<tpl if="xindex != xcount">' +
-                '<div>AUC:</div>',
-            '</tpl>',
-            '<tpl if="xindex == xcount">' +
-                '<div>Quality (AUC)<span class="redInfo">*</span>:</div>',
-            '</tpl>',
-            '</div>',
-
-            '<div class="leftColumn">',
-
-            '<tpl if="xindex != xcount">' +
-                '<div class="styled-text-17">{[this.getField(values.value)]}</div>',
-            '</tpl>',
-            '<tpl if="xindex == xcount">' +
-                '<div class="styled-text-17">&nbsp;</div>',
-            '</tpl>',
-
-            '<div>{[this.getNumber(values.trainingDocumentsCount)]}</div>',
-            '<div>{[this.getNumber(values.classifiedDocumentCount)]}</div>',
-            '<div>{[this.getNumber(values.labelPrecision)]}</div>',
-            '<div>{[this.getNumber(values.labelRecall)]}</div>',
-            '<div>{[this.getAUC(values.labelAuc)]}</div>',
-
-            '</div>',
-
-            '</div>',
-            '</div>',
-
-            '</tpl>',
-            '</div>',
-            {
-                getField: function (r) {
-                    return r ? r : "<span class='na-text'>Not specified</span>";
-                },
-                getNumber: function (r) {
-                    return r ? r : 0;
-                },
-                getAUC: function (r) {
-                    return AIDRFMFunctions.getAucNumberAsPercentageWithColors(r);
-                }
-            }
-        );
-
-        this.modelLabelsView = Ext.create('Ext.view.View', {
-            store: this.modelLabelsStore,
-            tpl: this.modelLabelsTpl,
-            itemSelector: 'div.active',
-            loadMask: false
-        });
-
+      
         this.modelHistoryTitle = Ext.create('Ext.form.Label', {
             hidden: true,
             margin: '10 0',
@@ -184,58 +91,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             }
         });
 
-      /*  this.modelHistoryTpl = new Ext.XTemplate(
-            '<div class="collections-list">',
-            '<tpl for=".">',
-
-            '<div class="collection-item">',
-
-            '<div class="img">',
-            '<img alt="Collection History image" src="/AIDRFetchManager/resources/img/AIDR/tag.png" width="70" height="79">',
-            '</div>',
-
-            '<div class="content">',
-
-            '<div class="rightColumn">',
-            '<div>Precision:</div>',
-            '<div>Recall:</div>',
-            '<div><p title="If AUC is lower than 80%, or AUC is 100%, you urgently need more human-tagged tweets">AUC:</p></div>',
-            '<div>Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ':</div>',
-            '<div>Date/Time:</div>',
-            '</div>',
-
-            '<div class="leftColumn">',
-            '<div>{[this.getDocNumber(values.avgPrecision)]}</div>',
-            '<div>{[this.getDocNumber(values.avgRecall)]}</div>',
-            '<div>{[this.getAUC(values.avgAuc)]}</div>',
-            '<div>{[this.getTotal(values.trainingCount)]}</div>',
-            '<div>{[this.getDateField(values.trainingTime)]}</div>',
-            '</div>',
-
-            '</div>',
-            '</div>',
-
-            '</tpl>',
-            '</div>',
-            {
-                getDateField: function (r) {
-                   // var s = new Date(r);
-                    return r ? moment(r).calendar() : "<span class='na-text'>Not specified</span>";
-                    //return r ? Ext.Date.format(new Date(r), "Y-m-d H:i:s") : "<span class='na-text'>Not specified</span>";
-
-                },
-                getTotal: function (r) {
-                    return r ? r.format() : 0;
-                },
-                getDocNumber: function (r) {
-                    return r ? r.toFixed(2) : 0.00;
-                },
-                getAUC: function (r) {
-                    return r ? (r * 100).toFixed(2) + '%' : '0.00%';
-                }
-            }
-        );*/
-
+      
         this.modelHistoryGrid = Ext.create('Ext.grid.Panel', {
             flex:1,
             store: this.modelHistoryStore,
@@ -275,11 +131,6 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             ],
 			listeners: {
                 select: function(model, records) {
-                	/*if(records.length==0){
-                		var chart = Ext.ComponentQuery.query('ClassifierHistoryChart');
-                		chart[0].series.items.cleanHighlights();
-                		return;
-                	}*/
                     var selectedRec = records.data;
                     var chart = Ext.ComponentQuery.query('ClassifierHistoryChart');
                     
@@ -317,22 +168,15 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
                      });
 				},
         
-        deselect: function(model, records){
-        	 var chart = Ext.ComponentQuery.query('ClassifierHistoryChart');
-        	 for(i=0 ; i<chart[0].series.items.length;i++){
-        		 chart[0].series.items[i].unHighlightItem();
-        	 }
-        }
+				deselect: function(model, records){
+					var chart = Ext.ComponentQuery.query('ClassifierHistoryChart');
+					for(i=0 ; i<chart[0].series.items.length;i++){
+						chart[0].series.items[i].unHighlightItem();
+					}
+				}
 			}
         });
         
-        /*this.modelHistoryView = Ext.create('Ext.view.View', {
-            hidden: true,
-            store: this.modelHistoryStore,
-            tpl: this.modelHistoryTpl,
-            itemSelector: 'div.active',
-            loadMask: false
-        });*/
 
         this.modelHistoryPaging = Ext.create('Ext.toolbar.Paging', {
             cls: 'aidr-paging',
@@ -371,14 +215,13 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
                         {
                             xtype: 'container',
                             width: '100%',
-                            html: '<div class="horizontalLine"></div>'
+                            //html: '<div class="horizontalLine"></div>'
                         },
-                        /*{
+                        {
                 			xtype:'ClassifierDetailsChart',
-                			width: 800,
-							height: 500
-                		},*/
-                        this.modelLabelsView,
+                			width: '100%'
+                		},
+                        
                         {
                             xtype: 'container',
                             layout:  'hbox',
@@ -397,12 +240,11 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
                     title: 'History',
                     padding: '10 0 0 0',
                     defaults: {
-                       // anchor: '100%'
                     },
                     items: [
 						{
 							xtype:'ClassifierHistoryChart',
-							//width: 900
+							width: 900
 						},
                         this.modelHistoryTitle,
                         this.modelHistoryGrid,
