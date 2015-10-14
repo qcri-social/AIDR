@@ -21,7 +21,7 @@ var store = Ext.create('Ext.data.JsonStore', {
     storeId: 'modelLabelStoreForClassifierDetailsChart',
     model : 'ModelForClassifiedDetailsChart',
     // fields: ['value', 'classifiedDocumentCount', 'trainingDocumentsCount', 'totalDocuments'],
-    autoLoad: false,
+    autoLoad: false
 });
 
 Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
@@ -117,7 +117,6 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                 { 'Name': 'Auc', 'Data': 100 },
                 { 'Name': 'Precision','Data': 100 },
                 { 'Name': 'Recall', 'Data': 100 },
-              
             ]
         });
 
@@ -222,7 +221,12 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
 	                    selectedRec = records[0];
 	                    updateRadarChart(selectedRec);
 	                }
-	            }
+	            },
+	            render : function(grid){
+	            	 grid.on('viewready',function(){  
+	                     this.getSelectionModel().select(0);  
+	                });
+            	 }
 	        }
 	    });
 

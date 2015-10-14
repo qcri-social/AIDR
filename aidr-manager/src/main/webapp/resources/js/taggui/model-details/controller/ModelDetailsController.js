@@ -110,7 +110,7 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
                             '<br><a href="' + BASE_URL +  '/protected/'
                             + CRISIS_CODE + '/' + MODEL_ID + '/' + MODEL_FAMILY_ID + '/' + ATTRIBUTE_ID
                             + '/training-data">Go to human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ' &raquo;</a>', false);
-                        Ext.getStore('modelLabelStoreForClassifierDetailsChart').loadData(models);
+                        Ext.getStore('modelLabelStoreForClassifierDetailsChart').loadData(models.reverse());
                         
                     }
                 } else {
