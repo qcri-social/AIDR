@@ -16,7 +16,7 @@ Before installing AIDR, you must have the following **installed** in your system
 Before installing AIDR, you must have the following **installed and running** in your system:
 
 1. **Glassfish** server (we have tested with v4.1) -- https://glassfish.java.net/
-1. **MySQL** server (we have tested with v14.14) -- https://dev.mysql.com/downloads/mysql/
+1. **MySQL** server (we have tested with v5.2) -- https://dev.mysql.com/downloads/mysql/
 1. **Redis** server -- http://redis.io/
 1. **Pybossa** server (Not for AIDR) -- http://docs.pybossa.com/en/latest/index.html
 
