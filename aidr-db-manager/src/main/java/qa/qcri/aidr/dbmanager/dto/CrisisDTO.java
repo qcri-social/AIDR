@@ -14,7 +14,6 @@ import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
-import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -118,10 +117,6 @@ public class CrisisDTO implements Serializable  {
 				user.setUserName(crisis.getUsers().getUserName());
 				user.setId(crisis.getUsers().getId());
 				this.setUsersDTO(new UsersDTO(user));
-			}
-			// Setting optional fields that were lazily initialized
-			if (crisis.hasNominalAttributes()) {
-				this.setNominalAttributesDTO(toNominalAttributeDTOList(crisis.getNominalAttributes()));
 			}
 			if (crisis.hasModelFamilies()) {
 				this.setModelFamiliesDTO(toModelFamilyDTOList(crisis.getModelFamilies()));
@@ -275,30 +270,6 @@ public class CrisisDTO implements Serializable  {
 		return null;
 	}
 
-	private List<NominalAttributeDTO> toNominalAttributeDTOList(List<NominalAttribute> list) throws PropertyNotSetException {
-		if (list != null) {
-			List<NominalAttributeDTO> dtoList = new ArrayList<NominalAttributeDTO>();
-			for (NominalAttribute d: list) {
-				dtoList.add(new NominalAttributeDTO(d));
-			}
-			return dtoList;
-		}
-		return null;
-	}
-
-
-	private List<NominalAttribute> toNominalAttributeList(List<NominalAttributeDTO> list) throws PropertyNotSetException {
-		if (list != null) {
-			List<NominalAttribute> eList = new ArrayList<NominalAttribute>();
-			for (NominalAttributeDTO dto: list) {
-				eList.add(dto.toEntity());
-			}
-			return eList;
-		}
-		return null;
-	}
-
-
 	/* Mapping to entity */
 	public Crisis toEntity() throws PropertyNotSetException {
 		Crisis crisis = new Crisis();
@@ -322,9 +293,6 @@ public class CrisisDTO implements Serializable  {
 		} 
 		if (this.getModelFamiliesDTO() != null) {
 			crisis.setModelFamilies(this.toModelFamilyList(this.getModelFamiliesDTO()));
-		} 
-		if (this.getNominalAttributesDTO() != null) {
-			crisis.setNominalAttributes(this.toNominalAttributeList(this.getNominalAttributesDTO()));
 		} 
 		return crisis;
 	}
