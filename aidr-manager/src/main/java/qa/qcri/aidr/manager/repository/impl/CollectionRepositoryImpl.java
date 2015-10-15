@@ -9,7 +9,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
-
 import org.apache.log4j.Logger;
 //import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
@@ -23,12 +22,12 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 
@@ -38,7 +37,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<AidrCollection> searchByName(String query,Integer userId) throws Exception {
+	public List<AidrCollection> searchByName(String query, Long userId) throws Exception {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
 		criteria.add(Restrictions.ilike("name", query, MatchMode.ANYWHERE));
 		criteria.add(Restrictions.eq("user.id", userId));
@@ -51,7 +50,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 		//        Workaround as criteria query gets result for different managers and in the end we get less then limit records.
 		List<Integer> collectionIds = (List<Integer>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
 			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+			public Object doInHibernate(Session session) throws HibernateException {
 
 				String sql = " SELECT DISTINCT c.id FROM aidr_collection c" +
 						" WHERE (c.publiclyListed = 1 and c.status = :statusValue) " +
@@ -82,7 +81,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 	public Integer getPublicCollectionsCount(final Enum statusValue) {
 		return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
 			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+			public Object doInHibernate(Session session) throws HibernateException {
 
 				String sql = " SELECT count(distinct c.id) FROM aidr_collection c" +
 						" WHERE (c.publiclyListed = 1 and c.status = :statusValue) " ;
@@ -98,8 +97,8 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<AidrCollection> getPaginatedData(final Integer start, final Integer limit, final UserEntity user, final boolean onlyTrashed) {
-		final Integer userId = user.getId();
+	public List<AidrCollection> getPaginatedData(final Integer start, final Integer limit, final UserAccount user, final boolean onlyTrashed) {
+		final Long userId = user.getId();
 		final String conditionTrashed;
 		if (onlyTrashed) {
 			conditionTrashed = "=";
@@ -134,7 +133,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 		//Workaround as criteria query gets result for different managers and in the end we get less than limit records.
 		List<Object[]> collections = (List<Object[]>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
 			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+			public Object doInHibernate(Session session) throws HibernateException {
 				String sql = " SELECT DISTINCT c.id,c.status FROM aidr_collection c " +
 						" LEFT OUTER JOIN aidr_collection_manager c_m " +
 						" ON c.id = c_m.id_collection " +
@@ -167,11 +166,11 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 	}
 
 	@Override
-	public Integer getCollectionsCount(final UserEntity user, final boolean onlyTrashed) {
+	public Integer getCollectionsCount(final UserAccount user, final boolean onlyTrashed) {
 		return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
 			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				Integer userId = user.getId();
+			public Object doInHibernate(Session session) throws HibernateException {
+				Long userId = user.getId();
 				final String conditionTrashed;
 				if (onlyTrashed) {
 					conditionTrashed = "=";
@@ -213,7 +212,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 	}
 
 	@Override
-	public AidrCollection getRunningCollectionStatusByUser(Integer userId) {
+	public AidrCollection getRunningCollectionStatusByUser(Long userId) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
 		//criteria.add(Restrictions.eq("user.id", userId));
 		//criteria.add(Restrictions.eq("status", CollectionStatus.RUNNING));
@@ -246,7 +245,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<AidrCollection> getAllCollectionByUser(Integer userId) {
+	public List<AidrCollection> getAllCollectionByUser(Long userId) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
 		criteria.add(Restrictions.eq("user.id", userId));
 
@@ -447,7 +446,7 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 	}
 
 	@Override
-	public AidrCollection getInitializingCollectionStatusByUser(Integer userId) {
+	public AidrCollection getInitializingCollectionStatusByUser(Long userId) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
 		criteria.add(Restrictions.eq("user.id", userId));
 		criteria.add(Restrictions.eq("status", CollectionStatus.INITIALIZING));

@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.service.CollectionService;
@@ -25,6 +26,7 @@ public class ScheduledTask {
 	@Autowired
 	private TaggerService taggerService;
 
+	@Transactional
 	@Scheduled(fixedDelay = 10 * 60 * 1000) // 10 minutes - in milliseconds
 	private void scheduledTaskUpdateCollections() {
 		List<AidrCollection> collections;

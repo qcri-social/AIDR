@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import qa.qcri.aidr.manager.RoleType;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
-import qa.qcri.aidr.manager.hibernateEntities.UserRole;
+import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
+import qa.qcri.aidr.manager.hibernateEntities.UserAccountRole;
 import qa.qcri.aidr.manager.service.CollectionService;
 
 import java.text.SimpleDateFormat;
@@ -36,7 +36,7 @@ public class UserController extends BaseController{
 	public Map<String,Object> getCurrentUserRoles() throws Exception {
 		logger.info("Get current user roles");
 		try{
-			UserEntity entity = getAuthenticatedUser();
+			UserAccount entity = getAuthenticatedUser();
 			List<RoleType> roles = Collections.EMPTY_LIST;
 			if(entity != null) {
 				roles = userService.getUserRoles(entity.getId());
@@ -57,7 +57,7 @@ public class UserController extends BaseController{
         logger.info("Get users list");
         try{
             Long total = userService.getUsersCount(query);
-            List<UserEntity> users = Collections.emptyList();
+            List<UserAccount> users = Collections.emptyList();
             if (total > 0) {
                 users = userService.getUsers(query, start, limit);
             }
@@ -71,14 +71,14 @@ public class UserController extends BaseController{
 
     @RequestMapping(value = "/addManagerToCollection.action", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String,Object> addManagerToCollection(@RequestParam String code, @RequestParam Integer userId) throws Exception {
+    public Map<String,Object> addManagerToCollection(@RequestParam String code, @RequestParam Long userId) throws Exception {
         logger.info("Add manager to Collection");
         String msg = "Error while adding manager to collection managers list";
         try{
             if (code == null || code.trim().length() == 0 || userId == null){
                 return getUIWrapper(false, msg);
             }
-            UserEntity userEntity = userService.getById(userId);
+            UserAccount userEntity = userService.getById(userId);
             AidrCollection collection = collectionService.findByCode(code);
 
             if (userService.isUserInCollectionManagersList(userEntity, collection)){
@@ -86,9 +86,9 @@ public class UserController extends BaseController{
                 return getUIWrapper(false, msg);
             }
 
-            List<UserEntity> managers = collection.getManagers();
+            List<UserAccount> managers = collection.getManagers();
             if (managers == null){
-                managers = new ArrayList<UserEntity>();
+                managers = new ArrayList<UserAccount>();
             }
 
             managers.add(userEntity);
@@ -111,12 +111,12 @@ public class UserController extends BaseController{
                 return getUIWrapper(false, msg);
             }
             AidrCollection collection = collectionService.findByCode(code);
-            List<UserEntity> managers = collection.getManagers();
+            List<UserAccount> managers = collection.getManagers();
             if (managers == null){
                 return getUIWrapper(false, msg);
             }
 
-            for (UserEntity manager : managers){
+            for (UserAccount manager : managers){
                 if (manager.getId().equals(userId)){
                     managers.remove(manager);
                     break;

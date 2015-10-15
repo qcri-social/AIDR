@@ -25,7 +25,8 @@ public interface ModelFacade {
 
     public Integer getModelCountByModelFamilyID(Long modelFamilyID);
 
-    public List<ModelHistoryWrapper> getModelByModelFamilyID(Long modelFamilyID, Integer start, Integer limit);
+    public List<ModelHistoryWrapper> getModelByModelFamilyID(Long modelFamilyID, Integer start, Integer limit,
+			String sortColumn, String sortDirection);
 
     public List<ModelWrapper> getModelByCrisisID(Long crisisID);
     

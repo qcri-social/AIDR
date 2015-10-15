@@ -97,7 +97,7 @@
     <modules>
         <module>aidr-common</module>
         <module>aidr-db-manager</module>
-        <module>aidr-task-manager</module>
+        <!--<module>aidr-task-manager</module>-->
         <module>aidr-persister</module>
         <module>aidr-collector</module>
         <module>aidr-tagger</module>

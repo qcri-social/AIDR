@@ -18,7 +18,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.IntegerType;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.stereotype.Repository;
 
 import qa.qcri.aidr.manager.dto.CollectionLogDataResponse;
@@ -71,7 +71,7 @@ public class CollectionLogRepositoryImpl extends GenericRepositoryImpl<AidrColle
     public Integer countTotalDownloadedItemsForCollection(final Integer collectionId) {
         return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
             @Override
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+            public Object doInHibernate(Session session) throws HibernateException {
                 String sql = " select sum(c.count) from aidr_collection_log c where c.collectionID = :collectionId ";
                 SQLQuery sqlQuery = session.createSQLQuery(sql);
                 sqlQuery.setParameter("collectionId", collectionId);
@@ -86,7 +86,7 @@ public class CollectionLogRepositoryImpl extends GenericRepositoryImpl<AidrColle
     public Map<Integer, Integer> countTotalDownloadedItemsForCollectionIds(final List<Integer> ids) {
         return (Map<Integer, Integer>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
             @Override
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+            public Object doInHibernate(Session session) throws HibernateException {
                 String sql = " select c.collectionID as id, " +
                         " sum(c.count) as count " +
                         " from aidr_collection_log c " +
@@ -113,7 +113,7 @@ public class CollectionLogRepositoryImpl extends GenericRepositoryImpl<AidrColle
 	public Integer countLogsStartedInInterval(final Integer collectionId, final Date startDate, final Date endDate) {
     	 return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
              @Override
-             public Object doInHibernate(Session session) throws HibernateException, SQLException {
+             public Object doInHibernate(Session session) throws HibernateException {
                  String sql = " select count(*) from aidr_collection_log c where c.collectionID = :collectionId and startDate >= :startDate and startDate < :endDate ";
                  SQLQuery sqlQuery = session.createSQLQuery(sql);
                  sqlQuery.setParameter("collectionId", collectionId);

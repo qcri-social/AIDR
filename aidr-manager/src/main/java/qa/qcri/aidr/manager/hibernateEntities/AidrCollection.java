@@ -37,9 +37,9 @@ public class AidrCollection implements Serializable {
 
     private String target;
 
-    @OneToOne(targetEntity = UserEntity.class, cascade = CascadeType.ALL)
+    @OneToOne(targetEntity = UserAccount.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private UserEntity user;
+    private UserAccount user;
 
     private Integer count;
 
@@ -80,7 +80,7 @@ public class AidrCollection implements Serializable {
             joinColumns = {@JoinColumn(name = "id_collection")},
             inverseJoinColumns = {@JoinColumn(name = "id_manager")}
     )
-    private List<UserEntity> managers;
+    private List<UserAccount> managers;
 
     @Column(name = "collection_type")
     @Enumerated(EnumType.STRING)
@@ -118,11 +118,11 @@ public class AidrCollection implements Serializable {
         this.target = target;
     }
 
-    public UserEntity getUser() {
+    public UserAccount getUser() {
         return user;
     }
 
-    public void setUser(UserEntity user) {
+    public void setUser(UserAccount user) {
         this.user = user;
     }
 
@@ -226,11 +226,11 @@ public class AidrCollection implements Serializable {
         this.langFilters = langFilter;
     }
 
-    public List<UserEntity> getManagers() {
+    public List<UserAccount> getManagers() {
         return managers;
     }
 
-    public void setManagers(List<UserEntity> managers) {
+    public void setManagers(List<UserAccount> managers) {
         this.managers = managers;
     }
 

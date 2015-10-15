@@ -9,29 +9,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-
-
 //import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 //import org.codehaus.jackson.annotate.JsonManagedReference;
-
 
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 
@@ -158,8 +142,9 @@ public class Users implements Serializable {
 	
 	public static qa.qcri.aidr.dbmanager.entities.misc.Users toTaskManagerUsers(Users user) {
 		Long userID = user.getUserID().longValue();
-		qa.qcri.aidr.dbmanager.entities.misc.Users u = new qa.qcri.aidr.dbmanager.entities.misc.Users(user.getName(), user.getRole());
-		u.setUserId(userID);
+		qa.qcri.aidr.dbmanager.entities.misc.Users u = new qa.qcri.aidr.dbmanager.entities.misc.Users();
+		u.setUserName(user.getName());
+		u.setId(userID);
 		return u;
 	}
 	

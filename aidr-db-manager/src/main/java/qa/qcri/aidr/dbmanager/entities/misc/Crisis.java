@@ -15,8 +15,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -25,7 +23,6 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.Hibernate;
 
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
-import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -67,11 +64,6 @@ public class Crisis implements java.io.Serializable {
 	@Column(name = "isMicromapperEnabled", nullable = false)
 	private boolean isMicromapperEnabled;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "crisis_nominal_attribute", catalog = "aidr_predict", joinColumns = { @JoinColumn(name = "crisisID", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "nominalAttributeID", nullable = false, updatable = false) })
-	@JsonManagedReference
-	private List<NominalAttribute> nominalAttributes;
-	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "crisis")
 	@JsonManagedReference
 	private List<Document> documents;
@@ -103,7 +95,7 @@ public class Crisis implements java.io.Serializable {
 	}
 
 	public Crisis(Users users, CrisisType crisisType, String name, String code,
-			boolean isTrashed, boolean isMicromapperEnabled, List<NominalAttribute> nominalAttributes, List<Document> documents,
+			boolean isTrashed, boolean isMicromapperEnabled, List<Document> documents,
 			List<ModelFamily> modelFamilies) {
 		this.users = users;
 		this.crisisType = crisisType;
@@ -111,7 +103,6 @@ public class Crisis implements java.io.Serializable {
 		this.code = code;
 		this.isTrashed = isTrashed;
 		this.isMicromapperEnabled = isMicromapperEnabled;
-		this.nominalAttributes = nominalAttributes;
 		this.documents = documents;
 		this.modelFamilies = modelFamilies;
 	}
@@ -174,14 +165,6 @@ public class Crisis implements java.io.Serializable {
 		this.isMicromapperEnabled = isMicromapperEnabled;
 	}
 	
-	public List<NominalAttribute> getNominalAttributes() {
-		return this.nominalAttributes;
-	}
-
-	public void setNominalAttributes(List<NominalAttribute> nominalAttributes) {
-		this.nominalAttributes = nominalAttributes;
-	}
-
 	public List<Document> getDocuments() {
 		return this.documents;
 	}
@@ -209,11 +192,6 @@ public class Crisis implements java.io.Serializable {
 	public boolean hasDocuments() {
 		//return ((PersistentList) this.documents).wasInitialized();
 		return Hibernate.isInitialized(this.documents);
-	}
-	
-	public boolean hasNominalAttributes() {
-		//return ((PersistentList) this.nominalAttributes).wasInitialized();
-		return Hibernate.isInitialized(this.nominalAttributes);
 	}
 	
 	public boolean hasModelFamilies() {

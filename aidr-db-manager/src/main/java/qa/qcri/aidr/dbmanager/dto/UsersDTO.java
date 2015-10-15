@@ -145,32 +145,32 @@ public class UsersDTO implements Serializable {
 	public UsersDTO(Users user) throws PropertyNotSetException {
 		if (user != null) {
 			
-			this.name = user.getName();
-			this.role = user.getRole();
-			this.setUserID(user.getUserId());
+			this.name = user.getUserName();
+			this.setUserID(user.getId());
 
-			if (user.hasCrisises()) {
+			/*if (user.hasCrisises()) {
 				this.setCrisisesDTO(toCrisisDTOList(user.getCrisises()));
 			}
 			if (user.hasNominalAttributes()) {
 				this.setNominalAttributesDTO(toNominalAttributeDTOList(user.getNominalAttributes()));
-			}
+			}*/
 		}
 	}
 
 	public Users toEntity() throws PropertyNotSetException {
-		Users user = new Users(this.getName(), this.getRole());
+		Users user = new Users();
+		user.setUserName(this.getName());
 		if (this.getUserID() != null) {
-			user.setUserId(this.getUserID());
+			user.setId(this.getUserID());
 		}
 
 		// optional parameters
-		if (this.getCrisisesDTO() != null) {
+		/*if (this.getCrisisesDTO() != null) {
 			user.setCrisises(this.toCrisisList(this.crisisesDTO));
 		}
 		if (this.getNominalAttributesDTO() != null) {
 			user.setNominalAttributes(this.toNominalAttributeList(this.nominalAttributesDTO));
-		}
+		}*/
 		return user;
 	}
 }

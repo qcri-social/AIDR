@@ -1,5 +1,8 @@
 package qa.qcri.aidr.manager.social.configuration;
 
+import java.sql.Timestamp;
+import java.util.UUID;
+
 import javax.annotation.Resource;
 import javax.inject.Inject;
 
@@ -10,7 +13,7 @@ import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.support.OAuth1Connection;
 import org.springframework.stereotype.Component;
 
-import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
 import qa.qcri.aidr.manager.hibernateEntities.UserConnection;
 import qa.qcri.aidr.manager.service.UserConnectionService;
 import qa.qcri.aidr.manager.service.UserService;
@@ -45,7 +48,12 @@ public class UserConnectionSignUp implements ConnectionSignUp {
 	        userConnection.setDisplayName(data.getDisplayName());
 	        userConnection.setRank(1);
 	        userConnectionService.register(userConnection);
-	        UserEntity user = new UserEntity();
+	        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+	        UserAccount user = new UserAccount();
+	        // TODO move to hibernate level
+	        user.setApiKey(UUID.randomUUID().toString());
+	        user.setCreatedAt(currentTimestamp);
+	        user.setUpdatedAt(currentTimestamp);
 	        user.setProvider(data.getProviderId());
 	        user.setUserName(profile.getUsername());
 	        userService.save(user);

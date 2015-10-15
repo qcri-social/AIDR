@@ -12,7 +12,6 @@
     <class>qa.qcri.aidr.dbmanager.entities.model.ModelFamily</class>
     <class>qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabel</class>
     <class>qa.qcri.aidr.dbmanager.entities.model.NominalAttribute</class>
-    <class>qa.qcri.aidr.dbmanager.entities.model.NominalAttributeDependentLabel</class>
     <class>qa.qcri.aidr.dbmanager.entities.model.NominalLabel</class>
     <class>qa.qcri.aidr.dbmanager.entities.model.NominalLabelEvaluationData</class>
     <class>qa.qcri.aidr.dbmanager.entities.model.NominalLabelTrainingData</class>
@@ -44,7 +43,6 @@
     <class>qa.qcri.aidr.dbmanager.entities.model.ModelFamily</class>
     <class>qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabel</class>
     <class>qa.qcri.aidr.dbmanager.entities.model.NominalAttribute</class>
-    <class>qa.qcri.aidr.dbmanager.entities.model.NominalAttributeDependentLabel</class>
     <class>qa.qcri.aidr.dbmanager.entities.model.NominalLabel</class>
     <class>qa.qcri.aidr.dbmanager.entities.model.NominalLabelEvaluationData</class>
     <class>qa.qcri.aidr.dbmanager.entities.model.NominalLabelTrainingData</class>

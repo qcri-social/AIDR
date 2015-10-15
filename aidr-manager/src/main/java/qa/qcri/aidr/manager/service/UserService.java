@@ -6,26 +6,26 @@ import org.json.simple.JSONArray;
 
 import qa.qcri.aidr.manager.RoleType;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
 
 public interface UserService {
 
-	public void save(UserEntity user);
+	public void save(UserAccount user);
 
-    public UserEntity fetchByUserName(String username);
+    public UserAccount fetchByUserName(String username);
 
-    public UserEntity getById(Integer id);
+    public UserAccount getById(Long id);
 
-    public List<UserEntity> getUsers(String query, Integer start, Integer limit);
+    public List<UserAccount> getUsers(String query, Integer start, Integer limit);
 
     public Long getUsersCount(String query);
 
-    public boolean isUserInCollectionManagersList(UserEntity user, AidrCollection collection);
+    public boolean isUserInCollectionManagersList(UserAccount user, AidrCollection collection);
 
-    public boolean isUserAdmin(UserEntity user);
+    public boolean isUserAdmin(UserAccount user);
 
-    public UserEntity getAvailableUser(JSONArray users);
+    public UserAccount getAvailableUser(JSONArray users);
     
-    public List<RoleType> getUserRoles(Integer userId);
+    public List<RoleType> getUserRoles(Long userId);
 
 }

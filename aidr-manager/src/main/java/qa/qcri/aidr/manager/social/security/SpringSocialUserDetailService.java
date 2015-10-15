@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
 import qa.qcri.aidr.manager.RoleType;
-import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
 import qa.qcri.aidr.manager.service.UserService;
 
 @Repository
@@ -55,11 +55,11 @@ public class SpringSocialUserDetailService implements UserDetailsService {
 		if (allConnections.size() > 0) {
 				Authentication authentication = authenticationFactory.createAuthenticationForAllConnections(userName,
 								springSocialProfile.getPassword(),allConnections);
-				UserEntity userEntity =  userService.fetchByUserName(userName);
+				UserAccount user =  userService.fetchByUserName(userName);
 				List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 				authorities.addAll(authentication.getAuthorities());
 				
-				List<RoleType> roles = userService.getUserRoles(userEntity.getId());
+				List<RoleType> roles = userService.getUserRoles(user.getId());
 				if(roles != null && !roles.isEmpty() ){
 					for(RoleType role : roles){
 					   GrantedAuthority authority = new SimpleGrantedAuthority(role.name());

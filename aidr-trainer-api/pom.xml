@@ -26,15 +26,13 @@
 			<artifactId>aidr-common</artifactId>
 			<version>1.0</version>
 		</dependency>
-
 		<dependency>
-			<groupId>qa.qcri.aidr.task</groupId>
-			<artifactId>aidr-task-manager-ejb</artifactId>
+			<groupId>qa.qcri.aidr.dbmanager</groupId>
+			<artifactId>aidr-db-manager-ejb</artifactId>
 			<version>1.0</version>
 			<scope>compile</scope>
 			<type>ejb-client</type>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
