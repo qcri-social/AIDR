@@ -844,7 +844,7 @@ public class DataStore {
 			//sum training sample counts per attribute
 			for (Map.Entry<ModelFamilyEC, Integer> entry : familyLabelCount.entrySet()) {
 				entry.getKey().setTrainingExampleCount(entry.getValue());
-				logger.info("training example count: " + entry.getValue() + " for family" + entry.getKey().getModelFamilyID());
+				//logger.info("training example count: " + entry.getValue() + " for family" + entry.getKey().getModelFamilyID());
 			}
 
 		} catch (SQLException e) {

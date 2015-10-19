@@ -1,8 +1,8 @@
 Ext.define('ModelForClassifiedDetailsChart',{
   extend: 'Ext.data.Model',
     fields: [{name : 'value' },
-             {name : 'classifiedDocumentCount' },
              {name : 'trainingDocumentsCount' },
+             {name : 'classifiedDocumentCount' },
              {name : 'totalDocuments' },
              {name : 'labelAuc', convert:function(a, rec){
                 return (rec.raw.labelAuc*100);
@@ -49,7 +49,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
             {
                 type: 'Numeric',
                 position: 'bottom',
-                fields: ['classifiedDocumentCount', 'trainingDocumentsCount', 'totalDocuments'],
+                fields: ['trainingDocumentsCount', 'classifiedDocumentCount', 'totalDocuments'],
                 title: 'No. of '+COLLECTION_TYPES[TYPE]["plural"],
                 grid: true,
                 minimum: 0,
@@ -77,11 +77,11 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                   width: 180,
                   height: 50,
                   renderer: function(storeItem, item) {
-                      if(item.yField == ('classifiedDocumentCount')){
-                          this.setTitle('Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('classifiedDocumentCount') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
+                      if(item.yField == ('trainingDocumentsCount')){
+                          this.setTitle('Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('trainingDocumentsCount') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
                       }
-                      else  if(item.yField == ('trainingDocumentsCount')){
-                          this.setTitle('Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('trainingDocumentsCount') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
+                      else  if(item.yField == ('classifiedDocumentCount')){
+                          this.setTitle('Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('classifiedDocumentCount') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
                       }
                       else  if(item.yField == ('totalDocuments')){
                           this.setTitle('Total tweets '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('totalDocuments') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
@@ -91,7 +91,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                 label: {
                   display: 'insideEnd',
                   'text-anchor': 'middle',
-                    field: ['classifiedDocumentCount','trainingDocumentsCount', 'totalDocuments'],
+                    field: ['trainingDocumentsCount','classifiedDocumentCount', 'totalDocuments'],
                     renderer: Ext.util.Format.numberRenderer('0'),
                     orientation: 'horizontal',
                     color: '#333'
@@ -104,7 +104,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                  },
                 xField: 'value',
                 title:  ['Human-Tagged', 'Machine-Tagged', 'Total'],
-                yField: ['classifiedDocumentCount', 'trainingDocumentsCount', 'totalDocuments']
+                yField: ['trainingDocumentsCount', 'classifiedDocumentCount', 'totalDocuments']
             }
         ]
         });
@@ -187,12 +187,12 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
 	            },
 	            {
 	                text: 'Human-tagged tweets',
-	                dataIndex: 'classifiedDocumentCount',
+	                dataIndex: 'trainingDocumentsCount',
 	                flex:1
 	            },
 	            {
 	                text: 'Machine-tagged tweets',
-	                dataIndex: 'trainingDocumentsCount',
+	                dataIndex: 'classifiedDocumentCount',
 	                flex:1
 	            },
 	            {
