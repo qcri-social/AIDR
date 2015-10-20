@@ -31,7 +31,6 @@ AIDR_ANALYSIS_JNDI=JNDI/aidr_analysis
 AIDR_PREDICT_CONNECTION_POOL=AIDR_PREDICT_CONNECTION_POOL
 AIDR_PREDICT_JNDI=JNDI/aidr_predict
 AIDR_DB_MANAGER_JNDI=JNDI/aidr_db_manager
-AIDR_TASK_MANAGER_JNDI=JNDI/aidr_task_manager
 echo "Done."
 
 # Go to $GLASSFISH_HOME
@@ -45,13 +44,11 @@ bin/asadmin delete-jdbc-resource "$AIDR_ANALYSIS_JNDI"
 bin/asadmin delete-jdbc-connection-pool "$AIDR_ANALYSIS_CONNECTION_POOL"
 bin/asadmin delete-jdbc-resource "$AIDR_PREDICT_JNDI"
 bin/asadmin delete-jdbc-resource "$AIDR_DB_MANAGER_JNDI"
-bin/asadmin delete-jdbc-resource "$AIDR_TASK_MANAGER_JNDI"
 bin/asadmin delete-jdbc-connection-pool "$AIDR_PREDICT_CONNECTION_POOL"
 echo "Done."
 
 echo "Undeploying Glassfish Applications."
 bin/asadmin undeploy AIDRDBManager
-bin/asadmin undeploy AIDRTaskManager
 bin/asadmin undeploy AIDRPersister
 bin/asadmin undeploy AIDRCollector
 bin/asadmin undeploy AIDRTaggerAPI
@@ -86,11 +83,9 @@ bin/asadmin create-jdbc-resource --connectionpoolid="$AIDR_ANALYSIS_CONNECTION_P
 bin/asadmin create-jdbc-connection-pool --driverclassname=com.mysql.jdbc.Driver --restype=java.sql.Driver --steadypoolsize=8 --maxpoolsize=32 --maxwait=60000 --isisolationguaranteed=true --ping=true --property user=aidr_admin:password=aidr_admin:url="jdbc\\:mysql\\://localhost\\:3306/aidr_predict" $AIDR_PREDICT_CONNECTION_POOL
 bin/asadmin create-jdbc-resource --connectionpoolid=AIDR_PREDICT_CONNECTION_POOL $AIDR_PREDICT_JNDI
 bin/asadmin create-jdbc-resource --connectionpoolid=AIDR_PREDICT_CONNECTION_POOL $AIDR_DB_MANAGER_JNDI
-bin/asadmin create-jdbc-resource --connectionpoolid=AIDR_PREDICT_CONNECTION_POOL $AIDR_TASK_MANAGER_JNDI
 
 # Deploying separate modules. First undeploying if already deployed and deploying again.
 bin/asadmin deploy --contextroot=AIDRDBManager --name=AIDRDBManager $AIDR_HOME/aidr-db-manager/target/aidr-db-manager-ear-1.0.ear
-bin/asadmin deploy --contextroot=AIDRTaskManager --name=AIDRTaskManager $AIDR_HOME/aidr-task-manager/target/aidr-task-manager-ear-1.0.ear
 bin/asadmin deploy --contextroot=AIDRPersister --name=AIDRPersister $AIDR_HOME/aidr-persister/target/aidr-persister-1.0.war
 bin/asadmin deploy --contextroot=AIDRCollector --name=AIDRCollector $AIDR_HOME/aidr-collector/target/aidr-collector-1.0.war
 bin/asadmin deploy --contextroot=AIDRTaggerAPI --name=AIDRTaggerAPI $AIDR_HOME/aidr-tagger-api/target/aidr-tagger-api-1.0.war
@@ -112,7 +107,6 @@ then
 
 # Deploying separate modules. First undeploying if already deployed and deploying again.
 bin/asadmin redeploy --keepstate=true --contextroot=AIDRDBManager --name=AIDRDBManager $AIDR_HOME/aidr-db-manager/target/aidr-db-manager-ear-1.0.ear
-bin/asadmin redeploy --keepstate=true --contextroot=AIDRTaskManager --name=AIDRTaskManager $AIDR_HOME/aidr-task-manager/target/aidr-task-manager-ear-1.0.ear
 bin/asadmin redeploy --keepstate=true --contextroot=AIDRPersister --name=AIDRPersister $AIDR_HOME/aidr-persister/target/aidr-persister-1.0.war
 bin/asadmin redeploy --keepstate=true --contextroot=AIDRCollector --name=AIDRCollector $AIDR_HOME/aidr-collector/target/aidr-collector-1.0.war
 bin/asadmin redeploy --keepstate=true --contextroot=AIDRTaggerAPI --name=AIDRTaggerAPI $AIDR_HOME/aidr-tagger-api/target/aidr-tagger-api-1.0.war

@@ -57,7 +57,6 @@ import qa.qcri.aidr.manager.dto.TaggersForCollectionsRequest;
 import qa.qcri.aidr.manager.dto.TaggersForCollectionsResponse;
 import qa.qcri.aidr.manager.dto.TaskAnswer;
 import qa.qcri.aidr.manager.dto.TrainingDataRequest;
-import qa.qcri.aidr.manager.dto.ValueModel;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.service.TaggerService;
@@ -1001,10 +1000,6 @@ public class TaggerServiceImpl implements TaggerService {
 			throws AidrException {
 
 		Integer taggerUserId = isUserExistsByUsername(userName);
-		if (taggerUserId == null) {
-			TaggerUser taggerUser = new TaggerUser(userName, "normal");
-			taggerUserId = addNewUser(taggerUser);
-		}
 
 		Client client = ClientBuilder.newBuilder()
 				.register(JacksonFeature.class).build();
@@ -1150,7 +1145,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 	@Override
 	public ModelHistoryWrapper getModelHistoryByModelFamilyID(Integer start,
-			Integer limit, Integer id) throws AidrException {
+			Integer limit, Integer id, String sortColumn, String sortDirection) throws AidrException {
 		Client client = ClientBuilder.newBuilder()
 				.register(JacksonFeature.class).build();
 		try {
@@ -1160,7 +1155,8 @@ public class TaggerServiceImpl implements TaggerService {
 			// + "&limit=" + limit);
 			WebTarget webResource = client.target(taggerMainUrl
 					+ "/model/modelFamily/" + id + "?start=" + start
-					+ "&limit=" + limit);
+					+ "&limit=" + limit+ "&sortColumn=" + sortColumn + "&sortDirection="
+					+ sortDirection);
 
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 			// ClientResponse clientResponse =

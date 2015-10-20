@@ -6,7 +6,7 @@ import javax.ejb.Stateless;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.predictui.facade.TaskBufferScannerFacade;
-import qa.qcri.aidr.task.ejb.TaskManagerRemote;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskManagerRemote;
 
 
 /**

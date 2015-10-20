@@ -72,7 +72,8 @@ public interface TaggerService {
 
 	public String loadLatestTweets(String code, String constraints) throws Exception;
 
-	public ModelHistoryWrapper getModelHistoryByModelFamilyID(Integer start, Integer limit, Integer id) throws Exception;
+	public ModelHistoryWrapper getModelHistoryByModelFamilyID(Integer start, Integer limit, Integer id, String sortColumn,
+			String sortDirection) throws Exception;
 
 	public Map<String, Integer> getTaggersForCollections(List<String> collectionCodes) throws Exception;
 

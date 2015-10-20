@@ -64,10 +64,6 @@ public class NominalLabel implements java.io.Serializable {
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalLabel")
 	@JsonManagedReference
-	private List<NominalAttributeDependentLabel> nominalAttributeDependentLabels = null;
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "nominalLabel")
-	@JsonManagedReference
 	private List<DocumentNominalLabel> documentNominalLabels = null;
 
 	public NominalLabel() {
@@ -86,7 +82,6 @@ public class NominalLabel implements java.io.Serializable {
 	public NominalLabel(NominalAttribute nominalAttribute,
 			String nominalLabelCode, String name, String description,
 			Integer sequence, List<ModelNominalLabel> modelNominalLabels,
-			List<NominalAttributeDependentLabel> nominalAttributeDependentLabels, 
 			List<DocumentNominalLabel> documentNominalLabels) {
 		this.nominalAttribute = nominalAttribute;
 		this.nominalLabelCode = nominalLabelCode;
@@ -94,7 +89,6 @@ public class NominalLabel implements java.io.Serializable {
 		this.description = description;
 		this.sequence = sequence;
 		this.modelNominalLabels = modelNominalLabels;
-		this.nominalAttributeDependentLabels = nominalAttributeDependentLabels;
 		this.documentNominalLabels = documentNominalLabels;
 	}
 
@@ -161,17 +155,6 @@ public class NominalLabel implements java.io.Serializable {
 		this.modelNominalLabels = modelNominalLabels;
 	}
 
-
-	public List<NominalAttributeDependentLabel> getNominalAttributeDependentLabels() {
-		return this.nominalAttributeDependentLabels;
-	}
-
-	public void setNominalAttributeDependentLabels(
-			List<NominalAttributeDependentLabel> nominalAttributeDependentLabels) {
-		this.nominalAttributeDependentLabels = nominalAttributeDependentLabels;
-	}
-
-
 	public List<DocumentNominalLabel> getDocumentNominalLabels() {
 		return this.documentNominalLabels;
 	}
@@ -186,10 +169,6 @@ public class NominalLabel implements java.io.Serializable {
 	
 	public boolean hasModelNominalLabels() {
 		return Hibernate.isInitialized(this.modelNominalLabels);
-	}
-	
-	public boolean hasNominalAttributeDependentLabels() {
-		return Hibernate.isInitialized(this.nominalAttributeDependentLabels);
 	}
 	
 	public boolean hasNominalAttribute() {

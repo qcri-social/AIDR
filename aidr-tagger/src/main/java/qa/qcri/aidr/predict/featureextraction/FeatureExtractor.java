@@ -22,7 +22,7 @@ import qa.qcri.aidr.predict.data.Tweet;
 public class FeatureExtractor extends PipelineProcess {
 
 	private static Logger logger = Logger.getLogger(FeatureExtractor.class);
-
+	private static String SINGLE_QUOTE_PATTERN_AT_EXTREME = "(^')|('$)";
 	protected void processItem(Document doc) {
 
 		//logger.info("Received doc class: " + doc.getClass());
@@ -62,7 +62,7 @@ public class FeatureExtractor extends PipelineProcess {
 		// remove URLs, rt @username, and a bunch of special characters
 		String text = inputText;
 		text = text.toLowerCase();
-		String regexp = "(^|\\s)rt\\s|@\\S+|http\\S+|www\\.\\S+|[-.,;:_+?&='\"*~¨^´`<>\\[\\]{}()\\\\/|%€¤$£@!§½…]"; //  
+		String regexp = "(^|\\s)rt\\s|@\\S+|http\\S+|www\\.\\S+|[-.,;:_+?&=\"*~¨^´`<>\\[\\]{}()\\\\/|%€¤$£@!§½…]"; //  
 		text = text.replaceAll(regexp, "");
 		String[] words = text.split("\\s+");
 
@@ -75,6 +75,12 @@ public class FeatureExtractor extends PipelineProcess {
 
 		// Make bigrams
 		HashSet<String> bigrams = new HashSet<String>();
+		
+		// remove single quotes from word's beginning and end
+		for (int index = 0; index < words.length; index ++) {
+        	words[index] = words[index].replaceAll(SINGLE_QUOTE_PATTERN_AT_EXTREME,"");
+        }
+		
 		for (int i = 0; i < words.length - 1; i++) {
 			String w1 = words[i];
 			if (isStopword(w1)) {

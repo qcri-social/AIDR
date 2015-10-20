@@ -98,7 +98,6 @@ public class NominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<Nomina
 		if (nb != null) {
 			Hibernate.initialize(nb.getModelNominalLabels());
 			Hibernate.initialize(nb.getNominalAttribute());
-			Hibernate.initialize(nb.getNominalAttributeDependentLabels());
 			Hibernate.initialize(nb.getDocumentNominalLabels());
 			return new NominalLabelDTO(nb);
 		} 
@@ -117,7 +116,6 @@ public class NominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<Nomina
 		if (nb != null) {
 			Hibernate.initialize(nb.getModelNominalLabels());
 			Hibernate.initialize(nb.getNominalAttribute());
-			Hibernate.initialize(nb.getNominalAttributeDependentLabels());
 			Hibernate.initialize(nb.getDocumentNominalLabels());
 			return new NominalLabelDTO(nb);
 		} 

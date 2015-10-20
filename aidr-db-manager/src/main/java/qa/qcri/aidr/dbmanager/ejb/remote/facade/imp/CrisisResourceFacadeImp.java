@@ -92,7 +92,6 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 		Crisis crisis = getById(id);
 		if (crisis != null) {
 			Hibernate.initialize(crisis.getModelFamilies());
-			Hibernate.initialize(crisis.getNominalAttributes());
 			Hibernate.initialize(crisis.getDocuments());
 
 			CrisisDTO dto = new CrisisDTO(crisis);
@@ -138,7 +137,7 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 		if (crisisList != null && !crisisList.isEmpty()) {
 			for (Crisis crisis : crisisList) {
 				logger.info("Converting to DTO crisis: " + crisis.getCode() + ", " + crisis.getName() + ", " + crisis.getCrisisId()
-						+ ", " + crisis.getUsers().getUserId() + ":" + crisis.getUsers().getName());
+						+ ", " + crisis.getUsers().getId() + ":" + crisis.getUsers().getUserName());
 
 				CrisisDTO dto = new CrisisDTO(crisis);
 				dtoList.add(dto);
@@ -210,7 +209,6 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 			for (Crisis c: list) {
 				try {
 					Hibernate.initialize(c.getModelFamilies());
-					Hibernate.initialize(c.getNominalAttributes());
 					dtoList.add(new CrisisDTO(c));
 				} catch (HibernateException e) {
 					logger.error("Hibernate initialization error for lazy objects in : " + c.getCrisisId());
@@ -226,7 +224,6 @@ public class CrisisResourceFacadeImp extends CoreDBServiceFacadeImp<Crisis, Long
 		if (crisis != null) {
 			try {
 				Hibernate.initialize(crisis.getModelFamilies());
-				Hibernate.initialize(crisis.getNominalAttributes());
 				return new CrisisDTO(crisis);
 			} catch (HibernateException e) {
 				logger.error("Hibernate initialization error for lazy objects in : " + crisis.getCrisisId());

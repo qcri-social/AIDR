@@ -80,14 +80,16 @@ public class ModelResource {
    @Path("modelFamily/{modelFamilyID}")
    public Response getModelsByModelFamilyID(@PathParam("modelFamilyID") Long modelFamilyID,
                                             @QueryParam("start") Integer start,
-                                            @QueryParam("limit") Integer limit){
+                                            @QueryParam("limit") Integer limit,
+                                			@DefaultValue("") @QueryParam("sortColumn") String sortColumn,
+                                			@DefaultValue("") @QueryParam("sortDirection") String sortDirection){
        start = (start != null) ? start : 0;
        limit = (limit != null) ? limit : 50;
        Integer total = modelLocalEJB.getModelCountByModelFamilyID(modelFamilyID);
        List<ModelHistoryWrapper> modelList = new ArrayList<ModelHistoryWrapper>(0);
 
        if (total > 0){
-           modelList = modelLocalEJB.getModelByModelFamilyID(modelFamilyID, start, limit);
+           modelList = modelLocalEJB.getModelByModelFamilyID(modelFamilyID, start, limit, sortColumn, sortDirection);
        }
 
        ResponseWrapper response = new ResponseWrapper();

@@ -33,8 +33,8 @@ import qa.qcri.aidr.manager.dto.PingResponse;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
+import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
 import qa.qcri.aidr.manager.hibernateEntities.UserConnection;
-import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
 import qa.qcri.aidr.manager.repository.AuthenticateTokenRepository;
 import qa.qcri.aidr.manager.repository.CollectionLogRepository;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
@@ -129,7 +129,7 @@ public class CollectionServiceImpl implements CollectionService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<AidrCollection> findAll(Integer start, Integer limit, UserEntity user, boolean onlyTrashed) throws Exception {
+	public List<AidrCollection> findAll(Integer start, Integer limit, UserAccount user, boolean onlyTrashed) throws Exception {
 		return collectionRepository.getPaginatedData(start, limit, user, onlyTrashed);
 	}
 
@@ -148,7 +148,7 @@ public class CollectionServiceImpl implements CollectionService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<AidrCollection> searchByName(String query, Integer userId) throws Exception {
+	public List<AidrCollection> searchByName(String query, Long userId) throws Exception {
 		return collectionRepository.searchByName(query, userId);
 	}
 
@@ -166,13 +166,13 @@ public class CollectionServiceImpl implements CollectionService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public AidrCollection getRunningCollectionStatusByUser(Integer userId) throws Exception {
+	public AidrCollection getRunningCollectionStatusByUser(Long userId) throws Exception {
 		return collectionRepository.getRunningCollectionStatusByUser(userId);
 	}
 
 	@Override
 	@Transactional(readOnly = false)
-	public AidrCollection updateAndGetRunningCollectionStatusByUser(Integer userId) throws Exception {
+	public AidrCollection updateAndGetRunningCollectionStatusByUser(Long userId) throws Exception {
 		AidrCollection collection = collectionRepository.getRunningCollectionStatusByUser(userId);
 		if (collection != null){
 			logger.info("User with ID: '" + userId + "' has a running collection with code: '" + collection.getCode());
@@ -196,7 +196,7 @@ public class CollectionServiceImpl implements CollectionService {
 
 		// We are going to start new collection. Lets stop collection which is running for owner of the new collection.
 		AidrCollection dbCollection = collectionRepository.findById(collectionId);
-		Integer userId = dbCollection.getUser().getId();
+		Long userId = dbCollection.getUser().getId();
 		AidrCollection alreadyRunningCollection = collectionRepository.getRunningCollectionStatusByUser(userId);
 		if (alreadyRunningCollection != null) {
 			this.stop(alreadyRunningCollection.getId());
@@ -354,7 +354,6 @@ public class CollectionServiceImpl implements CollectionService {
 		return null;
 	}
 
-	@Transactional(readOnly = false)
 	private AidrCollection updateStatusCollection(String jsonResponse, AidrCollection collection) throws Exception {
 		ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 		FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);
@@ -441,6 +440,7 @@ public class CollectionServiceImpl implements CollectionService {
 	}
 
 	//@SuppressWarnings("deprecation")
+	@Transactional
 	@Override
 	public AidrCollection statusById(Integer id) throws Exception {
 		AidrCollection collection = this.findById(id);
@@ -448,6 +448,7 @@ public class CollectionServiceImpl implements CollectionService {
 	}
 
 	//@SuppressWarnings("deprecation")
+	@Transactional
 	@Override
 	public AidrCollection statusByCollection(AidrCollection collection) throws Exception {
 		if (collection != null) {
@@ -511,7 +512,7 @@ public class CollectionServiceImpl implements CollectionService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Integer getCollectionsCount(UserEntity user, boolean onlyTrashed) throws Exception {
+	public Integer getCollectionsCount(UserAccount user, boolean onlyTrashed) throws Exception {
 		return collectionRepository.getCollectionsCount(user, onlyTrashed);
 	}
 
@@ -529,7 +530,7 @@ public class CollectionServiceImpl implements CollectionService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<AidrCollection> geAllCollectionByUser(Integer userId) throws Exception{
+	public List<AidrCollection> geAllCollectionByUser(Long userId) throws Exception{
 		return collectionRepository.getAllCollectionByUser(userId);
 	}
 
@@ -583,7 +584,6 @@ public class CollectionServiceImpl implements CollectionService {
 			if (userIdList != null && userIdList.length > 0) {
 				dataList.addAll(getUserDataFromTwitterID(userIdList, userName));
 			}
-
 			if (!dataList.isEmpty()) {
 				StringBuffer followIDs = new StringBuffer();
 				for (User u: dataList) {
@@ -643,8 +643,8 @@ public class CollectionServiceImpl implements CollectionService {
 
 			if (!dataList.isEmpty()) {
 				StringBuffer followScreenNames = new StringBuffer();
-				for (User u: dataList) {
-					followScreenNames.append(u.getScreenName()).append(",");
+				for (User user: dataList) {
+					followScreenNames.append(user.getScreenName()).append(",");
 				}
 				followScreenNames.deleteCharAt(followScreenNames.lastIndexOf(","));
 				//logger.info("Created follow twitterID list: " + followScreenNames.toString());

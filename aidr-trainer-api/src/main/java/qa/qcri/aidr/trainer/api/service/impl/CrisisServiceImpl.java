@@ -1,7 +1,8 @@
 package qa.qcri.aidr.trainer.api.service.impl;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,16 +11,16 @@ import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
 import qa.qcri.aidr.trainer.api.dao.CrisisDao;
 import qa.qcri.aidr.trainer.api.dao.CustomUITemplateDao;
 import qa.qcri.aidr.trainer.api.dao.ModelFamilyDao;
-import qa.qcri.aidr.trainer.api.entity.*;
+import qa.qcri.aidr.trainer.api.entity.Crisis;
+import qa.qcri.aidr.trainer.api.entity.CustomUITemplate;
+import qa.qcri.aidr.trainer.api.entity.ModelFamily;
+import qa.qcri.aidr.trainer.api.entity.NominalAttribute;
+import qa.qcri.aidr.trainer.api.entity.NominalLabel;
 import qa.qcri.aidr.trainer.api.service.CrisisService;
 import qa.qcri.aidr.trainer.api.store.CodeLookUp;
 import qa.qcri.aidr.trainer.api.template.CrisisJsonModel;
 import qa.qcri.aidr.trainer.api.template.CrisisJsonOutput;
 import qa.qcri.aidr.trainer.api.template.CrisisNominalAttributeModel;
-import qa.qcri.aidr.trainer.api.template.NominalAttributeJsonModel;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.

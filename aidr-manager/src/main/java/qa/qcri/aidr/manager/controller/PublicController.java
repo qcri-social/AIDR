@@ -33,7 +33,7 @@ import qa.qcri.aidr.manager.dto.TaggerCrisisType;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
-import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
 import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
@@ -431,7 +431,7 @@ public class PublicController extends BaseController{
 		dto.setName(collection.getName());
 		dto.setTarget(collection.getTarget());
 
-		UserEntity user = collection.getUser();
+		UserAccount user = collection.getUser();
 		dto.setUser(user);
 
 		if (collection.getCount() != null) {
@@ -459,7 +459,7 @@ public class PublicController extends BaseController{
 			dto.setCrisisTypeName(getCrisisTypeName(collection.getCrisisType()));
 		}
 
-		List<UserEntity> managers = collection.getManagers();
+		List<UserAccount> managers = collection.getManagers();
 		dto.setManagers(managers);
 
 		return dto;

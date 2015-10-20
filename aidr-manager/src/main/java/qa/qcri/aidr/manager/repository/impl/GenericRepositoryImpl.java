@@ -3,15 +3,14 @@ package qa.qcri.aidr.manager.repository.impl;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.sql.SQLException;
 import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.orm.hibernate4.HibernateCallback;
+import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import qa.qcri.aidr.manager.repository.GenericRepository;
 
@@ -27,6 +26,7 @@ public abstract class GenericRepositoryImpl<T, ID extends Serializable> implemen
 
 	@SuppressWarnings("unchecked")
     protected final Class<T> getEntityType() {
+		
         Class<? extends Object> thisClass = getClass();
 		Type genericSuperclass = thisClass.getGenericSuperclass();
 		if( genericSuperclass instanceof ParameterizedType ) {
@@ -46,8 +46,8 @@ public abstract class GenericRepositoryImpl<T, ID extends Serializable> implemen
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public List<T> findAll() {
-        return hibernateTemplate.executeFind(new HibernateCallback() {
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+        return hibernateTemplate.execute(new HibernateCallback<List<T>>() {
+            public List<T> doInHibernate(Session session) throws HibernateException {
                 Criteria criteria = session.createCriteria(GenericRepositoryImpl.this.entityType);
                 return criteria.list();
             }

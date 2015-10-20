@@ -17,7 +17,7 @@
     <context:component-scan base-package="org.socialsignin.springsocial.security" />
     <context:property-placeholder location="classpath:system.properties" />
 
-    <mvc:resources mapping="/resources/**" location="/resources/**"/>
+    <mvc:resources mapping="/resources/**" location="/resources/"/>
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
         <property name="prefix"><value>/WEB-INF/secure/</value></property>
@@ -32,7 +32,8 @@
 		<property name="password" value="${MANAGER_DB_PASSWORD}" />
 	</bean>
 
-    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+    	
         <property name="hibernateProperties">
             <props>
                 <prop key="hibernate.dialect">${HIBERNATE_DIALECT}</prop>
@@ -46,15 +47,13 @@
         </property>
         <property name="dataSource" ref="dataSource"/>
         <property name="configLocation" value="WEB-INF/hibernate.cfg.xml"/>
-        <property name="configurationClass" value="org.hibernate.cfg.AnnotationConfiguration"/>
     </bean>
     
-    <bean id="hibernateTemplate"  class="org.springframework.orm.hibernate3.HibernateTemplate">
+    <bean id="hibernateTemplate"  class="org.springframework.orm.hibernate4.HibernateTemplate">
 	    <property name="sessionFactory" ref="sessionFactory"/>
-	    <property name="allowCreate" value="true"/>
     </bean>
     
-    <bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
     

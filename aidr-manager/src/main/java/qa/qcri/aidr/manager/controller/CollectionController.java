@@ -1,30 +1,6 @@
 package qa.qcri.aidr.manager.controller;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
-
-import qa.qcri.aidr.common.values.DownloadType;
-import qa.qcri.aidr.manager.dto.AidrCollectionTotalDTO;
-import qa.qcri.aidr.manager.dto.TaggerCrisis;
-import qa.qcri.aidr.manager.dto.TaggerCrisisExist;
-import qa.qcri.aidr.manager.dto.TaggerCrisisType;
-import qa.qcri.aidr.manager.dto.ValueModel;
-import qa.qcri.aidr.manager.exception.AidrException;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
-import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
-import qa.qcri.aidr.manager.service.CollectionLogService;
-import qa.qcri.aidr.manager.service.CollectionService;
-import qa.qcri.aidr.manager.service.TaggerService;
-import qa.qcri.aidr.manager.service.UserService;
-import qa.qcri.aidr.manager.util.CollectionStatus;
-
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.QueryParam;
+import static qa.qcri.aidr.manager.util.CollectionType.SMS;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,10 +10,35 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
-import static qa.qcri.aidr.manager.util.CollectionType.SMS;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.QueryParam;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import qa.qcri.aidr.common.values.DownloadType;
+import qa.qcri.aidr.manager.dto.AidrCollectionTotalDTO;
+import qa.qcri.aidr.manager.dto.TaggerCrisis;
+import qa.qcri.aidr.manager.dto.TaggerCrisisExist;
+import qa.qcri.aidr.manager.dto.TaggerCrisisType;
+import qa.qcri.aidr.manager.exception.AidrException;
+import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
+import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
+import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
+import qa.qcri.aidr.manager.service.CollectionLogService;
+import qa.qcri.aidr.manager.service.CollectionService;
+import qa.qcri.aidr.manager.service.TaggerService;
+import qa.qcri.aidr.manager.service.UserService;
+import qa.qcri.aidr.manager.util.CollectionStatus;
 
 @Controller
 @RequestMapping("protected/collection")
@@ -74,13 +75,13 @@ public class CollectionController extends BaseController{
 		logger.info("Save AidrCollection to Database having code : "+collection.getCode());
 		//logger.info("Following users: " + collection.getFollow());
 		try{
-			UserEntity entity = getAuthenticatedUser();
+			UserAccount entity = getAuthenticatedUser();
 			collection.setUser(entity);
 			collection.setStatus(CollectionStatus.NOT_RUNNING);
 			collection.setPubliclyListed(true); 	// TODO: change default behavior to user choice
 			Calendar now = Calendar.getInstance();
 			collection.setCreatedDate(now.getTime());
-			List<UserEntity> managers = new ArrayList<UserEntity>();
+			List<UserAccount> managers = new ArrayList<UserAccount>();
 			managers.add(entity);
 			collection.setManagers(managers);
 
@@ -381,7 +382,7 @@ public class CollectionController extends BaseController{
 		start = (start != null) ? start : 0;
 		limit = (limit != null) ? limit : 50;
 		String userName="";
-		UserEntity userEntity = getAuthenticatedUser();
+		UserAccount userEntity = getAuthenticatedUser();
 		if (userEntity != null) {
 			userName = userEntity.getUserName();
 			List<AidrCollectionTotalDTO> dtoList = new ArrayList<AidrCollectionTotalDTO>();
@@ -433,7 +434,7 @@ public class CollectionController extends BaseController{
 	@RequestMapping(value = "/search.action", method = RequestMethod.GET)
 	@ResponseBody
 	public List<AidrCollection> search(@RequestParam String query) throws Exception {
-		UserEntity userEntity = getAuthenticatedUser();
+		UserAccount userEntity = getAuthenticatedUser();
 		if(userEntity!=null){
 			return collectionService.searchByName(query, userEntity.getId());
 		}
@@ -454,7 +455,7 @@ public class CollectionController extends BaseController{
 
 	@RequestMapping(value = "/getRunningCollectionStatusByUser.action", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String,Object> runningCollectionByUser(@RequestParam(value = "id") Integer userId) throws Exception {
+	public Map<String,Object> runningCollectionByUser(@RequestParam(value = "id") Long userId) throws Exception {
 		if(userId != null){
 			AidrCollection collection = collectionService.getRunningCollectionStatusByUser(userId);
 			return getUIWrapper(collection,true);
@@ -529,7 +530,7 @@ public class CollectionController extends BaseController{
 	@RequestMapping(value = "/updateAndGetRunningCollectionStatusByUser.action", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String,Object> updateAndGetRunningCollectionByUser() throws Exception {
-		UserEntity userEntity = getAuthenticatedUser();
+		UserAccount userEntity = getAuthenticatedUser();
 		if(userEntity!=null){
 			try {
 				return getUIWrapper(collectionService.updateAndGetRunningCollectionStatusByUser(userEntity.getId()),true);
@@ -585,7 +586,7 @@ public class CollectionController extends BaseController{
 		start = (start != null) ? start : 0;
 		limit = (limit != null) ? limit : 20;
 
-		UserEntity userEntity = getAuthenticatedUser();
+		UserAccount userEntity = getAuthenticatedUser();
 		if (userEntity != null) {
 			Long total = collectionService.getRunningCollectionsCount(terms);
 
@@ -651,7 +652,7 @@ public class CollectionController extends BaseController{
 		start = (start != null) ? start : 0;
 		limit = (limit != null) ? limit :20;
 
-		UserEntity userEntity = getAuthenticatedUser();
+		UserAccount userEntity = getAuthenticatedUser();
 		if(userEntity != null){
 			Long total = collectionService.getStoppedCollectionsCount(terms);
 
@@ -724,7 +725,7 @@ public class CollectionController extends BaseController{
 		dto.setTarget(collection.getTarget());
                 dto.setGeoR(collection.getGeoR());
 
-		UserEntity user = collection.getUser();
+		UserAccount user = collection.getUser();
 		dto.setUser(user);
 
 		if (collection.getCount() != null) {
@@ -746,7 +747,7 @@ public class CollectionController extends BaseController{
 		dto.setCrisisType(collection.getCrisisType());
 		dto.setCollectionType(collection.getCollectionType());
 
-		List<UserEntity> managers = collection.getManagers();
+		List<UserAccount> managers = collection.getManagers();
 		dto.setManagers(managers);
 
 		return dto;
@@ -791,9 +792,9 @@ public class CollectionController extends BaseController{
 
 	@RequestMapping(value = "/getTwitterUserIds.action", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, Object> getTwitterUserID(@RequestParam(value ="userId", required=true) Integer userId, @RequestParam("userList") String userList) {
+	public Map<String, Object> getTwitterUserID(@RequestParam(value ="userId", required=true) Long userId, @RequestParam("userList") String userList) {
 		try {
-			UserEntity user = userService.getById(userId);
+			UserAccount user = userService.getById(userId);
 			if (user != null) {
 				String userName = user.getUserName();
 				if (userList != null && !userList.isEmpty()) {

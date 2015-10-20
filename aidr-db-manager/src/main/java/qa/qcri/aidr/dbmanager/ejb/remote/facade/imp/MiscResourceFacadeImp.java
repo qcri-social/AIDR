@@ -7,7 +7,6 @@ package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -67,12 +66,12 @@ public class MiscResourceFacadeImp extends CoreDBServiceFacadeImp<Document, Long
 			orderSQLPart += " ORDER BY dnl.timestamp DESC";
 		}
 
-		String sql = " SELECT distinct lbl.nominalLabelID, lbl.name labelName, d.data tweetJSON, u.userID, u.name labelerName, dnl.timestamp, d.documentID "
+		String sql = " SELECT distinct lbl.nominalLabelID, lbl.name labelName, d.data tweetJSON, u.id, u.user_name labelerName, dnl.timestamp, d.documentID "
 				+ " FROM document_nominal_label dnl "
 				+ " JOIN nominal_label lbl on lbl.nominalLabelID=dnl.nominalLabelID "
 				+ " JOIN model_family mf on mf.nominalAttributeID=lbl.nominalAttributeID "
 				+ " JOIN document d on d.documentID = dnl.documentID "
-				+ " JOIN users u on u.userID = dnl.userID "
+				+ " JOIN account u on u.id = dnl.userID "
 				+ " WHERE mf.modelFamilyID = :modelFamilyID AND d.crisisID = :crisisID " + orderSQLPart
 				+ " LIMIT :fromRecord, :limit";
 

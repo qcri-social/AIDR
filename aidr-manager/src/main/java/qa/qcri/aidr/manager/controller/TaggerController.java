@@ -48,7 +48,7 @@ import qa.qcri.aidr.manager.dto.TaskInfo;
 import qa.qcri.aidr.manager.dto.UpdateCrisisDTO;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 
@@ -90,10 +90,6 @@ public class TaggerController extends BaseController {
 		try {
 			String userName = getAuthenticatedUserName();
 			Integer taggerUserId = taggerService.isUserExistsByUsername(userName);
-			if (taggerUserId == null) {
-				TaggerUser taggerUser = new TaggerUser(userName, "normal");
-				taggerUserId = taggerService.addNewUser(taggerUser);
-			}
 			if (taggerUserId != null) {
 				return getUIWrapper(taggerService.getCrisesByUserId(taggerUserId), true);
 			} else {
@@ -112,10 +108,6 @@ public class TaggerController extends BaseController {
 		try {
 			String userName = getAuthenticatedUserName();
 			Integer taggerUserId = taggerService.isUserExistsByUsername(userName);
-			if (taggerUserId == null) {
-				TaggerUser taggerUser = new TaggerUser(userName, "normal");
-				taggerUserId = taggerService.addNewUser(taggerUser);
-			}
 			//logger.info("userID = " + taggerUserId + ", name = " + userName);
 			if (taggerUserId != null) {
 				TaggerCrisisRequest crisis = transformCrisesRequestToTaggerCrises(crisisRequest, taggerUserId);
@@ -563,7 +555,9 @@ public class TaggerController extends BaseController {
 
 	@RequestMapping(value = "/modelHistory.action", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, Object> getModelHistoryByModelFamilyID(@RequestParam Integer start, @RequestParam Integer limit, @RequestParam Integer id) throws Exception {
+	public Map<String, Object> getModelHistoryByModelFamilyID(@RequestParam Integer start, @RequestParam Integer limit, @RequestParam Integer id,
+			@RequestParam (value = "sortColumn", required = false, defaultValue = "") String sortColumn,
+			@RequestParam (value = "sortDirection", required = false, defaultValue = "") String sortDirection) throws Exception {
 		if (id == null) {
 			logger.error("Error while Getting history records for Model by ModelFamilyId. ModelFamilyId is empty");
 			return getUIWrapper(false);
@@ -573,7 +567,7 @@ public class TaggerController extends BaseController {
 		limit = (limit != null) ? limit : 50;
 
 		try {
-			ModelHistoryWrapper result = taggerService.getModelHistoryByModelFamilyID(start, limit, id);
+			ModelHistoryWrapper result = taggerService.getModelHistoryByModelFamilyID(start, limit, id, sortColumn, sortDirection);
 			if (result != null) {
 				logger.info("Tagger returned " + result.getTotal() + " history records for model with modelFamilyID: " + id);
 				return getUIWrapper(result.getModelHistoryWrapper(), result.getTotal());
@@ -1008,7 +1002,7 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String, Object> sendEmail(@RequestParam String url, @RequestParam String mailType, @RequestParam String description) throws Exception {
 		//logger.info("In sending email");
-		UserEntity userEntity = getAuthenticatedUser();
+		UserAccount userEntity = getAuthenticatedUser();
 		userEntity.getUserName();
 		StringBuffer body = new StringBuffer("User:").append(userEntity.getUserName())
 				.append("\nURL:").append(url).append("\nRequestHeader:").append(description);

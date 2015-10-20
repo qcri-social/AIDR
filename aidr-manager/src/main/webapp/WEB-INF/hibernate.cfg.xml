@@ -5,11 +5,11 @@
 <hibernate-configuration>
     <session-factory>
         <mapping class="qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog"/>
-        <mapping class="qa.qcri.aidr.manager.hibernateEntities.UserEntity"/>
+        <mapping class="qa.qcri.aidr.manager.hibernateEntities.UserAccount"/>
         <mapping class="qa.qcri.aidr.manager.hibernateEntities.AidrCollection"/>
         <mapping class="qa.qcri.aidr.manager.hibernateEntities.UserConnection"/>
         <mapping class="qa.qcri.aidr.manager.hibernateEntities.Role"/>
         <mapping class="qa.qcri.aidr.manager.hibernateEntities.AidrAuthenticateToken"/>
-        <mapping class="qa.qcri.aidr.manager.hibernateEntities.UserRole"/>
+        <mapping class="qa.qcri.aidr.manager.hibernateEntities.UserAccountRole"/>
     </session-factory>
 </hibernate-configuration>

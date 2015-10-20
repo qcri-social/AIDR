@@ -12,7 +12,7 @@ import javax.ejb.Stateless;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelNominalLabelDTO;
 import qa.qcri.aidr.predictui.facade.ModelNominalLabelFacade;
-import qa.qcri.aidr.task.ejb.TaskManagerRemote;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskManagerRemote;
 
 //import qa.qcri.aidr.predictui.dto.ModelNominalLabelDTO;
 

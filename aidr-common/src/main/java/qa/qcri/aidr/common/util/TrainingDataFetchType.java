@@ -1,4 +1,4 @@
-package qa.qcri.aidr.task.common;
+package qa.qcri.aidr.common.util;
 
 public enum TrainingDataFetchType {
 	BATCH_FETCH("BATCH_FETCH"), INTERNAL_TRAINING("INTERNAL_TRAINING");

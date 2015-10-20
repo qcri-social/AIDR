@@ -1,14 +1,11 @@
 package qa.qcri.aidr.dbmanager.dto;
 
 import java.io.Serializable;
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.log4j.Logger;
 
@@ -17,14 +14,9 @@ import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
 import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
-import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
-import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
-import qa.qcri.aidr.dbmanager.entities.task.TaskAssignment;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 
 
@@ -121,13 +113,10 @@ public class CrisisDTO implements Serializable  {
 				this.setCrisisTypeDTO(new CrisisTypeDTO(cType));
 			}
 			if (crisis.hasUsers()) {
-				Users user = new Users(crisis.getUsers().getName(), crisis.getUsers().getRole());
-				user.setUserId(crisis.getUsers().getUserId());
+				Users user = new Users();
+				user.setUserName(crisis.getUsers().getUserName());
+				user.setId(crisis.getUsers().getId());
 				this.setUsersDTO(new UsersDTO(user));
-			}
-			// Setting optional fields that were lazily initialized
-			if (crisis.hasNominalAttributes()) {
-				this.setNominalAttributesDTO(toNominalAttributeDTOList(crisis.getNominalAttributes()));
 			}
 			if (crisis.hasModelFamilies()) {
 				this.setModelFamiliesDTO(toModelFamilyDTOList(crisis.getModelFamilies()));
@@ -281,30 +270,6 @@ public class CrisisDTO implements Serializable  {
 		return null;
 	}
 
-	private List<NominalAttributeDTO> toNominalAttributeDTOList(List<NominalAttribute> list) throws PropertyNotSetException {
-		if (list != null) {
-			List<NominalAttributeDTO> dtoList = new ArrayList<NominalAttributeDTO>();
-			for (NominalAttribute d: list) {
-				dtoList.add(new NominalAttributeDTO(d));
-			}
-			return dtoList;
-		}
-		return null;
-	}
-
-
-	private List<NominalAttribute> toNominalAttributeList(List<NominalAttributeDTO> list) throws PropertyNotSetException {
-		if (list != null) {
-			List<NominalAttribute> eList = new ArrayList<NominalAttribute>();
-			for (NominalAttributeDTO dto: list) {
-				eList.add(dto.toEntity());
-			}
-			return eList;
-		}
-		return null;
-	}
-
-
 	/* Mapping to entity */
 	public Crisis toEntity() throws PropertyNotSetException {
 		Crisis crisis = new Crisis();
@@ -328,9 +293,6 @@ public class CrisisDTO implements Serializable  {
 		} 
 		if (this.getModelFamiliesDTO() != null) {
 			crisis.setModelFamilies(this.toModelFamilyList(this.getModelFamiliesDTO()));
-		} 
-		if (this.getNominalAttributesDTO() != null) {
-			crisis.setNominalAttributes(this.toNominalAttributeList(this.getNominalAttributesDTO()));
 		} 
 		return crisis;
 	}

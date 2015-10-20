@@ -2,20 +2,15 @@ package qa.qcri.aidr.dbmanager.dto;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabel;
-import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
-import qa.qcri.aidr.dbmanager.entities.model.NominalAttributeDependentLabel;
 import qa.qcri.aidr.dbmanager.entities.model.NominalLabel;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @XmlRootElement

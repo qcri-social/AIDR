@@ -9,7 +9,7 @@ import javax.annotation.Resource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import qa.qcri.aidr.manager.hibernateEntities.UserEntity;
+import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
 import qa.qcri.aidr.manager.service.UserService;
 
 public class BaseController {
@@ -53,7 +53,7 @@ public class BaseController {
         }
     }
 
-	protected UserEntity getAuthenticatedUser() throws Exception{
+	protected UserAccount getAuthenticatedUser() throws Exception{
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if(authentication!=null){
 			return userService.fetchByUserName(authentication.getName());

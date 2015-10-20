@@ -70,10 +70,11 @@ public class ModelFacadeImp implements ModelFacade {
     }
 
     @Override
-    public List<ModelHistoryWrapper> getModelByModelFamilyID(Long modelFamilyID, Integer start, Integer limit) {
+    public List<ModelHistoryWrapper> getModelByModelFamilyID(Long modelFamilyID, Integer start, 
+    		Integer limit, String sortColumn, String sortDirection) {
         List<ModelHistoryWrapper> modelsList = new ArrayList<ModelHistoryWrapper>();
         try {
-            modelsList = remoteModelEJB.getModelByModelFamilyID(modelFamilyID, start, limit);
+            modelsList = remoteModelEJB.getModelByModelFamilyID(modelFamilyID, start, limit, sortColumn, sortDirection);
         } catch (PropertyNotSetException pe) {
             pe.printStackTrace();
         }
