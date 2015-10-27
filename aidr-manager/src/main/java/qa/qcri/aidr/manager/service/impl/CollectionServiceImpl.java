@@ -323,6 +323,7 @@ public class CollectionServiceImpl implements CollectionService {
 	}
 
 	//@SuppressWarnings("deprecation")
+	@Transactional(readOnly = false)
 	public AidrCollection stopAidrFetcher(AidrCollection collection) {
 		try {
 			/**
