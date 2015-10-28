@@ -5,6 +5,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        'TrainingDataPanel'
 	        ],
 	        // href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/' + MODEL_ID + '/' + MODEL_FAMILY_ID +/training-examples
+
 	        init: function () {
 
 	        	this.control({
@@ -31,6 +32,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        },
 
 	        beforeRenderView: function (component, eOpts) {
+	        	  
 	        	AIDRFMFunctions.initMessageContainer();
 	        	this.mainComponent = component;
 	        	this.mainComponent.constraintsString = '{"constraints":[]}';
@@ -47,7 +49,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        loadModelData: function() {
 	        	var me = this,
 	        	status = '',
-	        	detailsForModel = '';
+	        	detailsForModel = '';	        	
 
 	        	if (MODEL_ID) {
 	        		status = AIDRFMFunctions.getStatusWithStyle("RUNNING", TYPE);
@@ -86,13 +88,22 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        							}
 	        						});
 	        						// var self = this;
-	        						//me.getRetrainingThreshold()
-	        						me.getRetrainingThreshold(totalMessages, count);
-	        						me.mainComponent.taggerDescription.setText('Status: <b><small>' + status + '</small></b>. ' +
-	        								'Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ': <b>' + totalMessages + '</b> (since last change of the classifier).&nbsp;' + detailsForModel, false);
+	        						//me.getRetrainingThreshold()\
+	        						/*
+	        						Author:Sushant
+
+	        						*/
+	        						// Passed All the values to the getRetrainingThreshold function, so that after it is called, all the variables remain present to be rendered
+	        						var a=me.getRetrainingThreshold(totalMessages, count,status);
+	        						
+
+	        						
+
+   						
 
 
-	        						//  me.mainComponent.taggerDescription2line.setText('<b>' + totalExamples + '</b> training examples. Note: Value \"N/A\" doesn\'t count as training example.', false);
+
+	        						// me.mainComponent.taggerDescription2line.setText('<b>' + totalExamples + '</b> training examples. Note: Value \"N/A\" doesn\'t count as training example.', false);
 	        					}
 	        				} else {
 	        					AIDRFMFunctions.setAlert("Error", resp.message);
@@ -101,7 +112,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        			}
 	        		});
 	        	} else {
-	        		this.getRetrainingThreshold(0,0);
+	        		// this.getRetrainingThreshold(0,0);
 	        		me.mainComponent.breadcrumbs.setText('<div class="bread-crumbs">' +
 	        				'<a href="' + BASE_URL + '/protected/home">My Collections</a><span>&nbsp;>&nbsp;</span>' +
 	        				'<a href="' + BASE_URL + '/protected/' + CRISIS_CODE + '/tagger-collection-details">' + CRISIS_NAME + '</a><span>&nbsp;>&nbsp;' +
@@ -112,8 +123,10 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 
 	        },
 
-	        getRetrainingThreshold: function(trainingExamplesCount, countTrainingExample){
+	        getRetrainingThreshold: function(trainingExamplesCount, countTrainingExample,status){
 	        	var me = this;
+	     
+
 	        	Ext.Ajax.request({
 	        		url: BASE_URL + '/protected/tagger/getTrainingDataCountByModelIdAndCrisisId.action',
 	        		method: 'GET',
@@ -124,6 +137,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        		headers: {
 	        			'Accept': 'application/json'
 	        		},
+	        	
 	        		success: function (response) {
 	        			var resp = Ext.decode(response.responseText);
 	        			if (resp.success && resp.data) {
@@ -132,6 +146,7 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        	        	var retrainingThresholdCount = 0;
 	        	        	var statusMessage='';
 	        	        	var y = totalHumanLabeledCount % sampleCountThreshold; //TRAINING_EXAMPLE % sampleCountThreshold;
+	        	        	
 	        	        	if(y < 0){
 	        	        		y = y * sampleCountThreshold;
 	        	        	}
@@ -144,18 +159,25 @@ Ext.define('TAGGUI.training-data.controller.TrainingDataController', {
 	        	        	}
 	        	        	else{*/
 
-	        	        		statusMessage = retrainingThresholdCount + ' more needed to re-train. Note: Value \"N/A\" doesn\'t count for training.';
-	        	        		// TRAINING_EXAMPLE, this.trainingDataStore.getReader().getTotal()
-	        	        		me.mainComponent.taggerDescription2line.setText('<b>' + totalHumanLabeledCount + '</b> human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '. ' + statusMessage, false);
-	        	        	//}
-
+/* 
+Author:Sushant
+Removed the taggerDescription2line and disabled it as there is no use of two labels.
+*/
+	        	        		statusMessage = retrainingThresholdCount + 'more needed to re-train';
+	        	        		me.mainComponent.taggerDescription.setText(' Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +status+','+ statusMessage+'<br> ' +
+	        								'Human-tagged: ' + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' + totalHumanLabeledCount +'<br>'+'Machine-tagged: '+'&nbsp;&nbsp;&nbsp;&nbsp;'+trainingExamplesCount /*+ detailsForModel*/, false);
+                                 
+	        	        	
 	        			} else {
 	        				AIDRFMFunctions.setAlert("Info", "No human tagged "+ COLLECTION_TYPES[TYPE]["plural"] + " present for this classifier.");
 	        			}
 	        		}
+	        	
 	        	});
 
+                            
 	        },
+	        
 
 	        deleteTrainingExample: function(button){
 	        	if (!button.exampleId){

@@ -23,27 +23,29 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
 
         this.taggerTitle = Ext.create('Ext.form.Label', {
             cls: 'header-h1 bold-text',
-            text: 'Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ' for "' + MODEL_NAME + '" in collection "' + CRISIS_NAME + '"',
+            // text: 'Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ' for "' + MODEL_NAME + '" in collection "' + CRISIS_NAME + '"',
             flex: 1
         });
 
         this.taggerDescription = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
-            margin: '0 0 15 0',
-            html: 'Status: <b>Waiting human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '</b>. Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ': <b>0</b>&nbsp;',
+            margin: '0 0 30 0',
+            html: 'Status: <b>Waiting human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '<br> </b>. Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ': <b>0</b>&nbsp;',
             flex: 1
         });
-
-        this.taggerDescription2line = Ext.create('Ext.form.Label', {
-            cls: 'styled-text',
-            margin: '0 0 15 0',
-            html: '<b>0</b> human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '.',
-            flex: 1
-        });
+/*
+No use for this label as all the information is rendered in a single taggerDescription label
+*/
+        // this.taggerDescription2line = Ext.create('Ext.form.Label', {
+        //     cls: 'styled-text',
+        //     margin: '0 0 15 0',
+        //     html: '<b>0</b> human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '.',
+        //     flex: 1
+        // });
 
         this.addTrainingData = Ext.create('Ext.Button', {
             text: 'Tag more '+ COLLECTION_TYPES[TYPE]["plural"],
-            cls:'btn btn-blue',
+            cls:'btn btn-blueish1',
             id: 'addNewTrainingData',
             width: 150,
             margin: '0 0 0 0'
@@ -109,7 +111,7 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
                             Ext.widget('button', {
                                 exampleId: recordValue,
                                 renderTo: id,
-                                cls: 'btn btn-red',
+                                cls: 'btn btn-reddish',
                                 text: 'Delete',
                                 width: 70,
                                 action: 'deleteTrainingExample'
@@ -173,7 +175,7 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
 
                 this.downloadButton = Ext.create('Ext.Button', {
                 			text: 'Generate Downloadable File',
-                			cls:'btn btn-blue',
+                			cls:'btn btn-blueish1',
                 			id: 'downloadButton',
                 			margin: '10 0 0 0'
                 		});

@@ -12,8 +12,8 @@
 
 .tbarText{
     color: #04408c !important;
-	font-size: 15px !important;
-	font-weight: bold !important;
+    font-size: 15px !important;
+    font-weight: bold !important;
 }
 
 .header{
@@ -127,7 +127,11 @@
 .greenInfo{
   color :#008000;
 }
-
+.AidrInfo{
+    color:#3C3C3C;
+    font-weight: bold;
+    font-size: 13px;
+}
 .redInfo{
   color :red;
 }
@@ -140,7 +144,7 @@
 }
 
 .x-table-layout-cell{
- vertical-align: top;
+   vertical-align: top;
 }
 
 .crisis-table {
@@ -232,7 +236,8 @@ body{
 }
 
 .styled-text{
-    font-size: 15px ;
+    font-size: 13px ;
+    font-weight:100;
 }
 
 .styled-text-14{
@@ -262,7 +267,7 @@ body{
     color: #0080A6;
 }
 
-.btn.btn-blue, .btn.btn-green, .btn.btn-red, .btn.btn-grey {
+.btn.btn-blue, .btn.btn-green, .btn.btn-red,.btn.btn-blueis, .btn.btn-grey {
     min-width: 64px;
     height: 25px;
     padding: 0 13px;
@@ -304,6 +309,61 @@ body{
     -moz-box-shadow: inset #a2c790 0 1px 1px, #f2f0f0 0 -1px 0;
     box-shadow: inset #a2c790 0 1px 1px, #f2f0f0 0 -1px 0;
 }
+.btn.btn-reddish {
+    color: #fff;
+
+    filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#D9544F', endColorstr='#DC5456');
+
+    background: -webkit-linear-gradient(left, #D9544F, #DC5456);
+    background: -moz-linear-gradient(left, #D9544F, #DC5456);
+    background: -o-linear-gradient(left, #D9544F, #DC5456);
+    background: -ms-linear-gradient(left, #D9544F, #DC5456);
+    -webkit-box-shadow: inset #D9544F 0 1px 1px, #f2f0f0 0 -1px 0;
+    -moz-box-shadow: inset #D9544F 0 1px 1px, #f2f0f0 0 -1px 0;
+    box-shadow: inset #D9544F 0 1px 1px, #f2f0f0 0 -1px 0;
+    -webkit-border-radius: 0.4em;
+   -moz-border-radius: 0.4em;
+   border-radius: 0.4em;
+
+
+}
+.btn.btn-blueish1 {
+    color:#fff;
+
+    filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#44B5B1', endColorstr='#3FB6B0');
+
+    background: -webkit-linear-gradient(left, #44B5B1, #3FB6B0);
+    background: -moz-linear-gradient(left, #44B5B1, #3FB6B0);
+    background: -o-linear-gradient(left, #44B5B1, #3FB6B0);
+    background: -ms-linear-gradient(left, #44B5B1, #3FB6B0);
+    -webkit-box-shadow: inset #44B5B1 0 1px 1px, #f2f0f0 0 -1px 0;
+    -moz-box-shadow: inset #44B5B1 0 1px 1px, #f2f0f0 0 -1px 0;
+    box-shadow: inset #44B5B1 0 1px 1px, #f2f0f0 0 -1px 0;
+       -webkit-border-radius: 0.6em;
+   -moz-border-radius: 0.6em;
+   border-radius: 0.44em;
+
+
+}
+.btn.btn-blueish2 {
+    color:#fff;
+    
+    filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#44B5B1', endColorstr='#3FB6B0');
+
+    background: -webkit-linear-gradient(left, #44B5B1, #3FB6B0);
+    background: -moz-linear-gradient(left, #44B5B1, #3FB6B0);
+    background: -o-linear-gradient(left, #44B5B1, #3FB6B0);
+    background: -ms-linear-gradient(left, #44B5B1, #3FB6B0);
+    -webkit-box-shadow: inset #44B5B1 0 1px 1px, #f2f0f0 0 -1px 0;
+    -moz-box-shadow: inset #44B5B1 0 1px 1px, #f2f0f0 0 -1px 0;
+    box-shadow: inset #44B5B1 0 1px 1px, #f2f0f0 0 -1px 0;
+       -webkit-border-radius: 0.6em;
+   -moz-border-radius: 0.6em;
+   border-radius: 0.44em;
+
+
+}
+
 .btn.btn-grey {
     color: black;
     border-color: #454545;
@@ -334,44 +394,65 @@ body{
     box-shadow: inset #D8C41D 0 1px 1px, #f2f0f0 0 -1px 0;
 }
 
-.btn.btn-red button,
-.btn.btn-green button,
-.btn.btn-grey button,
-.btn.btn-blue button {
-    height: 20px;
+
+.btn.btn-blueish1 button{
+
+    height: 36px;
+    line-height: 99px;
+    },
+    .btn.btn-red button,
+.btn.btn-blueish2 button{
+
+    height: 23px;
     line-height: 22px;
+    },
+    .btn.btn-green button,
+    .btn.btn-grey button,
+    .btn.btn-blue button {
+        height: 23px;
+        line-height: 22px;
+    }
+
+    .btn.btn-blueish1 span,.btn.btn-blueish2 span,.btn.btn-green span,.btn.btn-reddish  span{
+        color: #FFFFFF;
+        },
+        .btn.btn-red span,
+
+        .btn.btn-green span,
+        .btn.btn-blue span {
+            color: #FFFFFF;
+            font-size: 12px;
+            height: 23px;
+            line-height: 22px;
+        }
+
+        .btn span{
+            font-family: "Lucida Sans Unicode", "Lucida Grande", "Arial";
+        }
+
+        .btn-disabled span{
+            color: #333!important;
+        }
+
+        .collection-item button:hover,
+        .attribute-item button:hover,
+        .crisis-item button:hover{
+            cursor: pointer;
+        }
+
+        .bread-crumbs a{
+            font-size: 15px;
+            color: ;
+        }
+        a {
+    text-decoration: none;
+    color: #48B1DB;
 }
 
-.btn.btn-red span,
-.btn.btn-green span,
-.btn.btn-blue span {
-    color: #FFFFFF;
-    font-size: 12px;
-    height: 20px;
-    line-height: 22px;
-}
-
-.btn span{
-    font-family: "Lucida Sans Unicode", "Lucida Grande", "Arial";
-}
-
-.btn-disabled span{
-    color: #333!important;
-}
-
-.collection-item button:hover,
-.attribute-item button:hover,
-.crisis-item button:hover{
-    cursor: pointer;
-}
-
-.bread-crumbs a{
-    font-size: 15px;
-}
-
-.bread-crumbs span{
-    font-size: 15px;
-}
+        .bread-crumbs span{
+            font-size: 15px;
+            color: ;
+        }
 
 /*
 
@@ -472,8 +553,9 @@ End of the tab panel styles
 
 */
 
-.x-btn-center .x-btn-inner {
+.x-btn-default-small .x-btn-center .x-btn-inner {
     font-family: "Lucida Sans Unicode", "Lucida Grande", "Arial";
+    font-size:13px;color:#FFFFFF;font-weight:normal;background-repeat:no-repeat;padding:0 3px
 }
 
 .bordered-top {
@@ -592,12 +674,14 @@ End of the tab panel styles
 }
 
 .aidr-paging {
+    color:#3FB6B0;
     background-color: white !important;
     background-image: none;
     border-width: 0px;
 }
 
 .aidr-paging .x-toolbar-text{
+    color:#3FB6B0;
     font-size: 12px;
     font-family: "Lucida Sans Unicode", "Lucida Grande", "Arial";
 }
@@ -658,7 +742,18 @@ End of the tab panel styles
     border-left-width: 0!important;
     border-right-width: 0!important;
 }
+.aidr-grid .x-column-header-over{
+    border-left-color: #3FB6B0 !important;
+    border-right-color: #3FB6B0 !important;
+    background-color: #3FB6B0 !important;\
+    background-image: -webkit-gradient(linear,50% 0,50% 100%,color-stop(0%,#FFFFFF),color-stop(39%,#FFFFFF),color-stop(40%,#FFFFFF),color-stop(100%,#FFFFFF));
+    background-image: -webkit-linear-gradient(top,#FFFFFF,#FFFFFF 39%,#FFFFFF 40%,#FFFFFF);
+    background-image: -moz-linear-gradient(top,#FFFFFF,#ebf3fd 39%,#d9e8fb 40%,#d9e8fb);
+    background-image: -o-linear-gradient(top,#ebf3fd,#ebf3fd 39%,#d9e8fb 40%,#d9e8fb);
+    background-image: -ms-linear-gradient(top,#ebf3fd,#ebf3fd 39%,#d9e8fb 40%,#d9e8fb);
+    background-image: linear-gradient(top,#ebf3fd,#ebf3fd 39%,#d9e8fb 40%,#d9e8fb);
 
+}
 .aidr-grid .x-grid-body {
     border-bottom-width: 0!important;
     border-left-width: 0!important;
@@ -671,7 +766,8 @@ End of the tab panel styles
 }
 
 .aidr-grid .x-column-header-inner span {
-    font-size: 12px;
+    color:#3FB6B0;
+    font-size: 14px;
     font-family: "Lucida Sans Unicode", "Lucida Grande", "Arial";
 }
 
@@ -773,9 +869,9 @@ End of the tab panel styles
 .link-style {
     font-size: 14px;
 }
- #viewDownloadTweetsGrid-body .x-grid-row .x-grid-cell-inner {
-     font-size: 1em;
- }
+#viewDownloadTweetsGrid-body .x-grid-row .x-grid-cell-inner {
+   font-size: 1em;
+}
 
 .collection-item .btn, .c-list .crisis-item .btn {
     position: relative;

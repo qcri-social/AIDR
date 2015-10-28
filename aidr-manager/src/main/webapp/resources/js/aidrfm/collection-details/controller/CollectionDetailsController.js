@@ -538,7 +538,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var p = this.DetailsComponent;
         var r = p.currentCollection;
 
-        p.codeE.setValue(r.code);
+         p.codeE.setValue(r.code);
         p.nameE.setValue(r.name);
         p.keywordsE.setValue(r.track);
 

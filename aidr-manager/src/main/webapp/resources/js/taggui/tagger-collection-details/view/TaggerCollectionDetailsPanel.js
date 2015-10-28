@@ -43,7 +43,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                  });
 
            this.addNewClassifierButton = Ext.create('Ext.Button', {
-                                                    text: 'Add a new classifier',
+                                                    text: 'Add new classifier',
                                                     cls:'btn btn-blue',
                                                     id: 'addNewClassifier',
                                                     width: 150,
@@ -323,20 +323,21 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                   },
                                                   height: 120,
                                                   items: [
+                                                          // {
+                                                          // xtype: 'container',
+                                                          // defaultType: 'label',
+                                                          // layout: 'hbox',
+                                                          // items: [
+                                                          //         {
+                                                          //         width: 75,
+                                                          //         text: 'Short name:'
+                                                          //         },
+                                                          //         {
+                                                          //         text: CRISIS_CODE
+                                                          //         }
+                                                          //         ]
+                                                          // },
                                                           {
-                                                          xtype: 'container',
-                                                          defaultType: 'label',
-                                                          layout: 'hbox',
-                                                          items: [
-                                                                  {
-                                                                  width: 75,
-                                                                  text: 'Short name:'
-                                                                  },
-                                                                  {
-                                                                  text: CRISIS_CODE
-                                                                  }
-                                                                  ]
-                                                          },{
                                                           xtype: 'container',
                                                           defaultType: 'label',
                                                           layout: 'hbox',
