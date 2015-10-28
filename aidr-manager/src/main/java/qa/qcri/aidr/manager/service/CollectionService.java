@@ -6,6 +6,7 @@ import qa.qcri.aidr.manager.dto.FetcherRequestDTO;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
+import qa.qcri.aidr.manager.util.SMS;
 
 public interface CollectionService {
 
@@ -74,5 +75,9 @@ public interface CollectionService {
 	public String getFollowTwitterIDs(String followList, String userName);
 
 	public String getFollowTwitterScreenNames(String followList, String userName);
+	
+	public Boolean pushSMS(String collectionCode, SMS sms);
+	
+	public Boolean isValidAPIKey(String code, String apiKey) throws Exception;
 
 }

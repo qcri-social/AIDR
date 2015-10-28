@@ -41,6 +41,7 @@ import qa.qcri.aidr.manager.repository.CollectionRepository;
 import qa.qcri.aidr.manager.repository.UserConnectionRepository;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
+import qa.qcri.aidr.manager.util.SMS;
 import twitter4j.ResponseList;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
@@ -659,7 +660,45 @@ public class CollectionServiceImpl implements CollectionService {
 		return null;
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public Boolean isValidAPIKey(String code, String apiKey)
+			throws Exception {
+		AidrCollection collection = findByCode(code);
+		if(collection.getUser().getApiKey().equals(apiKey)){
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public Boolean pushSMS(String collectionCode, SMS sms) {
+		try {
+			/**
+			 * Rest call to Fetcher
+			 */
+			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 
+				WebTarget webResource = client.target(fetchMainUrl + "/sms/endpoint/receive/"+ URLEncoder.encode(collectionCode, "UTF-8"));
+
+				ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+
+				Response response = webResource.request(MediaType.APPLICATION_JSON)
+						.post(Entity.json(objectMapper.writeValueAsString(sms)), Response.class);
+				if(response.getStatus()!=200){
+					return false;
+				}
+				else{
+					return true;
+				}
+				
+		} catch (Exception e) {
+			logger.error("Exception while pushing sms", e);
+			return false;
+		}
+		
+	}
+	
 	private List<User> getUserDataFromScreenName(String[] userNameList, String userName)	{		
 		if (userNameList != null) {
 			try {

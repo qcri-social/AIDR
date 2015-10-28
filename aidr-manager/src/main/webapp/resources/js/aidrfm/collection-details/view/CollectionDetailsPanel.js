@@ -852,7 +852,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     text: 'Collector end-point:'
                                 },
                                 {
-                                    text: FETCH_MAIN_URL +'/sms/endpoint/receive/'+COLLECTION_CODE
+                                    text: window.location.origin + BASE_URL +'/public/collection/sms/push/'+COLLECTION_CODE
                                 }
                             ]
                         },

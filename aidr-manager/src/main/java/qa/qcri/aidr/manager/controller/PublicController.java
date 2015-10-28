@@ -22,7 +22,9 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,6 +41,7 @@ import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.JsonDataValidator;
+import qa.qcri.aidr.manager.util.SMS;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -540,6 +543,25 @@ public class PublicController extends BaseController{
 		}
 		else{
 			return getUIWrapper("Authentication Failed", false);
+		}
+	}
+	
+	@RequestMapping(value = "/sms/push/{collectionCode}", method = RequestMethod.POST)
+	@ResponseBody
+    public Map<String,Object> receive(@PathVariable(value = "collectionCode") String collectionCode, @RequestHeader("apiKey") String apiKey, @RequestBody SMS sms) throws Exception {
+		
+		if(collectionService.isValidAPIKey(collectionCode, apiKey)){
+			Boolean response = collectionService.pushSMS(collectionCode, sms);
+			if(response){
+				return getUIWrapper("Successfully posted SMS", true);
+						//Response.ok("Successfully posted SMS").build();
+			}
+			else{
+				return getUIWrapper("Exception while posting SMS", false); //Response.ok("Exception while posting SMS").build();
+			}
+		}
+		else{
+			return getUIWrapper("API Key is not valid", false); //Response.ok("API Key is not valid").build();
 		}
 	}
 }
