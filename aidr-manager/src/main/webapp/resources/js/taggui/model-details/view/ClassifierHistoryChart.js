@@ -57,12 +57,12 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         minimum: 0,
         label:{
         	renderer: function (r, meta, record) {
-                return r ? (r * 100).toFixed(2) + '%' : '0.00%';
+                return r ? (r * 100).toFixed(0) + '%' : '0%';
             }
         }
     }, {
         type: 'Time',
-		dateFormat: 'M j, Y, g:i a',
+		dateFormat: 'M j,y',
         fields: 'trainingTime',
         position: 'bottom',
         grid: true
@@ -99,7 +99,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
               renderer: function(storeItem, item) {
  	        	 var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
  	           	 var val = storeItem.get(item.series.yField);
- 	           	 val = val ? (val * 100).toFixed(2) + '%' : '0.00%';
+ 	           	 val = val ? (val * 100).toFixed(0) + '%' : '0%';
  				 this.setTitle(item.series.title +' at ' + timestamp + ' is ' + val );
  			  }
 		}
@@ -128,7 +128,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
             renderer: function(storeItem, item) {
 	        	 var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
 	           	 var val = storeItem.get(item.series.yField);
-	           	 val = val ? (val * 100).toFixed(2) + '%' : '0.00%';
+	           	 val = val ? (val * 100).toFixed(0) + '%' : '0%';
 				 this.setTitle(item.series.title +' at ' + timestamp + ' is ' + val );
 			  }
 		}
@@ -157,7 +157,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
             renderer: function(storeItem, item) {
 	        	 var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
 	           	 var val = storeItem.get(item.series.yField);
-	           	 val = val ? (val * 100).toFixed(2) + '%' : '0.00%';
+	           	 val = val ? (val * 100).toFixed(0) + '%' : '0%';
 				 this.setTitle(item.series.title +' at ' + timestamp + ' is ' + val );
 			  }
 		}

@@ -114,7 +114,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
             fields: ['Name', 'Data', 'Tag'],
             //Default data values
             data: [
-                { 'Name': 'Auc', 'Data': 100 },
+                { 'Name': 'AUC', 'Data': 100 },
                 { 'Name': 'Precision','Data': 100 },
                 { 'Name': 'Recall', 'Data': 100 },
             ]
@@ -159,7 +159,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                     width: 180,
                     height: 60,
                     renderer: function(storeItem, item) {
-                        this.setTitle(storeItem.data.Name +' for ' + storeItem.data.Tag + ': ' + storeItem.data.Data.toFixed(2)+ '%');
+                        this.setTitle(storeItem.data.Name +' for ' + storeItem.data.Tag + ': ' + storeItem.data.Data.toFixed(0)+ '%');
                 }
                 },
                 style: {
@@ -171,7 +171,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
         });
         
         function perc(v) {
-            return v.toFixed(2) + '%';
+            return v.toFixed(0) + '%';
         }
         
 	    var gridPanel = Ext.create('Ext.grid.Panel', {

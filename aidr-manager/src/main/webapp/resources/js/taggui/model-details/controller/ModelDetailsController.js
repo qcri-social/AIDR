@@ -95,7 +95,7 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
                         });
                         
                         var totalModel = {};
-                        totalModel.value = 'Summary';
+                        totalModel.value = 'Total';
                         totalModel.classifiedDocumentCount = totalMessages;
                         totalModel.trainingDocumentsCount = totalExamples;
                         totalModel.totalDocuments = totalMessages + totalExamples;

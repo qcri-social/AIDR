@@ -245,7 +245,7 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
             r = 0;
             style = 'redInfo';
         }
-        return '<span class="' + style + '">' + (r * 100).toFixed(2) + '%</span>';
+        return '<span class="' + style + '">' + (r * 100).toFixed(0) + '%</span>';
     }
     
 
