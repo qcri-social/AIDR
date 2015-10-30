@@ -30,7 +30,7 @@ Ext.define('TAGGUI.training-data.view.TrainingDataPanel', {
         this.taggerDescription = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '0 0 30 0',
-            html: 'Status: <b>Waiting human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '<br> </b>. Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ': <b>0</b>&nbsp;',
+            html: 'Status: &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<b>Waiting for human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + '<br> </b>Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] + ': <b>0</b>&nbsp;',
             flex: 1
         });
 /*

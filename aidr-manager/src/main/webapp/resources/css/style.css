@@ -64,13 +64,16 @@
 
 
 .collection-details-refresh-btn .refrashIcon{
+
     height: 26px !important;
 
 }
 .refrashIcon{
+
     width: 30px !important;
     height: 30px !important;
     background-image: url(../img/refresh-icon.png);
+    opacity: 1;
 }
 
 .headerWrapper{
@@ -161,7 +164,7 @@
 
 a{
     text-decoration: none;
-    color: #00acee;
+    color: #3FB6B0;
 }
 
 a:hover {
@@ -327,8 +330,28 @@ body{
 
 
 }
+.btn.btn-reddish2 {
+    width:181px;
+    color: #fff;
+
+    filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#D9544F', endColorstr='#DC5456');
+
+    background: -webkit-linear-gradient(left, #D9544F, #DC5456);
+    background: -moz-linear-gradient(left, #D9544F, #DC5456);
+    background: -o-linear-gradient(left, #D9544F, #DC5456);
+    background: -ms-linear-gradient(left, #D9544F, #DC5456);
+    -webkit-box-shadow: inset #D9544F 0 1px 1px, #f2f0f0 0 -1px 0;
+    -moz-box-shadow: inset #D9544F 0 1px 1px, #f2f0f0 0 -1px 0;
+    box-shadow: inset #D9544F 0 1px 1px, #f2f0f0 0 -1px 0;
+    -webkit-border-radius: 0.4em;
+   -moz-border-radius: 0.4em;
+   border-radius: 0.4em;
+
+
+}
 .btn.btn-blueish1 {
     color:#fff;
+    border: 1px solid ;
 
     filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#44B5B1', endColorstr='#3FB6B0');
 
@@ -336,6 +359,11 @@ body{
     background: -moz-linear-gradient(left, #44B5B1, #3FB6B0);
     background: -o-linear-gradient(left, #44B5B1, #3FB6B0);
     background: -ms-linear-gradient(left, #44B5B1, #3FB6B0);
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    -ms-border-radius: 2px;
+    -o-border-radius: 2px;
+    border-radius: 2px;
     -webkit-box-shadow: inset #44B5B1 0 1px 1px, #f2f0f0 0 -1px 0;
     -moz-box-shadow: inset #44B5B1 0 1px 1px, #f2f0f0 0 -1px 0;
     box-shadow: inset #44B5B1 0 1px 1px, #f2f0f0 0 -1px 0;
@@ -348,15 +376,28 @@ body{
 .btn.btn-blueish2 {
     color:#fff;
     
+    padding: 0 13px;
+    border: 1px solid ;
+    font-size: 12px;
+    color: #fff;
+    line-height: 23px;
+    text-align: center;
+    text-shadow: none;
+   
+    *zoom: 1;
+    filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF75B2EB', endColorstr='#FF61A4E4');
     filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#44B5B1', endColorstr='#3FB6B0');
-
+text-shadow: none;
     background: -webkit-linear-gradient(left, #44B5B1, #3FB6B0);
     background: -moz-linear-gradient(left, #44B5B1, #3FB6B0);
     background: -o-linear-gradient(left, #44B5B1, #3FB6B0);
     background: -ms-linear-gradient(left, #44B5B1, #3FB6B0);
-    -webkit-box-shadow: inset #44B5B1 0 1px 1px, #f2f0f0 0 -1px 0;
+   /* -webkit-box-shadow: inset #44B5B1 0 1px 1px, #f2f0f0 0 -1px 0;
     -moz-box-shadow: inset #44B5B1 0 1px 1px, #f2f0f0 0 -1px 0;
-    box-shadow: inset #44B5B1 0 1px 1px, #f2f0f0 0 -1px 0;
+    box-shadow: inset #44B5B1 0 1px 1px, #f2f0f0 0 -1px 0;*/
+    /*-webkit-box-shadow: inset #9bc7f0 0 1px 1px, #f2f0f0 0 -1px 0;
+    -moz-box-shadow: inset #9bc7f0 0 1px 1px, #f2f0f0 0 -1px 0;
+    box-shadow: inset #9bc7f0 0 1px 1px, #f2f0f0 0 -1px 0;*/
        -webkit-border-radius: 0.6em;
    -moz-border-radius: 0.6em;
    border-radius: 0.44em;
@@ -406,6 +447,12 @@ body{
     height: 23px;
     line-height: 22px;
     },
+    .btn.btn-reddish2 button{
+        width:100px;
+
+    height: 23px;
+    line-height: 22px;
+    },
     .btn.btn-green button,
     .btn.btn-grey button,
     .btn.btn-blue button {
@@ -413,7 +460,7 @@ body{
         line-height: 22px;
     }
 
-    .btn.btn-blueish1 span,.btn.btn-blueish2 span,.btn.btn-green span,.btn.btn-reddish  span{
+    .btn.btn-blueish1 span,.btn.btn-blueish2 span,.btn.btn-green span,.btn.btn-reddish  span,.btn.btn-reddish2  span,.btn.btn-blue  span,.btn.btn-red  span{
         color: #FFFFFF;
         },
         .btn.btn-red span,
@@ -446,7 +493,7 @@ body{
         }
         a {
     text-decoration: none;
-    color: #48B1DB;
+    color: #3FB6B0;
 }
 
         .bread-crumbs span{
@@ -555,7 +602,7 @@ End of the tab panel styles
 
 .x-btn-default-small .x-btn-center .x-btn-inner {
     font-family: "Lucida Sans Unicode", "Lucida Grande", "Arial";
-    font-size:13px;color:#FFFFFF;font-weight:normal;background-repeat:no-repeat;padding:0 3px
+    font-size:13px;color:;font-weight:normal;background-repeat:no-repeat;padding:0 3px
 }
 
 .bordered-top {
@@ -868,7 +915,9 @@ End of the tab panel styles
 
 .link-style {
     font-size: 14px;
+    color:#3FB6B0;
 }
+
 #viewDownloadTweetsGrid-body .x-grid-row .x-grid-cell-inner {
    font-size: 1em;
 }

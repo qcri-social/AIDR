@@ -89,7 +89,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                   }
                 },
                 label: {
-                  display: 'insideEnd',
+                  display: 'outside',
                   'text-anchor': 'middle',
                     field: ['trainingDocumentsCount','classifiedDocumentCount', 'totalDocuments'],
                     renderer: Ext.util.Format.numberRenderer('0'),
