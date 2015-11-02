@@ -65,7 +65,12 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
 		dateFormat: 'M j,y',
         fields: 'trainingTime',
         position: 'bottom',
-        grid: true
+        grid: true,
+		label:{
+			rotate: {
+                    	degrees: -90
+                    }
+		}
     },
     {
         type: 'Numeric',
@@ -89,7 +94,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         highlight: {
             fillStyle: '#000',
             radius: 5,
-            lineWidth: 2,
+            lineWidth: 4,
             strokeStyle: '#fff'
         },
 		tips: {
@@ -118,7 +123,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         highlight: {
             fillStyle: '#000',
             radius: 5,
-            lineWidth: 2,
+            lineWidth: 4,
             strokeStyle: '#fff'
         },
 		tips: {
@@ -147,7 +152,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         highlight: {
             fillStyle: '#000',
             radius: 5,
-            lineWidth: 2,
+            lineWidth: 4,
             strokeStyle: '#fff'
         },
 		tips: {
@@ -176,7 +181,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         highlight: {
             fillStyle: '#000',
             radius: 5,
-            lineWidth: 2,
+            lineWidth: 4,
             strokeStyle: '#fff'
         },
 		tips: {

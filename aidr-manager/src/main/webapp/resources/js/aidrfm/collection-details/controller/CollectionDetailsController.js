@@ -874,7 +874,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
                     me.DetailsComponent.tabPanel.setActiveTab(0);
                     me.loadCollection(id);
-                    me.DetailsComponent.collectionLogStore.load();
+                 //   me.DetailsComponent.collectionLogStore.load();
                     if (running) {
                         var ranOnce = false;
                         var task = Ext.TaskManager.start({
@@ -915,7 +915,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
     refreshStatus: function (id) {
         var me = this;
 
-        this.DetailsComponent.collectionLogStore.load();
+      //  this.DetailsComponent.collectionLogStore.load();
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/refreshCount.action',
             method: 'GET',

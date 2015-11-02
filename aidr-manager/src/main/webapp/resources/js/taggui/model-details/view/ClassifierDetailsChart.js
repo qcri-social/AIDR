@@ -72,6 +72,9 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                 type: 'bar',
                 axis: 'left',
                 highlight: true,
+				style: {
+					opacity: .5
+				},
                 tips: {
                   trackMouse: true,
                   width: 180,
