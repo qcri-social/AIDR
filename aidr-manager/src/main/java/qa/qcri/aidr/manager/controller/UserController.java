@@ -1,20 +1,28 @@
 package qa.qcri.aidr.manager.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import qa.qcri.aidr.manager.RoleType;
 import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
-import qa.qcri.aidr.manager.hibernateEntities.UserAccountRole;
 import qa.qcri.aidr.manager.service.CollectionService;
-
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 @Controller
 @RequestMapping("protected/user")
@@ -132,4 +140,48 @@ public class UserController extends BaseController{
         }
     }
 	
+    @RequestMapping(value = "/getCurrentUser.action", method={RequestMethod.GET})
+	@ResponseBody
+	public Map<String,Object> getCurrentUser() throws Exception {
+		logger.info("Get current user info");
+		try{
+			UserAccount entity = getAuthenticatedUser();
+			return getUIWrapper(entity, true);
+		}catch(Exception e){
+            String msg = "Error while getting current user's info ";
+			logger.error(msg, e);
+			return getUIWrapper(false, msg);
+		}
+	}
+    
+
+    @RequestMapping(value = "/updateUserInfo.action", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> updateUserInfo(@RequestParam Long userId, @RequestParam (required=false) String email, @RequestParam (required=false) String locale) throws Exception {
+        logger.info("Updating userInfo");
+        String msg = "Error while updating userInfo";
+        try{
+            if (userId == null){
+                return getUIWrapper(false, msg);
+            }
+            UserAccount currentUser = getAuthenticatedUser();
+            if(currentUser.getId()==userId){
+            	if(!StringUtils.isEmpty(locale)){
+            		currentUser.setLocale(locale);
+            	}
+            	if(email!=null){
+            		currentUser.setEmail(email);
+            	}
+            	
+            	userService.update(currentUser);
+            	currentUser = userService.getById(userId);
+                return getUIWrapper(currentUser, true);
+            }
+            return getUIWrapper(false, "You can't update other user's info");
+           
+        }catch(Exception e){
+            logger.error(msg, e);
+            return getUIWrapper(false, msg);
+        }
+    }
 }

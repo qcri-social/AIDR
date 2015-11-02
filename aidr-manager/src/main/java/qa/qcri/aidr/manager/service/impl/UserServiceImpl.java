@@ -145,5 +145,11 @@ public class UserServiceImpl implements UserService{
 		}
 		return roleTypes;
 	}
+	
+	@Override
+	@Transactional(readOnly = false)
+	public void update(UserAccount user) throws Exception {
+		userRepository.update(user);
+	}
 
 }

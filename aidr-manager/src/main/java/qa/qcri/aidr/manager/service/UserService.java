@@ -28,4 +28,6 @@ public interface UserService {
     
     public List<RoleType> getUserRoles(Long userId);
 
+	void update(UserAccount user) throws Exception;
+
 }

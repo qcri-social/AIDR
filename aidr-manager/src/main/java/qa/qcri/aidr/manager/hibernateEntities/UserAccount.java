@@ -17,10 +17,12 @@ public class UserAccount extends BaseEntity {
 	private String userName;
 	private String provider;
 	private String locale;
+	private String email;
 	
 	@Column(name="api_key", nullable=false, unique=true)
 	private String apiKey;
 
+	
 	public String getApiKey() {
 		return apiKey;
 	}
@@ -51,6 +53,14 @@ public class UserAccount extends BaseEntity {
 
 	public void setLocale(String locale) {
 		this.locale = locale;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 }
