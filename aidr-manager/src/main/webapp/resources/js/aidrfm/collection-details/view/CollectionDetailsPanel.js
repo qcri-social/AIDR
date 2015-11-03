@@ -451,11 +451,11 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<div class="collections-list">',
        
             '<tpl if="values.length == 0">' +
-            '<div style="padding-top:20px"><center><div style="font-size:16pt">Please select a row.</div></center></div>',
+            '<div><center><div style="font-size:16pt; padding:20px 0 0px 0">Please select a row.</div></center></div>',
             '</tpl>',
             
             '<tpl for=".">',
-            '<div style="padding-top:20px"></div>',
+            '<div></div>',
             
             '<div class="collection-item">',
 
@@ -562,7 +562,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             store: 'collectionHistoryPanelStore',
             tpl: this.collectionHistoryPanelTpl,
             emptyText: 'Please select a row.',
-            loadMask: false
+            loadMask: false,
+            margin: '0 0 20 0'
             
         });
 
@@ -1262,41 +1263,30 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 			},
 			height: 150,
 	        columns: [
+				{
+					xtype: 'gridcolumn', text: 'Collected '+COLLECTION_TYPES[TYPE]["plural"],
+				    dataIndex: 'count', width: 130,
+				    renderer: function (r, meta, record) {
+				    	return r ? Ext.util.Format.number(r,'0,000') : 0;
+					}
+				},
 	            {
-	            	xtype: 'gridcolumn', text: 'Start date',  width: 120, dataIndex: 'startDate',
+	            	xtype: 'gridcolumn', text: 'Start date',  width: 160, dataIndex: 'startDate',
 	                renderer: function (r, meta, record) {
-	                       return r ? moment(r).calendar() : "Not specified";
+	                       return r ? moment(r).format("MMM Do, YYYY hh:mm A") : "Not specified";
                     }
 	            },
 	            {
-	            	xtype: 'gridcolumn', text: 'End date',  width: 120, dataIndex: 'endDate',
+	            	xtype: 'gridcolumn', text: 'End date',  width: 160, dataIndex: 'endDate',
 	            	renderer: function (r, meta, record) {
-	                       return r ? moment(r).calendar() : "Not specified";
+	                       return r ? moment(r).format("MMM Do, YYYY hh:mm A") : "Not specified";
 	            	}
 	            },
 	            {
-	            	xtype: 'gridcolumn', text: 'Collected '+COLLECTION_TYPES[TYPE]["plural"],
-	                dataIndex: 'count', 
-	                renderer: function (r, meta, record) {
-	                	return r ? Ext.util.Format.number(r,'0,000') : 0;
-	            	}
-	            },
-	            {	xtype: 'gridcolumn', text: 'Geographical regions', width: 120, dataIndex: 'geo',
-	            }, 
-	            {
-	            	xtype: 'gridcolumn', text: 'Language(s)', dataIndex: 'langFilters',
+	            	xtype: 'gridcolumn', text: 'Language(s)', flex:1, dataIndex: 'langFilters',
 	            	/*renderer: function (r, meta, record) {
 	                       return this.getLanguageField(r);
 	            	}*/
-	            },
-	            {
-	            	xtype: 'gridcolumn', text: 'Following', dataIndex: 'follow',
-	            }, 
-	            {
-	            	xtype: 'gridcolumn', text: 'Keywords', flex:1, dataIndex: 'track',
-	            	renderer: function (r, meta, record) {
-	            		return r ? r : "Not specified";
-	            	}
 	            }
 	        ],
 	        listeners: {
@@ -1365,10 +1355,15 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             items: [
                                 this.collectionHistoryTitle,
                                 collectionHistoryChart,
+                                {
+                                    xtype: 'container',
+                                    width: '100%',
+                                    margin: '10 0 0 0',
+                                    html: '<div class="horizontalLine"></div>'
+                                },
+                                this.collectionHistoryPanelView,
                                 this.collectionHistoryGrid,
                             //    this.collectionLogPaging,
-                                this.collectionHistoryPanelView,
-                                
                             ]
                         },
                         this.collectionHistoryDoNotChangeMessage
