@@ -78,7 +78,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                 tips: {
                   trackMouse: true,
                   width: 180,
-                  height: 50,
+                //  height: 50,
                   renderer: function(storeItem, item) {
                       if(item.yField == ('trainingDocumentsCount')){
                           this.setTitle('Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('trainingDocumentsCount') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
@@ -87,7 +87,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                           this.setTitle('Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('classifiedDocumentCount') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
                       }
                       else  if(item.yField == ('totalDocuments')){
-                          this.setTitle('Total tweets '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('totalDocuments') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
+                          this.setTitle('Total '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('totalDocuments') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
                       }
                   }
                 },
@@ -125,7 +125,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
 
         updateRadarChart = function(rec) {
             radarStore.loadData([
-                { 'Name': 'Auc', 'Data': rec.get('labelAuc'), 'Tag': rec.get('value')},
+                { 'Name': 'AUC', 'Data': rec.get('labelAuc'), 'Tag': rec.get('value')},
                 { 'Name': 'Precision', 'Data': rec.get('labelPrecision'), 'Tag': rec.get('value')},
                 { 'Name': 'Recall', 'Data': rec.get('labelRecall') , 'Tag': rec.get('value')}
               
@@ -160,7 +160,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                 tips: {
                     trackMouse: true,
                     width: 180,
-                    height: 60,
+                    //height: 60,
                     renderer: function(storeItem, item) {
                         this.setTitle(storeItem.data.Name +' for ' + storeItem.data.Tag + ': ' + storeItem.data.Data.toFixed(0)+ '%');
                 }
@@ -181,6 +181,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
 	        flex: 1,
 	        store: 'modelLabelStoreForClassifierDetailsChart',
 	        cls: 'aidr-grid',
+	        margin: '20 0 0 0',
 	        columns: [
 	            {
 	            	xtype: 'gridcolumn',
@@ -189,17 +190,17 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
 	                dataIndex: 'value'
 	            },
 	            {
-	                text: 'Human-tagged tweets',
+	                text: 'Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"],
 	                dataIndex: 'trainingDocumentsCount',
 	                flex:1
 	            },
 	            {
-	                text: 'Machine-tagged tweets',
+	                text: 'Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"],
 	                dataIndex: 'classifiedDocumentCount',
 	                flex:1
 	            },
 	            {
-	                text: 'Total tweets',
+	                text: 'Total '+ COLLECTION_TYPES[TYPE]["plural"],
 	                dataIndex: 'totalDocuments'
 	            },
 	            {	text: 'AUC',

@@ -1242,8 +1242,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 },
         		tips: {
                     trackMouse: true,
-                    width: 180,
-                    height: 60,
+                    width: 170,
+                    //height: 60,
                     renderer: function(storeItem, item) {
                   	  var fromTime = Ext.Date.format(new Date(storeItem.data.startDate), "Y-m-d H:i");
                   	  var toTime = Ext.Date.format(new Date(storeItem.data.endDate), "Y-m-d H:i");

@@ -82,7 +82,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
     series: [{
         type: 'line',
         axis: 'left',
-        title: 'AVG_PRECISION',
+        title: 'Avg Precision',
         xField: 'trainingTime',
         yField: 'avgPrecision',
         style: {
@@ -100,7 +100,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
 		tips: {
               trackMouse: true,
               width: 180,
-              height: 50,
+              //height: 50,
               renderer: function(storeItem, item) {
  	        	 var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
  	           	 var val = storeItem.get(item.series.yField);
@@ -111,7 +111,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
     }, {
         type: 'line',
         axis: 'left',
-        title: 'AVG_RECALL',
+        title: 'Avg Recall',
         xField: 'trainingTime',
         yField: 'avgRecall',
         style: {
@@ -129,7 +129,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
 		tips: {
             trackMouse: true,
             width: 180,
-            height: 50,
+            //height: 50,
             renderer: function(storeItem, item) {
 	        	 var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
 	           	 var val = storeItem.get(item.series.yField);
@@ -140,7 +140,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
     }, {
         type: 'line',
         axis: 'left',
-        title: 'AVG_AUC',
+        title: 'Avg AUC',
         xField: 'trainingTime',
         yField: 'avgAuc',
         style: {
@@ -158,7 +158,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
 		tips: {
             trackMouse: true,
             width: 180,
-            height: 50,
+           // height: 50,
             renderer: function(storeItem, item) {
 	        	 var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
 	           	 var val = storeItem.get(item.series.yField);
@@ -169,7 +169,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
     }, {
         type: 'line',
         axis: 'right',
-        title: 'TRAINING_COUNT',
+        title: 'Training Count',
         xField: 'trainingTime',
         yField: 'trainingCount',
         style: {
@@ -187,7 +187,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
 		tips: {
             trackMouse: true,
             width: 180,
-            height: 50,
+            //height: 50,
             renderer: function(storeItem, item) {
           	  var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
 				  this.setTitle(item.series.title +' at ' + timestamp + ' is ' + storeItem.get(item.series.yField) + ' ' + COLLECTION_TYPES[TYPE]["plural"]);
