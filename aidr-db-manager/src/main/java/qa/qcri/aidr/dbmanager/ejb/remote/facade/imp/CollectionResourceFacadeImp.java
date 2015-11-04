@@ -1,0 +1,262 @@
+/**
+ * Implements operations for managing the collection table of the aidr_predict DB
+ * 
+ * @author Koushik
+ */
+package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.persistence.Query;
+
+import org.apache.log4j.Logger;
+import org.hibernate.Hibernate;
+import org.hibernate.HibernateException;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
+
+import qa.qcri.aidr.common.exception.PropertyNotSetException;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
+import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.UsersResourceFacade;
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
+
+@Stateless(name="CollectionResourceFacadeImp")
+public class CollectionResourceFacadeImp extends CoreDBServiceFacadeImp<Collection, Long> implements CollectionResourceFacade {
+
+	private static final Logger logger = Logger.getLogger("db-manager-log");
+
+	@EJB
+	private UsersResourceFacade userLocalEJB;
+
+	protected CollectionResourceFacadeImp(){
+		super(Collection.class);
+	}
+
+	@Override
+	public List<CollectionDTO> findByCriteria(String columnName, Object value) throws PropertyNotSetException {
+		List<Collection> list = getAllByCriteria(Restrictions.eq(columnName,value));
+		List<CollectionDTO> dtoList = new ArrayList<CollectionDTO>();
+		if (list != null && !list.isEmpty()) {
+			for (Collection c: list) {
+				dtoList.add(new CollectionDTO(c));
+			}
+		}
+		return dtoList;
+	}
+
+	@Override 
+	public Integer deleteCrisis(CollectionDTO crisis) throws PropertyNotSetException {
+		try {
+			Collection managed = em.merge(crisis.toEntity());
+			em.remove(managed); 
+		} catch (Exception e) {
+			return 0;
+		}
+		return 1;
+	}
+
+	@Override
+	public CollectionDTO addCrisis(CollectionDTO crisis) {
+		try {
+			Collection c = crisis.toEntity();
+			em.persist(c);
+			em.flush();
+			em.refresh(c);
+			return new CollectionDTO(c);
+		} catch (Exception e) {
+			logger.error("Error in addCrisis for crisis code : " + crisis.getCode(), e);
+			return null;
+		}
+	}
+
+	@Override
+	public CollectionDTO findCrisisByID(Long id) throws PropertyNotSetException {
+		Collection collection = getById(id);
+		if (collection != null) {
+			CollectionDTO dto = new CollectionDTO(collection);
+			return dto;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public CollectionDTO getCrisisWithAllFieldsByID(Long id) throws PropertyNotSetException {
+		Collection collection = getById(id);
+		if (collection != null) {
+			Hibernate.initialize(collection.getModelFamilies());
+			Hibernate.initialize(collection.getDocuments());
+
+			CollectionDTO dto = new CollectionDTO(collection);
+			return dto;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public CollectionDTO getCrisisByCode(String code) throws PropertyNotSetException {
+		Criterion criterion = Restrictions.eq("code", code);
+		Collection collection = (Collection) getByCriteria(criterion);
+		return collection != null ? new CollectionDTO(collection) : null;
+	}
+
+	@Override
+	public CollectionDTO editCrisis(CollectionDTO crisis) throws PropertyNotSetException {
+		try {
+			Collection c = crisis.toEntity();
+			Collection cr = getById(c.getCrisisId()); 
+			if (cr != null) {
+				cr = em.merge(c);
+				em.flush();
+				em.refresh(cr);
+				return cr != null ? new CollectionDTO(cr) : null;
+			} else {
+				logger.error("Not found");
+				throw new RuntimeException("Not found");
+			}
+		} catch (Exception e) {
+			logger.error("Exception in merging/updating crisis: " + crisis.getCrisisID(), e);
+		}
+		return null;
+
+	}
+
+	@Override
+	public List<CollectionDTO> getAllCrisis() throws PropertyNotSetException {
+		logger.info("Received request for fetching all crisis!!!");
+		List<CollectionDTO> dtoList = new ArrayList<CollectionDTO>();
+		List<Collection> collections = getAll();
+		if (collections != null && !collections.isEmpty()) {
+			for (Collection collection : collections) {
+				logger.info("Converting to DTO crisis: " + collection.getCode() + ", " + collection.getName() + ", " + collection.getCrisisId()
+						+ ", " + collection.getUsers().getId() + ":" + collection.getUsers().getUserName());
+
+				CollectionDTO dto = new CollectionDTO(collection);
+				dtoList.add(dto);
+			}
+		}
+		logger.info("Done creating DTO list, size = " + dtoList.size());
+		return dtoList;
+	}
+
+	@Override
+	public List<CollectionDTO> getAllCrisisWithModelFamilies() throws PropertyNotSetException {
+		List<CollectionDTO> dtoList = new ArrayList<CollectionDTO>();
+		List<Collection> crisisList = getAll();
+		if (crisisList != null && !crisisList.isEmpty()) {
+			for (Collection crisis : crisisList) {
+				try {
+					Hibernate.initialize(crisis.getModelFamilies());		// fetching lazily loaded data
+					CollectionDTO dto = new CollectionDTO(crisis);
+					dtoList.add(dto);
+				} catch (HibernateException e) {
+					logger.error("Hibernate initialization error for lazy objects in : " + crisis.getCrisisId());
+				}
+			}
+		} 
+		return dtoList;
+	}
+
+	@Override
+	public List<CollectionDTO> getAllCrisisByUserID(Long userID) throws PropertyNotSetException{
+		List<CollectionDTO> dtoList = userLocalEJB.findAllCrisisByUserID(userID);
+		return dtoList;
+	}
+
+	@Override
+	public boolean isCrisisExists(String crisisCode) throws PropertyNotSetException {
+		CollectionDTO dto = getCrisisByCode(crisisCode); 
+		return dto != null ? true : false;
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public HashMap<String, Integer> countClassifiersByCrisisCodes(List<String> codes) {
+		// TODO: convert native query to Hibernate/JPA
+		String sqlQuery = "select cr.code, " +
+				"       (select count(*) from model_family mf where mf.crisisID = cr.id) as mf_amount " +
+				" from collection cr " +
+				" where cr.code in (:codes) and classifier_enabled = 1;";
+		try {
+			Query nativeQuery = em.createNativeQuery(sqlQuery);
+			nativeQuery.setParameter("codes", codes);
+			List resultList = nativeQuery.getResultList();
+			HashMap<String, Integer> rv = new HashMap<String, Integer>();
+			for(Object obj : resultList){
+				Object[] objs = ((Object[])obj);
+				rv.put((String)objs[0], ((BigInteger)objs[1]).intValue());
+			}
+			return rv;
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+		return null;
+	}
+
+	@Override
+	public List<CollectionDTO> getAllCrisisWithModelFamilyNominalAttribute() throws PropertyNotSetException {
+		List<CollectionDTO> dtoList = new ArrayList<CollectionDTO>();
+		List<Collection> list = getAll();
+		if (list != null && !list.isEmpty()) {
+			for (Collection c: list) {
+				try {
+					Hibernate.initialize(c.getModelFamilies());
+					dtoList.add(new CollectionDTO(c));
+				} catch (HibernateException e) {
+					logger.error("Hibernate initialization error for lazy objects in : " + c.getCrisisId());
+				}
+			}
+		}
+		return dtoList;
+	}
+
+	@Override
+	public CollectionDTO getWithModelFamilyNominalAttributeByCrisisID(Long crisisID) throws PropertyNotSetException {
+		Collection crisis = getById(crisisID);
+		if (crisis != null) {
+			try {
+				Hibernate.initialize(crisis.getModelFamilies());
+				return new CollectionDTO(crisis);
+			} catch (HibernateException e) {
+				logger.error("Hibernate initialization error for lazy objects in : " + crisis.getCrisisId());
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public List<CollectionDTO> findActiveCrisis() throws PropertyNotSetException {
+		List<CollectionDTO> dtoList = new ArrayList<CollectionDTO>();
+		List<Collection> list = getAllByCriteria(Restrictions.eq("isTrashed", false));
+		if (list != null && !list.isEmpty()) {
+			for (Collection c: list) {
+				try {
+					Hibernate.initialize(c.getModelFamilies());
+					dtoList.add(new CollectionDTO(c));
+				} catch (HibernateException e) {
+					logger.error("Hibernate initialization error for lazy objects in : " + c.getCrisisId());
+				}
+			}
+		}
+		return dtoList;
+	}
+	
+	@Override 
+	public int deleteCrisis(Long id) {
+		Collection collection = getById(id);
+		if (collection != null) {
+			delete(collection);
+			em.flush();
+			return 1;
+		} 
+		return 0;
+	}
+}

@@ -21,17 +21,17 @@ import org.apache.log4j.Logger;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 import qa.qcri.aidr.common.values.DownloadType;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentList;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.HumanLabeledDocumentListWrapper;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.ItemToLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskManagerRemote;
 import qa.qcri.aidr.predictui.facade.MiscResourceFacade;
 import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
 import qa.qcri.aidr.predictui.util.TaggerAPIConfigurator;
-import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskManagerRemote;
 
 /**
  *
@@ -46,7 +46,7 @@ public class MiscResourceFacadeImp implements MiscResourceFacade {
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.MiscResourceFacade remoteMiscEJB;
 
 	@EJB
-	private qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade remoteCrisisEJB;
+	private qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade remoteCrisisEJB;
 
 	@EJB
 	private TaskManagerRemote<DocumentDTO, Long> remoteTaskManager;
@@ -128,7 +128,7 @@ public class MiscResourceFacadeImp implements MiscResourceFacade {
 	@Override
 	public List<HumanLabeledDocumentDTO> getHumanLabeledDocumentsByCrisisCodeUserName(String crisisCode, String userName, Integer count)  {
 		try {
-			CrisisDTO crisis = remoteCrisisEJB.getCrisisByCode(crisisCode);
+			CollectionDTO crisis = remoteCrisisEJB.getCrisisByCode(crisisCode);
 			if (crisis != null) {
 			return remoteTaskManager.getHumanLabeledDocumentsByCrisisIDUserName(crisis.getCrisisID(), userName, count);
 			} else {

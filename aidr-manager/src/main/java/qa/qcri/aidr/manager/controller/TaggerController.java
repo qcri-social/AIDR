@@ -47,8 +47,8 @@ import qa.qcri.aidr.manager.dto.TaskAnswerRequest;
 import qa.qcri.aidr.manager.dto.TaskInfo;
 import qa.qcri.aidr.manager.dto.UpdateCrisisDTO;
 import qa.qcri.aidr.manager.exception.AidrException;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
+import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 
@@ -177,8 +177,8 @@ public class TaggerController extends BaseController {
 			TaggerCrisis updatedCrisis = taggerService.updateCode(crisis);
 
 			// update collection crisisType to keep data consistent
-			AidrCollection collection = collectionService.findByCode(dto.getCode());
-			collection.setCrisisType(dto.getCrisisTypeID());
+			Collection collection = collectionService.findByCode(dto.getCode());
+			//collection.setCrisisType(dto.getCrisisTypeID());
 			collectionService.update(collection);
 
 			return getUIWrapper(updatedCrisis != null);
@@ -876,7 +876,7 @@ public class TaggerController extends BaseController {
 
 	@RequestMapping(value = "/updateMobilePush.action", method = { RequestMethod.POST ,RequestMethod.GET })
 	@ResponseBody
-	public Map<String,Object> updateMobilePushStatus(AidrCollection collection) throws Exception {
+	public Map<String,Object> updateMobilePushStatus(Collection collection) throws Exception {
 		//logger.info("[updateMobilePushStatus: " + collection.getCode());
 		String result = "";
 		try {

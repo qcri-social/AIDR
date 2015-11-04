@@ -24,7 +24,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
@@ -41,13 +41,13 @@ public class TestTaskAnswerResourceFacadeImp {
 	static NominalLabelDTO nominalLabel;
 	static NominalAttributeDTO nominalAttribute;
 	static UsersDTO user;
-	static CrisisDTO crisis;
+	static CollectionDTO crisis;
 	static DocumentDTO documentDTO;
 	static TaskAnswerDTO taskAnswer;
 	static CrisisTypeResourceFacadeImp crisisTypeResourceFacadeImp;
 	static UsersResourceFacadeImp userResourceFacadeImp;
 	static DocumentResourceFacadeImp documentResourceFacadeImp;
-	static CrisisResourceFacadeImp crisisResourceFacadeImp;
+	static CollectionResourceFacadeImp crisisResourceFacadeImp;
 	static TaskAnswerResourceFacadeImp taskAnswerResourceFacadeImp;
 	private static Logger logger = Logger.getLogger("db-manager-log");
 	
@@ -59,7 +59,7 @@ public class TestTaskAnswerResourceFacadeImp {
 		taskAnswerResourceFacadeImp = new TaskAnswerResourceFacadeImp();
 		taskAnswerResourceFacadeImp.setEntityManager(entityManager);
 		documentResourceFacadeImp = new DocumentResourceFacadeImp();
-		crisisResourceFacadeImp = new CrisisResourceFacadeImp();
+		crisisResourceFacadeImp = new CollectionResourceFacadeImp();
 		crisisTypeResourceFacadeImp = new CrisisTypeResourceFacadeImp();
 		userResourceFacadeImp = new UsersResourceFacadeImp();
 		documentResourceFacadeImp.setEntityManager(entityManager);
@@ -75,15 +75,11 @@ public class TestTaskAnswerResourceFacadeImp {
 		user = userResourceFacadeImp.addUser(user);
 		entityManager.getTransaction().commit();
 		
-		try {
-			CrisisTypeDTO crisisTypeDTO = crisisTypeResourceFacadeImp.findCrisisTypeByID(1100L);
-			CrisisDTO crisisDTO = new CrisisDTO("testCrisisName"+new Date(), "testCrisisCode" + new Date(), false, false, crisisTypeDTO, user);
-			entityManager.getTransaction().begin();
-			crisis = crisisResourceFacadeImp.addCrisis(crisisDTO);
-			entityManager.getTransaction().commit();
-		} catch (PropertyNotSetException e) {
-			logger.error("PropertyNotSetException while creating crisis "+e.getMessage());
-		}
+		CrisisTypeDTO crisisTypeDTO = crisisTypeResourceFacadeImp.findCrisisTypeByID(1100L);
+		CollectionDTO crisisDTO = new CollectionDTO("testCrisisName"+new Date(), "testCrisisCode" + new Date(), false, false, crisisTypeDTO, user);
+		entityManager.getTransaction().begin();
+		crisis = crisisResourceFacadeImp.addCrisis(crisisDTO);
+		entityManager.getTransaction().commit();
 		getDoc();
 		entityManager.getTransaction().begin();
 		documentDTO = documentResourceFacadeImp.addDocument(documentDTO);
@@ -120,7 +116,7 @@ public class TestTaskAnswerResourceFacadeImp {
 				entityManager.getTransaction().begin();
 				crisisResourceFacadeImp.deleteCrisis(crisis);
 				entityManager.getTransaction().commit();
-				CrisisDTO result = crisisResourceFacadeImp.getCrisisByCode(crisis.getCode());
+				CollectionDTO result = crisisResourceFacadeImp.getCrisisByCode(crisis.getCode());
 				assertNull(result);
 			} catch (PropertyNotSetException e) {
 				logger.error("PropertyNotSetException while deleting crisis "+e.getMessage());

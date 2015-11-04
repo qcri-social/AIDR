@@ -11,5 +11,9 @@
         <mapping class="qa.qcri.aidr.manager.hibernateEntities.Role"/>
         <mapping class="qa.qcri.aidr.manager.hibernateEntities.AidrAuthenticateToken"/>
         <mapping class="qa.qcri.aidr.manager.hibernateEntities.UserAccountRole"/>
+        <mapping class="qa.qcri.aidr.manager.persistence.entities.Collection"/>
+        <mapping class="qa.qcri.aidr.manager.persistence.entities.CollectionCollaborator"/>
+        <mapping class="qa.qcri.aidr.manager.persistence.entities.CrisisType"/>
+        <mapping class="qa.qcri.aidr.manager.persistence.entities.CollectionLog"/>
     </session-factory>
 </hibernate-configuration>

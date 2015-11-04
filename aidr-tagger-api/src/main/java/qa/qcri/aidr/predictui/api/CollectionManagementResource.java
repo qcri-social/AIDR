@@ -16,7 +16,7 @@ import qa.qcri.aidr.predictui.facade.CrisisManagementResourceFacade;
 
 @Path("/manage/collection")
 @Stateless
-public class CrisisManagementResource {
+public class CollectionManagementResource {
 
 	@Context
 	private UriInfo context;
@@ -25,9 +25,9 @@ public class CrisisManagementResource {
 	private CrisisManagementResourceFacade crisisManagmentLocalEJB;
 
 	//private static Logger logger = Logger.getLogger(CrisisManagementResource.class);
-	private static Logger logger = Logger.getLogger(CrisisManagementResource.class);
+	private static Logger logger = Logger.getLogger(CollectionManagementResource.class);
 
-	public CrisisManagementResource() {
+	public CollectionManagementResource() {
 	}
 
 	@GET

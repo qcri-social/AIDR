@@ -31,11 +31,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import qa.qcri.aidr.manager.dto.AidrCollectionTotalDTO;
+import qa.qcri.aidr.manager.dto.CollectionDetailsInfo;
 import qa.qcri.aidr.manager.dto.TaggerCrisisType;
 import qa.qcri.aidr.manager.exception.AidrException;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
 import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
+import qa.qcri.aidr.manager.persistence.entities.Collection;
+import qa.qcri.aidr.manager.persistence.entities.CollectionLog;
 import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
@@ -100,7 +101,7 @@ public class PublicController extends BaseController{
 
         try{
             //logger.info("try:" + geoString) ;
-            AidrCollection dbCollection = collectionService.findById((int)collectionId);
+            Collection dbCollection = collectionService.findById(collectionId);
 
 
             CollectionStatus status = dbCollection.getStatus();
@@ -110,7 +111,7 @@ public class PublicController extends BaseController{
             if (CollectionStatus.RUNNING_WARNING.equals(status) || CollectionStatus.RUNNING.equals(status) || CollectionStatus.INITIALIZING.equals(status)) {
 
                 //              stop collection
-                AidrCollection collectionAfterStop = collectionService.stopAidrFetcher(dbCollection);
+                Collection collectionAfterStop = collectionService.stopAidrFetcher(dbCollection, 1L);
                 collectionLogEndData = collectionAfterStop.getEndDate();
 
                 if(updateDuration){
@@ -134,7 +135,7 @@ public class PublicController extends BaseController{
             }
 
             // save current state of the collection to collectionLog
-            AidrCollectionLog collectionLog = new AidrCollectionLog(dbCollection);
+            CollectionLog collectionLog = new CollectionLog(dbCollection);
             collectionLog.setEndDate(collectionLogEndData);
             collectionLogService.create(collectionLog);
 
@@ -154,7 +155,7 @@ public class PublicController extends BaseController{
             return getUIWrapper(true);
 
         }catch(Exception e){
-            logger.error(String.format("Exception while Updating AidrCollection : "+jsonCollection, e));
+            logger.error(String.format("Exception while Updating Collection : "+jsonCollection, e));
             return getUIWrapper(false);
         }
     }
@@ -164,7 +165,7 @@ public class PublicController extends BaseController{
     public Map<String,Object>  findByRequestCode(@QueryParam("code") String code) throws Exception {
         try {
         	//logger.info("Finding collection by code: "+code);
-            AidrCollection data = collectionService.findByCode(code);
+            Collection data = collectionService.findByCode(code);
             return getUIWrapper(data, true);
 
         } catch (Exception e) {
@@ -183,7 +184,7 @@ public class PublicController extends BaseController{
 
 		try {
 
-			List<AidrCollection> data = collectionService.findAllForPublic(start, limit, statusValue);
+			List<Collection> data = collectionService.findAllForPublic(start, limit, statusValue);
 			logger.info("[findAll] fetched data size: " + ((data != null) ? data.size() : 0));
 			return getUIWrapper(data, true);
 
@@ -194,6 +195,30 @@ public class PublicController extends BaseController{
 
 		//return getUIWrapper(false);
 	}
+
+
+	@RequestMapping(value = "/create", method={RequestMethod.POST})
+	@ResponseBody
+	public Map<String,Object> createCollection(CollectionDetailsInfo collectionDetailsInfo,
+			@RequestParam(value = "runAfterCreate", defaultValue = "false", required = false)
+			Boolean runAfterCreate) throws Exception {
+
+		
+		logger.info("Save Collection to Database having code : "+ collectionDetailsInfo.getCode());
+		
+		
+		//logger.info("Following users: " + collection.getFollow());
+		try{
+			UserAccount user = getAuthenticatedUser();
+			Collection collection = collectionService.create(collectionDetailsInfo, user);
+			
+			return getUIWrapper(true);  
+		}catch(Exception e){
+			logger.error("Error while saving Collection Info to database", e);
+			return getUIWrapper(false); 
+		}
+	}
+	
 
 	@RequestMapping(value = "/findAllRunning.action", method = RequestMethod.GET)
 	@ResponseBody
@@ -206,10 +231,10 @@ public class PublicController extends BaseController{
 
 		try {
 			//logger.info("*************************************************  CollectionStatus.RUNNING ****************************");
-			List<AidrCollection> data = collectionService.findAllForPublic(start, limit, CollectionStatus.RUNNING);
+			List<Collection> data = collectionService.findAllForPublic(start, limit, CollectionStatus.RUNNING);
 			//logger.info("data size : " + data.size());
 
-			for (AidrCollection collection : data) {
+			for (Collection collection : data) {
 				String taggingOutPut = taggerService.loadLatestTweetsWithCount(collection.getCode(), 1);
 				//String stripped = taggingOutPut.substring(1, taggingOutPut.lastIndexOf("]"));
 				//logger.info("stripped taggingOutPut : " + taggingOutPut );
@@ -239,9 +264,9 @@ public class PublicController extends BaseController{
 		List<AidrCollectionTotalDTO> dtoList = new ArrayList<AidrCollectionTotalDTO>();
 
 		try {
-			List<AidrCollection> data = collectionService.findAllForPublic(start, limit, CollectionStatus.RUNNING);
+			List<Collection> data = collectionService.findAllForPublic(start, limit, CollectionStatus.RUNNING);
 			//count = collectionService.getPublicCollectionsCount(CollectionStatus.RUNNING);
-			for (AidrCollection collection : data) {
+			for (Collection collection : data) {
 				String taggingOutPut = taggerService.loadLatestTweetsWithCount(collection.getCode(), 1);
 				if(JsonDataValidator.isEmptySON(taggingOutPut))  {
 					AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, false);
@@ -269,10 +294,10 @@ public class PublicController extends BaseController{
 		Integer count = 0;
 		List<AidrCollectionTotalDTO> dtoList = new ArrayList<AidrCollectionTotalDTO>();
 		try {
-			List<AidrCollection> data = collectionService.findAllForPublic(start, limit, CollectionStatus.STOPPED);
+			List<Collection> data = collectionService.findAllForPublic(start, limit, CollectionStatus.STOPPED);
 			count = collectionService.getPublicCollectionsCount(CollectionStatus.STOPPED);
 			boolean hasTagggerOutput;
-			for (AidrCollection collection : data) {
+			for (Collection collection : data) {
 				String taggingOutPut = taggerService.loadLatestTweetsWithCount(collection.getCode(), 1);
 				if(JsonDataValidator.isEmptySON(taggingOutPut))  {
 					hasTagggerOutput = false;
@@ -295,9 +320,9 @@ public class PublicController extends BaseController{
 
 	@RequestMapping(value = "/findById.action", method = RequestMethod.GET)
 	@ResponseBody
-	public AidrCollectionTotalDTO findById(Integer id) throws Exception {
+	public AidrCollectionTotalDTO findById(Long id) throws Exception {
 
-		AidrCollection collection = collectionService.findById(id);
+		Collection collection = collectionService.findById(id);
 		AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, false);
 		if (dto != null) {
 			Integer totalCount = collectionLogService.countTotalDownloadedItemsForCollection(id);
@@ -358,13 +383,13 @@ public class PublicController extends BaseController{
 	@RequestMapping(value = "/getPublicFlagStatus", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String, Boolean> getPublicFlagStatus() {
-		List<AidrCollection> resultList;
+		List<Collection> resultList;
 		try {
 			//long startTime = System.currentTimeMillis();
 			resultList = collectionService.getRunningCollections();
 			if (resultList != null) {
 				Map<String, Boolean> runningCollections = new HashMap<String, Boolean>(resultList.size());
-				for (AidrCollection c: resultList) {
+				for (Collection c: resultList) {
 					runningCollections.put(c.getCode(), c.getPubliclyListed());
 				}
 				//logger.debug("Fetched map to send: " + runningCollections);
@@ -380,7 +405,7 @@ public class PublicController extends BaseController{
 	@RequestMapping(value = "/getChannelPublicFlagStatus", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String, Boolean> getCollectionPublicFlagStatus(@QueryParam("channelCode") String channelCode) {
-		AidrCollection collection = null;
+		Collection collection = null;
 		try {
 			//long startTime = System.currentTimeMillis();
 			collection = collectionService.findByCode(channelCode);
@@ -403,7 +428,7 @@ public class PublicController extends BaseController{
 	@ResponseBody
 	public Map<String, Integer> findTotalCount(final String collectionCode) throws Exception {
 		try {
-			AidrCollection collection = collectionService.findByCode(collectionCode);
+			Collection collection = collectionService.findByCode(collectionCode);
 			AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, false);
 			if (dto != null) {
 				Integer totalCount = collectionLogService.countTotalDownloadedItemsForCollection(dto.getId());
@@ -422,7 +447,7 @@ public class PublicController extends BaseController{
 	}
 
 	
-	private AidrCollectionTotalDTO convertAidrCollectionToDTO(AidrCollection collection, boolean hasTaggerOutput){
+	private AidrCollectionTotalDTO convertAidrCollectionToDTO(Collection collection, boolean hasTaggerOutput){
 		if (collection == null){
 			return null;
 		}
@@ -432,9 +457,9 @@ public class PublicController extends BaseController{
 		dto.setId(collection.getId());
 		dto.setCode(collection.getCode());
 		dto.setName(collection.getName());
-		dto.setTarget(collection.getTarget());
+		//dto.setTarget(collection.getTarget());
 
-		UserAccount user = collection.getUser();
+		UserAccount user = collection.getOwner();
 		dto.setUser(user);
 
 		if (collection.getCount() != null) {
@@ -449,21 +474,18 @@ public class PublicController extends BaseController{
 		dto.setLangFilters(collection.getLangFilters());
 		dto.setStartDate(collection.getStartDate());
 		dto.setEndDate(collection.getEndDate());
-		dto.setCreatedDate(collection.getCreatedDate());
+		dto.setCreatedDate(collection.getCreatedAt());
 		dto.setLastDocument(collection.getLastDocument());
 		dto.setDurationHours(collection.getDurationHours());
 		dto.setPubliclyListed(collection.getPubliclyListed());
 		dto.setCrisisType(collection.getCrisisType());
 		dto.setHasTaggerOutput(hasTaggerOutput);
-        dto.setCollectionType(collection.getCollectionType());
+        dto.setCollectionType(collection.getProvider());
 
+		dto.setCrisisType(collection.getCrisisType());
 
-		if(collection.getCrisisType() != null){
-			dto.setCrisisTypeName(getCrisisTypeName(collection.getCrisisType()));
-		}
-
-		List<UserAccount> managers = collection.getManagers();
-		dto.setManagers(managers);
+		//List<UserAccount> managers = collection.getManagers();
+		//dto.setManagers(managers);
 
 		return dto;
 	}
@@ -499,12 +521,12 @@ public class PublicController extends BaseController{
 		String token = (String)jsonObject.get("token");
 		
 		if(collectionService.isValidToken(token)){
-			List<AidrCollection> runningCollections = collectionService.getRunningCollections();
+			List<Collection> runningCollections = collectionService.getRunningCollections();
 			
-			List<AidrCollection> stoppedCollections = new ArrayList<AidrCollection>();
+			List<Collection> stoppedCollections = new ArrayList<Collection>();
 			
-			for (AidrCollection aidrCollection : runningCollections) {
-				stoppedCollections.add(collectionService.stop(aidrCollection.getId()));
+			for (Collection aidrCollection : runningCollections) {
+				stoppedCollections.add(collectionService.stop(aidrCollection.getId(), 1L));
 			}
 			return getUIWrapper(stoppedCollections, true);
 		}
@@ -525,14 +547,14 @@ public class PublicController extends BaseController{
 		JSONObject jsonObject = (JSONObject)parser.parse(jsonString);
 		
 		String token = (String)jsonObject.get("token");
-		List<AidrCollection> collections = new ArrayList<AidrCollection>();
+		List<Collection> collections = new ArrayList<Collection>();
 		
 		if(collectionService.isValidToken(token)){
 			ObjectMapper mapper = new ObjectMapper();
-			collections = Arrays.asList(mapper.readValue(jsonObject.get("collections").toString(), AidrCollection[].class));
+			collections = Arrays.asList(mapper.readValue(jsonObject.get("collections").toString(), Collection[].class));
 			List<String> startedCollections = new ArrayList<String>();
 
-			for (AidrCollection collection : collections) {
+			for (Collection collection : collections) {
 				collection = collectionService.findByCode(collection.getCode());
 				if (!collection.getStatus().equals(CollectionStatus.TRASHED)) {
 					collection = collectionService.start(collection.getId());

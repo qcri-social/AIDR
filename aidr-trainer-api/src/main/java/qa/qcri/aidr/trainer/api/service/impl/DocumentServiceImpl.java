@@ -16,9 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import qa.qcri.aidr.common.util.TrainingDataFetchType;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
-import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskManagerRemote;
-import qa.qcri.aidr.trainer.api.entity.Crisis;
+import qa.qcri.aidr.dbmanager.entities.task.Document;
+import qa.qcri.aidr.trainer.api.entity.Collection;
 //import qa.qcri.aidr.trainer.api.entity.Document;
 import qa.qcri.aidr.trainer.api.entity.Users;
 import qa.qcri.aidr.trainer.api.service.CrisisService;
@@ -152,7 +152,7 @@ public class DocumentServiceImpl implements DocumentService {
 
 	private List<TaskBufferJsonModel> getJsonModeForTask(long crisisID, DocumentDTO document){
 		List<TaskBufferJsonModel> jsonModelList = new ArrayList<TaskBufferJsonModel>();
-		Crisis crisis =  crisisService.findByCrisisID(crisisID) ;
+		Collection crisis =  crisisService.findByCrisisID(crisisID) ;
 		CrisisJsonModel jsonOutput = new CrisisJsonOutput().crisisJsonModelGenerator(crisis);
 		Set<NominalAttributeJsonModel> attributeJsonModelSet = jsonOutput.getNominalAttributeJsonModelSet() ;
 

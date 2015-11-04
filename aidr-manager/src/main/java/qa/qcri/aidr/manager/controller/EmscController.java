@@ -1,8 +1,8 @@
 package qa.qcri.aidr.manager.controller;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +24,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
+import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.JsonDataValidator;
@@ -77,15 +77,15 @@ public class EmscController extends BaseController{
                     if(userEntity != null){
                         List<UserAccount> adminEntities =  getAdminUsers(adminAccount, userEntity);
                         //logger.info("userEntity CeaController  : "+userEntity.getUserName());
-                        List<AidrCollection> collectionList = collectionService.geAllCollectionByUser(userEntity.getId()) ;
+                        List<Collection> collectionList = collectionService.geAllCollectionByUser(userEntity.getId()) ;
 
                         if(collectionList != null && collectionList.size() > 0){
                             for(int i=0; i < collectionList.size() ; i++){
-                                AidrCollection aCol = collectionList.get(i);
+                                Collection aCol = collectionList.get(i);
                                 if(aCol.getStatus().equals(CollectionStatus.INITIALIZING) || aCol.getStatus().equals(CollectionStatus.RUNNING) ){
                                    // logger.info("collectionService.stop : " + aCol.getId());
                                     try{
-                                        collectionService.stop(aCol.getId());
+                                        collectionService.stop(aCol.getId(), userEntity.getId());
                                     }
                                     catch(Exception e){
                                         logger.error("Error while stop running collection", e);
@@ -95,26 +95,25 @@ public class EmscController extends BaseController{
                             }
                         }
 
-                        AidrCollection collection = new AidrCollection();
-                        collection.setUser(userEntity);
+                        Collection collection = new Collection();
+                        collection.setOwner(userEntity);
                         collection.setStatus(CollectionStatus.NOT_RUNNING);
                         collection.setPubliclyListed(true);
-                        Calendar now = Calendar.getInstance();
-                        collection.setCreatedDate(now.getTime());
-
+                        Timestamp now = new Timestamp(System.currentTimeMillis());
+                        collection.setCreatedAt(now);
+                        collection.setUpdatedAt(now);
                         String name = code;
-                        code = code+ now.getTime().hashCode();
+                        code = code + now.hashCode();
                         logger.info("updated code : " + code);
                         collection.setCode(code);
                         collection.setGeo(geo);
                         collection.setName(name);
                         collection.setDurationHours((int)defaultHours);
                         collection.setLangFilters("");
-                        collection.setManagers(adminEntities);
 
                         try{
-                            collectionService.create(collection);
-                            collectionService.start(collection.getId());
+                            //collectionService.create(collection);
+                            //collectionService.start(collection.getId());
 
                             return getUIWrapper("successful", true, Long.parseLong("1"), "successful");
                         }
@@ -135,7 +134,7 @@ public class EmscController extends BaseController{
             return getUIWrapper("bad json", false);
 
         }catch(Exception e){
-            logger.error("Error while saveStart AidrCollection. unknown issues....", e);
+            logger.error("Error while saveStart collection. unknown issues....", e);
             return getUIWrapper(e.getMessage(), false);
         }
     }

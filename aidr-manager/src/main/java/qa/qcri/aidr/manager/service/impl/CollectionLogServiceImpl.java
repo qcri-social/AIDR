@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import qa.qcri.aidr.manager.dto.CollectionLogDataResponse;
 import qa.qcri.aidr.manager.exception.AidrException;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
+import qa.qcri.aidr.manager.persistence.entities.CollectionLog;
 import qa.qcri.aidr.manager.repository.CollectionLogRepository;
 import qa.qcri.aidr.manager.service.CollectionLogService;
 
@@ -42,26 +42,25 @@ public class CollectionLogServiceImpl implements CollectionLogService {
 
     @Override
     @Transactional(readOnly = false)
-    public void update(AidrCollectionLog collectionLog) throws Exception {
+    public void update(CollectionLog collectionLog) throws Exception {
         collectionLogRepository.update(collectionLog);
     }
 
     @Override
     @Transactional(readOnly = false)
-    public void delete(AidrCollectionLog collectionLog) throws Exception {
+    public void delete(CollectionLog collectionLog) throws Exception {
         collectionLogRepository.delete(collectionLog);
 
     }
 
     @Override
-	@Transactional(readOnly = false)
-    public void create(AidrCollectionLog collectionLog) throws Exception {
+    public void create(CollectionLog collectionLog) throws Exception {
         collectionLogRepository.save(collectionLog);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public AidrCollectionLog findById(Integer id) throws Exception {
+    public CollectionLog findById(Long id) throws Exception {
         return collectionLogRepository.findById(id);
     }
 
@@ -73,19 +72,19 @@ public class CollectionLogServiceImpl implements CollectionLogService {
 
     @Override
     @Transactional(readOnly = true)
-    public CollectionLogDataResponse findAllForCollection(Integer start, Integer limit, Integer collectionId) throws Exception {
+    public CollectionLogDataResponse findAllForCollection(Integer start, Integer limit, Long collectionId) throws Exception {
         return collectionLogRepository.getPaginatedDataForCollection(start, limit, collectionId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Integer countTotalDownloadedItemsForCollection(Integer collectionId) throws Exception {
+    public Integer countTotalDownloadedItemsForCollection(Long collectionId) throws Exception {
         return collectionLogRepository.countTotalDownloadedItemsForCollection(collectionId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Map<Integer, Integer> countTotalDownloadedItemsForCollectionIds(List<Integer> ids) throws Exception {
+    public Map<Integer, Integer> countTotalDownloadedItemsForCollectionIds(List<Long> ids) throws Exception {
         return collectionLogRepository.countTotalDownloadedItemsForCollectionIds(ids);
     }
 

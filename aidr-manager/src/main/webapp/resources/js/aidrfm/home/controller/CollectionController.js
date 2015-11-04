@@ -279,7 +279,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
 
         Ext.Ajax.request({
             url: 'protected/collection/untrash.action',
-            method: 'GET',
+            method: 'POST',
             params: {
                 id: id,
                 code: code
@@ -310,12 +310,10 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
         }
 
         Ext.Ajax.request({
-            url: 'protected/tagger/createCrises.action',
+            url: 'protected/collection/classifier/enable',
             method: 'POST',
             params: {
-                code: Ext.String.trim( code ),
-                name: Ext.String.trim( name ),
-                crisisTypeID: crisisTypeID
+                collectionCode: Ext.String.trim( code )
             },
             headers: {
                 'Accept': 'application/json'

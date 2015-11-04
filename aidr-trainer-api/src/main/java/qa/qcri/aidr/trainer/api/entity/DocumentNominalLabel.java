@@ -67,12 +67,15 @@ public class DocumentNominalLabel implements Serializable {
 
 	public static DocumentNominalLabel toLocalDocumentNominalLabel(DocumentNominalLabelDTO doc) {
 		if (doc != null) {
+			DocumentNominalLabel nominalDoc;
 			try {
-				DocumentNominalLabel nominalDoc = new DocumentNominalLabel(doc.getIdDTO().getDocumentId(), doc.getIdDTO().getNominalLabelId(), doc.getIdDTO().getUserId());
+				nominalDoc = new DocumentNominalLabel(doc.getIdDTO().getDocumentId(), doc.getIdDTO().getNominalLabelId(), doc.getIdDTO().getUserId());
 				return nominalDoc;
 			} catch (PropertyNotSetException e) {
-				logger.error("Exception while parsing DocumentNominalLabelDTO to LocalDocumentNominalLabel",e);
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+			
 		}
 		return null;
 	}

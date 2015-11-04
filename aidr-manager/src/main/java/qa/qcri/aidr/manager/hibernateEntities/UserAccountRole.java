@@ -4,6 +4,7 @@
 package qa.qcri.aidr.manager.hibernateEntities;
 
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -23,10 +24,12 @@ public class UserAccountRole extends BaseEntity {
 
 	@NotNull
 	@ManyToOne
+	@JoinColumn(name="account_id")
 	private UserAccount account;
 	
 	@NotNull
 	@ManyToOne
+	@JoinColumn(name="role_id")
 	private Role role;
 	
 	public UserAccount getAccount() {

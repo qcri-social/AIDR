@@ -3,25 +3,20 @@ package qa.qcri.aidr.manager.hibernateEntities;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-import qa.qcri.aidr.manager.util.CollectionStatus;
+import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.util.JsonDateDeSerializer;
 import qa.qcri.aidr.manager.util.JsonDateSerializer;
-
-import javax.persistence.ManyToOne;
 
 @Entity
 @Table(name = "aidr_collection_log")
@@ -33,14 +28,10 @@ public class AidrCollectionLog implements Serializable {
 		super();
 	}
 	
-	public AidrCollectionLog(AidrCollection collection) {
+	public AidrCollectionLog(Collection collection) {
 		super();
 		this.collectionID = collection.getId();
 		this.count = collection.getCount();
-		this.track = collection.getTrack();
-		this.follow = collection.getFollow();
-		this.geo = collection.getGeo();
-		this.langFilters = collection.getLangFilters();
 		this.startDate = collection.getStartDate();
 		this.endDate = collection.getEndDate();
 	}
@@ -55,7 +46,7 @@ public class AidrCollectionLog implements Serializable {
     //@ManyToOne(targetEntity = AidrCollection.class, cascade = CascadeType.ALL)
     //@JoinColumn(name = "collection_id", referencedColumnName = "id")
     //private AidrCollection collection;
-    private Integer collectionID;
+    private Long collectionID;
     private Integer count;
     
     @Column(length = 1000, name = "track")
@@ -160,14 +151,14 @@ public class AidrCollectionLog implements Serializable {
     /**
      * @return the collectionID
      */
-    public Integer getCollectionID() {
+    public Long getCollectionID() {
         return collectionID;
     }
 
     /**
      * @param collectionID the collectionID to set
      */
-    public void setCollectionID(Integer collectionID) {
+    public void setCollectionID(Long collectionID) {
         this.collectionID = collectionID;
     }
 }

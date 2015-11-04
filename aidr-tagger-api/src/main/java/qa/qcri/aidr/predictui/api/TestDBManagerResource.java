@@ -14,12 +14,13 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskManagerRemote;
+import qa.qcri.aidr.predictui.dto.CrisisDTO;
 
 
 @Path("/test")
@@ -28,7 +29,7 @@ public class TestDBManagerResource {
 	private Logger logger = Logger.getLogger("db-manager-log");
 
 	@EJB
-	private qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade remoteCrisisEJB;
+	private qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade remoteCrisisEJB;
 
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade remoteDocumentEJB;
@@ -90,7 +91,7 @@ public class TestDBManagerResource {
 	@Path("/crisisType/crisis/{id}")
 	public Response getAllCrisisForCrisisType(@PathParam("id") long id) {
 		try {
-			List<CrisisDTO> dtoList = remoteCrisisTypeEJB.getAllCrisisForCrisisTypeID(id);
+			List<CollectionDTO> dtoList = remoteCrisisTypeEJB.getAllCrisisForCrisisTypeID(id);
 			if (dtoList != null) 
 			{
 				return Response.ok(dtoList).build();
@@ -110,7 +111,7 @@ public class TestDBManagerResource {
 	@Path("/crisis/{id}")
 	public Response getCrisisByID(@PathParam("id") long id) {
 		try {
-			CrisisDTO dto = remoteCrisisEJB.findCrisisByID(id);
+			CollectionDTO dto = remoteCrisisEJB.findCrisisByID(id);
 			if (dto != null) 
 			{
 				return Response.ok(dto).build();
@@ -129,7 +130,7 @@ public class TestDBManagerResource {
 	@Path("/crisis/fulldata/{id}")
 	public Response getCrisisWithAllParamsByID(@PathParam("id") long id) {
 		try {
-			CrisisDTO dto = remoteCrisisEJB.getCrisisWithAllFieldsByID(id);
+			CollectionDTO dto = remoteCrisisEJB.getCrisisWithAllFieldsByID(id);
 			if (dto != null) 
 			{
 				return Response.ok(dto).build();
@@ -148,7 +149,7 @@ public class TestDBManagerResource {
 	@Path("/crisis/all")
 	public Response getAllCrisis() {
 		try {
-			List<CrisisDTO> dtoList = remoteCrisisEJB.getAllCrisis();
+			List<CollectionDTO> dtoList = remoteCrisisEJB.getAllCrisis();
 			if (dtoList != null) 
 			{
 				return Response.ok(dtoList).build();
@@ -167,12 +168,12 @@ public class TestDBManagerResource {
 	@Path("/crisis/update/{id}")
 	public Response updateCrisisByID(@PathParam("id") long id, @QueryParam("value") boolean value) {
 		try {
-			CrisisDTO dto = remoteCrisisEJB.findCrisisByID(id);
+			CollectionDTO dto = remoteCrisisEJB.findCrisisByID(id);
 			if (dto != null) 
 			{
 				logger.info("Fetched crisis: " + dto.getCrisisID() + ", " + dto.getCrisisID());
 				dto.setIsTrashed(value);
-				CrisisDTO newDTO = remoteCrisisEJB.editCrisis(dto);
+				CollectionDTO newDTO = remoteCrisisEJB.editCrisis(dto);
 				return Response.ok(newDTO).build();
 			} 
 		} catch (Exception e) {
@@ -326,8 +327,8 @@ public class TestDBManagerResource {
 		try {
 			CrisisTypeDTO crisisType = remoteCrisisTypeEJB.getAllCrisisTypes().get(0);
 			UsersDTO user = remoteUsersEJB.getUserById(9L);
-			CrisisDTO newCrisis = new CrisisDTO("testDBManagerCrisis", "test_db-manager_crisis", false, false, crisisType, user);
-			CrisisDTO dto = remoteCrisisEJB.addCrisis(newCrisis);
+			CollectionDTO newCrisis = new CollectionDTO("testDBManagerCrisis", "test_db-manager_crisis", false, false, crisisType, user);
+			CollectionDTO dto = remoteCrisisEJB.addCrisis(newCrisis);
 			if (dto != null) 
 			{
 				logger.info("Add crisis successful: " + dto.getCrisisID() + ":" + dto.getName() + ":" + dto.getCode() 
@@ -347,7 +348,7 @@ public class TestDBManagerResource {
 	@Path("/document/adddel")
 	public Response TestAddDeleteDocument() {
 		try {
-			CrisisDTO crisis = remoteCrisisEJB.findActiveCrisis().get(0);
+			CollectionDTO crisis = remoteCrisisEJB.findActiveCrisis().get(0);
 			DocumentDTO newDoc = new DocumentDTO(crisis, false, false, 0.7, new Date(), "en", "twitter", "This is a test data for db-manager test");
 			DocumentDTO dto = remoteDocumentEJB.addDocument(newDoc);
 			if (dto != null) 

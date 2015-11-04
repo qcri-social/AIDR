@@ -6,7 +6,7 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.CoreDBServiceFacade;
 import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
@@ -26,7 +26,7 @@ public interface CrisisTypeResourceFacade extends CoreDBServiceFacade<CrisisType
 
 	public List<CrisisTypeDTO> getAllCrisisTypes() throws PropertyNotSetException;
 	
-	public List<CrisisDTO> getAllCrisisForCrisisTypeID(Long id) throws PropertyNotSetException;
+	public List<CollectionDTO> getAllCrisisForCrisisTypeID(Long id) throws PropertyNotSetException;
 	
 	public Integer deleteCrisisType(Long id);
 }

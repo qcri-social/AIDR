@@ -1,13 +1,25 @@
 package qa.qcri.aidr.manager.service;
 
-import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
-import qa.qcri.aidr.manager.dto.*;
-import qa.qcri.aidr.manager.exception.AidrException;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
+import qa.qcri.aidr.manager.dto.ModelHistoryWrapper;
+import qa.qcri.aidr.manager.dto.TaggerAttribute;
+import qa.qcri.aidr.manager.dto.TaggerCrisis;
+import qa.qcri.aidr.manager.dto.TaggerCrisisExist;
+import qa.qcri.aidr.manager.dto.TaggerCrisisRequest;
+import qa.qcri.aidr.manager.dto.TaggerCrisisType;
+import qa.qcri.aidr.manager.dto.TaggerLabel;
+import qa.qcri.aidr.manager.dto.TaggerLabelRequest;
+import qa.qcri.aidr.manager.dto.TaggerModel;
+import qa.qcri.aidr.manager.dto.TaggerModelFamily;
+import qa.qcri.aidr.manager.dto.TaggerModelNominalLabel;
+import qa.qcri.aidr.manager.dto.TaggerResponseWrapper;
+import qa.qcri.aidr.manager.dto.TaggerUser;
+import qa.qcri.aidr.manager.dto.TaskAnswer;
+import qa.qcri.aidr.manager.exception.AidrException;
+import qa.qcri.aidr.manager.persistence.entities.Collection;
 
 public interface TaggerService {
 
@@ -17,7 +29,7 @@ public interface TaggerService {
 
 	public String createNewCrises(TaggerCrisisRequest crisis) throws AidrException;
 
-	public Collection<TaggerAttribute> getAttributesForCrises(Integer crisisID, Integer userId) throws AidrException;
+	public java.util.Collection<TaggerAttribute> getAttributesForCrises(Integer crisisID, Integer userId) throws AidrException;
 
 	public TaggerCrisisExist isCrisesExist(String code) throws AidrException;
 
@@ -90,7 +102,7 @@ public interface TaggerService {
 	public String getAttributesAndLabelsByCrisisId(Integer id) throws Exception;
 
 	//Added by koushik
-	public int trashCollection(AidrCollection collection) throws Exception;
+	public int trashCollection(Collection collection) throws Exception;
 
 	//Added by koushik
 	public int untrashCollection(String collectionCode) throws Exception;

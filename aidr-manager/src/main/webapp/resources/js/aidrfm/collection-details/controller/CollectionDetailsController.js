@@ -567,7 +567,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         p.duration.setValue(duration);
         p.langCombo.setValue(r.langFilters ? r.langFilters.split(',') : '');
-        p.crisisTypesCombo.setValue(r.crisisType);
+        p.crisisTypesCombo.setValue(r.crisisType.id);
         p.collectionTypeCombo.setValue(r.collectionType);
         if(r.collectionType === 'SMS'){
            Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/sms_icon.png"/>');
@@ -763,7 +763,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/trash.action',
-            method: 'GET',
+            method: 'POST',
             params: {
                 id: id
             },
@@ -846,7 +846,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var editPanelEl = cmp.up('panel').getEl();
         editPanelEl.mask("Updating...");
         Ext.Ajax.request({
-            url: BASE_URL + '/protected/collection/update.action',
+            url: BASE_URL + '/protected/collection/update',
             method: 'POST',
             params: {
                 id: id,
@@ -862,7 +862,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 langFilters: form.findField('langFilters').getValue(),
                 durationHours: form.findField('durationHours').getValue(),
                 crisisType: form.findField('crisisType').getValue(),
-                collectionType: form.findField('collectionType').getValue()
+                provider: form.findField('collectionType').getValue()
             },
             headers: {
                 'Accept': 'application/json'
@@ -960,16 +960,12 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var code = collection.code;
         var name = collection.name;
 
+        
         Ext.Ajax.request({
-            url: BASE_URL + '/protected/tagger/createCrises.action',
+            url: BASE_URL + '/protected/collection/classifier/enable',
             method: 'POST',
             params: {
-                code: Ext.String.trim( code ),
-                name: Ext.String.trim( name ),
-                crisisTypeID: crisisTypeID
-            },
-            headers: {
-                'Accept': 'application/json'
+            	collectionCode: Ext.String.trim( code ),
             },
             success: function (response) {
                 var resp = Ext.decode(response.responseText);

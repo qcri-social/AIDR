@@ -3,16 +3,16 @@ package qa.qcri.aidr.manager.repository;
 import java.io.Serializable;
 import java.util.List;
 
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
+import qa.qcri.aidr.manager.persistence.entities.Collection;
 
-public interface CollectionRepository extends GenericRepository<AidrCollection, Serializable> {
+public interface CollectionRepository extends GenericRepository<Collection, Serializable> {
     public Integer getPublicCollectionsCount(final Enum statusValue);
-    public List<AidrCollection> getPaginatedDataForPublic( Integer start,  Integer limit, Enum statusValue);
+    public List<Collection> getPaginatedDataForPublic( Integer start,  Integer limit, Enum statusValue);
 
-    public List<AidrCollection> searchByName(String query, Long userId) throws Exception;
+    public List<Collection> searchByName(String query, Long userId) throws Exception;
 
-    public List<AidrCollection> getPaginatedData(Integer start, Integer limit, UserAccount user, boolean onlyTrashed);
+    public List<Collection> getPaginatedData(Integer start, Integer limit, UserAccount user, boolean onlyTrashed);
 
     public Integer getCollectionsCount(UserAccount user, boolean onlyTrashed);
 
@@ -20,28 +20,30 @@ public interface CollectionRepository extends GenericRepository<AidrCollection, 
 
     public Boolean existName(String name);
 
-    public AidrCollection getRunningCollectionStatusByUser(Long userId);
+    public Collection getRunningCollectionStatusByUser(Long userId);
 
-    public List<AidrCollection> getRunningCollections();
+    public List<Collection> getRunningCollections();
 
-    public List<AidrCollection> getRunningCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection);
+    public List<Collection> getRunningCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection);
 
     public Long getRunningCollectionsCount(String terms);
 
-    public List<AidrCollection> getStoppedCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection);
+    public List<Collection> getStoppedCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection);
 
     public Long getStoppedCollectionsCount(String terms);
 
-    public AidrCollection getInitializingCollectionStatusByUser(Long userId);
+    public Collection getInitializingCollectionStatusByUser(Long userId);
 
-    public AidrCollection start(Integer collectionId);
+    public Collection start(Long collectionId);
 
-    public AidrCollection stop(Integer collectionId);
+    public Collection stop(Long collectionId);
 
-    public AidrCollection findByCode(String code);
+    public Collection findByCode(String code);
     
-    public AidrCollection trashCollectionById(Integer collectionId);
+    public Collection trashCollectionById(Long collectionId);
 
-    public List<AidrCollection> getAllCollectionByUser(Long userId);
+    public List<Collection> getAllCollectionByUser(Long userId);
+    
+    public void update(Collection collection);
 
 }

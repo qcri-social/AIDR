@@ -1,6 +1,6 @@
 package qa.qcri.aidr.trainer.api.template;
 
-import qa.qcri.aidr.trainer.api.entity.Crisis;
+import qa.qcri.aidr.trainer.api.entity.Collection;
 import qa.qcri.aidr.trainer.api.entity.ModelFamily;
 import qa.qcri.aidr.trainer.api.entity.NominalAttribute;
 import qa.qcri.aidr.trainer.api.entity.NominalLabel;
@@ -21,7 +21,7 @@ public class CrisisJsonOutput {
 	
 	private static Logger logger=Logger.getLogger(CrisisJsonOutput.class);
 
-    public CrisisJsonModel crisisJsonModelGenerator(Crisis crisis){
+    public CrisisJsonModel crisisJsonModelGenerator(Collection crisis){
         CrisisJsonModel crisisJsonModel = new CrisisJsonModel();
         if (crisis != null) { 
         	logger.info("received crisis = " + crisis.getCode() + ", id = " + crisis.getCrisisID());

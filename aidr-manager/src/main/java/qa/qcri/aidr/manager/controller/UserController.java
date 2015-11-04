@@ -1,7 +1,6 @@
 package qa.qcri.aidr.manager.controller;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -20,8 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import qa.qcri.aidr.manager.RoleType;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
+import qa.qcri.aidr.manager.persistence.entities.Collection;
+import qa.qcri.aidr.manager.service.CollectionCollaboratorService;
 import qa.qcri.aidr.manager.service.CollectionService;
 
 @Controller
@@ -33,6 +33,9 @@ public class UserController extends BaseController{
     @Autowired
     private CollectionService collectionService;
 
+    @Autowired
+    private CollectionCollaboratorService collaboratorService;
+    
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -86,23 +89,16 @@ public class UserController extends BaseController{
             if (code == null || code.trim().length() == 0 || userId == null){
                 return getUIWrapper(false, msg);
             }
-            UserAccount userEntity = userService.getById(userId);
-            AidrCollection collection = collectionService.findByCode(code);
+            
+            UserAccount user = userService.getById(userId);
+            boolean success = collaboratorService.addCollaboratorToCollection(code, userId);
 
-            if (userService.isUserInCollectionManagersList(userEntity, collection)){
-                msg = "Selected user is already in managers list of this collection.";
-                return getUIWrapper(false, msg);
+            if(success) {
+            	getUIWrapper(user, true);
+            } else {
+            	getUIWrapper(false, "Selected user is already a collaborator");
             }
-
-            List<UserAccount> managers = collection.getManagers();
-            if (managers == null){
-                managers = new ArrayList<UserAccount>();
-            }
-
-            managers.add(userEntity);
-            collectionService.update(collection);
-
-            return getUIWrapper(userEntity, true);
+            return getUIWrapper(user, true);
         }catch(Exception e){
             logger.error(msg, e);
             return getUIWrapper(false, msg);
@@ -111,35 +107,29 @@ public class UserController extends BaseController{
 
     @RequestMapping(value = "/removeManagerFromCollection.action", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String,Object> removeManagerFromCollection(@RequestParam String code, @RequestParam Integer userId) throws Exception {
+    public Map<String,Object> removeManagerFromCollection(@RequestParam String code, @RequestParam Long userId) throws Exception {
         logger.info("Add manager to Collection");
         String msg = "Error while removing user from collection managers list";
         try{
             if (code == null || code.trim().length() == 0 || userId == null){
                 return getUIWrapper(false, msg);
             }
-            AidrCollection collection = collectionService.findByCode(code);
-            List<UserAccount> managers = collection.getManagers();
-            if (managers == null){
-                return getUIWrapper(false, msg);
+            Collection collection = collectionService.findByCode(code);
+            boolean success = collaboratorService.removeCollaboratorFromCollection(collection.getId(), userId);
+            if(success) {
+            	
+            	List<UserAccount> managers = collaboratorService.fetchCollaboratorsByCollection(collection.getId());
+            	return getUIWrapper(managers, true);
+            } else {
+            	return getUIWrapper(false, msg);
             }
-
-            for (UserAccount manager : managers){
-                if (manager.getId().equals(userId)){
-                    managers.remove(manager);
-                    break;
-                }
-            }
-
-            collectionService.update(collection);
-
-            return getUIWrapper(managers, true);
         }catch(Exception e){
             logger.error(msg, e);
             return getUIWrapper(false, msg);
         }
     }
 	
+
     @RequestMapping(value = "/getCurrentUser.action", method={RequestMethod.GET})
 	@ResponseBody
 	public Map<String,Object> getCurrentUser() throws Exception {

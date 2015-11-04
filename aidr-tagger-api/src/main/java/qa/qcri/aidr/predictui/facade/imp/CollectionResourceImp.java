@@ -4,6 +4,7 @@
  */
 package qa.qcri.aidr.predictui.facade.imp;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,8 @@ import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.predictui.entities.AidrCollection;
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
+import qa.qcri.aidr.dbmanager.entities.misc.Users;
 import qa.qcri.aidr.predictui.facade.CollectionResourceFacade;
 
 /**
@@ -30,21 +32,23 @@ public class CollectionResourceImp implements CollectionResourceFacade {
 	@PersistenceContext(unitName = "qa.qcri.aidr.collectorManager-PU")
 	private EntityManager em;
 
-	public List<AidrCollection> getAllRunningCollectionsByUserID(int userID) {
-		List<AidrCollection> collections = new ArrayList<AidrCollection>();
-		Query q = em.createNativeQuery("SELECT id, code, name, user_id "
-				+ " FROM AIDR_COLLECTION"
-				+ " WHERE user_id = :user_id AND status = 0");    
+	public List<Collection> getAllRunningCollectionsByUserID(int userID) {
+		List<Collection> collections = new ArrayList<Collection>();
+		Query q = em.createNativeQuery("SELECT id, code, name, owner_id "
+				+ " FROM collection"
+				+ " WHERE owner_id = :user_id AND status = 0");    
 		q.setParameter("user_id", + userID );
 		try {
 			List<Object[]> queryRes = q.getResultList();
-			AidrCollection collection;
+			Collection collection;
 			for (Object[] row : queryRes) {
-				collection =  new AidrCollection();
-				collection.setId(( (Integer)row[0]).intValue());
+				collection =  new Collection();
+				collection.setCrisisId(( (BigInteger)row[0]).longValue());
 				collection.setCode((String) row[1]);
 				collection.setName((String) row[2]);
-				collection.setUserID(( (Integer)row[3]).intValue());
+				Users user = new Users();
+				user.setId(((BigInteger)row[3]).longValue());
+				collection.setOwner(user);
 				collections.add(collection);
 			}
 

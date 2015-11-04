@@ -19,7 +19,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
@@ -30,7 +30,7 @@ public class TestModelFamilyResourceFacadeImp {
 	
 	private static Logger logger = Logger.getLogger("db-manager-log");
 	private static ModelFamilyResourceFacadeImp modelFamilyResourceFacadeImp;
-	private static CrisisResourceFacadeImp crisisResourceFacadeImp;
+	private static CollectionResourceFacadeImp crisisResourceFacadeImp;
 	private static CrisisTypeResourceFacadeImp crisisTypeResourceFacadeImp;
 	private static NominalAttributeResourceFacadeImp nominalAttributeResourceFacadeImp;
 	private static UsersResourceFacadeImp userResourceFacadeImp;
@@ -38,13 +38,13 @@ public class TestModelFamilyResourceFacadeImp {
 	
 	private UsersDTO user;
 	private ModelFamilyDTO modelFamilyDTO;
-	private CrisisDTO crisisDTO;
+	private CollectionDTO crisisDTO;
 	private CrisisTypeDTO crisisTypeDTO; 
 	
 	@BeforeClass
 	public static void setUpBeforeClass() {
 		modelFamilyResourceFacadeImp = new ModelFamilyResourceFacadeImp();
-		crisisResourceFacadeImp = new CrisisResourceFacadeImp();
+		crisisResourceFacadeImp = new CollectionResourceFacadeImp();
 		crisisTypeResourceFacadeImp = new CrisisTypeResourceFacadeImp();
 		nominalAttributeResourceFacadeImp = new NominalAttributeResourceFacadeImp();
 		userResourceFacadeImp = new UsersResourceFacadeImp();
@@ -72,7 +72,7 @@ public class TestModelFamilyResourceFacadeImp {
 			entityManager.getTransaction().commit();
 			
 			// insert crisis
-			crisisDTO = new CrisisDTO("tesName"+new Date(), "testCode"+new Date(), false, false, crisisTypeDTO, user);
+			crisisDTO = new CollectionDTO("tesName"+new Date(), "testCode"+new Date(), false, false, crisisTypeDTO, user);
 			entityManager.getTransaction().begin();
 			crisisDTO = crisisResourceFacadeImp.addCrisis(crisisDTO);
 			entityManager.getTransaction().commit();
@@ -125,7 +125,7 @@ public class TestModelFamilyResourceFacadeImp {
 				entityManager.getTransaction().begin();
 				crisisResourceFacadeImp.deleteCrisis(crisisDTO);
 				entityManager.getTransaction().commit();
-				CrisisDTO result = crisisResourceFacadeImp.getCrisisByCode(crisisDTO.getCode());
+				CollectionDTO result = crisisResourceFacadeImp.getCrisisByCode(crisisDTO.getCode());
 				assertNull(result);
 			}
 		} catch (PropertyNotSetException ex) {

@@ -1,6 +1,6 @@
 package qa.qcri.aidr.manager.dto;
 
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 
 public class TaggerCrisisRequest {
 
@@ -22,8 +22,8 @@ public class TaggerCrisisRequest {
         this.users = users;
     }
     
-    public CrisisDTO toDTO() throws Exception {
-		CrisisDTO dto = new CrisisDTO();
+    public CollectionDTO toDTO() throws Exception {
+    	CollectionDTO dto = new CollectionDTO();
 
 		dto.setCode(this.getCode());
 		dto.setName(this.getName());

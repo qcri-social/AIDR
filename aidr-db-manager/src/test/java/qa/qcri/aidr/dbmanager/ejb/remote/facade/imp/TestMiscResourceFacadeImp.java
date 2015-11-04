@@ -18,7 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
@@ -36,7 +36,7 @@ public class TestMiscResourceFacadeImp {
 	private static MiscResourceFacadeImp miscResourceFacadeImp;
 	
 	private static ModelFamilyResourceFacadeImp modelFamilyResourceFacadeImp;
-	private static CrisisResourceFacadeImp crisisResourceFacadeImp;
+	private static CollectionResourceFacadeImp crisisResourceFacadeImp;
 	private static CrisisTypeResourceFacadeImp crisisTypeResourceFacadeImp;
 	private static NominalAttributeResourceFacadeImp nominalAttributeResourceFacadeImp;
 	private static UsersResourceFacadeImp userResourceFacadeImp;
@@ -46,7 +46,7 @@ public class TestMiscResourceFacadeImp {
 	private static NominalLabelResourceFacadeImp nominalLabelResourceFacadeImp;
 	
 	private ModelFamilyDTO modelFamilyDTO;
-	private CrisisDTO crisisDTO;
+	private CollectionDTO crisisDTO;
 	private CrisisTypeDTO crisisTypeDTO; 
 	private DocumentDTO documentDTO;
 	private DocumentNominalLabelDTO documentNominalLabelDTO;
@@ -60,7 +60,7 @@ public class TestMiscResourceFacadeImp {
 		documentNominalLabelResourceFacadeImp = new DocumentNominalLabelResourceFacadeImp();
 		documentResourceFacadeImp = new DocumentResourceFacadeImp();
 		modelFamilyResourceFacadeImp = new ModelFamilyResourceFacadeImp();
-		crisisResourceFacadeImp = new CrisisResourceFacadeImp();
+		crisisResourceFacadeImp = new CollectionResourceFacadeImp();
 		crisisTypeResourceFacadeImp = new CrisisTypeResourceFacadeImp();
 		nominalAttributeResourceFacadeImp = new NominalAttributeResourceFacadeImp();
 		userResourceFacadeImp = new UsersResourceFacadeImp();
@@ -93,7 +93,7 @@ public class TestMiscResourceFacadeImp {
 			entityManager.getTransaction().commit();
 			
 			// insert crisis type
-			crisisDTO = new CrisisDTO("tesName"+new Date(), "testCode" +new Date(), false, false, crisisTypeDTO, userDTO);
+			crisisDTO = new CollectionDTO("tesName"+new Date(), "testCode" +new Date(), false, false, crisisTypeDTO, userDTO);
 			entityManager.getTransaction().begin();
 			crisisDTO = crisisResourceFacadeImp.addCrisis(crisisDTO);
 			entityManager.getTransaction().commit();
@@ -164,7 +164,7 @@ public class TestMiscResourceFacadeImp {
 				entityManager.getTransaction().begin();
 				crisisResourceFacadeImp.deleteCrisis(crisisDTO);
 				entityManager.getTransaction().commit();
-				CrisisDTO result = crisisResourceFacadeImp.getCrisisByCode(crisisDTO.getCode());
+				CollectionDTO result = crisisResourceFacadeImp.getCrisisByCode(crisisDTO.getCode());
 				assertNull(result);
 			}
 		} catch (PropertyNotSetException ex) {

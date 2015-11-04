@@ -5,9 +5,10 @@
 package qa.qcri.aidr.predictui.facade;
 
 import java.util.List;
+
 import javax.ejb.Local;
-import qa.qcri.aidr.predictui.entities.AidrCollection;
-import qa.qcri.aidr.predictui.entities.Crisis;
+
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
 
 /**
  *
@@ -16,7 +17,7 @@ import qa.qcri.aidr.predictui.entities.Crisis;
 @Local
 public interface CollectionResourceFacade {
     
-   public List<AidrCollection> getAllRunningCollectionsByUserID(int userID); 
+   public List<Collection> getAllRunningCollectionsByUserID(int userID); 
    
     
 }

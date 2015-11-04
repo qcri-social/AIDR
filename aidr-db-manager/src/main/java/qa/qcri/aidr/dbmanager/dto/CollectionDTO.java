@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
 import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class CrisisDTO implements Serializable  {
+public class CollectionDTO implements Serializable  {
 
 
 	/**
@@ -63,7 +63,7 @@ public class CrisisDTO implements Serializable  {
 	private List<ModelFamilyDTO> modelFamiliesDTO = null;
 
 
-	public CrisisDTO(){}
+	public CollectionDTO(){}
 
 /*	public CrisisDTO(String name, String code, boolean isTrashed,
 			CrisisTypeDTO crisisTypeDTO, UsersDTO usersDTO) {
@@ -75,7 +75,7 @@ public class CrisisDTO implements Serializable  {
 		this.setUsersDTO(usersDTO);
 	}*/
 	
-	public CrisisDTO(String name, String code, boolean isTrashed, boolean isMicromapperEnabled,
+	public CollectionDTO(String name, String code, boolean isTrashed, boolean isMicromapperEnabled,
 			CrisisTypeDTO crisisTypeDTO, UsersDTO usersDTO) {
 
 		this.setName(name);
@@ -87,7 +87,7 @@ public class CrisisDTO implements Serializable  {
 	}
 	
 
-	public CrisisDTO(Long crisisID, String name, String code, boolean isTrashed, boolean isMicromapperEnabled,
+	public CollectionDTO(Long crisisID, String name, String code, boolean isTrashed, boolean isMicromapperEnabled,
 			CrisisTypeDTO crisisTypeDTO, UsersDTO usersDTO) {
 
 		this.setCrisisID(crisisID);
@@ -99,30 +99,30 @@ public class CrisisDTO implements Serializable  {
 		this.setUsersDTO(usersDTO);
 	}
 
-	public CrisisDTO(Crisis crisis) throws PropertyNotSetException {
-		if (crisis != null) {
+	public CollectionDTO(Collection collection) throws PropertyNotSetException {
+		if (collection != null) {
 			
-			this.setCrisisID(crisis.getCrisisId());
-			this.setName(crisis.getName());
-			this.setCode(crisis.getCode());
-			this.setIsTrashed(crisis.isIsTrashed());
-			this.setIsMicromapperEnabled(crisis.isIsMicromapperEnabled());
-			if (crisis.hasCrisisType()) {
-				CrisisType cType = new CrisisType(crisis.getCrisisType().getName());
-				cType.setCrisisTypeId(crisis.getCrisisType().getCrisisTypeId());
+			this.setCrisisID(collection.getCrisisId());
+			this.setName(collection.getName());
+			this.setCode(collection.getCode());
+			this.setIsTrashed(collection.isIsTrashed());
+			this.setIsMicromapperEnabled(collection.isIsMicromapperEnabled());
+			if (collection.hasCrisisType()) {
+				CrisisType cType = new CrisisType(collection.getCrisisType().getName());
+				cType.setCrisisTypeId(collection.getCrisisType().getCrisisTypeId());
 				this.setCrisisTypeDTO(new CrisisTypeDTO(cType));
 			}
-			if (crisis.hasUsers()) {
+			if (collection.hasUsers()) {
 				Users user = new Users();
-				user.setUserName(crisis.getUsers().getUserName());
-				user.setId(crisis.getUsers().getId());
+				user.setUserName(collection.getUsers().getUserName());
+				user.setId(collection.getUsers().getId());
 				this.setUsersDTO(new UsersDTO(user));
 			}
-			if (crisis.hasModelFamilies()) {
-				this.setModelFamiliesDTO(toModelFamilyDTOList(crisis.getModelFamilies()));
+			if (collection.hasModelFamilies()) {
+				this.setModelFamiliesDTO(toModelFamilyDTOList(collection.getModelFamilies()));
 			}
-			if (crisis.hasDocuments()) {
-				this.setDocumentsDTO(toDocumentDTOList(crisis.getDocuments()));
+			if (collection.hasDocuments()) {
+				this.setDocumentsDTO(toDocumentDTOList(collection.getDocuments()));
 			}
 		} else {
 			logger.error("Entity = null in constructor");
@@ -271,8 +271,8 @@ public class CrisisDTO implements Serializable  {
 	}
 
 	/* Mapping to entity */
-	public Crisis toEntity() throws PropertyNotSetException {
-		Crisis crisis = new Crisis();
+	public Collection toEntity() throws PropertyNotSetException {
+		Collection crisis = new Collection();
 		if (this.getCrisisID() != null) {
 			crisis.setCrisisId(this.getCrisisID());
 		}

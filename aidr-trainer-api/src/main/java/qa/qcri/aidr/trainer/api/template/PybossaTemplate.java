@@ -49,7 +49,7 @@ public class PybossaTemplate {
                 Long userID = (Long)info.get("aidrID");
                 Long attributeID = (Long)info.get("attributeID");
 
-                Crisis crisis = crisisService.findByCrisisID(crisisID) ;
+                Collection crisis = crisisService.findByCrisisID(crisisID) ;
                 Set<ModelFamily> modelFamilySet= crisis.getModelFamilySet();
 
                 DocumentNominalLabel documentNominalLabel = null;

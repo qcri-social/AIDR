@@ -65,7 +65,7 @@ public class ModelDTO implements Serializable {
 	public ModelDTO(Model model) throws PropertyNotSetException {
 		setModelId(model.getModelId());
 		if (model.hasModelFamily()) {
-			ModelFamily mf = new ModelFamily(model.getModelFamily().getNominalAttribute(), model.getModelFamily().getCrisis(),
+			ModelFamily mf = new ModelFamily(model.getModelFamily().getNominalAttribute(), model.getModelFamily().getCollection(),
 					model.getModelFamily().isIsActive());
 			Long modelFamilyID = new Long(model.getModelFamily().getModelFamilyId());
 			mf.setModelFamilyId(modelFamilyID);

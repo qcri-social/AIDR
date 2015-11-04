@@ -26,7 +26,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
@@ -38,11 +38,11 @@ import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 public class TestDocumentResourceFacadeImp {
 	//
 	static DocumentResourceFacadeImp documentResourceFacadeImp;
-	static CrisisResourceFacadeImp crisisResourceFacadeImp;
+	static CollectionResourceFacadeImp crisisResourceFacadeImp;
 	static EntityManager entityManager;
 	static DocumentDTO documentDTO;
 	static UsersDTO user;
-	static CrisisDTO crisis;
+	static CollectionDTO crisis;
 	static CrisisTypeResourceFacadeImp crisisTypeResourceFacadeImp;
 	static UsersResourceFacadeImp userResourceFacadeImp;
 	private static Logger logger = Logger.getLogger("db-manager-log");
@@ -50,7 +50,7 @@ public class TestDocumentResourceFacadeImp {
 	@BeforeClass
 	public static void setUpClass() throws PropertyNotSetException {
 		documentResourceFacadeImp = new DocumentResourceFacadeImp();
-		crisisResourceFacadeImp = new CrisisResourceFacadeImp();
+		crisisResourceFacadeImp = new CollectionResourceFacadeImp();
 		crisisTypeResourceFacadeImp = new CrisisTypeResourceFacadeImp();
 		userResourceFacadeImp = new UsersResourceFacadeImp();
 		entityManager = Persistence.createEntityManagerFactory(
@@ -65,7 +65,7 @@ public class TestDocumentResourceFacadeImp {
 		entityManager.getTransaction().begin();
 		user = userResourceFacadeImp.addUser(user);
 		entityManager.getTransaction().commit();
-		CrisisDTO crisisDTO = new CrisisDTO("testCrisisName"+new Date(), "testCrisisCode"+new Date(), false, false, crisisTypeDTO, user);
+		CollectionDTO crisisDTO = new CollectionDTO("testCrisisName"+new Date(), "testCrisisCode"+new Date(), false, false, crisisTypeDTO, user);
 		entityManager.getTransaction().begin();
 		crisis = crisisResourceFacadeImp.addCrisis(crisisDTO);
 		entityManager.getTransaction().commit();
@@ -87,7 +87,7 @@ public class TestDocumentResourceFacadeImp {
 			entityManager.getTransaction().begin();
 			crisisResourceFacadeImp.deleteCrisis(crisis);
 			entityManager.getTransaction().commit();
-			CrisisDTO result = crisisResourceFacadeImp.getCrisisByCode(crisis.getCode());
+			CollectionDTO result = crisisResourceFacadeImp.getCrisisByCode(crisis.getCode());
 			assertNull(result);
 		}
 		if (user != null) {

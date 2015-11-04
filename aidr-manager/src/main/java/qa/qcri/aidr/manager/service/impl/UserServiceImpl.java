@@ -14,10 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import qa.qcri.aidr.manager.RoleType;
-import qa.qcri.aidr.manager.hibernateEntities.UserAccountRole;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
 import qa.qcri.aidr.manager.hibernateEntities.Role;
 import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
+import qa.qcri.aidr.manager.hibernateEntities.UserAccountRole;
+import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
 import qa.qcri.aidr.manager.repository.RoleRepository;
 import qa.qcri.aidr.manager.repository.UserAccountRepository;
@@ -71,15 +71,15 @@ public class UserServiceImpl implements UserService{
 		return userRepository.getUsersCount(query);
 	}
 
-    public boolean isUserInCollectionManagersList(UserAccount user, AidrCollection collection) {
-        if (collection.getManagers() == null) {
+    public boolean isUserInCollectionManagersList(UserAccount user, Collection collection) {
+        /*if (collection.getManagers() == null) {
             return false;
         }
         for (UserAccount manager : collection.getManagers()){
             if (manager.getId().equals(user.getId())){
                 return true;
             }
-        }
+        }*/
         return false;
     }
 
@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService{
     public UserAccount getAvailableUser(JSONArray users) {
         SortedMap map = new TreeMap();
         UserAccount userEntity = null;
-        AidrCollection aidrCollection;
+        Collection Collection;
         UserAccount unUsedUserEntity = null;
 
         for(Object user : users){
@@ -106,11 +106,11 @@ public class UserServiceImpl implements UserService{
             userEntity = fetchByUserName(userName);
 
             if(userEntity != null){
-                List<AidrCollection> aidrCollections = collectionRepository.getAllCollectionByUser(userEntity.getId());
+                List<Collection> collections = collectionRepository.getAllCollectionByUser(userEntity.getId());
                 boolean addedOnMap = false;
-                for(int i=0; i < aidrCollections.size(); i++ ){
-                    if(aidrCollections.get(i).getStatus().equals(CollectionStatus.INITIALIZING) || aidrCollections.get(i).getStatus().equals(CollectionStatus.RUNNING)){
-                        map.put(aidrCollections.get(i).getCreatedDate(), userEntity);
+                for(int i=0; i < collections.size(); i++ ){
+                    if(collections.get(i).getStatus().equals(CollectionStatus.INITIALIZING) || collections.get(i).getStatus().equals(CollectionStatus.RUNNING)){
+                        map.put(collections.get(i).getCreatedAt(), userEntity);
                         addedOnMap = true;
                     }
                 }

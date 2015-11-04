@@ -25,7 +25,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 
@@ -39,8 +39,8 @@ public class TestUsersResourceFacadeImp {
 	static UsersDTO user;
 	static String userName = "userDBTest"+new Date();
 	static String userRole = "normal"+new Date();
-	static CrisisDTO crisis;
-	static CrisisResourceFacadeImp crisisResourceFacadeImp;
+	static CollectionDTO crisis;
+	static CollectionResourceFacadeImp crisisResourceFacadeImp;
 	static CrisisTypeResourceFacadeImp crisisTypeResourceFacadeImp;
 	private static Logger logger = Logger.getLogger("db-manager-log");
 
@@ -50,7 +50,7 @@ public class TestUsersResourceFacadeImp {
 		entityManager = Persistence.createEntityManagerFactory(
 				"ProjectDBManagerTest-ejbPU").createEntityManager();
 		userResourceFacadeImp.setEntityManager(entityManager);
-		crisisResourceFacadeImp = new CrisisResourceFacadeImp();
+		crisisResourceFacadeImp = new CollectionResourceFacadeImp();
 		crisisTypeResourceFacadeImp = new CrisisTypeResourceFacadeImp();
 		crisisResourceFacadeImp.setEntityManager(entityManager);
 		crisisTypeResourceFacadeImp.setEntityManager(entityManager);
@@ -76,7 +76,7 @@ public class TestUsersResourceFacadeImp {
 				entityManager.getTransaction().begin();
 				crisisResourceFacadeImp.deleteCrisis(crisis);
 				entityManager.getTransaction().commit();
-				CrisisDTO result = crisisResourceFacadeImp.getCrisisByCode(crisis.getCode());
+				CollectionDTO result = crisisResourceFacadeImp.getCrisisByCode(crisis.getCode());
 				assertNull(result);
 				crisis=null;
 			}
@@ -146,12 +146,12 @@ public class TestUsersResourceFacadeImp {
 	public void testFindAllCrisisByUserId() {
 		try {
 			CrisisTypeDTO crisisTypeDTO = crisisTypeResourceFacadeImp.findCrisisTypeByID(1100L);
-			CrisisDTO crisisDTO = new CrisisDTO("testCrisisName", "testCrisisCode", false, false, crisisTypeDTO, user);
+			CollectionDTO crisisDTO = new CollectionDTO("testCrisisName", "testCrisisCode", false, false, crisisTypeDTO, user);
 			entityManager.getTransaction().begin();
 			crisis = crisisResourceFacadeImp.addCrisis(crisisDTO);
 			entityManager.getTransaction().commit();
 
-			List<CrisisDTO> result = userResourceFacadeImp
+			List<CollectionDTO> result = userResourceFacadeImp
 					.findAllCrisisByUserID(user.getUserID());
 			assertEquals(user.getUserID(), result.get(0).getUsersDTO()
 					.getUserID());
