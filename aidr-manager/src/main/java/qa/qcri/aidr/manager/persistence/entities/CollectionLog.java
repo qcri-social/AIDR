@@ -24,6 +24,8 @@ public class CollectionLog extends BaseEntity {
 		this.endDate = collection.getEndDate();
 		this.geo = collection.getGeo();
 		this.track = collection.getTrack();
+		this.langFilters = collection.getLangFilters();
+		this.follow = collection.getFollow();
 	}
 
     @Column(name="collection_id")

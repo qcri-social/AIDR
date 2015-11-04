@@ -39,6 +39,7 @@ import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.persistence.entities.CollectionLog;
 import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
+import qa.qcri.aidr.manager.service.CrisisTypeService;
 import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.JsonDataValidator;
@@ -60,6 +61,9 @@ public class PublicController extends BaseController{
 	@Autowired
 	private CollectionLogService collectionLogService;
 
+	@Autowired
+	private CrisisTypeService crisisTypeService;
+	
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -390,7 +394,7 @@ public class PublicController extends BaseController{
 			if (resultList != null) {
 				Map<String, Boolean> runningCollections = new HashMap<String, Boolean>(resultList.size());
 				for (Collection c: resultList) {
-					runningCollections.put(c.getCode(), c.getPubliclyListed());
+					runningCollections.put(c.getCode(), c.isPubliclyListed());
 				}
 				//logger.debug("Fetched map to send: " + runningCollections);
 				return runningCollections;
@@ -413,7 +417,7 @@ public class PublicController extends BaseController{
 
 			if (collection != null) {
 				Map<String, Boolean> result = new HashMap<String, Boolean>();
-				result.put(channelCode, collection.getPubliclyListed());
+				result.put(channelCode, collection.isPubliclyListed());
 				//logger.debug("Fetched map to send: " + result);
 				return result;
 			}
@@ -477,7 +481,7 @@ public class PublicController extends BaseController{
 		dto.setCreatedDate(collection.getCreatedAt());
 		dto.setLastDocument(collection.getLastDocument());
 		dto.setDurationHours(collection.getDurationHours());
-		dto.setPubliclyListed(collection.getPubliclyListed());
+		dto.setPubliclyListed(collection.isPubliclyListed());
 		dto.setCrisisType(collection.getCrisisType());
 		dto.setHasTaggerOutput(hasTaggerOutput);
         dto.setCollectionType(collection.getProvider());

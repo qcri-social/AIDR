@@ -625,7 +625,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
     setEndDate: function (raw, status) {
         var me = this;
         if (status == "RUNNING" || status == "RUNNING_WARNING" || status == "INITIALIZING" || status == 'WARNING') {
-        	this.DetailsComponent.lastStoppedL.setText(raw ? moment(raw).calendar() : 'Still running', false);
+        	this.DetailsComponent.lastStoppedL.setText(raw ? moment(raw).calendar() : 'N/A', false);
         	//this.DetailsComponent.lastStoppedL.setText('Still running', false);
         }
         else {

@@ -29,7 +29,7 @@ public class Collection extends BaseEntity {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name="owner_id")
+    @JoinColumn(name="owner_id", nullable=false)
     private UserAccount owner;
 
     private Integer count;
@@ -45,7 +45,7 @@ public class Collection extends BaseEntity {
     @Column(name="publicly_listed")
     private boolean publiclyListed;
     
-    @Column(name="last_document")
+	@Column(name="last_document")
     private String lastDocument;
     
     @Column(name="classifier_enabled")
@@ -85,7 +85,15 @@ public class Collection extends BaseEntity {
     @ManyToOne
     @JoinColumn(name="classifier_enabled_by")
     private UserAccount classifierEnabledBy;
-    
+
+    public boolean isPubliclyListed() {
+		return publiclyListed;
+	}
+
+	public void setPubliclyListed(boolean publiclyListed) {
+		this.publiclyListed = publiclyListed;
+	}
+
 	public CrisisType getCrisisType() {
 		return crisisType;
 	}
@@ -186,10 +194,6 @@ public class Collection extends BaseEntity {
 		this.durationHours = durationHours;
 	}
 
-	public void setPubliclyListed(boolean publiclyListed) {
-		this.publiclyListed = publiclyListed;
-	}
-
 	public void setCount(Integer count) {
 		this.count = count;
 	}
@@ -216,13 +220,6 @@ public class Collection extends BaseEntity {
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-	}
-	public Boolean getPubliclyListed() {
-		return publiclyListed;
-	}
-
-	public void setPubliclyListed(Boolean publiclyListed) {
-		this.publiclyListed = publiclyListed;
 	}
 
 	public String getLastDocument() {

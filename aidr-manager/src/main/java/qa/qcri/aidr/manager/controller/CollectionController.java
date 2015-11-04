@@ -124,30 +124,29 @@ public class CollectionController extends BaseController{
 			return getUIWrapper(false); 
 		}
 	}
-	/*@RequestMapping(value = "/updateDuration.action", method={RequestMethod.POST})
+	@RequestMapping(value = "/updateDuration.action", method={RequestMethod.POST})
 	@ResponseBody
-	public Map<String,Object> updateDuration(Collection collection) throws Exception {
+	public Map<String,Object> updateDuration(@RequestParam String code, @RequestParam Integer duration) throws Exception {
 		//logger.info("Save Collection to Database having code : "+collection.getCode());
 		try{
-			Collection dbCollection = collectionService.findById(collection.getId());
-			dbCollection.setDurationHours(collection.getDurationHours());
+			Collection dbCollection = collectionService.findByCode(code);
+			dbCollection.setDurationHours(duration);
 			collectionService.update(dbCollection);
 			return getUIWrapper(true);
 		}catch(Exception e){
 			logger.error("Error while updating collection duration", e);
 			return getUIWrapper(false);
 		}
-	}*/
+	}
 
 	@RequestMapping(value = "/updatePublicListing.action", method={RequestMethod.POST})
 	@ResponseBody
-	public Map<String,Object> updatePubliclyListed(Collection collection) throws Exception {
+	public Map<String,Object> updatePubliclyListed(@RequestParam Long id, @RequestParam boolean publiclyListed) throws Exception {
 		//logger.info("[updatePubliclyListed] Save Collection to Database having code : "+collection.getCode());
 		try{
-			Collection dbCollection = collectionService.findById(collection.getId());
-			logger.info("[updatePubliclyListed] old status: " + dbCollection.getPubliclyListed() + ", new status: " + collection.getPubliclyListed());
-			dbCollection.setPubliclyListed(collection.getPubliclyListed()); 
-			//collectionService.update(dbCollection);
+			Collection dbCollection = collectionService.findById(id);
+			dbCollection.setPubliclyListed(publiclyListed); 
+			collectionService.update(dbCollection);
 			return getUIWrapper(true);
 		}catch(Exception e){
 			logger.error("Error while updating collection publicly Listed status", e);
@@ -686,7 +685,7 @@ public class CollectionController extends BaseController{
 		dto.setCreatedDate(collection.getCreatedAt());
 		dto.setLastDocument(collection.getLastDocument());
 		dto.setDurationHours(collection.getDurationHours());
-		dto.setPubliclyListed(collection.getPubliclyListed());
+		dto.setPubliclyListed(collection.isPubliclyListed());
 		dto.setCrisisType(collection.getCrisisType());
 		dto.setCollectionType(collection.getProvider());
 
