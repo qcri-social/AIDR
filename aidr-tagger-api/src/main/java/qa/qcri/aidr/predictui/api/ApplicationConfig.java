@@ -31,7 +31,7 @@ public class ApplicationConfig extends Application {
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(qa.qcri.aidr.predictui.api.CollectionResource.class);
-        resources.add(qa.qcri.aidr.predictui.api.CrisisManagementResource.class);
+        resources.add(qa.qcri.aidr.predictui.api.CollectionManagementResource.class);
         resources.add(qa.qcri.aidr.predictui.api.CrisisResource.class);
         resources.add(qa.qcri.aidr.predictui.api.CrisisTypeResource.class);
         resources.add(qa.qcri.aidr.predictui.api.CustomUITemplateResource.class);

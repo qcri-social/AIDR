@@ -58,7 +58,8 @@ public class Collection implements Serializable {
     @Column(name="classifier_enabled")
     private boolean classifierEnabled;
     
-    @Column(name="crisis_type")
+    @ManyToOne
+    @JoinColumn(name="crisis_type")
     private CrisisType crisisType;
     
     @Column(name="duration_hours")
