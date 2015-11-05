@@ -192,7 +192,7 @@ body{
     overflow: hidden;
     padding-bottom: 10px;
     padding-top: 10px;
-    border-bottom: 1px #e3e1e1 solid;
+/*     border-bottom: 1px #e3e1e1 solid; */
 }
 
 .c-list .crisis-item,
@@ -625,7 +625,7 @@ End of the tab panel styles
 .attribute-list .content .rightColumn,
 .c-list .content .rightColumn,
 .c-models-list .content .rightColumn {
-    line-height: 1.5;
+    line-height: 2;
     float:left;
     width:160px;
 }
@@ -633,7 +633,7 @@ End of the tab panel styles
 .collections-list .content .leftColumn,
 .attribute-list .content .leftColumn,
 .c-list .content .leftColumn {
-    line-height: 1.5;
+    line-height: 2;
     float:left;
     width:710px;
 }

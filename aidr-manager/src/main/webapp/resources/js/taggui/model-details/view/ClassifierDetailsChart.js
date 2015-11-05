@@ -16,14 +16,6 @@ Ext.define('ModelForClassifiedDetailsChart',{
         ]
 });
 
-var store = Ext.create('Ext.data.JsonStore', {
-    pageSize: 100,
-    storeId: 'modelLabelStoreForClassifierDetailsChart',
-    model : 'ModelForClassifiedDetailsChart',
-    // fields: ['value', 'classifiedDocumentCount', 'trainingDocumentsCount', 'totalDocuments'],
-    autoLoad: false
-});
-
 Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
     extend: 'Ext.Panel',
     alias: 'widget.ClassifierDetailsChart',
@@ -31,6 +23,12 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
 
     initComponent: function() {
         var me = this;
+        var store = Ext.create('Ext.data.JsonStore', {
+            storeId: 'modelLabelStoreForClassifierDetailsChart',
+            model : 'ModelForClassifiedDetailsChart',
+            // fields: ['value', 'classifiedDocumentCount', 'trainingDocumentsCount', 'totalDocuments'],
+            autoLoad: false,
+        });
 
         var barChart = Ext.create('Ext.chart.Chart', {
             flex:4,
@@ -182,6 +180,15 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
 	        store: 'modelLabelStoreForClassifierDetailsChart',
 	        cls: 'aidr-grid',
 	        margin: '20 0 0 0',
+	        dockedItems: [{
+          	  xtype: 'toolbar',
+          	  dock: 'bottom',
+          	  cls: 'aidr-paging',
+          	  items: [
+      	          {	xtype: 'tbfill' },
+      	          {  xtype: 'tbtext', text: 'Loading...', itemId: 'classifierDetailsStoreCountDisplay' },
+               ]
+			}],
 	        columns: [
 	            {
 	            	xtype: 'gridcolumn',
@@ -218,22 +225,30 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
 	                renderer: perc
 	            }
 	        ],
-	
+	        viewConfig: {
+	            listeners: {
+	                refresh: function(gridview) {
+	                	 this.getSelectionModel().select(0);
+	                }
+	            }
+	        },
 	        listeners: {
 	            selectionchange: function(model, records) {
 	                if (records[0]) {
 	                    selectedRec = records[0];
 	                    updateRadarChart(selectedRec);
+	                    this.down('#classifierDetailsStoreCountDisplay').setText("Total no. of records :  " + store.getCount());
 	                }
 	            },
 	            render : function(grid){
 	            	 grid.on('viewready',function(){  
 	                     this.getSelectionModel().select(0);  
+	                     this.down('#classifierDetailsStoreCountDisplay').setText("Total no. of records :  " + store.getCount());
 	                });
-            	 }
+            	 },
 	        }
 	    });
-
+	    
         me.items = [{
             xtype: 'container',
             width: '100%',
@@ -260,6 +275,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                         gridPanel]
         }];
 
-        this.callParent();
+        this.callParent(arguments);
+        
     }
 });

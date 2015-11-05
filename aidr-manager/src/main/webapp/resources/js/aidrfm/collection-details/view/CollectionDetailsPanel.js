@@ -48,6 +48,17 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             text: 'Collection History'
         });
 
+        this.horizontalLineTop = Ext.create('Ext.container.Container', {
+        	width: '100%',
+            html: '<div class="horizontalLine"></div>'
+        });
+        
+        this.horizontalLineBottomMargin = Ext.create('Ext.container.Container', {
+        	width: '100%',
+            margin: '0 0 30 0',
+            html: '<div class="horizontalLine"></div>'
+        });
+        
         this.collectionHistoryDoNotChangeMessage = Ext.create('Ext.panel.Panel', {
             html: '<div style="padding-top:150px"><center><div style="font-size:16pt">This collection has not changed since it was created.</div></center></div>',
             hidden: true
@@ -409,16 +420,20 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
                     if (count > 0) {
                         me.collectionHistoryTitle.show();
-                       // me.collectionLogView.show();
-                        me.collectionLogPaging.show();
                         collectionHistoryChart.show();
+                        me.horizontalLineTop.show();
+                        me.collectionHistoryPanelView.show();
+                        me.horizontalLineBottomMargin.show();
                         me.collectionHistoryGrid.show();
+                        //Adding dock to display total record count 
+                        me.down('#collectionLogStoreCount').setText("Total no. of records :  " + s.getCount());
                         me.collectionHistoryDoNotChangeMessage.hide();
                     } else {
                         me.collectionHistoryTitle.hide();
-                      //  me.collectionLogView.hide();
                         collectionHistoryChart.hide();
-                        me.collectionLogPaging.hide();
+                        me.horizontalLineTop.hide();
+                        me.collectionHistoryPanelView.hide();
+                        me.horizontalLineBottomMargin.hide();
                         me.collectionHistoryGrid.hide();
                         me.collectionHistoryDoNotChangeMessage.show();
                     }
@@ -451,7 +466,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<div class="collections-list">',
        
             '<tpl if="values.length == 0">' +
-            '<div><center><div style="font-size:16pt; padding:20px 0 0px 0">Please select a row.</div></center></div>',
+            '<div><center><div style="font-size:16pt; padding:10px 0 0px 0">Please select a row.</div></center></div>',
             '</tpl>',
             
             '<tpl for=".">',
@@ -563,7 +578,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             tpl: this.collectionHistoryPanelTpl,
             emptyText: 'Please select a row.',
             loadMask: false,
-            margin: '0 0 20 0'
+            margin: '0 0 10 0'
             
         });
 
@@ -1199,6 +1214,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         var collectionHistoryChart = Ext.create('Ext.chart.Chart', {
         	width: 900,
             height: 350,
+            margin: '0 0 20 0',
             animate: true,
             store: 'collectionLogStore',
             legend: {
@@ -1262,22 +1278,31 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 				enableTextSelection: true
 			},
 			height: 150,
+			dockedItems: [{
+            	  xtype: 'toolbar',
+            	  dock: 'bottom',
+            	  cls: 'aidr-paging',
+            	  items: [
+        	          {	xtype: 'tbfill' },
+        	          {  xtype: 'tbtext', text: 'Loading...', itemId: 'collectionLogStoreCount' },
+                 ]
+			}],
 	        columns: [
 				{
 					xtype: 'gridcolumn', text: 'Collected '+COLLECTION_TYPES[TYPE]["plural"],
-				    dataIndex: 'count', width: 130,
+				    dataIndex: 'count', flex:1, tdCls:'align-right',
 				    renderer: function (r, meta, record) {
 				    	return r ? Ext.util.Format.number(r,'0,000') : 0;
 					}
 				},
 	            {
-	            	xtype: 'gridcolumn', text: 'Start date',  width: 160, dataIndex: 'startDate',
+	            	xtype: 'gridcolumn', text: 'Start date',  flex:1, dataIndex: 'startDate',
 	                renderer: function (r, meta, record) {
 	                       return r ? moment(r).format("MMM Do, YYYY hh:mm A") : "Not specified";
                     }
 	            },
 	            {
-	            	xtype: 'gridcolumn', text: 'End date',  width: 160, dataIndex: 'endDate',
+	            	xtype: 'gridcolumn', text: 'End date',  flex:1, dataIndex: 'endDate',
 	            	renderer: function (r, meta, record) {
 	                       return r ? moment(r).format("MMM Do, YYYY hh:mm A") : "Not specified";
 	            	}
@@ -1311,7 +1336,12 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 	            	if(collectionHistoryChart.series.items[0]!=null){
 	            		collectionHistoryChart.series.items[0].unHighlightItem();
 	            	}
-				}
+				},
+				render : function(grid){
+	            	 grid.on('viewready',function(){  
+	                     this.getSelectionModel().select(0);  
+	                });
+           	 	},
 	        },
             getLanguageField: function (r) {
                 var languageFull = "";
@@ -1355,15 +1385,17 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             items: [
                                 this.collectionHistoryTitle,
                                 collectionHistoryChart,
-                                {
+                                this.horizontalLineTop,
+                                this.collectionHistoryPanelView,
+                                /*{
                                     xtype: 'container',
                                     width: '100%',
-                                    margin: '10 0 0 0',
+                                    margin: '0 0 30 0',
                                     html: '<div class="horizontalLine"></div>'
-                                },
-                                this.collectionHistoryPanelView,
+                                },*/
+                                this.horizontalLineBottomMargin,
                                 this.collectionHistoryGrid,
-                            //    this.collectionLogPaging,
+                                //this.collectionLogPaging,
                             ]
                         },
                         this.collectionHistoryDoNotChangeMessage
@@ -1420,6 +1452,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         ];
 
         this.callParent(arguments);
+     
     }
 
 });
