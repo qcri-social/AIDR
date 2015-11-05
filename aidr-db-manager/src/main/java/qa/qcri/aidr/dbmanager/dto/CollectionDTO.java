@@ -112,7 +112,7 @@ public class CollectionDTO implements Serializable  {
 				cType.setCrisisTypeId(collection.getCrisisType().getCrisisTypeId());
 				this.setCrisisTypeDTO(new CrisisTypeDTO(cType));
 			}
-			if (collection.hasUsers()) {
+			if (collection.hasUsers() & collection.getUsers() != null) {
 				Users user = new Users();
 				user.setUserName(collection.getUsers().getUserName());
 				user.setId(collection.getUsers().getId());

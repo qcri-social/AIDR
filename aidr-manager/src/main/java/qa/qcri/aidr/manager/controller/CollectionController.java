@@ -681,7 +681,10 @@ public class CollectionController extends BaseController{
 		}
 		dto.setStatus(collection.getStatus());
 		dto.setTrack(collection.getTrack());
-		dto.setFollow(collectionService.getFollowTwitterScreenNames(collection.getFollow(), user.getUserName()));
+		
+		if(user != null) {
+			dto.setFollow(collectionService.getFollowTwitterScreenNames(collection.getFollow(), user.getUserName()));
+		}	
 		dto.setGeo(collection.getGeo());
 		dto.setLangFilters(collection.getLangFilters());
 		dto.setStartDate(collection.getStartDate());

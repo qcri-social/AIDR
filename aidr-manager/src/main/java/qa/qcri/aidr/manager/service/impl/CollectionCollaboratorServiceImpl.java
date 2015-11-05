@@ -85,4 +85,9 @@ public class CollectionCollaboratorServiceImpl implements CollectionCollaborator
 		return false;
 	}
 
+	@Override
+	public List<Collection> fetchCollectionsByCollaborator(Long userId, Integer start, Integer limit, boolean trashed) {
+		return collaboratorRepository.getCollectionByCollaborator(userId, start, limit, trashed);	
+	}
+
 }

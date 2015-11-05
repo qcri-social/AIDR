@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.persistence.entities.CollectionCollaborator;
 import qa.qcri.aidr.manager.repository.CollectionCollaboratorRepository;
+import qa.qcri.aidr.manager.util.CollectionStatus;
 
 /**
  * @author Latika
@@ -60,6 +62,36 @@ public class CollectionCollaboratorRepositoryImpl extends GenericRepositoryImpl<
 		collectionCollaborator.setUpdatedAt(now);
 		collectionCollaborator.setCreatedAt(now);
 		super.save(collectionCollaborator);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Collection> getCollectionByCollaborator(Long userId, Integer start, Integer limit, boolean trashed) {
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(CollectionCollaborator.class);
+		criteria.createAlias("collection", "col").setFetchMode("col", FetchMode.JOIN);
+		criteria.add(Restrictions.eq("account.id", userId));
+		
+		if(trashed) {
+			criteria.add(Restrictions.eq("col.status", CollectionStatus.TRASHED)); 
+		} else {
+			criteria.add(Restrictions.ne("col.status", CollectionStatus.TRASHED));
+		}
+		
+		if(start != null) {
+			criteria.setFirstResult(start);
+		}
+		if(limit != null) {
+			criteria.setMaxResults(limit);
+		}
+		List<CollectionCollaborator> collectionCollaborators = (List<CollectionCollaborator>) criteria.list();
+		
+		List<Collection> collections = new ArrayList<Collection>();
+		if(collectionCollaborators != null) {
+			for(CollectionCollaborator collaborator : collectionCollaborators) {
+				collections.add(collaborator.getCollection());
+			}
+		}
+		return collections;
 	}
 
 }
