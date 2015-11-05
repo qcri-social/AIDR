@@ -8,6 +8,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import qa.qcri.aidr.manager.hibernateEntities.BaseEntity;
 import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
@@ -15,6 +16,7 @@ import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.CollectionType;
 
 @Entity
+@Table(name = "collection")
 public class Collection extends BaseEntity {
 
     /**

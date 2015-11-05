@@ -56,11 +56,7 @@ public class CrisisManagementResourceFacadeImp implements CrisisManagementResour
 			}
 		
 			//Otherwise go ahead with trashing
-			collection.setIsTrashed(true);
-			
 			List<ModelFamilyDTO> associatedModels = remoteModelFamilyEJB.getAllModelFamiliesByCrisis(collection.getCrisisID());
-			
-			remoteCrisisEJB.merge(collection.toEntity());
 			
 			if (associatedModels.isEmpty()) {
 				StringBuilder sb = new StringBuilder().append("{\"TRASHED\":").append(collection.getCrisisID()).append("}");

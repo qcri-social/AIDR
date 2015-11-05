@@ -201,6 +201,7 @@ public class CollectionController extends BaseController{
 					try {
 						//collection = collectionService.stop(collection.getId());
 						collection.setStatus(CollectionStatus.TRASHED);
+						collection.setTrashed(true);
 						collectionService.update(collection);
 						if (taggerService.trashCollection(collection) > 0) {
 							AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, null);
@@ -211,6 +212,7 @@ public class CollectionController extends BaseController{
 							logger.error(msg);
 							// restore collection status to STOPPED
 							collection.setStatus(oldStatus);
+							collection.setTrashed(false);
 							collectionService.update(collection);
 							return getUIWrapper(false, msg);
 						}
@@ -219,6 +221,7 @@ public class CollectionController extends BaseController{
 						logger.error(msg, e);
 						if (!collection.getStatus().equals(oldStatus)) {
 							// restore collection status
+							collection.setTrashed(false);
 							collection.setStatus(oldStatus);
 							collectionService.update(collection);
 						}
