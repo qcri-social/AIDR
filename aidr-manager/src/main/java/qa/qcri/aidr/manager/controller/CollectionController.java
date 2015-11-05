@@ -455,7 +455,8 @@ public class CollectionController extends BaseController{
 				accountId = account.getId();
 			}
 			collection = collectionService.statusById(id, accountId);
-			dto = convertAidrCollectionToDTO(collection, null);
+			List<UserAccount>  collaborators = collaboratorService.fetchCollaboratorsByCollection(collection.getId());
+			dto = convertAidrCollectionToDTO(collection, collaborators);
 			if (dto != null) {
 				Integer totalCount = collectionLogService.countTotalDownloadedItemsForCollection(id);
 				if (CollectionStatus.RUNNING.equals(dto.getStatus()) || CollectionStatus.RUNNING_WARNING.equals(dto.getStatus())){

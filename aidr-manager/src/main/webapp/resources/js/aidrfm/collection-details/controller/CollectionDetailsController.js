@@ -800,7 +800,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/untrash.action',
-            method: 'GET',
+            method: 'POST',
             params: {
                 id: id,
                 code: code
