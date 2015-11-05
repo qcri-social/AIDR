@@ -205,6 +205,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 click: function (btn, e, eOpts) {
                     var id = datailsController.DetailsComponent.currentCollection.id;
                     this.refreshStatus(id);
+                    this.DetailsComponent.collectionLogStore.load();
                 }
             },
 
@@ -939,6 +940,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                         me.setCountOfDocuments(data.count);
                         me.setTotalCountOfDocuments(data.totalCount);
                         me.setLastDowloadedDoc(data.lastDocument);
+                        me.setManagers(data.managers);
                     }
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
