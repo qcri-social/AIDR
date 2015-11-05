@@ -1,6 +1,6 @@
 package qa.qcri.aidr.manager.repository;
 
-import qa.qcri.aidr.manager.hibernateEntities.AidrAuthenticateToken;
+import qa.qcri.aidr.manager.persistence.entities.AuthenticateToken;
 
 import java.io.Serializable;
 
@@ -11,7 +11,7 @@ import java.io.Serializable;
  * Time: 12:13 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface AuthenticateTokenRepository extends GenericRepository<AidrAuthenticateToken, Serializable>  {
+public interface AuthenticateTokenRepository extends GenericRepository<AuthenticateToken, Serializable>  {
 
     public Boolean isAuthorized(String token);
 }

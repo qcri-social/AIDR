@@ -14,10 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import qa.qcri.aidr.manager.RoleType;
-import qa.qcri.aidr.manager.hibernateEntities.Role;
-import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
-import qa.qcri.aidr.manager.hibernateEntities.UserAccountRole;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
+import qa.qcri.aidr.manager.persistence.entities.Role;
+import qa.qcri.aidr.manager.persistence.entities.UserAccount;
+import qa.qcri.aidr.manager.persistence.entities.UserAccountRole;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
 import qa.qcri.aidr.manager.repository.RoleRepository;
 import qa.qcri.aidr.manager.repository.UserAccountRepository;

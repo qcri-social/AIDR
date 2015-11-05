@@ -16,8 +16,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import qa.qcri.aidr.manager.dto.TaggerCrisis;
 import qa.qcri.aidr.manager.dto.TaggerModel;
-import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
+import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;

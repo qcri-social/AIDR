@@ -6,8 +6,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import qa.qcri.aidr.manager.hibernateEntities.BaseEntity;
-
 @Entity
 @Table(name = "collection_log")
 public class CollectionLog extends BaseEntity {

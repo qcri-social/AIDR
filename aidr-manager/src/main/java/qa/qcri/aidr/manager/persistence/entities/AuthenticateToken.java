@@ -1,4 +1,4 @@
-package qa.qcri.aidr.manager.hibernateEntities;
+package qa.qcri.aidr.manager.persistence.entities;
 
 
 import java.io.Serializable;
@@ -14,9 +14,9 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 
 @Entity
-@Table(name = "aidr_authenticate_token")
+@Table(name = "authenticate_token")
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class AidrAuthenticateToken implements Serializable {
+public class AuthenticateToken implements Serializable {
 
     private static final long serialVersionUID = 4720813686204397970L;
 

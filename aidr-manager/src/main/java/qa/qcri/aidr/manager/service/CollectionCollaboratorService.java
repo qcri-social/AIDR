@@ -5,8 +5,8 @@ package qa.qcri.aidr.manager.service;
 
 import java.util.List;
 
-import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
+import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 
 /**
  * @author Latika

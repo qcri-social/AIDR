@@ -5,7 +5,7 @@ import javax.inject.Inject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import qa.qcri.aidr.manager.hibernateEntities.UserConnection;
+import qa.qcri.aidr.manager.persistence.entities.UserConnection;
 import qa.qcri.aidr.manager.repository.UserConnectionRepository;
 import qa.qcri.aidr.manager.service.UserConnectionService;
 

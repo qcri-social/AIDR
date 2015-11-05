@@ -1,7 +1,7 @@
 /**
  * 
  */
-package qa.qcri.aidr.manager.hibernateEntities;
+package qa.qcri.aidr.manager.persistence.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;

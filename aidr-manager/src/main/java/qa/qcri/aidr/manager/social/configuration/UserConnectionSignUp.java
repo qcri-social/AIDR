@@ -13,8 +13,8 @@ import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.support.OAuth1Connection;
 import org.springframework.stereotype.Component;
 
-import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
-import qa.qcri.aidr.manager.hibernateEntities.UserConnection;
+import qa.qcri.aidr.manager.persistence.entities.UserAccount;
+import qa.qcri.aidr.manager.persistence.entities.UserConnection;
 import qa.qcri.aidr.manager.service.UserConnectionService;
 import qa.qcri.aidr.manager.service.UserService;
 

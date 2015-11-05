@@ -3,8 +3,8 @@ package qa.qcri.aidr.manager.repository;
 import java.io.Serializable;
 import java.util.List;
 
-import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
+import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 
 public interface CollectionRepository extends GenericRepository<Collection, Serializable> {
     public Integer getPublicCollectionsCount(final Enum statusValue);

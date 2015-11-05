@@ -4,13 +4,11 @@
 
 <hibernate-configuration>
     <session-factory>
-        <mapping class="qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog"/>
-        <mapping class="qa.qcri.aidr.manager.hibernateEntities.UserAccount"/>
-        <mapping class="qa.qcri.aidr.manager.hibernateEntities.AidrCollection"/>
-        <mapping class="qa.qcri.aidr.manager.hibernateEntities.UserConnection"/>
-        <mapping class="qa.qcri.aidr.manager.hibernateEntities.Role"/>
-        <mapping class="qa.qcri.aidr.manager.hibernateEntities.AidrAuthenticateToken"/>
-        <mapping class="qa.qcri.aidr.manager.hibernateEntities.UserAccountRole"/>
+        <mapping class="qa.qcri.aidr.manager.persistence.entities.UserAccount"/>
+        <mapping class="qa.qcri.aidr.manager.persistence.entities.UserConnection"/>
+        <mapping class="qa.qcri.aidr.manager.persistence.entities.Role"/>
+        <mapping class="qa.qcri.aidr.manager.persistence.entities.AuthenticateToken"/>
+        <mapping class="qa.qcri.aidr.manager.persistence.entities.UserAccountRole"/>
         <mapping class="qa.qcri.aidr.manager.persistence.entities.Collection"/>
         <mapping class="qa.qcri.aidr.manager.persistence.entities.CollectionCollaborator"/>
         <mapping class="qa.qcri.aidr.manager.persistence.entities.CrisisType"/>

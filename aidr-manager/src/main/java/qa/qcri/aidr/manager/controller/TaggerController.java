@@ -47,8 +47,8 @@ import qa.qcri.aidr.manager.dto.TaskAnswerRequest;
 import qa.qcri.aidr.manager.dto.TaskInfo;
 import qa.qcri.aidr.manager.dto.UpdateCrisisDTO;
 import qa.qcri.aidr.manager.exception.AidrException;
-import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
+import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 

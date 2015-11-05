@@ -8,9 +8,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import qa.qcri.aidr.manager.hibernateEntities.BaseEntity;
-import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
-
 /**
  * @author Latika
  *

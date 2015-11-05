@@ -1,4 +1,4 @@
-package qa.qcri.aidr.manager.hibernateEntities;
+package qa.qcri.aidr.manager.persistence.entities;
 
 import java.io.Serializable;
 

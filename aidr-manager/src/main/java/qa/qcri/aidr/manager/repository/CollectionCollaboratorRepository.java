@@ -6,9 +6,9 @@ package qa.qcri.aidr.manager.repository;
 import java.io.Serializable;
 import java.util.List;
 
-import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.persistence.entities.CollectionCollaborator;
+import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 
 /**
  * @author Latika
