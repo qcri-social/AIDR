@@ -34,11 +34,11 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         this.refreshButton = Ext.create('Ext.Button', {
             height: 32,
             width: 86,
-            text:'Refresh',
+            
             margin: '13 0 0 0',
             tooltip: 'Refresh',
-            iconCls: 'refrashIcon',
-            cls:'collection-details-refresh-btn',
+            
+            cls:'btn btn-blueish4',
             id: 'refreshBtn'
         });
 
@@ -146,7 +146,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         this.managersL = Ext.create('Ext.form.Label', {flex: 1});
 
         this.codeE = Ext.create('Ext.form.field.Text', {
-            fieldLabel: 'Short name',
+            fieldLabel: 'Short names',
             name: 'code',
             allowBlank: false,
             width: 370,
@@ -545,9 +545,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 getDocNumber: function (r) {
                     return r ? Ext.util.Format.number(r,'0,000') : 0;
                 },
-                getNumber: function(){
-                	return "a";
-                },
                 showGeoLabel: function (r) {
                     return r ? '<div>Geographical regions:</div>' : '';
                 },
@@ -651,22 +648,22 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 }
                             ]
                         },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            margin: '5 0',
-                            items: [
-                                this.codeE,
-                                {
-                                    border: false,
-                                    bodyStyle: 'background:none',
-                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
-                                    height: 22,
-                                    width: 22,
-                                    id: 'collectionCodeInfo'
-                                }
-                            ]
-                        },
+                        // {
+                        //     xtype: 'container',
+                        //     layout: 'hbox',
+                        //     margin: '5 0',
+                        //     items: [
+                        //         this.codeE,
+                        //         {
+                        //             border: false,
+                        //             bodyStyle: 'background:none',
+                        //             html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+                        //             height: 22,
+                        //             width: 22,
+                        //             id: 'collectionCodeInfo'
+                        //         }
+                        //     ]
+                        // },
                         {
                             xtype: 'container',
                             layout: 'hbox',
@@ -851,18 +848,18 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                         margin: '5 0'
                                     },
                                     items: [
-                                        {
-                                            xtype: 'container',
-                                            defaultType: 'label',
-                                            layout: 'hbox',
-                                            items: [
-                                                {
-                                                    padding: '0 10 0 0',
-                                                    text: 'Short name:'
-                                                },
-                                                this.codeL
-                                            ]
-                                        },
+                                        // {
+                                        //     xtype: 'container',
+                                        //     defaultType: 'label',
+                                        //     layout: 'hbox',
+                                        //     items: [
+                                        //         {
+                                        //             padding: '0 10 0 0',
+                                        //             text: 'Short name:'
+                                        //         },
+                                        //         this.codeL
+                                        //     ]
+                                        // },
                                         {
                                             xtype: 'container',
                                             defaultType: 'label',
@@ -1452,7 +1449,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         ];
 
         this.callParent(arguments);
-     
     }
 
 });

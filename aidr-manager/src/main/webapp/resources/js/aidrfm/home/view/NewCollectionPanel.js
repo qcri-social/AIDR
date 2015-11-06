@@ -27,21 +27,22 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
             text: 'Status as of ' + Ext.Date.format(new Date(), 'F j, Y, g:i:s A'),
             flex: 1
         });
+         this.newCollectionButton = Ext.create('Ext.Button', {
+            text: 'Create Collection',
+            margin: '6 0 0 15',
+            cls:'btn btn-blueish1',
+            id: 'newCollection'
+        });
 
         this.goToAdminSection = Ext.create('Ext.Button', {
-            text: 'Administrator console',
+            text: 'Admin Panel',
             margin: '6 0 0 15',
-            cls:'btn btn-blueish2',
+            cls:'btn btn-blueish1',
             id: 'goToAdminSection',
             hidden: true
         });
 
-        this.newCollectionButton = Ext.create('Ext.Button', {
-            text: 'Create New Collection',
-            margin: '6 0 0 15',
-            cls:'btn btn-blueish2',
-            id: 'newCollection'
-        });
+       
 
 //        this.manageCrisisButton = Ext.create('Ext.Button', {
 //            text: 'My Classifiers',
@@ -51,12 +52,14 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
 //        });
 
 this.refreshButton = Ext.create('Ext.Button', {
-    text: null,
-    height: 32,
-    width: 32,
-    margin: '0 0 0 20',
+    // text: null,
+    // height: 32,
+    // width: 32,
+    margin: '27 395 0 20',
     tooltip: 'Refresh',
-    iconCls: 'refrashIcon',
+    // iconCls: 'refrashIcon',
+     cls:'btn btn-blueish4',
+
     id: 'refreshBtn'
 });
 
@@ -107,7 +110,7 @@ this.collectionTpl = new Ext.XTemplate(
     '<span>Classifier ({classifiersNumber})</span>',
     '</button>',
     '<tpl else>',
-    '<button id="buttonEnableClassifiers_{id}" class="btn btn-blueish2 {[this.isEnableClassifierButtonDisabled(values.status)]}" onclick="collectionController.enableTagger({crisisType}, \'{code}\',\'{name}\');" {[this.isEnableClassifierButtonDisabled(values.status)]}>',
+    '<button id="buttonEnableClassifiers_{id}" class="btn btn-blueish3 {[this.isEnableClassifierButtonDisabled(values.status)]}" onclick="collectionController.enableTagger({crisisType}, \'{code}\',\'{name}\');" {[this.isEnableClassifierButtonDisabled(values.status)]}>',
     '<span>Enable Classifier</span>',
     '</button>',
     '</tpl>',
@@ -380,10 +383,12 @@ this.tabs =  Ext.create('Ext.tab.Panel', {
             layout: 'hbox',
             margin: '5 0 0 0',
             items: [
+             
             this.taggerTitle,
-            this.goToAdminSection,
+            this.refreshButton,
             this.newCollectionButton,
-            this.refreshButton
+              this.goToAdminSection
+            
             ]
         }, {
             xtype: 'container',
@@ -391,7 +396,7 @@ this.tabs =  Ext.create('Ext.tab.Panel', {
             margin: '0 0 40 0',
             items: [
             this.collectionDescription,
-            this.refreshButton
+            // this.refreshButton
             ]
         },
         me.tabs,
