@@ -1,4 +1,4 @@
-package qa.qcri.aidr.data.model;
+package qa.qcri.aidr.manager.dto;
 
 import java.util.Date;
 
@@ -11,7 +11,7 @@ public class CollectionSummaryInfo {
 
 	private String code;
 	private String name;
-	private Long totalCount;
+	private Integer totalCount;
 	private String language;
 	private String curator;
 	private Date collectionCreationDate;
@@ -20,8 +20,9 @@ public class CollectionSummaryInfo {
 	private String keywords;
 	private String geo;
 	private String status;
-	private Integer labelCount;
-	private Integer humanTaggedCount;
+	private Long labelCount;
+	private Long humanTaggedCount;
+	
 	public String getCode() {
 		return code;
 	}
@@ -34,10 +35,10 @@ public class CollectionSummaryInfo {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Long getTotalCount() {
+	public Integer getTotalCount() {
 		return totalCount;
 	}
-	public void setTotalCount(Long totalCount) {
+	public void setTotalCount(Integer totalCount) {
 		this.totalCount = totalCount;
 	}
 	public String getLanguage() {
@@ -51,12 +52,6 @@ public class CollectionSummaryInfo {
 	}
 	public void setCurator(String curator) {
 		this.curator = curator;
-	}
-	public Date getCollectionCreationDate() {
-		return collectionCreationDate;
-	}
-	public void setCollectionCreationDate(Date collectionCreationDate) {
-		this.collectionCreationDate = collectionCreationDate;
 	}
 	public Date getEndDate() {
 		return endDate;
@@ -88,17 +83,22 @@ public class CollectionSummaryInfo {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	public Integer getLabelCount() {
+	public Long getLabelCount() {
 		return labelCount;
 	}
-	public void setLabelCount(Integer labelCount) {
+	public void setLabelCount(Long labelCount) {
 		this.labelCount = labelCount;
 	}
-	public Integer getHumanTaggedCount() {
+	public Long getHumanTaggedCount() {
 		return humanTaggedCount;
 	}
-	public void setHumanTaggedCount(Integer humanTaggedCount) {
+	public void setHumanTaggedCount(Long humanTaggedCount) {
 		this.humanTaggedCount = humanTaggedCount;
 	}
-	
+	public Date getCollectionCreationDate() {
+		return collectionCreationDate;
+	}
+	public void setCollectionCreationDate(Date collectionCreationDate) {
+		this.collectionCreationDate = collectionCreationDate;
+	}
 }

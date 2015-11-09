@@ -3,6 +3,7 @@ package qa.qcri.aidr.manager.service;
 import java.util.List;
 
 import qa.qcri.aidr.manager.dto.CollectionDetailsInfo;
+import qa.qcri.aidr.manager.dto.CollectionSummaryInfo;
 import qa.qcri.aidr.manager.dto.CollectionUpdateInfo;
 import qa.qcri.aidr.manager.dto.FetcherRequestDTO;
 import qa.qcri.aidr.manager.exception.AidrException;
@@ -85,4 +86,5 @@ public interface CollectionService {
 	
 	public Boolean isValidAPIKey(String code, String apiKey) throws Exception;
 
+	public List<CollectionSummaryInfo> getAllCollectionData();
 }

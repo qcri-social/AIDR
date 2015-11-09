@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import qa.qcri.aidr.manager.dto.AidrCollectionTotalDTO;
 import qa.qcri.aidr.manager.dto.CollectionDetailsInfo;
+import qa.qcri.aidr.manager.dto.CollectionSummaryInfo;
 import qa.qcri.aidr.manager.dto.TaggerCrisisType;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
@@ -590,4 +592,20 @@ public class PublicController extends BaseController{
 			return getUIWrapper("API Key is not valid", false); //Response.ok("API Key is not valid").build();
 		}
 	}
+	
+	@RequestMapping(value = "/list")
+	@ResponseBody
+	public List<CollectionSummaryInfo> getCollections() {
+		List<CollectionSummaryInfo> summaryInfos = new ArrayList<CollectionSummaryInfo>();
+		try {
+			summaryInfos =  collectionService.getAllCollectionData();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("error", e);
+			return Collections.EMPTY_LIST;
+		}
+		
+		return summaryInfos;
+	}
+	
 }

@@ -148,4 +148,6 @@ public interface TaggerService {
 	
 	public Map<String, Object> updateMicromapperEnabled(String code, Boolean isMicromapperEnabled) throws AidrException;
 	public Boolean sendMailService(String subject, String body);
+	
+	public Long getLabelCount(Long collectionId);
 }

@@ -492,4 +492,12 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 		collection.setCreatedAt(now);
 		super.save(collection);
 	}
+	
+	@Override
+	public List<Collection> getAllCollections() {
+	
+		List<Collection> collections = new ArrayList<Collection>();
+		collections = findAll();
+		return collections;
+	}
 }

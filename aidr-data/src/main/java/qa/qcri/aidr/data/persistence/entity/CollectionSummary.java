@@ -2,6 +2,7 @@ package qa.qcri.aidr.data.persistence.entity;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 @Entity
@@ -19,11 +20,55 @@ public class CollectionSummary extends BaseEntity {
 
 	private Date endDate;
 	
+	private Date collectionCreationDate;
+	
+	@Column(length = 1000)	
     private String geo;
 
 	private String curator;
 	
-    public Long getTotalCount() {
+	private Integer labelCount;
+
+	@Column(length = 5000)
+    private String keywords;
+
+	private String language;
+	
+	private String status;
+	
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public Long getTotalCount() {
 		return totalCount;
 	}
 
@@ -31,52 +76,60 @@ public class CollectionSummary extends BaseEntity {
 		this.totalCount = totalCount;
 	}
 
-	public String getName() {
-        return name;
-    }
+	public Date getStartDate() {
+		return startDate;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
 
-    public String getCode() {
-        return code;
-    }
+	public Date getEndDate() {
+		return endDate;
+	}
 
-    public void setCode(String code) {
-        this.code = code;
-    }
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
 
-    public String getGeo() {
-        return geo;
-    }
+	public String getGeo() {
+		return geo;
+	}
 
-    public void setGeo(String geo) {
-        this.geo = geo;
-    }
-    
-    public Date getStartDate() {
-        return startDate;
-    }
+	public void setGeo(String geo) {
+		this.geo = geo;
+	}
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-    
-    public Date getEndDate() {
-        return endDate;
-    }
+	public String getCurator() {
+		return curator;
+	}
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-    
-    public String getCurator() {
-        return curator;
-    }
+	public void setCurator(String curator) {
+		this.curator = curator;
+	}
 
-    public void setCurator(String curator) {
-        this.name = curator;
-    }
+	public Integer getLabelCount() {
+		return labelCount;
+	}
+
+	public void setLabelCount(Integer labelCount) {
+		this.labelCount = labelCount;
+	}
+
+	public String getKeywords() {
+		return keywords;
+	}
+
+	public void setKeywords(String keywords) {
+		this.keywords = keywords;
+	}
+
+	public Date getCollectionCreationDate() {
+		return collectionCreationDate;
+	}
+
+	public void setCollectionCreationDate(Date collectionCreationDate) {
+		this.collectionCreationDate = collectionCreationDate;
+	}
 	
 }

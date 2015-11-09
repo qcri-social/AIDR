@@ -37,4 +37,6 @@ public interface NominalLabelResourceFacade extends CoreDBServiceFacade<NominalL
     public Boolean isNominalLabelExists(String code);
     
     public List<NominalLabelDTO> getNominalLabelByAttributeID(Long attributeID) throws PropertyNotSetException ;
+    
+    public Long getNominalLabelCountForCollectionID(Long collectionId) throws Exception;
 }

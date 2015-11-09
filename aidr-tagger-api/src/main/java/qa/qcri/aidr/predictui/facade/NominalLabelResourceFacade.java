@@ -29,4 +29,6 @@ public interface NominalLabelResourceFacade {
    public List<NominalLabelDTO> getAllNominalLabel(); 
    
    void deleteNominalLabelDataByAttribute(Long attributeID);
+   
+   Long getLabelCountByCollectionId(Long collectionId);
 }

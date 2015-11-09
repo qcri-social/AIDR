@@ -28,7 +28,7 @@ public class CollectionScheduler {
 	@Autowired
 	private CollectionSummaryService collectionSummaryService;
 	
-	@Scheduled(cron = "${collection.scheduler}") //  in 24 hours - in milliseconds
+	@Scheduled(fixedDelay = 60 * 1000) // 10 minutes - in milliseconds
 	private void scheduledTaskUpdateAidrData() {
 
 		HttpURLConnection con = null;

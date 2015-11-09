@@ -1,7 +1,6 @@
 package qa.qcri.aidr.data.service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,23 +33,31 @@ public class CollectionSummaryService {
     	
     	for(CollectionSummaryInfo summaryInfo : collectionSummaryInfos) {
     		CollectionSummary collectionSummary = collectionSummaryDao.getByCode(summaryInfo.getCode());
-    		adaptCollectionSummaryInfoToCollectionSummary(summaryInfo, collectionSummary);
+    		collectionSummary = adaptCollectionSummaryInfoToCollectionSummary(summaryInfo, collectionSummary);
     		listToSave.add(collectionSummary);
     	}
     	collectionSummaryDao.saveUpdateCollectionSummaryList(listToSave);
     }
 
-    private void adaptCollectionSummaryInfoToCollectionSummary(CollectionSummaryInfo summaryInfo, CollectionSummary collectionSummary) {
+    private CollectionSummary adaptCollectionSummaryInfoToCollectionSummary(CollectionSummaryInfo summaryInfo, CollectionSummary collectionSummary) {
     	if(collectionSummary == null) {
     		collectionSummary = new CollectionSummary();
+    		collectionSummary.setCode(summaryInfo.getCode());
+    		collectionSummary.setCollectionCreationDate(summaryInfo.getCollectionCreationDate());
     	}
     	
     	collectionSummary.setName(summaryInfo.getName());
     	collectionSummary.setTotalCount(summaryInfo.getTotalCount());
-    	if(summaryInfo.getStoppedAt() != null) {
-    		collectionSummary.setEndDate(new Date(summaryInfo.getStoppedAt()));
-    	}
     	collectionSummary.setCurator(summaryInfo.getCurator());
+    	collectionSummary.setGeo(summaryInfo.getGeo());
+    	collectionSummary.setLabelCount(summaryInfo.getLabelCount());
+    	collectionSummary.setStartDate(summaryInfo.getStartDate());
+    	collectionSummary.setEndDate(summaryInfo.getEndDate());
+    	collectionSummary.setKeywords(summaryInfo.getKeywords());
+    	collectionSummary.setStatus(summaryInfo.getStatus());
+    	collectionSummary.setLanguage(summaryInfo.getLanguage());
+    	
+    	return collectionSummary;
     }
     
     private List<CollectionSummaryInfo> adaptCollectionSummaryListToCollectionSummaryInfoList(List<CollectionSummary> collectionSummaries) {
@@ -71,7 +78,15 @@ public class CollectionSummaryService {
     	summaryInfo.setName(collectionSummary.getName());
     	summaryInfo.setCurator(collectionSummary.getCurator());
     	summaryInfo.setTotalCount(collectionSummary.getTotalCount());
-    	
+    	summaryInfo.setLabelCount(collectionSummary.getLabelCount());
+    	summaryInfo.setStartDate(collectionSummary.getStartDate());
+    	summaryInfo.setEndDate(collectionSummary.getEndDate());
+    	summaryInfo.setLanguage(collectionSummary.getLanguage());
+    	summaryInfo.setCollectionCreationDate(collectionSummary.getCollectionCreationDate());
+    	summaryInfo.setKeywords(collectionSummary.getKeywords());
+    	summaryInfo.setGeo(collectionSummary.getGeo());
+    	summaryInfo.setStatus(collectionSummary.getStatus());
+    	summaryInfo.setLanguage(collectionSummary.getLanguage());
     	return summaryInfo;
     }
 }
