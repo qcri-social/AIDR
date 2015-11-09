@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,7 +77,8 @@ public class CollectionCollaboratorRepositoryImpl extends GenericRepositoryImpl<
 		} else {
 			criteria.add(Restrictions.ne("col.status", CollectionStatus.TRASHED));
 		}
-		
+		criteria.addOrder(Order.asc("col.status"));
+		criteria.addOrder(Order.asc("col.createdAt"));
 		if(start != null) {
 			criteria.setFirstResult(start);
 		}

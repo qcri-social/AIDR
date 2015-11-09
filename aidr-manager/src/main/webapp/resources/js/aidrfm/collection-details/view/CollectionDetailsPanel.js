@@ -155,7 +155,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             maxLengthText: 'The maximum length for this field is 64',
             maskRe: /[^ ]/,
             disabled: true,
-            labelWidth: 130
+            labelWidth: 130,
+            hidden: true
         });
 
         this.nameE = Ext.create('Ext.form.field.Text', {
@@ -347,7 +348,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             cls:'btn btn-red',
             id: 'collectionTrash',
             margin: '25 0 0 0',
-            hidden: true
+            hidden: true,
+            flex: 1  
         });
 
         this.untrashButton = Ext.create('Ext.Button', {
@@ -648,22 +650,22 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 }
                             ]
                         },
-                        // {
-                        //     xtype: 'container',
-                        //     layout: 'hbox',
-                        //     margin: '5 0',
-                        //     items: [
-                        //         this.codeE,
-                        //         {
-                        //             border: false,
-                        //             bodyStyle: 'background:none',
-                        //             html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
-                        //             height: 22,
-                        //             width: 22,
-                        //             id: 'collectionCodeInfo'
-                        //         }
-                        //     ]
-                        // },
+                         {
+                             xtype: 'container',
+                             layout: 'hbox',
+                             margin: '5 0',
+                             items: [
+                                 this.codeE,
+//                                 {
+//                                     border: false,
+//                                     bodyStyle: 'background:none',
+//                                     html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+//                                     height: 22,
+//                                     width: 22,
+//                                     id: 'collectionCodeInfo'
+//                                 }
+                             ]
+                         },
                         {
                             xtype: 'container',
                             layout: 'hbox',
@@ -1031,6 +1033,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     	xtype: 'container',
                                     	defaultType: 'label',
                                     	layout: 'vbox',
+                                    	flex: 5,
                                     	items: [
                                     	        this.administrationL,
                                     	        this.managersL
