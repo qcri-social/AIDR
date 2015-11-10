@@ -24,9 +24,17 @@ a {
 #clock{
   margin:0 6px;
 }
+#twitter{
+  margin:0 12px 0px -19px;
+}
+
+.modal-header{
+ background-color:  #00A9C7;
+}
+
 #name span{
  
-   height:41px;
+   height:31px;
    display:inline-block;
     width       : auto;
     padding: 0 19px;
@@ -37,7 +45,13 @@ a {
     vertical-align: middle;
     text-align: center;
     text-shadow: none;
-   
+    /* -webkit-box-shadow: inset #44B5B1 0 1px 1px, #f2f0f0 0 -1px 0;
+    -moz-box-shadow: inset #44B5B1 0 1px 1px, #f2f0f0 0 -1px 0;
+    box-shadow: inset #44B5B1 0 1px 1px, #f2f0f0 0 -1px 0;
+    -webkit-box-shadow: inset #9bc7f0 0 1px 1px, #f2f0f0 0 -1px 0;
+    -moz-box-shadow: inset #9bc7f0 0 1px 1px, #f2f0f0 0 -1px 0;
+    box-shadow: inset #9bc7f0 0 1px 1px, #f2f0f0 0 -1px 0;*/
+   box-shadow: -3px 2px 5px #888888;
     /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#fcfcfc+0,f0f0f0+31,d5d5d5+64,bdbdbd+100 */
 background: #fcfcfc; /* Old browsers */
 background: -moz-linear-gradient(top,  #fcfcfc 0%, #f0f0f0 31%, #d5d5d5 64%, #bdbdbd 100%); /* FF3.6+ */
@@ -206,6 +220,7 @@ color:#000000;
    word-wrap: break-word;      /* IE */
  
   text-overflow: ;
+  margin-top: -19px;
     }
 .headerWrapper {
     background-color: #00a79d;
@@ -285,6 +300,14 @@ color:#000000;
   background-color:#ffffff !important;
 }
 .list-group-item:nth-child(odd){
+    background-color:#e0e0e0;
+
+}
+.modal-body{
+    background-color:#ffffff;
+
+}
+.modal-body:nth-child(odd){
     background-color:#e0e0e0;
 
 }
