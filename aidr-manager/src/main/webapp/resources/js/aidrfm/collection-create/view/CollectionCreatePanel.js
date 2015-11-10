@@ -306,8 +306,8 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         });
         
         this.saveButton = Ext.create('Ext.Button', {
-            text: 'Create and Start Collection',
-             margin: '0 0 0 -100',
+            text: 'Create and Start',
+            margin: '0 0 0 -100',
             cls: 'btn btn-blueish2',
             id: 'collectionCreate'
         });
