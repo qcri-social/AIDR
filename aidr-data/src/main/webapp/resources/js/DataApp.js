@@ -27100,7 +27100,7 @@ app.controller('appCtrl',function($scope, $uibModal, $log ,$filter,$http){
       $scope.filterLength = $scope.filteredItems.length;
       var begin = (($scope.currentPage - 1) * $scope.itemsPerPage);
       var end = begin + $scope.itemsPerPage;
-      $scope.pagedItems = $scope.alphabet.slice(begin, end);
+      $scope.pagedItems = $scope.filteredItems.slice(begin, end);
     };
 
     $scope.pageChanged = function () {
