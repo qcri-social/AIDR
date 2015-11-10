@@ -1,0 +1,142 @@
+<html>
+	<head>
+		<title>Speak</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular.js"></script>
+		 <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-animate.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-route.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-resource.js"></script>
+
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.js"></script>
+
+		<script src="resources/js/DataApp.js"></script>
+				
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+		<link rel="stylesheet" href="resources/css/style.css">
+	</head>
+	<body ng-app="DataApp" ng-controller="appCtrl">
+		<!-- <div id='main' class="container">
+			<nav class="navbar-fluid navbar-default navbar-fixed-top">
+				<div class="container">
+					<a class="navbar-brand" href="#"> Speak! </a>
+					<p class="navbar-text"> Speak On!</p>
+					<p class="navbar-right navbar-text" ng-hide="authenticated"><a href="#/login">Login</a> or <a href="#/signup">Register</a></p>
+					<p class="navbar-right navbar-text" ng-show="authenticated"><a href="#" ng-click="signout()">Logout</a></p>
+					<p class="navbar-right navbar-text" ng-show="authenticated">Signed in as {{current_user}}</p>
+				</div>
+			</nav>
+			<div class="col-md-offset-2 col-md-8">
+				<div ng-view>
+				</div>
+			</div>
+		</div> -->
+		<div class="container-fluid">
+		<div class="headerWrapper">
+        <div class="header"><a href="http://aidr.qcri.org"><img src="resources/img/AIDR/aidr_logo_240x90.png"></a></div> 
+        </div>
+        
+        	
+        
+<div class="col-md-12">
+
+			<div class="col-md-6" ng-repeat="letter in pagedItems track by $index">
+ <div  id="myDiv">
+			<div class="list-group" >
+				<div class="list-group-item active" >
+					{{letter.name}}
+					<p class="text-right" id="name"><span><img width="45" height="45" src="resources/img/twitter_icon2.png"/>{{letter.totalCount}}</span></p>
+				</div>
+				<div class="list-group-item" >
+					Status:
+					<p class="text-right" id="status"><span>{{letter.status}}</span></p> 
+				</div>
+				<div class="list-group-item" >
+					Created:
+					<p class="text-right" id="date"><span><img id="clock" src="resources/img/fa-clock-o_20_0_ffffff_none.png"/>{{letter.collectionCreationDate}}</span></p> 
+				</div>
+				<div class="list-group-item">
+					Languages:
+					<p class="text-right" id="lang"><span>{{letter.language}}</span></p>
+				</div>
+				<div class="list-group-item last">
+					<input type="submit" ng-click="open(letter)" value="Details" class="btn btn-block" />
+					
+				</div>
+			</div>
+		</div>
+		
+		</div>
+</div>
+
+	<pagination boundary-links="true" max-size="8" items-per-page="itemsPerPage" total-items="filterLength" ng-model="currentPage" ng-change="pageChanged()"></pagination>
+
+	
+	<!-- <div class="row">
+		<div class="col-md-12">
+			 <div class=row ng-repeat="letter in alphabet track by $index" ng-if="$index%4==0">
+    <div class="col-xs-3 letter-box" 
+      ng-repeat="i in [$index,$index+1,$index+2,$index+3]" 
+      ng-if="alphabet[i]!=null">
+      <div>Letter {{i+1}} is: <b> {{alphabet[i]}}</b></div>
+    </div>
+  </div>
+		</div>
+	</div> -->
+
+
+
+			<div class="footer navbar-fixed-bottom" id="footer">
+        <div class="footer">
+
+        <div class="right">
+        <a href="http://www.qcri.qa/">A project by <img align="middle" src="resources/img/qcri-gray-horiz.png"/></a>
+        </div>
+
+        <div class="left">
+        <a href="http://aidr.qcri.org/r/tos/">Terms of Service</a>
+        <a href="http://aidr.qcri.org/r/manual">Help</a>
+        <a href="http://aidr.qcri.org/r/credits">Credits</a>
+        </div>
+
+        </div>
+        </div>
+    </div>
+    <script type="text/ng-template" id="myModalContent.html">
+        <div class="modal-header">
+            <h3 class="modal-title">{{user.name}}</h3>
+        </div>
+        <div class="modal-body" >
+            Total Collected Tweets: {{user.totalCount}}
+           
+        </div>
+        <div class="modal-body" >
+           
+           Status: <b> {{user.status}}</b>
+        </div>
+         <div class="modal-body" >
+           
+           Created: <b> {{user.collectionCreationDate}}</b>
+        </div>
+         <div class="modal-body" >
+           
+           Finished: <b> {{user.endDate}}</b>
+        </div>
+         <div class="modal-body" >
+           
+           Language: <b> {{user.language}}</b>
+        </div>
+        <div class="modal-body" >
+           
+           Keywords: <b> {{user.keywords}}</b>
+        </div>
+         <div class="modal-body" >
+           
+           Curator: <b> {{user.curator}}</b>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
+	</body>
+</html>
