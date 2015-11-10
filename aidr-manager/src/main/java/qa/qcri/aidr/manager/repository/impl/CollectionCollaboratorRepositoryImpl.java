@@ -78,7 +78,7 @@ public class CollectionCollaboratorRepositoryImpl extends GenericRepositoryImpl<
 			criteria.add(Restrictions.ne("col.status", CollectionStatus.TRASHED));
 		}
 		criteria.addOrder(Order.asc("col.status"));
-		criteria.addOrder(Order.asc("col.createdAt"));
+		criteria.addOrder(Order.desc("col.createdAt"));
 		if(start != null) {
 			criteria.setFirstResult(start);
 		}
