@@ -9,6 +9,6 @@ import qa.qcri.aidr.data.persistence.entity.CollectionSummary;
 public interface CollectionSummaryRepository extends CrudRepository<CollectionSummary, Long>{
 
     List<CollectionSummary> findByName(String name);
-    List<CollectionSummary> findAll();
+    List<CollectionSummary> findAllByOrderByCollectionCreationDateDesc();
     CollectionSummary findByCode(String code);
 }

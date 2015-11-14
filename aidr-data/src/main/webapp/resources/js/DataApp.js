@@ -18,7 +18,7 @@ app.controller('appCtrl', function($scope, $uibModal, $log, $filter, $http) {
 	 */
 	$scope.buildPager = function() {
 		$scope.pagedItems = [];
-		$scope.itemsPerPage = 6;
+		$scope.itemsPerPage = 9;
 		$scope.currentPage = 1;
 		$scope.figureOutItemsToDisplay();
 	};
@@ -73,18 +73,20 @@ angular.module('DataApp').controller('ModalInstanceCtrl',
 				item : $scope.alphabet[0]
 			};
 
-			$scope.ok = function () {
-   
-      /* the $http service allows you to make arbitrary ajax requests.
-       * in this case you might also consider using angular-resource and setting up a
-       * User $resource. */
-       console.log("closed");
-      $http.post('/your/url/search',
-        function(response) { $scope.results = response; },
-        function(failure) { console.log("failed :(", failure); });
-   
-    $uibModalInstance.close($scope.selected.item);
-  };
+			$scope.ok = function() {
+
+				/* the $http service allows you to make arbitrary ajax requests.
+				 * in this case you might also consider using angular-resource and setting up a
+				 * User $resource. */
+				console.log("closed");
+				$http.post('/your/url/search', function(response) {
+					$scope.results = response;
+				}, function(failure) {
+					console.log("failed :(", failure);
+				});
+
+				$uibModalInstance.close($scope.selected.item);
+			};
 
 			$scope.cancel = function() {
 				$uibModalInstance.dismiss('cancel');

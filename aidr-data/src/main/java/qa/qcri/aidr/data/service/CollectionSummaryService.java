@@ -14,6 +14,8 @@ import qa.qcri.aidr.data.persistence.entity.CollectionSummary;
 @Service
 public class CollectionSummaryService {
 
+	private static final String NA_STRING = "n/a";
+	
 	@Autowired
 	private CollectionSummaryDao collectionSummaryDao;
 	
@@ -73,6 +75,7 @@ public class CollectionSummaryService {
     
     private CollectionSummaryInfo adaptCollectionSummaryToCollectionSummaryInfo(CollectionSummary collectionSummary) {
     	
+    	String lang = NA_STRING;
     	CollectionSummaryInfo summaryInfo = new CollectionSummaryInfo();
     	summaryInfo.setCode(collectionSummary.getCode());
     	summaryInfo.setName(collectionSummary.getName());
@@ -86,7 +89,12 @@ public class CollectionSummaryService {
     	summaryInfo.setKeywords(collectionSummary.getKeywords());
     	summaryInfo.setGeo(collectionSummary.getGeo());
     	summaryInfo.setStatus(collectionSummary.getStatus());
-    	summaryInfo.setLanguage(collectionSummary.getLanguage());
+    	
+    	if (collectionSummary.getLanguage() != null && !collectionSummary.getLanguage().isEmpty()) { 
+    		lang = collectionSummary.getLanguage();
+    	}
+    	
+    	summaryInfo.setLanguage(lang);
     	return summaryInfo;
     }
 }

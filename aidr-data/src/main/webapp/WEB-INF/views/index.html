@@ -1,38 +1,29 @@
 <html>
 	<head>
-		<title>Speak</title>
+		<title>AIDR - Dashboard</title>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular.js"></script>
-		 <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-animate.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-animate.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-route.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-resource.js"></script>
-
-
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.js"></script>
-		
-		
-
 		<script src="resources/js/DataApp.js"></script>
-				
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 		<link rel="stylesheet" href="resources/css/style.css">
 	</head>
 	<body ng-app="DataApp" ng-controller="appCtrl">
 		<div class="headerWrapper">
-        <div class="header"><a href="http://aidr.qcri.org"><img src="resources/img/AIDR/aidr_logo_240x90.png"></a></div> 
+        	<div class="header">
+        		<a href="http://aidr.qcri.org"><img src="resources/img/AIDR/aidr_logo_240x90.png"></a>
+        	</div> 
         </div>
         <div style="margin-left: 75%">
-        	
-<form class="form-search form-inline">
-        		<input type="text" class="search-query" ng-model="search" placeholder="Search" ng-change="figureOutItemsToDisplay()" />
-        		</form>
-
-			</div
-
-        
-<div class="col-md-12">
-  <div  id="myDiv">
-			<div class="col-md-6" ng-repeat="letter in pagedItems track by $index">
-
+			<form class="form-search form-inline">
+	       		<input type="text" class="search-query" ng-model="search" placeholder="Search" ng-change="figureOutItemsToDisplay()" />
+	     	</form>
+		</div>
+		<div class="col-md-12">
+  		<div id="myDiv">
+			<div class="col-md-4" ng-repeat="letter in pagedItems track by $index">
 			<div class="list-group" >
 				<div class="list-group-item active" >
 					{{letter.name}}
@@ -48,47 +39,38 @@
 				</div>
 				<div class="list-group-item">
 					Languages:
-					<p class="text-right" id="lang"><span>{{letter.language}}</span></p>
+					<p class="text-right" id="lang"><span>{{letter.language | limitTo: 5 }}{{letter.language.length > 5 ? '...' : ''}}</span></p>
 				</div>
 				<div class="list-group-item last">
 					<input type="submit" ng-click="open(letter)" value="Details" class="btn btn-block" />
-					
 				</div>
 			</div>
 		</div>
-		
 		</div>
-</div>
-
+	</div>
 	<pagination boundary-links="true" max-size="8" items-per-page="itemsPerPage" total-items="filterLength" ng-model="currentPage" ng-change="pageChanged()"></pagination>
-			<div class="footer navbar-fixed-bottom" id="footer">
-        <div class="footer">
-
-        <div class="right">
-        <a href="http://www.qcri.qa/">A project by <img align="middle" src="resources/img/qcri-gray-horiz.png"/></a>
-        </div>
-
-        <div class="left">
-        <a href="http://aidr.qcri.org/r/tos/">Terms of Service</a>
-        <a href="http://aidr.qcri.org/r/manual">Help</a>
-        <a href="http://aidr.qcri.org/r/credits">Credits</a>
-        </div>
-
-        </div>
+		<div class="footer navbar-fixed-bottom" id="footer">
+        	<div class="footer">
+        		<div class="right">
+    	    		<a href="http://www.qcri.qa/">A project by <img align="middle" src="resources/img/qcri-gray-horiz.png"/></a>
+        		</div>
+		        <div class="left">
+	    	    	<a href="http://aidr.qcri.org/r/tos/">Terms of Service</a>
+	        		<a href="http://aidr.qcri.org/r/manual">Help</a>
+	        		<a href="http://aidr.qcri.org/r/credits">Credits</a>
+	        	</div>
+        	</div>
         </div>
     </div>
      <script type="text/ng-template" id="myModalContent.html">
         <div class="modal-header">
             <button type="button" class="close" ng-click="cancel()" data-dismiss="modal" aria-hidden="true">&times;</button> 
-
             <h3 class="modal-title">{{user.name}}</h3>
         </div>
         <div class="modal-body" >
             <b>Total Collected Tweets:</b> <p class="text-right"> {{user.totalCount}}</p>
-           
         </div>
         <div class="modal-body" >
-           
            <b>Status:</b> <p class="text-right"> {{user.status}}</p>
         </div>
          <div class="modal-body" >
@@ -96,26 +78,21 @@
            <b>Created:</b> <p class="text-right">{{user.collectionCreationDate| date:"MM/dd/yyyy 'at' h:mma"}}</p>
         </div>
          <div class="modal-body" >
-           
-           <b>Finished:</b> <p class="text-right">{{user.endDate| date:"MM/dd/yyyy 'at' h:mma"}}</p>
+           <b>Last Stopped:</b> <p class="text-right">{{user.endDate| date:"MM/dd/yyyy 'at' h:mma"}}</p>
         </div>
          <div class="modal-body" >
-           
            <b>Language:</b>  <p class="text-right">{{user.language}}</p>
         </div>
         <div class="modal-body" >
-           
            <b>Keywords:</b> {{user.keywords}}
         </div>
          <div class="modal-body" >
-           
            <b>Curator:</b> <p class="text-right">{{user.curator}}</p>
         </div>
         <div class="modal-body">
-            <input type="submit" ng-click="ok()" value="Download Tweets" class="btn btn-primary center-block" />
-            <h5 class="text-center">*Note: If you need full data, please contact AIDR help team.</h5>
+            <input type="submit" ng-click="ok()" value="Download 50000 sample tweets" class="btn btn-primary center-block" />
+            <h5 class="text-center">* Contact AIDR team for full data.</h5>
         </div>
-        
     </script>
 	</body>
 </html>

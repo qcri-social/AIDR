@@ -25,7 +25,7 @@ public class HomeController {
     @RequestMapping(value = "/dashboard/list")
     @ResponseBody
     public List<CollectionSummaryInfo> list(){
-    	List<CollectionSummaryInfo> list=collectionSummaryService.fetchAllCollections();
+    	List<CollectionSummaryInfo> list = collectionSummaryService.fetchAllCollections();
         return list;
     }
     
