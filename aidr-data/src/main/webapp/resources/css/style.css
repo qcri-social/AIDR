@@ -190,7 +190,30 @@ text-shadow: none;
 	margin: 10px 0 10px 0;
 	width:30px;
 }
+input.search-query {
+    padding-left:26px;
+border-radius: 30px 30px 30px 30px;
+}
 
+form.form-search {
+    position: relative;
+
+}
+
+form.form-search:before {
+    content:'';
+    display: block;
+    width: 14px;
+    height: 14px;
+    background-image: url(http://getbootstrap.com/2.3.2/assets/img/glyphicons-halflings.png);
+    background-position: -48px 0;
+    position: absolute;
+
+    top:8px;
+    left:8px;
+    opacity: .5;
+    z-index: 1000;
+}
 .post {
 	padding: 10px;
 	margin-bottom: 5px;
@@ -244,7 +267,7 @@ color:#000000;
     display: block;
     margin-right: auto;
     margin-left: auto;
-    margin-top: -23px;
+    margin-top: auto;
 }
 .headerWrapper {
     background-color: #00a79d;

@@ -22,9 +22,12 @@
         </div>
         <div style="margin-left: 75%">
         	
+<form class="form-search form-inline">
+        		<input type="text" class="search-query" ng-model="search" placeholder="Search" ng-change="figureOutItemsToDisplay()" />
+        		</form>
 
-        		<input type="text" class="form-control" ng-model="search" placeholder="Search" ng-change="figureOutItemsToDisplay()" />
 			</div
+
         
 <div class="col-md-12">
   <div  id="myDiv">
@@ -109,11 +112,10 @@
            <b>Curator:</b> <p class="text-right">{{user.curator}}</p>
         </div>
         <div class="modal-body">
-            <b>Download 50000 sample tweets:</b><input type="submit" ng-click="ok()" value="Download Tweets" class="btn btn-primary center-block" />
+            <input type="submit" ng-click="ok()" value="Download Tweets" class="btn btn-primary center-block" />
+            <h5 class="text-center">*Note: If you need full data, please contact AIDR help team.</h5>
         </div>
-        <div class="modal-footer">
-            <p class="text-left"><b>Important:If you need full data, please contact AIDR help team.</b></p>
-        </div>
+        
     </script>
 	</body>
 </html>
