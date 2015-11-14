@@ -8,7 +8,7 @@
 
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-moment/1.0.0-beta.3/angular-moment.min.js"></script>
+		
 		
 
 		<script src="resources/js/DataApp.js"></script>
@@ -33,7 +33,7 @@
 			</div>
 		</div> -->
 
-		<div class="container-fluid">
+		
 		<div class="headerWrapper">
         <div class="header"><a href="http://aidr.qcri.org"><img src="resources/img/AIDR/aidr_logo_240x90.png"></a></div> 
         </div>
@@ -44,13 +44,13 @@
 			</div
         
 <div class="col-md-12">
-
+  <div  id="myDiv">
 			<div class="col-md-6" ng-repeat="letter in pagedItems track by $index">
- <div  id="myDiv">
+
 			<div class="list-group" >
 				<div class="list-group-item active" >
 					{{letter.name}}
-					<p class="text-right" id="name"><span><img width="35" height="35" id="twitter" src="resources/img/twitter_icon2.png"/>{{letter.totalCount}}</span></p>
+					<p class="text-right" id="name"><span><img width="28" height="28" id="twitter" src="resources/img/twitter_icon2.png"/>{{letter.totalCount}}</span></p>
 				</div>
 				<div class="list-group-item" >
 					Status:
@@ -58,7 +58,7 @@
 				</div>
 				<div class="list-group-item" >
 					Created:
-					<p class="text-right" id="date"><span><img id="clock" src="resources/img/fa-clock-o_20_0_ffffff_none.png"/>{{letter.collectionCreationDate| date:"MM/dd/yyyy 'at' h:mma"}}</span></p> 
+					<p class="text-right" id="date"><span><img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_ffffff_none.png"/>{{letter.collectionCreationDate| date:"MM/dd/yyyy 'at' h:mma"}}</span></p> 
 				</div>
 				<div class="list-group-item">
 					Languages:
@@ -140,8 +140,7 @@
            <b>Curator:</b> <p class="text-right">{{user.curator}}</p>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
-            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+            <input type="submit" ng-click="ok()" value="Download Tweets" class="btn btn-block" />
         </div>
     </script>
 	</body>

@@ -1,4 +1,4 @@
-var app = angular.module('DataApp', ['ngRoute', 'ngResource','ui.bootstrap','ngAnimate']).run(function($rootScope) {
+﻿var app = angular.module('DataApp', ['ngRoute', 'ngResource','ui.bootstrap','ngAnimate']).run(function($rootScope) {
   $rootScope.authenticated = false;
   $rootScope.current_user = '';
 
@@ -27088,7 +27088,7 @@ app.controller('appCtrl',function($scope, $uibModal, $log ,$filter,$http){
  */
     $scope.buildPager = function () {
       $scope.pagedItems = [];
-      $scope.itemsPerPage = 4;
+      $scope.itemsPerPage = 6;
       $scope.currentPage = 1;
       $scope.figureOutItemsToDisplay();
     };

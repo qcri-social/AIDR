@@ -1,7 +1,7 @@
 body {
-  /*padding-top:70px;*/
-  
-  
+	/*padding-top:70px;*/
+	
+	
     font-family: "Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;
     background-image: url("../img/aidr-bg-clouds.jpg") ;
     -webkit-background-size: cover;
@@ -18,11 +18,11 @@ margin-right: 0px;
    position: relative;
 }
 a {
-  color: #00B7FF;
+	color: #00B7FF;
 
 }
 #clock {
-    margin: 6px 9px 5px -9px;
+    margin: 4px 9px 5px -9px;
 }
 #twitter{
   margin:0 12px 0px -19px;
@@ -37,14 +37,14 @@ a {
 
 #name span{
  
-   height:33px;
+   height:26px;
    display:inline-block;
     width       : auto;
     padding: 0 19px;
     /*border: 1px solid ;*/
     font-size: 12px;
     color: #000000;
-    line-height: 28px;
+    line-height: 9px;
     vertical-align: middle;
     text-align: center;
     text-shadow: none;
@@ -73,14 +73,14 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', end
 
 #lang span{
    color:#fff;
-   height:33px;
+   height:26px;
    display:inline-block;
     width       : auto;
     padding: 0 19px;
     border: 1px solid ;
     font-size: 12px;
     color: #fff;
-    line-height: 28px;
+    line-height: 25px;
     vertical-align: middle;
     text-align: center;
     text-shadow: none;
@@ -121,14 +121,14 @@ p {
 }
 #status span{
    color:#fff;
-   height:33px;
+   height:26px;
    display:inline-block;
     width       : auto;
     padding: 0 19px;
     border: 1px solid ;
     font-size: 12px;
     color: #fff;
-    line-height: 28px;
+    line-height: 25px;
     vertical-align: middle;
     text-align: center;
     text-shadow: none;
@@ -153,7 +153,7 @@ text-shadow: none;
 }
 #date span{
    color:#fff;
-   height:33px;
+   height:26px;
    display:inline-block;
     width       : auto;
     padding: 0 19px;
@@ -184,15 +184,15 @@ text-shadow: none;
    border-radius: 0.44em;
 }
 .submit-btn {
-  background-color: #b1dbff;
-  margin: 10px 0 10px 0;
-  width:30px;
+	background-color: #b1dbff;
+	margin: 10px 0 10px 0;
+	width:30px;
 }
 
 .post {
-  padding: 10px;
-  margin-bottom: 5px;
-  border-radius: 5px;
+	padding: 10px;
+	margin-bottom: 5px;
+	border-radius: 5px;
 }
 
 .jumbotron p {
@@ -203,17 +203,17 @@ text-shadow: none;
 }
 
 .odd {
-  background-color: #f2f9ff;
-  
+	background-color: #f2f9ff;
+	
 }
 .even {
-  background-color: #eceff3;
+	background-color: #eceff3;
 }
 
 .form-auth {
-  max-width: 330px;
-  padding: 5px;
-  margin: 0 auto;
+	max-width: 330px;
+	padding: 5px;
+	margin: 0 auto;
 }
 .modal-backdrop {
   position: fixed;
@@ -263,19 +263,18 @@ color:#000000;
     min-height: 100%;
 }
 .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
-  position: relative;
-    min-height: 1px;
-    padding-right: 9px;
-    padding-left: 300px;
-    padding-top: 8px;
+ position: relative;
+min-height: 1px;
+padding-right: 9px;
+padding-top: 8px;
+padding-left: 0px;
 
 }
-#myDiv{
-  width: 90%;
-  margin-left: -100px;
-
-
-
+#myDiv {
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    
 }
 .list-group-item {
     position: relative;
@@ -293,11 +292,11 @@ color:#000000;
 }
 
 .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
-   position: relative;
-    min-height: 1px;
-    padding-right: 9px;
-    padding-left: 300px;
-    padding-top: 8px;
+ position: relative;
+min-height: 1px;
+padding-right: 9px;
+padding-top: 8px;
+padding-left: 0px;
 }
 
 
