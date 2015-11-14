@@ -2,11 +2,17 @@
 	<head>
 		<title>Speak</title>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-animate.js"></script>
+		 <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-animate.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-route.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-resource.js"></script>
+
+
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.js"></script>
+		
+		
+
 		<script src="resources/js/DataApp.js"></script>
+				
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 		<link rel="stylesheet" href="resources/css/style.css">
 	</head>
@@ -15,11 +21,15 @@
         <div class="header"><a href="http://aidr.qcri.org"><img src="resources/img/AIDR/aidr_logo_240x90.png"></a></div> 
         </div>
         <div style="margin-left: 75%">
-       		<input type="text" class="form-control" ng-model="search" placeholder="Search" ng-change="figureOutItemsToDisplay()" />
-		</div>
+        	
+
+        		<input type="text" class="form-control" ng-model="search" placeholder="Search" ng-change="figureOutItemsToDisplay()" />
+			</div
+        
 <div class="col-md-12">
   <div  id="myDiv">
 			<div class="col-md-6" ng-repeat="letter in pagedItems track by $index">
+
 			<div class="list-group" >
 				<div class="list-group-item active" >
 					{{letter.name}}
@@ -66,6 +76,8 @@
     </div>
      <script type="text/ng-template" id="myModalContent.html">
         <div class="modal-header">
+            <button type="button" class="close" ng-click="cancel()" data-dismiss="modal" aria-hidden="true">&times;</button> 
+
             <h3 class="modal-title">{{user.name}}</h3>
         </div>
         <div class="modal-body" >
@@ -96,8 +108,11 @@
            
            <b>Curator:</b> <p class="text-right">{{user.curator}}</p>
         </div>
+        <div class="modal-body">
+            <b>Download 50000 sample tweets:</b><input type="submit" ng-click="ok()" value="Download Tweets" class="btn btn-primary center-block" />
+        </div>
         <div class="modal-footer">
-            <input type="submit" ng-click="ok()" value="Download Tweets" class="btn btn-block" />
+            <p class="text-left"><b>Important:If you need full data, please contact AIDR help team.</b></p>
         </div>
     </script>
 	</body>

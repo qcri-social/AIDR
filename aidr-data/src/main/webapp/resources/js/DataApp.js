@@ -73,9 +73,18 @@ angular.module('DataApp').controller('ModalInstanceCtrl',
 				item : $scope.alphabet[0]
 			};
 
-			$scope.ok = function() {
-				$uibModalInstance.close($scope.selected.item);
-			};
+			$scope.ok = function () {
+   
+      /* the $http service allows you to make arbitrary ajax requests.
+       * in this case you might also consider using angular-resource and setting up a
+       * User $resource. */
+       console.log("closed");
+      $http.post('/your/url/search',
+        function(response) { $scope.results = response; },
+        function(failure) { console.log("failed :(", failure); });
+   
+    $uibModalInstance.close($scope.selected.item);
+  };
 
 			$scope.cancel = function() {
 				$uibModalInstance.dismiss('cancel');
