@@ -29,7 +29,7 @@
 					{{letter.name}}
 					<p class="text-right" id="name"><span><img width="28" height="28" id="twitter" src="resources/img/twitter_icon2.png"/>{{letter.totalCount}}</span></p>
 				</div>
-<div class="list-group-item">
+				<div class="list-group-item">
 					Languages:
 					<p class="text-right" id="lang"><span>{{letter.language | limitTo: 5 }}{{letter.language.length > 5 ? '...' : ''}}</span></p>
 				</div>
@@ -38,20 +38,14 @@
 					<p class="text-right" id="status"><span  ng-style="letter.status === 'RUNNING' && {'background-color' : 'green'} || 
                  letter.status === 'STOPPED' && {'background' : '#A80000'}">{{letter.status}}</span></p> 
 				</div>
-<div class="list-group-item" ng-show="isNull(letter.endDate)">
-					
-					<p class="text-center" id="date"><span><img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_ffffff_none.png"/>Running Since <b>{{letter.collectionCreationDate| date:'medium'  }}</b></span></p>
+				<div class="list-group-item" ng-show="isNull(letter.endDate)">
+					<p id="date"><span class="pull-right"><img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_ffffff_none.png"/>Running Since <b>{{letter.collectionCreationDate| date:'medium'  }}</b></span></p>
 				</div>
 				<div class="list-group-item" ng-show="null()">
-					
-					
 				</div>
 				<div class="list-group-item" ng-show="!isNull(letter.endDate)">
-					
-					<p class="text-center" id="date"><span><img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_ffffff_none.png"/><b>{{letter.collectionCreationDate| date:'medium'  }}</b> to <b>{{letter.endDate| date:'medium'  }}</b></span></p>
+					<p id="date"><span class="pull-right"><img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_ffffff_none.png"/><b>{{letter.collectionCreationDate| date:'medium'  }}</b> to <b>{{letter.endDate| date:'medium'  }}</b></span></p>
 				</div>
-				
-				
 				<div class="list-group-item last">
 					<input type="submit" ng-click="open(letter)" value="Details" class="btn btn-block" />
 				</div>
