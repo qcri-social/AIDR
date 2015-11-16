@@ -978,14 +978,14 @@ public class TaggerController extends BaseController {
 	@ResponseBody
 	public Map<String,Object> updateMicromapperEnabled(@RequestParam Boolean isMicromapperEnabled, @RequestParam String code ) throws Exception {
 		//logger.info("In update micromapperEnabled for collection, code = " + code);
-		Map<String, Object> result = null;
 		try {
-			result = taggerService.updateMicromapperEnabled(code, isMicromapperEnabled);
-			if (result != null && result.get("isMicromapperEnabled") != null) {
-				return getUIWrapper(null,true);
-			} else {
-				return getUIWrapper(false, "Something wrong while updating isMicromapperEnabled");
+			
+			Collection collectionToUpdate = collectionService.findByCode(code);
+			if (collectionToUpdate != null) {
+				collectionToUpdate.setMicromappersEnabled(isMicromapperEnabled);
+				collectionService.update(collectionToUpdate);
 			}
+			return getUIWrapper(null,true);
 		} catch (Exception e) {
 			logger.error("Error while updating isMicromapperEnabled flag for crisis: "+code ,e);
 			return getUIWrapper(false, "Unable to update micromapperEnabled for collection, code = " + code);

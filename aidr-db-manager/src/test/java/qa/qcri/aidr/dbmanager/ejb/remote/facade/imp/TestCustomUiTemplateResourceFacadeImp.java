@@ -70,7 +70,7 @@ public class TestCustomUiTemplateResourceFacadeImp {
 		
 		try {
 			CrisisTypeDTO crisisTypeDTO = crisisTypeResourceFacadeImp.findCrisisTypeByID(1100L);
-			CollectionDTO crisisDTO = new CollectionDTO("testCrisisName"+new Date(), "testCrisisCode"+new Date(), false, false, crisisTypeDTO, user);
+			CollectionDTO crisisDTO = new CollectionDTO("testCrisisName"+new Date(), "testCrisisCode"+new Date(), false, false, crisisTypeDTO, user, user);
 			entityManager.getTransaction().begin();
 			crisis = crisisResourceFacadeImp.addCrisis(crisisDTO);
 			entityManager.getTransaction().commit();

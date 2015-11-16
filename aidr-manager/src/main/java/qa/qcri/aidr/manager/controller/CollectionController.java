@@ -682,9 +682,13 @@ public class CollectionController extends BaseController{
 		dto.setStatus(collection.getStatus());
 		dto.setTrack(collection.getTrack());
 		
+		try {
 		if(user != null) {
 			dto.setFollow(collectionService.getFollowTwitterScreenNames(collection.getFollow(), user.getUserName()));
 		}	
+		} catch(RuntimeException e) {
+			logger.error("Error", e);
+		}
 		dto.setGeo(collection.getGeo());
 		dto.setLangFilters(collection.getLangFilters());
 		dto.setStartDate(collection.getStartDate());
@@ -695,7 +699,7 @@ public class CollectionController extends BaseController{
 		dto.setPubliclyListed(collection.isPubliclyListed());
 		dto.setCrisisType(collection.getCrisisType());
 		dto.setCollectionType(collection.getProvider());
-
+		dto.setHasTaggerOutput(collection.isClassifierEnabled());
 		dto.setManagers(managers);
 
 		return dto;
