@@ -31,10 +31,25 @@ public class Configurations {
 	}
 	
 	/**
-	 * @return Application root url
+	 * @return Collection Data API
 	 */
 	public static String getCollectionDataAPI() {
 		return getAidrRootUrl() + applicationConfigurations.collectionDataAPI.trim();
 	}
+	
+	/**
+	 * @return Persister URL
+	 */
+	public static String getPersisterURL() {
+		return applicationConfigurations.persisterURL.trim();
+	}
+	
+	/**
+	 * @return Alternate Persister URL for older collections
+	 */
+	public static String getPersisterURLForOlderCollections() {
+		return applicationConfigurations.persisterURLForOlderCollections.trim();
+	}
+	
 
 }
