@@ -83,8 +83,7 @@ angular.module('DataApp').controller(
 		'ModalInstanceCtrl',
 		function($scope, $http, $uibModalInstance, items) {
 			console.log(items);
-			$scope.item = items;
-
+			$scope.collection = items;
 			$scope.downloadTweets = function() {
 
 				/*
@@ -95,9 +94,9 @@ angular.module('DataApp').controller(
 				console.log("closed");
 				$http.post(
 						'/aidr-data/persister/generateDownloadLink?' + 'code='
-								+ $scope.item.code + '&count=50000'
+								+ $scope.collection.code + '&count=50000'
 								+ '&removeRetweet=false' + '&createdTimestamp='
-								+ $scope.item.collectionCreationDate
+								+ $scope.collection.collectionCreationDate
 								+ '&type=CSV').then(function(response) {
 					$scope.results = response;
 					window.open($scope.results.data.data);

@@ -70,29 +70,29 @@
      <script type="text/ng-template" id="myModalContent.html">
         <div class="modal-header">
             <button type="button" class="close" ng-click="cancel()" data-dismiss="modal" aria-hidden="true">&times;</button> 
-            <h3 class="modal-title">{{user.name}}</h3>
+            <h3 class="modal-title">{{collection.name}}</h3>
         </div>
         <div class="modal-body" >
-            <b>Total Collected Tweets:</b> <p class="text-right"> {{user.totalCount}}</p>
+            <b>Total Collected Tweets:</b> <p class="text-right"> {{collection.totalCount}}</p>
         </div>
         <div class="modal-body" >
-           <b>Status:</b> <p class="text-right"> {{user.status}}</p>
+           <b>Status:</b> <p class="text-right"> {{collection.status}}</p>
         </div>
          <div class="modal-body" >
            
-           <b>Created:</b> <p class="text-right">{{user.collectionCreationDate| date:'medium'}}</p>
+           <b>Created:</b> <p class="text-right">{{collection.collectionCreationDate| date:'medium'}}</p>
         </div>
          <div class="modal-body" >
-           <b>Last Stopped:</b> <p class="text-right">{{user.endDate| date:'medium'}}</p>
+           <b>Last Stopped:</b> <p class="text-right">{{collection.endDate| date:'medium'}}</p>
         </div>
          <div class="modal-body" >
-           <b>Language:</b>  <p class="text-right">{{user.language}}</p>
+           <b>Language:</b>  <p class="text-right">{{collection.language}}</p>
         </div>
         <div class="modal-body" >
-            <b >Keywords:</b> <p class="text-right" id="key">{{user.keywords}}</p>
+            <b >Keywords:</b> <p class="text-right" id="key">{{collection.keywords}}</p>
         </div>
          <div class="modal-body" >
-           <b>Curator:</b> <p class="text-right">{{user.curator}}</p>
+           <b>Curator:</b> <p class="text-right">{{collection.curator}}</p>
         </div>
         <div class="modal-body">
             <input type="submit" ng-click="downloadTweets()" value="Download 50000 sample tweets" class="btn btn-primary center-block" />
