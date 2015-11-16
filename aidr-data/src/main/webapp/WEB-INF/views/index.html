@@ -29,18 +29,29 @@
 					{{letter.name}}
 					<p class="text-right" id="name"><span><img width="28" height="28" id="twitter" src="resources/img/twitter_icon2.png"/>{{letter.totalCount}}</span></p>
 				</div>
-				<div class="list-group-item" >
-					Status:
-					<p class="text-right" id="status"><span>{{letter.status}}</span></p> 
-				</div>
-				<div class="list-group-item" >
-					Created:
-					<p class="text-right" id="date"><span><img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_ffffff_none.png"/>{{letter.collectionCreationDate| date:"MM/dd/yyyy 'at' h:mma"}}</span></p> 
-				</div>
-				<div class="list-group-item">
+<div class="list-group-item">
 					Languages:
 					<p class="text-right" id="lang"><span>{{letter.language | limitTo: 5 }}{{letter.language.length > 5 ? '...' : ''}}</span></p>
 				</div>
+				<div class="list-group-item" >
+					Status:
+					<p class="text-right" id="status"><span  ng-style="letter.status === 'RUNNING' && {'background-color' : 'green'} || 
+                 letter.status === 'STOPPED' && {'background' : '#A80000'}">{{letter.status}}</span></p> 
+				</div>
+<div class="list-group-item" ng-show="isNull(letter.endDate)">
+					
+					<p class="text-center" id="date"><span><img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_ffffff_none.png"/>Running Since <b>{{letter.collectionCreationDate| date:'medium'  }}</b></span></p>
+				</div>
+				<div class="list-group-item" ng-show="null()">
+					
+					
+				</div>
+				<div class="list-group-item" ng-show="!isNull(letter.endDate)">
+					
+					<p class="text-center" id="date"><span><img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_ffffff_none.png"/><b>{{letter.collectionCreationDate| date:'medium'  }}</b> to <b>{{letter.endDate| date:'medium'  }}</b></span></p>
+				</div>
+				
+				
 				<div class="list-group-item last">
 					<input type="submit" ng-click="open(letter)" value="Details" class="btn btn-block" />
 				</div>
@@ -75,16 +86,16 @@
         </div>
          <div class="modal-body" >
            
-           <b>Created:</b> <p class="text-right">{{user.collectionCreationDate| date:"MM/dd/yyyy 'at' h:mma"}}</p>
+           <b>Created:</b> <p class="text-right">{{user.collectionCreationDate| date:'medium'}}</p>
         </div>
          <div class="modal-body" >
-           <b>Last Stopped:</b> <p class="text-right">{{user.endDate| date:"MM/dd/yyyy 'at' h:mma"}}</p>
+           <b>Last Stopped:</b> <p class="text-right">{{user.endDate| date:'medium'}}</p>
         </div>
          <div class="modal-body" >
            <b>Language:</b>  <p class="text-right">{{user.language}}</p>
         </div>
         <div class="modal-body" >
-           <b>Keywords:</b> {{user.keywords}}
+            <b >Keywords:</b> <p class="text-right" id="key">{{user.keywords}}</p>
         </div>
          <div class="modal-body" >
            <b>Curator:</b> <p class="text-right">{{user.curator}}</p>

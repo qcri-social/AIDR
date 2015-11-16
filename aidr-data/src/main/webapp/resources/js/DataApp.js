@@ -9,8 +9,22 @@ app.controller('appCtrl', function($scope, $uibModal, $log, $filter, $http) {
 	$http.get('/aidr-data/dashboard/list').then(function(result) {
 		$scope.alphabet = result.data;
 		$scope.buildPager();
-	});
 
+	});
+$scope.isNull = function(value) {
+
+if (value == null)
+  return true;
+else 
+  return false;
+
+};
+$scope.null = function(value) {
+
+  return false;
+
+
+};
 	$scope.items = [ 'item1', 'item2', 'item3' ];
 
 	/*
