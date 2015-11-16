@@ -28,13 +28,13 @@ public class PersisterController {
     @Autowired
     PersisterService persisterService ;
     
-	@RequestMapping(value = "/generateDownloadLink", method = RequestMethod.GET)
+	@RequestMapping(value = "/generateDownloadLink", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> generateCSVLink(@RequestParam String code,
 			@RequestParam Integer count,
 			@RequestParam boolean removeRetweet,
 			@RequestParam(value="createdTimestamp", required = false) Long createdTimestamp,
-			@RequestParam(value = "jsonType", defaultValue = "CSV", required =false) String jsonType,
+			@RequestParam(value = "type", defaultValue = "CSV", required =false) String jsonType,
 			String queryString) throws Exception {
 		String response = null;
 		try {

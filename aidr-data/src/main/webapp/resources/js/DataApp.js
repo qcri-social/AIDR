@@ -65,27 +65,35 @@ app.controller('appCtrl', function($scope, $uibModal, $log, $filter, $http) {
 	};
 
 });
-angular.module('DataApp').controller('ModalInstanceCtrl',
-		function($scope, $uibModalInstance, items) {
+angular.module('DataApp').controller(
+		'ModalInstanceCtrl',
+		function($scope, $http, $uibModalInstance, items) {
 			console.log(items);
 			$scope.user = items;
 			$scope.selected = {
 				item : $scope.alphabet[0]
 			};
 
-			$scope.ok = function() {
+			$scope.downloadTweets = function() {
 
-				/* the $http service allows you to make arbitrary ajax requests.
-				 * in this case you might also consider using angular-resource and setting up a
-				 * User $resource. */
+				/*
+				 * the $http service allows you to make arbitrary ajax requests.
+				 * in this case you might also consider using angular-resource
+				 * and setting up a User $resource.
+				 */
 				console.log("closed");
-				$http.post('/your/url/search', function(response) {
+				$http.post(
+						'/aidr-data/persister/generateDownloadLink?' + 'code='
+								+ $scope.selected.item.code + '&count=50000'
+								+ '&removeRetweet=false' + '&createdTimestamp='
+								+ $scope.selected.item.collectionCreationDate
+								+ '&type=CSV').then(function(response) {
 					$scope.results = response;
+					window.open($scope.results.data.data);
 				}, function(failure) {
 					console.log("failed :(", failure);
 				});
 
-				$uibModalInstance.close($scope.selected.item);
 			};
 
 			$scope.cancel = function() {
