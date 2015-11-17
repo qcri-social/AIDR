@@ -110,6 +110,7 @@ angular.module('DataApp').controller(
 					$scope.results = response;
 					window.open($scope.results.data.data);
 				}, function(failure) {
+					$scope.busy = false;
 					console.log("failed :(", failure);
 				});
 
