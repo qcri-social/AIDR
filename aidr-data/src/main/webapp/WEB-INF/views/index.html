@@ -1,108 +1,78 @@
 <html>
-<head>
-<title>AIDR - Dashboard</title>
-<script
-	src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular.js"></script>
-<script
-	src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-animate.js"></script>
-<script
-	src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-route.js"></script>
-<script
-	src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-resource.js"></script>
-<script
-	src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.js"></script>
-<script src="resources/js/DataApp.js"></script>
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-<link rel="stylesheet" href="resources/css/style.css">
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-</head>
-<body ng-app="DataApp" ng-controller="appCtrl">
-	<div class="headerWrapper">
-		<div class="header">
-			<a href="http://aidr.qcri.org"><img
-				src="resources/img/AIDR/aidr_logo_240x90.png"></a>
+	<head>
+		<title>AIDR - Dashboard</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-animate.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-route.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-resource.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.js"></script>
+		<script src="resources/js/DataApp.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+		<link rel="stylesheet" href="resources/css/style.css">
+	</head>
+	<body ng-app="DataApp" ng-controller="appCtrl">
+		<div class="headerWrapper">
+        	<div class="header">
+        		<a href="http://aidr.qcri.org"><img src="resources/img/AIDR/aidr_logo_240x90.png"></a>
+        		
+					<form class="form-search form-inline">
+			       		<input type="text" class="search-query" ng-model="search" placeholder="Search" ng-change="figureOutItemsToDisplay()" />
+			     	</form>
+				</div>
+        	
+        </div>
+        <div ng-hide="flag" id="loading">
 
-			<form class="form-search form-inline">
-				<input type="text" class="search-query" ng-model="search"
-					placeholder="Search" ng-change="figureOutItemsToDisplay()" />
-			</form>
-		</div>
 
-	</div>
+        </div>
 
-	<div ng-hide="flag" id="loading"></div>
-
-	<div ng-show="flag" class="col-md-12">
-		<div id="myDiv">
-			<div class="col-md-4"
-				ng-repeat="letter in pagedItems track by $index">
-				<div class="list-group">
-					<div class="list-group-item active">
-						{{letter.name| limitTo: 35 }}{{letter.name.length > 35 ? '...' :
-						''}}
-						<p class="text-right" id="name">
-							<span><img width="28" height="28" id="twitter"
-								src="resources/img/twitter_icon2.png" />{{letter.totalCount}}</span>
-						</p>
-					</div>
-					<div class="list-group-item">
-						Languages:
-						<p class="text-right" id="lang">
-							<span>{{letter.language | limitTo: 5
-								}}{{letter.language.length > 5 ? '...' : ''}}</span>
-						</p>
-					</div>
-					<div class="list-group-item">
-						Status:
-						<p class="text-right" id="status">
-							<span
-								ng-style="letter.status === 'RUNNING' && {'background-color' : 'green'} || 
-                 letter.status === 'STOPPED' && {'background' : '#A80000'}">{{letter.status}}</span>
-						</p>
-					</div>
-					<div class="list-group-item" ng-show="isNull(letter.endDate)">
-						<p id="date">
-							<span class="pull-right"><img width="17" height="17"
-								id="clock" src="resources/img/fa-clock-o_20_0_ffffff_none.png" />Running
-								Since <b>{{letter.collectionCreationDate| date:'medium' }}</b></span>
-						</p>
-					</div>
-					<div class="list-group-item" ng-show="null()"></div>
-					<div class="list-group-item" ng-show="!isNull(letter.endDate)">
-						<p id="date">
-							<span class="pull-right"><img width="17" height="17"
-								id="clock" src="resources/img/fa-clock-o_20_0_ffffff_none.png" /><b>{{letter.collectionCreationDate|
-									date:'medium' }}</b> to <b>{{letter.endDate| date:'medium' }}</b></span>
-						</p>
-					</div>
-					<div class="list-group-item last">
-						<input type="submit" ng-click="open(letter)" value="Details"
-							class="btn btn-block" />
-					</div>
+		<div ng-show="flag" class="col-md-12">
+  		<div id="myDiv">
+			<div class="col-md-4" ng-repeat="letter in pagedItems track by $index">
+			<div class="list-group" >
+				<div class="list-group-item active" >
+					{{letter.name| limitTo: 35 }}{{letter.name.length > 35 ? '...' : ''}}
+					<p class="text-right" id="name"><span><img width="28" height="28" id="twitter" src="resources/img/twitter_icon2.png"/>{{letter.totalCount}}</span></p>
+				</div>
+				<div class="list-group-item">
+					Languages:
+					<p class="text-right" id="lang"><span>{{letter.language | limitTo: 5 }}{{letter.language.length > 5 ? '...' : ''}}</span></p>
+				</div>
+				<div class="list-group-item" >
+					Status:
+					<p class="text-right" id="status"><span  ng-style="letter.status === 'RUNNING' && {'background-color' : 'green'} || 
+                 letter.status === 'STOPPED' && {'background' : '#A80000'}">{{letter.status}}</span></p> 
+				</div>
+				<div class="list-group-item" ng-show="isNull(letter.endDate)">
+					<p id="date"><span class="pull-right"><img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_ffffff_none.png"/>Running Since <b>{{letter.collectionCreationDate| date:'medium'  }}</b></span></p>
+				</div>
+				<div class="list-group-item" ng-show="null()">
+				</div>
+				<div class="list-group-item" ng-show="!isNull(letter.endDate)">
+					<p id="date"><span class="pull-right"><img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_ffffff_none.png"/><b>{{letter.collectionCreationDate| date:'medium'  }}</b> to <b>{{letter.endDate| date:'medium'  }}</b></span></p>
+				</div>
+				<div class="list-group-item last">
+					<input type="submit" ng-click="open(letter)" value="Details" class="btn btn-block" />
 				</div>
 			</div>
 		</div>
-	</div>
-	<pagination ng-show="flag" boundary-links="true" max-size="8"
-		items-per-page="itemsPerPage" total-items="filterLength"
-		ng-model="currentPage" ng-change="pageChanged()"></pagination>
-	<div class="footer navbar-fixed-bottom" id="footer">
-		<div class="footer">
-			<div class="right">
-				<a href="http://www.qcri.qa/">A project by <img align="middle"
-					src="resources/img/qcri-gray-horiz.png" /></a>
-			</div>
-			<div class="left">
-				<a href="http://aidr.qcri.org/r/tos/">Terms of Service</a> <a
-					href="http://aidr.qcri.org/r/manual">Help</a> <a
-					href="http://aidr.qcri.org/r/credits">Credits</a>
-			</div>
 		</div>
 	</div>
-	</div>
-	<script type="text/ng-template" id="myModalContent.html">
+	<pagination ng-show="flag" boundary-links="true" max-size="8" items-per-page="itemsPerPage" total-items="filterLength" ng-model="currentPage" ng-change="pageChanged()"></pagination>
+		<div class="footer navbar-fixed-bottom" id="footer">
+        	<div class="footer">
+        		<div class="right">
+    	    		<a href="http://www.qcri.qa/">A project by <img align="middle" src="resources/img/qcri-gray-horiz.png"/></a>
+        		</div>
+		        <div class="left">
+	    	    	<a href="http://aidr.qcri.org/r/tos/">Terms of Service</a>
+	        		<a href="http://aidr.qcri.org/r/manual">Help</a>
+	        		<a href="http://aidr.qcri.org/r/credits">Credits</a>
+	        	</div>
+        	</div>
+        </div>
+    </div>
+     <script type="text/ng-template" id="myModalContent.html">
         <div class="modal-header">
             <button type="button" class="close" ng-click="cancel()" data-dismiss="modal" aria-hidden="true">&times;</button> 
             <h3 class="modal-title">{{collection.name}}</h3>
@@ -130,10 +100,9 @@
            <b>Curator:</b> <p class="text-right">{{collection.curator}}</p>
         </div>
         <div class="modal-body">
-		<button ng-show = "busy" ng-disabled="busy" ng-click="downloadTweets()" class="btn btn-primary center-block">Download 50000 sample tweets <i class="fa fa-spinner fa-spin"></i></button>
-		<button ng-hide="busy" ng-click="downloadTweets()" class="btn btn-primary center-block">Download 50000 sample tweets</button>
+            <input type="submit" ng-click="downloadTweets()" value="Download 50000 sample tweets" class="btn btn-primary center-block" />
             <h5 class="text-center">* Contact AIDR team for full data.</h5>
         </div>
     </script>
-</body>
+	</body>
 </html>
