@@ -39,6 +39,7 @@ import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.persistence.entities.CollectionLog;
 import qa.qcri.aidr.manager.persistence.entities.UserAccount;
+import qa.qcri.aidr.manager.service.CollectionCollaboratorService;
 import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.CrisisTypeService;
@@ -65,6 +66,9 @@ public class PublicController extends BaseController{
 
 	@Autowired
 	private CrisisTypeService crisisTypeService;
+	
+	@Autowired 
+	private CollectionCollaboratorService collaboratorService;
 	
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
@@ -487,11 +491,10 @@ public class PublicController extends BaseController{
 		dto.setCrisisType(collection.getCrisisType());
 		dto.setHasTaggerOutput(hasTaggerOutput);
         dto.setCollectionType(collection.getProvider());
-
 		dto.setCrisisType(collection.getCrisisType());
-
-		//List<UserAccount> managers = collection.getManagers();
-		//dto.setManagers(managers);
+		
+		List<UserAccount> managers = collaboratorService.fetchCollaboratorsByCollection(collection.getId());
+		dto.setManagers(managers);
 
 		return dto;
 	}

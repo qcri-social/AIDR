@@ -7,6 +7,7 @@ import java.util.TreeMap;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import qa.qcri.aidr.manager.repository.CollectionRepository;
 import qa.qcri.aidr.manager.repository.RoleRepository;
 import qa.qcri.aidr.manager.repository.UserAccountRepository;
 import qa.qcri.aidr.manager.repository.UserAccountRoleRepository;
+import qa.qcri.aidr.manager.service.CollectionCollaboratorService;
 import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 
@@ -40,6 +42,9 @@ public class UserServiceImpl implements UserService{
     
     @Autowired
     private RoleRepository roleRepository;
+    
+    @Autowired 
+	private CollectionCollaboratorService collaboratorService;
     
 	@Override
 	@Transactional(readOnly=false)
@@ -72,14 +77,15 @@ public class UserServiceImpl implements UserService{
 	}
 
     public boolean isUserInCollectionManagersList(UserAccount user, Collection collection) {
-        /*if (collection.getManagers() == null) {
+    	List<UserAccount> managers = collaboratorService.fetchCollaboratorsByCollection(collection.getId());
+        if (CollectionUtils.isEmpty(managers)) {
             return false;
         }
-        for (UserAccount manager : collection.getManagers()){
+        for (UserAccount manager : managers){
             if (manager.getId().equals(user.getId())){
                 return true;
             }
-        }*/
+        }
         return false;
     }
 
