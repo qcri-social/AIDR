@@ -9,8 +9,22 @@ app.controller('appCtrl', function($scope, $uibModal, $log, $filter, $http) {
 	$http.get('/aidr-data/dashboard/list').then(function(result) {
 		$scope.alphabet = result.data;
 		$scope.buildPager();
-	});
 
+	});
+	$scope.isNull = function(value) {
+
+		if (value == null)
+			return true;
+		else
+			return false;
+
+	};
+$scope.null = function(value) {
+
+  return false;
+
+
+};
 	$scope.items = [ 'item1', 'item2', 'item3' ];
 
 	/*
@@ -69,13 +83,9 @@ angular.module('DataApp').controller(
 		'ModalInstanceCtrl',
 		function($scope, $http, $uibModalInstance, items) {
 			console.log(items);
-			$scope.user = items;
-			$scope.selected = {
-				item : $scope.alphabet[0]
-			};
-
+			$scope.collection = items;
 			$scope.downloadTweets = function() {
-
+			    $scope.busy = true;
 				/*
 				 * the $http service allows you to make arbitrary ajax requests.
 				 * in this case you might also consider using angular-resource
@@ -84,10 +94,12 @@ angular.module('DataApp').controller(
 				console.log("closed");
 				$http.post(
 						'/aidr-data/persister/generateDownloadLink?' + 'code='
-								+ $scope.selected.item.code + '&count=50000'
+								+ $scope.collection.code + '&count=50000'
 								+ '&removeRetweet=false' + '&createdTimestamp='
-								+ $scope.selected.item.collectionCreationDate
+								+ $scope.collection.collectionCreationDate
 								+ '&type=CSV').then(function(response) {
+									
+					$scope.busy = false;
 					$scope.results = response;
 					window.open($scope.results.data.data);
 				}, function(failure) {

@@ -15,6 +15,9 @@ import qa.qcri.aidr.data.persistence.entity.CollectionSummary;
 public class CollectionSummaryService {
 
 	private static final String NA_STRING = "n/a";
+	private static final String RUNNING_STATUS = "RUNNING";
+	private static final String RUNNING_WARNING_STATUS = "RUNNING_WARNING";
+	private static final String STOPPED_STATUS = "STOPPED";
 	
 	@Autowired
 	private CollectionSummaryDao collectionSummaryDao;
@@ -88,7 +91,12 @@ public class CollectionSummaryService {
     	summaryInfo.setCollectionCreationDate(collectionSummary.getCollectionCreationDate());
     	summaryInfo.setKeywords(collectionSummary.getKeywords());
     	summaryInfo.setGeo(collectionSummary.getGeo());
-    	summaryInfo.setStatus(collectionSummary.getStatus());
+    	if(collectionSummary.getStatus() != null && (RUNNING_STATUS.equals(collectionSummary.getStatus()) 
+    			|| RUNNING_WARNING_STATUS.equals(collectionSummary.getStatus()))) {
+    		summaryInfo.setStatus(RUNNING_STATUS);
+    	} else {
+    		summaryInfo.setStatus(STOPPED_STATUS);
+    	}
     	
     	if (collectionSummary.getLanguage() != null && !collectionSummary.getLanguage().isEmpty()) { 
     		lang = collectionSummary.getLanguage();
