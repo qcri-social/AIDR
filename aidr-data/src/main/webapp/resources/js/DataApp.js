@@ -8,12 +8,16 @@
 app.controller('appCtrl', function($scope, $uibModal, $log, $filter, $timeout, $http) {
 	
 	$scope.flag=false;
-	$http.get('/aidr-data/dashboard/list1').then(function(result) {
+	$http.get('/aidr-data/dashboard/list').then(function(result) {
 		$scope.alphabet = result.data;
-		$timeout(function(){$scope.flag=true;}, 2000);
+		$timeout(function(){
+			$scope.flag=true;
+		}, 2000);
 		$scope.buildPager();
 	}, function(failure) {
-		$timeout(function(){$scope.flag=true;}, 2000);
+		$timeout(function(){
+			$scope.flag=true;
+		}, 2000);
 		console.log("test");
 	});
 	$scope.isNull = function(value) {
