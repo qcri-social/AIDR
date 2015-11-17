@@ -5,11 +5,16 @@
 			$rootScope.current_user = '';
 		});
 
-app.controller('appCtrl', function($scope, $uibModal, $log, $filter, $http) {
-	$http.get('/aidr-data/dashboard/list').then(function(result) {
+app.controller('appCtrl', function($scope, $uibModal, $log, $filter, $timeout, $http) {
+	
+	$scope.flag=false;
+	$http.get('/aidr-data/dashboard/list1').then(function(result) {
 		$scope.alphabet = result.data;
+		$timeout(function(){$scope.flag=true;}, 2000);
 		$scope.buildPager();
-
+	}, function(failure) {
+		$timeout(function(){$scope.flag=true;}, 2000);
+		console.log("test");
 	});
 	$scope.isNull = function(value) {
 
@@ -19,12 +24,10 @@ app.controller('appCtrl', function($scope, $uibModal, $log, $filter, $http) {
 			return false;
 
 	};
-$scope.null = function(value) {
-
-  return false;
-
-
-};
+	$scope.null = function(value) {
+		return false;
+	};
+	
 	$scope.items = [ 'item1', 'item2', 'item3' ];
 
 	/*

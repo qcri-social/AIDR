@@ -1,6 +1,7 @@
 package qa.qcri.aidr.data.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,13 +90,16 @@ public class CollectionSummaryService {
     	summaryInfo.setEndDate(collectionSummary.getEndDate());
     	summaryInfo.setLanguage(collectionSummary.getLanguage());
     	summaryInfo.setCollectionCreationDate(collectionSummary.getCollectionCreationDate());
-    	summaryInfo.setKeywords(collectionSummary.getKeywords());
+    	summaryInfo.setKeywords(collectionSummary.getKeywords() != null ? collectionSummary.getKeywords() : NA_STRING);
     	summaryInfo.setGeo(collectionSummary.getGeo());
     	if(collectionSummary.getStatus() != null && (RUNNING_STATUS.equals(collectionSummary.getStatus()) 
     			|| RUNNING_WARNING_STATUS.equals(collectionSummary.getStatus()))) {
     		summaryInfo.setStatus(RUNNING_STATUS);
     	} else {
     		summaryInfo.setStatus(STOPPED_STATUS);
+    		if(summaryInfo.getEndDate() == null) {
+    			summaryInfo.setEndDate(new Date());
+    		}
     	}
     	
     	if (collectionSummary.getLanguage() != null && !collectionSummary.getLanguage().isEmpty()) { 
