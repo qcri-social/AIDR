@@ -6,11 +6,11 @@ package qa.qcri.aidr.manager.repository.impl;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +19,7 @@ import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.persistence.entities.CollectionCollaborator;
 import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.repository.CollectionCollaboratorRepository;
+import qa.qcri.aidr.manager.util.CollectionComparator;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 
 /**
@@ -77,14 +78,17 @@ public class CollectionCollaboratorRepositoryImpl extends GenericRepositoryImpl<
 		} else {
 			criteria.add(Restrictions.ne("col.status", CollectionStatus.TRASHED));
 		}
-		criteria.addOrder(Order.asc("col.status"));
-		criteria.addOrder(Order.desc("col.createdAt"));
+		
+	//	"Case col.status When '0' Then 1 When '5' Then 2 Else 3 End";
+		//"Case start_date When null Then 1 Else start_date*-1  End"
+		
 		if(start != null) {
 			criteria.setFirstResult(start);
 		}
 		if(limit != null) {
 			criteria.setMaxResults(limit);
 		}
+		
 		List<CollectionCollaborator> collectionCollaborators = (List<CollectionCollaborator>) criteria.list();
 		
 		List<Collection> collections = new ArrayList<Collection>();
@@ -93,6 +97,7 @@ public class CollectionCollaboratorRepositoryImpl extends GenericRepositoryImpl<
 				collections.add(collaborator.getCollection());
 			}
 		}
+		Collections.sort(collections, new CollectionComparator());
 		return collections;
 	}
 
