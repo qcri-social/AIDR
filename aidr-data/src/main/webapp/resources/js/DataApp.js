@@ -11,14 +11,14 @@ app.controller('appCtrl', function($scope, $uibModal, $log, $filter, $http) {
 		$scope.buildPager();
 
 	});
-$scope.isNull = function(value) {
+	$scope.isNull = function(value) {
 
-if (value == null)
-  return true;
-else 
-  return false;
+		if (value == null)
+			return true;
+		else
+			return false;
 
-};
+	};
 $scope.null = function(value) {
 
   return false;
@@ -85,7 +85,7 @@ angular.module('DataApp').controller(
 			console.log(items);
 			$scope.collection = items;
 			$scope.downloadTweets = function() {
-
+			    $scope.busy = true;
 				/*
 				 * the $http service allows you to make arbitrary ajax requests.
 				 * in this case you might also consider using angular-resource
@@ -98,6 +98,8 @@ angular.module('DataApp').controller(
 								+ '&removeRetweet=false' + '&createdTimestamp='
 								+ $scope.collection.collectionCreationDate
 								+ '&type=CSV').then(function(response) {
+									
+					$scope.busy = false;
 					$scope.results = response;
 					window.open($scope.results.data.data);
 				}, function(failure) {

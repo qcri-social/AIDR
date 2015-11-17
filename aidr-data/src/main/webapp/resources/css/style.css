@@ -417,7 +417,7 @@ form.form-search:before {
 }*/
 .site-footer {
   background-color: #464646;
-  height: 70px;
+  height: 120px;
   width: 100%;
   position: relative;
   bottom: 0;
@@ -470,7 +470,7 @@ form.form-search:before {
 
 .navbar-fixed-bottom {
   bottom: 0;
-  height: 120px;
+  height: 70px;
   margin-bottom: 0;
   border-width: 1px 0 0;
   background-color: #464646;
