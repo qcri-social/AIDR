@@ -565,8 +565,8 @@ public class CollectionController extends BaseController{
 					AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, null);
 					if (dto != null) {
 						Integer totalCount;
-						if (totalCountsFromLogForCollections.containsKey(collection.getId())) {
-							totalCount = totalCountsFromLogForCollections.get(collection.getId());
+						if (totalCountsFromLogForCollections.containsKey(collection.getId().intValue())) {
+							totalCount = totalCountsFromLogForCollections.get(collection.getId().intValue());
 						} else {
 							totalCount = 0;
 						}
@@ -635,8 +635,8 @@ public class CollectionController extends BaseController{
 					AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, null);
 					if (dto != null) {
 						Integer totalCount;
-						if (totalCountsFromLogForCollections.containsKey(collection.getId())) {
-							totalCount = totalCountsFromLogForCollections.get(collection.getId());
+						if (totalCountsFromLogForCollections.containsKey(collection.getId().intValue())) {
+							totalCount = totalCountsFromLogForCollections.get(collection.getId().intValue());
 						} else {
 							totalCount = 0;
 						}
