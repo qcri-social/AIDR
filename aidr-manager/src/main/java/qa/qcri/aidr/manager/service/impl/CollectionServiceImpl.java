@@ -890,6 +890,7 @@ public class CollectionServiceImpl implements CollectionService {
     	summaryInfo.setKeywords(collection.getTrack());
     	summaryInfo.setGeo(collection.getGeo());
     	summaryInfo.setLabelCount(taggerService.getLabelCount(collection.getId()));
+    	summaryInfo.setPubliclyListed(collection.isPubliclyListed());
     	
     	return summaryInfo;
     }

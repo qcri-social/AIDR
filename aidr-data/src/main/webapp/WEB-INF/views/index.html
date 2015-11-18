@@ -102,7 +102,7 @@
         </div>
         <div class="modal-body">
             <button ng-show = "busy" ng-disabled="busy" ng-click="downloadTweets()" class="btn btn-primary center-block">Download 50000 sample tweets <i class="fa fa-spinner fa-spin"></i></button>
-			<button ng-hide="busy" ng-click="downloadTweets()" class="btn btn-primary center-block">Download 50000 sample tweets</button>
+			<button ng-hide="busy" ng-disabled="!collection.publiclyListed" ng-click="downloadTweets()" class="btn btn-primary center-block">Download 50000 sample tweets</button>
             <h5 class="text-center">* Contact AIDR team for full data.</h5>
         </div>
     </script>

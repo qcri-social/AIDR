@@ -62,6 +62,7 @@ public class CollectionSummaryService {
     	collectionSummary.setKeywords(summaryInfo.getKeywords());
     	collectionSummary.setStatus(summaryInfo.getStatus());
     	collectionSummary.setLanguage(summaryInfo.getLanguage());
+    	collectionSummary.setPubliclyListed(summaryInfo.isPubliclyListed());
     	
     	return collectionSummary;
     }
@@ -107,6 +108,7 @@ public class CollectionSummaryService {
     	}
     	
     	summaryInfo.setLanguage(lang);
+    	summaryInfo.setPubliclyListed(collectionSummary.isPubliclyListed());
     	return summaryInfo;
     }
 }

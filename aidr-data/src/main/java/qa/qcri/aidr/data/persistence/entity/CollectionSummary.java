@@ -29,6 +29,8 @@ public class CollectionSummary extends BaseEntity {
 	
 	private Integer labelCount;
 
+	private boolean publiclyListed;
+	
 	@Column(length = 5000)
     private String keywords;
 
@@ -36,6 +38,14 @@ public class CollectionSummary extends BaseEntity {
 	
 	private String status;
 	
+	public boolean isPubliclyListed() {
+		return publiclyListed;
+	}
+
+	public void setPubliclyListed(boolean publiclyListed) {
+		this.publiclyListed = publiclyListed;
+	}
+
 	public String getStatus() {
 		return status;
 	}

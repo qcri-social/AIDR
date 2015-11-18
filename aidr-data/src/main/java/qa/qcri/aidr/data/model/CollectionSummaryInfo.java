@@ -22,6 +22,14 @@ public class CollectionSummaryInfo {
 	private String status;
 	private Integer labelCount;
 	private Integer humanTaggedCount;
+	private boolean publiclyListed;
+	
+	public boolean isPubliclyListed() {
+		return publiclyListed;
+	}
+	public void setPubliclyListed(boolean publiclyListed) {
+		this.publiclyListed = publiclyListed;
+	}
 	public String getCode() {
 		return code;
 	}
