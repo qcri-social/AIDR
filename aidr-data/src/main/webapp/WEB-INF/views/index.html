@@ -1,15 +1,18 @@
 <html>
 	<head>
 		<title>AIDR - Dashboard</title>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-animate.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-route.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.0/angular-resource.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.js"></script>
+		<script src="resources/js/angular.min.js"></script>
+		<script src="resources/js/angular-animate.min.js"></script>
+		<script src="resources/js/angular-route.min.js"></script>
+		<script src="resources/js/angular-resource.min.js"></script>
+		<script src="resources/js/ui-bootstrap-tpls.min.js"></script>
 		<script src="resources/js/DataApp.js"></script>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+		<script type="text/javascript" src="resources/js/angular-toastr.tpls.min.js"></script>
+		<link rel="stylesheet" href="resources/css/bootstrap.min.css">
 		<link rel="stylesheet" href="resources/css/style.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="resources/css/angular-toastr.min.css" />
+		
 	</head>
 	<body ng-app="DataApp" ng-controller="appCtrl" style="overflow: auto">
 		<div class="headerWrapper">
@@ -23,10 +26,7 @@
         	
         </div>
         <div ng-hide="flag" id="loading">
-
-
         </div>
-
 		<div ng-show="flag" class="col-md-12">
   		<div id="myDiv">
 			<div class="col-md-4" ng-repeat="letter in pagedItems track by $index">
@@ -102,7 +102,7 @@
         </div>
         <div class="modal-body">
             <button ng-show = "busy" ng-disabled="busy" ng-click="downloadTweets()" class="btn btn-primary center-block">Download 50000 sample tweets <i class="fa fa-spinner fa-spin"></i></button>
-+		<button ng-hide="busy" ng-click="downloadTweets()" class="btn btn-primary center-block">Download 50000 sample tweets</button>
+			<button ng-hide="busy" ng-click="downloadTweets()" class="btn btn-primary center-block">Download 50000 sample tweets</button>
             <h5 class="text-center">* Contact AIDR team for full data.</h5>
         </div>
     </script>

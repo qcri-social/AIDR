@@ -7,7 +7,7 @@ body {
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
-  padding-bottom: 300px;
+  padding-bottom: 150px;
   margin-right: 0px;
 }
 
@@ -490,7 +490,7 @@ form.form-search:before {
 
 .navbar-fixed-bottom {
   bottom: 0;
-  height: 120px;
+  height: 70px;
   margin-bottom: 0;
   border-width: 1px 0 0;
   background-color: #464646;

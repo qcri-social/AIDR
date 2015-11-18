@@ -1,24 +1,21 @@
 ﻿var app = angular.module('DataApp',
-		[ 'ngRoute', 'ngResource', 'ui.bootstrap', 'ngAnimate' ]).run(
+		[ 'ngRoute', 'ngResource', 'ui.bootstrap', 'ngAnimate', 'toastr' ]).run(
 		function($rootScope) {
 			$rootScope.authenticated = false;
 			$rootScope.current_user = '';
 		});
 
-app.controller('appCtrl', function($scope, $uibModal, $log, $filter, $timeout, $http) {
+app.controller('appCtrl', function($scope, $uibModal, $log, $filter, toastr, $http) {
 	
 	$scope.flag=false;
 	$http.get('/aidr-data/dashboard/list').then(function(result) {
 		$scope.alphabet = result.data;
-		$timeout(function(){
-			$scope.flag=true;
-		}, 2000);
+		$scope.flag=true;
 		$scope.buildPager();
 	}, function(failure) {
-		$timeout(function(){
 			$scope.flag=true;
-		}, 2000);
-		console.log("test");
+			toastr.error('Could not load collections list. Please try again later', 'Error');
+			console.log("test");
 	});
 	$scope.isNull = function(value) {
 
@@ -88,7 +85,7 @@ app.controller('appCtrl', function($scope, $uibModal, $log, $filter, $timeout, $
 });
 angular.module('DataApp').controller(
 		'ModalInstanceCtrl',
-		function($scope, $http, $uibModalInstance, items) {
+		function($scope, $http, $uibModalInstance, toastr, items) {
 			console.log(items);
 			$scope.collection = items;
 			$scope.downloadTweets = function() {
@@ -108,9 +105,14 @@ angular.module('DataApp').controller(
 									
 					$scope.busy = false;
 					$scope.results = response;
-					window.open($scope.results.data.data);
+					if(!$scope.results.data.success) {
+						toastr.error($scope.results.data.message, 'Error');
+					} else {
+						window.open($scope.results.data.data);
+					}
 				}, function(failure) {
 					$scope.busy = false;
+					toastr.error('Could not serve download request for now. Please try again later.', 'Error');
 					console.log("failed :(", failure);
 				});
 
