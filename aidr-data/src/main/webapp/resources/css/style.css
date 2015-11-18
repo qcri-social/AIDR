@@ -243,6 +243,7 @@ form.form-search {
     display: inline-block;
     width: 36%;
     float: right;
+    margin-top: 65px;
 }
 
 form.form-search:before {
@@ -468,11 +469,13 @@ form.form-search:before {
 
 .footer .right {
   float: right;
+  padding-right: 10px;
 }
 
 .footer .left {
   float: left;
   padding-top: 16px;
+  padding-left: 10px;
 }
 
 .footer a {
