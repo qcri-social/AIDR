@@ -8,6 +8,7 @@ package qa.qcri.aidr.dbmanager.ejb.remote.facade.imp;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
@@ -19,12 +20,12 @@ import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.dbmanager.dto.ModelDTO;
-import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelDTOWrapper;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelHistoryWrapper;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelWrapper;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelResourceFacade;
-import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
 import qa.qcri.aidr.dbmanager.entities.model.Model;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabel;
@@ -39,6 +40,9 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 
 	private static Logger logger = Logger.getLogger("db-manager-log");
 
+	@EJB
+	private CollectionResourceFacade collectionResourceFacade;
+	
 	public ModelResourceFacadeImp() {
 		super(Model.class);
 	}
@@ -124,9 +128,10 @@ public class ModelResourceFacadeImp extends CoreDBServiceFacadeImp<Model, Long> 
 	public List<ModelWrapper> getModelByCrisisID(Long crisisID) throws PropertyNotSetException{
 		List<ModelWrapper> modelWrapperList = new ArrayList<ModelWrapper>();
 
-		Crisis crisis = getEntityManager().find(Crisis.class, crisisID);
-		Hibernate.initialize(crisis.getModelFamilies());
-		List<ModelFamily> modelFamilyList = crisis.getModelFamilies();
+		Collection collection = getEntityManager().find(Collection.class, crisisID);
+		getEntityManager().find(Collection.class, crisisID);
+		Hibernate.initialize(collection.getModelFamilies());
+		List<ModelFamily> modelFamilyList = collection.getModelFamilies();
 
 		// for each modelFamily get all the models and take avg
 		for (ModelFamily modelFamily : modelFamilyList) {

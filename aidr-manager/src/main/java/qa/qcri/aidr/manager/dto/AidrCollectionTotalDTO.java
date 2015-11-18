@@ -1,18 +1,19 @@
 package qa.qcri.aidr.manager.dto;
 
-import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
+import java.util.Date;
+import java.util.List;
+
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
+import qa.qcri.aidr.manager.persistence.entities.CrisisType;
+import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.CollectionType;
 import qa.qcri.aidr.manager.util.JsonDateSerializer;
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-
-import java.util.Date;
-import java.util.List;
-
 public class AidrCollectionTotalDTO {
 
-    private Integer id;
+    private Long id;
 
     private String code;
 
@@ -52,7 +53,7 @@ public class AidrCollectionTotalDTO {
     
     private Boolean publiclyListed;
 
-    private Integer crisisType;
+    private CrisisType crisisType;
 
     private String crisisTypeName;
 
@@ -64,11 +65,11 @@ public class AidrCollectionTotalDTO {
     
     private String geoR;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -227,11 +228,11 @@ public class AidrCollectionTotalDTO {
     	this.publiclyListed = publiclyListed;
     }
 
-    public Integer getCrisisType() {
+    public CrisisType getCrisisType() {
         return crisisType;
     }
 
-    public void setCrisisType(Integer crisisType) {
+    public void setCrisisType(CrisisType crisisType) {
         this.crisisType = crisisType;
     }
 

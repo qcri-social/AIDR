@@ -241,7 +241,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 mask.show();
 
                 Ext.Ajax.request({
-                    url: 'collection/save.action' + (shouldRun ? '?runAfterCreate=true' : ''),
+                    url: 'collection/create' + (shouldRun ? '?runAfterCreate=true' : ''),
                     method: 'POST',
                     params: {
                         name: Ext.String.trim( form.findField('name').getValue() ),
@@ -253,7 +253,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                         langFilters: form.findField('langFilters').getValue(),
                         durationHours: form.findField('durationHours').getValue(),
                         crisisType: form.findField('crisisType').getValue(),
-                        collectionType: form.findField('collectionType').getValue()
+                        provider: form.findField('collectionType').getValue()
                     },
                     headers: {
                         'Accept': 'application/json'

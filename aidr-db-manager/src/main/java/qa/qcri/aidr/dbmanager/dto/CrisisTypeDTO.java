@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
 import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -28,7 +28,7 @@ public class CrisisTypeDTO implements java.io.Serializable {
     private String name;
 
     @XmlElement
-    private List<CrisisDTO> crisisesDTO = null;
+    private List<CollectionDTO> crisisesDTO = null;
 
     @XmlElement
     private int numberOfCrisisAssociated;
@@ -45,20 +45,16 @@ public class CrisisTypeDTO implements java.io.Serializable {
         this.setName(name);
     }
 
-    public CrisisTypeDTO(Long crisisTypeId, String name, List<CrisisDTO> crisisesDTO) {
+    public CrisisTypeDTO(Long crisisTypeId, String name, List<CollectionDTO> crisisesDTO) {
         this.setCrisisTypeId(crisisTypeId);
         this.setName(name);
         this.setCrisisesDTO(crisisesDTO);
     }
 
-    public CrisisTypeDTO(CrisisType crisisType) throws PropertyNotSetException {
+    public CrisisTypeDTO(CrisisType crisisType) {
         if (crisisType != null) {
             this.setCrisisTypeId(crisisType.getCrisisTypeId());
             this.setName(crisisType.getName());
-            if (crisisType.hasCrisises()) {
-                this.setCrisisesDTO(toCrisisDTOList(crisisType.getCrisises()));
-                this.numberOfCrisisAssociated = crisisType.getCrisises() != null ? crisisType.getCrisises().size() : 0;
-            }
         } else {
             logger.error("Entity = null in constructor");
         }
@@ -80,29 +76,29 @@ public class CrisisTypeDTO implements java.io.Serializable {
         this.name = name;
     }
 
-    public List<CrisisDTO> getCrisisesDTO() {
+    public List<CollectionDTO> getCrisisesDTO() {
         return this.crisisesDTO;
     }
 
-    public void setCrisisesDTO(List<CrisisDTO> crisisesDTO) {
+    public void setCrisisesDTO(List<CollectionDTO> crisisesDTO) {
         this.crisisesDTO = crisisesDTO;
     }
 
-    private List<CrisisDTO> toCrisisDTOList(List<Crisis> list) throws PropertyNotSetException {
+    private List<CollectionDTO> toCrisisDTOList(List<Collection> list) throws PropertyNotSetException {
         if (list != null) {
-            List<CrisisDTO> crisisesDTO = new ArrayList<CrisisDTO>();
-            for (Crisis c : list) {
-                crisisesDTO.add(new CrisisDTO(c));
+            List<CollectionDTO> crisisesDTO = new ArrayList<CollectionDTO>();
+            for (Collection c : list) {
+                crisisesDTO.add(new CollectionDTO(c));
             }
             return crisisesDTO;
         }
         return null;
     }
 
-    private List<Crisis> toCrisisList(List<CrisisDTO> list) throws PropertyNotSetException {
+    private List<Collection> toCrisisList(List<CollectionDTO> list) throws PropertyNotSetException {
         if (list != null) {
-            List<Crisis> crisises = new ArrayList<Crisis>();
-            for (CrisisDTO dto : list) {
+            List<Collection> crisises = new ArrayList<Collection>();
+            for (CollectionDTO dto : list) {
                 crisises.add(dto.toEntity());
             }
             return crisises;
@@ -110,15 +106,12 @@ public class CrisisTypeDTO implements java.io.Serializable {
         return null;
     }
 
-    public CrisisType toEntity() throws PropertyNotSetException {
+    public CrisisType toEntity() {
         CrisisType cType = new CrisisType(this.getName());
         if (this.getCrisisTypeId() != null) {
             cType.setCrisisTypeId(this.getCrisisTypeId());
         }
         cType.setName(this.getName());
-        if (this.getCrisisesDTO() != null) {
-            cType.setCrisises(toCrisisList(this.getCrisisesDTO()));
-        }
 
         return cType;
     }

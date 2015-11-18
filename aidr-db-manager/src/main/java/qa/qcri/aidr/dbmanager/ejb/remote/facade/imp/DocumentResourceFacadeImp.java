@@ -24,11 +24,11 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
-import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.NominalLabelResourceFacade;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
@@ -39,7 +39,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	private Logger logger = Logger.getLogger("db-manager-log");
 
 	@EJB
-	CrisisResourceFacade crisisEJB;
+	CollectionResourceFacade crisisEJB;
 
 	@EJB
 	NominalLabelResourceFacade nominalLabelEJB;
@@ -363,7 +363,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 
 	@Override
 	public List<DocumentDTO> findDocumentsByCrisisID(Long crisisId) throws PropertyNotSetException {
-		List<DocumentDTO> dtoList = findByCriteria("crisis.crisisId", crisisId);
+		List<DocumentDTO> dtoList = findByCriteria("collection.id", crisisId);
 		return dtoList;
 	}
 
@@ -405,7 +405,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	@Override
 	public List<DocumentDTO> findLabeledDocumentsByCrisisID(Long crisisId) throws PropertyNotSetException {
 		Criterion criterion = Restrictions.conjunction()
-				.add(Restrictions.eq("crisis.crisisId",crisisId))
+				.add(Restrictions.eq("collection.id",crisisId))
 				.add(Restrictions.eq("hasHumanLabels", true));
 		List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
 		List<Document> list = this.getAllByCriteria(criterion);
@@ -422,7 +422,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	@Override
 	public List<DocumentDTO> findUnLabeledDocumentsByCrisisID(Long crisisId) throws PropertyNotSetException {
 		Criterion criterion = Restrictions.conjunction()
-				.add(Restrictions.eq("crisis.crisisId",crisisId))
+				.add(Restrictions.eq("collection.id",crisisId))
 				.add(Restrictions.eq("hasHumanLabels", false));
 		List<DocumentDTO> dtoList = new ArrayList<DocumentDTO>();
 		List<Document> list = this.getAllByCriteria(criterion);
@@ -445,10 +445,10 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 			Criteria criteria = null;
 			
 			try {
-				CrisisDTO cdto = crisisEJB.getCrisisByCode(crisisCode); 
+				CollectionDTO cdto = crisisEJB.getCrisisByCode(crisisCode); 
 				
 				Criterion criterion = Restrictions.conjunction()
-						.add(Restrictions.eq("crisis.crisisId",cdto.getCrisisID()))
+						.add(Restrictions.eq("collection.id",cdto.getCrisisID()))
 						.add(Restrictions.eq("hasHumanLabels", true));
 				
 				Criterion aliasCriterion =  Restrictions.eq(aliasTableKeyField, nominalLabelID);
@@ -502,7 +502,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 	@Override
 	public Integer getUnlabeledDocumentsCountByCrisisID(Long crisisId) throws PropertyNotSetException {
 		Criterion criterion = Restrictions.conjunction()
-				.add(Restrictions.eq("crisis.crisisId",crisisId))
+				.add(Restrictions.eq("collection.id",crisisId))
 				.add(Restrictions.eq("hasHumanLabels", false));
 		List<Document> documentList = this.getAllByCriteria(criterion);
 		return documentList != null ? Integer.valueOf(documentList.size()) : 0;
@@ -534,7 +534,7 @@ public class DocumentResourceFacadeImp extends CoreDBServiceFacadeImp<Document, 
 			String aliasTableKey = "taskAssignments.id.documentId";
 			String[] orderBy = {"valueAsTrainingSample", "documentId"};
 			Criterion criterion = Restrictions.conjunction()
-					.add(Restrictions.eq("crisis.crisisId",crisisID))
+					.add(Restrictions.eq("collection.id",crisisID))
 					.add(Restrictions.eq("hasHumanLabels",false));
 
 			// get just the documentIDs

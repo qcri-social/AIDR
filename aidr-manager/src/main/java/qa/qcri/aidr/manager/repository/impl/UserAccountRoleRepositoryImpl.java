@@ -16,7 +16,7 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
-import qa.qcri.aidr.manager.hibernateEntities.UserAccountRole;
+import qa.qcri.aidr.manager.persistence.entities.UserAccountRole;
 import qa.qcri.aidr.manager.repository.UserAccountRoleRepository;
 
 @Repository

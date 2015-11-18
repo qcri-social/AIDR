@@ -95,4 +95,15 @@ public class NominalLabelResourceImp implements NominalLabelResourceFacade {
 			 logger.error("Error in deleteNominalLabelDataByAttribute for attributeID : " + attributeID, e);
 		 }
 	}
+
+	@Override
+	public Long getLabelCountByCollectionId(Long collectionId) {
+		Long labelCount = 0L;
+		try {
+			labelCount = remoteNominalLabelEJB.getNominalLabelCountForCollectionID(collectionId);
+		} catch(Exception e) {
+			logger.error("Error in fetch label count.", e);
+		}
+		return labelCount;
+	}
 }

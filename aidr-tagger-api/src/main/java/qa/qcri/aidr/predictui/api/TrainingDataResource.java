@@ -27,7 +27,8 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
+import qa.qcri.aidr.predictui.dto.CrisisDTO;
 import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
@@ -57,10 +58,10 @@ public class TrainingDataResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{crisisCode}/getItem")
     public Response getTweetToTag(@PathParam("crisisCode") Long crisisId) {
-        CrisisDTO crisis = null;
+        CollectionDTO collection = null;
         try {
-            crisis = crisisLocalEJB.getCrisisByID(crisisId);
-            return Response.ok(crisis).build();
+            collection = crisisLocalEJB.getCrisisByID(crisisId);
+            return Response.ok(collection).build();
         } catch (RuntimeException e) {
             logger.error("Error in getting tweet to tag for crisis: " + crisisId);
         	return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
@@ -72,7 +73,7 @@ public class TrainingDataResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/by-code/{code}")
     public Response getCrisisByCode(@PathParam("code") String crisisCode) {
-        CrisisDTO crisis = null;
+    	CollectionDTO crisis = null;
         try {
             crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
             return Response.ok(crisis).build();
@@ -88,9 +89,9 @@ public class TrainingDataResource {
     @Path("/code/{code}")
     public Response isCrisisExists(@PathParam("code") String crisisCode) {
         long crisisId = 0;
-        CrisisDTO crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
-        if (crisis != null) {
-            crisisId =  crisis.getCrisisID();
+        CollectionDTO collection = crisisLocalEJB.getCrisisByCode(crisisCode);
+        if (collection != null) {
+            crisisId =  collection.getCrisisID();
         }
         //TODO: Following way of creating JSON should be changed through a proper and automatic way
         String response = "{\"crisisCode\":\"" + crisisCode + "\", \"crisisId\":\"" + crisisId + "\"}";
@@ -101,7 +102,7 @@ public class TrainingDataResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/all")
     public Response getAllCrisis() {
-        List<CrisisDTO> crisisList = crisisLocalEJB.getAllCrisis();
+        List<CollectionDTO> crisisList = crisisLocalEJB.getAllCrisis();
         ResponseWrapper response = new ResponseWrapper();
         response.setMessage(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
         response.setCrisises(crisisList);
@@ -111,7 +112,7 @@ public class TrainingDataResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseWrapper getAllCrisisByUserID(@QueryParam("userID") Long userID) throws Exception {
-        List<CrisisDTO> crisisList = crisisLocalEJB.getAllCrisisByUserID(userID);
+        List<CollectionDTO> crisisList = crisisLocalEJB.getAllCrisisByUserID(userID);
         ResponseWrapper response = new ResponseWrapper();
         if (crisisList == null) {
             response.setMessage("No crisis found associated with the given user id.");
@@ -124,11 +125,11 @@ public class TrainingDataResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addCrisis(CrisisDTO crisis) {
+    public Response addCrisis(CollectionDTO collection) {
         try {
-            CrisisDTO newCrisis = crisisLocalEJB.addCrisis(crisis);
+        	CollectionDTO newCollection = crisisLocalEJB.addCrisis(collection);
         } catch (RuntimeException e) {
-        	logger.error("Error while adding crisis: " + crisis.getCode() + ". Possible causes could be duplication of primary key, incomplete data, incompatible data format.");
+        	logger.error("Error while adding crisis: " + collection.getCode() + ". Possible causes could be duplication of primary key, incomplete data, incompatible data format.");
             return Response.ok("Error while adding Crisis. Possible causes could be duplication of primary key, incomplete data, incompatible data format.").build();
         }
 
@@ -139,9 +140,9 @@ public class TrainingDataResource {
     @PUT
     @Consumes("application/json")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response editCrisis(CrisisDTO crisis) {
+    public Response editCrisis(CollectionDTO crisis) {
         try {
-            CrisisDTO dto = crisisLocalEJB.editCrisis(crisis);
+        	CollectionDTO dto = crisisLocalEJB.editCrisis(crisis);
             return Response.ok(dto).build();
         } catch (RuntimeException e) {
             logger.error("Error in editing crisis: " + crisis.getCode());

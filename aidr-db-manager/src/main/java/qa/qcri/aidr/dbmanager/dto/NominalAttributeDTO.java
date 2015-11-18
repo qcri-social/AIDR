@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
@@ -45,7 +45,7 @@ public class NominalAttributeDTO implements java.io.Serializable {
 	private List<ModelFamilyDTO> modelFamiliesDTO = null;
 
 	@XmlElement
-	private List<CrisisDTO> crisisesDTO = null;
+	private List<CollectionDTO> crisisesDTO = null;
 
 	@XmlElement
 	private List<NominalLabelDTO> nominalLabelsDTO = null;
@@ -139,11 +139,11 @@ public class NominalAttributeDTO implements java.io.Serializable {
 		this.modelFamiliesDTO = modelFamiliesDTO;
 	}
 
-	public List<CrisisDTO> getCrisisesDTO() {
+	public List<CollectionDTO> getCrisisesDTO() {
 		return this.crisisesDTO;
 	}
 
-	public void setCrisisesDTO(List<CrisisDTO> crisisesDTO) {
+	public void setCrisisesDTO(List<CollectionDTO> crisisesDTO) {
 		this.crisisesDTO = crisisesDTO;
 	}
 
@@ -155,11 +155,11 @@ public class NominalAttributeDTO implements java.io.Serializable {
 		this.nominalLabelsDTO = nominalLabelsDTO;
 	}
 
-	private List<CrisisDTO> toCrisisDTOList(List<Crisis> list) throws PropertyNotSetException {
+	private List<CollectionDTO> toCrisisDTOList(List<Collection> list) throws PropertyNotSetException {
 		if (list != null) {
-			List<CrisisDTO> dtoList = new ArrayList<CrisisDTO>();
-			for (Crisis d: list) {
-				dtoList.add(new CrisisDTO(d));
+			List<CollectionDTO> dtoList = new ArrayList<CollectionDTO>();
+			for (Collection d: list) {
+				dtoList.add(new CollectionDTO(d));
 			}
 			return dtoList;
 		}
@@ -167,10 +167,10 @@ public class NominalAttributeDTO implements java.io.Serializable {
 	}
 
 
-	private List<Crisis> toCrisisList(List<CrisisDTO> list) throws PropertyNotSetException {
+	private List<Collection> toCrisisList(List<CollectionDTO> list) throws PropertyNotSetException {
 		if (list != null) {
-			List<Crisis> eList = new ArrayList<Crisis>();
-			for (CrisisDTO dto: list) {
+			List<Collection> eList = new ArrayList<Collection>();
+			for (CollectionDTO dto: list) {
 				eList.add(dto.toEntity());
 			}
 			return eList;

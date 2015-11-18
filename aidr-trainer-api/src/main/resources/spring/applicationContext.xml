@@ -33,9 +33,9 @@
 		jndi-name="${REMOTE_DB_MANAGER_DOCUMENT_RESOURCE_FACADE_JNDI_NAME}"
 		business-interface="qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade" />
 
-	<jee:remote-slsb id="CrisisResourceFacade"
+	<jee:remote-slsb id="CollectionResourceFacade"
 		jndi-name="${REMOTE_DB_MANAGER_CRISIS_RESOURCE_FACADE_JNDI_NAME}"
-		business-interface="qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade" />
+		business-interface="qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade" />
 
 	<jee:remote-slsb id="TaskAssignmentResourceFacade"
 		jndi-name="${REMOTE_DB_MANAGER_TASK_ASSIGNMENT_RESOURCE_FACADE_JNDI_NAME}"

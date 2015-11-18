@@ -4,7 +4,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import qa.qcri.aidr.trainer.api.dao.ModelFamilyDao;
-import qa.qcri.aidr.trainer.api.entity.Crisis;
+import qa.qcri.aidr.trainer.api.entity.Collection;
 import qa.qcri.aidr.trainer.api.entity.ModelFamily;
 import qa.qcri.aidr.trainer.api.template.CrisisNominalAttributeModel;
 
@@ -39,7 +39,7 @@ public class ModelFamilyDaoImpl extends AbstractDaoImpl<ModelFamily,String> impl
             ModelFamily modelFamily = (ModelFamily)iterator.next();
             Long crisisID = modelFamily.getCrisisID();
             Long attributeID = modelFamily.getNominalAttributeID();
-            Crisis crisis = modelFamily.getCrisis();
+            Collection crisis = modelFamily.getCrisis();
             if(crisis.getMicromapperEnabled() != null && crisis.getMicromapperEnabled())
             {
             	CrisisNominalAttributeModel temp = new CrisisNominalAttributeModel(crisisID, attributeID);

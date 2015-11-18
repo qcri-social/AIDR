@@ -30,7 +30,7 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.stereotype.Component;
 
-import qa.qcri.aidr.manager.hibernateEntities.UserConnection;
+import qa.qcri.aidr.manager.persistence.entities.UserConnection;
 import qa.qcri.aidr.manager.service.UserConnectionService;
 
 @Component

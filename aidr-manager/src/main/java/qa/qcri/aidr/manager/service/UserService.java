@@ -5,8 +5,8 @@ import java.util.List;
 import org.json.simple.JSONArray;
 
 import qa.qcri.aidr.manager.RoleType;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
+import qa.qcri.aidr.manager.persistence.entities.Collection;
+import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 
 public interface UserService {
 
@@ -20,12 +20,14 @@ public interface UserService {
 
     public Long getUsersCount(String query);
 
-    public boolean isUserInCollectionManagersList(UserAccount user, AidrCollection collection);
+    public boolean isUserInCollectionManagersList(UserAccount user, Collection collection);
 
     public boolean isUserAdmin(UserAccount user);
 
     public UserAccount getAvailableUser(JSONArray users);
     
     public List<RoleType> getUserRoles(Long userId);
+
+	void update(UserAccount user) throws Exception;
 
 }

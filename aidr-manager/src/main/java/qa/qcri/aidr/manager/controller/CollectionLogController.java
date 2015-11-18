@@ -1,18 +1,23 @@
 package qa.qcri.aidr.manager.controller;
 
-import qa.qcri.aidr.manager.dto.CollectionLogDataResponse;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
-import qa.qcri.aidr.manager.service.CollectionLogService;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
+import qa.qcri.aidr.manager.dto.CollectionLogDataResponse;
+import qa.qcri.aidr.manager.persistence.entities.CollectionLog;
+import qa.qcri.aidr.manager.service.CollectionLogService;
 
 @Controller
 @RequestMapping("protected/collection-log")
@@ -31,8 +36,8 @@ public class CollectionLogController extends BaseController {
 
     @RequestMapping(value = "/save.action", method = {RequestMethod.POST})
     @ResponseBody
-    public Map<String, Object> save(AidrCollectionLog collectionLog) throws Exception {
-        logger.info("Save AidrCollectionLog to Database for collection with ID: " + collectionLog.getCollectionID());
+    public Map<String, Object> save(CollectionLog collectionLog) throws Exception {
+        logger.info("Save CollectionLog to Database for collection with ID: " + collectionLog.getCollectionId());
         try {
             collectionLogService.create(collectionLog);
             return getUIWrapper(true);
@@ -44,8 +49,8 @@ public class CollectionLogController extends BaseController {
 
     @RequestMapping(value = "/delete.action", method = {RequestMethod.POST, RequestMethod.GET})
     @ResponseBody
-    public Map<String, Object> delete(AidrCollectionLog collectionLog) throws Exception {
-        logger.info("Deleting AidrCollectionLog Info from Database for collection with ID: " + collectionLog.getCollectionID());
+    public Map<String, Object> delete(CollectionLog collectionLog) throws Exception {
+        logger.info("Deleting CollectionLog Info from Database for collection with ID: " + collectionLog.getCollectionId());
         try {
             collectionLogService.delete(collectionLog);
             return getUIWrapper(true);
@@ -57,12 +62,12 @@ public class CollectionLogController extends BaseController {
 
     @RequestMapping(value = "/update.action", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> update(AidrCollectionLog collectionLog) throws Exception {
-        logger.info("Updating AidrCollectionLog into Database for collection with ID: " + collectionLog.getCollectionID());
+    public Map<String, Object> update(CollectionLog collectionLog) throws Exception {
+        logger.info("Updating CollectionLog into Database for collection with ID: " + collectionLog.getCollectionId());
         try {
-            AidrCollectionLog dbCollection = collectionLogService.findById(collectionLog.getId());
+        	CollectionLog dbCollection = collectionLogService.findById(collectionLog.getId());
             collectionLog.setStartDate(dbCollection.getStartDate());
-            collectionLog.setCollectionID(dbCollection.getCollectionID());
+            collectionLog.setCollectionId(dbCollection.getCollectionId());
             collectionLogService.update(collectionLog);
             return getUIWrapper(true);
         } catch (Exception e) {
@@ -73,8 +78,8 @@ public class CollectionLogController extends BaseController {
 
     @RequestMapping(value = "/findById.action", method = RequestMethod.GET)
     @ResponseBody
-    public AidrCollectionLog findById(Integer id) throws Exception {
-        logger.info("Fetch AidrCollectionLog for Id  " + id);
+    public CollectionLog findById(Long id) throws Exception {
+        logger.info("Fetch CollectionLog for Id  " + id);
         return collectionLogService.findById(id);
     }
 
@@ -89,9 +94,9 @@ public class CollectionLogController extends BaseController {
 
     @RequestMapping(value = "/findAllForCollection.action", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> findAllForCollection(@RequestParam Integer start, @RequestParam Integer limit, @RequestParam Integer id) throws Exception {
+    public Map<String, Object> findAllForCollection(@RequestParam Integer start, @RequestParam Integer limit, @RequestParam Long id) throws Exception {
         if (id == null) {
-            logger.error("Error while Getting all AidrCollectionLogs for Collection. Collection ID is empty");
+            logger.error("Error while Getting all CollectionLogs for Collection. Collection ID is empty");
             return getUIWrapper(false);
         }
         start = (start != null) ? start : 0;

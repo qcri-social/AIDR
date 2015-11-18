@@ -3,7 +3,7 @@ package qa.qcri.aidr.manager.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 
 public class TaggerCrisis {
@@ -43,7 +43,7 @@ public class TaggerCrisis {
 		this.isMicromapperEnabled = isMicromapperEnabled;
 	}
 
-	public TaggerCrisis(CrisisDTO dto) throws Exception {
+	public TaggerCrisis(CollectionDTO dto) throws Exception {
 		if (dto != null) {
 			this.setCode(dto.getCode());
 			this.setName(dto.getName());
@@ -67,8 +67,8 @@ public class TaggerCrisis {
 		}
 	}
 
-	public CrisisDTO toDTO() throws Exception {
-		CrisisDTO dto = new CrisisDTO();
+	public CollectionDTO toDTO() throws Exception {
+		CollectionDTO dto = new CollectionDTO();
 		if (this.getCrisisID() != null) {
 			dto.setCrisisID(new Long(this.getCrisisID()));
 		}

@@ -10,7 +10,6 @@ package qa.qcri.aidr.utils;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang3.text.translate.UnicodeEscaper;
 import org.apache.log4j.Logger;
 
 import com.google.gson.JsonObject;
@@ -21,7 +20,6 @@ import com.google.gson.JsonParser;
 public class Tweet  implements Document, Serializable{
 
 	private static Logger logger = Logger.getLogger(Tweet.class);
-	private static UnicodeEscaper unicodeEscaper = UnicodeEscaper.above(127); 
 	private String tweetID;
 	private String message;
 	private String crisisName;
@@ -75,14 +73,14 @@ public class Tweet  implements Document, Serializable{
 	 * @return the message
 	 */
 	public String getMessage() {
-		return unicodeEscaper.translate(message);
+		return message;
 	}
 
 	/**
 	 * @param message the message to set
 	 */
 	public void setMessage(String message) {
-		this.message = unicodeEscaper.translate(message);
+		this.message = message;
 	}
 
 	/**

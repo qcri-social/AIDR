@@ -177,8 +177,8 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                                                 url: BASE_URL + '/protected/collection/updateDuration.action',
                                                 method: 'POST',
                                                 params: {
-                                                    id: record.data.id,
-                                                    durationHours: selectedVal
+                                                    code: record.data.code,
+                                                    duration: selectedVal
                                                 },
                                                 headers: {
                                                     'Accept': 'application/json'
@@ -375,7 +375,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                                                 url: BASE_URL + '/protected/collection/updateDuration.action',
                                                 method: 'POST',
                                                 params: {
-                                                    id: record.data.id,
+                                                    code: record.data.code,
                                                     durationHours: selectedVal
                                                 },
                                                 headers: {

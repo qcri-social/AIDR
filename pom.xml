@@ -107,6 +107,7 @@
         <module>aidr-trainer-api</module>
         <!--<module>aidr-trainer-pybossa</module>-->
         <module>aidr-manager</module>
+		<module>aidr-data</module>
     </modules>
     
 </project>

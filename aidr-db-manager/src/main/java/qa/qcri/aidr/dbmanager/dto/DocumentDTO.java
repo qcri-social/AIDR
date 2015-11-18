@@ -7,22 +7,17 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
-import qa.qcri.aidr.dbmanager.entities.misc.CrisisType;
-import qa.qcri.aidr.dbmanager.entities.misc.Users;
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
 import qa.qcri.aidr.dbmanager.entities.task.TaskAssignment;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 @XmlRootElement
@@ -42,7 +37,7 @@ public class DocumentDTO implements Serializable {
 
 	@XmlElement
 	@JsonBackReference
-	private CrisisDTO crisisDTO = null;
+	private CollectionDTO crisisDTO = null;
 
 	@XmlElement
 	private boolean isEvaluationSet;
@@ -84,7 +79,7 @@ public class DocumentDTO implements Serializable {
 		this.setHasHumanLabels(hasHumanLabels);
 	}
 
-	public DocumentDTO(CrisisDTO crisis, boolean isEvaluationSet,
+	public DocumentDTO(CollectionDTO crisis, boolean isEvaluationSet,
 			boolean hasHumanLabels, Double valueAsTrainingSample,
 			Date receivedAt, String language, String doctype, String data) {
 		this.setCrisisDTO(crisis);
@@ -97,7 +92,7 @@ public class DocumentDTO implements Serializable {
 		this.setData(data);
 	}
 
-	public DocumentDTO(CrisisDTO crisis, boolean isEvaluationSet,
+	public DocumentDTO(CollectionDTO crisis, boolean isEvaluationSet,
 			boolean hasHumanLabels, Double valueAsTrainingSample,
 			Date receivedAt, String language, String doctype, String data,
 			String wordFeatures, String geoFeatures, List<TaskAssignmentDTO> taskAssignments,
@@ -125,10 +120,10 @@ public class DocumentDTO implements Serializable {
 			}
 			this.setHasHumanLabels(doc.isHasHumanLabels());
 			if (doc.hasCrisis()) {
-				Crisis c = new Crisis(doc.getCrisis().getUsers(), doc.getCrisis().getCrisisType(), doc.getCrisis().getName(), doc.getCrisis().getCode(),
+				Collection c = new Collection(doc.getCrisis().getUsers(), doc.getCrisis().getCrisisType(), doc.getCrisis().getName(), doc.getCrisis().getCode(),
 										doc.getCrisis().isIsTrashed(), doc.getCrisis().isIsMicromapperEnabled());
 				c.setCrisisId(doc.getCrisis().getCrisisId());
-				this.setCrisisDTO(new CrisisDTO(c));
+				this.setCrisisDTO(new CollectionDTO(c));
 			} 
 			this.setDoctype(doc.getDoctype());
 			this.setGeoFeatures(doc.getGeoFeatures());
@@ -176,11 +171,11 @@ public class DocumentDTO implements Serializable {
 		this.geoFeatures = geoFeatures;
 	}
 
-	public CrisisDTO getCrisisDTO() {
+	public CollectionDTO getCrisisDTO() {
 		return this.crisisDTO;
 	}
 
-	public void setCrisisDTO(CrisisDTO crisisDTO) {
+	public void setCrisisDTO(CollectionDTO crisisDTO) {
 		this.crisisDTO = crisisDTO;
 	}
 

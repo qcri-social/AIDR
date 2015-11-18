@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 
@@ -36,7 +36,7 @@ public class UsersDTO implements Serializable {
 	private List<NominalAttributeDTO> nominalAttributesDTO = null;
 
 	@XmlElement
-	private List<CrisisDTO> crisisesDTO = null;
+	private List<CollectionDTO> crisisesDTO = null;
 
 
 	public Long getUserID() {
@@ -73,19 +73,19 @@ public class UsersDTO implements Serializable {
 		this.nominalAttributesDTO = nominalAttributesDTO;
 	}
 
-	public List<CrisisDTO> getCrisisesDTO() {
+	public List<CollectionDTO> getCrisisesDTO() {
 		return this.crisisesDTO;
 	}
 
-	public void setCrisisesDTO(List<CrisisDTO> crisisesDTO) {
+	public void setCrisisesDTO(List<CollectionDTO> crisisesDTO) {
 		this.crisisesDTO = crisisesDTO;
 	}
 
-	private List<CrisisDTO> toCrisisDTOList(List<Crisis> list) throws PropertyNotSetException {
+	private List<CollectionDTO> toCrisisDTOList(List<Collection> list) throws PropertyNotSetException {
 		if (list != null) {
-			List<CrisisDTO> dtoList = new ArrayList<CrisisDTO>();
-			for (Crisis d: list) {
-				dtoList.add(new CrisisDTO(d));
+			List<CollectionDTO> dtoList = new ArrayList<CollectionDTO>();
+			for (Collection d: list) {
+				dtoList.add(new CollectionDTO(d));
 			}
 			return dtoList;
 		}
@@ -93,10 +93,10 @@ public class UsersDTO implements Serializable {
 	}
 
 
-	private List<Crisis> toCrisisList(List<CrisisDTO> list) throws PropertyNotSetException {
+	private List<Collection> toCrisisList(List<CollectionDTO> list) throws PropertyNotSetException {
 		if (list != null) {
-			List<Crisis> eList = new ArrayList<Crisis>();
-			for (CrisisDTO dto: list) {
+			List<Collection> eList = new ArrayList<Collection>();
+			for (CollectionDTO dto: list) {
 				eList.add(dto.toEntity());
 			}
 			return eList;
@@ -142,35 +142,20 @@ public class UsersDTO implements Serializable {
 		this.role = role;
 	}
 
-	public UsersDTO(Users user) throws PropertyNotSetException {
+	public UsersDTO(Users user) {
 		if (user != null) {
-			
 			this.name = user.getUserName();
 			this.setUserID(user.getId());
-
-			/*if (user.hasCrisises()) {
-				this.setCrisisesDTO(toCrisisDTOList(user.getCrisises()));
-			}
-			if (user.hasNominalAttributes()) {
-				this.setNominalAttributesDTO(toNominalAttributeDTOList(user.getNominalAttributes()));
-			}*/
 		}
 	}
 
-	public Users toEntity() throws PropertyNotSetException {
+	public Users toEntity() {
 		Users user = new Users();
 		user.setUserName(this.getName());
 		if (this.getUserID() != null) {
 			user.setId(this.getUserID());
 		}
 
-		// optional parameters
-		/*if (this.getCrisisesDTO() != null) {
-			user.setCrisises(this.toCrisisList(this.crisisesDTO));
-		}
-		if (this.getNominalAttributesDTO() != null) {
-			user.setNominalAttributes(this.toNominalAttributeList(this.nominalAttributesDTO));
-		}*/
 		return user;
 	}
 }

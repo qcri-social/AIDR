@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.commons.lang3.text.translate.UnicodeEscaper;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.code.DateFormatConfig;
@@ -38,7 +38,6 @@ import com.google.gson.stream.JsonReader;
 public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Document, Serializable {
 
 	private static final long serialVersionUID = 3780215910578547404L;
-	private static UnicodeEscaper unicodeEscaper = UnicodeEscaper.above(127);
 	private static Logger logger = Logger.getLogger(ClassifiedTweet.class);
 
 	/**
@@ -104,14 +103,14 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 	 * @return the message
 	 */
 	public String getMessage() {
-		return unicodeEscaper.translate(message);
+		return message;
 	}
 
 	/**
 	 * @param message the message to set
 	 */
 	public void setMessage(String message) {
-		this.message = unicodeEscaper.translate(message);
+		this.message = message;
 	}
 
 	/**
@@ -569,7 +568,7 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 		try {
 			String jsonString = jsonObject.toJson(this, ClassifiedTweet.class);
 			jsonString = jsonString.replace("\\\\u", "\\u");
-			return unicodeEscaper.translate(jsonString);
+			return StringEscapeUtils.unescapeJava(jsonString);
 		} catch (Exception e) {
 			logger.error("Error while parsing jsonObject to json string", e);
 			return null;

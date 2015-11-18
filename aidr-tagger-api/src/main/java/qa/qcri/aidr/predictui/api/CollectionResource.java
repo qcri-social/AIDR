@@ -5,6 +5,7 @@
 package qa.qcri.aidr.predictui.api;
 
 import java.util.List;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.GET;
@@ -15,7 +16,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import qa.qcri.aidr.predictui.entities.AidrCollection;
+
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
 import qa.qcri.aidr.predictui.facade.CollectionResourceFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 
@@ -41,7 +43,7 @@ public class CollectionResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{userID}")
     public Response getAllCrisisByUserID(@PathParam("userID") int userID) {
-        List<AidrCollection> collections = collectionLocalEJB.getAllRunningCollectionsByUserID(userID);
+        List<Collection> collections = collectionLocalEJB.getAllRunningCollectionsByUserID(userID);
         ResponseWrapper response = new ResponseWrapper();
         
         if (collections == null || collections.isEmpty()) {

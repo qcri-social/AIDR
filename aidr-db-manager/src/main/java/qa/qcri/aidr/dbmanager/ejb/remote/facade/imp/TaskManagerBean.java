@@ -23,7 +23,7 @@ import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
 import qa.qcri.aidr.common.util.TrainingDataFetchType;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
@@ -32,7 +32,7 @@ import qa.qcri.aidr.dbmanager.dto.TaskAnswerDTO;
 import qa.qcri.aidr.dbmanager.dto.TaskAssignmentDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskManagerRemote;
-import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
 import qa.qcri.aidr.dbmanager.entities.task.Document;
 import qa.qcri.aidr.dbmanager.entities.task.DocumentNominalLabel;
@@ -56,7 +56,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable> {
 
 	@EJB
-	private qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade remoteCrisisEJB;
+	private qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade remoteCrisisEJB;
 
 	@EJB
 	private qa.qcri.aidr.dbmanager.ejb.remote.facade.DocumentResourceFacade remoteDocumentEJB;
@@ -132,7 +132,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		}
 		try {
 			DocumentDTO doc = (DocumentDTO) task;
-			CrisisDTO crisisDTO = remoteCrisisEJB.findCrisisByID(crisisID);
+			CollectionDTO crisisDTO = remoteCrisisEJB.findCrisisByID(crisisID);
 			doc.setCrisisDTO(crisisDTO);
 			doc.setHasHumanLabels(false);
 			DocumentDTO savedDoc = remoteDocumentEJB.addDocument(doc);
@@ -170,7 +170,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		if (collection != null) {
 			try {
 				for (T doc: collection) {
-					CrisisDTO crisisDTO = remoteCrisisEJB.findCrisisByID(crisisID);
+					CollectionDTO crisisDTO = remoteCrisisEJB.findCrisisByID(crisisID);
 					((DocumentDTO) doc).setCrisisDTO(crisisDTO);
 					((DocumentDTO) doc).setHasHumanLabels(false);
 					DocumentDTO savedDoc = remoteDocumentEJB.addDocument((DocumentDTO) doc);
@@ -413,11 +413,11 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			if (criterion != null) {
 				newCriterion = Restrictions.conjunction()
 						.add(criterion)
-						.add(Restrictions.eq("crisis.crisisId",crisisID))
+						.add(Restrictions.eq("collection.id",crisisID))
 						.add(Restrictions.eq("hasHumanLabels",false));
 			} else {
 				newCriterion = Restrictions.conjunction()
-						.add(Restrictions.eq("crisis.crisisId",crisisID))
+						.add(Restrictions.eq("collection.id",crisisID))
 						.add(Restrictions.eq("hasHumanLabels",false));
 			}
 
@@ -444,11 +444,11 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		if (criterion != null) {
 			newCriterion = Restrictions.conjunction()
 					.add(criterion)
-					.add(Restrictions.eq("crisis.crisisId",crisisID))
+					.add(Restrictions.eq("collection.id",crisisID))
 					.add(Restrictions.eq("hasHumanLabels",false));
 		} else {
 			newCriterion = Restrictions.conjunction()
-					.add(Restrictions.eq("crisis.crisisId",crisisID))
+					.add(Restrictions.eq("collection.id",crisisID))
 					.add(Restrictions.eq("hasHumanLabels",false));
 		}
 		Criterion aliasCriterion =  (Restrictions.isNull(aliasTableKey));
@@ -534,7 +534,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			if (criterion != null) {
 				Criterion newCriterion = Restrictions.conjunction()
 						.add(criterion)
-						.add(Restrictions.eq("crisis.crisisId", crisisID));
+						.add(Restrictions.eq("collection.id", crisisID));
 				Document document = remoteDocumentEJB.getByCriteria(newCriterion);
 
 				return new DocumentDTO(document);
@@ -551,7 +551,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			if (criterion != null) {
 				Criterion newCriterion = Restrictions.conjunction()
 						.add(criterion)
-						.add(Restrictions.eq("crisis.crisisId", crisisID));
+						.add(Restrictions.eq("collection.id", crisisID));
 				List<Document> docList =  remoteDocumentEJB.getByCriteriaWithLimit(newCriterion, count);
 				return createDocumentDTOList(docList);
 			}
@@ -817,9 +817,8 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				//logger.info("Detected of type DocumentNominalLabel.class");
 				doc = (DocumentNominalLabel) remoteDocumentNominalLabelEJB.getById(id);
 			}
-			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.misc.Crisis.class)) {
-				//logger.info("Detected of type Crisis.class");
-				doc = (Crisis) remoteCrisisEJB.getById(id);
+			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.misc.Collection.class)) {
+				doc = (Collection) remoteCrisisEJB.getById(id);
 			}
 			//logger.info("Fetched task of type: " + doc.getClass());
 			//logger.info("received map: " + paramMap);
@@ -921,12 +920,11 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 				//return serializeTask((qa.qcri.aidr.task.entities.DocumentNominalLabel) doc);
 				return new DocumentNominalLabelDTO((DocumentNominalLabel) doc);
 			}
-			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.misc.Crisis.class)) {
-				//logger.info("Detected of type Crisis.class");
-				remoteCrisisEJB.merge((Crisis) doc);
+			if (entityType.equals(qa.qcri.aidr.dbmanager.entities.misc.Collection.class)) {
+				remoteCrisisEJB.merge((Collection) doc);
 				logger.debug("Merge update successful for task id = " + id);
 				//return serializeTask((qa.qcri.aidr.task.entities.Crisis) doc);
-				return new CrisisDTO((Crisis) doc);
+				return new CollectionDTO((Collection) doc);
 			}
 		} catch (Exception e) {
 			logger.error("Error in updating entity on DB");
@@ -1052,7 +1050,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		String[] orderBy = {"documentId"};
 
 		Criterion criterion = Restrictions.conjunction()
-				.add(Restrictions.eq("crisis.crisisId",crisisID))
+				.add(Restrictions.eq("collection.id",crisisID))
 				.add(Restrictions.eq("hasHumanLabels", true));
 		Criterion aliasCriterion =  Restrictions.isNotNull(aliasTableKeyField);
 		try {
@@ -1095,7 +1093,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 			logger.error("crisis code can't be null");
 			throw new PropertyNotSetException("crisis code can't be null");
 		}
-		CrisisDTO crisis = remoteCrisisEJB.getCrisisByCode(crisisCode);
+		CollectionDTO crisis = remoteCrisisEJB.getCrisisByCode(crisisCode);
 		if (null == crisis) {
 			logger.error("crisis code is invalid");
 			throw new PropertyNotSetException("crisis code is invalid");
@@ -1118,7 +1116,7 @@ public class TaskManagerBean<T, I> implements TaskManagerRemote<T, Serializable>
 		String[] orderBy = {"documentId"};
 
 		Criterion criterion = Restrictions.conjunction()
-				.add(Restrictions.eq("crisis.crisisId",crisisID))
+				.add(Restrictions.eq("collection.id",crisisID))
 				.add(Restrictions.eq("hasHumanLabels", true));
 		Criterion aliasCriterion =  Restrictions.conjunction()
 				.add(Restrictions.isNotNull(aliasTableKeyField))

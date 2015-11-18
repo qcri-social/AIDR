@@ -25,22 +25,22 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 
 public class TestCrisisResourceFacadeImp {
-	private static CrisisResourceFacadeImp crisisResourceFacadeImp;
+	private static CollectionResourceFacadeImp crisisResourceFacadeImp;
 	private static UsersResourceFacadeImp userResourceFacadeImp;
 	private static CrisisTypeResourceFacadeImp crisisTypeResourceFacadeImp;
 	private static NominalAttributeResourceFacadeImp nominalAttributeResourceFacadeImp;
 	private static ModelFamilyResourceFacadeImp modelFamilyResourceFacadeImp;
 	private static EntityManager entityManager;
-	private static CrisisDTO editCrisis;
+	private static CollectionDTO editCrisis;
 	private static Long crisisId;
-	private static CrisisDTO crisisDTO;
+	private static CollectionDTO crisisDTO;
 	private static String crisisCode = "testCrisisCode"+new Date();
 	private static String crisisName = "testCrisisName"+new Date();
 	private static UsersDTO user;
@@ -48,7 +48,7 @@ public class TestCrisisResourceFacadeImp {
 	
 	@BeforeClass
 	public static void setUpClass() {
-		crisisResourceFacadeImp = new CrisisResourceFacadeImp();
+		crisisResourceFacadeImp = new CollectionResourceFacadeImp();
 		entityManager = Persistence.createEntityManagerFactory(
 				"ProjectDBManagerTest-ejbPU").createEntityManager();
 		crisisResourceFacadeImp.setEntityManager(entityManager);
@@ -64,22 +64,18 @@ public class TestCrisisResourceFacadeImp {
 
 	@Before
 	public void setUp() {
-		try {
-			CrisisTypeDTO crisisTypeDTO = crisisTypeResourceFacadeImp.findCrisisTypeByID(1100L);
-			
-			user = new UsersDTO("userDBTest"+new Date(), "normal");
-			entityManager.getTransaction().begin();
-			user = userResourceFacadeImp.addUser(user);
-			
-			entityManager.getTransaction().commit();
-			crisisDTO = new CrisisDTO(crisisName, crisisCode, false, false, crisisTypeDTO, user);
-			entityManager.getTransaction().begin();
-			crisisDTO = crisisResourceFacadeImp.addCrisis(crisisDTO);
-			entityManager.getTransaction().commit();
-			crisisId = crisisDTO.getCrisisID();
-		} catch (PropertyNotSetException ex) {
-			logger.error("Property not set exception while adding crisis "+ex.getMessage());
-		}
+		CrisisTypeDTO crisisTypeDTO = crisisTypeResourceFacadeImp.findCrisisTypeByID(1100L);
+		
+		user = new UsersDTO("userDBTest"+new Date(), "normal");
+		entityManager.getTransaction().begin();
+		user = userResourceFacadeImp.addUser(user);
+		
+		entityManager.getTransaction().commit();
+		crisisDTO = new CollectionDTO(crisisName, crisisCode, false, false, crisisTypeDTO, user, user);
+		entityManager.getTransaction().begin();
+		crisisDTO = crisisResourceFacadeImp.addCrisis(crisisDTO);
+		entityManager.getTransaction().commit();
+		crisisId = crisisDTO.getCrisisID();
 	}
 
 	@After
@@ -89,7 +85,7 @@ public class TestCrisisResourceFacadeImp {
 				entityManager.getTransaction().begin();
 				crisisResourceFacadeImp.deleteCrisis(crisisDTO);
 				entityManager.getTransaction().commit();
-				CrisisDTO result = crisisResourceFacadeImp.getCrisisByCode(crisisCode);
+				CollectionDTO result = crisisResourceFacadeImp.getCrisisByCode(crisisCode);
 				assertNull(result);
 				
 			}
@@ -132,7 +128,7 @@ public class TestCrisisResourceFacadeImp {
 	@Test
 	public void testFindCrisisByID() {
 		try {
-			CrisisDTO crisisDTO = crisisResourceFacadeImp
+			CollectionDTO crisisDTO = crisisResourceFacadeImp
 					.findCrisisByID(crisisId);
 			assertEquals(crisisName, crisisDTO.getName());
 		} catch (PropertyNotSetException ex) {
@@ -148,7 +144,7 @@ public class TestCrisisResourceFacadeImp {
 		try {
 			String columnName = "code";
 			String value = crisisCode;
-			List<CrisisDTO> result = crisisResourceFacadeImp.findByCriteria(
+			List<CollectionDTO> result = crisisResourceFacadeImp.findByCriteria(
 					columnName, value);
 			assertEquals(crisisCode, result.get(0).getCode());
 		} catch (PropertyNotSetException ex) {
@@ -159,7 +155,7 @@ public class TestCrisisResourceFacadeImp {
 	@Test
 	public void testGetCrisisWithAllFieldsByID() {
 		try {
-			CrisisDTO crisis = crisisResourceFacadeImp
+			CollectionDTO crisis = crisisResourceFacadeImp
 					.getCrisisWithAllFieldsByID(crisisId);
 			assertEquals(crisisName, crisis.getName());
 		} catch (PropertyNotSetException ex) {
@@ -173,7 +169,7 @@ public class TestCrisisResourceFacadeImp {
 	@Test
 	public void testGetCrisisByCode() {
 		try {
-			CrisisDTO result = crisisResourceFacadeImp
+			CollectionDTO result = crisisResourceFacadeImp
 					.getCrisisByCode(crisisCode);
 			assertNotNull(result);
 			assertEquals(crisisCode, result.getCode());
@@ -192,7 +188,7 @@ public class TestCrisisResourceFacadeImp {
 			editCrisis.setName(crisisName + "2");
 			editCrisis.setCode(crisisCode + "2");
 			entityManager.getTransaction().begin();
-			CrisisDTO result = crisisResourceFacadeImp.editCrisis(editCrisis);
+			CollectionDTO result = crisisResourceFacadeImp.editCrisis(editCrisis);
 			entityManager.getTransaction().commit();
 
 			assertEquals(crisisName + "2", result.getName());
@@ -215,7 +211,7 @@ public class TestCrisisResourceFacadeImp {
 	@Test
 	public void testFindActiveCrisis() {
 		try {
-			List<CrisisDTO> list = crisisResourceFacadeImp.findActiveCrisis();
+			List<CollectionDTO> list = crisisResourceFacadeImp.findActiveCrisis();
 			assertEquals(false, list.get(0).isIsTrashed());
 		} catch (PropertyNotSetException ex) {
 			logger.error("PropertyNotSetException while finding all active crisis "+ex.getMessage());
@@ -228,7 +224,7 @@ public class TestCrisisResourceFacadeImp {
 	@Test
 	public void testGetAllCrisis() {
 		try {
-			List<CrisisDTO> result = crisisResourceFacadeImp.getAllCrisis();
+			List<CollectionDTO> result = crisisResourceFacadeImp.getAllCrisis();
 			assertNotNull(result);
 		} catch (PropertyNotSetException ex) {
 			logger.error("PropertyNotSetException while getting all crisis "+ex.getMessage());
@@ -242,7 +238,7 @@ public class TestCrisisResourceFacadeImp {
 	@Test
 	public void testGetAllCrisisWithModelFamilies() {
 		try {
-			List<CrisisDTO> result = crisisResourceFacadeImp
+			List<CollectionDTO> result = crisisResourceFacadeImp
 					.getAllCrisisWithModelFamilies();
 			assertNotNull(result.get(0).getModelFamiliesDTO());
 		} catch (PropertyNotSetException ex) {
@@ -253,7 +249,7 @@ public class TestCrisisResourceFacadeImp {
 	@Test
 	public void testGetAllCrisisWithModelFamilyNominalAttribute() {
 		try {
-			List<CrisisDTO> list = crisisResourceFacadeImp
+			List<CollectionDTO> list = crisisResourceFacadeImp
 					.getAllCrisisWithModelFamilyNominalAttribute();
 			assertNotNull(list.get(0).getModelFamiliesDTO());
 			assertNotNull(list.get(0).getNominalAttributesDTO());
@@ -346,7 +342,7 @@ public class TestCrisisResourceFacadeImp {
 	@Test
 	public void testGetWithModelFamilyNominalAttributeByCrisisID() {
 		try {
-			CrisisDTO crisis = crisisResourceFacadeImp
+			CollectionDTO crisis = crisisResourceFacadeImp
 					.getWithModelFamilyNominalAttributeByCrisisID(crisisId);
 			assertEquals(Long.valueOf(crisisId), crisis.getCrisisID());
 			assertEquals(crisisName, crisis.getName());

@@ -96,23 +96,24 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             flex:1,
             store: this.modelHistoryStore,
             cls: 'aidr-grid',
+            margin: '20 0 0 0',
             columns: [
                 {
                     xtype: 'gridcolumn', dataIndex: 'avgPrecision', text: 'Precision', width: 150,
-                    renderer: function (value, meta, record) {
-                        return value;
+                    renderer: function (r, meta, record) {
+                    	return r ? (r * 100).toFixed(0) + '%' : '0%';
                     }
                 },
                 {
                     xtype: 'gridcolumn', dataIndex: 'avgRecall', text: 'Recall', flex: 1,
                     renderer: function (r, meta, record) {
-                        return r ? r.toFixed(2) : 0.00;
+                        return r ? (r * 100).toFixed(0) + '%' : '0%';
                     }
                 },
                 {
                     xtype: 'gridcolumn', dataIndex: 'avgAuc', text: 'AUC', width: 150,
                     renderer: function (r, meta, record) {
-                        return r ? (r * 100).toFixed(2) + '%' : '0.00%';
+                        return r ? (r * 100).toFixed(0) + '%' : '0%';
                     }
                 },
                 {
@@ -242,13 +243,20 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
                     defaults: {
                     },
                     items: [
-						{
-							xtype:'ClassifierHistoryChart',
-							width: 900
-						},
-                        this.modelHistoryTitle,
-                        this.modelHistoryGrid,
-                        this.modelHistoryPaging,
+                            {
+                            	xtype: 'container',
+	                            layout: {
+	                                type: 'vbox',
+	                                align: 'stretch'
+	                            },
+	                            margin: '15 0 0 0',
+	                            items: [{
+	                            	xtype:'ClassifierHistoryChart',
+	                            }],
+                            },
+                            //this.modelHistoryTitle,
+                            this.modelHistoryGrid,
+                            this.modelHistoryPaging,
                     ]
                 },
                 {

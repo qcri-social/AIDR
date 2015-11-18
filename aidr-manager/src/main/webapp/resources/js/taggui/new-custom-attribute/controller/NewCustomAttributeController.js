@@ -294,6 +294,7 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
             success: function (response) {
                 var resp = Ext.decode(response.responseText);
                 if (resp.success && resp.data) {
+                	
                     var labels = me.mainComponent.labelsStore.getRange();
 
                     me.addAttributeToCrises(resp.data.nominalAttributeID, name);

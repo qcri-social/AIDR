@@ -30,7 +30,7 @@ import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
  */
 public class TestCrisisTypeResourceFacadeImp {
 	static CrisisTypeResourceFacadeImp crisisTypeResourceFacadeImp;
-	static CrisisResourceFacadeImp crisisResourceFacadeImp;
+	static CollectionResourceFacadeImp crisisResourceFacadeImp;
 	static UsersResourceFacadeImp userResourceFacadeImp;
 	static EntityManager entityManager;
 	static CrisisTypeDTO addCrisisType;
@@ -53,7 +53,7 @@ public class TestCrisisTypeResourceFacadeImp {
 		entityManager = Persistence.createEntityManagerFactory(
 				"ProjectDBManagerTest-ejbPU").createEntityManager();
 		crisisTypeResourceFacadeImp.setEntityManager(entityManager);
-		crisisResourceFacadeImp = new CrisisResourceFacadeImp();
+		crisisResourceFacadeImp = new CollectionResourceFacadeImp();
 		crisisResourceFacadeImp.setEntityManager(entityManager);
 		userResourceFacadeImp = new UsersResourceFacadeImp();
 		userResourceFacadeImp.setEntityManager(entityManager);
@@ -73,14 +73,10 @@ public class TestCrisisTypeResourceFacadeImp {
 	 */
 	@Test
 	public void testGetAllCrisisTypes() {
-		try {
-			List<CrisisTypeDTO> result = crisisTypeResourceFacadeImp
-					.getAllCrisisTypes();
-			assertNotNull(result);
-			assertEquals(crisisTypeName, result.get(1).getName());
-		} catch (PropertyNotSetException ex) {
-			logger.error("PropertyNotSetException while fetching all crisisTypes "+ex.getMessage());
-		}
+		List<CrisisTypeDTO> result = crisisTypeResourceFacadeImp
+				.getAllCrisisTypes();
+		assertNotNull(result);
+		assertEquals(crisisTypeName, result.get(1).getName());
 	}
 
 	/**
@@ -105,26 +101,22 @@ public class TestCrisisTypeResourceFacadeImp {
 	 */
 	@Test
 	public void testEditCrisisType() {
-		try {
-			CrisisTypeDTO addCrisisType = new CrisisTypeDTO();
-			addCrisisType.setName(sampleCrisisTypeName);
-			entityManager.getTransaction().begin();
-			CrisisTypeDTO result = crisisTypeResourceFacadeImp
-					.addCrisisType(addCrisisType);
-			entityManager.getTransaction().commit();
+		CrisisTypeDTO addCrisisType = new CrisisTypeDTO();
+		addCrisisType.setName(sampleCrisisTypeName);
+		entityManager.getTransaction().begin();
+		CrisisTypeDTO result = crisisTypeResourceFacadeImp
+				.addCrisisType(addCrisisType);
+		entityManager.getTransaction().commit();
 
-			result.setName(sampleCrisisTypeName + "2");
-			entityManager.getTransaction().begin();
-			result = crisisTypeResourceFacadeImp.editCrisisType(result);
-			entityManager.getTransaction().commit();
-			assertEquals(sampleCrisisTypeName + "2", result.getName());
-			entityManager.getTransaction().begin();
-			crisisTypeResourceFacadeImp.deleteCrisisType(result
-					.getCrisisTypeId());
-			entityManager.getTransaction().commit();
-		} catch (PropertyNotSetException ex) {
-			logger.error("PropertyNotSetException while editting crisis type name "+ex.getMessage());
-		}
+		result.setName(sampleCrisisTypeName + "2");
+		entityManager.getTransaction().begin();
+		result = crisisTypeResourceFacadeImp.editCrisisType(result);
+		entityManager.getTransaction().commit();
+		assertEquals(sampleCrisisTypeName + "2", result.getName());
+		entityManager.getTransaction().begin();
+		crisisTypeResourceFacadeImp.deleteCrisisType(result
+				.getCrisisTypeId());
+		entityManager.getTransaction().commit();
 	}
 
 	/**
@@ -150,13 +142,9 @@ public class TestCrisisTypeResourceFacadeImp {
 	 */
 	@Test
 	public void testFindCrisisTypeByID() {
-		try {
-			CrisisTypeDTO result = crisisTypeResourceFacadeImp
-					.findCrisisTypeByID(crisisTypeId);
-			assertEquals(crisisTypeName, result.getName());
-		} catch (PropertyNotSetException ex) {
-			logger.error("PropertyNotSetException while finding crisis type by id "+ex.getMessage());
-		}
+		CrisisTypeDTO result = crisisTypeResourceFacadeImp
+				.findCrisisTypeByID(crisisTypeId);
+		assertEquals(crisisTypeName, result.getName());
 	}
 
 	/**
@@ -164,13 +152,9 @@ public class TestCrisisTypeResourceFacadeImp {
 	 */
 	@Test
 	public void testIsCrisisTypeExists() {
-		try {
-			boolean result = crisisTypeResourceFacadeImp
-					.isCrisisTypeExists(crisisTypeId);
-			assertEquals(true, result);
-		} catch (PropertyNotSetException ex) {
-			logger.error("PropertyNotSetException while checking crisis type exist or not "+ex.getMessage());
-		}
+		boolean result = crisisTypeResourceFacadeImp
+				.isCrisisTypeExists(crisisTypeId);
+		assertEquals(true, result);
 	}
 
 	/**

@@ -19,6 +19,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.supercsv.cellprocessor.Optional;
@@ -158,7 +159,7 @@ public class ReadWriteCSV<CellProcessors> {
 
 	public ICsvMapWriter getCSVMapWriter(String fileToWrite) {
 		try {
-			return new CsvMapWriter(new FileWriter(fileToWrite, true),
+			return new CsvMapWriter(new FileWriterWithEncoding(fileToWrite,"UTF-8", true),
 					new CsvPreference.Builder(CsvPreference.EXCEL_PREFERENCE)
 			.useEncoder(new DefaultCsvEncoder())
 			.build() );

@@ -4,6 +4,51 @@ Ext.require([
     'AIDRFM.common.Header',
     'AIDRFM.common.Footer'
 ]);
+//Author:Sushant
+//Code to listen to the onclick event of the Bounding Box hyperlink and display it in a popup window
+ Ext.onReady(function() {
+        Ext.BLANK_IMAGE_URL = 'http://extjs.cachefly.net/ext-3.2.1/resources/images/default/s.gif';
+        App.Demo.init();
+    });
+
+
+    Ext.ns('App');
+    App.Demo = {
+        init:function()
+        {
+            
+        },
+
+        openWindow:function(url)
+        {
+            var win = new Ext.Window({
+                width:800,
+                height:600,
+                title:'Pick up the Coordinates:' + 'www.boundingbox.klokantech.com/',
+                autoScroll:true,
+                modal:false
+            });
+
+            var iframeid = win.getId() + '_iframe';
+
+            var iframe = {
+                id:iframeid,
+                tag:'iframe',
+                src:'http://boundingbox.klokantech.com/',
+                width:'100%',
+                height:'100%',
+                frameborder:0
+            }
+
+            // show first
+            win.show();
+            // then iframe
+            Ext.DomHelper.insertFirst(win.body, iframe)
+
+        }
+
+    }
+    //Code Ends
 
 Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
     extend: 'AIDRFM.common.StandardLayout',
@@ -96,7 +141,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             items:[{
                 fieldLabel: 'Collect tweets only within these geographical boundaries:',
                 labelWidth: 240,
-                width: 550,
+                width: 687,
                 xtype: 'textareafield',
                 grow: true,
                 growMax: 100,
@@ -126,9 +171,10 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 
         this.geoDescription = Ext.create('Ext.form.Label', {
             flex: 1,
+            //added additional onclick event to display bounding box in a popup window instead of opening up in a new tab
             id:'geoDescription',
             html: '<span class="redInfo">*</span> ' +
-                'Tool to get coordinates: <a href="http://boundingbox.klokantech.com/" target="_blank">boundingbox.klokantech.com</a> ' +
+                'Click here to get coordinates: <a href="#" onclick="App.Demo.openWindow()" >boundingbox.klokantech.com</a> ' +
                 '("Copy/paste CSV format of a boundingbox")',
             padding: '2 0 2 245'
         });
@@ -137,7 +183,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             fieldLabel: 'Additionally, collect all tweets from these twitter user ids, independent of their keywords or location',
             labelWidth: 240,
             name: 'follow',
-            flex: 1,
+            width:687,
             emptyText: 'e.g. cnnbrk, bbcbreaking, fema, lastquake'
         });
 
@@ -167,6 +213,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 
         this.duration = Ext.create('Ext.form.ComboBox', {
             fieldLabel: 'Collect data for',
+            width:687,
             labelWidth: 240,
             name: 'durationHours',
             editable: false,
@@ -197,6 +244,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             multiSelect: true,
             editable: false,
             fieldLabel: 'Language of tweets',
+            flex:1,
             labelWidth: 240,
             name: 'langFilters',
             id: 'CollectionLang',
@@ -226,6 +274,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 
         this.collectionTypeCombo = Ext.create('Ext.form.ComboBox', {
             fieldLabel: 'Collection Source',
+            flex:1,
             labelWidth: 240,
             id: 'CollectionType',
             name: 'collectionType',
@@ -257,15 +306,17 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         });
         
         this.saveButton = Ext.create('Ext.Button', {
-            text: 'Create and Start Collection',
-            margin: '0 10 0 10',
-            cls: 'btn btn-green',
+            text: 'Create and Start',
+            margin: '0 0 0 -100',
+            cls: 'btn btn-blueish2',
             id: 'collectionCreate'
         });
 
         this.cancelButton = Ext.create('Ext.Button', {
             text: 'Cancel',
-            cls: 'btn btn-red',
+                         margin: '0 140 0 240',
+
+            cls: 'btn btn-reddish2',
             id: 'collectionCancelCreate'
         });
 
@@ -325,7 +376,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             bodyCls: 'no-border',
             layout:'anchor',
             defaults: {
-                anchor: '65%',
+                anchor: '75%',
                 labelWidth: 240,
                 margin: '20 0 0 5'
             },
@@ -355,7 +406,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                     margin: '20 0 0 0',
                     layout:'anchor',
                     defaults: {
-                        anchor: '65%',
+                        anchor: '100%',
                         margin: '20 0 0 0'
                     },
                     items:[
@@ -376,7 +427,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                 {
                     xtype: 'container',
                     layout: 'hbox',
-                    padding: '15 0 0 0',
+                     padding: '15 0 0 0',
                     items: [
                         this.cancelButton,
                         this.saveButton

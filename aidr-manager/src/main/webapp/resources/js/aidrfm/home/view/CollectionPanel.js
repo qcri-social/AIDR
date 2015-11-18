@@ -25,7 +25,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
         this.goToAdminSection = Ext.create('Ext.Button', {
             text: 'Administrator console',
             margin: '6 0 0 15',
-            cls:'btn btn-blue',
+            cls:'btn btn-blueish1',
             id: 'goToAdminSection',
             hidden: true
         });

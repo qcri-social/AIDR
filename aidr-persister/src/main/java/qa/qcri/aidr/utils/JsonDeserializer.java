@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,8 +30,9 @@ import java.util.Map;
 import net.minidev.json.JSONObject;
 
 import org.apache.commons.io.input.ReversedLinesFileReader;
+import org.apache.commons.io.output.FileWriterWithEncoding;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.translate.UnicodeEscaper;
 import org.apache.log4j.Logger;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.ICsvBeanWriter;
@@ -54,8 +54,6 @@ import com.google.gson.stream.JsonReader;
 public class JsonDeserializer {
 
 	private static Logger logger = Logger.getLogger(JsonDeserializer.class.getName());
-	private static UnicodeEscaper unicodeEscaper = UnicodeEscaper.above(127);
-	
 	private static final int BUFFER_SIZE = 10 * 1024 * 1024; // buffer size to use for buffered r/w
 	private static final int LIST_BUFFER_SIZE = 50000;
 
@@ -1042,7 +1040,7 @@ public class JsonDeserializer {
 
 			long currentSize = 0;
 			StringBuffer outputFile = new StringBuffer().append(folderLocation).append(FILE_SEPARATOR).append(fileName);
-			beanWriter = new BufferedWriter(new FileWriter(outputFile.toString()), BUFFER_SIZE);
+			beanWriter = new BufferedWriter(new FileWriterWithEncoding(outputFile.toString(), "UTF-8"), BUFFER_SIZE);
 			if (DownloadJsonType.JSON_OBJECT.equals(jsonType)) {
 				beanWriter.write("[");
 			}
@@ -1065,7 +1063,7 @@ public class JsonDeserializer {
 									beanWriter.write(", "); // do not append for last item
 								}
 								// write to file
-								beanWriter.write(unicodeEscaper.translate(line));
+								beanWriter.write(line);
 								beanWriter.newLine();
 								++currentSize;
 							} else {
@@ -1140,7 +1138,7 @@ public class JsonDeserializer {
 			});
 
 			StringBuffer outputFile = new StringBuffer().append(folderLocation).append(FILE_SEPARATOR).append(fileName);
-			beanWriter = new BufferedWriter(new FileWriter(outputFile.toString()), BUFFER_SIZE);
+			beanWriter = new BufferedWriter(new FileWriterWithEncoding(outputFile.toString(), "UTF-8"), BUFFER_SIZE);
 			if (DownloadJsonType.JSON_OBJECT.equals(jsonType)) {
 				beanWriter.write("[");
 			}
@@ -1174,7 +1172,7 @@ public class JsonDeserializer {
 									beanWriter.write(", "); // do not append for last item
 								}
 								// write to file
-								beanWriter.write(unicodeEscaper.translate(obj.toJSONString()));
+								beanWriter.write(obj.toJSONString());
 								beanWriter.newLine();
 								++totalCount;
 							}
@@ -1254,7 +1252,7 @@ public class JsonDeserializer {
 			});
 
 			StringBuffer outputFile = new StringBuffer().append(folderLocation).append(FILE_SEPARATOR).append(fileName);
-			beanWriter = new BufferedWriter(new FileWriter(outputFile.toString()), BUFFER_SIZE);
+			beanWriter = new BufferedWriter(new FileWriterWithEncoding(outputFile.toString(), "UTF-8"), BUFFER_SIZE);
 			if (DownloadJsonType.JSON_OBJECT.equals(jsonType)) {
 				beanWriter.write("[");
 			}
@@ -1278,7 +1276,7 @@ public class JsonDeserializer {
 									beanWriter.write(", ");
 								}
 								// write to file
-								beanWriter.write(unicodeEscaper.translate(line));
+								beanWriter.write(line);
 								beanWriter.newLine();
 								++currentSize;
 							} else {
@@ -1351,7 +1349,7 @@ public class JsonDeserializer {
 			// System.out.println(fileNames);
 
 			StringBuffer outputFile = new StringBuffer().append(folderLocation).append(FILE_SEPARATOR).append(fileName);
-			beanWriter = new BufferedWriter(new FileWriter(outputFile.toString()), BUFFER_SIZE);
+			beanWriter = new BufferedWriter(new FileWriterWithEncoding(outputFile.toString(), "UTF-8"), BUFFER_SIZE);
 			if (DownloadJsonType.JSON_OBJECT.equals(jsonType)) {
 				beanWriter.write("[");
 			}
@@ -1476,7 +1474,7 @@ public class JsonDeserializer {
 			});
 
 			StringBuffer outputFile = new StringBuffer().append(folderLocation).append(fileName);
-			beanWriter = new BufferedWriter(new FileWriter(outputFile.toString()), BUFFER_SIZE);
+			beanWriter = new BufferedWriter(new FileWriterWithEncoding(outputFile.toString(), "UTF-8"), BUFFER_SIZE);
 			if (DownloadJsonType.JSON_OBJECT.equals(jsonType)) {
 				beanWriter.write("[");
 			}
@@ -1510,7 +1508,7 @@ public class JsonDeserializer {
 											beanWriter.write(", ");
 										}
 										// write to file
-										beanWriter.write(unicodeEscaper.translate(line));
+										beanWriter.write(StringEscapeUtils.unescapeJava(line));
 										beanWriter.newLine();
 										++currentSize;
 									}
@@ -1606,7 +1604,7 @@ public class JsonDeserializer {
 			FileSystemOperations.deleteFile(fileToDelete + ZIP_EXTENSION); // delete if there exist a csv file with same name
 
 			StringBuffer outputFile = new StringBuffer().append(folderLocation).append(fileName);
-			beanWriter = new BufferedWriter(new FileWriter(outputFile.toString()), BUFFER_SIZE);
+			beanWriter = new BufferedWriter(new FileWriterWithEncoding(outputFile.toString(), "UTF-8"), BUFFER_SIZE);
 			if (DownloadJsonType.JSON_OBJECT.equals(jsonType)) {
 				beanWriter.write("[");
 			}
@@ -1993,7 +1991,7 @@ public class JsonDeserializer {
 			logger.info("Deleted existing file: " + folderLocation + FILE_SEPARATOR + fileNameforGen + ZIP_EXTENSION);
 
 			StringBuffer outputFile = new StringBuffer().append(folderLocation).append(FILE_SEPARATOR).append(fileNameforGen);
-			beanWriter = new BufferedWriter(new FileWriter(outputFile.toString()), BUFFER_SIZE);
+			beanWriter = new BufferedWriter(new FileWriterWithEncoding(outputFile.toString(), "UTF-8"), BUFFER_SIZE);
 
 			if (DownloadJsonType.JSON_OBJECT.equals(jsonType)) {
 				beanWriter.write("[");
@@ -2021,7 +2019,7 @@ public class JsonDeserializer {
 						}
 						// write to file
 						String jsonString = tweet.toJsonString();
-						beanWriter.write(unicodeEscaper.translate(jsonString));
+						beanWriter.write(jsonString);
 						beanWriter.newLine();
 						++currentSize;
 					}
@@ -2109,7 +2107,7 @@ public class JsonDeserializer {
 																			// name
 
 			StringBuffer outputFile = new StringBuffer().append(folderLocation).append(FILE_SEPARATOR).append(fileNameforGen);
-			beanWriter = new BufferedWriter(new FileWriter(outputFile.toString()), BUFFER_SIZE);
+			beanWriter = new BufferedWriter(new FileWriterWithEncoding(outputFile.toString(), "UTF-8"), BUFFER_SIZE);
 			if (DownloadJsonType.JSON_OBJECT.equals(jsonType)) {
 				beanWriter.write("[");
 			}
@@ -2136,7 +2134,7 @@ public class JsonDeserializer {
 						beanWriter.write(", ");
 					}
 					// write to file
-					beanWriter.write(unicodeEscaper.translate(createJsonClassifiedTweetIDString(tweet)));
+					beanWriter.write(createJsonClassifiedTweetIDString(tweet));
 					beanWriter.newLine();
 					++totalCount;
 				}

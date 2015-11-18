@@ -1,6 +1,6 @@
 package qa.qcri.aidr.trainer.api.dao;
 
-import qa.qcri.aidr.trainer.api.entity.Crisis;
+import qa.qcri.aidr.trainer.api.entity.Collection;
 
 import java.util.List;
 
@@ -11,11 +11,11 @@ import java.util.List;
  * Time: 7:57 AM
  * To change this template use File | Settings | File Templates.
  */
-    public interface CrisisDao extends AbstractDao<Crisis, String> {
+    public interface CrisisDao extends AbstractDao<Collection, Long> {
 
-        Crisis findByCrisisID(Long id);
-        List<Crisis> findByCriteria(String columnName, Long value);
-        List<Crisis> findByCriteria(String columnName, String value);
-        List<Crisis> findAllActiveCrisis();
-        List<Crisis> findActiveCrisis();
+        Collection findByCrisisID(Long id);
+        List<Collection> findByCriteria(String columnName, Long value);
+        List<Collection> findByCriteria(String columnName, String value);
+        List<Collection> findAllActiveCrisis();
+        List<Collection> findActiveCrisis();
 }
