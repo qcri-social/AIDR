@@ -193,7 +193,11 @@ body{
     overflow: hidden;
     padding-bottom: 10px;
     padding-top: 10px;
-/*     border-bottom: 1px #e3e1e1 solid; */
+    border-bottom: 1px #e3e1e1 solid; 
+}
+
+.collection-item:nth-child(odd) {
+    background-color: #f7f7f7;
 }
 
 .c-list .crisis-item,
