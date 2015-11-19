@@ -190,7 +190,6 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 	public Boolean existName(String name) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
 		criteria.add(Restrictions.eq("name", name));
-		criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
 		Collection collection = (Collection) criteria.uniqueResult();
 		return collection != null;
 	}
