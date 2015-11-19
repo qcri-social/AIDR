@@ -223,7 +223,7 @@ public class CollectionServiceImpl implements CollectionService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<Collection> findAll(Integer start, Integer limit, UserAccount user, boolean onlyTrashed) throws Exception {
-		return collaboratorService.fetchCollectionsByCollaborator(user.getId(), start, limit, onlyTrashed);
+		return collectionRepository.getPaginatedData(start, limit, user, onlyTrashed);
 	}
 
 	@Override
