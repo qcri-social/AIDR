@@ -29,7 +29,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 import qa.qcri.aidr.predictui.util.ResponseWrapper;
 import qa.qcri.aidr.predictui.util.TaggerAPIConfigurationProperty;
@@ -39,7 +39,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
@@ -66,17 +65,17 @@ public class CrisisResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("{id}")
 	public Response getCrisisByID(@PathParam("id") Long id) {
-		CrisisDTO crisis = null;
+		CollectionDTO collection = null;
 		try {
-			crisis = crisisLocalEJB.getCrisisByID(id);
-			System.out.println("fetched crisis for id " + id + ": " + (crisis != null ? crisis.getCode() : "null"));
+			collection = crisisLocalEJB.getCrisisByID(id);
+			System.out.println("fetched collection for id " + id + ": " + (collection != null ? collection.getCode() : "null"));
 		} catch (RuntimeException e) {
-			logger.error("Error in getCrisisById for crisis id : " + id);
+			logger.error("Error in getCrisisById for collection id : " + id);
 			return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
 		}
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			return Response.ok(mapper.writeValueAsString(crisis)).build();
+			return Response.ok(mapper.writeValueAsString(collection)).build();
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			logger.error("Error in Json processing.");
@@ -88,13 +87,13 @@ public class CrisisResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/by-code/{code}")
 	public Response getCrisisByCode(@PathParam("code") String crisisCode) {
-		CrisisDTO crisis = null;
+		CollectionDTO collection = null;
 		ResponseWrapper response = new ResponseWrapper();
 		try {
-			crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
-			logger.info("For code = " + crisisCode + ", Returning crisis: " + (crisis != null ? crisis.getCode() : "null"));
-			if (crisis != null) {
-				response.setDataObject(crisis);
+			collection = crisisLocalEJB.getCrisisByCode(crisisCode);
+			logger.info("For code = " + crisisCode + ", Returning crisis: " + (collection != null ? collection.getCode() : "null"));
+			if (collection != null) {
+				response.setDataObject(collection);
 				response.setTotal(1);
 				response.setStatusCode(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
 				return Response.ok(response).build();
@@ -119,13 +118,13 @@ public class CrisisResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/code/{code}")
 	public Response isCrisisExists(@PathParam("code") String crisisCode) {
-		CrisisDTO crisis = crisisLocalEJB.getCrisisByCode(crisisCode);
+		CollectionDTO collection = crisisLocalEJB.getCrisisByCode(crisisCode);
 		long crisisId = 0;
 		//        null value can not be correct deserialized
-		if (crisis == null){
+		if (collection == null){
 			crisisId = 0;
 		} else {
-				crisisId = crisis.getCrisisID();
+				crisisId = collection.getCrisisID();
 		}
 			
         Gson gson = new Gson();
@@ -161,7 +160,7 @@ public class CrisisResource {
 	@Path("/all")
 	public Response getAllCrisis() {
 
-		List<CrisisDTO> crisisList = crisisLocalEJB.getAllCrisis();
+		List<CollectionDTO> crisisList = crisisLocalEJB.getAllCrisis();
 		ResponseWrapper response = new ResponseWrapper();
 		response.setMessage(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS));
 		response.setCrisises(crisisList);
@@ -179,7 +178,7 @@ public class CrisisResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public ResponseWrapper getAllCrisisByUserID(@QueryParam("userID") Long userID) throws Exception {
-		List<CrisisDTO> crisisList = crisisLocalEJB.getAllCrisisByUserID(userID);
+		List<CollectionDTO> crisisList = crisisLocalEJB.getAllCrisisByUserID(userID);
 		logger.info("list of crisis for userID " + userID + ": " + (crisisList != null ? crisisList.size() : 0));
 		ResponseWrapper response = new ResponseWrapper();
 		if (crisisList == null) {
@@ -193,7 +192,7 @@ public class CrisisResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response addCrisis(CrisisDTO crisis) {
+	public Response addCrisis(CollectionDTO crisis) {
 		try {
 			logger.info("Received request to add crisis: " + crisis.getCode());
 			if (crisisLocalEJB.isCrisisExists(crisis.getCode())) {
@@ -202,8 +201,8 @@ public class CrisisResource {
 			}
 			// Otherwise, add the new crisis to aidr_predict database
 			crisis.setIsTrashed(false);
-			CrisisDTO newCrisis = crisisLocalEJB.addCrisis(crisis);
-			logger.info("Added crisis successfully: id = " + newCrisis.getCrisisID() + ", " + newCrisis.getCode());
+			CollectionDTO newCollection = crisisLocalEJB.addCrisis(crisis);
+			logger.info("Added crisis successfully: id = " + newCollection.getCrisisID() + ", " + newCollection.getCode());
 			return Response.ok(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_SUCCESS)).build();
 		} catch (RuntimeException e) {
 			logger.error("Error while adding Crisis. Possible causes could be duplication of primary key, incomplete data, incompatible data format. For crisis: " + crisis.getCode(), e);
@@ -214,13 +213,13 @@ public class CrisisResource {
 	@PUT
 	@Consumes("application/json")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response editCrisis(CrisisDTO crisis) {
+	public Response editCrisis(CollectionDTO collection) {
 		try {
-			logger.info("Received request to edit crisis: " + crisis.getCode());
-			CrisisDTO updatedCrisis = crisisLocalEJB.editCrisis(crisis);
-			return Response.ok(updatedCrisis).build();
+			logger.info("Received request to edit crisis: " + collection.getCode());
+			CollectionDTO updatedCollection = crisisLocalEJB.editCrisis(collection);
+			return Response.ok(updatedCollection).build();
 		} catch (RuntimeException e) {
-			logger.error("Error in editCrisis for crisis code : " + crisis.getCode());
+			logger.error("Error in editCrisis for crisis code : " + collection.getCode());
 			return Response.ok(new ResponseWrapper(TaggerAPIConfigurator.getInstance().getProperty(TaggerAPIConfigurationProperty.STATUS_CODE_FAILED), e.getCause().getCause().getMessage())).build();
 		}
 		
@@ -268,7 +267,7 @@ public class CrisisResource {
 		Map<String, Boolean> result = new HashMap<String, Boolean>(1);
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			CrisisDTO crisisDTO = crisisLocalEJB.getCrisisByCode(crisisCode);
+			CollectionDTO crisisDTO = crisisLocalEJB.getCrisisByCode(crisisCode);
 			crisisDTO.setIsMicromapperEnabled(isMicromapperEnabled);
 			
 			crisisDTO = crisisLocalEJB.editCrisis(crisisDTO);

@@ -7,6 +7,7 @@ import java.util.TreeMap;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +15,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import qa.qcri.aidr.manager.RoleType;
-import qa.qcri.aidr.manager.hibernateEntities.UserAccountRole;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.hibernateEntities.Role;
-import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
+import qa.qcri.aidr.manager.persistence.entities.Collection;
+import qa.qcri.aidr.manager.persistence.entities.Role;
+import qa.qcri.aidr.manager.persistence.entities.UserAccount;
+import qa.qcri.aidr.manager.persistence.entities.UserAccountRole;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
 import qa.qcri.aidr.manager.repository.RoleRepository;
 import qa.qcri.aidr.manager.repository.UserAccountRepository;
 import qa.qcri.aidr.manager.repository.UserAccountRoleRepository;
+import qa.qcri.aidr.manager.service.CollectionCollaboratorService;
 import qa.qcri.aidr.manager.service.UserService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 
@@ -40,6 +42,9 @@ public class UserServiceImpl implements UserService{
     
     @Autowired
     private RoleRepository roleRepository;
+    
+    @Autowired 
+	private CollectionCollaboratorService collaboratorService;
     
 	@Override
 	@Transactional(readOnly=false)
@@ -71,11 +76,12 @@ public class UserServiceImpl implements UserService{
 		return userRepository.getUsersCount(query);
 	}
 
-    public boolean isUserInCollectionManagersList(UserAccount user, AidrCollection collection) {
-        if (collection.getManagers() == null) {
+    public boolean isUserInCollectionManagersList(UserAccount user, Collection collection) {
+    	List<UserAccount> managers = collaboratorService.fetchCollaboratorsByCollection(collection.getId());
+        if (CollectionUtils.isEmpty(managers)) {
             return false;
         }
-        for (UserAccount manager : collection.getManagers()){
+        for (UserAccount manager : managers){
             if (manager.getId().equals(user.getId())){
                 return true;
             }
@@ -98,7 +104,7 @@ public class UserServiceImpl implements UserService{
     public UserAccount getAvailableUser(JSONArray users) {
         SortedMap map = new TreeMap();
         UserAccount userEntity = null;
-        AidrCollection aidrCollection;
+        Collection Collection;
         UserAccount unUsedUserEntity = null;
 
         for(Object user : users){
@@ -106,11 +112,11 @@ public class UserServiceImpl implements UserService{
             userEntity = fetchByUserName(userName);
 
             if(userEntity != null){
-                List<AidrCollection> aidrCollections = collectionRepository.getAllCollectionByUser(userEntity.getId());
+                List<Collection> collections = collectionRepository.getAllCollectionByUser(userEntity.getId());
                 boolean addedOnMap = false;
-                for(int i=0; i < aidrCollections.size(); i++ ){
-                    if(aidrCollections.get(i).getStatus().equals(CollectionStatus.INITIALIZING) || aidrCollections.get(i).getStatus().equals(CollectionStatus.RUNNING)){
-                        map.put(aidrCollections.get(i).getCreatedDate(), userEntity);
+                for(int i=0; i < collections.size(); i++ ){
+                    if(collections.get(i).getStatus().equals(CollectionStatus.INITIALIZING) || collections.get(i).getStatus().equals(CollectionStatus.RUNNING)){
+                        map.put(collections.get(i).getCreatedAt(), userEntity);
                         addedOnMap = true;
                     }
                 }
@@ -144,6 +150,12 @@ public class UserServiceImpl implements UserService{
 			}
 		}
 		return roleTypes;
+	}
+	
+	@Override
+	@Transactional(readOnly = false)
+	public void update(UserAccount user) throws Exception {
+		userRepository.update(user);
 	}
 
 }

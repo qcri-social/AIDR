@@ -3,7 +3,7 @@ package qa.qcri.aidr.manager.repository.impl;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.URLDecoder;
-import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -26,51 +26,51 @@ import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
+import qa.qcri.aidr.manager.persistence.entities.Collection;
+import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 
 @Repository("collectionRepository")
-public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollection, Serializable> implements CollectionRepository{
+public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, Serializable> implements CollectionRepository{
 	private Logger logger = Logger.getLogger(CollectionRepositoryImpl.class);
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<AidrCollection> searchByName(String query, Long userId) throws Exception {
-		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+	public List<Collection> searchByName(String query, Long userId) throws Exception {
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
 		criteria.add(Restrictions.ilike("name", query, MatchMode.ANYWHERE));
-		criteria.add(Restrictions.eq("user.id", userId));
-		return (List<AidrCollection>) criteria.list();
+		criteria.add(Restrictions.eq("owner.id", userId));
+		return (List<Collection>) criteria.list();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<AidrCollection> getPaginatedDataForPublic(final Integer start, final Integer limit, final Enum statusValue) {
+	public List<Collection> getPaginatedDataForPublic(final Integer start, final Integer limit, final Enum statusValue) {
 		//        Workaround as criteria query gets result for different managers and in the end we get less then limit records.
-		List<Integer> collectionIds = (List<Integer>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
+		List<BigInteger> collectionIds = (List<BigInteger>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 
-				String sql = " SELECT DISTINCT c.id FROM aidr_collection c" +
-						" WHERE (c.publiclyListed = 1 and c.status = :statusValue) " +
-						" order by c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
+				String sql = " SELECT DISTINCT c.id FROM collection c" +
+						" WHERE (c.publicly_listed = 1 and c.status = :statusValue) " +
+						" order by c.start_date DESC, c.created_at DESC LIMIT :start, :limit ";
 
 
 				SQLQuery sqlQuery = session.createSQLQuery(sql);
 				sqlQuery.setParameter("start", start);
 				sqlQuery.setParameter("limit", limit);
 				sqlQuery.setParameter("statusValue", statusValue.ordinal());
-				List<Integer> ids = (List<Integer>) sqlQuery.list();
+				List<BigInteger> ids = (List<BigInteger>) sqlQuery.list();
 
 				return ids != null ? ids : Collections.emptyList();
 			}
 		});
 
-		List<AidrCollection> a = new ArrayList<AidrCollection>();
+		List<Collection> a = new ArrayList<Collection>();
 
 		for(int i =0; i < collectionIds.size(); i++){
-			AidrCollection collection =	this.findById(collectionIds.get(i));
+			Collection collection =	this.findById(collectionIds.get(i).longValue());
 			a.add(collection) ;
 		}
 		return a;
@@ -83,8 +83,8 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 
-				String sql = " SELECT count(distinct c.id) FROM aidr_collection c" +
-						" WHERE (c.publiclyListed = 1 and c.status = :statusValue) " ;
+				String sql = " SELECT count(distinct c.id) FROM collection c" +
+						" WHERE (c.publicly_listed = 1 and c.status = :statusValue) " ;
 
 				SQLQuery sqlQuery = session.createSQLQuery(sql);
 				sqlQuery.setParameter("statusValue", statusValue.ordinal());
@@ -97,53 +97,42 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<AidrCollection> getPaginatedData(final Integer start, final Integer limit, final UserAccount user, final boolean onlyTrashed) {
+	public List<Collection> getPaginatedData(final Integer start, final Integer limit, final UserAccount user, final boolean onlyTrashed) {
+		/*List<Collection> result = new ArrayList<Collection>();
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
+		criteria.add(Restrictions.eq("owner.id", user.getId()));
+		if(onlyTrashed) {
+			criteria.add(Restrictions.eq("status", CollectionStatus.TRASHED));
+		} else {
+			criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
+		}
+		result =  criteria.list();*/
+		
 		final Long userId = user.getId();
 		final String conditionTrashed;
 		if (onlyTrashed) {
 			conditionTrashed = "=";
 		} else {
 			conditionTrashed = "!=";
-		}      
-/*		List<Integer> collectionIds = (List<Integer>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				String sql = " SELECT DISTINCT c.id FROM AIDR_COLLECTION c " +
-						" LEFT OUTER JOIN AIDR_COLLECTION_TO_MANAGER c_m " +
-						" ON c.id = c_m.id_collection " +
-						" WHERE ((c.user_id =:userId OR c_m.id_manager = :userId) AND c.status " + conditionTrashed + " :statusValue) " +
-						" order by c.startDate IS NULL DESC, c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
-
-				SQLQuery sqlQuery = session.createSQLQuery(sql);
-				sqlQuery.setParameter("userId", userId);
-				sqlQuery.setParameter("start", start);
-				sqlQuery.setParameter("limit", limit);
-				sqlQuery.setParameter("statusValue", CollectionStatus.TRASHED.ordinal());
-				List<Integer> ids = (List<Integer>) sqlQuery.list();
-
-				return ids != null ? ids : Collections.emptyList();
-			}
-		});
-		for(Integer id : collectionIds){
-			AidrCollection collection =	this.findById(id);
-			result.add(collection) ;
-		}
-		*/		
+		}   
 		
-		//Workaround as criteria query gets result for different managers and in the end we get less than limit records.
 		List<Object[]> collections = (List<Object[]>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
-				String sql = " SELECT DISTINCT c.id,c.status FROM aidr_collection c " +
-						" LEFT OUTER JOIN aidr_collection_manager c_m " +
-						" ON c.id = c_m.id_collection " +
-						" WHERE ((c.user_id =:userId OR c_m.id_manager = :userId) AND c.status " + conditionTrashed + " :statusValue) " +
-						" order by c.startDate IS NULL DESC, c.startDate DESC, c.createdDate DESC LIMIT :start, :limit ";
+				String sql = " SELECT DISTINCT c.id, c.status FROM collection c " +
+						" LEFT OUTER JOIN collection_collaborator c_m " +
+						" ON c.id = c_m.collection_id " +
+						" WHERE ((c.owner_id =:userId OR c_m.account_id = :userId) AND c.status " + conditionTrashed + " :statusValue) " +
+						" ORDER BY Case c.status When :status1 Then 1 When :status2 Then 1 Else 3 End, " +
+						" Case c.start_date When null Then 1 Else c.start_date*-1  End " +
+						" LIMIT :start, :limit ";
 
 				SQLQuery sqlQuery = session.createSQLQuery(sql);
 				sqlQuery.setParameter("userId", userId);
 				sqlQuery.setParameter("start", start);
 				sqlQuery.setParameter("limit", limit);
+				sqlQuery.setParameter("status1", CollectionStatus.RUNNING.ordinal());
+				sqlQuery.setParameter("status2", CollectionStatus.RUNNING_WARNING.ordinal());
 				sqlQuery.setParameter("statusValue", CollectionStatus.TRASHED.ordinal());
 				List<Object[]> ids = (List<Object[]>) sqlQuery.list();
 
@@ -152,16 +141,15 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 		});
 
 		//MEGHNA: To prevent multiple db calls, we get collection id and status from db and update AidrCollection status
-		List<AidrCollection> result = new ArrayList<AidrCollection>();
-		Integer id;
+		List<Collection> result = new ArrayList<Collection>();
+		BigInteger id;
 		for(Object[] col : collections)
 		{			
-			id = (Integer)col[0];
-			AidrCollection collection =	this.findById(id);
+			id = (BigInteger)col[0];
+			Collection collection =	this.findById(id.longValue());
 			collection.setStatus(CollectionStatus.values()[(Integer)col[1]]);
 			result.add(collection) ;
 		}
-		
 		return result;
 	}
 
@@ -179,10 +167,10 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 				}
 
 				String sql = " select count(distinct c.id) " +
-						" FROM aidr_collection c " +
-						" LEFT OUTER JOIN aidr_collection_manager c_m " +
-						" ON c.id = c_m.id_collection " +
-						" WHERE (c.status " + conditionTrashed + " :statusValue and (c.user_id = :userId or c_m.id_manager = :userId)) ";
+						" FROM collection c " +
+						" LEFT OUTER JOIN collection_collaborator c_m " +
+						" ON c.id = c_m.collection_id " +
+						" WHERE (c.status " + conditionTrashed + " :statusValue and (c.owner_id = :userId or c_m.account_id = :userId)) ";
 
 				SQLQuery sqlQuery = session.createSQLQuery(sql);
 				sqlQuery.setParameter("userId", userId);
@@ -195,25 +183,24 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 
 	@Override
 	public Boolean exist(String code) {
-		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
 		criteria.add(Restrictions.eq("code", code));
 		criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
-		AidrCollection collection = (AidrCollection) criteria.uniqueResult();
+		Collection collection = (Collection) criteria.uniqueResult();
 		return collection != null;
 	}
 
 	@Override
 	public Boolean existName(String name) {
-		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
 		criteria.add(Restrictions.eq("name", name));
-		criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
-		AidrCollection collection = (AidrCollection) criteria.uniqueResult();
+		Collection collection = (Collection) criteria.uniqueResult();
 		return collection != null;
 	}
 
 	@Override
-	public AidrCollection getRunningCollectionStatusByUser(Long userId) {
-		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+	public Collection getRunningCollectionStatusByUser(Long userId) {
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
 		//criteria.add(Restrictions.eq("user.id", userId));
 		//criteria.add(Restrictions.eq("status", CollectionStatus.RUNNING));
 		
@@ -235,32 +222,32 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 				);*/
 		LogicalExpression andAll = Restrictions.and(
 				orAll,
-				Restrictions.eq("user.id", userId)
+				Restrictions.eq("owner.id", userId)
 				);
 		
 		criteria.add(andAll);
 		//criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
-		return (AidrCollection) criteria.uniqueResult();
+		return (Collection) criteria.uniqueResult();
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<AidrCollection> getAllCollectionByUser(Long userId) {
-		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
-		criteria.add(Restrictions.eq("user.id", userId));
+	public List<Collection> getAllCollectionByUser(Long userId) {
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
+		criteria.add(Restrictions.eq("owner.id", userId));
 
-		return (List<AidrCollection>) criteria.list();
+		return (List<Collection>) criteria.list();
 	}
 
 	@Override
-	public List<AidrCollection> getRunningCollections() {
+	public List<Collection> getRunningCollections() {
 		return getRunningCollections(null, null, null, null, null);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<AidrCollection> getRunningCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) {
-		Criteria criteriaIds = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+	public List<Collection> getRunningCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) {
+		Criteria criteriaIds = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
 		criteriaIds.setProjection(Projections.projectionList()
 				.add(Projections.property("id"), "id"));
 
@@ -301,18 +288,18 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 			return Collections.emptyList();
 		}
 
-		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
 		criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 
 		criteria.add(Restrictions.in("id", ids));
 		searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
 
-		return (List<AidrCollection>) criteria.list();
+		return (List<Collection>) criteria.list();
 	}
 
 	@Override
 	public Long getRunningCollectionsCount(String terms) {
-		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
 		criteria.setProjection(Projections.projectionList()
 				.add(Projections.property("id"), "id"));
 
@@ -346,8 +333,8 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<AidrCollection> getStoppedCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) {
-		Criteria criteriaIds = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+	public List<Collection> getStoppedCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) {
+		Criteria criteriaIds = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
 		criteriaIds.setProjection(Projections.projectionList()
 				.add(Projections.property("id"), "id"));
 
@@ -378,18 +365,18 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 			return Collections.emptyList();
 		}
 
-		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
 		criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 
 		criteria.add(Restrictions.in("id", ids));
 		searchCollectionsAddOrder(sortColumn, sortDirection, criteria);
 
-		return (List<AidrCollection>) criteria.list();
+		return (List<Collection>) criteria.list();
 	}
 
 	@Override
 	public Long getStoppedCollectionsCount(String terms) {
-		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
 		criteria.setProjection(Projections.projectionList()
 				.add(Projections.property("id"), "id"));
 		
@@ -431,9 +418,9 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 
 	private void searchCollectionsAddOrder(String sortColumn, String sortDirection, Criteria criteria) {
 		if (StringUtils.hasText(sortColumn)) {
-			if ("user".equals(sortColumn)){
-				sortColumn = "user.userName";
-				criteria.createAlias("user", "user");
+			if ("owner".equals(sortColumn)){
+				sortColumn = "owner.userName";
+				criteria.createAlias("owner", "owner");
 			}
 			Order order;
 			if ("ASC".equals(sortDirection)){
@@ -446,16 +433,16 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 	}
 
 	@Override
-	public AidrCollection getInitializingCollectionStatusByUser(Long userId) {
-		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
-		criteria.add(Restrictions.eq("user.id", userId));
+	public Collection getInitializingCollectionStatusByUser(Long userId) {
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
+		criteria.add(Restrictions.eq("owner.id", userId));
 		criteria.add(Restrictions.eq("status", CollectionStatus.INITIALIZING));
-		return (AidrCollection) criteria.uniqueResult();
+		return (Collection) criteria.uniqueResult();
 	}
 
 	@Override
-	public AidrCollection start(Integer collectionId) {
-		AidrCollection collection =	this.findById(collectionId);
+	public Collection start(Long collectionId) {
+		Collection collection =	this.findById(collectionId);
 		Calendar now = Calendar.getInstance();
 		collection.setStartDate(now.getTime());
 		//		  collection.setEndDate(null);
@@ -465,8 +452,8 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 	}
 
 	@Override
-	public AidrCollection stop(Integer collectionId) {
-		AidrCollection collection =	this.findById(collectionId);
+	public Collection stop(Long collectionId) {
+		Collection collection =	this.findById(collectionId);
 		Calendar now = Calendar.getInstance();
 		collection.setEndDate(now.getTime());
 		collection.setStatus(CollectionStatus.STOPPED);
@@ -475,11 +462,11 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 	}
 
 	@Override
-	public AidrCollection findByCode(String code) {
-		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollection.class);
+	public Collection findByCode(String code) {
+		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
 		criteria.add(Restrictions.eq("code", code));
 		try {
-			return (AidrCollection) criteria.uniqueResult();
+			return (Collection) criteria.uniqueResult();
 		} catch (HibernateException e) {
 			logger.error("Hibernate exception while finding a collection by code: "+code + "/t"+e.getStackTrace());
 			return null;
@@ -487,12 +474,33 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<AidrCollecti
 	}
 
 	@Override
-	public AidrCollection trashCollectionById(Integer collectionId) {
-		AidrCollection collection = stop(collectionId);
+	public Collection trashCollectionById(Long collectionId) {
+		Collection collection = stop(collectionId);
 		collection.setStatus(CollectionStatus.TRASHED);
 		this.update(collection);
 
 		return collection;
 	}
 
+	@Override
+	public void update(Collection collection) {
+		collection.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+		super.update(collection);
+	}
+	
+	@Override
+	public void save(Collection collection) {
+		Timestamp now = new Timestamp(System.currentTimeMillis());
+		collection.setUpdatedAt(now);
+		collection.setCreatedAt(now);
+		super.save(collection);
+	}
+	
+	@Override
+	public List<Collection> getAllCollections() {
+	
+		List<Collection> collections = new ArrayList<Collection>();
+		collections = findAll();
+		return collections;
+	}
 }

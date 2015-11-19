@@ -24,7 +24,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.dbmanager.dto.CustomUiTemplateDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
@@ -38,11 +38,11 @@ public class TestCustomUiTemplateResourceFacadeImp {
 	static EntityManager entityManager;
 	static NominalAttributeDTO nominalAttribute;
 	static UsersDTO user;
-	static CrisisDTO crisis;
+	static CollectionDTO crisis;
 	static CustomUiTemplateDTO customUiTemplate;
 	static CrisisTypeResourceFacadeImp crisisTypeResourceFacadeImp;
 	static UsersResourceFacadeImp userResourceFacadeImp;
-	static CrisisResourceFacadeImp crisisResourceFacadeImp;
+	static CollectionResourceFacadeImp crisisResourceFacadeImp;
 	static CustomUiTemplateResourceFacadeImp customUiTemplateResourceFacadeImp;
 	static NominalAttributeResourceFacadeImp nominalAttributeResourceFacadeImp;
 	private static Logger logger = Logger.getLogger("db-manager-log");
@@ -52,7 +52,7 @@ public class TestCustomUiTemplateResourceFacadeImp {
 		entityManager = Persistence.createEntityManagerFactory(
 				"ProjectDBManagerTest-ejbPU").createEntityManager();
 		
-		crisisResourceFacadeImp = new CrisisResourceFacadeImp();
+		crisisResourceFacadeImp = new CollectionResourceFacadeImp();
 		crisisTypeResourceFacadeImp = new CrisisTypeResourceFacadeImp();
 		userResourceFacadeImp = new UsersResourceFacadeImp();
 		crisisResourceFacadeImp.setEntityManager(entityManager);
@@ -70,7 +70,7 @@ public class TestCustomUiTemplateResourceFacadeImp {
 		
 		try {
 			CrisisTypeDTO crisisTypeDTO = crisisTypeResourceFacadeImp.findCrisisTypeByID(1100L);
-			CrisisDTO crisisDTO = new CrisisDTO("testCrisisName"+new Date(), "testCrisisCode"+new Date(), false, false, crisisTypeDTO, user);
+			CollectionDTO crisisDTO = new CollectionDTO("testCrisisName"+new Date(), "testCrisisCode"+new Date(), false, false, crisisTypeDTO, user, user);
 			entityManager.getTransaction().begin();
 			crisis = crisisResourceFacadeImp.addCrisis(crisisDTO);
 			entityManager.getTransaction().commit();
@@ -96,11 +96,11 @@ public class TestCustomUiTemplateResourceFacadeImp {
 				entityManager.getTransaction().begin();
 				crisisResourceFacadeImp.deleteCrisis(crisis);
 				entityManager.getTransaction().commit();
-				CrisisDTO result = crisisResourceFacadeImp.getCrisisByCode(crisis.getCode());
+				CollectionDTO result = crisisResourceFacadeImp.getCrisisByCode(crisis.getCode());
 				assertNull(result);
 			}
 		}catch (PropertyNotSetException e) {
-				logger.error("PropertyNotSetException while deleting crisis "+e.getMessage());
+			logger.error("PropertyNotSetException while deleting crisis "+e.getMessage());
 		}
 		try {	
 			if (user != null) {

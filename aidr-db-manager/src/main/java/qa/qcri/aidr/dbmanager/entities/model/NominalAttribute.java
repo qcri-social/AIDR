@@ -19,7 +19,7 @@ import javax.persistence.UniqueConstraint;
 
 import org.hibernate.Hibernate;
 
-import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
 import qa.qcri.aidr.dbmanager.entities.misc.Users;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -77,7 +77,7 @@ public class NominalAttribute implements java.io.Serializable {
 
 	public NominalAttribute(Users users, String name, String description,
 			String code, List<ModelFamily> modelFamilies,
-			List<Crisis> crisises, List<NominalLabel> nominalLabels) {
+			List<Collection> crisises, List<NominalLabel> nominalLabels) {
 		this.users = users;
 		this.name = name;
 		this.description = description;

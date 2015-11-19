@@ -536,16 +536,16 @@ public class DataStore {
 		try {
 			for (Document item : items) {
 				TaggerDocument doc = Document.fromDocumentToTaggerDocument(item);
-				//System.out.println("Attempting to save NEW document for crisis = " + doc.getCrisisCode());
-				//logger.info("Attempting to save NEW document for crisis = " + doc.getCrisisCode());
+				//System.out.println("Attempting to save NEW document for collection = " + doc.getCrisisCode());
+				//logger.info("Attempting to save NEW document for collection = " + doc.getCrisisCode());
 				Long docID = taskManager.saveNewTask(TaggerDocument.toDocumentDTO(doc), doc.getCrisisID());
 				++saveNewDocumentsCount;
 				if (docID.longValue() != -1) {
 					// Update document with auto generated Doc
 					item.setDocumentID(docID);
-					//logger.info("Success in saving NEW document: " + item.getDocumentID() + ", for crisis = " + item.getCrisisCode());
+					//logger.info("Success in saving NEW document: " + item.getDocumentID() + ", for collection = " + item.getCrisisCode());
 				} else {
-					logger.error("Something went wrong in saving document: " + item.getDocumentID() + ", for crisis = " + item.getCrisisCode());
+					logger.error("Something went wrong in saving document: " + item.getDocumentID() + ", for collection = " + item.getCrisisCode());
 				}
 			}
 			if (canLog()) {
@@ -590,11 +590,11 @@ public class DataStore {
 					DocumentNominalLabelDTO dto = new DocumentNominalLabelDTO();
 					dto.setIdDTO(idDTO);
 					if (canLog()) {
-						logger.info("Attempting to save LABELED document: " + dto.getIdDTO().getDocumentId() + " with nominal labelID=" + dto.getIdDTO().getNominalLabelId() + ", for crisis = " + d.getCrisisCode() + ", userID = " + dto.getIdDTO().getUserId());
+						logger.info("Attempting to save LABELED document: " + dto.getIdDTO().getDocumentId() + " with nominal labelID=" + dto.getIdDTO().getNominalLabelId() + ", for collection = " + d.getCrisisCode() + ", userID = " + dto.getIdDTO().getUserId());
 						lastSaveTime = System.currentTimeMillis();
 						saveNewDocumentsCount = 0;
 					}
-					//System.out.println("Attempting to save LABELED document: " + dto.getIdDTO().getDocumentId() + " with nominal labelID=" + dto.getIdDTO().getNominalLabelId() + ", for crisis = " + d.getCrisisCode() + ", userID = " + dto.getIdDTO().getUserId());
+					//System.out.println("Attempting to save LABELED document: " + dto.getIdDTO().getDocumentId() + " with nominal labelID=" + dto.getIdDTO().getNominalLabelId() + ", for collection = " + d.getCrisisCode() + ", userID = " + dto.getIdDTO().getUserId());
 					taskManager.saveDocumentNominalLabel(dto);
 					rows++;
 				}
@@ -659,8 +659,8 @@ public class DataStore {
 							"SELECT \n"
 									+ " fam.modelFamilyID, \n"
 									+ "	fam.crisisID, \n"
-									+ "	crisis.code AS crisisCode, \n"
-									+ "	crisis.name AS crisisName, \n"
+									+ "	col.code AS crisisCode, \n"
+									+ "	col.name AS crisisName, \n"
 									+ "	fam.nominalAttributeID, \n"
 									+ "	attr.code AS nominalAttributeCode, \n"
 									+ "	attr.name AS nominalAttributeName, \n"
@@ -673,7 +673,7 @@ public class DataStore {
 									+ "	COUNT(DISTINCT dnl.documentID) AS labeledItemCount\n"
 									+ "FROM model_family fam \n"
 									+ "LEFT JOIN model mdl on mdl.modelFamilyID = fam.modelFamilyID \n"
-									+ "JOIN crisis on crisis.crisisID = fam.crisisID \n"
+									+ "JOIN collection col on col.id = fam.crisisID and col.classifier_enabled = 1 \n"
 									+ "JOIN nominal_attribute attr ON attr.nominalAttributeID = fam.nominalAttributeID \n"
 									+ "JOIN nominal_label lbl ON lbl.nominalAttributeID = fam.nominalAttributeID \n"
 									+ "LEFT JOIN document doc ON doc.crisisID=fam.crisisID \n"
@@ -882,10 +882,10 @@ public class DataStore {
 
 		try {
 			conn = getMySqlConnection();
-			sql = conn.prepareStatement("select crisisID, code from crisis;");
+			sql = conn.prepareStatement("select id, code from collection where classifier_enabled = 1;");
 			result = sql.executeQuery();
 			while (result.next()) {
-				crisisIDs.put(result.getString("code"), result.getInt("crisisID"));
+				crisisIDs.put(result.getString("code"), result.getInt("id"));
 			}
 		} catch (SQLException e) {
 			logger.error("Exception when getting crisis IDs", e);

@@ -5,7 +5,7 @@ package qa.qcri.aidr.manager.repository;
 
 import java.util.List;
 
-import qa.qcri.aidr.manager.hibernateEntities.UserAccountRole;
+import qa.qcri.aidr.manager.persistence.entities.UserAccountRole;
 
 /**
  * @author Latika

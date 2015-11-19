@@ -1,5 +1,11 @@
 package qa.qcri.aidr.manager.controller;
 
+import static qa.qcri.aidr.manager.util.CollectionStatus.RUNNING;
+import static qa.qcri.aidr.manager.util.CollectionStatus.RUNNING_WARNING;
+
+import java.util.List;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,18 +16,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import qa.qcri.aidr.manager.dto.TaggerCrisis;
 import qa.qcri.aidr.manager.dto.TaggerModel;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
+import qa.qcri.aidr.manager.persistence.entities.Collection;
+import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.util.CollectionType;
-
-import java.util.List;
-import java.util.Map;
-
-import static qa.qcri.aidr.manager.util.CollectionStatus.RUNNING;
-import static qa.qcri.aidr.manager.util.CollectionStatus.RUNNING_WARNING;
 
 
 @Controller
@@ -69,13 +69,13 @@ public class ScreenController extends BaseController{
             return true;
         }
 
-        AidrCollection collection = collectionService.findByCode(code);
+        Collection collection = collectionService.findByCode(code);
         if (collection == null){
             return false;
         }
 
 //        current user is a owner of the collection
-        if(user.getUserName().equals(collection.getUser().getUserName())){
+        if(user.getUserName().equals(collection.getOwner().getUserName())){
             return true;
         }
 
@@ -93,14 +93,14 @@ public class ScreenController extends BaseController{
         }
 
         String userName = getAuthenticatedUserName();
-        AidrCollection collection = collectionService.findByCode(code);
+        Collection collection = collectionService.findByCode(code);
 
         ModelAndView model = new ModelAndView("collection-details");
         model.addObject("id", collection.getId());
         model.addObject("collectionCode", code);
         model.addObject("userName", userName);
         model.addObject("fetchMainUrl", fetchMainUrl);
-        model.addObject("collectionType", collection.getCollectionType());
+        model.addObject("collectionType", collection.getProvider());
         model.addObject("collectionTypes", CollectionType.JSON());
 
         return model;
@@ -127,25 +127,25 @@ public class ScreenController extends BaseController{
     		return new ModelAndView("redirect:/protected/access-error");
         }
 
-        TaggerCrisis crisis = taggerService.getCrisesByCode(code);
+        //TaggerCrisis crisis = taggerService.getCrisesByCode(code);
         logger.info("returned from getCrisesByCode");
-        AidrCollection collection = collectionService.findByCode(code);
+        Collection collection = collectionService.findByCode(code);
         logger.info("returned from findByCode");
 
-        Integer crisisId = 0;
+        Long crisisId = 0L;
         String crisisName = "";
-        Integer crisisTypeId = 0;
+        Long crisisTypeId = 0L;
         Boolean isMicromapperEnabled = false;
-        if (crisis != null && crisis.getCrisisID() != null && crisis.getName() != null){
-            crisisId = crisis.getCrisisID();
-            crisisName = crisis.getName();
-            if (crisis.getCrisisType() != null && crisis.getCrisisType().getCrisisTypeID() != null){
-                crisisTypeId = crisis.getCrisisType().getCrisisTypeID();
+        if (collection != null && collection.getId() != null && collection.getName() != null){
+            crisisId = collection.getId();
+            crisisName = collection.getName();
+            if (collection.getCrisisType() != null) {
+                crisisTypeId = collection.getCrisisType().getId();
             }
             
-        	isMicromapperEnabled = crisis.getIsMicromapperEnabled();
+        	isMicromapperEnabled = collection.isMicromappersEnabled();
         }
-        logger.info("Fetched tagger crisis: " + crisis.getCode() + ", aidr collection: " + collection.getCode());
+        logger.info("Fetched tagger crisis: " + collection.getCode() + ", aidr collection: " + collection.getCode());
         
         ModelAndView model = new ModelAndView("tagger/tagger-collection-details");
         model.addObject("crisisId", crisisId);
@@ -153,7 +153,7 @@ public class ScreenController extends BaseController{
         model.addObject("crisisTypeId", crisisTypeId);
         model.addObject("code", code);
         model.addObject("isMicromapperEnabled", isMicromapperEnabled);
-        model.addObject("collectionType", collection.getCollectionType());
+        model.addObject("collectionType", collection.getProvider());
         model.addObject("collectionTypes", CollectionType.JSON());
         
         logger.info("Returning model: " + model.getModel());
@@ -243,7 +243,7 @@ public class ScreenController extends BaseController{
         	logger.error("Exception while checking whether user exist by username",e);
         }
 
-        AidrCollection collection = collectionService.findByCode(code);
+        Collection collection = collectionService.findByCode(code);
 
         ModelAndView model = new ModelAndView("tagger/model-details");
         model.addObject("crisisId", crisisId);
@@ -255,7 +255,7 @@ public class ScreenController extends BaseController{
         model.addObject("code", code);
         model.addObject("userId", taggerUserId);
         model.addObject("attributeId", attributeId);
-        model.addObject("collectionType", collection.getCollectionType());
+        model.addObject("collectionType", collection.getProvider());
         model.addObject("collectionTypes", CollectionType.JSON());
 
         return model;
@@ -276,13 +276,13 @@ public class ScreenController extends BaseController{
             crisisName = crisis.getName();
         }
 
-        AidrCollection collection = collectionService.findByCode(code);
+        Collection collection = collectionService.findByCode(code);
 
         ModelAndView model = new ModelAndView("tagger/new-custom-attribute");
         model.addObject("code", code);
         model.addObject("crisisId", crisisId);
         model.addObject("crisisName", crisisName);
-        model.addObject("collectionType", collection.getCollectionType());
+        model.addObject("collectionType", collection.getProvider());
         model.addObject("collectionTypes", CollectionType.JSON());
 
         return model;
@@ -321,7 +321,7 @@ public class ScreenController extends BaseController{
             }
         }
 
-        AidrCollection collection = collectionService.findByCode(code);
+        Collection collection = collectionService.findByCode(code);
 
         ModelAndView model = new ModelAndView("tagger/training-data");
         model.addObject("crisisId", crisisId);
@@ -334,7 +334,7 @@ public class ScreenController extends BaseController{
         model.addObject("trainingExamples", trainingExamples);
         model.addObject("modelAuc", modelAuc);
         model.addObject("retrainingThreshold", retrainingThreshold);
-        model.addObject("collectionType", collection.getCollectionType());
+        model.addObject("collectionType", collection.getProvider());
         model.addObject("collectionTypes", CollectionType.JSON());
 
         return model;
@@ -367,7 +367,7 @@ public class ScreenController extends BaseController{
         }
 
 
-        AidrCollection collection = collectionService.findByCode(code);
+        Collection collection = collectionService.findByCode(code);
 
         ModelAndView model = new ModelAndView("tagger/training-examples");
         model.addObject("code", code);
@@ -377,7 +377,7 @@ public class ScreenController extends BaseController{
         model.addObject("modelId", modelId);
         model.addObject("modelFamilyId", modelFamilyId);
         model.addObject("nominalAttributeId", nominalAttributeId);
-        model.addObject("collectionType", collection.getCollectionType());
+        model.addObject("collectionType", collection.getProvider());
         model.addObject("collectionTypes", CollectionType.JSON());
 
         return model;
@@ -431,7 +431,7 @@ public class ScreenController extends BaseController{
     private ModelAndView getInteractiveViewDownload(String code, String userName){
 
         TaggerCrisis crisis = null;
-        AidrCollection collection = null;
+        Collection collection = null;
         try {
             crisis = taggerService.getCrisesByCode(code);
             collection = collectionService.findByCode(code);
@@ -448,7 +448,7 @@ public class ScreenController extends BaseController{
         }
 
         Integer collectionCount = 0;
-        Integer collectionId = 0;
+        Long collectionId = 0L;
         CollectionType type = CollectionType.Twitter;
         if (collection != null){
             if (collection.getId() != null) {
@@ -462,8 +462,8 @@ public class ScreenController extends BaseController{
             if (collection.getCount() != null && (collection.getStatus() != null || RUNNING == collection.getStatus() || RUNNING_WARNING == collection.getStatus())) {
                 collectionCount += collection.getCount();
             }
-            if (collection.getCollectionType() != null) {
-                type = collection.getCollectionType();
+            if (collection.getProvider() != null) {
+                type = collection.getProvider();
             }
         }
 

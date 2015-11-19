@@ -14,17 +14,19 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.ModelFamilyResourceFacade;
-import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
 
@@ -53,15 +55,13 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 
 	@Override
 	public List<ModelFamilyDTO> getAllModelFamiliesByCrisis(Long crisisID) throws PropertyNotSetException {
+		
 		List<ModelFamilyDTO> modelFamilyDTOList = new ArrayList<ModelFamilyDTO>();
-		Crisis crisis = getEntityManager().find(Crisis.class, crisisID);
-		Hibernate.initialize(crisis.getModelFamilies());
-		List<ModelFamily> modelFamilyList = crisis.getModelFamilies();
+		Criteria criteria = getCurrentSession().createCriteria(ModelFamily.class);
+		criteria.add(Restrictions.eq("collection.id", crisisID));
+		List<ModelFamily> modelFamilyList = criteria.list();
 		if (modelFamilyList != null && !modelFamilyList.isEmpty()) {
 			for (ModelFamily modelFamily : modelFamilyList) {
-				Hibernate.initialize(modelFamily.getModels());
-				Hibernate.initialize(modelFamily.getNominalAttribute());
-				Hibernate.initialize(modelFamily.getCrisis());
 				modelFamilyDTOList.add(new ModelFamilyDTO(modelFamily));
 			}
 		}
@@ -79,9 +79,9 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 	@Override
 	public boolean addCrisisAttribute(ModelFamilyDTO modelFamily) throws PropertyNotSetException {
 		try {
-			Crisis crisis = getEntityManager().find(Crisis.class, modelFamily.getCrisisDTO().getCrisisID());
+			Collection collection = getEntityManager().find(Collection.class, modelFamily.getCrisisDTO().getCrisisID());
 			NominalAttribute attribute = getEntityManager().find(NominalAttribute.class, modelFamily.getNominalAttributeDTO().getNominalAttributeId());
-			modelFamily.setCrisisDTO(new CrisisDTO(crisis));
+			modelFamily.setCrisisDTO(new CollectionDTO(collection));
 			modelFamily.setNominalAttributeDTO(new NominalAttributeDTO(attribute));
 			getEntityManager().persist(modelFamily.toEntity());
 		} catch (HibernateException he) {
@@ -114,7 +114,7 @@ public class ModelFamilyResourceFacadeImp extends CoreDBServiceFacadeImp<ModelFa
 		String sql = "select c.code as code, " +
 				" count(mf.modelFamilyID) as modelsCount " +
 				" from model_family mf " +
-				" right outer join crisis c on c.crisisID = mf.crisisID " +
+				" right outer join collection c on c.id = mf.crisisID and classifier_enabled = 1" +
 				" where c.code in :codes " +
 				" group by mf.crisisID ";
 

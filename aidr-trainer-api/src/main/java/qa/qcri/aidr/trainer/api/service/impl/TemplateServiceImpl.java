@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
-import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade;
 import qa.qcri.aidr.trainer.api.entity.Client;
 import qa.qcri.aidr.trainer.api.entity.ClientApp;
 //import qa.qcri.aidr.trainer.api.entity.Crisis;
@@ -56,7 +56,7 @@ public class TemplateServiceImpl implements TemplateService {
 	//private CrisisService crisisService;
 
 	@Autowired
-	private CrisisResourceFacade crisisService;
+	private CollectionResourceFacade crisisService;
 
 	@Autowired
 	private CustomUITemplateService customUITemplateService;
@@ -106,12 +106,12 @@ public class TemplateServiceImpl implements TemplateService {
 	public List<CrisisApplicationListModel> getApplicationListHtmlByCrisisCode(String crisisCode) {
 
 		List<CrisisApplicationListModel> crisisApplicationListModelList = null;
-		List<CrisisDTO> crisisList;
+		List<CollectionDTO> crisisList;
 		try {
 			crisisList = crisisService.findByCriteria("code", crisisCode);
 			if(crisisList!=null){
 				if(crisisList.size() > 0){
-					CrisisDTO crisis = crisisList.get(0);
+					CollectionDTO crisis = crisisList.get(0);
 					crisisApplicationListModelList = getApplicationListHtmlByCrisisID(crisis.getCrisisID());
 				}
 			}
@@ -125,7 +125,7 @@ public class TemplateServiceImpl implements TemplateService {
 	@Override
 	public CrisisLandingHtmlModel getCrisisLandingHtmlByCrisisCode(String crisisCode) {
 		CrisisLandingHtmlModel crisisLandingHtmlModel = null;
-		List<CrisisDTO> crisisList = null;
+		List<CollectionDTO> crisisList = null;
 		try {
 			crisisList = crisisService.findByCriteria("code", crisisCode);
 		} catch (Exception e) {
@@ -133,7 +133,7 @@ public class TemplateServiceImpl implements TemplateService {
 		}
 		if(crisisList != null){
 			if(crisisList.size() > 0){
-				CrisisDTO crisis = crisisList.get(0);
+				CollectionDTO crisis = crisisList.get(0);
 				crisisLandingHtmlModel = getCrisisLandingHtmlByCrisisID(crisis.getCrisisID());
 			}
 		}
@@ -147,7 +147,7 @@ public class TemplateServiceImpl implements TemplateService {
 		CrisisLandingHtmlModel crisisLandingHtmlModel = null;
 		try {
 			//Crisis crisis =  crisisService.findByCrisisID(crisisID);
-			CrisisDTO crisis =  crisisService.findCrisisByID(crisisID);
+			CollectionDTO crisis =  crisisService.findCrisisByID(crisisID);
 			List<ClientApp> clientAppList = clientAppService.getAllClientAppByCrisisID(crisisID);
 			if(clientAppList != null & crisis!= null){
 				if(clientAppList.size() > 0){
@@ -168,7 +168,7 @@ public class TemplateServiceImpl implements TemplateService {
 	public String getCrisisLandingJSONPByCrisisID(Long crisisID) {
 		CrisisLandingHtmlModel crisisLandingHtmlModel = null;
 		JSONObject json = new JSONObject();
-		CrisisDTO crisis = null;
+		CollectionDTO crisis = null;
 		try {
 			//Crisis crisis =  crisisService.findByCrisisID(crisisID);
 			crisis =  crisisService.findCrisisByID(crisisID);
@@ -231,12 +231,12 @@ public class TemplateServiceImpl implements TemplateService {
 	@Override
 	public String getCrisisLandingJSONPByCrisisCode(String crisisCode) {
 		String returnValue = "";
-		List<CrisisDTO> crisisList = null;
+		List<CollectionDTO> crisisList = null;
 		try {
 			crisisList = crisisService.findByCriteria("code", crisisCode);
 			if(crisisList != null){
 				if(crisisList.size() > 0){
-					CrisisDTO crisis = crisisList.get(0);
+					CollectionDTO crisis = crisisList.get(0);
 					returnValue = getCrisisLandingJSONPByCrisisID(crisis.getCrisisID()) ;
 				}
 			}
@@ -249,7 +249,7 @@ public class TemplateServiceImpl implements TemplateService {
 	@Override
 	public CrisisLandingStatusModel getCrisisLandingStatusByCrisisCode(String crisisCode) {
 		CrisisLandingStatusModel crisisLandingStatusModel = null;
-		List<CrisisDTO> crisisList = null;
+		List<CollectionDTO> crisisList = null;
 		try {
 			crisisList = crisisService.findByCriteria("code", crisisCode);
 			logger.info("crisisList size = " + (crisisList != null ? crisisList.size() : "null"));
@@ -259,7 +259,7 @@ public class TemplateServiceImpl implements TemplateService {
 		boolean isReadyToShow = false;
 		if(crisisList != null){
 			if(crisisList.size() > 0){
-				CrisisDTO crisis = crisisList.get(0);
+				CollectionDTO crisis = crisisList.get(0);
 				List<ClientApp> clientAppList = clientAppService.getAllClientAppByCrisisID(crisis.getCrisisID());
 				//System.out.println("clientAppList size = " + (clientAppList != null ? clientAppList.size() : "null"));
 				logger.info("clientAppList size = " + (clientAppList != null ? clientAppList.size() : "null"));

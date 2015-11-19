@@ -24,7 +24,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 
@@ -37,8 +37,8 @@ public class TestNominalAttributeResourceFacadeImp {
 	static UsersResourceFacadeImp userResourceFacadeImp;
 	static EntityManager entityManager;
 	static UsersDTO user;
-	static CrisisDTO crisis;
-	static CrisisResourceFacadeImp crisisResourceFacadeImp;
+	static CollectionDTO crisis;
+	static CollectionResourceFacadeImp crisisResourceFacadeImp;
 	static CrisisTypeResourceFacadeImp crisisTypeResourceFacadeImp;
 	static NominalAttributeDTO nominalAttribute;
 	static NominalAttributeResourceFacadeImp nominalAttributeResourceFacadeImp;
@@ -49,7 +49,7 @@ public class TestNominalAttributeResourceFacadeImp {
 		entityManager = Persistence.createEntityManagerFactory(
 				"ProjectDBManagerTest-ejbPU").createEntityManager();
 		userResourceFacadeImp = new UsersResourceFacadeImp();
-		crisisResourceFacadeImp = new CrisisResourceFacadeImp();
+		crisisResourceFacadeImp = new CollectionResourceFacadeImp();
 		crisisTypeResourceFacadeImp = new CrisisTypeResourceFacadeImp();
 		userResourceFacadeImp.setEntityManager(entityManager);
 		nominalAttributeResourceFacadeImp = new NominalAttributeResourceFacadeImp();
@@ -98,7 +98,7 @@ public class TestNominalAttributeResourceFacadeImp {
 				entityManager.getTransaction().begin();
 				crisisResourceFacadeImp.deleteCrisis(crisis);
 				entityManager.getTransaction().commit();
-				CrisisDTO result = crisisResourceFacadeImp.getCrisisByCode(crisis.getCode());
+				CollectionDTO result = crisisResourceFacadeImp.getCrisisByCode(crisis.getCode());
 				assertNull(result);
 				crisis=null;
 			}

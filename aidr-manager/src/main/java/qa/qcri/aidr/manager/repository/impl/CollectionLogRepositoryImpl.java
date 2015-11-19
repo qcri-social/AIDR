@@ -3,7 +3,7 @@ package qa.qcri.aidr.manager.repository.impl;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,57 +22,57 @@ import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.stereotype.Repository;
 
 import qa.qcri.aidr.manager.dto.CollectionLogDataResponse;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
+import qa.qcri.aidr.manager.persistence.entities.CollectionLog;
 import qa.qcri.aidr.manager.repository.CollectionLogRepository;
 
 @Repository("collectionLogRepository")
-public class CollectionLogRepositoryImpl extends GenericRepositoryImpl<AidrCollectionLog, Serializable> implements CollectionLogRepository {
+public class CollectionLogRepositoryImpl extends GenericRepositoryImpl<CollectionLog, Serializable> implements CollectionLogRepository {
 
     @SuppressWarnings("unchecked")
     @Override
     public CollectionLogDataResponse getPaginatedData(Integer start, Integer limit) {
-        Criteria countCriteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollectionLog.class);
+        Criteria countCriteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(CollectionLog.class);
         countCriteria.setProjection(Projections.rowCount());
         Long count = (Long) countCriteria.uniqueResult();
         if (count == 0){
-            return new CollectionLogDataResponse(Collections.<AidrCollectionLog>emptyList(), count);
+            return new CollectionLogDataResponse(Collections.<CollectionLog>emptyList(), count);
         }
 
-        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollectionLog.class);
+        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(CollectionLog.class);
         criteria.setFirstResult(start);
         criteria.setMaxResults(limit);
         criteria.addOrder(Order.desc("startDate"));
 
-        return new CollectionLogDataResponse((List<AidrCollectionLog>) criteria.list(), count);
+        return new CollectionLogDataResponse((List<CollectionLog>) criteria.list(), count);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public CollectionLogDataResponse getPaginatedDataForCollection(Integer start, Integer limit, Integer collectionId) {
-        Criteria countCriteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollectionLog.class);
-        countCriteria.add(Restrictions.eq("collectionID", collectionId));
+    public CollectionLogDataResponse getPaginatedDataForCollection(Integer start, Integer limit, Long collectionId) {
+        Criteria countCriteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(CollectionLog.class);
+        countCriteria.add(Restrictions.eq("collectionId", collectionId));
         countCriteria.setProjection(Projections.rowCount());
         Long count = (Long) countCriteria.uniqueResult();
         if (count == 0){
-            return new CollectionLogDataResponse(Collections.<AidrCollectionLog>emptyList(), count);
+            return new CollectionLogDataResponse(Collections.<CollectionLog>emptyList(), count);
         }
 
-        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(AidrCollectionLog.class);
-        criteria.add(Restrictions.eq("collectionID", collectionId));
+        Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(CollectionLog.class);
+        criteria.add(Restrictions.eq("collectionId", collectionId));
         criteria.setFirstResult(start);
         criteria.setMaxResults(limit);
         criteria.addOrder(Order.desc("startDate"));
 
-        return new CollectionLogDataResponse((List<AidrCollectionLog>) criteria.list(), count);
+        return new CollectionLogDataResponse((List<CollectionLog>) criteria.list(), count);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public Integer countTotalDownloadedItemsForCollection(final Integer collectionId) {
+    public Integer countTotalDownloadedItemsForCollection(final Long collectionId) {
         return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
             @Override
             public Object doInHibernate(Session session) throws HibernateException {
-                String sql = " select sum(c.count) from aidr_collection_log c where c.collectionID = :collectionId ";
+                String sql = " select sum(c.count) from collection_log c where c.collection_id = :collectionId ";
                 SQLQuery sqlQuery = session.createSQLQuery(sql);
                 sqlQuery.setParameter("collectionId", collectionId);
                 BigDecimal total = (BigDecimal) sqlQuery.uniqueResult();
@@ -83,15 +83,15 @@ public class CollectionLogRepositoryImpl extends GenericRepositoryImpl<AidrColle
         
     @SuppressWarnings("unchecked")
     @Override
-    public Map<Integer, Integer> countTotalDownloadedItemsForCollectionIds(final List<Integer> ids) {
+    public Map<Integer, Integer> countTotalDownloadedItemsForCollectionIds(final List<Long> ids) {
         return (Map<Integer, Integer>) getHibernateTemplate().execute(new HibernateCallback<Object>() {
             @Override
             public Object doInHibernate(Session session) throws HibernateException {
-                String sql = " select c.collectionID as id, " +
+                String sql = " select c.collection_id as id, " +
                         " sum(c.count) as count " +
-                        " from aidr_collection_log c " +
-                        " where c.collectionID in :ids " +
-                        " group by c.collectionID ";
+                        " from collection_log c " +
+                        " where c.collection_id in :ids " +
+                        " group by c.collection_id ";
                 SQLQuery sqlQuery = session.createSQLQuery(sql);
                 sqlQuery.addScalar("id", new IntegerType());
                 sqlQuery.addScalar("count", new IntegerType());
@@ -110,11 +110,11 @@ public class CollectionLogRepositoryImpl extends GenericRepositoryImpl<AidrColle
 
     @SuppressWarnings("unchecked")
 	@Override
-	public Integer countLogsStartedInInterval(final Integer collectionId, final Date startDate, final Date endDate) {
+	public Integer countLogsStartedInInterval(final Long collectionId, final Date startDate, final Date endDate) {
     	 return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
              @Override
              public Object doInHibernate(Session session) throws HibernateException {
-                 String sql = " select count(*) from aidr_collection_log c where c.collectionID = :collectionId and startDate >= :startDate and startDate < :endDate ";
+                 String sql = " select count(*) from collection_log c where c.collection_id = :collectionId and start_date >= :startDate and start_date < :endDate ";
                  SQLQuery sqlQuery = session.createSQLQuery(sql);
                  sqlQuery.setParameter("collectionId", collectionId);
                  sqlQuery.setParameter("startDate", startDate);
@@ -124,4 +124,13 @@ public class CollectionLogRepositoryImpl extends GenericRepositoryImpl<AidrColle
              }
          });
 	}
+    
+    @Override
+    public void save(CollectionLog collectionLog) {
+
+		Timestamp now = new Timestamp(System.currentTimeMillis());
+		collectionLog.setCreatedAt(now);
+    	collectionLog.setUpdatedAt(now);
+    	super.save(collectionLog);
+    }
 }

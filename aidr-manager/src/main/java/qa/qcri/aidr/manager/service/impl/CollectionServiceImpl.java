@@ -1,9 +1,7 @@
 package qa.qcri.aidr.manager.service.impl;
 
-import static qa.qcri.aidr.manager.util.CollectionType.SMS;
-import static qa.qcri.aidr.manager.util.CollectionType.Twitter;
-
 import java.net.URLEncoder;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -27,20 +25,29 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
+import qa.qcri.aidr.manager.dto.CollectionDetailsInfo;
+import qa.qcri.aidr.manager.dto.CollectionSummaryInfo;
+import qa.qcri.aidr.manager.dto.CollectionUpdateInfo;
 import qa.qcri.aidr.manager.dto.FetcheResponseDTO;
 import qa.qcri.aidr.manager.dto.FetcherRequestDTO;
 import qa.qcri.aidr.manager.dto.PingResponse;
 import qa.qcri.aidr.manager.exception.AidrException;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollectionLog;
-import qa.qcri.aidr.manager.hibernateEntities.UserAccount;
-import qa.qcri.aidr.manager.hibernateEntities.UserConnection;
+import qa.qcri.aidr.manager.persistence.entities.Collection;
+import qa.qcri.aidr.manager.persistence.entities.CollectionLog;
+import qa.qcri.aidr.manager.persistence.entities.UserAccount;
+import qa.qcri.aidr.manager.persistence.entities.UserConnection;
 import qa.qcri.aidr.manager.repository.AuthenticateTokenRepository;
 import qa.qcri.aidr.manager.repository.CollectionLogRepository;
 import qa.qcri.aidr.manager.repository.CollectionRepository;
 import qa.qcri.aidr.manager.repository.UserConnectionRepository;
+import qa.qcri.aidr.manager.service.CollectionCollaboratorService;
+import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
+import qa.qcri.aidr.manager.service.CrisisTypeService;
+import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
+import qa.qcri.aidr.manager.util.CollectionType;
+import qa.qcri.aidr.manager.util.SMS;
 import twitter4j.ResponseList;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
@@ -59,8 +66,16 @@ public class CollectionServiceImpl implements CollectionService {
 	private UserConnectionRepository userConnectionRepository;
 
 	@Autowired
+	private TaggerService taggerService;
+	
+	@Autowired
 	private AuthenticateTokenRepository authenticateTokenRepository;
 
+	@Autowired
+	private CollectionCollaboratorService collaboratorService;
+	
+	@Autowired
+	private CrisisTypeService crisisTypeService;
 	//@Autowired	// gf 3 way
 	@Value("${fetchMainUrl}")
 	private String fetchMainUrl;
@@ -72,43 +87,121 @@ public class CollectionServiceImpl implements CollectionService {
 	private String accessTokenStr = null;
 	private String accessTokenSecretStr = null;
 
+	@Autowired
+	private CollectionLogService collectionLogService;
+	
 	@Override
-	@Transactional(readOnly = false)
-	public void update(AidrCollection collection) throws Exception {
+	@Transactional(readOnly=false)
+	public void update(Collection collection) {
 		collectionRepository.update(collection);
 	}
+	
+	@Override
+	@Transactional(readOnly=false)
+	public boolean updateCollection(CollectionUpdateInfo collectionUpdateInfo, Long userId) {
+		
+		try {
+			Collection collection = findByCode(collectionUpdateInfo.getCode());
+			
+			if(!collection.getName().equals(collectionUpdateInfo.getName())) {
+				if(!existName(collectionUpdateInfo.getName())) {
+					collection.setName(collectionUpdateInfo.getName());
+				} else {
+					return false;
+				}
+			}
+			// if collection exists with same name
+			
+			collection.setProvider(CollectionType.valueOf(collectionUpdateInfo.getProvider()));
+			collection.setFollow(collectionUpdateInfo.getFollow());
+			collection.setTrack(collectionUpdateInfo.getTrack());
+			collection.setGeo(collectionUpdateInfo.getGeo());
+			collection.setGeoR(collectionUpdateInfo.getGeoR());
+			collection.setDurationHours(Integer.parseInt(collectionUpdateInfo.getDurationHours()));
+			collection.setLangFilters(collectionUpdateInfo.getLangFilters());
+			
+			if (CollectionType.SMS.equals(collection.getProvider())) {
+				collection.setTrack(null);
+				collection.setLangFilters(null);
+				collection.setGeo(null);
+				collection.setGeoR(null);
+				collection.setFollow(null);
+			}
+			
+			collectionRepository.update(collection);
 
+			// first make an entry in log if collection is running
+			if (CollectionStatus.RUNNING_WARNING.equals(collection.getStatus()) || CollectionStatus.RUNNING.equals(collection.getStatus())) {
+				//              stop collection
+				Collection collectionAfterStop = this.stopAidrFetcher(collection, userId);
+
+				//              save current state of the collection to collectionLog
+				CollectionLog collectionLog = new CollectionLog(collection);
+				collectionLog.setEndDate(collectionAfterStop.getEndDate());
+				collectionLogService.create(collectionLog);
+
+				//              set some fields from old collection and update collection
+				collection.setEndDate(collectionAfterStop.getEndDate());
+				collection.setFollow(this.getFollowTwitterIDs(collectionUpdateInfo.getFollow(), collection.getOwner().getUserName()));
+				collectionRepository.update(collection);
+
+				//              start collection
+				this.startFetcher(this.prepareFetcherRequest(collection), collection);
+			} else {
+				collection.setFollow(this.getFollowTwitterIDs(collectionUpdateInfo.getFollow(), collection.getOwner().getUserName()));
+				collectionRepository.update(collection);
+			}
+			return true;
+		} catch (Exception e) {
+			
+			logger.error("Unable to update the collection : " + collectionUpdateInfo.getCode(), e);
+			return false;
+		}
+		
+	}
+	
 	@Override
 	@Transactional(readOnly = false)
-	public void delete(AidrCollection collection) throws Exception {
+	public void delete(Collection collection) throws Exception {
 		collectionRepository.delete(collection);
 
 	}
 
 	@Override
 	@Transactional
-	public void create(AidrCollection collection) throws Exception {
-		collectionRepository.save(collection);
+	public Collection create(CollectionDetailsInfo collectionDetailsInfo, UserAccount user) throws Exception {
+		
+		Collection collection = adaptCollectionDetailsInfoToCollection(collectionDetailsInfo, user);
+		try {
+			collectionRepository.save(collection);
+			collaboratorService.addCollaboratorToCollection(collectionDetailsInfo.getCode(), user.getId());
+			return collection;
+		} catch (Exception e) {
+			
+			logger.error("Error in creating collection.", e);
+			return null;
+		}
+		
 	}
 
 	//  this method is common to get collection and should not filter by status
 	@Override
 	@Transactional(readOnly = true)
-	public AidrCollection findById(Integer id) throws Exception {
+	public Collection findById(Long id) throws Exception {
 		return collectionRepository.findById(id);
 	}
 
 	//  this method is common to get collection and should not filter by status
 	@Override
 	@Transactional(readOnly = true)
-	public AidrCollection findByCode(String code) throws Exception {
+	public Collection findByCode(String code) throws Exception {
 		return collectionRepository.findByCode(code);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public AidrCollection findTrashedById(Integer id) throws Exception {
-		AidrCollection temp = collectionRepository.findById(id);
+	public Collection findTrashedById(Long id) throws Exception {
+		Collection temp = collectionRepository.findById(id);
 		if (temp.getStatus().equals(CollectionStatus.TRASHED)) {
 			return temp;
 		}
@@ -118,8 +211,8 @@ public class CollectionServiceImpl implements CollectionService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public AidrCollection findTrashedByCode(String code) throws Exception {
-		AidrCollection temp = collectionRepository.findByCode(code);
+	public Collection findTrashedByCode(String code) throws Exception {
+		Collection temp = collectionRepository.findByCode(code);
 		if (temp.getStatus().equals(CollectionStatus.TRASHED)) {
 			return temp;
 		}
@@ -129,26 +222,19 @@ public class CollectionServiceImpl implements CollectionService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<AidrCollection> findAll(Integer start, Integer limit, UserAccount user, boolean onlyTrashed) throws Exception {
+	public List<Collection> findAll(Integer start, Integer limit, UserAccount user, boolean onlyTrashed) throws Exception {
 		return collectionRepository.getPaginatedData(start, limit, user, onlyTrashed);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<AidrCollection> findAllForPublic(Integer start, Integer limit, Enum statusValue) throws Exception {
+	public List<Collection> findAllForPublic(Integer start, Integer limit, Enum statusValue) throws Exception {
 		return collectionRepository.getPaginatedDataForPublic(start, limit, statusValue);
 	}
 
-
-	//    @Override
-	//    @Transactional(readOnly = true)
-	//    public CollectionDataResponse findAll(Integer start, Integer limit, Integer userId) throws Exception {
-	//        return collectionRepository.getPaginatedData(start, limit, userId);
-	//    }
-
 	@Override
 	@Transactional(readOnly = true)
-	public List<AidrCollection> searchByName(String query, Long userId) throws Exception {
+	public List<Collection> searchByName(String query, Long userId) throws Exception {
 		return collectionRepository.searchByName(query, userId);
 	}
 
@@ -166,17 +252,17 @@ public class CollectionServiceImpl implements CollectionService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public AidrCollection getRunningCollectionStatusByUser(Long userId) throws Exception {
+	public Collection getRunningCollectionStatusByUser(Long userId) throws Exception {
 		return collectionRepository.getRunningCollectionStatusByUser(userId);
 	}
 
 	@Override
 	@Transactional(readOnly = false)
-	public AidrCollection updateAndGetRunningCollectionStatusByUser(Long userId) throws Exception {
-		AidrCollection collection = collectionRepository.getRunningCollectionStatusByUser(userId);
+	public Collection updateAndGetRunningCollectionStatusByUser(Long userId) throws Exception {
+		Collection collection = collectionRepository.getRunningCollectionStatusByUser(userId);
 		if (collection != null){
 			logger.info("User with ID: '" + userId + "' has a running collection with code: '" + collection.getCode());
-			return statusByCollection(collection);
+			return statusByCollection(collection, userId);
 		} else {
 			//logger.info("User with ID: '" + userId + "' don't have any running collections. Nothing to update." );
 			//            If there is no running collection there is still can be collection with status 'Initializing'.
@@ -184,7 +270,7 @@ public class CollectionServiceImpl implements CollectionService {
 			//            So we need to update from Fetcher this kind of collections as well.
 			collection = collectionRepository.getInitializingCollectionStatusByUser(userId);
 			if (collection != null) {
-				return statusByCollection(collection);
+				return statusByCollection(collection, userId);
 			}
 		}
 		return null;
@@ -192,31 +278,32 @@ public class CollectionServiceImpl implements CollectionService {
 
 	@Override
 	@Transactional(readOnly = false)
-	public AidrCollection start(Integer collectionId) throws Exception {
+	public Collection start(Long collectionId) throws Exception {
 
 		// We are going to start new collection. Lets stop collection which is running for owner of the new collection.
-		AidrCollection dbCollection = collectionRepository.findById(collectionId);
-		Long userId = dbCollection.getUser().getId();
-		AidrCollection alreadyRunningCollection = collectionRepository.getRunningCollectionStatusByUser(userId);
+		Collection dbCollection = collectionRepository.findById(collectionId);
+		Long userId = dbCollection.getOwner().getId();
+		Collection alreadyRunningCollection = collectionRepository.getRunningCollectionStatusByUser(userId);
 		if (alreadyRunningCollection != null) {
-			this.stop(alreadyRunningCollection.getId());
+			this.stop(alreadyRunningCollection.getId(), userId);
 		}
 
 		return startFetcher(prepareFetcherRequest(dbCollection), dbCollection);
 	}
 
 	@Transactional(readOnly = true)
-	public FetcherRequestDTO prepareFetcherRequest(AidrCollection dbCollection) {
+	public FetcherRequestDTO prepareFetcherRequest(Collection dbCollection) {
 		FetcherRequestDTO dto = new FetcherRequestDTO();
 
-		UserConnection userconnection = userConnectionRepository.fetchbyUsername(dbCollection.getUser().getUserName());
+		UserConnection userconnection = userConnectionRepository.fetchbyUsername(dbCollection.getOwner().getUserName());
 		dto.setAccessToken(userconnection.getAccessToken());
 		dto.setAccessTokenSecret(userconnection.getSecret());
 		dto.setConsumerKey(consumerKey);
 		dto.setConsumerSecret(consumerSecret);
 		dto.setCollectionName(dbCollection.getName());
 		dto.setCollectionCode(dbCollection.getCode());
-		dto.setToFollow(getFollowTwitterIDs(dbCollection.getFollow(), dbCollection.getUser().getUserName()));
+
+		dto.setToFollow(getFollowTwitterIDs(dbCollection.getFollow(), dbCollection.getOwner().getUserName()));
 		dto.setToFollow(dbCollection.getFollow());
 		dto.setToTrack(dbCollection.getTrack());
 		dto.setGeoLocation(dbCollection.getGeo());
@@ -232,16 +319,17 @@ public class CollectionServiceImpl implements CollectionService {
 
 	@Override
 	@Transactional(readOnly = false)
-	public AidrCollection stop(Integer collectionId) throws Exception {
-		AidrCollection collection = collectionRepository.findById(collectionId);
+	public Collection stop(Long collectionId, Long userId) throws Exception {
+		Collection collection = collectionRepository.findById(collectionId);
 		
 		// Follwoing 2 lines added by koushik for downloadCount bug
-		AidrCollection c = this.statusByCollection(collection);
+		Collection c = this.statusByCollection(collection, userId);
 		collection.setCount(c.getCount());
 		
-		AidrCollection updateCollection = stopAidrFetcher(collection);
+		Collection updateCollection = stopAidrFetcher(collection, userId);
 
-		AidrCollectionLog collectionLog = new AidrCollectionLog(collection);
+		CollectionLog collectionLog = new CollectionLog(collection);
+		collectionLog.setUpdatedBy(userId);
 		collectionLogRepository.save(collectionLog);
 
 		return updateCollection;
@@ -250,26 +338,26 @@ public class CollectionServiceImpl implements CollectionService {
 	//MEGHNA: method for stopping a collection on FATAL_ERROR
 	//separate method from stop needed to prevent looping in
 	//updateStatusCollection() method
-	public AidrCollection stopFatalError(Integer collectionId) throws Exception {
-		AidrCollection collection = collectionRepository.findById(collectionId);
+	public Collection stopFatalError(Long collectionId, Long userId) throws Exception {
+		Collection collection = collectionRepository.findById(collectionId);
 		//collection = collectionRepository.stop(collection.getId());
 		
-		AidrCollection updateCollection = stopAidrFetcher(collection);
+		Collection updateCollection = stopAidrFetcher(collection, userId);
 
-		AidrCollectionLog collectionLog = new AidrCollectionLog(collection);
+		CollectionLog collectionLog = new CollectionLog(collection);
 		collectionLogRepository.save(collectionLog);		
 
 		return updateCollection;
 	}
 
-	public AidrCollection startFetcher(FetcherRequestDTO fetcherRequest, AidrCollection aidrCollection) {
+	public Collection startFetcher(FetcherRequestDTO fetcherRequest, Collection collection) {
 		try {
 			/**
 			 * Rest call to Fetcher
 			 */
 			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 
-			if (aidrCollection.getCollectionType() == Twitter) {
+			if (CollectionType.Twitter.equals(collection.getProvider())) {
 				WebTarget webResource = client.target(fetchMainUrl + "/twitter/start");
 
 				ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
@@ -282,18 +370,18 @@ public class CollectionServiceImpl implements CollectionService {
 				//logger.info("NEW STRING: " + jsonResponse);
 				FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);
 				logger.info("start Response from fetchMain " + objectMapper.writeValueAsString(response));
-				aidrCollection.setStatus(CollectionStatus.getByStatus(response.getStatusCode()));
-			} else if (aidrCollection.getCollectionType() == SMS){
-				WebTarget webResource = client.target(fetchMainUrl + "/sms/start?collection_code=" + URLEncoder.encode(aidrCollection.getCode(), "UTF-8"));
+				collection.setStatus(CollectionStatus.getByStatus(response.getStatusCode()));
+			} else if (CollectionType.SMS.equals(collection.getProvider())) {
+				WebTarget webResource = client.target(fetchMainUrl + "/sms/start?collection_code=" + URLEncoder.encode(collection.getCode(), "UTF-8"));
 				Response response = webResource.request(MediaType.APPLICATION_JSON).get();
 				if (response.getStatus() == 200)
-					aidrCollection.setStatus(CollectionStatus.INITIALIZING);
+					collection.setStatus(CollectionStatus.INITIALIZING);
 			}
 			/**
 			 * Update Status To database
 			 */
-			collectionRepository.update(aidrCollection);
-			return aidrCollection;
+			collectionRepository.update(collection);
+			return collection;
 		} catch (Exception e) {
 			logger.error("Error while starting Remote FetchMain Collection", e);
 		}
@@ -323,17 +411,16 @@ public class CollectionServiceImpl implements CollectionService {
 	}
 
 	//@SuppressWarnings("deprecation")
-	@Transactional(readOnly = false)
-	public AidrCollection stopAidrFetcher(AidrCollection collection) {
+	public Collection stopAidrFetcher(Collection collection, Long userId) {
 		try {
 			/**
 			 * Rest call to Fetcher
 			 */
 			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 			String path = "";
-			if (collection.getCollectionType() == Twitter) {
+			if (CollectionType.Twitter.equals(collection.getProvider())) {
 				path = "/twitter/stop?id=";
-			} else if(collection.getCollectionType() == SMS){
+			} else if(CollectionType.SMS.equals(collection.getProvider())) {
 				path = "/sms/stop?collection_code=";
 			}
 
@@ -343,7 +430,7 @@ public class CollectionServiceImpl implements CollectionService {
 
 			String jsonResponse = clientResponse.readEntity(String.class);
 
-			collection = updateStatusCollection(jsonResponse, collection);
+			collection = updateStatusCollection(jsonResponse, collection, userId);
 
 			/**
 			 * Change Database Status
@@ -355,7 +442,7 @@ public class CollectionServiceImpl implements CollectionService {
 		return null;
 	}
 
-	private AidrCollection updateStatusCollection(String jsonResponse, AidrCollection collection) throws Exception {
+	private Collection updateStatusCollection(String jsonResponse, Collection collection, Long accountId) throws Exception {
 		ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
 		FetcheResponseDTO response = objectMapper.readValue(jsonResponse, FetcheResponseDTO.class);
 		if (response != null) {
@@ -383,9 +470,10 @@ public class CollectionServiceImpl implements CollectionService {
 					//Add collectionCount in collectionLog if it was not recorded. 
 					if (collection.getStartDate() != null) {
 						if(collectionLogRepository.countLogsStartedInInterval(collection.getId(), collection.getStartDate(), new Date())==0){
-							AidrCollectionLog aidrCollectionLog = new AidrCollectionLog(collection);
-							aidrCollectionLog.setEndDate(new Date());
-							collectionLogRepository.save(aidrCollectionLog);
+							CollectionLog collectionLog = new CollectionLog(collection);
+							collectionLog.setEndDate(new Date());
+							collectionLog.setUpdatedBy(accountId);
+							collectionLogRepository.save(collectionLog);
 						}
 					}
 				case RUNNING_WARNING:
@@ -404,37 +492,11 @@ public class CollectionServiceImpl implements CollectionService {
 					//collection = collectionRepository.stop(collection.getId());
 					logger.warn("Fatal error, stopping collection " + collection.getId()); 
 					if(prevStatus != CollectionStatus.FATAL_ERROR || prevStatus != CollectionStatus.NOT_RUNNING || prevStatus != CollectionStatus.STOPPED)
-						this.stopFatalError(collection.getId());
+						this.stopFatalError(collection.getId(), accountId);
 					break;
 				default:
 					break;
 				}
-				
-				//if local=running and fetcher=NOT-FOUND then put local as NOT-RUNNING
-				/*
-				if (CollectionStatus.NOT_FOUND.equals(CollectionStatus.getByStatus(response.getStatusCode()))) {
-					//collection.setCount(response.getCollectionCount());
-					collection.setStatus(CollectionStatus.NOT_RUNNING);
-					collectionRepository.update(collection);
-				}
-				
-				if (CollectionStatus.STOPPED.equals(CollectionStatus.getByStatus(response.getStatusCode()))) {
-					//collection.setCount(response.getCollectionCount());
-					collection.setStatus(CollectionStatus.STOPPED);
-					collectionRepository.update(collection);
-				}
-
-				if (CollectionStatus.RUNNING.equals(CollectionStatus.getByStatus(response.getStatusCode()))) {
-					//collection.setCount(response.getCollectionCount());
-					collection = collectionRepository.start(collection.getId());
-				}
-				
-				if (CollectionStatus.FATAL_ERROR.equals(CollectionStatus.getByStatus(response.getStatusCode()))) {
-					collection.setStatus(CollectionStatus.FATAL_ERROR);
-					collection = collectionRepository.stop(collection.getId());						
-					this.stopFatalError(collection.getId());
-					}
-					*/
 			}
 		}
 		return collection;
@@ -443,15 +505,15 @@ public class CollectionServiceImpl implements CollectionService {
 	//@SuppressWarnings("deprecation")
 	@Transactional
 	@Override
-	public AidrCollection statusById(Integer id) throws Exception {
-		AidrCollection collection = this.findById(id);
-		return statusByCollection(collection);
+	public Collection statusById(Long id, Long userId) throws Exception {
+		Collection collection = this.findById(id);
+		return statusByCollection(collection, userId);
 	}
 
 	//@SuppressWarnings("deprecation")
 	@Transactional
 	@Override
-	public AidrCollection statusByCollection(AidrCollection collection) throws Exception {
+	public Collection statusByCollection(Collection collection, Long accountId) throws Exception {
 		if (collection != null) {
 			try {
 				/**
@@ -460,9 +522,9 @@ public class CollectionServiceImpl implements CollectionService {
 				Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
 
 				String path = "";
-				if (collection.getCollectionType() == Twitter) {
+				if (CollectionType.Twitter.equals(collection.getProvider())) {
 					path = "/twitter/status?id=";
-				} else if(collection.getCollectionType() == SMS){
+				} else if(CollectionType.SMS.equals(collection.getProvider())) {
 					path = "/sms/status?collection_code=";
 				}
 
@@ -470,7 +532,7 @@ public class CollectionServiceImpl implements CollectionService {
 				Response clientResponse = webResource.request(MediaType.APPLICATION_JSON).get();
 
 				String jsonResponse = clientResponse.readEntity(String.class);
-				collection = updateStatusCollection(jsonResponse, collection);
+				collection = updateStatusCollection(jsonResponse, collection, accountId);
 				return collection;
 			} catch (Exception e) {
 				String msg = "Error while getting status for collection from Remote FetchMain Collection";
@@ -483,13 +545,13 @@ public class CollectionServiceImpl implements CollectionService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<AidrCollection> getRunningCollections() throws Exception {
+	public List<Collection> getRunningCollections() throws Exception {
 		return collectionRepository.getRunningCollections();
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<AidrCollection> getRunningCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) throws Exception {
+	public List<Collection> getRunningCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) throws Exception {
 		return collectionRepository.getRunningCollections(start, limit, terms, sortColumn, sortDirection);
 	}
 
@@ -501,7 +563,7 @@ public class CollectionServiceImpl implements CollectionService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<AidrCollection> getStoppedCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) throws Exception {
+	public List<Collection> getStoppedCollections(Integer start, Integer limit, String terms, String sortColumn, String sortDirection) throws Exception {
 		return collectionRepository.getStoppedCollections(start, limit, terms, sortColumn, sortDirection);
 	}
 
@@ -531,7 +593,7 @@ public class CollectionServiceImpl implements CollectionService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<AidrCollection> geAllCollectionByUser(Long userId) throws Exception{
+	public List<Collection> geAllCollectionByUser(Long userId) throws Exception{
 		return collectionRepository.getAllCollectionByUser(userId);
 	}
 
@@ -658,8 +720,80 @@ public class CollectionServiceImpl implements CollectionService {
 		}
 		return null;
 	}
+	
+	@Override
+	@Transactional(readOnly = false)
+	public boolean enableClassifier(String code, UserAccount currentUser) {
+		
+		try {
+			Collection collection = findByCode(code);
+			if(collection != null) {
+				collection.setClassifierEnabled(Boolean.TRUE);
+				collection.setClassifierEnabledBy(currentUser);
+				
+				this.update(collection);
+			}
+			
+			return Boolean.TRUE;
+		} catch (Exception e) {
+			logger.error("Error in enabling classifier for code : " + code, e);
+			return Boolean.FALSE;
+		}
+	}
 
 
+	@Override
+	@Transactional(readOnly = true)
+	public Boolean isValidAPIKey(String code, String apiKey)
+			throws Exception {
+		Collection collection = findByCode(code);
+		if(collection.getOwner().getApiKey().equals(apiKey)){
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public Boolean pushSMS(String collectionCode, SMS sms) {
+		try {
+			/**
+			 * Rest call to Fetcher
+			 */
+			Client client = ClientBuilder.newBuilder().register(JacksonFeature.class).build();
+
+				WebTarget webResource = client.target(fetchMainUrl + "/sms/endpoint/receive/"+ URLEncoder.encode(collectionCode, "UTF-8"));
+
+				ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
+
+				Response response = webResource.request(MediaType.APPLICATION_JSON)
+						.post(Entity.json(objectMapper.writeValueAsString(sms)), Response.class);
+				if(response.getStatus()!=200){
+					return false;
+				}
+				else{
+					return true;
+				}
+				
+		} catch (Exception e) {
+			logger.error("Exception while pushing sms", e);
+			return false;
+		}
+		
+	}
+
+	@Override
+	public List<CollectionSummaryInfo> getAllCollectionData() {
+		List<CollectionSummaryInfo> collectionSummaryInfos = new ArrayList<CollectionSummaryInfo>();
+		
+		List<Collection> collections = collectionRepository.getAllCollections();
+		
+		if(collections != null) {
+			collectionSummaryInfos = adaptCollectionListToCollectionSummaryInfoList(collections);
+		}
+		
+		return collectionSummaryInfos;
+	}
+	
 	private List<User> getUserDataFromScreenName(String[] userNameList, String userName)	{		
 		if (userNameList != null) {
 			try {
@@ -695,4 +829,77 @@ public class CollectionServiceImpl implements CollectionService {
 		}
 		return new ArrayList<User>();
 	}
+	
+	private Collection adaptCollectionDetailsInfoToCollection(CollectionDetailsInfo collectionInfo, UserAccount user) {
+		
+		Collection collection = new Collection();
+		
+		collection.setCode(collectionInfo.getCode());
+		collection.setName(collectionInfo.getName());
+		collection.setClassifierEnabled(false);
+		collection.setProvider(CollectionType.valueOf(collectionInfo.getProvider()));
+		collection.setOwner(user);
+		collection.setStatus(CollectionStatus.NOT_RUNNING);
+		collection.setPubliclyListed(true); 	// TODO: change default behavior to user choice
+
+		collection.setGeoR(collectionInfo.getGeoR());
+		collection.setGeo(collectionInfo.getGeo());
+		collection.setTrack(collectionInfo.getTrack());
+		collection.setCrisisType(crisisTypeService.getById(collectionInfo.getCrisisType()));
+		collection.setFollow(collection.getFollow());
+		collection.setLangFilters(collectionInfo.getLangFilters());
+		collection.setMicromappersEnabled(Boolean.FALSE);
+		collection.setProvider(CollectionType.valueOf(collectionInfo.getProvider()));
+
+		if(CollectionType.SMS.equals(collectionInfo.getProvider())) {
+			collection.setTrack(null);
+			collection.setLangFilters(null);
+			collection.setGeo(null);
+			collection.setFollow(null);
+		}
+		
+		Timestamp now = new Timestamp(System.currentTimeMillis());
+		collection.setCreatedAt(now);
+		collection.setUpdatedAt(now);
+		return collection;
+	}
+	
+    private List<CollectionSummaryInfo> adaptCollectionListToCollectionSummaryInfoList(List<Collection> collections) {
+    	
+    	List<CollectionSummaryInfo> collectionSummaryInfos = new ArrayList<CollectionSummaryInfo>();
+    	
+    	for(Collection collection : collections) {
+    		collectionSummaryInfos.add(adaptCollectionToCollectionSummaryInfo(collection));
+    	}
+
+    	return collectionSummaryInfos;
+    }
+    
+    private CollectionSummaryInfo adaptCollectionToCollectionSummaryInfo(Collection collection) {
+    	
+    	CollectionSummaryInfo summaryInfo = new CollectionSummaryInfo();
+    	summaryInfo.setCode(collection.getCode());
+    	summaryInfo.setName(collection.getName());
+    	summaryInfo.setCurator(collection.getOwner().getUserName());
+    	summaryInfo.setStartDate(collection.getStartDate());
+    	summaryInfo.setEndDate(collection.getEndDate());
+    	summaryInfo.setCollectionCreationDate(collection.getCreatedAt());
+    	// TODO to fetch from collection log
+    	try {
+			summaryInfo.setTotalCount(collectionLogService.countTotalDownloadedItemsForCollection(collection.getId()));
+		} catch (Exception e) {
+			logger.warn("Error in fetch count from collection log.", e);
+			summaryInfo.setTotalCount(collection.getCount());
+		}
+    	summaryInfo.setStatus(collection.getStatus().getStatus());
+    	
+    	// TODO summaryInfo.setCreatedAt(collection.getCreatedAt());
+    	summaryInfo.setLanguage(collection.getLangFilters());
+    	summaryInfo.setKeywords(collection.getTrack());
+    	summaryInfo.setGeo(collection.getGeo());
+    	summaryInfo.setLabelCount(taggerService.getLabelCount(collection.getId()));
+    	summaryInfo.setPubliclyListed(collection.isPubliclyListed());
+    	
+    	return summaryInfo;
+    }
 }

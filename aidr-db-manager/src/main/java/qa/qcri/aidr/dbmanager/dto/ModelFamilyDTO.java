@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.entities.misc.Crisis;
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
 import qa.qcri.aidr.dbmanager.entities.model.Model;
 import qa.qcri.aidr.dbmanager.entities.model.ModelFamily;
 import qa.qcri.aidr.dbmanager.entities.model.NominalAttribute;
@@ -36,7 +36,7 @@ public class ModelFamilyDTO implements Serializable {
 	private NominalAttributeDTO nominalAttributeDTO = null;
 
 	@XmlElement
-	private CrisisDTO crisisDTO = null;
+	private CollectionDTO crisisDTO = null;
 
 	@XmlElement
 	private boolean isActive;
@@ -57,10 +57,10 @@ public class ModelFamilyDTO implements Serializable {
 				this.setNominalAttributeDTO(new NominalAttributeDTO(na));
 			}
 			if (model.hasCrisis()) {
-				Crisis c = new Crisis(model.getCrisis().getUsers(), model.getCrisis().getCrisisType(), model.getCrisis().getName(), model.getCrisis().getCode(),
-						model.getCrisis().isIsTrashed(), model.getCrisis().isIsMicromapperEnabled());
-				c.setCrisisId(model.getCrisis().getCrisisId());
-				this.setCrisisDTO(new CrisisDTO(c));
+				Collection c = new Collection(model.getCollection().getUsers(), model.getCollection().getCrisisType(), model.getCollection().getName(), model.getCollection().getCode(),
+						model.getCollection().isIsTrashed(), model.getCollection().isIsMicromapperEnabled());
+				c.setCrisisId(model.getCollection().getCrisisId());
+				this.setCrisisDTO(new CollectionDTO(c));
 			}
 			this.setIsActive(model.isIsActive());
 			this.setModelFamilyId(model.getModelFamilyId());
@@ -71,7 +71,7 @@ public class ModelFamilyDTO implements Serializable {
 
 	}
 
-	public ModelFamilyDTO(NominalAttributeDTO nominalAttributeDTO, CrisisDTO crisisDTO,
+	public ModelFamilyDTO(NominalAttributeDTO nominalAttributeDTO, CollectionDTO crisisDTO,
 			boolean isActive) {
 		this.setNominalAttributeDTO(nominalAttributeDTO);
 		this.setCrisisDTO(crisisDTO);
@@ -94,11 +94,11 @@ public class ModelFamilyDTO implements Serializable {
 			this.nominalAttributeDTO = nominalAttributeDTO;
 	}
 
-	public CrisisDTO getCrisisDTO() {
+	public CollectionDTO getCrisisDTO() {
 		return this.crisisDTO;
 	}
 
-	public void setCrisisDTO(CrisisDTO crisisDTO) {
+	public void setCrisisDTO(CollectionDTO crisisDTO) {
 			this.crisisDTO = crisisDTO;
 	}
 
@@ -147,7 +147,7 @@ public class ModelFamilyDTO implements Serializable {
 			entity.setNominalAttribute(this.getNominalAttributeDTO().toEntity());
 		}
 		if (this.getCrisisDTO() != null) {
-				entity.setCrisis(this.getCrisisDTO().toEntity());
+				entity.setCollection(this.getCrisisDTO().toEntity());
 		}
 		entity.setIsActive(this.isIsActive());
 		if (this.getModelFamilyId() != null) {

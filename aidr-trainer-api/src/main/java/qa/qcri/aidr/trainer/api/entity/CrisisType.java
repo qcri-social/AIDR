@@ -43,7 +43,7 @@ public class CrisisType implements Serializable {
     }
 
     @Id
-    @Column(name = "crisisTypeID")
+    @Column(name = "id")
     private Long crisisTypeID;
 
     @Column (name = "name", nullable = false)

@@ -1,6 +1,6 @@
 package qa.qcri.aidr.manager.service;
 
-import qa.qcri.aidr.manager.hibernateEntities.UserConnection;
+import qa.qcri.aidr.manager.persistence.entities.UserConnection;
 
 import java.util.List;
 

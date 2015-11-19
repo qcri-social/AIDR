@@ -16,14 +16,6 @@ Ext.define('ModelForClassifiedDetailsChart',{
         ]
 });
 
-var store = Ext.create('Ext.data.JsonStore', {
-    pageSize: 100,
-    storeId: 'modelLabelStoreForClassifierDetailsChart',
-    model : 'ModelForClassifiedDetailsChart',
-    // fields: ['value', 'classifiedDocumentCount', 'trainingDocumentsCount', 'totalDocuments'],
-    autoLoad: false
-});
-
 Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
     extend: 'Ext.Panel',
     alias: 'widget.ClassifierDetailsChart',
@@ -31,6 +23,12 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
 
     initComponent: function() {
         var me = this;
+        var store = Ext.create('Ext.data.JsonStore', {
+            storeId: 'modelLabelStoreForClassifierDetailsChart',
+            model : 'ModelForClassifiedDetailsChart',
+            // fields: ['value', 'classifiedDocumentCount', 'trainingDocumentsCount', 'totalDocuments'],
+            autoLoad: false,
+        });
 
         var barChart = Ext.create('Ext.chart.Chart', {
             flex:4,
@@ -72,10 +70,13 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                 type: 'bar',
                 axis: 'left',
                 highlight: true,
+				style: {
+					opacity: .5
+				},
                 tips: {
                   trackMouse: true,
                   width: 180,
-                  height: 50,
+                //  height: 50,
                   renderer: function(storeItem, item) {
                       if(item.yField == ('trainingDocumentsCount')){
                           this.setTitle('Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('trainingDocumentsCount') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
@@ -84,12 +85,12 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                           this.setTitle('Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('classifiedDocumentCount') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
                       }
                       else  if(item.yField == ('totalDocuments')){
-                          this.setTitle('Total tweets '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('totalDocuments') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
+                          this.setTitle('Total '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('totalDocuments') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
                       }
                   }
                 },
                 label: {
-                  display: 'insideEnd',
+                  display: 'outside',
                   'text-anchor': 'middle',
                     field: ['trainingDocumentsCount','classifiedDocumentCount', 'totalDocuments'],
                     renderer: Ext.util.Format.numberRenderer('0'),
@@ -114,7 +115,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
             fields: ['Name', 'Data', 'Tag'],
             //Default data values
             data: [
-                { 'Name': 'Auc', 'Data': 100 },
+                { 'Name': 'AUC', 'Data': 100 },
                 { 'Name': 'Precision','Data': 100 },
                 { 'Name': 'Recall', 'Data': 100 },
             ]
@@ -122,7 +123,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
 
         updateRadarChart = function(rec) {
             radarStore.loadData([
-                { 'Name': 'Auc', 'Data': rec.get('labelAuc'), 'Tag': rec.get('value')},
+                { 'Name': 'AUC', 'Data': rec.get('labelAuc'), 'Tag': rec.get('value')},
                 { 'Name': 'Precision', 'Data': rec.get('labelPrecision'), 'Tag': rec.get('value')},
                 { 'Name': 'Recall', 'Data': rec.get('labelRecall') , 'Tag': rec.get('value')}
               
@@ -157,9 +158,9 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                 tips: {
                     trackMouse: true,
                     width: 180,
-                    height: 60,
+                    //height: 60,
                     renderer: function(storeItem, item) {
-                        this.setTitle(storeItem.data.Name +' for ' + storeItem.data.Tag + ': ' + storeItem.data.Data.toFixed(2)+ '%');
+                        this.setTitle(storeItem.data.Name +' for ' + storeItem.data.Tag + ': ' + storeItem.data.Data.toFixed(0)+ '%');
                 }
                 },
                 style: {
@@ -171,13 +172,23 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
         });
         
         function perc(v) {
-            return v.toFixed(2) + '%';
+            return v.toFixed(0) + '%';
         }
         
 	    var gridPanel = Ext.create('Ext.grid.Panel', {
 	        flex: 1,
 	        store: 'modelLabelStoreForClassifierDetailsChart',
 	        cls: 'aidr-grid',
+	        margin: '20 0 0 0',
+	        dockedItems: [{
+          	  xtype: 'toolbar',
+          	  dock: 'bottom',
+          	  cls: 'aidr-paging',
+          	  items: [
+      	          {	xtype: 'tbfill' },
+      	          {  xtype: 'tbtext', text: 'Loading...', itemId: 'classifierDetailsStoreCountDisplay' },
+               ]
+			}],
 	        columns: [
 	            {
 	            	xtype: 'gridcolumn',
@@ -186,17 +197,17 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
 	                dataIndex: 'value'
 	            },
 	            {
-	                text: 'Human-tagged tweets',
+	                text: 'Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"],
 	                dataIndex: 'trainingDocumentsCount',
 	                flex:1
 	            },
 	            {
-	                text: 'Machine-tagged tweets',
+	                text: 'Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"],
 	                dataIndex: 'classifiedDocumentCount',
 	                flex:1
 	            },
 	            {
-	                text: 'Total tweets',
+	                text: 'Total '+ COLLECTION_TYPES[TYPE]["plural"],
 	                dataIndex: 'totalDocuments'
 	            },
 	            {	text: 'AUC',
@@ -214,22 +225,30 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
 	                renderer: perc
 	            }
 	        ],
-	
+	        viewConfig: {
+	            listeners: {
+	                refresh: function(gridview) {
+	                	 this.getSelectionModel().select(0);
+	                }
+	            }
+	        },
 	        listeners: {
 	            selectionchange: function(model, records) {
 	                if (records[0]) {
 	                    selectedRec = records[0];
 	                    updateRadarChart(selectedRec);
+	                    this.down('#classifierDetailsStoreCountDisplay').setText("Total no. of records :  " + store.getCount());
 	                }
 	            },
 	            render : function(grid){
 	            	 grid.on('viewready',function(){  
 	                     this.getSelectionModel().select(0);  
+	                     this.down('#classifierDetailsStoreCountDisplay').setText("Total no. of records :  " + store.getCount());
 	                });
-            	 }
+            	 },
 	        }
 	    });
-
+	    
         me.items = [{
             xtype: 'container',
             width: '100%',
@@ -256,6 +275,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                         gridPanel]
         }];
 
-        this.callParent();
+        this.callParent(arguments);
+        
     }
 });

@@ -9,7 +9,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import qa.qcri.aidr.manager.RoleType;
-import qa.qcri.aidr.manager.hibernateEntities.Role;
+import qa.qcri.aidr.manager.persistence.entities.Role;
 import qa.qcri.aidr.manager.repository.RoleRepository;
 
 @Repository

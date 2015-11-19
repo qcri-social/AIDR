@@ -205,6 +205,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 click: function (btn, e, eOpts) {
                     var id = datailsController.DetailsComponent.currentCollection.id;
                     this.refreshStatus(id);
+                    this.DetailsComponent.collectionLogStore.load();
                 }
             },
 
@@ -480,6 +481,13 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         this.setCountOfDocuments(r.count);
         this.setTotalCountOfDocuments(r.totalCount);
         this.setLastDowloadedDoc(r.lastDocument);
+        if(r.hasTaggerOutput) {
+        	this.DetailsComponent.gotoTaggerButton.show();
+        	this.DetailsComponent.enableTaggerButton.hide();
+    	} else {
+    		this.DetailsComponent.gotoTaggerButton.hide();
+        	this.DetailsComponent.enableTaggerButton.show();
+    	}
     },
     
     updateTrashedDetailsPanel: function (r) {
@@ -538,7 +546,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var p = this.DetailsComponent;
         var r = p.currentCollection;
 
-        p.codeE.setValue(r.code);
+         p.codeE.setValue(r.code);
         p.nameE.setValue(r.name);
         p.keywordsE.setValue(r.track);
 
@@ -567,7 +575,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         p.duration.setValue(duration);
         p.langCombo.setValue(r.langFilters ? r.langFilters.split(',') : '');
-        p.crisisTypesCombo.setValue(r.crisisType);
+        if(r.crisisType!=null){
+        	p.crisisTypesCombo.setValue(r.crisisType.id);
+        }
         p.collectionTypeCombo.setValue(r.collectionType);
         if(r.collectionType === 'SMS'){
            Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/sms_icon.png"/>');
@@ -601,7 +611,6 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 statusText += ' (Click on "Start" to start this collection.)';
             }
             this.DetailsComponent.startButton.show();
-            this.DetailsComponent.enableTaggerButton.show();
             this.DetailsComponent.enableTaggerButton.disable();
             this.DetailsComponent.stopButton.hide();
             this.DetailsComponent.trashButton.show();
@@ -625,7 +634,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
     setEndDate: function (raw, status) {
         var me = this;
         if (status == "RUNNING" || status == "RUNNING_WARNING" || status == "INITIALIZING" || status == 'WARNING') {
-        	this.DetailsComponent.lastStoppedL.setText(raw ? moment(raw).calendar() : 'Still running', false);
+        	this.DetailsComponent.lastStoppedL.setText(raw ? moment(raw).calendar() : 'N/A', false);
         	//this.DetailsComponent.lastStoppedL.setText('Still running', false);
         }
         else {
@@ -763,7 +772,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/trash.action',
-            method: 'GET',
+            method: 'POST',
             params: {
                 id: id
             },
@@ -800,7 +809,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/untrash.action',
-            method: 'GET',
+            method: 'POST',
             params: {
                 id: id,
                 code: code
@@ -846,7 +855,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var editPanelEl = cmp.up('panel').getEl();
         editPanelEl.mask("Updating...");
         Ext.Ajax.request({
-            url: BASE_URL + '/protected/collection/update.action',
+            url: BASE_URL + '/protected/collection/update',
             method: 'POST',
             params: {
                 id: id,
@@ -862,7 +871,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 langFilters: form.findField('langFilters').getValue(),
                 durationHours: form.findField('durationHours').getValue(),
                 crisisType: form.findField('crisisType').getValue(),
-                collectionType: form.findField('collectionType').getValue()
+                provider: form.findField('collectionType').getValue()
             },
             headers: {
                 'Accept': 'application/json'
@@ -874,7 +883,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
                     me.DetailsComponent.tabPanel.setActiveTab(0);
                     me.loadCollection(id);
-                    me.DetailsComponent.collectionLogStore.load();
+                 //   me.DetailsComponent.collectionLogStore.load();
                     if (running) {
                         var ranOnce = false;
                         var task = Ext.TaskManager.start({
@@ -915,7 +924,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
     refreshStatus: function (id) {
         var me = this;
 
-        this.DetailsComponent.collectionLogStore.load();
+      //  this.DetailsComponent.collectionLogStore.load();
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/refreshCount.action',
             method: 'GET',
@@ -939,6 +948,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                         me.setCountOfDocuments(data.count);
                         me.setTotalCountOfDocuments(data.totalCount);
                         me.setLastDowloadedDoc(data.lastDocument);
+                        me.setManagers(data.managers);
                     }
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
@@ -960,16 +970,12 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var code = collection.code;
         var name = collection.name;
 
+        
         Ext.Ajax.request({
-            url: BASE_URL + '/protected/tagger/createCrises.action',
+            url: BASE_URL + '/protected/collection/classifier/enable',
             method: 'POST',
             params: {
-                code: Ext.String.trim( code ),
-                name: Ext.String.trim( name ),
-                crisisTypeID: crisisTypeID
-            },
-            headers: {
-                'Accept': 'application/json'
+            	collectionCode: Ext.String.trim( code ),
             },
             success: function (response) {
                 var resp = Ext.decode(response.responseText);

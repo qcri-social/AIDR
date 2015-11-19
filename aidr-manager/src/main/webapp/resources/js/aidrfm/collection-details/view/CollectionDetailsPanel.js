@@ -5,6 +5,50 @@ Ext.require([
     'AIDRFM.common.Footer'
 ]);
 
+Ext.onReady(function() {
+    Ext.BLANK_IMAGE_URL = 'http://extjs.cachefly.net/ext-3.2.1/resources/images/default/s.gif';
+    App.Demo.init();
+});
+
+
+Ext.ns('App');
+App.Demo = {
+    init:function()
+    {
+        
+    },
+
+    openWindow:function(url)
+    {
+        var win = new Ext.Window({
+            width:800,
+            height:600,
+            title:'Pick up the Coordinates:' + 'www.boundingbox.klokantech.com/',
+            autoScroll:true,
+            modal:false
+        });
+
+        var iframeid = win.getId() + '_iframe';
+
+        var iframe = {
+            id:iframeid,
+            tag:'iframe',
+            src:'http://boundingbox.klokantech.com/',
+            width:'100%',
+            height:'100%',
+            frameborder:0
+        }
+
+        // show first
+        win.show();
+        // then iframe
+        Ext.DomHelper.insertFirst(win.body, iframe)
+
+    }
+
+}
+//Code Ends
+
 Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
     extend: 'AIDRFM.common.StandardLayout',
     alias: 'widget.collection-details-view',
@@ -34,11 +78,11 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         this.refreshButton = Ext.create('Ext.Button', {
             height: 32,
             width: 86,
-            text:'Refresh',
+            
             margin: '13 0 0 0',
             tooltip: 'Refresh',
-            iconCls: 'refrashIcon',
-            cls:'collection-details-refresh-btn',
+            
+            cls:'btn btn-blueish4',
             id: 'refreshBtn'
         });
 
@@ -48,6 +92,17 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             text: 'Collection History'
         });
 
+        this.horizontalLineTop = Ext.create('Ext.container.Container', {
+        	width: '100%',
+            html: '<div class="horizontalLine"></div>'
+        });
+        
+        this.horizontalLineBottomMargin = Ext.create('Ext.container.Container', {
+        	width: '100%',
+            margin: '0 0 30 0',
+            html: '<div class="horizontalLine"></div>'
+        });
+        
         this.collectionHistoryDoNotChangeMessage = Ext.create('Ext.panel.Panel', {
             html: '<div style="padding-top:150px"><center><div style="font-size:16pt">This collection has not changed since it was created.</div></center></div>',
             hidden: true
@@ -135,7 +190,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         this.managersL = Ext.create('Ext.form.Label', {flex: 1});
 
         this.codeE = Ext.create('Ext.form.field.Text', {
-            fieldLabel: 'Short name',
+            fieldLabel: 'Short names',
             name: 'code',
             allowBlank: false,
             width: 370,
@@ -144,7 +199,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             maxLengthText: 'The maximum length for this field is 64',
             maskRe: /[^ ]/,
             disabled: true,
-            labelWidth: 130
+            labelWidth: 130,
+            hidden: true
         });
 
         this.nameE = Ext.create('Ext.form.field.Text', {
@@ -200,8 +256,11 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.geoDescription = Ext.create('Ext.form.Label', {
             flex: 1,
+            //added additional onclick event to display bounding box in a popup window instead of opening up in a new tab
             id:'geoDescription',
-            html: '<span class="redInfo">*</span> <a href="http://boundingbox.klokantech.com/" target="_blank">boundingbox.klokantech.com</a> ("Copy/paste CSV format of a boundingbox")',
+            html: '<span class="redInfo">*</span> ' +
+                'Click here to get coordinates: <a href="#" onclick="App.Demo.openWindow()" >boundingbox.klokantech.com</a> ' +
+                '("Copy/paste CSV format of a boundingbox")',
             padding: '2 0 2 135'
         });
 
@@ -336,7 +395,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             cls:'btn btn-red',
             id: 'collectionTrash',
             margin: '25 0 0 0',
-            hidden: true
+            hidden: true,
+            flex: 1  
         });
 
         this.untrashButton = Ext.create('Ext.Button', {
@@ -385,7 +445,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
 
         this.collectionLogStore = Ext.create('Ext.data.Store', {
-            pageSize: 10,
             storeId: 'collectionLogStore',
             fields: ['id', 'collectionID', 'langFilters', 'startDate', 'endDate', 'count', 'track', 'geo', 'follow'],
             proxy: {
@@ -401,7 +460,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 beforeload: function (s) {
                     var id = me.currentCollectionId;
                     s.getProxy().extraParams = {
-                        id: id
+                        id: id,
+                        'limit' : -1
                     }
                 },
                 load: function (s) {
@@ -409,13 +469,21 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
                     if (count > 0) {
                         me.collectionHistoryTitle.show();
-                        me.collectionLogView.show();
-                        me.collectionLogPaging.show();
+                        collectionHistoryChart.show();
+                        me.horizontalLineTop.show();
+                        me.collectionHistoryPanelView.show();
+                        me.horizontalLineBottomMargin.show();
+                        me.collectionHistoryGrid.show();
+                        //Adding dock to display total record count 
+                        me.down('#collectionLogStoreCount').setText("Total no. of records :  " + s.getCount());
                         me.collectionHistoryDoNotChangeMessage.hide();
                     } else {
                         me.collectionHistoryTitle.hide();
-                        me.collectionLogView.hide();
-                        me.collectionLogPaging.hide();
+                        collectionHistoryChart.hide();
+                        me.horizontalLineTop.hide();
+                        me.collectionHistoryPanelView.hide();
+                        me.horizontalLineBottomMargin.hide();
+                        me.collectionHistoryGrid.hide();
                         me.collectionHistoryDoNotChangeMessage.show();
                     }
                 }
@@ -443,14 +511,25 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '</div>'
         );
 
-        this.collectionLogTpl = new Ext.XTemplate(
+        this.collectionHistoryPanelTpl = new Ext.XTemplate(
             '<div class="collections-list">',
+       
+            '<tpl if="values.length == 0">' +
+            '<div><center><div style="font-size:16pt; padding:10px 0 0px 0">Please select a row.</div></center></div>',
+            '</tpl>',
+            
             '<tpl for=".">',
-
+            '<div></div>',
+            
             '<div class="collection-item">',
 
             '<div class="img">',
+            '<tpl if="[this.getType()] == 0">' +
             '<img alt="Collection History image" height="70" src="/AIDRFetchManager/resources/img/twitter_icon2.png" width="70">',
+            '</tpl>',
+            '<tpl if="[this.getType()] == 1">' +
+            '<img alt="Collection History image" height="70" src="/AIDRFetchManager/resources/img/sms_icon.png" width="70">',
+            '</tpl>',
             '</div>',
 
             '<div class="content">',
@@ -484,6 +563,14 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 getField: function (r) {
                     return r ? r : "<span class='na-text'>Not specified</span>";
                 },
+                getType: function(){
+                	if(TYPE == 'SMS'){
+                		return 1;
+                	}
+                	else{
+                		return 0;
+                	}
+                },
                 getLanguageField: function (r) {
                     var languageFull = "";
                     if(r != ''){
@@ -501,7 +588,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     return r ? languageFull : "<span class='na-text'>Not specified</span>";
                 },
                 getDateTimeField: function(r){
-                    return r ? moment(r).calendar():"<span class='na-text'>Not specified</span>";
+                	return r ? moment(r).format("MMM Do, YYYY hh:mm A") : "Not specified";
 
                 },
                 getDocNumber: function (r) {
@@ -519,12 +606,26 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             }
         );
 
-        this.collectionLogView = Ext.create('Ext.view.View', {
-            store: this.collectionLogStore,
-            tpl: this.collectionLogTpl,
-            itemSelector: 'div.active',
-            emptyText: 'This collection has not changed since it was created.',
-            loadMask: false
+        this.collectionHistoryPanelStore = Ext.create('Ext.data.Store', {
+            storeId: 'collectionHistoryPanelStore',
+            fields: ['id', 'collectionID', 'langFilters', 'startDate', 'endDate', 'count', 'track', 'geo', 'follow'],
+            autoLoad: false,
+            proxy: {
+                type: 'ajax',
+                url: '',
+                reader: {
+                    root: 'data',
+                }
+            }
+        });
+        
+        this.collectionHistoryPanelView = Ext.create('Ext.view.View', {
+            store: 'collectionHistoryPanelStore',
+            tpl: this.collectionHistoryPanelTpl,
+            emptyText: 'Please select a row.',
+            loadMask: false,
+            margin: '0 0 10 0'
+            
         });
 
         this.collectionLogPaging = Ext.create('Ext.toolbar.Paging', {
@@ -596,22 +697,22 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 }
                             ]
                         },
-                        {
-                            xtype: 'container',
-                            layout: 'hbox',
-                            margin: '5 0',
-                            items: [
-                                this.codeE,
-                                {
-                                    border: false,
-                                    bodyStyle: 'background:none',
-                                    html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
-                                    height: 22,
-                                    width: 22,
-                                    id: 'collectionCodeInfo'
-                                }
-                            ]
-                        },
+                         {
+                             xtype: 'container',
+                             layout: 'hbox',
+                             margin: '5 0',
+                             items: [
+                                 this.codeE,
+//                                 {
+//                                     border: false,
+//                                     bodyStyle: 'background:none',
+//                                     html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+//                                     height: 22,
+//                                     width: 22,
+//                                     id: 'collectionCodeInfo'
+//                                 }
+                             ]
+                         },
                         {
                             xtype: 'container',
                             layout: 'hbox',
@@ -796,18 +897,18 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                         margin: '5 0'
                                     },
                                     items: [
-                                        {
-                                            xtype: 'container',
-                                            defaultType: 'label',
-                                            layout: 'hbox',
-                                            items: [
-                                                {
-                                                    padding: '0 10 0 0',
-                                                    text: 'Short name:'
-                                                },
-                                                this.codeL
-                                            ]
-                                        },
+                                        // {
+                                        //     xtype: 'container',
+                                        //     defaultType: 'label',
+                                        //     layout: 'hbox',
+                                        //     items: [
+                                        //         {
+                                        //             padding: '0 10 0 0',
+                                        //             text: 'Short name:'
+                                        //         },
+                                        //         this.codeL
+                                        //     ]
+                                        // },
                                         {
                                             xtype: 'container',
                                             defaultType: 'label',
@@ -852,7 +953,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     text: 'Collector end-point:'
                                 },
                                 {
-                                    text: FETCH_MAIN_URL +'/sms/endpoint/receive/'+COLLECTION_CODE
+                                    text: window.location.origin + BASE_URL +'/public/collection/sms/push/'+COLLECTION_CODE
                                 }
                             ]
                         },
@@ -979,6 +1080,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     	xtype: 'container',
                                     	defaultType: 'label',
                                     	layout: 'vbox',
+                                    	flex: 5,
                                     	items: [
                                     	        this.administrationL,
                                     	        this.managersL
@@ -1156,6 +1258,156 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             margin: '10 0 0 0'
         });
 
+        var collectionHistoryChart = Ext.create('Ext.chart.Chart', {
+        	width: 900,
+            height: 350,
+            margin: '0 0 20 0',
+            animate: true,
+            store: 'collectionLogStore',
+            legend: {
+                position: 'right'
+            },
+            axes: [{
+                type: 'Numeric',
+                fields: 'count',
+                position: 'left',
+                grid: true,
+                minimum: 0
+            }, {
+                type: 'Time',
+        		dateFormat: 'M j,y',
+                fields: 'endDate',
+                position: 'bottom',
+                grid: true,
+        		label:{
+        			rotate: {
+                            	degrees: -90
+                    }
+        		}
+            }],
+            series: [{
+                type: 'line',
+                axis: 'left',
+                title: 'Collected '+COLLECTION_TYPES[TYPE]["plural"],
+                xField: 'endDate',
+                yField: 'count',
+                style: {
+                    lineWidth: 4
+                },
+                marker: {
+                    radius: 4
+                },
+                highlight: {
+                    fillStyle: '#000',
+                    radius: 5,
+                    lineWidth: 4,
+                    strokeStyle: '#fff'
+                },
+        		tips: {
+                    trackMouse: true,
+                    width: 170,
+                    //height: 60,
+                    renderer: function(storeItem, item) {
+                  	  var fromTime = Ext.Date.format(new Date(storeItem.data.startDate), "Y-m-d H:i");
+                  	  var toTime = Ext.Date.format(new Date(storeItem.data.endDate), "Y-m-d H:i");
+        				  this.setTitle(Ext.util.Format.capitalize(COLLECTION_TYPES[TYPE]["plural"]) + ' collected from '+ fromTime + ' to ' + toTime +" = " + storeItem.get(item.series.yField));
+        			  }
+        		}
+            }]
+        });
+        
+        this.collectionHistoryGrid = Ext.create('Ext.grid.Panel', {
+	        flex: 1,
+	        store: 'collectionLogStore',
+	        cls: 'aidr-grid',
+	        loadMask: false,
+			viewConfig: {
+				enableTextSelection: true
+			},
+			height: 150,
+			dockedItems: [{
+            	  xtype: 'toolbar',
+            	  dock: 'bottom',
+            	  cls: 'aidr-paging',
+            	  items: [
+        	          {	xtype: 'tbfill' },
+        	          {  xtype: 'tbtext', text: 'Loading...', itemId: 'collectionLogStoreCount' },
+                 ]
+			}],
+	        columns: [
+				{
+					xtype: 'gridcolumn', text: 'Collected '+COLLECTION_TYPES[TYPE]["plural"],
+				    dataIndex: 'count', flex:1, tdCls:'align-right',
+				    renderer: function (r, meta, record) {
+				    	return r ? Ext.util.Format.number(r,'0,000') : 0;
+					}
+				},
+	            {
+	            	xtype: 'gridcolumn', text: 'Start date',  flex:1, dataIndex: 'startDate',
+	                renderer: function (r, meta, record) {
+	                       return r ? moment(r).format("MMM Do, YYYY hh:mm A") : "Not specified";
+                    }
+	            },
+	            {
+	            	xtype: 'gridcolumn', text: 'End date',  flex:1, dataIndex: 'endDate',
+	            	renderer: function (r, meta, record) {
+	                       return r ? moment(r).format("MMM Do, YYYY hh:mm A") : "Not specified";
+	            	}
+	            },
+	            {
+	            	xtype: 'gridcolumn', text: 'Language(s)', flex:1, dataIndex: 'langFilters',
+	            	/*renderer: function (r, meta, record) {
+	                       return this.getLanguageField(r);
+	            	}*/
+	            }
+	        ],
+	        listeners: {
+	            selectionchange: function(model, records) {
+	                if (records[0]) {
+	                    var selectedRec = records[0].data;
+	                    var model = [];
+	                    model.push(selectedRec);
+	                    Ext.getStore('collectionHistoryPanelStore').loadData(model);
+	                
+	                    //Highlighting the point on chart
+		                var collectionSeries = collectionHistoryChart.series.items[0];
+		                collectionSeries.unHighlightItem();
+	                    Ext.Array.each(collectionSeries.items, function(pointOnchart, index){
+	                    	 if (pointOnchart.value[0] == selectedRec.endDate && pointOnchart.value[1] == selectedRec.count) {
+	                    		 collectionSeries.highlightItem(pointOnchart);
+	                        }
+	                    });
+	                }
+	            },
+	            deselect: function(model, records){
+	            	if(collectionHistoryChart.series.items[0]!=null){
+	            		collectionHistoryChart.series.items[0].unHighlightItem();
+	            	}
+				},
+				render : function(grid){
+	            	 grid.on('viewready',function(){  
+	                     this.getSelectionModel().select(0);  
+	                });
+           	 	},
+	        },
+            getLanguageField: function (r) {
+                var languageFull = "";
+                if(r != ''){
+                    var lns = r.split(",");
+                    lns.forEach(function(val, i){
+                        var index = me.langComboStore.find('code', val);
+                        var s =  me.langComboStore.getAt(index);
+                        languageFull += s.data.name;
+                        if(i < (lns.length - 1)){
+                            languageFull +=", ";
+                        }
+                    });
+
+                }
+                return r ? languageFull : "<span class='na-text'>Not specified</span>";
+            }
+	    });
+        
         this.tabPanel = Ext.create('Ext.tab.Panel', {
             cls: 'tabPanel',
             width: '100%',
@@ -1179,8 +1431,18 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             },
                             items: [
                                 this.collectionHistoryTitle,
-                                this.collectionLogView,
-                                this.collectionLogPaging
+                                collectionHistoryChart,
+                                this.horizontalLineTop,
+                                this.collectionHistoryPanelView,
+                                /*{
+                                    xtype: 'container',
+                                    width: '100%',
+                                    margin: '0 0 30 0',
+                                    html: '<div class="horizontalLine"></div>'
+                                },*/
+                                this.horizontalLineBottomMargin,
+                                this.collectionHistoryGrid,
+                                //this.collectionLogPaging,
                             ]
                         },
                         this.collectionHistoryDoNotChangeMessage

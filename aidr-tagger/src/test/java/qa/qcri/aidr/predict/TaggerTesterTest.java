@@ -32,13 +32,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.dbmanager.dto.ModelFamilyDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
-import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade;
 import qa.qcri.aidr.predict.TaggerTesterHelper.LabelCode;
 import qa.qcri.aidr.predict.common.TaggerConfigurationProperty;
 import qa.qcri.aidr.predict.common.TaggerConfigurator;
@@ -85,7 +85,7 @@ public class TaggerTesterTest {
 	private TaggerSubscriber taggerSubscriber;
 	
 	@EJB
-	private CrisisResourceFacade crisisResourceFacade;
+	private CollectionResourceFacade crisisResourceFacade;
 	
 	@Before
 	public void setUp() {
@@ -213,7 +213,7 @@ public class TaggerTesterTest {
 		
 		//3. Create a collection (name="Tagger Tester Crisis", code="tagger_tester")
 		
-		CrisisDTO crisis = new CrisisDTO();
+		CollectionDTO crisis = new CollectionDTO();
 		crisis.setCode(TAGGER_TESTER_CRISIS_CODE);
 		crisis.setName(TAGGER_TESTER_CRISIS_NAME);
 		crisis.setCrisisTypeDTO(new CrisisTypeDTO(1100L, "Natural Hazard: Geophysical: Earthquake and/or Tsunami"));
@@ -277,7 +277,7 @@ public class TaggerTesterTest {
 		
 	   //5. Create a ModelFamily 
 		ModelFamilyDTO modelFamilyDTO = new ModelFamilyDTO();
-		CrisisDTO crisisDTO = new CrisisDTO();
+		CollectionDTO crisisDTO = new CollectionDTO();
 		crisisDTO.setCrisisID(new Long (crisisID.intValue()));
 		modelFamilyDTO.setCrisisDTO(crisisDTO);
 		modelFamilyDTO.setNominalAttributeDTO(attributeDTO);

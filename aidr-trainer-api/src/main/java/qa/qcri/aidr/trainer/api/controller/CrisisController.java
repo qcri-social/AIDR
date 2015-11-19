@@ -6,7 +6,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import qa.qcri.aidr.trainer.api.entity.Crisis;
+import qa.qcri.aidr.trainer.api.entity.Collection;
 import qa.qcri.aidr.trainer.api.entity.NominalLabel;
 import qa.qcri.aidr.trainer.api.service.CrisisService;
 import qa.qcri.aidr.trainer.api.template.CrisisJsonModel;
@@ -57,7 +57,7 @@ public class CrisisController {
 	@GET
 	@Produces( MediaType.APPLICATION_JSON )
 	@Path("/get/active")
-	public List<Crisis> getActiveCrisis(){
+	public List<Collection> getActiveCrisis(){
 		return  crisisService.findActiveCrisisInfo();
 	}
 

@@ -13,7 +13,7 @@ import javax.ejb.Stateless;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
 
 /**
@@ -22,16 +22,12 @@ import qa.qcri.aidr.predictui.facade.CrisisResourceFacade;
  */
 @Stateless
 public class CrisisResourceImp implements CrisisResourceFacade {
-	//private static Logger logger = Logger.getLogger(CrisisResourceImp.class);
 	private Logger logger = Logger.getLogger(CrisisResourceImp.class);
 
-	//@PersistenceContext(unitName = "qa.qcri.aidr.predictui-EJBS")
-	//private EntityManager em;
-
 	@EJB
-	private qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade remoteCrisisEJB;
+	private qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade remoteCrisisEJB;
 
-	public CrisisDTO addCrisis(CrisisDTO crisis) {
+	public CollectionDTO addCrisis(CollectionDTO crisis) {
 		try {
 			return remoteCrisisEJB.addCrisis(crisis);
 		} catch (Exception e) {
@@ -40,7 +36,7 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 		return null;
 	}
 
-	public CrisisDTO getCrisisByID(Long id) {
+	public CollectionDTO getCrisisByID(Long id) {
 		try {
 			return remoteCrisisEJB.findCrisisByID(id);
 		} catch (PropertyNotSetException e) {
@@ -49,7 +45,7 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 		return null;
 	}
 
-	public CrisisDTO getCrisisByCode(String code) {
+	public CollectionDTO getCrisisByCode(String code) {
 		try {
 			return remoteCrisisEJB.getCrisisByCode(code);
 		} catch (PropertyNotSetException e) {
@@ -58,9 +54,9 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 		return null;
 	}
 
-	public CrisisDTO editCrisis(CrisisDTO crisis) {
+	public CollectionDTO editCrisis(CollectionDTO crisis) {
 		try {
-			CrisisDTO editedDTO = remoteCrisisEJB.editCrisis(crisis);
+			CollectionDTO editedDTO = remoteCrisisEJB.editCrisis(crisis);
 			return editedDTO;
 		} catch (PropertyNotSetException e) {
 			logger.error("Error in editCrisis.", e);
@@ -68,7 +64,7 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 		return null;
 	}
 
-	public List<CrisisDTO> getAllCrisis() {
+	public List<CollectionDTO> getAllCrisis() {
 		try {
 			return remoteCrisisEJB.getAllCrisis();
 		} catch (PropertyNotSetException e) {
@@ -77,7 +73,7 @@ public class CrisisResourceImp implements CrisisResourceFacade {
 		return null;
 	}
 
-	public List<CrisisDTO> getAllCrisisByUserID(Long userID){
+	public List<CollectionDTO> getAllCrisisByUserID(Long userID){
 		try {
 			return remoteCrisisEJB.getAllCrisisByUserID(userID);
 		} catch (PropertyNotSetException e) {

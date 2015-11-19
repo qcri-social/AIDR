@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import qa.qcri.aidr.dbmanager.ejb.remote.facade.CrisisResourceFacade;
+import qa.qcri.aidr.dbmanager.ejb.remote.facade.CollectionResourceFacade;
 import qa.qcri.aidr.trainer.api.dao.CrisisDao;
 import qa.qcri.aidr.trainer.api.dao.CustomUITemplateDao;
 import qa.qcri.aidr.trainer.api.dao.ModelFamilyDao;
-import qa.qcri.aidr.trainer.api.entity.Crisis;
+import qa.qcri.aidr.trainer.api.entity.Collection;
 import qa.qcri.aidr.trainer.api.entity.CustomUITemplate;
 import qa.qcri.aidr.trainer.api.entity.ModelFamily;
 import qa.qcri.aidr.trainer.api.entity.NominalAttribute;
@@ -44,17 +44,17 @@ public class CrisisServiceImpl implements CrisisService {
     private CustomUITemplateDao customUITemplateDao;
 
     @Autowired
-	private CrisisResourceFacade crisisService;
+	private CollectionResourceFacade crisisService;
     
     @Override
-    public Crisis findByCrisisID(Long id) {
+    public Collection findByCrisisID(Long id) {
 
         return crisisDao.findByCrisisID(id);  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public CrisisJsonModel findByOptimizedCrisisID(Long id) {
-    	Crisis crisis = crisisDao.findByCrisisID(id);
+    	Collection crisis = crisisDao.findByCrisisID(id);
         CrisisJsonModel jsonOutput = new CrisisJsonOutput().crisisJsonModelGenerator(crisis);
         List<CustomUITemplate> uiTemps =  customUITemplateDao.getTemplateByCrisisWithType(id, CodeLookUp.CURATOR_NAME);
 
@@ -66,12 +66,12 @@ public class CrisisServiceImpl implements CrisisService {
     }
 
     @Override
-    public List<Crisis> findByCriteria(String columnName, String value) {
+    public List<Collection> findByCriteria(String columnName, String value) {
         return crisisDao.findByCriteria(columnName,value);
     }
 
     @Override
-    public List<Crisis> findByCriteria(String columnName, Long value) {
+    public List<Collection> findByCriteria(String columnName, Long value) {
         return crisisDao.findByCriteria(columnName,value);  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -102,7 +102,7 @@ public class CrisisServiceImpl implements CrisisService {
     }
 
     @Override
-    public List<Crisis> findActiveCrisisInfo() {
+    public List<Collection> findActiveCrisisInfo() {
         return crisisDao.findActiveCrisis();
     }
 

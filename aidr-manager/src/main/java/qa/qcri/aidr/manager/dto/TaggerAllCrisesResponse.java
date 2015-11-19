@@ -3,7 +3,7 @@ package qa.qcri.aidr.manager.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 
 public class TaggerAllCrisesResponse {
 
@@ -18,10 +18,10 @@ public class TaggerAllCrisesResponse {
         this.crisises = crisises;
     }*/
     
-    public void setCrisises(List<CrisisDTO> dtoList) throws Exception {
+    public void setCrisises(List<CollectionDTO> dtoList) throws Exception {
     	if (dtoList != null) {
     		List<TaggerCrisis> list = new ArrayList<TaggerCrisis>();
-    		for (CrisisDTO dto: dtoList) {
+    		for (CollectionDTO dto: dtoList) {
     			TaggerCrisis c = new TaggerCrisis(dto);
     			list.add(c);
     		}

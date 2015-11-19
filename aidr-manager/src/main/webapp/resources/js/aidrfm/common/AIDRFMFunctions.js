@@ -195,10 +195,10 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
 
     getStatusWithStyle: function(raw, collectionType) {
         var statusText = '';
-        var status = collectionType === 'Twitter' ? 'Collecting Live Tweets' : 'Collecting Live SMS';
+        var status = collectionType === 'Twitter' ? 'Running' : 'Collecting Live SMS';
         
         if (raw == 'RUNNING') {
-            statusText = "<b class='greenInfo'> " + status + " </b>";
+            statusText = "<h class='AidrInfo'> " + status + "</h>";
         } else if (raw == 'INITIALIZING') {
             statusText = "<b class='blueInfo'> INITIALIZING </b>";
         } else if (raw == 'STOPPED' || raw == 'FATAL_ERROR') {
@@ -245,7 +245,7 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
             r = 0;
             style = 'redInfo';
         }
-        return '<span class="' + style + '">' + (r * 100).toFixed(2) + '%</span>';
+        return '<span class="' + style + '">' + (r * 100).toFixed(0) + '%</span>';
     }
     
 

@@ -1,7 +1,6 @@
 package qa.qcri.aidr.manager.service.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +25,7 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 import org.springframework.stereotype.Service;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalAttributeDTO;
 import qa.qcri.aidr.dbmanager.dto.NominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
@@ -58,7 +57,7 @@ import qa.qcri.aidr.manager.dto.TaggersForCollectionsResponse;
 import qa.qcri.aidr.manager.dto.TaskAnswer;
 import qa.qcri.aidr.manager.dto.TrainingDataRequest;
 import qa.qcri.aidr.manager.exception.AidrException;
-import qa.qcri.aidr.manager.hibernateEntities.AidrCollection;
+import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.util.ManagerConfigurationProperty;
 import qa.qcri.aidr.manager.util.ManagerConfigurator;
@@ -185,7 +184,7 @@ public class TaggerServiceImpl implements TaggerService {
 			/**
 			 * Rest call to Tagger
 			 */
-			CrisisDTO dto = crisis.toDTO();
+			CollectionDTO dto = crisis.toDTO();
 			logger.info("Going to create new crisis: " + dto.getCode());
 			WebTarget webResource = client.target(taggerMainUrl + "/crisis");
 			ObjectMapper objectMapper = JacksonWrapper.getObjectMapper();
@@ -204,7 +203,7 @@ public class TaggerServiceImpl implements TaggerService {
 
 	// (6)
 	@Override
-	public Collection<TaggerAttribute> getAttributesForCrises(Integer crisisID,
+	public java.util.Collection<TaggerAttribute> getAttributesForCrises(Integer crisisID,
 			Integer userId) throws AidrException {
 		Client client = ClientBuilder.newBuilder()
 				.register(JacksonFeature.class).build();
@@ -463,13 +462,13 @@ public class TaggerServiceImpl implements TaggerService {
 					MediaType.APPLICATION_JSON).get();
 			String jsonResponse = clientResponse.readEntity(String.class);
 			logger.info("received response: " + jsonResponse);
-			CrisisDTO dto = null;
+			CollectionDTO dto = null;
 			TaggerResponseWrapper response = objectMapper.readValue(
 					jsonResponse, TaggerResponseWrapper.class);
 			if (response.getDataObject() != null) {
 				dto = objectMapper.readValue(objectMapper
 						.writeValueAsString(response.getDataObject()),
-						CrisisDTO.class);
+						CollectionDTO.class);
 			}
 			logger.info("deserialization result: " + dto);
 			if (dto != null) {
@@ -498,7 +497,7 @@ public class TaggerServiceImpl implements TaggerService {
 			/**
 			 * Rest call to Tagger
 			 */
-			CrisisDTO dto = crisis.toDTO();
+			CollectionDTO dto = crisis.toDTO();
 			WebTarget webResource = client.target(taggerMainUrl + "/crisis");
 			logger.info("Received update request for crisis = "
 					+ crisis.getCode() + ", dto = " + dto.getCode());
@@ -509,8 +508,8 @@ public class TaggerServiceImpl implements TaggerService {
 					Response.class);
 
 			String jsonResponse = clientResponse.readEntity(String.class);
-			CrisisDTO updatedDTO = objectMapper.readValue(jsonResponse,
-					CrisisDTO.class);
+			CollectionDTO updatedDTO = objectMapper.readValue(jsonResponse,
+					CollectionDTO.class);
 			TaggerCrisis updatedCrisis = new TaggerCrisis(updatedDTO);
 			logger.info("Received response: " + updatedCrisis.getCode() + ", "
 					+ updatedCrisis.getName() + ","
@@ -1646,7 +1645,7 @@ public class TaggerServiceImpl implements TaggerService {
 		}
 	}
 
-	private Collection<TaggerAttribute> convertTaggerCrisesAttributeToDTO(
+	private java.util.Collection<TaggerAttribute> convertTaggerCrisesAttributeToDTO(
 			List<TaggerCrisesAttribute> attributes, Integer userId) {
 		Map<Integer, TaggerAttribute> result = new HashMap<Integer, TaggerAttribute>();
 		for (TaggerCrisesAttribute a : attributes) {
@@ -1769,7 +1768,7 @@ public class TaggerServiceImpl implements TaggerService {
 	}
 
 	@Override
-	public int trashCollection(AidrCollection collection) throws Exception {
+	public int trashCollection(Collection collection) throws Exception {
 		int retVal = 0;
 		Long crisisID = -1L;
 		//logger.info("[trashCollection] request received for collection: "
@@ -1779,8 +1778,7 @@ public class TaggerServiceImpl implements TaggerService {
 			Client client = ClientBuilder.newBuilder()
 					.register(JacksonFeature.class).build();
 			WebTarget webResource = client
-					.target(taggerMainUrl + "/manage/collection/trash/crisis/"
-							+ collection.getCode());
+					.target(taggerMainUrl + "/manage/collection/trash/crisis/" + collection.getCode());
 			Response clientResponse = webResource.request(
 					MediaType.APPLICATION_JSON).get();
 
@@ -1796,7 +1794,7 @@ public class TaggerServiceImpl implements TaggerService {
 				retVal = 0;
 			}
 		} catch (Exception e) {
-			logger.error("Error while attempting trash  a collection: "+collection.getCode(), e);
+			logger.error("Error while attempting trash  a collection: ", e);
 			throw new AidrException(
 					"Error while deleting a collection from aidr-predict database",
 					e);
@@ -1823,14 +1821,13 @@ public class TaggerServiceImpl implements TaggerService {
 						//+ jsonResponse);
 				if (jsonResponse != null
 						&& jsonResponse.equalsIgnoreCase("{\"status\":200}")) {
-					logger.info("[trashCollection] Success in trashing "
-							+ collection.getCode());
+					logger.info("[trashCollection] Success in trashing ");
 					return 1;
 				} else {
 					return 0;
 				}
 			} catch (Exception e) {
-				logger.error("Error while attempting trash REST call for aidr_scheduler for collection: "+collection.getCode(), e);
+				logger.error("Error while attempting trash REST call for aidr_scheduler for collection: ", e);
 				throw new AidrException(
 						"Error while attempting trash REST call for aidr_scheduler",
 						e);
@@ -2142,5 +2139,30 @@ public class TaggerServiceImpl implements TaggerService {
 			return false;
 		}
 		return true;
+	}
+	
+	@Override
+	public Long getLabelCount(Long collectionId) {
+		
+		Long labelCount = 0L;
+		Client client = ClientBuilder.newBuilder()
+				.register(JacksonFeature.class).build();
+		Response clientResponse = null;
+		try {
+			WebTarget webResource = client.target(taggerMainUrl
+					+ "/label/collection/" + collectionId);
+			clientResponse = webResource.request(
+					MediaType.APPLICATION_JSON).get();
+			
+			labelCount = clientResponse.readEntity(Long.class);
+			
+			if (clientResponse.getStatus() != 200) {
+				logger.warn("Couldn't contact AIDRTaggerAPI for sending error message");
+			}
+		} catch (Exception e) {
+			logger.error("Error in contacting AIDRTaggerAPI: " + clientResponse, e);
+		}
+		
+		return labelCount;
 	}
 }

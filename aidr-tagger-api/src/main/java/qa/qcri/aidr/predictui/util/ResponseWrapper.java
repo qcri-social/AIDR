@@ -10,10 +10,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisAttributesDTO;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
 import qa.qcri.aidr.dbmanager.dto.CrisisTypeDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.HumanLabeledDocumentDTO;
@@ -26,8 +24,11 @@ import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelHistoryWrapper;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.ModelWrapper;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TaggersForCodes;
 import qa.qcri.aidr.dbmanager.dto.taggerapi.TrainingDataDTO;
+import qa.qcri.aidr.dbmanager.entities.misc.Collection;
 import qa.qcri.aidr.dbmanager.entities.model.ModelNominalLabel;
 import qa.qcri.aidr.predictui.entities.AidrCollection;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 
 /**
@@ -48,7 +49,7 @@ public class ResponseWrapper implements Serializable {
     @XmlElement
     private List<CrisisTypeDTO> crisisTypes;
     @XmlElement
-    private List<CrisisDTO> crisises;
+    private List<CollectionDTO> crisises;
     @XmlElement
     private List<NominalLabelDTO> nominalLabels;
     @XmlElement
@@ -64,7 +65,7 @@ public class ResponseWrapper implements Serializable {
     @XmlElement
     private List<ModelNominalLabelDTO> modelNominalLabelsDTO;
     @XmlElement
-    private List<AidrCollection> collections;
+    private List<Collection> collections;
     @XmlElement
     private List<ModelWrapper> modelWrapper;
     @XmlElement
@@ -158,14 +159,14 @@ public class ResponseWrapper implements Serializable {
     /**
      * @return the crisises
      */
-    public List<CrisisDTO> getCrisises() {
+    public List<CollectionDTO> getCrisises() {
         return crisises;
     }
 
     /**
      * @param crisises the crisises to set
      */
-    public void setCrisises(List<CrisisDTO> crisises) {
+    public void setCrisises(List<CollectionDTO> crisises) {
         this.crisises = crisises;
     }
 
@@ -256,14 +257,14 @@ public class ResponseWrapper implements Serializable {
     /**
      * @return the collections
      */
-    public List<AidrCollection> getCollections() {
+    public List<Collection> getCollections() {
         return collections;
     }
 
     /**
      * @param collections the collections to set
      */
-    public void setCollections(List<AidrCollection> collections) {
+    public void setCollections(List<Collection> collections) {
         this.collections = collections;
     }
 

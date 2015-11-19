@@ -57,15 +57,20 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         minimum: 0,
         label:{
         	renderer: function (r, meta, record) {
-                return r ? (r * 100).toFixed(2) + '%' : '0.00%';
+                return r ? (r * 100).toFixed(0) + '%' : '0%';
             }
         }
     }, {
         type: 'Time',
-		dateFormat: 'M j, Y, g:i a',
+		dateFormat: 'M j,y',
         fields: 'trainingTime',
         position: 'bottom',
-        grid: true
+        grid: true,
+		label:{
+			rotate: {
+                    	degrees: -90
+                    }
+		}
     },
     {
         type: 'Numeric',
@@ -77,7 +82,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
     series: [{
         type: 'line',
         axis: 'left',
-        title: 'AVG_PRECISION',
+        title: 'Avg Precision',
         xField: 'trainingTime',
         yField: 'avgPrecision',
         style: {
@@ -89,24 +94,24 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         highlight: {
             fillStyle: '#000',
             radius: 5,
-            lineWidth: 2,
+            lineWidth: 4,
             strokeStyle: '#fff'
         },
 		tips: {
               trackMouse: true,
               width: 180,
-              height: 50,
+              //height: 50,
               renderer: function(storeItem, item) {
  	        	 var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
  	           	 var val = storeItem.get(item.series.yField);
- 	           	 val = val ? (val * 100).toFixed(2) + '%' : '0.00%';
+ 	           	 val = val ? (val * 100).toFixed(0) + '%' : '0%';
  				 this.setTitle(item.series.title +' at ' + timestamp + ' is ' + val );
  			  }
 		}
     }, {
         type: 'line',
         axis: 'left',
-        title: 'AVG_RECALL',
+        title: 'Avg Recall',
         xField: 'trainingTime',
         yField: 'avgRecall',
         style: {
@@ -118,24 +123,24 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         highlight: {
             fillStyle: '#000',
             radius: 5,
-            lineWidth: 2,
+            lineWidth: 4,
             strokeStyle: '#fff'
         },
 		tips: {
             trackMouse: true,
             width: 180,
-            height: 50,
+            //height: 50,
             renderer: function(storeItem, item) {
 	        	 var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
 	           	 var val = storeItem.get(item.series.yField);
-	           	 val = val ? (val * 100).toFixed(2) + '%' : '0.00%';
+	           	 val = val ? (val * 100).toFixed(0) + '%' : '0%';
 				 this.setTitle(item.series.title +' at ' + timestamp + ' is ' + val );
 			  }
 		}
     }, {
         type: 'line',
         axis: 'left',
-        title: 'AVG_AUC',
+        title: 'Avg AUC',
         xField: 'trainingTime',
         yField: 'avgAuc',
         style: {
@@ -147,24 +152,24 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         highlight: {
             fillStyle: '#000',
             radius: 5,
-            lineWidth: 2,
+            lineWidth: 4,
             strokeStyle: '#fff'
         },
 		tips: {
             trackMouse: true,
             width: 180,
-            height: 50,
+           // height: 50,
             renderer: function(storeItem, item) {
 	        	 var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
 	           	 var val = storeItem.get(item.series.yField);
-	           	 val = val ? (val * 100).toFixed(2) + '%' : '0.00%';
+	           	 val = val ? (val * 100).toFixed(0) + '%' : '0%';
 				 this.setTitle(item.series.title +' at ' + timestamp + ' is ' + val );
 			  }
 		}
     }, {
         type: 'line',
         axis: 'right',
-        title: 'TRAINING_COUNT',
+        title: 'Training Count',
         xField: 'trainingTime',
         yField: 'trainingCount',
         style: {
@@ -176,13 +181,13 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         highlight: {
             fillStyle: '#000',
             radius: 5,
-            lineWidth: 2,
+            lineWidth: 4,
             strokeStyle: '#fff'
         },
 		tips: {
             trackMouse: true,
             width: 180,
-            height: 50,
+            //height: 50,
             renderer: function(storeItem, item) {
           	  var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
 				  this.setTitle(item.series.title +' at ' + timestamp + ' is ' + storeItem.get(item.series.yField) + ' ' + COLLECTION_TYPES[TYPE]["plural"]);

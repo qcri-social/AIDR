@@ -33,6 +33,7 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/getAllLabelsForModel.action',
             method: 'GET',
+            async:false,
             params: {
                 id: MODEL_ID,
                 code: CRISIS_CODE
@@ -95,7 +96,7 @@ Ext.define('TAGGUI.model-details.controller.ModelDetailsController', {
                         });
                         
                         var totalModel = {};
-                        totalModel.value = 'Summary';
+                        totalModel.value = 'Total';
                         totalModel.classifiedDocumentCount = totalMessages;
                         totalModel.trainingDocumentsCount = totalExamples;
                         totalModel.totalDocuments = totalMessages + totalExamples;

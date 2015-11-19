@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import qa.qcri.aidr.trainer.api.entity.Crisis;
+import qa.qcri.aidr.trainer.api.entity.Collection;
 import qa.qcri.aidr.trainer.api.template.CrisisJsonModel;
 import qa.qcri.aidr.trainer.api.template.CrisisNominalAttributeModel;
 
@@ -40,7 +40,7 @@ public class CrisisServiceTest {
 
 
     public void testFindAllTest() throws Exception{
-       List<Crisis> crisisList = crisisService.findAllActiveCrisis();
+       List<Collection> crisisList = crisisService.findAllActiveCrisis();
        System.out.println(crisisList + "\n");
        List<CrisisNominalAttributeModel> tm = crisisService.getAllActiveCrisisNominalAttribute();
 

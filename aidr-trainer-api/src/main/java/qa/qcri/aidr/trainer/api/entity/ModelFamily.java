@@ -45,11 +45,11 @@ public class ModelFamily implements Serializable {
         this.crisisID = crisisID;
     }
 
-    public Crisis getCrisis() {
+    public Collection getCrisis() {
         return crisis;
     }
 
-    public void setCrisis(Crisis crisis) {
+    public void setCrisis(Collection crisis) {
         this.crisis = crisis;
     }
 
@@ -87,7 +87,7 @@ public class ModelFamily implements Serializable {
 
     @ManyToOne
     @JoinColumn(name="crisisID" ,nullable = false, insertable = false, updatable = false)
-    private Crisis crisis;
+    private Collection crisis;
 
     @ManyToOne
     @JoinColumn(name="nominalAttributeID" ,nullable = false, insertable = false, updatable = false)

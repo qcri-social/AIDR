@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
-import qa.qcri.aidr.dbmanager.dto.CrisisDTO;
+import qa.qcri.aidr.dbmanager.dto.CollectionDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.dbmanager.ejb.local.facade.impl.CoreDBServiceFacadeImp;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.UsersResourceFacade;
@@ -62,9 +62,9 @@ public class UsersResourceFacadeImp extends CoreDBServiceFacadeImp<Users, Long> 
 	}
 
 	@Override
-	public List<CrisisDTO> findAllCrisisByUserID(Long id) throws PropertyNotSetException {
+	public List<CollectionDTO> findAllCrisisByUserID(Long id) throws PropertyNotSetException {
 		Users u = getById(id);
-		List<CrisisDTO> dtoList = new ArrayList<CrisisDTO>();
+		List<CollectionDTO> dtoList = new ArrayList<CollectionDTO>();
 		if (u != null) {
 			/*Hibernate.initialize(u.getCrisises());
 			for (Crisis c: u.getCrisises()) {
