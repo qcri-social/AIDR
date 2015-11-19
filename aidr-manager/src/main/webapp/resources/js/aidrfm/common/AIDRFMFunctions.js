@@ -198,7 +198,7 @@ Ext.define('AIDRFM.common.AIDRFMFunctions', {
         var status = collectionType === 'Twitter' ? 'Running' : 'Collecting Live SMS';
         
         if (raw == 'RUNNING') {
-            statusText = "<h class='AidrInfo'> " + status + " </h>";
+            statusText = "<h class='AidrInfo'> " + status + "</h>";
         } else if (raw == 'INITIALIZING') {
             statusText = "<b class='blueInfo'> INITIALIZING </b>";
         } else if (raw == 'STOPPED' || raw == 'FATAL_ERROR') {

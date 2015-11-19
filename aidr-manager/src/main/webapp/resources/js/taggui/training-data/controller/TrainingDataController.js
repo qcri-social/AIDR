@@ -164,7 +164,7 @@ Author:Sushant
 Removed the taggerDescription2line and disabled it as there is no use of two labels.
 */
 	        	        		statusMessage = retrainingThresholdCount + ' more needed to re-train';
-	        	        		me.mainComponent.taggerDescription.setText(' Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +status+','+ statusMessage+'<br> ' +
+	        	        		me.mainComponent.taggerDescription.setText(' Status: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +status+', '+ statusMessage+'<br> ' +
 	        								'Human-tagged: ' + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ' + totalHumanLabeledCount.format() +'<br>'+'Machine-tagged: '+'&nbsp;&nbsp;&nbsp;&nbsp;'+trainingExamplesCount.format() /*+ detailsForModel*/, false);
                                  
 	        	        	
