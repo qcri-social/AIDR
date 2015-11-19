@@ -46,7 +46,7 @@ public class Collection implements java.io.Serializable {
 	@Column(length = 64, unique = true)
     private String code;
 
-    @Column(length = 255, unique = true)
+    @Column(length = 255)
     private String name;
 
     @ManyToOne

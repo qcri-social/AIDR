@@ -25,7 +25,7 @@ public class Collection extends BaseEntity {
 	@Column(length = 64, unique = true)
     private String code;
 
-    @Column(length = 255, unique = true)
+    @Column(length = 255)
     private String name;
 
     @ManyToOne
