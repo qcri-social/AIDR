@@ -103,7 +103,15 @@ public class CollectionServiceImpl implements CollectionService {
 		try {
 			Collection collection = findByCode(collectionUpdateInfo.getCode());
 			
-			collection.setName(collectionUpdateInfo.getName());
+			if(!collection.getName().equals(collectionUpdateInfo.getName())) {
+				if(!existName(collectionUpdateInfo.getName())) {
+					collection.setName(collectionUpdateInfo.getName());
+				} else {
+					return false;
+				}
+			}
+			// if collection exists with same name
+			
 			collection.setProvider(CollectionType.valueOf(collectionUpdateInfo.getProvider()));
 			collection.setFollow(collectionUpdateInfo.getFollow());
 			collection.setTrack(collectionUpdateInfo.getTrack());
