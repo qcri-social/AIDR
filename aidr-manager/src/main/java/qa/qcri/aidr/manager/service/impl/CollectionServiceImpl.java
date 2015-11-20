@@ -833,7 +833,7 @@ public class CollectionServiceImpl implements CollectionService {
 	private Collection adaptCollectionDetailsInfoToCollection(CollectionDetailsInfo collectionInfo, UserAccount user) {
 		
 		Collection collection = new Collection();
-		
+		collection.setDurationHours(collectionInfo.getDurationHours());
 		collection.setCode(collectionInfo.getCode());
 		collection.setName(collectionInfo.getName());
 		collection.setClassifierEnabled(false);
