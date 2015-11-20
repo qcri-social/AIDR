@@ -54,6 +54,7 @@ public class CollectionLogServiceImpl implements CollectionLogService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public void create(CollectionLog collectionLog) throws Exception {
         collectionLogRepository.save(collectionLog);
     }
