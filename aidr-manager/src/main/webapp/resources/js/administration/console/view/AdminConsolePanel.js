@@ -376,7 +376,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                                                 method: 'POST',
                                                 params: {
                                                     code: record.data.code,
-                                                    durationHours: selectedVal
+                                                    duration: selectedVal
                                                 },
                                                 headers: {
                                                     'Accept': 'application/json'
