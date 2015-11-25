@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity @IdClass(TaskLogKey.class)
-@Table(catalog = "aidr_scheduler",name = "taskLog")
+@Table(catalog = "mm_scheduler",name = "taskLog")
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class TaskLog implements Serializable {
 
