@@ -2,10 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.example</groupId>
-    <artifactId>aidr-data</artifactId>
-    <packaging>war</packaging>
-    <version>1.0.0</version>
+	<groupId>qa.qcri.aidr.data</groupId>
+	<artifactId>aidr-data</artifactId>
+	<name>AIDR Data</name>
+	<version>1.0</version>
+	<packaging>war</packaging>
+	<description>AIDR data for the AIDR application</description>
+	<url>http://aidr.qcri.org/</url>
     <build>
         <resources>
             <resource>
@@ -279,4 +282,27 @@
         <org.springframework-version>4.2.1.RELEASE</org.springframework-version>
         <org.springframework.data.version>1.9.0.RELEASE</org.springframework.data.version>
     </properties>
+    
+    	<!-- Profile configuration this should match the one in the master POM -->
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<build.profile.id>dev</build.profile.id>
+			</properties>
+		</profile>
+		<profile>
+			<id>staging</id>
+			<properties>
+				<build.profile.id>staging</build.profile.id>
+			</properties>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<build.profile.id>prod</build.profile.id>
+			</properties>
+		</profile>
+	</profiles>
+    
 </project>

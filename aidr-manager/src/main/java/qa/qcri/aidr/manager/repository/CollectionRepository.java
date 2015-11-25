@@ -46,4 +46,5 @@ public interface CollectionRepository extends GenericRepository<Collection, Seri
     
     public void update(Collection collection);
 
+    public List<Collection> getAllCollections();
 }

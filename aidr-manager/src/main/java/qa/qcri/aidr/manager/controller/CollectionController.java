@@ -565,8 +565,8 @@ public class CollectionController extends BaseController{
 					AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, null);
 					if (dto != null) {
 						Integer totalCount;
-						if (totalCountsFromLogForCollections.containsKey(collection.getId())) {
-							totalCount = totalCountsFromLogForCollections.get(collection.getId());
+						if (totalCountsFromLogForCollections.containsKey(collection.getId().intValue())) {
+							totalCount = totalCountsFromLogForCollections.get(collection.getId().intValue());
 						} else {
 							totalCount = 0;
 						}
@@ -635,8 +635,8 @@ public class CollectionController extends BaseController{
 					AidrCollectionTotalDTO dto = convertAidrCollectionToDTO(collection, null);
 					if (dto != null) {
 						Integer totalCount;
-						if (totalCountsFromLogForCollections.containsKey(collection.getId())) {
-							totalCount = totalCountsFromLogForCollections.get(collection.getId());
+						if (totalCountsFromLogForCollections.containsKey(collection.getId().intValue())) {
+							totalCount = totalCountsFromLogForCollections.get(collection.getId().intValue());
 						} else {
 							totalCount = 0;
 						}
@@ -682,9 +682,13 @@ public class CollectionController extends BaseController{
 		dto.setStatus(collection.getStatus());
 		dto.setTrack(collection.getTrack());
 		
+		try {
 		if(user != null) {
 			dto.setFollow(collectionService.getFollowTwitterScreenNames(collection.getFollow(), user.getUserName()));
 		}	
+		} catch(RuntimeException e) {
+			logger.error("Error", e);
+		}
 		dto.setGeo(collection.getGeo());
 		dto.setLangFilters(collection.getLangFilters());
 		dto.setStartDate(collection.getStartDate());
@@ -695,7 +699,7 @@ public class CollectionController extends BaseController{
 		dto.setPubliclyListed(collection.isPubliclyListed());
 		dto.setCrisisType(collection.getCrisisType());
 		dto.setCollectionType(collection.getProvider());
-
+		dto.setHasTaggerOutput(collection.isClassifierEnabled());
 		dto.setManagers(managers);
 
 		return dto;

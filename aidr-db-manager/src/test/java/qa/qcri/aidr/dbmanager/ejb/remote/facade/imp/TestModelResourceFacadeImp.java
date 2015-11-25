@@ -79,7 +79,7 @@ public class TestModelResourceFacadeImp {
 			entityManager.getTransaction().commit();
 			
 			// insert crisis type
-			crisisDTO = new CollectionDTO("tesName"+new Date(), "testCode"+new Date(), false, false, crisisTypeDTO, user);
+			crisisDTO = new CollectionDTO("tesName"+new Date(), "testCode"+new Date(), false, false, crisisTypeDTO, user, user);
 			entityManager.getTransaction().begin();
 			crisisDTO = crisisResourceFacadeImp.addCrisis(crisisDTO);
 			entityManager.getTransaction().commit();

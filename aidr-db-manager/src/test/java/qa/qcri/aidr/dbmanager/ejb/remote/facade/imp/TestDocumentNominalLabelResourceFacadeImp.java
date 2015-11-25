@@ -135,7 +135,7 @@ public class TestDocumentNominalLabelResourceFacadeImp {
 		entityManager.getTransaction().begin();
 		user = userResourceFacadeImp.addUser(user);
 		entityManager.getTransaction().commit();
-		CollectionDTO crisisDTO = new CollectionDTO("testCrisisName"+new Date(), "testCrisisCode"+new Date(), false, false, crisisTypeDTO, user);
+		CollectionDTO crisisDTO = new CollectionDTO("testCrisisName"+new Date(), "testCrisisCode"+new Date(), false, false, crisisTypeDTO, user, user);
 		entityManager.getTransaction().begin();
 		crisis = crisisResourceFacadeImp.addCrisis(crisisDTO);
 		entityManager.getTransaction().commit();

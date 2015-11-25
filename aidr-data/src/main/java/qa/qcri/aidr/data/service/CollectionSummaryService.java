@@ -15,6 +15,11 @@ import qa.qcri.aidr.data.persistence.entity.CollectionSummary;
 @Service
 public class CollectionSummaryService {
 
+	private static final String NA_STRING = "n/a";
+	private static final String RUNNING_STATUS = "RUNNING";
+	private static final String RUNNING_WARNING_STATUS = "RUNNING_WARNING";
+	private static final String STOPPED_STATUS = "STOPPED";
+	
 	@Autowired
 	private CollectionSummaryDao collectionSummaryDao;
 	
@@ -34,23 +39,32 @@ public class CollectionSummaryService {
     	
     	for(CollectionSummaryInfo summaryInfo : collectionSummaryInfos) {
     		CollectionSummary collectionSummary = collectionSummaryDao.getByCode(summaryInfo.getCode());
-    		adaptCollectionSummaryInfoToCollectionSummary(summaryInfo, collectionSummary);
+    		collectionSummary = adaptCollectionSummaryInfoToCollectionSummary(summaryInfo, collectionSummary);
     		listToSave.add(collectionSummary);
     	}
     	collectionSummaryDao.saveUpdateCollectionSummaryList(listToSave);
     }
 
-    private void adaptCollectionSummaryInfoToCollectionSummary(CollectionSummaryInfo summaryInfo, CollectionSummary collectionSummary) {
+    private CollectionSummary adaptCollectionSummaryInfoToCollectionSummary(CollectionSummaryInfo summaryInfo, CollectionSummary collectionSummary) {
     	if(collectionSummary == null) {
     		collectionSummary = new CollectionSummary();
+    		collectionSummary.setCode(summaryInfo.getCode());
+    		collectionSummary.setCollectionCreationDate(summaryInfo.getCollectionCreationDate());
     	}
     	
     	collectionSummary.setName(summaryInfo.getName());
     	collectionSummary.setTotalCount(summaryInfo.getTotalCount());
-    	if(summaryInfo.getStoppedAt() != null) {
-    		collectionSummary.setEndDate(new Date(summaryInfo.getStoppedAt()));
-    	}
     	collectionSummary.setCurator(summaryInfo.getCurator());
+    	collectionSummary.setGeo(summaryInfo.getGeo());
+    	collectionSummary.setLabelCount(summaryInfo.getLabelCount());
+    	collectionSummary.setStartDate(summaryInfo.getStartDate());
+    	collectionSummary.setEndDate(summaryInfo.getEndDate());
+    	collectionSummary.setKeywords(summaryInfo.getKeywords());
+    	collectionSummary.setStatus(summaryInfo.getStatus());
+    	collectionSummary.setLanguage(summaryInfo.getLanguage());
+    	collectionSummary.setPubliclyListed(summaryInfo.isPubliclyListed());
+    	
+    	return collectionSummary;
     }
     
     private List<CollectionSummaryInfo> adaptCollectionSummaryListToCollectionSummaryInfoList(List<CollectionSummary> collectionSummaries) {
@@ -66,12 +80,35 @@ public class CollectionSummaryService {
     
     private CollectionSummaryInfo adaptCollectionSummaryToCollectionSummaryInfo(CollectionSummary collectionSummary) {
     	
+    	String lang = NA_STRING;
     	CollectionSummaryInfo summaryInfo = new CollectionSummaryInfo();
     	summaryInfo.setCode(collectionSummary.getCode());
     	summaryInfo.setName(collectionSummary.getName());
     	summaryInfo.setCurator(collectionSummary.getCurator());
     	summaryInfo.setTotalCount(collectionSummary.getTotalCount());
+    	summaryInfo.setLabelCount(collectionSummary.getLabelCount());
+    	summaryInfo.setStartDate(collectionSummary.getStartDate());
+    	summaryInfo.setEndDate(collectionSummary.getEndDate());
+    	summaryInfo.setLanguage(collectionSummary.getLanguage());
+    	summaryInfo.setCollectionCreationDate(collectionSummary.getCollectionCreationDate());
+    	summaryInfo.setKeywords(collectionSummary.getKeywords() != null ? collectionSummary.getKeywords() : NA_STRING);
+    	summaryInfo.setGeo(collectionSummary.getGeo());
+    	if(collectionSummary.getStatus() != null && (RUNNING_STATUS.equals(collectionSummary.getStatus()) 
+    			|| RUNNING_WARNING_STATUS.equals(collectionSummary.getStatus()))) {
+    		summaryInfo.setStatus(RUNNING_STATUS);
+    	} else {
+    		summaryInfo.setStatus(STOPPED_STATUS);
+    		if(summaryInfo.getEndDate() == null) {
+    			summaryInfo.setEndDate(new Date());
+    		}
+    	}
     	
+    	if (collectionSummary.getLanguage() != null && !collectionSummary.getLanguage().isEmpty()) { 
+    		lang = collectionSummary.getLanguage();
+    	}
+    	
+    	summaryInfo.setLanguage(lang);
+    	summaryInfo.setPubliclyListed(collectionSummary.isPubliclyListed());
     	return summaryInfo;
     }
 }

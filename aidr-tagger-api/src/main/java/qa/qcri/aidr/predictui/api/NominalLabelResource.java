@@ -95,4 +95,13 @@ public class NominalLabelResource {
         return Response.ok("Label deleted").build();
     }
     
+    @GET
+    @Path("/collection/{collectionID}")
+    public Response getLabelCountlByCollectionId(@PathParam("collectionID") Long collectionID) {
+        Long count = labelLocal.getLabelCountByCollectionId(collectionID);
+        if(count == null) {
+        	count = 0L;
+        }
+        return Response.ok(count).build();
+    }
 }

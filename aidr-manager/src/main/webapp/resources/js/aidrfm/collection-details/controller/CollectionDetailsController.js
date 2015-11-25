@@ -481,6 +481,13 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         this.setCountOfDocuments(r.count);
         this.setTotalCountOfDocuments(r.totalCount);
         this.setLastDowloadedDoc(r.lastDocument);
+        if(r.hasTaggerOutput) {
+        	this.DetailsComponent.gotoTaggerButton.show();
+        	this.DetailsComponent.enableTaggerButton.hide();
+    	} else {
+    		this.DetailsComponent.gotoTaggerButton.hide();
+        	this.DetailsComponent.enableTaggerButton.show();
+    	}
     },
     
     updateTrashedDetailsPanel: function (r) {
@@ -568,7 +575,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         p.duration.setValue(duration);
         p.langCombo.setValue(r.langFilters ? r.langFilters.split(',') : '');
-        p.crisisTypesCombo.setValue(r.crisisType.id);
+        if(r.crisisType!=null){
+        	p.crisisTypesCombo.setValue(r.crisisType.id);
+        }
         p.collectionTypeCombo.setValue(r.collectionType);
         if(r.collectionType === 'SMS'){
            Ext.getCmp('iconPanel').update('<img src="/AIDRFetchManager/resources/img/sms_icon.png"/>');
@@ -602,7 +611,6 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 statusText += ' (Click on "Start" to start this collection.)';
             }
             this.DetailsComponent.startButton.show();
-            this.DetailsComponent.enableTaggerButton.show();
             this.DetailsComponent.enableTaggerButton.disable();
             this.DetailsComponent.stopButton.hide();
             this.DetailsComponent.trashButton.show();

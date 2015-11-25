@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import qa.qcri.aidr.common.code.JacksonWrapper;
 import qa.qcri.aidr.manager.dto.CollectionDetailsInfo;
+import qa.qcri.aidr.manager.dto.CollectionSummaryInfo;
 import qa.qcri.aidr.manager.dto.CollectionUpdateInfo;
 import qa.qcri.aidr.manager.dto.FetcheResponseDTO;
 import qa.qcri.aidr.manager.dto.FetcherRequestDTO;
@@ -43,6 +44,7 @@ import qa.qcri.aidr.manager.service.CollectionCollaboratorService;
 import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.CrisisTypeService;
+import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.CollectionType;
 import qa.qcri.aidr.manager.util.SMS;
@@ -63,6 +65,9 @@ public class CollectionServiceImpl implements CollectionService {
 	@Autowired
 	private UserConnectionRepository userConnectionRepository;
 
+	@Autowired
+	private TaggerService taggerService;
+	
 	@Autowired
 	private AuthenticateTokenRepository authenticateTokenRepository;
 
@@ -98,7 +103,15 @@ public class CollectionServiceImpl implements CollectionService {
 		try {
 			Collection collection = findByCode(collectionUpdateInfo.getCode());
 			
-			collection.setName(collectionUpdateInfo.getName());
+			if(!collection.getName().equals(collectionUpdateInfo.getName())) {
+				if(!existName(collectionUpdateInfo.getName())) {
+					collection.setName(collectionUpdateInfo.getName());
+				} else {
+					return false;
+				}
+			}
+			// if collection exists with same name
+			
 			collection.setProvider(CollectionType.valueOf(collectionUpdateInfo.getProvider()));
 			collection.setFollow(collectionUpdateInfo.getFollow());
 			collection.setTrack(collectionUpdateInfo.getTrack());
@@ -115,28 +128,13 @@ public class CollectionServiceImpl implements CollectionService {
 				collection.setFollow(null);
 			}
 			
+			collection.setFollow(this.getFollowTwitterIDs(collectionUpdateInfo.getFollow(), collection.getOwner().getUserName()));
 			collectionRepository.update(collection);
-
 			// first make an entry in log if collection is running
 			if (CollectionStatus.RUNNING_WARNING.equals(collection.getStatus()) || CollectionStatus.RUNNING.equals(collection.getStatus())) {
-				//              stop collection
-				Collection collectionAfterStop = this.stopAidrFetcher(collection, userId);
-
-				//              save current state of the collection to collectionLog
-				CollectionLog collectionLog = new CollectionLog(collection);
-				collectionLog.setEndDate(collectionAfterStop.getEndDate());
-				collectionLogService.create(collectionLog);
-
-				//              set some fields from old collection and update collection
-				collection.setEndDate(collectionAfterStop.getEndDate());
-				collection.setFollow(this.getFollowTwitterIDs(collectionUpdateInfo.getFollow(), collection.getOwner().getUserName()));
-				collectionRepository.update(collection);
-
-				//              start collection
+				
+				this.stop(collection.getId(), userId);
 				this.startFetcher(this.prepareFetcherRequest(collection), collection);
-			} else {
-				collection.setFollow(this.getFollowTwitterIDs(collectionUpdateInfo.getFollow(), collection.getOwner().getUserName()));
-				collectionRepository.update(collection);
 			}
 			return true;
 		} catch (Exception e) {
@@ -210,7 +208,7 @@ public class CollectionServiceImpl implements CollectionService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<Collection> findAll(Integer start, Integer limit, UserAccount user, boolean onlyTrashed) throws Exception {
-		return collaboratorService.fetchCollectionsByCollaborator(user.getId(), start, limit, onlyTrashed);
+		return collectionRepository.getPaginatedData(start, limit, user, onlyTrashed);
 	}
 
 	@Override
@@ -398,6 +396,7 @@ public class CollectionServiceImpl implements CollectionService {
 	}
 
 	//@SuppressWarnings("deprecation")
+	@Transactional(readOnly = false)
 	public Collection stopAidrFetcher(Collection collection, Long userId) {
 		try {
 			/**
@@ -455,7 +454,8 @@ public class CollectionServiceImpl implements CollectionService {
 					collection.setStatus(CollectionStatus.NOT_RUNNING);
 					
 					//Add collectionCount in collectionLog if it was not recorded. 
-					if (collection.getStartDate() != null) {
+					if (collection.getStartDate() != null && ((collection.getEndDate() != null 
+							&& collection.getStartDate().after(collection.getEndDate())) || collection.getEndDate() == null)) {
 						if(collectionLogRepository.countLogsStartedInInterval(collection.getId(), collection.getStartDate(), new Date())==0){
 							CollectionLog collectionLog = new CollectionLog(collection);
 							collectionLog.setEndDate(new Date());
@@ -768,6 +768,19 @@ public class CollectionServiceImpl implements CollectionService {
 		
 	}
 
+	@Override
+	public List<CollectionSummaryInfo> getAllCollectionData() {
+		List<CollectionSummaryInfo> collectionSummaryInfos = new ArrayList<CollectionSummaryInfo>();
+		
+		List<Collection> collections = collectionRepository.getAllCollections();
+		
+		if(collections != null) {
+			collectionSummaryInfos = adaptCollectionListToCollectionSummaryInfoList(collections);
+		}
+		
+		return collectionSummaryInfos;
+	}
+	
 	private List<User> getUserDataFromScreenName(String[] userNameList, String userName)	{		
 		if (userNameList != null) {
 			try {
@@ -807,7 +820,7 @@ public class CollectionServiceImpl implements CollectionService {
 	private Collection adaptCollectionDetailsInfoToCollection(CollectionDetailsInfo collectionInfo, UserAccount user) {
 		
 		Collection collection = new Collection();
-		
+		collection.setDurationHours(collectionInfo.getDurationHours());
 		collection.setCode(collectionInfo.getCode());
 		collection.setName(collectionInfo.getName());
 		collection.setClassifierEnabled(false);
@@ -838,4 +851,42 @@ public class CollectionServiceImpl implements CollectionService {
 		return collection;
 	}
 	
+    private List<CollectionSummaryInfo> adaptCollectionListToCollectionSummaryInfoList(List<Collection> collections) {
+    	
+    	List<CollectionSummaryInfo> collectionSummaryInfos = new ArrayList<CollectionSummaryInfo>();
+    	
+    	for(Collection collection : collections) {
+    		collectionSummaryInfos.add(adaptCollectionToCollectionSummaryInfo(collection));
+    	}
+
+    	return collectionSummaryInfos;
+    }
+    
+    private CollectionSummaryInfo adaptCollectionToCollectionSummaryInfo(Collection collection) {
+    	
+    	CollectionSummaryInfo summaryInfo = new CollectionSummaryInfo();
+    	summaryInfo.setCode(collection.getCode());
+    	summaryInfo.setName(collection.getName());
+    	summaryInfo.setCurator(collection.getOwner().getUserName());
+    	summaryInfo.setStartDate(collection.getStartDate());
+    	summaryInfo.setEndDate(collection.getEndDate());
+    	summaryInfo.setCollectionCreationDate(collection.getCreatedAt());
+    	// TODO to fetch from collection log
+    	try {
+			summaryInfo.setTotalCount(collectionLogService.countTotalDownloadedItemsForCollection(collection.getId()));
+		} catch (Exception e) {
+			logger.warn("Error in fetch count from collection log.", e);
+			summaryInfo.setTotalCount(collection.getCount());
+		}
+    	summaryInfo.setStatus(collection.getStatus().getStatus());
+    	
+    	// TODO summaryInfo.setCreatedAt(collection.getCreatedAt());
+    	summaryInfo.setLanguage(collection.getLangFilters());
+    	summaryInfo.setKeywords(collection.getTrack());
+    	summaryInfo.setGeo(collection.getGeo());
+    	summaryInfo.setLabelCount(taggerService.getLabelCount(collection.getId()));
+    	summaryInfo.setPubliclyListed(collection.isPubliclyListed());
+    	
+    	return summaryInfo;
+    }
 }

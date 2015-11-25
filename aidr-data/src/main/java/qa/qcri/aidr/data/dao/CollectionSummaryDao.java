@@ -22,7 +22,7 @@ public class CollectionSummaryDao {
 	private CollectionSummaryRepository collectionSummaryRepository;
 	
 	public List<CollectionSummary> getAllCollections() {
-		List<CollectionSummary> collectionSummaries = collectionSummaryRepository.findAll();
+		List<CollectionSummary> collectionSummaries = collectionSummaryRepository.getCollectionsOrderByCollectionCreationDate();
 		return collectionSummaries;
 	}
 	

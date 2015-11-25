@@ -5,6 +5,50 @@ Ext.require([
     'AIDRFM.common.Footer'
 ]);
 
+Ext.onReady(function() {
+    Ext.BLANK_IMAGE_URL = 'http://extjs.cachefly.net/ext-3.2.1/resources/images/default/s.gif';
+    App.Demo.init();
+});
+
+
+Ext.ns('App');
+App.Demo = {
+    init:function()
+    {
+        
+    },
+
+    openWindow:function(url)
+    {
+        var win = new Ext.Window({
+            width:800,
+            height:600,
+            title:'Pick up the Coordinates:' + 'www.boundingbox.klokantech.com/',
+            autoScroll:true,
+            modal:false
+        });
+
+        var iframeid = win.getId() + '_iframe';
+
+        var iframe = {
+            id:iframeid,
+            tag:'iframe',
+            src:'http://boundingbox.klokantech.com/',
+            width:'100%',
+            height:'100%',
+            frameborder:0
+        }
+
+        // show first
+        win.show();
+        // then iframe
+        Ext.DomHelper.insertFirst(win.body, iframe)
+
+    }
+
+}
+//Code Ends
+
 Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
     extend: 'AIDRFM.common.StandardLayout',
     alias: 'widget.collection-details-view',
@@ -155,7 +199,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             maxLengthText: 'The maximum length for this field is 64',
             maskRe: /[^ ]/,
             disabled: true,
-            labelWidth: 130
+            labelWidth: 130,
+            hidden: true
         });
 
         this.nameE = Ext.create('Ext.form.field.Text', {
@@ -211,8 +256,11 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.geoDescription = Ext.create('Ext.form.Label', {
             flex: 1,
+            //added additional onclick event to display bounding box in a popup window instead of opening up in a new tab
             id:'geoDescription',
-            html: '<span class="redInfo">*</span> <a href="http://boundingbox.klokantech.com/" target="_blank">boundingbox.klokantech.com</a> ("Copy/paste CSV format of a boundingbox")',
+            html: '<span class="redInfo">*</span> ' +
+                'Click here to get coordinates: <a href="#" onclick="App.Demo.openWindow()" >boundingbox.klokantech.com</a> ' +
+                '("Copy/paste CSV format of a boundingbox")',
             padding: '2 0 2 135'
         });
 
@@ -347,7 +395,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             cls:'btn btn-red',
             id: 'collectionTrash',
             margin: '25 0 0 0',
-            hidden: true
+            hidden: true,
+            flex: 1  
         });
 
         this.untrashButton = Ext.create('Ext.Button', {
@@ -648,22 +697,22 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 }
                             ]
                         },
-                        // {
-                        //     xtype: 'container',
-                        //     layout: 'hbox',
-                        //     margin: '5 0',
-                        //     items: [
-                        //         this.codeE,
-                        //         {
-                        //             border: false,
-                        //             bodyStyle: 'background:none',
-                        //             html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
-                        //             height: 22,
-                        //             width: 22,
-                        //             id: 'collectionCodeInfo'
-                        //         }
-                        //     ]
-                        // },
+                         {
+                             xtype: 'container',
+                             layout: 'hbox',
+                             margin: '5 0',
+                             items: [
+                                 this.codeE,
+//                                 {
+//                                     border: false,
+//                                     bodyStyle: 'background:none',
+//                                     html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
+//                                     height: 22,
+//                                     width: 22,
+//                                     id: 'collectionCodeInfo'
+//                                 }
+                             ]
+                         },
                         {
                             xtype: 'container',
                             layout: 'hbox',
@@ -1031,6 +1080,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     	xtype: 'container',
                                     	defaultType: 'label',
                                     	layout: 'vbox',
+                                    	flex: 5,
                                     	items: [
                                     	        this.administrationL,
                                     	        this.managersL

@@ -20,7 +20,6 @@ import qa.qcri.aidr.dbmanager.dto.DocumentDTO;
 import qa.qcri.aidr.dbmanager.dto.DocumentNominalLabelDTO;
 import qa.qcri.aidr.dbmanager.dto.UsersDTO;
 import qa.qcri.aidr.dbmanager.ejb.remote.facade.TaskManagerRemote;
-import qa.qcri.aidr.predictui.dto.CrisisDTO;
 
 
 @Path("/test")
@@ -327,7 +326,7 @@ public class TestDBManagerResource {
 		try {
 			CrisisTypeDTO crisisType = remoteCrisisTypeEJB.getAllCrisisTypes().get(0);
 			UsersDTO user = remoteUsersEJB.getUserById(9L);
-			CollectionDTO newCrisis = new CollectionDTO("testDBManagerCrisis", "test_db-manager_crisis", false, false, crisisType, user);
+			CollectionDTO newCrisis = new CollectionDTO("testDBManagerCrisis", "test_db-manager_crisis", false, false, crisisType, user, user);
 			CollectionDTO dto = remoteCrisisEJB.addCrisis(newCrisis);
 			if (dto != null) 
 			{

@@ -12,6 +12,8 @@ import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
 import qa.qcri.aidr.common.exception.PropertyNotSetException;
@@ -157,5 +159,22 @@ public class NominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<Nomina
 		}
 		
 		return dtoList;
+	}
+
+	@Override
+	public Long getNominalLabelCountForCollectionID(Long collectionId) throws Exception {
+		Session session = getCurrentSession();
+		Long count = 0L;
+		String queryText = "select count(1) from NominalLabel label, ModelFamily fam where fam.collection.id = :collectionId and fam.nominalAttribute.nominalAttributeId = label.nominalAttribute.nominalAttributeId";
+		try {
+			Query query = session.createQuery(queryText);
+			query.setParameter("collectionId", collectionId);
+			count = (Long) query.uniqueResult();
+		} catch (Exception e) {
+			logger.error("Error in fetching count for collection : " + collectionId, e);
+			throw e;
+		}
+		return count;
+
 	}
 }

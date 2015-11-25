@@ -3,7 +3,7 @@ package qa.qcri.aidr.manager.controller;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,16 +32,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import qa.qcri.aidr.manager.dto.AidrCollectionTotalDTO;
 import qa.qcri.aidr.manager.dto.CollectionDetailsInfo;
+import qa.qcri.aidr.manager.dto.CollectionSummaryInfo;
 import qa.qcri.aidr.manager.dto.TaggerCrisisType;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
-import qa.qcri.aidr.manager.persistence.entities.CollectionLog;
 import qa.qcri.aidr.manager.persistence.entities.UserAccount;
+import qa.qcri.aidr.manager.service.CollectionCollaboratorService;
 import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.CrisisTypeService;
 import qa.qcri.aidr.manager.service.TaggerService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
+import qa.qcri.aidr.manager.util.GeoRestrictionType;
 import qa.qcri.aidr.manager.util.JsonDataValidator;
 import qa.qcri.aidr.manager.util.SMS;
 
@@ -63,6 +65,9 @@ public class PublicController extends BaseController{
 
 	@Autowired
 	private CrisisTypeService crisisTypeService;
+	
+	@Autowired 
+	private CollectionCollaboratorService collaboratorService;
 	
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
@@ -106,62 +111,30 @@ public class PublicController extends BaseController{
         try{
             //logger.info("try:" + geoString) ;
             Collection dbCollection = collectionService.findById(collectionId);
-
-
-            CollectionStatus status = dbCollection.getStatus();
-            Date collectionLogEndData ;
-            Date newCollectionEndDate = null;
-
-            if (CollectionStatus.RUNNING_WARNING.equals(status) || CollectionStatus.RUNNING.equals(status) || CollectionStatus.INITIALIZING.equals(status)) {
-
-                //              stop collection
-                Collection collectionAfterStop = collectionService.stopAidrFetcher(dbCollection, 1L);
-                collectionLogEndData = collectionAfterStop.getEndDate();
-
-                if(updateDuration){
-                    Calendar c = Calendar.getInstance();
-                    c.setTime(collectionAfterStop.getEndDate());
-                    c.add(Calendar.HOUR, (int)durationInHours);
-                    newCollectionEndDate =  c.getTime();
-                }
+            if(dbCollection != null) {
+	            CollectionStatus status = dbCollection.getStatus();
+	
+	            if (CollectionStatus.RUNNING_WARNING.equals(status) || CollectionStatus.RUNNING.equals(status) || CollectionStatus.INITIALIZING.equals(status)) {
+	            	collectionService.stop(dbCollection.getId(), 1L);
+	            }
+	
+	            dbCollection.setGeo(geoString);
+	            dbCollection.setGeoR(GeoRestrictionType.STRICT.name().toLowerCase());
+	            dbCollection.setDurationHours((int)durationInHours);
+	            collectionService.update(dbCollection);
+	
+	            if(!geoString.isEmpty() && geoString != null) {
+	                // status
+	                collectionService.startFetcher(collectionService.prepareFetcherRequest(dbCollection), dbCollection);
+	            }
+	            return getUIWrapper(true);
             }
-            else{
-                logger.info("PublicController update status :" + status.getStatus());
-                Calendar now = Calendar.getInstance();
-                collectionLogEndData = dbCollection.getEndDate();
-
-                if(updateDuration){
-                    Calendar c = Calendar.getInstance();
-                    c.setTime(now.getTime());
-                    c.add(Calendar.HOUR, (int)durationInHours);
-                    newCollectionEndDate =  c.getTime();
-                }
-            }
-
-            // save current state of the collection to collectionLog
-            CollectionLog collectionLog = new CollectionLog(dbCollection);
-            collectionLog.setEndDate(collectionLogEndData);
-            collectionLogService.create(collectionLog);
-
-            dbCollection.setGeo(geoString);
-
-            if(updateDuration && newCollectionEndDate != null){
-                dbCollection.setEndDate(newCollectionEndDate);
-            }
-
-            collectionService.update(dbCollection);
-
-            if(!geoString.isEmpty() && geoString != null) {
-                // status
-                collectionService.startFetcher(collectionService.prepareFetcherRequest(dbCollection), dbCollection);
-            }
-
-            return getUIWrapper(true);
 
         }catch(Exception e){
             logger.error(String.format("Exception while Updating Collection : "+jsonCollection, e));
-            return getUIWrapper(false);
         }
+        
+        return getUIWrapper(false);
     }
 
     @RequestMapping(value = "/findByRequestCode.action", method = RequestMethod.GET)
@@ -485,11 +458,10 @@ public class PublicController extends BaseController{
 		dto.setCrisisType(collection.getCrisisType());
 		dto.setHasTaggerOutput(hasTaggerOutput);
         dto.setCollectionType(collection.getProvider());
-
 		dto.setCrisisType(collection.getCrisisType());
-
-		//List<UserAccount> managers = collection.getManagers();
-		//dto.setManagers(managers);
+		
+		List<UserAccount> managers = collaboratorService.fetchCollaboratorsByCollection(collection.getId());
+		dto.setManagers(managers);
 
 		return dto;
 	}
@@ -590,4 +562,20 @@ public class PublicController extends BaseController{
 			return getUIWrapper("API Key is not valid", false); //Response.ok("API Key is not valid").build();
 		}
 	}
+	
+	@RequestMapping(value = "/list")
+	@ResponseBody
+	public List<CollectionSummaryInfo> getCollections() {
+		List<CollectionSummaryInfo> summaryInfos = new ArrayList<CollectionSummaryInfo>();
+		try {
+			summaryInfos =  collectionService.getAllCollectionData();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("error", e);
+			return Collections.EMPTY_LIST;
+		}
+		
+		return summaryInfos;
+	}
+	
 }

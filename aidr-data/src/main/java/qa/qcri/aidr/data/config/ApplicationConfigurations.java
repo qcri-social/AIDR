@@ -11,4 +11,11 @@ public class ApplicationConfigurations {
 	
 	@Value("${aidr.collection.data.fetch.api}")
 	String collectionDataAPI;
+	
+	@Value("${persisterURL}")
+	String persisterURL;
+	
+	@Value("${persisterURLForOlderCollections}")
+	String persisterURLForOlderCollections;
+	
 }

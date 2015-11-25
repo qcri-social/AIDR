@@ -62,21 +62,13 @@ public class CollectionDTO implements Serializable  {
 	@XmlElement
 	private List<ModelFamilyDTO> modelFamiliesDTO = null;
 
+	@XmlElement
+	private UsersDTO ownerDTO = null;
 
 	public CollectionDTO(){}
 
-/*	public CrisisDTO(String name, String code, boolean isTrashed,
-			CrisisTypeDTO crisisTypeDTO, UsersDTO usersDTO) {
-
-		this.setName(name);
-		this.setCode(code);
-		this.setIsTrashed(isTrashed);
-		this.setCrisisTypeDTO(crisisTypeDTO);
-		this.setUsersDTO(usersDTO);
-	}*/
-	
 	public CollectionDTO(String name, String code, boolean isTrashed, boolean isMicromapperEnabled,
-			CrisisTypeDTO crisisTypeDTO, UsersDTO usersDTO) {
+			CrisisTypeDTO crisisTypeDTO, UsersDTO usersDTO, UsersDTO owner) {
 
 		this.setName(name);
 		this.setCode(code);
@@ -84,11 +76,12 @@ public class CollectionDTO implements Serializable  {
 		this.setIsMicromapperEnabled(isMicromapperEnabled);
 		this.setCrisisTypeDTO(crisisTypeDTO);
 		this.setUsersDTO(usersDTO);
+		this.setOwnerDTO(owner);
 	}
 	
 
 	public CollectionDTO(Long crisisID, String name, String code, boolean isTrashed, boolean isMicromapperEnabled,
-			CrisisTypeDTO crisisTypeDTO, UsersDTO usersDTO) {
+			CrisisTypeDTO crisisTypeDTO, UsersDTO usersDTO, UsersDTO owner) {
 
 		this.setCrisisID(crisisID);
 		this.setName(name);
@@ -97,6 +90,7 @@ public class CollectionDTO implements Serializable  {
 		this.setIsMicromapperEnabled(isMicromapperEnabled);
 		this.setCrisisTypeDTO(crisisTypeDTO);
 		this.setUsersDTO(usersDTO);
+		this.setOwnerDTO(owner);
 	}
 
 	public CollectionDTO(Collection collection) throws PropertyNotSetException {
@@ -107,7 +101,7 @@ public class CollectionDTO implements Serializable  {
 			this.setCode(collection.getCode());
 			this.setIsTrashed(collection.isIsTrashed());
 			this.setIsMicromapperEnabled(collection.isIsMicromapperEnabled());
-			if (collection.hasCrisisType()) {
+			if (collection.hasCrisisType() && collection.getCrisisType() != null) {
 				CrisisType cType = new CrisisType(collection.getCrisisType().getName());
 				cType.setCrisisTypeId(collection.getCrisisType().getCrisisTypeId());
 				this.setCrisisTypeDTO(new CrisisTypeDTO(cType));
@@ -118,6 +112,14 @@ public class CollectionDTO implements Serializable  {
 				user.setId(collection.getUsers().getId());
 				this.setUsersDTO(new UsersDTO(user));
 			}
+			
+			if(collection.getOwner() != null) {
+				Users user = new Users();
+				user.setUserName(collection.getOwner().getUserName());
+				user.setId(collection.getOwner().getId());
+				this.setOwnerDTO(new UsersDTO(user));
+			}
+			
 			if (collection.hasModelFamilies()) {
 				this.setModelFamiliesDTO(toModelFamilyDTOList(collection.getModelFamilies()));
 			}
@@ -129,7 +131,15 @@ public class CollectionDTO implements Serializable  {
 		}
 
 	}
+	
+	public UsersDTO getOwnerDTO() {
+		return ownerDTO;
+	}
 
+	public void setOwnerDTO(UsersDTO ownerDTO) {
+		this.ownerDTO = ownerDTO;
+	}
+	
 	public Long getCrisisID() {
 			return this.crisisID;
 	}
@@ -280,6 +290,9 @@ public class CollectionDTO implements Serializable  {
 		crisis.setCode(this.getCode());
 		crisis.setIsTrashed(this.isTrashed);
 		crisis.setIsMicromapperEnabled(this.isMicromapperEnabled);
+		if(this.getOwnerDTO() != null) {
+			crisis.setOwner(this.getOwnerDTO().toEntity());
+		}
 		if (this.getUsersDTO() != null) {
 			crisis.setUsers(this.getUsersDTO().toEntity());
 		}

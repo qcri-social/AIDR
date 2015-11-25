@@ -1,5 +1,7 @@
 package qa.qcri.aidr.data.model;
 
+import java.util.Date;
+
 
 /**
  * @author Latika
@@ -12,19 +14,21 @@ public class CollectionSummaryInfo {
 	private Long totalCount;
 	private String language;
 	private String curator;
-	private Long createdAt;
-	private Long stoppedAt;
+	private Date collectionCreationDate;
+	private Date endDate;
+	private Date startDate;
 	private String keywords;
 	private String geo;
 	private String status;
 	private Integer labelCount;
 	private Integer humanTaggedCount;
+	private boolean publiclyListed;
 	
-	public String getGeo() {
-		return geo;
+	public boolean isPubliclyListed() {
+		return publiclyListed;
 	}
-	public void setGeo(String geo) {
-		this.geo = geo;
+	public void setPubliclyListed(boolean publiclyListed) {
+		this.publiclyListed = publiclyListed;
 	}
 	public String getCode() {
 		return code;
@@ -56,23 +60,35 @@ public class CollectionSummaryInfo {
 	public void setCurator(String curator) {
 		this.curator = curator;
 	}
-	public Long getCreatedAt() {
-		return createdAt;
+	public Date getCollectionCreationDate() {
+		return collectionCreationDate;
 	}
-	public void setCreatedAt(Long createdAt) {
-		this.createdAt = createdAt;
+	public void setCollectionCreationDate(Date collectionCreationDate) {
+		this.collectionCreationDate = collectionCreationDate;
 	}
-	public Long getStoppedAt() {
-		return stoppedAt;
+	public Date getEndDate() {
+		return endDate;
 	}
-	public void setStoppedAt(Long stoppedAt) {
-		this.stoppedAt = stoppedAt;
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+	public Date getStartDate() {
+		return startDate;
+	}
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
 	}
 	public String getKeywords() {
 		return keywords;
 	}
 	public void setKeywords(String keywords) {
 		this.keywords = keywords;
+	}
+	public String getGeo() {
+		return geo;
+	}
+	public void setGeo(String geo) {
+		this.geo = geo;
 	}
 	public String getStatus() {
 		return status;

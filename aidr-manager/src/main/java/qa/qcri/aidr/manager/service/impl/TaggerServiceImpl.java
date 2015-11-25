@@ -2140,4 +2140,29 @@ public class TaggerServiceImpl implements TaggerService {
 		}
 		return true;
 	}
+	
+	@Override
+	public Long getLabelCount(Long collectionId) {
+		
+		Long labelCount = 0L;
+		Client client = ClientBuilder.newBuilder()
+				.register(JacksonFeature.class).build();
+		Response clientResponse = null;
+		try {
+			WebTarget webResource = client.target(taggerMainUrl
+					+ "/label/collection/" + collectionId);
+			clientResponse = webResource.request(
+					MediaType.APPLICATION_JSON).get();
+			
+			labelCount = clientResponse.readEntity(Long.class);
+			
+			if (clientResponse.getStatus() != 200) {
+				logger.warn("Couldn't contact AIDRTaggerAPI for sending error message");
+			}
+		} catch (Exception e) {
+			logger.error("Error in contacting AIDRTaggerAPI: " + clientResponse, e);
+		}
+		
+		return labelCount;
+	}
 }

@@ -123,12 +123,16 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 						" LEFT OUTER JOIN collection_collaborator c_m " +
 						" ON c.id = c_m.collection_id " +
 						" WHERE ((c.owner_id =:userId OR c_m.account_id = :userId) AND c.status " + conditionTrashed + " :statusValue) " +
-						" order by c.start_date IS NULL DESC, c.start_date DESC, c.created_at DESC LIMIT :start, :limit ";
+						" ORDER BY Case c.status When :status1 Then 1 When :status2 Then 1 Else 3 End, " +
+						" Case c.start_date When null Then 1 Else c.start_date*-1  End " +
+						" LIMIT :start, :limit ";
 
 				SQLQuery sqlQuery = session.createSQLQuery(sql);
 				sqlQuery.setParameter("userId", userId);
 				sqlQuery.setParameter("start", start);
 				sqlQuery.setParameter("limit", limit);
+				sqlQuery.setParameter("status1", CollectionStatus.RUNNING.ordinal());
+				sqlQuery.setParameter("status2", CollectionStatus.RUNNING_WARNING.ordinal());
 				sqlQuery.setParameter("statusValue", CollectionStatus.TRASHED.ordinal());
 				List<Object[]> ids = (List<Object[]>) sqlQuery.list();
 
@@ -190,7 +194,6 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 	public Boolean existName(String name) {
 		Criteria criteria = getHibernateTemplate().getSessionFactory().getCurrentSession().createCriteria(Collection.class);
 		criteria.add(Restrictions.eq("name", name));
-		criteria.add(Restrictions.ne("status", CollectionStatus.TRASHED));
 		Collection collection = (Collection) criteria.uniqueResult();
 		return collection != null;
 	}
@@ -491,5 +494,13 @@ public class CollectionRepositoryImpl extends GenericRepositoryImpl<Collection, 
 		collection.setUpdatedAt(now);
 		collection.setCreatedAt(now);
 		super.save(collection);
+	}
+	
+	@Override
+	public List<Collection> getAllCollections() {
+	
+		List<Collection> collections = new ArrayList<Collection>();
+		collections = findAll();
+		return collections;
 	}
 }
