@@ -128,28 +128,13 @@ public class CollectionServiceImpl implements CollectionService {
 				collection.setFollow(null);
 			}
 			
+			collection.setFollow(this.getFollowTwitterIDs(collectionUpdateInfo.getFollow(), collection.getOwner().getUserName()));
 			collectionRepository.update(collection);
-
 			// first make an entry in log if collection is running
 			if (CollectionStatus.RUNNING_WARNING.equals(collection.getStatus()) || CollectionStatus.RUNNING.equals(collection.getStatus())) {
-				//              stop collection
-				Collection collectionAfterStop = this.stopAidrFetcher(collection, userId);
-
-				//              save current state of the collection to collectionLog
-				CollectionLog collectionLog = new CollectionLog(collection);
-				collectionLog.setEndDate(collectionAfterStop.getEndDate());
-				collectionLogService.create(collectionLog);
-
-				//              set some fields from old collection and update collection
-				collection.setEndDate(collectionAfterStop.getEndDate());
-				collection.setFollow(this.getFollowTwitterIDs(collectionUpdateInfo.getFollow(), collection.getOwner().getUserName()));
-				collectionRepository.update(collection);
-
-				//              start collection
+				
+				this.stop(collection.getId(), userId);
 				this.startFetcher(this.prepareFetcherRequest(collection), collection);
-			} else {
-				collection.setFollow(this.getFollowTwitterIDs(collectionUpdateInfo.getFollow(), collection.getOwner().getUserName()));
-				collectionRepository.update(collection);
 			}
 			return true;
 		} catch (Exception e) {
@@ -411,6 +396,7 @@ public class CollectionServiceImpl implements CollectionService {
 	}
 
 	//@SuppressWarnings("deprecation")
+	@Transactional(readOnly = false)
 	public Collection stopAidrFetcher(Collection collection, Long userId) {
 		try {
 			/**
@@ -468,7 +454,8 @@ public class CollectionServiceImpl implements CollectionService {
 					collection.setStatus(CollectionStatus.NOT_RUNNING);
 					
 					//Add collectionCount in collectionLog if it was not recorded. 
-					if (collection.getStartDate() != null) {
+					if (collection.getStartDate() != null && ((collection.getEndDate() != null 
+							&& collection.getStartDate().after(collection.getEndDate())) || collection.getEndDate() == null)) {
 						if(collectionLogRepository.countLogsStartedInInterval(collection.getId(), collection.getStartDate(), new Date())==0){
 							CollectionLog collectionLog = new CollectionLog(collection);
 							collectionLog.setEndDate(new Date());

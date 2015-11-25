@@ -120,7 +120,7 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
             '</div>',
             '<div class="info">',
             '<div class="collection-title">{[this.getOutputLink(values.code,values.name ,values.hasTaggerOutput)]}</div>',
-            '<div class="styled-text-14" id="statusField_{id}">{[this.getCrisisType(values.crisisType)]} &nbsp; {[this.getSharedBy(values.user)]}</div>',
+            '<div class="styled-text-14" id="statusField_{id}">{[this.getCrisisType(values.crisisType.name)]} &nbsp; {[this.getSharedBy(values.user)]}</div>',
             '<div class="styled-text-14" id="docCountField_{id}">{[this.getDateTimeSet(values.startDate, values.status)]}</div>',
             '</div>',
 
