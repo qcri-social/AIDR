@@ -10,7 +10,6 @@ import qa.qcri.aidr.trainer.pybossa.service.ClientAppRunWorker;
 import qa.qcri.aidr.trainer.pybossa.service.MicroMapperWorker;
 import qa.qcri.aidr.trainer.pybossa.service.Worker;
 import qa.qcri.aidr.trainer.pybossa.store.LookupCode;
-
 import java.util.Calendar;
 import java.util.Date;
 
