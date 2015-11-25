@@ -7,7 +7,7 @@ package qa.qcri.aidr.trainer.pybossa.store;
  * Time: 9:48 PM
  * To change this template use File | Settings | File Templates.
  */
-public class StatusCodeType {
+public class LookupCode {
 
     public static Integer Task_NOT_PUBLISHED = 0;
     public static Integer TASK_PUBLISHED = 1;
@@ -28,8 +28,8 @@ public class StatusCodeType {
     public static Integer RESPONSE_MIN_LENGTH = 10;
 
     public static Integer CLIENT_APP_PENDING = 0;
-    public static Integer MICROMAPPER_ONLY = 2;
     public static Integer AIDR_ONLY = 1;
+    public static Integer MICROMAPPER_ONLY = 2;
     public static Integer CLIENT_APP_INACTIVE_REQUEST = 3;
     public static Integer CLIENT_APP_DISABLED = 4;
     public static Integer AIDR_MICROMAPPER_BOTH = 5;
@@ -63,5 +63,8 @@ public class StatusCodeType {
     public static final Integer MIN_REPORT_TEMPLATE_EXPORT_SIZE = 20;
 
     public static Integer CLIENT_APP_DELETION_TIME = 24;
+
+    public static String SYSTEM_USER_NAME = "MicroMappers";
+    public static String MIROMAPPER_USER_NAME = "micromappers_custom";
 
 }

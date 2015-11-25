@@ -9,7 +9,7 @@ import qa.qcri.aidr.trainer.pybossa.service.ClientAppCreateWorker;
 import qa.qcri.aidr.trainer.pybossa.service.ClientAppRunWorker;
 import qa.qcri.aidr.trainer.pybossa.service.MicroMapperWorker;
 import qa.qcri.aidr.trainer.pybossa.service.Worker;
-import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
+import qa.qcri.aidr.trainer.pybossa.store.LookupCode;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -39,21 +39,23 @@ public class SyncWorker implements Worker {
         System.out.println("************************************ Scheduler is starting : " + threadName + " - " + new Date());
         try {
 
-            microMapperWorker.processTaskExport();
+           // microMapperWorker.processTaskExport();
             clientAppRunWorker.processTaskRunImport();
             clientAppRunWorker.processTaskPublish();
             pybossaWorker.doCreateApp();
 
             int hour = cal.get(Calendar.HOUR_OF_DAY) ;
-            if(hour == StatusCodeType.CLIENT_APP_DELETION_TIME){
+            if(hour == LookupCode.CLIENT_APP_DELETION_TIME){
                 pybossaWorker.doAppDelete();
             }
 
         }
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("InterruptedException : " + e.getMessage());
+        }
+        catch (Exception e) {
+            System.out.println("Exception : " + e.getMessage());
         }
 
         System.out.println("************************************ Scheduler is going sleep : "  + new Date());

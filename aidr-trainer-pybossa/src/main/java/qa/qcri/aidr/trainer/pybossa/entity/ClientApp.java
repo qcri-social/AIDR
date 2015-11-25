@@ -1,6 +1,6 @@
 package qa.qcri.aidr.trainer.pybossa.entity;
 
-import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
+import qa.qcri.aidr.trainer.pybossa.store.LookupCode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -62,9 +62,6 @@ public class ClientApp implements Serializable {
     @Column (name = "appType", nullable = false)
     private Integer appType;
 
-    @Column (name = "groupID", nullable = true)
-    private Long groupID;
-
     @Column (name = "tcProjectId", nullable = true)
     private Long tcProjectId;
 
@@ -86,8 +83,8 @@ public class ClientApp implements Serializable {
         this.platformAppID =  platformAppID;
         this.shortName = shortName;
         this.nominalAttributeID = nominalAttributeID;
-        this.quorum = StatusCodeType.AIDR_ONLY;
-        this.status = StatusCodeType.AIDR_ONLY;
+        this.quorum = LookupCode.AIDR_ONLY;
+        this.status = LookupCode.AIDR_ONLY;
         this.taskRunsPerTask = taskRunsPerTask;
         this.appType = appType;
     }
@@ -211,14 +208,6 @@ public class ClientApp implements Serializable {
 
     public void setNominalAttributeID(Long nominalAttributeID) {
         this.nominalAttributeID = nominalAttributeID;
-    }
-
-    public Long getGroupID() {
-        return groupID;
-    }
-
-    public void setGroupID(Long groupID) {
-        this.groupID = groupID;
     }
 
     public Long getTcProjectId() { return tcProjectId;}
