@@ -25,30 +25,38 @@ Ext.onReady(function() {
 
 
             Ext.Ajax.request({
-    url: 'http://172.16.6.68:8080/AIDRFetchManager/public/collection/getCurrentUser.action',
-    method: "JSONP",
+    url: 'http://google.com',
+    method: "get",
          
     success: function(response){
         var responseText = response.responseText;
-        console.log(responseText);
+        console.log(hey);
         //DO STUFF  
     },
     failure: function(response ) {
             // DO STUFF
+            console.log("hey");
+            var name="sushant";
+            var key="f65b49da-9373-11e5-8994-feff819cdc9f";
+            var dh = Ext.DomHelper;
+            dh.append('name',name);
+            dh.append('key',key);
+          
             }
 });
-            var div={
-            	html:'<div id="content1" class="modal-body" >'+
-     '<p class="text-right" id="name"><span><img width="24" height="24" id="twitter" src="' + BASE_URL + '/resources/img/User-Profile-24.png"/>@jikimlucas</span></p>'+
+            var div=
+            	'<div id="content1" class="modal-body" >'+
+     '<p class="text-right" id="name"><span><img width="24" height="24" id="twitter" src="' + BASE_URL + '/resources/img/User-Profile-24.png"/></span></p>'+
            
        ' </div>'+
         '<div id="content2" class="modal-body" >'+
            
-          ' <p class="text-right" id="name"><span><img width="24" height="24" id="twitter" src="' + BASE_URL + '/resources/img/key96.png"/>f65b49da-9373-11e5-8994-feff819cdc9f</span></p>'+
+          ' <p class="text-right" id="key"><span><img width="24" height="24" id="twitter" src="' + BASE_URL + '/resources/img/key96.png"/></span></p>'+
 
         '</div>'+
          '<div class="modal-body" >'
-            }
+            
+            
 
             // show first
             win.show();
@@ -79,26 +87,38 @@ Ext.onReady(function() {
             
 
             Ext.Ajax.request({
-    url: 'http://172.16.6.68:8080/AIDRFetchManager/public/collection/getCurrentUser.action',
+    url: 'http:google.com',
     method: "JSONP",
          
     success: function(response){
         var responseText = response.responseText;
-        console.log(responseText);
+        console.log("hey");
+        var name="sushant";
+            var key="f65b49da-9373-11e5-8994-feff819cdc9f";
+            var dh = Ext.DomHelper;
+            dh.append('name',name);
+            dh.append('key',key);
         //DO STUFF  
     },
     failure: function(response ) {
             // DO STUFF
+            console.log("hey");
+            console.log("hey");
+        var name="sushant";
+            var key="f65b49da-9373-11e5-8994-feff819cdc9f";
+            var dh = Ext.DomHelper;
+            dh.append('name',name);
+            dh.append('key',key);
             }
 });
             var div={
             	html:'<div id="content1" class="modal-body" >'+
-     '<p class="text-right" id="name"><span><img width="24" height="24" id="twitter" src="' + BASE_URL + '/resources/img/User-Profile-24.png"/> @jikimlucas</span></p>'+
+     '<p class="text-right" id="name"><span><img width="24" height="24" id="twitter" src="' + BASE_URL + '/resources/img/User-Profile-24.png"/></span></p>'+
            
        ' </div>'+
         '<div id="content1" class="modal-body" >'+
            
-          ' <p class="text-right" id="name"><span><img width="24" height="24" id="twitter" src="' + BASE_URL + '/resources/img/key96.png"/> f65b49da-9373-11e5-8994-feff819cdc9f</span></p>'+
+          ' <p class="text-right" id="key"><span><img width="24" height="24" id="twitter" src="' + BASE_URL + '/resources/img/key96.png"/></span></p>'+
 
         '</div>'+
          '<div id="content2" class="modal-body" >'+
@@ -125,10 +145,11 @@ Ext.define('AIDRFM.common.Header', {
 
     width: '100%',
     html: '<div class="headerWrapper">' +
-        '<div class="header"><a href="http://aidr.qcri.org"><img src="' + BASE_URL + '/resources/img/AIDR/aidr_logo_240x90.png"></a>'+'<div class="dropdown">'+
+        '<div class="header"><a href="http://aidr.qcri.org"><img src="' + BASE_URL + '/resources/img/AIDR/aidr_logo_240x90.png"></a>'+'</div>'+
+        '</div>'+'<div class="dropdown">'+
 
   
-   ' <button><img src="https://cdn4.iconfinder.com/data/icons/wirecons-free-vector-icons/32/menu-alt-32.png"/> </button>'+
+   ' <button><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAMFBMVEUAAAD///////////////////////////////////////////////////////////87TQQwAAAAD3RSTlMAAQ8TFB4fSV6Ag4Wt6/uDY192AAAAQElEQVQoz2NgIAiEXVCAAsP5/yjgOwMq//8vdIHfDO9RBX4y9KEKXGOgCUCz5SqmOzBciuEXDN9ihAc1wGANZAAX+vf+Xu8gUwAAAABJRU5ErkJggg=="/> </button>'+
 
   
     '<ul class="dropdown-menu">'+
@@ -136,8 +157,7 @@ Ext.define('AIDRFM.common.Header', {
         '<li><a  onclick="App1.Demo1.updateProfile()">Update Profile</a></li>'+
         
     '</ul>'+
-'</div>' +'</div>'+
-        '</div>'
+'</div>' 
  
 });
 // this.menu=Ext.create('Ext.Button', {
