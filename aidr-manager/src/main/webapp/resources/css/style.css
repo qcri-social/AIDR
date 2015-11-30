@@ -110,6 +110,8 @@ color:#000000;
     background-color: #ffffff;
 }
 .dropdown {
+        z-index: 9999999999999999999;
+
     position: relative;
     display: inline-block;
    margin-left: 80%;
@@ -118,6 +120,8 @@ color:#000000;
 }
 
 .dropdown .dropdown-menu {
+        z-index: 9999999999999999999;
+
     position: absolute;
     top: 100%;
     display: none;
@@ -139,6 +143,8 @@ color:#000000;
 
 /** Button Styles **/
 .dropdown button {
+        z-index: 9999999999999999999;
+
     background:     #09A89F;;
     opacity: 1;
     color: #FFFFFF;
@@ -150,6 +156,8 @@ color:#000000;
 
 /** List Item Styles **/
 .dropdown a {
+        z-index: 9999999999999999999;
+
     display: block;
     padding: 0.8em 0.8em;
     text-decoration: none;
@@ -162,6 +170,8 @@ color:#000000;
 
 /** List Item Hover Styles **/
 .dropdown a:hover {
+        z-index: 9999999999999999999;
+
     background: #BBBBBB;
 }
 a.svg-menu {
