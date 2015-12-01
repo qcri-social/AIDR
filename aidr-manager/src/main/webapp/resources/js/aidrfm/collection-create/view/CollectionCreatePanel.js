@@ -154,6 +154,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         
         this.geoR = Ext.create('Ext.form.Panel', {
             border: false,
+            id:'geoRPanel',
         	items:[{
             	name: 'geoR',
             	xtype: 'radiogroup',
