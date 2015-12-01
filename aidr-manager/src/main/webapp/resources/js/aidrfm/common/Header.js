@@ -4,6 +4,7 @@ Ext.onReady(function() {
     });
 
 
+
     Ext.ns('App2');
     App2.Demo = {
         init:function()
@@ -111,6 +112,49 @@ Ext.onReady(function() {
             dh.append('key',key);
             }
 });
+//             Ext.Ajax.request({
+//             url:  'protected/user/getCurrentUserRoles.action',
+//             method: 'GET',
+//             headers: {
+//                 'Accept': 'application/json'
+//             },
+//             success: function (resp) {
+//                 var response = Ext.decode(resp.responseText);
+//                 if (response.data) {
+//                     var roles = response.data;
+//                     if (Ext.isArray(roles)) {
+//                         Ext.each(roles, function (role) {
+//                             if (role && role == 'ADMIN'){
+//                                 var dh = Ext.DomHelper;
+//                                 dh.append('name',name);
+//             dh.append('key',key);
+//                             }
+//                         })
+//                     }
+//                 } else {
+//                     AIDRFMFunctions.setAlert('Error', 'Collection Code already exist. Please select another code');
+//                     AIDRFMFunctions.reportIssue(resp);
+//                 }
+//             },
+//              failure: function(response ) {
+//             // DO STUFF
+//             console.log("hey");
+//             console.log("hey");
+//         var name="sushant";
+//             var key="f65b49da-9373-11e5-8994-feff819cdc9f";
+//             var dh = Ext.DomHelper;
+//             dh.append('myDiv', {
+//      tag: 'ul', cls: 'my-list', children: [
+//           {tag: 'li', id: 'item0', html: 'List Item 0'},
+//           {tag: 'li', id: 'item1', html: 'List Item 1'},
+//           {tag: 'li', id: 'item2', html: 'List Item 2'},
+//           {tag: 'li', id: 'item3', html: 'List Item 3'},
+//           {tag: 'li', id: 'item4', html: 'List Item 4'}
+//       ]
+// });
+            
+//             }
+//         });
             var div={
             	html:'<div id="content1" class="modal-body" >'+
      '<p class="text-right" id="name"><span><img width="24" height="24" id="twitter" src="' + BASE_URL + '/resources/img/User-Profile-24.png"/></span></p>'+
@@ -155,6 +199,7 @@ Ext.define('AIDRFM.common.Header', {
     '<ul class="dropdown-menu">'+
         '<li><a  onclick="App2.Demo.viewProfile()">View Profile</a></li>'+
         '<li><a  onclick="App1.Demo1.updateProfile()">Update Profile</a></li>'+
+        '<li><a id="adminButton" onclick="goToAdmin()">Admin Console</a></li>'+
         
     '</ul>'+
 '</div>' 
