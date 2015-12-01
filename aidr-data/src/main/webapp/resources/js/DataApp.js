@@ -17,18 +17,7 @@ app.controller('appCtrl', function($scope, $uibModal, $log, $filter, toastr, $ht
 			toastr.error('Could not load collections list. Please try again later', 'Error');
 			console.log("test");
 	});
-	$scope.isNull = function(value) {
 
-		if (value == null)
-			return true;
-		else
-			return false;
-
-	};
-	$scope.null = function(value) {
-		return false;
-	};
-	
 	$scope.items = [ 'item1', 'item2', 'item3' ];
 
 	/*
