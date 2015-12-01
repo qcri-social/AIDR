@@ -11,6 +11,7 @@
     <script type="text/javascript" src="resources/extjs/ext-all.js"></script>
     <script type="text/javascript" src="resources/vendor/moment-with-langs.js"></script>
     <script type="text/javascript" src="resources/vendor/moment-lang-en.js"></script>
+     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
     <script type="text/javascript">
         Ext.Loader.setConfig({
                 enabled: true,
@@ -37,4 +38,7 @@
   </script>
 
 </body>
+<script type="text/javascript" src="<%=request.getContextPath()%>/resources/js/aidrfm/common/Admin.js">
+
+</script>
 </html>
