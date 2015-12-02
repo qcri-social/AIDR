@@ -266,7 +266,11 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 change: function(field, newValue, oldValue){
                      if(newValue === 'SMS'){
                          Ext.getCmp('keywordsPanel').hide();
+                         Ext.getCmp('keywords').hide();
                          Ext.getCmp('langPanel').hide();
+                         Ext.getCmp('geoRPanel').hide();
+                         Ext.getCmp('AdvancedConfiguration').hide();
+                         Ext.getCmp('Language').hide();
                          Ext.getCmp('geoPanel').hide();
                          Ext.getCmp('followPanel').hide();
                          Ext.getCmp('durationDescription').hide();
@@ -290,7 +294,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     Ext.getCmp('totalDownloadLabel').setText('Total downloaded ' + COLLECTION_TYPES[newValue]['plural'] + ':');
                     Ext.getCmp('lastDownloadLabel').setText('Last downloaded ' + COLLECTION_TYPES[newValue]['plural'] + ':');
                 }
-            }
+           }
 
         });
     },

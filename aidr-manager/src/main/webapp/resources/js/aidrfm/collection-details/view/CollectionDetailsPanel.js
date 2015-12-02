@@ -238,6 +238,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
         
         this.geoR = Ext.create('Ext.form.Panel', {
+        	id:'geoRPanel',
             items:[{
                 name: 'geoR',
                 xtype: 'radiogroup',
@@ -408,6 +409,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
 
         this.configurationsEditTabL = Ext.create('Ext.form.Label', {
+        	id:'AdvancedConfiguration',
             flex: 1,
             text: 'Advanced configuration',
             padding: '15 0 0 0',
@@ -1044,6 +1046,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         this.configurationsL,
                         {
                             xtype: 'container',
+                            id:'keywords',
                             defaultType: 'label',
                             layout: 'hbox',
                             items: [
@@ -1058,6 +1061,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         this.followContainer,
                         {
                             xtype: 'container',
+                            id:'Language',
                             defaultType: 'label',
                             layout: 'hbox',
                             cls: 'bordered-bottom',
