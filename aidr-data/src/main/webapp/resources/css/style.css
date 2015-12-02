@@ -135,14 +135,14 @@ a {
 
 #lang span {
 	color: #fff;
-	height: 26px;
+	//height: 26px;
 	display: inline-block;
 	width: auto;
-	padding: 0 19px;
+	padding: 2px 19px;
 	border: 1px solid white;
 	font-size: 12px;
 	color: black;
-	line-height: 25px;
+	//line-height: 25px;
 	vertical-align: middle;
 	text-align: center;
 	text-shadow: none;
