@@ -49,8 +49,6 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
         this.mainComponent = component;
         collectionController = this;
 
-        this.applyUserPermissions();
-
         var me = this;
 
         var isFirstRun = true;
@@ -241,35 +239,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
         });
     },
 
-    applyUserPermissions: function () {
-        var me = this;
-
-        Ext.Ajax.request({
-            url:  'protected/user/getCurrentUserRoles.action',
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json'
-            },
-            success: function (resp) {
-                var response = Ext.decode(resp.responseText);
-                if (response.data) {
-                    var roles = response.data;
-                    if (Ext.isArray(roles)) {
-                        Ext.each(roles, function (role) {
-                            if (role && role == 'ADMIN'){
-                                me.mainComponent.goToAdminSection.show();
-                            }
-                        })
-                    }
-                } else {
-                    AIDRFMFunctions.setAlert('Error', 'Collection Code already exist. Please select another code');
-                    AIDRFMFunctions.reportIssue(resp);
-                }
-            }
-        });
-    },
-
-    untrashCollection: function (collectionId, collectionCode) {
+       untrashCollection: function (collectionId, collectionCode) {
         var me = this;
         var id = collectionId;
         var code = collectionCode;

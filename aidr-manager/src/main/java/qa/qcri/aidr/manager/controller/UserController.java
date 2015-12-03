@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import qa.qcri.aidr.manager.RoleType;
+import qa.qcri.aidr.manager.dto.UserInfo;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.service.CollectionCollaboratorService;
@@ -130,13 +131,14 @@ public class UserController extends BaseController{
     }
 	
 
-    @RequestMapping(value = "/getCurrentUser.action", method={RequestMethod.GET})
+    @RequestMapping(value = "/loggedin", method={RequestMethod.GET})
 	@ResponseBody
-	public Map<String,Object> getCurrentUser() throws Exception {
+	public Map<String, Object> getCurrentUser() throws Exception {
 		logger.info("Get current user info");
 		try{
 			UserAccount entity = getAuthenticatedUser();
-			return getUIWrapper(entity, true);
+			
+			return getUIWrapper(adaptUserAccountToUserInfo(entity), true);
 		}catch(Exception e){
             String msg = "Error while getting current user's info ";
 			logger.error(msg, e);
@@ -145,26 +147,25 @@ public class UserController extends BaseController{
 	}
     
 
-    @RequestMapping(value = "/updateUserInfo.action", method = RequestMethod.GET)
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,Object> updateUserInfo(@RequestParam Long userId, @RequestParam (required=false) String email, @RequestParam (required=false) String locale) throws Exception {
+    public Map<String,Object> updateUserInfo(UserInfo userInfo) throws Exception {
         logger.info("Updating userInfo");
         String msg = "Error while updating userInfo";
         try{
-            if (userId == null){
+            if (userInfo == null){
                 return getUIWrapper(false, msg);
             }
             UserAccount currentUser = getAuthenticatedUser();
-            if(currentUser.getId()==userId){
-            	if(!StringUtils.isEmpty(locale)){
-            		currentUser.setLocale(locale);
+            if(userInfo.getUserName()!= null && userInfo.getUserName().equals(currentUser.getUserName())){
+            	if(!StringUtils.isEmpty(userInfo.getLocale())){
+            		currentUser.setLocale(userInfo.getLocale());
             	}
-            	if(email!=null){
-            		currentUser.setEmail(email);
+            	if(userInfo.getEmail() != null){
+            		currentUser.setEmail(userInfo.getEmail());
             	}
             	
             	userService.update(currentUser);
-            	currentUser = userService.getById(userId);
                 return getUIWrapper(currentUser, true);
             }
             return getUIWrapper(false, "You can't update other user's info");
@@ -173,5 +174,17 @@ public class UserController extends BaseController{
             logger.error(msg, e);
             return getUIWrapper(false, msg);
         }
+    }
+    
+    private UserInfo adaptUserAccountToUserInfo(UserAccount account) {
+    	
+    	UserInfo info = new UserInfo();
+    	
+    	info.setApiKey(account.getApiKey());
+    	info.setUserName(account.getUserName());
+    	info.setLocale(account.getLocale());
+    	info.setProvider(account.getProvider());
+    	
+    	return info;
     }
 }
