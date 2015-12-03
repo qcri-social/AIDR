@@ -542,8 +542,15 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<div>End date:</div>',
             '{[this.showGeoLabel(values.geo)]}',
             '{[this.showFollowLabel(values.follow)]}',
+            
+            '<tpl if="[this.getType()] == 0">' +
             '<div>Language(s):</div>',
             '<div>Keywords:</div>',
+            '</tpl>',
+            '<tpl if="[this.getType()] == 1">' +
+            '<div></div>',
+            '</tpl>',
+           
             '</div>',
 
             '<div class="leftColumn">',

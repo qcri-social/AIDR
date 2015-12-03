@@ -282,6 +282,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                          Ext.getCmp('keywordsPanel').show();
                          Ext.getCmp('langPanel').show();
                          Ext.getCmp('geoPanel').show();
+                         Ext.getCmp('AdvancedConfiguration').show();
+                         Ext.getCmp('geoRPanel').show();
                          Ext.getCmp('followPanel').show();
                          Ext.getCmp('durationDescription').show();
                          Ext.getCmp('configurationsL').show();
