@@ -91,8 +91,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
 
     loadLatestTweets: function () {
         var me = this;
-        var mask = AIDRFMFunctions.getMask(true);
-        mask.show();
+        Ext.getBody().mask('Loading...');
         
         Ext.Ajax.timeout = 900000;
         Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
@@ -134,14 +133,14 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                     }
                 });
                 me.mainComponent.tweetsStore.load();
-                mask.hide();
+                Ext.getBody().unmask();
                 //Ext.Ajax.timeout = 30000;
                 //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
                 //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
                 //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             },
             failure: function () {
-                mask.hide();
+            	Ext.getBody().unmask();
                 //Ext.Ajax.timeout = 30000;
                 //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
                 //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});

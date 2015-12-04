@@ -342,8 +342,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
                 if (resp.success) {
                     AIDRFMFunctions.setAlert("Ok", ["Tag was deleted successfully.", "You will be redirected to My Classifiers screen."]);
 
-                    var maskRedirect = AIDRFMFunctions.getMask(true, 'Redirecting ...');
-                    maskRedirect.show();
+                    Ext.getBody().mask('Redirecting ...');
 
 //                    wait for 3 sec to let user read information box
                     var isFirstRun = true;

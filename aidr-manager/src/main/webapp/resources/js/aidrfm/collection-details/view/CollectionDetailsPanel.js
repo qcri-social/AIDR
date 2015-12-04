@@ -448,6 +448,9 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.collectionLogStore = Ext.create('Ext.data.Store', {
             storeId: 'collectionLogStore',
+            requires: ['Ext.data.identifier.Uuid', 'Ext.data.proxy.Rest'],
+
+            identifier: 'uuid',
             fields: ['id', 'collectionID', 'langFilters', 'startDate', 'endDate', 'count', 'track', 'geo', 'follow'],
             proxy: {
                 type: 'ajax',
@@ -481,11 +484,11 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         me.collectionHistoryDoNotChangeMessage.hide();
                     } else {
                         me.collectionHistoryTitle.hide();
-                        collectionHistoryChart.hide();
+                        //collectionHistoryChart.hide();
                         me.horizontalLineTop.hide();
                         me.collectionHistoryPanelView.hide();
                         me.horizontalLineBottomMargin.hide();
-                        me.collectionHistoryGrid.hide();
+                        //me.collectionHistoryGrid.hide();
                         me.collectionHistoryDoNotChangeMessage.show();
                     }
                 }

@@ -7,12 +7,16 @@
 
     <link rel="shortcut icon" type="image/ico" href="${pageContext.request.contextPath}/resources/img/favicon.ico" />
 
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/extjs/resources/css/ext-all.css"/>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/build/packages/ext-theme-crisp/build/resources/ext-theme-crisp-all.css"/>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/style.css"/>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/font-awesome-4.5.0/css/font-awesome.min.css">
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/extjs/ext-all.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/vendor/moment-with-langs.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/vendor/moment-lang-en.js"></script>
+     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/vendor/moment-lang-en.js"></script>
+     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/build/packages/sencha-charts/build/sencha-charts.js"></script>
+	<link type="text/css" href="${pageContext.request.contextPath}/resources/build/packages/sencha-charts/build/crisp/resources/sencha-charts-all.css">
+	<script type="text/javascript" src="${pageContext.request.contextPath}/resources/build/packages/ext-charts/build/ext-charts.js"></script>
     <script type="text/javascript">
         Ext.Loader.setConfig({
                 enabled: true,
