@@ -70,9 +70,9 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             autoLoad: true,
             listeners: {
                 beforeload: function (s) {
-                    s.getProxy().extraParams = {
+                    s.getProxy().setExtraParams({
                         id: MODEL_FAMILY_ID
-                    }
+                    })
                 },
                 load: function (s) {
                     var count = s.getCount();

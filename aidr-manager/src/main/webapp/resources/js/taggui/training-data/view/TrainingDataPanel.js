@@ -70,10 +70,10 @@ No use for this label as all the information is rendered in a single taggerDescr
             autoLoad: true,
             listeners: {
                 beforeload: function (s) {
-                    s.getProxy().extraParams = {
+                    s.getProxy().setExtraParams({
                         modelFamilyId: MODEL_FAMILY_ID,
                         crisisId: CRISIS_ID
-                    }
+                    })
                 }
             }
         });

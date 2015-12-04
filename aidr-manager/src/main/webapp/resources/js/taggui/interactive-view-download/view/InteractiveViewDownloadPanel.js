@@ -3,7 +3,6 @@ Ext.require([
     'AIDRFM.common.StandardLayout',
     'AIDRFM.common.Header',
     'AIDRFM.common.Footer',
-    'Ext.ux.data.PagingMemoryProxy',
     'TAGGUI.interactive-view-download.view.SingleFilterPanel'
 ]);
 
