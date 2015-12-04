@@ -9,6 +9,7 @@
 
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/extjs/resources/css/ext-all.css"/>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/font-awesome-4.5.0/css/font-awesome.min.css">
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/extjs/ext-all.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/vendor/moment-with-langs.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/vendor/moment-lang-en.js"></script>

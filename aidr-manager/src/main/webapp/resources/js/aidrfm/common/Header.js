@@ -37,7 +37,7 @@ UserController.service = {
 	viewProfileModal : function(url) {
 		var win = new Ext.Window({
 			width : 330,
-			minHeight : 115,
+			minHeight : 100,
 			cls : 'popWindow',
 			resizable : false,
 			autoScroll : true,
@@ -45,13 +45,10 @@ UserController.service = {
 		});
 
 		var div = '<div id="content1" class="modal-body" >'
-				+ '<p class="text-right" id="name"><span><img width="24" height="24" id="twitter" src="'
-				+ BASE_URL
-				+ '/resources/img/User-Profile-24.png"/> ' + Ext.USER.data.items[0].data.userName + '</span></p>'
+				+ '<p class="text-right" id="name"><span><i class="fa fa-user fa-lg"></i>&nbsp;&nbsp;&nbsp;' + Ext.USER.data.items[0].data.userName + '</span></p>'
 				+ ' </div>'
 				+ '<div id="content2" class="modal-body" >'
-				+ ' <p class="text-right" id="key"><span><img width="24" height="24" id="twitter" src="'
-				+ BASE_URL + '/resources/img/key96.png"/>' + Ext.USER.data.items[0].data.apiKey + '</span></p>'
+				+ ' <p class="text-right" id="key"><span><i class="fa fa-key fa-lg"></i>&nbsp;&nbsp;&nbsp;' + Ext.USER.data.items[0].data.apiKey + '</span></p>'
 				+ '</div>' + '<div class="modal-body" >'
 		// show first
 		win.show();
@@ -62,36 +59,29 @@ UserController.service = {
 	
 	updateProfileModal : function(url) {
 		var win = new Ext.Window({
-			width : 370,
+			width : 360,
 			minHeight : 220,
 			cls : 'popWindow',
 			resizable : false,
 			autoScroll : true,
-			modal : true
+			modal : true,
+			id: 'updateWindow'
 		});
 
 		var div = {
-			html : 	'<form id="updateForm">'
-				+ '<div id="content1" class="modal-body" >'
-				+ '<p class="text-right" id="name"><span><img width="24" height="24" id="twitter" src="'
-				+ BASE_URL
-				+ '/resources/img/User-Profile-24.png"/>' +Ext.USER.data.items[0].data.userName + '</span></p>'
+			html : 	'<div id="content1" class="modal-body" >'
+				+ '<p class="text-right" id="name"><span><i class="fa fa-user fa-lg"></i>&nbsp;&nbsp;&nbsp;&nbsp;' +Ext.USER.data.items[0].data.userName + '</span></p>'
 				+' </div>'
 				+ '<div id="content1" class="modal-body" >'
-				+ ' <p class="text-right" id="key"><span><img width="24" height="24" id="twitter" src="'
-				+ BASE_URL
-				+ '/resources/img/key96.png"/>' + Ext.USER.data.items[0].data.apiKey + '</span></p>'
+				+ ' <p class="text-right" id="key"><span><i class="fa fa-key fa-lg"></i>&nbsp;&nbsp;&nbsp;' + Ext.USER.data.items[0].data.apiKey + '</span></p>'
 				+ '</div>'
-				+ '<div id="content2" class="modal-body" >'
+				+ '<div id="content1" class="modal-body" >'
 
-				+ ' <p class="text-right" id="name"><span><img width="24" height="24" id="twitter" src="'
-				+ BASE_URL
-				+ '/resources/img/email5.png"/> <input class="inputForm" type="text" name="email"></span></p>'
-				+ ' <p class="text-right" id="name"><span><img width="24" height="24" id="twitter" src="'
-				+ BASE_URL
-				+ '/resources/img/character.png"/> <input class="inputForm" type="text" name="locale"></span></p>'
+				+ ' <p class="text-right" id="name"><span><i class="fa fa-envelope fa-lg"></i>&nbsp;&nbsp;&nbsp;<input class="inputForm" type="text" id="email" value="' + Ext.USER.data.items[0].data.email + '"></span></p>'
+				+ '</div><div id="content1" class="modal-body" >'
+				+ ' <p class="text-right" id="name"><span><i class="fa fa-language fa-lg"></i>&nbsp;&nbsp;&nbsp;&nbsp;<input class="inputForm" type="text" id="locale" value="' + Ext.USER.data.items[0].data.locale +'"></span></p>'
+				+ '</div>'
 				+ '<input class="btn btn-rddish1" type="button" type="reset" value="Cancel"><input class="btn btn-bluish1" onclick = "UserController.service.updateUser()" type="button" value="Save"> '
-				+ '</form>'
 		}
 
 		// show first
@@ -102,11 +92,17 @@ UserController.service = {
 	
     updateUser: function () {
 
-		var form = Ext.getCmp('updateForm').getForm();
         var userName = Ext.USER.data.items[0].data.userName;
-        var email = form.findField('email').getValue();
-        var locale = form.findField('locale').getValue();
-        var mask = AIDRFMFunctions.getMask();
+        var email = Ext.get('email');
+        var locale = Ext.get('locale').getValue();
+        var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+        if (!email.getValue() || !re.test(email.getValue())) {
+            AIDRFMFunctions.setAlert('Error', 'Invalid email.');
+            isValid = false;
+            return;
+        }
+
+        var mask = AIDRFMFunctions.getMask(true, 'Update user info ...');
         mask.show();
 
         //Check if some collection already is running for current user
@@ -115,15 +111,26 @@ UserController.service = {
             method: 'POST',
             params: {
                 userName: userName,
-                email: email,
+                email: email.getValue(),
                 locale: locale
             },
             headers: {
                 'Accept': 'application/json'
             },
             success: function (resp) {
+            	Ext.get('updateWindow').hide();
+            	AIDRFMFunctions.setAlert("Info", ["User updated successfully."]);
+                mask.hide();
+                
             },
             failure: function (resp) {
+            	Ext.get('updateWindow').hide();
+            	AIDRFMFunctions.setAlert(
+                        "Error",
+                        ['Error while updating user.',
+                            'Please try again later or contact Support']
+                    );
+                AIDRFMFunctions.reportIssue(resp);
                 mask.hide();
             }
         });
@@ -160,6 +167,7 @@ UserController.service = {
     goToAdminSection: function() {
     	document.location.href = BASE_URL + '/protected/administration/admin-console';
     }
+    
 }
 
 Ext.define('AIDRFM.common.Header', {
@@ -167,44 +175,6 @@ Ext.define('AIDRFM.common.Header', {
 					alias : 'widget.aidr-header',
 					id : 'header',
 					width : '100%',
-		            /*items: [
-		                    {
-		                    	xtype: 'container',
-		                    	cls: 'header',
-		                    	items:[
-										{
-											xtype: 'component',
-										    autoEl: {
-										        tag: 'a',
-										        href: 'http://aidr.qcri.org',
-										        html: '<img src="' + BASE_URL
-													+ '/resources/img/AIDR/aidr_logo_240x90.png">'
-										    }
-										},
-										{
-											xtype: 'container',
-											cls: 'dropdown',
-											items: [
-											        {
-											        	xtype: 'button',
-											        	html: '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAMFBMVEUAAAD///////////////////////////////////////////////////////////87TQQwAAAAD3RSTlMAAQ8TFB4fSV6Ag4Wt6/uDY192AAAAQElEQVQoz2NgIAiEXVCAAsP5/yjgOwMq//8vdIHfDO9RBX4y9KEKXGOgCUCz5SqmOzBciuEXDN9ihAc1wGANZAAX+vf+Xu8gUwAAAABJRU5ErkJggg=="/>',
-											        	cls: 'dropdown-button'
-											        },
-											        {
-											        	xtype: 'box',
-											        	id: 'menu',
-											            html: '<ul class="dropdown-menu"> ' 
-											            		+ '<li><a onclick="UserController.service.viewProfileModal()">VIEW PROFILE</a></li>'
-																+ '<li><a onclick="UserController.service.updateProfileModal()">UPDATE PROFILE</a></li>'
-																+ '<li id="adminButton" hidden="true"><a onclick="goToAdmin()">ADMIN CONSOLE</a></li>'+
-																+ '</ul>',
-											        }
-											        ]
-										}
-		                    	       ]
-									}]
-		                    ,*/
-		                   
 					html : '<div class="headerWrapper">'
 							+ '<div class="header"><a href="http://aidr.qcri.org"><img src="'
 							+ BASE_URL
@@ -216,3 +186,4 @@ Ext.define('AIDRFM.common.Header', {
 							+ '<li><span onclick="UserController.service.updateProfileModal()">UPDATE PROFILE</span></li>'
 							+ '<li id="adminButton" hidden="true"><span onclick="UserController.service.goToAdminSection()">ADMIN CONSOLE</span></li></ul></div></div></div>'
 				});
+

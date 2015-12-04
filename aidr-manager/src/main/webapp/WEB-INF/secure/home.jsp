@@ -8,6 +8,7 @@
 
     <link rel="stylesheet" type="text/css" href="resources/extjs/resources/css/ext-all.css"/>
     <link rel="stylesheet" type="text/css" href="resources/css/style.css"/>
+    <link rel="stylesheet" href="resources/font-awesome-4.5.0/css/font-awesome.min.css">
     <script type="text/javascript" src="resources/extjs/ext-all.js"></script>
     <script type="text/javascript" src="resources/vendor/moment-with-langs.js"></script>
     <script type="text/javascript" src="resources/vendor/moment-lang-en.js"></script>
@@ -38,7 +39,4 @@
   </script>
 
 </body>
-<script type="text/javascript" src="<%=request.getContextPath()%>/resources/js/aidrfm/common/Admin.js">
-
-</script>
 </html>
