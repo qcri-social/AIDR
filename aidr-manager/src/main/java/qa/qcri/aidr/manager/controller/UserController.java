@@ -184,7 +184,7 @@ public class UserController extends BaseController{
     	info.setUserName(account.getUserName());
     	info.setLocale(account.getLocale());
     	info.setProvider(account.getProvider());
-    	
+    	info.setEmail(account.getEmail());
     	return info;
     }
 }

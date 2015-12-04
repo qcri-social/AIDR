@@ -81,7 +81,7 @@ UserController.service = {
 				+ '</div><div id="content1" class="modal-body" >'
 				+ ' <p class="text-right" id="name"><span><i class="fa fa-language fa-lg"></i>&nbsp;&nbsp;&nbsp;&nbsp;<input class="inputForm" type="text" id="locale" value="' + Ext.USER.data.items[0].data.locale +'"></span></p>'
 				+ '</div>'
-				+ '<input class="btn btn-rddish1" type="button" type="reset" value="Cancel"><input class="btn btn-bluish1" onclick = "UserController.service.updateUser()" type="button" value="Save"> '
+				+ '<input class="btn btn-rddish1" type="button" onclick = "UserController.service.closeWindow()" type="reset" value="Cancel"><input class="btn btn-bluish1" onclick = "UserController.service.updateUser()" type="button" value="Save"> '
 		}
 
 		// show first
@@ -118,13 +118,13 @@ UserController.service = {
                 'Accept': 'application/json'
             },
             success: function (resp) {
-            	Ext.get('updateWindow').hide();
+            	Ext.get('updateWindow').destroy();
             	AIDRFMFunctions.setAlert("Info", ["User updated successfully."]);
                 mask.hide();
                 
             },
             failure: function (resp) {
-            	Ext.get('updateWindow').hide();
+            	Ext.get('updateWindow').destroy();
             	AIDRFMFunctions.setAlert(
                         "Error",
                         ['Error while updating user.',
@@ -166,6 +166,10 @@ UserController.service = {
     
     goToAdminSection: function() {
     	document.location.href = BASE_URL + '/protected/administration/admin-console';
+    },
+    
+    closeWindow: function() {
+    	Ext.getCmp('updateWindow').destroy();
     }
     
 }
