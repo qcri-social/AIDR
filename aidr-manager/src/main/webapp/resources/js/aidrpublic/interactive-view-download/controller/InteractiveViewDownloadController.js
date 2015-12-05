@@ -298,7 +298,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                     me.mainComponent.contactOwnerPanel.show();
 
                     me.mainComponent.suspendLayout = false;
-                    me.mainComponent.forceComponentLayout();
+                    me.mainComponent.updateLayout();
                 }
 
                 me.updateStatusInfo(jsonData.status, jsonData.endDate, jsonData.collectionType);
@@ -432,7 +432,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
         this.loadLatestTweets();
 
         me.mainComponent.suspendLayout = false;
-        me.mainComponent.forceComponentLayout();
+        me.mainComponent.updateLayout();
         me.mainComponent.downloadLink.hide();
     },
 
@@ -449,7 +449,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
         me.mainComponent.applyFilterButton.disable();
 
         me.mainComponent.suspendLayout = false;
-        me.mainComponent.forceComponentLayout();
+        me.mainComponent.updateLayout();
     },
 
     getAttributesAndLabelsByCrisisId: function () {
@@ -475,7 +475,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                     rawData : data
                 });
                 me.mainComponent.suspendLayout = false;
-                me.mainComponent.forceComponentLayout();
+                me.mainComponent.updateLayout();
                  if(!Ext.isEmpty(data.curatorInfo)) {
                      me.mainComponent.curatorInfoR.setText(data.curatorInfo, false);
                      me.mainComponent.curatorInfoR.show();

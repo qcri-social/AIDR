@@ -204,7 +204,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                     me.mainComponent.contactOwnerPanel.show();
 
                     me.mainComponent.suspendLayout = false;
-                    me.mainComponent.forceComponentLayout();
+                    me.mainComponent.updateLayout();
                 }
                 me.updateStatusInfo(jsonData.status, jsonData.endDate);                
             }
@@ -297,7 +297,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
         this.loadLatestTweets();
 
         me.mainComponent.suspendLayout = false;
-        me.mainComponent.forceComponentLayout();
+        me.mainComponent.updateLayout();
     },
 
     addFilterHandler: function(){
@@ -313,7 +313,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
         me.mainComponent.applyFilterButton.disable();
 
         me.mainComponent.suspendLayout = false;
-        me.mainComponent.forceComponentLayout();
+        me.mainComponent.updateLayout();
     },
 
     generateTweetIdsLink: function(btn) {
@@ -396,7 +396,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                     rawData : data
                 });
                 me.mainComponent.suspendLayout = false;
-                me.mainComponent.forceComponentLayout();
+                me.mainComponent.updateLayout();
             }
         });
     },

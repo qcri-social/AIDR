@@ -294,7 +294,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
         }
 
         this.suspendLayout = false;
-        this.forceComponentLayout();
+        this.updateLayout();
 
         this.onChange();
         return true;
@@ -325,7 +325,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
         	this.timeField.setValue('12:01 AM');
 
         this.suspendLayout = false;
-        this.forceComponentLayout();
+        this.updateLayout();
 
         this.onChange();
         return true;
@@ -358,7 +358,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
         }
 
         this.suspendLayout = false;
-        this.forceComponentLayout();
+        this.updateLayout();
 
         this.onChange();
         return true;
@@ -377,7 +377,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
         this.confidenceCombo.show();
 
         this.suspendLayout = false;
-        this.forceComponentLayout();
+        this.updateLayout();
 
         this.onChange();
         return true;
@@ -453,7 +453,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
         parent.remove(this, true);
 
         this.suspendLayout = false;
-        this.forceComponentLayout();
+        this.updateLayout();
 
         this.onChange(true);
     },

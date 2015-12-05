@@ -417,7 +417,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
         me.cancelButton.show();
 
         me.suspendLayout = false;
-        me.forceComponentLayout();
+        me.updateLayout();
     },
 
     attributeCancel: function (btn, me) {
@@ -433,7 +433,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
         me.nameTextBox.setValue(me.attributeName);
 
         me.suspendLayout = false;
-        me.forceComponentLayout();
+        me.updateLayout();
     },
 
     attributeSave: function (btn, me) {
@@ -479,7 +479,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
                 me.removeClassifierButton.enable();
 
                 me.suspendLayout = false;
-                me.forceComponentLayout();
+                me.updateLayout();
             },
             failure: function () {
                 me.attributeCancel(null, me);
@@ -490,7 +490,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
         });
 
         me.suspendLayout = false;
-        me.forceComponentLayout();
+        me.updateLayout();
     },
 
     valuesEdit: function (btn, me) {
@@ -508,7 +508,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
         me.valuesCancelButton.show();
 
         me.suspendLayout = false;
-        me.forceComponentLayout();
+        me.updateLayout();
     },
 
     valuesSave: function (btn, me) {
@@ -527,7 +527,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
         me.valuesCancelButton.hide();
 
         me.suspendLayout = false;
-        me.forceComponentLayout();
+        me.updateLayout();
 
     },
 
@@ -547,7 +547,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
         me.valuesCancelButton.hide();
 
         me.suspendLayout = false;
-        me.forceComponentLayout();
+        me.updateLayout();
     }
 
 });

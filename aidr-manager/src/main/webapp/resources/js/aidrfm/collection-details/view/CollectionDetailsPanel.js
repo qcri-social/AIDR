@@ -1400,7 +1400,9 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 				},
 				render : function(grid){
 	            	 grid.on('viewready',function(){  
-	                     this.getSelectionModel().select(0);  
+	                     //this.getSelectionModel().select(0);  
+						 
+						 //Commented during extJs 5.1 migration. Need to uncomment to enable functioning
 	                });
            	 	},
 	        },
