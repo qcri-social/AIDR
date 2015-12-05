@@ -53,7 +53,7 @@ Ext.define('TAGGUI.predict-new-attribute.view.PredictNewAttributePanel', {
                 type: 'ajax',
                 url: '',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },
@@ -68,7 +68,7 @@ Ext.define('TAGGUI.predict-new-attribute.view.PredictNewAttributePanel', {
                 type: 'ajax',
                 url: '',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },

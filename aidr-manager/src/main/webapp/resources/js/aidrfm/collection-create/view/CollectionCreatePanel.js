@@ -329,7 +329,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                 type: 'ajax',
                 url: BASE_URL + '/protected/tagger/getAllCrisisTypes.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },

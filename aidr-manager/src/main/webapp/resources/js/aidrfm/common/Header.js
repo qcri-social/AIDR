@@ -20,7 +20,7 @@ Ext.onReady(function() {
 					method : "GET",
 		            reader: {
 		                type: 'json',
-		                root : 'data'
+		                rootProperty : 'data'
 		            }
 		        }
 		    });

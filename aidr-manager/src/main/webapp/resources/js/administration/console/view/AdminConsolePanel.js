@@ -41,7 +41,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                 type: 'ajax',
                 url: BASE_URL + '/protected/collection/getAllRunning.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 },
                 simpleSortMode: true,
@@ -273,7 +273,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                 type: 'ajax',
                 url: BASE_URL + '/protected/collection/getAllStopped.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 },
                 simpleSortMode: true,

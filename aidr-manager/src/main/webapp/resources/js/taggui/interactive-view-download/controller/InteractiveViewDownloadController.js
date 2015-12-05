@@ -128,7 +128,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                     reader: {
                         type: 'json',
                         totalProperty: 'totalCount',
-                        root: 'data',
+                        rootProperty: 'data',
                         successProperty: 'success'
                     }
                 });

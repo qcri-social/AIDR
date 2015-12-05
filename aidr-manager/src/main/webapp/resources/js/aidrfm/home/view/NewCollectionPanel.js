@@ -71,7 +71,7 @@ this.collectionStore = Ext.create('Ext.data.JsonStore', {
         type: 'ajax',
         url: 'protected/collection/findAll.action',
         reader: {
-            root: 'data',
+            rootProperty: 'data',
             totalProperty: 'total'
         }
     },
@@ -227,7 +227,7 @@ this.collectionTrashedStore = Ext.create('Ext.data.JsonStore', {
         type: 'ajax',
         url: 'protected/collection/findAll.action',
         reader: {
-            root: 'data',
+            rootProperty: 'data',
             totalProperty: 'total'
         }
     },

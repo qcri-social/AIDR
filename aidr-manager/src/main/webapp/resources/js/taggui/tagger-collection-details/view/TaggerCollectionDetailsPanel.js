@@ -141,7 +141,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                               type: 'ajax',
                                               url: BASE_URL + '/protected/tagger/getAllCrisisTypes.action',
                                               reader: {
-                                              root: 'data',
+                                              rootProperty: 'data',
                                               totalProperty: 'total'
                                               }
                                               },
@@ -181,7 +181,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                type: 'ajax',
                                                url: BASE_URL + '/protected/tagger/getModelsForCrisis.action',
                                                reader: {
-                                               root: 'data',
+                                               rootProperty: 'data',
                                                totalProperty: 'total'
                                                }
                                                },

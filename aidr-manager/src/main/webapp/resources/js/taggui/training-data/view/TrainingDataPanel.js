@@ -60,7 +60,7 @@ No use for this label as all the information is rendered in a single taggerDescr
                 type: 'ajax',
                 url: BASE_URL + '/protected/tagger/getTrainingDataByModelIdAndCrisisId.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 },
                 simpleSortMode: true,

@@ -45,7 +45,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
             
             axes: [
             {
-                type: 'Numeric',
+                type: 'numeric',
                 position: 'bottom',
                 fields: ['trainingDocumentsCount', 'classifiedDocumentCount', 'totalDocuments'],
                 title: 'No. of '+COLLECTION_TYPES[TYPE]["plural"],
@@ -59,7 +59,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                 
             },
             {
-                type: 'Category',
+                type: 'category',
                 position: 'left',
                 fields: ['value'],
                 title: 'Tags',
@@ -140,7 +140,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
             theme: 'Blue',
             axes: [{
                 steps: 5,
-                type: 'Radial',
+                type: 'radial',
                 position: 'radial',
                 maximum: 100
             }],

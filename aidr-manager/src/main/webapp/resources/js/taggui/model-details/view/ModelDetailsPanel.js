@@ -59,7 +59,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
                 type: 'ajax',
                 url: BASE_URL + '/protected/tagger/modelHistory.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 },
                 simpleSortMode: true,

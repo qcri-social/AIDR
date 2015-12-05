@@ -11,7 +11,7 @@ var store = Ext.create('Ext.data.JsonStore', {
         type: 'ajax',
         url: BASE_URL + '/protected/tagger/modelHistory.action',
         reader: {
-            root: 'data',
+            rootProperty: 'data',
             totalProperty: 'total'
         },
         extraParams : {
@@ -50,7 +50,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         position: 'right'
     },
     axes: [{
-        type: 'Numeric',
+        type: 'numeric',
         fields: ['avgPrecision', 'avgRecall', 'avgAuc' ],
         position: 'left',
         grid: true,
@@ -61,7 +61,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
             }
         }
     }, {
-        type: 'Time',
+        type: 'time',
 		dateFormat: 'M j,y',
         fields: 'trainingTime',
         position: 'bottom',
@@ -73,7 +73,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
 		}
     },
     {
-        type: 'Numeric',
+        type: 'numeric',
         fields: ['trainingCount'],
         position: 'right',
         grid: true,

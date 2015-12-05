@@ -37,7 +37,7 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
                 type: 'ajax',
                 url: 'public/collection/findAllStoped.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },
@@ -63,7 +63,7 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
                 type: 'ajax',
                 url: 'public/collection/findAllRunning.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },
@@ -89,7 +89,7 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
                 type: 'ajax',
                 url: 'public/collection/findAllRunningWithNoOutput.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },

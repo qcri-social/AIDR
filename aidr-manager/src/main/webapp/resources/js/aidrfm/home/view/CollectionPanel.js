@@ -62,7 +62,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                 type: 'ajax',
                 url: 'protected/collection/findAll.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },
@@ -198,7 +198,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                 type: 'ajax',
                 url: 'protected/collection/findAll.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },

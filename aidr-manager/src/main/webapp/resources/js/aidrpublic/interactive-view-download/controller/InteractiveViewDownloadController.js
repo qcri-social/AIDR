@@ -129,7 +129,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                     reader: {
                         type: 'json',
                         totalProperty: 'totalCount',
-                        root: 'data',
+                        rootProperty: 'data',
                         successProperty: 'success'
                     }
                 });

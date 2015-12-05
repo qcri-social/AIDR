@@ -119,7 +119,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
                 type: 'ajax',
                 url: '',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },

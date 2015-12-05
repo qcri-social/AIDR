@@ -456,7 +456,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 type: 'ajax',
                 url: BASE_URL + '/protected/collection-log/findAllForCollection.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },
@@ -626,7 +626,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 type: 'ajax',
                 url: '',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                 }
             }
         });
@@ -657,7 +657,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 type: 'ajax',
                 url: BASE_URL + '/protected/tagger/getAllCrisisTypes.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },
@@ -1181,7 +1181,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     type: 'ajax',
                     url: BASE_URL + '/protected/user/getUsers.action',
                     reader: {
-                        root: 'data',
+                        rootProperty: 'data',
                         type: 'json'
                     }
                 }
@@ -1282,13 +1282,13 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 position: 'right'
             },
             axes: [{
-                type: 'Numeric',
+                type: 'numeric',
                 fields: 'count',
                 position: 'left',
                 grid: true,
                 minimum: 0
             }, {
-                type: 'Time',
+                type: 'time',
         		dateFormat: 'M j,y',
                 fields: 'endDate',
                 position: 'bottom',
