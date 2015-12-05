@@ -71,7 +71,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                 axis: 'left',
                 highlight: true,
 				style: {
-					globalAlpha: .5
+					opacity: .5
 				},
                 tips: {
                   trackMouse: true,
@@ -95,7 +95,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                     field: ['trainingDocumentsCount','classifiedDocumentCount', 'totalDocuments'],
                     renderer: Ext.util.Format.numberRenderer('0'),
                     orientation: 'horizontal',
-                    fillStyle: '#333'
+                    color: '#333'
                 },
                  listeners: {
                     itemmouseup: function(item) {
@@ -139,29 +139,22 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
             store: radarStore,
             theme: 'Blue',
             axes: [{
-                type: 'numeric',
-                position: 'radial',
-                fields: 'Data',
-                steps: 5,
-                maximum: 100,
-                grid: true
-            }, {
-                type: 'category',
-                position: 'angular',
-                fields: 'Name',
-                grid: true
-            }],
-            
+            	steps: 5,
+	            type: 'Radial',
+	            position: 'radial',
+	            maximum: 100
+            }],    
             series: [{
                 type: 'radar',
                 xField: 'Name',
                 yField: 'Data',
                 showInLegend: true,
                 showMarkers: true,
+                highlight: true,
                 markerConfig: {
                     radius: 4,
                     size: 4,
-                    fillStyle: 'rgb(69,109,159)'
+                    fill: 'rgb(69,109,159)'
                 },
                 tips: {
                     trackMouse: true,
@@ -172,8 +165,8 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                 }
                 },
                 style: {
-                	fillStyle: 'rgb(194,214,240)',
-                    globalAlpha: 0.5,
+                	fill: 'rgb(194,214,240)',
+                    opacity: 0.5,
                     'lineWidth': 0.5
                 }
             }]

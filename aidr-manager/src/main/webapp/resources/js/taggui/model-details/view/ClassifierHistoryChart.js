@@ -89,7 +89,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         marker: {
             radius: 4
         },
-        highlightCfg: {
+        highlight: {
             fillStyle: '#000',
             radius: 5,
             lineWidth: 4,
@@ -118,7 +118,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         marker: {
             radius: 4
         },
-        highlightCfg: {
+        highlight: {
             fillStyle: '#000',
             radius: 5,
             lineWidth: 4,
@@ -147,7 +147,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         marker: {
             radius: 4
         },
-        highlightCfg: {
+        highlight: {
             fillStyle: '#000',
             radius: 5,
             lineWidth: 4,
@@ -176,7 +176,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         marker: {
             radius: 4
         },
-        highlightCfg: {
+        highlight: {
             fillStyle: '#000',
             radius: 5,
             lineWidth: 4,
