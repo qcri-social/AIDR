@@ -385,7 +385,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.stopButton = Ext.create('Ext.Button', {
             text: 'Stop',
-            cls:'btn btn-red',
+            cls:'btn btn-redCancel',
             id: 'collectionStop',
             margin: '0 0 0 10',
             hidden: true
@@ -393,7 +393,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.trashButton = Ext.create('Ext.Button', {
             text: 'Delete Collection',
-            cls:'btn btn-red',
+            cls:'btn btn-reddish2',
             id: 'collectionTrash',
             margin: '25 0 0 0',
             hidden: true,
@@ -440,7 +440,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.gotoTaggerButton = Ext.create('Ext.Button', {
             text: 'Go To Classifier',
-            cls:'btn btn-blue',
+            cls:'btn btn-blueish2',
             id: 'goToTagger',
             margin: '0 0 0 10',
             hidden: true
