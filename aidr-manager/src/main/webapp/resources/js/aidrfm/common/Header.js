@@ -40,7 +40,7 @@ UserController.service = {
 			minHeight : 100,
 			cls : 'popWindow',
 			resizable : false,
-			autoScroll : true,
+			scrollable : true,
 			modal : true,
 		});
 
@@ -63,7 +63,7 @@ UserController.service = {
 			minHeight : 220,
 			cls : 'popWindow',
 			resizable : false,
-			autoScroll : true,
+			scrollable : true,
 			modal : true,
 			id: 'updateWindow'
 		});
@@ -102,8 +102,7 @@ UserController.service = {
             return;
         }
 
-        var mask = AIDRFMFunctions.getMask(true, 'Update user info ...');
-        mask.show();
+		Ext.getBody().mask('Update user info ...');
 
         //Check if some collection already is running for current user
         Ext.Ajax.request({
@@ -120,7 +119,7 @@ UserController.service = {
             success: function (resp) {
             	Ext.get('updateWindow').destroy();
             	AIDRFMFunctions.setAlert("Info", ["User updated successfully."]);
-                mask.hide();
+                Ext.getBody().unmask();
                 
             },
             failure: function (resp) {
@@ -131,7 +130,7 @@ UserController.service = {
                             'Please try again later or contact Support']
                     );
                 AIDRFMFunctions.reportIssue(resp);
-                mask.hide();
+                Ext.getBody().unmask();
             }
         });
     },

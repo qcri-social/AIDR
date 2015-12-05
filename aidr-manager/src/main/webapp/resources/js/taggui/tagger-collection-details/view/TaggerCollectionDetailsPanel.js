@@ -188,9 +188,9 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                autoLoad: true,
                                                listeners: {
                                                beforeload: function (s) {
-                                               s.getProxy().extraParams = {
+                                               s.getProxy().setExtraParams({
                                                id: CRISIS_ID
-                                               }
+                                               })
                                                Ext.getBody().mask('Loading...');
                                                },
                                                load: function(){

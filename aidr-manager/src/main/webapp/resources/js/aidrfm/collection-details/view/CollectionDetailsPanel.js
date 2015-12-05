@@ -24,7 +24,7 @@ App.Demo = {
             width:800,
             height:600,
             title:'Pick up the Coordinates:' + 'www.boundingbox.klokantech.com/',
-            autoScroll:true,
+            scrollable:true,
             modal:false
         });
 
@@ -464,10 +464,10 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             listeners: {
                 beforeload: function (s) {
                     var id = me.currentCollectionId;
-                    s.getProxy().extraParams = {
+                    s.getProxy().setExtraParams({
                         id: id,
                         'limit' : -1
-                    }
+                    })
                 },
                 load: function (s) {
                     var count = s.getCount();

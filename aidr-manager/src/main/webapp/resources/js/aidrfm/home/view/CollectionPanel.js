@@ -205,9 +205,9 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
             autoLoad: true,
             listeners: {
                 beforeload: function (s) {
-                    s.getProxy().extraParams = {
+                    s.getProxy().setExtraParams({
                         trashed: "yes"
-                    };
+                    });
                 },
                 load: function (store, records, successful, operation, eOpts) {
                     var count = store.getCount();

@@ -92,7 +92,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
 
     loadLatestTweets: function () {
         var me = this;
-        Ext.getBody.mask('Loading...');
+        Ext.getBody().mask('Loading...');
         
         Ext.Ajax.timeout = 900000;
         Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
@@ -112,7 +112,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
             success: function (response) {
                 var jsonData = Ext.decode(response.responseText);
                 if (jsonData.data == ""){
-                    Ext.getBody.unmask();
+                    Ext.getBody().unmask();
                     return true;
                 }
                 var tweetData = Ext.JSON.decode(jsonData.data);
@@ -135,11 +135,11 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                 });
                  me.mainComponent.tweetsGrid.reconfigure(me.mainComponent.tweetsStore, columnsFromTweetData.columns);
                 me.mainComponent.tweetsStore.load();
-                Ext.getBody.unmask();
+                Ext.getBody().unmask();
                 return true;
             },
             failure: function () {
-                Ext.getBody.unmask();
+                Ext.getBody().unmask();
             }
         });
     },

@@ -25,7 +25,7 @@ Ext.require([
                 width:800,
                 height:600,
                 title:'Pick up the Coordinates:' + 'www.boundingbox.klokantech.com/',
-                autoScroll:true,
+                scrollable:true,
                 modal:false
             });
 

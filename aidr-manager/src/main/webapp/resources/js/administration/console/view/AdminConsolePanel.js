@@ -57,9 +57,9 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                         terms =  me.runningCollectionsSearchField.getValue();
                     }
 
-                    s.getProxy().extraParams = {
+                    s.getProxy().setExtraParams({
                         terms: terms
-                    };
+                    });
                 }
             },
             sorters: [
@@ -289,9 +289,9 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                         terms =  me.stoppedCollectionsSearchField.getValue();
                     }
 
-                    s.getProxy().extraParams = {
+                    s.getProxy().setExtraParams({
                         terms: terms
-                    };
+                    });
                 }
             },
             sorters: [

@@ -183,9 +183,8 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
 
             var form = Ext.getCmp('collectionForm').getForm();
 
-            var mask = AIDRFMFunctions.getMask();
-            mask.show();
-
+            Ext.getBody().mask('Loading...');
+            
             //Check if some collection already is running for current user
             Ext.Ajax.request({
                 url: BASE_URL + '/protected/collection/getRunningCollectionStatusByUser.action',
@@ -199,7 +198,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 success: function (resp) {
                     var response = Ext.decode(resp.responseText);
                     var name = form.findField('name').getValue();
-                    mask.hide();
+                    Ext.getBody().unmask();
                     if (response.success) {
                         if (response.data) {
                             var collectionData = response.data;
@@ -227,7 +226,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                     }
                 },
                 failure: function () {
-                    mask.hide();
+                    Ext.getBody().unmask();
                    
                 }
             });
@@ -239,8 +238,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
              */
             function createCollection(shouldRun) {
 
-                var mask = AIDRFMFunctions.getMask(true, 'Saving collection ...');
-                mask.show();
+                Ext.getBody.mask('Saving collection ...');
 
                 Ext.Ajax.request({
                     url: 'collection/create' + (shouldRun ? '?runAfterCreate=true' : ''),
@@ -262,10 +260,9 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                     },
                     success: function (response) {
                         AIDRFMFunctions.setAlert("Info", ["Collection created successfully.", "You will be redirected to the collection details page."]);
-                        mask.hide();
+                        Ext.getBody().unmask();
 
-                        var maskRedirect = AIDRFMFunctions.getMask(true, 'Redirecting ...');
-                        maskRedirect.show();
+                        Ext.getBody().mask('Redirecting ...');
 
 //                    wait for 3 sec to let user read information box
                         var isFirstRun = true;
