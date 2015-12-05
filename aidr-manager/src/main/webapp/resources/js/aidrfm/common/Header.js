@@ -37,10 +37,10 @@ UserController.service = {
 	viewProfileModal : function(url) {
 		var win = new Ext.Window({
 			width : 330,
-			minHeight : 100,
+			minHeight : 130,
 			cls : 'popWindow',
 			resizable : false,
-			scrollable : true,
+			scrollable : false,
 			modal : true,
 		});
 
@@ -59,11 +59,11 @@ UserController.service = {
 	
 	updateProfileModal : function(url) {
 		var win = new Ext.Window({
-			width : 360,
-			minHeight : 220,
+			width : 370,
+			minHeight : 260,
 			cls : 'popWindow',
 			resizable : false,
-			scrollable : true,
+			scrollable : false,
 			modal : true,
 			id: 'updateWindow'
 		});
