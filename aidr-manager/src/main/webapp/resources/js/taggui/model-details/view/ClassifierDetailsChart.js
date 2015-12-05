@@ -5,13 +5,13 @@ Ext.define('ModelForClassifiedDetailsChart',{
              {name : 'classifiedDocumentCount' },
              {name : 'totalDocuments' },
              {name : 'labelAuc', convert:function(a, rec){
-                return (rec.raw.labelAuc*100);
+                return (rec.data.labelAuc*100);
             }},
              {name : 'labelPrecision' , convert:function(a, rec){
-                return (rec.raw.labelPrecision*100);
+                return (rec.data.labelPrecision*100);
             }},
              {name : 'labelRecall' , convert:function(a, rec){
-                return (rec.raw.labelRecall*100);
+                return (rec.data.labelRecall*100);
             }}
         ]
 });
@@ -91,7 +91,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                 },
                 label: {
                   display: 'outside',
-                  'text-anchor': 'middle',
+                  'textAlign': 'middle',
                     field: ['trainingDocumentsCount','classifiedDocumentCount', 'totalDocuments'],
                     renderer: Ext.util.Format.numberRenderer('0'),
                     orientation: 'horizontal',
