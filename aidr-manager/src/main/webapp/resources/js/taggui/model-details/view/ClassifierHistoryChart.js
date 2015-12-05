@@ -55,10 +55,8 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         position: 'left',
         grid: true,
         minimum: 0,
-        label:{
-        	renderer: function (r, meta, record) {
-                return r ? (r * 100).toFixed(0) + '%' : '0%';
-            }
+        renderer: function (r, meta, record) {
+            return r ? (r * 100).toFixed(0) + '%' : '0%';
         }
     }, {
         type: 'time',
@@ -91,7 +89,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         marker: {
             radius: 4
         },
-        highlight: {
+        highlightCfg: {
             fillStyle: '#000',
             radius: 5,
             lineWidth: 4,
@@ -120,7 +118,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         marker: {
             radius: 4
         },
-        highlight: {
+        highlightCfg: {
             fillStyle: '#000',
             radius: 5,
             lineWidth: 4,
@@ -149,7 +147,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         marker: {
             radius: 4
         },
-        highlight: {
+        highlightCfg: {
             fillStyle: '#000',
             radius: 5,
             lineWidth: 4,
@@ -178,7 +176,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         marker: {
             radius: 4
         },
-        highlight: {
+        highlightCfg: {
             fillStyle: '#000',
             radius: 5,
             lineWidth: 4,

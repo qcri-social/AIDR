@@ -71,7 +71,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                 axis: 'left',
                 highlight: true,
 				style: {
-					opacity: .5
+					globalAlpha: .5
 				},
                 tips: {
                   trackMouse: true,
@@ -95,7 +95,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                     field: ['trainingDocumentsCount','classifiedDocumentCount', 'totalDocuments'],
                     renderer: Ext.util.Format.numberRenderer('0'),
                     orientation: 'horizontal',
-                    color: '#333'
+                    fillStyle: '#333'
                 },
                  listeners: {
                     itemmouseup: function(item) {
@@ -139,11 +139,19 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
             store: radarStore,
             theme: 'Blue',
             axes: [{
-                steps: 5,
-                type: 'radial',
+                type: 'numeric',
                 position: 'radial',
-                maximum: 100
+                fields: 'Data',
+                steps: 5,
+                maximum: 100,
+                grid: true
+            }, {
+                type: 'category',
+                position: 'angular',
+                fields: 'Name',
+                grid: true
             }],
+            
             series: [{
                 type: 'radar',
                 xField: 'Name',
@@ -153,7 +161,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                 markerConfig: {
                     radius: 4,
                     size: 4,
-                    fill: 'rgb(69,109,159)'
+                    fillStyle: 'rgb(69,109,159)'
                 },
                 tips: {
                     trackMouse: true,
@@ -164,9 +172,9 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                 }
                 },
                 style: {
-                    fill: 'rgb(194,214,240)',
-                    opacity: 0.5,
-                    'stroke-width': 0.5
+                	fillStyle: 'rgb(194,214,240)',
+                    globalAlpha: 0.5,
+                    'lineWidth': 0.5
                 }
             }]
         });

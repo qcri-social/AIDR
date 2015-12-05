@@ -1311,7 +1311,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 marker: {
                     radius: 4
                 },
-                highlight: {
+                highlightCfg: {
                     fillStyle: '#000',
                     radius: 5,
                     lineWidth: 4,
