@@ -30,14 +30,14 @@ Ext.define('AIDRFM.home.view.NewCollectionPanel', {
          this.newCollectionButton = Ext.create('Ext.Button', {
             text: 'Create Collection',
             margin: '6 0 0 15',
-            cls:'btn btn-blueish1',
+            cls:'btn btn-greenBig',
             id: 'newCollection'
         });
 
         this.goToAdminSection = Ext.create('Ext.Button', {
             text: 'Admin Panel',
             margin: '6 0 0 15',
-            cls:'btn btn-blueish1',
+            cls:'btn btn-greenBig',
             id: 'goToAdminSection',
             hidden: true
         });
@@ -106,16 +106,16 @@ this.collectionTpl = new Ext.XTemplate(
     '<div class="collection-item">',
 
     '<tpl if="classifiersNumber != null">',
-    '<button id="buttonGoToClassifiers_{id}" class="btn btn-blueish2" onclick="document.location.href=\'{[this.getEncodedCode(values.code)]}/tagger-collection-details\'">',
+    '<button id="buttonGoToClassifiers_{id}" class="btn btn-blueBig" onclick="document.location.href=\'{[this.getEncodedCode(values.code)]}/tagger-collection-details\'">',
     '<span>Classifier ({classifiersNumber})</span>',
     '</button>',
     '<tpl else>',
-    '<button id="buttonEnableClassifiers_{id}" class="btn btn-blueish3 {[this.isEnableClassifierButtonDisabled(values.status)]}" onclick="collectionController.enableTagger({crisisType.id}, \'{code}\',\'{name}\');" {[this.isEnableClassifierButtonDisabled(values.status)]}>',
+    '<button id="buttonEnableClassifiers_{id}" class="btn btn-blueDisabled {[this.isEnableClassifierButtonDisabled(values.status)]}" onclick="collectionController.enableTagger({crisisType.id}, \'{code}\',\'{name}\');" {[this.isEnableClassifierButtonDisabled(values.status)]}>',
     '<span>Enable Classifier</span>',
     '</button>',
     '</tpl>',
 
-    '<button id="buttonCollector_{id}" class="btn btn-blueish2" style="margin-right: 10px" onclick="document.location.href=\'{[this.getEncodedCode(values.code)]}/collection-details\'">',
+    '<button id="buttonCollector_{id}" class="btn btn-blueBig" style="margin-right: 10px" onclick="document.location.href=\'{[this.getEncodedCode(values.code)]}/collection-details\'">',
     '<span>Collector</span>',
     '</button>',
     '<div class="content">',

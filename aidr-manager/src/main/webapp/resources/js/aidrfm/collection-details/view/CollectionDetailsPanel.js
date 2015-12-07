@@ -393,7 +393,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.trashButton = Ext.create('Ext.Button', {
             text: 'Delete Collection',
-            cls:'btn btn-reddish2',
+            cls:'btn btn-redBig',
             id: 'collectionTrash',
             margin: '25 0 0 0',
             hidden: true,
@@ -425,7 +425,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.cancelButton = Ext.create('Ext.Button', {
             text: 'Cancel',
-            cls:'btn btn-red',
+            cls:'btn btn-redCancel',
             id: 'collectionEditCancel'
         });
 
@@ -440,7 +440,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.gotoTaggerButton = Ext.create('Ext.Button', {
             text: 'Go To Classifier',
-            cls:'btn btn-blueish2',
+            cls:'btn btn-blueBig',
             id: 'goToTagger',
             margin: '0 0 0 10',
             hidden: true
@@ -1221,7 +1221,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             Ext.widget('button', {
                                 exampleId: recordValue,
                                 renderTo: id,
-                                cls: 'btn btn-red',
+                                cls: 'btn btn-redCancel',
                                 text: 'Remove Collaborator',
                                 width: 185,
                                 action: 'removeManager'

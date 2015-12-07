@@ -567,7 +567,7 @@ border: 1px solid;
 	border-radius: 0.4em;
 }
 
-.btn.btn-reddish2 {
+.btn.btn-redBig {
 	color: #fff;
 	width: 181px;
 	border: 1px solid;
@@ -628,7 +628,7 @@ border: 1px solid;
 	border-radius: 0.44em;
 }
 
-.btn.btn-blueish1 {
+.btn.btn-greenBig {
 	color: #fff;
 	height:34px;
 	width: auto;
@@ -765,7 +765,7 @@ border: 1px solid;
 	border-radius: 0.44em;
 }
 
-.btn.btn-blueish2 {
+.btn.btn-blueBig {
 	color: #fff;
 	width: 181px;
 	border: 1px solid;
@@ -797,7 +797,7 @@ border: 1px solid;
 }
 
 
-.btn.btn-blueish3 {
+.btn.btn-blueDisabled {
 	color: #fff;
 	width: auto;
 	padding: 0 13px;
@@ -863,20 +863,20 @@ border: 1px solid;
 	box-shadow: inset #D8C41D 0 1px 1px, #f2f0f0 0 -1px 0;
 }
 
-.btn.btn-blueish1 button {
+.btn.btn-greenBig button {
 	width: auto;
 	height: 36px;
 	line-height: 99px;
 }
 
 ,
-.btn.btn-red button, .btn.btn-blueish2 button {
+.btn.btn-red button, .btn.btn-blueBig button {
 	height: 33px;
 	line-height: 22px;
 }
 
 ,
-.btn.btn-reddish2 button {
+.btn.btn-redBigbutton {
 	width: 100px;
 	height: 23px;
 	line-height: 22px;
@@ -888,8 +888,8 @@ border: 1px solid;
 	line-height: 22px;
 }
 
-.btn.btn-blueish1 span, .btn.btn-blueish3 span, .btn.btn-blueish2 span,
-	.btn.btn-green span, .btn.btn-reddish  span, .btn.btn-reddish2  span,
+.btn.btn-greenBig span, .btn.btn-blueDisabled span, .btn.btn-blueBig span,
+	.btn.btn-green span, .btn.btn-reddish  span, .btn.btn-redBig  span,
 	.btn.btn-blue  span, .btn.btn-red  span {
 	color: #FFFFFF;
 }
