@@ -117,13 +117,13 @@ UserController.service = {
                 'Accept': 'application/json'
             },
             success: function (resp) {
-            	Ext.get('updateWindow').destroy();
+            	Ext.getCmp('updateWindow').hide();
             	AIDRFMFunctions.setAlert("Info", ["User updated successfully."]);
                 Ext.getBody().unmask();
                 
             },
             failure: function (resp) {
-            	Ext.get('updateWindow').destroy();
+            	Ext.getCmp('updateWindow').hide();
             	AIDRFMFunctions.setAlert(
                         "Error",
                         ['Error while updating user.',

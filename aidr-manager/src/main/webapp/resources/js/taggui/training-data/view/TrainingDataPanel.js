@@ -45,7 +45,7 @@ No use for this label as all the information is rendered in a single taggerDescr
 
         this.addTrainingData = Ext.create('Ext.Button', {
             text: 'Tag more '+ COLLECTION_TYPES[TYPE]["plural"],
-            cls:'btn btn-blueish1',
+            cls:'btn btn-greenBig',
             id: 'addNewTrainingData',
             width: 150,
             margin: '0 0 0 0'
@@ -175,7 +175,7 @@ No use for this label as all the information is rendered in a single taggerDescr
 
                 this.downloadButton = Ext.create('Ext.Button', {
                 			text: 'Generate Downloadable File',
-                			cls:'btn btn-blueish1',
+                			cls:'btn btn-greenBig',
                 			id: 'downloadButton',
                 			margin: '10 0 0 0'
                 		});
