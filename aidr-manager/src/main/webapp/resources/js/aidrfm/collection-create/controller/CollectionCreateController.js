@@ -238,7 +238,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
              */
             function createCollection(shouldRun) {
 
-                Ext.getBody.mask('Saving collection ...');
+                Ext.getBody().mask('Saving collection ...');
 
                 Ext.Ajax.request({
                     url: 'collection/create' + (shouldRun ? '?runAfterCreate=true' : ''),

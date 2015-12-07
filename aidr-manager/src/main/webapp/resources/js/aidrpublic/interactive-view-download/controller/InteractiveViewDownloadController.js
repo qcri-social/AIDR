@@ -133,7 +133,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                         successProperty: 'success'
                     }
                 });
-                 me.mainComponent.tweetsGrid.reconfigure(me.mainComponent.tweetsStore, columnsFromTweetData.columns);
+                me.mainComponent.tweetsGrid.reconfigure(me.mainComponent.tweetsStore, columnsFromTweetData.columns);
                 me.mainComponent.tweetsStore.load();
                 Ext.getBody().unmask();
                 return true;
