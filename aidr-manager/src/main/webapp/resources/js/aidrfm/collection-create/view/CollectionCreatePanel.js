@@ -309,7 +309,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         this.saveButton = Ext.create('Ext.Button', {
             text: 'Create and Start',
             margin: '0 0 0 -100',
-            cls: 'btn btn-blueish2',
+            cls: 'btn btn-blueBig',
             id: 'collectionCreate'
         });
 
@@ -317,7 +317,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             text: 'Cancel',
                          margin: '0 140 0 240',
 
-            cls: 'btn btn-reddish2',
+            cls: 'btn btn-redBig',
             id: 'collectionCancelCreate'
         });
 
