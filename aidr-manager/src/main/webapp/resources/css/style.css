@@ -10,15 +10,7 @@
 .svg-menu img {
 	width: 1.25em;
 }
-.tabPanel .x-panel-body-default {
-    border-width: 0;
-     width: 100% !important;
-}
-.x-panel-default {
-    border-color: #f5f5f5;
-    padding: 0;
-    width: 100% !important;
-}
+
 
 
 .x-window .x-tool img {
