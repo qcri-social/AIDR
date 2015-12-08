@@ -27,13 +27,13 @@
 .x-window .x-tool-over .x-tool-close {
 	background-position: 0px 0.2px;
 }
-.x-btn-default-small {
+#refreshBtn {
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     -ms-border-radius: 3px;
     -o-border-radius: 3px;
     border-radius: 3px;
-    padding: 3px 3px 3px 3px;
+    /*padding: 3px 3px 3px 3px;*/
     border-width: 1px;
     border-style: solid;
     background-color: #FFFFFF;

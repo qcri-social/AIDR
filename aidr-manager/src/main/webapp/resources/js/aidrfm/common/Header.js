@@ -151,7 +151,10 @@ UserController.service = {
                     if (Ext.isArray(roles)) {
                         Ext.each(roles, function (role) {
                             if (role && role == 'ADMIN'){
-                                Ext.get('adminButton').show();
+                            	 var dh = Ext.DomHelper;
+                            	 var button='<span onclick="UserController.service.goToAdminSection()">ADMIN CONSOLE</span>';
+                            	 dh.append('adminButton',button);
+                               
                             }
                         })
                     }
@@ -187,6 +190,6 @@ Ext.define('AIDRFM.common.Header', {
 							+ '<ul class="dropdown-menu">'
 							+ '<li><span onclick="UserController.service.viewProfileModal()">VIEW PROFILE</span></li>'
 							+ '<li><span onclick="UserController.service.updateProfileModal()">UPDATE PROFILE</span></li>'
-							+ '<li id="adminButton" hidden="true"><span onclick="UserController.service.goToAdminSection()">ADMIN CONSOLE</span></li></ul></div></div></div>'
+							+ '<li id="adminButton"></li></ul></div></div></div>'
 				});
 

@@ -431,7 +431,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.enableTaggerButton = Ext.create('Ext.Button', {
             text: 'Enable Classifier',
-            cls:'btn btn-blue',
+            cls:'btn btn-blueBig',
             id: 'enableTagger',
             margin: '0 0 0 10',
             disabled: true,
@@ -1126,14 +1126,14 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         this.generateCSVButton = Ext.create('Ext.Button', {
             text: 'Export ' + COLLECTION_TYPES[TYPE]['plural'] + ' (.csv) (Last 100k ' + COLLECTION_TYPES[TYPE]['plural'] + ')',
             margin: 5,
-            cls:'btn btn-blue download-button',
+            cls:'btn btn-blueBig download-button',
             id: 'generateCSVLink'
         });
 
         this.generateTweetIdsButton = Ext.create('Ext.Button', {
             text: 'Export ' + COLLECTION_TYPES[TYPE]['singular'] + '-ids only (.csv) (All ' + COLLECTION_TYPES[TYPE]['plural'] + ')',
             margin: 5,
-            cls:'btn btn-blue download-button',
+            cls:'btn btn-blueBig download-button',
             id: 'generateTweetIdsLink'
         });
 
@@ -1152,14 +1152,14 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         this.generateJSONButton = Ext.create('Ext.Button', {
             text: 'Export ' + COLLECTION_TYPES[TYPE]['plural'] + ' (.json) (Last 100k ' + COLLECTION_TYPES[TYPE]['plural'] + ')',
             margin: 5,
-            cls:'btn btn-blue download-button',
+            cls:'btn btn-blueBig download-button',
             id: 'generateJSONLink'
         });
 
         this.generateJsonTweetIdsButton = Ext.create('Ext.Button', {
             text: 'Export ' + COLLECTION_TYPES[TYPE]['singular'] + '-ids only (.json) (All ' + COLLECTION_TYPES[TYPE]['plural'] + ')',
             margin: 5,
-            cls:'btn btn-blue download-button',
+            cls:'btn btn-blueBig download-button',
             id: 'generateJsonTweetIdsLink'
         });
 
@@ -1264,7 +1264,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.toMyClassifiersToDownload = Ext.create('Ext.Button', {
             text: 'Go to my classifiers to download',
-            cls:'btn btn-blue',
+            cls:'btn btn-blueBig',
             id: 'toMyClassifiersToDownload',
             margin: '10 0 0 0'
         });
