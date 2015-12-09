@@ -42,14 +42,14 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 
 		this.applyFilterButton = Ext.create('Ext.Button', {
 			text: 'Apply Filter',
-			cls:'btn btn-blue',
+			cls:'btn btn-blueSmall',
 			id: 'applyFilterButton',
 			disabled: true
 		});
 
 		this.resetFiltersButton = Ext.create('Ext.Button', {
 			text: 'Reset Filters',
-			cls:'btn btn-red',
+			cls:'btn btn-redSmall',
 			id: 'resetFilters',
 			margin: '0 10 0 0',
 			disabled: true
@@ -231,7 +231,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 
 		this.downloadButton = Ext.create('Ext.Button', {
 			text: 'Generate Downloadable File',
-			cls:'btn btn-blue',
+			cls:'btn btn-blueSmall',
 			id: 'downloadButton',
 			margin: '10 0 0 0'
 		});
