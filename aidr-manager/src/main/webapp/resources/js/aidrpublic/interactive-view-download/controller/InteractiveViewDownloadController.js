@@ -124,7 +124,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                 tweetsTmpData = Ext.clone(data);
 
                 me.mainComponent.tweetsStore.setProxy({
-                    type: 'pagingmemory',
+                    type: 'memory',
                     data: tweetsTmpData,
                     reader: {
                         type: 'json',

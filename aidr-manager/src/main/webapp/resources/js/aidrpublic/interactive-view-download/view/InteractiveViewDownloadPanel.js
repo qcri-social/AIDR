@@ -297,7 +297,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			        ]
 		});
 
-		this.tweetsPanel = Ext.create('Ext.container.Container', {
+		/*this.tweetsPanel = Ext.create('Ext.container.Container', {
 			layout: {
 				type: 'vbox',
 				align: 'stretch'
@@ -307,7 +307,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			        this.tweetsPaging
 			        ]
 		});
-
+*/
 		this.downloadPanel = Ext.create('Ext.container.Container', {
 			layout: {
 				type: 'vbox'
@@ -383,7 +383,17 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 				            	          ]
 				              },
 				              this.filterFieldSet,
-				              this.tweetsPanel,
+				              {
+				                  xtype: 'container',
+				                  layout: {
+				                      type: 'vbox',
+				                      align: 'stretch'
+				                  },
+				                  items: [
+				                          	this.tweetsGrid,
+				                          	this.tweetsPaging
+			                          	]
+				              },
 				              this.contactOwnerPanel,
 				              {
 				            	  xtype: 'container',
@@ -419,7 +429,17 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			            	          this.screenTitle
 			            	          ]
 			              },
-			              this.tweetsPanel,
+			              {
+			                  xtype: 'container',
+			                  layout: {
+			                      type: 'vbox',
+			                      align: 'stretch'
+			                  },
+			                  items: [
+			                          	this.tweetsGrid,
+			                          	this.tweetsPaging
+		                          	]
+			              },
 			              this.curatorInfoPanel,
 			              {
 			            	  xtype: 'container',
