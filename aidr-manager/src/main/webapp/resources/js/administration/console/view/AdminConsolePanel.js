@@ -28,7 +28,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
         this.toSystemHealthButton = Ext.create('Ext.Button', {
             text: 'Go to System Health',
             margin: '27 0 0 15',
-            cls: 'btn btn-blue',
+            cls: 'btn btn-blueSmall',
             id: 'toSystemHealthButtonId'
         });
 
@@ -246,7 +246,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
         this.runningCollectionsSearchButton = Ext.create('Ext.Button', {
             margin: '0 0 0 10',
             text: 'Search',
-            cls: 'btn btn-blue',
+            cls: 'btn btn-blueSmall',
             id: 'runningCollectionsSearchButtonId'
         });
 
@@ -260,7 +260,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
         this.stoppedCollectionsSearchButton = Ext.create('Ext.Button', {
             margin: '0 0 0 10',
             text: 'Search',
-            cls: 'btn btn-blue',
+            cls: 'btn btn-blueSmall',
             id: 'stoppedCollectionsSearchButtonId'
         });
 

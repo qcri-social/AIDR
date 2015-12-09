@@ -36,7 +36,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
            this.gotoCollectorButton = Ext.create('Ext.Button', {
                                                  text: 'Go To Collector',
-                                                 cls:'btn btn-blueBig',
+                                                 cls:'btn btn-blueSmall',
                                                  id: 'goToCollector',
                                                  width: 150,
                                                  margin: '0 0 0 810'
@@ -44,7 +44,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
            this.addNewClassifierButton = Ext.create('Ext.Button', {
                                                     text: 'Add new classifier',
-                                                    cls:'btn btn-blueBig',
+                                                    cls:'btn btn-blueSmall',
                                                     id: 'addNewClassifier',
                                                     width: 150,
                                                     margin: '27 0 0 0'
@@ -215,7 +215,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                     '<td class="styled-text-17" width="135px">Classifier:</td>',
                                                     '<td class="styled-text-17" >{[this.getModelName(values.modelID, values.attribute)]}</td>' +
                                                     '<td class="styled-text-17 pdng-r-0" align="right">' +
-                                                    '<button id="removeClassifierBtn_{modelFamilyID}" class="btn btn-redCancel {[this.isRemoveClassifierButtonHidden(values.modelID)]}" onclick="taggerCollectionDetailsController.removeClassifierHandler(\'{modelFamilyID}\', \'{attribute}\')">',
+                                                    '<button id="removeClassifierBtn_{modelFamilyID}" class="btn btn-redSmall {[this.isRemoveClassifierButtonHidden(values.modelID)]}" onclick="taggerCollectionDetailsController.removeClassifierHandler(\'{modelFamilyID}\', \'{attribute}\')">',
                                                     '<span>Remove Classifier</span>',
                                                     '</button>',
                                                     '</td>' +
@@ -303,7 +303,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
            this.deleteButton = Ext.create('Ext.Button', {
                                           text: 'Delete',
-                                          cls:'btn btn-redCancel',
+                                          cls:'btn btn-redSmall',
                                           id: 'crisisDelete',
                                           margin: '0 0 0 7'
                                           });

@@ -101,7 +101,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
 
         this.cancelButton = Ext.create('Ext.Button', {
             text: 'Cancel',
-            cls: 'btn btn-redCancel',
+            cls: 'btn btn-redSmall',
             id: 'attributeCancelCreate'
         });
 

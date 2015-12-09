@@ -385,7 +385,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.stopButton = Ext.create('Ext.Button', {
             text: 'Stop',
-            cls:'btn btn-redCancel',
+            cls:'btn btn-redSmall',
             id: 'collectionStop',
             margin: '0 0 0 10',
             hidden: true
@@ -393,7 +393,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.trashButton = Ext.create('Ext.Button', {
             text: 'Delete Collection',
-            cls:'btn btn-redBig',
+            cls:'btn btn-redSmall',
             id: 'collectionTrash',
             margin: '25 0 0 0',
             hidden: true,
@@ -425,13 +425,13 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.cancelButton = Ext.create('Ext.Button', {
             text: 'Cancel',
-            cls:'btn btn-redCancel',
+            cls:'btn btn-redSmall',
             id: 'collectionEditCancel'
         });
 
         this.enableTaggerButton = Ext.create('Ext.Button', {
             text: 'Enable Classifier',
-            cls:'btn btn-blueBig',
+            cls:'btn btn-blueSmall',
             id: 'enableTagger',
             margin: '0 0 0 10',
             disabled: true,
@@ -440,7 +440,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.gotoTaggerButton = Ext.create('Ext.Button', {
             text: 'Go To Classifier',
-            cls:'btn btn-blueBig',
+            cls:'btn btn-blueSmall',
             id: 'goToTagger',
             margin: '0 0 0 10',
             hidden: true
@@ -1221,7 +1221,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             Ext.widget('button', {
                                 exampleId: recordValue,
                                 renderTo: id,
-                                cls: 'btn btn-redCancel',
+                                cls: 'btn btn-redSmall',
                                 text: 'Remove Collaborator',
                                 width: 185,
                                 action: 'removeManager'
