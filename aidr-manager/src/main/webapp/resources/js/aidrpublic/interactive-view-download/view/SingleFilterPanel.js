@@ -260,7 +260,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
     },
 
     onMainComboSelect: function(cmp, selectedValues){
-        var val = selectedValues[0].data.val;
+        var val = selectedValues.data.val;
 
         if (!val){
             this.markNotValid();
@@ -301,7 +301,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
     },
 
     onDateTypeComboSelect: function(cmp, selectedValues){
-        var val = selectedValues[0].data.val;
+        var val = selectedValues.data.val;
 
         if (!val){
             this.dateField.hide();
@@ -332,7 +332,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
     },
 
     onClassifierTypeComboSelect: function(cmp, selectedValues){
-        var val = selectedValues[0].data.val;
+        var val = selectedValues.data.val;
 
         if (!val){
             this.labelCombo.hide();
@@ -365,7 +365,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
     },
 
     onLabelComboSelect: function(cmp, selectedValues){
-        var val = selectedValues[0].data.val;
+        var val = selectedValues.data.val;
 
         if (!val){
             this.markNotValid();
@@ -459,7 +459,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel', {
     },
 
     onConfidenceComboSelect: function(cmp, selectedValues){
-        var val = selectedValues[0].data.val;
+        var val = selectedValues.data.val;
 
         if (!val){
             this.markNotValid();
