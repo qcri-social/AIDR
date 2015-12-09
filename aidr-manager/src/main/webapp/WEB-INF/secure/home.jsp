@@ -14,9 +14,8 @@
     <script type="text/javascript" src="resources/vendor/moment-lang-en.js"></script>
      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
      
-     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/build/packages/sencha-charts/build/sencha-charts.js"></script>
+     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/build/packages/ext-charts/build/ext-charts.js"></script>
 	<link type="text/css" href="${pageContext.request.contextPath}/resources/build/packages/sencha-charts/build/crisp/resources/sencha-charts-all.css">
-	<script type="text/javascript" src="${pageContext.request.contextPath}/resources/build/packages/ext-charts/build/ext-charts.js"></script>
     <script type="text/javascript">
         Ext.Loader.setConfig({
                 enabled: true,

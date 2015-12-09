@@ -233,8 +233,19 @@ No use for this label as all the information is rendered in a single taggerDescr
                 ]
             },
             this.taggerDescription2line,
-            this.trainingDataGrid,
-            this.trainingDataPaging,
+            {
+                xtype: 'container',
+                layout: {
+                    type: 'vbox',
+                    align: 'stretch'
+                },
+                items: [
+						this.trainingDataGrid,
+						this.trainingDataPaging,
+                ]
+            },
+            
+            
             this.downloadPanel
         ];
 
