@@ -11,13 +11,13 @@ import java.io.Serializable;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-@Table(catalog = "mm_scheduler",name = "clientAppDeployment")
+@Table(catalog = "mm_scheduler",name = "client_app_deployment")
 public class ClientAppDeployment implements Serializable {
     private static final long serialVersionUID = -5527566248002296042L;
 
     @Id
     @GeneratedValue
-    @Column(name = "deploymentID")
+    @Column(name = "id")
     private Long deploymentID;
 
     @Column (name = "name", nullable = false)
@@ -27,7 +27,7 @@ public class ClientAppDeployment implements Serializable {
     private int status;
 
 
-    @Column (name = "clientAppID", nullable = false)
+    @Column (name = "client_app_id", nullable = false)
     private Long clientAppID;
 
     public Long getDeploymentID() {

@@ -108,37 +108,37 @@ public class Client implements Serializable {
 
 
     @Id
-    @Column(name = "clientID")
+    @Column(name = "id")
     private Long clientID;
 
-    @Column (name = "aidrUserID", nullable = false)
+    @Column (name = "aidr_user_id", nullable = false)
     private Long aidrUserID;
 
     @Column (name = "name", nullable = false)
     private String name;
 
-    @Column (name = "hostURL", nullable = false)
+    @Column (name = "host_url", nullable = false)
     private String hostURL;
 
-    @Column (name = "hostAPIKey", nullable = false)
+    @Column (name = "host_api_key", nullable = false)
     private String hostAPIKey;
 
     @Column (name = "description", nullable = false)
     private String description;
 
-    @Column (name = "queueSize", nullable = false)
+    @Column (name = "queue_size", nullable = false)
     private Integer queueSize;
 
-    @Column (name = "aidrHostURL", nullable = false)
+    @Column (name = "aidr_host_url", nullable = false)
     private String aidrHostURL;
 
     @Column (name = "created", nullable = false)
     private Date created;
 
-    @Column (name = "defaultTaskRunsPerTask", nullable = false)
+    @Column (name = "default_task_run_per_task", nullable = false)
     private int defaultTaskRunsPerTask;
 
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="clientID")
+    @JoinColumn(name="client_id")
     private Set<ClientApp> clientAppSet;
 }

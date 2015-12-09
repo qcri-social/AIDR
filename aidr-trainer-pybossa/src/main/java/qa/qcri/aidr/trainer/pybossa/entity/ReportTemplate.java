@@ -10,24 +10,24 @@ import javax.persistence.*;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-@Table(name = "reportTemplate")
+@Table(name = "report_template")
 public class ReportTemplate {
 
     @Id
     @GeneratedValue
-    @Column(name = "reportTemplateID")
+    @Column(name = "id")
     private Long reportTemplateID;
 
-    @Column(name = "taskQueueID")
+    @Column(name = "task_queue_id")
     private Long taskQueueID;
 
-    @Column(name = "clientAppID")
+    @Column(name = "client_app_id")
     private Long clientAppID;
 
-    @Column(name = "taskID", nullable = false)
+    @Column(name = "task_id", nullable = false)
     private Long taskID;
 
-    @Column(name = "tweetID", nullable = false)
+    @Column(name = "tweet_id", nullable = false)
     private String tweetID;
 
     @Column(name = "tweet", nullable = false)

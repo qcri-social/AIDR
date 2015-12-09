@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity @IdClass(TaskLogKey.class)
-@Table(name = "taskLog")
+@Table(name = "task_log")
 public class TaskLog implements Serializable {
 
     private static final long serialVersionUID = -5527566248002296042L;
@@ -46,7 +46,7 @@ public class TaskLog implements Serializable {
 
 
     @Id
-    @Column(name = "taskQueueID")
+    @Column(name = "task_queue_id")
     private Long taskQueueID;
 
     @Id

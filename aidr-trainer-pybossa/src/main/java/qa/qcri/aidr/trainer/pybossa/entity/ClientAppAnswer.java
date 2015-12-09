@@ -12,12 +12,12 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-@Table(name = "clientAppAnswer")
+@Table(name = "client_app_answer")
 public class ClientAppAnswer implements Serializable {
     private static final long serialVersionUID = -5527566248002296042L;
 
     @Id
-    @Column(name = "clientAppID")
+    @Column(name = "client_app_id")
     private Long clientAppID;
 
     @Column (name = "answer", nullable = false)
@@ -26,10 +26,10 @@ public class ClientAppAnswer implements Serializable {
     @Column (name = "created", nullable = false)
     private Date created;
 
-    @Column(name="voteCutOff", nullable = false)
+    @Column(name="vote_cut_off", nullable = false)
     private Integer voteCutOff;
 
-    @Column (name = "activeAnswerKey", nullable = true)
+    @Column (name = "active_answer_key", nullable = true)
     private String activeAnswerKey;
 
 
