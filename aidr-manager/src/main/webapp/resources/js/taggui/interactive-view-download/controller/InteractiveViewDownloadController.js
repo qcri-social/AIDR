@@ -125,6 +125,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                 me.mainComponent.tweetsStore.setProxy({
                     type: 'memory',
                     data: tweetsTmpData,
+                    enablePaging: true,
                     reader: {
                         type: 'json',
                         totalProperty: 'totalCount',
