@@ -45,6 +45,7 @@ import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.CrisisTypeService;
 import qa.qcri.aidr.manager.service.TaggerService;
+import qa.qcri.aidr.manager.service.WordDictionaryService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.CollectionType;
 import qa.qcri.aidr.manager.util.SMS;
@@ -76,7 +77,10 @@ public class CollectionServiceImpl implements CollectionService {
 	
 	@Autowired
 	private CrisisTypeService crisisTypeService;
-	//@Autowired	// gf 3 way
+
+	@Autowired
+	private WordDictionaryService wordService;
+	
 	@Value("${fetchMainUrl}")
 	private String fetchMainUrl;
 	@Value("${twitter.consumerKey}")
@@ -156,7 +160,18 @@ public class CollectionServiceImpl implements CollectionService {
 	@Transactional
 	public Collection create(CollectionDetailsInfo collectionDetailsInfo, UserAccount user) throws Exception {
 		
+		String filteredTrack = collectionDetailsInfo.getTrack();
+		
+		if(!StringUtils.isEmpty(filteredTrack)) {
+			filteredTrack = getFilteredTrack(filteredTrack);
+			
+			if(StringUtils.isEmpty(filteredTrack)) {
+				return null;
+			}
+		}
+		
 		Collection collection = adaptCollectionDetailsInfoToCollection(collectionDetailsInfo, user);
+		collection.setTrack(filteredTrack);
 		try {
 			collectionRepository.save(collection);
 			collaboratorService.addCollaboratorToCollection(collectionDetailsInfo.getCode(), user.getId());
@@ -773,7 +788,6 @@ public class CollectionServiceImpl implements CollectionService {
 		List<CollectionSummaryInfo> collectionSummaryInfos = new ArrayList<CollectionSummaryInfo>();
 		
 		List<Collection> collections = collectionRepository.getAllCollections();
-		
 		if(collections != null) {
 			collectionSummaryInfos = adaptCollectionListToCollectionSummaryInfoList(collections);
 		}
@@ -888,5 +902,26 @@ public class CollectionServiceImpl implements CollectionService {
     	summaryInfo.setPubliclyListed(collection.isPubliclyListed());
     	
     	return summaryInfo;
+    }
+    
+    private String getFilteredTrack(String trackToFilter) {
+    	
+    	String filteredTrack = "";
+    	
+    	String[] trackArray = trackToFilter.split(",");
+    	List<String> toFilter = new ArrayList<String>();
+    	toFilter.addAll(Arrays.asList(trackArray));
+    	
+    	List<String> stopWordList = wordService.fetchAllStopWords();
+    	
+    	toFilter.removeAll(stopWordList);
+    	
+    	if(toFilter != null && !toFilter.isEmpty()) {
+    		trackArray = toFilter.toArray(new String[] {});
+        	filteredTrack = trackArray.toString().substring(0, trackArray.toString().length());
+    	}
+    	
+    	return filteredTrack;
+    	
     }
 }
