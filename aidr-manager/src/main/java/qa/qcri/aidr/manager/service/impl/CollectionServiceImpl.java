@@ -104,6 +104,7 @@ public class CollectionServiceImpl implements CollectionService {
 	@Transactional(readOnly=false)
 	public boolean updateCollection(CollectionUpdateInfo collectionUpdateInfo, Long userId) {
 		
+		String filteredTrack = "";
 		try {
 			Collection collection = findByCode(collectionUpdateInfo.getCode());
 			
@@ -118,7 +119,16 @@ public class CollectionServiceImpl implements CollectionService {
 			
 			collection.setProvider(CollectionType.valueOf(collectionUpdateInfo.getProvider()));
 			collection.setFollow(collectionUpdateInfo.getFollow());
-			collection.setTrack(collectionUpdateInfo.getTrack());
+			filteredTrack = collectionUpdateInfo.getTrack();
+			
+			if(!StringUtils.isEmpty(filteredTrack)) {
+				filteredTrack = getFilteredTrack(filteredTrack);
+				
+				if(StringUtils.isEmpty(filteredTrack)) {
+					return false;
+				}
+			}
+			collection.setTrack(filteredTrack);
 			collection.setGeo(collectionUpdateInfo.getGeo());
 			collection.setGeoR(collectionUpdateInfo.getGeoR());
 			collection.setDurationHours(Integer.parseInt(collectionUpdateInfo.getDurationHours()));
@@ -908,7 +918,8 @@ public class CollectionServiceImpl implements CollectionService {
     	
     	String filteredTrack = "";
     	
-    	String[] trackArray = trackToFilter.split(",");
+    	//trackToFilter = trackToFilter.replaceAll(", ", ",");
+    	String[] trackArray = trackToFilter.split(",\\s*");
     	List<String> toFilter = new ArrayList<String>();
     	toFilter.addAll(Arrays.asList(trackArray));
     	
@@ -918,10 +929,11 @@ public class CollectionServiceImpl implements CollectionService {
     	
     	if(toFilter != null && !toFilter.isEmpty()) {
     		trackArray = toFilter.toArray(new String[] {});
-        	filteredTrack = trackArray.toString().substring(0, trackArray.toString().length());
+        	filteredTrack = Arrays.toString(trackArray);
+        	filteredTrack = filteredTrack.substring(1, filteredTrack.length()-1);
     	}
     	
-    	return filteredTrack;
+    	return filteredTrack.trim();
     	
     }
 }

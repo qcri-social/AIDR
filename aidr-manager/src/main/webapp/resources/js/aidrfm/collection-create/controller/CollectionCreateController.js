@@ -258,23 +258,31 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                     headers: {
                         'Accept': 'application/json'
                     },
-                    success: function (response) {
-                        AIDRFMFunctions.setAlert("Info", ["Collection created successfully.", "You will be redirected to the collection details page."]);
+                    success: function (resp) {
                         Ext.getBody().unmask();
+                        var response = Ext.decode(resp.responseText);
+                        if (response.success) {
+                            AIDRFMFunctions.setAlert("Info", ["Collection created successfully.", "You will be redirected to the collection details page."]);
+                            Ext.getBody().mask('Redirecting ...');
 
-                        Ext.getBody().mask('Redirecting ...');
+                            //wait for 3 sec to let user read information box
+                            var isFirstRun = true;
+                            Ext.TaskManager.start({
+                                run: function () {
+                                    if (!isFirstRun) {
+                                        document.location.href = BASE_URL + '/protected/'+ form.findField('code').getValue() +'/collection-details';
+                                    }
+                                    isFirstRun = false;
+                                },
+                                interval: 3 * 1000
+                            });
+                    	} else {
+                        	AIDRFMFunctions.setAlert("Error", ["Error in creating collection.", "Please try again later."]);
+                        }
 
-//                    wait for 3 sec to let user read information box
-                        var isFirstRun = true;
-                        Ext.TaskManager.start({
-                            run: function () {
-                                if (!isFirstRun) {
-                                    document.location.href = BASE_URL + '/protected/'+ form.findField('code').getValue() +'/collection-details';
-                                }
-                                isFirstRun = false;
-                            },
-                            interval: 3 * 1000
-                        });
+                    },
+                    failure: function(response) {
+                    	Ext.getBody().unmask();
                     }
                 });
             }

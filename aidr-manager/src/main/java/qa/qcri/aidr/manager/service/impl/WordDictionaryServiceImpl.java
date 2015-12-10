@@ -36,6 +36,10 @@ public class WordDictionaryServiceImpl implements WordDictionaryService {
 			for(WordDictionary word : wordDictionary) {
 				STOP_WORDS_LIST.add(word.getWord());
 			}
+			
+			for(WordDictionary word : wordDictionary) {
+				STOP_WORDS_LIST.add("#" +word.getWord());
+			}
 		}		
 		
 		return STOP_WORDS_LIST;
