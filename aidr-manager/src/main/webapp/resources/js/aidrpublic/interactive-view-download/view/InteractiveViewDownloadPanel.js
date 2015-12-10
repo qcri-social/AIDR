@@ -275,7 +275,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			displayInfo:true,
 			displayMsg:COLLECTION_TYPES[TYPE]["plural"] + ' {0} - {1} of {2}',
 			emptyMsg:'No '+ COLLECTION_TYPES[TYPE]["plural"] + ' to display',
-			items: [
+			/*items: [
 			        {
 			        	xtype: 'tbseparator'
 			        },
@@ -294,7 +294,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			        		this.fireEvent('triggerClear');
 			        	}
 			        }
-			        ]
+			        ]*/
 		});
 
 		/*this.tweetsPanel = Ext.create('Ext.container.Container', {

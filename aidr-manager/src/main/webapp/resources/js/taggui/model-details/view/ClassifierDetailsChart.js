@@ -79,13 +79,13 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                 //  height: 50,
                   renderer: function(storeItem, item) {
                       if(item.yField == ('trainingDocumentsCount')){
-                          this.setTitle('Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('trainingDocumentsCount') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
+                          this.setHtml('Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('trainingDocumentsCount') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
                       }
                       else  if(item.yField == ('classifiedDocumentCount')){
-                          this.setTitle('Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('classifiedDocumentCount') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
+                          this.setHtml('Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('classifiedDocumentCount') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
                       }
                       else  if(item.yField == ('totalDocuments')){
-                          this.setTitle('Total '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('totalDocuments') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
+                          this.setHtml('Total '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('totalDocuments') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
                       }
                   }
                 },
@@ -161,7 +161,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                     width: 180,
                     //height: 60,
                     renderer: function(storeItem, item) {
-                        this.setTitle(storeItem.data.Name +' for ' + storeItem.data.Tag + ': ' + storeItem.data.Data.toFixed(0)+ '%');
+                        this.setHtml(storeItem.data.Name +' for ' + storeItem.data.Tag + ': ' + storeItem.data.Data.toFixed(0)+ '%');
                 }
                 },
                 style: {

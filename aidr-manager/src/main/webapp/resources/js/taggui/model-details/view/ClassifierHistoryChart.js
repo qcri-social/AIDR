@@ -103,7 +103,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
  	        	 var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
  	           	 var val = storeItem.get(item.series.yField);
  	           	 val = val ? (val * 100).toFixed(0) + '%' : '0%';
- 				 this.setTitle(item.series.title +' at ' + timestamp + ' is ' + val );
+ 				 this.setHtml(item.series.title +' at ' + timestamp + ' is ' + val );
  			  }
 		}
     }, {
@@ -132,7 +132,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
 	        	 var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
 	           	 var val = storeItem.get(item.series.yField);
 	           	 val = val ? (val * 100).toFixed(0) + '%' : '0%';
-				 this.setTitle(item.series.title +' at ' + timestamp + ' is ' + val );
+				 this.setHtml(item.series.title +' at ' + timestamp + ' is ' + val );
 			  }
 		}
     }, {
@@ -161,7 +161,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
 	        	 var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
 	           	 var val = storeItem.get(item.series.yField);
 	           	 val = val ? (val * 100).toFixed(0) + '%' : '0%';
-				 this.setTitle(item.series.title +' at ' + timestamp + ' is ' + val );
+				 this.setHtml(item.series.title +' at ' + timestamp + ' is ' + val );
 			  }
 		}
     }, {
@@ -188,7 +188,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
             //height: 50,
             renderer: function(storeItem, item) {
           	  var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
-				  this.setTitle(item.series.title +' at ' + timestamp + ' is ' + storeItem.get(item.series.yField) + ' ' + COLLECTION_TYPES[TYPE]["plural"]);
+				  this.setHtml(item.series.title +' at ' + timestamp + ' is ' + storeItem.get(item.series.yField) + ' ' + COLLECTION_TYPES[TYPE]["plural"]);
 			  }
 		}
    }]
