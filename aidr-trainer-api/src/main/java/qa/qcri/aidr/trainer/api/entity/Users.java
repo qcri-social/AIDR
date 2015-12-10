@@ -44,7 +44,7 @@ public class Users implements Serializable {
     @Column(name = "id")
     private Long userID;
 
-    @Column (name = "name", nullable = false)
+    @Column (name = "user_name", nullable = false)
     private String name;
 
 
