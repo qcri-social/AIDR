@@ -20,7 +20,7 @@ Ext.onReady(function() {
 					method : "GET",
 		            reader: {
 		                type: 'json',
-		                root : 'data'
+		                rootProperty : 'data'
 		            }
 		        }
 		    });
@@ -37,10 +37,10 @@ UserController.service = {
 	viewProfileModal : function(url) {
 		var win = new Ext.Window({
 			width : 330,
-			minHeight : 100,
+			minHeight : 130,
 			cls : 'popWindow',
 			resizable : false,
-			autoScroll : true,
+			scrollable : false,
 			modal : true,
 		});
 
@@ -59,11 +59,11 @@ UserController.service = {
 	
 	updateProfileModal : function(url) {
 		var win = new Ext.Window({
-			width : 360,
-			minHeight : 220,
+			width : 370,
+			minHeight : 260,
 			cls : 'popWindow',
 			resizable : false,
-			autoScroll : true,
+			scrollable : false,
 			modal : true,
 			id: 'updateWindow'
 		});
@@ -102,8 +102,7 @@ UserController.service = {
             return;
         }
 
-        var mask = AIDRFMFunctions.getMask(true, 'Update user info ...');
-        mask.show();
+		Ext.getBody().mask('Update user info ...');
 
         //Check if some collection already is running for current user
         Ext.Ajax.request({
@@ -118,20 +117,20 @@ UserController.service = {
                 'Accept': 'application/json'
             },
             success: function (resp) {
-            	Ext.get('updateWindow').destroy();
+            	Ext.getCmp('updateWindow').hide();
             	AIDRFMFunctions.setAlert("Info", ["User updated successfully."]);
-                mask.hide();
+                Ext.getBody().unmask();
                 
             },
             failure: function (resp) {
-            	Ext.get('updateWindow').destroy();
+            	Ext.getCmp('updateWindow').hide();
             	AIDRFMFunctions.setAlert(
                         "Error",
                         ['Error while updating user.',
                             'Please try again later or contact Support']
                     );
                 AIDRFMFunctions.reportIssue(resp);
-                mask.hide();
+                Ext.getBody().unmask();
             }
         });
     },
@@ -152,7 +151,10 @@ UserController.service = {
                     if (Ext.isArray(roles)) {
                         Ext.each(roles, function (role) {
                             if (role && role == 'ADMIN'){
-                                Ext.get('adminButton').show();
+                            	 var dh = Ext.DomHelper;
+                            	 var button='<span onclick="UserController.service.goToAdminSection()">ADMIN CONSOLE</span>';
+                            	 dh.append('adminButton',button);
+                               
                             }
                         })
                     }
@@ -188,6 +190,6 @@ Ext.define('AIDRFM.common.Header', {
 							+ '<ul class="dropdown-menu">'
 							+ '<li><span onclick="UserController.service.viewProfileModal()">VIEW PROFILE</span></li>'
 							+ '<li><span onclick="UserController.service.updateProfileModal()">UPDATE PROFILE</span></li>'
-							+ '<li id="adminButton" hidden="true"><span onclick="UserController.service.goToAdminSection()">ADMIN CONSOLE</span></li></ul></div></div></div>'
+							+ '<li id="adminButton"></li></ul></div></div></div>'
 				});
 

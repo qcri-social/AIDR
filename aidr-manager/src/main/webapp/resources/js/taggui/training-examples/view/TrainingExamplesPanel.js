@@ -57,14 +57,14 @@ Ext.define('TAGGUI.training-examples.view.TrainingExamplesPanel', {
 
         this.skipTaskButton = Ext.create('Ext.Button', {
             text: 'Skip',
-            cls:'btn btn-blue',
+            cls:'btn btn-blueSmall',
             id: 'skipTask',
             margin: '0 0 0 15'
         });
 
         this.cancelButton = Ext.create('Ext.Button', {
             text: 'Back to list of human-tagged '+ COLLECTION_TYPES[TYPE]["plural"],
-            cls:'btn btn-blue',
+            cls:'btn btn-blueSmall',
             id: 'cancel',
             margin: '7 0 0 15'
         });

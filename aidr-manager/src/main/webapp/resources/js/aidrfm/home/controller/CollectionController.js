@@ -67,8 +67,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
     startCollectionCheck: function(id, name, ownerName, ownerId) {
         var me = this;
 
-        var mask = AIDRFMFunctions.getMask(true, 'Starting collection ...');
-        mask.show();
+		Ext.getBody().mask('Starting collection ...');
 
         Ext.Ajax.request({
             url: 'protected/collection/getRunningCollectionStatusByUser.action',
@@ -81,7 +80,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
             },
             success: function (resp) {
                 var response = Ext.decode(resp.responseText);
-                mask.hide();
+                Ext.getBody().unmask();
                 if (response.success) {
                     if (response.data) {
                         var collectionData = response.data;
@@ -112,8 +111,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
     stopCollection: function(id) {
         var me = this;
 
-        var mask = AIDRFMFunctions.getMask(true, 'Stopping collection ...');
-        mask.show();
+		Ext.getBody().mask('Stopping collection ...');
 
         Ext.Ajax.request({
             url: 'protected/collection/stop.action',
@@ -125,7 +123,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
                 'Accept': 'application/json'
             },
             success: function (response) {
-                mask.hide();
+                Ext.getBody().unmask();
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
                     me.updateLastRefreshDate();
@@ -142,8 +140,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
     },
 
     startCollection: function (id) {
-        var mask = AIDRFMFunctions.getMask(true, 'Starting collection ...');
-        mask.show();
+        Ext.getBody().mask('Starting collection ...');
 
         var me = this;
         Ext.Ajax.request({
@@ -156,7 +153,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
                 'Accept': 'application/json'
             },
             success: function (response) {
-                mask.hide();
+                Ext.getBody().unmask();
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
                     me.updateLastRefreshDate();
@@ -244,8 +241,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
         var id = collectionId;
         var code = collectionCode;
 
-        var mask = AIDRFMFunctions.getMask();
-        mask.show();
+		Ext.getBody().mask('Loading...');
 
         Ext.Ajax.request({
             url: 'protected/collection/untrash.action',
@@ -258,7 +254,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
                 'Accept': 'application/json'
             },
             success: function (response) {
-                mask.hide();
+                Ext.getBody().unmask();
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
                     me.refreshBothCollections();
@@ -268,7 +264,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
                 }
             },
             failure: function () {
-                mask.hide();
+                Ext.getBody().unmask();
             }
         });
     },

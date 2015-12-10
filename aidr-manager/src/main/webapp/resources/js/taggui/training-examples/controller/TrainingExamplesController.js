@@ -56,8 +56,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
     loadData: function(fromSkipAction) {
         var me = this;
 
-        var mask = AIDRFMFunctions.getMask(true);
-        AIDRFMFunctions.showMask(mask);
+        Ext.getBody().mask('Loading...');
 
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/getAssignableTask.action',
@@ -116,10 +115,12 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                     AIDRFMFunctions.setAlert("Error", resp.message);
                     AIDRFMFunctions.reportIssue(response);
                 }
-                AIDRFMFunctions.hideMask(mask);
+                //AIDRFMFunctions.hideMask(mask);
+				Ext.getBody().unmask();
             },
             failure: function () {
-                AIDRFMFunctions.hideMask(mask);
+				Ext.getBody().unmask();
+                //AIDRFMFunctions.hideMask(mask);
             }
         });
     },
@@ -151,8 +152,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
             return false;
         }
 
-        var mask = AIDRFMFunctions.getMask(true);
-        AIDRFMFunctions.showMask(mask);
+        Ext.getBody().mask('Loading...');
 
         Ext.each(children, function (child) {
             var values = child.optionRG.getChecked();
@@ -178,10 +178,12 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                         me.loadData();
                         AIDRFMFunctions.reportIssue(response);
                     }
-                    AIDRFMFunctions.hideMask(mask);
+					Ext.getBody().unmask();
+                    //AIDRFMFunctions.hideMask(mask);
                 },
                 failure: function () {
-                    AIDRFMFunctions.hideMask(mask);
+					Ext.getBody().unmask();
+                   // AIDRFMFunctions.hideMask(mask);
                 }
             });
         });
@@ -201,8 +203,7 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
             return false;
         }
 
-        var mask = AIDRFMFunctions.getMask(true);
-        AIDRFMFunctions.showMask(mask);
+		Ext.getBody().mask('Loading...');
 
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/saveTaskAnswer.action',
@@ -225,10 +226,12 @@ Ext.define('TAGGUI.training-examples.controller.TrainingExamplesController', {
                     AIDRFMFunctions.setAlert("Error", "Error while skip task.");
                     AIDRFMFunctions.reportIssue(response);
                 }
-                AIDRFMFunctions.hideMask(mask);
+				Ext.getBody().unmask();
+               // AIDRFMFunctions.hideMask(mask);
             },
             failure: function () {
-                AIDRFMFunctions.hideMask(mask);
+				Ext.getBody().unmask();
+                //AIDRFMFunctions.hideMask(mask);
             }
         });
     }

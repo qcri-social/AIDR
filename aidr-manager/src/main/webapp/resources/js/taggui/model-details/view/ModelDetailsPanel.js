@@ -59,7 +59,7 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
                 type: 'ajax',
                 url: BASE_URL + '/protected/tagger/modelHistory.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 },
                 simpleSortMode: true,
@@ -70,9 +70,9 @@ Ext.define('TAGGUI.model-details.view.ModelDetailsPanel', {
             autoLoad: true,
             listeners: {
                 beforeload: function (s) {
-                    s.getProxy().extraParams = {
+                    s.getProxy().setExtraParams({
                         id: MODEL_FAMILY_ID
-                    }
+                    })
                 },
                 load: function (s) {
                     var count = s.getCount();

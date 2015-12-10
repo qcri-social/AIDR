@@ -91,8 +91,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
 
     loadLatestTweets: function () {
         var me = this;
-        var mask = AIDRFMFunctions.getMask(true);
-        mask.show();
+        Ext.getBody().mask('Loading...');
         
         Ext.Ajax.timeout = 900000;
         Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
@@ -124,24 +123,25 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                 tweetsTmpData = Ext.clone(data);
 
                 me.mainComponent.tweetsStore.setProxy({
-                    type: 'pagingmemory',
+                    type: 'memory',
                     data: tweetsTmpData,
+                    enablePaging: true,
                     reader: {
                         type: 'json',
                         totalProperty: 'totalCount',
-                        root: 'data',
+                        rootProperty: 'data',
                         successProperty: 'success'
                     }
                 });
                 me.mainComponent.tweetsStore.load();
-                mask.hide();
+                Ext.getBody().unmask();
                 //Ext.Ajax.timeout = 30000;
                 //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
                 //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
                 //Ext.override(Ext.data.Connection, {timeout: Ext.Ajax.timeout});
             },
             failure: function () {
-                mask.hide();
+            	Ext.getBody().unmask();
                 //Ext.Ajax.timeout = 30000;
                 //Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
                 //Ext.override(Ext.data.proxy.Server, {timeout: Ext.Ajax.timeout});
@@ -205,7 +205,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                     me.mainComponent.contactOwnerPanel.show();
 
                     me.mainComponent.suspendLayout = false;
-                    me.mainComponent.forceComponentLayout();
+                    me.mainComponent.updateLayout();
                 }
                 me.updateStatusInfo(jsonData.status, jsonData.endDate);                
             }
@@ -298,7 +298,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
         this.loadLatestTweets();
 
         me.mainComponent.suspendLayout = false;
-        me.mainComponent.forceComponentLayout();
+        me.mainComponent.updateLayout();
     },
 
     addFilterHandler: function(){
@@ -314,7 +314,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
         me.mainComponent.applyFilterButton.disable();
 
         me.mainComponent.suspendLayout = false;
-        me.mainComponent.forceComponentLayout();
+        me.mainComponent.updateLayout();
     },
 
     generateTweetIdsLink: function(btn) {
@@ -397,7 +397,7 @@ Ext.define('TAGGUI.interactive-view-download.controller.InteractiveViewDownloadC
                     rawData : data
                 });
                 me.mainComponent.suspendLayout = false;
-                me.mainComponent.forceComponentLayout();
+                me.mainComponent.updateLayout();
             }
         });
     },

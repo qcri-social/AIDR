@@ -101,7 +101,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
 
         this.cancelButton = Ext.create('Ext.Button', {
             text: 'Cancel',
-            cls: 'btn btn-red',
+            cls: 'btn btn-redSmall',
             id: 'attributeCancelCreate'
         });
 
@@ -119,7 +119,7 @@ Ext.define('TAGGUI.new-custom-attribute.view.NewCustomAttributePanel', {
                 type: 'ajax',
                 url: '',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },

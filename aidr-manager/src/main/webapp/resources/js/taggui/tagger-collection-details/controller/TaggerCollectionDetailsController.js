@@ -282,8 +282,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
 
 
             if(!noCustomizationRequired) {
-                var mask = AIDRFMFunctions.getMask(true, 'Saving data ...');
-                mask.show();
+              	Ext.getBody().mask('Saving attribute ...');
                 Ext.Ajax.request({
                     url: BASE_URL + '/protected/uitemplate/updateTemplate.action',
                     method: 'POST',
@@ -306,11 +305,11 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                             AIDRFMFunctions.setAlert("Error", 'Error while updating templateSave.');
                             AIDRFMFunctions.reportIssue(resp);
                         }
-                        mask.hide();
+                        	Ext.getBody().unmask();
                     }
                     ,
                     failure: function () {
-                        mask.hide();
+                        Ext.getBody().unmask();
                     }
                 });
             }
@@ -322,8 +321,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
     templateSkinTypeSave:function(){
         var me = this;
          //me.mainComponent.optionRG.items.items[
-        var mask = AIDRFMFunctions.getMask(true, 'Saving custom skin ...');
-        mask.show();
+        Ext.getBody().mask('Saving custom skin ...');
         var value = me.mainComponent.optionRG.getChecked();
         Ext.Ajax.request({
             url: BASE_URL + '/protected/uitemplate/updateTemplate.action',
@@ -351,7 +349,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     Ext.create('Ext.util.DelayedTask', function () {
                        // console.log('run');
                         run(delay);
-                        mask.hide();
+                        Ext.getBody().unmask();
                     }).delay(delay);
                 };
 
@@ -362,7 +360,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
 
             },
             failure: function () {
-                mask.hide();
+                Ext.getBody().unmask();
             }
         });
 
@@ -372,8 +370,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
     templateUIUpdateSave:function(attID, type, templateContent, maskText){
         var me = this;
         var status = true;
-        var mask = AIDRFMFunctions.getMask(true, maskText);
-        mask.show();
+		Ext.getBosy().mask(maskText);
         Ext.Ajax.request({
             url: BASE_URL + '/protected/uitemplate/updateTemplate.action',
             method: 'POST',
@@ -393,7 +390,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     me.mainComponent.uiTemplate.setReadOnly(true);
                     me.mainComponent.templateSaveButton.setText('Edit',false);
                 } else {
-                    mask.hide();
+                    Ext.getBody().unmask();
                     AIDRFMFunctions.setAlert("Error",  'Requst failed : ' + maskText );
                     AIDRFMFunctions.reportIssue(resp);
                 }
@@ -403,7 +400,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
                     Ext.create('Ext.util.DelayedTask', function () {
                       //  console.log('run');
                         run(delay);
-                        mask.hide();
+                        Ext.getBody().unmask();
                     }).delay(delay);
                 };
 
@@ -412,7 +409,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
 
             },
             failure: function (resp) {
-                mask.hide();
+                Ext.getBody().unmask();
                 maskText = " Requst failed : " + maskText ;
                 AIDRFMFunctions.setAlert("Error", maskText);
                 AIDRFMFunctions.reportIssue(resp);

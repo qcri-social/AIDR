@@ -244,9 +244,8 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
             return false;
         }
 
-        var mask = AIDRFMFunctions.getMask(true, 'Saving attribute ...');
-        mask.show();
-
+      	Ext.getBody().mask('Saving attribute ...');
+		
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/attribute-exists.action',
             method: 'GET',
@@ -264,12 +263,12 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
                         var msg = 'Attribute with this code already exist. Please select another code';
                         AIDRFMFunctions.setAlert('Error', msg);
                         me.mainComponent.codeE.markInvalid(msg);
-                        mask.hide();
+                        Ext.getBody().unmask();
                     } else {
                         me.saveAttribute(name, code, description, mask);
                     }
                 } else {
-                    mask.hide();
+                    Ext.getBody().unmask();
                     AIDRFMFunctions.setAlert('Error', 'Error in Tagger while validating attribute code');
                     AIDRFMFunctions.reportIssue(response);
                 }
@@ -309,7 +308,7 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
                         });
                     }
                 } else {
-                    mask.hide();
+                    Ext.getBody().unmask();
                     AIDRFMFunctions.setAlert('Error', 'Error while saving attribute in Tagger');
                     AIDRFMFunctions.reportIssue(response);
                 }
@@ -340,7 +339,7 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
                         me.redirectAfterSave(mask);
                     }
                 } else {
-                    mask.hide();
+                    Ext.getBody().unmask();
                     AIDRFMFunctions.setAlert('Error', 'Error while saving labels for attribute in Tagger');
                     AIDRFMFunctions.reportIssue(response);
                 }
@@ -374,11 +373,10 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
 
     redirectAfterSave: function(mask) {
         AIDRFMFunctions.setAlert("Ok", ["Attribute created successfully.", 'You will be redirected to Predict a new attribute screen.']);
-        mask.hide();
+        Ext.getBody().unmask();
 
-        var maskRedirect = AIDRFMFunctions.getMask(true, 'Redirecting ...');
-        maskRedirect.show();
-
+		Ext.getBody().mask('Redirecting ...');
+        
 //      wait for 3 sec to let user read information box
         var isFirstRun = true;
         Ext.TaskManager.start({
