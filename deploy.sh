@@ -22,10 +22,10 @@ fi
 
 echo "Step 1: Setting up environment variables."
 # Setting environment variables.
-GLASSFISH_HOME=C:/E/AIDR/glassfish4
-AIDR_HOME=C:/E/AIDR/AIDR
+GLASSFISH_HOME=D:/Project/glassfish4
+AIDR_HOME=D:/Project/AIDR
 AIDR_GLASSFISH_DOMAIN=domain1
-MY_SQL_USERNAME=aidr_admin
+MY_SQL_USERNAME=root
 AIDR_ANALYSIS_CONNECTION_POOL=AIDR_ANALYSIS_CONNECTION_POOL
 AIDR_ANALYSIS_JNDI=JNDI/aidr_analysis
 AIDR_PREDICT_CONNECTION_POOL=AIDR_PREDICT_CONNECTION_POOL
@@ -78,9 +78,9 @@ echo "Starting AIDR Applications."
 bin/asadmin set configs.config.server-config.cdi-service.enable-implicit-cdi=true
 
 # Creating JDBC Resources
-bin/asadmin create-jdbc-connection-pool --driverclassname=com.mysql.jdbc.Driver --restype=java.sql.Driver --steadypoolsize=8 --maxpoolsize=32 --maxwait=60000 --isisolationguaranteed=true --ping=true --property user=aidr_admin:password=aidr_admin:url="jdbc\\:mysql\\://localhost\\:3306/aidr_analysis" "$AIDR_ANALYSIS_CONNECTION_POOL"
+bin/asadmin create-jdbc-connection-pool --driverclassname=com.mysql.jdbc.Driver --restype=java.sql.Driver --steadypoolsize=8 --maxpoolsize=32 --maxwait=60000 --isisolationguaranteed=true --ping=true --property user=root:password=root:url="jdbc\\:mysql\\://localhost\\:3306/aidr_analysis" "$AIDR_ANALYSIS_CONNECTION_POOL"
 bin/asadmin create-jdbc-resource --connectionpoolid="$AIDR_ANALYSIS_CONNECTION_POOL" "$AIDR_ANALYSIS_JNDI"
-bin/asadmin create-jdbc-connection-pool --driverclassname=com.mysql.jdbc.Driver --restype=java.sql.Driver --steadypoolsize=8 --maxpoolsize=32 --maxwait=60000 --isisolationguaranteed=true --ping=true --property user=aidr_admin:password=aidr_admin:url="jdbc\\:mysql\\://localhost\\:3306/aidr_predict" $AIDR_PREDICT_CONNECTION_POOL
+bin/asadmin create-jdbc-connection-pool --driverclassname=com.mysql.jdbc.Driver --restype=java.sql.Driver --steadypoolsize=8 --maxpoolsize=32 --maxwait=60000 --isisolationguaranteed=true --ping=true --property user=root:password=root:url="jdbc\\:mysql\\://localhost\\:3306/aidr_predict" $AIDR_PREDICT_CONNECTION_POOL
 bin/asadmin create-jdbc-resource --connectionpoolid=AIDR_PREDICT_CONNECTION_POOL $AIDR_PREDICT_JNDI
 bin/asadmin create-jdbc-resource --connectionpoolid=AIDR_PREDICT_CONNECTION_POOL $AIDR_DB_MANAGER_JNDI
 
