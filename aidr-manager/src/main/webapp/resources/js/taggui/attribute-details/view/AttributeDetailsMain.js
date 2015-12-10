@@ -134,7 +134,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
 
         this.removeClassifierButton = Ext.create('Ext.Button', {
             text: 'Remove Classifier',
-            cls:'btn btn-red',
+            cls:'btn btn-redSmall',
             margin: '5 0',
             hidden: !me.showRemoveClassifierButton,
             listeners: {

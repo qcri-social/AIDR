@@ -111,7 +111,7 @@ No use for this label as all the information is rendered in a single taggerDescr
                             Ext.widget('button', {
                                 exampleId: recordValue,
                                 renderTo: id,
-                                cls: 'btn btn-reddish',
+                                cls: 'btn btn-redBig',
                                 text: 'Delete',
                                 width: 70,
                                 action: 'deleteTrainingExample'
