@@ -72,6 +72,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
 
         this.durationStore = Ext.create('Ext.data.Store', {
             fields: ['val', 'label'],
+            storeId: 'durationStore',
             data : [
                 { "val": 12, "label": '12 hours' },
                 { "val": 24, "label": '1 day' },
@@ -156,49 +157,45 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'durationHours', text: 'Max Duration', width: 135, sortable: false,
-                    renderer: function (value, meta, record) {
-                        var id = Ext.id();
-
-                        Ext.defer(function () {
-                            var widget = Ext.widget('combo', {
-                                renderTo: id,
-                                editable: false,
-                                text: 'Edit',
-                                valueField: 'val',
-                                displayField: 'label',
-                                width: 125,
-                                store: me.durationStore,
-                                listeners: {
-                                    select: function (cmp, selectedValues, options) {
-                                        var selectedVal = selectedValues[0].data.val;
-                                        if (selectedVal) {
-                                            Ext.Ajax.request({
-                                                url: BASE_URL + '/protected/collection/updateDuration.action',
-                                                method: 'POST',
-                                                params: {
-                                                    code: record.data.code,
-                                                    duration: selectedVal
-                                                },
-                                                headers: {
-                                                    'Accept': 'application/json'
-                                                },
-                                                success: function (response) {
-                                                    AIDRFMFunctions.setAlert("Info", "Collection <b>" + record.data.name + "</b> new duration has been updated");
-                                                }
-                                            });
+                    text: 'Max Duration',
+                    flex: 1,
+                    xtype: 'widgetcolumn',
+                    widget: {
+                        xtype: 'combo',
+                        displayField: 'label',
+                        valueField: 'val',
+                        flex: 1,
+                        editable: false,
+                        listeners: {
+                            select: function (cmp, selectedValues, options) {
+                                var selectedVal = selectedValues.data.val;
+                                var code = this.getWidgetRecord().data.code;
+                                var name = this.getWidgetRecord().data.name;
+                                if (selectedVal) {
+                                    Ext.Ajax.request({
+                                        url: BASE_URL + '/protected/collection/updateDuration.action',
+                                        method: 'POST',
+                                        params: {
+                                            code: code,
+                                            duration: selectedVal
+                                        },
+                                        headers: {
+                                            'Accept': 'application/json'
+                                        },
+                                        success: function (response) {
+                                            AIDRFMFunctions.setAlert("Info", "Collection <b>" + name + "</b> new duration has been updated");
                                         }
-                                    }
+                                    });
                                 }
-                            });
-
-                            if (value) {
-                                widget.setValue(value);
-                            } else {
-                                widget.setValue(48);
                             }
-                        }, 10);
-                        return Ext.String.format('<div id="{0}" class="no-padding"></div>', id);
+                        }
+                    },
+                    onWidgetAttach: function (column, container, record) {
+                        // hide the container by default
+                        var combo = container;
+                        
+                        combo.setStore(Ext.data.StoreManager.lookup('durationStore'));
+                        combo.setValue(record.data.durationHours);
                     }
                 },
                 {
@@ -354,49 +351,45 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'durationHours', text: 'Max Duration', width: 135, sortable: false,
-                    renderer: function (value, meta, record) {
-                        var id = Ext.id();
-
-                        Ext.defer(function () {
-                            var widget = Ext.widget('combo', {
-                                renderTo: id,
-                                editable: false,
-                                text: 'Edit',
-                                valueField: 'val',
-                                displayField: 'label',
-                                width: 125,
-                                store: me.durationStore,
-                                listeners: {
-                                    select: function (cmp, selectedValues, options) {
-                                        var selectedVal = selectedValues[0].data.val;
-                                        if (selectedVal) {
-                                            Ext.Ajax.request({
-                                                url: BASE_URL + '/protected/collection/updateDuration.action',
-                                                method: 'POST',
-                                                params: {
-                                                    code: record.data.code,
-                                                    duration: selectedVal
-                                                },
-                                                headers: {
-                                                    'Accept': 'application/json'
-                                                },
-                                                success: function (response) {
-                                                    AIDRFMFunctions.setAlert("Info", "Collection <b>" + record.data.name + "</b> new duration has been updated");
-                                                }
-                                            });
+                    text: 'Max Duration',
+                    flex: 1,
+                    xtype: 'widgetcolumn',
+                    widget: {
+                        xtype: 'combo',
+                        displayField: 'label',
+                        valueField: 'val',
+                        flex: 1,
+                        editable: false,
+                        listeners: {
+                            select: function (cmp, selectedValues, options) {
+                                var selectedVal = selectedValues.data.val;
+                                var code = this.getWidgetRecord().data.code;
+                                var name = this.getWidgetRecord().data.name;
+                                if (selectedVal) {
+                                    Ext.Ajax.request({
+                                        url: BASE_URL + '/protected/collection/updateDuration.action',
+                                        method: 'POST',
+                                        params: {
+                                            code: code,
+                                            duration: selectedVal
+                                        },
+                                        headers: {
+                                            'Accept': 'application/json'
+                                        },
+                                        success: function (response) {
+                                            AIDRFMFunctions.setAlert("Info", "Collection <b>" + name + "</b> new duration has been updated");
                                         }
-                                    }
+                                    });
                                 }
-                            });
-
-                            if (value) {
-                                widget.setValue(value);
-                            } else {
-                                widget.setValue(48);
                             }
-                        }, 10);
-                        return Ext.String.format('<div id="{0}" class="no-padding"></div>', id);
+                        }
+                    },
+                    onWidgetAttach: function (column, container, record) {
+                        // hide the container by default
+                        var combo = container;
+                        
+                        combo.setStore(Ext.data.StoreManager.lookup('durationStore'));
+                        combo.setValue(record.data.durationHours);
                     }
                 },
                 {
