@@ -117,6 +117,14 @@ UserController.service = {
                 'Accept': 'application/json'
             },
             success: function (resp) {
+            	Ext.USER.load();
+            	var response = Ext.decode(resp.responseText);
+            	var data=response.data;
+            	var email=data.email;
+                var locale=data.locale;
+            
+
+            	 
             	Ext.getCmp('updateWindow').hide();
             	AIDRFMFunctions.setAlert("Info", ["User updated successfully."]);
                 Ext.getBody().unmask();
