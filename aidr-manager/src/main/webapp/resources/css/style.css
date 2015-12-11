@@ -979,10 +979,6 @@ height:29px;
 	cursor: pointer;
 }
 
-.collection-item:nth-child(odd){
-    background-color:#f7f7f7;
-}
-
 .bread-crumbs a {
 	font-size: 15px;
 	color:;
@@ -1282,13 +1278,18 @@ End of the tab panel styles
 .gray-backgrpund a {
 	color: #5fa3a0;
 }
+.x-column-header-inner {
+    padding: 3px 90px 1px 11px;
+    text-overflow: ellipsis;
+}
 
 .aidr-grid .x-grid-header-ct {
-	border-top-width: 0 !important;
+	border-top-width: 1px !important;
+	border-bottom-width: 1px !important;
 	border-left-width: 0 !important;
 	border-right-width: 0 !important;
 }
-/*.aidr-grid .x-column-header-over{
+.aidr-grid .x-column-header-over{
     border-left-color: #3FB6B0 !important;
     border-right-color: #3FB6B0 !important;
     background-color: #3FB6B0 !important;\
@@ -1299,7 +1300,7 @@ End of the tab panel styles
     background-image: -ms-linear-gradient(top,#ebf3fd,#ebf3fd 39%,#d9e8fb 40%,#d9e8fb);
     background-image: linear-gradient(top,#ebf3fd,#ebf3fd 39%,#d9e8fb 40%,#d9e8fb);
 
-}*/
+}
 .aidr-grid .x-grid-body {
 	border-bottom-width: 0 !important;
 	border-left-width: 0 !important;
@@ -1321,7 +1322,7 @@ End of the tab panel styles
 .aidr-grid .x-grid-cell-inner {
 	padding-top: 3px;
 	padding-bottom: 3px;
-	height: 31px;
+	height: 34px;
 	font-size: 12px;
 	font-family: "Lucida Sans Unicode", "Lucida Grande", "Arial";
 	display: table-cell;
