@@ -902,8 +902,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     AIDRFMFunctions.setAlert("Info", ["Collection updated successfully."]);
 
                 } else {
-                    AIDRFMFunctions.setAlert("Error", [respObj.message]);
-                    AIDRFMFunctions.reportIssue(response);
+                    AIDRFMFunctions.setAlert("Error", ["An error occurred while updating the collection."]);
+                    //AIDRFMFunctions.reportIssue(response);
                 }
 
                 editPanelEl.unmask();
@@ -1239,7 +1239,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 }
             });
         } else {
-            AIDRFMFunctions.setAlert("Info", "Please select user from list");
+            AIDRFMFunctions.setAlert("Error", "Please select user from list");
             btn.setDisabled(false);
         }
     },

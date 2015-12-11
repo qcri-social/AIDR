@@ -218,7 +218,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
 
         this.keywordsE = Ext.create('Ext.form.field.TextArea', {
-            fieldLabel: 'Keywords',
+            fieldLabel: 'Keyword(s)',
             name: 'track',
             allowBlank: true,
             maxLength: 24000,
@@ -545,7 +545,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             
             '<tpl if="[this.getType()] == 0">' +
             '<div>Language(s):</div>',
-            '<div>Keywords:</div>',
+            '<div>Keyword(s):</div>',
             '</tpl>',
             '<tpl if="[this.getType()] == 1">' +
             '<div></div>',
@@ -1059,7 +1059,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             items: [
                                 {
                                     width: 220,
-                                    text: 'Keywords:'
+                                    text: 'Keyword(s):'
                                 },
                                 this.keywordsL
                             ]
@@ -1169,6 +1169,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             pageSize: true,
             triggerAction: 'query',
             margin: '1 0 0 0',
+            emptyText: 'Please select a user',
             displayField: 'userName',
             valueField: 'id',
             store: {

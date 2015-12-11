@@ -34,6 +34,7 @@ import qa.qcri.aidr.manager.dto.PingResponse;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.persistence.entities.CollectionLog;
+import qa.qcri.aidr.manager.persistence.entities.CrisisType;
 import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.persistence.entities.UserConnection;
 import qa.qcri.aidr.manager.repository.AuthenticateTokenRepository;
@@ -133,6 +134,16 @@ public class CollectionServiceImpl implements CollectionService {
 			collection.setGeoR(collectionUpdateInfo.getGeoR());
 			collection.setDurationHours(Integer.parseInt(collectionUpdateInfo.getDurationHours()));
 			collection.setLangFilters(collectionUpdateInfo.getLangFilters());
+			
+			Long crisisTypeId = Long.parseLong(collectionUpdateInfo.getCrisisType());
+			CrisisType crisisType = crisisTypeService.getById(crisisTypeId);
+			if(crisisType!=null){
+				collection.setCrisisType(crisisType);
+			}
+			else{
+				logger.error("Crisis Type Id: "+crisisTypeId +" does not exist. Can't update the collection : " + collectionUpdateInfo.getCode());
+				return false;
+			}
 			
 			if (CollectionType.SMS.equals(collection.getProvider())) {
 				collection.setTrack(null);
