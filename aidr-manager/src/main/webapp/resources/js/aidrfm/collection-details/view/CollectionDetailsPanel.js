@@ -547,9 +547,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<div>Language(s):</div>',
             '<div>Keyword(s):</div>',
             '</tpl>',
-            '<tpl if="[this.getType()] == 1">' +
-            '<div></div>',
-            '</tpl>',
            
             '</div>',
 
@@ -559,8 +556,11 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<div>{[this.getDateTimeField(values.endDate)]}</div>',
             '{[this.showValue(values.geo)]}',
             '{[this.showValue(values.follow)]}',
+            
+            '<tpl if="[this.getType()] == 0">' +
             '<div>{[this.getLanguageField(values.langFilters)]}</div>',
             '<div class="word-wrap-class">{[this.getField(values.track)]}</div>',
+            '</tpl>',
             '</div>',
 
             '</div>',
@@ -1368,6 +1368,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 	            },
 	            {
 	            	xtype: 'gridcolumn', text: 'Language(s)', flex:1, dataIndex: 'langFilters',
+					hidden: (TYPE=="SMS"),
 	            	/*renderer: function (r, meta, record) {
 	                       return this.getLanguageField(r);
 	            	}*/
