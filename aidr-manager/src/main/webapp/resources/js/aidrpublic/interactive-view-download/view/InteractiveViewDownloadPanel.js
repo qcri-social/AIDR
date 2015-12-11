@@ -263,7 +263,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			        	  xtype: 'gridcolumn', dataIndex: 'createdAt', text: 'Date/Time', width: 175
 			          },
 			          {
-			        	  xtype: 'gridcolumn', dataIndex: 'text', text: 'Tweet', flex: 1
+			        	  xtype: 'gridcolumn', dataIndex: 'text', text: Ext.util.Format.capitalize(COLLECTION_TYPES[TYPE]["plural"]), flex: 1
 			          }
 			          ]
 		});
