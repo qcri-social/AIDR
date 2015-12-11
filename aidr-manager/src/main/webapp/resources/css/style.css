@@ -12,7 +12,9 @@
 }
 
 
-
+.x-css-shadow{
+	    box-shadow: #157fcc 0px 0px 6px !important;
+}
 .x-window .x-tool img {
 	overflow: hidden;
 	width: 18px;
@@ -113,25 +115,25 @@ color:#000000;
 }
 
 .x-window-body-default {
-	border-color: #99bbe8;
+	border-color: #3383CE;
 	border-width: 0px;
 	background: #ffffff;
 	color: black;
 }
 
 .x-window-default {
-	border-color: transparent;
+	border-color: #C2C2C2;
 	-webkit-border-radius: 5px 5px;
 	-moz-border-radius: 5px 5px;
 	-ms-border-radius: 5px 5px;
 	-o-border-radius: 5px 5px;
 	border-radius: 5px 5px;
-	-webkit-box-shadow: #ecf2fb 0 1px 0 0 inset, #ecf2fb 0 -1px 0 0 inset,
-		#ecf2fb -1px 0 0 0 inset, #ecf2fb 1px 0 0 0 inset;
-	-moz-box-shadow: #ecf2fb 0 1px 0 0 inset, #ecf2fb 0 -1px 0 0 inset,
-		#ecf2fb -1px 0 0 0 inset, #ecf2fb 1px 0 0 0 inset;
-	box-shadow: #ecf2fb 0 1px 0 0 inset, #ecf2fb 0 -1px 0 0 inset, #ecf2fb
-		-1px 0 0 0 inset, #ecf2fb 1px 0 0 0 inset;
+	-webkit-box-shadow: #9BC7F0 0 1px 0 0 inset, #9BC7F0 0 -1px 0 0 inset,
+		#9BC7F0 -1px 0 0 0 inset, #9BC7F0 1px 0 0 0 inset;
+	-moz-box-shadow: #9BC7F0 0 1px 0 0 inset, #9BC7F0 0 -1px 0 0 inset,
+		#9BC7F0 -1px 0 0 0 inset,#9BC7F0 1px 0 0 0 inset;
+	box-shadow: #9BC7F0 0 1px 0 0 inset, #9BC7F0 0 -1px 0 0 inset, #9BC7F0
+		-1px 0 0 0 inset, #9BC7F0 1px 0 0 0 inset;
 	background-color: #ffffff;
 }
 
@@ -1322,7 +1324,7 @@ End of the tab panel styles
 .aidr-grid .x-grid-cell-inner {
 	padding-top: 3px;
 	padding-bottom: 3px;
-	height: 34px;
+	height: 78px;
 	font-size: 12px;
 	font-family: "Lucida Sans Unicode", "Lucida Grande", "Arial";
 	display: table-cell;
