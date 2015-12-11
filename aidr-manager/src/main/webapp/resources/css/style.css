@@ -1280,9 +1280,16 @@ End of the tab panel styles
 .gray-backgrpund a {
 	color: #5fa3a0;
 }
+
 .x-column-header-inner {
     padding: 3px 90px 1px 11px;
     text-overflow: ellipsis;
+   background-color:  #E9ECEF;
+   	border:transparent !important;
+}
+.x-column-header{
+	   background-color:  #E9ECEF;
+
 }
 
 .aidr-grid .x-grid-header-ct {
@@ -1324,7 +1331,7 @@ End of the tab panel styles
 .aidr-grid .x-grid-cell-inner {
 	padding-top: 3px;
 	padding-bottom: 3px;
-	height: 78px;
+	height: 33px;
 	font-size: 12px;
 	font-family: "Lucida Sans Unicode", "Lucida Grande", "Arial";
 	display: table-cell;
