@@ -481,11 +481,11 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                         me.collectionHistoryDoNotChangeMessage.hide();
                     } else {
                         me.collectionHistoryTitle.hide();
-                        //collectionHistoryChart.hide();
+                        collectionHistoryChart.hide();
                         me.horizontalLineTop.hide();
                         me.collectionHistoryPanelView.hide();
                         me.horizontalLineBottomMargin.hide();
-                        //me.collectionHistoryGrid.hide();
+                        me.collectionHistoryGrid.hide();
                         me.collectionHistoryDoNotChangeMessage.show();
                     }
                 }
@@ -1377,19 +1377,22 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 	        listeners: {
 	            selectionchange: function(model, records) {
 	                if (records[0]) {
-	                    var selectedRec = records[0].data;
+	                	var selectedRec = records[0].data;
 	                    var model = [];
 	                    model.push(selectedRec);
-	                    Ext.getStore('collectionHistoryPanelStore').loadData(model);
-	                
-	                    //Highlighting the point on chart
+		                    
+	                	 //Highlighting the point on chart
 		                var collectionSeries = collectionHistoryChart.series.items[0];
-		                collectionSeries.unHighlightItem();
+		                //collectionSeries.unHighlightItem();
 	                    Ext.Array.each(collectionSeries.items, function(pointOnchart, index){
 	                    	 if (pointOnchart.value[0] == selectedRec.endDate && pointOnchart.value[1] == selectedRec.count) {
 	                    		 collectionSeries.highlightItem(pointOnchart);
 	                        }
 	                    });
+	                    //Set data in docked panel
+	                    me.down('#collectionLogStoreCount').setText("Total no. of records :  " + Ext.getStore('collectionLogStore').data.length);
+	                    //Push data into the view panel
+	                    Ext.getStore('collectionHistoryPanelStore').loadData(model);
 	                }
 	            },
 	            deselect: function(model, records){
