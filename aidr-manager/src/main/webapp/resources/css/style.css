@@ -10,7 +10,9 @@
 .svg-menu img {
 	width: 1.25em;
 }
-
+.filterSingle{
+	width: 900px;
+}
 
 .x-css-shadow{
 	    box-shadow: #157fcc 0px 0px 6px !important;
@@ -25,7 +27,24 @@
 	background-image: url('./../../resources/img/button18.png');
 	margin-left: -3px;
 }
+.x-grid-col {
+    border-left:  1px solid #FFFFFF;
+    border-right: 1px solid #EEEEEE;
+}
 
+/* Also remove padding from table data (to compensate for added grid lines) */
+.x-grid-row td, .x-grid-summary-row td {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+.x-grid-td {
+    overflow: hidden;
+    border-right: solid;
+    border-width: 1px;
+    border-color: #cecece;
+    
+    vertical-align: top;
+}
 .x-window .x-tool-over .x-tool-close {
 	background-position: 0px 0.2px;
 }
