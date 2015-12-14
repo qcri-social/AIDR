@@ -58,43 +58,79 @@ UserController.service = {
 	},
 	
 	updateProfileModal : function(url) {
-		var win = new Ext.Window({
-			width : 370,
-			minHeight : 260,
-			cls : 'popWindow',
-			resizable : false,
-			scrollable : false,
-			modal : true,
-			id: 'updateWindow'
-		});
-
-		var div = {
-			html : 	'<div id="content1" class="modal-body" >'
-				+ '<p class="text-right" id="name"><span><i class="fa fa-user fa-lg"></i>&nbsp;&nbsp;&nbsp;&nbsp;' +Ext.USER.data.items[0].data.userName + '</span></p>'
-				+' </div>'
-				+ '<div id="content1" class="modal-body" >'
-				+ ' <p class="text-right" id="key"><span><i class="fa fa-key fa-lg"></i>&nbsp;&nbsp;&nbsp;' + Ext.USER.data.items[0].data.apiKey + '</span></p>'
-				+ '</div>'
-				+ '<div id="content1" class="modal-body" >'
-
-				+ ' <p class="text-right" id="name"><span><i class="fa fa-envelope fa-lg"></i>&nbsp;&nbsp;&nbsp;<input class="inputForm" type="text" id="email" value="' + Ext.USER.data.items[0].data.email + '"></span></p>'
-				+ '</div><div id="content1" class="modal-body" >'
-				+ ' <p class="text-right" id="name"><span><i class="fa fa-language fa-lg"></i>&nbsp;&nbsp;&nbsp;&nbsp;<input class="inputForm" type="text" id="locale" value="' + Ext.USER.data.items[0].data.locale +'"></span></p>'
-				+ '</div>'
-				+ '<input class="btn btn-rddish1" type="button" onclick = "UserController.service.closeWindow()" type="reset" value="Cancel"><input class="btn btn-bluish1" onclick = "UserController.service.updateUser()" type="button" value="Save"> '
+		if(Ext.getCmp('updateWindow') == undefined) {
+			var win = new Ext.Window({
+				width : 370,
+				minHeight : 260,
+				cls : 'popWindow',
+				resizable : false,
+				scrollable : false,
+				modal : true,
+				id: 'updateWindow',
+				
+				items: [
+					{
+		                xtype: 'container',
+		                html: '<div id="content1" class="modal-body" >'
+		    				+ '<p class="text-right" id="name"><span><i class="fa fa-user fa-lg"></i>&nbsp;&nbsp;&nbsp;&nbsp;' +Ext.USER.data.items[0].data.userName + '</span></p>'
+		    				+' </div>'
+		    				+ '<div id="content1" class="modal-body" >'
+		    				+ ' <p class="text-right" id="key"><span><i class="fa fa-key fa-lg"></i>&nbsp;&nbsp;&nbsp;' + Ext.USER.data.items[0].data.apiKey + '</span></p>'
+		    				+ '</div>'
+		    				+ '<div id="content1" class="modal-body" >'
+	
+		    				+ ' <p class="text-right" id="name"><span><i class="fa fa-envelope fa-lg"></i>&nbsp;&nbsp;&nbsp;<input class="inputForm" type="text" id="email" value="' + Ext.USER.data.items[0].data.email + '"></span></p>'
+		    				+ '</div>'
+		            },
+		            {
+		            	xtype: 'container',
+		            	cls: 'modal-body',
+		            	layout: 'hbox',
+		            	margin: "0 0 0 2",
+		            	items: [
+		            	        	{
+		        	            		xtype: 'container',
+		        	            		html: '<i class="fa fa-language fa-lg"></i>&nbsp;&nbsp;&nbsp;'
+		        	            	},
+		        	            	{
+		        	            		xtype: 'combobox',
+		        	            		id: 'locale',
+		        	            		cls: 'inputForm',
+		        	            		style: {
+		        	            			border: '1px',
+		        	            			'border-radius': '4px'
+		        	            		},
+		        	            		store: new Ext.data.ArrayStore({
+		        	            	        data: LANG,
+		        	            	        id: 0,
+		        	            	        fields: ['name', 'code']
+		        	            	    }),
+		        	            	    valueField: 'code',
+		        	            	    displayField: 'name',
+		        	            	    editable: false,
+		        	            	    value: 'en'
+		        	            	}
+		            	        ]
+		            	
+		            },
+		            {
+		            	cls: 'modal-body',
+		            	xtype: 'container',
+		            	html: '<input class="btn btn-rddish1" type="button" onclick = "UserController.service.closeWindow()" type="reset" value="Cancel"><input class="btn btn-bluish1" onclick = "UserController.service.updateUser()" type="button" value="Save">'
+		            }
+				]
+			});
 		}
-
-		// show first
-		win.show();
-		// then iframe
-		Ext.DomHelper.insertFirst(win.body, div)
+		
+		Ext.getCmp('updateWindow').show();
 	},
+	
 	
     updateUser: function () {
 
         var userName = Ext.USER.data.items[0].data.userName;
         var email = Ext.get('email');
-        var locale = Ext.get('locale').getValue();
+        var locale = Ext.getCmp('locale').getValue();
         var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
         if (!email.getValue() || !re.test(email.getValue())) {
             AIDRFMFunctions.setAlert('Error', 'Invalid email.');
@@ -122,10 +158,8 @@ UserController.service = {
             	var data=response.data;
             	var email=data.email;
                 var locale=data.locale;
-            
 
-            	 
-            	Ext.getCmp('updateWindow').hide();
+                Ext.getCmp('updateWindow').hide();
             	AIDRFMFunctions.setAlert("Info", ["User updated successfully."]);
                 Ext.getBody().unmask();
                 

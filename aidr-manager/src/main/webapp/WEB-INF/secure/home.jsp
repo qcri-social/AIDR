@@ -16,6 +16,7 @@
      <script type="text/javascript" src="${pageContext.request.contextPath}/resources/extjs/resources/charts/ext-charts.js"></script>
 	<link type="text/css" href="${pageContext.request.contextPath}/resources/extjs/resources/charts/sencha-charts/build/crisp/resources/sencha-charts-all.css">
    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/extjs/resources/themes/ext-theme-crisp/ext-theme-crisp.js"></script>
+   <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/aidrfm/common/lang.js"></script>
     <script type="text/javascript">
         Ext.Loader.setConfig({
                 enabled: true,

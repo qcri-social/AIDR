@@ -245,6 +245,12 @@ a.svg-menu {
 	margin-bottom: 10px;
 }
 
+#locale {
+	margin-bottom: 10px;
+	border-radius: 4px;
+	padding: 0px;
+}
+
 #name {
 	margin-left: 2px;
 	margin-bottom: 10px;
