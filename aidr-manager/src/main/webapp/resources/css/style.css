@@ -981,6 +981,10 @@ height:29px;
 	cursor: pointer;
 }
 
+.collection-item:nth-child(odd){
+    background-color:#f7f7f7;
+}
+
 .bread-crumbs a {
 	font-size: 15px;
 	color:;
