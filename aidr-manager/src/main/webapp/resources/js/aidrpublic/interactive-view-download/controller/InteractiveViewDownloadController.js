@@ -92,8 +92,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
 
     loadLatestTweets: function () {
         var me = this;
-        var mask = AIDRFMFunctions.getMask(true);
-        mask.show();
+        Ext.getBody().mask('Loading...');
         
         Ext.Ajax.timeout = 900000;
         Ext.override(Ext.form.Basic, {timeout: Ext.Ajax.timeout/1000});
@@ -113,7 +112,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
             success: function (response) {
                 var jsonData = Ext.decode(response.responseText);
                 if (jsonData.data == ""){
-                    mask.hide();
+                    Ext.getBody().unmask();
                     return true;
                 }
                 var tweetData = Ext.JSON.decode(jsonData.data);
@@ -125,22 +124,23 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                 tweetsTmpData = Ext.clone(data);
 
                 me.mainComponent.tweetsStore.setProxy({
-                    type: 'pagingmemory',
+                    type: 'memory',
                     data: tweetsTmpData,
+                    enablePaging:true,
                     reader: {
                         type: 'json',
                         totalProperty: 'totalCount',
-                        root: 'data',
+                        rootProperty: 'data',
                         successProperty: 'success'
                     }
                 });
-                 me.mainComponent.tweetsGrid.reconfigure(me.mainComponent.tweetsStore, columnsFromTweetData.columns);
+                me.mainComponent.tweetsGrid.reconfigure(me.mainComponent.tweetsStore, columnsFromTweetData.columns);
                 me.mainComponent.tweetsStore.load();
-                mask.hide();
+                Ext.getBody().unmask();
                 return true;
             },
             failure: function () {
-                mask.hide();
+                Ext.getBody().unmask();
             }
         });
     },
@@ -176,10 +176,10 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
      getColumnsModelAndStoreKeysFromTweetData: function (obj) {
          var columns = [
              {
-                 xtype: 'gridcolumn', dataIndex: 'createdAt', text: 'Date/Time', width: 175
+                 xtype: 'gridcolumn', dataIndex: 'createdAt', text: 'Date/Time', width: 185
              },
              {
-                 xtype: 'gridcolumn', dataIndex: 'text', text: 'Tweet', flex: 1,
+                 xtype: 'gridcolumn', dataIndex: 'text', text: Ext.util.Format.capitalize(COLLECTION_TYPES[TYPE]["plural"]), flex: 1,
                  renderer: function (value, meta, record) {
                     var tooltipText = value + "<br/>";
                      Ext.Object.each(record.data, function(key, val){
@@ -299,7 +299,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                     me.mainComponent.contactOwnerPanel.show();
 
                     me.mainComponent.suspendLayout = false;
-                    me.mainComponent.forceComponentLayout();
+                    me.mainComponent.updateLayout();
                 }
 
                 me.updateStatusInfo(jsonData.status, jsonData.endDate, jsonData.collectionType);
@@ -433,7 +433,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
         this.loadLatestTweets();
 
         me.mainComponent.suspendLayout = false;
-        me.mainComponent.forceComponentLayout();
+        me.mainComponent.updateLayout();
         me.mainComponent.downloadLink.hide();
     },
 
@@ -450,7 +450,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
         me.mainComponent.applyFilterButton.disable();
 
         me.mainComponent.suspendLayout = false;
-        me.mainComponent.forceComponentLayout();
+        me.mainComponent.updateLayout();
     },
 
     getAttributesAndLabelsByCrisisId: function () {
@@ -476,7 +476,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.controller.InteractiveViewDownl
                     rawData : data
                 });
                 me.mainComponent.suspendLayout = false;
-                me.mainComponent.forceComponentLayout();
+                me.mainComponent.updateLayout();
                  if(!Ext.isEmpty(data.curatorInfo)) {
                      me.mainComponent.curatorInfoR.setText(data.curatorInfo, false);
                      me.mainComponent.curatorInfoR.show();

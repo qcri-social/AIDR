@@ -73,8 +73,6 @@ public class CollectionController extends BaseController{
 		
 		logger.info("Save Collection to Database having code : "+ collectionDetailsInfo.getCode());
 		
-		
-		//logger.info("Following users: " + collection.getFollow());
 		try{
 			UserAccount user = getAuthenticatedUser();
 			Collection collection = collectionService.create(collectionDetailsInfo, user);

@@ -123,8 +123,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
             "#collectionStart": {
                 click: function (btn, e, eOpts) {
-                    var mask = AIDRFMFunctions.getMask();
-                    mask.show();
+                    Ext.getBody().mask('Loading...');
 
                     Ext.Ajax.request({
                         url: BASE_URL + '/protected/collection/getRunningCollectionStatusByUser.action',
@@ -138,7 +137,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                         success: function (resp) {
                             var response = Ext.decode(resp.responseText);
                             var name = datailsController.DetailsComponent.currentCollection.name;
-                            mask.hide();
+                            Ext.getBody().unmask();
                             if (response.success) {
                                 if (response.data) {
                                     var collectionData = response.data;
@@ -162,7 +161,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                             }
                         },
                         failure: function () {
-                            mask.hide();
+                            Ext.getBody().unmask();
                         }
                     });
 
@@ -344,8 +343,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         if (!id){
             AIDRFMFunctions.setAlert("Error", ["Collection not specified.", "You will be redirected to Home screen."]);
 
-            var maskRedirect = AIDRFMFunctions.getMask(true, 'Redirecting ...');
-            maskRedirect.show();
+			Ext.getBody().mask('Redirecting ...');
 
 //            wait for 3 sec to let user read information box
             var isFirst = true;
@@ -385,8 +383,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
     loadCollection: function (id) {
         var me = this;
 
-        var mask = AIDRFMFunctions.getMask(true);
-        mask.show();
+		Ext.getBody().mask('Loading...');
 
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/findById.action',
@@ -412,12 +409,12 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 me.DetailsComponent.managersStore.loadData(jsonData.managers);
 
                 me.DetailsComponent.suspendLayout = false;
-                me.DetailsComponent.forceComponentLayout();
+                me.DetailsComponent.updateLayout();
 
-                mask.hide();
+                Ext.getBody().unmask();
             },
             failure: function () {
-                mask.hide();
+                Ext.getBody().unmask();
             }
         });
     },
@@ -679,8 +676,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
     },
 
     startCollection: function () {
-        var mask = AIDRFMFunctions.getMask();
-        mask.show();
+       
+		Ext.getBody().mask('Loading...');
 
         var me = this;
         var id = datailsController.DetailsComponent.currentCollection.id;
@@ -694,7 +691,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 'Accept': 'application/json'
             },
             success: function (response) {
-                mask.hide();
+                Ext.getBody().unmask();
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
                     if (resp.data) {
@@ -719,7 +716,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 }
             },
             failure: function () {
-                mask.hide();
+                Ext.getBody().unmask();
             }
         });
     },
@@ -728,8 +725,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var me = this;
         var id = datailsController.DetailsComponent.currentCollection.id;
 
-        var mask = AIDRFMFunctions.getMask();
-        mask.show();
+        Ext.getBody().mask('Loading...');
 
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/stop.action',
@@ -741,7 +737,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 'Accept': 'application/json'
             },
             success: function (response) {
-                mask.hide();
+                Ext.getBody().unmask();
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
                     if (resp.data) {
@@ -754,7 +750,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 }
             },
             failure: function () {
-                mask.hide();
+                Ext.getBody().unmask();
             }
         });
     },
@@ -773,8 +769,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var me = this;
         var id = datailsController.DetailsComponent.currentCollection.id;
 
-        var mask = AIDRFMFunctions.getMask();
-        mask.show();
+		Ext.getBody().mask('Loading...');
 
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/trash.action',
@@ -786,7 +781,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 'Accept': 'application/json'
             },
             success: function (response) {
-                mask.hide();
+                Ext.getBody().unmask();
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
                     if (resp.data) {
@@ -800,7 +795,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 }
             },
             failure: function () {
-                mask.hide();
+                Ext.getBody().unmask();
             }
         });
     },
@@ -809,9 +804,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var me = this;
         var id = datailsController.DetailsComponent.currentCollection.id;
         var code = datailsController.DetailsComponent.currentCollection.code;
-
-        var mask = AIDRFMFunctions.getMask();
-        mask.show();
+		
+		Ext.getBody().mask('Loading...');
 
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/untrash.action',
@@ -824,7 +818,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 'Accept': 'application/json'
             },
             success: function (response) {
-                mask.hide();
+                Ext.getBody().unmask();
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
                     me.refreshStatus(id);
@@ -834,7 +828,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 }
             },
             failure: function () {
-                mask.hide();
+                Ext.getBody().unmask();
             }
         });
     },
@@ -860,6 +854,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
 
         var editPanelEl = cmp.up('panel').getEl();
         editPanelEl.mask("Updating...");
+		
         Ext.Ajax.request({
             url: BASE_URL + '/protected/collection/update',
             method: 'POST',
@@ -907,8 +902,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                     AIDRFMFunctions.setAlert("Info", ["Collection updated successfully."]);
 
                 } else {
-                    AIDRFMFunctions.setAlert("Error", [respObj.message]);
-                    AIDRFMFunctions.reportIssue(response);
+                    AIDRFMFunctions.setAlert("Error", ["An error occurred while updating the collection."]);
+                    //AIDRFMFunctions.reportIssue(response);
                 }
 
                 editPanelEl.unmask();
@@ -1244,7 +1239,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 }
             });
         } else {
-            AIDRFMFunctions.setAlert("Info", "Please select user from list");
+            AIDRFMFunctions.setAlert("Error", "Please select user from list");
             btn.setDisabled(false);
         }
     },

@@ -5,13 +5,13 @@ Ext.define('ModelForClassifiedDetailsChart',{
              {name : 'classifiedDocumentCount' },
              {name : 'totalDocuments' },
              {name : 'labelAuc', convert:function(a, rec){
-                return (rec.raw.labelAuc*100);
+                return (rec.data.labelAuc*100);
             }},
              {name : 'labelPrecision' , convert:function(a, rec){
-                return (rec.raw.labelPrecision*100);
+                return (rec.data.labelPrecision*100);
             }},
              {name : 'labelRecall' , convert:function(a, rec){
-                return (rec.raw.labelRecall*100);
+                return (rec.data.labelRecall*100);
             }}
         ]
 });
@@ -45,7 +45,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
             
             axes: [
             {
-                type: 'Numeric',
+                type: 'numeric',
                 position: 'bottom',
                 fields: ['trainingDocumentsCount', 'classifiedDocumentCount', 'totalDocuments'],
                 title: 'No. of '+COLLECTION_TYPES[TYPE]["plural"],
@@ -59,7 +59,7 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                 
             },
             {
-                type: 'Category',
+                type: 'category',
                 position: 'left',
                 fields: ['value'],
                 title: 'Tags',
@@ -79,19 +79,19 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                 //  height: 50,
                   renderer: function(storeItem, item) {
                       if(item.yField == ('trainingDocumentsCount')){
-                          this.setTitle('Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('trainingDocumentsCount') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
+                          this.setHtml('Human-tagged '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('trainingDocumentsCount') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
                       }
                       else  if(item.yField == ('classifiedDocumentCount')){
-                          this.setTitle('Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('classifiedDocumentCount') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
+                          this.setHtml('Machine-tagged '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('classifiedDocumentCount') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
                       }
                       else  if(item.yField == ('totalDocuments')){
-                          this.setTitle('Total '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('totalDocuments') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
+                          this.setHtml('Total '+ COLLECTION_TYPES[TYPE]["plural"] +' for ' + storeItem.get('value') + ': ' + storeItem.get('totalDocuments') +' ' +  COLLECTION_TYPES[TYPE]["plural"]);
                       }
                   }
                 },
                 label: {
                   display: 'outside',
-                  'text-anchor': 'middle',
+                  'textAlign': 'middle',
                     field: ['trainingDocumentsCount','classifiedDocumentCount', 'totalDocuments'],
                     renderer: Ext.util.Format.numberRenderer('0'),
                     orientation: 'horizontal',
@@ -139,17 +139,18 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
             store: radarStore,
             theme: 'Blue',
             axes: [{
-                steps: 5,
-                type: 'Radial',
-                position: 'radial',
-                maximum: 100
-            }],
+            	steps: 5,
+	            type: 'Radial',
+	            position: 'radial',
+	            maximum: 100
+            }],    
             series: [{
                 type: 'radar',
                 xField: 'Name',
                 yField: 'Data',
                 showInLegend: true,
                 showMarkers: true,
+                highlight: true,
                 markerConfig: {
                     radius: 4,
                     size: 4,
@@ -160,13 +161,13 @@ Ext.define('TAGGUI.model-details.view.ClassifierDetailsChart', {
                     width: 180,
                     //height: 60,
                     renderer: function(storeItem, item) {
-                        this.setTitle(storeItem.data.Name +' for ' + storeItem.data.Tag + ': ' + storeItem.data.Data.toFixed(0)+ '%');
+                        this.setHtml(storeItem.data.Name +' for ' + storeItem.data.Tag + ': ' + storeItem.data.Data.toFixed(0)+ '%');
                 }
                 },
                 style: {
-                    fill: 'rgb(194,214,240)',
+                	fill: 'rgb(194,214,240)',
                     opacity: 0.5,
-                    'stroke-width': 0.5
+                    'lineWidth': 0.5
                 }
             }]
         });
