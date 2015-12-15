@@ -179,6 +179,31 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
 
     saveCollection: function () {
 
+    	var purpose='Using collection for humanitarian and crisis response purpose only.';
+    	
+    	Ext.MessageBox.confirm('Confirm', 'Are you going to use this collection for humanitarian and crisis response purposes only?', function (buttonId) {
+			if (buttonId === 'yes') {
+				checkRunningStatus();
+			}
+			else{
+				Ext.MessageBox.show({
+		    	    title: 'Purpose for creating collection',
+		    	    message: 'Please enter your purpose for creating the collection:',
+		    	    width: 500,
+		    	    buttons: Ext.Msg.OKCANCEL,
+		    	    multiline: true,
+		    	    fn: function(btn, text){
+		        	    if (btn == 'ok'){
+		        	    	purpose = text;
+		        	    	checkRunningStatus();
+		        	    }
+		        	}
+		       	});
+		    }
+        });
+    	
+    	
+    	function checkRunningStatus(){
         if (AIDRFMFunctions.mandatoryFieldsEntered()) {
 
             var form = Ext.getCmp('collectionForm').getForm();
@@ -253,7 +278,8 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                         langFilters: form.findField('langFilters').getValue(),
                         durationHours: form.findField('durationHours').getValue(),
                         crisisType: form.findField('crisisType').getValue(),
-                        provider: form.findField('collectionType').getValue()
+                        provider: form.findField('collectionType').getValue(),
+                        purpose: Ext.String.trim(purpose)
                     },
                     headers: {
                         'Accept': 'application/json'
@@ -287,6 +313,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 });
             }
         }
+    }
     },
 
     isExist: function () {
@@ -357,10 +384,39 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
         });
     },
 
+    agreeTOS: function () {
+    	var me = this;
+    	
+    	Ext.MessageBox.confirm('Confirm', 'Are you going to use this collection for humanitarian and crisis response purposes only?', function (buttonId) {
+                if (buttonId === 'yes') {
+                }
+                else{
+                	Ext.MessageBox.show({
+                	    title: 'Purpose for creating collection',
+                	    message: 'Please enter your purpose for creating the collection:',
+                	    width: 500,
+                	    buttons: Ext.Msg.OKCANCEL,
+                	    multiline: true,
+                	    fn: function(btn, text){
+                    	    if (btn == 'ok'){
+                    	        console.log(text);
+                    	    }
+                    	    else{
+                    	    	console.log("cancel");
+                    	    }
+                    	},
+                	});
+                }
+            });
+    },
+    
+    
+    
+    
     initNameAndCodeValidation: function() {
-        this.checkCount = 2;
-        this.isExist();
-        this.isExistName();
+    	this.checkCount = 2;
+    	this.isExist();
+    	this.isExistName();
     },
 
     generateCollectionCode: function(value) {

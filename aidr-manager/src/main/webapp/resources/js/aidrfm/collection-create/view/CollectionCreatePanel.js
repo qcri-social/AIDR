@@ -297,10 +297,10 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         	flex: 1,
         	html: 'By creating a collection you agree to our <a href="http://aidr.qcri.org/r/tos/" target=_blank>Terms of Service</a>, which basically state that:<br>'
         		 	+ '<ul>'
-        			+ '<li><span class="blueInfo">*</span>   You are using AIDR for humanitarian and crisis response purposes.</span></li>'
-        		 	+ '<li><span class="blueInfo">*</span>   You understand your collections can be stopped and removed at any time.'
-                                + '<li><span class="blueInfo">*</span>   After your collection finishes or is stopped, we will give you the option to download it within a week.'
-        		 	+ '<li><span class="blueInfo">*</span>   You understand the data you collect will be made available for research purposes.</span></li>'
+        			+ '<li><span class="blueInfo"></span>   You are using AIDR for humanitarian and crisis response purposes.</span></li>'
+        		 	+ '<li><span class="blueInfo"></span>   You understand your collections can be stopped and removed at any time.'
+                                + '<li><span class="blueInfo"></span>   After your collection finishes or is stopped, we will give you the option to download it within a week.'
+        		 	+ '<li><span class="blueInfo"></span>   You understand the data you collect will be made available for research purposes.</span></li>'
         		 	+ '</ul>'
         		 	+ '<br> If you have questions, please contact us.',
             margin:'20 0 0 0'

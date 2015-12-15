@@ -699,7 +699,8 @@ public class CollectionController extends BaseController{
 		dto.setCollectionType(collection.getProvider());
 		dto.setHasTaggerOutput(collection.isClassifierEnabled());
 		dto.setManagers(managers);
-
+		dto.setPurpose(collection.getPurpose());
+		
 		return dto;
 	}
 

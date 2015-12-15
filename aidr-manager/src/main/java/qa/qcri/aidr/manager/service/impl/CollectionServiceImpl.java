@@ -872,7 +872,8 @@ public class CollectionServiceImpl implements CollectionService {
 		collection.setLangFilters(collectionInfo.getLangFilters());
 		collection.setMicromappersEnabled(Boolean.FALSE);
 		collection.setProvider(CollectionType.valueOf(collectionInfo.getProvider()));
-
+		collection.setPurpose(collectionInfo.getPurpose());
+		
 		if(CollectionType.SMS.equals(collectionInfo.getProvider())) {
 			collection.setTrack(null);
 			collection.setLangFilters(null);

@@ -511,6 +511,7 @@ body {
 .collection-title {
 	font-size: 22px;
 	color: #00acee;
+	margin-bottom: 5px;
 }
 
 .collection-title a {
