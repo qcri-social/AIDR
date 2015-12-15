@@ -946,6 +946,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                             var data = resp.data;
 
                             me.DetailsComponent.currentCollection.status = data.status;
+                            Ext.suspendLayouts();
                             me.setStatus(data.status, data.collectionType);
                             me.setStartDate(data.startDate);
                             me.setEndDate(data.endDate, data.status);
@@ -954,6 +955,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                             me.setTotalCountOfDocuments(data.totalCount);
                             me.setLastDowloadedDoc(data.lastDocument);
                             me.setManagers(data.managers);
+                            Ext.resumeLayouts();
                         }
                     } else {
                         AIDRFMFunctions.setAlert("Error", resp.message);
