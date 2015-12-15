@@ -397,12 +397,12 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             id: 'collectionTrash',
             margin: '25 0 0 0',
             hidden: true,
-            flex: 1  
+            //flex: 1  
         });
 
         this.untrashButton = Ext.create('Ext.Button', {
             text: 'Untrash Collection',
-            cls:'btn btn-red',
+            cls:'btn btn-redSmall',
             id: 'collectionUntrash',
             margin: '25 0 0 0',
             hidden: true

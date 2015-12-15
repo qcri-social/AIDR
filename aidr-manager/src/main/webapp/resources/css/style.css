@@ -553,13 +553,15 @@ body {
 }
 
 .btn.btn-green {
-color: #fff;
-border: 1px solid;
-height:29px;
+	color: #fff;
+	border: 1px solid;
+	height:29px;
+	padding-right: 20px; 
+	padding-left: 20px; 
 	*zoom: 1;
 	filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0,
 		startColorstr='#FF93C27C', endColorstr='#FF7FB863');
-*zoom: 1;
+	*zoom: 1;
 	filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0,
 		startColorstr='#44B5B1', endColorstr='#3FB6B0');
 	background: -webkit-linear-gradient(left, #44B5B1, #3FB6B0);
@@ -599,6 +601,7 @@ height:29px;
 .btn.btn-redBig {
 	color: #fff;
 	width: 181px;
+	height:29px;
 	border: 1px solid;
 	font-size: 12px;
 	color: #fff;
@@ -660,6 +663,7 @@ height:29px;
 	color: #fff;
 	width: auto;
 	height:29px;
+	padding: 0 20px;
 	border: 1px solid;
 	font-size: 12px;
 	color: #fff;
@@ -827,6 +831,7 @@ height:29px;
 .btn.btn-blueBig {
 	color: #fff;
 	width: 181px;
+	height:29px;
 	border: 1px solid;
 	font-size: 12px;
 	color: #fff;
@@ -860,6 +865,8 @@ height:29px;
 	height:29px;
 	border: 1px solid;
 	font-size: 12px;
+	padding-left: 20px;
+	padding-right: 20px;
 	color: #fff;
 	line-height: 23px;
 	text-align: center;

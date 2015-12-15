@@ -386,12 +386,12 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                 this.codeE,
                 wrapFieldWithInfo(this.nameE, 'collectionNameInfo'),
 
-                wrapFieldWithInfo(this.collectionTypeCombo, 'collectionTypeInfo'),
+                wrapFieldWithInfo(this.collectionTypeCombo, 'collectionTypeInfo', undefined, '20 0 0 0'),
 
-                wrapFieldWithInfo(this.langCombo, 'collectionLangInfo', undefined, '20 0 5 5', 'langPanel'),
+                wrapFieldWithInfo(this.langCombo, 'collectionLangInfo', undefined, '20 0 5 0', 'langPanel'),
                 this.langNote,
 
-                wrapFieldWithInfo(this.keywordsE, 'collectionkeywordsInfo', undefined, undefined, 'keywordsPanel'),
+                wrapFieldWithInfo(this.keywordsE, 'collectionkeywordsInfo', undefined, '20 0 0 0', 'keywordsPanel'),
 
                 wrapFieldWithInfo(this.crisisTypesCombo, 'crisisTypesInfo'),
 
