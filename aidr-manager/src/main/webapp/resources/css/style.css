@@ -10,12 +10,9 @@
 .svg-menu img {
 	width: 1.25em;
 }
-.filterSingle{
-	width: 900px;
-}
 
 .x-css-shadow{
-	    box-shadow: #157fcc 0px 0px 6px !important;
+    box-shadow: #157fcc 0px 0px 6px !important;
 }
 .x-window .x-tool img {
 	overflow: hidden;

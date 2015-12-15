@@ -821,6 +821,8 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 Ext.getBody().unmask();
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
+                	var statusText = AIDRFMFunctions.getStatusWithStyle("NOT_RUNNING", TYPE);
+                	DetailsComponent.statusL.setText(statusText, false);
                     me.refreshStatus(id);
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
@@ -926,37 +928,41 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
         var me = this;
 
       //  this.DetailsComponent.collectionLogStore.load();
-        Ext.Ajax.request({
-            url: BASE_URL + '/protected/collection/refreshCount.action',
-            method: 'GET',
-            params: {
-                id: id
-            },
-            headers: {
-                'Accept': 'application/json'
-            },
-            success: function (response) {
-                var resp = Ext.decode(response.responseText);
-                if (resp.success ) {
-                    if (resp.data) {
-                        var data = resp.data;
+        
+        if(!(me.DetailsComponent.statusL.html =="<b class='warningFont'>TRASHED </b>")){
+        	Ext.Ajax.request({
+                url: BASE_URL + '/protected/collection/refreshCount.action',
+                method: 'GET',
+                params: {
+                    id: id
+                },
+                headers: {
+                    'Accept': 'application/json'
+                },
+                success: function (response) {
+                    var resp = Ext.decode(response.responseText);
+                    if (resp.success ) {
+                        if (resp.data) {
+                            var data = resp.data;
 
-                        me.DetailsComponent.currentCollection.status = data.status;
-                        me.setStatus(data.status, data.collectionType);
-                        me.setStartDate(data.startDate);
-                        me.setEndDate(data.endDate, data.status);
-                        me.setWillStoppedDate(data.status, data.startDate, data.durationHours);
-                        me.setCountOfDocuments(data.count);
-                        me.setTotalCountOfDocuments(data.totalCount);
-                        me.setLastDowloadedDoc(data.lastDocument);
-                        me.setManagers(data.managers);
+                            me.DetailsComponent.currentCollection.status = data.status;
+                            me.setStatus(data.status, data.collectionType);
+                            me.setStartDate(data.startDate);
+                            me.setEndDate(data.endDate, data.status);
+                            me.setWillStoppedDate(data.status, data.startDate, data.durationHours);
+                            me.setCountOfDocuments(data.count);
+                            me.setTotalCountOfDocuments(data.totalCount);
+                            me.setLastDowloadedDoc(data.lastDocument);
+                            me.setManagers(data.managers);
+                        }
+                    } else {
+                        AIDRFMFunctions.setAlert("Error", resp.message);
+                        //AIDRFMFunctions.reportIssue(response);
                     }
-                } else {
-                    AIDRFMFunctions.setAlert("Error", resp.message);
-                    AIDRFMFunctions.reportIssue(response);
                 }
-            }
-        });
+            });
+        }
+        
     },
 
     enableTagger: function(view, record, item, index, e, eOpts) {
