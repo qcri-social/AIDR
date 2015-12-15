@@ -382,7 +382,13 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 				            	          this.statusL
 				            	          ]
 				              },
-				              this.filterFieldSet,
+				              {
+				            	  xtype: 'container',
+				            	  items: [
+				            	          this.filterFieldSet
+				            	          ]
+				            		  
+				              },
 				              {
 				                  xtype: 'container',
 				                  layout: {
