@@ -186,18 +186,28 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
 				checkRunningStatus();
 			}
 			else{
+				var message = 'Please enter your purpose for creating the collection (Max. 1000 chars):';
 				Ext.MessageBox.show({
 		    	    title: 'Purpose for creating collection',
-		    	    message: 'Please enter your purpose for creating the collection:',
+		    	    msg: message,
 		    	    width: 500,
 		    	    buttons: Ext.Msg.OKCANCEL,
 		    	    multiline: true,
-		    	    fn: function(btn, text){
-		        	    if (btn == 'ok'){
+		    	    fn: function(btn, text, cfg){
+		    	    	text = Ext.String.trim(text);
+		    	    	if (btn == 'ok' && Ext.isEmpty(text)){
+		    	    		var newMsg = message+'</br><span style="color:red">Empty string not allowed !!!</span>';
+		        	    	Ext.MessageBox.show(Ext.apply({}, {msg:newMsg}, cfg));
+		    	    	}
+		    	    	else if(btn == 'ok' && text.length>1000){
+		    	    		var newMsg = message+'</br><span style="color:red">Maximum length of string should not be greater than 1000 !!!</span>';
+		        	    	Ext.MessageBox.show(Ext.apply({}, {msg:newMsg}, cfg));
+		    	    	}
+		    	    	else if(btn == 'ok'){
 		        	    	purpose = text;
 		        	    	checkRunningStatus();
 		        	    }
-		        	}
+		    	    }
 		       	});
 		    }
         });
