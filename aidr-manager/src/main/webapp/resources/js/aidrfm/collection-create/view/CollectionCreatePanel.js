@@ -161,12 +161,12 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             	fieldLabel: 'Geographical boundary strictness',
             	labelWidth: 240,
             	columns: 1,
-            	margin: '0 0 0 -5',
             	vertical: true,
             	items: [
-                    { boxLabel: 'Does not apply (no geographical boundary)', name: 'geoR1', inputValue: 'null', checked: true},
-                    { boxLabel: 'Approximate: a tweet may be collected if it comes from a country that overlaps with the geographical boundaries.', name: 'geoR1', inputValue: 'approximate' },
-                    { boxLabel: 'Strict: a tweet can only be collected if it has geographical coordinates strictly inside the geographical boundaries.', name: 'geoR1', inputValue: 'strict'}
+            	        
+                    { margin: '0 0 0 -5', boxLabel: 'Does not apply (no geographical boundary)', name: 'geoR1', inputValue: 'null', checked: true},
+                    { margin: '0 0 0 -5', boxLabel: 'Approximate: a tweet may be collected if it comes from a country that overlaps with the geographical boundaries.', name: 'geoR1', inputValue: 'approximate' },
+                    { margin: '0 0 0 -5', boxLabel: 'Strict: a tweet can only be collected if it has geographical coordinates strictly inside the geographical boundaries.', name: 'geoR1', inputValue: 'strict'}
                 ]
         	}]
         });

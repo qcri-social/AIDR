@@ -52,14 +52,14 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
            this.enableMicroMappersButton = Ext.create('Ext.Button', {
                                                       text: 'Enable MicroMappers',
-                                                      cls:'btn btn-green',
+                                                      cls:'btn btn-greenBig',
                                                       id: 'enableMicroMappersBtn',
                                                       width: 160,
                                                       margin: '10 0 0 800'
                                                       });
            this.disableMicroMappersButton = Ext.create('Ext.Button', {
                                                       text: 'Disable MicroMappers',
-                                                      cls:'btn btn-redCancel',
+                                                      cls:'btn btn-redBig',
                                                       id: 'disableMicroMappersBtn',
                                                       width: 160,
                                                       margin: '10 0 0 800',
@@ -807,10 +807,20 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                           }
                                                           ,
                                                           {
-                                                          xtype: 'label',
-                                                          html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/pybossaAppPage.png"></span>',
-                                                          margins: '50 0 0 40'
+                                                        	  xtype: 'container',
+                                                              layout: {
+                                                              type: 'vbox',
+                                                              align: 'stretch'
+                                                              },
+                                                              margin: '50 0 0 40',
+                                                              items: [{
+                                                                  xtype: 'label',
+                                                                  //margins: '50 0 0 40',
+                                                                  html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/pybossaAppPage.png"></span>',
+                                                                  
+                                                                  }]
                                                           }
+                                                          
                                                           ]
                                                   });
 
