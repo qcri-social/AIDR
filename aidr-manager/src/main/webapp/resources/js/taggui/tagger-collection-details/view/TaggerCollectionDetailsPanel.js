@@ -44,7 +44,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
            this.addNewClassifierButton = Ext.create('Ext.Button', {
                                                     text: 'Add new classifier',
-                                                    cls:'btn btn-blueSmall',
+                                                    cls:'btn btn-blueBig',
                                                     id: 'addNewClassifier',
                                                     width: 150,
                                                     margin: '27 0 0 0'

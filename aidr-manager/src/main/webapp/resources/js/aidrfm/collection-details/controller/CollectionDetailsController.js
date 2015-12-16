@@ -822,11 +822,11 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 var resp = Ext.decode(response.responseText);
                 if (resp.success) {
                 	var statusText = AIDRFMFunctions.getStatusWithStyle("NOT_RUNNING", TYPE);
-                	DetailsComponent.statusL.setText(statusText, false);
+                	datailsController.DetailsComponent.statusL.setText(statusText, false);
                     me.refreshStatus(id);
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
-                    AIDRFMFunctions.reportIssue(response);
+                    //AIDRFMFunctions.reportIssue(response);
                 }
             },
             failure: function () {

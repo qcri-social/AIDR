@@ -411,7 +411,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                         margin: '20 0 0 0'
                     },
                     items:[
-                        wrapFieldWithInfo(this.geoE, 'collectionGeoInfo', '10 0', '20 0 -6 0', 'geoPanel'),
+                        wrapFieldWithInfo(this.geoE, 'collectionGeoInfo', '10 0', '20 0 -6 -10', 'geoPanel'),
                         this.geoDescription,
                         this.geoR,
 
