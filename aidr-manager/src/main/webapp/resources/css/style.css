@@ -1097,7 +1097,7 @@ Overriding of the standard ExtJs styles for tab panel
 	background: #F8F8F8;
 	background: -moz-linear-gradient(top, #FFFFFF 0%, #F4F4F4 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #FFFFFF),
-		color-stop(100%, #F4F4F4));
+		color-stop(100%, #FFFFFF));
 	margin-right: 0.5em;
 	height: 25px;
 }
