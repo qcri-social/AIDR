@@ -183,7 +183,8 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 
         this.followE = Ext.create('Ext.form.field.Text', {
             fieldLabel: 'Additionally, collect all tweets from these twitter user ids, independent of their keywords or location',
-            labelWidth: 240,
+            labelWidth: 230,
+            labelPad: 15,
             name: 'follow',
             width:698,
             emptyText: 'e.g. cnnbrk, bbcbreaking, fema, lastquake'

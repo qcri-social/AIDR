@@ -108,7 +108,7 @@ UserController.service = {
 		        	            	    valueField: 'code',
 		        	            	    displayField: 'name',
 		        	            	    editable: false,
-		        	            	    value: 'en'
+		        	            	    value: Ext.USER.data.items[0].data.locale
 		        	            	}
 		            	        ]
 		            	
@@ -154,15 +154,9 @@ UserController.service = {
             },
             success: function (resp) {
             	Ext.USER.load();
-            	var response = Ext.decode(resp.responseText);
-            	var data=response.data;
-            	var email=data.email;
-                var locale=data.locale;
-
                 Ext.getCmp('updateWindow').hide();
             	AIDRFMFunctions.setAlert("Info", ["User updated successfully."]);
                 Ext.getBody().unmask();
-                
             },
             failure: function (resp) {
             	Ext.getCmp('updateWindow').hide();
