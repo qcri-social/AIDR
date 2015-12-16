@@ -113,7 +113,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             maxLength: 24000,
             maxLengthText: 'The maximum length for this field is 400',
             flex: 1,
-            rows: 7,
+            height: 109,
             labelWidth: 240,
             emptyText: 'e.g. earthquake california, quake california, #earthquakeca, #sfearthquake, #earthquakesf',
 
@@ -136,12 +136,12 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         });*/
         this.geoE = Ext.create('Ext.form.FormPanel', {
             border: false,
-            bodyPadding: 5,
+            //bodyPadding: 5,
             padding: '0 0 10 0',
             items:[{
                 fieldLabel: 'Collect tweets only within these geographical boundaries:',
                 labelWidth: 240,
-                width: 687,
+                width: 698,
                 xtype: 'textareafield',
                 grow: true,
                 growMax: 100,
@@ -161,6 +161,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             	fieldLabel: 'Geographical boundary strictness',
             	labelWidth: 240,
             	columns: 1,
+            	margin: '0 0 0 -5',
             	vertical: true,
             	items: [
                     { boxLabel: 'Does not apply (no geographical boundary)', name: 'geoR1', inputValue: 'null', checked: true},
@@ -184,7 +185,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             fieldLabel: 'Additionally, collect all tweets from these twitter user ids, independent of their keywords or location',
             labelWidth: 240,
             name: 'follow',
-            width:687,
+            width:698,
             emptyText: 'e.g. cnnbrk, bbcbreaking, fema, lastquake'
         });
 
@@ -214,7 +215,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 
         this.duration = Ext.create('Ext.form.ComboBox', {
             fieldLabel: 'Collect data for',
-            width:687,
+            width:698,
             labelWidth: 240,
             name: 'durationHours',
             editable: false,
@@ -393,7 +394,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 
                 wrapFieldWithInfo(this.keywordsE, 'collectionkeywordsInfo', undefined, '20 0 0 0', 'keywordsPanel'),
 
-                wrapFieldWithInfo(this.crisisTypesCombo, 'crisisTypesInfo'),
+                wrapFieldWithInfo(this.crisisTypesCombo, 'crisisTypesInfo', undefined, '20 0 0 0'),
 
                 //Advanced configuration
                 {
@@ -403,7 +404,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                     collapsible:true,
                     collapsed:true,
                     cls:'collapse-style',
-                    bodyPadding: '5 5 20 5',
+                   // bodyPadding: '5 5 20 5',
                     margin: '20 0 0 0',
                     layout:'anchor',
                     defaults: {
@@ -411,7 +412,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                         margin: '20 0 0 0'
                     },
                     items:[
-                        wrapFieldWithInfo(this.geoE, 'collectionGeoInfo', '10 0', '20 0 -6 -10', 'geoPanel'),
+                        wrapFieldWithInfo(this.geoE, 'collectionGeoInfo', '10 0', '20 0 -6 0', 'geoPanel'),
                         this.geoDescription,
                         this.geoR,
 
