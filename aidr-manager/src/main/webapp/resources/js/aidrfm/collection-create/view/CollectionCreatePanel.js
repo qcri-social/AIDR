@@ -417,7 +417,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                         this.geoDescription,
                         this.geoR,
 
-                        wrapFieldWithInfo(this.followE, 'collectionFollowInfo', '10 0', undefined, 'followPanel'),
+                        wrapFieldWithInfo(this.followE, 'collectionFollowInfo', '12 0', undefined, 'followPanel'),
 
                         wrapFieldWithInfo(this.duration, 'collectionDurationInfo', undefined, '20 0 5 0'),
                         this.durationDescription

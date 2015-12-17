@@ -220,7 +220,7 @@ this.collectionPaging = Ext.create('Ext.toolbar.Paging', {
 });
 
 this.collectionTrashedStore = Ext.create('Ext.data.JsonStore', {
-    pageSize: 3,
+    pageSize: 10,
     storeId: 'collectionTrashedStore',
     fields: ['id', 'code', 'name', 'target', 'langFilters', 'startDate', 'endDate', 'status', 'count', 'track', 'geo', 'follow', 'lastDocument', 'user', 'collectionType'],
     proxy: {
