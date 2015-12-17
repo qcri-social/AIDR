@@ -86,7 +86,7 @@ UserController.service = {
 		            	xtype: 'container',
 		            	cls: 'modal-body',
 		            	layout: 'hbox',
-		            	margin: "0 0 0 2",
+		            	margin: "0 0 0 4",
 		            	items: [
 		            	        	{
 		        	            		xtype: 'container',
@@ -98,7 +98,6 @@ UserController.service = {
 		        	            		cls: 'inputForm',
 		        	            		style: {
 		        	            			border: '1px',
-		        	            			'border-radius': '4px'
 		        	            		},
 		        	            		store: new Ext.data.ArrayStore({
 		        	            	        data: LANG,

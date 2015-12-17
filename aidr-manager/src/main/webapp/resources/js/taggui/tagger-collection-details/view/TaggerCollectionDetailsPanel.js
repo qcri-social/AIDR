@@ -565,7 +565,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                           labelWidth: 250,
                                                           name: 'pybossaClassifierFilters',
                                                           id: 'pybossaClassifierFilters',
-                                                          margin: '0 0 0 10',
+                                                          margin: '0 0 0 0',
                                                           flex: 1
                                                           });
 
