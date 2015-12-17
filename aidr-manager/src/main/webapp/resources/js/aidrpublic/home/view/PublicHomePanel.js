@@ -120,7 +120,7 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
             '</div>',
             '<div class="info">',
             '<div class="collection-title">{[this.getOutputLink(values.code,values.name ,values.hasTaggerOutput)]}</div>',
-            '<div class="styled-text-14" id="statusField_{id}">{[this.getCrisisType(values.crisisType.name)]} &nbsp; {[this.getSharedBy(values.user)]}</div>',
+            '<div class="styled-text-14" id="statusField_{id}">{[this.getCrisisType(values.crisisType)]} &nbsp; {[this.getSharedBy(values.user)]}</div>',
             '<div class="styled-text-14" id="docCountField_{id}">{[this.getDateTimeSet(values.startDate, values.status)]}</div>',
             '</div>',
 
@@ -159,7 +159,7 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
                     return AIDRFMFunctions.getStatusWithStyle(raw);
                 },
                 getCrisisType: function (r) {
-                    return r ? '<span class="styled-text-14"> Crisis Type: ' + r + '</span>' : "<span class='styled-text-14'>Crisis Type: Not specified</span>";
+                    return r ? '<span class="styled-text-14"> Crisis Type: ' + r.name + '</span>' : "<span class='styled-text-14'>Crisis Type: Not specified</span>";
                 },
                 getEncodedCode: function(code) {
                     return encodeURI(code);
