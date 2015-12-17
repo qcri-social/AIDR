@@ -1059,6 +1059,7 @@ Overriding of the standard ExtJs styles for tab panel
 
 .tabPanel .x-tab-bar-body {
 	border-style: none;
+	margin-left: -10px;
 }
 
 .tabPanel .x-border-box .x-tab-bar-top .x-tab-bar-strip {
@@ -1194,6 +1195,7 @@ End of the tab panel styles
 	.c-models-list .content .img {
 	float: left;
 	width: 75px;
+	margin-left: -13px;
 }
 
 .collections-list .content .info, .attribute-list .content .info,
