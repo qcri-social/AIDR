@@ -196,7 +196,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
 		    	    fn: function(btn, text, cfg){
 		    	    	text = Ext.String.trim(text);
 		    	    	if (btn == 'ok' && Ext.isEmpty(text)){
-		    	    		var newMsg = message+'</br><span style="color:red">Empty string not allowed !!!</span>';
+		    	    		var newMsg = message+'</br><span style="color:red">Collection purpose is mandatory !!!</span>';
 		        	    	Ext.MessageBox.show(Ext.apply({}, {msg:newMsg}, cfg));
 		    	    	}
 		    	    	else if(btn == 'ok' && text.length>1000){
