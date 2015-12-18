@@ -104,7 +104,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
         
         this.collectionHistoryDoNotChangeMessage = Ext.create('Ext.panel.Panel', {
-            html: '<div style="padding-top:150px"><center><div style="font-size:16pt">This collection has not changed since it was created.</div></center></div>',
+            html: '<div style="padding-top:160px; padding-bottom:10px;"><center><div style="font-size:16pt">This collection has not changed since it was created.</div></center></div>',
             hidden: true
         });
 
@@ -1320,11 +1320,11 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 },
                 tips: {
                     trackMouse: true,
-                    width: 200,
+                    width: 180,
                     //height: 60,
                     renderer: function(storeItem, item) {
-                      var fromTime = Ext.Date.format(new Date(storeItem.data.startDate), "Y-m-d H:i");
-                      var toTime = Ext.Date.format(new Date(storeItem.data.endDate), "Y-m-d H:i");
+                      var fromTime = moment(new Date(storeItem.data.startDate)).format("MMM Do, YYYY hh:mm A");
+                      var toTime = moment(new Date(storeItem.data.endDate)).format("MMM Do, YYYY hh:mm A");
                           this.setHtml(Ext.util.Format.capitalize(COLLECTION_TYPES[TYPE]["plural"]) + ' collected from '+ fromTime + ' to ' + toTime +" = " + storeItem.get(item.series.yField));
                       }
                 }

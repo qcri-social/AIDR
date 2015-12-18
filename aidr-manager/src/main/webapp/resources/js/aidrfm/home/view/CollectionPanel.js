@@ -18,7 +18,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
         this.collectionDescription = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '7 0 0 0',
-            text: 'Status as of ' + Ext.Date.format(new Date(), 'F j, Y, g:i:s A'),
+            text: 'Status as of ' + moment(new Date()).format("MMM Do, YYYY hh:mm A"),
             flex: 1
         });
 

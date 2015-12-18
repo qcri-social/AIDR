@@ -205,7 +205,7 @@ Ext.define('AIDRFM.home.controller.CollectionController', {
     },
 
     updateLastRefreshDate: function() {
-        this.mainComponent.collectionDescription.setText('Status as of ' + Ext.Date.format(new Date(), 'F j, Y, g:i:s A'));
+        this.mainComponent.collectionDescription.setText('Status as of ' + moment(new Date()).format("MMM Do, YYYY hh:mm A"));
     },
 
     updateStartStopButtonsState: function(status, id) {

@@ -100,7 +100,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
               width: 180,
               //height: 50,
               renderer: function(storeItem, item) {
- 	        	 var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
+ 	        	 var timestamp = moment(new Date(storeItem.get(item.series.xField))).format("MMM Do, YYYY hh:mm A");
  	           	 var val = storeItem.get(item.series.yField);
  	           	 val = val ? (val * 100).toFixed(0) + '%' : '0%';
  				 this.setHtml(item.series.title +' at ' + timestamp + ' is ' + val );
@@ -129,7 +129,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
             width: 180,
             //height: 50,
             renderer: function(storeItem, item) {
-	        	 var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
+	        	 var timestamp = moment(new Date(storeItem.get(item.series.xField))).format("MMM Do, YYYY hh:mm A");
 	           	 var val = storeItem.get(item.series.yField);
 	           	 val = val ? (val * 100).toFixed(0) + '%' : '0%';
 				 this.setHtml(item.series.title +' at ' + timestamp + ' is ' + val );
@@ -158,7 +158,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
             width: 180,
            // height: 50,
             renderer: function(storeItem, item) {
-	        	 var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
+	        	 var timestamp = moment(new Date(storeItem.get(item.series.xField))).format("MMM Do, YYYY hh:mm A");
 	           	 var val = storeItem.get(item.series.yField);
 	           	 val = val ? (val * 100).toFixed(0) + '%' : '0%';
 				 this.setHtml(item.series.title +' at ' + timestamp + ' is ' + val );
@@ -167,7 +167,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
     }, {
         type: 'line',
         axis: 'right',
-        title: 'Training Count',
+        title: 'Human Tagged',
         xField: 'trainingTime',
         yField: 'trainingCount',
         style: {
@@ -187,7 +187,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
             width: 180,
             //height: 50,
             renderer: function(storeItem, item) {
-          	  var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
+          	  var timestamp = moment(new Date(storeItem.get(item.series.xField))).format("MMM Do, YYYY hh:mm A");
 				  this.setHtml(item.series.title +' at ' + timestamp + ' is ' + storeItem.get(item.series.yField) + ' ' + COLLECTION_TYPES[TYPE]["plural"]);
 			  }
 		}
