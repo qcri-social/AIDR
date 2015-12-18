@@ -82,7 +82,8 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                 { "val": 72, "label": '3 days' },
                 { "val": 168, "label": '7 days' },
                 { "val": 336, "label": '14 days' },
-                { "val": 720, "label": '30 days' }
+                { "val": 720, "label": '30 days' },
+                { "val": 1440, "label": '60 days' }
             ]
         });
 
