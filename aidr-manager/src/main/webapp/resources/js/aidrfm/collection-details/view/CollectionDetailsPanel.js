@@ -582,7 +582,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 },
                 getLanguageField: function (r) {
                     var languageFull = "";
-                    if(r != ''){
+                    if(r && r != ''){
                         var lns = r.split(",");
                         lns.forEach(function(val, i){
                             var index = me.langComboStore.find('code', val);
@@ -1413,7 +1413,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             },
             getLanguageField: function (r) {
                 var languageFull = "";
-                if(r != ''){
+                if(r && r != ''){
                     var lns = r.split(",");
                     lns.forEach(function(val, i){
                         var index = me.langComboStore.find('code', val);
