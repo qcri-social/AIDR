@@ -8,7 +8,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -81,8 +80,7 @@ public class PersistenceConfig {
 
 	protected Properties getJpaProperties() {
 		Properties properties = new Properties();
-		properties.setProperty(NAMING_STRATEGY,
-				ImprovedNamingStrategy.class.getName());
+		properties.setProperty(NAMING_STRATEGY,	RespectfulImprovedNamingStrategy.class.getName());
 		return properties;
 	}
 

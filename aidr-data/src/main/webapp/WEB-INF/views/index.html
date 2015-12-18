@@ -18,13 +18,14 @@
 		<div class="headerWrapper">
         	<div class="header">
         		<a href="http://aidr.qcri.org"><img src="resources/img/AIDR/aidr_logo_240x90.png"></a>
-   				     		
-					<form class="form-search form-inline">
-			       		<input type="text" class="search-query" ng-model="search" placeholder="Search" ng-change="figureOutItemsToDisplay()" />
-			     	</form>
-				
-        	
-        </div>
+        		
+				<form class="form-search form-inline">
+					<a href="logout" class="btn btn-default btn-sm" style="margin-top:-81px;margin-left: 54%">
+			          <span class="fa fa-sign-out"></span> Log out
+			        </a><br/>
+		       		<input type="text" class="search-query" ng-model="search" placeholder="Search" ng-change="figureOutItemsToDisplay()" />
+		     	</form>
+	        </div>
         <div ng-hide="flag" id="loading">
         </div>
 		<div ng-show="flag" class="col-md-12">
