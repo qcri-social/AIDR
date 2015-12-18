@@ -898,6 +898,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     xtype: 'container',
                                     padding: '0 20 0 0',
                                     height:60,
+                                    width:75,
                                     id:'iconPanel',
                                     html: '<img src="/AIDRFetchManager/resources/img/collection-icon.png"/>'
                                 },

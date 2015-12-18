@@ -183,6 +183,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             "#collectionUntrash": {
                 click: function (btn, e, eOpts) {
                     datailsController.untrashCollection();
+                    window.location.reload();
+                    history.go(0);
+                    window.location.href=window.location.href;
                 }
             },
 
