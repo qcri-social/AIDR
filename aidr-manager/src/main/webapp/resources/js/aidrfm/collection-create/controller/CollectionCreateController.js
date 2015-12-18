@@ -200,7 +200,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
 		        	    	Ext.MessageBox.show(Ext.apply({}, {msg:newMsg}, cfg));
 		    	    	}
 		    	    	else if(btn == 'ok' && text.length>1000){
-		    	    		var newMsg = message+'</br><span style="color:red">Maximum length of string should not be greater than 1000 !!!</span>';
+		    	    		var newMsg = message+'</br><span style="color:red">Collection purpose should not be greater than 1000 characters!!!</span>';
 		        	    	Ext.MessageBox.show(Ext.apply({}, {msg:newMsg}, cfg));
 		    	    	}
 		    	    	else if(btn == 'ok'){
