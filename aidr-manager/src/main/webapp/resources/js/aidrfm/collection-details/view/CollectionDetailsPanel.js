@@ -627,17 +627,14 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             }
         });
         
-        this.collectionHistoryPanelView = Ext.create('Ext.container.Container', {
-            
+        this.collectionHistoryPanelView = Ext.create('Ext.view.View', {
+        	store: 'collectionHistoryPanelStore',
+        	tpl: this.collectionHistoryPanelTpl,
+        	emptyText: 'Please select a row.',
+            loadMask: false,
             margin: '0 0 10 0',
-            items : [
-                     {
-                        xtype: 'dataview',
-                        itemTpl: this.collectionHistoryPanelTpl,
-                        store: 'collectionHistoryPanelStore',
-                     }
-                    ],
-            
+            scrollable: 'y',
+            height: 140
         });
 
         this.collectionLogPaging = Ext.create('Ext.toolbar.Paging', {
