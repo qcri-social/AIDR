@@ -517,7 +517,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<div class="collections-list">',
        
             '<tpl if="values.length == 0">' +
-            '<div><center><div style="font-size:16pt; padding:10px 0 0px 0">Please select a row.</div></center></div>',
+            '<div><center><div style="font-size:16pt; padding:64px 0 0px 0">Please select a row.</div></center></div>',
             '</tpl>',
             
             '<tpl for=".">',
@@ -1404,7 +1404,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 },
                 render : function(grid){
                      grid.on('viewready',function(){  
-                         this.getSelectionModel().select(0);  
+                         //this.getSelectionModel().select(0);  
                          
                          //Commented during extJs 5.1 migration. Need to uncomment to enable functioning
                     });
