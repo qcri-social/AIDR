@@ -380,6 +380,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             margin: 0,
             cls:'btn btn-green',
             id: 'collectionStart',
+             margin: '0 0 0 480',
             hidden: true
         });
 
@@ -937,18 +938,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                             ]
                                         }
                                     ]
-                                },
-                                {
-                                    xtype: 'container',
-                                    defaultType: 'label',
-                                    padding: '12 0 0 0',
-                                    layout: 'hbox',
-                                    items: [
-                                        this.startButton,
-                                        this.stopButton,
-                                        this.enableTaggerButton,
-                                        this.gotoTaggerButton
-                                    ]
                                 }
                             ]
                         },
@@ -1498,7 +1487,21 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
 
         this.items = [
-            this.breadcrumbs,
+            
+            
+             {
+                                    xtype: 'container',
+                                    defaultType: 'label',
+                                    padding: '12 0 0 0',
+                                    layout: 'hbox',
+                                    items: [
+                                    this.breadcrumbs,
+                                        this.startButton,
+                                        this.stopButton,
+                                        this.enableTaggerButton,
+                                        this.gotoTaggerButton
+                                    ]
+                                },
             {
                 xtype: 'container',
                 width: '100%',
