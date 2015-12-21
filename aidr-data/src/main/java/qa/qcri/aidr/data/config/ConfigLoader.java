@@ -26,7 +26,7 @@ import org.springframework.web.servlet.view.JstlView;
  */
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = { "qa.qcri.aidr.data" })
+@ComponentScan(basePackages = { "qa.qcri.aidr.data","org.socialsignin.springsocial.security" })
 @EnableScheduling
 public class ConfigLoader extends WebMvcConfigurerAdapter {
 
@@ -72,6 +72,7 @@ public class ConfigLoader extends WebMvcConfigurerAdapter {
 	
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
-	    registry.addViewController("/").setViewName("/index");
+	    registry.addViewController("/").setViewName("/login");
 	}
+	
 }

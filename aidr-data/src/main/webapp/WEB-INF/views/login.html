@@ -1,0 +1,75 @@
+<html>
+	<head>
+		<title>AIDR</title>
+		<!-- <script src="resources/js/angular.min.js"></script>
+		<script src="resources/js/angular-animate.min.js"></script>
+		<script src="resources/js/angular-route.min.js"></script>
+		<script src="resources/js/angular-resource.min.js"></script>
+		<script src="resources/js/ui-bootstrap-tpls.min.js"></script>
+		<script src="resources/js/DataApp.js"></script> -->
+		<script type="text/javascript" src="resources/js/angular-toastr.tpls.min.js"></script>
+		<link rel="stylesheet" href="resources/css/bootstrap.min.css">
+		<link rel="stylesheet" href="resources/css/bootstrap-social.css">
+		<link rel="stylesheet" href="resources/css/style.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="resources/css/angular-toastr.min.css" />
+	</head>
+	<body style="overflow: auto">
+		<div class="headerWrapper">
+        	<div class="header">
+       			<a href="http://aidr.qcri.org"><img src="resources/img/AIDR/aidr_logo_240x90.png"></a>
+        	</div>
+		</div>
+		
+		<div class="mainWraper">
+			<div class="main">
+				<div>
+					
+					<div class="row" style="padding: 50px; padding-bottom: 25px">
+						<div class="col-md-1" style="width: 12.4%">
+						</div>
+						<div class="col-md-3">
+							<form action="signin/twitter" method="POST">
+								<button type="submit" class="btn btn-social btn-twitter" style="width:100%" >
+									<span class="fa fa-twitter"></span> Sign in with Twitter
+								</button>
+							</form>
+						</div>
+						<div class="col-md-3">
+							<form action="signin/facebook" method="POST">
+								<button type="submit" class="btn btn-social btn-facebook" style="width:100%">
+									<span class="fa fa-facebook"></span> Sign in with Facebook
+								</button>
+							</form>
+						</div>
+						<div class="col-md-3">
+							<form action="signin/google" method="POST">
+								<button type="submit" class="btn btn-social btn-google" style="width:100%">
+									<span class="fa fa-google"></span> Sign in with Google
+								</button>
+							</form>
+						</div>
+					</div>
+					
+					
+					
+					<p align="center">By logging in, you are agreeing to the <a href="resources/aidr_user_agreement.docx">terms of use, privacy</a> and <a href="resources/aidr_data_policy.docx">data policy.</a></p>
+					
+				</div>
+			</div>
+		</div>	
+	
+		<div class="footer navbar-fixed-bottom" id="footer">
+        	<div class="footer">
+        		<div class="right">
+    	    		<a href="http://www.qcri.qa/">A project by <img align="middle" src="resources/img/qcri-gray-horiz.png"/></a>
+        		</div>
+		        <div class="left">
+	    	    	<a href="http://aidr.qcri.org/r/tos/">Terms of Service</a>
+	        		<a href="http://aidr.qcri.org/r/manual">Help</a>
+	        		<a href="http://aidr.qcri.org/r/credits">Credits</a>
+	        	</div>
+        	</div>
+       </div>
+	</body>
+</html>
