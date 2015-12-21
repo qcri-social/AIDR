@@ -517,7 +517,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<div class="collections-list">',
        
             '<tpl if="values.length == 0">' +
-            '<div><center><div style="font-size:16pt; padding:64px 0 0px 0">Please select a row.</div></center></div>',
+            '<div><center><div style="font-size:16pt; padding:10px 0 0px 0">Please select a row.</div></center></div>',
             '</tpl>',
             
             '<tpl for=".">',
@@ -1402,12 +1402,14 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 	            	}
                     Ext.getStore('collectionHistoryPanelStore').remove(record);
                 },
-                render : function(grid){
-                     grid.on('viewready',function(){  
-                         //this.getSelectionModel().select(0);  
+                viewready : function(grid){
+                	setTimeout(function() {
+                		grid.getSelectionModel().select(0);
+                    }, 1000); 
+                    	   
                          
                          //Commented during extJs 5.1 migration. Need to uncomment to enable functioning
-                    });
+                    //});
                 },
             },
             getLanguageField: function (r) {
@@ -1433,6 +1435,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             width: '100%',
             minHeight: 400,
             activeTab: 0,
+            deferredRender: false,
             items: [
                 {
                     title: 'Details',
