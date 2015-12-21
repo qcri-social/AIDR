@@ -114,11 +114,10 @@ public class CollectionLogRepositoryImpl extends GenericRepositoryImpl<Collectio
     	 return (Integer) getHibernateTemplate().execute(new HibernateCallback<Object>() {
              @Override
              public Object doInHibernate(Session session) throws HibernateException {
-                 String sql = " select count(*) from collection_log c where c.collection_id = :collectionId and start_date >= :startDate and start_date < :endDate ";
+                 String sql = " select count(*) from collection_log c where c.collection_id = :collectionId and start_date = :startDate ";
                  SQLQuery sqlQuery = session.createSQLQuery(sql);
                  sqlQuery.setParameter("collectionId", collectionId);
                  sqlQuery.setParameter("startDate", startDate);
-                 sqlQuery.setParameter("endDate", endDate);
                  BigInteger total = (BigInteger) sqlQuery.uniqueResult();
                  return total != null ? total.intValue() : 0;
              }

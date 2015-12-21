@@ -20,7 +20,7 @@ import qa.qcri.aidr.trainer.pybossa.service.ClientAppService;
 import qa.qcri.aidr.trainer.pybossa.service.ReportTemplateService;
 import qa.qcri.aidr.trainer.pybossa.service.TranslationService;
 import qa.qcri.aidr.trainer.pybossa.store.PybossaConf;
-import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
+import qa.qcri.aidr.trainer.pybossa.store.LookupCode;
 import qa.qcri.aidr.trainer.pybossa.store.URLPrefixCode;
 
 import java.io.BufferedReader;
@@ -255,7 +255,7 @@ public class TWBTranslationServiceImpl implements TranslationService {
                     ReportTemplate template = new ReportTemplate(taskTranslation.getTaskQueueID(),
                             taskTranslation.getTaskId(), taskTranslation.getTweetID(), taskTranslation.getTranslatedText(),
                             taskTranslation.getAuthor(), taskTranslation.getLat(), taskTranslation.getLon(),
-                            taskTranslation.getUrl(), taskTranslation.getCreated(), taskTranslation.getAnswerCode(), StatusCodeType.TEMPLATE_IS_READY_FOR_EXPORT, Long.parseLong(taskTranslation.getClientAppId()));
+                            taskTranslation.getUrl(), taskTranslation.getCreated(), taskTranslation.getAnswerCode(), LookupCode.TEMPLATE_IS_READY_FOR_EXPORT, Long.parseLong(taskTranslation.getClientAppId()));
                     reportTemplateService.saveReportItem(template);
                 }
             }

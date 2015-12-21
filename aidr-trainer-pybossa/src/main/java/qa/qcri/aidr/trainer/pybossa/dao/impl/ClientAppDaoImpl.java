@@ -4,9 +4,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import qa.qcri.aidr.trainer.pybossa.dao.ClientAppDao;
 import qa.qcri.aidr.trainer.pybossa.entity.ClientApp;
-import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,7 +23,13 @@ public class ClientAppDaoImpl extends AbstractDaoImpl<ClientApp, String> impleme
 
     @Override
     public void createClientApp(ClientApp clientApp) {
-        saveOrUpdate(clientApp);
+        try{
+            saveOrUpdate(clientApp);
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
+
     }
 
     @Override

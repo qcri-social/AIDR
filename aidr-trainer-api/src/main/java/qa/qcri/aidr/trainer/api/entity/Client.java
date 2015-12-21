@@ -13,7 +13,7 @@ import java.util.Set;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-@Table(catalog = "aidr_scheduler", name = "client")
+@Table(catalog = "mm_scheduler", name = "client")
 public class Client implements Serializable {
 
     private static final long serialVersionUID = -5527566248002296042L;
@@ -99,34 +99,34 @@ public class Client implements Serializable {
     }
 
     @Id
-    @Column(name = "clientID")
+    @Column(name = "id")
     private Long clientID;
 
-    @Column (name = "aidrUserID", nullable = false)
+    @Column (name = "aidr_user_id", nullable = false)
     private Long aidrUserID;
 
     @Column (name = "name", nullable = false)
     private String name;
 
-    @Column (name = "hostURL", nullable = false)
+    @Column (name = "host_url", nullable = false)
     private String hostURL;
 
-    @Column (name = "hostAPIKey", nullable = false)
+    @Column (name = "host_api_key", nullable = false)
     private String hostAPIKey;
 
     @Column (name = "description", nullable = false)
     private String description;
 
-    @Column (name = "queueSize", nullable = false)
+    @Column (name = "queue_size", nullable = false)
     private Integer queueSize;
 
-    @Column (name = "aidrHostURL", nullable = false)
+    @Column (name = "aidr_host_url", nullable = false)
     private String aidrHostURL;
 
     @Column (name = "created", nullable = false)
     private Date created;
 
     @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinColumn(name="clientID")
+    @JoinColumn(name="client_id")
     private Set<ClientApp> clientAppSet;
 }

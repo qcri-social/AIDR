@@ -7,6 +7,7 @@ package qa.qcri.aidr.collector.beans;
 public class SMS {
     private AIDR aidr;
     private String text;
+    private String created_at;
 
     public AIDR getAidr() {
         return aidr;
@@ -23,4 +24,12 @@ public class SMS {
     public void setText(String text) {
         this.text = text;
     }
+
+	public String getCreated_at() {
+		return created_at;
+	}
+
+	public void setCreated_at(String created_at) {
+		this.created_at = created_at;
+	}
 }

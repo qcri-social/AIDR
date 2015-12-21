@@ -18,7 +18,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
         this.collectionDescription = Ext.create('Ext.form.Label', {
             cls: 'styled-text',
             margin: '7 0 0 0',
-            text: 'Status as of ' + Ext.Date.format(new Date(), 'F j, Y, g:i:s A'),
+            text: 'Status as of ' + moment(new Date()).format("MMM Do, YYYY hh:mm A"),
             flex: 1
         });
 
@@ -62,7 +62,7 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                 type: 'ajax',
                 url: 'protected/collection/findAll.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },
@@ -198,16 +198,16 @@ Ext.define('AIDRFM.home.view.CollectionPanel', {
                 type: 'ajax',
                 url: 'protected/collection/findAll.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },
             autoLoad: true,
             listeners: {
                 beforeload: function (s) {
-                    s.getProxy().extraParams = {
+                    s.getProxy().setExtraParams({
                         trashed: "yes"
-                    };
+                    });
                 },
                 load: function (store, records, successful, operation, eOpts) {
                     var count = store.getCount();

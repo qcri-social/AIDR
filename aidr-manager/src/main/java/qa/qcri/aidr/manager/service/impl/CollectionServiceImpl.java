@@ -34,6 +34,7 @@ import qa.qcri.aidr.manager.dto.PingResponse;
 import qa.qcri.aidr.manager.exception.AidrException;
 import qa.qcri.aidr.manager.persistence.entities.Collection;
 import qa.qcri.aidr.manager.persistence.entities.CollectionLog;
+import qa.qcri.aidr.manager.persistence.entities.CrisisType;
 import qa.qcri.aidr.manager.persistence.entities.UserAccount;
 import qa.qcri.aidr.manager.persistence.entities.UserConnection;
 import qa.qcri.aidr.manager.repository.AuthenticateTokenRepository;
@@ -45,6 +46,7 @@ import qa.qcri.aidr.manager.service.CollectionLogService;
 import qa.qcri.aidr.manager.service.CollectionService;
 import qa.qcri.aidr.manager.service.CrisisTypeService;
 import qa.qcri.aidr.manager.service.TaggerService;
+import qa.qcri.aidr.manager.service.WordDictionaryService;
 import qa.qcri.aidr.manager.util.CollectionStatus;
 import qa.qcri.aidr.manager.util.CollectionType;
 import qa.qcri.aidr.manager.util.SMS;
@@ -76,7 +78,10 @@ public class CollectionServiceImpl implements CollectionService {
 	
 	@Autowired
 	private CrisisTypeService crisisTypeService;
-	//@Autowired	// gf 3 way
+
+	@Autowired
+	private WordDictionaryService wordService;
+	
 	@Value("${fetchMainUrl}")
 	private String fetchMainUrl;
 	@Value("${twitter.consumerKey}")
@@ -100,6 +105,7 @@ public class CollectionServiceImpl implements CollectionService {
 	@Transactional(readOnly=false)
 	public boolean updateCollection(CollectionUpdateInfo collectionUpdateInfo, Long userId) {
 		
+		String filteredTrack = "";
 		try {
 			Collection collection = findByCode(collectionUpdateInfo.getCode());
 			
@@ -114,11 +120,30 @@ public class CollectionServiceImpl implements CollectionService {
 			
 			collection.setProvider(CollectionType.valueOf(collectionUpdateInfo.getProvider()));
 			collection.setFollow(collectionUpdateInfo.getFollow());
-			collection.setTrack(collectionUpdateInfo.getTrack());
+			filteredTrack = collectionUpdateInfo.getTrack();
+			
+			if(!StringUtils.isEmpty(filteredTrack)) {
+				filteredTrack = getFilteredTrack(filteredTrack);
+				
+				if(StringUtils.isEmpty(filteredTrack)) {
+					return false;
+				}
+			}
+			collection.setTrack(filteredTrack);
 			collection.setGeo(collectionUpdateInfo.getGeo());
 			collection.setGeoR(collectionUpdateInfo.getGeoR());
 			collection.setDurationHours(Integer.parseInt(collectionUpdateInfo.getDurationHours()));
 			collection.setLangFilters(collectionUpdateInfo.getLangFilters());
+			
+			Long crisisTypeId = Long.parseLong(collectionUpdateInfo.getCrisisType());
+			CrisisType crisisType = crisisTypeService.getById(crisisTypeId);
+			if(crisisType!=null){
+				collection.setCrisisType(crisisType);
+			}
+			else{
+				logger.error("Crisis Type Id: "+crisisTypeId +" does not exist. Can't update the collection : " + collectionUpdateInfo.getCode());
+				return false;
+			}
 			
 			if (CollectionType.SMS.equals(collection.getProvider())) {
 				collection.setTrack(null);
@@ -128,28 +153,13 @@ public class CollectionServiceImpl implements CollectionService {
 				collection.setFollow(null);
 			}
 			
+			collection.setFollow(this.getFollowTwitterIDs(collectionUpdateInfo.getFollow(), collection.getOwner().getUserName()));
 			collectionRepository.update(collection);
-
 			// first make an entry in log if collection is running
 			if (CollectionStatus.RUNNING_WARNING.equals(collection.getStatus()) || CollectionStatus.RUNNING.equals(collection.getStatus())) {
-				//              stop collection
-				Collection collectionAfterStop = this.stopAidrFetcher(collection, userId);
-
-				//              save current state of the collection to collectionLog
-				CollectionLog collectionLog = new CollectionLog(collection);
-				collectionLog.setEndDate(collectionAfterStop.getEndDate());
-				collectionLogService.create(collectionLog);
-
-				//              set some fields from old collection and update collection
-				collection.setEndDate(collectionAfterStop.getEndDate());
-				collection.setFollow(this.getFollowTwitterIDs(collectionUpdateInfo.getFollow(), collection.getOwner().getUserName()));
-				collectionRepository.update(collection);
-
-				//              start collection
+				
+				this.stop(collection.getId(), userId);
 				this.startFetcher(this.prepareFetcherRequest(collection), collection);
-			} else {
-				collection.setFollow(this.getFollowTwitterIDs(collectionUpdateInfo.getFollow(), collection.getOwner().getUserName()));
-				collectionRepository.update(collection);
 			}
 			return true;
 		} catch (Exception e) {
@@ -171,7 +181,18 @@ public class CollectionServiceImpl implements CollectionService {
 	@Transactional
 	public Collection create(CollectionDetailsInfo collectionDetailsInfo, UserAccount user) throws Exception {
 		
+		String filteredTrack = collectionDetailsInfo.getTrack();
+		
+		if(!StringUtils.isEmpty(filteredTrack)) {
+			filteredTrack = getFilteredTrack(filteredTrack);
+			
+			if(StringUtils.isEmpty(filteredTrack)) {
+				return null;
+			}
+		}
+		
 		Collection collection = adaptCollectionDetailsInfoToCollection(collectionDetailsInfo, user);
+		collection.setTrack(filteredTrack);
 		try {
 			collectionRepository.save(collection);
 			collaboratorService.addCollaboratorToCollection(collectionDetailsInfo.getCode(), user.getId());
@@ -411,6 +432,7 @@ public class CollectionServiceImpl implements CollectionService {
 	}
 
 	//@SuppressWarnings("deprecation")
+	@Transactional(readOnly = false)
 	public Collection stopAidrFetcher(Collection collection, Long userId) {
 		try {
 			/**
@@ -468,7 +490,8 @@ public class CollectionServiceImpl implements CollectionService {
 					collection.setStatus(CollectionStatus.NOT_RUNNING);
 					
 					//Add collectionCount in collectionLog if it was not recorded. 
-					if (collection.getStartDate() != null) {
+					if (collection.getStartDate() != null && ((collection.getEndDate() != null 
+							&& collection.getStartDate().after(collection.getEndDate())) || collection.getEndDate() == null)) {
 						if(collectionLogRepository.countLogsStartedInInterval(collection.getId(), collection.getStartDate(), new Date())==0){
 							CollectionLog collectionLog = new CollectionLog(collection);
 							collectionLog.setEndDate(new Date());
@@ -786,7 +809,6 @@ public class CollectionServiceImpl implements CollectionService {
 		List<CollectionSummaryInfo> collectionSummaryInfos = new ArrayList<CollectionSummaryInfo>();
 		
 		List<Collection> collections = collectionRepository.getAllCollections();
-		
 		if(collections != null) {
 			collectionSummaryInfos = adaptCollectionListToCollectionSummaryInfoList(collections);
 		}
@@ -850,7 +872,8 @@ public class CollectionServiceImpl implements CollectionService {
 		collection.setLangFilters(collectionInfo.getLangFilters());
 		collection.setMicromappersEnabled(Boolean.FALSE);
 		collection.setProvider(CollectionType.valueOf(collectionInfo.getProvider()));
-
+		collection.setPurpose(collectionInfo.getPurpose());
+		
 		if(CollectionType.SMS.equals(collectionInfo.getProvider())) {
 			collection.setTrack(null);
 			collection.setLangFilters(null);
@@ -901,5 +924,28 @@ public class CollectionServiceImpl implements CollectionService {
     	summaryInfo.setPubliclyListed(collection.isPubliclyListed());
     	
     	return summaryInfo;
+    }
+    
+    private String getFilteredTrack(String trackToFilter) {
+    	
+    	String filteredTrack = "";
+    	
+    	//trackToFilter = trackToFilter.replaceAll(", ", ",");
+    	String[] trackArray = trackToFilter.split(",\\s*");
+    	List<String> toFilter = new ArrayList<String>();
+    	toFilter.addAll(Arrays.asList(trackArray));
+    	
+    	List<String> stopWordList = wordService.fetchAllStopWords();
+    	
+    	toFilter.removeAll(stopWordList);
+    	
+    	if(toFilter != null && !toFilter.isEmpty()) {
+    		trackArray = toFilter.toArray(new String[] {});
+        	filteredTrack = Arrays.toString(trackArray);
+        	filteredTrack = filteredTrack.substring(1, filteredTrack.length()-1);
+    	}
+    	
+    	return filteredTrack.trim();
+    	
     }
 }

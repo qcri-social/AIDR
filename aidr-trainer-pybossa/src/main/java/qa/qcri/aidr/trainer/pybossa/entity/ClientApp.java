@@ -1,6 +1,6 @@
 package qa.qcri.aidr.trainer.pybossa.entity;
 
-import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
+import qa.qcri.aidr.trainer.pybossa.store.LookupCode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,22 +14,22 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-@Table(name = "clientApp")
+@Table(name = "client_app")
 public class ClientApp implements Serializable {
     private static final long serialVersionUID = -5527566248002296042L;
 
     @Id
     @GeneratedValue
-    @Column(name = "clientAppID")
+    @Column(name = "id")
     private Long clientAppID;
 
-    @Column (name = "clientID", nullable = false)
+    @Column (name = "client_id", nullable = false)
     private Long clientID;
 
-    @Column (name = "crisisID", nullable = false)
+    @Column (name = "crisis_id", nullable = false)
     private Long crisisID;
 
-    @Column (name = "nominalAttributeID", nullable = false)
+    @Column (name = "nominal_attribute_id", nullable = false)
     private Long nominalAttributeID;
 
     @Column (name = "name", nullable = false)
@@ -38,19 +38,19 @@ public class ClientApp implements Serializable {
     @Column (name = "description", nullable = false)
     private String description;
 
-    @Column (name = "platformAppID", nullable = false)
+    @Column (name = "platform_app_id", nullable = false)
     private Long platformAppID;
 
-    @Column (name = "shortName", nullable = false)
+    @Column (name = "short_name", nullable = false)
     private String shortName;
 
-    @Column (name = "taskRunsPerTask", nullable = false)
+    @Column (name = "task_run_per_task", nullable = false)
     private Integer taskRunsPerTask;
 
     @Column (name = "quorum", nullable = false)
     private Integer quorum;
 
-    @Column (name = "iconURL", nullable = true)
+    @Column (name = "icon_url", nullable = true)
     private String iconURL;
 
     @Column (name = "status", nullable = false)
@@ -59,18 +59,15 @@ public class ClientApp implements Serializable {
     @Column (name = "created", nullable = false)
     private Date created;
 
-    @Column (name = "appType", nullable = false)
+    @Column (name = "app_type", nullable = false)
     private Integer appType;
 
-    @Column (name = "groupID", nullable = true)
-    private Long groupID;
-
-    @Column (name = "tcProjectId", nullable = true)
+    @Column (name = "tc_project_id", nullable = true)
     private Long tcProjectId;
 
 
     @ManyToOne
-    @JoinColumn(name="clientID" ,nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name="client_id" ,nullable = false, insertable = false, updatable = false)
     private Client client;
 
 
@@ -86,8 +83,8 @@ public class ClientApp implements Serializable {
         this.platformAppID =  platformAppID;
         this.shortName = shortName;
         this.nominalAttributeID = nominalAttributeID;
-        this.quorum = StatusCodeType.AIDR_ONLY;
-        this.status = StatusCodeType.AIDR_ONLY;
+        this.quorum = LookupCode.AIDR_ONLY;
+        this.status = LookupCode.AIDR_ONLY;
         this.taskRunsPerTask = taskRunsPerTask;
         this.appType = appType;
     }
@@ -211,14 +208,6 @@ public class ClientApp implements Serializable {
 
     public void setNominalAttributeID(Long nominalAttributeID) {
         this.nominalAttributeID = nominalAttributeID;
-    }
-
-    public Long getGroupID() {
-        return groupID;
-    }
-
-    public void setGroupID(Long groupID) {
-        this.groupID = groupID;
     }
 
     public Long getTcProjectId() { return tcProjectId;}

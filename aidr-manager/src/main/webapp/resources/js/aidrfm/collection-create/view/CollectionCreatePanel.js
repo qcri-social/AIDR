@@ -25,7 +25,7 @@ Ext.require([
                 width:800,
                 height:600,
                 title:'Pick up the Coordinates:' + 'www.boundingbox.klokantech.com/',
-                autoScroll:true,
+                scrollable:false,
                 modal:false
             });
 
@@ -113,7 +113,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             maxLength: 24000,
             maxLengthText: 'The maximum length for this field is 400',
             flex: 1,
-            rows: 7,
+            height: 109,
             labelWidth: 240,
             emptyText: 'e.g. earthquake california, quake california, #earthquakeca, #sfearthquake, #earthquakesf',
 
@@ -136,12 +136,12 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         });*/
         this.geoE = Ext.create('Ext.form.FormPanel', {
             border: false,
-            bodyPadding: 5,
+            //bodyPadding: 5,
             padding: '0 0 10 0',
             items:[{
                 fieldLabel: 'Collect tweets only within these geographical boundaries:',
                 labelWidth: 240,
-                width: 687,
+                width: 698,
                 xtype: 'textareafield',
                 grow: true,
                 growMax: 100,
@@ -154,6 +154,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         
         this.geoR = Ext.create('Ext.form.Panel', {
             border: false,
+            id:'geoRPanel',
         	items:[{
             	name: 'geoR',
             	xtype: 'radiogroup',
@@ -162,9 +163,10 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             	columns: 1,
             	vertical: true,
             	items: [
-                    { boxLabel: 'Does not apply (no geographical boundary)', name: 'geoR1', inputValue: 'null', checked: true},
-                    { boxLabel: 'Approximate: a tweet may be collected if it comes from a country that overlaps with the geographical boundaries.', name: 'geoR1', inputValue: 'approximate' },
-                    { boxLabel: 'Strict: a tweet can only be collected if it has geographical coordinates strictly inside the geographical boundaries.', name: 'geoR1', inputValue: 'strict'}
+            	        
+                    { margin: '0 0 0 -5', boxLabel: 'Does not apply (no geographical boundary)', name: 'geoR1', inputValue: 'null', checked: true},
+                    { margin: '0 0 0 -5', boxLabel: 'Approximate: a tweet may be collected if it comes from a country that overlaps with the geographical boundaries.', name: 'geoR1', inputValue: 'approximate' },
+                    { margin: '0 0 0 -5', boxLabel: 'Strict: a tweet can only be collected if it has geographical coordinates strictly inside the geographical boundaries.', name: 'geoR1', inputValue: 'strict'}
                 ]
         	}]
         });
@@ -181,9 +183,10 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 
         this.followE = Ext.create('Ext.form.field.Text', {
             fieldLabel: 'Additionally, collect all tweets from these twitter user ids, independent of their keywords or location',
-            labelWidth: 240,
+            labelWidth: 230,
+            labelPad: 15,
             name: 'follow',
-            width:687,
+            width:698,
             emptyText: 'e.g. cnnbrk, bbcbreaking, fema, lastquake'
         });
 
@@ -213,7 +216,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
 
         this.duration = Ext.create('Ext.form.ComboBox', {
             fieldLabel: 'Collect data for',
-            width:687,
+            width:698,
             labelWidth: 240,
             name: 'durationHours',
             editable: false,
@@ -296,10 +299,10 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         	flex: 1,
         	html: 'By creating a collection you agree to our <a href="http://aidr.qcri.org/r/tos/" target=_blank>Terms of Service</a>, which basically state that:<br>'
         		 	+ '<ul>'
-        			+ '<li><span class="blueInfo">*</span>   You are using AIDR for humanitarian and crisis response purposes.</span></li>'
-        		 	+ '<li><span class="blueInfo">*</span>   You understand your collections can be stopped and removed at any time.'
-                                + '<li><span class="blueInfo">*</span>   After your collection finishes or is stopped, we will give you the option to download it within a week.'
-        		 	+ '<li><span class="blueInfo">*</span>   You understand the data you collect will be made available for research purposes.</span></li>'
+        			+ '<li><span class="blueInfo"></span>   You are using AIDR for humanitarian and crisis response purposes.</span></li>'
+        		 	+ '<li><span class="blueInfo"></span>   You understand your collections can be stopped and removed at any time.'
+                                + '<li><span class="blueInfo"></span>   After your collection finishes or is stopped, we will give you the option to download it within a week.'
+        		 	+ '<li><span class="blueInfo"></span>   You understand the data you collect will be made available for research purposes.</span></li>'
         		 	+ '</ul>'
         		 	+ '<br> If you have questions, please contact us.',
             margin:'20 0 0 0'
@@ -308,7 +311,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
         this.saveButton = Ext.create('Ext.Button', {
             text: 'Create and Start',
             margin: '0 0 0 -100',
-            cls: 'btn btn-blueish2',
+            cls: 'btn btn-blueBig',
             id: 'collectionCreate'
         });
 
@@ -316,7 +319,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
             text: 'Cancel',
                          margin: '0 140 0 240',
 
-            cls: 'btn btn-reddish2',
+            cls: 'btn btn-redBig',
             id: 'collectionCancelCreate'
         });
 
@@ -328,7 +331,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                 type: 'ajax',
                 url: BASE_URL + '/protected/tagger/getAllCrisisTypes.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },
@@ -385,14 +388,14 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                 this.codeE,
                 wrapFieldWithInfo(this.nameE, 'collectionNameInfo'),
 
-                wrapFieldWithInfo(this.collectionTypeCombo, 'collectionTypeInfo'),
+                wrapFieldWithInfo(this.collectionTypeCombo, 'collectionTypeInfo', undefined, '20 0 0 0'),
 
-                wrapFieldWithInfo(this.langCombo, 'collectionLangInfo', undefined, '20 0 5 5', 'langPanel'),
+                wrapFieldWithInfo(this.langCombo, 'collectionLangInfo', undefined, '20 0 5 0', 'langPanel'),
                 this.langNote,
 
-                wrapFieldWithInfo(this.keywordsE, 'collectionkeywordsInfo', undefined, undefined, 'keywordsPanel'),
+                wrapFieldWithInfo(this.keywordsE, 'collectionkeywordsInfo', undefined, '20 0 0 0', 'keywordsPanel'),
 
-                wrapFieldWithInfo(this.crisisTypesCombo, 'crisisTypesInfo'),
+                wrapFieldWithInfo(this.crisisTypesCombo, 'crisisTypesInfo', undefined, '20 0 0 0'),
 
                 //Advanced configuration
                 {
@@ -402,7 +405,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                     collapsible:true,
                     collapsed:true,
                     cls:'collapse-style',
-                    bodyPadding: '5 5 20 5',
+                   // bodyPadding: '5 5 20 5',
                     margin: '20 0 0 0',
                     layout:'anchor',
                     defaults: {
@@ -414,7 +417,7 @@ Ext.define('AIDRFM.collection-create.view.CollectionCreatePanel', {
                         this.geoDescription,
                         this.geoR,
 
-                        wrapFieldWithInfo(this.followE, 'collectionFollowInfo', '10 0', undefined, 'followPanel'),
+                        wrapFieldWithInfo(this.followE, 'collectionFollowInfo', '12 0', undefined, 'followPanel'),
 
                         wrapFieldWithInfo(this.duration, 'collectionDurationInfo', undefined, '20 0 5 0'),
                         this.durationDescription

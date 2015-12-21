@@ -1,6 +1,7 @@
 package qa.qcri.aidr.common.filter;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -52,11 +53,11 @@ public class DateQueryJsonObject extends QueryJsonObject {
 
 	@Override
 	public Date getDate() {
-		SimpleDateFormat dateFormat = new SimpleDateFormat(DateFormatConfig.ISODateFormat);
-		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-		Date date = new Date(this.timestamp * 1000);
-		
-		return date;
+		Calendar c = Calendar.getInstance();
+		c.setTimeZone(TimeZone.getTimeZone("GMT"));
+		c.setTimeInMillis(timestamp * 1000);
+		c.add(Calendar.MINUTE, -new Date().getTimezoneOffset());
+		return c.getTime();
 	}
 
 	@Override

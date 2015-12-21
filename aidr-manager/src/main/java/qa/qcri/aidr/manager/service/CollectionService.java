@@ -81,10 +81,10 @@ public interface CollectionService {
 
 	public boolean enableClassifier(String code, UserAccount currentUser);
 
-	
 	public Boolean pushSMS(String collectionCode, SMS sms);
 	
 	public Boolean isValidAPIKey(String code, String apiKey) throws Exception;
 
 	public List<CollectionSummaryInfo> getAllCollectionData();
+	
 }

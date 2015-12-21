@@ -393,26 +393,26 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 
 				//System.out.println("Unparsed tweet data: " + jsonObj.get("id") + ", " + jsonObj.get("created_at") + ", " + jsonObj.get("user")  + ", " + jsonObj.get("aidr"));
 
-				if (!jsonObj.get("id_str").isJsonNull()) {
+				if (jsonObj.get("id_str") != null) {
 					this.setTweetID(jsonObj.get("id_str").getAsString());
 				} 
 
-				if (!jsonObj.get("text").isJsonNull()) {
+				if (jsonObj.get("text") != null) {
 					this.setMessage(jsonObj.get("text").getAsString());
 				}
 
-				if (!jsonObj.get("created_at").isJsonNull()) {
+				if (jsonObj.get("created_at") != null) {
 					this.setCreatedAtString(jsonObj.get("created_at").getAsString());
 				}
 
 				JsonObject jsonUserObj = null;
-				if (!jsonObj.get("user").isJsonNull()) {				
+				if (jsonObj.get("user") != null) {				
 					jsonUserObj = jsonObj.get("user").getAsJsonObject();
 					if (jsonUserObj.get("id") != null) {
 						this.setUserID(jsonUserObj.get("id").getAsString());
 					}
 
-					if (!jsonUserObj.get("screen_name").isJsonNull()) {
+					if (jsonUserObj.get("screen_name") != null) {
 						this.setUserName(jsonUserObj.get("screen_name").getAsString());
 						this.setTweetURL("https://twitter.com/" + this.getUserName() + "/status/" + this.getTweetID());
 					}
@@ -422,17 +422,17 @@ public class ClassifiedTweet  extends ClassifiedFilteredTweet implements Documen
 				}
 
 				JsonObject aidrObject = null;
-				if (jsonObj.has("aidr") && !jsonObj.get("aidr").isJsonNull()) {
+				if (jsonObj.has("aidr") && (jsonObj.get("aidr") != null)) {
 					aidrObject = jsonObj.get("aidr").getAsJsonObject();
-					if (!aidrObject.get("crisis_name").isJsonNull()) {
+					if (aidrObject.get("crisis_name") != null) {
 						this.setCrisisName(aidrObject.get("crisis_name").getAsString());
 						this.getAidr().setCrisisName(this.getCrisisName());
 					}
-					if (!aidrObject.get("crisis_code").isJsonNull()) {
+					if (aidrObject.get("crisis_code") != null) {
 						this.setCrisisCode(aidrObject.get("crisis_code").getAsString());
 						this.getAidr().setCrisisCode(this.getCrisisCode());
 					}
-					if (aidrObject.has("nominal_labels") && !aidrObject.get("nominal_labels").isJsonNull()) {
+					if (aidrObject.has("nominal_labels") && (aidrObject.get("nominal_labels") != null)) {
 						//JSONArray nominalLabels = (JSONArray) aidrObject.get("nominal_labels");
 						JsonArray nominalLabels = aidrObject.get("nominal_labels").getAsJsonArray();
 						StringBuffer allAttributeNames = new StringBuffer();

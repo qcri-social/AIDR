@@ -36,7 +36,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
            this.gotoCollectorButton = Ext.create('Ext.Button', {
                                                  text: 'Go To Collector',
-                                                 cls:'btn btn-blue',
+                                                 cls:'btn btn-blueSmall',
                                                  id: 'goToCollector',
                                                  width: 150,
                                                  margin: '0 0 0 810'
@@ -44,7 +44,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
            this.addNewClassifierButton = Ext.create('Ext.Button', {
                                                     text: 'Add new classifier',
-                                                    cls:'btn btn-blue',
+                                                    cls:'btn btn-blueBig',
                                                     id: 'addNewClassifier',
                                                     width: 150,
                                                     margin: '27 0 0 0'
@@ -52,14 +52,14 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
            this.enableMicroMappersButton = Ext.create('Ext.Button', {
                                                       text: 'Enable MicroMappers',
-                                                      cls:'btn btn-green',
+                                                      cls:'btn btn-greenBig',
                                                       id: 'enableMicroMappersBtn',
                                                       width: 160,
                                                       margin: '10 0 0 800'
                                                       });
            this.disableMicroMappersButton = Ext.create('Ext.Button', {
                                                       text: 'Disable MicroMappers',
-                                                      cls:'btn btn-red',
+                                                      cls:'btn btn-redBig',
                                                       id: 'disableMicroMappersBtn',
                                                       width: 160,
                                                       margin: '10 0 0 800',
@@ -141,7 +141,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                               type: 'ajax',
                                               url: BASE_URL + '/protected/tagger/getAllCrisisTypes.action',
                                               reader: {
-                                              root: 'data',
+                                              rootProperty: 'data',
                                               totalProperty: 'total'
                                               }
                                               },
@@ -174,27 +174,27 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
            this.crisisModelsStore = Ext.create('Ext.data.Store', {
                                                pageSize: 30,
-                                               mask: AIDRFMFunctions.getMask(true),
+                                               //mask: AIDRFMFunctions.getMask(true),
                                                storeId: 'crisisModelsStore',
                                                fields: ['attribute', 'attributeID', 'auc', 'classifiedDocuments', 'modelID', 'status', 'trainingExamples', 'modelFamilyID','retrainingThreshold'],
                                                proxy: {
                                                type: 'ajax',
                                                url: BASE_URL + '/protected/tagger/getModelsForCrisis.action',
                                                reader: {
-                                               root: 'data',
+                                               rootProperty: 'data',
                                                totalProperty: 'total'
                                                }
                                                },
                                                autoLoad: true,
                                                listeners: {
                                                beforeload: function (s) {
-                                               s.getProxy().extraParams = {
+                                               s.getProxy().setExtraParams({
                                                id: CRISIS_ID
-                                               }
-                                               this.mask.show();
+                                               })
+                                               Ext.getBody().mask('Loading...');
                                                },
                                                load: function(){
-                                               this.mask.hide();
+                                               Ext.getBody().unmask();
                                                //me.pyBossaLink.show();
                                                }
                                                }
@@ -215,7 +215,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                     '<td class="styled-text-17" width="135px">Classifier:</td>',
                                                     '<td class="styled-text-17" >{[this.getModelName(values.modelID, values.attribute)]}</td>' +
                                                     '<td class="styled-text-17 pdng-r-0" align="right">' +
-                                                    '<button id="removeClassifierBtn_{modelFamilyID}" class="btn btn-red {[this.isRemoveClassifierButtonHidden(values.modelID)]}" onclick="taggerCollectionDetailsController.removeClassifierHandler(\'{modelFamilyID}\', \'{attribute}\')">',
+                                                    '<button id="removeClassifierBtn_{modelFamilyID}" class="btn btn-redSmall {[this.isRemoveClassifierButtonHidden(values.modelID)]}" onclick="taggerCollectionDetailsController.removeClassifierHandler(\'{modelFamilyID}\', \'{attribute}\')">',
                                                     '<span>Remove Classifier</span>',
                                                     '</button>',
                                                     '</td>' +
@@ -303,7 +303,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
 
            this.deleteButton = Ext.create('Ext.Button', {
                                           text: 'Delete',
-                                          cls:'btn btn-red',
+                                          cls:'btn btn-redSmall',
                                           id: 'crisisDelete',
                                           margin: '0 0 0 7'
                                           });
@@ -401,7 +401,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
            this.generateCSVButton = Ext.create('Ext.Button', {
                                                text: 'Export tweets (.csv) (Last 100k tweets)',
                                                margin: '5 5 5 0',
-                                               cls:'btn btn-blue download-button',
+                                               cls:'btn btn-blueBig download-button',
                                                id: 'generateCSVLink',
                                                width: 300
                                                });
@@ -409,7 +409,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
            this.generateTweetIdsButton = Ext.create('Ext.Button', {
                                                     text: 'Export tweet-ids only (.csv) (All tweets)',
                                                     margin: '5 5 5 0',
-                                                    cls:'btn btn-blue download-button',
+                                                    cls:'btn btn-blueBig download-button',
                                                     id: 'generateTweetIdsLink' ,
                                                     width: 300
                                                     });
@@ -428,7 +428,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
            this.generateJSONButton = Ext.create('Ext.Button', {
                                                 text: 'Export tweets (.json) (Last 100k tweets)',
                                                 margin: '5 5 5 0',
-                                                cls:'btn btn-blue download-button',
+                                                cls:'btn btn-blueBig download-button',
                                                 id: 'generateJSONLink',
                                                 width: 300
                                                 });
@@ -436,7 +436,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
            this.generateJsonTweetIdsButton = Ext.create('Ext.Button', {
                                                         text: 'Export tweet-ids only (.json) (All tweets)',
                                                         margin: '5 5 5 0',
-                                                        cls:'btn btn-blue download-button',
+                                                        cls:'btn btn-blueBig download-button',
                                                         id: 'generateJsonTweetIdsLink',
                                                         width: 300
                                                         });
@@ -565,7 +565,7 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                           labelWidth: 250,
                                                           name: 'pybossaClassifierFilters',
                                                           id: 'pybossaClassifierFilters',
-                                                          margin: '0 0 0 10',
+                                                          margin: '0 0 0 0',
                                                           flex: 1
                                                           });
 
@@ -807,10 +807,20 @@ Ext.define('TAGGUI.tagger-collection-details.view.TaggerCollectionDetailsPanel',
                                                           }
                                                           ,
                                                           {
-                                                          xtype: 'label',
-                                                          html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/pybossaAppPage.png"></span>',
-                                                          margins: '50 0 0 40'
+                                                        	  xtype: 'container',
+                                                              layout: {
+                                                              type: 'vbox',
+                                                              align: 'stretch'
+                                                              },
+                                                              margin: '50 0 0 40',
+                                                              items: [{
+                                                                  xtype: 'label',
+                                                                  //margins: '50 0 0 40',
+                                                                  html: '<span class="img"><img alt="Collection image" src="/AIDRFetchManager/resources/img/pybossaAppPage.png"></span>',
+                                                                  
+                                                                  }]
                                                           }
+                                                          
                                                           ]
                                                   });
 
