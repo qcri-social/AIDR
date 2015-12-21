@@ -183,9 +183,7 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
             "#collectionUntrash": {
                 click: function (btn, e, eOpts) {
                     datailsController.untrashCollection();
-                    window.location.reload();
-                    history.go(0);
-                    window.location.href=window.location.href;
+                    
                 }
             },
 
@@ -827,6 +825,9 @@ Ext.define('AIDRFM.collection-details.controller.CollectionDetailsController', {
                 	var statusText = AIDRFMFunctions.getStatusWithStyle("NOT_RUNNING", TYPE);
                 	datailsController.DetailsComponent.statusL.setText(statusText, false);
                     me.refreshStatus(id);
+                    window.location.reload();
+                    history.go(0);
+                    window.location.href=window.location.href;
                 } else {
                     AIDRFMFunctions.setAlert("Error", resp.message);
                     //AIDRFMFunctions.reportIssue(response);
