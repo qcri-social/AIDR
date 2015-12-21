@@ -977,7 +977,13 @@ body {
 	height: 36px;
 	line-height: 99px;
 }
-
+.btn.btn-greenBig:active{
+	background: -webkit-linear-gradient(left, #44B5B1, #3FB6B0);
+	background: -moz-linear-gradient(left, #44B5B1, #3FB6B0);
+ 	background: -o-linear-gradient(left, #44B5B1, #3FB6B0);
+ 	background: -ms-linear-gradient(left, #44B5B1, #3FB6B0);
+ 	border: 1px solid;
+}
 ,
 .btn.btn-red button, .btn.btn-blueBig button {
 	height: 33px;
@@ -1003,7 +1009,14 @@ body {
 	color: #FFFFFF;
 }
 
-,
+.btn.btn-redSmall:active{
+background: -webkit-linear-gradient(left, #D9544F, #D9544F);
+ background: -moz-linear-gradient(left, #D9544F, #D9544F);
+ background: -o-linear-gradient(left, #D9544F, #D9544F);
+ background: -ms-linear-gradient(left, #D9544F, #D9544F);
+ border: 1px solid;
+ 
+}
 .btn.btn-red span, .btn.btn-green span, .btn.btn-blue span {
 	color: #FFFFFF;
 	font-size: 12px;
