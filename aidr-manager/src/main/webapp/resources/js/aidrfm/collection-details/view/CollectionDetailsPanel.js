@@ -1391,11 +1391,13 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 	            	}
                     Ext.getStore('collectionHistoryPanelStore').remove(record);
                 },
-                viewready : function(grid){
-                	setTimeout(function() {
-                		grid.getSelectionModel().select(0);
-                    }, 1000); 
-                },
+                render : function(grid){
+                    grid.on('viewready',function(a,b){  
+                        //this.getSelectionModel().select(0);  
+                        
+                        //Commented during extJs 5.1 migration. Need to uncomment to enable functioning
+                   });
+               },
             },
             getLanguageField: function (r) {
                 var languageFull = "";
