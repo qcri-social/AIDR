@@ -89,6 +89,15 @@
             <name>Spring Maven MILESTONE Repository</name>
             <url>http://maven.springframework.org/milestone</url>
         </repository>
+        <repository>
+			<id>springsource-repo</id>
+			<name>SpringSource Repository</name>
+			<url>http://repo.springsource.org/release</url>
+		</repository>
+		<repository>
+			<id>opensourceagility-snapshots</id>
+			<url>http://repo.opensourceagility.com/releases</url>
+		</repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
@@ -257,6 +266,77 @@
             <version>${org.springframework-version}</version>
             <scope>test</scope>
         </dependency>
+        
+        <dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.1</version>
+		</dependency>
+        
+        <!-- Spring Social -->
+		<dependency>
+			<groupId>org.springframework.social</groupId>
+			<artifactId>spring-social-core</artifactId>
+			<version>1.1.2.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.social</groupId>
+			<artifactId>spring-social-web</artifactId>
+			<version>1.1.2.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.social</groupId>
+			<artifactId>spring-social-twitter</artifactId>
+			<version>1.1.1.RELEASE</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.social</groupId>
+		    <artifactId>spring-social-facebook</artifactId>
+		    <version>2.0.3.RELEASE</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.springframework.social</groupId>
+		  <artifactId>spring-social-google</artifactId>
+		  <version>1.0.0.RELEASE</version>
+		</dependency>
+		
+		<!-- Spring Security -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.social</groupId>
+			<artifactId>spring-social-security</artifactId>
+			<version>1.1.4.RELEASE</version>
+		</dependency>				
+		
+		<dependency>
+			<groupId>org.socialsignin</groupId>
+			<artifactId>spring-social-security</artifactId>
+			<version>${org.socialsignin.spring.security.version}</version>
+		</dependency>
+        
     </dependencies>
     <properties>
         <cglib.version>2.2.2</cglib.version>
@@ -281,6 +361,10 @@
         <org.slf4j-version>1.6.2</org.slf4j-version>
         <org.springframework-version>4.2.1.RELEASE</org.springframework-version>
         <org.springframework.data.version>1.9.0.RELEASE</org.springframework.data.version>
+        <spring.social>1.1.2.RELEASE</spring.social>
+		<spring-social-twitter>1.1.1.RELEASE</spring-social-twitter>
+		<org.socialsignin.spring.security.version>1.0.3.RELEASE</org.socialsignin.spring.security.version>
+		<spring.security.version>3.2.0.RELEASE</spring.security.version>
     </properties>
     
     	<!-- Profile configuration this should match the one in the master POM -->

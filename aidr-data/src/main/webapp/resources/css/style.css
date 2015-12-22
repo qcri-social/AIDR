@@ -305,6 +305,20 @@ form.form-search:before {
 	margin: 0 auto;
 }
 
+.mainWraper {
+	margin: 0 auto;
+	padding: 1em;
+}
+
+.main {
+	padding: 1em;
+	border-radius: 12px;
+	margin: 0 auto;
+	width: 70%;
+	background: white;
+	font-size: 16px;
+}
+
 .modal-backdrop {
 	position: fixed;
 	top: 0;
