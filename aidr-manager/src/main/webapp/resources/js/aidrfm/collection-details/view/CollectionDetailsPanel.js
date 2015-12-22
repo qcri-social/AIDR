@@ -518,7 +518,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<div class="collections-list">',
        
             '<tpl if="values.length == 0">' +
-            '<div><center><div style="font-size:16pt; padding:10px 0 0px 0">Please select a row.</div></center></div>',
+            '<div><center><div style="font-size:16pt; padding:64px 0 0px 0">Please select a row.</div></center></div>',
             '</tpl>',
             
             '<tpl for=".">',
@@ -628,17 +628,14 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             }
         });
         
-        this.collectionHistoryPanelView = Ext.create('Ext.container.Container', {
-            
+        this.collectionHistoryPanelView = Ext.create('Ext.view.View', {
+        	store: 'collectionHistoryPanelStore',
+        	tpl: this.collectionHistoryPanelTpl,
+        	emptyText: 'Please select a row.',
+            loadMask: false,
             margin: '0 0 10 0',
-            items : [
-                     {
-                        xtype: 'dataview',
-                        itemTpl: this.collectionHistoryPanelTpl,
-                        store: 'collectionHistoryPanelStore',
-                     }
-                    ],
-            
+            scrollable: 'y',
+            height: 140
         });
 
         this.collectionLogPaging = Ext.create('Ext.toolbar.Paging', {
@@ -898,7 +895,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 {
                                     xtype: 'container',
                                     padding: '0 20 0 0',
-                                    height:60,
+                                    height:72,
                                     width:75,
                                     id:'iconPanel',
                                     html: '<img src="/AIDRFetchManager/resources/img/collection-icon.png"/>'
@@ -942,7 +939,6 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                         }
                                     ]
                                 }
-                               
                             ]
                         },
                         {
@@ -1395,12 +1391,10 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 	            	}
                     Ext.getStore('collectionHistoryPanelStore').remove(record);
                 },
-                render : function(grid){
-                     grid.on('viewready',function(){  
-                         this.getSelectionModel().select(0);  
-                         
-                         //Commented during extJs 5.1 migration. Need to uncomment to enable functioning
-                    });
+                viewready : function(grid){
+                	setTimeout(function() {
+                		grid.getSelectionModel().select(0);
+                    }, 1000); 
                 },
             },
             getLanguageField: function (r) {
@@ -1426,6 +1420,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             width: '100%',
             minHeight: 400,
             activeTab: 0,
+            deferredRender: false,
             items: [
                 {
                     title: 'Details',
