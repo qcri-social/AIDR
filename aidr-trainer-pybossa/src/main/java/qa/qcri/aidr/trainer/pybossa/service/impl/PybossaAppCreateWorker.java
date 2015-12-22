@@ -12,10 +12,10 @@ import qa.qcri.aidr.trainer.pybossa.entity.Client;
 import qa.qcri.aidr.trainer.pybossa.entity.ClientApp;
 import qa.qcri.aidr.trainer.pybossa.entity.ClientAppAnswer;
 import qa.qcri.aidr.trainer.pybossa.entity.TaskQueue;
-import qa.qcri.aidr.trainer.pybossa.format.impl.PybossaFormatter;
+import qa.qcri.aidr.trainer.pybossa.format.impl.TextClickerPybossaFormatter;
 import qa.qcri.aidr.trainer.pybossa.service.*;
 import qa.qcri.aidr.trainer.pybossa.store.PybossaConf;
-import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
+import qa.qcri.aidr.trainer.pybossa.store.LookupCode;
 import qa.qcri.aidr.trainer.pybossa.store.URLPrefixCode;
 
 import java.util.Date;
@@ -56,15 +56,14 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
     private String PYBOSSA_API_APP_CREATE_URL ;
     private String AIDR_GET_CRISIS_URL;
     private String PYBOSSA_API_APP_UPDATE_BASE_URL;
-    private String PYBOSSA_API_APP_DELETE_URL;
-    private String PYBOSSA_TASK_DELETE_URL;
     private String AIDR_NOMINAL_ATTRIBUTE_LABEL_URL;
 
 
     private PybossaCommunicator pybossaCommunicator = new PybossaCommunicator();
     private JSONParser parser = new JSONParser();
-    private PybossaFormatter pybossaFormatter = new PybossaFormatter();
+    private TextClickerPybossaFormatter textClickerFormat = new TextClickerPybossaFormatter();
 
+    @Transactional(readOnly = true)
     public void setClassVariable(Client theClient) throws Exception{
         boolean resetVariable = false;
 
@@ -75,9 +74,7 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
             }
         }
         else{
-            if(theClient == null){
-                theClient = clientService.findClientByCriteria("name","MicroMappers");
-            }
+            theClient = clientService.findClientByCriteria("name",LookupCode.SYSTEM_USER_NAME);
             client = theClient;
             resetVariable = true;
         }
@@ -87,8 +84,6 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
             AIDR_GET_CRISIS_URL = client.getAidrHostURL() + URLPrefixCode.AIDR_CRISIS_INFO ;
             PYBOSSA_API_APP_UPDATE_BASE_URL = client.getHostURL()  + URLPrefixCode.PYBOSAA_APP;
             PYBOSSA_API_APP_CREATE_URL = client.getHostURL()  + URLPrefixCode.PYBOSSA_APP_KEY + client.getHostAPIKey();
-            PYBOSSA_API_APP_DELETE_URL = client.getHostURL() + URLPrefixCode.PYBOSAA_APP ;
-            PYBOSSA_TASK_DELETE_URL = client.getHostURL() + URLPrefixCode.PYBOSSA_TASK_DELETE;
             AIDR_NOMINAL_ATTRIBUTE_LABEL_URL = client.getAidrHostURL() + URLPrefixCode.AIDR_NOMINAL_ATTRIBUTE_LABEL;
         }
 
@@ -105,21 +100,21 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
                 List<ClientApp> appList = clientAppService.getAllClientAppByClientID(client.getClientID());
                 String crisisSet = pybossaCommunicator.sendGet(AIDR_ALL_ACTIVE_CRISIS_URL);
 
-                if(crisisSet != null ){
+                if(crisisSet != null && !crisisSet.isEmpty() ){
                     JSONArray array = (JSONArray) parser.parse(crisisSet);
 
                     for(int i = 0 ; i < array.size(); i++){
                         JSONObject jsonObject = (JSONObject)array.get(i);
                         Long cririsID = (Long)jsonObject.get("cririsID");
                         Long attID = (Long)jsonObject.get("nominalAttributeID");
-                        if(!findDuplicate(appList, cririsID, attID) ){
+                        if(!this.findDuplicate(appList, cririsID, attID) ){
                             // AIDR_GET_CRISIS_URL = AIDR_GET_CRISIS_URL + id;
                             String cririsInfo = pybossaCommunicator.sendGet(AIDR_GET_CRISIS_URL + cririsID);
                             if(!cririsInfo.isEmpty()){
                                 JSONObject crisisJson = (JSONObject) parser.parse(cririsInfo);
                                 if(crisisJson.get("nominalAttributeJsonModelSet") != null ){
                                     String nominalModel = crisisJson.get("nominalAttributeJsonModelSet").toString();
-                                    if(!nominalModel.isEmpty() && nominalModel.length() > StatusCodeType.RESPONSE_MIN_LENGTH){
+                                    if(!nominalModel.isEmpty() && nominalModel.length() > LookupCode.RESPONSE_MIN_LENGTH){
                                         String name = (String)crisisJson.get("name");
                                         Long crisisID = (Long)crisisJson.get("crisisID");
                                         String code = (String)crisisJson.get("code");
@@ -157,13 +152,13 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
             ClientApp localClientApp = clientAppService.findClientAppByCriteria("shortName",appcode);
 
             if(localClientApp == null){
-                String data = pybossaFormatter.assmeblePybossaAppCreationForm(appname,appcode, description);
+                String data = textClickerFormat.assmeblePybossaAppCreationForm(appname,appcode, description);
                 int responseCode = pybossaCommunicator.sendPost(data, PYBOSSA_API_APP_CREATE_URL);
-                if(responseCode == StatusCodeType.HTTP_OK){
+                if(responseCode == LookupCode.HTTP_OK){
                     updateInfo = true;
                 }
                 else{
-                    if(responseCode == StatusCodeType.HTTP_OK_DUPLICATE_INFO_FOUND){
+                    if(responseCode == LookupCode.HTTP_OK_DUPLICATE_INFO_FOUND){
                          logger.info("duplicate app found : " + responseCode);
                          duplicateFound = true;
                     }
@@ -175,7 +170,7 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
 
             if(duplicateFound) {
                 String appInfoDuplicate = pybossaCommunicator.sendGet(PYBOSSA_APP_INFO_URL + appcode);
-                Long appIDDuplicate = pybossaFormatter.getAppID(appInfoDuplicate, parser);
+                Long appIDDuplicate = textClickerFormat.getAppID(appInfoDuplicate, parser);
                 this.createClientAppInstance(crisisID, appname,description,appIDDuplicate,appcode,nominalAttributeID);
                 return;
             }
@@ -183,7 +178,7 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
             if(updateInfo){
                 JSONArray labelModel = (JSONArray) featureJsonObj.get("nominalLabelJsonModelSet");
                 String appInfo = pybossaCommunicator.sendGet(PYBOSSA_APP_INFO_URL + appcode);
-                Long appID = pybossaFormatter.getAppID(appInfo, parser);
+                Long appID = textClickerFormat.getAppID(appInfo, parser);
                 if(localClientApp == null){
                     localClientApp = this.createClientAppInstance(crisisID, appname,description,appID,appcode,nominalAttributeID);
                 }
@@ -196,19 +191,19 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
     public void doAppUpdate(ClientApp clientApp, String appInfoJson,JSONObject attribute, JSONArray labelModel, String crisisCode, String crisisName) throws Exception{
 
         String PYBOSSA_API_APP_UPDATE_URL = PYBOSSA_API_APP_UPDATE_BASE_URL + clientApp.getPlatformAppID() + URLPrefixCode.PYBOSSA_APP_UPDATE_KEY + client.getHostAPIKey();
-        String data = pybossaFormatter.updateApp(clientApp, attribute, labelModel, PybossaConf.DEFAULT_CATEGORY_ID);
+        String data = textClickerFormat.updateApp(clientApp, attribute, labelModel, PybossaConf.DEFAULT_CATEGORY_ID);
 
         int responseCode = pybossaCommunicator.sendPut(data, PYBOSSA_API_APP_UPDATE_URL);
 
         ClientAppAnswer clientAppAnswer = clientAppResponseService.getClientAppAnswer(clientApp.getClientAppID());
 
         if(clientAppAnswer == null){
-            int cutOffValue = StatusCodeType.MAX_VOTE_CUT_OFF_VALUE;
+            int cutOffValue = LookupCode.MAX_VOTE_CUT_OFF_VALUE;
             String AIDR_NOMINAL_ATTRIBUTE_LABEL_URL_PER_APP = AIDR_NOMINAL_ATTRIBUTE_LABEL_URL + clientApp.getCrisisID() + "/" + clientApp.getNominalAttributeID();
             String answerSet = pybossaCommunicator.sendGet(AIDR_NOMINAL_ATTRIBUTE_LABEL_URL_PER_APP) ;
 
-            if(clientApp.getTaskRunsPerTask() < StatusCodeType.MAX_VOTE_CUT_OFF_VALUE){
-                cutOffValue = StatusCodeType.MIN_VOTE_CUT_OFF_VALUE;
+            if(clientApp.getTaskRunsPerTask() < LookupCode.MAX_VOTE_CUT_OFF_VALUE){
+                cutOffValue = LookupCode.MIN_VOTE_CUT_OFF_VALUE;
             }
 
             clientAppResponseService.saveClientAppAnswer(clientApp.getClientAppID(), answerSet, cutOffValue);
@@ -228,7 +223,7 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
             JSONObject crisisJson = (JSONObject) parser.parse(crisisInfo);
             if(crisisJson.get("nominalAttributeJsonModelSet") != null ){
                 String nominalModel = crisisJson.get("nominalAttributeJsonModelSet").toString();
-                if(!nominalModel.isEmpty() && nominalModel.length() > StatusCodeType.RESPONSE_MIN_LENGTH){
+                if(!nominalModel.isEmpty() && nominalModel.length() > LookupCode.RESPONSE_MIN_LENGTH){
                     String name = (String)crisisJson.get("name");
                     String code = (String)crisisJson.get("code");
                     String description = name + "(" + crisisID + ")";
@@ -252,58 +247,38 @@ public class PybossaAppCreateWorker implements ClientAppCreateWorker {
     @Override
     public void doAppDelete() throws Exception {
         System.out.println("doAppDelete : Start : " + new Date());
-        List<ClientApp> clientAppList = clientAppService.findClientAppByStatus(StatusCodeType.CLIENT_APP_INACTIVE_REQUEST) ;
+        List<ClientApp> clientAppList = clientAppService.findClientAppByStatus(LookupCode.CLIENT_APP_INACTIVE_REQUEST) ;
         for (int i = 0; i < clientAppList.size(); i++) {
             ClientApp currentClientApp = clientAppList.get(i);
             setClassVariable(currentClientApp.getClient());
-            if(isEligibleForDeactivationRule(currentClientApp))  {
-                //String deleteURL = PYBOSSA_API_APP_DELETE_URL + currentClientApp.getPlatformAppID()+ URLPrefixCode.PYBOSSA_APP_UPDATE_KEY + client.getHostAPIKey();
-                //String returnValue = pybossaCommunicator.deleteGet(deleteURL);
-                this.doMarkTaskAbandoned(currentClientApp);
-                clientAppService.updateClientAppStatus(currentClientApp, StatusCodeType.CLIENT_APP_DISABLED);
-                doCleanAbandonedTask();
-            }
+            this.doMarkTaskAbandoned(currentClientApp);
+            clientAppService.updateClientAppStatus(currentClientApp, LookupCode.CLIENT_APP_DISABLED);
+            doCleanAbandonedTask();
         }
-    }
-
-    private boolean isEligibleForDeactivationRule(ClientApp currentClientApp){
-        if(currentClientApp.getStatus().equals(StatusCodeType.CLIENT_APP_INACTIVE_REQUEST)){
-            return true;
-        }
-        return false;
-
     }
 
     public void doMarkTaskAbandoned(ClientApp currentClientApp) throws Exception{
-        List<TaskQueue> taskQueues =  taskQueueService.getTaskQueueByClientAppStatus(currentClientApp.getClientAppID(),StatusCodeType.TASK_PUBLISHED);
+        List<TaskQueue> taskQueues =  taskQueueService.getTaskQueueByClientAppStatus(currentClientApp.getClientAppID(), LookupCode.TASK_PUBLISHED);
 
         for(int i = 0; i < taskQueues.size(); i++){
-            this.removeAbandonedTask(taskQueues.get(i).getTaskID(), taskQueues.get(i).getTaskQueueID());
+            TaskQueue taskToBeRemoved = taskQueues.get(i);
+            taskToBeRemoved.setStatus(LookupCode.TASK_ABANDONED)  ;
+            taskQueueService.createTaskQueue(taskToBeRemoved);
         }
 
     }
 
     public void doCleanAbandonedTask() throws Exception{
-        List<TaskQueue> taskQueues =  taskQueueService.getTaskQueueByStatus("status",StatusCodeType.TASK_ABANDONED);
+        List<TaskQueue> taskQueues =  taskQueueService.getTaskQueueByStatus("status", LookupCode.TASK_ABANDONED);
         for(int i = 0; i < taskQueues.size(); i++){
-            this.removeAbandonedTask(taskQueues.get(i).getTaskID(), taskQueues.get(i).getTaskQueueID());
+            TaskQueue taskToBeRemoved = taskQueues.get(i);
+            taskToBeRemoved.setStatus(LookupCode.TASK_ABANDONED)  ;
+            taskQueueService.createTaskQueue(taskToBeRemoved);
         }
-    }
-
-    public String removeAbandonedTask(long taskID, long taskQueueID) throws Exception {
-        String deleteTaskURL =  PYBOSSA_TASK_DELETE_URL + taskID + URLPrefixCode.PYBOSSA_APP_UPDATE_KEY + client.getHostAPIKey();
-        //System.out.println(deleteTaskURL);
-        String returnValue = pybossaCommunicator.deleteGet(deleteTaskURL);
-
-        if(!returnValue.equalsIgnoreCase("Exception")) {
-            taskLogService.deleteAbandonedTaskLog(taskQueueID);
-            taskQueueService.deleteAbandonedTaskQueue(taskQueueID);
-        }
-        return returnValue;
     }
 
     private ClientApp createClientAppInstance(Long crisisID, String appname, String description, Long appID, String appcode, Long nominalAttributeID){
-        ClientApp clApp = new ClientApp(client.getClientID(),crisisID, appname,description,appID,appcode,nominalAttributeID, client.getDefaultTaskRunsPerTask(), StatusCodeType.APP_MULTIPLE_CHOICE);
+        ClientApp clApp = new ClientApp(client.getClientID(),crisisID, appname,description,appID,appcode,nominalAttributeID, client.getDefaultTaskRunsPerTask(), LookupCode.APP_MULTIPLE_CHOICE);
         clientAppService.createClientApp(clApp);
         return clApp;
 

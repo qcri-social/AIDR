@@ -17,8 +17,6 @@ public class URLPrefixCode {
 
 
 
-    public static String ASSIGN_TASK_CLEANUP= "/taskassignment/revert/timeout";
-
     public static String AIDR_ACTIVE_NOMINAL_ATTRIBUTE ="/crisis/getnominalAttribute";
     public static String AIDR_CRISIS_INFO="/crisis/id/";
     public static String AIDR_NOMINAL_ATTRIBUTE_LABEL = "/crisis/getnominalLabels/";
@@ -30,8 +28,6 @@ public class URLPrefixCode {
 
 
     public static String PYBOSSA_APP_UPDATE_KEY = "?api_key=";
-    public static String PYBOSSA_CATEGORY = "/category";
-    public static String PYBOSSA_CATEGORY_SHORT_NAME = "?short_name=";
 
     public static String PYBOSSA_TASK_DELETE = "/task/";
 

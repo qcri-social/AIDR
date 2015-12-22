@@ -18,19 +18,19 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-@Table(catalog = "aidr_scheduler",name = "taskQueueResponse")
+@Table(catalog = "mm_scheduler",name = "task_queue_response")
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class TaskQueueResponse implements Serializable {
     private static final long serialVersionUID = -5527566248002296042L;
 
     @Id
-    @Column(name = "taskQueueID")
+    @Column(name = "task_queue_id")
     private Long taskQueueID;
 
     @Column (name = "response", nullable = false)
     private String response;
 
-    @Column (name = "taskInfo", nullable = true)
+    @Column (name = "task_info", nullable = true)
     private String taskInfo;
 
     @Column (name = "created", nullable = false)

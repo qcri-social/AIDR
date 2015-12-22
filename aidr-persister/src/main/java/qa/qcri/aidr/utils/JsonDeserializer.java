@@ -895,27 +895,27 @@ public class JsonDeserializer {
 			if(removeRetweet && jsonObj.get("retweeted_status") != null) {
 				return null;
 			}
-			if (!jsonObj.get("id_str").isJsonNull()) {
+			if (jsonObj.get("id_str") != null) {
 				tweet.setTweetID(jsonObj.get("id_str").getAsString());
 			}
 
-			if (!jsonObj.get("text").isJsonNull()) {
+			if (jsonObj.get("text") != null) {
 				tweet.setMessage(jsonObj.get("text").getAsString());
 			}
 
-			if (!jsonObj.get("created_at").isJsonNull()) {
+			if (jsonObj.get("created_at") != null) {
 				tweet.setCreatedAtString(jsonObj.get("created_at").getAsString());
 				tweet.setCreateAt(new Date(tweet.getTimestamp()));
 			}
 
 			JsonObject jsonUserObj = null;
-			if (!jsonObj.get("user").isJsonNull()) {
+			if (jsonObj.get("user") != null) {
 				jsonUserObj = jsonObj.get("user").getAsJsonObject();
 				if (jsonUserObj.get("id") != null) {
 					tweet.setUserID(jsonUserObj.get("id").getAsString());
 				}
 
-				if (!jsonUserObj.get("screen_name").isJsonNull()) {
+				if (jsonUserObj.get("screen_name") != null) {
 					tweet.setUserName(jsonUserObj.get("screen_name").getAsString());
 					tweet.setTweetURL("https://twitter.com/" + tweet.getUserName() + "/status/" + tweet.getTweetID());
 				}
@@ -925,15 +925,15 @@ public class JsonDeserializer {
 			}
 
 			JsonObject aidrObject = null;
-			if (!jsonObj.get("aidr").isJsonNull()) {
+			if (jsonObj.get("aidr") != null) {
 				aidrObject = jsonObj.get("aidr").getAsJsonObject();
-				if (!aidrObject.get("crisis_name").isJsonNull()) {
+				if (aidrObject.get("crisis_name") != null) {
 					tweet.setCrisisName(aidrObject.get("crisis_name").getAsString());
 				}
-				if (!aidrObject.get("crisis_code").isJsonNull()) {
+				if (aidrObject.get("crisis_code") != null) {
 					tweet.setCrisisCode(aidrObject.get("crisis_code").getAsString());
 				}
-				if (aidrObject.has("nominal_labels") && !aidrObject.get("nominal_labels").isJsonNull()) {
+				if (aidrObject.has("nominal_labels") && (aidrObject.get("nominal_labels") != null)) {
 					// JSONArray nominalLabels = (JSONArray)
 					// aidrObject.get("nominal_labels");
 					JsonArray nominalLabels = aidrObject.get("nominal_labels").getAsJsonArray();

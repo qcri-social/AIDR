@@ -7,6 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +29,7 @@ public class PersisterController {
     @Autowired
     PersisterService persisterService ;
     
+    @PreAuthorize("hasRole('ADMIN')")
 	@RequestMapping(value = "/generateDownloadLink", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> generateCSVLink(@RequestParam String code,

@@ -7,11 +7,18 @@
 
     <link rel="shortcut icon" type="image/ico" href="${pageContext.request.contextPath}/resources/img/favicon.ico" />
 
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/extjs/resources/css/ext-all.css"/>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/extjs/resources/themes/ext-theme-crisp/resources/ext-theme-crisp-all.css"/>
+    
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/font-awesome-4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/css/style.css"/>
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/extjs/ext-all.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/vendor/moment-with-langs.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/vendor/moment-lang-en.js"></script>
+     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/vendor/moment-lang-en.js"></script>
+     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/extjs/resources/charts/ext-charts.js"></script>
+	<link type="text/css" href="${pageContext.request.contextPath}/resources/extjs/resources/charts/sencha-charts/build/crisp/resources/sencha-charts-all.css">
+   <script type="text/javascript" src="${pageContext.request.contextPath}/resources/extjs/resources/themes/ext-theme-crisp/ext-theme-crisp.js"></script>
+   <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/aidrfm/common/lang.js"></script>
     <script type="text/javascript">
         Ext.Loader.setConfig({
                 enabled: true,

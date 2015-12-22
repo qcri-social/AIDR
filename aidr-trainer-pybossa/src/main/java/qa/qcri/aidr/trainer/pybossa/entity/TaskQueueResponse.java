@@ -15,18 +15,18 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-@Table(name = "taskQueueResponse")
+@Table(name = "task_queue_response")
 public class TaskQueueResponse implements Serializable {
     private static final long serialVersionUID = -5527566248002296042L;
 
     @Id
-    @Column(name = "taskQueueID")
+    @Column(name = "task_queue_id")
     private Long taskQueueID;
 
     @Column (name = "response", nullable = false)
     private String response;
 
-    @Column (name = "taskInfo", nullable = false)
+    @Column (name = "task_info", nullable = false)
     private String taskInfo;
 
     @Column (name = "created", nullable = false)

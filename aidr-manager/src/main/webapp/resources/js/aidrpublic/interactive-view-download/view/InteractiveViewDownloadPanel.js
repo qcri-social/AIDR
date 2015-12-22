@@ -3,7 +3,6 @@ Ext.require([
              'AIDRFM.common.StandardLayout',
              'AIDRFM.common.Header',
              'AIDRFM.common.Footer',
-             'Ext.ux.data.PagingMemoryProxy',
              'AIDRPUBLIC.interactive-view-download.view.SingleFilterPanel'
              ]);
 
@@ -43,22 +42,23 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 
 		this.applyFilterButton = Ext.create('Ext.Button', {
 			text: 'Apply Filter',
-			cls:'btn btn-blue',
+			cls:'btn btn-blueSmall',
 			id: 'applyFilterButton',
+			margin: '0 10 10 0',
 			disabled: true
 		});
 
 		this.resetFiltersButton = Ext.create('Ext.Button', {
 			text: 'Reset Filters',
-			cls:'btn btn-red',
+			cls:'btn btn-redSmall',
 			id: 'resetFilters',
-			margin: '0 10 0 0',
+			margin: '0 10 10 0',
 			disabled: true
 		});
 
 		this.addFilterButton = Ext.create('Ext.button.Button', {
 			iconCls: 'add',
-			margin: '1 10 0 0',
+			margin: '1 10 10 0',
 			text : null,
 			scale: 'small',
 			id: 'addFilter',
@@ -187,7 +187,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			{
 		        xtype:'combo',
 				queryMode:'local',
-			   store:['1500','3000','10000', '50000', '100000'],
+			   store:['1500','3000','10000', '50000'],
 			   value: '1500',
 			   displayField:'division',
 			   autoSelect:true,
@@ -232,7 +232,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 
 		this.downloadButton = Ext.create('Ext.Button', {
 			text: 'Generate Downloadable File',
-			cls:'btn btn-blue',
+			cls:'btn btn-blueSmall',
 			id: 'downloadButton',
 			margin: '10 0 0 0'
 		});
@@ -261,10 +261,10 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			},
 			columns: [
 			          {
-			        	  xtype: 'gridcolumn', dataIndex: 'createdAt', text: 'Date/Time', width: 175
+			        	  xtype: 'gridcolumn', dataIndex: 'createdAt', text: 'Date/Time', width: 185
 			          },
 			          {
-			        	  xtype: 'gridcolumn', dataIndex: 'text', text: 'Tweet', flex: 1
+			        	  xtype: 'gridcolumn', dataIndex: 'text', text: Ext.util.Format.capitalize(COLLECTION_TYPES[TYPE]["plural"]), flex: 1
 			          }
 			          ]
 		});
@@ -276,7 +276,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			displayInfo:true,
 			displayMsg:COLLECTION_TYPES[TYPE]["plural"] + ' {0} - {1} of {2}',
 			emptyMsg:'No '+ COLLECTION_TYPES[TYPE]["plural"] + ' to display',
-			items: [
+			/*items: [
 			        {
 			        	xtype: 'tbseparator'
 			        },
@@ -295,10 +295,10 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			        		this.fireEvent('triggerClear');
 			        	}
 			        }
-			        ]
+			        ]*/
 		});
 
-		this.tweetsPanel = Ext.create('Ext.container.Container', {
+		/*this.tweetsPanel = Ext.create('Ext.container.Container', {
 			layout: {
 				type: 'vbox',
 				align: 'stretch'
@@ -308,7 +308,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			        this.tweetsPaging
 			        ]
 		});
-
+*/
 		this.downloadPanel = Ext.create('Ext.container.Container', {
 			layout: {
 				type: 'vbox'
@@ -383,8 +383,24 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 				            	          this.statusL
 				            	          ]
 				              },
-				              this.filterFieldSet,
-				              this.tweetsPanel,
+				              {
+				            	  xtype: 'container',
+				            	  items: [
+				            	          this.filterFieldSet
+				            	          ]
+				            		  
+				              },
+				              {
+				                  xtype: 'container',
+				                  layout: {
+				                      type: 'vbox',
+				                      align: 'stretch'
+				                  },
+				                  items: [
+				                          	this.tweetsGrid,
+				                          	this.tweetsPaging
+			                          	]
+				              },
 				              this.contactOwnerPanel,
 				              {
 				            	  xtype: 'container',
@@ -420,7 +436,17 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			            	          this.screenTitle
 			            	          ]
 			              },
-			              this.tweetsPanel,
+			              {
+			                  xtype: 'container',
+			                  layout: {
+			                      type: 'vbox',
+			                      align: 'stretch'
+			                  },
+			                  items: [
+			                          	this.tweetsGrid,
+			                          	this.tweetsPaging
+		                          	]
+			              },
 			              this.curatorInfoPanel,
 			              {
 			            	  xtype: 'container',

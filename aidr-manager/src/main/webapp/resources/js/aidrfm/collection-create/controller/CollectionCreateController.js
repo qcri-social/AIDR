@@ -152,7 +152,8 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                      if(newValue === 'SMS'){
                          Ext.getCmp('keywordsPanel').hide();
                          Ext.getCmp('langPanel').hide();
-                         Ext.getCmp('geoPanel').hide();
+                         Ext.getCmp('geoPanel').hide(); 
+                         Ext.getCmp('geoRPanel').hide();
                          Ext.getCmp('followPanel').hide();
                          Ext.getCmp('durationDescription').hide();
                          Ext.getCmp('geoDescription').hide();
@@ -160,6 +161,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                          Ext.getCmp('keywordsPanel').show();
                          Ext.getCmp('langPanel').show();
                          Ext.getCmp('geoPanel').show();
+                         Ext.getCmp('geoRPanel').show();
                          Ext.getCmp('followPanel').show();
                          Ext.getCmp('durationDescription').show();
                          Ext.getCmp('geoDescription').show();
@@ -177,13 +179,47 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
 
     saveCollection: function () {
 
+    	var purpose='Using collection for humanitarian and crisis response purpose only.';
+    	
+    	Ext.MessageBox.confirm('Confirm', 'Are you going to use this collection for humanitarian and crisis response purposes only?', function (buttonId) {
+			if (buttonId === 'yes') {
+				checkRunningStatus();
+			}
+			else{
+				var message = 'Please enter your purpose for creating the collection (Max. 1000 chars):';
+				Ext.MessageBox.show({
+		    	    title: 'Purpose for creating collection',
+		    	    msg: message,
+		    	    width: 500,
+		    	    buttons: Ext.Msg.OKCANCEL,
+		    	    multiline: true,
+		    	    fn: function(btn, text, cfg){
+		    	    	text = Ext.String.trim(text);
+		    	    	if (btn == 'ok' && Ext.isEmpty(text)){
+		    	    		var newMsg = message+'</br><span style="color:red">Collection purpose is mandatory !!!</span>';
+		        	    	Ext.MessageBox.show(Ext.apply({}, {msg:newMsg}, cfg));
+		    	    	}
+		    	    	else if(btn == 'ok' && text.length>1000){
+		    	    		var newMsg = message+'</br><span style="color:red">Collection purpose should not be greater than 1000 characters!!!</span>';
+		        	    	Ext.MessageBox.show(Ext.apply({}, {msg:newMsg}, cfg));
+		    	    	}
+		    	    	else if(btn == 'ok'){
+		        	    	purpose = text;
+		        	    	checkRunningStatus();
+		        	    }
+		    	    }
+		       	});
+		    }
+        });
+    	
+    	
+    	function checkRunningStatus(){
         if (AIDRFMFunctions.mandatoryFieldsEntered()) {
 
             var form = Ext.getCmp('collectionForm').getForm();
 
-            var mask = AIDRFMFunctions.getMask();
-            mask.show();
-
+            Ext.getBody().mask('Loading...');
+            
             //Check if some collection already is running for current user
             Ext.Ajax.request({
                 url: BASE_URL + '/protected/collection/getRunningCollectionStatusByUser.action',
@@ -197,7 +233,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                 success: function (resp) {
                     var response = Ext.decode(resp.responseText);
                     var name = form.findField('name').getValue();
-                    mask.hide();
+                    Ext.getBody().unmask();
                     if (response.success) {
                         if (response.data) {
                             var collectionData = response.data;
@@ -225,7 +261,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                     }
                 },
                 failure: function () {
-                    mask.hide();
+                    Ext.getBody().unmask();
                    
                 }
             });
@@ -237,8 +273,7 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
              */
             function createCollection(shouldRun) {
 
-                var mask = AIDRFMFunctions.getMask(true, 'Saving collection ...');
-                mask.show();
+                Ext.getBody().mask('Saving collection ...');
 
                 Ext.Ajax.request({
                     url: 'collection/create' + (shouldRun ? '?runAfterCreate=true' : ''),
@@ -253,33 +288,42 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
                         langFilters: form.findField('langFilters').getValue(),
                         durationHours: form.findField('durationHours').getValue(),
                         crisisType: form.findField('crisisType').getValue(),
-                        provider: form.findField('collectionType').getValue()
+                        provider: form.findField('collectionType').getValue(),
+                        purpose: Ext.String.trim(purpose)
                     },
                     headers: {
                         'Accept': 'application/json'
                     },
-                    success: function (response) {
-                        AIDRFMFunctions.setAlert("Info", ["Collection created successfully.", "You will be redirected to the collection details page."]);
-                        mask.hide();
+                    success: function (resp) {
+                        Ext.getBody().unmask();
+                        var response = Ext.decode(resp.responseText);
+                        if (response.success) {
+                            AIDRFMFunctions.setAlert("Info", ["Collection created successfully.", "You will be redirected to the collection details page."]);
+                            Ext.getBody().mask('Redirecting ...');
 
-                        var maskRedirect = AIDRFMFunctions.getMask(true, 'Redirecting ...');
-                        maskRedirect.show();
+                            //wait for 3 sec to let user read information box
+                            var isFirstRun = true;
+                            Ext.TaskManager.start({
+                                run: function () {
+                                    if (!isFirstRun) {
+                                        document.location.href = BASE_URL + '/protected/'+ form.findField('code').getValue() +'/collection-details';
+                                    }
+                                    isFirstRun = false;
+                                },
+                                interval: 3 * 1000
+                            });
+                    	} else {
+                        	AIDRFMFunctions.setAlert("Error", ["Error in creating collection.", "Please try again later."]);
+                        }
 
-//                    wait for 3 sec to let user read information box
-                        var isFirstRun = true;
-                        Ext.TaskManager.start({
-                            run: function () {
-                                if (!isFirstRun) {
-                                    document.location.href = BASE_URL + '/protected/'+ form.findField('code').getValue() +'/collection-details';
-                                }
-                                isFirstRun = false;
-                            },
-                            interval: 3 * 1000
-                        });
+                    },
+                    failure: function(response) {
+                    	Ext.getBody().unmask();
                     }
                 });
             }
         }
+    }
     },
 
     isExist: function () {
@@ -350,10 +394,39 @@ Ext.define('AIDRFM.collection-create.controller.CollectionCreateController', {
         });
     },
 
+    agreeTOS: function () {
+    	var me = this;
+    	
+    	Ext.MessageBox.confirm('Confirm', 'Are you going to use this collection for humanitarian and crisis response purposes only?', function (buttonId) {
+                if (buttonId === 'yes') {
+                }
+                else{
+                	Ext.MessageBox.show({
+                	    title: 'Purpose for creating collection',
+                	    message: 'Please enter your purpose for creating the collection:',
+                	    width: 500,
+                	    buttons: Ext.Msg.OKCANCEL,
+                	    multiline: true,
+                	    fn: function(btn, text){
+                    	    if (btn == 'ok'){
+                    	        console.log(text);
+                    	    }
+                    	    else{
+                    	    	console.log("cancel");
+                    	    }
+                    	},
+                	});
+                }
+            });
+    },
+    
+    
+    
+    
     initNameAndCodeValidation: function() {
-        this.checkCount = 2;
-        this.isExist();
-        this.isExistName();
+    	this.checkCount = 2;
+    	this.isExist();
+    	this.isExistName();
     },
 
     generateCollectionCode: function(value) {

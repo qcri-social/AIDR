@@ -4,24 +4,17 @@ import au.com.bytecode.opencsv.CSVWriter;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.trainer.pybossa.entity.*;
 import qa.qcri.aidr.trainer.pybossa.format.impl.CVSRemoteFileFormatter;
-import qa.qcri.aidr.trainer.pybossa.format.impl.GeoJsonOutputModel;
 import qa.qcri.aidr.trainer.pybossa.service.*;
 import qa.qcri.aidr.trainer.pybossa.store.PybossaConf;
-import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
+import qa.qcri.aidr.trainer.pybossa.store.LookupCode;
 import qa.qcri.aidr.trainer.pybossa.store.URLPrefixCode;
-import qa.qcri.aidr.trainer.pybossa.store.UserAccount;
 import qa.qcri.aidr.trainer.pybossa.util.DateTimeConverter;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.util.Iterator;
 import java.util.List;
 
@@ -57,7 +50,7 @@ public class ReportProductServiceImpl implements ReportProductService {
     private PybossaCommunicator pybossaCommunicator = new PybossaCommunicator();
 
     public void setClassVariable() throws Exception{
-        client = clientService.findClientByCriteria("name", UserAccount.SYSTEM_USER_NAME);
+        client = clientService.findClientByCriteria("name", LookupCode.SYSTEM_USER_NAME);
     }
 
 
@@ -75,9 +68,9 @@ public class ReportProductServiceImpl implements ReportProductService {
         while(itr.hasNext()){
 
             Long clientAppID = (long)itr.next();
-            List<ReportTemplate> templateList =  reportTemplateService.getReportTemplateByClientApp(clientAppID, StatusCodeType.TEMPLATE_IS_READY_FOR_EXPORT);
+            List<ReportTemplate> templateList =  reportTemplateService.getReportTemplateByClientApp(clientAppID, LookupCode.TEMPLATE_IS_READY_FOR_EXPORT);
 
-            if(templateList.size() > StatusCodeType.MIN_REPORT_TEMPLATE_EXPORT_SIZE){
+            if(templateList.size() > LookupCode.MIN_REPORT_TEMPLATE_EXPORT_SIZE){
                 CVSRemoteFileFormatter formatter = new CVSRemoteFileFormatter();
                 ClientApp clientApp = clientAppService.findClientAppByID("clientAppID", clientAppID);
                 String sTemp = reformatFileName(clientApp.getShortName()) ;
@@ -93,13 +86,13 @@ public class ReportProductServiceImpl implements ReportProductService {
 
                     formatter.addToCVSOuputFile(generateOutputData(rpt),writer);
 
-                    rpt.setStatus(StatusCodeType.TEMPLATE_EXPORTED);
+                    rpt.setStatus(LookupCode.TEMPLATE_EXPORTED);
                     reportTemplateService.updateReportItem(rpt);
                 }
                 formatter.finalizeCVSOutputFile(writer);
                 ClientAppEvent targetClinetApp = clientAppEventService.getNextSequenceClientAppEvent(clientApp.getClientAppID());
                 if(targetClinetApp != null ){
-                    ClientAppSource appSource = new ClientAppSource(targetClinetApp.getClientAppID(), StatusCodeType.EXTERNAL_DATA_SOURCE_ACTIVE, fileName);
+                    ClientAppSource appSource = new ClientAppSource(targetClinetApp.getClientAppID(), LookupCode.EXTERNAL_DATA_SOURCE_ACTIVE, fileName);
                     clientAppSourceService.insertNewClientAppSource(appSource);
 
                     JSONArray jsonArray = new JSONArray();

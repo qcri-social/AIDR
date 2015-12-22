@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -73,10 +74,11 @@ public class CollectionController extends BaseController{
 		
 		logger.info("Save Collection to Database having code : "+ collectionDetailsInfo.getCode());
 		
-		
-		//logger.info("Following users: " + collection.getFollow());
 		try{
 			UserAccount user = getAuthenticatedUser();
+			if(collectionDetailsInfo.getPurpose().trim().length()>1000 || StringUtils.isEmpty(collectionDetailsInfo.getPurpose())){
+				throw new Exception("Colection purpose is not valid !!!");
+			}
 			Collection collection = collectionService.create(collectionDetailsInfo, user);
 			
 			if(collection == null) {
@@ -701,7 +703,8 @@ public class CollectionController extends BaseController{
 		dto.setCollectionType(collection.getProvider());
 		dto.setHasTaggerOutput(collection.isClassifierEnabled());
 		dto.setManagers(managers);
-
+		dto.setPurpose(collection.getPurpose());
+		
 		return dto;
 	}
 

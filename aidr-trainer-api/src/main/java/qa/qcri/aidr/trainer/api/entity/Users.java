@@ -31,6 +31,7 @@ public class Users implements Serializable {
         this.userID = userID;
     }
 
+
     public String getName() {
         return name;
     }
@@ -45,5 +46,7 @@ public class Users implements Serializable {
 
     @Column (name = "user_name", nullable = false)
     private String name;
+
+
 
 }

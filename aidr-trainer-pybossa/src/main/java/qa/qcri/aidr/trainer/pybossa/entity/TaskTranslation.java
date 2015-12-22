@@ -14,21 +14,21 @@ import javax.persistence.Table;
 
 
 @Entity
-@Table(name = "taskTranslation")
+@Table(name = "task_translation")
 public class TaskTranslation {
 	    
     @Id
     @GeneratedValue
-    @Column(name = "translationID", unique=true, nullable = false)
+    @Column(name = "id", unique=true, nullable = false)
     private Long translationId;
 
-    @Column(name = "taskID")
+    @Column(name = "task_id")
     private Long taskId;
     
-    @Column(name = "clientAppID")
+    @Column(name = "client_app_id")
     private String clientAppId;
 
-    @Column(name = "tweetID", nullable = false)
+    @Column(name = "tweet_id", nullable = false)
     private String tweetID;
 
     @Column(name = "author", nullable = false)
@@ -43,19 +43,19 @@ public class TaskTranslation {
     @Column(name = "url", nullable = false)
     private String url;
 
-    @Column(name = "taskQueueID")
+    @Column(name = "task_queue_id")
     private Long taskQueueID;
 
-    @Column(name = "twbOrderID")
+    @Column(name = "twb_order_id")
     private Long twbOrderId;
     
-    @Column(name = "originalText")
+    @Column(name = "original_text")
     private String originalText;
 
-    @Column(name = "translatedText")
+    @Column(name = "translated_text")
     private String translatedText;
     
-    @Column(name = "answerCode")
+    @Column(name = "answer_code")
     private String answerCode;
 
     @Column(name = "created", nullable = false)

@@ -11,7 +11,7 @@ var store = Ext.create('Ext.data.JsonStore', {
         type: 'ajax',
         url: BASE_URL + '/protected/tagger/modelHistory.action',
         reader: {
-            root: 'data',
+            rootProperty: 'data',
             totalProperty: 'total'
         },
         extraParams : {
@@ -50,18 +50,16 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
         position: 'right'
     },
     axes: [{
-        type: 'Numeric',
+        type: 'numeric',
         fields: ['avgPrecision', 'avgRecall', 'avgAuc' ],
         position: 'left',
         grid: true,
         minimum: 0,
-        label:{
-        	renderer: function (r, meta, record) {
-                return r ? (r * 100).toFixed(0) + '%' : '0%';
-            }
+        renderer: function (r, meta, record) {
+            return r ? (r * 100).toFixed(0) + '%' : '0%';
         }
     }, {
-        type: 'Time',
+        type: 'time',
 		dateFormat: 'M j,y',
         fields: 'trainingTime',
         position: 'bottom',
@@ -73,7 +71,7 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
 		}
     },
     {
-        type: 'Numeric',
+        type: 'numeric',
         fields: ['trainingCount'],
         position: 'right',
         grid: true,
@@ -102,10 +100,10 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
               width: 180,
               //height: 50,
               renderer: function(storeItem, item) {
- 	        	 var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
+ 	        	 var timestamp = moment(new Date(storeItem.get(item.series.xField))).format("MMM Do, YYYY hh:mm A");
  	           	 var val = storeItem.get(item.series.yField);
  	           	 val = val ? (val * 100).toFixed(0) + '%' : '0%';
- 				 this.setTitle(item.series.title +' at ' + timestamp + ' is ' + val );
+ 				 this.setHtml(item.series.title +' at ' + timestamp + ' is ' + val );
  			  }
 		}
     }, {
@@ -131,10 +129,10 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
             width: 180,
             //height: 50,
             renderer: function(storeItem, item) {
-	        	 var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
+	        	 var timestamp = moment(new Date(storeItem.get(item.series.xField))).format("MMM Do, YYYY hh:mm A");
 	           	 var val = storeItem.get(item.series.yField);
 	           	 val = val ? (val * 100).toFixed(0) + '%' : '0%';
-				 this.setTitle(item.series.title +' at ' + timestamp + ' is ' + val );
+				 this.setHtml(item.series.title +' at ' + timestamp + ' is ' + val );
 			  }
 		}
     }, {
@@ -160,16 +158,16 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
             width: 180,
            // height: 50,
             renderer: function(storeItem, item) {
-	        	 var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
+	        	 var timestamp = moment(new Date(storeItem.get(item.series.xField))).format("MMM Do, YYYY hh:mm A");
 	           	 var val = storeItem.get(item.series.yField);
 	           	 val = val ? (val * 100).toFixed(0) + '%' : '0%';
-				 this.setTitle(item.series.title +' at ' + timestamp + ' is ' + val );
+				 this.setHtml(item.series.title +' at ' + timestamp + ' is ' + val );
 			  }
 		}
     }, {
         type: 'line',
         axis: 'right',
-        title: 'Training Count',
+        title: 'Human Tagged',
         xField: 'trainingTime',
         yField: 'trainingCount',
         style: {
@@ -189,8 +187,8 @@ Ext.define("TAGGUI.model-details.view.ClassifierHistoryChart", {
             width: 180,
             //height: 50,
             renderer: function(storeItem, item) {
-          	  var timestamp = Ext.Date.format(new Date(storeItem.get(item.series.xField)), "Y-m-d H:i");
-				  this.setTitle(item.series.title +' at ' + timestamp + ' is ' + storeItem.get(item.series.yField) + ' ' + COLLECTION_TYPES[TYPE]["plural"]);
+          	  var timestamp = moment(new Date(storeItem.get(item.series.xField))).format("MMM Do, YYYY hh:mm A");
+				  this.setHtml(item.series.title +' at ' + timestamp + ' is ' + storeItem.get(item.series.yField) + ' ' + COLLECTION_TYPES[TYPE]["plural"]);
 			  }
 		}
    }]

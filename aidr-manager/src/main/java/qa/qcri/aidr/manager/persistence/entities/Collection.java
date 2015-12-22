@@ -76,6 +76,9 @@ public class Collection extends BaseEntity {
     @Column(name="geo_r")
     private String geoR;
 
+    @Column(length = 1000, name = "purpose")
+    private String purpose;
+    
     @Column(name="lang_filters")
     private String langFilters;
     
@@ -253,5 +256,13 @@ public class Collection extends BaseEntity {
 
 	public void setTrashed(boolean trashed) {
 		this.trashed = trashed;
+	}
+
+	public String getPurpose() {
+		return purpose;
+	}
+
+	public void setPurpose(String purpose) {
+		this.purpose = purpose;
 	}
 }

@@ -32,6 +32,7 @@ public class CollectionDetailsInfo {
     private String target;
     private Integer durationHours;
     private Long crisisType;
+    private String purpose;
     
     public Long getCrisisType() {
 		return crisisType;
@@ -140,5 +141,11 @@ public class CollectionDetailsInfo {
 	}
 	public void setTrashed(boolean isTrashed) {
 		this.isTrashed = isTrashed;
+	}
+	public String getPurpose() {
+		return purpose;
+	}
+	public void setPurpose(String purpose) {
+		this.purpose = purpose;
 	}
 }

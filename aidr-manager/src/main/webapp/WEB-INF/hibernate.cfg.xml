@@ -13,5 +13,6 @@
         <mapping class="qa.qcri.aidr.manager.persistence.entities.CollectionCollaborator"/>
         <mapping class="qa.qcri.aidr.manager.persistence.entities.CrisisType"/>
         <mapping class="qa.qcri.aidr.manager.persistence.entities.CollectionLog"/>
+        <mapping class="qa.qcri.aidr.manager.persistence.entities.WordDictionary"/>
     </session-factory>
 </hibernate-configuration>

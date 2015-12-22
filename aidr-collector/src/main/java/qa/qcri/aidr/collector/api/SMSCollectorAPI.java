@@ -2,7 +2,10 @@ package qa.qcri.aidr.collector.api;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.Consumes;
@@ -98,6 +101,9 @@ public class SMSCollectorAPI  {
                 String channelName = String.format(CHANNEL, code);
                 if (redisLoadShedder.get(channelName).canProcess()) {
                     JedisPublisher publisherJedis = JedisPublisher.newInstance();
+                    SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZ yyyy");
+            		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+                    sms.setCreated_at(sdf.format(new Date()));
                     publisherJedis.publish(channelName, objectMapper.writeValueAsString(sms));
                     cache.increaseSMSCount(code);
                     cache.setLastDownloadedDoc(code, sms.getText());

@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import qa.qcri.aidr.trainer.pybossa.dao.ReportTemplateDao;
 import qa.qcri.aidr.trainer.pybossa.entity.ReportTemplate;
 import qa.qcri.aidr.trainer.pybossa.service.ReportTemplateService;
-import qa.qcri.aidr.trainer.pybossa.store.StatusCodeType;
+import qa.qcri.aidr.trainer.pybossa.store.LookupCode;
 
 import java.util.List;
 
@@ -52,7 +52,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 
     @Override
     public List<ReportTemplate> getReportTemplateWithUniqueKey(String uniqueKey) {
-        return reportTemplateDao.getReportTemplateWithUniqueKey("status", StatusCodeType.TEMPLATE_IS_READY_FOR_EXPORT, uniqueKey);  //To change body of implemented methods use File | Settings | File Templates.
+        return reportTemplateDao.getReportTemplateWithUniqueKey("status", LookupCode.TEMPLATE_IS_READY_FOR_EXPORT, uniqueKey);  //To change body of implemented methods use File | Settings | File Templates.
     }
 
 

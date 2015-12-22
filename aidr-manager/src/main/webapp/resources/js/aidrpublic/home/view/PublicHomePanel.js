@@ -37,7 +37,7 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
                 type: 'ajax',
                 url: 'public/collection/findAllStoped.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },
@@ -63,7 +63,7 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
                 type: 'ajax',
                 url: 'public/collection/findAllRunning.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },
@@ -89,7 +89,7 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
                 type: 'ajax',
                 url: 'public/collection/findAllRunningWithNoOutput.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },
@@ -159,7 +159,7 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
                     return AIDRFMFunctions.getStatusWithStyle(raw);
                 },
                 getCrisisType: function (r) {
-                    return r ? '<span class="styled-text-14"> Crisis Type: ' + r + '</span>' : "<span class='styled-text-14'>Crisis Type: Not specified</span>";
+                    return r ? '<span class="styled-text-14"> Crisis Type: ' + r.name + '</span>' : "<span class='styled-text-14'>Crisis Type: Not specified</span>";
                 },
                 getEncodedCode: function(code) {
                     return encodeURI(code);

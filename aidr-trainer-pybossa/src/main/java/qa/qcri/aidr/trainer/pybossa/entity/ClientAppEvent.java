@@ -12,25 +12,25 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-@Table(name = "clientAppEvent")
+@Table(name = "client_app_event")
 public class ClientAppEvent implements Serializable {
     private static final long serialVersionUID = -5527566248002296042L;
 
     @Id
     @GeneratedValue
-    @Column(name = "clientAppEventID")
+    @Column(name = "id")
     private Long clientAppEventID;
 
     @Column (name = "name", nullable = false)
     private String name;
 
-    @Column (name = "clientAppID", nullable = false)
+    @Column (name = "client_app_id", nullable = false)
     private Long clientAppID;
 
     @Column (name = "sequence", nullable = false)
     private Integer sequence;
 
-    @Column (name = "eventID", nullable = false)
+    @Column (name = "event_id", nullable = false)
     private Long eventID;
 
     @Column (name = "created", nullable = true)

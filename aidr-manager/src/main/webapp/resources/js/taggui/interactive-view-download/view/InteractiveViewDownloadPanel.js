@@ -3,8 +3,8 @@ Ext.require([
     'AIDRFM.common.StandardLayout',
     'AIDRFM.common.Header',
     'AIDRFM.common.Footer',
-    'Ext.ux.data.PagingMemoryProxy',
-    'TAGGUI.interactive-view-download.view.SingleFilterPanel'
+    'TAGGUI.interactive-view-download.view.SingleFilterPanel',
+    'Ext.data.proxy.Memory'
 ]);
 
 Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel', {
@@ -215,7 +215,7 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
             ]
         });
 
-        this.tweetsPanel = Ext.create('Ext.container.Container', {
+        /*this.tweetsPanel = Ext.create('Ext.container.Container', {
             layout: {
                 type: 'vbox',
                 align: 'stretch'
@@ -224,7 +224,7 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
                 this.tweetsGrid,
                 this.tweetsPaging
             ]
-        });
+        });*/
 
         this.downloadPanel = Ext.create('Ext.container.Container', {
             layout: {
@@ -277,7 +277,17 @@ Ext.define('TAGGUI.interactive-view-download.view.InteractiveViewDownloadPanel',
                 ]
             },
             this.filterFieldSet,
-            this.tweetsPanel,
+            {
+                xtype: 'container',
+                layout: {
+                    type: 'vbox',
+                    align: 'stretch'
+                },
+                items: [
+                        this.tweetsGrid,
+                        this.tweetsPaging,
+                ]
+            },
 //            TODO uncomment this when generate download link API will be OK
 //            {
 //                xtype: 'container',

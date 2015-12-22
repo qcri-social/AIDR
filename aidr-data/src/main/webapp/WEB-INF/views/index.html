@@ -19,12 +19,13 @@
         	<div class="header">
         		<a href="http://aidr.qcri.org"><img src="resources/img/AIDR/aidr_logo_240x90.png"></a>
         		
-					<form class="form-search form-inline">
-			       		<input type="text" class="search-query" ng-model="search" placeholder="Search" ng-change="figureOutItemsToDisplay()" />
-			     	</form>
-				</div>
-        	
-        </div>
+				<form class="form-search form-inline">
+					<a href="logout" class="btn btn-default btn-sm" style="margin-top:-81px;margin-left: 54%">
+			          <span class="fa fa-sign-out"></span> Log out
+			        </a><br/>
+		       		<input type="text" class="search-query" ng-model="search" placeholder="Search" ng-change="figureOutItemsToDisplay()" />
+		     	</form>
+	        </div>
         <div ng-hide="flag" id="loading">
         </div>
 		<div ng-show="flag" class="col-md-12">
@@ -32,25 +33,33 @@
 			<div class="col-md-4" ng-repeat="letter in pagedItems track by $index">
 			<div class="list-group" >
 				<div class="list-group-item active" >
-					{{letter.name| limitTo: 35 }}{{letter.name.length > 35 ? '...' : ''}}
-					<p class="text-right" id="name"><span><img width="28" height="28" id="twitter" src="resources/img/twitter_icon2.png"/>{{letter.totalCount}}</span></p>
+					{{letter.name| limitTo: 35 }}{{letter.name.length > 35 ? '...' : ''}}</div>
+				<div class="list-group-item1">
+					<b>Tweets</b><img id="twitter" src="resources/img/twitter_icon3.png"/>
+					<span id="lang" ng-if="letter.status == 'RUNNING'"><span class="pull-right">{{letter.totalCount}}<img id="count" src="resources/img/arrow-up.png" style="margin-top: -2px"/></span></span>
+					<span id="lang" ng-if="letter.status !== 'RUNNING'"><span class="pull-right">{{letter.totalCount}}</span></span>					
 				</div>
 				<div class="list-group-item">
-					Languages:
+					<b>Languages</b>
 					<p class="text-right" id="lang"><span>{{letter.language | limitTo: 20 }}{{letter.language.length > 20 ? '...' : ''}}</span></p>
 				</div>
 				<div class="list-group-item" >
-					Status:
-					<p class="text-right" id="status"><span  ng-style="letter.status === 'RUNNING' && {'background-color' : 'green'} || 
+					<b>Status</b>
+					<p class="text-right" id="status"><span  ng-style="letter.status === 'RUNNING' && {'background-color' : '#41B6B0'} || 
                  letter.status === 'STOPPED' && {'background' : '#A80000'}">{{letter.status}}</span></p> 
+				</div>				
+				<div class="list-group-item" ng-if="letter.status == 'RUNNING'">
+					<span class="col-md-12" style="font-size: 11px; text-align: center">
+						<img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_41b6b0_none.png"/><b>Running Since {{letter.startDate| date:'medium'}}</b>
+					</span>
+					<!-- <p id="date"><span style="margin-left:70px"><img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_41b6b0_none.png"/><b>Running Since {{letter.startDate| date:'medium'  }}</b></span></p> -->
 				</div>
-				<div class="list-group-item" ng-show="isNull(letter.endDate)">
-					<p id="date"><span class="pull-right"><img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_ffffff_none.png"/>Running Since <b>{{letter.collectionCreationDate| date:'medium'  }}</b></span></p>
-				</div>
-				<div class="list-group-item" ng-show="null()">
-				</div>
-				<div class="list-group-item" ng-show="!isNull(letter.endDate)">
-					<p id="date"><span class="pull-right"><img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_ffffff_none.png"/><b>{{letter.collectionCreationDate| date:'medium'  }}</b> to <b>{{letter.endDate| date:'medium'  }}</b></span></p>
+
+				<div class="list-group-item" ng-if="letter.status !== 'RUNNING'">
+					<span class="col-md-12" style="font-size: 11px; text-align: center">
+						<img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_41b6b0_none.png"/><b>{{letter.startDate| date:'medium'  }}</b> to <b>{{letter.endDate| date:'medium'  }}</b>
+					</span>
+					<!-- <p id="date"><span style="margin-left:40px"><img width="17" height="17" id="clock" src="resources/img/fa-clock-o_20_0_41b6b0_none.png"/><b>{{letter.startDate| date:'medium'  }}</b> to <b>{{letter.endDate| date:'medium'  }}</b></span></p> -->
 				</div>
 				<div class="list-group-item last">
 					<input type="submit" ng-click="open(letter)" value="Details" class="btn btn-block" />
@@ -94,15 +103,21 @@
          <div class="modal-body" >
            <b>Language:</b>  <p class="text-right">{{collection.language}}</p>
         </div>
-        <div class="modal-body" >
-            <b >Keywords:</b> <p class="text-right" id="key">{{collection.keywords}}</p>
+        <div class="modal-body">
+			<div class="col-md-2">
+				<b>Keywords:</b>
+			</div>
+			<div class="col-md-10" style="text-align: right">
+				{{collection.keywords}}
+			</div>
+           <!-- <b>Keywords:</b> <p class="text-right" id="key">{{collection.keywords}}</p> -->
         </div>
          <div class="modal-body" >
            <b>Curator:</b> <p class="text-right">{{collection.curator}}</p>
         </div>
         <div class="modal-body">
-            <button ng-show = "busy" ng-disabled="busy" ng-click="downloadTweets()" class="btn btn-primary center-block">Download 50000 sample tweets <i class="fa fa-spinner fa-spin"></i></button>
-			<button ng-hide="busy" ng-disabled="!collection.publiclyListed" ng-click="downloadTweets()" class="btn btn-primary center-block">Download 50000 sample tweets</button>
+            <!--<button ng-show = "busy" ng-disabled="busy" ng-click="downloadTweets()" class="btn btn-primary center-block">Download 50000 sample tweets <i class="fa fa-spinner fa-spin"></i></button>-->
+			<button disabled class="btn btn-primary center-block">Download 50000 sample tweets</button>
             <h5 class="text-center">* Contact AIDR team for full data.</h5>
         </div>
     </script>

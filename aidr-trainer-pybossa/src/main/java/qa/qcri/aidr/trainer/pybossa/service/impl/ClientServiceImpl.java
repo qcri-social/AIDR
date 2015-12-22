@@ -24,13 +24,19 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Client findClientbyID(String columnName, Long id) {
         return clientDao.findClientByID(columnName, id);
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public Client findClientByCriteria(String columnName, String value) {
+        Client c = null;
+        try{
+            c = clientDao.findClientByCriteria(columnName, value);
 
-        return clientDao.findClientByCriteria(columnName, value);
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
+        return c;
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }
