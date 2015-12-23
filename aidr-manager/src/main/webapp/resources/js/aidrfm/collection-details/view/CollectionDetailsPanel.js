@@ -380,6 +380,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             margin: 0,
             cls:'btn btn-green',
             id: 'collectionStart',
+            // margin: '0 0 0 480',
             hidden: true
         });
 
@@ -388,6 +389,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             cls:'btn btn-redSmall',
             id: 'collectionStop',
             margin: '0 0 0 10',
+            //margin: '0 0 0 480',
             hidden: true
         });
 
@@ -517,7 +519,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<div class="collections-list">',
        
             '<tpl if="values.length == 0">' +
-            '<div><center><div style="font-size:16pt; padding:64px 0 0px 0">Please select a row.</div></center></div>',
+            //'<div><center><div style="font-size:16pt; padding:64px 0 0px 0">Please select a row.</div></center></div>',
+            '<div><center><div style="font-size:16pt; padding:10px 0 0px 0">Please select a row.</div></center></div>',
             '</tpl>',
             
             '<tpl for=".">',
@@ -627,10 +630,14 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             }
         });
         
-        this.collectionHistoryPanelView = Ext.create('Ext.view.View', {
-        	store: 'collectionHistoryPanelStore',
-        	tpl: this.collectionHistoryPanelTpl,
-        	emptyText: 'Please select a row.',
+        this.collectionHistoryPanelView = Ext.create('Ext.container.Container', {
+        	
+        	items: [{
+        	        	xtype: 'dataview',
+        	        	store: 'collectionHistoryPanelStore',
+        	        	itemTpl: this.collectionHistoryPanelTpl,
+        	}],
+        	      	emptyText: 'Please select a row.',
             loadMask: false,
             margin: '0 0 10 0',
             scrollable: 'y',
@@ -894,7 +901,8 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 {
                                     xtype: 'container',
                                     padding: '0 20 0 0',
-                                    height:72,
+                                    //height:72,
+                                    height:60,
                                     width:75,
                                     id:'iconPanel',
                                     html: '<img src="/AIDRFetchManager/resources/img/collection-icon.png"/>'
@@ -1406,6 +1414,10 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 	setTimeout(function() {
                 		grid.getSelectionModel().select(0);
                     }, 1000); 
+                    	   
+                         
+                         //Commented during extJs 5.1 migration. Need to uncomment to enable functioning
+                    //});
                 },
             },
             getLanguageField: function (r) {
@@ -1499,6 +1511,19 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.items = [
             this.breadcrumbs,
+            /* {
+                                    xtype: 'container',
+                                    defaultType: 'label',
+                                    padding: '12 0 0 0',
+                                    layout: 'hbox',
+                                    items: [
+                                    this.breadcrumbs,
+                                        this.startButton,
+                                        this.stopButton,
+                                        this.enableTaggerButton,
+                                        this.gotoTaggerButton
+                                    ]
+                                },*/
             {
                 xtype: 'container',
                 width: '100%',
