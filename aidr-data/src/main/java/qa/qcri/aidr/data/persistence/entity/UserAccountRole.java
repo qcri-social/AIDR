@@ -32,6 +32,16 @@ public class UserAccountRole extends BaseEntity {
 	@JoinColumn(name="role_id")
 	private Role role;
 	
+	public UserAccountRole() {
+		super();
+	}
+	
+	public UserAccountRole(UserAccount account, Role role) {
+		super();
+		this.account = account;
+		this.role = role;
+	}
+
 	public UserAccount getAccount() {
 		return account;
 	}

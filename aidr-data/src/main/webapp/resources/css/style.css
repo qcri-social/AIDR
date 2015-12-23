@@ -359,7 +359,7 @@ form.form-search:before {
 .headerWrapper {
 	background-color: #00a79d;
 	opacity: 0.9;
-	height: 120px;
+	height: 54px;
 	width: auto;
 	margin: 0;
 	padding: 0;
@@ -383,8 +383,9 @@ form.form-search:before {
 
 .header {
 	margin: 0 auto;
-	padding: 18px;
-	width: 100%;
+	padding-left: 18px;
+	//padding-top: 5px;
+	width: 91%;
 }
 
 .jumbotron {
@@ -541,4 +542,10 @@ form.form-search:before {
 	margin-bottom: 0;
 	border-width: 1px 0 0;
 	background-color: #464646;
+}
+.aidr_text_logo{
+	color: white;
+	font-size: 41px;	
+	padding: 0px;
+	font-family: fantasy;
 }

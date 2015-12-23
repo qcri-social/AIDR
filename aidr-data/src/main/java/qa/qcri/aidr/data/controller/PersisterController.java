@@ -29,7 +29,7 @@ public class PersisterController {
     @Autowired
     PersisterService persisterService ;
     
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_USER_SPRINGSOCIALSECURITY')")
 	@RequestMapping(value = "/generateDownloadLink", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> generateCSVLink(@RequestParam String code,
