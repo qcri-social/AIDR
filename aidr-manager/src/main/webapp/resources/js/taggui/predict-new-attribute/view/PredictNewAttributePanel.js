@@ -137,7 +137,7 @@ Ext.define('TAGGUI.predict-new-attribute.view.PredictNewAttributePanel', {
 
             '<div class="attribute-item">',
 
-            '<button class="btn btn-blue" onclick="predictNewAttributeController.addAttributeToCrises({nominalAttributeID}, \'{name}\', \'custom\')">',
+            '<button class="btn btn-green" onclick="predictNewAttributeController.addAttributeToCrises({nominalAttributeID}, \'{name}\', \'custom\')">',
             '<span>Add</span>',
             '</button>',
 
