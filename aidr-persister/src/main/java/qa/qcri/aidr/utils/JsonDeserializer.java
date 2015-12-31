@@ -31,8 +31,9 @@ import net.minidev.json.JSONObject;
 
 import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.apache.commons.io.output.FileWriterWithEncoding;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.translate.UnicodeEscaper;
+import org.apache.commons.lang3.text.translate.UnicodeUnescaper;
 import org.apache.log4j.Logger;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.ICsvBeanWriter;
@@ -1508,7 +1509,13 @@ public class JsonDeserializer {
 											beanWriter.write(", ");
 										}
 										// write to file
-										beanWriter.write(StringEscapeUtils.unescapeJava(line));
+										//Decode unicode hex value to normal characters
+										UnicodeUnescaper u = new UnicodeUnescaper();
+										line =  u.translate(line);
+										//Encoding angular brackets < > 
+									    line = UnicodeEscaper.between(60,60).translate(line);
+									    line = UnicodeEscaper.between(62,62).translate(line);
+										beanWriter.write(line);
 										beanWriter.newLine();
 										++currentSize;
 									}

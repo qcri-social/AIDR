@@ -11,8 +11,6 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.text.translate.UnicodeEscaper;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
@@ -26,8 +24,8 @@ import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusListener;
-import twitter4j.TwitterObjectFactory;
 import twitter4j.TwitterException;
+import twitter4j.TwitterObjectFactory;
 
 /**
  * This class is responsible for dispatching incoming tweets.
@@ -90,16 +88,7 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 	@Override
 	public void onStatus(Status status) {
 		String json = TwitterObjectFactory.getRawJSON(status);
-		
 		JsonObject originalDoc = Json.createReader(new StringReader(json)).readObject();
-		
-		//String jsonSourceValue = StringEscapeUtils.escapeEcmaScript(originalDoc.getString("source"));
-		String jsonSourceValue = originalDoc.getString("source");
-		UnicodeEscaper un = UnicodeEscaper.between(60,60);
-		String jsonValueTranslated = un.translate(jsonSourceValue);
-		UnicodeEscaper  un1 = UnicodeEscaper.between(62,62);
-		String jsonValueFinal = un1.translate(jsonValueTranslated);
-
 		for (Predicate<JsonObject> filter : filters) {
 			if (!filter.test(originalDoc)) {
 				//logger.info(originalDoc.get("text").toString() + ": failed on filter = " + filter.getFilterName());
@@ -110,7 +99,6 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 		for (Entry<String, JsonValue> entry: originalDoc.entrySet())
 			builder.add(entry.getKey(), entry.getValue());
 		builder.add("aidr", aidr);
-		builder.add("source", jsonValueFinal);
 		JsonObject doc = builder.build();
 		for (Publisher p : publishers)
 			p.publish(channelName, doc);
