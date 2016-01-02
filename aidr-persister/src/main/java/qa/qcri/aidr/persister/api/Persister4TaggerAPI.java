@@ -28,6 +28,7 @@ import net.minidev.json.JSONObject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import qa.qcri.aidr.common.filter.DeserializeFilters;
 import qa.qcri.aidr.common.filter.JsonQueryList;
@@ -42,6 +43,7 @@ import qa.qcri.aidr.utils.ResultStatus;
 
 
 @Path("taggerPersister")
+@Component
 public class Persister4TaggerAPI {
 
 	private static Logger logger = Logger.getLogger(Persister4TaggerAPI.class.getName());

@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import qa.qcri.aidr.persister.collction.RedisCollectionPersister;
 import qa.qcri.aidr.utils.GenericCache;
@@ -23,6 +24,7 @@ import qa.qcri.aidr.utils.PersisterConfigurator;
 
 
 @Path("collectionPersister")
+@Component
 public class Persister4CollectionAPI {
 
     private static Logger logger = Logger.getLogger(Persister4CollectionAPI.class.getName());
