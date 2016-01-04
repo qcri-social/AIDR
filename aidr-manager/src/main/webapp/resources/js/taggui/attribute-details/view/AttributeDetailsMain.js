@@ -49,7 +49,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
             items: [
                 {
                     width: 150,
-                    html: '<b>code:</b>'
+                    html: 'Code:'
                 },
                 this.codeValue
             ]
@@ -205,7 +205,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
         this.valuesCancelButton = Ext.create('Ext.Button', {
             text: 'Cancel',
             margin: '0 0 0 10',
-            cls:'btn btn-green',
+            cls:'btn btn-redSmall',
             hidden: true,
             listeners: {
                 click: function(btn){
@@ -216,7 +216,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
 
         this.valuesEditButton = Ext.create('Ext.Button', {
             text: 'Edit',
-            cls:'btn btn-green',
+            cls:'btn btn-blueSmall',
             hidden: true,
             listeners: {
                 click: function(btn){
@@ -270,7 +270,17 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
                 html: '<div class="horizontalLine"></div>'
             },
             this.valuesLable,
-            this.labelsBlock,
+            {
+                xtype: 'container',
+                layout: {
+                    type: 'vbox',
+                    align: 'stretch'
+                },
+                items: [
+            		this.labelsBlock
+                ]
+            },
+            
             this.valuesButtonsBlock
         ];
 
@@ -284,7 +294,7 @@ Ext.define('TAGGUI.attribute-details.view.AttributeDetailsMain', {
         me.attributeName = r.name;
         me.nameValue.setText(r.name, false);
         me.nameTextBox.setValue(r.name);
-        me.codeValue.setText("<b>" + r.code + "</b>", false);
+        me.codeValue.setText(r.code, false);
 
         if (r.users && r.users.userID) {
             if (r.users.userID == 1) {
