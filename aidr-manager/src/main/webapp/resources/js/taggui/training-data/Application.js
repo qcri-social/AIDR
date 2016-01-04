@@ -19,7 +19,7 @@ Ext.application({
             items: [
                 {
                     xtype: 'container',
-                    autoScroll: true,
+                    scrollable: true,
                     layout: {
                         type: 'vbox',
                         align: 'center'

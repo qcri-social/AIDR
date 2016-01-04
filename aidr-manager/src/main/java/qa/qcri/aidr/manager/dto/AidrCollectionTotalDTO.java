@@ -65,6 +65,8 @@ public class AidrCollectionTotalDTO {
     
     private String geoR;
 
+    private String purpose;
+    
     public Long getId() {
         return id;
     }
@@ -275,4 +277,12 @@ public class AidrCollectionTotalDTO {
     public void setGeoR(String geoR) {
         this.geoR = geoR;
     }
+
+	public String getPurpose() {
+		return purpose;
+	}
+
+	public void setPurpose(String purpose) {
+		this.purpose = purpose;
+	}
 }

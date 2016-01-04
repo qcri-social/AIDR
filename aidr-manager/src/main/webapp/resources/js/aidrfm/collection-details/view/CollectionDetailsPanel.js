@@ -24,7 +24,7 @@ App.Demo = {
             width:800,
             height:600,
             title:'Pick up the Coordinates:' + 'www.boundingbox.klokantech.com/',
-            autoScroll:true,
+            scrollable:true,
             modal:false
         });
 
@@ -93,18 +93,18 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
 
         this.horizontalLineTop = Ext.create('Ext.container.Container', {
-        	width: '100%',
+            width: '100%',
             html: '<div class="horizontalLine"></div>'
         });
         
         this.horizontalLineBottomMargin = Ext.create('Ext.container.Container', {
-        	width: '100%',
+            width: '100%',
             margin: '0 0 30 0',
             html: '<div class="horizontalLine"></div>'
         });
         
         this.collectionHistoryDoNotChangeMessage = Ext.create('Ext.panel.Panel', {
-            html: '<div style="padding-top:150px"><center><div style="font-size:16pt">This collection has not changed since it was created.</div></center></div>',
+            html: '<div style="padding-top:160px; padding-bottom:10px;"><center><div style="font-size:16pt">This collection has not changed since it was created.</div></center></div>',
             hidden: true
         });
 
@@ -119,7 +119,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             cls: 'word-wrap-class'
         });
         this.geoL = Ext.create('Ext.form.Label', {
-        	flex: 1});
+            flex: 1});
         this.followL = Ext.create('Ext.form.Label', {flex: 1});
         this.languageFiltersL = Ext.create('Ext.form.Label', {flex: 1});
         this.createdL = Ext.create('Ext.form.Label', {flex: 1});
@@ -218,7 +218,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
 
         this.keywordsE = Ext.create('Ext.form.field.TextArea', {
-            fieldLabel: 'Keywords',
+            fieldLabel: 'Keyword(s)',
             name: 'track',
             allowBlank: true,
             maxLength: 24000,
@@ -238,7 +238,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         });
         
         this.geoR = Ext.create('Ext.form.Panel', {
-        	id:'geoRPanel',
+            id:'geoRPanel',
             items:[{
                 name: 'geoR',
                 xtype: 'radiogroup',
@@ -380,36 +380,38 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             margin: 0,
             cls:'btn btn-green',
             id: 'collectionStart',
+            // margin: '0 0 0 480',
             hidden: true
         });
 
         this.stopButton = Ext.create('Ext.Button', {
             text: 'Stop',
-            cls:'btn btn-red',
+            cls:'btn btn-redSmall',
             id: 'collectionStop',
             margin: '0 0 0 10',
+            //margin: '0 0 0 480',
             hidden: true
         });
 
         this.trashButton = Ext.create('Ext.Button', {
             text: 'Delete Collection',
-            cls:'btn btn-red',
+            cls:'btn btn-redSmall',
             id: 'collectionTrash',
             margin: '25 0 0 0',
             hidden: true,
-            flex: 1  
+            //flex: 1  
         });
 
         this.untrashButton = Ext.create('Ext.Button', {
             text: 'Untrash Collection',
-            cls:'btn btn-red',
+            cls:'btn btn-redSmall',
             id: 'collectionUntrash',
             margin: '25 0 0 0',
             hidden: true
         });
 
         this.configurationsEditTabL = Ext.create('Ext.form.Label', {
-        	id:'AdvancedConfiguration',
+            id:'AdvancedConfiguration',
             flex: 1,
             text: 'Advanced configuration',
             padding: '15 0 0 0',
@@ -425,13 +427,13 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.cancelButton = Ext.create('Ext.Button', {
             text: 'Cancel',
-            cls:'btn btn-red',
+            cls:'btn btn-redSmall',
             id: 'collectionEditCancel'
         });
 
         this.enableTaggerButton = Ext.create('Ext.Button', {
             text: 'Enable Classifier',
-            cls:'btn btn-blue',
+            cls:'btn btn-blueSmall',
             id: 'enableTagger',
             margin: '0 0 0 10',
             disabled: true,
@@ -440,7 +442,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.gotoTaggerButton = Ext.create('Ext.Button', {
             text: 'Go To Classifier',
-            cls:'btn btn-blue',
+            cls:'btn btn-blueSmall',
             id: 'goToTagger',
             margin: '0 0 0 10',
             hidden: true
@@ -453,7 +455,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 type: 'ajax',
                 url: BASE_URL + '/protected/collection-log/findAllForCollection.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },
@@ -461,10 +463,10 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             listeners: {
                 beforeload: function (s) {
                     var id = me.currentCollectionId;
-                    s.getProxy().extraParams = {
+                    s.getProxy().setExtraParams({
                         id: id,
                         'limit' : -1
-                    }
+                    })
                 },
                 load: function (s) {
                     var count = s.getCount();
@@ -517,6 +519,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<div class="collections-list">',
        
             '<tpl if="values.length == 0">' +
+            //'<div><center><div style="font-size:16pt; padding:64px 0 0px 0">Please select a row.</div></center></div>',
             '<div><center><div style="font-size:16pt; padding:10px 0 0px 0">Please select a row.</div></center></div>',
             '</tpl>',
             
@@ -545,10 +548,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             
             '<tpl if="[this.getType()] == 0">' +
             '<div>Language(s):</div>',
-            '<div>Keywords:</div>',
-            '</tpl>',
-            '<tpl if="[this.getType()] == 1">' +
-            '<div></div>',
+            '<div>Keyword(s):</div>',
             '</tpl>',
            
             '</div>',
@@ -559,8 +559,11 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             '<div>{[this.getDateTimeField(values.endDate)]}</div>',
             '{[this.showValue(values.geo)]}',
             '{[this.showValue(values.follow)]}',
+            
+            '<tpl if="[this.getType()] == 0">' +
             '<div>{[this.getLanguageField(values.langFilters)]}</div>',
             '<div class="word-wrap-class">{[this.getField(values.track)]}</div>',
+            '</tpl>',
             '</div>',
 
             '</div>',
@@ -573,16 +576,16 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     return r ? r : "<span class='na-text'>Not specified</span>";
                 },
                 getType: function(){
-                	if(TYPE == 'SMS'){
-                		return 1;
-                	}
-                	else{
-                		return 0;
-                	}
+                    if(TYPE == 'SMS'){
+                        return 1;
+                    }
+                    else{
+                        return 0;
+                    }
                 },
                 getLanguageField: function (r) {
                     var languageFull = "";
-                    if(r != ''){
+                    if(r && r != ''){
                         var lns = r.split(",");
                         lns.forEach(function(val, i){
                             var index = me.langComboStore.find('code', val);
@@ -597,7 +600,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     return r ? languageFull : "<span class='na-text'>Not specified</span>";
                 },
                 getDateTimeField: function(r){
-                	return r ? moment(r).format("MMM Do, YYYY hh:mm A") : "Not specified";
+                    return r ? moment(r).format("MMM Do, YYYY hh:mm A") : "Not specified";
 
                 },
                 getDocNumber: function (r) {
@@ -617,24 +620,28 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.collectionHistoryPanelStore = Ext.create('Ext.data.Store', {
             storeId: 'collectionHistoryPanelStore',
-            fields: ['id', 'collectionID', 'langFilters', 'startDate', 'endDate', 'count', 'track', 'geo', 'follow'],
+            fields: ['collectionId', 'langFilters', 'startDate', 'endDate', 'count', 'track', 'geo', 'follow'],
             autoLoad: false,
             proxy: {
-                type: 'ajax',
-                url: '',
+                type: 'memory',
                 reader: {
-                    root: 'data',
+                    type: 'json',
                 }
             }
         });
         
-        this.collectionHistoryPanelView = Ext.create('Ext.view.View', {
-            store: 'collectionHistoryPanelStore',
-            tpl: this.collectionHistoryPanelTpl,
-            emptyText: 'Please select a row.',
+        this.collectionHistoryPanelView = Ext.create('Ext.container.Container', {
+        	
+        	items: [{
+        	        	xtype: 'dataview',
+        	        	store: 'collectionHistoryPanelStore',
+        	        	itemTpl: this.collectionHistoryPanelTpl,
+        	}],
+        	      	emptyText: 'Please select a row.',
             loadMask: false,
-            margin: '0 0 10 0'
-            
+            margin: '0 0 10 0',
+            scrollable: 'y',
+            height: 140
         });
 
         this.collectionLogPaging = Ext.create('Ext.toolbar.Paging', {
@@ -654,7 +661,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 type: 'ajax',
                 url: BASE_URL + '/protected/tagger/getAllCrisisTypes.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 }
             },
@@ -894,6 +901,9 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 {
                                     xtype: 'container',
                                     padding: '0 20 0 0',
+                                    //height:72,
+                                    height:60,
+                                    width:75,
                                     id:'iconPanel',
                                     html: '<img src="/AIDRFetchManager/resources/img/collection-icon.png"/>'
                                 },
@@ -1059,7 +1069,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             items: [
                                 {
                                     width: 220,
-                                    text: 'Keywords:'
+                                    text: 'Keyword(s):'
                                 },
                                 this.keywordsL
                             ]
@@ -1088,14 +1098,14 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             layout: 'hbox',
                             items: [
                                     {
-                                    	xtype: 'container',
-                                    	defaultType: 'label',
-                                    	layout: 'vbox',
-                                    	flex: 5,
-                                    	items: [
-                                    	        this.administrationL,
-                                    	        this.managersL
-                                    	]
+                                        xtype: 'container',
+                                        defaultType: 'label',
+                                        layout: 'vbox',
+                                        flex: 5,
+                                        items: [
+                                                this.administrationL,
+                                                this.managersL
+                                        ]
                                     },
                                     {
                                         xtype: 'container',
@@ -1126,14 +1136,14 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         this.generateCSVButton = Ext.create('Ext.Button', {
             text: 'Export ' + COLLECTION_TYPES[TYPE]['plural'] + ' (.csv) (Last 100k ' + COLLECTION_TYPES[TYPE]['plural'] + ')',
             margin: 5,
-            cls:'btn btn-blue download-button',
+            cls:'btn btn-blueBig download-button',
             id: 'generateCSVLink'
         });
 
         this.generateTweetIdsButton = Ext.create('Ext.Button', {
             text: 'Export ' + COLLECTION_TYPES[TYPE]['singular'] + '-ids only (.csv) (All ' + COLLECTION_TYPES[TYPE]['plural'] + ')',
             margin: 5,
-            cls:'btn btn-blue download-button',
+            cls:'btn btn-blueBig download-button',
             id: 'generateTweetIdsLink'
         });
 
@@ -1152,14 +1162,14 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
         this.generateJSONButton = Ext.create('Ext.Button', {
             text: 'Export ' + COLLECTION_TYPES[TYPE]['plural'] + ' (.json) (Last 100k ' + COLLECTION_TYPES[TYPE]['plural'] + ')',
             margin: 5,
-            cls:'btn btn-blue download-button',
+            cls:'btn btn-blueBig download-button',
             id: 'generateJSONLink'
         });
 
         this.generateJsonTweetIdsButton = Ext.create('Ext.Button', {
             text: 'Export ' + COLLECTION_TYPES[TYPE]['singular'] + '-ids only (.json) (All ' + COLLECTION_TYPES[TYPE]['plural'] + ')',
             margin: 5,
-            cls:'btn btn-blue download-button',
+            cls:'btn btn-blueBig download-button',
             id: 'generateJsonTweetIdsLink'
         });
 
@@ -1169,6 +1179,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
             pageSize: true,
             triggerAction: 'query',
             margin: '1 0 0 0',
+            emptyText: 'Please select a user',
             displayField: 'userName',
             valueField: 'id',
             store: {
@@ -1178,7 +1189,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     type: 'ajax',
                     url: BASE_URL + '/protected/user/getUsers.action',
                     reader: {
-                        root: 'data',
+                        rootProperty: 'data',
                         type: 'json'
                     }
                 }
@@ -1221,7 +1232,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                             Ext.widget('button', {
                                 exampleId: recordValue,
                                 renderTo: id,
-                                cls: 'btn btn-red',
+                                cls: 'btn btn-redSmall',
                                 text: 'Remove Collaborator',
                                 width: 185,
                                 action: 'removeManager'
@@ -1264,13 +1275,13 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.toMyClassifiersToDownload = Ext.create('Ext.Button', {
             text: 'Go to my classifiers to download',
-            cls:'btn btn-blue',
+            cls:'btn btn-blueBig',
             id: 'toMyClassifiersToDownload',
             margin: '10 0 0 0'
         });
 
         var collectionHistoryChart = Ext.create('Ext.chart.Chart', {
-        	width: 900,
+            width: 900,
             height: 350,
             margin: '0 0 20 0',
             animate: true,
@@ -1279,22 +1290,22 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 position: 'right'
             },
             axes: [{
-                type: 'Numeric',
+                type: 'numeric',
                 fields: 'count',
                 position: 'left',
                 grid: true,
                 minimum: 0
             }, {
-                type: 'Time',
-        		dateFormat: 'M j,y',
+                type: 'time',
+                dateFormat: 'M j,y',
                 fields: 'endDate',
                 position: 'bottom',
                 grid: true,
-        		label:{
-        			rotate: {
-                            	degrees: -90
+                label:{
+                    rotate: {
+                                degrees: -90
                     }
-        		}
+                }
             }],
             series: [{
                 type: 'line',
@@ -1314,96 +1325,104 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                     lineWidth: 4,
                     strokeStyle: '#fff'
                 },
-        		tips: {
+                tips: {
                     trackMouse: true,
-                    width: 170,
+                    width: 180,
                     //height: 60,
                     renderer: function(storeItem, item) {
-                  	  var fromTime = Ext.Date.format(new Date(storeItem.data.startDate), "Y-m-d H:i");
-                  	  var toTime = Ext.Date.format(new Date(storeItem.data.endDate), "Y-m-d H:i");
-        				  this.setTitle(Ext.util.Format.capitalize(COLLECTION_TYPES[TYPE]["plural"]) + ' collected from '+ fromTime + ' to ' + toTime +" = " + storeItem.get(item.series.yField));
-        			  }
-        		}
+                      var fromTime = moment(new Date(storeItem.data.startDate)).format("MMM Do, YYYY hh:mm A");
+                      var toTime = moment(new Date(storeItem.data.endDate)).format("MMM Do, YYYY hh:mm A");
+                          this.setHtml(Ext.util.Format.capitalize(COLLECTION_TYPES[TYPE]["plural"]) + ' collected from '+ fromTime + ' to ' + toTime +" = " + storeItem.get(item.series.yField));
+                      }
+                }
             }]
         });
         
         this.collectionHistoryGrid = Ext.create('Ext.grid.Panel', {
-	        flex: 1,
-	        store: 'collectionLogStore',
-	        cls: 'aidr-grid',
-	        loadMask: false,
-			viewConfig: {
-				enableTextSelection: true
-			},
-			height: 150,
-			dockedItems: [{
-            	  xtype: 'toolbar',
-            	  dock: 'bottom',
-            	  cls: 'aidr-paging',
-            	  items: [
-        	          {	xtype: 'tbfill' },
-        	          {  xtype: 'tbtext', text: 'Loading...', itemId: 'collectionLogStoreCount' },
+            flex: 1,
+            store: 'collectionLogStore',
+            cls: 'aidr-grid',
+            loadMask: false,
+            selModel: {
+                selType: 'rowmodel'
+            },
+            height: 150,
+            dockedItems: [{
+                  xtype: 'toolbar',
+                  dock: 'bottom',
+                  cls: 'aidr-paging',
+                  items: [
+                      { xtype: 'tbfill' },
+                      {  xtype: 'tbtext', text: 'Loading...', itemId: 'collectionLogStoreCount' },
                  ]
-			}],
-	        columns: [
-				{
-					xtype: 'gridcolumn', text: 'Collected '+COLLECTION_TYPES[TYPE]["plural"],
-				    dataIndex: 'count', flex:1, tdCls:'align-right',
-				    renderer: function (r, meta, record) {
-				    	return r ? Ext.util.Format.number(r,'0,000') : 0;
-					}
-				},
-	            {
-	            	xtype: 'gridcolumn', text: 'Start date',  flex:1, dataIndex: 'startDate',
-	                renderer: function (r, meta, record) {
-	                       return r ? moment(r).format("MMM Do, YYYY hh:mm A") : "Not specified";
+            }],
+            columns: [
+                {
+                    xtype: 'gridcolumn', text: 'Collected '+COLLECTION_TYPES[TYPE]["plural"],
+                    dataIndex: 'count', flex:1, tdCls:'align-right',
+                    renderer: function (r, meta, record) {
+                        return r ? Ext.util.Format.number(r,'0,000') : 0;
                     }
-	            },
-	            {
-	            	xtype: 'gridcolumn', text: 'End date',  flex:1, dataIndex: 'endDate',
-	            	renderer: function (r, meta, record) {
-	                       return r ? moment(r).format("MMM Do, YYYY hh:mm A") : "Not specified";
-	            	}
-	            },
-	            {
-	            	xtype: 'gridcolumn', text: 'Language(s)', flex:1, dataIndex: 'langFilters',
-	            	/*renderer: function (r, meta, record) {
-	                       return this.getLanguageField(r);
-	            	}*/
-	            }
-	        ],
-	        listeners: {
-	            selectionchange: function(model, records) {
+                },
+                {
+                    xtype: 'gridcolumn', text: 'Start date',  flex:1, dataIndex: 'startDate',
+                    renderer: function (r, meta, record) {
+                           return r ? moment(r).format("MMM Do, YYYY hh:mm A") : "Not specified";
+                    }
+                },
+                {
+                    xtype: 'gridcolumn', text: 'End date',  flex:1, dataIndex: 'endDate',
+                    renderer: function (r, meta, record) {
+                           return r ? moment(r).format("MMM Do, YYYY hh:mm A") : "Not specified";
+                    }
+                },
+                {
+                    xtype: 'gridcolumn', text: 'Language(s)', flex:1, dataIndex: 'langFilters',
+                    hidden: (TYPE=="SMS"),
+                    /*renderer: function (r, meta, record) {
+                           return this.getLanguageField(r);
+                    }*/
+                }
+            ],
+            listeners: {
+            	selectionchange: function(model, records) {
 	                if (records[0]) {
-	                    var selectedRec = records[0].data;
+	                	var selectedRec = records[0].data;
 	                    var model = [];
 	                    model.push(selectedRec);
-	                    Ext.getStore('collectionHistoryPanelStore').loadData(model);
-	                
-	                    //Highlighting the point on chart
+		                    
+	                	 //Highlighting the point on chart
 		                var collectionSeries = collectionHistoryChart.series.items[0];
-		                collectionSeries.unHighlightItem();
+		                //collectionSeries.unHighlightItem();
 	                    Ext.Array.each(collectionSeries.items, function(pointOnchart, index){
 	                    	 if (pointOnchart.value[0] == selectedRec.endDate && pointOnchart.value[1] == selectedRec.count) {
 	                    		 collectionSeries.highlightItem(pointOnchart);
 	                        }
 	                    });
-	                }
-	            },
-	            deselect: function(model, records){
-	            	if(collectionHistoryChart.series.items[0]!=null){
+	                    //Set data in docked panel
+	                    me.down('#collectionLogStoreCount').setText("Total no. of records :  " + Ext.getStore('collectionLogStore').data.length);
+	                    //Push data into the view panel
+	                    Ext.getStore('collectionHistoryPanelStore').add(model);
+	                }},
+                deselect: function (grid, record) {
+                	if(collectionHistoryChart.series.items[0]!=null){
 	            		collectionHistoryChart.series.items[0].unHighlightItem();
 	            	}
-				},
-				render : function(grid){
-	            	 grid.on('viewready',function(){  
-	                     this.getSelectionModel().select(0);  
-	                });
-           	 	},
-	        },
+                    Ext.getStore('collectionHistoryPanelStore').remove(record);
+                },
+                viewready : function(grid){
+                	setTimeout(function() {
+                		grid.getSelectionModel().select(0);
+                    }, 1000); 
+                    	   
+                         
+                         //Commented during extJs 5.1 migration. Need to uncomment to enable functioning
+                    //});
+                },
+            },
             getLanguageField: function (r) {
                 var languageFull = "";
-                if(r != ''){
+                if(r && r != ''){
                     var lns = r.split(",");
                     lns.forEach(function(val, i){
                         var index = me.langComboStore.find('code', val);
@@ -1417,13 +1436,14 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                 }
                 return r ? languageFull : "<span class='na-text'>Not specified</span>";
             }
-	    });
+        });
         
         this.tabPanel = Ext.create('Ext.tab.Panel', {
             cls: 'tabPanel',
             width: '100%',
             minHeight: 400,
             activeTab: 0,
+            deferredRender: false,
             items: [
                 {
                     title: 'Details',
@@ -1491,6 +1511,19 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.items = [
             this.breadcrumbs,
+            /* {
+                                    xtype: 'container',
+                                    defaultType: 'label',
+                                    padding: '12 0 0 0',
+                                    layout: 'hbox',
+                                    items: [
+                                    this.breadcrumbs,
+                                        this.startButton,
+                                        this.stopButton,
+                                        this.enableTaggerButton,
+                                        this.gotoTaggerButton
+                                    ]
+                                },*/
             {
                 xtype: 'container',
                 width: '100%',

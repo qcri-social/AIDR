@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@Table(name = "userconnection")
+@Table(name = "UserConnection")
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class UserConnection implements Serializable {
 

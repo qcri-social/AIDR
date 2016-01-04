@@ -260,7 +260,7 @@ Ext.define('TAGGUI.interactive-view-download.view.SingleFilterPanel', {
     },
 
     onMainComboSelect: function(cmp, selectedValues){
-        var val = selectedValues[0].data.val;
+        var val = selectedValues.data.val;
 
         if (!val){
             this.markNotValid();
@@ -294,14 +294,14 @@ Ext.define('TAGGUI.interactive-view-download.view.SingleFilterPanel', {
         }
 
         this.suspendLayout = false;
-        this.forceComponentLayout();
+        this.updateLayout();
 
         this.onChange();
         return true;
     },
 
     onDateTypeComboSelect: function(cmp, selectedValues){
-        var val = selectedValues[0].data.val;
+        var val = selectedValues.data.val;
 
         if (!val){
             this.dateField.hide();
@@ -325,14 +325,14 @@ Ext.define('TAGGUI.interactive-view-download.view.SingleFilterPanel', {
         	this.timeField.setValue('12:01 AM');
 
         this.suspendLayout = false;
-        this.forceComponentLayout();
+        this.updateLayout();
 
         this.onChange();
         return true;
     },
 
     onClassifierTypeComboSelect: function(cmp, selectedValues){
-        var val = selectedValues[0].data.val;
+        var val = selectedValues.data.val;
 
         if (!val){
             this.labelCombo.hide();
@@ -358,14 +358,14 @@ Ext.define('TAGGUI.interactive-view-download.view.SingleFilterPanel', {
         }
 
         this.suspendLayout = false;
-        this.forceComponentLayout();
+        this.updateLayout();
 
         this.onChange();
         return true;
     },
 
     onLabelComboSelect: function(cmp, selectedValues){
-        var val = selectedValues[0].data.val;
+        var val = selectedValues.data.val;
 
         if (!val){
             this.markNotValid();
@@ -377,7 +377,7 @@ Ext.define('TAGGUI.interactive-view-download.view.SingleFilterPanel', {
         this.confidenceCombo.show();
 
         this.suspendLayout = false;
-        this.forceComponentLayout();
+        this.updateLayout();
 
         this.onChange();
         return true;
@@ -453,13 +453,13 @@ Ext.define('TAGGUI.interactive-view-download.view.SingleFilterPanel', {
         parent.remove(this, true);
 
         this.suspendLayout = false;
-        this.forceComponentLayout();
+        this.updateLayout();
 
         this.onChange(true);
     },
 
     onConfidenceComboSelect: function(cmp, selectedValues){
-        var val = selectedValues[0].data.val;
+        var val = selectedValues.data.val;
 
         if (!val){
             this.markNotValid();

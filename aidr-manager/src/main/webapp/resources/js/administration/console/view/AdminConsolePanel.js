@@ -28,7 +28,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
         this.toSystemHealthButton = Ext.create('Ext.Button', {
             text: 'Go to System Health',
             margin: '27 0 0 15',
-            cls: 'btn btn-blue',
+            cls: 'btn btn-blueSmall',
             id: 'toSystemHealthButtonId'
         });
 
@@ -41,7 +41,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                 type: 'ajax',
                 url: BASE_URL + '/protected/collection/getAllRunning.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 },
                 simpleSortMode: true,
@@ -57,9 +57,9 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                         terms =  me.runningCollectionsSearchField.getValue();
                     }
 
-                    s.getProxy().extraParams = {
+                    s.getProxy().setExtraParams({
                         terms: terms
-                    };
+                    });
                 }
             },
             sorters: [
@@ -72,6 +72,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
 
         this.durationStore = Ext.create('Ext.data.Store', {
             fields: ['val', 'label'],
+            storeId: 'durationStore',
             data : [
                 { "val": 12, "label": '12 hours' },
                 { "val": 24, "label": '1 day' },
@@ -81,7 +82,8 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                 { "val": 72, "label": '3 days' },
                 { "val": 168, "label": '7 days' },
                 { "val": 336, "label": '14 days' },
-                { "val": 720, "label": '30 days' }
+                { "val": 720, "label": '30 days' },
+                { "val": 1440, "label": '60 days' }
             ]
         });
 
@@ -156,49 +158,45 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'durationHours', text: 'Max Duration', width: 135, sortable: false,
-                    renderer: function (value, meta, record) {
-                        var id = Ext.id();
-
-                        Ext.defer(function () {
-                            var widget = Ext.widget('combo', {
-                                renderTo: id,
-                                editable: false,
-                                text: 'Edit',
-                                valueField: 'val',
-                                displayField: 'label',
-                                width: 125,
-                                store: me.durationStore,
-                                listeners: {
-                                    select: function (cmp, selectedValues, options) {
-                                        var selectedVal = selectedValues[0].data.val;
-                                        if (selectedVal) {
-                                            Ext.Ajax.request({
-                                                url: BASE_URL + '/protected/collection/updateDuration.action',
-                                                method: 'POST',
-                                                params: {
-                                                    code: record.data.code,
-                                                    duration: selectedVal
-                                                },
-                                                headers: {
-                                                    'Accept': 'application/json'
-                                                },
-                                                success: function (response) {
-                                                    AIDRFMFunctions.setAlert("Info", "Collection <b>" + record.data.name + "</b> new duration has been updated");
-                                                }
-                                            });
+                    text: 'Max Duration',
+                    flex: 1,
+                    xtype: 'widgetcolumn',
+                    widget: {
+                        xtype: 'combo',
+                        displayField: 'label',
+                        valueField: 'val',
+                        flex: 1,
+                        editable: false,
+                        listeners: {
+                            select: function (cmp, selectedValues, options) {
+                                var selectedVal = selectedValues.data.val;
+                                var code = this.getWidgetRecord().data.code;
+                                var name = this.getWidgetRecord().data.name;
+                                if (selectedVal) {
+                                    Ext.Ajax.request({
+                                        url: BASE_URL + '/protected/collection/updateDuration.action',
+                                        method: 'POST',
+                                        params: {
+                                            code: code,
+                                            duration: selectedVal
+                                        },
+                                        headers: {
+                                            'Accept': 'application/json'
+                                        },
+                                        success: function (response) {
+                                            AIDRFMFunctions.setAlert("Info", "Collection <b>" + name + "</b> new duration has been updated");
                                         }
-                                    }
+                                    });
                                 }
-                            });
-
-                            if (value) {
-                                widget.setValue(value);
-                            } else {
-                                widget.setValue(48);
                             }
-                        }, 10);
-                        return Ext.String.format('<div id="{0}" class="no-padding"></div>', id);
+                        }
+                    },
+                    onWidgetAttach: function (column, container, record) {
+                        // hide the container by default
+                        var combo = container;
+                        
+                        combo.setStore(Ext.data.StoreManager.lookup('durationStore'));
+                        combo.setValue(record.data.durationHours);
                     }
                 },
                 {
@@ -246,7 +244,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
         this.runningCollectionsSearchButton = Ext.create('Ext.Button', {
             margin: '0 0 0 10',
             text: 'Search',
-            cls: 'btn btn-blue',
+            cls: 'btn btn-blueSmall',
             id: 'runningCollectionsSearchButtonId'
         });
 
@@ -260,7 +258,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
         this.stoppedCollectionsSearchButton = Ext.create('Ext.Button', {
             margin: '0 0 0 10',
             text: 'Search',
-            cls: 'btn btn-blue',
+            cls: 'btn btn-blueSmall',
             id: 'stoppedCollectionsSearchButtonId'
         });
 
@@ -273,7 +271,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                 type: 'ajax',
                 url: BASE_URL + '/protected/collection/getAllStopped.action',
                 reader: {
-                    root: 'data',
+                    rootProperty: 'data',
                     totalProperty: 'total'
                 },
                 simpleSortMode: true,
@@ -289,9 +287,9 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                         terms =  me.stoppedCollectionsSearchField.getValue();
                     }
 
-                    s.getProxy().extraParams = {
+                    s.getProxy().setExtraParams({
                         terms: terms
-                    };
+                    });
                 }
             },
             sorters: [
@@ -354,49 +352,45 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'durationHours', text: 'Max Duration', width: 135, sortable: false,
-                    renderer: function (value, meta, record) {
-                        var id = Ext.id();
-
-                        Ext.defer(function () {
-                            var widget = Ext.widget('combo', {
-                                renderTo: id,
-                                editable: false,
-                                text: 'Edit',
-                                valueField: 'val',
-                                displayField: 'label',
-                                width: 125,
-                                store: me.durationStore,
-                                listeners: {
-                                    select: function (cmp, selectedValues, options) {
-                                        var selectedVal = selectedValues[0].data.val;
-                                        if (selectedVal) {
-                                            Ext.Ajax.request({
-                                                url: BASE_URL + '/protected/collection/updateDuration.action',
-                                                method: 'POST',
-                                                params: {
-                                                    code: record.data.code,
-                                                    duration: selectedVal
-                                                },
-                                                headers: {
-                                                    'Accept': 'application/json'
-                                                },
-                                                success: function (response) {
-                                                    AIDRFMFunctions.setAlert("Info", "Collection <b>" + record.data.name + "</b> new duration has been updated");
-                                                }
-                                            });
+                    text: 'Max Duration',
+                    flex: 1,
+                    xtype: 'widgetcolumn',
+                    widget: {
+                        xtype: 'combo',
+                        displayField: 'label',
+                        valueField: 'val',
+                        flex: 1,
+                        editable: false,
+                        listeners: {
+                            select: function (cmp, selectedValues, options) {
+                                var selectedVal = selectedValues.data.val;
+                                var code = this.getWidgetRecord().data.code;
+                                var name = this.getWidgetRecord().data.name;
+                                if (selectedVal) {
+                                    Ext.Ajax.request({
+                                        url: BASE_URL + '/protected/collection/updateDuration.action',
+                                        method: 'POST',
+                                        params: {
+                                            code: code,
+                                            duration: selectedVal
+                                        },
+                                        headers: {
+                                            'Accept': 'application/json'
+                                        },
+                                        success: function (response) {
+                                            AIDRFMFunctions.setAlert("Info", "Collection <b>" + name + "</b> new duration has been updated");
                                         }
-                                    }
+                                    });
                                 }
-                            });
-
-                            if (value) {
-                                widget.setValue(value);
-                            } else {
-                                widget.setValue(48);
                             }
-                        }, 10);
-                        return Ext.String.format('<div id="{0}" class="no-padding"></div>', id);
+                        }
+                    },
+                    onWidgetAttach: function (column, container, record) {
+                        // hide the container by default
+                        var combo = container;
+                        
+                        combo.setStore(Ext.data.StoreManager.lookup('durationStore'));
+                        combo.setValue(record.data.durationHours);
                     }
                 },
                 {
