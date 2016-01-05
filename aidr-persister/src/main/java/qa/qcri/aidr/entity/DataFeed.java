@@ -53,6 +53,10 @@ public class DataFeed  implements Serializable {
 	@Type(type = "CustomJsonObject")
 	private JSONObject geo;
 	
+	@Column(name="place")
+	@Type(type = "CustomJsonObject")
+	private JSONObject place;
+	
 	@Column(updatable = false, nullable=false, name = "created_at")
 	private Date createdAt;
 	
@@ -121,6 +125,14 @@ public class DataFeed  implements Serializable {
 
 	public void setGeo(JSONObject geo) {
 		this.geo = geo;
+	}
+
+	public JSONObject getPlace() {
+		return place;
+	}
+
+	public void setPlace(JSONObject place) {
+		this.place = place;
 	}
 
 }

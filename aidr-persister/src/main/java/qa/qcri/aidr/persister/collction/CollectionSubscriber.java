@@ -158,7 +158,9 @@ public class CollectionSubscriber extends JedisPubSub {
 			if(!msgJson.isNull("geo")){
 				dataFeed.setGeo(msgJson.getJSONObject("geo"));
 			}
-			
+			if(!msgJson.isNull("place")){
+				dataFeed.setPlace(msgJson.getJSONObject("place"));
+			}
             dataFeedService.persist(dataFeed);
             
         }catch(Exception e){
