@@ -21,9 +21,6 @@ public class UserAccountActivity extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(name="account_id")
 	private UserAccount account;
-
-	@Column(name="user_name", nullable=false)
-	private String userName;
 	
 	@Column(name="activity_date")
 	private Date activityDate;
@@ -32,15 +29,20 @@ public class UserAccountActivity extends BaseEntity {
 	private Integer downloadCount;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name="activity_type", nullable=false, unique=true)
+	@Column(name="activity_type", nullable=false)
 	private ActivityType activityType;
-
-	public String getUserName() {
-		return userName;
+	
+	public UserAccountActivity() {
+		super();
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public UserAccountActivity(UserAccount account, Date activityDate, Integer downloadCount,
+			ActivityType activityType) {
+		super();
+		this.account = account;
+		this.activityDate = activityDate;
+		this.downloadCount = downloadCount;
+		this.activityType = activityType;
 	}
 
 	public Date getActivityDate() {

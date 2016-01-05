@@ -1,5 +1,8 @@
 package qa.qcri.aidr.data.controller;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,8 +23,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import qa.qcri.aidr.data.ActivityType;
 import qa.qcri.aidr.data.RoleType;
 import qa.qcri.aidr.data.persistence.entity.UserAccount;
+import qa.qcri.aidr.data.persistence.entity.UserAccountActivity;
 import qa.qcri.aidr.data.service.PersisterService;
 import qa.qcri.aidr.data.service.UserAcountActivityService;
 import qa.qcri.aidr.data.service.UserService;
@@ -79,36 +84,54 @@ public class PersisterController {
 			if (createdTimestamp != null) {
 				createdDate = new Date(createdTimestamp);
 			}
+			
+			UserAccountActivity userAccountActivity = null;
+			DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			Date fromDate = formatter.parse(formatter.format(new Date()));
+			// if user is not admin then check download limit for a user
+			if(!isAdmin){		
+				
+				Calendar c = Calendar.getInstance(); 
+				c.setTime(fromDate); 
+				c.add(Calendar.DATE, 1);
+				Date toDate = c.getTime();				
+				
+				List<UserAccountActivity> activities = userAcountActivityService.findByAccountIdandActivityDate(userAccount.getId(), fromDate, toDate);
+				
+				if(activities != null && !activities.isEmpty()){
+					userAccountActivity = activities.get(0);
+					if(userAccountActivity.getDownloadCount() == null) {
+						userAccountActivity.setDownloadCount(0);
+					}
+					Integer downloadCount = userAccountActivity.getDownloadCount();
+					count = count - downloadCount;
+				}
+				
+				if(count <= 0){
+					return getUIWrapper(false, "You have reached at your daily download limit. Please try tomorrow to download!");
+				}
+				
+				//Integer tweetCount = (Integer) result.get("tweetCount");
+				System.out.println(activities);
+			}
 
 			response = persisterService.generateDownloadLink(code, queryString, userName, count, removeRetweet,
 					jsonType, createdDate);
 			if (!StringUtils.isEmpty(response)) {
 				Map<String, Object> result = new ObjectMapper().readValue(response, Map.class);
-				
-				// if user is not admin then check download limit for a user
-				/*if(!isAdmin && result != null && result.containsKey("tweetCount")){
-					DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-					Date fromDate = formatter.parse(formatter.format(new Date()));
+
+				if (result != null && result.containsKey("url")) {
 					
-					Calendar c = Calendar.getInstance(); 
-					c.setTime(fromDate); 
-					c.add(Calendar.DATE, 1);
-					Date toDate = c.getTime();				
-					
-					List<UserAccountActivity> activities = userAcountActivityService.findByAccountIdandActivityDate(userAccount.getId(), fromDate, toDate);
-					
-					if(activities != null && !activities.isEmpty()){
-						UserAccountActivity userAccountActivity = activities.get(0);
-						Integer downloadCount = userAccountActivity.getDownloadCount();
-						if(downloadCount == null) {
+					// update download count of userAccountActivity
+					if(result.containsKey("tweetCount")){
+						if(userAccountActivity == null){
+							userAccountActivity = new UserAccountActivity(userAccount, fromDate, 0, ActivityType.DOWNLOAD);
 						}
+						Integer downloadedTweets = (Integer)result.get("tweetCount");
+						userAccountActivity.setDownloadCount(downloadedTweets + userAccountActivity.getDownloadCount());
+						userAcountActivityService.save(userAccountActivity);
 					}
 					
-					Integer tweetCount = (Integer) result.get("tweetCount");
-					System.out.println(activities);
-				}*/		
-				
-				if (result != null && result.containsKey("url")) {
 					return getUIWrapper(result.get("url"), true);
 				} else {
 					return getUIWrapper(false, "Something wrong - no file generated!");

@@ -32,12 +32,6 @@ public class UserAcountActivityServiceImpl implements UserAcountActivityService{
 	}
 	
 	@Override
-	@Transactional(readOnly=true)
-	public List<UserAccountActivity> fetchByUserName(String username) {
-		return userAccountActivityRepository.findByUserName(username);
-	}
-	
-	@Override
 	public List<UserAccountActivity> findByAccountIdandActivityDate(Long id, Date fromDate, Date toDate) {
 		return userAccountActivityRepository.findByAccountIdandActivityDate(id, fromDate, toDate);
 	}

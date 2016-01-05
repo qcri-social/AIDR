@@ -11,8 +11,6 @@ import qa.qcri.aidr.data.persistence.entity.UserAccountActivity;
 
 public interface UserAccountActivityRepository extends CrudRepository<UserAccountActivity, Long>{
 
-	public List<UserAccountActivity> findByUserName(String userName);
-	
 	@Query("SELECT u FROM UserAccountActivity u where u.account.id = :id and u.activityDate >= :fromDate and u.activityDate < :toDate") 
 	public List<UserAccountActivity> findByAccountIdandActivityDate(@Param("id") Long id, @Param("fromDate") Date fromDate, @Param("toDate") Date toDate);
 
