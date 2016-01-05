@@ -115,7 +115,7 @@ Ext.define('AIDRPUBLIC.home.view.PublicHomePanel', {
 
             '<div class="content">',
 
-            '<div class="img">',
+            '<div class="img"  style="margin-left: -10px">',
             '{[this.getImageLink(values.code,values.name ,values.hasTaggerOutput)]}',
             '</div>',
             '<div class="info">',

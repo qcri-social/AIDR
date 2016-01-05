@@ -120,7 +120,7 @@ this.collectionTpl = new Ext.XTemplate(
     '</button>',
     '<div class="content">',
 
-    '<div class="img">',
+    '<div class="img" style="margin-left: -10px">',
     '<a href="{[this.getEncodedCode(values.code)]}/collection-details">' +
     '<tpl if="this.isTwitter(values.collectionType)">'+
     '<img alt="Collection image" height="70" src="resources/img/collection-icon.png" width="70">' +
@@ -263,7 +263,7 @@ this.collectionTrashedTpl = new Ext.XTemplate(
     // '</button>',
      '<div class="content">',
 
-    '<div class="img">',
+    '<div class="img" style="margin-left: -10px">',
     '<a href="{[this.getEncodedCode(values.code)]}/collection-details">' +
     '<tpl if="this.isTwitter(values.collectionType)">'+
     '<img alt="Collection image" height="70" src="resources/img/collection-icon.png" width="70">' +
