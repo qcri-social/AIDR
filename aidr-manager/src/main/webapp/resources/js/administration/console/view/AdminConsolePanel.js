@@ -99,7 +99,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'user', text: 'User', width: 160,
+                    xtype: 'gridcolumn', dataIndex: 'user', text: 'User', width: 150,
                     renderer: function (value, meta, record) {
                         if (value.userName){
                             return value.userName;
@@ -108,7 +108,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Last started', width: 120,
+                    xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Last started', width: 160,
                     renderer: function (value, meta, record) {
                         if (value) {
                             return moment(value).calendar();
@@ -118,7 +118,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Scheduled stop', width: 120,
+                    xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Scheduled stop', width: 160,
                     renderer: function (value, meta, record) {
                         var duration = record.data.durationHours;
 
@@ -159,13 +159,13 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                 },
                 {
                     text: 'Max Duration',
-                    flex: 1,
+                    width: 130,
                     xtype: 'widgetcolumn',
                     widget: {
                         xtype: 'combo',
                         displayField: 'label',
                         valueField: 'val',
-                        flex: 1,
+                        width: 110,
                         editable: false,
                         listeners: {
                             select: function (cmp, selectedValues, options) {
@@ -200,7 +200,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'publiclyListed', text: 'Public', width: 50,
+                    xtype: 'gridcolumn', dataIndex: 'publiclyListed', text: 'Public', width: 70,
                     renderer: function (value, meta, record) {
                         var id = Ext.id();
                         var recordId = record.data.id;
@@ -209,7 +209,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                         Ext.defer(function () {
                             var widget = Ext.widget('checkbox', {
                                 renderTo: id,
-                                margin: '0 0 0 12',
+                                margin: '0 0 0 15',
                                 checked: value,
                                 listeners: {
                                     change: function (el, newValue) {
@@ -312,7 +312,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'user', text: 'User', width: 160,
+                    xtype: 'gridcolumn', dataIndex: 'user', text: 'User', width: 150,
                     renderer: function (value, meta, record) {
                         if (value.userName){
                             return value.userName;
@@ -321,7 +321,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Last started', width: 120,
+                    xtype: 'gridcolumn', dataIndex: 'startDate', text: 'Last started', width: 190,
                     renderer: function (value, meta, record) {
                         if (value) {
                             return moment(value).calendar();
@@ -331,14 +331,14 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Items', width: 80, sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'totalCount', text: 'Items', width: 100, sortable: false,
                     renderer: function (value, meta, record) {
                         meta.style = "float:right; padding-top: 9px;";
                         return value ? Ext.util.Format.number(value, '0,000') : 0;
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'taggersCount', text: 'Links', width: 80, sortable: false,
+                    xtype: 'gridcolumn', dataIndex: 'taggersCount', text: 'Links', width: 100, sortable: false,
                     renderer: function (value, meta, record) {
                         meta.style = "float:left; padding-left:7px;";
                         var rv = me.getCollectorLink(record.data.code);
@@ -353,13 +353,13 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                 },
                 {
                     text: 'Max Duration',
-                    flex: 1,
+                    width: 130,
                     xtype: 'widgetcolumn',
                     widget: {
                         xtype: 'combo',
                         displayField: 'label',
                         valueField: 'val',
-                        flex: 1,
+                        width: 110,
                         editable: false,
                         listeners: {
                             select: function (cmp, selectedValues, options) {
@@ -394,7 +394,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                     }
                 },
                 {
-                    xtype: 'gridcolumn', dataIndex: 'publiclyListed', text: 'Public', width: 50,
+                    xtype: 'gridcolumn', dataIndex: 'publiclyListed', text: 'Public', width: 70,
                     renderer: function (value, meta, record) {
                         var id = Ext.id();
                         var recordId = record.data.id;
@@ -403,7 +403,7 @@ Ext.define('ADMIN.console.view.AdminConsolePanel', {
                         Ext.defer(function () {
                             var widget = Ext.widget('checkbox', {
                                 renderTo: id,
-                                margin: '0 0 0 12',
+                                margin: '0 0 0 15',
                                 checked: value,
                                 listeners: {
                                     change: function (el, newValue) {
