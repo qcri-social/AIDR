@@ -187,13 +187,14 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			{
 		        xtype:'combo',
 				queryMode:'local',
-			   store:['1500','3000','10000', '50000'],
-			   value: '1500',
-			   displayField:'division',
-			   autoSelect:true,
-			   forceSelection:true,
-			   id: "limit",
-			   listeners: {
+				store:['1500','3000','10000', '50000'],
+				value: '1500',
+				displayField:'division',
+				editable: false,
+			   	autoSelect:true,
+			   	forceSelection:true,
+			   	id: "limit",
+			   	listeners: {
 					change: function(ctl, val) {
 						Ext.getCmp('downloadLink').hide();
 					}

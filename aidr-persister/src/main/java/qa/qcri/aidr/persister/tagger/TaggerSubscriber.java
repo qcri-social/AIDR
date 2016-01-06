@@ -184,8 +184,8 @@ public class TaggerSubscriber extends JedisPubSub {
             JSONObject aidrJson = msgJson.getJSONObject("aidr");
 			dataFeed.setAidr(aidrJson);
 			dataFeed.setSource(aidrJson.getString("doctype"));
-			if(!msgJson.isNull("geo")){
-				dataFeed.setGeo(msgJson.getJSONObject("geo"));
+			if(!msgJson.isNull("coordinates")){
+				dataFeed.setGeo(msgJson.getJSONObject("coordinates"));
 			}
 			if(!msgJson.isNull("place")){
 				dataFeed.setPlace(msgJson.getJSONObject("place"));
