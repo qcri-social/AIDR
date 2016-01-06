@@ -55,9 +55,13 @@ public class NominalLabelResourceFacadeImp extends CoreDBServiceFacadeImp<Nomina
 	public NominalLabelDTO editNominalLabel(NominalLabelDTO nominalLabel) throws PropertyNotSetException {
 		try {
 			NominalLabel label = nominalLabel.toEntity();
-			NominalLabel oldLabel = getById(label.getNominalLabelId()); 
+			NominalLabel oldLabel = getById(label.getNominalLabelId());
+			
 			if (oldLabel != null) {
+				label.setSequence(oldLabel.getSequence());
 				oldLabel = em.merge(label);
+				em.flush();
+				em.refresh(oldLabel);
 				return (oldLabel != null) ? new NominalLabelDTO(oldLabel) : null;
 			} else {
 				throw new RuntimeException("Not found");

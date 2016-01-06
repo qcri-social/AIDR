@@ -77,7 +77,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
 
         this.refreshButton = Ext.create('Ext.Button', {
             height: 32,
-            width: 86,
+            width: 32,
             
             margin: '13 0 0 0',
             tooltip: 'Refresh',
@@ -831,6 +831,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                 this.geoE,
                                 {
                                     border: false,
+                                    margin: '5 0 0 0',
                                     bodyStyle: 'background:none',
                                     html: '<img src="/AIDRFetchManager/resources/img/info.png"/>',
                                     height: 22,
@@ -902,7 +903,7 @@ Ext.define('AIDRFM.collection-details.view.CollectionDetailsPanel', {
                                     xtype: 'container',
                                     padding: '0 20 0 0',
                                     //height:72,
-                                    height:60,
+                                    height:72,
                                     width:75,
                                     id:'iconPanel',
                                     html: '<img src="/AIDRFetchManager/resources/img/collection-icon.png"/>'

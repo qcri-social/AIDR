@@ -157,6 +157,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			        
 			listeners: {
 				change: function(ctl, val) {
+					Ext.suspendLayouts();
 					Ext.getCmp('downloadLink').hide();
 				}
 			}
@@ -187,14 +188,16 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			{
 		        xtype:'combo',
 				queryMode:'local',
-			   store:['1500','3000','10000', '50000'],
-			   value: '1500',
-			   displayField:'division',
-			   autoSelect:true,
-			   forceSelection:true,
-			   id: "limit",
-			   listeners: {
+				store:['1500','3000','10000', '50000'],
+				value: '1500',
+				displayField:'division',
+				editable: false,
+			   	autoSelect:true,
+			   	forceSelection:true,
+			   	id: "limit",
+			   	listeners: {
 					change: function(ctl, val) {
+						Ext.suspendLayouts();
 						Ext.getCmp('downloadLink').hide();
 					}
 				}
@@ -220,6 +223,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 				id: 'retweet',
 				listeners: {
 					change: function(ctl, val) {
+						Ext.suspendLayouts();
 						Ext.getCmp('downloadLink').hide();
 					}
 				}
@@ -241,6 +245,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			flex: 1,
 			margin: '10 5 5 5',
 			html: '',
+			width: 100, 
 			id: 'downloadLink'
 		});
 
@@ -322,7 +327,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			        {
 			        	xtype: 'container',
 			        	layout: 'hbox',
-			        	items: [
+			        		items: [
 			        	        this.downloadButton,
 			        	        this.downloadLink
 			        	        ]

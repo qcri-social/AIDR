@@ -61,15 +61,18 @@ box-shadow: #C7D3E0 0 1px 0px 0 #3383ce, #3383ce 0 -1px 0px 0 inset, #3383ce -1p
     -moz-border-radius: 3px;
     -ms-border-radius: 3px;
     -o-border-radius: 3px;
-    border-radius: 3px;
+    border: none;
     /*padding: 3px 3px 3px 3px;*/
-    border-width: 1px;
-    border-style: solid;
     background-color: #FFFFFF;
 }
 
 
 .x-btn-over.x-btn-default-small {
+    /*border-color: #1374bb;*/
+    background-image: none;
+     /*background-color: #FFFFFF; */
+}
+.x-btn-pressed.x-btn-default-small a{
     /*border-color: #1374bb;*/
     background-image: none;
      /*background-color: #FFFFFF; */
@@ -1212,7 +1215,7 @@ End of the tab panel styles
 	.c-models-list .content .img {
 	float: left;
 	width: 75px;
-	margin-left: -10px;
+	margin-left: -1px;
 }
 
 .collections-list .content .info, .attribute-list .content .info,

@@ -117,7 +117,7 @@ public class TwitterStreamTracker implements Closeable {
 			for (int i=0; i<list.size(); ++i) {
 				long val = Long.parseLong(list.get(i));
 				tmp[i] = val;
-				System.out.println("Will follow twitter user ID: " + tmp[i]);
+				//System.out.println("Will follow twitter user ID: " + tmp[i]);
 			}
 			query.follow(tmp);
 			// End of Java 8 Update

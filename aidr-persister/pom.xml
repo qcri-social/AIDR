@@ -12,16 +12,174 @@
 
 	<properties>
 		<resource.dir>${basedir}/src/main/resources</resource.dir>
+		<spring.version>4.2.1.RELEASE</spring.version>
+		<org.springframework.data.version>1.9.0.RELEASE</org.springframework.data.version>
+		<org.hibernate.hibernate-validator.version>5.1.0.CR1</org.hibernate.hibernate-validator.version>
+		<org.hibernate.version>4.3.11.Final</org.hibernate.version>
 	</properties>
 
 	<dependencies>
+	
+		<!-- Spring dependencies -->
+		
+		<!--  	<dependency>
+	    		<groupId>org.springframework</groupId>
+	    		<artifactId>org.springframework.web</artifactId>
+	    		<version>3.2.0.RELEASE</version>
+			</dependency> -->
+			
+			<dependency>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-aspects</artifactId>
+			    <version>${spring.version}</version>
+			</dependency>
+
+	  		<dependency>
+				  <groupId>org.springframework</groupId>
+				  <artifactId>spring-web</artifactId>
+				  <version>${spring.version}</version>
+			</dependency> 
+			
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-expression</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-jdbc</artifactId>
+			    <version>${spring.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-tx</artifactId>
+				<version>${spring.version}</version>
+			 </dependency>
+			 
+			 <dependency>
+			   <groupId>org.springframework</groupId>
+			   <artifactId>spring-orm</artifactId>
+			   <version>${spring.version}</version>
+			</dependency>
+			 
+			<dependency>
+			    <groupId>org.springframework.security</groupId>
+			    <artifactId>spring-security-core</artifactId>      
+			    <version>3.0.1.RELEASE</version>
+			</dependency>
+			<dependency>
+			    <groupId>org.springframework.security</groupId>
+			    <artifactId>spring-security-openid</artifactId>
+			    <version>3.0.1.RELEASE</version>
+			</dependency>
+			
+			<dependency>
+			       <groupId>org.springframework.security</groupId>
+			       <artifactId>spring-security-config</artifactId>
+			       <version>3.0.1.RELEASE</version>
+    		</dependency>
+    		
+    		<dependency>
+				   <groupId>org.springframework</groupId>
+				   <artifactId>spring-aop</artifactId>
+				   <version>${spring.version}</version>
+			</dependency>
+			
+			<dependency>
+				    <groupId>org.springframework</groupId>
+				    <artifactId>spring-webmvc</artifactId>
+				    <version>${spring.version}</version>
+			</dependency>
+			
+			<!-- spring jpa -->
+	       <!--  <dependency>
+	            <groupId>org.springframework.data</groupId>
+	            <artifactId>spring-data-jpa</artifactId>
+	            <version>${org.springframework.data.version}</version>
+	        </dependency> -->
+			
+			<dependency>
+			    <groupId>org.springframework</groupId>
+			    <artifactId>spring-orm</artifactId>
+			    <version>${spring.version}</version>
+			</dependency>
+    		
+			<dependency>
+		        <groupId>org.springframework</groupId>
+		        <artifactId>spring-context-support</artifactId>
+		        <version>${spring.version}</version>
+    		</dependency>
+
+		<!-- hibernate dependencies -->
+			
+			<dependency>
+	            <groupId>org.hibernate</groupId>
+	            <artifactId>hibernate-core</artifactId>
+	            <version>${org.hibernate.version}</version>
+        </dependency>
+  
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>${org.hibernate.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>cglib</artifactId>
+                    <groupId>cglib</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>dom4j</artifactId>
+                    <groupId>dom4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+			
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-validator</artifactId>
+				<version>${org.hibernate.hibernate-validator.version}</version>
+			</dependency>
+			
+		<dependency>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.1-api</artifactId>
+			<version>1.0.0.Final</version>
+		</dependency>
+
+	<!-- json dependencies -->
+	
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20151123</version>
+		</dependency>
+
+		<dependency>
+		    <groupId>org.glassfish</groupId>
+		    <artifactId>javax.json</artifactId>
+		    <version>1.0.4</version>
+		</dependency>
+		
+		<!--  -->
+			<dependency>
+				<groupId>javassist</groupId>
+				<artifactId>javassist</artifactId>
+				<version>3.12.1.GA</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>jstl</artifactId>
+				<version>1.2</version>
+			</dependency>
+			
 		<!-- AIDR dependencies -->
 		<dependency>
 			<groupId>qa.qcri.aidr.common</groupId>
 			<artifactId>aidr-common</artifactId>
 			<version>1.0</version>
 		</dependency>
-
 		<dependency>
 			<groupId>qa.qcri.aidr.dbmanager</groupId>
 			<artifactId>aidr-db-manager-ejb</artifactId>
@@ -29,14 +187,16 @@
 			<scope>compile</scope>
 			<type>ejb-client</type>
 		</dependency>
-
-
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.4-1206-jdbc41</version>
+		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
@@ -59,7 +219,6 @@
 			<artifactId>super-csv</artifactId>
 			<version>2.2.0</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
@@ -216,9 +375,9 @@
 		<resources>
 			<resource>
 				<directory>${resource.dir}</directory>
-				<includes>
+				<!-- <includes>
 					<include>**/*.properties</include>
-				</includes>
+				</includes> -->
 				<filtering>true</filtering>
 			</resource>
 		</resources>

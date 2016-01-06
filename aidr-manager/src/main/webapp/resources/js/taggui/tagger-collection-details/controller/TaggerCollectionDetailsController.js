@@ -370,7 +370,7 @@ Ext.define('TAGGUI.tagger-collection-details.controller.TaggerCollectionDetailsC
     templateUIUpdateSave:function(attID, type, templateContent, maskText){
         var me = this;
         var status = true;
-		Ext.getBosy().mask(maskText);
+		Ext.getBody().mask(maskText);
         Ext.Ajax.request({
             url: BASE_URL + '/protected/uitemplate/updateTemplate.action',
             method: 'POST',

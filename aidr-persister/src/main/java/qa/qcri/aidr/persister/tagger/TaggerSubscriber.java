@@ -17,9 +17,14 @@ import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import qa.qcri.aidr.common.redis.LoadShedder;
+import qa.qcri.aidr.entity.DataFeed;
 import qa.qcri.aidr.io.FileSystemOperations;
+import qa.qcri.aidr.service.DataFeedService;
 import qa.qcri.aidr.utils.ClassifiedTweet;
 import qa.qcri.aidr.utils.JsonDeserializer;
 import qa.qcri.aidr.utils.PersisterConfigurationProperty;
@@ -38,6 +43,7 @@ public class TaggerSubscriber extends JedisPubSub {
     private File file;
     private long itemsWrittenToFile = 0;
     private int fileVolumnNumber = 1;
+    DataFeedService dataFeedService = null;
     	
     private static ConcurrentHashMap<String, LoadShedder> redisLoadShedder = null;
     
@@ -71,6 +77,8 @@ public class TaggerSubscriber extends JedisPubSub {
 												PersisterConfigurationProperty.PERSISTER_LOAD_CHECK_INTERVAL_MINUTES)),
 								true,channelName));
 		logger.info("Created loadshedder for channel: " + (PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TAGGER_CHANNEL)+collectionCode));
+		ApplicationContext appContext = new ClassPathXmlApplicationContext("spring/spring-servlet.xml");
+        dataFeedService = (DataFeedService) appContext.getBean("dataFeedService");
     }
 
     @Override
@@ -84,6 +92,7 @@ public class TaggerSubscriber extends JedisPubSub {
     	if (redisLoadShedder.get(channel).canProcess()) {
     		logger.info("can process write for: " + channel);
     		writeToFile(message);
+    		writeToPostgres(message);
         }
     }
 
@@ -162,6 +171,29 @@ public class TaggerSubscriber extends JedisPubSub {
         	if (null == tweet.getLabelName_1() && tweet.getNominalLabels().isEmpty()) {
         		//System.err.println("[writeToFile] REDIS output faulty tweet with empty nominal label: " + tweet.getTweetID());
         	}
+        }
+    }
+    
+    //Persisting To Postgres
+    private void writeToPostgres(String message) {
+        try{
+        	JSONObject msgJson  = new JSONObject(message);
+            DataFeed dataFeed = new DataFeed();
+            dataFeed.setCode(collectionCode);
+            dataFeed.setFeed(msgJson);
+            JSONObject aidrJson = msgJson.getJSONObject("aidr");
+			dataFeed.setAidr(aidrJson);
+			dataFeed.setSource(aidrJson.getString("doctype"));
+			if(msgJson.has("coordinates") && !msgJson.isNull("coordinates")){
+				dataFeed.setGeo(msgJson.getJSONObject("coordinates"));
+			}
+			if(msgJson.has("place") && !msgJson.isNull("place")){
+				dataFeed.setPlace(msgJson.getJSONObject("place"));
+			}
+            dataFeedService.persist(dataFeed);
+            
+        }catch(Exception e){
+        	logger.error("Exception while persisting to postgres db ", e );
         }
     }
 

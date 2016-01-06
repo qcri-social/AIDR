@@ -28,6 +28,7 @@ import net.minidev.json.JSONObject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import qa.qcri.aidr.common.filter.DeserializeFilters;
 import qa.qcri.aidr.common.filter.JsonQueryList;
@@ -42,6 +43,7 @@ import qa.qcri.aidr.utils.ResultStatus;
 
 
 @Path("taggerPersister")
+@Component
 public class Persister4TaggerAPI {
 
 	private static Logger logger = Logger.getLogger(Persister4TaggerAPI.class.getName());
@@ -86,7 +88,7 @@ public class Persister4TaggerAPI {
 	public Response stopPersister(@QueryParam("collectionCode") String collectionCode) {
 		logger.info(collectionCode + ": In tagger persister stop");
 		String response;
-		RedisTaggerPersister p = (RedisTaggerPersister) GenericCache.getInstance().getTaggerPersisterMap(collectionCode);
+		RedisTaggerPersister p = GenericCache.getInstance().getTaggerPersisterMap(collectionCode);
 		if (p != null) {
 			try {
 				logger.debug(collectionCode + ": Aborting tagger persister...");
@@ -167,11 +169,13 @@ public class Persister4TaggerAPI {
 		}
 		
 		if (null == exportLimit) exportLimit = Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT));
-		String fileName = jsonD.taggerGenerateJSON2CSVBasedOnTweetCountFiltered(collectionCode, exportLimit, queryList, userName, removeRetweet);
+		Map<String, Object> generatedFileMap = jsonD.taggerGenerateJSON2CSVBasedOnTweetCountFiltered(collectionCode, exportLimit, queryList, userName, removeRetweet);
+		String fileName = (String) generatedFileMap.get("fileName");
 		logger.info("done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
 		
 		JSONObject obj = new JSONObject();
 		obj.putAll(ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), fileName, true));
+		obj.put("tweetCount", generatedFileMap.get("currentSize"));
 		logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), fileName, true));
 		return Response.ok(obj.toJSONString())
 				.allow("POST", "OPTIONS", "HEAD")
@@ -347,12 +351,14 @@ public class Persister4TaggerAPI {
 		
 		JsonDeserializer jsonD = new JsonDeserializer();
 		if (null == exportLimit) exportLimit = Integer.parseInt(PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.TWEETS_EXPORT_LIMIT));		// Koushik: added to override user specs
-		String fileName = jsonD.taggerGenerateJSON2JSONBasedOnTweetCountFiltered(collectionCode, exportLimit, queryList, DownloadJsonType.getDownloadJsonTypeFromString(jsonType), userName, removeRetweet);
+		Map<String, Object> generatedFileMap = jsonD.taggerGenerateJSON2JSONBasedOnTweetCountFiltered(collectionCode, exportLimit, queryList, DownloadJsonType.getDownloadJsonTypeFromString(jsonType), userName, removeRetweet);
+		String fileName = (String) generatedFileMap.get("fileName");
 		logger.info("Done processing request for collection: " + collectionCode + ", returning created file: " + fileName);
 		//return Response.ok(fileName).build();
 		
 		JSONObject obj = new JSONObject();
 		obj.putAll(ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), fileName, true));
+		obj.put("tweetCount", generatedFileMap.get("currentSize"));
 		logger.info("Returning JSON object: " + ResultStatus.getUIWrapper(collectionCode, PersisterConfigurator.getInstance().getProperty(PersisterConfigurationProperty.PERSISTER_CHANGE_NOTIFY_MSG), fileName, true));
 		return Response.ok(obj.toJSONString()).build();
 	}

@@ -265,7 +265,7 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
                         me.mainComponent.codeE.markInvalid(msg);
                         Ext.getBody().unmask();
                     } else {
-                        me.saveAttribute(name, code, description, mask);
+                        me.saveAttribute(name, code, description);
                     }
                 } else {
                     Ext.getBody().unmask();
@@ -276,7 +276,7 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
         });
     },
 
-    saveAttribute: function (name, code, description, mask) {
+    saveAttribute: function (name, code, description) {
         var me = this;
 
         Ext.Ajax.request({
@@ -300,11 +300,11 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
 
                     if (labels.length == 0) {
 //                        redirect because attribute was created and there is no labels for it
-                          me.redirectAfterSave(mask);
+                          me.redirectAfterSave();
                     } else {
                         me.labelsCount = labels.length;
                         Ext.Array.each(labels, function(r, index) {
-                            me.saveLabel(r.data.name, r.data.code, r.data.description, resp.data.nominalAttributeID, r.data.sequence, mask);
+                            me.saveLabel(r.data.name, r.data.code, r.data.description, resp.data.nominalAttributeID, r.data.sequence);
                         });
                     }
                 } else {
@@ -316,7 +316,7 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
         });
     },
 
-    saveLabel: function (name, code, description, attributeID, sequence, mask) {
+    saveLabel: function (name, code, description, attributeID, sequence) {
         var me = this;
         Ext.Ajax.request({
             url: BASE_URL + '/protected/tagger/createLabel.action',
@@ -336,7 +336,7 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
                 if (resp.success && resp.data) {
                     me.labelsCount = me.labelsCount - 1;
                     if (me.labelsCount == 0) {
-                        me.redirectAfterSave(mask);
+                        me.redirectAfterSave();
                     }
                 } else {
                     Ext.getBody().unmask();
@@ -371,7 +371,7 @@ Ext.define('TAGGUI.new-custom-attribute.controller.NewCustomAttributeController'
         });
     },
 
-    redirectAfterSave: function(mask) {
+    redirectAfterSave: function() {
         AIDRFMFunctions.setAlert("Ok", ["Attribute created successfully.", 'You will be redirected to Predict a new attribute screen.']);
         Ext.getBody().unmask();
 

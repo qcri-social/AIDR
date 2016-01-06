@@ -4,15 +4,11 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.concurrent.RejectedExecutionException;
-
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.text.translate.UnicodeEscaper;
 import org.apache.log4j.Logger;
 
 import qa.qcri.aidr.collector.beans.CollectionTask;
@@ -26,8 +22,8 @@ import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusListener;
-import twitter4j.TwitterObjectFactory;
 import twitter4j.TwitterException;
+import twitter4j.TwitterObjectFactory;
 
 /**
  * This class is responsible for dispatching incoming tweets.
@@ -90,16 +86,7 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 	@Override
 	public void onStatus(Status status) {
 		String json = TwitterObjectFactory.getRawJSON(status);
-		
 		JsonObject originalDoc = Json.createReader(new StringReader(json)).readObject();
-		
-		//String jsonSourceValue = StringEscapeUtils.escapeEcmaScript(originalDoc.getString("source"));
-		String jsonSourceValue = originalDoc.getString("source");
-		UnicodeEscaper un = UnicodeEscaper.between(60,60);
-		String jsonValueTranslated = un.translate(jsonSourceValue);
-		UnicodeEscaper  un1 = UnicodeEscaper.between(62,62);
-		String jsonValueFinal = un1.translate(jsonValueTranslated);
-
 		for (Predicate<JsonObject> filter : filters) {
 			if (!filter.test(originalDoc)) {
 				//logger.info(originalDoc.get("text").toString() + ": failed on filter = " + filter.getFilterName());
@@ -110,7 +97,6 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 		for (Entry<String, JsonValue> entry: originalDoc.entrySet())
 			builder.add(entry.getKey(), entry.getValue());
 		builder.add("aidr", aidr);
-		builder.add("source", jsonValueFinal);
 		JsonObject doc = builder.build();
 		for (Publisher p : publishers)
 			p.publish(channelName, doc);
@@ -131,10 +117,10 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 	@Override
 	public void onException(Exception ex) {
 		logger.error("Exception for collection " + task.getCollectionCode(), ex);
-		int attempt = cache.incrAttempt(task.getCollectionCode());
-		task.setStatusMessage(ex.getMessage());
 		if(ex instanceof TwitterException)
 		{
+			int attempt = cache.incrAttempt(task.getCollectionCode());
+			task.setStatusMessage(ex.getMessage());
 			if(((TwitterException) ex).getStatusCode() == -1)
 			{
 				if(attempt > Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_NET_FAILURE_RETRY_ATTEMPTS)))
@@ -181,28 +167,6 @@ class TwitterStatusListener implements StatusListener, ConnectionLifeCycleListen
 				CollectorErrorLog.sendErrorMail(task.getCollectionCode(),ex.toString());
 			else
 			{
-				try {
-					Thread.sleep(timeToSleep*1000);
-				} catch (InterruptedException ignore) {
-				}
-				timeToSleep=0;
-			}
-		}
-		else if(ex instanceof RejectedExecutionException)
-		{
-			if(attempt > Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_SERVICE_UNAVAILABLE_RETRY_ATTEMPTS)))
-			{
-				CollectorErrorLog.sendErrorMail(task.getCollectionCode(),ex.toString());
-				task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_COLLECTION_ERROR));
-			}
-			else
-			{
-				timeToSleep = (long) (getRandom()*attempt*
-						Integer.parseInt(configProperties.getProperty(CollectorConfigurationProperty.RECONNECT_SERVICE_UNAVAILABLE_WAIT_SECONDS)));
-				logger.warn("Error RejectedExecutionException, Waiting for " + timeToSleep + " seconds, attempt: " + attempt);					
-				task.setStatusCode(configProperties.getProperty(CollectorConfigurationProperty.STATUS_CODE_WARNING));
-				task.setStatusMessage("Collection Stopped due to RejectedExecutionException. Reconnect Attempt: " + attempt);
-				
 				try {
 					Thread.sleep(timeToSleep*1000);
 				} catch (InterruptedException ignore) {

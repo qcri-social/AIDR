@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,8 +32,9 @@ import net.minidev.json.JSONObject;
 
 import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.apache.commons.io.output.FileWriterWithEncoding;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.translate.UnicodeEscaper;
+import org.apache.commons.lang3.text.translate.UnicodeUnescaper;
 import org.apache.log4j.Logger;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.ICsvBeanWriter;
@@ -474,6 +476,7 @@ public class JsonDeserializer {
 			File[] listOfFiles = folder.listFiles();
 
 			Arrays.sort(listOfFiles, new Comparator<File>() {
+				@Override
 				public int compare(File f1, File f2) {
 					return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
 				}
@@ -580,6 +583,7 @@ public class JsonDeserializer {
 			Object[] objectsArray = taggerFilesList.toArray();
 			File[] taggerFiles = Arrays.copyOf(objectsArray, objectsArray.length, File[].class);
 			Arrays.sort(taggerFiles, new Comparator<File>() {
+				@Override
 				public int compare(File f1, File f2) {
 					return Long.valueOf(f2.lastModified()).compareTo(f1.lastModified()); // koushik: changed sort order
 				}
@@ -671,7 +675,7 @@ public class JsonDeserializer {
 	 * @return JSON to CSV converted 100K tweets filtered by user selected label
 	 *         name
 	 */
-	public String taggerGenerateJSON2CSVBasedOnTweetCountFiltered(String collectionCode, int exportLimit,
+	public Map<String, Object> taggerGenerateJSON2CSVBasedOnTweetCountFiltered(String collectionCode, int exportLimit,
 			final JsonQueryList queryList, String userName, boolean removeRetweet) {
 		// BufferedReader br = null;
 		ReversedLinesFileReader br = null;
@@ -712,6 +716,7 @@ public class JsonDeserializer {
 			File[] taggerFiles = Arrays.copyOf(objectsArray, objectsArray.length, File[].class);
 
 			Arrays.sort(taggerFiles, new Comparator<File>() {
+				@Override
 				public int compare(File f1, File f2) {
 					return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
 				}
@@ -832,8 +837,10 @@ public class JsonDeserializer {
 		FileSystemOperations.deleteFile(folderLocation + FILE_SEPARATOR + fileToDelete);
 		logger.info("Deleted raw created file: " + folderLocation + FILE_SEPARATOR + fileNameforCSVGen + CSV_EXTENSION);
 		
-		
-		return fileName;
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("fileName", fileName);
+		resultMap.put("currentSize", currentSize);		
+		return resultMap;
 	}
 
 	private Tweet getTweet(String line) {
@@ -1033,6 +1040,7 @@ public class JsonDeserializer {
 			File[] listOfFiles = folder.listFiles();
 
 			Arrays.sort(listOfFiles, new Comparator<File>() {
+				@Override
 				public int compare(File f1, File f2) {
 					return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
 				}
@@ -1132,6 +1140,7 @@ public class JsonDeserializer {
 			File[] listOfFiles = folder.listFiles();
 
 			Arrays.sort(listOfFiles, new Comparator<File>() {
+				@Override
 				public int compare(File f1, File f2) {
 					return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
 				}
@@ -1246,6 +1255,7 @@ public class JsonDeserializer {
 			Object[] objectsArray = taggerFilesList.toArray();
 			File[] taggerFiles = Arrays.copyOf(objectsArray, objectsArray.length, File[].class);
 			Arrays.sort(taggerFiles, new Comparator<File>() {
+				@Override
 				public int compare(File f1, File f2) {
 					return Long.valueOf(f2.lastModified()).compareTo(f1.lastModified()); // koushik: changed sort order?
 				}
@@ -1422,7 +1432,7 @@ public class JsonDeserializer {
 		return ResultStatus.getUIWrapper("fileName", fileName, "count", totalCount);
 	}
 
-	public String taggerGenerateJSON2JSONBasedOnTweetCountFiltered(String collectionCode, int exportLimit, JsonQueryList queryList,
+	public Map<String, Object> taggerGenerateJSON2JSONBasedOnTweetCountFiltered(String collectionCode, int exportLimit, JsonQueryList queryList,
 			DownloadJsonType jsonType, String userName, boolean removeRetweet) {
 
 		// BufferedReader br = null;
@@ -1467,6 +1477,7 @@ public class JsonDeserializer {
 			Object[] objectsArray = taggerFilesList.toArray();
 			File[] taggerFiles = Arrays.copyOf(objectsArray, objectsArray.length, File[].class);
 			Arrays.sort(taggerFiles, new Comparator<File>() {
+				@Override
 				public int compare(File f1, File f2) {
 					return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified()); 
 					// koushik: changed sort order to create list in ascending order of modified time
@@ -1508,7 +1519,13 @@ public class JsonDeserializer {
 											beanWriter.write(", ");
 										}
 										// write to file
-										beanWriter.write(StringEscapeUtils.unescapeJava(line));
+										//Decode unicode hex value to normal characters
+										UnicodeUnescaper u = new UnicodeUnescaper();
+										line =  u.translate(line);
+										//Encoding angular brackets < > 
+									    line = UnicodeEscaper.between(60,60).translate(line);
+									    line = UnicodeEscaper.between(62,62).translate(line);
+										beanWriter.write(line);
 										beanWriter.newLine();
 										++currentSize;
 									}
@@ -1561,7 +1578,11 @@ public class JsonDeserializer {
 				+ FILE_SEPARATOR + compressor.zip();
 		FileSystemOperations.deleteFile(folderLocation + FILE_SEPARATOR + fileToDelete);
 		logger.info("Deleted created raw file: " + folderLocation + FILE_SEPARATOR + fileNameforJsonGen + extension);
-		return fileName;
+		
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("fileName", fileName);
+		resultMap.put("currentSize", currentSize);		
+		return resultMap;
 	}
 
 	public Map<String, Object> generateClassifiedJson2TweetIdsJSONFiltered(String collectionCode, Boolean downloadLimited,
