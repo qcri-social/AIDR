@@ -154,10 +154,10 @@ public class CollectorSubscriber extends JedisPubSub {
             JSONObject aidrJson = msgJson.getJSONObject("aidr");
 			dataFeed.setAidr(aidrJson);
 			dataFeed.setSource(aidrJson.getString("doctype"));
-			if(!msgJson.isNull("coordinates")){
+			if(msgJson.has("coordinates") && !msgJson.isNull("coordinates")){
 				dataFeed.setGeo(msgJson.getJSONObject("coordinates"));
 			}
-			if(!msgJson.isNull("place")){
+			if(msgJson.has("place") && !msgJson.isNull("place")){
 				dataFeed.setPlace(msgJson.getJSONObject("place"));
 			}
             dataFeedService.persist(dataFeed);

@@ -75,13 +75,11 @@ public class TaggerJsonOutputAdapter {
 				// Added as per pivotal story #90581110
 				JsonObject geo = null;
 				JsonArray coordinates = null;
-				if (obj.has("geo")) {
-					if (!obj.get("geo").isJsonNull()) {
-						geo = (JsonObject) obj.get("geo"); 
+				if (obj.has("coordinates") && !obj.get("coordinates").isJsonNull()) {
+						geo = (JsonObject) obj.get("coordinates"); 
 						if (!geo.get("coordinates").isJsonNull()) {
 							coordinates = geo.get("coordinates").getAsJsonArray();
 						}
-					}
 				}
 
 				if (obj.has("aidr")) {								// should always be true
@@ -112,8 +110,8 @@ public class TaggerJsonOutputAdapter {
 					
 					jsonObj.setGeo(geo);
 					if (coordinates != null) {
-						jsonObj.setLatitude(coordinates.get(0).getAsDouble());
-						jsonObj.setLongitude(coordinates.get(1).getAsDouble());
+						jsonObj.setLongitude(coordinates.get(0).getAsDouble());
+						jsonObj.setLatitude(coordinates.get(1).getAsDouble());
 					}
 					
 					jsonObj.setId(id);

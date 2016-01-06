@@ -125,6 +125,7 @@ public class DocumentJSONConverter {
 					GeoLabel.LonLatPair geotag = new GeoLabel.LonLatPair();
 					geotag.setLongitude(coords.getDouble(0));
 					geotag.setLatitude(coords.getDouble(1));
+					t.setGeotag(geotag);
 				}
 			}
 			return t;
