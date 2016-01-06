@@ -157,6 +157,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			        
 			listeners: {
 				change: function(ctl, val) {
+					Ext.suspendLayouts();
 					Ext.getCmp('downloadLink').hide();
 				}
 			}
@@ -196,6 +197,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			   	id: "limit",
 			   	listeners: {
 					change: function(ctl, val) {
+						Ext.suspendLayouts();
 						Ext.getCmp('downloadLink').hide();
 					}
 				}
@@ -221,6 +223,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 				id: 'retweet',
 				listeners: {
 					change: function(ctl, val) {
+						Ext.suspendLayouts();
 						Ext.getCmp('downloadLink').hide();
 					}
 				}
@@ -242,6 +245,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			flex: 1,
 			margin: '10 5 5 5',
 			html: '',
+			width: 100, 
 			id: 'downloadLink'
 		});
 
@@ -323,7 +327,7 @@ Ext.define('AIDRPUBLIC.interactive-view-download.view.InteractiveViewDownloadPan
 			        {
 			        	xtype: 'container',
 			        	layout: 'hbox',
-			        	items: [
+			        		items: [
 			        	        this.downloadButton,
 			        	        this.downloadLink
 			        	        ]

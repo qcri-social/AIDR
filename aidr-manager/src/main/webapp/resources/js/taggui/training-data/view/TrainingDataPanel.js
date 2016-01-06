@@ -168,6 +168,7 @@ No use for this label as all the information is rendered in a single taggerDescr
                 			        ],
         			        listeners: {
         						change: function(ctl, val) {
+        							Ext.suspendLayouts();
         							Ext.getCmp('downloadLink').hide();
         						}
         					}
@@ -184,6 +185,7 @@ No use for this label as all the information is rendered in a single taggerDescr
                 			flex: 1,
                 			margin: '10 5 5 5',
                 			html: '',
+                			width: 100,
                 			id: 'downloadLink'
                 		});
 

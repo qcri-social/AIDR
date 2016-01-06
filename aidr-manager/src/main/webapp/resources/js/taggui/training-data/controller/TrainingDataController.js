@@ -225,6 +225,7 @@ Removed the taggerDescription2line and disabled it as there is no use of two lab
 
                     btn.setDisabled(true);
                     me.mainComponent.downloadLink.show();
+                    Ext.suspendLayouts();
                     me.mainComponent.downloadLink.setText('<div class="loading-block"></div>', false);
 
                     Ext.Ajax.timeout = 900000;
