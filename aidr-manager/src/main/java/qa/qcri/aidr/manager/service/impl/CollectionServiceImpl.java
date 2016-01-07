@@ -371,6 +371,7 @@ public class CollectionServiceImpl implements CollectionService {
 		return updateCollection;
 	}
 
+	@Transactional(readOnly = false)
 	public Collection startFetcher(FetcherRequestDTO fetcherRequest, Collection collection) {
 		try {
 			/**
